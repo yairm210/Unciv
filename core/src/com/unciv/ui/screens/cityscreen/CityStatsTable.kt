@@ -140,7 +140,7 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
         var turnsToPopString =
                 when {
                     city.isStarving() -> "[${city.population.getNumTurnsToStarvation()}] turns to lose population"
-                    city.getRuleset().units[city.cityConstructions.currentConstructionFromQueue]
+                    city.getRuleset().units[city.cityConstructions. currentConstructionName()]
                         .let { it != null && it.hasUnique(UniqueType.ConvertFoodToProductionWhenConstructed) }
                     -> "Food converts to production"
                     city.isGrowing() -> "[${city.population.getNumTurnsToNewPopulation()}] turns to new population"

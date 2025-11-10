@@ -75,9 +75,9 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
     ConstructionIcon {
         override fun getHeaderActor(iconSize: Float) = null
         override fun getEntryValue(item: City) =
-                item.cityConstructions.run { turnsToConstruction(currentConstructionFromQueue) }
+                item.cityConstructions.run { turnsToConstruction( currentConstructionName()) }
         override fun getEntryActor(item: City, iconSize: Float, actionContext: EmpireOverviewScreen): Actor? {
-            val construction = item.cityConstructions.currentConstructionFromQueue
+            val construction = item.cityConstructions. currentConstructionName()
             if (construction.isEmpty()) return null
             return ImageGetter.getConstructionPortrait(construction, iconSize * 0.8f)
         }
@@ -91,7 +91,7 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
         override val headerTip = "Current construction"
         override val defaultSort get() = SortableGrid.SortDirection.Ascending
         override fun getComparator() =
-            compareBy<City, String>(collator) { it.cityConstructions.currentConstructionFromQueue.tr(hideIcons = true) }
+            compareBy<City, String>(collator) { it.cityConstructions. currentConstructionName().tr(hideIcons = true) }
         override fun getHeaderActor(iconSize: Float) =
                 getCircledIcon("OtherIcons/Settings", iconSize)
         override fun getEntryValue(item: City) = 0
