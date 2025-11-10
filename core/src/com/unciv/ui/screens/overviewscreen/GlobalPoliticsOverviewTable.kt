@@ -25,6 +25,7 @@ import com.unciv.ui.components.widgets.ColorMarkupLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
+import yairm210.purity.annotations.Readonly
 import kotlin.math.roundToInt
 
 class GlobalPoliticsOverviewTable(
@@ -180,6 +181,7 @@ class GlobalPoliticsOverviewTable(
         return wonderTable
     }
 
+    @Readonly
     private fun getCivName(otherciv: Civilization): String {
         if (viewingPlayer.knows(otherciv) || otherciv == viewingPlayer) {
             return otherciv.civName
@@ -320,6 +322,7 @@ class GlobalPoliticsOverviewTable(
     }
 
     /** Same as [Civilization.shouldHideCivCount] but for City-States instead of Major Civs */
+    @Readonly
     private fun Civilization.hideCityStateCount(): Boolean {
         if (!gameInfo.gameParameters.randomNumberOfCityStates) return false
         val knownCivs = 1 + getKnownCivs().count { it.isCityState }

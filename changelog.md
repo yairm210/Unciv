@@ -1,33 +1,14 @@
 ## 4.18.13
 
-Proposing a new ModConstant value - By hackedpassword
-
-Refactor: Prefer cached Civ information over civ names - By SeventhM
-
-Add automated game creation from config file - By ICanSeeForever
-
 By unciv-loof:
-- Fix broken minimap state after tapping world tile after maximizing minimap 
-- Relocate maximize minimap button for compatibility with displays with rounded corners 
-- Set start time of new games to system time instead of 0L and remove 0L check in MPScreen 
-- Disallow settling cities in territory of other civilizations 
-- Spelling, punctuation, and don't list espionage as an unimplemented feature 
-
-By SomeTroglodyte:
-- Logging - better automatic or manual control over 'release' status 
-- WorldScreenMusicPopup / SoundTab - move music controls to their own file 
-- Treat a warning about data class copy visibility 
-- Refactor GameStartScreen to a proper '.ui.' place 
-- Code maintenance: Refactor Versioning 
-- Improve changelog link and mention it in 'UI Tips' 
-- FasterUIDevelopment - fix resize 
-- FasterUIDevelopment - modes 
-- Improve FasterUIDevelopment tool again 
-- Improve Scene2D debug mode: Log clicks 
+- Fix broken minimap state after maximizing minimap + tile tap
+- Relocate maximize minimap button for compatibility with rounded corner displays 
+- New MP games display correct "time since last turn" 
+- Disallow settling cities in territory of other civs
 
 Add Great People Names - By RobLoach
 
-Streaming GitHub Repository Download & Display Extracting Status - By touhidurrr
+Faster mod download & display status - By touhidurrr
 
 Add Nuclear Weapons Disabled conditional unique - By PLynx01
 
