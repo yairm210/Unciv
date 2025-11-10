@@ -24,7 +24,6 @@ import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.popups.AuthPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.options.SettingsSelect.SelectItem
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread
 import com.unciv.utils.toGdxArray
@@ -33,13 +32,8 @@ import java.time.temporal.ChronoUnit
 
 internal class MultiplayerTab(
     optionsPopup: OptionsPopup
-) : Table(BaseScreen.skin) {
+) : OptionsPopupTab(optionsPopup) {
     init {
-        pad(10f)
-        defaults().pad(5f)
-
-        val settings = optionsPopup.settings
-
         optionsPopup.addCheckbox(
             this, "Enable multiplayer status button in singleplayer games",
             settings.multiplayer::statusButtonInSinglePlayer, updateWorld = true
@@ -108,8 +102,6 @@ internal class MultiplayerTab(
         optionsPopup: OptionsPopup,
         toUpdate: Iterable<RefreshSelect>
     ) {
-        val settings = optionsPopup.settings
-
         val connectionToServerButton = "Check connection".toTextButton()
 
         val textToShowForOnlineMultiplayerAddress = if (Multiplayer.usesCustomServer()) {
@@ -213,8 +205,6 @@ internal class MultiplayerTab(
         tab: Table,
         optionsPopup: OptionsPopup
     ): RefreshSelect? {
-        val settings = optionsPopup.settings
-
         optionsPopup.addCheckbox(
             tab,
             "Enable out-of-game turn notifications",
@@ -288,7 +278,7 @@ internal class MultiplayerTab(
         successfullySetPassword(password) { success, ex ->
             if (success) {
                 popup.reuseWith(
-                    "Password set successfully for server [${optionsPopup.settings.multiplayer.getServer()}]",
+                    "Password set successfully for server [${settings.multiplayer.getServer()}]",
                     true
                 )
             } else {

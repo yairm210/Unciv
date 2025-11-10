@@ -2,26 +2,20 @@ package com.unciv.ui.popups.options
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.UncivGame
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.components.extensions.MusicControls
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.onClick
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread
 
-class SoundTab(
+internal class SoundTab(
     optionsPopup: OptionsPopup
-) : Table(BaseScreen.skin), MusicControls {
+) : OptionsPopupTab(optionsPopup), MusicControls {
     init {
-        pad(10f)
-        defaults().pad(5f)
-
-        val settings = optionsPopup.settings
-        val music = UncivGame.Current.musicController
+        val music = game.musicController
 
         addSoundEffectsVolumeSlider(settings)
         addCitySoundsVolumeSlider(settings)
@@ -33,14 +27,14 @@ class SoundTab(
             addMusicControls(settings, music)
 
         if (!music.isDefaultFileAvailable())
-            addDownloadMusic(this, optionsPopup)
+            addDownloadMusic()
     }
 
-    private fun addDownloadMusic(table: Table, optionsPopup: OptionsPopup) {
+    private fun addDownloadMusic() {
         val downloadMusicButton = "Download music".toTextButton()
-        table.add(downloadMusicButton).colspan(2).row()
+        add(downloadMusicButton).colspan(2).row()
         val errorTable = Table()
-        table.add(errorTable).colspan(2).row()
+        add(errorTable).colspan(2).row()
 
         downloadMusicButton.onClick {
             downloadMusicButton.disable()
@@ -50,10 +44,10 @@ class SoundTab(
             // So the whole game doesn't get stuck while downloading the file
             Concurrency.run("MusicDownload") {
                 try {
-                    UncivGame.Current.musicController.downloadDefaultFile()
+                    game.musicController.downloadDefaultFile()
                     launchOnGLThread {
-                        optionsPopup.tabs.replacePage("Sound", SoundTab(optionsPopup))
-                        UncivGame.Current.musicController.chooseTrack(flags = MusicTrackChooserFlags.setPlayDefault)
+                        replacePage { optionsPopup -> SoundTab(optionsPopup) }
+                        game.musicController.chooseTrack(flags = MusicTrackChooserFlags.setPlayDefault)
                     }
                 } catch (_: Exception) {
                     launchOnGLThread {

@@ -37,7 +37,6 @@ import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.Popup
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Display
 import com.unciv.utils.isUUID
@@ -49,15 +48,10 @@ import kotlinx.coroutines.withContext
 import java.util.zip.Deflater
 
 internal class AdvancedTab(
-    private val optionsPopup: OptionsPopup,
+    optionsPopup: OptionsPopup,
     onFontChange: () -> Unit
-): Table(BaseScreen.skin) {
-    private val settings = optionsPopup.settings
-
+): OptionsPopupTab(optionsPopup) {
     init {
-        pad(10f)
-        defaults().pad(5f)
-
         addAutosaveField()
         addAutosaveTurnsSelectBox()
 
@@ -87,7 +81,7 @@ internal class AdvancedTab(
 
     private fun addCutoutCheckbox() {
         optionsPopup.addCheckbox(this, "Enable using display cutout areas", settings.androidCutout) {
-            optionsPopup.settings.androidCutout = it
+            settings.androidCutout = it
             Display.setCutout(it)
             optionsPopup.reopenAfterDisplayLayoutChange()
             GUI.setUpdateWorldOnNextRender()
@@ -96,7 +90,7 @@ internal class AdvancedTab(
 
     private fun addHideSystemUiCheckbox() {
         optionsPopup.addCheckbox(this, "Hide system status and navigation bars", settings.androidHideSystemUi) {
-            optionsPopup.settings.androidHideSystemUi = it
+            settings.androidHideSystemUi = it
             Display.setSystemUiVisibility(hide = it)
             optionsPopup.reopenAfterDisplayLayoutChange()
         }
@@ -179,7 +173,7 @@ internal class AdvancedTab(
             val fontToSelect = settings.fontFamilyData
             fontSelectBox.selected = fonts.firstOrNull { it.invariantName == fontToSelect.invariantName } // will default to first entry if `null` is passed
 
-            selectCell.setActor(fontSelectBox).minWidth(optionsPopup.selectBoxMinWidth).pad(10f)
+            selectCell.setActor(fontSelectBox).minWidth(selectBoxMinWidth).pad(10f)
 
             fontSelectBox.onChange {
                 settings.fontFamilyData = fontSelectBox.selected
@@ -267,7 +261,7 @@ internal class AdvancedTab(
         val generateTranslationsButton = "Generate translation files".toTextButton()
 
         generateTranslationsButton.onActivation {
-            optionsPopup.tabs.selectPage("Advanced")  // only because key F12 works from any page
+            selectPage("Advanced") // only because key F12 works from any page // TODO that's actually broken
             generateTranslationsButton.setText(Constants.working.tr())
             Concurrency.run("WriteTranslations") {
                 val result = TranslationFileWriter.writeNewTranslationFiles()
@@ -305,7 +299,7 @@ internal class AdvancedTab(
                 val extraImagesLocation = "../../extraImages"
                 // I'm not sure why we need to advance the y by 2 for every screenshot... but that's the only way it remains centered
                 generateScreenshots(
-                    optionsPopup.settings, arrayListOf(
+                    settings, arrayListOf(
                         ScreenshotConfig(630, 500, ScreenSize.Medium, "$extraImagesLocation/itch.io image.png", Vector2(-2f, 2f), false),
                         ScreenshotConfig(1280, 640, ScreenSize.Medium, "$extraImagesLocation/GithubPreviewImage.png", Vector2(-2f, 4f)),
                         ScreenshotConfig(1024, 500, ScreenSize.Medium, "$extraImagesLocation/Feature graphic - Google Play.png", Vector2(-2f, 6f)),

@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle
 import com.unciv.GUI
-import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.files.MapSaver
@@ -28,13 +27,9 @@ import com.unciv.utils.DebugUtils
 import com.unciv.utils.toGdxArray
 
 internal class DebugTab(
-    private val optionsPopup: OptionsPopup
-) : Table(BaseScreen.skin) {
+    optionsPopup: OptionsPopup
+): OptionsPopupTab(optionsPopup) {
     init {
-        pad(10f)
-        defaults().pad(5f)
-        val game = UncivGame.Current
-
         if (GUI.isWorldLoaded()) {
             val simulateButton = "Simulate until turn:".toTextButton()
             val simulateTextField = UncivTextField.Numeric("Turn", DebugUtils.SIMULATE_UNTIL_TURN, integerOnly = true)
@@ -75,7 +70,7 @@ internal class DebugTab(
             (stage as UncivStage).setSceneDebugMode()
         }
         add("Gdx Scene2D debug".toLabel()).left().fillX()
-        add(select).minWidth(optionsPopup.selectBoxMinWidth).row()
+        add(select).minWidth(selectBoxMinWidth).row()
 
         add(Table().apply {
             add("Unique misspelling threshold".toLabel()).left().fillX()
@@ -139,7 +134,7 @@ internal class DebugTab(
                 val clipboardContentsString = Gdx.app.clipboard.contents.trim()
                 val loadedGame = UncivFiles.gameInfoFromString(clipboardContentsString)
                 loadedGame.gameParameters.isOnlineMultiplayer = false
-                optionsPopup.game.loadGame(loadedGame, callFromLoadScreen = true)
+                game.loadGame(loadedGame, callFromLoadScreen = true)
                 optionsPopup.close()
             } catch (ex: Exception) {
                 ToastPopup(ex.message ?: ex::class.java.simpleName, optionsPopup.stageToShowOn)

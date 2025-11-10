@@ -3,7 +3,6 @@ package com.unciv.ui.popups.options
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
@@ -25,7 +24,6 @@ import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
-import com.unciv.ui.screens.basescreen.BaseScreen.Companion.skin
 import com.unciv.ui.screens.worldscreen.NotificationsScroll
 import com.unciv.utils.Display
 import com.unciv.utils.ScreenMode
@@ -36,19 +34,16 @@ import com.unciv.utils.ScreenOrientation
  */
 internal class DisplayTab(
     optionsPopup: OptionsPopup,
-    onChange: () -> Unit,
-) : Table(skin) {
+    onChange: () -> Unit
+): OptionsPopupTab(optionsPopup) {
     init {
-        pad(10f)
         defaults().pad(2.5f)
-
-        val settings = optionsPopup.settings
 
         add("Screen".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
 
-        addScreenSizeSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
-        addScreenOrientationSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
-        addScreenModeSelectBox(this, settings, optionsPopup.selectBoxMinWidth)
+        addScreenSizeSelectBox(this, settings, selectBoxMinWidth, onChange)
+        addScreenOrientationSelectBox(this, settings, selectBoxMinWidth, onChange)
+        addScreenModeSelectBox(this, settings, selectBoxMinWidth)
 
 
         if (Gdx.app.type == Application.ApplicationType.Desktop) {
@@ -57,20 +52,20 @@ internal class DisplayTab(
                 if (GUI.isWorldLoaded())
                     GUI.getMap().isAutoScrollEnabled = settings.mapAutoScroll
             }
-            addScrollSpeedSlider(this, settings, optionsPopup.selectBoxMinWidth)
+            addScrollSpeedSlider(this, settings, selectBoxMinWidth)
         }
 
         addSeparator()
         add("Graphics".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
 
-        addTileSetSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
-        addUnitSetSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
-        addSkinSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
+        addTileSetSelectBox(this, settings, selectBoxMinWidth, onChange)
+        addUnitSetSelectBox(this, settings, selectBoxMinWidth, onChange)
+        addSkinSelectBox(this, settings, selectBoxMinWidth, onChange)
 
         addSeparator()
         add("UI".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
 
-        addNotificationScrollSelect(this, settings, optionsPopup.selectBoxMinWidth)
+        addNotificationScrollSelect(this, settings, selectBoxMinWidth)
         optionsPopup.addCheckbox(this, "Show minimap", settings.showMinimap, updateWorld = true) { settings.showMinimap = it }
         optionsPopup.addCheckbox(this, "Show tutorials", settings.showTutorials, updateWorld = true, newRow = false) { settings.showTutorials = it }
         addResetTutorials(this, settings)
@@ -87,7 +82,7 @@ internal class DisplayTab(
             settings.useCirclesToIndicateMovableTiles,
             true
         ) { settings.useCirclesToIndicateMovableTiles = it }
-        addPediaUnitArtSizeSlider(this, settings, optionsPopup.selectBoxMinWidth)
+        addPediaUnitArtSizeSlider(this, settings, selectBoxMinWidth)
 
         addSeparator()
         add("Visual Hints".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
@@ -106,7 +101,7 @@ internal class DisplayTab(
         }
         optionsPopup.addCheckbox(this, "Show pixel improvements", settings.showPixelImprovements, true) { settings.showPixelImprovements = it }
 
-        addUnitIconAlphaSlider(this, settings, optionsPopup.selectBoxMinWidth)
+        addUnitIconAlphaSlider(this, settings, selectBoxMinWidth)
 
         addSeparator()
         add("Performance".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()

@@ -34,12 +34,12 @@ class OptionsPopup(
     private val selectPage: Int = defaultPage,
     withDebug: Boolean = false,
     private val onClose: () -> Unit = {}
-) : Popup(screen.stage, /** [TabbedPager] handles scrolling */ scrollable = Scrollability.None) {
+) : Popup(screen.stage, /** [TabbedPager] handles scrolling */ scrollable = Scrollability.None), OptionsPopupHelpers {
 
     val game = screen.game
     val settings = screen.game.settings
     val tabs: TabbedPager
-    val selectBoxMinWidth: Float
+    override val selectBoxMinWidth: Float
     private val tabMinWidth: Float
 
     //endregion

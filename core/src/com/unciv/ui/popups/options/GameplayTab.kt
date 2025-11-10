@@ -4,17 +4,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.widgets.UncivSlider
-import com.unciv.ui.screens.basescreen.BaseScreen
 
 internal class GameplayTab(
     optionsPopup: OptionsPopup
-) : Table(BaseScreen.skin) {
+) : OptionsPopupTab(optionsPopup) {
     init {
-        pad(10f)
-        defaults().pad(5f)
-
-        val settings = optionsPopup.settings
-
         optionsPopup.addCheckbox(this, "Check for idle units", settings.checkForDueUnits, true) { settings.checkForDueUnits = it }
         optionsPopup.addCheckbox(this, "'Next unit' button cycles idle units", settings.checkForDueUnitsCycles, true) { settings.checkForDueUnitsCycles = it }
         optionsPopup.addCheckbox(this, "Show Small Skip/Cycle Unit Button", settings.smallUnitButton, true) { settings.smallUnitButton = it }
@@ -24,7 +18,7 @@ internal class GameplayTab(
         optionsPopup.addCheckbox(this, "Order trade offers by amount", settings.orderTradeOffersByAmount) { settings.orderTradeOffersByAmount = it }
         optionsPopup.addCheckbox(this, "Ask for confirmation when pressing next turn", settings.confirmNextTurn) { settings.confirmNextTurn = it }
 
-        addNotificationLogMaxTurnsSlider(this, settings, optionsPopup.selectBoxMinWidth)
+        addNotificationLogMaxTurnsSlider(this, settings, selectBoxMinWidth)
     }
 
     private fun addNotificationLogMaxTurnsSlider(

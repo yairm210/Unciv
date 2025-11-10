@@ -8,16 +8,11 @@ import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.screens.basescreen.BaseScreen
 
 internal class AutomationTab(
     optionsPopup: OptionsPopup
-) : Table(BaseScreen.skin) {
+): OptionsPopupTab(optionsPopup) {
     init {
-        pad(10f)
-        defaults().pad(5f)
-
-        val settings = optionsPopup.settings
         add("Automation".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
 
         optionsPopup.addCheckbox(this, "Auto-assign city production", settings.autoAssignCityProduction, true) { shouldAutoAssignCityProduction ->
@@ -114,13 +109,13 @@ internal class AutomationTab(
             settings.autoPlay.autoPlayUntilEnd, false
         ) {
             settings.autoPlay.autoPlayUntilEnd = it
-            if (!it) addAutoPlayMaxTurnsSlider(this, settings, optionsPopup.selectBoxMinWidth)
-            else optionsPopup.tabs.replacePage(optionsPopup.tabs.activePage, AutomationTab(optionsPopup))
+            if (!it) addAutoPlayMaxTurnsSlider(this, settings, selectBoxMinWidth)
+            else replacePage { parent -> AutomationTab(parent) }
         }
 
 
         if (!settings.autoPlay.autoPlayUntilEnd)
-            addAutoPlayMaxTurnsSlider(this, settings, optionsPopup.selectBoxMinWidth)
+            addAutoPlayMaxTurnsSlider(this, settings, selectBoxMinWidth)
 
 //    optionsPopup.addCheckbox(
 //        this,
@@ -128,7 +123,7 @@ internal class AutomationTab(
 //        settings.autoPlay.fullAutoPlayAI, false
 //    ) { settings.autoPlay.fullAutoPlayAI = it
 //        if (!it) addAutoPlaySections()
-//        else optionsPopup.tabs.replacePage(optionsPopup.tabs.activePage, autoPlayTab(optionsPopup))
+//        else replacePage { optionsPopup -> AutomationTab(optionsPopup) }
 //    }
 //    if (!settings.autoPlay.fullAutoPlayAI)
 //        addAutoPlaySections()
