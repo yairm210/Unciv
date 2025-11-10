@@ -75,6 +75,7 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
         if (newMinimapSize == minimapSize && civ?.exploredRegion?.shouldUpdateMinimap() != true && cutoutSetting == lastCutoutSetting) return
         lastCutoutSetting = cutoutSetting
         minimapSize = newMinimapSize
+        maximized = false
         rebuild(civ)
     }
 
