@@ -188,7 +188,7 @@ object Automation {
             return // already training a military unit
         val chosenUnit = chooseMilitaryUnit(city, city.civ.gameInfo.ruleset.units.values.asSequence())
         if (chosenUnit != null)
-            city.cityConstructions.currentConstructionFromQueue = chosenUnit.name
+            city.cityConstructions.setCurrentConstruction(chosenUnit.name)
     }
 
     @Suppress("MemberVisibilityCanBePrivate")

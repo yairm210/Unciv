@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx
 import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.UncivGame
-import com.unciv.UncivGame.Version
 import com.unciv.json.json
 import com.unciv.logic.BackwardCompatibility.convertFortify
 import com.unciv.logic.BackwardCompatibility.ensureUnitIds
@@ -12,8 +11,6 @@ import com.unciv.logic.BackwardCompatibility.guaranteeUnitPromotions
 import com.unciv.logic.BackwardCompatibility.migrateGreatGeneralPools
 import com.unciv.logic.BackwardCompatibility.migrateToTileHistory
 import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
-import com.unciv.logic.GameInfo.Companion.CURRENT_COMPATIBILITY_NUMBER
-import com.unciv.logic.GameInfo.Companion.FIRST_WITHOUT
 import com.unciv.logic.automation.civilization.BarbarianManager
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
@@ -59,8 +56,8 @@ import java.util.UUID
  * Take care with `lateinit` and `by lazy` fields - both are **never** serialized.
  *
  * When you change the structure of any class with this interface in a way which makes it impossible
- * to load the new saves from an older game version, increment [CURRENT_COMPATIBILITY_NUMBER]! And don't forget
- * to add backwards compatibility for the previous format.
+ * to load the new saves from an older game version, increment [CompatibilityVersion.CURRENT_COMPATIBILITY_NUMBER]!
+ * And don't forget to add backwards compatibility for the previous format.
  *
  * Reminder: In all subclasses, do use only actual Collection types, not abstractions like
  * `= mutableSetOf<Something>()`. That would make the reflection type of the field an interface, which
@@ -71,42 +68,18 @@ import java.util.UUID
  */
 interface IsPartOfGameInfoSerialization
 
-interface HasGameInfoSerializationVersion {
-    val version: CompatibilityVersion
-}
-
-data class CompatibilityVersion(
-    /** Contains the current serialization version of [GameInfo], i.e. when this number is not equal to [CURRENT_COMPATIBILITY_NUMBER], it means
-     * this instance has been loaded from a save file json that was made with another version of the game. */
-    val number: Int,
-    val createdWith: Version
-) : IsPartOfGameInfoSerialization {
-    @Suppress("unused") // used by json serialization
-    constructor() : this(-1, Version())
-
-    @Pure operator fun compareTo(other: CompatibilityVersion) = number.compareTo(other.number)
-}
 
 data class VictoryData(val winningCiv: String, val victoryType: String, val victoryTurn: Int) {
     @Suppress("unused")  // used by json serialization
-    constructor(): this("","",0)
+    constructor() : this("", "", 0)
 }
 
 /** The virtual world the users play in */
 class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion {
-    companion object {
-        /** The current compatibility version of [GameInfo]. This number is incremented whenever changes are made to the save file structure that guarantee that
-         * previous versions of the game will not be able to load or play a game normally. */
-        const val CURRENT_COMPATIBILITY_NUMBER = 4
-
-        val CURRENT_COMPATIBILITY_VERSION = CompatibilityVersion(CURRENT_COMPATIBILITY_NUMBER, UncivGame.VERSION)
-
-        /** This is the version just before this field was introduced, i.e. all saves without any version will be from this version */
-        val FIRST_WITHOUT = CompatibilityVersion(1, Version("4.1.14", 731))
-    }
     //region Fields - Serialized
 
-    override var version = FIRST_WITHOUT
+    /** Version that saved the game, set in [UncivFiles.gameInfoToString][com.unciv.logic.files.UncivFiles.gameInfoToString]. */
+    override var version = CompatibilityVersion.FIRST_WITHOUT
 
     var civilizations = mutableListOf<Civilization>()
     var barbarians = BarbarianManager()
@@ -117,7 +90,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     var turns = 0
     var oneMoreTurnMode = false
     var currentPlayer = ""
-    var currentTurnStartTime = 0L
+    var currentTurnStartTime = System.currentTimeMillis()
     var gameId = UUID.randomUUID().toString() // random string
     var checksum = ""
     var lastUnitId = 0
@@ -145,6 +118,9 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
      */
     @Volatile
     var customSaveLocation: String? = null
+
+    /** List of unit names that have been taken in this game from UnitNameGroups.json. */
+    var unitNamesTaken = mutableListOf<String>()
 
     //endregion
     //region Fields - Transient
@@ -205,6 +181,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         toReturn.victoryData = victoryData?.copy()
         toReturn.historyStartTurn = historyStartTurn
         toReturn.lastUnitId = lastUnitId
+        toReturn.unitNamesTaken.addAll(unitNamesTaken)
 
         return toReturn
     }
@@ -423,7 +400,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         // We found a human player, so we are making them current
         currentTurnStartTime = System.currentTimeMillis()
         currentPlayer = player.civName
-        currentPlayerCiv = getCivilization(currentPlayer)
+        currentPlayerCiv = player
 
         // Starting their turn
         TurnManager(player).startTurn(progressBar)
@@ -563,7 +540,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         // Include your city-state allies' cities with your own for the purpose of showing the closest city
         val relevantCities: Sequence<City> = civ.cities.asSequence() +
             civ.getKnownCivs()
-                .filter { it.isCityState && it.getAllyCivName() == civ.civName }
+                .filter { it.isCityState && it.allyCiv == civ }
                 .flatMap { it.cities }
 
         // All sources of the resource on the map, using a city-state's capital center tile for the CityStateOnlyResource types
@@ -814,9 +791,4 @@ class GameInfoPreview() {
     @Readonly fun getCivilization(civName: String) = civilizations.first { it.civName == civName }
     @Readonly fun getCurrentPlayerCiv() = getCivilization(currentPlayer)
     @Readonly fun getPlayerCiv(playerId: String) = civilizations.firstOrNull { it.playerId == playerId }
-}
-
-/** Class to use when parsing jsons if you only want the serialization [version]. */
-class GameInfoSerializationVersion : HasGameInfoSerializationVersion {
-    override var version = FIRST_WITHOUT
 }

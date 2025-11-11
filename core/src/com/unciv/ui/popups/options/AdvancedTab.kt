@@ -57,10 +57,10 @@ class AdvancedTab(
     init {
         pad(10f)
         defaults().pad(5f)
-        
+
         addAutosaveField()
         addAutosaveTurnsSelectBox()
-        
+
         addSeparator()
 
         if (Display.hasCutout())
@@ -90,6 +90,7 @@ class AdvancedTab(
             optionsPopup.settings.androidCutout = it
             Display.setCutout(it)
             optionsPopup.reopenAfterDisplayLayoutChange()
+            GUI.setUpdateWorldOnNextRender()
         }
     }
 
@@ -111,7 +112,7 @@ class AdvancedTab(
 
         autoSaveTrunsTextFieldButton.onClick {
             if (autoSaveTrunsTextField.text.isEmpty()) return@onClick
-            
+
             val numberAutosaveTurns = autoSaveTrunsTextField.text.toInt()
 
             if (numberAutosaveTurns <= 0) {
@@ -131,13 +132,13 @@ class AdvancedTab(
 
             } else {
                 settings.maxAutosavesStored = numberAutosaveTurns
-            
+
             }
         }
         autosaveFieldTable.add(autoSaveTrunsTextFieldButton).row()
         add(autosaveFieldTable).row()
     }
-    
+
     private fun addAutosaveTurnsSelectBox() {
         add("Turns between autosaves".toLabel()).left().fillX()
 

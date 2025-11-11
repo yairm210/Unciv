@@ -153,7 +153,7 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
         private fun getCityWithNoProductionSet(worldScreen: WorldScreen) =
             worldScreen.viewingCiv.cities
             .firstOrNull {
-                !it.isPuppet && it.cityConstructions.currentConstructionFromQueue.isEmpty()
+                !it.isPuppet && it.cityConstructions. currentConstructionName().isEmpty()
             }
 
         private fun openReligionPicker(
