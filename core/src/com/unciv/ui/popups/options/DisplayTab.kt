@@ -3,9 +3,7 @@ package com.unciv.ui.popups.options
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.utils.Array
 import com.unciv.GUI
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSettings.ScreenSize
@@ -15,9 +13,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.brighten
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
-import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
-import com.unciv.ui.components.widgets.TranslatedSelectBox
 import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.images.ImageGetter
@@ -39,9 +35,9 @@ internal class DisplayTab(
 
         addHeader("Screen")
 
-        addScreenSizeSelectBox(this, settings, selectBoxMinWidth, onChange)
-        addScreenOrientationSelectBox(this, settings, selectBoxMinWidth, onChange)
-        addScreenModeSelectBox(this, settings, selectBoxMinWidth)
+        addScreenSizeSelectBox(onChange)
+        addScreenOrientationSelectBox(onChange)
+        addScreenModeSelectBox()
 
 
         if (Gdx.app.type == Application.ApplicationType.Desktop) {
@@ -54,13 +50,13 @@ internal class DisplayTab(
 
         addHeader("Graphics")
 
-        addTileSetSelectBox(this, settings, selectBoxMinWidth, onChange)
-        addUnitSetSelectBox(this, settings, selectBoxMinWidth, onChange)
-        addSkinSelectBox(this, settings, selectBoxMinWidth, onChange)
+        addTileSetSelectBox(onChange)
+        addUnitSetSelectBox(onChange)
+        addSkinSelectBox(onChange)
 
         addHeader("UI")
 
-        addNotificationScrollSelect(this, settings, selectBoxMinWidth)
+        addNotificationScrollSelect()
         addCheckbox("Show minimap", settings::showMinimap, updateWorld = true)
         addCheckbox("Show tutorials", settings.showTutorials, updateWorld = true, newRow = false) { settings.showTutorials = it }
         addResetTutorials(this, settings)
@@ -142,114 +138,58 @@ internal class DisplayTab(
         table.add(unitArtSizeSlider).minWidth(selectBoxMinWidth).pad(10f).row()
     }
 
-    private fun addScreenModeSelectBox(table: Table, settings: GameSettings, selectBoxMinWidth: Float) {
-        table.add("Screen Mode".toLabel()).left().fillX()
-
+    private fun addScreenModeSelectBox() {
         val modes = Display.getScreenModes()
-        val current: ScreenMode? = modes[settings.screenMode]
-
-        val selectBox = SelectBox<ScreenMode>(table.skin)
-        selectBox.items = Array(modes.values.toTypedArray())
-        selectBox.selected = current
-        selectBox.onChange {
+        val proxy = object {
+            var value: ScreenMode
+                get() = modes[settings.screenMode] ?: modes.values.first()
+                set(value) { settings.screenMode = value.getId() }
+        }
+        addSelectBox("Screen Mode", proxy::value, modes.values) { mode, _ ->
             settings.refreshWindowSize()
-            val mode = selectBox.selected
-            settings.screenMode = mode.getId()
             Display.setScreenMode(mode.getId(), settings)
         }
-
-        table.add(selectBox).minWidth(selectBoxMinWidth).pad(10f).row()
     }
 
-    private fun addScreenSizeSelectBox(table: Table, settings: GameSettings, selectBoxMinWidth: Float, onResolutionChange: () -> Unit) {
-        table.add("UI Scale".toLabel()).left().fillX()
-
-        val screenSizeSelectBox = TranslatedSelectBox(ScreenSize.entries.map { it.name }, settings.screenSize.name)
-        table.add(screenSizeSelectBox).minWidth(selectBoxMinWidth).pad(10f).row()
-
-        screenSizeSelectBox.onChange {
-            settings.screenSize = ScreenSize.valueOf(screenSizeSelectBox.selected.value)
+    private fun addScreenSizeSelectBox(onResolutionChange: () -> Unit) {
+        addSelectBox("UI Scale", settings::screenSize, ScreenSize.entries) { _, _ ->
             onResolutionChange()
         }
     }
 
-    private fun addScreenOrientationSelectBox(table: Table, settings: GameSettings, selectBoxMinWidth: Float, onOrientationChange: () -> Unit) {
+    private fun addScreenOrientationSelectBox(onOrientationChange: () -> Unit) {
         if (!Display.hasOrientation()) return
-
-        table.add("Screen orientation".toLabel()).left().fillX()
-
-        val selectBox = SelectBox<ScreenOrientation>(skin)
-        selectBox.items = Array(ScreenOrientation.entries.toTypedArray())
-        selectBox.selected = settings.displayOrientation
-        selectBox.onChange {
-            val orientation = selectBox.selected
-            settings.displayOrientation = orientation
+        addSelectBox("Screen orientation", settings::displayOrientation, ScreenOrientation.entries) { orientation, _ ->
             Display.setOrientation(orientation)
             onOrientationChange()
         }
-
-        table.add(selectBox).minWidth(selectBoxMinWidth).pad(10f).row()
     }
 
-    private fun addTileSetSelectBox(table: Table, settings: GameSettings, selectBoxMinWidth: Float, onTilesetChange: () -> Unit) {
-        table.add("Tileset".toLabel()).left().fillX()
-
-        val tileSetSelectBox = SelectBox<String>(table.skin)
-        val tileSetArray = Array<String>()
-        val tileSets = ImageGetter.getAvailableTilesets()
-        for (tileset in tileSets) tileSetArray.add(tileset)
-        tileSetSelectBox.items = tileSetArray
-        tileSetSelectBox.selected = settings.tileSet
-        table.add(tileSetSelectBox).minWidth(selectBoxMinWidth).pad(10f).row()
-
+    private fun addTileSetSelectBox(onTilesetChange: () -> Unit) {
         val unitSets = ImageGetter.getAvailableUnitsets()
-
-        tileSetSelectBox.onChange {
+        addSelectBox("Tileset", settings::tileSet, ImageGetter.getAvailableTilesets().asIterable()) { newValue, oldValue ->
             // Switch unitSet together with tileSet as long as one with the same name exists and both are selected
-            if (settings.tileSet == settings.unitSet && unitSets.contains(tileSetSelectBox.selected)) {
-                settings.unitSet = tileSetSelectBox.selected
+            if (oldValue == settings.unitSet && unitSets.contains(newValue)) {
+                settings.unitSet = newValue
             }
-            settings.tileSet = tileSetSelectBox.selected
             // ImageGetter ruleset should be correct no matter what screen we're on
             TileSetCache.assembleTileSetConfigs(ImageGetter.ruleset.mods)
             onTilesetChange()
         }
     }
 
-    private fun addUnitSetSelectBox(table: Table, settings: GameSettings, selectBoxMinWidth: Float, onUnitsetChange: () -> Unit) {
-        table.add("Unitset".toLabel()).left().fillX()
-
-        val unitSetSelectBox = SelectBox<String>(table.skin)
-        val unitSetArray = Array<String>()
+    private fun addUnitSetSelectBox(onUnitsetChange: () -> Unit) {
         val nullValue = "None".tr()
-        unitSetArray.add(nullValue)
-        val unitSets = ImageGetter.getAvailableUnitsets()
-        for (unitset in unitSets) unitSetArray.add(unitset)
-        unitSetSelectBox.items = unitSetArray
-        unitSetSelectBox.selected = settings.unitSet ?: nullValue
-        table.add(unitSetSelectBox).minWidth(selectBoxMinWidth).pad(10f).row()
-
-        unitSetSelectBox.onChange {
-            settings.unitSet = if (unitSetSelectBox.selected != nullValue) unitSetSelectBox.selected else null
+        addSelectBox("Unitset", settings::unitSet, ImageGetter.getAvailableUnitsets().asIterable()) { value, _ ->
+            if (value == nullValue) settings.unitSet = null
             // ImageGetter ruleset should be correct no matter what screen we're on
             TileSetCache.assembleTileSetConfigs(ImageGetter.ruleset.mods)
             onUnitsetChange()
         }
     }
 
-    private fun addSkinSelectBox(table: Table, settings: GameSettings, selectBoxMinWidth: Float, onSkinChange: () -> Unit) {
-        table.add("UI Skin".toLabel()).left().fillX()
-
-        val skinSelectBox = SelectBox<String>(table.skin)
-        val skinArray = Array<String>()
-        val skins = ImageGetter.getAvailableSkins()
-        for (skin in skins) skinArray.add(skin)
-        skinSelectBox.items = skinArray
-        skinSelectBox.selected = settings.skin
-        table.add(skinSelectBox).minWidth(selectBoxMinWidth).pad(10f).row()
-
-        skinSelectBox.onChange {
-            settings.skin = skinSelectBox.selected
+    private fun addSkinSelectBox(onSkinChange: () -> Unit) {
+        addSelectBox("UI Skin", settings::skin, ImageGetter.getAvailableSkins().asIterable()) { _, _ ->
             // ImageGetter ruleset should be correct no matter what screen we're on
             SkinCache.assembleSkinConfigs(ImageGetter.ruleset.mods)
             onSkinChange()
@@ -273,17 +213,8 @@ internal class DisplayTab(
         table.add(resetTutorialsButton).center().row()
     }
 
-    private fun addNotificationScrollSelect(table: Table, settings: GameSettings, selectBoxMinWidth: Float) {
-        table.add("Notifications on world screen".toLabel()).left().fillX()
-
-        val selectBox = TranslatedSelectBox(
-            NotificationsScroll.UserSetting.entries.map { it.name },
-            settings.notificationScroll
-        )
-        table.add(selectBox).minWidth(selectBoxMinWidth).pad(10f).row()
-
-        selectBox.onChange {
-            settings.notificationScroll = selectBox.selected.value
+    private fun addNotificationScrollSelect() {
+        addEnumAsStringSelectBox("Notifications on world screen", settings::notificationScroll, NotificationsScroll.UserSetting.entries) {
             GUI.setUpdateWorldOnNextRender()
         }
     }

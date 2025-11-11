@@ -1,7 +1,6 @@
 package com.unciv.ui.popups.options
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle
 import com.unciv.GUI
@@ -15,7 +14,6 @@ import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
-import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.popups.ToastPopup
@@ -24,7 +22,6 @@ import com.unciv.ui.screens.basescreen.SceneDebugMode
 import com.unciv.ui.screens.basescreen.UncivStage
 import com.unciv.utils.Concurrency
 import com.unciv.utils.DebugUtils
-import com.unciv.utils.toGdxArray
 
 internal class DebugTab(
     optionsPopup: OptionsPopup
@@ -62,15 +59,9 @@ internal class DebugTab(
         addCheckbox("Save games compressed", UncivFiles::saveZipped)
         addCheckbox("Save maps compressed", MapSaver::saveZipped)
 
-        val select = SelectBox<SceneDebugMode>(skin)
-        select.items = SceneDebugMode.entries.toGdxArray()
-        select.selected = BaseScreen.enableSceneDebug
-        select.onChange {
-            BaseScreen.enableSceneDebug = select.selected
+        addSelectBox("Gdx Scene2D debug", BaseScreen::enableSceneDebug, SceneDebugMode.entries) { _, _ ->
             (stage as UncivStage).setSceneDebugMode()
         }
-        add("Gdx Scene2D debug".toLabel()).left().fillX()
-        add(select).minWidth(selectBoxMinWidth).row()
 
         add(Table().apply {
             add("Unique misspelling threshold".toLabel()).left().fillX()

@@ -1,23 +1,35 @@
 package com.unciv.ui.popups.options
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.Array
 import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.ui.components.extensions.addSeparator
+import com.unciv.ui.components.extensions.setFontColor
 import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.onChange
+import com.unciv.ui.components.widgets.TranslatedSelectBox
 import com.unciv.ui.popups.hasOpenPopups
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.utils.Concurrency
+import com.unciv.utils.launchOnGLThread
+import com.unciv.utils.toGdxArray
 import com.unciv.utils.withGLContext
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlin.reflect.KMutableProperty0
 
 /**
@@ -37,7 +49,6 @@ import kotlin.reflect.KMutableProperty0
  *  TODO
  *    * Sliders: 5 occurrences (Advanced, Automation, Debug, Display, Gameplay)
  *    * TextFields: 4 occurrences (Advanced, Debug, ModCheck, Multiplayer)
- *    * SelectBoxes
  *    * SettingsSelect and subclass
  *    * Performance - what is taking so long? Use tabs doing their heavy lifting only on activation, like ModCheckTab?
  */
@@ -99,6 +110,112 @@ internal interface OptionsPopupHelpers {
         addCheckbox(text, settingsProperty.get(), updateWorld) {
             settingsProperty.set(it)
             action(it)
+        }
+    }
+
+    /**
+     *  Adds a [Label] and [SelectBox] as two Cells into a table row.
+     *
+     *  **Entries will only be translated when the item class provides a toString() doing so.**
+     *
+     *  @param action Optional callback, after the value is set, arguments are the new value and the old value
+     *  @see addTranslatedSelectBox
+     *  @see addEnumAsStringSelectBox
+     */
+    fun <T> Table.addSelectBox(text: String, property: KMutableProperty0<T>, items: Iterable<T>, action: ((T, T) -> Unit)? = null) {
+        add(text.toLabel()).left().fillX()
+
+        val select = SelectBox<T>(BaseScreen.skin)
+        select.setItems(items.toGdxArray())
+        select.selected = property.get()
+        add(select).pad(10f).minWidth(rightWidgetMinWidth).row()
+
+        select.onChange {
+            val oldValue = property.get()
+            val newValue = select.selected
+            property.set(newValue)
+            action?.invoke(newValue, oldValue)
+        }
+    }
+
+    /**
+     *  Adds a [Label] and [SelectBox] as two Cells into a table row.
+     *
+     *  **Entries will be translated for you.**
+     *
+     *  @param action Optional callback, after the value is set, argument is the new value
+     *  @see addSelectBox
+     *  @see addEnumAsStringSelectBox
+     */
+    fun Table.addTranslatedSelectBox(text: String, property: KMutableProperty0<String>, items: Iterable<String>, action: ((String) -> Unit)? = null) {
+        add(text.toLabel()).left().fillX()
+        val select = TranslatedSelectBox(items as? Collection ?: items.toList(), property.get())
+        add(select).pad(10f).minWidth(selectBoxMinWidth).row()
+
+        select.onChange {
+            val newValue = select.selected.value
+            property.set(newValue)
+            action?.invoke(newValue)
+        }
+    }
+
+    /**
+     *  Adds a [Label] and [SelectBox] as two Cells into a table row.
+     *
+     *  **This is for the case an enum is actually stored as string in GameSettings.**
+     *  **Entries will be translated for you.**
+     *
+     *  @param action Optional callback, after the value is set, argument is the new value
+     *  @see addSelectBox
+     *  @see addTranslatedSelectBox
+     */
+    fun <T : Enum<T>> Table.addEnumAsStringSelectBox(
+        text: String,
+        property: KMutableProperty0<String>,
+        items: Iterable<Enum<T>>,
+        action: ((String) -> Unit)? = null
+    ) = addTranslatedSelectBox(text, property, items.map { it.name }, action)
+
+    /**
+     *  Adds a [Label] and [SelectBox] as two Cells into a table row, filling the items **asynchronously**.
+     *
+     *  The Label will be gray and the SelectBox disabled until the items arrive.
+     *  **Entries will only be translated when the item class provides a toString() doing so.**
+     *
+     *  @param action Optional callback, after the value is set, argument is the new value
+     *  @see addSelectBox
+     */
+    fun <T> Table.addAsyncSelectBox(
+        text: String,
+        property: KMutableProperty0<T>,
+        provider: suspend () -> Flow<T>,
+        dispatcher: CoroutineDispatcher = Dispatchers.IO,
+        action: ((T) -> Unit)? = null
+    ) {
+        val label = text.toLabel(Color.GRAY)
+        label.wrap = true
+        add(label).left().fillX()
+        val select = SelectBox<T>(BaseScreen.skin)
+        select.isDisabled = true
+        add(select).pad(10f).minWidth(rightWidgetMinWidth).row()
+
+        Concurrency.run("Async SelectBox", CoroutineScope(dispatcher)) {
+            val items = Array<T>(false, 20)
+            provider().collect { items.add(it) }
+            launchOnGLThread {
+                select.setItems(items)
+                val toSelect = property.get()
+                // make sure the instance we pass to select is actually contained in the items array, because Gdx' Selection.set uses identity comparisons
+                select.selected = items.firstOrNull { it == toSelect } // will default to first entry if `null` is passed
+                select.isDisabled = false
+                label.setFontColor(Color.WHITE)
+                select.onChange {
+                    val value = select.selected
+                    property.set(value)
+                    action?.invoke(value)
+                }
+                select.invalidateHierarchy()
+            }
         }
     }
 
