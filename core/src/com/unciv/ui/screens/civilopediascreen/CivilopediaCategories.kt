@@ -112,7 +112,7 @@ enum class CivilopediaCategories (
         CivilopediaImageGetters.unitNameGroup,
         KeyboardBinding.PediaUnitNameGroups,
         "OtherIcons/UnitNameGroups",
-        { ruleset, _ -> ruleset.unitNameGroups.values }
+        { ruleset, _ -> ruleset.unitNameGroups.values.filter { it.unitNames.isNotEmpty() } }
     ),
     Difficulty ("Difficulty levels",
         getImage = null,
