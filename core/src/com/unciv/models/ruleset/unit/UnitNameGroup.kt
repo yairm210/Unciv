@@ -59,9 +59,6 @@ class UnitNameGroup : RulesetObject() {
         if (unitNames.isNotEmpty()) {
             lines.add(FormattedLine())
             lines.add(FormattedLine("Unit Names", header = 4))
-            for (name in unitNames) {
-                lines.add(FormattedLine(name))
-            }
             val (collator, language) = UncivGame.Current.settings.run { getCollatorFromLocale() to locale!!.language }
             fun wikilink(name: String) = "https://$language.wikipedia.org/w/index.php?search=${URLEncoder.encode(name.tr(), Charsets.UTF_8.name())}"
             for (name in unitNames.sortedWith(collator)) {
