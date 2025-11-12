@@ -704,9 +704,9 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     
     @Readonly
     fun hasEnemyInvisibleUnit(viewingCiv: Civilization): Boolean {
+        if (getFirstUnit() == null) return false // common case
         val unitsInTile = getUnits()
         return when {
-            unitsInTile.none() -> false
             unitsInTile.first().civ == viewingCiv -> false
             unitsInTile.none { it.isInvisible(viewingCiv) } -> false
             else -> true
