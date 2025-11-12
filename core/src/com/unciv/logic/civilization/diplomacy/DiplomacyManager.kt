@@ -603,7 +603,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         otherCivDiplomacy().setFlag(DiplomacyFlags.DeclarationOfFriendship, 30)
 
         for (thirdCiv in getCommonKnownCivsWithSpectators()) {
-            thirdCiv.addNotification("[${civInfo.civName}] and [$otherCivName] have signed the Declaration of Friendship!",
+            thirdCiv.addNotification("[${civInfo.civName}] and [$otherCivName] have signed a Declaration of Friendship!",
                 NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
             thirdCiv.getDiplomacyManager(civInfo)!!.setFriendshipBasedModifier()
             if (thirdCiv.isSpectator()) return
