@@ -8,6 +8,7 @@ import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
@@ -21,6 +22,8 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.screens.victoryscreen.RankingType
 import yairm210.purity.annotations.Readonly
 import kotlin.math.abs
+import kotlin.math.pow
+import kotlin.math.roundToInt
 import kotlin.random.Random
 
 object DiplomacyAutomation {
@@ -460,5 +463,71 @@ object DiplomacyAutomation {
         return otherCiv.tradeRequests.filter { request -> request.requestingCiv == civInfo.civName }
             .any { trade -> trade.trade.ourOffers.any { offer -> offer.name == offerName }
                     || trade.trade.theirOffers.any { offer -> offer.name == offerName } }
+    }
+
+    internal fun denounce(
+        civInfo: Civilization
+    ) {
+        /*
+        this is not an official formula - modify or replace if needed
+        
+        whether to denounce is determined by how rapidly opinion has declined, the current relationship level, and (to do) personality traits
+        
+        with the current formula, excluding decounceWillingness, the AI will denounce if opinion drops rapidly from:
+            135 to 50
+            65 to 0
+            0 to -50
+            -60 to -100
+        
+        what "rapidly" means can be adjusted with DiplomacyManager#smoothedOpinionEmaPeriod
+        */
+
+        fun requiredOpinionChange(
+            diplomacyManager: DiplomacyManager,
+            denounceWillingnessModifier: Float = 1f
+        ): Float =
+            -65 * denounceWillingnessModifier * 1.005f.pow(diplomacyManager.opinionOfOtherCiv())
+
+        fun debugPrint(diplomacy: DiplomacyManager) {
+            val opinionChange = diplomacy.opinionOfOtherCiv() - diplomacy.smoothedOpinionOfOtherCiv
+            println(
+                "-> %s: %d (%d), %d / %d".format(
+                    diplomacy.otherCivName,
+                    diplomacy.opinionOfOtherCiv().roundToInt(),
+                    diplomacy.smoothedOpinionOfOtherCiv.roundToInt(),
+                    opinionChange.roundToInt(),
+                    requiredOpinionChange(diplomacy).roundToInt()
+                )
+            )
+        }
+
+        // enable to print the civ name followed by a list of their opinions of other civs each turn
+        val debug = false
+        if (debug) println(civInfo.civName)
+
+        // limit how many civs we can denounce similtaneously
+        // TODO: replace this with logic to consider consequences of denouncing others
+        val maxActiveDenunciations = 5
+        if (civInfo.diplomacy.values.count { it.hasFlag(DiplomacyFlags.Denunciation) } >= maxActiveDenunciations)
+            return
+        
+        civInfo.diplomacy.values.stream()
+            // only denounce major civs
+            .filter { it.otherCiv.isMajorCiv() }
+            .peek { if (debug) debugPrint(it) }
+            // not able to denounce if we are at war, signed DoF, or already denounced them
+            .filter {
+                it.diplomaticStatus != DiplomaticStatus.War
+                    && !it.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
+                    && !it.hasFlag(DiplomacyFlags.Denunciation)
+            }.forEach {
+                val denounceWillingnessModifier =
+                    1f // TODO: apply denounceWillingness personality trait
+                // compare our current opinion with the smoothed opinion
+                val opinionChange = it.opinionOfOtherCiv() - it.smoothedOpinionOfOtherCiv
+                // denounce if opinion dropped too quickly
+                if (opinionChange <= requiredOpinionChange(it, denounceWillingnessModifier))
+                    it.denounce()
+            }
     }
 }

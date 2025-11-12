@@ -187,6 +187,31 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     /** Total of each turn Science during Research Agreement */
     internal var totalOfScienceDuringRA = 0
 
+    // how quickly do we forget past relationships?
+    // used in AI denounce logic (values updated for all major civs, including humans, incase player resigns)
+    // a period of 1 is equivalent to only remembering our opinion from the last turn - very sudden drop in opinion is required to denounce
+    // a period of >1 means we keep some memory of opinions from previous turns
+    // if the old average is 10, new value is 25, and period is 3, then the new average will be 15, because the new value would contibute 1/3 to the new average
+    // (ema = exponential moving average)
+    @Readonly
+    private fun smoothedOpinionEmaPeriod() = 30f * civInfo.gameInfo.speed.modifier // value of 1 is useful for debugging
+    
+    // in old savefiles, if we have already met a civ, but the value has not been set, apply a very low initial value to prevent sudden mass denunciations
+    private val oldSavefileInitialOpinion = -250f
+    
+    // the smoothed opinion perpetually converges with the actual opinion, updated each turn
+    internal var smoothedOpinionOfOtherCiv = oldSavefileInitialOpinion
+        private set
+    
+    // needed as a cache because the opinion value is saved right before the automation logic runs - but we want to use the one from the previous turn
+    private var currentSmoothedOpinionOfOtherCiv = oldSavefileInitialOpinion
+
+    // smoothing formula = (newValue + oldAverage * (period - 1)) / period
+    internal fun saveOpinionOfOtherCiv() {
+        smoothedOpinionOfOtherCiv = currentSmoothedOpinionOfOtherCiv
+        currentSmoothedOpinionOfOtherCiv = (opinionOfOtherCiv() + smoothedOpinionOfOtherCiv * (smoothedOpinionEmaPeriod() - 1)) / smoothedOpinionEmaPeriod()
+    }
+
     fun clone(): DiplomacyManager {
         val toReturn = DiplomacyManager()
         toReturn.otherCivName = otherCivName
@@ -196,12 +221,17 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         toReturn.flagsCountdown.putAll(flagsCountdown)
         toReturn.diplomaticModifiers.putAll(diplomaticModifiers)
         toReturn.totalOfScienceDuringRA = totalOfScienceDuringRA
+        toReturn.smoothedOpinionOfOtherCiv = smoothedOpinionOfOtherCiv
+        toReturn.currentSmoothedOpinionOfOtherCiv = currentSmoothedOpinionOfOtherCiv
         return toReturn
     }
 
+    // called when we meet a new civ
     constructor(civilization: Civilization, mOtherCivName: String) : this() {
         civInfo = civilization
         otherCivName = mOtherCivName
+        smoothedOpinionOfOtherCiv = 0f
+        currentSmoothedOpinionOfOtherCiv = 0f
         updateHasOpenBorders()
     }
 
@@ -701,14 +731,18 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
     fun denounce() {
         activateDenounceEffects()
+        // legacy code for AI to counter-denounce
+        /*
         if (otherCiv.isAI())
             otherCivDiplomacy().activateDenounceEffects()
+        */
     }
     
     private fun activateDenounceEffects() {
         setFlag(DiplomacyFlags.Denunciation, 30)
         otherCivDiplomacy().setModifier(DiplomaticModifiers.Denunciation, -35f)
         
+        // TODO: make denouncement more impactful with a popup
         otherCiv.addNotification(
             "[${civInfo.civName}] has denounced us!",
             NotificationCategory.Diplomacy,
@@ -729,15 +763,15 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             if (thirdCiv.isSpectator())
                 return@forEach
 
-            // their relationship with us
-            val thirdCivRelationship = thirdCiv.getDiplomacyManager(civInfo)!!
+            // their diplomacy with us
+            val thirdCivDiplomacyWithUs = thirdCiv.getDiplomacyManager(civInfo)!!
             // their relationship with the civ we are denouncing
             val thirdCivRelationshipWithTarget = thirdCiv.getDiplomacyManager(otherCiv)!!.relationshipIgnoreAfraid()
             when (thirdCivRelationshipWithTarget) {
-                RelationshipLevel.Unforgivable -> thirdCivRelationship.addModifier(DiplomaticModifiers.DenouncedOurEnemies, 15f)
-                RelationshipLevel.Enemy -> thirdCivRelationship.addModifier(DiplomaticModifiers.DenouncedOurEnemies, 5f)
-                RelationshipLevel.Friend -> thirdCivRelationship.addModifier(DiplomaticModifiers.DenouncedOurAllies, -5f)
-                RelationshipLevel.Ally -> thirdCivRelationship.addModifier(DiplomaticModifiers.DenouncedOurAllies, -15f)
+                RelationshipLevel.Unforgivable -> thirdCivDiplomacyWithUs.addModifier(DiplomaticModifiers.DenouncedOurEnemies, 15f)
+                RelationshipLevel.Enemy -> thirdCivDiplomacyWithUs.addModifier(DiplomaticModifiers.DenouncedOurEnemies, 5f)
+                RelationshipLevel.Friend -> thirdCivDiplomacyWithUs.addModifier(DiplomaticModifiers.DenouncedOurAllies, -5f)
+                RelationshipLevel.Ally -> thirdCivDiplomacyWithUs.addModifier(DiplomaticModifiers.DenouncedOurAllies, -15f)
                 else -> {}
             }
         }
