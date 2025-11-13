@@ -106,7 +106,12 @@ enum class CivilopediaCategories (
         CivilopediaImageGetters.victoryType,
         KeyboardBinding.PediaVictoryTypes,
         "OtherIcons/Score",
-        { ruleset, _ -> ruleset.victories.values }
+        { ruleset, _ -> ruleset.victories.values
+            .filter {
+                // Only display active victory types
+                UncivGame.Current.gameInfo?.gameParameters?.victoryTypes?.contains(it.name) ?: true
+            }
+        }
     ),
     UnitNameGroup("Unit Names",
         CivilopediaImageGetters.unitNameGroup,
