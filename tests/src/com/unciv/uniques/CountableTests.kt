@@ -361,6 +361,30 @@ class CountableTests {
         assertEquals("Testing Happiness", 6, happiness)
     }
 
+    @Test
+    fun testFilteredTechnologies() {
+        setupModdedGame()
+        civ.tech.techsResearched.addAll(listOf(
+            "Agriculture",
+            "Pottery",
+            "Sailing",
+            "Animal Husbandry",
+            "Optics"
+        ))
+        val tests = listOf(
+            "[All] Researched Technologies" to 5,
+            "[Ancient era] Researched Technologies" to 4,
+            "[Classical era] Researched Technologies" to 1, // Optics
+            "[Modern era] Researched Technologies" to 0,
+            "[Pottery] Researched Technologies" to 1,
+            "[Archery] Researched Technologies" to 0,
+        )
+        for ((test, expected) in tests) {
+            val actual = Countables.getCountableAmount(test, GameContext(civ))
+            assertEquals("Testing `$test` countable:", expected, actual)
+        }
+    }
+
     private fun setupModdedGame(vararg addGlobalUniques: String, withCiv: Boolean = true): Ruleset {
         game = TestGame(*addGlobalUniques)
         game.makeHexagonalMap(3)
