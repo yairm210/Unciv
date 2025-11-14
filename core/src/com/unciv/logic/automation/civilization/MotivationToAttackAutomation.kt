@@ -119,7 +119,7 @@ object MotivationToAttackAutomation {
             //The more potential friends of this CS, the more times the friend bonus is shared and the utilitarian option is to leave it alive
             modifiers.add(Pair("Influence", -targetCiv.getDiplomacyManager(civInfo)!!.getInfluence() / 10f * personality.scaledFocus(PersonalityValue.Diplomacy)))
             // The more we invested into the city state already, the less likely we're going to attack it, and vice versa
-            if (targetCiv.allyCiv == civInfo)
+            if (targetCiv.getAllyCivName() == civInfo.civName)
                 modifiers.add(Pair("Allied City-state", -20 * personality.scaledFocus(PersonalityValue.Diplomacy))) // There had better be a DAMN good reason
         }
 
@@ -256,7 +256,7 @@ object MotivationToAttackAutomation {
     @Readonly
     private fun getDefensivePactAlliesScore(otherCiv: Civilization, civInfo: Civilization, baseForce: Float, ourCombatStrength: Float): Float {
         var theirAlliesValue = 0f
-        for (thirdCiv in otherCiv.diplomacy.values.filter { it.hasFlag(DiplomacyFlags.DefensivePact) && it.otherCiv != civInfo }) {
+        for (thirdCiv in otherCiv.diplomacy.values.filter { it.hasFlag(DiplomacyFlags.DefensivePact) && it.otherCiv() != civInfo }) {
             val thirdCivCombatStrengthRatio = (otherCiv.getStatForRanking(RankingType.Force).toFloat() + baseForce) / ourCombatStrength
             theirAlliesValue += when {
                 thirdCivCombatStrengthRatio > 5 -> -15f

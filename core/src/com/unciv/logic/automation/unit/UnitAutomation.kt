@@ -649,7 +649,7 @@ object UnitAutomation {
                 .flatMap { it.cities.asSequence() }
                 .filter {
                     unit.civ.isAtWarWith(it.civ) &&
-                            unit.civ == it.foundingCivObject &&
+                            unit.civ.civName == it.foundingCiv &&
                             it.isInResistance() &&
                             it.health < it.getMaxHealth()
                 } //Most likely just been captured
@@ -707,7 +707,7 @@ object UnitAutomation {
         if (city.health < city.getMaxHealth()) return true // this city is under attack!
         for (enemyCivCity in city.civ.diplomacy.values
             .filter { it.diplomaticStatus == DiplomaticStatus.War }
-            .map { it.otherCiv }.flatMap { it.cities })
+            .map { it.otherCiv() }.flatMap { it.cities })
             if (city.getCenterTile().aerialDistanceTo(enemyCivCity.getCenterTile()) <= 5) return true // this is an edge city that needs defending
         return false
     }

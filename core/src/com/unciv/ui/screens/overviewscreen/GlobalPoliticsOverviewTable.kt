@@ -166,7 +166,7 @@ class GlobalPoliticsOverviewTable(
         val allWorldWonders = wonderInfo.collectInfo(viewingPlayer)
 
         for (wonder in allWorldWonders) {
-            if (wonder.civ == civ) {
+            if (wonder.civ?.civName == civ.civName) {
                 val wonderName = wonder.name.toLabel()
                 if (wonder.location != null) {
                     wonderName.onClick {
@@ -183,7 +183,7 @@ class GlobalPoliticsOverviewTable(
 
     @Readonly
     private fun getCivName(otherciv: Civilization): String {
-        if (viewingPlayer.knows(otherciv) || otherciv == viewingPlayer) {
+        if (viewingPlayer.knows(otherciv) || otherciv.civName == viewingPlayer.civName) {
             return otherciv.civName
         }
         return "an unknown civilization"
@@ -192,7 +192,7 @@ class GlobalPoliticsOverviewTable(
     private fun getPoliticsOfCivTable(civ: Civilization): Table {
         val politicsTable = Table(skin)
 
-        if (!viewingPlayer.knows(civ) && civ != viewingPlayer)
+        if (!viewingPlayer.knows(civ) && civ.civName != viewingPlayer.civName)
             return politicsTable
 
         if (civ.isDefeated()) {
@@ -211,14 +211,14 @@ class GlobalPoliticsOverviewTable(
 
         // defensive pacts and declaration of friendships
         for (otherCiv in civ.getKnownCivs()) {
-            if (civ.getDiplomacyManager(otherCiv)?.hasFlag(DiplomacyFlags.DefensivePact) == true) {
+            if (civ.diplomacy[otherCiv.civName]?.hasFlag(DiplomacyFlags.DefensivePact) == true) {
                 val friendText = ColorMarkupLabel("Defensive pact with [${getCivName(otherCiv)}]", Color.CYAN)
-                val turnsLeftText = " (${civ.getDiplomacyManager(otherCiv)?.getFlag(DiplomacyFlags.DefensivePact)} ${Fonts.turn})".toLabel()
+                val turnsLeftText = " (${civ.diplomacy[otherCiv.civName]?.getFlag(DiplomacyFlags.DefensivePact)} ${Fonts.turn})".toLabel()
                 politicsTable.add(friendText)
                 politicsTable.add(turnsLeftText).row()
-            } else if (civ.getDiplomacyManager(otherCiv)?.hasFlag(DiplomacyFlags.DeclarationOfFriendship) == true) {
+            } else if (civ.diplomacy[otherCiv.civName]?.hasFlag(DiplomacyFlags.DeclarationOfFriendship) == true) {
                 val friendText = ColorMarkupLabel("Friends with [${getCivName(otherCiv)}]", Color.GREEN)
-                val turnsLeftText = " (${civ.getDiplomacyManager(otherCiv)?.getFlag(DiplomacyFlags.DeclarationOfFriendship)} ${Fonts.turn})".toLabel()
+                val turnsLeftText = " (${civ.diplomacy[otherCiv.civName]?.getFlag(DiplomacyFlags.DeclarationOfFriendship)} ${Fonts.turn})".toLabel()
                 politicsTable.add(friendText)
                 politicsTable.add(turnsLeftText).row()
             }
@@ -227,9 +227,9 @@ class GlobalPoliticsOverviewTable(
 
         // denounced civs
         for (otherCiv in civ.getKnownCivs()) {
-            if (civ.getDiplomacyManager(otherCiv)?.hasFlag(DiplomacyFlags.Denunciation) == true) {
+            if (civ.diplomacy[otherCiv.civName]?.hasFlag(DiplomacyFlags.Denunciation) == true) {
                 val denouncedText = ColorMarkupLabel("Denounced [${getCivName(otherCiv)}]", Color.RED)
-                val turnsLeftText = "(${civ.getDiplomacyManager(otherCiv)?.getFlag(DiplomacyFlags.Denunciation)} ${Fonts.turn})".toLabel()
+                val turnsLeftText = "(${civ.diplomacy[otherCiv.civName]?.getFlag(DiplomacyFlags.Denunciation)} ${Fonts.turn})".toLabel()
                 politicsTable.add(denouncedText)
                 politicsTable.add(turnsLeftText).row()
             }
@@ -238,7 +238,7 @@ class GlobalPoliticsOverviewTable(
 
         //allied CS
         for (cityState in gameInfo.getAliveCityStates()) {
-            if (cityState.getDiplomacyManager(civ)?.isRelationshipLevelEQ(RelationshipLevel.Ally) == true) {
+            if (cityState.diplomacy[civ.civName]?.isRelationshipLevelEQ(RelationshipLevel.Ally) == true) {
                 val alliedText = ColorMarkupLabel("Allied with [${getCivName(cityState)}]", Color.CYAN)
                 politicsTable.add(alliedText).row()
             }

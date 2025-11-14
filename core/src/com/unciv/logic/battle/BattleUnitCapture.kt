@@ -134,7 +134,9 @@ object BattleUnitCapture {
         capturedUnit.automated = false
 
         val capturedUnitTile = capturedUnit.getTile()
-        val originalOwner = capturedUnit.originalOwningCiv
+        val originalOwner = if (capturedUnit.originalOwner != null)
+            capturedUnit.civ.gameInfo.getCivilization(capturedUnit.originalOwner!!)
+        else null
 
         var wasDestroyedInstead = false
         when {

@@ -91,7 +91,7 @@ object DiplomacyAutomation {
         motivation -= deadCivs / allCivs * 50
 
         // Become more desperate as we have more wars
-        motivation += civInfo.diplomacy.values.count { it.otherCiv.isMajorCiv() && it.diplomaticStatus == DiplomaticStatus.War } * 10
+        motivation += civInfo.diplomacy.values.count { it.otherCiv().isMajorCiv() && it.diplomaticStatus == DiplomaticStatus.War } * 10
 
         // Wait to declare frienships until more civs
         // Goes from -30 to 0 when we know 75% of allCivs
@@ -220,7 +220,7 @@ object DiplomacyAutomation {
         if (ourDiploManager.hasFlag(DiplomacyFlags.DeclinedOpenBorders)) return false
         if (ourDiploManager.isRelationshipLevelLT(RelationshipLevel.Favorable)) return false
         // Don't accept if they are at war with our friends, they might use our land to attack them
-        if (civInfo.diplomacy.values.any { it.isRelationshipLevelGE(RelationshipLevel.Friend) && it.otherCiv.isAtWarWith(otherCiv) })
+        if (civInfo.diplomacy.values.any { it.isRelationshipLevelGE(RelationshipLevel.Friend) && it.otherCiv().isAtWarWith(otherCiv) })
             return false
         // Being able to see their cities can give us an advantage later on, especially with espionage enabled
         if (otherCiv.cities.count { !it.getCenterTile().isVisible(civInfo) } < otherCiv.cities.count() * .8f)
@@ -304,7 +304,7 @@ object DiplomacyAutomation {
         val defensivePacts = civInfo.diplomacy.count { it.value.hasFlag(DiplomacyFlags.DefensivePact) }
         val otherCivNonOverlappingDefensivePacts = otherCiv.diplomacy.values.count {
             it.hasFlag(DiplomacyFlags.DefensivePact)
-                && it.otherCiv.getDiplomacyManager(civInfo)?.hasFlag(DiplomacyFlags.DefensivePact) != true
+                && it.otherCiv().getDiplomacyManager(civInfo)?.hasFlag(DiplomacyFlags.DefensivePact) != true
         }
         val allCivs = civInfo.gameInfo.civilizations.count { it.isMajorCiv() } - 1 // Don't include us
         val deadCivs = civInfo.gameInfo.civilizations.count { it.isMajorCiv() && !it.isAlive() }
@@ -332,7 +332,7 @@ object DiplomacyAutomation {
         motivation -= 15 * otherCivNonOverlappingDefensivePacts
 
         // Becomre more desperate as we have more wars
-        motivation += civInfo.diplomacy.values.count { it.otherCiv.isMajorCiv() && it.diplomaticStatus == DiplomaticStatus.War } * 5
+        motivation += civInfo.diplomacy.values.count { it.otherCiv().isMajorCiv() && it.diplomaticStatus == DiplomaticStatus.War } * 5
 
         // Try to have a defensive pact with 1/5 of all civs
         val civsToAllyWith = 0.20f * allAliveCivs * civInfo.getPersonality().scaledFocus(PersonalityValue.Diplomacy)
@@ -376,14 +376,14 @@ object DiplomacyAutomation {
 
         val enemiesCiv = civInfo.diplomacy.asSequence()
             .filter { it.value.diplomaticStatus == DiplomaticStatus.War }
-            .map { it.value.otherCiv }
+            .map { it.value.otherCiv() }
             .filterNot {
                 it == civInfo || it.isBarbarian || it.cities.isEmpty()
                         || it.getDiplomacyManager(civInfo)!!.hasFlag(DiplomacyFlags.DeclaredWar)
                         || civInfo.getDiplomacyManager(it)!!.hasFlag(DiplomacyFlags.DeclaredWar)
             }.filter { !civInfo.getDiplomacyManager(it)!!.hasFlag(DiplomacyFlags.DeclinedPeace) }
             // Don't allow AIs to offer peace to city states allied with their enemies
-            .filterNot { it.isCityState && it.allyCiv != null && civInfo.isAtWarWith(it.allyCiv!!) }
+            .filterNot { it.isCityState && it.getAllyCivName() != null && civInfo.isAtWarWith(it.getAllyCiv()!!) }
             // ignore civs that we have already offered peace this turn as a counteroffer to another civ's peace offer
             .filter { it.tradeRequests.none { tradeRequest -> tradeRequest.requestingCiv == civInfo.civName && tradeRequest.trade.isPeaceTreaty() } }
             .toList()
