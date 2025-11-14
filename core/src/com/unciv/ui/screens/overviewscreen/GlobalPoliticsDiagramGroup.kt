@@ -67,10 +67,10 @@ class GlobalPoliticsDiagramGroup(
         for (civ in undefeatedCivs) {
             if (civ.isDefeated()) continue // if you're dead, icon but no lines (One more turn mode after losing)
             for (diplomacy in civ.diplomacy.values) {
-                val otherCiv = diplomacy.otherCiv
+                val otherCiv = diplomacy.otherCiv()
                 if (otherCiv !in undefeatedCivs || otherCiv.isDefeated()) continue
                 val civGroup = civGroups[civ.civName]!!
-                val otherCivGroup = civGroups[diplomacy.otherCiv.civName]!!
+                val otherCivGroup = civGroups[diplomacy.otherCivName]!!
 
                 val statusLine = ImageGetter.getLine(
                     startX = civGroup.x + civGroup.width / 2,
@@ -87,8 +87,8 @@ class GlobalPoliticsDiagramGroup(
                 else if (civ.isHuman() && otherCiv.isHuman() && diplomacy.hasModifier(DiplomaticModifiers.DeclarationOfFriendship))
                     RelationshipLevel.Friend.color
                 // Test for alliance with city state
-                else if ((civ.isCityState && civ.allyCiv == diplomacy.otherCiv)
-                    || (otherCiv.isCityState && otherCiv.allyCiv == civ)) RelationshipLevel.Ally.color
+                else if ((civ.isCityState && civ.getAllyCivName() == diplomacy.otherCivName)
+                    || (otherCiv.isCityState && otherCiv.getAllyCivName() == civ.civName)) RelationshipLevel.Ally.color
                 // Else the color depends on opinion between major civs, OR city state relationship with major civ
                 else diplomacy.relationshipLevel().color
 

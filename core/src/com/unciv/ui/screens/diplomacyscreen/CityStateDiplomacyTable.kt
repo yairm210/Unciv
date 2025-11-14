@@ -78,7 +78,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         val diplomaticMarriageButton = getDiplomaticMarriageButton(otherCiv)
         if (diplomaticMarriageButton != null) diplomacyTable.add(diplomaticMarriageButton).row()
 
-        for (assignedQuest in otherCiv.questManager.getAssignedQuestsFor(viewingCiv)) {
+        for (assignedQuest in otherCiv.questManager.getAssignedQuestsFor(viewingCiv.civName)) {
             diplomacyTable.addSeparator()
             diplomacyTable.add(getQuestTable(assignedQuest)).row()
         }
@@ -126,14 +126,13 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         diplomacyTable.row().padTop(15f)
 
         otherCiv.cityStateFunctions.updateAllyCivForCityState()
-        val ally = otherCiv.allyCiv
+        var ally = otherCiv.getAllyCivName()
         if (ally != null) {
             val allyInfluence = otherCiv.getDiplomacyManager(ally)!!.getInfluence().toInt()
-            val allyName = if (!viewingCiv.knows(ally) && ally != viewingCiv)
-                "Unknown civilization"
-            else ally.civName
+            if (!viewingCiv.knows(ally) && ally != viewingCiv.civName)
+                ally = "Unknown civilization"
             diplomacyTable
-                .add("Ally: [$allyName] with [$allyInfluence] Influence".toLabel())
+                .add("Ally: [$ally] with [$allyInfluence] Influence".toLabel())
                 .row()
         }
 
@@ -155,7 +154,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         val nextLevelString = when {
             atWar -> ""
             otherCivDiplomacyManager.getInfluence().toInt() < 30 -> "Reach 30 for friendship."
-            ally == viewingCiv -> ""
+            ally == viewingCiv.civName -> ""
             else -> "Reach highest influence above 60 for alliance."
         }
         diplomacyTable.add(diplomacyScreen.getRelationshipTable(otherCivDiplomacyManager)).row()
@@ -263,9 +262,9 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
                 diplomacyScreen.updateRightSide(otherCiv)
             }.open()
         }
-        val cityStatesAlly = otherCiv.allyCiv
+        val cityStatesAlly = otherCiv.getAllyCivName()
         val atWarWithItsAlly = viewingCiv.getKnownCivs()
-            .any { it == cityStatesAlly && it.isAtWarWith(viewingCiv) }
+            .any { it.civName == cityStatesAlly && it.isAtWarWith(viewingCiv) }
         if (diplomacyScreen.isNotPlayersTurn() || atWarWithItsAlly) peaceButton.disable()
 
         if (otherCivDiplomacyManager.hasFlag(DiplomacyFlags.DeclaredWar)) {
@@ -447,7 +446,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         val questTable = Table()
         questTable.defaults().pad(10f)
 
-        val quest: Quest = assignedQuest.quest
+        val quest: Quest = viewingCiv.gameInfo.ruleset.quests[assignedQuest.questName]!!
         val remainingTurns: Int = assignedQuest.getRemainingTurns()
         val title = if (quest.influence > 0)
             "[${quest.name}] (+[${quest.influence.toInt()}] influence)"
@@ -461,7 +460,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         if (quest.duration > 0)
             questTable.add("[${remainingTurns}] turns remaining".toLabel()).row()
         if (quest.isGlobal()) {
-            val leaderString = assignedQuest.assignerCiv.questManager.getScoreStringForGlobalQuest(assignedQuest)
+            val leaderString = viewingCiv.gameInfo.getCivilization(assignedQuest.assigner).questManager.getScoreStringForGlobalQuest(assignedQuest)
             if (leaderString.isNotEmpty())
                 questTable.add(leaderString.toLabel()).row()
         }

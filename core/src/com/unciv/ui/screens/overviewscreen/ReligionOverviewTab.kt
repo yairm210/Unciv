@@ -105,8 +105,8 @@ class ReligionOverviewTab(
         val existingReligions: List<Religion> = gameInfo.civilizations.mapNotNull { it.religionManager.religion }
         for (religion in existingReligions) {
             val image = if (religion.isPantheon()) {
-                if (viewingPlayer.knows(religion.foundingCiv) || viewingPlayer == religion.foundingCiv)
-                    ImageGetter.getNationPortrait(religion.foundingCiv.nation, 60f)
+                if (viewingPlayer.knows(religion.foundingCivName) || viewingPlayer.civName == religion.foundingCivName)
+                    ImageGetter.getNationPortrait(religion.getFounder().nation, 60f)
                 else
                     ImageGetter.getRandomNationPortrait(60f)
             } else {
@@ -153,7 +153,7 @@ class ReligionOverviewTab(
         statsTable.add(religion.getReligionDisplayName().toLabel()).right().row()
         statsTable.add("Founding Civ:".toLabel())
         val foundingCivName =
-            if (viewingPlayer.knows(religion.foundingCiv) || viewingPlayer == religion.foundingCiv)
+            if (viewingPlayer.knows(religion.foundingCivName) || viewingPlayer.civName == religion.foundingCivName)
                 religion.foundingCivName
             else Constants.unknownNationName
         statsTable.add(foundingCivName.toLabel()).right().row()
@@ -168,7 +168,7 @@ class ReligionOverviewTab(
                 statsTable.add(cityName.toLabel(hideIcons = true)).right().row()
             }
         }
-        val manager = religion.foundingCiv.religionManager
+        val manager = religion.getFounder().religionManager
         statsTable.add("Cities following this religion:".toLabel())
         statsTable.add(manager.numberOfCitiesFollowingThisReligion().toLabel()).right().row()
         statsTable.add("Followers of this religion:".toLabel())

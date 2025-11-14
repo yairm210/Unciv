@@ -757,7 +757,7 @@ object Battle {
             return
         }
 
-        if (city.isOriginalCapital && city.foundingCivObject == attackerCiv) {
+        if (city.isOriginalCapital && city.foundingCiv == attackerCiv.civName) {
             // retaking old capital
             city.puppetCity(attackerCiv)
             //Although in Civ5 Venice is unable to re-annex their capital, that seems a bit silly. No check for May not annex cities here.
@@ -779,7 +779,7 @@ object Battle {
      * or raze a city */
     private fun automateCityConquer(civInfo: Civilization, city: City) {
         if (!city.hasDiplomaticMarriage()) {
-            val foundingCiv = city.foundingCivObject!!
+            val foundingCiv = civInfo.gameInfo.getCivilization(city.foundingCiv)
             var valueAlliance = NextTurnAutomation.valueCityStateAlliance(civInfo, foundingCiv)
             if (civInfo.getHappiness() < 0)
                 valueAlliance -= civInfo.getHappiness() // put extra weight on liberating if unhappy
@@ -793,7 +793,7 @@ object Battle {
 
         city.puppetCity(civInfo)
         if ((city.population.population < 4 || civInfo.isCityState)
-            && city.foundingCivObject != civInfo && city.canBeDestroyed(justCaptured = true)) {
+            && city.foundingCiv != civInfo.civName && city.canBeDestroyed(justCaptured = true)) {
             // raze if attacker is a city state
             if (!civInfo.hasUnique(UniqueType.MayNotAnnexCities)) city.annexCity()
             city.isBeingRazed = true

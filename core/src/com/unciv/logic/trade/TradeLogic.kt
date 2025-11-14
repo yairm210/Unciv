@@ -78,11 +78,11 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
                 offers.add(TradeOffer(city.id, TradeOfferType.City, speed = civInfo.gameInfo.speed))
 
         val otherCivsWeKnow = civInfo.getKnownCivs()
-            .filter { it != otherCiv && it.isMajorCiv() && !it.isDefeated() }
+            .filter { it.civName != otherCiv.civName && it.isMajorCiv() && !it.isDefeated() }
 
         if (civInfo.gameInfo.ruleset.modOptions.hasUnique(UniqueType.TradeCivIntroductions)) {
             val civsWeKnowAndTheyDont = otherCivsWeKnow
-                .filter { !otherCiv.knows(it) && !it.isDefeated() }
+                .filter { !otherCiv.diplomacy.containsKey(it.civName) && !it.isDefeated() }
             for (thirdCiv in civsWeKnowAndTheyDont) {
                 offers.add(TradeOffer(thirdCiv.civName, TradeOfferType.Introduction, speed = civInfo.gameInfo.speed))
             }
@@ -90,7 +90,7 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
 
         if (!civInfo.gameInfo.ruleset.modOptions.hasUnique(UniqueType.DiplomaticRelationshipsCannotChange)) {
             val civsWeBothKnow = otherCivsWeKnow
-                    .filter { otherCiv.knows(it) }
+                    .filter { otherCiv.diplomacy.containsKey(it.civName) }
             val civsWeArentAtWarWith = civsWeBothKnow
                     .filter { civInfo.getDiplomacyManager(it)!!.canDeclareWar() }
             for (thirdCiv in civsWeArentAtWarWith) {
@@ -157,9 +157,9 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
 
                     // suggest an option to liberate the city
                     if (to.isHuman()
-                            && city.foundingCivObject != null
-                            && from != city.foundingCivObject // can't liberate if the city actually belongs to those guys
-                            && to != city.foundingCivObject
+                            && city.foundingCiv != ""
+                            && from.civName != city.foundingCiv // can't liberate if the city actually belongs to those guys
+                            && to.civName != city.foundingCiv
                     )  // can't liberate if it's our city
                         to.popupAlerts.add(PopupAlert(AlertType.CityTraded, city.id))
                 }

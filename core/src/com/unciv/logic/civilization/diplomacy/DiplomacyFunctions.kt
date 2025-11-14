@@ -29,7 +29,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
     }
 
     private fun meetCiv(otherCiv: Civilization, warOnContact: Boolean = false) {
-        civInfo.diplomacy[otherCiv.civName] = DiplomacyManager(civInfo, otherCiv)
+        civInfo.diplomacy[otherCiv.civName] = DiplomacyManager(civInfo, otherCiv.civName)
             .apply { diplomaticStatus = DiplomaticStatus.Peace }
 
         if (!otherCiv.isSpectator())
@@ -50,7 +50,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
             // For now, it might be overkill though.
             var meetString = "[${civInfo.civName}] has given us [${giftAmount.toStringForNotifications()}] as a token of goodwill for meeting us"
             val religionMeetString = "[${civInfo.civName}] has also given us [${faithAmount.toStringForNotifications()}]"
-            if (civInfo.diplomacy.count { it.value.otherCiv.isMajorCiv() } == 1) {
+            if (civInfo.diplomacy.count { it.value.otherCiv().isMajorCiv() } == 1) {
                 giftAmount.timesInPlace(2f)
                 meetString = "[${civInfo.civName}] has given us [${giftAmount.toStringForNotifications()}] as we are the first major civ to meet them"
             }
@@ -81,7 +81,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
             otherCiv == civInfo -> false
             otherCiv.isBarbarian || civInfo.isBarbarian -> true
             else -> {
-                val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)
+                val diplomacyManager = civInfo.diplomacy[otherCiv.civName]
                     ?: return false // not encountered yet
                 return diplomacyManager.diplomaticStatus == DiplomaticStatus.War
             }
@@ -237,7 +237,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
         if (otherCiv.isBarbarian) return true
         if (civInfo.isBarbarian && civInfo.gameInfo.turns >= civInfo.gameInfo.getDifficulty().turnBarbariansCanEnterPlayerTiles)
             return true
-        val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)
+        val diplomacyManager = civInfo.diplomacy[otherCiv.civName]
         if (diplomacyManager != null && (diplomacyManager.hasOpenBorders || diplomacyManager.diplomaticStatus == DiplomaticStatus.War))
             return true
         // Players can always pass through city-state tiles
