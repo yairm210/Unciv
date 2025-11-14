@@ -98,13 +98,13 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
 
     @Readonly
     private fun originalMajorCapitalsOwned(civInfo: Civilization): Int = civInfo.cities
-        .count { it.isOriginalCapital && it.foundingCivObject != null && it.foundingCivObject!!.isMajorCiv() }
+        .count { it.isOriginalCapital && it.foundingCiv != "" && civInfo.gameInfo.getCivilization(it.foundingCiv).isMajorCiv() }
 
     @Readonly
     private fun civsWithPotentialCapitalsToOwn(gameInfo: GameInfo): Set<Civilization> {
         // Capitals that still exist, even if the civ is dead
         val civsWithCapitals = gameInfo.getCities().filter { it.isOriginalCapital }
-            .map { it.foundingCivObject!! }
+            .map { gameInfo.getCivilization(it.foundingCiv) }
             .filter { it.isMajorCiv() }.toSet()
         // If the civ is alive, they can still create a capital, so we need them as well
         val livingCivs = gameInfo.civilizations.filter { it.isMajorCiv() && !it.isDefeated() }
@@ -302,9 +302,9 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
                 val hideCivCount = civInfo.shouldHideCivCount()
                 val majorCivs = civInfo.gameInfo.civilizations.filter { it.isMajorCiv() }
                 val originalCapitals = civInfo.gameInfo.getCities().filter { it.isOriginalCapital }
-                    .associateBy { it.foundingCivObject }
+                    .associateBy { it.foundingCiv }
                 for (civ in majorCivs) {
-                    val city = originalCapitals[civ]
+                    val city = originalCapitals[civ.civName]
                     if (city != null) {
                         val isKnown = civInfo.hasExplored(city.getCenterTile())
                         if (hideCivCount && !isKnown) continue
