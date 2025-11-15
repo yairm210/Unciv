@@ -440,7 +440,6 @@
 		"obsoleteTech": "Military Science",
 		"uniques": ["Can move after attacking","No defensive terrain bonus"],
 		"attackSound": "arrow"
-		//Camel Archer should have no penalty attacking cities
 	},
 	{
 		"name": "Conquistador",
@@ -503,7 +502,6 @@
 		"uniques": ["Can move after attacking","No defensive terrain bonus"],
 		"promotions": ["Great Generals I", "Quick Study"],
 		"attackSound": "arrow"
-		// Keshik should have no penalty attacking cities
 	},
 	{
 		"name": "Crossbowman",
@@ -762,8 +760,7 @@
 		"cost": 185,
 		"requiredTech": "Metallurgy",
 		"requiredResource": "Horses",
-		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities> <when attacking>","Never appears as a Barbarian unit"],
-        // TODO: Penalty on Defense
+		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities> <when attacking>","[-33]% Strength <when defending>","Never appears as a Barbarian unit"],
 		"promotions": ["Formation I"],
 		"upgradesTo": "Anti-Tank Gun",
 		"obsoleteTech": "Combustion",
@@ -780,8 +777,7 @@
 		"requiredTech": "Metallurgy",
 		"requiredResource": "Horses",
 		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities> <when attacking>",
-			"[+1] Sight"],
-        // TODO: Penalty on Defense
+			"[+1] Sight","[-33]% Strength <when defending>"],
 		"promotions": ["[Sipahi] ability","Formation I"],
 		"upgradesTo": "Anti-Tank Gun",
 		"obsoleteTech": "Combustion",
@@ -835,8 +831,7 @@
 		"obsoleteTech": "Combustion",
 		"requiredResource": "Horses",
 		"upgradesTo": "Tank",
-		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities> <when attacking>", "Never appears as a Barbarian unit"],
-        // TODO: Penalty vs Mounted
+		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities> <when attacking>","[-33]% Strength <vs [Mounted] units>","Never appears as a Barbarian unit"],
 		"attackSound": "horse"
 	},
 	{
@@ -851,8 +846,7 @@
 		"obsoleteTech": "Combustion",
 		"requiredResource": "Horses",
 		"upgradesTo": "Tank",
-		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities> <when attacking>"],
-        // TODO: Penalty vs Mounted
+		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities> <when attacking>","[-33]% Strength <vs [Mounted] units>"],
 		"promotions":["[Cossack] ability"],
 		"attackSound": "horse"
 	},
@@ -1027,7 +1021,7 @@
 		"requiredTech": "Radar",
 		"requiredResource": "Oil",
 		"upgradesTo": "Stealth Bomber",
-        // TODO: Penalty vs Naval
+        "uniques": ["[-33]% Strength <vs [Water] units>"],
 		"attackSound": "bombing"
 	},
 	{
@@ -1043,7 +1037,7 @@
 		"requiredTech": "Radar",
 		"requiredResource": "Oil",
 		"promotions": ["Evasion", "Siege I"],
-        // TODO: Penalty vs Naval
+        "uniques": ["[-33]% Strength <vs [Water] units>"],
 		"upgradesTo": "Stealth Bomber",
 		"attackSound": "bombing"
 	},
@@ -1266,8 +1260,7 @@
 		"cost": 425,
 		"requiredTech": "Stealth",
 		"requiredResource": "Aluminum",
-		"uniques": ["Damage taken from interception reduced by [100]%", "Cannot be carried by [Carrier] units", "[+4] Sight", "Can see over obstacles"],
-        // TODO: Penalty vs Naval
+		"uniques": ["Damage taken from interception reduced by [100]%", "Cannot be carried by [Carrier] units", "[+4] Sight", "Can see over obstacles","[-33]% Strength <vs [Water] units>"],
 		"attackSound": "bombing"
 	},
 
