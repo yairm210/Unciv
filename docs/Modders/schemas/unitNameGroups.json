@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "The name of the unit name group. For example: Scientist."
+      },
+      "unitNames": {
+        "type": "array",
+        "description": "A list of names that apply to the group. For example: Alan Turing.",
+        "items": { "type": "string" }
+      },
+      "uniques": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/uniques.json" },
+      "civilopediaText": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/civilopediaText.json" }
+    },
+    "required": [
+      "name"
+    ],
+    "additionalProperties": false
+  }
+}

@@ -14,9 +14,7 @@ import com.unciv.logic.map.mapgenerator.mapregions.MapRegions.Companion.secondRi
 import com.unciv.logic.map.mapgenerator.mapregions.MapRegions.Companion.secondRingProdScores
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.tile.TerrainType
-import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Pure
-import yairm210.purity.annotations.Readonly
 import kotlin.math.roundToInt
 
 object RegionStartFinder {
@@ -27,20 +25,22 @@ object RegionStartFinder {
         // Priority: 1. Adjacent to river, 2. Adjacent to coast or fresh water, 3. Other.
 
         // First check center rect, then middle. Only check the outer area if no good sites found
-        val centerTiles = region.tileMap.getTilesInRectangle(getCentralRectangle(region.rect, 0.33f))
+        val centerTiles = region.tileMap.getTilesInRectangle(getCentralRectangle(region.rect, 0.33f)).toSet()
         if (findGoodPosition(centerTiles, region, tileData, fallbackTiles)) return
         
-        val middleDonut = region.tileMap.getTilesInRectangle(getCentralRectangle(region.rect, 0.67f)).filterNot { it in centerTiles }
+        val middleDonut = region.tileMap.getTilesInRectangle(getCentralRectangle(region.rect, 0.67f))
+            .filterNot { it in centerTiles }.toSet()
         if (findGoodPosition(middleDonut, region, tileData, fallbackTiles)) return 
 
         // Now check the outer tiles. For these we don't care about rivers, coasts etc
-        val outerDonut = region.tileMap.getTilesInRectangle(region.rect).filterNot { it in centerTiles || it in middleDonut}
+        val outerDonut = region.tileMap.getTilesInRectangle(region.rect)
+            .filterNot { it in centerTiles || it in middleDonut}
         if (findEdgePosition(outerDonut, region, tileData, fallbackTiles)) return
         
         findFallbackPosition(fallbackTiles, tileData, region)
     }
 
-    private fun findGoodPosition(centerTiles: Sequence<Tile>, region: Region, tileData: TileDataMap, fallbackTiles: HashSet<Vector2>): Boolean {
+    private fun findGoodPosition(centerTiles: Set<Tile>, region: Region, tileData: TileDataMap, fallbackTiles: HashSet<Vector2>): Boolean {
         val riverTiles = HashSet<Vector2>()
         val wetTiles = HashSet<Vector2>()
         val dryTiles = HashSet<Vector2>()
