@@ -137,10 +137,11 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
     }
 
     private fun getIcon(combatant: ICombatant) =
-        if (combatant is MapUnitCombatant) UnitIconGroup(combatant.unit,25f)
+        if (combatant is MapUnitCombatant) UnitIconGroup(combatant.unit, 25f)
         else ImageGetter.getNationPortrait(combatant.getCivInfo().nation, 25f)
 
     private val quarterScreen = worldScreen.stage.width / 4
+    private val viewportWidthSixth = worldScreen.stage.width / 6
 
     private fun getModifierTable(key: String, value: Int) = Table().apply {
         val description = if (key.startsWith("vs "))
@@ -150,36 +151,47 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
         val upOrDownLabel = if (value > 0f) "⬆".toLabel(Color.GREEN)
         else "⬇".toLabel(Color.RED)
 
-        add(upOrDownLabel)
-        val modifierLabel = "$percentage $description".toLabel(fontSize = 14).apply { wrap = true }
-        add(modifierLabel).width(quarterScreen - upOrDownLabel.minWidth)
+        add(upOrDownLabel).padRight(16f)
+        val modifierLabel = "$percentage $description".toLabel(fontSize = 12, alignment = Align.right).apply { wrap = true }
+        add(modifierLabel).width(viewportWidthSixth - upOrDownLabel.minWidth)
     }
+
+    private fun getAttackerNameWrapper(combatant: ICombatant) = Table().apply {
+        add(combatant.getName().toLabel(
+            fontSize = 28, //  16 * 1.75
+            alignment = Align.right,
+            hideIcons = true));
+        add(getIcon(combatant)).padLeft(8f)
+    };
+
+    private fun getDefenderNameWrapper(combatant: ICombatant) = Table().apply {
+        add(getIcon(combatant)).padRight(8f)
+        add(combatant.getName().toLabel(
+            fontSize = 28,
+            alignment = Align.left,
+            hideIcons = true))
+    };
 
     private fun simulateBattle(attacker: ICombatant, defender: ICombatant, tileToAttackFrom: Tile) {
         clear()
 
-        val attackerNameWrapper = Table()
-        val attackerLabel = attacker.getName().toLabel(hideIcons = true)
-        attackerNameWrapper.add(getIcon(attacker)).padRight(5f)
-        attackerNameWrapper.add(attackerLabel)
-        add(attackerNameWrapper)
-
-        val defenderNameWrapper = Table()
-        val defenderLabel = Label(defender.getName().tr(hideIcons = true), skin)
-        defenderNameWrapper.add(getIcon(defender)).padRight(5f)
-
-        defenderNameWrapper.add(defenderLabel)
-        add(defenderNameWrapper).row()
-
-        addSeparator().pad(0f)
+        add(getAttackerNameWrapper(attacker)).right().padBottom(8f)
+        add(getDefenderNameWrapper(defender)).left().padBottom(8f)
+        row()
 
         val attackIcon = if (attacker.isRanged()) Fonts.rangedStrength else Fonts.strength
         val defenceIcon =
             if (attacker.isRanged() && defender.isRanged() && !defender.isCity() && !(defender is MapUnitCombatant && defender.unit.isEmbarked()))
                 Fonts.rangedStrength
             else Fonts.strength // use strength icon if attacker is melee, defender is melee, defender is a city, or defender is embarked
-        add(attacker.getAttackingStrength().tr() + attackIcon)
-        add(defender.getDefendingStrength(attacker.isRanged()).tr() + defenceIcon).row()
+
+        val attackerTrueStrengthString =
+            BattleDamage.getAttackingStrength(attacker, defender, tileToAttackFrom).roundToInt().toString() + attackIcon;
+        val defenderTrueStrengthString =
+            defenceIcon + BattleDamage.getDefendingStrength(attacker, defender, tileToAttackFrom).roundToInt().toString();
+        add(attackerTrueStrengthString.toLabel(fontSize = 24, alignment = Align.right)).right().padBottom(16f)
+        add(defenderTrueStrengthString.toLabel(fontSize = 24, alignment = Align.left)).left().padBottom(16f)
+        row()
 
         val attackerModifiers =
                 BattleDamage.getAttackModifiers(attacker, defender, tileToAttackFrom).map {
@@ -192,18 +204,42 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
                     }
                 else listOf()
 
-        for (i in 0..max(attackerModifiers.size, defenderModifiers.size)) {
-            if (i < attackerModifiers.size) add(attackerModifiers[i]) else add().width(quarterScreen)
-            if (i < defenderModifiers.size) add(defenderModifiers[i]) else add().width(quarterScreen)
-            row().pad(2f)
-        }
-
         if (attackerModifiers.any() || defenderModifiers.any()) {
-            addSeparator()
-            val attackerStrength = BattleDamage.getAttackingStrength(attacker, defender, tileToAttackFrom).roundToInt()
-            val defenderStrength = BattleDamage.getDefendingStrength(attacker, defender, tileToAttackFrom).roundToInt()
-            add(attackerStrength.tr() + attackIcon)
-            add(defenderStrength.tr() + attackIcon).row()
+            val attackerModifiersTable = Table()
+            val defenderModifiersTable = Table()
+
+            val attackerBaseStrengthLabel =
+                ("Base value".tr() + " " + attacker.getAttackingStrength().toString() + attackIcon).toLabel(
+                    fontSize = 12,
+                    alignment = Align.right);
+
+            val defenderBaseStrengthLabel =
+                ("Base value".tr() + " " + defender.getDefendingStrength(attacker.isRanged()).toString() + defenceIcon).toLabel(
+                    fontSize = 12,
+                    alignment = Align.right);
+
+            attackerModifiersTable.add(attackerBaseStrengthLabel).top().right().row()
+            defenderModifiersTable.add(defenderBaseStrengthLabel).top().right().row()
+            val maxModifierArraySize = max(attackerModifiers.size, defenderModifiers.size);
+
+            for (i in 0..maxModifierArraySize) {
+                attackerModifiersTable.run {
+                    if (i < attackerModifiers.size) add(attackerModifiers[i]).right() else add()
+                    if (i != maxModifierArraySize) {
+                        row().padBottom(3f)
+                    }
+                }
+
+                defenderModifiersTable.run {
+                    if (i < defenderModifiers.size) add(defenderModifiers[i]).right() else add()
+                    if (i != maxModifierArraySize) {
+                        row().padBottom(3f)
+                    }
+                }
+            }
+            add(attackerModifiersTable).top().padBottom(16f)
+            add(defenderModifiersTable).top().padBottom(16f)
+            row();
         }
 
         // from Battle.addXp(), check for can't gain more XP from Barbarians
@@ -239,21 +275,37 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
             val minRemainingLifeDefender = max(defenderHealth-maxDamageToDefender, 0)
             val maxRemainingLifeDefender = max(defenderHealth-minDamageToDefender, 0)
 
-            add(getHealthBar(attacker.getMaxHealth(), attacker.getHealth(), maxRemainingLifeAttacker, minRemainingLifeAttacker))
-            add(getHealthBar(defender.getMaxHealth(), defender.getHealth(), maxRemainingLifeDefender, minRemainingLifeDefender, true)).row()
+            add(getHealthBar(attacker.getMaxHealth(), attacker.getHealth(), maxRemainingLifeAttacker, minRemainingLifeAttacker)).right()
+            add(getHealthBar(defender.getMaxHealth(), defender.getHealth(), maxRemainingLifeDefender, minRemainingLifeDefender, true)).left()
+            row()
 
             fun avg(vararg values: Int) = values.average().roundToInt()
             // Don't use original damage estimates - they're raw, before clamping to 0..max
             val avgDamageToDefender = avg(defenderHealth - minRemainingLifeDefender, defenderHealth - maxRemainingLifeDefender)
             val avgDamageToAttacker = avg(attackerHealth - minRemainingLifeAttacker, attackerHealth - maxRemainingLifeAttacker)
 
-            if (minRemainingLifeAttacker == attackerHealth) add(attackerHealth.toLabel())
-            else if (maxRemainingLifeAttacker == minRemainingLifeAttacker) add("$attackerHealth → $maxRemainingLifeAttacker ($avgDamageToAttacker)".toLabel())
-            else add("$attackerHealth → $minRemainingLifeAttacker-$maxRemainingLifeAttacker (~$avgDamageToAttacker)".toLabel())
+            val attackerHealthString: String
+            val defenderHealthString: String
+            val showAttackerExact = (minRemainingLifeAttacker == maxRemainingLifeAttacker)
+            val showDefenderExact = (minRemainingLifeDefender == maxRemainingLifeDefender)
 
+            if (minRemainingLifeAttacker == attackerHealth) attackerHealthString = attackerHealth.toString()
+            else if (showAttackerExact)
+                attackerHealthString = "$attackerHealth → $maxRemainingLifeAttacker"
+            else
+                attackerHealthString = "$attackerHealth → $minRemainingLifeAttacker–$maxRemainingLifeAttacker"
 
-            if (minRemainingLifeDefender == maxRemainingLifeDefender) add("$defenderHealth → $maxRemainingLifeDefender ($avgDamageToDefender)".toLabel())
-            else add("$defenderHealth → $minRemainingLifeDefender-$maxRemainingLifeDefender (~$avgDamageToDefender)".toLabel())
+            add(attackerHealthString.toLabel(alignment = Align.right)).right().padBottom(0f)
+
+            if (showDefenderExact)
+                defenderHealthString = "$defenderHealth → $maxRemainingLifeDefender"
+            else
+                defenderHealthString = "$defenderHealth → $minRemainingLifeDefender–$maxRemainingLifeDefender"
+
+            add(defenderHealthString.toLabel()).left().padBottom(0f).row()
+
+            add(("Average".tr() + ": $avgDamageToAttacker").toLabel(fontSize = 12, alignment = Align.right)).right()
+            add(("Average".tr() + ": $avgDamageToDefender").toLabel(fontSize = 12, alignment = Align.left)).left()
         }
 
         row().pad(5f)
