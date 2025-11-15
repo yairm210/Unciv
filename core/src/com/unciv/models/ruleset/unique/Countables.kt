@@ -182,6 +182,10 @@ enum class Countables(
     },
 
     FilteredTechnologies("[techFilter] Researched Technologies") {
+        override val documentationStrings = listOf(
+            "Counts researched matching technologies for the relevant Civilization",
+            "Repeatable technologies, like Future Tech, are only counted once"
+        )
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val technologies = gameContext.gameInfo?.ruleset?.technologies ?: return null
             val techManager = gameContext.civInfo?.tech ?: return null
