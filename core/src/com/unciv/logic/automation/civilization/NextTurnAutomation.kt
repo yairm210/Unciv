@@ -186,9 +186,9 @@ object NextTurnAutomation {
             value -= 5
         }
 
-        if (cityState.allyCiv != null && cityState.allyCiv != civInfo) {
+        if (cityState.getAllyCivName() != null && cityState.getAllyCivName() != civInfo.civName) {
             // easier not to compete if a third civ has this locked down
-            val thirdCivInfluence = cityState.getDiplomacyManager(cityState.allyCiv!!)!!.getInfluence().toInt()
+            val thirdCivInfluence = cityState.getDiplomacyManager(cityState.getAllyCivName()!!)!!.getInfluence().toInt()
             value -= (thirdCivInfluence - 30) / 10
         }
 
@@ -200,7 +200,7 @@ object NextTurnAutomation {
 
         if (includeQuests) {
             // Investing is better if there is an investment bonus quest active.
-            value += (cityState.questManager.getInvestmentMultiplier(civInfo) * 10).toInt() - 10
+            value += (cityState.questManager.getInvestmentMultiplier(civInfo.civName) * 10).toInt() - 10
         }
 
         return value
@@ -216,7 +216,7 @@ object NextTurnAutomation {
 
     private fun bullyCityStates(civInfo: Civilization) {
         for (state in civInfo.getKnownCivs().filter { !it.isDefeated() && it.isCityState }.toList()) {
-            val diplomacyManager = state.getDiplomacyManager(civInfo)!!
+            val diplomacyManager = state.getDiplomacyManager(civInfo.civName)!!
             if (diplomacyManager.isRelationshipLevelLT(RelationshipLevel.Friend)
                     && diplomacyManager.diplomaticStatus == DiplomaticStatus.Peace
                     && valueCityStateAlliance(civInfo, state) <= 0
@@ -540,7 +540,8 @@ object NextTurnAutomation {
     private fun tryVoteForDiplomaticVictory(civ: Civilization) {
         if (!civ.mayVoteForDiplomaticVictory()) return
 
-        val chosenCiv: Civilization? = if (civ.isMajorCiv()) {
+        val chosenCiv: String? = if (civ.isMajorCiv()) {
+
             val knownMajorCivs = civ.getKnownCivs().filter { it.isMajorCiv() }
             val highestOpinion = knownMajorCivs
                 .maxOfOrNull {
@@ -552,13 +553,13 @@ object NextTurnAutomation {
                 null // Abstain if we hate everybody (proportional chance in the RelationshipLevel.Enemy range - lesser evil)
             else knownMajorCivs
                 .filter { civ.getDiplomacyManager(it)!!.opinionOfOtherCiv() == highestOpinion }
-                .toList().random()
+                .toList().random().civName
 
         } else {
-            civ.allyCiv
+            civ.getAllyCivName()
         }
 
-        civ.diplomaticVoteForCiv(chosenCiv?.civName)
+        civ.diplomaticVoteForCiv(chosenCiv)
     }
 
     private fun issueRequests(civInfo: Civilization) {

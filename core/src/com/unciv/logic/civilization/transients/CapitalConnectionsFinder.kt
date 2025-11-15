@@ -146,7 +146,7 @@ class CapitalConnectionsFinder(private val civInfo: Civilization) {
     private fun canEnterBordersOf(otherCiv: Civilization): Boolean {
         if (otherCiv == civInfo) return true // own borders are always open
         if (otherCiv.isBarbarian || civInfo.isBarbarian) return false // barbarians blocks the routes
-        val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)
+        val diplomacyManager = civInfo.diplomacy[otherCiv.civName]
             ?: return false // not encountered yet
         if (otherCiv.isCityState && diplomacyManager.diplomaticStatus != DiplomaticStatus.War) return true
         return diplomacyManager.hasOpenBorders

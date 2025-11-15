@@ -204,7 +204,7 @@ class PromotionPickerScreen private constructor(
          even their own because you can't build any unit there.
         */ 
         val currentCity = unit.currentTile.getCity() ?: return
-        if (currentCity.civ != unit.civ) return
+        if (currentCity.civ.civName != unit.civ.civName) return
         if (currentCity.isPuppet) return
         val checkBoxSaveUnitPromotion = "Default promotions for [${unit.baseUnit.name}]".toCheckBox(saveUnitPromotion) {saveUnitPromotion = it}
         topTable.add(checkBoxSaveUnitPromotion).left().padTop(10f)

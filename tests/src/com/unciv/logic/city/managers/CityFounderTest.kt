@@ -33,7 +33,7 @@ class CityFounderTest {
         val foundedCity = cityFounder.foundCity(civ, Vector2.Zero)
 
         // then
-        assertEquals(civ, foundedCity.foundingCivObject)
+        assertEquals(civ.civName, foundedCity.foundingCiv)
     }
 
     @Test

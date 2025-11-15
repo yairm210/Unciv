@@ -190,9 +190,9 @@ class AlertPopup(
         addQuestionAboutTheCity(city.name)
         val conqueringCiv = gameInfo.getCurrentPlayerCivilization()
 
-        if (city.foundingCivObject != null
-                && city.civ != city.foundingCivObject // can't liberate if the city actually belongs to those guys
-                && conqueringCiv != city.foundingCivObject) { // or belongs originally to us
+        if (city.foundingCiv != ""
+                && city.civ.civName != city.foundingCiv // can't liberate if the city actually belongs to those guys
+                && conqueringCiv.civName != city.foundingCiv) { // or belongs originally to us
             addLiberateOption(city, conqueringCiv)
             addSeparator()
         }
@@ -232,7 +232,7 @@ class AlertPopup(
         addQuestionAboutTheCity(city.name)
         val conqueringCiv = gameInfo.getCurrentPlayerCivilization()
 
-        if (!conqueringCiv.isAtWarWith(city.foundingCivObject!!)) {
+        if (!conqueringCiv.isAtWarWith(getCiv(city.foundingCiv))) {
             addLiberateOption(city, conqueringCiv)
             addSeparator()
         }
@@ -342,7 +342,7 @@ class AlertPopup(
         val tile = gameInfo.tileMap[position]
         val capturedUnit = tile.civilianUnit  // This has got to be it
             ?: return false // the unit disappeared somehow? maybe a modded action?
-        val originalOwner = capturedUnit.originalOwningCiv!!
+        val originalOwner = getCiv(capturedUnit.originalOwner!!)
         if (originalOwner.isDefeated()) return false
         val captor = viewingCiv
 
@@ -374,7 +374,7 @@ class AlertPopup(
                 yield(LocationAction(tile.position))
                 if (closestCity != null)
                     yield(LocationAction(closestCity.location))
-                yield(DiplomacyAction(captor))
+                yield(DiplomacyAction(captor.civName))
                 yield(CivilopediaAction("Tutorial/Barbarians"))
             }
             originalOwner.addNotification("Your captured [${unitName}] has been returned by [${captor.civName}]", notificationSequence, NotificationCategory.Diplomacy, NotificationIcon.Trade, unitName, captor.civName)
@@ -524,7 +524,7 @@ class AlertPopup(
     }
 
     private fun addLiberateOption(city: City, conqueringCiv: Civilization) {
-        val button = "Liberate (city returns to [originalOwner])".fillPlaceholders(city.foundingCivObject!!.civName).toTextButton()
+        val button = "Liberate (city returns to [originalOwner])".fillPlaceholders(city.foundingCiv).toTextButton()
         button.onActivation {
             city.liberateCity(conqueringCiv)
             close()

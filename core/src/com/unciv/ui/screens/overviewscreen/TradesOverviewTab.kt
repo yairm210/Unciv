@@ -17,12 +17,12 @@ class TradesOverviewTab(
 
     init {
         defaults().pad(10f)
-        val diplomaciesWithPendingTrade = viewingPlayer.diplomacy.values.filter { it.otherCiv.tradeRequests.any { it.requestingCiv == viewingPlayer.civName } }
+        val diplomaciesWithPendingTrade = viewingPlayer.diplomacy.values.filter { it.otherCiv().tradeRequests.any { it.requestingCiv == viewingPlayer.civName } }
         if (diplomaciesWithPendingTrade.isNotEmpty())
             add("Pending trades".toLabel(fontSize = Constants.headingFontSize)).padTop(10f).row()
         for (diplomacy in diplomaciesWithPendingTrade) {
-            for (tradeRequest in diplomacy.otherCiv.tradeRequests.filter { it.requestingCiv == viewingPlayer.civName })
-                add(createTradeTable(tradeRequest.trade.reverse(), diplomacy.otherCiv)).row()
+            for (tradeRequest in diplomacy.otherCiv().tradeRequests.filter { it.requestingCiv == viewingPlayer.civName })
+                add(createTradeTable(tradeRequest.trade.reverse(), diplomacy.otherCiv())).row()
         }
 
         val diplomaciesWithExistingTrade = viewingPlayer.diplomacy.values.filter { it.trades.isNotEmpty() }
@@ -41,7 +41,7 @@ class TradesOverviewTab(
             add("Current trades".toLabel(fontSize = Constants.headingFontSize)).padTop(10f).row()
         for (diplomacy in diplomaciesWithExistingTrade) {
             for (trade in diplomacy.trades)
-                add(createTradeTable(trade, diplomacy.otherCiv)).row()
+                add(createTradeTable(trade, diplomacy.otherCiv())).row()
         }
     }
 
