@@ -41,7 +41,7 @@ class UnitNameGroup : RulesetObject() {
             }
         }
 
-    override fun getUniqueTarget() = UniqueTarget.UnitTriggerable
+    override fun getUniqueTarget() = UniqueTarget.EventChoice
     override fun makeLink() = "Unit Names/$name"
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         val lines = ArrayList<FormattedLine>()
