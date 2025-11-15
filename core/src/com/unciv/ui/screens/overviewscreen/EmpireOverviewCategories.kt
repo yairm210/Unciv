@@ -35,7 +35,7 @@ enum class EmpireOverviewCategories(
         override fun showDisabled(viewingPlayer: Civilization) =
                 viewingPlayer.diplomacy.values.all { it.trades.isEmpty() } &&
                 viewingPlayer.diplomacy.values.none { diplomacyManager ->
-                        diplomacyManager.otherCiv.tradeRequests.any { it.requestingCiv == viewingPlayer.civName }
+                        diplomacyManager.otherCiv().tradeRequests.any { it.requestingCiv == viewingPlayer.civName }
                     }
     },
     Units("OtherIcons/Shield", 'U', Align.topLeft) {

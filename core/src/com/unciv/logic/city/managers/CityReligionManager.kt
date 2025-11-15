@@ -113,7 +113,7 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
 
         if (newMajorityReligion in religionsAtSomePointAdopted) return
 
-        val religionOwningCiv = newMajorityReligionObject.foundingCiv
+        val religionOwningCiv = newMajorityReligionObject.getFounder()
         if (religionOwningCiv.hasUnique(UniqueType.StatsWhenAdoptingReligion)) {
             val statsGranted =
                 religionOwningCiv.getMatchingUniques(UniqueType.StatsWhenAdoptingReligion).map { it.stats.times(if (!it.isModifiedByGameSpeed()) 1f else city.civ.gameInfo.speed.modifier) }
@@ -209,7 +209,7 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
             if (pressure == Constants.noReligionName) continue
             val correspondingReligion = city.civ.gameInfo.religions[pressure]!!
             if (correspondingReligion.isPantheon()
-                && correspondingReligion.foundingCiv != city.civ
+                && correspondingReligion.foundingCivName != city.civ.civName
             ) {
                 pressures.remove(pressure)
             }
@@ -266,7 +266,7 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
 
         val majorityReligion = getMajorityReligion()
         if (majorityReligion != null) {
-            for (unique in majorityReligion.foundingCiv.getMatchingUniques(UniqueType.ReligionSpreadDistance))
+            for (unique in majorityReligion.getFounder().getMatchingUniques(UniqueType.ReligionSpreadDistance))
                 spreadRange += unique.params[0].toInt()
         }
 
@@ -322,7 +322,7 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
         // Founder beliefs of this religion
         val majorityReligion = getMajorityReligion()
         if (majorityReligion != null) {
-            for (unique in majorityReligion.foundingCiv.getMatchingUniques(UniqueType.NaturalReligionSpreadStrength))
+            for (unique in majorityReligion.getFounder().getMatchingUniques(UniqueType.NaturalReligionSpreadStrength))
                 if (pressuredCity.matchesFilter(unique.params[1]))
                     pressure *= unique.params[0].toPercent()
         }

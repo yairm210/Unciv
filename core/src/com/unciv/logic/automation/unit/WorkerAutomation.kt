@@ -578,7 +578,7 @@ class WorkerAutomation(
 
         var valueOfFort = 1f
 
-        if (civInfo.isCityState && civInfo.allyCiv != null) valueOfFort -= 1f // Allied city states probably don't need to build forts
+        if (civInfo.isCityState && civInfo.getAllyCivName() != null) valueOfFort -= 1f // Allied city states probably don't need to build forts
 
         if (tile.hasViewableResource(civInfo)) valueOfFort -= 1
 

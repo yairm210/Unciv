@@ -39,6 +39,7 @@ import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onChange
+import com.unciv.ui.components.widgets.CircularButton
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -311,12 +312,11 @@ fun getCloseButton(
     iconSize: Float = size - 20f,
     circleColor: Color = BaseScreen.skinStrings.skinConfig.baseColor,
     overColor: Color = Color.RED,
+    outerCircleColor: Color? = null,
     action: () -> Unit
-): Group {
-    val closeButton = "OtherIcons/Close".toImageButton(iconSize, size, circleColor, overColor)
-    closeButton.onActivation(action)
-    closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
-    return closeButton
+): Group = CircularButton.fromImage("OtherIcons/Close", size, iconSize / size, overColor, circleColor, outerCircleColor, 2f).apply {
+    onActivation(action)
+    keyShortcuts.add(KeyCharAndCode.BACK)
 }
 
 /**
@@ -328,11 +328,9 @@ fun addRoundCloseButton(
     action: () -> Unit
 ): Group {
     val size = 30f
-    val button = getCloseButton(size, size-15f, Color.CLEAR, Color.RED, action = action)
-        .surroundWithCircle(size, false, BaseScreen.clearColor)
-        .surroundWithCircle(size+4f, false, Color.WHITE)
+    val button = getCloseButton(size, size - 15f - 4f, BaseScreen.clearColor, Color.RED, Color.WHITE, action = action)
     parent.addActor(button)
-    button.setPosition(parent.width - button.width*3/4, parent.height - button.height*3/4)
+    button.setPosition(parent.width - button.width * 3 / 4, parent.height - button.height * 3 / 4)
     return button
 }
 

@@ -4,15 +4,14 @@ import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Action
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
-import com.badlogic.gdx.math.Interpolation
 import com.unciv.UncivGame
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
@@ -31,15 +30,14 @@ import com.unciv.ui.components.MapArrowType
 import com.unciv.ui.components.MiscArrowTypes
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.isShiftKeyPressed
-import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.input.ActivationTypes
-import com.unciv.ui.components.input.ClickableCircle
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.components.tilegroups.TileGroupMap
 import com.unciv.ui.components.tilegroups.TileSetStrings
 import com.unciv.ui.components.tilegroups.WorldTileGroup
+import com.unciv.ui.components.widgets.CircularButton
 import com.unciv.ui.components.widgets.UnitIconGroup
 import com.unciv.ui.components.widgets.ZoomableScrollPane
 import com.unciv.ui.screens.basescreen.UncivStage
@@ -506,18 +504,21 @@ class WorldMapHolder(
         }
 
         for (unit in unitList) {
-            val unitIconGroup = UnitIconGroup(unit, 48f).surroundWithCircle(68f, resizeActor = false)
-            unitIconGroup.circle.color = Color.GRAY.cpy().apply { a = 0.5f }
-            if (!unit.hasMovement()) unitIconGroup.color.a = 0.66f
-            val clickableCircle = ClickableCircle(68f)
-            clickableCircle.touchable = Touchable.enabled
-            clickableCircle.onClick {
+            val unitButton = CircularButton.build(68f) {
+                val circle = circle(Color.GRAY.cpy().apply { a = 0.5f })
+                actor(UnitIconGroup(unit, 48f))
+                if (unit.hasMovement())
+                    hover { entered ->
+                        circle.color.a = if (entered) 0.7f else 0.5f
+                    }
+                else color.a = 0.66f
+            }
+            unitButton.onClick {
                 worldScreen.bottomUnitTable.selectUnit(unit, Gdx.input.isShiftKeyPressed())
                 worldScreen.shouldUpdate = true
                 removeUnitActionOverlay()
             }
-            unitIconGroup.addActor(clickableCircle)
-            table.add(unitIconGroup)
+            table.add(unitButton)
         }
 
         addOverlayOnTileGroup(tileGroups[tile]!!, table)

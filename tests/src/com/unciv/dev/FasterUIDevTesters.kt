@@ -3,8 +3,10 @@ package com.unciv.dev
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.unciv.Constants
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
@@ -12,10 +14,12 @@ import com.unciv.logic.map.HexMath
 import com.unciv.testing.TestGame
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.CircularButton
 import com.unciv.ui.components.widgets.LoadingImage
 import com.unciv.ui.components.widgets.LoadingImage.Style
-import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen.Companion.buttonsSize
+import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen.Companion.circleButtonsHoverColor
 import com.unciv.ui.screens.overviewscreen.GlobalPoliticsDiagramGroup
 import kotlin.random.Random
 
@@ -88,6 +92,34 @@ internal enum class FasterUIDevTesters : IFasterUITester {
             pack()
         }
     },
+
+    MainMenuButtons {
+        override fun testCreateExample(screen: BaseScreen): Actor {
+            val table = Table()
+            table.defaults().pad(20f)
+            val msg = Label("", BaseScreen.skin)
+            table.add(msg).colspan(3).row()
+
+            table.add(CircularButton.build(buttonsSize) {
+                circles(Color.WHITE, defaultColor)
+                hover(circleButtonsHoverColor)
+                label("?", 48)
+            }.onClick { msg.setText("Civilopedia") })
+            table.add(CircularButton.build(buttonsSize) {
+                circles(Color.WHITE, defaultColor)
+                hover(circleButtonsHoverColor)
+                image("OtherIcons/Discord", buttonsSize * .75f)
+                link("https://discord.gg/bjrB4Xw")
+            }.onClick { msg.setText("Discord") })
+            table.add(CircularButton.build(buttonsSize) {
+                circles(Color.WHITE, defaultColor)
+                hover(circleButtonsHoverColor)
+                image("OtherIcons/Github", buttonsSize * .75f)
+            }.onClick { msg.setText("Github") })
+            return table
+        }
+    },
     ;
+
     override fun testGetLabel(): String? = name // maybe use unCamelCase in KeyboardBinding?
 }

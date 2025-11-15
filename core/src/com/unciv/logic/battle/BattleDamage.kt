@@ -150,7 +150,7 @@ object BattleDamage {
             if (attacker.isMelee()) {
                 val numberOfOtherAttackersSurroundingDefender = defender.getTile().neighbors.count {
                     it.militaryUnit != null && it.militaryUnit != attacker.unit
-                            && it.militaryUnit!!.civ == attacker.getCivInfo()
+                            && it.militaryUnit!!.owner == attacker.getCivInfo().civName
                             && MapUnitCombatant(it.militaryUnit!!).isMelee()
                 }
                 if (numberOfOtherAttackersSurroundingDefender > 0) {
@@ -271,7 +271,7 @@ object BattleDamage {
         tileToAttackFrom: Tile
     ): Float {
         val attackModifier = modifiersToFinalBonus(getAttackModifiers(attacker, defender, tileToAttackFrom))
-        return max(1f, attacker.getAttackingStrength() * attackModifier)
+        return max(1f, attacker.getAttackingStrength(defender) * attackModifier)
     }
 
 
@@ -281,7 +281,7 @@ object BattleDamage {
     @Readonly
     fun getDefendingStrength(attacker: ICombatant, defender: ICombatant, tileToAttackFrom: Tile): Float {
         val defenceModifier = modifiersToFinalBonus(getDefenceModifiers(attacker, defender, tileToAttackFrom))
-        return max(1f, defender.getDefendingStrength(attacker.isRanged()) * defenceModifier)
+        return max(1f, defender.getDefendingStrength(attacker) * defenceModifier)
     }
 
     @Readonly
