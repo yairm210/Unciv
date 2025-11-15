@@ -800,14 +800,11 @@
 		"uniques": ["[+20]% Strength <vs cities> <when attacking>","No defensive terrain bonus","Must set up to ranged attack","[-1] Sight","Never appears as a Barbarian unit"],
 		"attackSound": "cannon"
 	},
-
-	// Industrial Era
-
 	{
 		"name": "Rifleman",
 		"unitType": "Gunpowder",
 		"movement": 2,
-		"strength": 34,
+		"strength": 25,
 		"cost": 225,
 		"requiredTech": "Rifling",
 		"obsoleteTech": "Replaceable Parts",
@@ -820,7 +817,7 @@
 		"replaces": "Rifleman",
 		"uniqueTo": "Denmark",
 		"movement": 2,
-		"strength": 34,
+		"strength": 25,
 		"cost": 225,
 		"requiredTech": "Rifling",
 		"obsoleteTech": "Replaceable Parts",
@@ -831,14 +828,15 @@
 	{
 		"name": "Cavalry",
 		"unitType": "Mounted",
-		"movement": 4,
-		"strength": 34,
+		"movement": 3,
+		"strength": 25,
 		"cost": 225,
 		"requiredTech": "Military Science",
 		"obsoleteTech": "Combustion",
 		"requiredResource": "Horses",
 		"upgradesTo": "Tank",
 		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities> <when attacking>", "Never appears as a Barbarian unit"],
+        // TODO: Penalty vs Mounted
 		"attackSound": "horse"
 	},
 	{
@@ -846,41 +844,46 @@
 		"unitType": "Mounted",
 		"replaces": "Cavalry",
 		"uniqueTo": "Russia",
-		"movement": 4,
-		"strength": 34,
+		"movement": 3,
+		"strength": 25,
 		"cost": 225,
 		"requiredTech": "Military Science",
 		"obsoleteTech": "Combustion",
 		"requiredResource": "Horses",
 		"upgradesTo": "Tank",
 		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities> <when attacking>"],
+        // TODO: Penalty vs Mounted
 		"promotions":["[Cossack] ability"],
 		"attackSound": "horse"
 	},
+
+	// Industrial Era
+
 	{
 		"name": "Ironclad",
-		"unitType": "Melee Water",
-		"movement": 3,
-		"strength": 45,
-		"cost": 250,
+		"unitType": "Ranged Water",
+		"movement": 4,
+		"strength": 35,
+        "rangedStrength": 18,
+		"cost": 270,
 		"requiredTech": "Steam Power",
 		"requiredResource": "Coal",
-		"upgradesTo": "Destroyer",
-		"obsoleteTech": "Combustion",
-		"uniques": ["[+33]% Strength <vs cities>","Double movement in [Coast]", "Never appears as a Barbarian unit"],
+		"upgradesTo": "Battleship",
+		"obsoleteTech": "Telegraph",
+		"uniques": ["Cannot enter ocean tiles", "[+33]% Strength <vs cities>","Double movement in [Coast]", "Never appears as a Barbarian unit"],
 		"attackSound": "shipguns"
 	},
 	{
 		"name": "Artillery",
 		"unitType": "Siege",
 		"movement": 2,
-		"strength": 21,
-		"rangedStrength": 28,
+		"strength": 16,
+		"rangedStrength": 32,
 		"range": 3,
 		"cost": 320,
 		"requiredTech": "Dynamite",
 		"upgradesTo": "Rocket Artillery",
-		"uniques": ["[+200]% Strength <vs cities> <when attacking>","No defensive terrain bonus",
+		"uniques": ["[+20]% Strength <vs cities> <when attacking>","No defensive terrain bonus",
 			"Must set up to ranged attack","[-1] Sight", "Never appears as a Barbarian unit"],
 		"promotions": ["Indirect Fire"],
 		"attackSound": "artillery"
@@ -892,9 +895,10 @@
 		"name": "Submarine",
 		"unitType": "Submarine",
 		"movement": 5,
-		"strength": 35,
+		"strength": 25,
 		"rangedStrength": 60,
-		"cost": 325,
+        "range": 3,
+		"cost": 375,
 		"requiredTech": "Refrigeration",
 		"upgradesTo": "Nuclear Submarine",
 		"uniques": ["[+75]% Strength <when attacking>", "Can only attack [Water] tiles", "Never appears as a Barbarian unit"],
@@ -906,10 +910,10 @@
 		"replaces": "Rifleman",
 		"uniqueTo": "France",
 		"movement": 2,
-		"strength": 50,
+		"strength": 36,
 		"cost": 320,
 		"requiredTech": "Rifling",
-		"upgradesTo": "Infantry",
+		"upgradesTo": "Mechanized Infantry",
 		"obsoleteTech": "Replaceable Parts",
 		"uniques": ["[+20]% Strength <when fighting in [Foreign Land] tiles>"],
 		"attackSound": "shot"
@@ -918,8 +922,8 @@
 		"name": "Infantry",
 		"unitType": "Gunpowder",
 		"movement": 2,
-		"strength": 70,
-		"cost": 375,
+		"strength": 36,
+		"cost": 320,
 		"requiredTech": "Replaceable Parts",
 		"upgradesTo": "Mechanized Infantry",
 		"attackSound": "shot"
@@ -928,8 +932,8 @@
 		"name": "Fighter",
 		"unitType": "Fighter",
 		"movement": 1,
-		"strength": 45,
-		"rangedStrength": 45,
+		"strength": 40,
+		"rangedStrength": 40,
 		"range": 8,
 		"interceptRange": 8,
 		"cost": 375,
@@ -937,6 +941,7 @@
 		"requiredResource": "Oil",
 		"upgradesTo": "Jet Fighter",
 		"uniques": ["[100]% chance to intercept air attacks", "[+150]% Strength <vs [Bomber] units>", "[+150]% Strength <vs [Helicopter] units>"],
+        // TODO: Weak Ranged Attack
 		"attackSound": "machinegun"
 	},
 	{
@@ -946,14 +951,14 @@
 		"strength": 40,
 		"cost": 375,
 		"requiredTech": "Flight",
-		"uniques": ["Cannot attack", "Can carry [2] [Aircraft] units"]
+		"uniques": ["Cannot attack", "Can carry [3] [Aircraft] units"]
 	},
 	{
 		"name": "Battleship",
 		"unitType": "Ranged Water",
-		"movement": 5,
-		"strength": 55,
-		"rangedStrength": 55,
+		"movement": 4,
+		"strength": 60,
+		"rangedStrength": 32,
 		"range": 3,
 		"cost": 375,
 		"requiredResource": "Oil",
@@ -968,27 +973,27 @@
 		"unitType": "Gunpowder",
 		"movement": 2,
 		"interceptRange": 2,
-		"strength": 50,
+		"strength": 32,
 		"cost": 375,
 		"requiredTech": "Radio",
 		"upgradesTo": "Mobile SAM",
-		"uniques": ["[100]% chance to intercept air attacks", "[+150]% Strength <vs [Air] units>", "[+150]% Strength <vs [Helicopter] units>", "Never appears as a Barbarian unit"],
+		"uniques": ["[100]% chance to intercept air attacks", "[+100]% Strength <vs [Aircraft] units>", "[+100]% Strength <vs [Helicopter] units>", "Never appears as a Barbarian unit"],
 		"attackSound": "machinegun"
 	},
 	{
 		"name": "Destroyer",
 		"unitType": "Melee Water",
 		"movement": 6,
-		"strength": 55,
-		"interceptRange": 2,
+        "interceptRange": 2,
+        "rangedStrength": 22,
+		"strength": 35,
 		"cost": 375,
 		"requiredTech": "Combustion",
 		"uniques": ["Can see invisible [Submarine] units", "[40]% chance to intercept air attacks",
 			"Withdraws before melee combat <with [80]% chance>", "[+100]% Strength <vs [Submarine] units>"],
+		"promotions": ["Indirect Fire"],
 		"attackSound": "shipguns"
 	},
-
-	// Atomic Era
 
 	{
 		"name": "Zero",
@@ -996,23 +1001,27 @@
 		"replaces": "Fighter",
 		"uniqueTo": "Japan",
 		"movement": 1,
-		"strength": 45,
-		"rangedStrength": 45,
+		"strength": 40,
+		"rangedStrength": 40,
 		"range": 8,
 		"interceptRange": 8,
 		"cost": 375,
-		"requiredTech": "Radar",
+		"requiredTech": "Flight",
+		"requiredResource": "Oil",
 		"upgradesTo": "Jet Fighter",
-		"uniques": ["[100]% chance to intercept air attacks", "[+150]% Strength <vs [Bomber] units>", "[+150]% Strength <vs [Helicopter] units>"],
+		"uniques": ["[100]% chance to intercept air attacks", "[+33]% Strength <vs [Helicopter] units>"],
 		"promotions": ["[Zero] ability"],
 		"attackSound": "machinegun"
 	},
+
+    // Modern Era
+
 	{
 		"name": "Bomber",
 		"unitType": "Bomber",
 		"movement": 1,
-		"strength": 65,
-		"rangedStrength": 65,
+		"strength": 50,
+		"rangedStrength": 50,
 		"range": 10,
 		"cost": 375,
 		"requiredTech": "Radar",
