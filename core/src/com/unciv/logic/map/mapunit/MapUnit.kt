@@ -26,6 +26,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.UnitMovementMemoryType
+import com.unciv.ui.components.extensions.toPercent
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
@@ -997,7 +998,11 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 civ.getDifficulty().clearBarbarianCampReward * civ.gameInfo.speed.goldCostModifier
         if (civ.hasUnique(UniqueType.TripleGoldFromEncampmentsAndCities))
             goldGained *= 3f
-
+        
+        for (unique in civ.getMatchingUniques(UniqueType.GoldFromEncampmentsAndCities)) {
+            goldGained *= unique.params[0].toPercent()
+        }
+        
         civ.addGold(goldGained.toInt())
         civ.addNotification(
                 "We have captured a barbarian encampment and recovered [${goldGained.toInt()}] gold!",

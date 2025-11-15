@@ -18,6 +18,7 @@ import com.unciv.logic.trade.TradeOfferType
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.ui.components.extensions.toPercent
 import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 import kotlin.math.min
@@ -34,8 +35,13 @@ class CityConquestFunctions(val city: City) {
         val turnModifier = max(0, min(50, city.civ.gameInfo.turns - city.turnAcquired)) / 50f
         val cityModifier = if (city.containsBuildingUnique(UniqueType.DoublesGoldFromCapturingCity)) 2f else 1f
         val conqueringCivModifier = if (conqueringCiv.hasUnique(UniqueType.TripleGoldFromEncampmentsAndCities)) 3f else 1f
-
-        val goldPlundered = baseGold * turnModifier * cityModifier * conqueringCivModifier
+        var conqueringCivModifierNew = 1f
+        
+        for (unique in conqueringCiv.getMatchingUniques(UniqueType.GoldFromEncampmentsAndCities)) {
+            conqueringCivModifierNew *= unique.params[0].toPercent()
+        }
+        
+        val goldPlundered = baseGold * turnModifier * cityModifier * conqueringCivModifier * conqueringCivModifierNew
         return goldPlundered.toInt()
     }
 
