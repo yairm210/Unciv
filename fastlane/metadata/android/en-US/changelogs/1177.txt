@@ -1,0 +1,26 @@
+
+
+chore(translation): have signed the declaration of Friendship -> have signed a declaration of Friendship
+
+perf(cpu) - Faster map generation
+
+perf(memory) - populate TileLayerFeatures roadImages only when there are actual roads
+
+perf(memory) - hasEnemyInvisibleUnit doesn't create a sequence in the common case
+
+By SomeTroglodyte:
+- New CircularButton Widget 
+- Improve recognition of GitHub url types passed to "Download mod from URL" 
+- 4.18.13-patch1
+- Revert "Refactor: Prefer cached Civ information over civ names " ()
+
+By RobLoach:
+- vanilla: Fix Unit Stats across Vanilla 
+- Fix Spaceship Parts requiring a Scientific Victory 
+- Fix Unit Name Group unique type 
+- Allow modding of Great Prophet names 
+- Remove newline in Apollo Program's Civilopedia text 
+
+Fix incorrect target civ used to determine defensive pact modifiers - By unciv-loof
+
+Add plus strength amount unique - By SeventhM
