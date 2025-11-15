@@ -183,11 +183,12 @@ enum class Countables(
 
     FilteredTechnologies("[techFilter] Researched Technologies") {
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
-            val filter = parameterText.getPlaceholderParameters()[0]
+            val technologies = gameContext.gameInfo?.ruleset?.technologies ?: return null
             val techManager = gameContext.civInfo?.tech ?: return null
-            return techManager.techsResearched.filter {
-                gameContext.gameInfo?.ruleset?.technologies[it]?.matchesFilter(filter, gameContext) ?: false
-            }.size
+            val filter = parameterText.getPlaceholderParameters()[0]
+            return techManager.techsResearched.count {
+                technologies[it]?.matchesFilter(filter, gameContext) ?: false
+            }
         }
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
             UniqueParameterType.TechFilter.getTranslatedErrorSeverity(parameterText, ruleset)
