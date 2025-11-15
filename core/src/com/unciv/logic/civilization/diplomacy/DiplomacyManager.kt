@@ -658,7 +658,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         removeModifier(DiplomaticModifiers.SignedDefensivePactWithOurEnemies)
 
         val civsTheyHavePactWith = getCommonKnownCivs()
-            .filter { otherCiv.getDiplomacyManager(it)!!.hasFlag(DiplomacyFlags.DefensivePact) }
+            .filter { otherCiv().getDiplomacyManager(it)!!.hasFlag(DiplomacyFlags.DefensivePact) }
 
         for (thirdCiv in civsTheyHavePactWith) {
             // what do we (A) think about the other civ (B) having a defensive pact with the third civ (C)?
