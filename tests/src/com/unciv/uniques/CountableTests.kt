@@ -364,13 +364,16 @@ class CountableTests {
     @Test
     fun testFilteredTechnologies() {
         setupModdedGame()
-        civ.tech.techsResearched.addAll(listOf(
+        val techs = listOf(
             "Agriculture",
             "Pottery",
             "Sailing",
             "Animal Husbandry",
             "Optics"
-        ))
+        )
+        for (techName in techs) {
+            civ.tech.addTechnology(techName, false)
+        }
         val tests = listOf(
             "[All] Researched Technologies" to 5,
             "[Ancient era] Researched Technologies" to 4,
