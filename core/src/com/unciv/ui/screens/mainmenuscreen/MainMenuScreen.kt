@@ -1,5 +1,6 @@
 ﻿package com.unciv.ui.screens.mainmenuscreen
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
@@ -26,7 +27,10 @@ import com.unciv.models.tilesets.TileSetCache
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.center
+import com.unciv.ui.components.extensions.surroundWithCircle
+import com.unciv.ui.components.extensions.surroundWithThinCircle
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.keyShortcuts
@@ -35,7 +39,6 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onLongPress
 import com.unciv.ui.components.tilegroups.TileGroupMap
 import com.unciv.ui.components.widgets.AutoScrollPane
-import com.unciv.ui.components.widgets.CircularButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.padTopDescent
 import com.unciv.ui.popups.Popup
@@ -78,11 +81,10 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         const val mapFadeTime = 1.3f
         const val mapFirstFadeTime = 0.3f
         const val mapReplaceDelay = 20f
-        /** Outer size of the Civilopedia+Discord+Github buttons (effective size adds 2f for the thin circle) */
-        const val buttonsSize = 64f
+        /** Inner size of the Civilopedia+Discord+Github buttons (effective size adds 2f for the thin circle) */
+        const val buttonsSize = 60f
         /** Distance of the Civilopedia and Discord+Github buttons from the stage edges */
         const val buttonsPosFromEdge = 30f
-        val circleButtonsHoverColor = Color(0x002854ff) // Unskinned baseColor (keep H&S, V 52->33, alpha .75->1)
     }
 
     /** Create one **Main Menu Button** including onClick/key binding
@@ -203,11 +205,12 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             game.popScreen()
         }
 
-        val civilopediaButton = CircularButton.build(buttonsSize) {
-            circles(Color.WHITE, defaultColor)
-            hover(circleButtonsHoverColor)
-            label("?", 48)
-        }
+        val civilopediaButton = "?".toLabel(fontSize = 48)
+            .apply { setAlignment(Align.center) }
+            .surroundWithCircle(buttonsSize, color = skinStrings.skinConfig.baseColor)
+            .apply { actor.y -= Fonts.getDescenderHeight(48) / 2 } // compensate font baseline
+            .surroundWithThinCircle(Color.WHITE)
+        civilopediaButton.touchable = Touchable.enabled
         // Passing the binding directly to onActivation gives you a size 26 tooltip...
         civilopediaButton.onActivation { openCivilopedia() }
         civilopediaButton.keyShortcuts.add(KeyboardBinding.Civilopedia)
@@ -216,20 +219,16 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         stage.addActor(civilopediaButton)
 
         val rightSideButtons = Table().apply { defaults().space(10f) }
-        val discordButton = CircularButton.build(buttonsSize) {
-            circles(Color.WHITE, defaultColor)
-            hover(circleButtonsHoverColor)
-            image("OtherIcons/Discord", buttonsSize * .75f)
-            link("https://discord.gg/bjrB4Xw")
-        }
+        val discordButton = ImageGetter.getImage("OtherIcons/Discord")
+            .surroundWithCircle(buttonsSize, color = skinStrings.skinConfig.baseColor)
+            .surroundWithThinCircle(Color.WHITE)
+            .onActivation { Gdx.net.openURI("https://discord.gg/bjrB4Xw") }
         rightSideButtons.add(discordButton)
 
-        val githubButton = CircularButton.build(buttonsSize) {
-            circles(Color.WHITE, defaultColor)
-            hover(circleButtonsHoverColor)
-            image("OtherIcons/Github", buttonsSize * .75f)
-            link(Constants.uncivRepoURL)
-        }
+        val githubButton = ImageGetter.getImage("OtherIcons/Github")
+            .surroundWithCircle(buttonsSize, color = skinStrings.skinConfig.baseColor)
+            .surroundWithThinCircle(Color.WHITE)
+            .onActivation { Gdx.net.openURI(Constants.uncivRepoURL) }
         rightSideButtons.add(githubButton)
 
         rightSideButtons.pack()
