@@ -633,7 +633,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     }
 
     @Readonly
-    fun canBeSettled(): Boolean {
+    fun canBeSettled(civ: Civilization): Boolean {
         val modConstants = tileMap.gameInfo.ruleset.modOptions.constants
         return when {
             isWater || isImpassible() -> false
@@ -641,6 +641,8 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
                 .any { it.isCityCenter() && it.getContinent() != getContinent() } -> false
             getTilesInDistance(modConstants.minimalCityDistance)
                 .any { it.isCityCenter() && it.getContinent() == getContinent() } -> false
+            // cannot settle in someone else's territory
+            owningCity != null && owningCity!!.civ != civ -> false
             else -> true
         }
     }
@@ -704,9 +706,9 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     
     @Readonly
     fun hasEnemyInvisibleUnit(viewingCiv: Civilization): Boolean {
+        if (getFirstUnit() == null) return false // common case
         val unitsInTile = getUnits()
         return when {
-            unitsInTile.none() -> false
             unitsInTile.first().civ == viewingCiv -> false
             unitsInTile.none { it.isInvisible(viewingCiv) } -> false
             else -> true

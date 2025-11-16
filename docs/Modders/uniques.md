@@ -326,6 +326,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: UnitTriggerable
 
+??? example  "[unitTriggerTarget] gets a name from the [unitNameGroup] group"
+	Example: "[This Unit] gets a name from the [Scientist] group"
+
+	Applicable to: UnitTriggerable
+
 ## Global uniques
 !!! note ""
 
@@ -975,6 +980,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, Unit
 
+??? example  "[relativeAmount] Strength"
+	Example: "[+20] Strength"
+
+	Applicable to: Global, Unit
+
 ??? example  "[relativeAmount]% Strength decreasing with distance from the capital"
 	Example: "[+20]% Strength decreasing with distance from the capital"
 
@@ -1041,13 +1051,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, Unit
 
 ??? example  "Unable to pillage tiles"
-	Applicable to: Global, Unit
-
-??? example  "Destroys [cityFilter] cities instead of capturing"
-	The unit will destroy [cityFilter] cities instead of capturing them, also allows non-melee units to destroy cities.Capital cities (including city states) are immune to this effect.
-
-	Example: "Destroys [in all cities] cities instead of capturing"
-
 	Applicable to: Global, Unit
 
 ??? example  "No movement cost to pillage"
@@ -1946,6 +1949,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, Unit
 
+??? example  "[relativeAmount] Strength"
+	Example: "[+20] Strength"
+
+	Applicable to: Global, Unit
+
 ??? example  "[relativeAmount]% Strength decreasing with distance from the capital"
 	Example: "[+20]% Strength decreasing with distance from the capital"
 
@@ -2073,7 +2081,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Example: "Destroys [in all cities] cities instead of capturing"
 
-	Applicable to: Global, Unit
+	Applicable to: Unit
 
 ??? example  "No movement cost to pillage"
 	Applicable to: Global, Unit
@@ -3264,6 +3272,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;when nuclear weapons are enabled&gt;"
 	Applicable to: Conditional
 
+??? example  "&lt;when nuclear weapons are disabled&gt;"
+	Applicable to: Conditional
+
 ??? example  "&lt;with [nonNegativeAmount]% chance&gt;"
 	Example: "&lt;with [3]% chance&gt;"
 
@@ -4019,7 +4030,8 @@ There is a conversion affecting dashes and leading/trailing blanks. Please make 
 *[tech]: The name of any tech.
 *[terrainFeature]: The name of any terrain that is a terrain feature according to the json file.
 *[tileFilter]: Anything that can be used either in an improvementFilter or in a terrainFilter can be used here, plus 'unimproved'
-*[unitTriggerTarget]: `This Unit`, `Target Unit`, or `Every adjacent [mapUnitFilter] unit`.
+*[unitNameGroup]: The name of a unit name group found in UnitNameGroups.json, or one of their unique tags.
+*[unitTriggerTarget]: `This Unit` or `Target Unit`, or `Every adjacent [mapUnitFilter] unit`.
 *[unitType]: Can be 'Land', 'Water', 'Air', any unit type, a filtering Unique on a unit type, or a multi-filter of these.
 *[validationWarning]: Suppresses one specific Ruleset validation warning. This can specify the full text verbatim including correct upper/lower case, or it can be a wildcard case-insensitive simple pattern starting and ending in an asterisk ('*'). If the suppression unique is used within an object or as modifier (not ModOptions), the wildcard symbols can be omitted, as selectivity is better due to the limited scope.
 *[victoryType]: The name of any victory type: 'Cultural', 'Diplomatic', 'Domination', 'Scientific', 'Time' or one of your mod's VictoryTypes.json names.

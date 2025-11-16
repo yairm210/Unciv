@@ -12,6 +12,7 @@ import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import io.ktor.utils.io.jvm.javaio.*
 import kotlinx.coroutines.delay
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
@@ -19,6 +20,11 @@ import java.util.zip.ZipException
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
+
+enum class DownloadAndExtractState {
+    Downloading,
+    Extracting
+}
 
 /**
  *  "Namespace" collects all Github API structural knowledge
@@ -300,7 +306,7 @@ object GithubAPI {
         if (matchZip != null && matchZip.groups.size > 4)
             return processMatch(matchZip)
 
-        val matchBranch = Regex("""^(.*/(.*)/(.*))/tree/(.*)$""").matchEntire(url)
+        val matchBranch = Regex("""^(.*/(.*)/(.*))/tree/(.+?)/?$""").matchEntire(url) // important non-greedy '+'
         if (matchBranch != null && matchBranch.groups.size > 4)
             return processMatch(matchBranch)
 
@@ -310,7 +316,7 @@ object GithubAPI {
         // TODO Query a specific release for its name attribute - the page will link the tag
         // https://docs.github.com/en/rest/releases/releases#get-a-release-by-tag-name
 
-        val matchTagArchive = Regex("""^(.*/(.*)/(.*))/archive/(?:.*/)?tags/([^.]+).zip$""").matchEntire(url)
+        val matchTagArchive = Regex("""^(.*/(.*)/(.*))/archive/(?:.*/)?tags/(.+).zip$""").matchEntire(url)
         if (matchTagArchive != null && matchTagArchive.groups.size > 4) {
             processMatch(matchTagArchive)
             release_tag = default_branch
@@ -319,7 +325,7 @@ object GithubAPI {
             direct_zip_url = url
             return this
         }
-        val matchTagPage = Regex("""^(.*/(.*)/(.*))/releases/(?:.*/)?tag/([^.]+)$""").matchEntire(url)
+        val matchTagPage = Regex("""^(.*/(.*)/(.*))/releases/(?:.*/)?tag/(.+?)/?$""").matchEntire(url) // important non-greedy '+'
         if (matchTagPage != null && matchTagPage.groups.size > 4) {
             processMatch(matchTagPage)
             release_tag = default_branch
@@ -335,7 +341,7 @@ object GithubAPI {
             return this
         }
 
-        val matchRepo = Regex("""^.*//.*/(.+)/(.+)/?$""").matchEntire(url)
+        val matchRepo = Regex("""^.*//.*/(.+)/(.+?)/?$""").matchEntire(url) // important non-greedy '+'
         if (matchRepo != null && matchRepo.groups.size > 2) {
             // Query API if we got the 'https://github.com/author/repoName' URL format to get the correct default branch
             val repo = Repo.query(matchRepo.groups[1]!!.value, matchRepo.groups[2]!!.value)
@@ -372,7 +378,7 @@ object GithubAPI {
     suspend fun Repo.downloadAndExtract(
         modsFolder: FileHandle,
         /** Should accept a number 0-100 */
-        updateProgressPercent: ((Int) -> Unit)? = null
+        updateProgressPercent: ((DownloadAndExtractState, Int?) -> Unit)? = null
     ): FileHandle? {
         var modNameFromFileName = name
 
@@ -399,57 +405,62 @@ object GithubAPI {
             val progressEndsAtSize = contentLength ?: fallbackSize
             if (progressEndsAtSize <= 0L) return
             val percent = bytesReceivedTotal * 100L / progressEndsAtSize
-            updateProgressPercent!!(percent.toInt().coerceIn(0, 100))
+            updateProgressPercent!!(DownloadAndExtractState.Downloading, percent.toInt().coerceIn(0, 100))
         }
 
-        val resp = UncivKtor.client.get(zipUrl) {
-            timeout {
-                requestTimeoutMillis = Long.MAX_VALUE
+        val tempZipFileHandle = modsFolder.child("$tempName.zip")
+
+        // Thanks to: https://stackoverflow.com/a/74328603/10585461
+        val resp = UncivKtor.client.prepareRequest {
+            url(zipUrl)
+            timeout { requestTimeoutMillis = Long.MAX_VALUE }
+            if (updateProgressPercent != null) onDownload(::reportProgress)
+        }.execute { resp ->
+            /**
+             * This block is borrowed from the deleted method `processRequestHandlingRedirects()`
+             * See: https://github.com/yairm210/Unciv/blob/1cb3f94d36009719b63f6d8e9d2e49c1bd594a8f/core/src/com/unciv/logic/github/Github.kt#L197-L216
+             */
+            when {
+                resp.status == HttpStatusCode.NotFound -> return@execute resp
+
+                (resp.status == HttpStatusCode.Forbidden) &&
+                    resp.headers["CF-RAY"] != null && resp.headers["cf-mitigated"].orEmpty() == "challenge" ->
+                    throw UncivShowableException("Blocked by Cloudflare")
+
+                (resp.status.value in 401..403) || resp.status == HttpStatusCode.ProxyAuthenticationRequired ->
+                    throw UncivShowableException("Servers requiring authentication are not supported")
+
+                resp.status.value in 300..499 ->
+                    throw UncivShowableException("Unexpected response: [${resp.bodyAsText()}]")
+
+                resp.status.value in 500..599 ->
+                    throw UncivShowableException("Server failure: [${resp.bodyAsText()}}]")
+
+                !resp.status.isSuccess() ->
+                    throw UncivShowableException("Unknown Issue!\nStatus: ${resp.status}\nBody:[${resp.bodyAsText()}}]")
             }
-            if (updateProgressPercent != null)
-                onDownload(::reportProgress)
+
+            val stream = resp.bodyAsChannel().toInputStream()
+            tempZipFileHandle.write(stream, false)
+            return@execute resp
         }
 
-        /**
-         * This block is borrowed from the deleted method `processRequestHandlingRedirects()`
-         * See: https://github.com/yairm210/Unciv/blob/1cb3f94d36009719b63f6d8e9d2e49c1bd594a8f/core/src/com/unciv/logic/github/Github.kt#L197-L216
-         */
-        when {
-            resp.status == HttpStatusCode.NotFound -> return null
-            (resp.status == HttpStatusCode.Forbidden) &&
-                resp.headers["CF-RAY"] != null && resp.headers["cf-mitigated"].orEmpty() == "challenge" ->
-                throw UncivShowableException("Blocked by Cloudflare")
-
-            (resp.status.value in 401..403) || resp.status == HttpStatusCode.ProxyAuthenticationRequired ->
-                throw UncivShowableException("Servers requiring authentication are not supported")
-
-            resp.status.value in 300..499 ->
-                throw UncivShowableException("Unexpected response: [${resp.bodyAsText()}]")
-
-            resp.status.value in 500..599 ->
-                throw UncivShowableException("Server failure: [${resp.bodyAsText()}}]")
-
-            !resp.status.isSuccess() ->
-                throw UncivShowableException("Unknown Issue!\nStatus: ${resp.status}\nBody:[${resp.bodyAsText()}}]")
+        if (tempZipFileHandle.length() == 0L) {
+            tempZipFileHandle.delete()
+            return null
         }
-
-        val content = resp.bodyAsBytes()
-        if (content.isEmpty()) return null
 
         val disposition = resp.headers[HttpHeaders.ContentDisposition]
         modNameFromFileName = parseNameFromDisposition(disposition, modNameFromFileName)
-
-        // Download to temporary zip
-        // If the Content-Length header was missing, fall back to the reported repo size (which should be in kB)
-        // and assume low compression efficiency - bigger mods typically have mostly images.
-        val tempZipFileHandle = modsFolder.child("$tempName.zip")
-        tempZipFileHandle.writeBytes(content, false)
 
         // prepare temp unpacking folder
         val unzipDestination = tempZipFileHandle.sibling(tempName) // folder, not file
         // prevent mixing new content with old - hopefully there will never be cadavers of our tempZip stuff
         if (unzipDestination.exists())
             if (unzipDestination.isDirectory) unzipDestination.deleteDirectory() else unzipDestination.delete()
+
+        if (updateProgressPercent !== null)
+            updateProgressPercent(DownloadAndExtractState.Extracting, null)
 
         try {
             Zip.extractFolder(tempZipFileHandle, unzipDestination)

@@ -137,6 +137,23 @@ class UnitUniquesTests {
         Assert.assertTrue(tree.allNodes().any { !it.unreachable && tree.canBuyUpTo(it.promotion) })
     }
 
+    /**
+     * Ensures units are assigned instance names.
+     *
+     * @see unciv.models.ruleset.unique.UniqueType.OneTimeUnitGetsName
+     */
+    @Test
+    fun testOneTimeUnitGetsName() {
+        val unit = game.addDefaultMeleeUnitWithUniques(
+            game.addCiv(),
+            game.getTile(Vector2.Zero),
+            "[This Unit] gets a name from the [Scientist] group <upon turn start>")
+        UnitTurnManager(unit).startTurn()
+
+        Assert.assertTrue(unit.instanceName != null)
+        Assert.assertTrue(game.ruleset.unitNameGroups["Scientist"]?.unitNames?.contains(unit.instanceName) ?: false)
+    }
+
     @Test
     fun testPromotionTreeSetUp() {
         val civ = game.addCiv(isPlayer = true)

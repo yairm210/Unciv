@@ -1,3 +1,49 @@
+## 4.18.14
+
+Faster map generation
+
+Less memory usage for large maps
+
+By SomeTroglodyte:
+- New CircularButton Widget 
+- Improve recognition of GitHub url types passed to "Download mod from URL" 
+
+By RobLoach:
+- Fix Unit Stats across Vanilla 
+- Fix Spaceship Parts requiring a Scientific Victory 
+- Fix Unit Name Group unique type
+- Allow modding of Great Prophet names
+
+Fix incorrect target civ used to determine defensive pact modifiers - By unciv-loof
+
+Add plus strength amount unique - By SeventhM
+
+## 4.18.13
+
+By unciv-loof:
+- Fix broken minimap state after maximizing minimap + tile tap
+- Relocate maximize minimap button for compatibility with rounded corner displays 
+- New MP games display correct "time since last turn" 
+- Disallow settling cities in territory of other civs
+
+Add Great People Names - By RobLoach
+
+Faster mod download & display status - By touhidurrr
+
+Add Nuclear Weapons Disabled conditional unique - By PLynx01
+
+Bug fixes for city destroy mechanic - By PhiRite
+
+## 4.18.12
+
+By SomeTroglodyte:
+- Align buttons on MainMenuScreen 
+- Adapt main menu background maps to aspect ratio 
+- Fix resource stats in Civilopedia 
+
+By SidedYapper:
+- Added popup for "about tab" when clicking Version in main menu 
+
 ## 4.18.11
 
 Happiness shown in city stat overview

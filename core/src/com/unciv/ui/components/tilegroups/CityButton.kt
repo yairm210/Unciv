@@ -350,7 +350,7 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
         var turns = "-"
         var icon: Group? = null
 
-        if (cityConstructions.currentConstructionFromQueue.isNotEmpty()) {
+        if (cityConstructions.currentConstructionName().isNotEmpty()) {
             if (cityCurrentConstruction !is PerpetualConstruction) {
                 val turnsToConstruction = cityConstructions.turnsToConstruction(cityCurrentConstruction.name)
                 if (turnsToConstruction < 100)

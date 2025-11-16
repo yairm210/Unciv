@@ -52,7 +52,7 @@ object UnitActionsFromUniques {
         // Spain should still be able to build Conquistadors in a one city challenge - but can't settle them
         if (unit.civ.isOneCityChallenger() && unit.civ.hasEverOwnedOriginalCapital) return null
 
-        if (!unit.hasMovement() || !tile.canBeSettled())
+        if (!unit.hasMovement() || !tile.canBeSettled(unit.civ))
             return UnitAction(UnitActionType.FoundCity, 80f, action = null)
 
         val hasActionModifiers = unique.modifiers.any { it.type?.targetTypes?.contains(
@@ -427,17 +427,16 @@ object UnitActionsFromUniques {
                     val oldMovement = unit.currentMovement
                     unit.destroy()
                     val newUnit =
-                        civInfo.units.placeUnitNearTile(unitTile.position, unitToTransformTo, unit.id)
+                        civInfo.units.placeUnitNearTile(unitTile.position, unitToTransformTo, unit.id, copiedFrom = unit)
 
                     /** We were UNABLE to place the new unit, which means that the unit failed to upgrade!
                      * The only known cause of this currently is "land units upgrading to water units" which fail to be placed.
                      */
                     if (newUnit == null) {
                         val resurrectedUnit =
-                            civInfo.units.placeUnitNearTile(unitTile.position, unit.baseUnit, unit.id)!!
-                        unit.copyStatisticsTo(resurrectedUnit)
+                            civInfo.units.placeUnitNearTile(unitTile.position, unit.baseUnit, unit.id, copiedFrom = unit)!!
+                        
                     } else { // Managed to upgrade
-                        unit.copyStatisticsTo(newUnit)
                         // have to handle movement manually because we killed the old unit
                         // a .destroy() unit has 0 movement
                         // and a new one may have less Max Movement

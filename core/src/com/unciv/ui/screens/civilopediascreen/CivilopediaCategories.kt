@@ -108,6 +108,16 @@ enum class CivilopediaCategories (
         "OtherIcons/Score",
         { ruleset, _ -> ruleset.victories.values }
     ),
+    UnitNameGroup("Unit Names",
+        CivilopediaImageGetters.unitNameGroup,
+        KeyboardBinding.PediaUnitNameGroups,
+        "OtherIcons/UnitNameGroups",
+        { ruleset, _ -> ruleset.unitNameGroups.values
+            .filter {
+                it.unitNames.isNotEmpty() && it.getUnits(ruleset).isNotEmpty()
+            }
+        }
+    ),
     Difficulty ("Difficulty levels",
         getImage = null,
         KeyboardBinding.PediaDifficulties,

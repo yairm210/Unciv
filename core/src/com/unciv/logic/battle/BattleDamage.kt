@@ -271,7 +271,7 @@ object BattleDamage {
         tileToAttackFrom: Tile
     ): Float {
         val attackModifier = modifiersToFinalBonus(getAttackModifiers(attacker, defender, tileToAttackFrom))
-        return max(1f, attacker.getAttackingStrength() * attackModifier)
+        return max(1f, attacker.getAttackingStrength(defender) * attackModifier)
     }
 
 
@@ -281,7 +281,7 @@ object BattleDamage {
     @Readonly
     fun getDefendingStrength(attacker: ICombatant, defender: ICombatant, tileToAttackFrom: Tile): Float {
         val defenceModifier = modifiersToFinalBonus(getDefenceModifiers(attacker, defender, tileToAttackFrom))
-        return max(1f, defender.getDefendingStrength(attacker.isRanged()) * defenceModifier)
+        return max(1f, defender.getDefendingStrength(attacker) * defenceModifier)
     }
 
     @Readonly

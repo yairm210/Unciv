@@ -1,0 +1,7 @@
+By SomeTroglodyte:
+- Align buttons on MainMenuScreen 
+- Adapt main menu background maps to aspect ratio 
+- Fix resource stats in Civilopedia 
+
+By SidedYapper:
+- Added popup for "about tab" when clicking Version in main menu

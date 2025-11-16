@@ -590,6 +590,18 @@ enum class UniqueParameterType(
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.victories.keys
     },
 
+    /** Used by [UniqueType.OneTimeUnitGetsName] */
+    UnitNameGroup("unitNameGroup",
+        "Scientist", "The name of a unit name group found in UnitNameGroups.json, or one of their unique tags"
+    ) {
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.unitNameGroups.keys
+        override fun isKnownValue(parameterText: String, ruleset: Ruleset) = when {
+            parameterText in ruleset.unitNameGroups -> true
+            ruleset.unitNameGroups.values.any { it.hasTagUnique(parameterText, GameContext.IgnoreConditionals) } -> true
+            else -> false
+        }
+    },
+
     /** Used by [UniqueType.KillUnitPlunder] and [UniqueType.KillUnitPlunderNearCity], implementation in [Battle.tryEarnFromKilling][com.unciv.logic.battle.Battle.tryEarnFromKilling] */
     CostOrStrength("costOrStrength", "Cost", "`Cost` or `Strength`",
         severityDefault = UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
