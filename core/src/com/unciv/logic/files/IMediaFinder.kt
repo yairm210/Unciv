@@ -14,7 +14,6 @@ import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.audio.MusicController
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.popups.options.SettingsSelect
 import kotlin.reflect.full.declaredMemberProperties
 
 /**
@@ -191,10 +190,10 @@ interface IMediaFinder {
     }
 
     /** Specialized subclass to provide all accessible sounds with a human-readable label.
-     *  - API: Use [getLabeledSounds] only.
+     *  - API: Use [getLabeledSounds] only. It returns entries where `key` is the UncivSound filename and `value` is the display label.
      *  - Note: Redesign if UncivSound should ever be made into or use an Enum, to store the label there.
      */
-    open class LabeledSounds : Sounds() {
+    class LabeledSounds : Sounds() {
         private companion object {
             // Also determines display order
             val prettifyUncivSoundNames = mapOf(
@@ -214,11 +213,9 @@ interface IMediaFinder {
 
         private val cache = mutableMapOf<String, String>()
 
-        fun getLabeledSounds(): Iterable<SettingsSelect.SelectItem<UncivSound>> {
+        fun getLabeledSounds(): Sequence<Map.Entry<String, String>> {
             fillCache()
             return cache.asSequence()
-                .map { SettingsSelect.SelectItem(it.value, UncivSound(it.key)) }
-                .asIterable()
         }
 
         override fun listMediaFolders(): Sequence<FileHandle> =

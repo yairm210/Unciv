@@ -53,7 +53,6 @@ import kotlin.reflect.KMutableProperty0
  *  ```
  *
  *  TODO
- *    * MultiplayerTab - SettingsSelect and subclass
  *    * Performance - what is taking so long? Use tabs doing their heavy lifting only on activation, like ModCheckTab?
  */
 internal interface OptionsPopupHelpers {
