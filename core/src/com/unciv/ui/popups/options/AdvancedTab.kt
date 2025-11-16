@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.PixmapIO
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.UncivGame
@@ -21,6 +21,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.disable
+import com.unciv.ui.components.extensions.isEnabled
 import com.unciv.ui.components.extensions.setFontColor
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
@@ -28,6 +29,7 @@ import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.popups.ConfirmPopup
@@ -81,6 +83,8 @@ internal class AdvancedTab(
         addSetUserId()
 
         addTranslationGeneration()
+        addUpdateModCategories()
+        addScreenhotGeneration()
     }
 
     private fun addCutoutCheckbox() {
@@ -100,39 +104,51 @@ internal class AdvancedTab(
 
     private fun addAutosaveField() {
         add("Number of autosave files stored".toLabel()).left().fillX()
-        val autosaveFieldTable = Table()
-        val autoSaveTrunsTextField = UncivTextField("",settings.maxAutosavesStored.toString())
-        autoSaveTrunsTextField.setTextFieldFilter { _, c -> c in "1234567890" }
-        autosaveFieldTable.add(autoSaveTrunsTextField)
-        val autoSaveTrunsTextFieldButton = "Enter".toTextButton()
 
-        autoSaveTrunsTextFieldButton.onClick {
-            if (autoSaveTrunsTextField.text.isEmpty()) return@onClick
+        val autoSaveTurnsTextField = UncivTextField("", settings.maxAutosavesStored.toString())
+        autoSaveTurnsTextField.maxLength = 8
+        autoSaveTurnsTextField.setTextFieldFilter { _, c -> c in "1234567890" }
 
-            val numberAutosaveTurns = autoSaveTrunsTextField.text.toInt()
-
-            if (numberAutosaveTurns <= 0) {
-                val popup = Popup(stage)
-                popup.addGoodSizedLabel("Autosave turns must be larger than 0!", color = Color.RED)
-                popup.addCloseButton()
-                popup.open(true)
-
-            } else if (numberAutosaveTurns >= 200) {
-                val popup = Popup(stage)
-                popup.addGoodSizedLabel(
-                    "Autosave turns over 200 may take a lot of space on your device.",
-                    color = Color.ORANGE)
-                popup.addCloseButton()
-                popup.open(true)
-                settings.maxAutosavesStored = numberAutosaveTurns
-
-            } else {
-                settings.maxAutosavesStored = numberAutosaveTurns
-
-            }
+        val autoSaveTurnsTextFieldButton = "Enter".toTextButton()
+        autoSaveTurnsTextFieldButton.isEnabled = false
+        autoSaveTurnsTextFieldButton.onClick {
+            autosaveFieldEnterClicked(autoSaveTurnsTextField.text)
+            setAutosaveButtonState(autoSaveTurnsTextFieldButton, autoSaveTurnsTextField.text)
         }
-        autosaveFieldTable.add(autoSaveTrunsTextFieldButton).row()
-        add(autosaveFieldTable).row()
+        autoSaveTurnsTextField.onChange { setAutosaveButtonState(autoSaveTurnsTextFieldButton, autoSaveTurnsTextField.text) }
+
+        val cell = addWrapped(newRow = false) {
+            add(autoSaveTurnsTextField)
+            add(autoSaveTurnsTextFieldButton).padLeft(5f)
+        }
+        cell.minWidth(rightWidgetMinWidth).right().row()
+    }
+
+    private fun setAutosaveButtonState(button: TextButton, text: String) {
+        button.isEnabled = text.toIntOrNull() != settings.maxAutosavesStored
+    }
+
+    private fun autosaveFieldEnterClicked(text: String) {
+        if (text.isEmpty()) return
+        val numberAutosaveTurns = text.toInt()
+
+        if (numberAutosaveTurns <= 0) {
+            val popup = Popup(stage)
+            popup.addGoodSizedLabel("Autosave turns must be larger than 0!", color = Color.RED)
+            popup.addCloseButton()
+            popup.open(true)
+            return
+        }
+
+        settings.maxAutosavesStored = numberAutosaveTurns
+        if (numberAutosaveTurns < 200) return
+
+        val popup = Popup(stage)
+        popup.addGoodSizedLabel(
+            "Autosave turns over 200 may take a lot of space on your device.",
+            color = Color.ORANGE)
+        popup.addCloseButton()
+        popup.open(true)
     }
 
     private fun addFontFamilySelect(onFontChange: () -> Unit) {
@@ -212,7 +228,9 @@ internal class AdvancedTab(
         generateTranslationsButton.keyShortcuts.add(Input.Keys.F12)
         generateTranslationsButton.addTooltip("F12", 18f)
         add(generateTranslationsButton).colspan(2).row()
+    }
 
+    private fun addUpdateModCategories() {
         val updateModCategoriesButton = "Update Mod categories".toTextButton()
         updateModCategoriesButton.onActivation {
             updateModCategoriesButton.setText(Constants.working.tr())
@@ -225,6 +243,9 @@ internal class AdvancedTab(
         }
         add(updateModCategoriesButton).colspan(2).row()
 
+    }
+
+    private fun addScreenhotGeneration() {
         if (!UncivGame.Current.files.getSave("ScreenshotGenerationGame").exists()) return
 
         val generateScreenshotsButton = "Generate screenshots".toTextButton()

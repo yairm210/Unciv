@@ -17,7 +17,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen.Companion.skin
 internal abstract class OptionsPopupTab(
     internal val optionsPopup: OptionsPopup,
 ) : Table(skin), OptionsPopupHelpers {
-    override val selectBoxMinWidth by optionsPopup::selectBoxMinWidth
+    override val rightWidgetMinWidth by optionsPopup::rightWidgetMinWidth
     override val activePage get() = optionsPopup.tabs.activePage
 
     val settings by optionsPopup::settings

@@ -34,16 +34,21 @@ import kotlinx.coroutines.flow.Flow
 import kotlin.reflect.KMutableProperty0
 
 /**
- *  Helper library for OptionsPopup and its tabs.
+ *  Helper library for [OptionsPopup] and its tabs.
  *
  *  Interface used as namespace and to share variables, included in [OptionsPopupTab].
+ *
+ *  Content Helpers: [addCheckbox], [addHeader], [addSelectBox], [addSlider], [addWrapped]
+ *  Variants: [addEnumAsStringSelectBox], [addTranslatedSelectBox], [addAsyncSelectBox]
+ *  Reload helpers: [reloadWorldAndOptions], [reopenAfterDisplayLayoutChange]
  *
  *  Usage without `OptionsPopupTab`:
  *  ```
  *  internal class NewOptionsPage(
  *     optionsPopup: OptionsPopup
  * ) : Table(BaseScreen.skin), OptionsPopupHelpers {
- *     override val selectBoxMinWidth by optionsPopup::selectBoxMinWidth
+ *     override val rightWidgetMinWidth by optionsPopup::rightWidgetMinWidth
+ *     override val activePage get() = optionsPopup.tabs.activePage
  *     ...
  *  ```
  *
@@ -55,7 +60,7 @@ internal interface OptionsPopupHelpers {
     /** Suggested minimum width for a right-hand cell in a typical 2-column label/widget row.
      *  Calculated by [OptionsPopup] constructor from stage size.
      */
-    val selectBoxMinWidth: Float
+    val rightWidgetMinWidth: Float
 
     /** Access the active page number of the TabbedPager in [OptionsPopup] */
     val activePage: Int
@@ -127,7 +132,7 @@ internal interface OptionsPopupHelpers {
         val select = SelectBox<T>(BaseScreen.skin)
         select.setItems(items.toGdxArray())
         select.selected = property.get()
-        add(select).pad(10f).minWidth(selectBoxMinWidth).row()
+        add(select).pad(10f).minWidth(rightWidgetMinWidth).right().row()
 
         select.onChange {
             val oldValue = property.get()
@@ -149,7 +154,7 @@ internal interface OptionsPopupHelpers {
     fun Table.addTranslatedSelectBox(text: String, property: KMutableProperty0<String>, items: Iterable<String>, action: ((String) -> Unit)? = null) {
         add(text.toLabel()).left().fillX()
         val select = TranslatedSelectBox(items as? Collection ?: items.toList(), property.get())
-        add(select).pad(10f).minWidth(selectBoxMinWidth).row()
+        add(select).pad(10f).minWidth(rightWidgetMinWidth).right().row()
 
         select.onChange {
             val newValue = select.selected.value
@@ -196,7 +201,7 @@ internal interface OptionsPopupHelpers {
         add(label).left().fillX()
         val select = SelectBox<T>(BaseScreen.skin)
         select.isDisabled = true
-        add(select).pad(10f).minWidth(selectBoxMinWidth).row()
+        add(select).pad(10f).minWidth(rightWidgetMinWidth).right().row()
 
         Concurrency.run("Async SelectBox", CoroutineScope(dispatcher)) {
             val items = Array<T>(false, 20)
@@ -244,7 +249,7 @@ internal interface OptionsPopupHelpers {
         ) {
             action(it, slider.isDragging)
         }
-        val cell = add(slider).minWidth(selectBoxMinWidth).pad(5f).padTop(10f)
+        val cell = add(slider).minWidth(rightWidgetMinWidth).right().pad(5f).padTop(10f)
         cell.row()
         return cell
     }
@@ -269,6 +274,21 @@ internal interface OptionsPopupHelpers {
                 action(value)
             property.set(value)
         }
+    }
+
+    /** Wrap something in a [Table] and add it to the receiver as single-cell row.
+     *
+     *  @receiver Destination [Table]
+     *  @param newRow If set, the new Cell will get `.fillX().colspan(2).row()`
+     *  @param block Has the wrapper table as receiver, so you simply build with add(*) or any of the [OptionsPopupHelpers] methods.
+     *  @return The new [Cell] containing the wrapped result
+     */
+    fun Table.addWrapped(newRow: Boolean = true, block: Table.() -> Unit): Cell<Table> {
+        val cell = add(Table().apply {
+            block()
+        })
+        if (newRow) cell.fillX().colspan(2).row()
+        return cell
     }
 
     /** Reload the [OptionsPopup] after major changes (resolution, tileset, language, font) */
@@ -308,19 +328,4 @@ internal interface OptionsPopupHelpers {
             }
         }
     }
-
-    /** Wrap something in a [Table] and add it to the receiver as single-cell row.
-     *
-     *  @receiver Destination [Table]
-     *  @param block Has the wrapper table as receiver, so you simply build with add(*) or any of the [OptionsPopupHelpers] methods.
-     *  @return The new Cell containing the wrapped result
-     */
-    fun Table.addWrapped(block: Table.() -> Unit): Cell<Table> {
-        val cell = add(Table().apply {
-            block()
-        })
-        cell.fillX().colspan(2).row()
-        return cell
-    }
-
 }

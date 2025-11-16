@@ -57,7 +57,7 @@ internal class DisplayTab(
         addNotificationScrollSelect()
         addCheckbox("Show minimap", settings::showMinimap, updateWorld = true)
         addCheckbox("Show tutorials", settings.showTutorials, updateWorld = true, newRow = false) { settings.showTutorials = it }
-        addResetTutorials(this, settings)
+        addResetTutorials()
         addCheckbox("Show zoom buttons in world screen", settings::showZoomButtons, true)
         addCheckbox("Never close popups by clicking outside", settings::forbidPopupClickBehindToClose)
         addCheckbox("Use circles to indicate movable tiles", settings::useCirclesToIndicateMovableTiles, updateWorld = true)
@@ -176,11 +176,11 @@ internal class DisplayTab(
         }
     }
 
-    private fun addResetTutorials(table: Table, settings: GameSettings) {
+    private fun addResetTutorials() {
         val resetTutorialsButton = "Reset tutorials".toTextButton()
         resetTutorialsButton.onClick {
             ConfirmPopup(
-                table.stage,
+                stage,
                 "Do you want to reset completed tutorials?",
                 "Reset"
             ) {
@@ -190,7 +190,7 @@ internal class DisplayTab(
                 resetTutorialsButton.clearListeners()
             }.open(true)
         }
-        table.add(resetTutorialsButton).center().row()
+        add(resetTutorialsButton).center().row()
     }
 
     private fun addNotificationScrollSelect() {

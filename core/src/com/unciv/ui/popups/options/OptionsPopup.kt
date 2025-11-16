@@ -34,7 +34,7 @@ class OptionsPopup(
     val settings = screen.game.settings
     val tabs: TabbedPager
     override val activePage get() = tabs.activePage
-    override val selectBoxMinWidth: Float
+    override val rightWidgetMinWidth: Float
     private val tabMinWidth: Float
 
     //endregion
@@ -53,7 +53,7 @@ class OptionsPopup(
         val tabMaxWidth: Float
         val tabMaxHeight: Float
         screen.run {
-            selectBoxMinWidth = if (stage.width < 600f) 200f else 240f
+            rightWidgetMinWidth = if (stage.width < 600f) 200f else 240f
             tabMaxWidth = if (isPortrait()) stage.width - 10f else 0.8f * stage.width
             tabMinWidth = 0.6f * stage.width
             tabMaxHeight = 0.8f * stage.height
