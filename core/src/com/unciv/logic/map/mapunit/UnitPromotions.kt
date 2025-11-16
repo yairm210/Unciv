@@ -167,6 +167,13 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
         return toReturn
     }
 
+    @Readonly
+    fun clone(unit: MapUnit): UnitPromotions {
+        @LocalState val toReturn = clone()
+        toReturn.unit = unit
+        return toReturn
+    }
+
     // For json serialization, to not serialize an empty object
     override fun equals(other: Any?): Boolean {
         if (other !is UnitPromotions) return false
