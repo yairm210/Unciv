@@ -60,7 +60,7 @@ class StatTreeNode {
     fun clone() : StatTreeNode {
         val new = StatTreeNode()
         new.innerStats = this.innerStats?.clone()
-        new.children.putAll(this.children)
+        new.children.putAll(this.children.mapValues { it.value.clone() })
         return new
     }
 

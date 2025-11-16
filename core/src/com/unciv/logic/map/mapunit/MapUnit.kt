@@ -110,6 +110,13 @@ class MapUnit : IsPartOfGameInfoSerialization {
         fun setTransients(unit: MapUnit) {
             uniques = unit.civ.gameInfo.ruleset.unitPromotions[name]?.uniqueObjects ?: emptyList()
         }
+
+        fun clone(): UnitStatus {
+            val toReturn = UnitStatus()
+            toReturn.name = name
+            toReturn.turnsLeft = turnsLeft
+            return toReturn
+        }
     }
     
     var statusMap = HashMap<String, UnitStatus>()
@@ -217,13 +224,13 @@ class MapUnit : IsPartOfGameInfoSerialization {
         toReturn.automatedRoadConnectionPath = automatedRoadConnectionPath
         toReturn.attacksThisTurn = attacksThisTurn
         toReturn.turnsFortified = turnsFortified
-        toReturn.promotions = promotions.clone()
+        toReturn.promotions = promotions.clone().also { it.setTransients(toReturn) }
         toReturn.isTransported = isTransported
         toReturn.abilityToTimesUsed = HashMap(abilityToTimesUsed)
         toReturn.religion = religion
         toReturn.religiousStrengthLost = religiousStrengthLost
         toReturn.movementMemories = movementMemories.copy()
-        toReturn.statusMap = HashMap(statusMap)
+        toReturn.statusMap = HashMap(statusMap.mapValues { it.value.clone() })
         toReturn.mostRecentMoveType = mostRecentMoveType
         toReturn.attacksSinceTurnStart = ArrayList(attacksSinceTurnStart.map { Vector2(it) })
         return toReturn
@@ -727,7 +734,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             if (promotion !in promotions.promotions)
                 promotions.addPromotion(promotion, isFree = true)
 
-        newUnit.promotions = promotions.clone()
+        newUnit.promotions = promotions.clone().also { it.setTransients(newUnit) }
         newUnit.automated = automated
         newUnit.action = action // Needed too for Unit Overview action column
 

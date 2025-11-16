@@ -164,7 +164,6 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
         toReturn.XP = XP
         toReturn.promotions = HashSet(promotions)
         toReturn.numberOfPromotions = numberOfPromotions
-        toReturn.unit = unit
         return toReturn
     }
 
