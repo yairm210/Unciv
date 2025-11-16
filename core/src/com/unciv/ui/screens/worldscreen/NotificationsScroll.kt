@@ -55,7 +55,7 @@ class NotificationsScroll(
         /** Logical font size used in notification and category labels */
         const val fontSize = 30
         /** This is the spacing between categories and also the spacing between the next turn button and the first header */
-        const val categoryTopPad = 15f
+        const val categoryTopPad = 20f
         /** Spacing between rightmost Label edge and right Screen limit */
         const val rightPadToScreenEdge = 10f
         /** Extra right padding when there's a selection */
@@ -80,6 +80,7 @@ class NotificationsScroll(
         const val restoreButtonNumbersCenter = restoreButtonSize - restoreButtonNumbersSize / 2
         /** Background tint for [oneTimeNotification] */
         private val oneTimeNotificationColor = Color.valueOf("fceea8")
+        const val minimumNotificationsToCollapseCategory = 2
     }
 
     //region private fields
@@ -262,7 +263,7 @@ class NotificationsScroll(
             .toSortedMap()  // This sorts by Category ordinal, so far intentional - the order of the grouped lists are unaffected
         for ((category, categoryNotifications) in orderedNotifications) {
             val header: CategoryHeader?
-            if (category == NotificationCategory.General) {
+            if (categoryNotifications.size < minimumNotificationsToCollapseCategory) {
                 notificationsTable.add().padTop(categoryTopPad)
                     .row()  // Make sure category w/o header gets same spacing
                 header = null
