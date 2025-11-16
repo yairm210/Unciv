@@ -11,8 +11,6 @@ import com.unciv.ui.screens.basescreen.BaseScreen.Companion.skin
  *  Shortcuts: [settings], [game], [activePage], [selectPage], [replacePage]
  *
  *  Sets table padding to 10 and cell default padding to 5.
- *
- *  TODO: Implementations should NOT keep a reference to [optionsPopup] but move the usecase to a helper here.
  */
 internal abstract class OptionsPopupTab(
     internal val optionsPopup: OptionsPopup,
