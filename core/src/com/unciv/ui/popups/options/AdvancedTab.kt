@@ -28,9 +28,7 @@ import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
-import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
-import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.Popup
@@ -182,32 +180,16 @@ internal class AdvancedTab(
     }
 
     private fun addFontSizeMultiplier(onFontChange: () -> Unit) {
-        add("Font size multiplier".toLabel()).left().fillX().padTop(5f)
-
-        val fontSizeSlider = UncivSlider(
-            0.7f, 1.5f, 0.05f,
-            initial = settings.fontSizeMultiplier
-        ) {
-            settings.fontSizeMultiplier = it
+        addSlider("Font size multiplier", settings::fontSizeMultiplier, 0.7f, 1.5f, 0.05f) {
+            onFontChange()
         }
-        fontSizeSlider.onChange {
-            if (!fontSizeSlider.isDragging)
-                onFontChange()
-        }
-        add(fontSizeSlider).pad(5f).padTop(10f).row()
     }
 
     private fun addMaxZoomSlider() {
-        add("Max zoom out".tr()).left().fillX().padTop(5f)
-        val maxZoomSlider = UncivSlider(
-            2f, 6f, 1f,
-            initial = settings.maxWorldZoomOut
-        ) {
-            settings.maxWorldZoomOut = it
+        addSlider("Max zoom out", settings::maxWorldZoomOut, 2f, 6f, 1f) {
             if (GUI.isWorldLoaded())
                 GUI.getMap().reloadMaxZoom()
         }
-        add(maxZoomSlider).pad(5f).padTop(10f).row()
     }
 
     private fun addTranslationGeneration() {

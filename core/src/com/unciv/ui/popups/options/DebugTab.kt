@@ -1,7 +1,6 @@
 package com.unciv.ui.popups.options
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle
 import com.unciv.GUI
 import com.unciv.logic.GameInfo
@@ -10,12 +9,11 @@ import com.unciv.logic.files.MapSaver
 import com.unciv.logic.files.UncivFiles
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.tile.ResourceType
-import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.onClick
-import com.unciv.ui.components.widgets.UncivSlider
+import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.SceneDebugMode
@@ -63,14 +61,10 @@ internal class DebugTab(
             (stage as UncivStage).setSceneDebugMode()
         }
 
-        add(Table().apply {
-            add("Unique misspelling threshold".toLabel()).left().fillX()
-            add(
-                UncivSlider(0f, 0.5f, 0.05f, initial = RulesetCache.uniqueMisspellingThreshold.toFloat()) {
-                    RulesetCache.uniqueMisspellingThreshold = it.toDouble()
-                }
-            ).minWidth(120f).pad(5f)
-        }).colspan(2).row()
+        //TODO This was wrapped then colspan(2) before - look
+        addSlider("Unique misspelling threshold", RulesetCache.uniqueMisspellingThreshold, 0.0, 0.5, 0.05) { value, _ ->
+            RulesetCache.uniqueMisspellingThreshold = value.toDouble()
+        }
 
         if (curGameInfo != null) {
             val unlockTechsButton = "Unlock all techs".toTextButton()
