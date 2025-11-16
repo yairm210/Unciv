@@ -840,9 +840,10 @@
 		"culture": 3,
 		"cityStrength": 12,
 		"isWonder": true,
+        "greatPersonPoints": {"Great Scientist": 1},
 		"uniques": ["[+25]% City Strength from defensive buildings"],
 		"requiredTech": "Metallurgy",
-		"quote": "'The Kremlin is constantly changing the rules of the game to suit its purposes. We are not playing chess, we're playing roulette.' - Garry Kasparov"
+		"quote": "'The Law is a fortress on a hill that armies cannot take or floods wash away.' - The Prophet Muhammad"
 	},
 
 	// Industrial Era
