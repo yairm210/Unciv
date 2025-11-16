@@ -286,6 +286,7 @@ class CityStateFunctions(val civInfo: Civilization) {
 
     fun updateAllyCivForCityState() {
         if (!civInfo.isCityState) return
+        val oldAlly = civInfo.allyCiv
         var newAlly: Civilization? = null
 
         val maxInfluence = civInfo.diplomacy
@@ -294,10 +295,8 @@ class CityStateFunctions(val civInfo: Civilization) {
         if (maxInfluence != null && maxInfluence.value.getInfluence() >= 60) {
             newAlly = maxInfluence.value.otherCiv
         }
-
-        if (civInfo == newAlly) return
-
-        val oldAlly = civInfo.allyCiv
+        
+        if (oldAlly == newAlly) return
         civInfo.allyCiv = newAlly
 
         if (newAlly != null) {
