@@ -54,10 +54,9 @@ import kotlin.io.path.nameWithoutExtension
 import kotlin.io.path.pathString
 
 internal class AdvancedTab(
-    optionsPopup: OptionsPopup,
-    onFontChange: () -> Unit
+    optionsPopup: OptionsPopup
 ): OptionsPopupTab(optionsPopup) {
-    init {
+    override fun lateInitialize() {
         addAutosaveField()
         addSelectBox("Turns between autosaves", settings::turnsBetweenAutosaves, listOf(1,2,5,10,20,50,100,1000))
 
@@ -69,8 +68,8 @@ internal class AdvancedTab(
         if (Display.hasSystemUiVisibility())
             addHideSystemUiCheckbox()
 
-        addFontFamilySelect(onFontChange)
-        addFontSizeMultiplier(onFontChange)
+        addFontFamilySelect()
+        addFontSizeMultiplier()
         addSeparator()
 
         addMaxZoomSlider()
@@ -85,6 +84,8 @@ internal class AdvancedTab(
         addTranslationGeneration()
         addUpdateModCategories()
         addScreenhotGeneration()
+
+        super.lateInitialize()
     }
 
     private fun addCutoutCheckbox() {
@@ -151,7 +152,7 @@ internal class AdvancedTab(
         popup.open(true)
     }
 
-    private fun addFontFamilySelect(onFontChange: () -> Unit) {
+    private fun addFontFamilySelect() {
         /** Build provider for [addAsyncSelectBox]: per-mod scan */
         @Suppress("NewApi")
         fun loadModFonts(mod: Path) = flow {
@@ -192,12 +193,12 @@ internal class AdvancedTab(
                 emit(font)
         }
 
-        addAsyncSelectBox("Font family", settings::fontFamilyData, ::loadFonts) { onFontChange() }
+        addAsyncSelectBox("Font family", settings::fontFamilyData, ::loadFonts) { reloadWorldAndOptions() }
     }
 
-    private fun addFontSizeMultiplier(onFontChange: () -> Unit) {
+    private fun addFontSizeMultiplier() {
         addSlider("Font size multiplier", settings::fontSizeMultiplier, 0.7f, 1.5f, 0.05f) {
-            onFontChange()
+            reloadWorldAndOptions()
         }
     }
 

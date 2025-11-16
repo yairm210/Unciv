@@ -24,7 +24,7 @@ import com.unciv.utils.DebugUtils
 internal class DebugTab(
     optionsPopup: OptionsPopup
 ): OptionsPopupTab(optionsPopup) {
-    init {
+    override fun lateInitialize() {
         if (GUI.isWorldLoaded()) {
             val simulateButton = "Simulate until turn:".toTextButton()
             val simulateTextField = UncivTextField.Numeric("Turn", DebugUtils.SIMULATE_UNTIL_TURN, integerOnly = true)
@@ -85,6 +85,8 @@ internal class DebugTab(
             throw UncivShowableException("Intentional crash")
         }).colspan(2).row()
         addSeparator()
+
+        super.lateInitialize()
     }
 
     private fun GameInfo.unlockAllTechs() {

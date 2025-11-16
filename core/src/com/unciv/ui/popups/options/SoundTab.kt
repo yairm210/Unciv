@@ -14,7 +14,7 @@ import com.unciv.utils.launchOnGLThread
 internal class SoundTab(
     optionsPopup: OptionsPopup
 ) : OptionsPopupTab(optionsPopup), MusicControls {
-    init {
+    override fun lateInitialize() {
         val music = game.musicController
 
         addSoundEffectsVolumeSlider(settings)
@@ -28,6 +28,8 @@ internal class SoundTab(
 
         if (!music.isDefaultFileAvailable())
             addDownloadMusic()
+
+        super.lateInitialize()
     }
 
     private fun addDownloadMusic() {

@@ -50,6 +50,7 @@ class OptionsPopup(
             (screen as? WorldScreen)?.shouldUpdate = true
 
         innerTable.pad(0f)
+
         val tabMaxWidth: Float
         val tabMaxHeight: Float
         screen.run {
@@ -58,8 +59,10 @@ class OptionsPopup(
             tabMinWidth = 0.6f * stage.width
             tabMaxHeight = 0.8f * stage.height
         }
+        // Since all pages now initialize their content late, on activation, we can't measure their preferred size anymore -> use tabMaxHeight for tabMinHeight
+        // That's not really bad, the tabs are long enough so some will always need scrolling even on the largest UI size setting.
         tabs = TabbedPager(
-            tabMinWidth, tabMaxWidth, 0f, tabMaxHeight,
+            tabMinWidth, tabMaxWidth, tabMaxHeight, tabMaxHeight,
             headerFontSize = 21, backgroundColor = Color.CLEAR, capacity = 8
         )
         add(tabs).pad(0f).grow().row()
@@ -71,7 +74,7 @@ class OptionsPopup(
         )
         tabs.addPage(
             "Display",
-            DisplayTab(this, ::reloadWorldAndOptions),
+            DisplayTab(this),
             ImageGetter.getImage("UnitPromotionIcons/Scouting"), 24f
         )
         tabs.addPage(
@@ -86,7 +89,7 @@ class OptionsPopup(
         )
         tabs.addPage(
             "Language",
-            LanguageTab(this, ::reloadWorldAndOptions),
+            LanguageTab(this),
             ImageGetter.getImage("FlagIcons/${settings.language}"), 24f
         )
         tabs.addPage(
@@ -110,7 +113,7 @@ class OptionsPopup(
 
         tabs.addPage(
             "Advanced",
-            AdvancedTab(this, ::reloadWorldAndOptions),
+            AdvancedTab(this),
             ImageGetter.getImage("OtherIcons/Settings"), 24f
         )
 

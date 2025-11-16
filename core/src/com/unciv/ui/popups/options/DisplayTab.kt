@@ -3,9 +3,7 @@ package com.unciv.ui.popups.options
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.GUI
-import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSettings.ScreenSize
 import com.unciv.models.skins.SkinCache
 import com.unciv.models.tilesets.TileSetCache
@@ -21,20 +19,16 @@ import com.unciv.utils.Display
 import com.unciv.utils.ScreenMode
 import com.unciv.utils.ScreenOrientation
 
-/**
- *  @param onChange Callback for _major_ changes, OptionsPopup will rebuild itself and the WorldScreen
- */
 internal class DisplayTab(
-    optionsPopup: OptionsPopup,
-    onChange: () -> Unit
+    optionsPopup: OptionsPopup
 ): OptionsPopupTab(optionsPopup) {
-    init {
+    override fun lateInitialize() {
         defaults().pad(2.5f)
 
         addHeader("Screen")
 
-        addScreenSizeSelectBox(onChange)
-        addScreenOrientationSelectBox(onChange)
+        addScreenSizeSelectBox()
+        addScreenOrientationSelectBox()
         addScreenModeSelectBox()
 
 
@@ -48,9 +42,9 @@ internal class DisplayTab(
 
         addHeader("Graphics")
 
-        addTileSetSelectBox(onChange)
-        addUnitSetSelectBox(onChange)
-        addSkinSelectBox(onChange)
+        addTileSetSelectBox()
+        addUnitSetSelectBox()
+        addSkinSelectBox()
 
         addHeader("UI")
 
@@ -93,6 +87,8 @@ internal class DisplayTab(
         addCheckbox("Experimental Demographics scoreboard", settings::useDemographics)
         addCheckbox("Unit movement button", settings::unitMovementButtonAnimation)
         addCheckbox("Unit actions menu", settings::unitActionsTableAnimation)
+
+        super.lateInitialize()
     }
 
     private fun addScrollSpeedSlider() {
@@ -131,21 +127,21 @@ internal class DisplayTab(
         }
     }
 
-    private fun addScreenSizeSelectBox(onResolutionChange: () -> Unit) {
+    private fun addScreenSizeSelectBox() {
         addSelectBox("UI Scale", settings::screenSize, ScreenSize.entries) { _, _ ->
-            onResolutionChange()
+            reloadWorldAndOptions()
         }
     }
 
-    private fun addScreenOrientationSelectBox(onOrientationChange: () -> Unit) {
+    private fun addScreenOrientationSelectBox() {
         if (!Display.hasOrientation()) return
         addSelectBox("Screen orientation", settings::displayOrientation, ScreenOrientation.entries) { orientation, _ ->
             Display.setOrientation(orientation)
-            onOrientationChange()
+            reloadWorldAndOptions()
         }
     }
 
-    private fun addTileSetSelectBox(onTilesetChange: () -> Unit) {
+    private fun addTileSetSelectBox() {
         val unitSets = ImageGetter.getAvailableUnitsets()
         addSelectBox("Tileset", settings::tileSet, ImageGetter.getAvailableTilesets().asIterable()) { newValue, oldValue ->
             // Switch unitSet together with tileSet as long as one with the same name exists and both are selected
@@ -154,25 +150,25 @@ internal class DisplayTab(
             }
             // ImageGetter ruleset should be correct no matter what screen we're on
             TileSetCache.assembleTileSetConfigs(ImageGetter.ruleset.mods)
-            onTilesetChange()
+            reloadWorldAndOptions()
         }
     }
 
-    private fun addUnitSetSelectBox(onUnitsetChange: () -> Unit) {
+    private fun addUnitSetSelectBox() {
         val nullValue = "None".tr()
         addSelectBox("Unitset", settings::unitSet, ImageGetter.getAvailableUnitsets().asIterable()) { value, _ ->
             if (value == nullValue) settings.unitSet = null
             // ImageGetter ruleset should be correct no matter what screen we're on
             TileSetCache.assembleTileSetConfigs(ImageGetter.ruleset.mods)
-            onUnitsetChange()
+            reloadWorldAndOptions()
         }
     }
 
-    private fun addSkinSelectBox(onSkinChange: () -> Unit) {
+    private fun addSkinSelectBox() {
         addSelectBox("UI Skin", settings::skin, ImageGetter.getAvailableSkins().asIterable()) { _, _ ->
             // ImageGetter ruleset should be correct no matter what screen we're on
             SkinCache.assembleSkinConfigs(ImageGetter.ruleset.mods)
-            onSkinChange()
+            reloadWorldAndOptions()
         }
     }
 

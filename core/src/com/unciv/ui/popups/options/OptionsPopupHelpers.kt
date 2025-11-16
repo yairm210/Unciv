@@ -52,9 +52,6 @@ import kotlin.reflect.KMutableProperty0
  *     override val activePage get() = optionsPopup.tabs.activePage
  *     ...
  *  ```
- *
- *  TODO
- *    * Performance - what is taking so long? Use tabs doing their heavy lifting only on activation, like ModCheckTab?
  */
 internal interface OptionsPopupHelpers {
     /** Suggested minimum width for a right-hand cell in a typical 2-column label/widget row.

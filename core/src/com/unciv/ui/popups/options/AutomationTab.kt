@@ -8,12 +8,12 @@ import com.unciv.logic.civilization.PlayerType
 internal class AutomationTab(
     optionsPopup: OptionsPopup
 ): OptionsPopupTab(optionsPopup) {
-    val autoPlayMaxTurnsSliderTable: Table
-    val autoPlayMaxTurnsSliderCell: Cell<Table>
+    lateinit var autoPlayMaxTurnsSliderTable: Table
+    lateinit var autoPlayMaxTurnsSliderCell: Cell<Table>
 //     val fullAutoPlayTable: Table
 //     val fullAutoPlayCell: Cell<Table>
 
-    init {
+    override fun lateInitialize() {
         top() // So the dynamically displayed parts won't make the page jump up and down
         add().row() // Empty Cell for the "ensure layout won't jump" line below
 
@@ -61,6 +61,8 @@ internal class AutomationTab(
 //         fullAutoPlayTable = fullAutoPlayCell.actor
 //         if (!settings.autoPlay.fullAutoPlayAI)
 //            fullAutoPlayCell.setActor(null)
+
+        super.lateInitialize()
     }
 
 //     private fun Table.addAutoPlaySections() {

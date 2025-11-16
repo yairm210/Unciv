@@ -33,7 +33,7 @@ internal class MultiplayerTab(
     private val mpSettings by settings::multiplayer
     private val mpServer by game.onlineMultiplayer::multiplayerServer
 
-    init {
+    override fun lateInitialize() {
         addCheckbox(
             "Enable multiplayer status button in singleplayer games",
             mpSettings::statusButtonInSinglePlayer, updateWorld = true
@@ -75,6 +75,8 @@ internal class MultiplayerTab(
         addSeparator()
 
         addMultiplayerServerOptions(listOfNotNull(curRefreshSelect, allRefreshSelect, turnCheckerSelect))
+
+        super.lateInitialize()
     }
 
     private fun addMultiplayerServerOptions(toUpdate: Iterable<RefreshSelectOptions>) {
