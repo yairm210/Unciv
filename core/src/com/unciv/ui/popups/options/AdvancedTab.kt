@@ -90,7 +90,7 @@ internal class AdvancedTab(
     private fun addCutoutCheckbox() {
         addCheckbox("Enable using display cutout areas", settings::androidCutout) {
             Display.setCutout(it)
-            reopenAfterDisplayLayoutChange()
+            reopenOptions()
             GUI.setUpdateWorldOnNextRender()
         }
     }
@@ -98,7 +98,7 @@ internal class AdvancedTab(
     private fun addHideSystemUiCheckbox() {
         addCheckbox("Hide system status and navigation bars", settings::androidHideSystemUi) {
             Display.setSystemUiVisibility(hide = it)
-            reopenAfterDisplayLayoutChange()
+            reopenOptions()
         }
     }
 

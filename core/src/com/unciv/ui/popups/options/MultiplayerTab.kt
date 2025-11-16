@@ -181,7 +181,9 @@ internal class MultiplayerTab(
         // at the moment the notification service only exists on Android
         if (Gdx.app.type != Application.ApplicationType.Android) return null
 
-        addCheckbox("Enable out-of-game turn notifications", mpSettings::turnCheckerEnabled)
+        addCheckbox("Enable out-of-game turn notifications", mpSettings::turnCheckerEnabled) {
+            reopenOptions(force = true)
+        }
 
         if (!mpSettings.turnCheckerEnabled) return null
 

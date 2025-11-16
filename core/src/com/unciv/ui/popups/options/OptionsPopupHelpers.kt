@@ -17,6 +17,7 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.widgets.TranslatedSelectBox
 import com.unciv.ui.components.widgets.UncivSlider
+import com.unciv.ui.popups.activePopup
 import com.unciv.ui.popups.hasOpenPopups
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
@@ -40,7 +41,7 @@ import kotlin.reflect.KMutableProperty0
  *
  *  Content Helpers: [addCheckbox], [addHeader], [addSelectBox], [addSlider], [addWrapped]
  *  Variants: [addEnumAsStringSelectBox], [addTranslatedSelectBox], [addAsyncSelectBox]
- *  Reload helpers: [reloadWorldAndOptions], [reopenAfterDisplayLayoutChange]
+ *  Reload helpers: [reloadWorldAndOptions], [reopenOptions]
  *
  *  Usage without `OptionsPopupTab`:
  *  ```
@@ -312,16 +313,18 @@ internal interface OptionsPopupHelpers {
         }
     }
 
-    /** Call if an option change might trigger a Screen.resize
+    /** Reload the [OptionsPopup] after changes that require a fresh layout.
      *
-     *  Does nothing if any Popup (which can only be this one) is still open after a short delay and context yield.
-     *  Reason: A resize might relaunch the parent screen ([MainMenuScreen] is [RecreateOnResize]) and thus close this Popup.
+     *  If [force] is `true`, it will always close and reopen the OptionsPopup.
+     *  If [force]`false`, it does nothing if any Popup (which can only be this one) is still open after a short delay and context yield.
+     *  Reason: A resize _might_ relaunch the parent screen ([MainMenuScreen] is [RecreateOnResize]) and thus close this Popup - or not.
      */
-    fun reopenAfterDisplayLayoutChange() {
+    fun reopenOptions(force: Boolean = false) {
         Concurrency.run("Reload from options") {
-            delay(100)
+            delay(if (force) 0 else 100)
             withGLContext {
                 val screen = UncivGame.Current.screen ?: return@withGLContext
+                if (force && screen.activePopup is OptionsPopup) screen.activePopup!!.close()
                 if (screen.hasOpenPopups()) return@withGLContext // e.g. Orientation auto to fixed while auto is already the new orientation
                 screen.openOptionsPopup(activePage)
             }
