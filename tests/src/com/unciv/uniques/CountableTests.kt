@@ -375,12 +375,12 @@ class CountableTests {
             civ.tech.addTechnology(techName, false)
         }
         val tests = listOf(
-            "[All] Researched Technologies" to 5,
-            "[Ancient era] Researched Technologies" to 4,
-            "[Classical era] Researched Technologies" to 1, // Optics
-            "[Modern era] Researched Technologies" to 0,
-            "[Pottery] Researched Technologies" to 1,
-            "[Archery] Researched Technologies" to 0,
+            "Researched [All] Technologies" to 5,
+            "Researched [Ancient era] Technologies" to 4,
+            "Researched [Classical era] Technologies" to 1, // Optics
+            "Researched [Modern era] Technologies" to 0,
+            "Researched [Pottery] Technologies" to 1,
+            "Researched [Archery] Technologies" to 0,
         )
         for ((test, expected) in tests) {
             val actual = Countables.getCountableAmount(test, GameContext(civ))

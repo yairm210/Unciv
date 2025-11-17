@@ -181,7 +181,7 @@ enum class Countables(
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
     },
 
-    FilteredTechnologies("[techFilter] Researched Technologies") {
+    FilteredTechnologies("Researched [techFilter] Technologies") {
         override val documentationStrings = listOf(
             "Counts researched matching technologies for the relevant Civilization",
             "Repeatable technologies, like Future Tech, are only counted once"
