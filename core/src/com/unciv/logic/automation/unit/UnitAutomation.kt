@@ -639,7 +639,7 @@ object UnitAutomation {
             CityCombatant(city),
             it
         ).toFloat().coerceAtLeast(1f) }
-        val target = hitsToKill.filter { it.value <= 1 }.maxByOrNull { it.key.getAttackingStrength() }?.key
+        val target = hitsToKill.filter { it.value <= 1 }.maxByOrNull { it.key.getAttackingStrength(CityCombatant(city)) }?.key
         if (target != null) return target
         return hitsToKill.minByOrNull { it.value }?.key
     }
