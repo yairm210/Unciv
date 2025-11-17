@@ -225,6 +225,23 @@ class CountableTests {
 
         assertEquals(6f, capitalCulture, 0.005f)
         assertEquals(10.5f, civCulture, 0.005f)
+
+        // FilteredBuildingsByCivs
+        val civ2 = game.addCiv()
+        val civ2city = game.addCity(civ2, game.tileMap[-2, -2])
+        game.addCity(civ2, game.tileMap[2, 2])
+        civ2city.cityConstructions.addBuilding(building)
+        val tests = listOf(
+            "[Ancestor Tree] Buildings" to 2,
+            "[Ancestor Tree] Buildings by [All] Civilizations" to 3,
+            "[Ancestor Tree] Buildings by [${civ.civName}] Civilizations" to 2,
+            "[Ancestor Tree] Buildings by [${civ2.civName}] Civilizations" to 1,
+            "[Ancestor Tree] Buildings by [City-State] Civilizations" to 0
+        )
+        for ((test, expected) in tests) {
+            val actual = Countables.getCountableAmount(test, GameContext(civ))
+            assertEquals("Testing `$test` countable:", expected, actual)
+        }
     }
 
     @Test

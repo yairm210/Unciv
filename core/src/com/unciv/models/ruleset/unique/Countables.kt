@@ -152,6 +152,26 @@ enum class Countables(
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
     },
 
+    FilteredBuildingsByCivs("[buildingFilter] Buildings by [civFilter] Civilizations") {
+        override fun eval(parameterText: String, gameContext: GameContext): Int? {
+            val (buildingFilter, civFilter) = parameterText.getPlaceholderParameters()
+            val civilizations = gameContext.gameInfo?.civilizations ?: return null
+            return civilizations
+                .filter { it.isAlive() && it.matchesFilter(civFilter, gameContext) }
+                .sumOf { civ ->
+                    civ.cities.sumOf { city ->
+                        city.cityConstructions.getBuiltBuildings().count { it.matchesFilter(buildingFilter) }
+                    }
+                }
+        }
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
+            val params = parameterText.getPlaceholderParameters()
+            return UniqueParameterType.BuildingFilter.getErrorSeverity(params[0], ruleset) ?:
+                UniqueParameterType.CivFilter.getErrorSeverity(params[1], ruleset)
+        }
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
+    },
+
     FilteredPolicies("Adopted [policyFilter] Policies") {
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val filter = parameterText.getPlaceholderParameters()[0]
