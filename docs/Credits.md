@@ -718,6 +718,7 @@ HexaRealm tileset images by legacymtgsalvationuser69544 [here](https://github.co
 - [Arrow](https://thenounproject.com/icon/arrow-2032227/) By uzeir syarief for moving between idle units, expanders, etc.
 - [Exchange](https://thenounproject.com/icon/exchange-17858) By Mike Rowe for switching tiles between cities
 - [Revolution](https://thenounproject.com/term/revolution/1315305/) By HeadsOfBirds for cities in resistance - world screen, city screen, city overview
+- [Podium](https://thenounproject.com/icon/podium-7960078/) by Ibrahim Nuruz for the Diplomatic Victory icon
 - [Viking Hat](https://thenounproject.com/icon/pillage-185405) By my name is mud for pillaging improvements
 - [Aim](https://thenounproject.com/icon/aim-2034920) By Kaviashri for ranged strength
 - [Capitol](https://thenounproject.com/icon/capitol-160031) By Loren Klein for City-States
