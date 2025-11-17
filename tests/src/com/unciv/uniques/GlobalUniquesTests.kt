@@ -643,13 +643,23 @@ class GlobalUniquesTests {
             "<on [Prince] difficulty>" to 1, // TestGame is Prince
             "<on [King] difficulty>" to 0,
             "<on [Emperor] difficulty>" to 0,
-            "<on [Settler] difficulty or higher>" to 0,
-            "<on [Chieftain] difficulty or higher>" to 0,
+            "<on [Settler] difficulty or higher>" to 1,
+            "<on [Chieftain] difficulty or higher>" to 1,
             "<on [Prince] difficulty or higher>" to 1,
-            "<on [King] difficulty or higher>" to 1,
-            "<on [Emperor] difficulty or higher>" to 1,
+            "<on [King] difficulty or higher>" to 0,
+            "<on [Emperor] difficulty or higher>" to 0,
+            "<on [Immortal] difficulty or higher>" to 0,
+            "<on [Deity] difficulty or higher>" to 0,
+            "<on [Settler] difficulty or lower>" to 0,
+            "<on [Chieftain] difficulty or lower>" to 0,
+            "<on [Prince] difficulty or lower>" to 1,
+            "<on [King] difficulty or lower>" to 1,
+            "<on [Emperor] difficulty or lower>" to 1,
+            "<on [Immortal] difficulty or lower>" to 1,
+            "<on [Deity] difficulty or lower>" to 1,
             "<on [Not Found] difficulty>" to 0,
             "<on [Not Found] difficulty or higher>" to 0,
+            "<on [Not Found] difficulty or lower>" to 0
         )
 
         Assert.assertEquals(civInfo.gold, 0)
@@ -658,6 +668,7 @@ class GlobalUniquesTests {
             city.cityConstructions.addBuilding(building)
             Assert.assertEquals("Conditional `$test` should be: $expected", civInfo.gold, expected)
             civInfo.addGold(-civInfo.gold) // Reset the gold
+            Assert.assertEquals(civInfo.gold, 0)
         }
     }
 
