@@ -160,7 +160,7 @@ enum class Countables(
                 .filter { it.isAlive() && it.matchesFilter(civFilter, gameContext) }
                 .sumOf { civ ->
                     civ.cities.sumOf { city ->
-                        city.cityConstructions.getBuiltBuildings().count { it.matchesFilter(buildingFilter) }
+                        city.cityConstructions.getBuiltBuildings().count { it.matchesFilter(buildingFilter, gameContext) }
                     }
                 }
         }
