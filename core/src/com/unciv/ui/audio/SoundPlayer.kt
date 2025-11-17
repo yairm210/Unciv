@@ -190,13 +190,14 @@ object SoundPlayer {
         if (sound == UncivSound.Silent || volume < 0.01) return true
         val (resource, isFresh) = get(sound) ?: return false
         if (Gdx.app.type == Application.ApplicationType.Android)
-            return playAndroid(resource, isFresh, volume)
+            playAndroid(resource, isFresh, volume)
         else
-            return playDesktop(resource, volume)
+            playDesktop(resource, volume)
+        return true
     }
 
     // Android needs time for a newly created sound to become ready, but in turn AndroidSound.play seems thread-safe.
-    private fun playAndroid(resource: Sound, isFresh: Boolean, volume: Float): Boolean {
+    private fun playAndroid(resource: Sound, isFresh: Boolean, volume: Float) {
         /** Tested with a 2022 Android "S" and libGdx 1.12.1 - still required */
         // See also: https://github.com/libgdx/libgdx/issues/694
         // Typical logcat (effectively means we tried play before even the codec got loaded):
@@ -210,22 +211,22 @@ object SoundPlayer {
         CCodec                  com.unciv.app                        I  Created component [c2.android.vorbis.decoder]
         CCodecConfig            com.unciv.app                        D  read media type: audio/vorbis
  */
-        if (!isFresh && resource.play(volume) != -1L) return true // If it's already cached we should be able to play immediately
-        return !Concurrency.run("DelayedSound") {
+        if (!isFresh && resource.play(volume) != -1L) return // If it's already cached we should be able to play immediately
+        Concurrency.run("DelayedSound") {
             delay(40L)
             var repeatCount = 0
             while (resource.play(volume) == -1L && ++repeatCount < 12) // quarter second tops
                 delay(20L)
-        }.isCancelled
+        }
     }
 
     // Let's do just one silent retry on Desktop. In turn, OpenALSound.play is not thread-safe.
-    private fun playDesktop(resource: Sound, volume: Float): Boolean {
-        if (resource.play(volume) != -1L) return true
-        return !Concurrency.runOnGLThread("SoundRetry") {
+    private fun playDesktop(resource: Sound, volume: Float) {
+        if (resource.play(volume) != -1L) return
+        Concurrency.runOnGLThread("SoundRetry") {
             delay(20L)
             resource.play(volume)
-        }.isCancelled
+        }
     }
 
     /** Play a sound repeatedly - e.g. to express that an action was applied multiple times or to multiple targets.
