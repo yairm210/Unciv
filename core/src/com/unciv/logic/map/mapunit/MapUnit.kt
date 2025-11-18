@@ -646,9 +646,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
             return buildImprovementUniques.any()
         }
         return buildImprovementUniques.any {
-            // Use a multifilter for checking compatibility
+            // Engage the MultiFilter on the entire filter, prior to checking the individual filters
             MultiFilter.multiFilter(it.params[0], {
-                improvement.matchesFilter(it.params[0], cache.state) || tile.matchesTerrainFilter(it, civ)
+                improvement.matchesFilter(it, cache.state) || tile.matchesTerrainFilter(it, civ)
             })
         }
     }
