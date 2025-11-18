@@ -647,10 +647,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
 
         // Validate that the improvement is available for the unit
-        if (!improvement.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)
-                .none { unique -> !unique.conditionalsApply(cache.state) } ||
-            !improvement.getMatchingUniques(UniqueType.Unavailable, GameContext.IgnoreConditionals)
-                .none { unique -> unique.conditionalsApply(cache.state) }) {
+        if (improvement.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)
+                .any { unique -> !unique.conditionalsApply(cache.state) } ||
+            improvement.getMatchingUniques(UniqueType.Unavailable, GameContext.IgnoreConditionals)
+                .any { unique -> unique.conditionalsApply(cache.state) }) {
             return false
         }
 
