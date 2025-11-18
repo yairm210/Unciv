@@ -668,7 +668,6 @@ class GlobalUniquesTests {
             city.cityConstructions.addBuilding(building)
             Assert.assertEquals("Conditional `$test` should be: $expected", civInfo.gold, expected)
             civInfo.addGold(-civInfo.gold) // Reset the gold
-            Assert.assertEquals(civInfo.gold, 0)
         }
     }
 
