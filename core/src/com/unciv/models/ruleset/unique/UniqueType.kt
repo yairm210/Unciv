@@ -688,6 +688,7 @@ enum class UniqueType(
     ConditionalSpeed("on [speed] game speed", UniqueTarget.Conditional),
     ConditionalDifficulty("on [difficulty] difficulty", UniqueTarget.Conditional),
     ConditionalDifficultyOrHigher("on [difficulty] difficulty or higher", UniqueTarget.Conditional),
+    ConditionalDifficultyOrLower("on [difficulty] difficulty or lower", UniqueTarget.Conditional),
     ConditionalVictoryEnabled("when [victoryType] Victory is enabled", UniqueTarget.Conditional),
     ConditionalVictoryDisabled("when [victoryType] Victory is disabled", UniqueTarget.Conditional),
     ConditionalReligionEnabled("when religion is enabled", UniqueTarget.Conditional),
