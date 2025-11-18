@@ -776,6 +776,7 @@ HexaRealm tileset images by legacymtgsalvationuser69544 [here](https://github.co
 - [Keyboard](https://thenounproject.com/icon/keyboard-2685534/) by Twenty Foo Studio for Options Keys
 - [charts](https://thenounproject.com/icon/charts-2312023/) by Srinivas Agra (gimped to appear bolder) for the Charts page
 - [framed image](https://thenounproject.com/icon/framed-image-2332187/) by Jose Dean for Victory Illustrations page
+- [Sword and Shield](https://thenounproject.com/icon/sword-and-shield-3929957/) by Firza Alamsyah for Domination Victory icon
 - [down](https://thenounproject.com/icon/down-39378/) by Cengiz SARI for Show unit destination
 - [Cat](https://thenounproject.com/icon/cat-158942/) by Josi for Politics overview diagram legend
 - [Bell](https://thenounproject.com/icon/bell-2054409) by Lyhn, transparency modified, for Notifications (overview, unhide button)
