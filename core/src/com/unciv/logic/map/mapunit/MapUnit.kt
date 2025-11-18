@@ -645,8 +645,12 @@ class MapUnit : IsPartOfGameInfoSerialization {
             if (tile.isEnemyTerritory(civ)) return false
             return buildImprovementUniques.any()
         }
-        return buildImprovementUniques
-                .any { improvement.matchesFilter(it.params[0], cache.state) || tile.matchesTerrainFilter(it.params[0], civ) }
+        return buildImprovementUniques.any {
+            // Use a multifilter for checking compatibility
+            MultiFilter.multiFilter(it.params[0], {
+                improvement.matchesFilter(it.params[0], cache.state) || tile.matchesTerrainFilter(it, civ)
+            })
+        }
     }
 
     @Readonly
