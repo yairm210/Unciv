@@ -645,6 +645,15 @@ class MapUnit : IsPartOfGameInfoSerialization {
             if (tile.isEnemyTerritory(civ)) return false
             return buildImprovementUniques.any()
         }
+
+        // Validate that the improvement is available for the unit
+        if (!improvement.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)
+                .none { unique -> !unique.conditionalsApply(cache.state) } ||
+            !improvement.getMatchingUniques(UniqueType.Unavailable, GameContext.IgnoreConditionals)
+                .none { unique -> unique.conditionalsApply(cache.state) }) {
+            return false
+        }
+
         return buildImprovementUniques.any {
             // Engage the MultiFilter on the entire filter, prior to checking the individual filters
             MultiFilter.multiFilter(it.params[0], {
