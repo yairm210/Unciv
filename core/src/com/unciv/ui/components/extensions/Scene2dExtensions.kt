@@ -113,12 +113,13 @@ fun Color.brighten(t: Float): Color = Color(this).let {
 
 /** Ensures that the `lightness` value of the given color
  * in `HSL` scale is at least [minLightness].
+ * Creates a copy.
  */
 fun Color.coerceLightnessAtLeast(minLightness: Float): Color {
     /** see [Color.toHsv] implementation to understand this */
     val lightness = maxOf(r, g, b)
     return if (lightness < minLightness) {
-        this.mul(minLightness / lightness)
+        this.cpy().mul(minLightness / lightness)
     } else this
 }
 

@@ -3,6 +3,7 @@ package com.unciv.models.ruleset.nation
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.logic.MultiFilter
+import com.unciv.models.ImmutableColor
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.unique.GameContext
@@ -109,7 +110,7 @@ class Nation : RulesetObject() {
     var ignoreHillMovementCost = false
 
     fun setTransients() {
-        fun safeColorFromRGB(rgb: List<Int>) = if (rgb.size >= 3) colorFromRGB(rgb) else Color.PURPLE
+        fun safeColorFromRGB(rgb: List<Int>) = ImmutableColor(if (rgb.size >= 3) colorFromRGB(rgb) else Color.PURPLE)
 
         outerColorObject = safeColorFromRGB(outerColor)
 
