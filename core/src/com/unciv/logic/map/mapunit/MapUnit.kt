@@ -110,6 +110,14 @@ class MapUnit : IsPartOfGameInfoSerialization {
         fun setTransients(unit: MapUnit) {
             uniques = unit.civ.gameInfo.ruleset.unitPromotions[name]?.uniqueObjects ?: emptyList()
         }
+
+        @Readonly
+        fun clone(): UnitStatus {
+            @LocalState val toReturn = UnitStatus()
+            toReturn.name = name
+            toReturn.turnsLeft = turnsLeft
+            return toReturn
+        }
     }
     
     var statusMap = HashMap<String, UnitStatus>()
@@ -217,13 +225,18 @@ class MapUnit : IsPartOfGameInfoSerialization {
         toReturn.automatedRoadConnectionPath = automatedRoadConnectionPath
         toReturn.attacksThisTurn = attacksThisTurn
         toReturn.turnsFortified = turnsFortified
-        toReturn.promotions = promotions.clone()
+        toReturn.promotions = promotions.clone(toReturn)
         toReturn.isTransported = isTransported
         toReturn.abilityToTimesUsed = HashMap(abilityToTimesUsed)
         toReturn.religion = religion
         toReturn.religiousStrengthLost = religiousStrengthLost
         toReturn.movementMemories = movementMemories.copy()
-        toReturn.statusMap = HashMap(statusMap)
+        @LocalState val newStatusMap = HashMap<String, UnitStatus>()
+        for ((name, status) in statusMap) {
+            @LocalState val newStatus = status.clone()
+            newStatusMap[name] = newStatus
+        }
+        toReturn.statusMap = newStatusMap
         toReturn.mostRecentMoveType = mostRecentMoveType
         toReturn.attacksSinceTurnStart = ArrayList(attacksSinceTurnStart.map { Vector2(it) })
         return toReturn
@@ -740,7 +753,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             if (promotion !in promotions.promotions)
                 promotions.addPromotion(promotion, isFree = true)
 
-        newUnit.promotions = promotions.clone()
+        newUnit.promotions = promotions.clone(newUnit)
         newUnit.automated = automated
         newUnit.action = action // Needed too for Unit Overview action column
 
