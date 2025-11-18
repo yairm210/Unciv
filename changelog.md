@@ -1,24 +1,17 @@
 ## 4.18.15
 
-Resolved  - Display road per-turn costs in the stats
+Display road per-turn costs in the stats
 
-4.18.14-patch1
-
-Revert "New CircularButton Widget " ()
-
-Resolved  - Cloned units' triggers happen after the data is copied to them
+Modding: Cloned units' triggers happen after the data is copied to them
 
 By RobLoach:
-- Sounds: Allow attack sounds by unit name 
-- countables: Add a Researched Technologies Countable 
-- icons: Update Diplomatic Victory Icon 
+- modding: Allow attack sounds by unit name 
+- modding: Add a Researched Technologies Countable
 - Fix `<on [difficulty] or higher/lower>` Conditional 
 - Fix Worker Improvement Automation Checks 
 - civilopedia: Only show active Victory Types 
 
 Link historical Great Person names to Wikipedia - By SomeTroglodyte
-
-chore: cleanup instances of cloning objects - By SeventhM
 
 ## 4.18.14
 

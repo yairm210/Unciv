@@ -3247,6 +3247,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
+??? example  "&lt;on [difficulty] difficulty or lower&gt;"
+	Example: "&lt;on [Prince] difficulty or lower&gt;"
+
+	Applicable to: Conditional
+
 ??? example  "&lt;when [victoryType] Victory is enabled&gt;"
 	Example: "&lt;when [Domination] Victory is enabled&gt;"
 
