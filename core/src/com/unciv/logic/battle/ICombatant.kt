@@ -46,4 +46,5 @@ interface ICombatant {
     }
     @Readonly fun isCity(): Boolean = this is CityCombatant
     @Readonly fun isCivilian() = this is MapUnitCombatant && this.unit.isCivilian()
+    @Readonly fun isUnitRenamed(): Boolean = false
 }

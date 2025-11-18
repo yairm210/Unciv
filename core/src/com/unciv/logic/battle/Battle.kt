@@ -256,7 +256,7 @@ object Battle {
             ourCombatant = ourUnit, theirCombatant = enemy, tile = attackedTile)
         for (unique in ourUnit.unit.getTriggeredUniques(UniqueType.TriggerUponDefeatingUnit, gameContext)
         { enemy.unit.matchesFilter(it.params[0]) })
-            UniqueTriggerActivation.triggerUnique(unique, ourUnit.unit, triggerNotificationText = "due to our [${ourUnit.getName()}] defeating a [${enemy.getName()}]")
+            UniqueTriggerActivation.triggerUnique(unique, ourUnit.unit, triggerNotificationText = "due to ${if (ourUnit.isUnitRenamed()) "" else "our"} [${ourUnit.getName()}] defeating ${if (enemy.isUnitRenamed()) "" else "a"} [${enemy.getName()}]")
     }
 
     private fun triggerDamageUniquesForUnit(triggeringUnit: MapUnitCombatant, enemy: MapUnitCombatant, attackedTile: Tile, combatAction: CombatAction){
@@ -266,9 +266,9 @@ object Battle {
         for (unique in triggeringUnit.unit.getTriggeredUniques(UniqueType.TriggerUponDamagingUnit, gameContext)
         { enemy.matchesFilter(it.params[0]) }){
             if (unique.params[0] == Constants.targetUnit){
-                UniqueTriggerActivation.triggerUnique(unique, enemy.unit, triggerNotificationText = "due to our [${enemy.getName()}] being damaged by a [${triggeringUnit.getName()}]")
+                UniqueTriggerActivation.triggerUnique(unique, enemy.unit, triggerNotificationText = "due to ${if (enemy.isUnitRenamed()) "" else "our"} [${enemy.getName()}] being damaged by ${if (triggeringUnit.isUnitRenamed()) "" else "a"} [${triggeringUnit.getName()}]")
             } else {
-                UniqueTriggerActivation.triggerUnique(unique, triggeringUnit.unit, triggerNotificationText = "due to our [${triggeringUnit.getName()}] damaging a [${enemy.getName()}]")
+                UniqueTriggerActivation.triggerUnique(unique, triggeringUnit.unit, triggerNotificationText = "due to ${if (triggeringUnit.isUnitRenamed()) "" else "our"} [${triggeringUnit.getName()}] damaging ${if (enemy.isUnitRenamed()) "" else "a"} [${enemy.getName()}]")
             }
         }
     }
@@ -277,7 +277,7 @@ object Battle {
         val gameContext = GameContext(civInfo = ourUnit.getCivInfo(),
             ourCombatant = ourUnit, theirCombatant=enemy, tile = attackedTile)
         for (unique in ourUnit.unit.getTriggeredUniques(UniqueType.TriggerUponDefeat, gameContext))
-            UniqueTriggerActivation.triggerUnique(unique, ourUnit.unit, triggerNotificationText = "due to our [${ourUnit.getName()}] being defeated by a [${enemy.getName()}]")
+            UniqueTriggerActivation.triggerUnique(unique, ourUnit.unit, triggerNotificationText = "due to ${if (ourUnit.isUnitRenamed()) "" else "our"} [${ourUnit.getName()}] being defeated by ${if (enemy.isUnitRenamed()) "" else "a"} [${enemy.getName()}]")
     }
 
     private fun tryEarnFromKilling(civUnit: ICombatant, defeatedUnit: MapUnitCombatant) {
