@@ -15,6 +15,7 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import yairm210.purity.annotations.Readonly
 import java.util.concurrent.CancellationException
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -52,6 +53,22 @@ object Concurrency {
                 null
             }
         }
+    }
+    
+    fun parallelize(
+        functions: List<() -> Unit>,
+        parallelize: Boolean = true
+    ){
+        if (parallelize)
+            runBlocking {
+                functions
+                    .map { function -> launchOnNonDaemonThreadPool { function() } }
+                    .map { it.join() }
+            }
+        else 
+            runBlocking { // entirely sequential
+                functions.forEach { function -> function() }
+            }
     }
 
     /** Non-blocking version of [runBlocking]. Runs on a daemon thread pool by default. Use this for code that does not necessarily need to finish executing. */
@@ -155,8 +172,8 @@ private class Dispatchers {
     /** Runs coroutines on a non-daemon thread pool. */
     val NON_DAEMON: CoroutineDispatcher = createThreadpoolDispatcher("threadpool-nondaemon-", isDaemon = false)
 
-    /** Runs coroutines on the GDX GL thread. */
-    val GL: CoroutineDispatcher = CrashHandlingDispatcher(GLDispatcher(DAEMON))
+    /** Runs coroutines on the GDX GL thread - unused in e.g. ConsoleLauncher */
+    val GL: CoroutineDispatcher by lazy { CrashHandlingDispatcher(GLDispatcher(DAEMON)) }
 
     fun stopThreadPools() {
         val iterator = EXECUTORS.iterator()
@@ -167,7 +184,7 @@ private class Dispatchers {
         }
     }
 
-    fun isStopped() = EXECUTORS.isEmpty()
+    @Readonly fun isStopped() = EXECUTORS.isEmpty()
 
     private fun createThreadpoolDispatcher(threadPrefix: String, isDaemon: Boolean): CrashHandlingDispatcher {
         val executor = Executors.newCachedThreadPool(object : ThreadFactory {

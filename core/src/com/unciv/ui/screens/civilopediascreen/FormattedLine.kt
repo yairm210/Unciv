@@ -227,6 +227,7 @@ class FormattedLine (
                 yield(CivilopediaCategories.Technology to ruleSet.technologies)
                 yield(CivilopediaCategories.Building to nonWonderBuildings())
                 yield(CivilopediaCategories.Wonder to wonderBuildings())
+                yield(CivilopediaCategories.UnitNameGroup to ruleSet.unitNameGroups)
             }
             val result = HashMap<String, CivilopediaCategories>()
             allObjectMapsSequence

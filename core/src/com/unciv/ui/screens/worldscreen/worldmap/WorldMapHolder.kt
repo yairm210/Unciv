@@ -49,6 +49,7 @@ import com.unciv.ui.screens.worldscreen.bottombar.BattleTableHelpers.battleAnima
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import com.unciv.utils.launchOnGLThread
+import yairm210.purity.annotations.Readonly
 import java.lang.Float.max
 
 
@@ -235,7 +236,8 @@ class WorldMapHolder(
                 /** ****** Right-click Attack ****** */
                 val attacker = MapUnitCombatant(unit)
                 if (!Battle.movePreparingAttack(attacker, attackableTile)) return
-                SoundPlayer.play(attacker.getAttackSound())
+                if (!SoundPlayer.play(UncivSound(attacker.getName())))
+                    SoundPlayer.play(attacker.getAttackSound())
                 val (damageToDefender, damageToAttacker) = Battle.attackOrNuke(attacker, attackableTile)
                 if (attackableTile.combatant != null)
                     worldScreen.battleAnimationDeferred(attacker, damageToAttacker, attackableTile.combatant, damageToDefender)
@@ -468,7 +470,7 @@ class WorldMapHolder(
                 selectedUnit.civ.hasExplored(tile)
 
             if (validTile) {
-                val roadPath: List<Tile>? = MapPathing.getRoadPath(selectedUnit, selectedUnit.currentTile, tile)
+                val roadPath: List<Tile>? = MapPathing.getRoadPath(selectedUnit.civ, selectedUnit.getTile(), tile)
                 launchOnGLThread {
                     if (roadPath == null) { // give the regular tile overlays with no road connection
                         addTileOverlays(tile)
@@ -543,6 +545,7 @@ class WorldMapHolder(
     }
 
     /** Returns true when the civ is a human player defeated in singleplayer game */
+    @Readonly
     fun isMapRevealEnabled(viewingCiv: Civilization) = !viewingCiv.gameInfo.gameParameters.isOnlineMultiplayer
             && viewingCiv.isCurrentPlayer()
             && viewingCiv.isDefeated()

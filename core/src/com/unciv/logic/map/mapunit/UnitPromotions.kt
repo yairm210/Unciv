@@ -7,6 +7,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.ui.components.extensions.toPercent
 import yairm210.purity.annotations.LocalState
+import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 
 class UnitPromotions : IsPartOfGameInfoSerialization {
@@ -59,7 +60,7 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
     fun xpForNextNPromotions(count: Int) = (1..count).sumOf { 
         baseXpForPromotionNumber(numberOfPromotions+it)} * promotionCostModifier()
 
-    @Readonly
+    @Pure
     private fun baseXpForPromotionNumber(numberOfPromotions: Int) = (numberOfPromotions) * 10
 
     @Readonly
@@ -163,6 +164,12 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
         toReturn.XP = XP
         toReturn.promotions = HashSet(promotions)
         toReturn.numberOfPromotions = numberOfPromotions
+        return toReturn
+    }
+
+    @Readonly
+    fun clone(unit: MapUnit): UnitPromotions {
+        @LocalState val toReturn = clone()
         toReturn.unit = unit
         return toReturn
     }

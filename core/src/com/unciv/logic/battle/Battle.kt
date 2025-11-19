@@ -209,9 +209,36 @@ object Battle {
     }
 
     private fun handleCityDefeated(defender: ICombatant, attacker: ICombatant) {
-        if (!defender.isDefeated() || defender !is CityCombatant || attacker !is MapUnitCombatant || !attacker.isMelee()
+        if (!defender.isDefeated() || defender !is CityCombatant || attacker !is MapUnitCombatant || 
+            (!attacker.isMelee() && !attacker.unit.hasUnique(UniqueType.CanDestroyCities, checkCivInfoUniques = true))
             || attacker.unit.hasUnique(UniqueType.CannotCaptureCities, checkCivInfoUniques = true)
         ) return
+
+        // Must come before normal conquest logic so units that cannot capture cities can still destroy them
+        // Melee units can capture capitals; any unit with CanDestroyCities can destroy non-capital cities
+        if (defender.isDefeated() && defender.city.canBeDestroyed()) {
+            val destroyFilters = attacker.unit.getMatchingUniques(UniqueType.CanDestroyCities).map { it.params[0] }
+            if (destroyFilters.any { filter -> defender.city.matchesFilter(filter.trim(), attacker.getCivInfo()) }) {
+                val cityName = defender.city.name
+                val defendingCiv = defender.getCivInfo()
+
+                //Notification to attacker
+                attacker.getCivInfo().addNotification(
+                    "We have destroyed the city of [$cityName]!",
+                    defender.getTile().position,
+                    NotificationCategory.War,
+                    NotificationIcon.War
+                )
+
+                defender.city.destroyCity()
+
+                if (defendingCiv.cities.isEmpty()) {
+                    destroyIfDefeated(defendingCiv, attacker.getCivInfo(), defender.getTile().position)
+                }
+
+                return // stop further logic because city was destroyed
+            }
+        }
         
         // Barbarians can't capture cities, instead raiding them for gold
         if (attacker.unit.civ.isBarbarian) {
@@ -487,7 +514,7 @@ object Battle {
 
         val attackerHurtString = if (damageDealt != null && damageDealt.defenderDealt != 0) " ([-${damageDealt.defenderDealt}] HP)" else ""
         val defenderHurtString = if (damageDealt != null) " ([-${damageDealt.attackerDealt}] HP)" else ""
-        val notificationString = "[{$attackerString}{$attackerHurtString}] [$battleActionString] [{$defenderString}{$defenderHurtString}]"
+        val notificationString = "$attackerString$attackerHurtString $battleActionString $defenderString$defenderHurtString"
         val attackerIcon = if (attacker is CityCombatant) NotificationIcon.City else attacker.getName()
         val defenderIcon = if (defender is CityCombatant) NotificationIcon.City else defender.getName()
         val locations = LocationAction(attackedTile.position, attackerTile?.position)

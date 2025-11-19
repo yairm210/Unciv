@@ -81,7 +81,7 @@ object WorldMapTileUpdater {
 
                 // Fade out improvement icons (but not barb camps or ruins)
                 if (shownImprovement != null && shownImprovement != Constants.barbarianEncampment
-                    && !unit.civ.gameInfo.ruleset.tileImprovements[shownImprovement]!!.isAncientRuinsEquivalent())
+                    && !unit.civ.gameInfo.ruleset.tileImprovements[shownImprovement]!!.isAncientRuinsEquivalent(unit.cache.state))
                     group.layerImprovement.dimImprovement(true)
             }
         }
@@ -104,7 +104,7 @@ object WorldMapTileUpdater {
         if (worldScreen.bottomUnitTable.selectedUnitIsConnectingRoad) {
             if (unit.currentTile.ruleset.roadImprovement == null) return
             val validTiles = unit.civ.gameInfo.tileMap.tileList.filter {
-                MapPathing.isValidRoadPathTile(unit, it)
+                MapPathing.isValidRoadPathTile(unit.civ, it)
             }
             val connectRoadTileOverlayColor = Color.RED
             for (tile in validTiles)  {

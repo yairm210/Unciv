@@ -12,6 +12,7 @@ import com.unciv.logic.city.managers.CityPopulationManager
 import com.unciv.logic.city.managers.CityReligionManager
 import com.unciv.logic.city.managers.SpyFleeReason
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.transients.CapitalConnectionsFinder.CapitalConnectionMedium
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.UnitPromotions
@@ -29,6 +30,7 @@ import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.SubStat
 import yairm210.purity.annotations.Readonly
+import java.util.EnumSet
 import java.util.UUID
 import kotlin.math.roundToInt
 
@@ -124,11 +126,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     internal var flagsCountdown = HashMap<String, Int>()
 
     /** Persisted connected-to-capital (by any medium) to allow "disconnected" notifications after loading */
-    // Unknown only exists to support older saves, so those do not generate spurious connected/disconnected messages.
-    // The other names are chosen so serialization is compatible with a Boolean to allow easy replacement in the future.
-    @Suppress("EnumEntryName")
-    enum class ConnectedToCapitalStatus { Unknown, `false`, `true` }
-    var connectedToCapitalStatus = ConnectedToCapitalStatus.Unknown
+    var connectedToCapitalStatus = false
 
     @Readonly fun hasDiplomaticMarriage(): Boolean = foundingCiv == ""
 
@@ -175,13 +173,18 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     @Readonly fun isCapital(): Boolean = cityConstructions.builtBuildingUniqueMap.hasUnique(UniqueType.IndicatesCapital, state)
     @Readonly fun isCoastal(): Boolean = centerTile.isCoastalTile()
-
+    @Readonly fun isNaval(): Boolean = centerTile.isWater || isCoastal()
+    
     @Readonly fun getBombardRange(): Int = civ.gameInfo.ruleset.modOptions.constants.baseCityBombardRange
     @Readonly fun getWorkRange(): Int = civ.gameInfo.ruleset.modOptions.constants.cityWorkRange
     @Readonly fun getExpandRange(): Int = civ.gameInfo.ruleset.modOptions.constants.cityExpandRange
 
     @Readonly
-    fun isConnectedToCapital(@Readonly connectionTypePredicate: (Set<String>) -> Boolean = { true }): Boolean {
+    fun isConnectedToCapital() = this in civ.cache.citiesConnectedToCapitalToMediums
+    @Readonly
+    fun isConnectedToCapital(
+        @Readonly connectionTypePredicate: (EnumSet<CapitalConnectionMedium>) -> Boolean
+    ): Boolean {
         val mediumTypes = civ.cache.citiesConnectedToCapitalToMediums[this] ?: return false
         return connectionTypePredicate(mediumTypes)
     }
@@ -273,7 +276,10 @@ class City : IsPartOfGameInfoSerialization, INamed {
     @Readonly fun getStrength() = cityConstructions.getBuiltBuildings().sumOf { it.cityStrength }.toFloat()
 
     /** Gets max air units that can remain in the city untransported */
-    @Readonly fun getMaxAirUnits() = civ.gameInfo.ruleset.modOptions.constants.cityAirUnitCapacity
+    @Readonly fun getMaxAirUnits(): Int = civ.gameInfo.ruleset.modOptions.constants.cityAirUnitCapacity +
+        getMatchingUniques(UniqueType.CarryExtraAirUnits)
+            .filter { it.params[1] == "Air" }
+            .sumOf { it.params[0].toInt() }
 
     override fun toString() = name // for debug
 

@@ -5,21 +5,14 @@ package com.unciv.ui.components.widgets
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.actions.TemporalAction
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Disposable
 import com.unciv.GUI
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.setSize
-import com.unciv.ui.components.input.onChange
-import com.unciv.ui.components.input.onClick
-import com.unciv.ui.components.widgets.LoadingImage.Style
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.basescreen.BaseScreen
 import kotlin.math.absoluteValue
 import kotlin.time.ExperimentalTime
 import kotlin.time.TimeMark
@@ -226,32 +219,6 @@ class LoadingImage(
 
         override fun end() {
             restart()
-        }
-    }
-
-    @Suppress("unused")  // Used only temporarily for FasterUIDevelopment.DevElement
-    object Testing {
-        fun getFasterUIDevelopmentTester() = Table().apply {
-            val testee = LoadingImage(52f, Style(
-                circleColor = Color.NAVY,
-                loadingColor = Color.SCARLET,
-                idleIconColor = Color.CYAN,
-                idleImageName = "OtherIcons/Multiplayer",
-                minShowTime = 1500))
-            defaults().pad(10f).center()
-            add(testee)
-            add(TextButton("Start", BaseScreen.skin).onClick {
-                testee.show()
-            })
-            add(TextButton("Stop", BaseScreen.skin).onClick {
-                testee.hide()
-            })
-            row()
-            val check = CheckBox(" animated ", BaseScreen.skin)
-            check.isChecked = testee.animated
-            check.onChange { testee.animated = check.isChecked }
-            add(check).colspan(3)
-            pack()
         }
     }
 }

@@ -206,7 +206,7 @@ class CivilopediaScreen(
         for (loopCategory in CivilopediaCategories.entries) {
             if (!religionEnabled && loopCategory == CivilopediaCategories.Belief) continue
             categoryToEntries[loopCategory] =
-                loopCategory.getCategoryIterator(ruleset, tutorialController)
+                loopCategory.getCategoryIterator(ruleset, tutorialController, game.gameInfo)
                     .filter(::shouldBeDisplayed)
                     .map { CivilopediaEntry(
                         (it as INamed).name,

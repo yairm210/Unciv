@@ -424,11 +424,13 @@ object NextTurnAutomation {
         for (unit in ourUnitsInRange(7).filter { it.baseUnit.isAirUnit() })
             UnitAutomation.automateUnitMoves(unit)
         
-        // First off, any siege unit that can attack the city, should
-        val seigeUnits = ourUnitsInRange(4).filter { it.baseUnit.isProbablySiegeUnit() }
-        for (unit in seigeUnits) {
-            if (!unit.hasUnique(UniqueType.MustSetUp) || unit.isSetUpForSiege())
-                attackIfPossible(unit, city.getCenterTile())
+        // First off, any siege unit that can attack the city, should - as long as it's not defeated
+        if (city.health != 1) {
+            val seigeUnits = ourUnitsInRange(4).filter { it.baseUnit.isProbablySiegeUnit() }
+            for (unit in seigeUnits) {
+                if (!unit.hasUnique(UniqueType.MustSetUp) || unit.isSetUpForSiege())
+                    attackIfPossible(unit, city.getCenterTile())
+            }
         }
         
         // Melee units should focus on getting rid of enemy units that threaten the siege units
@@ -530,7 +532,7 @@ object NextTurnAutomation {
             .maxByOrNull { it.cityStats.currentCityStats.production }
             ?: return
         if (bestCity.cityConstructions.getBuiltBuildings().count() > 1) // 2 buildings or more, otherwise focus on self first
-            bestCity.cityConstructions.currentConstructionFromQueue = settlerUnits.minByOrNull { it.cost }!!.name
+            bestCity.cityConstructions.setCurrentConstruction(settlerUnits.minByOrNull { it.cost }!!.name)
     }
 
     // Technically, this function should also check for civs that have liberated one or more cities

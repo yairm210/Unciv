@@ -140,7 +140,7 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
         var turnsToPopString =
                 when {
                     city.isStarving() -> "[${city.population.getNumTurnsToStarvation()}] turns to lose population"
-                    city.getRuleset().units[city.cityConstructions.currentConstructionFromQueue]
+                    city.getRuleset().units[city.cityConstructions. currentConstructionName()]
                         .let { it != null && it.hasUnique(UniqueType.ConvertFoodToProductionWhenConstructed) }
                     -> "Food converts to production"
                     city.isGrowing() -> "[${city.population.getNumTurnsToNewPopulation()}] turns to new population"
@@ -396,7 +396,8 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
         private fun update(expanderIsOpen: Boolean?) {
             clear()
             val selected = BaseScreen.skin.getColor("selection")
-            for ((stat, amount) in city.cityStats.currentCityStats) {
+            for (stat in Stat.entries) {
+                val amount = city.cityStats.currentCityStats[stat]
                 if (stat == Stat.Faith && !city.civ.gameInfo.isReligionEnabled()) continue
                 val icon = Table()
                 val focus = CityFocus.safeValueOf(stat)

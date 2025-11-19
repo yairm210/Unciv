@@ -217,6 +217,13 @@ class Civilization : IsPartOfGameInfoSerialization {
     var totalFaithForContests = 0
 
     /**
+     * The title for the Civilization's leader.
+     *
+     * When empty, will display the nation's display name, otherwise will parse it with [leaderName][Nation.leaderName]. For example: `"King [leaderName]"`
+     */
+    var leaderTitle = ""
+
+    /**
      * Container class to represent a historical attack recently performed by this civilization.
      *
      * @property attackingUnit Name key of [BaseUnit] type that performed the attack, or null (E.G. for city bombardments).
@@ -264,7 +271,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.civName = civName
         toReturn.tech = tech.clone()
         toReturn.policies = policies.clone()
-        toReturn.civConstructions = civConstructions.clone()
+        toReturn.civConstructions = civConstructions.clone().also { it.setTransients(toReturn) }
         toReturn.religionManager = religionManager.clone()
         toReturn.questManager = questManager.clone()
         toReturn.goldenAges = goldenAges.clone()
@@ -280,6 +287,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.neutralRoads = neutralRoads
         toReturn.exploredRegion = exploredRegion.clone()
         toReturn.lastSeenImprovement.putAll(lastSeenImprovement)
+        toReturn.leaderTitle = leaderTitle
         toReturn.notifications.addAll(notifications)
         toReturn.notificationsLog.addAll(notificationsLog)
         toReturn.citiesCreated = citiesCreated
@@ -689,7 +697,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun getLeaderDisplayName(): String {
         val severalHumans = gameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1
         val online = gameInfo.gameParameters.isOnlineMultiplayer
-        return nation.getLeaderDisplayName().tr(hideIcons = true) +
+        return nation.getLeaderDisplayName(leaderTitle).tr(hideIcons = true) +
             when {
                 !online && !severalHumans -> ""  // offline single player will know everybody else is AI
                 playerType == PlayerType.AI -> " (${"AI".tr()})"
@@ -936,18 +944,48 @@ class Civilization : IsPartOfGameInfoSerialization {
     }
 
     // region addNotification
+    /** Add a [Notification] to this [civ's][Civilization] [notifications] (No-action version).
+     *  - Ignored for AI civ's
+     *  - There's overloads accepting zero, one, a Sequence or Iterable of [NotificationAction]s between [text] and [category]
+     *  - Another overload accepts a [Vector2] as shorthand for a [LocationAction] - for several use [LocationAction(positions)][LocationAction.Companion]
+     *  @param notificationIcons Zero or more icons to decorate the notification with - see [NotificationIcon]
+     */
     fun addNotification(text: String, category: NotificationCategory, vararg notificationIcons: String) =
         addNotification(text, null, category, *notificationIcons)
 
+    /** Add a [Notification] to this [civ's][Civilization] [notifications] (Single-location version).
+     *  - Ignored for AI civ's
+     *  - There's overloads accepting zero, one, a Sequence or Iterable of [NotificationAction]s between [text] and [category]
+     *  - Another overload accepts a [Vector2] as shorthand for a [LocationAction] - for several use [LocationAction(positions)][LocationAction.Companion]
+     *  @param notificationIcons Zero or more icons to decorate the notification with - see [NotificationIcon]
+     */
     fun addNotification(text: String, location: Vector2, category: NotificationCategory, vararg notificationIcons: String) =
         addNotification(text, LocationAction(location), category, *notificationIcons)
 
+    /** Add a [Notification] to this [civ's][Civilization] [notifications] (Single-action version).
+     *  - Ignored for AI civ's
+     *  - There's overloads accepting zero, one, a Sequence or Iterable of [NotificationAction]s between [text] and [category]
+     *  - Another overload accepts a [Vector2] as shorthand for a [LocationAction] - for several use [LocationAction(positions)][LocationAction.Companion]
+     *  @param notificationIcons Zero or more icons to decorate the notification with - see [NotificationIcon]
+     */
     fun addNotification(text: String, action: NotificationAction, category: NotificationCategory, vararg notificationIcons: String) =
         addNotification(text, listOf(action), category, *notificationIcons)
 
+    /** Add a [Notification] to this [civ's][Civilization] [notifications] (Sequence version).
+     *  - Ignored for AI civ's
+     *  - There's overloads accepting zero, one, a Sequence or Iterable of [NotificationAction]s between [text] and [category]
+     *  - Another overload accepts a [Vector2] as shorthand for a [LocationAction] - for several use [LocationAction(positions)][LocationAction.Companion]
+     *  @param notificationIcons Zero or more icons to decorate the notification with - see [NotificationIcon]
+     */
     fun addNotification(text: String, actions: Sequence<NotificationAction>, category:NotificationCategory, vararg notificationIcons: String) =
         addNotification(text, actions.asIterable(), category, *notificationIcons)
 
+    /** Add a [Notification] to this [civ's][Civilization] [notifications] (Iterable version).
+     *  - Ignored for AI civ's
+     *  - There's overloads accepting zero, one, a Sequence or Iterable of [NotificationAction]s between [text] and [category]
+     *  - Another overload accepts a [Vector2] as shorthand for a [LocationAction] - for several use [LocationAction(positions)][LocationAction.Companion]
+     *  @param notificationIcons Zero or more icons to decorate the notification with - see [NotificationIcon]
+     */
     fun addNotification(text: String, actions: Iterable<NotificationAction>?, category: NotificationCategory, vararg notificationIcons: String) {
         if (playerType == PlayerType.AI) return // no point in lengthening the saved game info if no one will read it
         notifications.add(Notification(text, notificationIcons, actions, category))

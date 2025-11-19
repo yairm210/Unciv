@@ -11,6 +11,7 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
+import yairm210.purity.annotations.Readonly
 
 object CityLocationTileRanker {
 
@@ -63,6 +64,7 @@ object CityLocationTileRanker {
         return bestTilesToFoundCity
     }
 
+    @Readonly
     private fun canSettleTile(tile: Tile, civ: Civilization, nearbyCities: Sequence<City>): Boolean {
         val modConstants = civ.gameInfo.ruleset.modOptions.constants
         if (!tile.isLand || tile.isImpassible()) return false
@@ -122,10 +124,11 @@ object CityLocationTileRanker {
         }
 
         // Placing cities on the edge of the map is bad, we can't even build improvements on them!
-        tileValue -= (HexMath.getNumberOfTilesInHexagon(3) - tiles) * 2.4f
+        tileValue -= (HexMath.getNumberOfTilesInHexagon(2) - tiles) * 2.4f
         return tileValue
     }
 
+    @Readonly
     private fun getDistanceToCityModifier(newCityTile: Tile,nearbyCities: Sequence<City>, civ: Civilization): Float {
         var modifier = 0f
         for (city in nearbyCities) {

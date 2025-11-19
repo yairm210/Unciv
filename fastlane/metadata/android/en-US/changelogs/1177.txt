@@ -1,0 +1,17 @@
+Faster map generation
+
+Less memory usage for large maps
+
+By SomeTroglodyte:
+- New CircularButton Widget 
+- Improve recognition of GitHub url types passed to "Download mod from URL" 
+
+By RobLoach:
+- Fix Unit Stats across Vanilla 
+- Fix Spaceship Parts requiring a Scientific Victory 
+- Fix Unit Name Group unique type
+- Allow modding of Great Prophet names
+
+Fix incorrect target civ used to determine defensive pact modifiers - By unciv-loof
+
+Add plus strength amount unique - By SeventhM

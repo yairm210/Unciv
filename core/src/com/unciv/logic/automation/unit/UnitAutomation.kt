@@ -181,7 +181,7 @@ object UnitAutomation {
 
         val tileWithRuinOrEncampment = unit.viewableTiles
             .firstOrNull {
-                (it.getTileImprovement()?.isAncientRuinsEquivalent() == true
+                (it.getTileImprovement()?.isAncientRuinsEquivalent(unit.cache.state) == true
                                 || it.improvement == Constants.barbarianEncampment)
                         && unit.movement.canMoveTo(it) && unit.movement.canReach(it)
             } ?: return false
@@ -639,7 +639,7 @@ object UnitAutomation {
             CityCombatant(city),
             it
         ).toFloat().coerceAtLeast(1f) }
-        val target = hitsToKill.filter { it.value <= 1 }.maxByOrNull { it.key.getAttackingStrength() }?.key
+        val target = hitsToKill.filter { it.value <= 1 }.maxByOrNull { it.key.getAttackingStrength(CityCombatant(city)) }?.key
         if (target != null) return target
         return hitsToKill.minByOrNull { it.value }?.key
     }

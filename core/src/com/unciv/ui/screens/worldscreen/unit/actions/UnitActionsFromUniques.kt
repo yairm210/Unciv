@@ -52,7 +52,7 @@ object UnitActionsFromUniques {
         // Spain should still be able to build Conquistadors in a one city challenge - but can't settle them
         if (unit.civ.isOneCityChallenger() && unit.civ.hasEverOwnedOriginalCapital) return null
 
-        if (!unit.hasMovement() || !tile.canBeSettled())
+        if (!unit.hasMovement() || !tile.canBeSettled(unit.civ))
             return UnitAction(UnitActionType.FoundCity, 80f, action = null)
 
         val hasActionModifiers = unique.modifiers.any { it.type?.targetTypes?.contains(
@@ -117,6 +117,7 @@ object UnitActionsFromUniques {
      * @param tile The tile where the new city would go
      * @return null if no promises broken, else a String listing the leader(s) we would p* off.
      */
+    @Readonly
     private fun getLeadersWePromisedNotToSettleNear(civInfo: Civilization, tile: Tile): String? {
         val leadersWePromisedNotToSettleNear = HashSet<String>()
         for (otherCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() && !civInfo.isAtWarWith(it) }) {
@@ -146,12 +147,6 @@ object UnitActionsFromUniques {
 
     internal fun getParadropActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
         unit.cache.paradropDestinationTileFilters.clear()
-
-        // Support the old paradrop unique, going from Friendly Land to any Land tile
-        val paradropOldUniques = unit.getMatchingUniques(UniqueType.MayParadropOld)
-        if (paradropOldUniques.any() && !unit.isEmbarked() && !unit.getTile().isWater && unit.getTile().isFriendlyTerritory(unit.civ)) {
-            unit.cache.paradropDestinationTileFilters["Land"] = paradropOldUniques.maxOf { it.params[0] }.toInt()
-        }
 
         // Retrieve all parardrop uniques, considering the state of the unit
         val paradropUniques = unit.getMatchingUniques(UniqueType.MayParadrop, unit.cache.state)
@@ -432,17 +427,16 @@ object UnitActionsFromUniques {
                     val oldMovement = unit.currentMovement
                     unit.destroy()
                     val newUnit =
-                        civInfo.units.placeUnitNearTile(unitTile.position, unitToTransformTo, unit.id)
+                        civInfo.units.placeUnitNearTile(unitTile.position, unitToTransformTo, unit.id, copiedFrom = unit)
 
                     /** We were UNABLE to place the new unit, which means that the unit failed to upgrade!
                      * The only known cause of this currently is "land units upgrading to water units" which fail to be placed.
                      */
                     if (newUnit == null) {
                         val resurrectedUnit =
-                            civInfo.units.placeUnitNearTile(unitTile.position, unit.baseUnit, unit.id)!!
-                        unit.copyStatisticsTo(resurrectedUnit)
+                            civInfo.units.placeUnitNearTile(unitTile.position, unit.baseUnit, unit.id, copiedFrom = unit)!!
+                        
                     } else { // Managed to upgrade
-                        unit.copyStatisticsTo(newUnit)
                         // have to handle movement manually because we killed the old unit
                         // a .destroy() unit has 0 movement
                         // and a new one may have less Max Movement

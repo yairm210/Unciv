@@ -244,6 +244,16 @@ class CountableTests {
             freePolicies++
             adopt(taggedPolicyBranch) // Will be completed as it has no member policies
         }
+
+        // Add a second Civilization
+        val civ2 = game.addCiv()
+        val city2 = game.addCity(civ2, game.tileMap[2,2])
+        civ2.policies.run {
+            freePolicies += 2
+            adopt(getPolicyByName("Tradition"))
+            adopt(getPolicyByName("Oligarchy"))
+        }
+
         val tests = listOf(
             "Completed Policy branches" to 2,               // Tradition and taggedPolicyBranch
             "Adopted [Tradition Complete] Policies" to 1,
@@ -251,6 +261,10 @@ class CountableTests {
             "Adopted [Liberty Complete] Policies" to 0,
             "Adopted [[Liberty] branch] Policies" to 2,     // Liberty has only 1 member adopted
             "Adopted [Some marker] Policies" to 1,
+            "Adopted [Military Tradition] Policies by [All] Civilizations" to 0,
+            "Adopted [Some marker] Policies by [All] Civilizations" to 1,
+            "Adopted [Oligarchy] Policies by [All] Civilizations" to 2,
+            "Adopted [Oligarchy] Policies by [City-State] Civilizations" to 0,
         )
         for ((test, expected) in tests) {
             val actual = Countables.getCountableAmount(test, GameContext(civ))
@@ -345,6 +359,33 @@ class CountableTests {
         val happiness = Countables.getCountableAmount("Happiness", GameContext(civ, city))
         // Base 9, -1 city, -3 population +1 deprecated countable should still work, but the bogus one should not
         assertEquals("Testing Happiness", 6, happiness)
+    }
+
+    @Test
+    fun testFilteredTechnologies() {
+        setupModdedGame()
+        val techs = listOf(
+            "Agriculture",
+            "Pottery",
+            "Sailing",
+            "Animal Husbandry",
+            "Optics"
+        )
+        for (techName in techs) {
+            civ.tech.addTechnology(techName, false)
+        }
+        val tests = listOf(
+            "Researched [All] Technologies" to 5,
+            "Researched [Ancient era] Technologies" to 4,
+            "Researched [Classical era] Technologies" to 1, // Optics
+            "Researched [Modern era] Technologies" to 0,
+            "Researched [Pottery] Technologies" to 1,
+            "Researched [Archery] Technologies" to 0,
+        )
+        for ((test, expected) in tests) {
+            val actual = Countables.getCountableAmount(test, GameContext(civ))
+            assertEquals("Testing `$test` countable:", expected, actual)
+        }
     }
 
     private fun setupModdedGame(vararg addGlobalUniques: String, withCiv: Boolean = true): Ruleset {

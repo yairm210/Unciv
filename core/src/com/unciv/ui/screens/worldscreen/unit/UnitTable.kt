@@ -26,6 +26,7 @@ import com.unciv.ui.screens.worldscreen.unit.presenter.CityPresenter
 import com.unciv.ui.screens.worldscreen.unit.presenter.SpyPresenter
 import com.unciv.ui.screens.worldscreen.unit.presenter.SummaryPresenter
 import com.unciv.ui.screens.worldscreen.unit.presenter.UnitPresenter
+import yairm210.purity.annotations.Readonly
 import java.awt.Label
 
 class UnitTable(val worldScreen: WorldScreen) : Table() {
@@ -216,6 +217,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
         // Do no select a different unit while in Air Sweep mode
         if (selectedUnit != null && selectedUnit!!.isPreparingAirSweep()) return
 
+        @Readonly
         fun MapUnit.isEligible(): Boolean = (this.civ == worldScreen.viewingCiv
                 || worldScreen.viewingCiv.isSpectator()) && this !in selectedUnits
 

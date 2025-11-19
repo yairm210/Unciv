@@ -110,7 +110,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
         val toReturn = QuestManager()
         toReturn.globalQuestCountdown = globalQuestCountdown
         toReturn.individualQuestCountdown.putAll(individualQuestCountdown)
-        toReturn.assignedQuests.addAll(assignedQuests)
+        toReturn.assignedQuests.addAll(assignedQuests.map { it.clone() })
         toReturn.unitsToKillForCiv.putAll(unitsToKillForCiv)
         for ((attacker, unitsKilled) in unitsKilledFromCiv) {
             toReturn.unitsKilledFromCiv[attacker] = HashMap(unitsKilled)
@@ -815,14 +815,16 @@ class QuestManager : IsPartOfGameInfoSerialization {
     }
 
     /**
-     * Returns a random Natural Wonder not yet discovered by [challenger].
+     * Returns a random Natural Wonder not yet discovered by [challenger], or the [civ] dispatching the quest.
+     *
+     * @param challenger The Civilization that will be receiving the quest.
      */
     @Readonly
-    private fun getNaturalWonderToFindForQuest(challenger: Civilization): String? {
-        val naturalWondersToFind = civ.gameInfo.tileMap.naturalWonders.subtract(challenger.naturalWonders)
-
-        return naturalWondersToFind.randomOrNull()
-    }
+    private fun getNaturalWonderToFindForQuest(challenger: Civilization): String? =
+        civ.gameInfo.tileMap.naturalWonders
+            .subtract(challenger.naturalWonders)
+            .subtract(civ.naturalWonders)
+            .randomOrNull()
 
     /**
      * Returns a Great Person [BaseUnit] that is not owned by both the [challenger] and the [civ]
@@ -905,6 +907,8 @@ class AssignedQuest(
     private lateinit var questObject: Quest
 
     val questNameInstance get() = questObject.questNameInstance
+
+    fun clone() = AssignedQuest(questName, assigner, assignee, assignedOnTurn, data1, data2)
 
     internal fun setTransients(gameInfo: GameInfo, quest: Quest? = null) {
         this.gameInfo = gameInfo

@@ -11,6 +11,7 @@ import com.unciv.models.translations.getPlaceholderText
 import yairm210.purity.annotations.Readonly
 import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Cache
+import yairm210.purity.annotations.Pure
 
 /**
  *  Contains all knowledge about how to check and evaluate [countable Unique parameters][UniqueParameterType.Countable].
@@ -161,6 +162,42 @@ enum class Countables(
             UniqueParameterType.PolicyFilter.getTranslatedErrorSeverity(parameterText, ruleset)
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
             UniqueParameterType.PolicyFilter.getKnownValuesForAutocomplete(ruleset)
+                .map { text.fillPlaceholders(it) }.toSet()
+    },
+
+    FilteredPoliciesByCivs("Adopted [policyFilter] Policies by [civFilter] Civilizations") {
+        override fun eval(parameterText: String, gameContext: GameContext): Int? {
+            val (policyFilter, civFilter) = parameterText.getPlaceholderParameters()
+            val civilizations = gameContext.gameInfo?.civilizations ?: return null
+            return civilizations
+                .filter { it.isAlive() && it.matchesFilter(civFilter, gameContext) }
+                .sumOf { it.policies.getAdoptedPoliciesMatching(policyFilter, gameContext).size }
+        }
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
+            val params = parameterText.getPlaceholderParameters()
+            return UniqueParameterType.PolicyFilter.getErrorSeverity(params[0], ruleset) ?:
+                UniqueParameterType.CivFilter.getErrorSeverity(params[1], ruleset)
+        }
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
+    },
+
+    FilteredTechnologies("Researched [techFilter] Technologies") {
+        override val documentationStrings = listOf(
+            "Counts researched matching technologies for the relevant Civilization",
+            "Repeatable technologies, like Future Tech, are only counted once"
+        )
+        override fun eval(parameterText: String, gameContext: GameContext): Int? {
+            val technologies = gameContext.gameInfo?.ruleset?.technologies ?: return null
+            val techManager = gameContext.civInfo?.tech ?: return null
+            val filter = parameterText.getPlaceholderParameters()[0]
+            return techManager.techsResearched.count {
+                technologies[it]?.matchesFilter(filter, gameContext) ?: false
+            }
+        }
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
+            UniqueParameterType.TechFilter.getTranslatedErrorSeverity(parameterText, ruleset)
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
+            UniqueParameterType.TechFilter.getKnownValuesForAutocomplete(ruleset)
                 .map { text.fillPlaceholders(it) }.toSet()
     },
 
