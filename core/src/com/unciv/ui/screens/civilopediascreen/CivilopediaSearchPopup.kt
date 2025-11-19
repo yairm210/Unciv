@@ -118,7 +118,7 @@ class CivilopediaSearchPopup(
             if (!isActive) break
             if (!ruleset.modOptions.isBaseRuleset && category == CivilopediaCategories.Tutorial)
                 continue  // Search tutorials only when the mod filter is a base ruleset
-            for (entry in category.getCategoryIterator(ruleset, tutorialController)) {
+            for (entry in category.getCategoryIterator(ruleset, tutorialController, gameInfo)) {
                 if (!isActive) break
                 if (entry !is INamed) continue
                 if (!ruleset.modOptions.isBaseRuleset) {

@@ -272,7 +272,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.civName = civName
         toReturn.tech = tech.clone()
         toReturn.policies = policies.clone()
-        toReturn.civConstructions = civConstructions.clone()
+        toReturn.civConstructions = civConstructions.clone().also { it.setTransients(toReturn) }
         toReturn.religionManager = religionManager.clone()
         toReturn.questManager = questManager.clone()
         toReturn.goldenAges = goldenAges.clone()

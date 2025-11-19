@@ -1,3 +1,18 @@
+## 4.18.15
+
+Display road per-turn costs in the stats
+
+Modding: Cloned units' triggers happen after the data is copied to them
+
+By RobLoach:
+- modding: Allow attack sounds by unit name 
+- modding: Add a Researched Technologies Countable
+- Fix `<on [difficulty] or higher/lower>` Conditional 
+- Fix Worker Improvement Automation Checks 
+- civilopedia: Only show active Victory Types 
+
+Link historical Great Person names to Wikipedia - By SomeTroglodyte
+
 ## 4.18.14
 
 Faster map generation
