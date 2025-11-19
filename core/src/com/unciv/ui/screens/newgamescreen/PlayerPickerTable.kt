@@ -246,9 +246,15 @@ class PlayerPickerTable(
         fun onPlayerIdTextUpdated() {
             if (IdChecker.checkAndReturnPlayerUuid(playerIdTextField.text)?.isUUID() ?: false) {
                 player.playerId = playerIdTextField.text.trim()
-                errorLabel.apply { setText("✔");setFontColor(Color.GREEN) }
+                errorLabel.apply {
+                    setText("✔") // U+2714 heavy checkmark
+                    setFontColor(Color.GREEN)
+                }
             } else {
-                errorLabel.apply { setText("✘");setFontColor(Color.RED) }
+                errorLabel.apply {
+                    setText("✘") // U+2718 heavy ballot x
+                    setFontColor(Color.RED)
+                }
             }
         }
         onPlayerIdTextUpdated()
