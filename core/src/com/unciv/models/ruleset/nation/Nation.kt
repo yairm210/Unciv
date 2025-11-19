@@ -88,13 +88,13 @@ class Nation : RulesetObject() {
     override fun getUniqueTarget() = UniqueTarget.Nation
 
     @Transient
-    private var outerColorObject = Color.WHITE // Not lateinit for unit tests
-    fun getOuterColor(): Color = outerColorObject
+    private var outerColorObject:ImmutableColor = ImmutableColor(Color.WHITE) // Not lateinit for unit tests
+    fun getOuterColor(): ImmutableColor = outerColorObject
 
     @Transient
-    private var innerColorObject = Color.BLACK // Not lateinit for unit tests
+    private var innerColorObject: ImmutableColor = ImmutableColor(Color.BLACK) // Not lateinit for unit tests
 
-    fun getInnerColor(): Color = innerColorObject
+    fun getInnerColor(): ImmutableColor = innerColorObject
 
     val isCityState by lazy { cityStateType != null }
     val isMajorCiv by lazy { !isBarbarian && !isCityState && !isSpectator }
@@ -114,7 +114,7 @@ class Nation : RulesetObject() {
 
         outerColorObject = safeColorFromRGB(outerColor)
 
-        innerColorObject = if (innerColor == null) ImageGetter.CHARCOAL
+        innerColorObject = if (innerColor == null) ImmutableColor(ImageGetter.CHARCOAL)
                            else safeColorFromRGB(innerColor!!)
 
         forestsAndJunglesAreRoads = uniqueMap.hasUnique(UniqueType.ForestsAndJunglesAreRoads)
