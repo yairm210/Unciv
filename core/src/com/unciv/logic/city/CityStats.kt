@@ -60,7 +60,7 @@ class StatTreeNode {
     fun clone() : StatTreeNode {
         val new = StatTreeNode()
         new.innerStats = this.innerStats?.clone()
-        new.children.putAll(this.children)
+        new.children.putAll(this.children.mapValues { it.value.clone() })
         return new
     }
 
@@ -172,7 +172,7 @@ class CityStats(val city: City) {
 
     @Readonly
     fun hasExtraAnnexUnhappiness(): Boolean {
-        if (city.civ == city.foundingCivObject || city.isPuppet) return false
+        if (city.civ.civName == city.foundingCiv || city.isPuppet) return false
         return !city.containsBuildingUnique(UniqueType.RemovesAnnexUnhappiness)
     }
 

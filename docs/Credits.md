@@ -718,6 +718,7 @@ HexaRealm tileset images by legacymtgsalvationuser69544 [here](https://github.co
 - [Arrow](https://thenounproject.com/icon/arrow-2032227/) By uzeir syarief for moving between idle units, expanders, etc.
 - [Exchange](https://thenounproject.com/icon/exchange-17858) By Mike Rowe for switching tiles between cities
 - [Revolution](https://thenounproject.com/term/revolution/1315305/) By HeadsOfBirds for cities in resistance - world screen, city screen, city overview
+- [Podium](https://thenounproject.com/icon/podium-7960078/) by Ibrahim Nuruz for the Diplomatic Victory icon
 - [Viking Hat](https://thenounproject.com/icon/pillage-185405) By my name is mud for pillaging improvements
 - [Aim](https://thenounproject.com/icon/aim-2034920) By Kaviashri for ranged strength
 - [Capitol](https://thenounproject.com/icon/capitol-160031) By Loren Klein for City-States
@@ -775,6 +776,7 @@ HexaRealm tileset images by legacymtgsalvationuser69544 [here](https://github.co
 - [Keyboard](https://thenounproject.com/icon/keyboard-2685534/) by Twenty Foo Studio for Options Keys
 - [charts](https://thenounproject.com/icon/charts-2312023/) by Srinivas Agra (gimped to appear bolder) for the Charts page
 - [framed image](https://thenounproject.com/icon/framed-image-2332187/) by Jose Dean for Victory Illustrations page
+- [Sword and Shield](https://thenounproject.com/icon/sword-and-shield-3929957/) by Firza Alamsyah for Domination Victory icon
 - [down](https://thenounproject.com/icon/down-39378/) by Cengiz SARI for Show unit destination
 - [Cat](https://thenounproject.com/icon/cat-158942/) by Josi for Politics overview diagram legend
 - [Bell](https://thenounproject.com/icon/bell-2054409) by Lyhn, transparency modified, for Notifications (overview, unhide button)

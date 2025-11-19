@@ -400,7 +400,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         // We found a human player, so we are making them current
         currentTurnStartTime = System.currentTimeMillis()
         currentPlayer = player.civName
-        currentPlayerCiv = player
+        currentPlayerCiv = getCivilization(currentPlayer)
 
         // Starting their turn
         TurnManager(player).startTurn(progressBar)
@@ -540,7 +540,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         // Include your city-state allies' cities with your own for the purpose of showing the closest city
         val relevantCities: Sequence<City> = civ.cities.asSequence() +
             civ.getKnownCivs()
-                .filter { it.isCityState && it.allyCiv == civ }
+                .filter { it.isCityState && it.getAllyCivName() == civ.civName }
                 .flatMap { it.cities }
 
         // All sources of the resource on the map, using a city-state's capital center tile for the CityStateOnlyResource types

@@ -306,7 +306,7 @@ object GithubAPI {
         if (matchZip != null && matchZip.groups.size > 4)
             return processMatch(matchZip)
 
-        val matchBranch = Regex("""^(.*/(.*)/(.*))/tree/(.*)$""").matchEntire(url)
+        val matchBranch = Regex("""^(.*/(.*)/(.*))/tree/(.+?)/?$""").matchEntire(url) // important non-greedy '+'
         if (matchBranch != null && matchBranch.groups.size > 4)
             return processMatch(matchBranch)
 
@@ -316,7 +316,7 @@ object GithubAPI {
         // TODO Query a specific release for its name attribute - the page will link the tag
         // https://docs.github.com/en/rest/releases/releases#get-a-release-by-tag-name
 
-        val matchTagArchive = Regex("""^(.*/(.*)/(.*))/archive/(?:.*/)?tags/([^.]+).zip$""").matchEntire(url)
+        val matchTagArchive = Regex("""^(.*/(.*)/(.*))/archive/(?:.*/)?tags/(.+).zip$""").matchEntire(url)
         if (matchTagArchive != null && matchTagArchive.groups.size > 4) {
             processMatch(matchTagArchive)
             release_tag = default_branch
@@ -325,7 +325,7 @@ object GithubAPI {
             direct_zip_url = url
             return this
         }
-        val matchTagPage = Regex("""^(.*/(.*)/(.*))/releases/(?:.*/)?tag/([^.]+)$""").matchEntire(url)
+        val matchTagPage = Regex("""^(.*/(.*)/(.*))/releases/(?:.*/)?tag/(.+?)/?$""").matchEntire(url) // important non-greedy '+'
         if (matchTagPage != null && matchTagPage.groups.size > 4) {
             processMatch(matchTagPage)
             release_tag = default_branch
@@ -341,7 +341,7 @@ object GithubAPI {
             return this
         }
 
-        val matchRepo = Regex("""^.*//.*/(.+)/(.+)/?$""").matchEntire(url)
+        val matchRepo = Regex("""^.*//.*/(.+)/(.+?)/?$""").matchEntire(url) // important non-greedy '+'
         if (matchRepo != null && matchRepo.groups.size > 2) {
             // Query API if we got the 'https://github.com/author/repoName' URL format to get the correct default branch
             val repo = Repo.query(matchRepo.groups[1]!!.value, matchRepo.groups[2]!!.value)

@@ -178,8 +178,8 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
             if (attacker.isRanged() && defender.isRanged() && !defender.isCity() && !(defender is MapUnitCombatant && defender.unit.isEmbarked()))
                 Fonts.rangedStrength
             else Fonts.strength // use strength icon if attacker is melee, defender is melee, defender is a city, or defender is embarked
-        add(attacker.getAttackingStrength().tr() + attackIcon)
-        add(defender.getDefendingStrength(attacker.isRanged()).tr() + defenceIcon).row()
+        add(attacker.getAttackingStrength(defender).tr() + attackIcon)
+        add(defender.getDefendingStrength(attacker).tr() + defenceIcon).row()
 
         val attackerModifiers =
                 BattleDamage.getAttackModifiers(attacker, defender, tileToAttackFrom).map {
@@ -317,7 +317,9 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
         //Gdx.graphics.requestRendering()  // Use this if immediate rendering is required
 
         if (!canStillAttack) return
-        SoundPlayer.play(attacker.getAttackSound())
+        if (!SoundPlayer.play(UncivSound(attacker.getName())))
+            SoundPlayer.play(attacker.getAttackSound())
+
         val (damageToDefender, damageToAttacker) = Battle.attackOrNuke(attacker, attackableTile)
 
         worldScreen.battleAnimationDeferred(attacker, damageToAttacker, defender, damageToDefender)

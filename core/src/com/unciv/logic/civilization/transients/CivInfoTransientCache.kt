@@ -201,7 +201,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         newViewableTiles.addAll(civInfo.units.getCivUnits().flatMap { unit -> unit.viewableTiles.asSequence().filter { it.getOwner() != civInfo } })
 
         for (otherCiv in civInfo.getKnownCivs()) {
-            if (otherCiv.allyCiv == civInfo || otherCiv == civInfo.allyCiv) {
+            if (otherCiv.getAllyCivName() == civInfo.civName || otherCiv.civName == civInfo.getAllyCivName()) {
                 newViewableTiles.addAll(otherCiv.cities.asSequence().flatMap { it.getTiles() })
             }
         }
@@ -324,7 +324,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
             var resourceBonusPercentage = 1f
             for (unique in civInfo.getMatchingUniques(UniqueType.CityStateResources))
                 resourceBonusPercentage += unique.params[0].toFloat() / 100
-            for (cityStateAlly in civInfo.getKnownCivs().filter { it.allyCiv == civInfo }) {
+            for (cityStateAlly in civInfo.getKnownCivs().filter { it.getAllyCivName() == civInfo.civName }) {
                 for (resourceSupply in cityStateAlly.cityStateFunctions.getCityStateResourcesForAlly()) {
                     if (resourceSupply.resource.hasUnique(UniqueType.CannotBeTraded, cityStateAlly.state)) continue
                     val newAmount = (resourceSupply.amount * resourceBonusPercentage).toInt()

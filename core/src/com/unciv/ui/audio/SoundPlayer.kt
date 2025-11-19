@@ -182,14 +182,17 @@ object SoundPlayer {
      *
      * @param sound The sound to play
      * @see playRepeated
+     *
+     * @return True if the sound was processed correctly.
      */
-    fun play(sound: UncivSound) {
+    fun play(sound: UncivSound): Boolean {
         val volume = UncivGame.Current.settings.soundEffectsVolume
-        if (sound == UncivSound.Silent || volume < 0.01) return
-        val (resource, _) = get(sound) ?: return
+        if (sound == UncivSound.Silent || volume < 0.01) return true
+        val (resource, _) = get(sound) ?: return false
         resource.setVolume(volume)
         resource.seekTo(0f)
         resource.play()
+        return true
     }
 
     /** Play a sound repeatedly - e.g. to express that an action was applied multiple times or to multiple targets.
@@ -197,7 +200,10 @@ object SoundPlayer {
      *  Runs the actual sound player decoupled on the GL thread unlike [SoundPlayer.play], which leaves that responsibility to the caller.
      */
     fun playRepeated(sound: UncivSound, count: Int = 2, delay: Long = 200) {
-        if (count <= 1) return play(sound)
+        if (count <= 1) {
+            play(sound)
+            return
+        }
         val volume = UncivGame.Current.settings.soundEffectsVolume
         if (sound == UncivSound.Silent || volume < 0.01) return
         val (template, _) = get(sound) ?: return

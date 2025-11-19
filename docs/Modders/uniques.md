@@ -980,6 +980,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, Unit
 
+??? example  "[relativeAmount] Strength"
+	Example: "[+20] Strength"
+
+	Applicable to: Global, Unit
+
 ??? example  "[relativeAmount]% Strength decreasing with distance from the capital"
 	Example: "[+20]% Strength decreasing with distance from the capital"
 
@@ -1941,6 +1946,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "[relativeAmount]% Strength"
 	Example: "[+20]% Strength"
+
+	Applicable to: Global, Unit
+
+??? example  "[relativeAmount] Strength"
+	Example: "[+20] Strength"
 
 	Applicable to: Global, Unit
 
@@ -3234,6 +3244,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "&lt;on [difficulty] difficulty or higher&gt;"
 	Example: "&lt;on [Prince] difficulty or higher&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;on [difficulty] difficulty or lower&gt;"
+	Example: "&lt;on [Prince] difficulty or lower&gt;"
 
 	Applicable to: Conditional
 

@@ -79,7 +79,7 @@ allprojects {
         wellKnownInternalStateClasses = setOf(
             "com.badlogic.gdx.math.Vector2",
         )
-        warnOnPossibleAnnotations = true
+        warnOnPossibleAnnotations = false
     }
 
     apply(plugin = "eclipse")

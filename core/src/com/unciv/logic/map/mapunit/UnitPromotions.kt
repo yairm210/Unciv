@@ -164,6 +164,12 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
         toReturn.XP = XP
         toReturn.promotions = HashSet(promotions)
         toReturn.numberOfPromotions = numberOfPromotions
+        return toReturn
+    }
+
+    @Readonly
+    fun clone(unit: MapUnit): UnitPromotions {
+        @LocalState val toReturn = clone()
         toReturn.unit = unit
         return toReturn
     }
