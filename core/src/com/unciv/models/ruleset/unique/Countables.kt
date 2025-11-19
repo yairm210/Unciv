@@ -156,7 +156,7 @@ enum class Countables(
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val (buildingFilter, civFilter) = parameterText.getPlaceholderParameters()
             val civilizations = gameContext.gameInfo?.civilizations ?: return null
-            return civilizations
+            return civilizations.asSequence()
                 .filter { it.isAlive() && it.matchesFilter(civFilter, gameContext) }
                 .sumOf { civ ->
                     civ.cities.sumOf { city ->
