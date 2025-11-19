@@ -7,6 +7,7 @@ import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.screens.basescreen.TutorialController
 import com.unciv.models.ruleset.Belief as BaseBelief
 import com.unciv.models.ruleset.unit.UnitType as BaseUnitType
+import com.unciv.logic.GameInfo
 import yairm210.purity.annotations.Readonly
 
 /** Enum used as keys for Civilopedia "pages" (categories).
@@ -21,116 +22,125 @@ enum class CivilopediaCategories (
     val getImage: ((name: String, size: Float) -> Actor?)?,
     val binding: KeyboardBinding,
     val headerIcon: String,
-    val getCategoryIterator: (ruleset: Ruleset, tutorialController: TutorialController) -> Collection<ICivilopediaText>
+    val getCategoryIterator: (ruleset: Ruleset, tutorialController: TutorialController, gameInfo: GameInfo?) -> Collection<ICivilopediaText>
 ) {
     Building ("Buildings",
         CivilopediaImageGetters.construction,
         KeyboardBinding.PediaBuildings,
         "OtherIcons/Cities",
-        { ruleset, _ -> ruleset.buildings.values.filter { !it.isAnyWonder() } }
+        { ruleset, _, _ -> ruleset.buildings.values.filter { !it.isAnyWonder() } }
     ),
     Wonder ("Wonders",
         CivilopediaImageGetters.construction,
         KeyboardBinding.PediaWonders,
         "OtherIcons/Wonders",
-        { ruleset, _ -> ruleset.buildings.values.filter { it.isAnyWonder() } }
+        { ruleset, _, _ -> ruleset.buildings.values.filter { it.isAnyWonder() } }
     ),
     Resource ("Resources",
         CivilopediaImageGetters.resource,
         KeyboardBinding.PediaResources,
         "OtherIcons/Resources",
-        { ruleset, _ -> ruleset.tileResources.values }
+        { ruleset, _, _ -> ruleset.tileResources.values }
     ),
     Terrain ("Terrains",
         CivilopediaImageGetters.terrain,
         KeyboardBinding.PediaTerrains,
         "OtherIcons/Terrains",
-        { ruleset, _ -> ruleset.terrains.values }
+        { ruleset, _, _ -> ruleset.terrains.values }
     ),
     Improvement ("Tile Improvements",
         CivilopediaImageGetters.improvement,
         KeyboardBinding.PediaImprovements,
         "OtherIcons/Improvements",
-        { ruleset, _ -> ruleset.tileImprovements.values }
+        { ruleset, _, _ -> ruleset.tileImprovements.values }
     ),
     Unit ("Units",
         CivilopediaImageGetters.construction,
         KeyboardBinding.PediaUnits,
         "OtherIcons/Shield",
-        { ruleset, _ -> ruleset.units.values }
+        { ruleset, _, _ -> ruleset.units.values }
     ),
     UnitType ("Unit types",
         CivilopediaImageGetters.unitType,
         KeyboardBinding.PediaUnitTypes,
         "UnitTypeIcons/UnitTypes",
-        { ruleset, _ -> BaseUnitType.getCivilopediaIterator(ruleset) }
+        { ruleset, _, _ -> BaseUnitType.getCivilopediaIterator(ruleset) }
     ),
     Nation ("Nations",
         CivilopediaImageGetters.nation,
         KeyboardBinding.PediaNations,
         "OtherIcons/Nations",
-        { ruleset, _ -> ruleset.nations.values.filter { !it.isSpectator } }
+        { ruleset, _, _ -> ruleset.nations.values.filter { !it.isSpectator } }
     ),
     Technology ("Technologies",
         CivilopediaImageGetters.technology,
         KeyboardBinding.PediaTechnologies,
         "TechIcons/Philosophy",
-        { ruleset, _ -> ruleset.technologies.values }
+        { ruleset, _, _ -> ruleset.technologies.values }
     ),
     Promotion ("Promotions",
         CivilopediaImageGetters.promotion,
         KeyboardBinding.PediaPromotions,
         "UnitPromotionIcons/Mobility",
-        { ruleset, _ -> ruleset.unitPromotions.values }
+        { ruleset, _, _ -> ruleset.unitPromotions.values }
     ),
     Policy ("Policies",
         CivilopediaImageGetters.policy,
         KeyboardBinding.PediaPolicies,
         "PolicyIcons/Constitution",
-        { ruleset, _ -> ruleset.policies.values }
+        { ruleset, _, _ -> ruleset.policies.values }
     ),
     Belief("Religions and Beliefs",
         CivilopediaImageGetters.belief,
         KeyboardBinding.PediaBeliefs,
         "ReligionIcons/Religion",
-        { ruleset, _ -> (ruleset.beliefs.values.asSequence() +
+        { ruleset, _, _ -> (ruleset.beliefs.values.asSequence() +
             BaseBelief.getCivilopediaReligionEntry(ruleset)).toList() }
     ),
     Tutorial ("Tutorials",
         getImage = null,
         KeyboardBinding.PediaTutorials,
         "OtherIcons/ExclamationMark",
-        { _, tutorialController -> tutorialController.getCivilopediaTutorials() }
+        { _, tutorialController, _ -> tutorialController.getCivilopediaTutorials() }
     ),
     Victory ("Victory Types",
         CivilopediaImageGetters.victoryType,
         KeyboardBinding.PediaVictoryTypes,
         "OtherIcons/Score",
-        { ruleset, _ -> ruleset.victories.values }
+        { ruleset, _, gameInfo -> ruleset.victories.values
+            .filter {
+                // Only display active victory types
+                gameInfo?.gameParameters?.victoryTypes?.contains(it.name) ?: true
+            }
+        }
     ),
     UnitNameGroup("Unit Names",
         CivilopediaImageGetters.unitNameGroup,
         KeyboardBinding.PediaUnitNameGroups,
         "OtherIcons/UnitNameGroups",
-        { ruleset, _ -> ruleset.unitNameGroups.values }
+        { ruleset, _, _ -> ruleset.unitNameGroups.values
+            .filter {
+                it.unitNames.isNotEmpty() && it.getUnits(ruleset).isNotEmpty()
+            }
+        }
     ),
     Difficulty ("Difficulty levels",
         getImage = null,
         KeyboardBinding.PediaDifficulties,
         "OtherIcons/Quickstart",
-        { ruleset, _ -> ruleset.difficulties.values }
+        { ruleset, _, _ -> ruleset.difficulties.values }
     ),
     Era ("Eras",
         getImage = null,
         KeyboardBinding.PediaEras,
         "OtherIcons/Tyrannosaurus",
-        { ruleset, _ -> ruleset.eras.values }
+        { ruleset, _, _ -> ruleset.eras.values }
     ),
     Speed ("Speeds",
         getImage = null,
         KeyboardBinding.PediaSpeeds,
         "OtherIcons/Timer",
-        { ruleset, _ -> ruleset.speeds.values }
+        { ruleset, _, _ -> ruleset.speeds.values }
     );
 
     companion object {

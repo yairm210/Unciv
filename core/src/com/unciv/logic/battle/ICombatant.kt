@@ -11,8 +11,8 @@ interface ICombatant {
     @Readonly fun getHealth(): Int
     @Readonly fun getMaxHealth(): Int
     @Readonly fun getUnitType(): UnitType
-    @Readonly fun getAttackingStrength(): Int
-    @Readonly fun getDefendingStrength(attackedByRanged: Boolean = false): Int
+    @Readonly fun getAttackingStrength(defender: ICombatant? = null): Int
+    @Readonly fun getDefendingStrength(attacker: ICombatant? = null): Int
     fun takeDamage(damage: Int)
     @Readonly fun isDefeated(): Boolean
     @Readonly fun getCivInfo(): Civilization

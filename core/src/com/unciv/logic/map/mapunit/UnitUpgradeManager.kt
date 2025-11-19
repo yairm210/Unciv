@@ -94,20 +94,18 @@ class UnitUpgradeManager(val unit: MapUnit) {
         unit.destroy(destroyTransportedUnit = false)
         val civ = unit.civ
         val position = unit.currentTile.position
-        val newUnit = civ.units.placeUnitNearTile(position, upgradedUnit, unit.id)
+        val newUnit = civ.units.placeUnitNearTile(position, upgradedUnit, unit.id, copiedFrom = unit)
 
         /** We were UNABLE to place the new unit, which means that the unit failed to upgrade!
          * The only known cause of this currently is "land units upgrading to water units" which fail to be placed.
          */
         if (newUnit == null) {
-            val resurrectedUnit = civ.units.placeUnitNearTile(position, unit.baseUnit)!!
-            unit.copyStatisticsTo(resurrectedUnit)
+            civ.units.placeUnitNearTile(position, unit.baseUnit, copiedFrom = unit)!!
             return
         }
 
         // Managed to upgrade
         if (!isFree) civ.addGold(-(goldCostOfUpgrade ?: getCostOfUpgrade(upgradedUnit)))
-        unit.copyStatisticsTo(newUnit)
         newUnit.currentMovement = 0f
         // wake up if lost ability to fortify
         if (newUnit.isFortified() && !newUnit.canFortify(ignoreAlreadyFortified = true))

@@ -181,6 +181,26 @@ enum class Countables(
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
     },
 
+    FilteredTechnologies("Researched [techFilter] Technologies") {
+        override val documentationStrings = listOf(
+            "Counts researched matching technologies for the relevant Civilization",
+            "Repeatable technologies, like Future Tech, are only counted once"
+        )
+        override fun eval(parameterText: String, gameContext: GameContext): Int? {
+            val technologies = gameContext.gameInfo?.ruleset?.technologies ?: return null
+            val techManager = gameContext.civInfo?.tech ?: return null
+            val filter = parameterText.getPlaceholderParameters()[0]
+            return techManager.techsResearched.count {
+                technologies[it]?.matchesFilter(filter, gameContext) ?: false
+            }
+        }
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
+            UniqueParameterType.TechFilter.getTranslatedErrorSeverity(parameterText, ruleset)
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
+            UniqueParameterType.TechFilter.getKnownValuesForAutocomplete(ruleset)
+                .map { text.fillPlaceholders(it) }.toSet()
+    },
+
     RemainingCivs("Remaining [civFilter] Civilizations") {
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val filter = parameterText.getPlaceholderParameters()[0]

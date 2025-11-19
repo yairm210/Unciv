@@ -110,7 +110,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
         val toReturn = QuestManager()
         toReturn.globalQuestCountdown = globalQuestCountdown
         toReturn.individualQuestCountdown.putAll(individualQuestCountdown)
-        toReturn.assignedQuests.addAll(assignedQuests)
+        toReturn.assignedQuests.addAll(assignedQuests.map { it.clone() })
         toReturn.unitsToKillForCiv.putAll(unitsToKillForCiv)
         for ((attacker, unitsKilled) in unitsKilledFromCiv) {
             toReturn.unitsKilledFromCiv[attacker] = HashMap(unitsKilled)
@@ -907,6 +907,8 @@ class AssignedQuest(
     private lateinit var questObject: Quest
 
     val questNameInstance get() = questObject.questNameInstance
+
+    fun clone() = AssignedQuest(questName, assigner, assignee, assignedOnTurn, data1, data2)
 
     internal fun setTransients(gameInfo: GameInfo, quest: Quest? = null) {
         this.gameInfo = gameInfo

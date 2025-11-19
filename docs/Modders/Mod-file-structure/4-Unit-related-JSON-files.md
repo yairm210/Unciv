@@ -29,7 +29,7 @@ Each unit has the following structure:
 | promotions                | List of Strings | empty    | A list of all the promotions the unit automatically receives upon being built. Each promotion must be in [UnitPromotions.json](#unitpromotionsjson) |
 | uniques                   | List of Strings | empty    | List of [unique abilities](../uniques.md) this unit has                                                                                             |
 | replacementTextForUniques | String          | none     | If provided, this will be displayed instead of the list of uniques. Can be used for better formatting.                                              |
-| attackSound               | String          | none     | The sound that is to be played when this unit attacks. For possible values, see [Sounds](../../Images-and-Audio.md#sounds)                          |
+| attackSound               | String          | none     | The sound that will be played when the unit attacks, and if there isn't already a sound named by the unit's name. For possible values, see [Sounds](../../Images-and-Audio.md#sounds) |
 | civilopediaText           | List            | empty    | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text)                                                                       |
 
 ## UnitPromotions.json
