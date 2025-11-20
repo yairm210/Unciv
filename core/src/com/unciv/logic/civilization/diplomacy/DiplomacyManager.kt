@@ -199,15 +199,15 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         return toReturn
     }
 
-    constructor(civilization: Civilization, mOtherCivName: String) : this() {
+    constructor(civilization: Civilization, otherCivName: String) : this() {
         civInfo = civilization
-        otherCivName = mOtherCivName
+        this.otherCivName = otherCivName
         updateHasOpenBorders()
     }
 
     constructor(civilization: Civilization, otherCiv: Civilization) : this() {
         civInfo = civilization
-        mOtherCiv = otherCiv
+        _otherCiv = otherCiv
         otherCivName = otherCiv.civName
         updateHasOpenBorders()
     }
@@ -216,11 +216,11 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
     @Cache
     @Transient
-    private lateinit var mOtherCiv: Civilization
+    private lateinit var _otherCiv: Civilization
     @get:Readonly val otherCiv: Civilization get() {
-        if (!::mOtherCiv.isInitialized)
-            mOtherCiv = civInfo.gameInfo.getCivilization(otherCivName)
-        return mOtherCiv
+        if (!::_otherCiv.isInitialized)
+            _otherCiv = civInfo.gameInfo.getCivilization(otherCivName)
+        return _otherCiv
     }
     @Readonly fun otherCivDiplomacy() = otherCiv.getDiplomacyManager(civInfo)!!
 

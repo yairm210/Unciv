@@ -363,10 +363,10 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
 
     @Readonly fun getOwner(): Civilization? = getCity()?.civ
     
-    @Transient private var roadOwnerOb: Civilization? = null
+    @Transient private var roadOwnerObject: Civilization? = null
     @Readonly
     fun getRoadOwner(): Civilization? {
-        return roadOwnerOb ?: getOwner()
+        return roadOwnerObject ?: getOwner()
     }
 
     @Readonly
@@ -822,26 +822,26 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             gameInfo = if (tileMap.hasGameInfo()) tileMap.gameInfo else null)
         
         if (owningCity == null && roadOwner != "") {
-            if (roadOwnerOb == null && tileMap.hasGameInfo())
-                roadOwnerOb = tileMap.gameInfo.getCivilization(roadOwner)
+            if (roadOwnerObject == null && tileMap.hasGameInfo())
+                roadOwnerObject = tileMap.gameInfo.getCivilization(roadOwner)
             getRoadOwner()!!.neutralRoads.add(this.position)
         }
     }
 
     fun setOwningCity(city: City?) {
-        if (roadOwner != "" && roadOwnerOb == null)
-            roadOwnerOb = tileMap.gameInfo.getCivilization(roadOwner)
+        if (roadOwner != "" && roadOwnerObject == null)
+            roadOwnerObject = tileMap.gameInfo.getCivilization(roadOwner)
         if (city != null) {
             if (roadStatus != RoadStatus.None && roadOwner != "") {
                 // remove previous neutral tile owner
                 getRoadOwner()!!.neutralRoads.remove(this.position)
             }
             roadOwner = city.civ.civName // only when taking control, otherwise last owner
-            roadOwnerOb = city.civ
+            roadOwnerObject = city.civ
         } else if (roadStatus != RoadStatus.None && owningCity != null) {
             // Razing City! Remove owner
             roadOwner = ""
-            roadOwnerOb = null
+            roadOwnerObject = null
         }
         owningCity = city
         stateThisTile = GameContext(tile = this, city = city, gameInfo = tileMap.gameInfo)
@@ -980,12 +980,12 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         val currentOwner = getOwner()
         if (newRoadStatus == RoadStatus.None && owningCity == null)
             getRoadOwner()?.neutralRoads?.remove(this.position)
-        else if (currentOwner != null && currentOwner != roadOwnerOb) {
+        else if (currentOwner != null && currentOwner != roadOwnerObject) {
             roadOwner = currentOwner.civName
-            roadOwnerOb = currentOwner
+            roadOwnerObject = currentOwner
         } else if (creatingCivInfo != null) {
             roadOwner = creatingCivInfo.civName // neutral tile, use building unit
-            roadOwnerOb = creatingCivInfo
+            roadOwnerObject = creatingCivInfo
             creatingCivInfo.neutralRoads.add(this.position)
         }
     }
