@@ -17,7 +17,7 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     override fun getTile(): Tile = unit.getTile()
     override fun getName(): String = unit.name
     override fun getInstanceName(): String = if (unit.instanceName.isNullOrEmpty()) unit.name else unit.instanceName!!
-    override fun isUnitRenamed(): Boolean = if (unit.instanceName.isNullOrEmpty()) false else true
+    override fun isUnitRenamed(): Boolean = !(unit.instanceName.isNullOrEmpty())
     override fun isDefeated(): Boolean = unit.health <= 0
     override fun isInvisible(to: Civilization): Boolean = unit.isInvisible(to)
     override fun canAttack(): Boolean = unit.canAttack()
