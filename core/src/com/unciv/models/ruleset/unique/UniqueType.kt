@@ -345,6 +345,8 @@ enum class UniqueType(
 
     DestroyedWhenCityCaptured("Destroyed when the city is captured", UniqueTarget.Building),
     NotDestroyedWhenCityCaptured("Never destroyed when the city is captured", UniqueTarget.Building),
+    GoldFromCapturingCity("[relativeAmount]% Gold given to enemy if city is captured", UniqueTarget.Building),
+    @Deprecated("As of 4.18.15", ReplaceWith("[+100]% Gold given to enemy if city is captured"), DeprecationLevel.WARNING)
     DoublesGoldFromCapturingCity("Doubles Gold given to enemy if city is captured", UniqueTarget.Building),
 
 
