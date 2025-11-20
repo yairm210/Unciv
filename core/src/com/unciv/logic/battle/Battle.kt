@@ -283,7 +283,7 @@ object Battle {
             ourCombatant = ourUnit, theirCombatant = enemy, tile = attackedTile)
         for (unique in ourUnit.unit.getTriggeredUniques(UniqueType.TriggerUponDefeatingUnit, gameContext)
         { enemy.unit.matchesFilter(it.params[0]) })
-            UniqueTriggerActivation.triggerUnique(unique, ourUnit.unit, triggerNotificationText = "due to ${if (ourUnit.unit.instanceName == null) "our [${ourUnit.getName()}]" else "[${ourUnit.unit.shortDisplayName()}]"} defeating a [${enemy.getName()}]")
+            UniqueTriggerActivation.triggerUnique(unique, ourUnit.unit, triggerNotificationText = "due to ${if (!ourUnit.isUnitRenamed()) "our "}[${ourUnit.getDisplayName()}] defeating a [${enemy.getName()}]")
     }
 
     private fun triggerDamageUniquesForUnit(triggeringUnit: MapUnitCombatant, enemy: MapUnitCombatant, attackedTile: Tile, combatAction: CombatAction){
@@ -293,9 +293,9 @@ object Battle {
         for (unique in triggeringUnit.unit.getTriggeredUniques(UniqueType.TriggerUponDamagingUnit, gameContext)
         { enemy.matchesFilter(it.params[0]) }){
             if (unique.params[0] == Constants.targetUnit){
-                UniqueTriggerActivation.triggerUnique(unique, enemy.unit, triggerNotificationText = "due to ${if (enemy.unit.instanceName == null) "our [${enemy.getName()}]" else "[${enemy.unit.shortDisplayName()}]"} being damaged by a [${triggeringUnit.getName()}]")
+                UniqueTriggerActivation.triggerUnique(unique, enemy.unit, triggerNotificationText = "due to ${if (!enemy.isUnitRenamed()) "our "}[${enemy.getDisplayName()}] being damaged by a [${triggeringUnit.getName()}]")
             } else {
-                UniqueTriggerActivation.triggerUnique(unique, triggeringUnit.unit, triggerNotificationText = "due to ${if (triggeringUnit.unit.instanceName == null) "our [${triggeringUnit.getName()}]" else "[${triggeringUnit.unit.shortDisplayName()}]"} damaging a [${enemy.getName()}]")
+                UniqueTriggerActivation.triggerUnique(unique, triggeringUnit.unit, triggerNotificationText = "due to ${if (!triggeringUnit.isUnitRenamed()) "our "}[${triggeringUnit.getDisplayName()}] damaging a [${enemy.getName()}]")
             }
         }
     }
@@ -304,7 +304,7 @@ object Battle {
         val gameContext = GameContext(civInfo = ourUnit.getCivInfo(),
             ourCombatant = ourUnit, theirCombatant=enemy, tile = attackedTile)
         for (unique in ourUnit.unit.getTriggeredUniques(UniqueType.TriggerUponDefeat, gameContext))
-            UniqueTriggerActivation.triggerUnique(unique, ourUnit.unit, triggerNotificationText = "due to ${if (ourUnit.unit.instanceName == null) "our [${ourUnit.getName()}]" else "[${ourUnit.unit.shortDisplayName()}]"} being defeated by a [${enemy.getName()}]")
+            UniqueTriggerActivation.triggerUnique(unique, ourUnit.unit, triggerNotificationText = "due to ${if (!ourUnit.isUnitRenamed()) "our "}[${ourUnit.getDisplayName()}] being defeated by a [${enemy.getName()}]")
     }
 
     private fun tryEarnFromKilling(civUnit: ICombatant, defeatedUnit: MapUnitCombatant) {
@@ -458,7 +458,7 @@ object Battle {
             civ.addGameResource(resource, plunderedAmount)
             val icon = if (resource is SubStat) resource.icon else "ResourceIcons/$resourceName"
             civ.addNotification(
-                "Your ${if (plunderingUnit.unit.instanceName == null) "[${plunderingUnit.getName()}]" else "unit [${plunderingUnit.unit.shortDisplayName()}]"} plundered [${plunderedAmount}] [${resourceName}] from [${plunderedUnit.getName()}]",
+                "Your ${if (plunderingUnit.isUnitRenamed()) "unit "}[${plunderingUnit.getDisplayName()}] plundered [${plunderedAmount}] [${resourceName}] from [${plunderedUnit.getName()}]",
                 plunderedUnit.getTile().position,
                 NotificationCategory.War,
                 plunderingUnit.getName(), NotificationIcon.War, icon,
@@ -471,7 +471,7 @@ object Battle {
             if (plunderedAmount == 0) continue
             civ.addStat(key, plunderedAmount)
             civ.addNotification(
-                "Your ${if (plunderingUnit.unit.instanceName == null) "[${plunderingUnit.getName()}]" else "unit [${plunderingUnit.unit.shortDisplayName()}]"} plundered [${plunderedAmount}] [${key.name}] from [${plunderedUnit.getName()}]",
+                "Your ${if (plunderingUnit.isUnitRenamed()) "unit "}[${plunderingUnit.getDisplayName()}] plundered [${plunderedAmount}] [${key.name}] from [${plunderedUnit.getName()}]",
                 plunderedUnit.getTile().position,
                 NotificationCategory.War,
                 plunderingUnit.getName(), NotificationIcon.War, "StatIcons/${key.name}",
@@ -510,7 +510,7 @@ object Battle {
                 if (defender.isCity())
                     if (defender.isDefeated() && attacker.isRanged()) " the defence of [" + defender.getName() + "]"
                     else " [" + defender.getName() + "]"
-                else "${if (defender.unit.instanceName == null) "our [${defender.getName()}]" else "[${defender.unit.shortDisplayName()}]"}"
+                else "${if (!defender.isUnitRenamed()) "our "}[${defender.getDisplayName()}]"
 
         val attackerHurtString = if (damageDealt != null && damageDealt.defenderDealt != 0) " ([-${damageDealt.defenderDealt}] HP)" else ""
         val defenderHurtString = if (damageDealt != null) " ([-${damageDealt.attackerDealt}] HP)" else ""
