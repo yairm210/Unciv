@@ -510,7 +510,7 @@ object Battle {
                 if (defender.isCity())
                     if (defender.isDefeated() && attacker.isRanged()) " the defence of [" + defender.getName() + "]"
                     else " [" + defender.getName() + "]"
-                else "${if (defender.isUnitRenamed()) "" else "our"} [" + defender.getInstanceName() + "]"
+                else "${if (defender.isUnitRenamed()) "" else "our "}[" + defender.getInstanceName() + "]"
 
         val attackerHurtString = if (damageDealt != null && damageDealt.defenderDealt != 0) " ([-${damageDealt.defenderDealt}] HP)" else ""
         val defenderHurtString = if (damageDealt != null) " ([-${damageDealt.attackerDealt}] HP)" else ""
