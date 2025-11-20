@@ -89,6 +89,8 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     var roadIsPillaged = false
     private var roadOwner: String = "" // either who last built the road or last owner of tile
 
+    @Transient private var roadOwnerObject: Civilization? = null
+
     var hasBottomRightRiver = false
     var hasBottomRiver = false
     var hasBottomLeftRiver = false
@@ -363,7 +365,6 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
 
     @Readonly fun getOwner(): Civilization? = getCity()?.civ
     
-    @Transient private var roadOwnerObject: Civilization? = null
     @Readonly
     fun getRoadOwner(): Civilization? {
         return roadOwnerObject ?: getOwner()

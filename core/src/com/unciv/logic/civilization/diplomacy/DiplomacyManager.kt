@@ -159,12 +159,22 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     @Transient
     lateinit var civInfo: Civilization
 
+    lateinit var otherCivName: String
+        private set
+    @Cache
+    @Transient
+    private lateinit var _otherCiv: Civilization
+    @get:Readonly val otherCiv: Civilization get() {
+        if (!::_otherCiv.isInitialized)
+            _otherCiv = civInfo.gameInfo.getCivilization(otherCivName)
+        return _otherCiv
+    }
+
     // since this needs to be checked a lot during travel, putting it in a transient is a good performance booster
     @Transient
     /** Can civInfo enter otherCivInfo's tiles? */
     var hasOpenBorders = false
 
-    lateinit var otherCivName: String
     var trades = ArrayList<Trade>()
     var diplomaticStatus = DiplomaticStatus.War
 
@@ -213,15 +223,6 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     }
 
     //region pure functions
-
-    @Cache
-    @Transient
-    private lateinit var _otherCiv: Civilization
-    @get:Readonly val otherCiv: Civilization get() {
-        if (!::_otherCiv.isInitialized)
-            _otherCiv = civInfo.gameInfo.getCivilization(otherCivName)
-        return _otherCiv
-    }
     @Readonly fun otherCivDiplomacy() = otherCiv.getDiplomacyManager(civInfo)!!
 
     @Readonly

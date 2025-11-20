@@ -18,7 +18,6 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
 
     override lateinit var name: String
     var displayName: String? = null
-    lateinit var foundingCivName: String
 
     private var founderBeliefs: HashSet<String> = hashSetOf()
     private var followerBeliefs: HashSet<String> = hashSetOf()
@@ -31,6 +30,8 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
     @Transient
     lateinit var gameInfo: GameInfo
     
+    lateinit var foundingCivName: String
+        private set
     @Transient
     @Cache
     private lateinit var _foundingCiv: Civilization

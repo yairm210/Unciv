@@ -44,7 +44,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
     /** civName owning the unit */
     lateinit var owner: String
 
-    /** civName of original owner - relevant for returning captured workers from barbarians */
+    /** civName of original owner - relevant for returning captured workers from barbarians 
+     * 
+     * Serialization field for [originalOwningCiv]*/
     var originalOwner: String? = null
 
     /**
@@ -155,7 +157,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
     @Transient
     var cache = MapUnitCache(this)
 
-    /** civ of original owner - relevant for returning captured workers from barbarians */
+    /** civ of original owner - relevant for returning captured workers from barbarians 
+     * 
+     * Transient field for [originalOwner]*/
     @delegate:Transient
     val originalOwningCiv by lazy { originalOwner?.let { civ.gameInfo.getCivilization(it) } }
 
