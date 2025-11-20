@@ -63,7 +63,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     var location: Vector2 = Vector2.Zero
     var id: String = UUID.randomUUID().toString()
     override var name: String = ""
-    /**Serialization field for [foundingCivObject]. Is equivalient to ``foundingCivObject.civName``*/
+    /** Serialization field for [foundingCivObject]. Is equivalent to `foundingCivObject.civName` */
     private var foundingCiv = ""
     // This is so that cities in resistance that are recaptured aren't in resistance anymore
     var previousOwner = ""
