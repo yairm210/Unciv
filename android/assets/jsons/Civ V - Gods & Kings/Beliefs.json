@@ -147,7 +147,12 @@
     {
         "name": "Holy Warriors",
         "type": "Follower",
-        "uniques": ["May buy [{Military} {Land}] units with [Faith] for [2] times their normal Production cost <before the [Industrial era]>"]
+        "uniques": [
+            "May buy [{Ancient era} {Military} {Land}] units with [Faith] for [2] times their normal Production cost <in [in cities following this religion] cities>",
+            "May buy [{Classical era} {Military} {Land}] units with [Faith] for [2] times their normal Production cost <in [in cities following this religion] cities>",
+            "May buy [{Medieval era} {Military} {Land}] units with [Faith] for [2] times their normal Production cost <in [in cities following this religion] cities>",
+            "May buy [{Renaissance era} {Military} {Land}] units with [Faith] for [2] times their normal Production cost <in [in cities following this religion] cities>"
+        ]
     },
     {
         "name": "Liturgical Drama",
