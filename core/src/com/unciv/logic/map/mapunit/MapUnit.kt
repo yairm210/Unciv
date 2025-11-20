@@ -999,7 +999,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         if (civ.hasUnique(UniqueType.TripleGoldFromEncampmentsAndCities))
             goldGained *= 3f
         
-        for (unique in civ.getMatchingUniques(UniqueType.GoldFromEncampmentsAndCities)) {
+        for (unique in civ.getMatchingUniques(UniqueType.GoldFromEncampmentsAndCities, cache.state)) {
             goldGained *= unique.params[0].toPercent()
         }
         

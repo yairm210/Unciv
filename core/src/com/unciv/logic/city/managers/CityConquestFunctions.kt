@@ -37,7 +37,7 @@ class CityConquestFunctions(val city: City) {
         val conqueringCivModifier = if (conqueringCiv.hasUnique(UniqueType.TripleGoldFromEncampmentsAndCities)) 3f else 1f
         var conqueringCivModifierNew = 1f
         
-        for (unique in conqueringCiv.getMatchingUniques(UniqueType.GoldFromEncampmentsAndCities)) {
+        for (unique in conqueringCiv.getMatchingUniques(UniqueType.GoldFromEncampmentsAndCities, conqueringCiv.state)) {
             conqueringCivModifierNew *= unique.params[0].toPercent()
         }
         
