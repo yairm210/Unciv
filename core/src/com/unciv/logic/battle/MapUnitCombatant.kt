@@ -16,8 +16,6 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     override fun getCivInfo(): Civilization = unit.civ
     override fun getTile(): Tile = unit.getTile()
     override fun getName(): String = unit.name
-    override fun getDisplayName(): String = if (unit.instanceName.isNullOrEmpty()) unit.name else unit.shortDisplayName()!!
-    override fun isUnitRenamed(): Boolean = !(unit.instanceName.isNullOrEmpty())
     override fun isDefeated(): Boolean = unit.health <= 0
     override fun isInvisible(to: Civilization): Boolean = unit.isInvisible(to)
     override fun canAttack(): Boolean = unit.canAttack()
@@ -25,6 +23,16 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     override fun getAttackSound() = unit.baseUnit.attackSound.let {
         if (it == null) UncivSound.Click else UncivSound(it)
     }
+
+    override fun getNotificationDisplay(leadingText: String): String {
+        var displayName = if (unit.instanceName.isNullOrEmpty()) unit.name else unit.shortDisplayName()
+        var isUnitRenamed = !(unit.instanceName.isNullOrEmpty())
+        if (isUnitRenamed)
+            return "[" + displayName + "]"
+        else
+            return leadingText + "[" + displayName + "]"
+    }
+
 
     override fun takeDamage(damage: Int) = unit.takeDamage(damage)
 
