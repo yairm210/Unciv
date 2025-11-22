@@ -113,4 +113,31 @@ class Era : RulesetObject() {
     }
 
     @Readonly fun getHexColor() = "#" + getColor().toString().substring(0, 6)
+
+    /** Implements [UniqueParameterType.CivFilter][com.unciv.models.ruleset.unique.UniqueParameterType.CivFilter] */
+    @Readonly
+    fun matchesFilter(filter: String, state: GameContext? = null, multiFilter: Boolean = true): Boolean =
+        if (multiFilter) MultiFilter.multiFilter(filter, { matchesSingleFilter(it, state) })
+        else matchesSingleFilter(filter, state)
+
+    @Readonly
+    fun matchesSingleFilter(filter: String, state: GameContext? = null): Boolean {
+        return when (filter) {
+            "any era" -> true
+            name -> true
+            else -> {
+                if (filter.startsWith("pre-[")) {
+                    val eraName = filter.removePrefix("pre-[").replaceSuffix("]")
+                    val eras = state?.ruleset?.eras ?: return false
+                    return eraNumber < eras[eraName].eraNumber
+                }
+                else if (filter.startsWith("post-[")) {
+                    val eraName = filter.removePrefix("post-[").replaceSuffix("]")
+                    val eras = state?.ruleset?.eras ?: return false
+                    return eraNumber > eras[eraName].eraNumber
+                }
+                false
+            }
+        }
+    }
 }

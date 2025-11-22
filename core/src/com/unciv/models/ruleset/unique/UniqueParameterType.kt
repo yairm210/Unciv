@@ -422,6 +422,16 @@ enum class UniqueParameterType(
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.eras.keys
     },
 
+    /** [UniqueType.OneTimeFreeTechRuins], [UniqueType.ConditionalDuringEra] and similar */
+    EraFilter("eraFilter", "Ancient era", "The name of an era, `any era`, `pre-[era]`, `post-[era]`") {
+        override val staticKnownValues = setOf("any era")
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
+            staticKnownValues +
+            ruleset.eras.keys +
+            ruleset.eras.keys.flatMap { listOf("pre-[$it]", "post-[$it]") }
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = getErrorSeverityForFilter(parameterText, ruleset)
+    },
+
     Speed("speed", "Quick", "The name of any speed") {
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.speeds.keys
     },
@@ -542,10 +552,10 @@ enum class UniqueParameterType(
         override fun isKnownValue(parameterText: String, ruleset: Ruleset) = when (parameterText) {
             in staticKnownValues -> true
             in ruleset.technologies -> true
-            in ruleset.eras -> true
+            in EraFilter.getKnownValuesForAutocomplete(ruleset) -> true
             else -> ruleset.technologies.values.any { it.hasTagUnique(parameterText) }
         }
-        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = staticKnownValues + ruleset.technologies.keys + ruleset.eras.keys
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = staticKnownValues + ruleset.technologies.keys + EraFilter.getKnownValuesForAutocomplete(ruleset)
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = getErrorSeverityForFilter(parameterText, ruleset)
     },
 
