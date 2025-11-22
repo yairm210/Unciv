@@ -13,7 +13,7 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.math.abs
 
-class Speed : RulesetObject(), IsPartOfGameInfoSerialization {
+class Speed : RulesetObject() {
     var modifier: Float = 1f
     var goldCostModifier: Float = modifier
     var productionCostModifier: Float = modifier
