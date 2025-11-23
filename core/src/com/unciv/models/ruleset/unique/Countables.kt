@@ -51,7 +51,7 @@ enum class Countables(
     Year("year", shortDocumentation = "The current year") {
         override val documentationStrings = listOf("Depends on game speed or start era, negative for years BC")
         override fun eval(parameterText: String, gameContext: GameContext) =
-            gameContext.gameInfo?.run { getYear(turns) }
+            gameContext.gameInfo?.getYear(0)
     },
     Cities("Cities", shortDocumentation = "The number of cities the relevant Civilization owns") {
         override fun eval(parameterText: String, gameContext: GameContext) =
