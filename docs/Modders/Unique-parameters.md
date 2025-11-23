@@ -161,6 +161,7 @@ Allowed values:
 
 - Era name (e.g.: `Modern era`)
 - `any era`
+- `Starting Era` - The era in which the game began
 - `pre-[era]` - Any era that appears prior to the given era (e.g.: `pre-[Modern era]`)
 - `post-[era]` - Any era that appears after the given era (e.g.: `post-[Ancient era]`)
 

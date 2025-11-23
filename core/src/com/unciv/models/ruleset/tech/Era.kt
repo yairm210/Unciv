@@ -116,7 +116,7 @@ class Era : RulesetObject() {
 
     @Readonly fun getHexColor() = "#" + getColor().toString().substring(0, 6)
 
-    /** Implements [UniqueParameterType.CivFilter][com.unciv.models.ruleset.unique.UniqueParameterType.CivFilter] */
+    /** Implements [UniqueParameterType.EraFilter][com.unciv.models.ruleset.unique.UniqueParameterType.EraFilter] */
     @Readonly
     fun matchesFilter(filter: String, state: GameContext? = null, multiFilter: Boolean = true): Boolean =
         if (multiFilter) MultiFilter.multiFilter(filter, { matchesSingleFilter(it, state) })
@@ -128,13 +128,15 @@ class Era : RulesetObject() {
             "any era" -> true
             name -> true
             else -> {
-                if (filter.startsWith("pre-[")) {
-                    val gameInfo = state?.gameInfo ?: UncivGame.Current.gameInfo
+                val gameInfo = state?.gameInfo ?: UncivGame.Current.gameInfo
+                if (filter == "Starting Era") {
+                    return name == gameInfo?.gameParameters?.startingEra ?: "Ancient era"
+                }
+                else if (filter.startsWith("pre-[")) {
                     val targetEra = gameInfo?.ruleset?.eras?.get(filter.removePrefix("pre-[").removeSuffix("]"))
                     return targetEra?.eraNumber?.let { eraNumber < it } ?: false
                 }
                 else if (filter.startsWith("post-[")) {
-                    val gameInfo = state?.gameInfo ?: UncivGame.Current.gameInfo
                     val targetEra = gameInfo?.ruleset?.eras?.get(filter.removePrefix("post-[").removeSuffix("]"))
                     return targetEra?.eraNumber?.let { eraNumber > it } ?: false
                 }
