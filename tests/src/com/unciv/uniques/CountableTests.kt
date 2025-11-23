@@ -1,5 +1,6 @@
 package com.unciv.uniques
 
+import com.unciv.Constants
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.Ruleset
@@ -23,6 +24,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Test
 import org.junit.runner.RunWith
+import kotlin.random.Random
 import kotlin.reflect.full.declaredFunctions
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
@@ -411,6 +413,117 @@ class CountableTests {
         assertEquals("Testing Happiness", 6, happiness)
     }
 
+    private fun setupModdedGame(vararg addGlobalUniques: String, withCiv: Boolean = true): Ruleset {
+        game = TestGame(*addGlobalUniques)
+        game.makeHexagonalMap(3)
+        if (!withCiv) return game.ruleset
+        civ = game.addCiv()
+        city = game.addCity(civ, game.tileMap[2,0])
+        return game.ruleset
+    }
+
+    @Test
+    @CoversCountable(Countables.EraNumber)
+    fun testEraNumberCountable() {
+        setupModdedGame()
+        val context = GameContext(civ)
+
+        runTestParcours("Era number countable", { tech: String ->
+            civ.tech.addTechnology(tech, false)
+            Countables.getCountableAmount("Era number", context)
+        },
+            "Agriculture", 0,
+            "Optics", 1,
+            "Archery", 1,
+            "Navigation", 3,
+        )
+    }
+
+    @Test
+    @CoversCountable(Countables.Integer, Countables.Turns, Countables.Year, Countables.Expression)
+    fun testTimeCountables() {
+        setupModdedGame()
+        val context = GameContext(civ)
+
+        runTestParcours("Year and turns countables", { input: Pair<Int, String> ->
+            game.gameInfo.turns = input.first
+            Countables.getCountableAmount(input.second, context)
+        },
+            7 to "[year] - ([-4000] + [40] * [turns])", 0,
+            42 to "[year] - (-4000 + 40 * [turns])", 0,
+            124 to "[year]", 225,
+        )
+    }
+
+    @Test
+    @CoversCountable(Countables.GameSpeedModifier)
+    fun testSpeedModifierCountable() {
+        setupModdedGame()
+        val context = GameContext(civ)
+
+        runTestParcours("Game speed modifier countable", { input: Pair<String, String> ->
+            game.gameInfo.gameParameters.speed = input.first
+            game.gameInfo.setGlobalTransients()
+            Countables.getCountableAmount("Speed modifier for [${input.second}]", context)
+        },
+            "Quick" to "Production", 67,
+            "Standard" to "Gold", 100,
+            "Marathon" to "Faith", 300,
+        )
+    }
+
+    @Test
+    @CoversCountable(Countables.Cities, Countables.Units)
+    fun testCitiesAndUnitsCountable() {
+        setupModdedGame()
+        val city2 = game.addCity(civ, game.tileMap[-2,0])
+        game.addUnit("Warrior", civ, city.getCenterTile())
+        game.addUnit("Warrior", civ, city2.getCenterTile())
+        game.addUnit("Scout", civ, game.tileMap.values.first())
+        game.addUnit("Scout", civ, game.tileMap.values.last())
+        val actual = Countables.getCountableAmount("[Cities] + 10 * [Units]", GameContext(civ))
+        assertEquals("There should be four units and 2 cities", 42, actual)
+    }
+
+    @Test
+    @CoversCountable(Countables.RemainingCivs, Countables.FilteredUnits)
+    fun testFilteredUnitsCountable() {
+        setupModdedGame()
+        game.addUnit("Warrior", civ, city.getCenterTile())
+        game.addUnit("Scout", civ, game.tileMap.values.first())
+        game.addUnit("Scout", civ, game.tileMap.values.last())
+        game.addUnit("Worker", civ, game.tileMap[2,1])
+        game.addUnit("Worker", civ, game.tileMap[2,-1])
+        val deSela = game.addCiv(game.ruleset.nations["Lhasa"]!!)
+        val city2 = game.addCity(deSela, game.tileMap[-2,1])
+        game.addUnit("Scout", deSela, city2.getCenterTile())
+        val actual = Countables.getCountableAmount("[Remaining [all] Civilizations] + 10 * [[Military] Units]", GameContext(civ))
+        assertEquals("There should be three military units and 2 civilizations", 32, actual)
+    }
+
+    @Test
+    @CoversCountable(Countables.TileFilterTiles, Countables.TileResources)
+    fun testTileFilterTilesCountable() {
+        val ruleset = setupModdedGame("Provides [40] [Horses]")
+        val wetTile = game.tileMap[0,0]
+        wetTile.setBaseTerrain(ruleset.terrains[Constants.coast]!!)
+        for (tile in wetTile.getTilesAtDistance(3))
+            tile.addTerrainFeature(if (Random.nextBoolean()) "Forest" else "Jungle")
+        city.getCenterTile().setTileResource(ruleset.tileResources["Horses"]!!, false, Random(42))
+        civ.tech.addTechnology("Animal Husbandry", false)
+        val context = GameContext(civ)
+        runTestParcours("Countables TileFilterTiles and TileResources",
+            { test: String -> Countables.getCountableAmount(test, context) },
+            "Horses", 42,
+            "[Coastal] Tiles", 6,
+            "[Coast] Tiles", 1,
+            "[Land] Tiles", 36,
+            "[City center] Tiles", 1,
+            "[Nation-0] Tiles", 7,
+            "[Vegetation] Tiles", 18,
+        )
+    }
+
     @Test
     @CoversCountable(Countables.FilteredTechnologies)
     fun testFilteredTechnologies() {
@@ -437,14 +550,5 @@ class CountableTests {
             "Pottery", 1,
             "Archery", 0,
         )
-    }
-
-    private fun setupModdedGame(vararg addGlobalUniques: String, withCiv: Boolean = true): Ruleset {
-        game = TestGame(*addGlobalUniques)
-        game.makeHexagonalMap(3)
-        if (!withCiv) return game.ruleset
-        civ = game.addCiv()
-        city = game.addCity(civ, game.tileMap[2,0])
-        return game.ruleset
     }
 }
