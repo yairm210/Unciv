@@ -17,6 +17,7 @@ import com.unciv.models.translations.getPlaceholderText
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
 import com.unciv.testing.runTestParcours
+import java.lang.reflect.Modifier
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Test
@@ -32,39 +33,63 @@ class CountableTests {
     private lateinit var civ: Civilization
     private lateinit var city: City
 
-//    @Test
-//    fun testCountableConventions() {
-//        fun Class<out Countables>.hasOverrideFor(name: String, vararg args: Class<out Any>): Boolean {
-//            try {
-//                getDeclaredMethod(name, *args)
-//            } catch (ex: NoSuchMethodException) {
-//                return false
-//            }
-//            return true
-//        }
-//
-//        var fails = 0
-//        println("Reflection check of the Countables class:")
-//        for (instance in Countables::class.java.enumConstants) {
-//            val instanceClazz = instance::class.java
-//
-//            val matchesOverridden = instanceClazz.hasOverrideFor("matches", String::class.java, Ruleset::class.java)
-//            if (instance.text.isEmpty() && !matchesOverridden) {
-//                println("`$instance` has no `text` but fails to override `matches`.")
-//                fails++
-//            }
-//
-//            val getErrOverridden = instanceClazz.hasOverrideFor("getErrorSeverity", String::class.java, Ruleset::class.java)
-//            if (instance.noPlaceholders && getErrOverridden) {
-//                println("`$instance` has no placeholders but overrides `getErrorSeverity` which is likely an error.")
-//                fails++
-//            } else if (!instance.noPlaceholders && !getErrOverridden) {
-//                println("`$instance` has placeholders that must be treated and therefore **must** override `getErrorSeverity` but does not.")
-//                fails++
-//            }
-//        }
-//        assertEquals("failure count", 0, fails)
-//    }
+    /** Test whether a Countables instance has a _specific_ override - by name and parameter signature.
+     *
+     *  This uses Java reflection, pure kotlin reflection was tested and `declaredFunctions` seems broken.
+     *  With kotlin reflection there should be a nice `overrides` extension, but that seems to be missing in 2.1.21 (and you'd need a lot of boilerplate to get there).
+     */
+    private fun Class<out Countables>.hasOverrideFor(name: String, vararg argTypes: Class<out Any?>): Boolean {
+        try {
+            getDeclaredMethod(name, *argTypes)
+        } catch (_: NoSuchMethodException) {
+            return false
+        }
+        // Verify there's actually a super method
+        val superMethod = try {
+            superclass.getDeclaredMethod(name, *argTypes)
+        } catch (_: NoSuchMethodException) {
+            return false
+        }
+        return !Modifier.isFinal(superMethod.modifiers)
+    }
+
+    @Test
+    fun testCountableConventions() {
+        var fails = 0
+        println("Reflection check of the Countables class:")
+        for (instance in Countables.entries) {
+            val instanceClazz = instance::class.java
+
+            val matches1Overridden = instanceClazz.hasOverrideFor("matches", String::class.java)
+            val matches2Overridden = instanceClazz.hasOverrideFor("matches", String::class.java, Ruleset::class.java)
+            if (matches1Overridden && matches2Overridden) {
+                println("`$instance` overrides both `matches` overloads. You either need a Ruleset to match or you don't.")
+                fails++
+            } else if (matches1Overridden && instance.matchesWithRuleset) {
+                println("`$instance` overrides the `matches` overload without ruleset but has `matchesWithRuleset` true.")
+                fails++
+            } else if (matches2Overridden && !instance.matchesWithRuleset) {
+                println("`$instance` overrides the `matches` overload with ruleset but has `matchesWithRuleset` false.")
+                fails++
+            }
+
+            val matchesOverridden = matches1Overridden || matches2Overridden
+            if (instance.text.isEmpty() && !matchesOverridden) {
+                println("`$instance` has no `text` but fails to override `matches`.")
+                fails++
+            }
+
+            val getErrOverridden = instanceClazz.hasOverrideFor("getErrorSeverity", String::class.java, Ruleset::class.java)
+            if (instance.noPlaceholders && getErrOverridden) {
+                println("`$instance` has no placeholders but overrides `getErrorSeverity` which is likely an error.")
+                fails++
+            } else if (!instance.noPlaceholders && !getErrOverridden) {
+                println("`$instance` has placeholders that must be treated and therefore **must** override `getErrorSeverity` but does not.")
+                fails++
+            }
+        }
+        assertEquals("failure count", 0, fails)
+    }
 
     @Test
     fun testAllCountableParametersAreUniqueParameterTypes() {
