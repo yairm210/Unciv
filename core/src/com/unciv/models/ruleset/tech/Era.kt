@@ -1,7 +1,9 @@
 package com.unciv.models.ruleset.tech
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.UncivGame
 import com.unciv.logic.UncivShowableException
+import com.unciv.logic.MultiFilter
 import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
@@ -127,14 +129,14 @@ class Era : RulesetObject() {
             name -> true
             else -> {
                 if (filter.startsWith("pre-[")) {
-                    val eraName = filter.removePrefix("pre-[").replaceSuffix("]")
-                    val eras = state?.ruleset?.eras ?: return false
-                    return eraNumber < eras[eraName].eraNumber
+                    val gameInfo = state?.gameInfo ?: UncivGame.Current.gameInfo
+                    val targetEra = gameInfo?.ruleset?.eras?.get(filter.removePrefix("pre-[").removeSuffix("]"))
+                    return targetEra?.eraNumber?.let { eraNumber < it } ?: false
                 }
                 else if (filter.startsWith("post-[")) {
-                    val eraName = filter.removePrefix("post-[").replaceSuffix("]")
-                    val eras = state?.ruleset?.eras ?: return false
-                    return eraNumber > eras[eraName].eraNumber
+                    val gameInfo = state?.gameInfo ?: UncivGame.Current.gameInfo
+                    val targetEra = gameInfo?.ruleset?.eras?.get(filter.removePrefix("post-[").removeSuffix("]"))
+                    return targetEra?.eraNumber?.let { eraNumber > it } ?: false
                 }
                 false
             }
