@@ -1,19 +1,8 @@
-package com.unciv.uniques
+package com.unciv.models.ruleset.tech
 
-import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.ruleset.unique.Countables
 import com.unciv.models.ruleset.unique.GameContext
-import com.unciv.models.ruleset.unique.Unique
-import com.unciv.models.ruleset.unique.UniqueParameterType
-import com.unciv.models.ruleset.unique.UniqueTriggerActivation
-import com.unciv.models.ruleset.validation.RulesetValidator
-import com.unciv.models.ruleset.validation.UniqueValidator
-import com.unciv.models.stats.Stat
-import com.unciv.models.translations.getPlaceholderParameters
-import com.unciv.models.translations.getPlaceholderText
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Before
@@ -22,10 +11,6 @@ import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Test
 import org.junit.runner.RunWith
-
-// TODO better coverage:
-//      - Each modifier using UniqueParameterType.Countable
-//      - Each actual Countables enum instance
 
 @RunWith(GdxTestRunner::class)
 class EraTests {
@@ -44,6 +29,7 @@ class EraTests {
         setupModdedGame()
         val eraTests = hashMapOf(
             "Ancient era" to listOf(
+                "any era" to true,
                 "Ancient era" to true,
                 "Industrial era" to false,
                 "Starting Era" to true,
@@ -52,6 +38,7 @@ class EraTests {
                 "post-[Ancient era]" to false
             ),
             "Industrial era" to listOf(
+                "any era" to true,
                 "Ancient era" to false,
                 "Industrial era" to true,
                 "Starting Era" to false,
@@ -82,7 +69,6 @@ class EraTests {
         game.makeHexagonalMap(3)
         if (!withCiv) return game.ruleset
         civ = game.addCiv()
-        //city = game.addCity(civ, game.tileMap[2,0])
         return game.ruleset
     }
 }
