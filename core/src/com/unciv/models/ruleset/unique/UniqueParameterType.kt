@@ -427,8 +427,7 @@ enum class UniqueParameterType(
         override val staticKnownValues = setOf("any era", "Starting Era")
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
             staticKnownValues +
-            ruleset.eras.keys +
-            ruleset.eras.keys.flatMap { listOf("pre-[$it]", "post-[$it]") }
+            ruleset.eras.keys.flatMap { listOf(it, "pre-[$it]", "post-[$it]") }
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = getErrorSeverityForFilter(parameterText, ruleset)
     },
 
