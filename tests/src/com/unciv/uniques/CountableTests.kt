@@ -18,14 +18,21 @@ import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
 import com.unciv.testing.runTestParcours
 import java.lang.reflect.Modifier
+import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Test
 import org.junit.runner.RunWith
+import kotlin.reflect.full.declaredFunctions
+import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.hasAnnotation
 
 // TODO better coverage:
 //      - Each modifier using UniqueParameterType.Countable
-//      - Each actual Countables enum instance
+
+@Retention(AnnotationRetention.RUNTIME)
+@Target(AnnotationTarget.FUNCTION)
+internal annotation class CoversCountable(vararg val countable: Countables)
 
 @RunWith(GdxTestRunner::class)
 class CountableTests {
@@ -92,6 +99,19 @@ class CountableTests {
     }
 
     @Test
+    fun testAllCountablesAreCovered() {
+        val actual = CountableTests::class.declaredFunctions.asSequence()
+            .plus(ExpressionTests::class.declaredFunctions)
+            .mapNotNull { it.findAnnotation<CoversCountable>() }
+            .flatMap { it.countable.asIterable() }
+            .toSet()
+        val expected = Countables.entries.filterNot { it::class.hasAnnotation<Deprecated>() }.toSet()
+        if (actual == expected) return
+        val missing = (expected - actual).sorted() // by ordinal ergo source order
+        Assert.fail("Every Countable should be covered by a unit test.\nMissing: $missing")
+    }
+
+    @Test
     fun testAllCountableParametersAreUniqueParameterTypes() {
         for (countable in Countables.entries) {
             val parameters = countable.text.getPlaceholderParameters()
@@ -126,6 +146,7 @@ class CountableTests {
     }
 
     @Test
+    @CoversCountable(Countables.TileResources) // Just barely
     fun testPerCountableForGlobalAndLocalResources() {
         setupModdedGame()
         // one coal provided locally
@@ -139,6 +160,7 @@ class CountableTests {
     }
 
     @Test
+    @CoversCountable(Countables.StatOrResourcePerTurn)
     fun testStatOrResourcePerTurn() {
         setupModdedGame()
         city.cityConstructions.addBuilding(game.createBuilding(
@@ -159,6 +181,7 @@ class CountableTests {
     }
 
     @Test
+    @CoversCountable(Countables.Stats)
     fun testStatsCountables() {
         setupModdedGame()
         fun verifyStats(context: GameContext) {
@@ -183,6 +206,7 @@ class CountableTests {
     }
 
     @Test
+    @CoversCountable(Countables.OwnedTiles)
     fun testOwnedTilesCountable() {
         setupModdedGame()
         UniqueTriggerActivation.triggerUnique(Unique("Turn this tile into a [Coast] tile"), civ, tile = game.tileMap[-3,0])
@@ -204,6 +228,7 @@ class CountableTests {
     }
 
     @Test
+    @CoversCountable(Countables.FilteredCities)
     fun testFilteredCitiesCountable() {
         setupModdedGame()
         UniqueTriggerActivation.triggerUnique(Unique("Turn this tile into a [Coast] tile"), civ, tile = game.tileMap[-3,0])
@@ -223,6 +248,7 @@ class CountableTests {
     }
 
     @Test
+    @CoversCountable(Countables.FilteredBuildings)
     fun testFilteredBuildingsCountable () {
         setupModdedGame(withCiv = false)
         val building = game.createBuilding("Ancestor Tree") // That's a filtering Unique, not the building name 
@@ -252,6 +278,7 @@ class CountableTests {
     }
 
     @Test
+    @CoversCountable(Countables.PolicyBranches, Countables.FilteredPolicies, Countables.FilteredPoliciesByCivs)
     fun testPoliciesCountables() {
         setupModdedGame()
         civ.policies.run {
@@ -385,6 +412,7 @@ class CountableTests {
     }
 
     @Test
+    @CoversCountable(Countables.FilteredTechnologies)
     fun testFilteredTechnologies() {
         setupModdedGame()
         val techs = listOf(
