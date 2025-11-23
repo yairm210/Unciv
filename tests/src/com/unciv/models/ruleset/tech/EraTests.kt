@@ -7,11 +7,11 @@ import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Before
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Test
 import org.junit.runner.RunWith
 
+/** Tests [Era][com.unciv.models.ruleset.tech.Era] */
 @RunWith(GdxTestRunner::class)
 class EraTests {
     private lateinit var game: TestGame
@@ -35,7 +35,8 @@ class EraTests {
                 "Starting Era" to true,
                 "pre-[Industrial era]" to true,
                 "pre-[Ancient era]" to false,
-                "post-[Ancient era]" to false
+                "post-[Ancient era]" to false,
+                "Invalid Filter" to false
             ),
             "Industrial era" to listOf(
                 "any era" to true,
@@ -47,16 +48,18 @@ class EraTests {
                 "post-[Industrial era]" to false,
                 "pre-[Industrial era]" to false,
                 "pre-[Modern era]" to true,
-                "pre-[Classical era]" to false
+                "pre-[Classical era]" to false,
+                "pre-[Invalid era]" to false,
+                "post-[Invalid era]" to false
             )
         )
 
         val state = GameContext(civ)
         for ((eraName, tests) in eraTests) {
-            for ((filter, expected) in tests) {
-                val era = game.ruleset.eras[eraName]
-                assertNotNull(era)
-                if (era != null) {
+            val era = game.ruleset.eras[eraName]
+            assertNotNull(era)
+            if (era != null) {
+                for ((filter, expected) in tests) {
                     val actual = era.matchesFilter(filter, state)
                     assertEquals("Testing that `$era` matchesFilter `$filter`:", expected, actual)
                 }

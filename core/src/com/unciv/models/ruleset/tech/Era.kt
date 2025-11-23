@@ -133,12 +133,12 @@ class Era : RulesetObject() {
             filter.startsWith("pre-[") -> {
                 val targetEraName = filter.removePrefix("pre-[").removeSuffix("]")
                 val targetEra = gameInfo.ruleset.eras[targetEraName]
-                targetEra?.eraNumber?.let { eraNumber < it } ?: false
+                targetEra?.eraNumber?.let { eraNumber < it } == true
             }
             filter.startsWith("post-[") -> {
                 val targetEraName = filter.removePrefix("post-[").removeSuffix("]")
                 val targetEra = gameInfo.ruleset.eras[targetEraName]
-                targetEra?.eraNumber?.let { eraNumber > it } ?: false
+                targetEra?.eraNumber?.let { eraNumber > it } == true
             }
             else -> false
         }

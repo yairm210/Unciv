@@ -57,7 +57,7 @@ class Technology: RulesetObject() {
             in Constants.all -> true
             name -> true
             era() -> true
-            else -> state?.gameInfo?.ruleset?.eras?.get(era())?.matchesFilter(filter, state, false) ?: false
+            else -> state?.gameInfo?.ruleset?.eras?.get(era())?.matchesFilter(filter, state, false) == true
         }
     }
 
