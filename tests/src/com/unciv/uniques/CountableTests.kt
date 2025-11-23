@@ -76,7 +76,6 @@ class CountableTests {
         }
     }
 
-
     @Test
     fun testAllCountableAutocompleteValuesMatch() {
         RulesetCache.loadRulesets(noMods = true)
@@ -90,12 +89,11 @@ class CountableTests {
                     countable, matchedCountable
                 )
             }
-                    
         }
     }
-    
+
     @Test
-    fun testPlaceholderParams(){
+    fun testPlaceholderParams() {
         val text = "when number of [Iron] is equal to [3 * 2 + [Iron] + [bob]]"
         val placeholderText = text.getPlaceholderText()
         assertEquals("when number of [] is equal to []", placeholderText)
@@ -137,11 +135,11 @@ class CountableTests {
     @Test
     fun testStatsCountables() {
         setupModdedGame()
-        fun verifyStats(state: GameContext) {
+        fun verifyStats(context: GameContext) {
             for (stat in Stat.entries) {
-                val countableResult = Countables.Stats.eval(stat.name, state)
+                val countableResult = Countables.Stats.eval(stat.name, context)
                 val expected = if (stat == Stat.Happiness) civ.getHappiness()
-                else state.getStatAmount(stat)
+                else context.getStatAmount(stat)
                 assertEquals("Testing $stat countable:", countableResult, expected)
             }
         }
@@ -247,7 +245,7 @@ class CountableTests {
 
         // Add a second Civilization
         val civ2 = game.addCiv()
-        val city2 = game.addCity(civ2, game.tileMap[2,2])
+        game.addCity(civ2, game.tileMap[2,2])
         civ2.policies.run {
             freePolicies += 2
             adopt(getPolicyByName("Tradition"))
