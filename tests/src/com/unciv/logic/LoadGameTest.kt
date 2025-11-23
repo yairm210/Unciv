@@ -26,12 +26,10 @@ class LoadGameTest {
 
     private val screenshotGamePath = "../../../extraImages/Screenshots/ScreenshotGenerationGame"
 
-    private lateinit var game: UncivGame
-
     @Before
     fun loadRulesets() {
         RulesetCache.loadRulesets(noMods = true)
-        game = UncivGame() // Saves might need this for setTransients
+        val game = UncivGame() // Saves might need this for setTransients
         UncivGame.Current = game
         game.settings = GameSettings()
     }
