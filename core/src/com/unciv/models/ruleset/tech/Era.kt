@@ -124,24 +124,23 @@ class Era : RulesetObject() {
 
     @Readonly
     fun matchesSingleFilter(filter: String, state: GameContext? = null): Boolean {
-        return when (filter) {
-            "any era" -> true
-            name -> true
-            else -> {
-                val gameInfo = state?.gameInfo ?: UncivGame.Current.gameInfo
-                if (filter == "Starting Era") {
-                    return name == gameInfo?.gameParameters?.startingEra ?: "Ancient era"
-                }
-                else if (filter.startsWith("pre-[")) {
-                    val targetEra = gameInfo?.ruleset?.eras?.get(filter.removePrefix("pre-[").removeSuffix("]"))
-                    return targetEra?.eraNumber?.let { eraNumber < it } ?: false
-                }
-                else if (filter.startsWith("post-[")) {
-                    val targetEra = gameInfo?.ruleset?.eras?.get(filter.removePrefix("post-[").removeSuffix("]"))
-                    return targetEra?.eraNumber?.let { eraNumber > it } ?: false
-                }
-                false
+        if (filter == "any era" || filter == name) return true
+
+        val gameInfo = state?.gameInfo ?: UncivGame.Current.gameInfo
+        return when {
+            gameInfo == null -> false
+            filter == "Starting Era" -> name == gameInfo.gameParameters.startingEra
+            filter.startsWith("pre-[") -> {
+                val targetEraName = filter.removePrefix("pre-[").removeSuffix("]")
+                val targetEra = gameInfo.ruleset.eras[targetEraName]
+                targetEra?.eraNumber?.let { eraNumber < it } ?: false
             }
+            filter.startsWith("post-[") -> {
+                val targetEraName = filter.removePrefix("post-[").removeSuffix("]")
+                val targetEra = gameInfo.ruleset.eras[targetEraName]
+                targetEra?.eraNumber?.let { eraNumber > it } ?: false
+            }
+            else -> false
         }
     }
 }
