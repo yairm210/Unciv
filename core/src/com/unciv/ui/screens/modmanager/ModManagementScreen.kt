@@ -420,8 +420,7 @@ class ModManagementScreen private constructor(
             popup.add(pasteLinkButton).row()
             val actualDownloadButton = "Download".toTextButton()
             actualDownloadButton.onClick {
-                actualDownloadButton.setText("Downloading...".tr())
-                actualDownloadButton.disable()
+                actualDownloadButton.setStartingDownload()
                 Concurrency.run {
                     val repo = GithubAPI.Repo.parseUrl(textField.text)
                     if (repo == null) {
@@ -432,12 +431,7 @@ class ModManagementScreen private constructor(
                         }
                     } else {
                         downloadMod(repo, { state, progress ->
-                            when (state) {
-                                DownloadAndExtractState.Downloading ->
-                                    actualDownloadButton.setText("{Downloading...} ${progress}%".tr())
-                                DownloadAndExtractState.Extracting ->
-                                    actualDownloadButton.setText("Extracting...".tr())
-                            }
+                            actualDownloadButton.setText(state.message(progress).tr())
                         }) { popup.close() }
                     }
                 }
@@ -481,21 +475,27 @@ class ModManagementScreen private constructor(
         rightSideButton.setText(label.tr())
         rightSideButton.clearActivationActions(ActivationTypes.Tap)
         rightSideButton.onClick {
-            rightSideButton.setText("Downloading...".tr())
-            rightSideButton.disable()
-
+            rightSideButton.setStartingDownload()
             downloadMod(repo, { state, progress ->
-                when (state) {
-                    DownloadAndExtractState.Downloading -> rightSideButton.setText("{Downloading...} ${progress}%".tr())
-                    DownloadAndExtractState.Extracting -> rightSideButton.setText("Extracting...".tr())
-                }
+                rightSideButton.setText(state.message(progress).tr())
             }) {
-                rightSideButton.setText("Downloaded!".tr())
+                rightSideButton.setFinishedDownload()
             }
         }
 
         selectedMod = repo
         modActionTable.update(repo)
+    }
+
+    private fun TextButton.setStartingDownload() {
+        setText("Downloading...".tr())
+        disable()
+    }
+    private fun TextButton.setFinishedDownload() {
+        // Note while setStartingDownload is called from three places, this one is only used once.
+        // This serves as reminder that the other uses will close or clear and repopulate the button's container.
+        setText("Downloaded!".tr())
+        // Not re-enabling it here: Changing selection does
     }
 
     /** Download and install a mod in the background, called both from the right-bottom button and the URL entry popup */

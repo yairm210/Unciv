@@ -25,8 +25,13 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 enum class DownloadAndExtractState {
-    Downloading,
-    Extracting
+    Downloading {
+        override fun message(progress: Int?) = if (progress == null) "Downloading..." else "{Downloading...} ${progress.coerceIn(0, 100)}%"
+    },
+    Finishing {
+        override fun message(progress: Int?) = "Finishing..."
+    };
+    abstract fun message(progress: Int?): String
 }
 
 /**
@@ -408,7 +413,8 @@ object GithubAPI {
             val progressEndsAtSize = contentLength ?: fallbackSize
             if (progressEndsAtSize <= 0L) return
             val percent = bytesReceivedTotal * 100L / progressEndsAtSize
-            updateProgressPercent!!(DownloadAndExtractState.Downloading, percent.toInt().coerceIn(0, 100))
+            val state = if (percent > 101L) DownloadAndExtractState.Finishing else DownloadAndExtractState.Downloading
+            updateProgressPercent!!(state, percent.toInt())
         }
 
         val unzipDestination = modsFolder.child(tempName)
