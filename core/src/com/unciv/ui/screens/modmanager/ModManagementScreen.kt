@@ -587,7 +587,7 @@ class ModManagementScreen private constructor(
     */
     private fun refreshInstalledModActions(mod: Ruleset) {
         selectedMod = null
-        // show mod information first
+        // show mod information first - this starts by clearing modActionTable
         modActionTable.update(mod)
 
         val modInfo = installedModInfo[mod.name]!!
@@ -611,9 +611,15 @@ class ModManagementScreen private constructor(
                 refreshInstalledModTable()
         }
 
-        modActionTable.addUpdateModButton(modInfo) {
+        val updateModButton = modActionTable.addUpdateModButton(modInfo) ?: return
+        updateModButton.onClick {
+            updateModButton.setStartingDownload()
             val repo = onlineModInfo[mod.name]!!.repo!!
-            downloadMod(repo) { refreshInstalledModActions(mod) }
+            downloadMod(repo, { state, progress ->
+                updateModButton.setText(state.message(progress).tr())
+            }) {
+                refreshInstalledModActions(mod)
+            }
         }
     }
 
