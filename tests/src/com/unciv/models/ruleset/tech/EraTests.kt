@@ -67,10 +67,9 @@ class EraTests {
         }
     }
 
-    private fun setupModdedGame(vararg addGlobalUniques: String, withCiv: Boolean = true): Ruleset {
-        game = TestGame(*addGlobalUniques)
+    private fun setupModdedGame(): Ruleset {
+        game = TestGame()
         game.makeHexagonalMap(3)
-        if (!withCiv) return game.ruleset
         civ = game.addCiv()
         return game.ruleset
     }

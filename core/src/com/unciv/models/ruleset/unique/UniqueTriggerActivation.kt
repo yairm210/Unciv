@@ -488,8 +488,8 @@ object UniqueTriggerActivation {
             UniqueType.OneTimeFreeTechRuins -> {
                 val researchableTechsFromThatEra = ruleset.technologies.values
                     .filter {
-                        civInfo.tech.canBeResearched(it.name) &&
-                        (it.era(ruleset)?.matchesFilter(unique.params[1], gameContext) == true)
+                        (it.era(ruleset)?.matchesFilter(unique.params[1], gameContext) == true) &&
+                        civInfo.tech.canBeResearched(it.name)
                     }
                 if (researchableTechsFromThatEra.isEmpty()) return null
 
