@@ -25,12 +25,11 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     }
 
     override fun getNotificationDisplay(leadingText: String): String {
-        var displayName = if (unit.instanceName.isNullOrEmpty()) unit.name else unit.shortDisplayName()
         var isUnitRenamed = !(unit.instanceName.isNullOrEmpty())
         if (isUnitRenamed)
             return "[" + displayName + "]"
         else
-            return leadingText + "[" + displayName + "]"
+            return leadingText + "[" + unit.shortDisplayName() + "]"
     }
 
 
