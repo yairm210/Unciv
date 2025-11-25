@@ -29,7 +29,7 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
         if (isUnitRenamed)
             return "[" + unit.name + "]"
         else
-            return leadingText + "[" + unit.shortDisplayName() + "]"
+            return leadingText + "[" + unit.instanceName + "]"
     }
 
 
