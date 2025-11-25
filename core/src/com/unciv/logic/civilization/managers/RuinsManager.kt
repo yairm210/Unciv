@@ -11,7 +11,7 @@ import yairm210.purity.annotations.Readonly
 import kotlin.random.Random
 
 class RuinsManager(
-    private var lastChosenRewards: MutableList<String> = mutableListOf("", "")
+    private val lastChosenRewards: ArrayList<String> = arrayListOf("", "")
 ) : IsPartOfGameInfoSerialization {
 
     @Transient

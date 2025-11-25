@@ -3,6 +3,7 @@ package com.unciv.json
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.ui.components.extensions.toPrettyString
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
@@ -21,7 +22,7 @@ import yairm210.purity.annotations.Readonly
  */
 open class LastSeenImprovement(
     private val map: HashMap<Vector2, String> = hashMapOf()
-) : MutableMap<Vector2, String> by map, Json.Serializable {
+) : MutableMap<Vector2, String> by map, IsPartOfGameInfoSerialization, Json.Serializable {
     override fun write(json: Json) {
         for ((key, value) in entries) {
             val name = key.toPrettyString()

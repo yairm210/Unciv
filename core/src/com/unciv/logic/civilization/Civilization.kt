@@ -171,7 +171,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     var notifications = ArrayList<Notification>()
 
     var notificationsLog = ArrayList<NotificationsLog>()
-    class NotificationsLog(val turn: Int = 0) {
+    class NotificationsLog(val turn: Int = 0) : IsPartOfGameInfoSerialization {
         var notifications = ArrayList<Notification>()
     }
 
@@ -195,6 +195,8 @@ class Civilization : IsPartOfGameInfoSerialization {
     // if we only use lists, and change the list each time the cities are changed,
     // we won't get concurrent modification exceptions.
     // This is basically a way to ensure our lists are immutable.
+    // Note this relies on Gdx Json falling beck to ArrayList when deserializing json arrays for a field collection type it doesn't recognize.
+    // This will NOT be an ArrayList in memory right after GameStarter - but save and reload or pass a next turn, and it will be.
     var cities = listOf<City>()
     var citiesCreated = 0
 

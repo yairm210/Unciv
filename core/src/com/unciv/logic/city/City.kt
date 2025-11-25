@@ -29,6 +29,7 @@ import com.unciv.models.stats.GameResource
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.SubStat
+import com.unciv.utils.withoutItem
 import yairm210.purity.annotations.Readonly
 import java.util.EnumSet
 import java.util.UUID
@@ -387,8 +388,8 @@ class City : IsPartOfGameInfoSerialization, INamed {
         // Must be before removing existing capital because we may be annexing a puppet which means city stats update - see #8337
         if (isCapital()) civ.moveCapitalToNextLargest(null)
 
-        civ.cities = civ.cities.toMutableList().apply { remove(this@City) }
-        
+        civ.cities = civ.cities.withoutItem(this)
+
         if (getRuleset().tileImprovements.containsKey("City ruins"))
             getCenterTile().setImprovement("City ruins")
 
