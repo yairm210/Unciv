@@ -153,6 +153,18 @@ cityFilters allow us to choose the range of cities affected by this unique:
 
 You can check this in-game using the console with the `city checkfilter <filter>` command
 
+## eraFilter
+
+For filtering a specific era.
+
+Allowed values:
+
+- Era name (e.g.: `Modern era`)
+- `any era`
+- `Starting Era` - The era in which the game began
+- `pre-[era]` - Any era that appears prior to the given era (e.g.: `pre-[Modern era]`)
+- `post-[era]` - Any era that appears after the given era (e.g.: `post-[Ancient era]`)
+
 ## improvementFilter
 
 For filtering a specific improvement.
@@ -279,7 +291,7 @@ At the moment only implemented for [ModOptions.techsToRemove](Mod-file-structure
 Allowed values:
 
 - `All`, `all`
-- The name of an Era
+- An [eraFilter](#erafilter) matching the technology's era
 - The name of a Technology
 - A unique a Technology has (verbatim, no placeholders)
 
