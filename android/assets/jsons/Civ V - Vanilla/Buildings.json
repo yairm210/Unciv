@@ -939,7 +939,7 @@
 			"Only available <when [Scientific] Victory is enabled>", "Cannot be hurried"],
 		"requiredTech": "Rocketry",
         "civilopediaText": [
-            { "text": "Once you have completed the Apollo Program, you can start constructing spaceship parts in your cities\n (with the relevant technologies) to win a Scientific Victory!" }
+            { "text": "Once you have completed the Apollo Program, you can start constructing spaceship parts in your cities (with the relevant technologies) to win a Scientific Victory!" }
         ]
 	},
 

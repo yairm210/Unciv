@@ -11,7 +11,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(GdxTestRunner::class)
-class ThreatManangerTests {
+class ThreatManagerTests {
 
     val testGame = TestGame()
     val civ = testGame.addCiv()
@@ -170,4 +170,3 @@ class ThreatManangerTests {
     }
 
 }
-

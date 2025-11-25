@@ -56,19 +56,19 @@ private class FlagBackground(drawable: TextureRegionDrawable, size: Float) : Ima
         return super.getDrawable() as TextureRegionDrawable
     }
 
-    override fun draw(batch: Batch?, parentAlpha: Float) {
+    override fun draw(batch: Batch, parentAlpha: Float) {
         val alpha = color.a*parentAlpha
         val drawable = drawable
 
         if (drawOutline) {
-            batch?.setColor(outlineColor.r, outlineColor.g, outlineColor.b, outlineColor.a*alpha)
+            batch.setColor(outlineColor.r, outlineColor.g, outlineColor.b, outlineColor.a*alpha)
             drawable.draw(batch, x-outlineOffsetX, y-outlineOffsetY, outlineWidth, outlineHeight)
         }
 
-        batch?.setColor(outerColor.r, outerColor.g, outerColor.b, outerColor.a*alpha)
+        batch.setColor(outerColor.r, outerColor.g, outerColor.b, outerColor.a*alpha)
         drawable.draw(batch, x, y, width, height)
 
-        batch?.setColor(innerColor.r, innerColor.g, innerColor.b, innerColor.a * alpha)
+        batch.setColor(innerColor.r, innerColor.g, innerColor.b, innerColor.a * alpha)
         if (drawableInner == null) {
             drawable.draw(batch, x + innerOffsetX, y + innerOffsetY, innerWidth, innerHeight)
         } else {
@@ -90,8 +90,8 @@ class UnitIconGroup(val unit: MapUnit, val size: Float) : NonTransformGroup() {
     init {
         color.a *= UncivGame.Current.settings.unitIconOpacity
 
-        val sizeSelectionX = size*1.6f
-        val sizeSelectionY = sizeSelectionX*flagSelection.height/flagSelection.width
+        val sizeSelectionX = size * 1.6f
+        val sizeSelectionY = sizeSelectionX * flagSelection.height / flagSelection.width
 
         setSize(flagBg.width, flagBg.height)
 
@@ -105,7 +105,7 @@ class UnitIconGroup(val unit: MapUnit, val size: Float) : NonTransformGroup() {
         flagBg.drawableInner = getBackgroundInnerDrawableForUnit()
 
         if (flagMask != null) {
-            flagMask!!.setSize(size*0.88f, size*0.88f * flagMask!!.height / flagMask!!.width)
+            flagMask!!.setSize(size * 0.88f, size * 0.88f * flagMask!!.height / flagMask!!.width)
         }
 
         val flagIconSizeMultiplier: Float = if (unit.isCivilian()) 0.5f else 0.65f
@@ -127,7 +127,7 @@ class UnitIconGroup(val unit: MapUnit, val size: Float) : NonTransformGroup() {
         }
 
         if (unit.health < 100) { // add health bar
-            val hp = ImageGetter.getHealthBar(unit.health.toFloat(), 100f, size*0.78f)
+            val hp = ImageGetter.getHealthBar(unit.health.toFloat(), 100f, size * 0.78f)
             addActor(hp)
             hp.centerX(this)
         }

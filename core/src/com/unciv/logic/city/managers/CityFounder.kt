@@ -12,13 +12,14 @@ import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.utils.withItem
 import yairm210.purity.annotations.Readonly
 
 class CityFounder {
     fun foundCity(civInfo: Civilization, cityLocation: Vector2, unit: MapUnit? = null): City {
         val city = City()
 
-        city.foundingCiv = civInfo.civName
+        city.foundingCivObject = civInfo
         city.turnAcquired = civInfo.gameInfo.turns
         city.location = cityLocation
         city.setTransients(civInfo)
@@ -36,7 +37,7 @@ class CityFounder {
         }
         civInfo.citiesCreated++
 
-        civInfo.cities = civInfo.cities.toMutableList().apply { add(city) }
+        civInfo.cities = civInfo.cities.withItem(city)
 
         val startingEra = civInfo.gameInfo.gameParameters.startingEra
 

@@ -53,23 +53,40 @@ import java.util.UUID
 /**
  * A class that implements this interface is part of [GameInfo] serialization, i.e. save files.
  *
- * Take care with `lateinit` and `by lazy` fields - both are **never** serialized.
+ * ### Clarification: *only* for classes that are serialized and deserialized - *not* pure Ruleset files.
  *
+ * #### Compatibility:
  * When you change the structure of any class with this interface in a way which makes it impossible
  * to load the new saves from an older game version, increment [CompatibilityVersion.CURRENT_COMPATIBILITY_NUMBER]!
  * And don't forget to add backwards compatibility for the previous format.
  *
+ * #### Rules:
+ * - Enum classes are always serialized like primitives, any additional fields are ignored. Therefore marking them makes no technical sense, but the unit test tolerates it.
+ * - If the class also implements Json.Serializable, then the rules below do not apply, that implementation is entirely responsible.
+ * - Exclude all fields that do not need to be saved with [`@Transient`][Transient].
+ * - Take care with `by lazy` fields - those must **never** be serialized. Use `@delegate:Transient` to exclude them.
+ * - Properties without backing field (val foo get() = without referencing `field` or `val bar by ::foo`) are always fine - they're never serialized.
+ * - Types of serialized fields must be primitives, enums, other classes marked `IsPartOfGameInfoSerialization`, or collections of those.
+ * - All types involved in a field's type should be **non-abstract**: No interfaces. The `List`, see below.
+ * - Keys in Maps must be String. Sets are fine even though they are a Map internally.
+ * - Do not serialize any `Sequence` - should be obvious!
+ *
+ * #### Explanation for the non-abstract rule
  * Reminder: In all subclasses, do use only actual Collection types, not abstractions like
  * `= mutableSetOf<Something>()`. That would make the reflection type of the field an interface, which
  * hides the actual implementation from Gdx Json, so it will not try to call a no-args constructor but
  * will instead deserialize a List in the jsonData.isArray() -> isAssignableFrom(Collection) branch of readValue:
  * https://github.com/libgdx/libgdx/blob/75612dae1eeddc9611ed62366858ff1d0ac7898b/gdx/src/com/badlogic/gdx/utils/Json.java#L1111
- * .. which will crash later (when readFields actually assigns it) unless empty.
+ * .. which will crash later (when readFields actually assigns it) - unless the interface actually was `List`.
  */
 interface IsPartOfGameInfoSerialization
 
 
-data class VictoryData(val winningCiv: String, val victoryType: String, val victoryTurn: Int) {
+data class VictoryData(
+    val winningCiv: String,
+    val victoryType: String,
+    val victoryTurn: Int
+) : IsPartOfGameInfoSerialization {
     @Suppress("unused")  // used by json serialization
     constructor() : this("", "", 0)
 }
@@ -81,7 +98,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     /** Version that saved the game, set in [UncivFiles.gameInfoToString][com.unciv.logic.files.UncivFiles.gameInfoToString]. */
     override var version = CompatibilityVersion.FIRST_WITHOUT
 
-    var civilizations = mutableListOf<Civilization>()
+    var civilizations = ArrayList<Civilization>()
     var barbarians = BarbarianManager()
     var religions: HashMap<String, Religion> = hashMapOf()
     var difficulty = "Chieftain" // difficulty is game-wide, think what would happen if 2 human players could play on different difficulties?
@@ -120,7 +137,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     var customSaveLocation: String? = null
 
     /** List of unit names that have been taken in this game from UnitNameGroups.json. */
-    var unitNamesTaken = mutableListOf<String>()
+    var unitNamesTaken = ArrayList<String>()
 
     //endregion
     //region Fields - Transient
@@ -400,7 +417,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         // We found a human player, so we are making them current
         currentTurnStartTime = System.currentTimeMillis()
         currentPlayer = player.civName
-        currentPlayerCiv = getCivilization(currentPlayer)
+        currentPlayerCiv = player
 
         // Starting their turn
         TurnManager(player).startTurn(progressBar)
@@ -540,7 +557,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         // Include your city-state allies' cities with your own for the purpose of showing the closest city
         val relevantCities: Sequence<City> = civ.cities.asSequence() +
             civ.getKnownCivs()
-                .filter { it.isCityState && it.getAllyCivName() == civ.civName }
+                .filter { it.isCityState && it.allyCiv == civ }
                 .flatMap { it.cities }
 
         // All sources of the resource on the map, using a city-state's capital center tile for the CityStateOnlyResource types

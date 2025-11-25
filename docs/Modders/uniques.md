@@ -92,7 +92,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
-??? example  "[positiveAmount] free random researchable Tech(s) from the [era]"
+??? example  "[positiveAmount] free random researchable Tech(s) from the [eraFilter]"
 	Example: "[3] free random researchable Tech(s) from the [Ancient era]"
 
 	Applicable to: Triggerable
@@ -977,6 +977,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "[relativeAmount]% Strength"
 	Example: "[+20]% Strength"
+
+	Applicable to: Global, Unit
+
+??? example  "[relativeAmount] Strength"
+	Example: "[+20] Strength"
 
 	Applicable to: Global, Unit
 
@@ -1941,6 +1946,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "[relativeAmount]% Strength"
 	Example: "[+20]% Strength"
+
+	Applicable to: Global, Unit
+
+??? example  "[relativeAmount] Strength"
+	Example: "[+20] Strength"
 
 	Applicable to: Global, Unit
 
@@ -3237,6 +3247,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
+??? example  "&lt;on [difficulty] difficulty or lower&gt;"
+	Example: "&lt;on [Prince] difficulty or lower&gt;"
+
+	Applicable to: Conditional
+
 ??? example  "&lt;when [victoryType] Victory is enabled&gt;"
 	Example: "&lt;when [Domination] Victory is enabled&gt;"
 
@@ -3995,6 +4010,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[countable]: This indicates a number or a numeric variable.They can be tested in the developer console with `civ checkcountable` - for example, `civ checkcountable "[Iron]+2"`.
 *[difficulty]: The name of any difficulty.
 *[era]: The name of any era.
+*[eraFilter]: The name of an era, `any era`, `Starting Era`, `pre-[era]`, `post-[era]`.
 *[event]: The name of any event.
 *[foundingOrEnhancing]: `founding` or `enhancing`.
 *[fraction]: Indicates a fractional number, which can be negative.
