@@ -392,6 +392,8 @@ Allowed values:
     - Example: `Only available <when number of [[Wounded] Units] is more than [0]>`
 -   `[buildingFilter] Buildings`
     - Example: `Only available <when number of [[Culture] Buildings] is more than [0]>`
+-   `[buildingFilter] Buildings by [civFilter] Civilizations`
+    - Example: `Only available <when number of [[Culture] Buildings by [City-States] Civilizations] is more than [0]>`
 -   `Adopted [policyFilter] Policies`
     - Example: `Only available <when number of [Adopted [Oligarchy] Policies] is more than [0]>`
 -   `Adopted [policyFilter] Policies by [civFilter] Civilizations`

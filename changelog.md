@@ -1,28 +1,13 @@
 ## 4.18.16
 
-Units that upgrade continue escorting - see 
+Units that upgrade continue escorting 
 
-chore: detekt -_-
-
-chore: unified + better modification error for ImmutableColor
-
-Fix backticks in multiline changelog string that cause problems
-
-Resolved  - Nation colors unchanged by multiplayer chat
-
-Refactor: Prefer cached Civ information over civ names - By SeventhM
+Nation colors unchanged by multiplayer chat
 
 By RobLoach:
 - G&K: Fix Kremlin providing a Great Scientist Point 
 - Add `[buildingFilter] Buildings by [civFilter] Civilizations` Countable 
 - Add `eraFilter` to allow filtering by Era 
-- Set units to have at least one tech dependency 
-
-By SomeTroglodyte:
-- chore: Remove LastSeenImprovement backward compatibility 
-- IsPartOfGameInfoSerialization: clearer doc, ensure compliance, minor linting 
-- Unit test and IsPartOfGameInfoSerialization linting 
-- chore: Minor linting I happened to come across 
 
 ## 4.18.15
 
