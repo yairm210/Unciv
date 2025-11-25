@@ -18,6 +18,8 @@ import com.unciv.logic.trade.TradeOfferType
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.utils.withItem
+import com.unciv.utils.withoutItem
 import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 import kotlin.math.min
@@ -269,8 +271,8 @@ class CityConquestFunctions(val city: City) {
         //  civs so the capitalCityIndicator recognizes the unique buildings of the conquered civ
         if (city.isCapital()) oldCiv.moveCapitalToNextLargest(city)
 
-        oldCiv.cities = oldCiv.cities.toMutableList().apply { remove(city) }
-        newCiv.cities = newCiv.cities.toMutableList().apply { add(city) }
+        oldCiv.cities = oldCiv.cities.withoutItem(city)
+        newCiv.cities = newCiv.cities.withItem(city)
         city.civ = newCiv
         city.state = GameContext(city)
         city.hasJustBeenConquered = false

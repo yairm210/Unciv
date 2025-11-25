@@ -12,6 +12,7 @@ import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.utils.withItem
 import yairm210.purity.annotations.Readonly
 
 class CityFounder {
@@ -36,7 +37,7 @@ class CityFounder {
         }
         civInfo.citiesCreated++
 
-        civInfo.cities = civInfo.cities.toMutableList().apply { add(city) }
+        civInfo.cities = civInfo.cities.withItem(city)
 
         val startingEra = civInfo.gameInfo.gameParameters.startingEra
 
