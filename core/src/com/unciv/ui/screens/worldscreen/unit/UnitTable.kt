@@ -67,24 +67,18 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
     )
 
     val selectedUnit: MapUnit?
-        get() = presenter.let { if (it is UnitPresenter) it.selectedUnit else null }
-    
+        get() = (presenter as? UnitPresenter)?.selectedUnit
     val selectedCity: City?
-        get() = presenter.let { if (it is CityPresenter) it.selectedCity else null }
+        get() = (presenter as? CityPresenter)?.selectedCity
 
     val selectedSpy: Spy?
-        get() = presenter.let { if (it is SpyPresenter) it.selectedSpy else null }
+        get() = (presenter as? SpyPresenter)?.selectedSpy
 
-    val selectedUnits: List<MapUnit>
-        get() = unitPresenter.selectedUnits
+    val selectedUnits: List<MapUnit> by unitPresenter::selectedUnits
 
-    var selectedUnitIsSwapping: Boolean
-        get() = unitPresenter.selectedUnitIsSwapping
-        set(value) { unitPresenter.selectedUnitIsSwapping = value }
+    var selectedUnitIsSwapping by unitPresenter::selectedUnitIsSwapping
 
-    var selectedUnitIsConnectingRoad: Boolean
-        get() = unitPresenter.selectedUnitIsConnectingRoad
-        set(value) { unitPresenter.selectedUnitIsConnectingRoad = value }
+    var selectedUnitIsConnectingRoad by unitPresenter::selectedUnitIsConnectingRoad
 
     var nameLabelText: String
         get() = unitNameLabel.text.toString()
