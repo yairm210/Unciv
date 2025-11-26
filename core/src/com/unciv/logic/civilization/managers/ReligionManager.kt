@@ -71,12 +71,12 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         // Find our religion from the map of founded religions.
         // First check if there is any major religion
         religion = civInfo.gameInfo.religions.values.firstOrNull {
-            it.foundingCivName == civInfo.civName && it.isMajorReligion()
+            it.foundingCiv == civInfo && it.isMajorReligion()
         }
         // If there isn't, check for just pantheons.
         if (religion != null) return
         religion = civInfo.gameInfo.religions.values.firstOrNull {
-            it.foundingCivName == civInfo.civName
+            it.foundingCiv == civInfo
         }
     }
 
@@ -144,7 +144,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
             // paid for the initial pantheon using faith
             storedFaith -= faithForPantheon()
         }
-        religion = Religion(beliefName, civInfo.gameInfo, civInfo.civName)
+        religion = Religion(beliefName, civInfo.gameInfo, civInfo)
         civInfo.gameInfo.religions[beliefName] = religion!!
         for (city in civInfo.cities)
             city.religion.addPressure(beliefName, 200 * city.population.population)
@@ -462,7 +462,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
 
 
     internal fun foundReligion(displayName: String, name: String) {
-        val newReligion = Religion(name, civInfo.gameInfo, civInfo.civName)
+        val newReligion = Religion(name, civInfo.gameInfo, civInfo)
         newReligion.displayName = displayName
         if (religion != null) {
             newReligion.addBeliefs(religion!!.getAllBeliefsOrdered().asIterable())

@@ -18,10 +18,12 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import com.unciv.utils.DebugUtils
+import com.unciv.utils.DefaultLogBackend
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import org.junit.Assert
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import kotlin.math.abs
@@ -30,46 +32,60 @@ import kotlin.random.Random
 @RunWith(GdxTestRunner::class)
 class BasicTests {
 
-    var ruleset = Ruleset()
+    lateinit var ruleset: Ruleset
+
     @Before
-    fun loadTranslations() {
-        Log.shouldLog()
-        RulesetCache.loadRulesets(noMods = true)
-        ruleset = RulesetCache.getVanillaRuleset()
+    fun loadRulesets() {
+        if (RulesetCache.isEmpty())
+            RulesetCache.loadRulesets(noMods = true)
+        ruleset = RulesetCache[BaseRuleset.Civ_V_Vanilla.fullName]!!
+    }
+
+    @Test
+    /**
+     *  Unit tests do not generally need to use Unciv's logger, but can output to console (stdout, println) directly.
+     *  Using `Log` is fine, its formatting capabilities can help, but println with string templating is perfectly fine.
+     *  We also want to be able to see log output of some core routines. So our logger should output directly to console.
+     *  Since tests won't use DesktopLauncher or AndroidLauncher, this is guaranteed - but this test can remind us.
+     */
+    fun testsShouldRunWithDefaultLogBackend () {
+        Assert.assertTrue("Unit tests should run with default Log backend", Log.backend is DefaultLogBackend)
     }
 
     @Test
     fun gamePngExists() {
-        Assert.assertTrue("This test will only pass when the game.png exists",
-                Gdx.files.local("").list().any { it.name().endsWith(".png") })
+        Assert.assertTrue("This test will only pass when any png exists in the atlas location",
+            Gdx.files.local("").list().any { it.name().endsWith(".png") }
+        )
     }
 
     @Test
-    fun loadRuleset() {
+    fun rulesetLoadingWorks() {
         Assert.assertTrue("This test will only pass when the jsons can be loaded",
-                ruleset.buildings.size > 0)
+            ruleset.buildings.isNotEmpty()
+        )
     }
 
     @Test
     fun gameIsNotRunWithDebugModes() {
         val game = UncivGame()
         Assert.assertTrue("This test will only pass if the game is not run with debug modes",
-                !DebugUtils.SUPERCHARGED
-                        && !DebugUtils.VISIBLE_MAP
-                        && DebugUtils.SIMULATE_UNTIL_TURN <= 0
-                        && !game.isConsoleMode
+            !DebugUtils.SUPERCHARGED
+            && !DebugUtils.VISIBLE_MAP
+            && DebugUtils.SIMULATE_UNTIL_TURN <= 0
+            && !game.isConsoleMode
         )
     }
 
     // If there's a unit that obsoletes with no upgrade then when it obsoletes
-// and we try to work on its upgrade, we'll get an exception - see techManager
+    // and we try to work on its upgrade, we'll get an exception - see techManager
     // But...Scout obsoletes at Scientific Theory with no upgrade...?
     @Test
     fun allObsoletingUnitsHaveUpgrades() {
         val units: Collection<BaseUnit> = ruleset.units.values
         var allObsoletingUnitsHaveUpgrades = true
         for (unit in units) {
-            if (unit.techsAtWhichAutoUpgradeInProduction().any() && unit.upgradesTo == null && unit.name !="Scout" ) {
+            if (unit.techsAtWhichAutoUpgradeInProduction().any() && unit.upgradesTo == null && unit.name != "Scout" ) {
                 debug("%s obsoletes but has no upgrade", unit.name)
                 allObsoletingUnitsHaveUpgrades = false
             }
@@ -86,8 +102,9 @@ class BasicTests {
         val statsThatShouldBe = Stats(gold = 1f, production = 2f)
         Assert.assertTrue(Stats.parse("+1 Gold, +2 Production").equals(statsThatShouldBe))
 
-        UncivGame.Current = UncivGame()
-        UncivGame.Current.settings = GameSettings().apply { language = "Italian" }
+        //TODO these were active - why? They only test whether the default UncivGame ctor throws
+        //UncivGame.Current = UncivGame()
+        //UncivGame.Current.settings = GameSettings().apply { language = "Italian" }
     }
 
     @Test
@@ -107,7 +124,7 @@ class BasicTests {
     fun uniqueTypesHaveNoUnknownParameters() {
         var noUnknownParameters = true
         for (uniqueType in UniqueType.entries) {
-            if (uniqueType.getDeprecationAnnotation()!=null) continue
+            if (uniqueType.getDeprecationAnnotation() != null) continue
             for (entry in uniqueType.parameterTypeMap.withIndex()) {
                 for (paramType in entry.value) {
                     if (paramType == UniqueParameterType.Unknown) {
@@ -282,7 +299,8 @@ class BasicTests {
         Assert.assertTrue("This test succeeds only if all deprecated uniques have a replaceWith text that matches an existing type", allOK)
     }
 
-    //@Test  // commented so github doesn't run this
+    @Test
+    @Ignore("so github doesn't run this") 
     fun statMathStressTest() {
         val runtime = Runtime.getRuntime()
         runtime.gc()

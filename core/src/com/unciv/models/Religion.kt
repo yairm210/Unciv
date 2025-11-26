@@ -10,6 +10,7 @@ import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.INamed
+import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.Readonly
 
 /** Data object for Religions */
@@ -17,7 +18,6 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
 
     override lateinit var name: String
     var displayName: String? = null
-    lateinit var foundingCivName: String
 
     private var founderBeliefs: HashSet<String> = hashSetOf()
     private var followerBeliefs: HashSet<String> = hashSetOf()
@@ -29,10 +29,28 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
 
     @Transient
     lateinit var gameInfo: GameInfo
+    
+    lateinit var foundingCivName: String
+        private set
+    @Transient
+    @Cache
+    private lateinit var _foundingCiv: Civilization
+    @get:Readonly
+    val foundingCiv: Civilization get() {
+        if (!::_foundingCiv.isInitialized) _foundingCiv = gameInfo.getCivilization(foundingCivName)
+        return _foundingCiv
+    }
 
     @delegate:Transient
     val buildingsPurchasableByBeliefs by lazy {
         unlockedBuildingsPurchasable()
+    }
+    
+    constructor(name: String, gameInfo: GameInfo, foundingCiv: Civilization): this() {
+        this.name = name
+        this.gameInfo = gameInfo
+        this._foundingCiv = foundingCiv
+        this.foundingCivName = foundingCiv.civName
     }
 
     constructor(name: String, gameInfo: GameInfo, foundingCivName: String) : this() {
@@ -118,8 +136,6 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
     @Readonly fun isMajorReligion() = getBeliefs(BeliefType.Founder).any()
     @Readonly fun isEnhancedReligion() = getBeliefs(BeliefType.Enhancer).any()
 
-    @Readonly fun getFounder() = gameInfo.getCivilization(foundingCivName)
-
     @Readonly
     fun matchesFilter(filter: String, state: GameContext = GameContext.IgnoreConditionals, civ: Civilization? = null): Boolean {
         return MultiFilter.multiFilter(filter, { matchesSingleFilter(it, state, civ) })
@@ -127,7 +143,7 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
 
     @Readonly
     private fun matchesSingleFilter(filter: String, state: GameContext = GameContext.IgnoreConditionals, civ: Civilization? = null): Boolean {
-        val foundingCiv = getFounder()
+        val foundingCiv = foundingCiv
         when (filter) {
             "any" -> return true
             "major" -> return isMajorReligion()

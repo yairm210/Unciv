@@ -1,3 +1,14 @@
+## 4.18.16
+
+Units that upgrade continue escorting 
+
+Nation colors unchanged by multiplayer chat
+
+By RobLoach:
+- G&K: Fix Kremlin providing a Great Scientist Point 
+- Add `[buildingFilter] Buildings by [civFilter] Civilizations` Countable 
+- Add `eraFilter` to allow filtering by Era 
+
 ## 4.18.15
 
 Display road per-turn costs in the stats

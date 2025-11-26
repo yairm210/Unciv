@@ -839,6 +839,7 @@
 		"name": "Kremlin",
 		"culture": 3,
 		"cityStrength": 12,
+        "greatPersonPoints": {"Great Scientist": 1},
 		"isWonder": true,
 		"uniques": ["[+25]% City Strength from defensive buildings"],
 		"requiredTech": "Metallurgy",

@@ -150,7 +150,7 @@ object BattleDamage {
             if (attacker.isMelee()) {
                 val numberOfOtherAttackersSurroundingDefender = defender.getTile().neighbors.count {
                     it.militaryUnit != null && it.militaryUnit != attacker.unit
-                            && it.militaryUnit!!.owner == attacker.getCivInfo().civName
+                            && it.militaryUnit!!.civ == attacker.getCivInfo()
                             && MapUnitCombatant(it.militaryUnit!!).isMelee()
                 }
                 if (numberOfOtherAttackersSurroundingDefender > 0) {
