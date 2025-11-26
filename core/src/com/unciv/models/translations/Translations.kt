@@ -366,47 +366,40 @@ private fun String.translateConditionals(hideIcons: Boolean, language: String): 
      * together into the final fully translated string.
      */
 
-    var translatedBaseUnique = this.removeConditionals().tr(hideIcons)
-
-    val conditionals = this.getModifiers().map { it.placeholderText }
-    val conditionsWithTranslation: LinkedHashMap<String, String> = linkedMapOf()
-
-    for (conditional in this.getModifiers())
-        conditionsWithTranslation[conditional.placeholderText] = conditional.text.tr(hideIcons)
-
-    val translatedConditionals: MutableList<String> = mutableListOf()
+    // Get all special parameters stored in the translation files
+    val conditionalOrdering = UncivGame.Current.translations.getConditionalOrder(language)
+    val conditionalsAfterUnique = UncivGame.Current.translations.placeConditionalsAfterUnique(language)
+    val shouldCapitalize = UncivGame.Current.translations.shouldCapitalize(language)
+    val spaceEquivalent = UncivGame.Current.translations.getSpaceEquivalent(language)
 
     // Somewhere, we asked the translators to reorder all possible conditionals in a way that
-    // makes sense in their language. We get this ordering, and than extract each of the
-    // translated conditionals, removing the <> surrounding them, and removing param values
-    // where it exists.
-    val conditionalOrdering = UncivGame.Current.translations.getConditionalOrder(language)
-    for (placedConditional in pointyBraceRegex.findAll(conditionalOrdering)
-        .map { it.value.substring(1, it.value.length - 1).getPlaceholderText() }) {
-        if (placedConditional in conditionals) {
-            translatedConditionals.add(conditionsWithTranslation[placedConditional]!!)
-            conditionsWithTranslation.remove(placedConditional)
-        }
-    }
+    // makes sense in their language. We get this ordering, and map their placeholderText to their ordinal.
+    val sortPriorities: Map<String, Int> = pointyBraceRegex
+        .findAll(conditionalOrdering)
+        .map { it.groupValues[1].getPlaceholderText() }
+        .withIndex()
+        .associate { (index, key) -> key to index }
 
-    // If the translated string that should contain all conditionals doesn't contain
-    // a few conditionals used here, just add the translations of these to the end.
-    // We do test for this, but just in case.
-    translatedConditionals.addAll(conditionsWithTranslation.values)
+    // Now sort the input conditionals by looking their sort priority up (sorting to the end if none defined).
+    // Remember this sort operator is stable - entries with identical priority keep their original ordering,
+    // so if the conditional order definition is empty, all conditionals keep their place.
+    fun sortPriority(unique: Unique) = sortPriorities.getOrDefault(unique.placeholderText, Int.MAX_VALUE)
+    val translatedConditionals = this.getModifiersSequence()
+        .sortedBy(::sortPriority)
+        .map { it.text.tr(hideIcons) }
 
     // After that, add the translation of the base unique either before or after these conditionals
-    if (UncivGame.Current.translations.placeConditionalsAfterUnique(language)) {
-        translatedConditionals.add(0, translatedBaseUnique)
-    } else {
-        if (UncivGame.Current.translations.shouldCapitalize(language) && translatedBaseUnique[0].isUpperCase())
-            translatedBaseUnique = translatedBaseUnique.replaceFirstChar { it.lowercase() }
-        translatedConditionals.add(translatedBaseUnique)
+    val translatedBaseUnique = this.removeConditionals().tr(hideIcons)
+    val translatedComponents = sequence {
+        if (conditionalsAfterUnique) yield(translatedBaseUnique)
+        yieldAll(translatedConditionals)
+        if (!conditionalsAfterUnique)
+            if (shouldCapitalize) yield(translatedBaseUnique.replaceFirstChar { it.lowercase() })
+            else yield(translatedBaseUnique)
     }
 
-    var fullyTranslatedString = translatedConditionals.joinToString(
-        UncivGame.Current.translations.getSpaceEquivalent(language)
-    )
-    if (UncivGame.Current.translations.shouldCapitalize(language))
+    var fullyTranslatedString = translatedComponents.joinToString(spaceEquivalent)
+    if (shouldCapitalize)
         fullyTranslatedString = fullyTranslatedString.replaceFirstChar { it.uppercase() }
     return fullyTranslatedString
 }
@@ -491,7 +484,7 @@ fun String.getPlaceholderParameters(): List<String> {
     if (!this.contains('[')) return emptyList()
 
     val stringToParse = this.removeConditionals()
-    
+
     val parameters = ArrayList<String>()
     var depthOfBraces = 0
     var startOfCurrentParameter = -1
@@ -547,12 +540,13 @@ fun String.fillPlaceholders(vararg strings: String): String {
 }
 
 @Pure
-fun String.getModifiers(): List<Unique> {
-    if (!this.contains('<')) return emptyList()
+private fun String.getModifiersSequence(): Sequence<Unique> {
+    if (!this.contains('<')) return emptySequence()
     @Immutable val matchResults = pointyBraceRegex.findAll(this)
-    @Immutable val uniques = matchResults.map { Unique(it.groups[1]!!.value) }
-    return uniques.toList()
+    return matchResults.map { Unique(it.groups[1]!!.value) }
 }
+@Readonly
+fun String.getModifiers() = getModifiersSequence().toList()
 
 @Pure
 fun String.removeConditionals(): String {

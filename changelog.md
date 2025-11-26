@@ -1,3 +1,105 @@
+## 4.18.16
+
+Units that upgrade continue escorting 
+
+Nation colors unchanged by multiplayer chat
+
+By RobLoach:
+- G&K: Fix Kremlin providing a Great Scientist Point 
+- Add `[buildingFilter] Buildings by [civFilter] Civilizations` Countable 
+- Add `eraFilter` to allow filtering by Era 
+
+## 4.18.15
+
+Display road per-turn costs in the stats
+
+Modding: Cloned units' triggers happen after the data is copied to them
+
+By RobLoach:
+- modding: Allow attack sounds by unit name 
+- modding: Add a Researched Technologies Countable
+- Fix `<on [difficulty] or higher/lower>` Conditional 
+- Fix Worker Improvement Automation Checks 
+- civilopedia: Only show active Victory Types 
+
+Link historical Great Person names to Wikipedia - By SomeTroglodyte
+
+## 4.18.14
+
+Faster map generation
+
+Less memory usage for large maps
+
+By SomeTroglodyte:
+- New CircularButton Widget 
+- Improve recognition of GitHub url types passed to "Download mod from URL" 
+
+By RobLoach:
+- Fix Unit Stats across Vanilla 
+- Fix Spaceship Parts requiring a Scientific Victory 
+- Fix Unit Name Group unique type
+- Allow modding of Great Prophet names
+
+Fix incorrect target civ used to determine defensive pact modifiers - By unciv-loof
+
+Add plus strength amount unique - By SeventhM
+
+## 4.18.13
+
+By unciv-loof:
+- Fix broken minimap state after maximizing minimap + tile tap
+- Relocate maximize minimap button for compatibility with rounded corner displays 
+- New MP games display correct "time since last turn" 
+- Disallow settling cities in territory of other civs
+
+Add Great People Names - By RobLoach
+
+Faster mod download & display status - By touhidurrr
+
+Add Nuclear Weapons Disabled conditional unique - By PLynx01
+
+Bug fixes for city destroy mechanic - By PhiRite
+
+## 4.18.12
+
+By SomeTroglodyte:
+- Align buttons on MainMenuScreen 
+- Adapt main menu background maps to aspect ratio 
+- Fix resource stats in Civilopedia 
+
+By SidedYapper:
+- Added popup for "about tab" when clicking Version in main menu 
+
+## 4.18.11
+
+Happiness shown in city stat overview
+
+By SomeTroglodyte:
+- Show Mod json parse errors right after download 
+- Fix translation of multiple conditionals of the same type 
+- Fix upgrading from Unit overview won't show changes
+- Make ToastPopups stay on screen when tapped, for leisurely reading
+
+Fix City-States asking you to find Natural Wonders they already found - By RobLoach
+
+## 4.18.10
+
+By RobLoach:
+- Add more notifications to Triggerable Uniques 
+- Fix Victory Type translations in Civilopedia 
+- Fix Wonder Alert without a quote 
+- Great Admiral: Add 'Change Port' Ability 
+
+By EmperorPinguin:
+- Adjust luxury resource placement logic thresholds
+- Add minimumCityLocationTileValue mod constant
+
+By SomeTroglodyte:
+- Fix broken "download missing mods"  
+- Better Resource descriptions  
+
+Run Android tasks in parallel - By nbd-boss (new constributor!)
+
 ## 4.18.9
 
 Updated Libgdx to 1.14.0 - solving Wayand and Android bugs

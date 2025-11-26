@@ -1,6 +1,5 @@
 package com.unciv.models.ruleset
 
-import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
@@ -13,7 +12,7 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.math.abs
 
-class Speed : RulesetObject(), IsPartOfGameInfoSerialization {
+class Speed : RulesetObject() {
     var modifier: Float = 1f
     var goldCostModifier: Float = modifier
     var productionCostModifier: Float = modifier

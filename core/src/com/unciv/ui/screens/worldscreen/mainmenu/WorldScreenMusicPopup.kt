@@ -9,15 +9,16 @@ import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSettings.ScreenSize
 import com.unciv.ui.audio.MusicController
+import com.unciv.ui.components.extensions.MusicControls.addMusicControls
 import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
-import com.unciv.ui.popups.options.addMusicControls
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
+import yairm210.purity.annotations.Readonly
 
 class WorldScreenMusicPopup(
     worldScreen: WorldScreen
@@ -25,6 +26,7 @@ class WorldScreenMusicPopup(
 
     companion object {
         // 3/4 of the screen is just a bit too small on small screen settings
+        @Readonly
         private fun calcSize(worldScreen: WorldScreen) = when(worldScreen.game.settings.screenSize) {
             ScreenSize.Tiny -> 0.95f
             ScreenSize.Small -> 0.85f
@@ -59,7 +61,7 @@ class WorldScreenMusicPopup(
 
         addMusicMods(settings)
         historyExpander = addHistory()
-        addMusicControls(bottomTable, settings, musicController)
+        bottomTable.addMusicControls(settings, musicController)
         addCloseButton().colspan(2)
 
         musicController.onChange {

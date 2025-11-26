@@ -130,6 +130,7 @@ interface IHasUniques : INamed {
             UniqueType.ConditionalSpeed,
             UniqueType.ConditionalDifficulty,
             UniqueType.ConditionalDifficultyOrHigher,
+            UniqueType.ConditionalDifficultyOrLower,
             UniqueType.ConditionalReligionEnabled,
             UniqueType.ConditionalReligionDisabled,
             UniqueType.ConditionalEspionageEnabled,

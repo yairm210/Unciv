@@ -37,15 +37,14 @@ class CityCombatant(val city: City) : ICombatant {
     }
 
     override fun getUnitType(): UnitType = UnitType.City
-    override fun getAttackingStrength(): Int = (getCityStrength(CombatAction.Attack) * 0.75).roundToInt()
-    @Readonly override fun getDefendingStrength(attackedByRanged: Boolean): Int {
+    override fun getAttackingStrength(defender: ICombatant?): Int = (getCityStrength(defender, CombatAction.Attack) * 0.75).roundToInt()
+    @Readonly override fun getDefendingStrength(attacker: ICombatant?): Int {
         if (isDefeated()) return 1
-        return getCityStrength()
+        return getCityStrength(attacker)
     }
 
-    @Suppress("MemberVisibilityCanBePrivate")
     @Readonly
-    fun getCityStrength(combatAction: CombatAction = CombatAction.Defend): Int { // Civ fanatics forum, from a modder who went through the original code
+    fun getCityStrength(theirCombatant: ICombatant? = null, combatAction: CombatAction = CombatAction.Defend): Int { // Civ fanatics forum, from a modder who went through the original code
         val modConstants = getCivInfo().gameInfo.ruleset.modOptions.constants
         var strength = modConstants.cityStrengthBase
         strength += (city.population.population * modConstants.cityStrengthPerPop) // Each 5 pop gives 2 defence
@@ -66,11 +65,14 @@ class CityCombatant(val city: City) : ICombatant {
             strength += cityTile.militaryUnit!!.baseUnit.strength * (cityTile.militaryUnit!!.health / 100f) * modConstants.cityStrengthFromGarrison
 
         var buildingsStrength = city.getStrength()
-        val gameContext = GameContext(getCivInfo(), city, ourCombatant = this, combatAction = combatAction)
+        val gameContext = GameContext(getCivInfo(), city, ourCombatant = this, theirCombatant = theirCombatant, combatAction = combatAction)
 
         for (unique in getCivInfo().getMatchingUniques(UniqueType.BetterDefensiveBuildings, gameContext))
             buildingsStrength *= unique.params[0].toPercent()
         strength += buildingsStrength
+
+        val extraStrength = city.getMatchingUniques(UniqueType.StrengthAmount, gameContext).sumOf { it.params[0].toInt() }
+        strength += extraStrength
 
         return strength.roundToInt()
     }

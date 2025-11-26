@@ -43,6 +43,7 @@ import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import yairm210.purity.annotations.Pure
+import yairm210.purity.annotations.Readonly
 
 /**
  * Collection of extension functions mostly for libGdx widgets
@@ -96,7 +97,7 @@ fun colorFromHex(hexColor: Int): Color {
 @Pure fun colorFromRGB(r: Int, g: Int, b: Int) = Color(r / 255f, g / 255f, b / 255f, 1f)
 
 /** Create a new [Color] instance from r/g/b given as Integers in the range 0..255 in the form of a 3-element List [rgb] */
-fun colorFromRGB(rgb: List<Int>) = colorFromRGB(rgb[0], rgb[1], rgb[2])
+@Readonly fun colorFromRGB(rgb: List<Int>) = colorFromRGB(rgb[0], rgb[1], rgb[2])
 
 /** Linearly interpolates between this [Color] and [BLACK][ImageGetter.CHARCOAL] by [t] which is in the range [[0,1]].
  * The result is returned as a new instance. */
@@ -112,12 +113,13 @@ fun Color.brighten(t: Float): Color = Color(this).let {
 
 /** Ensures that the `lightness` value of the given color
  * in `HSL` scale is at least [minLightness].
+ * Creates a copy.
  */
 fun Color.coerceLightnessAtLeast(minLightness: Float): Color {
     /** see [Color.toHsv] implementation to understand this */
     val lightness = maxOf(r, g, b)
     return if (lightness < minLightness) {
-        this.mul(minLightness / lightness)
+        this.cpy().mul(minLightness / lightness)
     } else this
 }
 
@@ -377,7 +379,8 @@ fun String.toCheckBox(startsOutChecked: Boolean = false, changeAction: ((Boolean
 
 /** Sets the [font color][Label.LabelStyle.fontColor] on a [Label] and returns it to allow chaining */
 fun Label.setFontColor(color: Color): Label {
-    style = Label.LabelStyle(style).apply { fontColor=color }
+    if (color != style.fontColor)
+        style = Label.LabelStyle(style).apply { fontColor = color }
     return this
 }
 
@@ -386,7 +389,7 @@ fun Label.setFontSize(size: Int): Label {
     style = Label.LabelStyle(style)
     style.font = Fonts.font
     @Suppress("UsePropertyAccessSyntax") setStyle(style)
-    setFontScale(size/ Fonts.ORIGINAL_FONT_SIZE)
+    setFontScale(size / Fonts.ORIGINAL_FONT_SIZE)
     return this
 }
 

@@ -25,6 +25,7 @@ import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
+import yairm210.purity.annotations.Pure
 import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
 
 /*TODO
@@ -39,7 +40,7 @@ class NotificationsScroll(
 ) : ScrollPane(null) {
     enum class UserSetting(val static: Boolean = false) {
         Disabled(true), Hidden, Visible, Permanent(true);
-        companion object { fun default() = Visible }
+        companion object { @Pure fun default() = Visible }
     }
 
     private companion object {

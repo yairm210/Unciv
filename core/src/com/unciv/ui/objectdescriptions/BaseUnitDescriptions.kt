@@ -20,6 +20,7 @@ import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
+import yairm210.purity.annotations.Readonly
 
 object BaseUnitDescriptions {
 
@@ -224,7 +225,9 @@ object BaseUnitDescriptions {
     }
 
     @Suppress("RemoveExplicitTypeArguments")  // for faster IDE - inferring sequence types can be slow
+    
     fun UnitType.getUnitTypeCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
+        @Readonly
         fun getDomainLines() = sequence<FormattedLine> {
             yield(FormattedLine("{Unit types}:", header = 4))
             val myMovementType = getMovementType()

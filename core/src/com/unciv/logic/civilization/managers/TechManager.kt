@@ -68,7 +68,7 @@ class TechManager : IsPartOfGameInfoSerialization {
     var repeatingTechsResearched = 0
 
     /** For calculating Great Scientist yields - see https://civilization.fandom.com/wiki/Great_Scientist_(Civ5)  */
-    var scienceOfLast8Turns = IntArray(8) { 0 }
+    var scienceOfLast8Turns = IntArray(8)
     var scienceFromResearchAgreements = 0
     /** This is the list of strings, which is serialized */
     var techsResearched = HashSet<String>()
@@ -98,7 +98,7 @@ class TechManager : IsPartOfGameInfoSerialization {
 
     @Readonly fun getNumberOfTechsResearched(): Int = techsResearched.size
 
-    fun getOverflowScience(): Int = overflowScience
+    @Readonly fun getOverflowScience(): Int = overflowScience
 
     @Readonly
     private fun getScienceModifier(techName: String): Float { // https://forums.civfanatics.com/threads/the-mechanics-of-overflow-inflation.517970/

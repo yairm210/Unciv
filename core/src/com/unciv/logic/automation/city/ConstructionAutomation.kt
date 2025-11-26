@@ -143,9 +143,9 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         // Also do not notify when the decision hasn't changed - duh!
         val noNotification = city.isInResistance()
             || civInfo.isAI() // Optimization: addNotification filters anyway, but saves a string builder and a CityAction instantiation
-            || cityConstructions.currentConstructionFromQueue == chosenConstruction.name
+            || cityConstructions.currentConstructionName() == chosenConstruction.name
             || UncivGame.Current.screen is CityScreen
-        cityConstructions.currentConstructionFromQueue = chosenConstruction.name
+        cityConstructions.setCurrentConstruction(chosenConstruction.name)
         if (noNotification) return
 
         civInfo.addNotification(

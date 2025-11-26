@@ -26,7 +26,7 @@ import com.unciv.ui.screens.worldscreen.WorldScreen
  * there that should not be serialized to the saved game.
  *
  * IsPartOfGameInfoSerialization is just a marker class and not actually tested for, so inheriting it
- * _indirectly_ is OK (the NotificationAction subclasses need not re-implement, a `is`test would still succeed).
+ * _indirectly_ is OK (the NotificationAction subclasses need not re-implement, a `is` test would still succeed).
  *
  * Also note all implementations need the default no-args constructor for deserialization,
  * therefore the otherwise unused default initializers.
@@ -36,19 +36,21 @@ interface NotificationAction : IsPartOfGameInfoSerialization {
 }
 
 /** A notification action that shows map places. */
-// Note location is nonprivate only for writeOldFormatAction
-class LocationAction(internal val location: Vector2 = Vector2.Zero) : NotificationAction {
+class LocationAction(private val location: Vector2 = Vector2.Zero) : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
         worldScreen.mapHolder.setCenterPosition(location, selectUnit = false)
     }
+
+    /**
+     *  This Companion implements constructor-like factories through [invoke] to simulate the old [LocationAction]
+     *  which stored several locations (back then in turn there was only one action per Notification).
+     *  - Meant to be used in [Civilization.addNotification] calls.
+     *  - Note there are overloads accepting `Iterable`, `Sequence` or `vararg` of [Vector2]
+     *  - The `vararg` version accepts and ignores `null`s, often making pre-filtering of conditionally available locations unnecessary.
+     *
+     *  Example: `addNotification("Bob hit alice", LocationAction(bob.position, alice.position), NotificationCategory.War)`
+     */
     companion object {
-        /*
-            These are constructor-like factories to simulate the old LocationAction which stored
-            several locations (back then in turn there was only one action per Notification).
-            Example: addNotification("Bob hit alice", LocationAction(bob.position, alice.position), NotificationCategory.War)
-            This maps to the (String, Sequence<NotificationAction>, NotificationCategory, vararg String)
-            overload of addNotification through the last invoke below.
-         */
         operator fun invoke(locations: Sequence<Vector2>): Sequence<LocationAction> =
             locations.map { LocationAction(it) }
         operator fun invoke(locations: Iterable<Vector2>): Sequence<LocationAction> =
@@ -80,13 +82,30 @@ class CityAction(private val city: Vector2 = Vector2.Zero) : NotificationAction 
 }
 
 /** enter diplomacy screen */
-class DiplomacyAction(
-    private val otherCivName: String = "",
-    private var showTrade: Boolean = false
-) : NotificationAction {
+class DiplomacyAction : NotificationAction {
+    private val otherCivName: String
+    private var showTrade: Boolean
+    @Transient
+    private lateinit var otherCiv: Civilization
+
+    @Suppress("unused") // Used for deserialization
+    constructor(): this("", false)
+
+    constructor(otherCivName: String, showTrade: Boolean = false) {
+        this.otherCivName = otherCivName
+        this.showTrade = showTrade
+    }
+
+    constructor(otherCiv: Civilization, showTrade: Boolean = false) {
+        this.otherCiv = otherCiv
+        this.otherCivName = otherCiv.civName
+        this.showTrade = showTrade
+    }
+
     override fun execute(worldScreen: WorldScreen) {
         val currentCiv = worldScreen.selectedCiv
-        val otherCiv = worldScreen.gameInfo.getCivilization(otherCivName)
+        if (!::otherCiv.isInitialized)
+            otherCiv = worldScreen.gameInfo.getCivilization(otherCivName)
 
         if (showTrade && otherCiv == currentCiv)
             // Because TradeTable will set up otherCiv against that one,
@@ -203,17 +222,16 @@ class ReligionAction(private val religionName: String? = null) : NotificationAct
 
 
 @Suppress("PrivatePropertyName")  // These names *must* match their class name, see below
+/** This exists as trick to leverage readFields for Json deserialization.
+ *
+ *  The serializer writes each [NotificationAction] as json object (within the [actions][Notification.actions] array),
+ *  containing the class `simpleName` as subfield name, which carries any (or none) subclass-specific data as its object value.
+ *  So, reading this from json data will fill just one of the fields, and the `listOfNotNull` will output that field only.
+ *  Even though we know there's only one result, no need to `first()` since it's no advantage to the caller.
+ *
+ *  In a way, this is like asking the class loader to resolve the class by compilation instead of via the reflection API, like Gdx would try unaided.
+ */
 internal class NotificationActionsDeserializer {
-    /* This exists as trick to leverage readFields for Json deserialization.
-    // The serializer writes each NotificationAction as json object (within the actions array),
-    // containing the class simpleName as subfield name, which carries any (or none) subclass-
-    // specific data as its object value. So, reading this from json data will fill just one of the
-    // fields, and the listOfNotNull will output that field only.
-    // Even though we know there's only one result, no need to first() since it's no advantage to the caller.
-    //
-    // In a way, this is like asking the class loader to resolve the class by compilation
-    // instead of via the reflection API, like Gdx would try unaided.
-    */
     private val LocationAction: LocationAction? = null
     private val TechAction: TechAction? = null
     private val CityAction: CityAction? = null

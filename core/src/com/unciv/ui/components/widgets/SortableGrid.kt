@@ -39,8 +39,9 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
     /** Provides the actual "data" as in one object per row that can then be passed to [ISortableGridContentProvider] methods to fetch cell content.
      *
      *  Note: If your initial [sortState] has [SortDirection.None], then enumeration order of this will determine initial presentation order.
+     *  When this needs to change, call [update] with the `newData`parameter.
      */
-    private val data: Iterable<IT>,
+    private var data: Iterable<IT>,
     /** Passed to [ISortableGridContentProvider.getEntryActor] where it can be used to define `onClick` actions. */
     private val actionContext: ACT,
     /** Sorting state will be kept here - provide your own e.g. if you want to persist it */
@@ -149,7 +150,8 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
      *  Clients can call this if some data change affects cell content and sorting.
      *  Note there is optimization potential here - a mechanism that updates one cell, and resorts only if it is in the currently sorted column
      */
-    fun update() {
+    fun update(newData: Iterable<IT>? = null) {
+        if (newData != null) data = newData
         updateHeader()
         updateDetails()
     }
@@ -336,7 +338,6 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
         override var sortShown = SortDirection.None
 
         init {
-            outerActor.isTransform = false
             outerActor.align(column.align)
             outerActor.addActor(headerActor)
             initActivationAndTooltip(column)

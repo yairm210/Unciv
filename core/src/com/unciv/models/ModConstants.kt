@@ -101,12 +101,17 @@ class ModConstants {
     var pantheonBase = 10
     var pantheonGrowth = 5
 
+    // AI behaviour
     var workboatAutomationSearchMaxTiles = 20
+    var minimumCityLocationTileValue = 53f
 
     // Civilization
     var minimumWarDuration = 10
     var baseTurnsUntilRevolt = 4
     var cityStateElectionTurns = 15
+
+    // Economy
+    var maxGoldTradeOffer = 10000
 
     // City State Tribute: maximum points from Force ranking towards reaching Tribute willingness threshold
     var tributeGlobalModifier = 100 // 75 in BNW

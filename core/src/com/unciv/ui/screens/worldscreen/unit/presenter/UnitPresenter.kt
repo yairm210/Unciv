@@ -15,6 +15,7 @@ import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.screens.pickerscreens.UnitRenamePopup
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.ui.screens.worldscreen.unit.UnitTable
+import yairm210.purity.annotations.Readonly
 
 class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: WorldScreen) : UnitTable.Presenter {
 
@@ -153,6 +154,7 @@ class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: W
         Unit
     } ?: Unit
 
+    @Readonly
     private fun buildNameLabelText(unit: MapUnit) : String {
         var nameLabelText = unit.displayName().tr(true)
         if (unit.health < 100) nameLabelText += " (${unit.health.tr()})"
