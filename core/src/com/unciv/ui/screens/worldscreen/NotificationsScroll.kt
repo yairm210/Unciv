@@ -96,7 +96,7 @@ class NotificationsScroll(
     /** For category header decoration lines */
     private val minCategoryLineWidth = worldScreen.stage.width * 0.075f
     /** Show restoreButton when less than this much of the pane is left */
-    private val scrolledAwayEpsilon = minCategoryLineWidth
+    private val scrolledAwayEpsilon = maxEntryWidth * 0.3f // yes should include inverseScaleFactor
 
     private val restoreButton = RestoreButton()
 
@@ -527,7 +527,7 @@ class NotificationsScroll(
 
         fun checkScrollX(scrollX: Float) {
             if (blockCheck) return
-            if (active && scrollX >= scrolledAwayEpsilon * 2)
+            if (active && scrollX >= scrolledAwayEpsilon * 1.2f)
                 hide()
             if (!active && scrollX <= scrolledAwayEpsilon)
                 show()
