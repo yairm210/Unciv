@@ -1,10 +1,11 @@
 package com.unciv.ui.screens.worldscreen
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import com.badlogic.gdx.scenes.scene2d.actions.TemporalAction
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.Image
@@ -34,7 +35,6 @@ import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
  *  Un-hiding the notifications when new ones arrive is a little pointless due to Categories:
  *      * try to scroll new into view? Very complicated as the "old" state is only "available" in the Widgets
  *      * Don't unless a new user option disables categories, then scroll to top?
- *  Idea: Blink or tint the button when new notifications while Hidden
  */
 
 class NotificationsScroll(
@@ -438,11 +438,12 @@ class NotificationsScroll(
         private var active = false
         private var shownCount = -1
         private val countLabel: Label
+        private val bellIcon = ImageGetter.getImage("OtherIcons/Notifications")
         private val labelInnerCircle: Image
         private val labelOuterCircle: Image
 
         init {
-            actor = ImageGetter.getImage("OtherIcons/Notifications")
+            actor = bellIcon
                 .surroundWithCircle(restoreButtonSize * 0.9f, color = BaseScreen.skinStrings.skinConfig.baseColor)
                 .surroundWithCircle(restoreButtonSize, resizeActor = false)
             size(restoreButtonSize)
@@ -484,6 +485,7 @@ class NotificationsScroll(
             countLabel.setText(countText) // should we use Maya numerals for the Maya?
             countLabel.pack()
             countLabel.centerAtNumberPosition()
+            if (active) flash()
         }
 
         fun block() {
@@ -504,6 +506,7 @@ class NotificationsScroll(
                 worldScreen.stage.root.addActorAfter(this@NotificationsScroll, this)
             blockAct = false
             addAction(Actions.fadeIn(1f))
+            if (userSetting == UserSetting.Disabled) flash()
         }
 
         fun hide() {
@@ -539,9 +542,22 @@ class NotificationsScroll(
             }
         }
 
+        fun flash() {
+            addAction(ButtonFlashAction(bellIcon))
+        }
+
         override fun act(delta: Float) {
             // Actions are blocked while update() is rebuilding the UI elements - to be safe from unexpected state changes
             if (!blockAct) super.act(delta)
+        }
+    }
+
+    private class ButtonFlashAction(private val icon: Actor) : TemporalAction(4f) {
+        val tempColor = Color()
+        override fun update(percent: Float) {
+            val shift = (1f - MathUtils.cos(12f * percent * MathUtils.PI)) / 2f
+            tempColor.set(Color.WHITE).lerp(Color.RED, shift)
+            icon.color.set(tempColor)
         }
     }
 
@@ -601,8 +617,4 @@ class NotificationsScroll(
         userSetting = newSetting
         GUI.getSettings().notificationScroll = newSetting.name
     }
-
-    override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
-    override fun act(delta: Float) = super.act(delta)
-    override fun hit(x: Float, y: Float, touchable: Boolean): Actor? = super.hit(x, y, touchable)
 }
