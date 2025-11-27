@@ -229,7 +229,7 @@ object UnitAutomation {
     fun wander(unit: MapUnit, stayInTerritory: Boolean = false, tilesToAvoid: Set<Tile> = setOf()) {
         val unitDistanceToTiles = unit.currentTile.getTilesInDistance(1)
         // We could walk further, but wander() is meant to let units not stay on the same tile permanently,
-        // to avoid opstructing human scouts and workers, moving just one tile should be enough
+        // to avoid obstructing human scouts and workers, moving just one tile should be enough
         val reachableTiles = unitDistanceToTiles
                 .filter {
                     it !in tilesToAvoid
