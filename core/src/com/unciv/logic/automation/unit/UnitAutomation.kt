@@ -297,11 +297,12 @@ object UnitAutomation {
 
     private fun tryHeadTowardsEncampment(unit: MapUnit): Boolean {
         if (unit.hasUnique(UniqueType.SelfDestructs)) return false // don't use single-use units against barbarians...
-        val knownEncampments = unit.civ.gameInfo.tileMap.values.asSequence()
-                .filter { it.improvement == Constants.barbarianEncampment && unit.civ.hasExplored(it) }
         val cities = unit.civ.cities
-        val encampmentsCloseToCities = knownEncampments
-            .filter { cities.any { city -> city.getCenterTile().aerialDistanceTo(it) < 6 } }
+        val knownEncampments = cities.asSequence()
+            .flatMap { it.getCenterTile().getTilesInDistance(5) }
+                .filter { it.improvement == Constants.barbarianEncampment && unit.civ.hasExplored(it) }
+            .distinct()
+        val encampmentsCloseToCities = knownEncampments.asSequence()
             .sortedBy { it.aerialDistanceTo(unit.currentTile) }
         val encampmentToHeadTowards = encampmentsCloseToCities.firstOrNull { unit.movement.canReach(it) }
             ?: return false
