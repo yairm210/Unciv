@@ -133,8 +133,8 @@ class CityStateFunctions(val civInfo: Civilization) {
         if (giftableUnits.isEmpty()) // For badly defined mods that don't have great people but do have the policy that makes city states grant them
             return
         val giftedUnit = giftableUnits.random()
-        val cities = NextTurnAutomation.getClosestCities(receivingCiv, civInfo) ?: return
-        val placedUnit = receivingCiv.units.placeUnitNearTile(cities.city1.location, giftedUnit)
+        val cities = NextTurnAutomation.getClosestCities(civInfo, receivingCiv) ?: return
+        val placedUnit = receivingCiv.units.placeUnitNearTile(cities.city2.location, giftedUnit)
             ?: return
         val locations = LocationAction(placedUnit.getTile().position, cities.city2.location)
         receivingCiv.addNotification( "[${civInfo.civName}] gave us a [${giftedUnit.name}] as a gift!", locations,
