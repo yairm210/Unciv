@@ -102,7 +102,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         else
             TileMap(mapSize.radius, ruleset, mapParameters.worldWrap)
 
-        mapParameters.createdWithVersion = UncivGame.VERSION.toNiceString()
+        mapParameters.createdWithVersion = UncivGame.VERSION.toSerializeString()
         map.mapParameters = mapParameters
 
         if (mapType == MapType.empty) {

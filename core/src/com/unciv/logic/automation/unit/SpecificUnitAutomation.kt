@@ -147,7 +147,7 @@ object SpecificUnitAutomation {
             @Readonly
             fun getFrontierScore(city: City) = city.getCenterTile()
                 .getTilesAtDistance(city.civ.gameInfo.ruleset.modOptions.constants.minimalCityDistance + 1)
-                .count { it.canBeSettled() && (it.getOwner() == null || it.getOwner() == city.civ ) }
+                .count { it.canBeSettled(unit.civ) }
 
             val frontierCity = unit.civ.cities.maxByOrNull { getFrontierScore(it) }
             if (frontierCity != null && getFrontierScore(frontierCity) > 0  && unit.movement.canReach(frontierCity.getCenterTile()))

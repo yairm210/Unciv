@@ -56,7 +56,7 @@ object BattleUnitCapture {
 
         val captureChance = min(
             0.8f,
-            0.1f + attacker.getAttackingStrength().toFloat() / defender.getDefendingStrength()
+            0.1f + attacker.getAttackingStrength(defender).toFloat() / defender.getDefendingStrength(attacker)
                 .toFloat() * 0.4f
         )
         /** Between 0 and 1.  Defaults to turn and location-based random to avoid save scumming */
@@ -134,9 +134,7 @@ object BattleUnitCapture {
         capturedUnit.automated = false
 
         val capturedUnitTile = capturedUnit.getTile()
-        val originalOwner = if (capturedUnit.originalOwner != null)
-            capturedUnit.civ.gameInfo.getCivilization(capturedUnit.originalOwner!!)
-        else null
+        val originalOwner = capturedUnit.originalOwningCiv
 
         var wasDestroyedInstead = false
         when {

@@ -4,6 +4,7 @@ package com.unciv.logic
 import com.badlogic.gdx.Gdx
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.LocaleCode
 import com.unciv.models.ruleset.Ruleset
@@ -26,6 +27,7 @@ import com.unciv.ui.components.fonts.DiacriticSupport
 import com.unciv.utils.Log
 import org.junit.Assert
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -488,6 +490,41 @@ class TranslationTests {
             println("""Test "${test.label}" failed: Expected="${test.expected}", actual="$actual"""")
         }
         Assert.assertEquals(0, failures)
+    }
+
+    @Test
+    @RedirectOutput(RedirectPolicy.Show)
+    @Ignore("Don't run on github checks, comment out annotation for a local run")
+    /** Tool to determine how many of the names that come from their own cultural context have translations differing from their original */
+    fun listTranslatedNames() {
+        val languages = translations.getLanguages()
+        ruleset = RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!
+        val parcours = listOf(
+            "leader names" to ruleset.nations.values.asSequence().map { it.leaderName },
+            "city names" to ruleset.nations.values.asSequence().flatMap { it.cities },
+            "spy names" to ruleset.nations.values.asSequence().flatMap { it.spyNames },
+            "person names" to ruleset.unitNameGroups.values.asSequence().flatMap { it.unitNames },
+        )
+
+        fun checkGroup(name: String, seq: Sequence<String>): String {
+            var total = 0
+            println("--- $name ---")
+            val keysToCheck = seq.toSet()
+            for ((key, translation) in translations) {
+                val translationEntry = translation.entry
+                if (translationEntry !in keysToCheck) continue
+                for (language in languages) {
+                    val output = translations.getText(key, language)
+                    if (output == key) continue // the language doesn't have the required translation, so we got back the key
+                    println("\t\"$key\" is \"$output\" in $language")
+                    total++
+                }
+            }
+            return "$total (${total * 100f / keysToCheck.size / languages.size}%) $name were translated differently than their original over ${keysToCheck.size} candidates and ${languages.size} languages"
+        }
+
+        // Print summaries after details
+        parcours.map { (name, sequence) -> checkGroup(name, sequence) }.toList().forEach { println(it) }
     }
 
 //    @Test

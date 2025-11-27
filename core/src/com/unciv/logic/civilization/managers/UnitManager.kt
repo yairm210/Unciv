@@ -99,34 +99,38 @@ class UnitManager(val civInfo: Civilization) {
      * @param baseUnit [BaseUnit] to create and place
      * @return created [MapUnit] or null if no suitable location was found
      * */
-    fun placeUnitNearTile(location: Vector2, baseUnit: BaseUnit, unitId: Int? = null): MapUnit? {
+    fun placeUnitNearTile(location: Vector2, baseUnit: BaseUnit, unitId: Int? = null, copiedFrom: MapUnit? = null): MapUnit? {
         val unit = civInfo.gameInfo.tileMap.placeUnitNearTile(location, baseUnit, civInfo, unitId)
 
-        if (unit != null) {
-            val triggerNotificationText = "due to gaining a [${unit.name}]"
-            for (unique in unit.getUniques())
-                // Promotion triggerables are ALREADY handled in placeUnitNearTile -> addPromotion, where they were added
-                if (!unique.hasTriggerConditional() && unique.sourceObjectType != UniqueTarget.Promotion
-                    && unique.conditionalsApply(unit.cache.state))
-                    UniqueTriggerActivation.triggerUnique(unique, unit, triggerNotificationText = triggerNotificationText)
+        if (unit == null) return unit
+        
+        // Must happen before the triggers or else things like "[This Unit] loses the [promotionName] promotion"
+        //    will trigger *before* the unit actually has the promotion, and then will get the promotion anyway.
+        copiedFrom?.copyStatisticsTo(unit)
 
-            for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponGainingUnit, unit.cache.state) 
-                    { unit.matchesFilter(it.params[0]) })
+        val triggerNotificationText = "due to gaining a [${unit.name}]"
+        for (unique in unit.getUniques())
+            // Promotion triggerables are ALREADY handled in placeUnitNearTile -> addPromotion, where they were added
+            if (!unique.hasTriggerConditional() && unique.sourceObjectType != UniqueTarget.Promotion
+                && unique.conditionalsApply(unit.cache.state))
                 UniqueTriggerActivation.triggerUnique(unique, unit, triggerNotificationText = triggerNotificationText)
 
-            if (unit.getResourceRequirementsPerTurn().isNotEmpty())
-                civInfo.cache.updateCivResources()
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponGainingUnit, unit.cache.state) 
+                { unit.matchesFilter(it.params[0]) })
+            UniqueTriggerActivation.triggerUnique(unique, unit, triggerNotificationText = triggerNotificationText)
 
-            for (unique in civInfo.getMatchingUniques(UniqueType.LandUnitsCrossTerrainAfterUnitGained, unit.cache.state)) {
-                if (unit.matchesFilter(unique.params[1])) {
-                    civInfo.passThroughImpassableUnlocked = true    // Update the cached Boolean
-                    civInfo.passableImpassables.add(unique.params[0])   // Add to list of passable impassables
-                }
-            }
+        if (unit.getResourceRequirementsPerTurn().isNotEmpty())
+            civInfo.cache.updateCivResources()
 
-            if (unit.hasUnique(UniqueType.ReligiousUnit) && civInfo.gameInfo.isReligionEnabled()) {
-                unit.religion = civInfo.religionManager.religion?.name
+        for (unique in civInfo.getMatchingUniques(UniqueType.LandUnitsCrossTerrainAfterUnitGained, unit.cache.state)) {
+            if (unit.matchesFilter(unique.params[1])) {
+                civInfo.passThroughImpassableUnlocked = true    // Update the cached Boolean
+                civInfo.passableImpassables.add(unique.params[0])   // Add to list of passable impassables
             }
+        }
+
+        if (unit.hasUnique(UniqueType.ReligiousUnit) && civInfo.gameInfo.isReligionEnabled()) {
+            unit.religion = civInfo.religionManager.religion?.name
         }
         return unit
     }

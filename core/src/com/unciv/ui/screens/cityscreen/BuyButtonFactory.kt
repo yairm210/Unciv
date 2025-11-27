@@ -182,7 +182,7 @@ class BuyButtonFactory(val cityScreen: CityScreen) {
 
             // Allow buying next queued or auto-assigned construction right away
             city.cityConstructions.chooseNextConstruction()
-            if (city.cityConstructions.currentConstructionFromQueue.isNotEmpty()) {
+            if (city.cityConstructions. currentConstructionName().isNotEmpty()) {
                 val newConstruction = city.cityConstructions.getCurrentConstruction()
                 if (newConstruction is INonPerpetualConstruction)
                     cityScreen.selectConstruction(newConstruction)

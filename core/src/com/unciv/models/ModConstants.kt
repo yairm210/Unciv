@@ -110,6 +110,9 @@ class ModConstants {
     var baseTurnsUntilRevolt = 4
     var cityStateElectionTurns = 15
 
+    // Economy
+    var maxGoldTradeOffer = 10000
+
     // City State Tribute: maximum points from Force ranking towards reaching Tribute willingness threshold
     var tributeGlobalModifier = 100 // 75 in BNW
     var tributeLocalModifier = 100 // 125 in BNW

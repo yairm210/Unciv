@@ -228,7 +228,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         val githubButton = ImageGetter.getImage("OtherIcons/Github")
             .surroundWithCircle(buttonsSize, color = skinStrings.skinConfig.baseColor)
             .surroundWithThinCircle(Color.WHITE)
-            .onActivation { Gdx.net.openURI("https://github.com/yairm210/Unciv") }
+            .onActivation { Gdx.net.openURI(Constants.uncivRepoURL) }
         rightSideButtons.add(githubButton)
 
         rightSideButtons.pack()
@@ -239,10 +239,10 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         versionLabel.setAlignment(Align.center)
         val versionTable = Table()
         versionTable.background = skinStrings.getUiBackground("MainMenuScreen/Version",
-            skinStrings.roundedEdgeRectangleShape, Color.DARK_GRAY.cpy().apply { a=0.7f })
+            skinStrings.roundedEdgeRectangleShape, Color.DARK_GRAY.cpy().apply { a = 0.7f })
         versionTable.add(versionLabel)
         versionTable.pack()
-        versionTable.setPosition(stage.width/2, 10f, Align.bottom)
+        versionTable.setPosition(stage.width / 2, 10f, Align.bottom)
         versionTable.touchable = Touchable.enabled
         versionTable.onClick {
             val popup = Popup(stage)

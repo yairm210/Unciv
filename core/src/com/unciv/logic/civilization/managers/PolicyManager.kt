@@ -30,7 +30,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     internal val adoptedPolicies = HashSet<String>()
     private var numberOfAdoptedPolicies = 0
 
-    private var cultureOfLast8Turns = IntArray(8) { 0 }
+    private var cultureOfLast8Turns = IntArray(8)
 
     /** Indicates whether we should *check* if policy is adoptible, and if so open */
     var shouldOpenPolicyPicker = false

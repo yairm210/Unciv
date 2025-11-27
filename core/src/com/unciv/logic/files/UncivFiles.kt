@@ -10,11 +10,8 @@ import com.badlogic.gdx.utils.SerializationException
 import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
-import com.unciv.logic.CompatibilityVersion
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
-import com.unciv.logic.GameInfoSerializationVersion
-import com.unciv.logic.HasGameInfoSerializationVersion
 import com.unciv.logic.UncivShowableException
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.doMigrations
@@ -22,7 +19,10 @@ import com.unciv.models.metadata.isMigrationNecessary
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.screens.modmanager.ModUIData
 import com.unciv.ui.screens.savescreens.Gzip
+import com.unciv.logic.CompatibilityVersion
 import com.unciv.utils.Concurrency
+import com.unciv.logic.GameInfoSerializationVersion
+import com.unciv.logic.HasGameInfoSerializationVersion
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import kotlinx.coroutines.Job
@@ -415,7 +415,7 @@ class UncivFiles(
                 throw IncompatibleGameInfoVersionException(onlyVersion.version, ex)
             } ?: throw UncivShowableException("The file data seems to be corrupted.")
 
-            if (gameInfo.version > GameInfo.CURRENT_COMPATIBILITY_VERSION) {
+            if (gameInfo.version > CompatibilityVersion.CURRENT_COMPATIBILITY_VERSION) {
                 // this means there wasn't an immediate error while serializing, but this version will cause other errors later down the line
                 throw IncompatibleGameInfoVersionException(gameInfo.version)
             }
@@ -433,7 +433,7 @@ class UncivFiles(
 
         /** Returns gzipped serialization of [game], optionally gzipped ([forceZip] overrides [saveZipped]) */
         fun gameInfoToString(game: GameInfo, forceZip: Boolean? = null, updateChecksum: Boolean = false): String {
-            game.version = GameInfo.CURRENT_COMPATIBILITY_VERSION
+            game.version = CompatibilityVersion.CURRENT_COMPATIBILITY_VERSION
 
             if (updateChecksum) game.checksum = game.calculateChecksum()
             val plainJson = json().toJson(game)

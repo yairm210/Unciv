@@ -44,7 +44,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
     /** civName owning the unit */
     lateinit var owner: String
 
-    /** civName of original owner - relevant for returning captured workers from barbarians */
+    /** civName of original owner - relevant for returning captured workers from barbarians 
+     * 
+     * Serialization field for [originalOwningCiv]*/
     var originalOwner: String? = null
 
     /**
@@ -98,20 +100,26 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     /** Array list of all the tiles that this unit has attacked since the start of its most recent turn. Used in movement arrow overlay. */
     var attacksSinceTurnStart = ArrayList<Vector2>()
-    
-    class UnitStatus {
-        var name:String = ""
-        /** Decreses at *start on next turn* so defensive statuses persist on enemy turns */
-        var turnsLeft = 1
-        
+
+    class UnitStatus(
+        val name: String,
+        /** Decreases at *start on next turn* so defensive statuses persist on enemy turns */
+        var turnsLeft: Int
+    ) : IsPartOfGameInfoSerialization {
+        @Suppress("unused") // for deserialization
+        constructor() : this("", 1)
+
         @Transient
         lateinit var uniques: List<Unique>
-        
+
         fun setTransients(unit: MapUnit) {
             uniques = unit.civ.gameInfo.ruleset.unitPromotions[name]?.uniqueObjects ?: emptyList()
         }
+
+        @Readonly
+        fun clone() = UnitStatus(name, turnsLeft)
     }
-    
+
     var statusMap = HashMap<String, UnitStatus>()
 
     //endregion
@@ -146,6 +154,12 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     @Transient
     var cache = MapUnitCache(this)
+
+    /** civ of original owner - relevant for returning captured workers from barbarians 
+     * 
+     * Transient field for [originalOwner]*/
+    @delegate:Transient
+    val originalOwningCiv by lazy { originalOwner?.let { civ.gameInfo.getCivilization(it) } }
 
     // This is saved per each unit because if we need to recalculate viewable tiles every time a unit moves,
     //  and we need to go over ALL the units, that's a lot of time spent on updating information we should already know!
@@ -217,13 +231,18 @@ class MapUnit : IsPartOfGameInfoSerialization {
         toReturn.automatedRoadConnectionPath = automatedRoadConnectionPath
         toReturn.attacksThisTurn = attacksThisTurn
         toReturn.turnsFortified = turnsFortified
-        toReturn.promotions = promotions.clone()
+        toReturn.promotions = promotions.clone(toReturn)
         toReturn.isTransported = isTransported
         toReturn.abilityToTimesUsed = HashMap(abilityToTimesUsed)
         toReturn.religion = religion
         toReturn.religiousStrengthLost = religiousStrengthLost
         toReturn.movementMemories = movementMemories.copy()
-        toReturn.statusMap = HashMap(statusMap)
+        @LocalState val newStatusMap = HashMap<String, UnitStatus>((statusMap.size * 4 + 2) / 3)
+        for ((name, status) in statusMap) {
+            @LocalState val newStatus = status.clone()
+            newStatusMap[name] = newStatus
+        }
+        toReturn.statusMap = newStatusMap
         toReturn.mostRecentMoveType = mostRecentMoveType
         toReturn.attacksSinceTurnStart = ArrayList(attacksSinceTurnStart.map { Vector2(it) })
         return toReturn
@@ -235,7 +254,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     @Readonly fun getMovementString(): String =
         (DecimalFormat("0.#").format(currentMovement.toDouble()) + "/" + getMaxMovement()).tr()
 
-    
+
     @Readonly fun getTile(): Tile = currentTile
 
     @Readonly
@@ -324,7 +343,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     ): Sequence<Unique> {
         return tempUniquesMap.getTriggeredUniques(trigger, gameContext, triggerFilter)
     }
-    
+
 
     /** Gets *per turn* resource requirements - does not include immediate costs for stockpiled resources.
      * StateForConditionals is assumed to regarding this mapUnit*/
@@ -437,7 +456,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             return true
         if (hasUnique(UniqueType.InvisibleToNonAdjacent) && !to.isSpectator())
             return getTile().getTilesInDistance(1).none {
-                it.getUnits().any { unit -> unit.owner == to.civName }
+                it.getUnits().any { unit -> unit.civ == to }
             }
         return false
     }
@@ -458,7 +477,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     private fun adjacentHealingBonus(): Int {
         return getMatchingUniques(UniqueType.HealAdjacentUnits).sumOf { it.params[0].toInt() }
     }
-    
+
     @Readonly
     fun getHealAmountForCurrentTile() = when {
         isEmbarked() -> 0 // embarked units can't heal
@@ -506,7 +525,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 .map { it.adjacentHealingBonus() }.maxOrNull()
         if (maxAdjacentHealingBonus != null)
             healing += maxAdjacentHealingBonus
-        
+
         healing -= getDamageFromTerrain(tile)
 
         return healing
@@ -540,8 +559,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         val maxAttacksPerTurn = 1 +
                 getMatchingUniques(UniqueType.ExtraInterceptionsPerTurn)
                         .sumOf { it.params[0].toInt() }
-        if (attacksThisTurn >= maxAttacksPerTurn) return false
-        return true
+        return attacksThisTurn < maxAttacksPerTurn
     }
 
     @Readonly
@@ -601,8 +619,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
     @Readonly
     private fun isAlly(otherCiv: Civilization): Boolean {
         return otherCiv == civ
-                || (otherCiv.isCityState && otherCiv.getAllyCivName() == civ.civName)
-                || (civ.isCityState && civ.getAllyCivName() == otherCiv.civName)
+                || (otherCiv.isCityState && otherCiv.allyCiv == civ)
+                || (civ.isCityState && civ.allyCiv == otherCiv)
     }
 
     /** Implements [UniqueParameterType.MapUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.MapUnitFilter] */
@@ -624,7 +642,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 if (civ.matchesFilter(filter, cache.state, false)) return true
                 if (nonUnitUniquesMap.hasUnique(filter, cache.state)) return true
                 if (promotions.promotions.contains(filter)) return true
-                if (hasStatus(filter)) return true 
+                if (hasStatus(filter)) return true
                 return false
             }
         }
@@ -633,7 +651,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     @Readonly
     fun canBuildImprovement(improvement: TileImprovement, tile: Tile = currentTile): Boolean {
         if (civ.isBarbarian) return false
-        
+
         // Workers (and similar) should never be able to (instantly) construct things, only build them
         // HOWEVER, they should be able to repair such things if they are pillaged
         if (improvement.turnsToBuild == -1
@@ -645,8 +663,21 @@ class MapUnit : IsPartOfGameInfoSerialization {
             if (tile.isEnemyTerritory(civ)) return false
             return buildImprovementUniques.any()
         }
-        return buildImprovementUniques
-                .any { improvement.matchesFilter(it.params[0], cache.state) || tile.matchesTerrainFilter(it.params[0], civ) }
+
+        // Validate that the improvement is available for the unit
+        if (improvement.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)
+                .any { unique -> !unique.conditionalsApply(cache.state) } ||
+            improvement.getMatchingUniques(UniqueType.Unavailable, GameContext.IgnoreConditionals)
+                .any { unique -> unique.conditionalsApply(cache.state) }) {
+            return false
+        }
+
+        return buildImprovementUniques.any { unique ->
+            // Engage the MultiFilter on the entire filter, prior to checking the individual filters
+            MultiFilter.multiFilter(unique.params[0], {
+                improvement.matchesFilter(it, cache.state) || tile.matchesTerrainFilter(it, civ)
+            })
+        }
     }
 
     @Readonly
@@ -674,7 +705,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     @Readonly
     fun isEscorting(): Boolean {
-        if (escorting) { 
+        if (escorting) {
             if (getOtherEscortUnit() != null) return true
             escorting = false
         }
@@ -698,7 +729,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         promotions.setTransients(this)
         baseUnit = ruleset.units[name]
                 ?: throw java.lang.Exception("Unit $name is not found!")
-        
+
         for (status in statusMap.values) status.setTransients(this)
         updateUniques()
         if (action == UnitActionType.Automate.value){
@@ -711,7 +742,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         val otherUniqueSources = promotions.getPromotions().flatMap { it.uniqueObjects } +
             statusMap.values.flatMap { it.uniques }
         val uniqueSources = baseUnit.rulesetUniqueObjects.asSequence() + otherUniqueSources
-        
+
         tempUniquesMap = UniqueMap(uniqueSources)
         nonUnitUniquesMap = UniqueMap(otherUniqueSources)
         cache.updateUniques()
@@ -727,7 +758,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             if (promotion !in promotions.promotions)
                 promotions.addPromotion(promotion, isFree = true)
 
-        newUnit.promotions = promotions.clone()
+        newUnit.promotions = promotions.clone(newUnit)
         newUnit.automated = automated
         newUnit.action = action // Needed too for Unit Overview action column
 
@@ -749,14 +780,14 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
 
         // Set equality automatically determines if anything changed - https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-abstract-set/equals.html
-        
+
         val shouldUpdateTiles = updateCivViewableTiles && oldViewableTiles != viewableTiles
                 // Don't bother updating if all previous and current viewable tiles are within our borders
-                && (oldViewableTiles.any { it !in civ.cache.ourTilesAndNeighboringTiles } 
+                && (oldViewableTiles.any { it !in civ.cache.ourTilesAndNeighboringTiles }
                 || viewableTiles.any { it !in civ.cache.ourTilesAndNeighboringTiles })
 
         if (!shouldUpdateTiles) return
-        
+
         val unfilteredTriggeredUniques = getTriggeredUniques(UniqueType.TriggerUponDiscoveringTile, GameContext.IgnoreConditionals).toList()
         if (unfilteredTriggeredUniques.isNotEmpty()) {
             val newlyExploredTiles = viewableTiles.filter { !it.isExplored(civ) }
@@ -813,7 +844,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
 
         val currentTile = getTile()
-        
+
         if (isMoving()) {
             val destinationTile = getMovementDestination()
             if (!movement.canReach(destinationTile)) { // That tile that we were moving towards is now unreachable -
@@ -943,7 +974,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             val promotion = unique.params[0]
             promotions.addPromotion(promotion, true)
         }
-            
+
         updateVisibleTiles(true, currentTile.position)
     }
 
@@ -1089,17 +1120,15 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     @Readonly fun getStatus(name:String): UnitStatus? = statusMap[name]
     @Readonly fun hasStatus(name:String): Boolean = getStatus(name) != null
-    
+
     fun setStatus(name:String, turns:Int){
         val existingStatus = getStatus(name)
         if (existingStatus != null){
             if (turns > existingStatus.turnsLeft) existingStatus.turnsLeft = turns
             return
         }
-        
-        val status = UnitStatus()
-        status.name = name
-        status.turnsLeft = turns
+
+        val status = UnitStatus(name, turns)
         status.setTransients(this)
         statusMap[status.name] = status
         updateUniques()
@@ -1107,7 +1136,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         for (unique in getTriggeredUniques(UniqueType.TriggerUponStatusGain){ it.params[0] == name })
             UniqueTriggerActivation.triggerUnique(unique, this)
     }
-    
+
     fun removeStatus(name:String){
         statusMap.remove(name) ?: return
 

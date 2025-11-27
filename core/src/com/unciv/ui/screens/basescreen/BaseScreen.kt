@@ -15,7 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.utils.viewport.ExtendViewport
-import com.unciv.GameStartScreen
+import com.unciv.ui.screens.GameStartScreen
 import com.unciv.UncivGame
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.metadata.BaseRuleset

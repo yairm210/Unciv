@@ -225,6 +225,23 @@ class CountableTests {
 
         assertEquals(6f, capitalCulture, 0.005f)
         assertEquals(10.5f, civCulture, 0.005f)
+
+        // FilteredBuildingsByCivs
+        val civ2 = game.addCiv()
+        val civ2city = game.addCity(civ2, game.tileMap[-2, -2])
+        game.addCity(civ2, game.tileMap[2, 2])
+        civ2city.cityConstructions.addBuilding(building)
+        val tests = listOf(
+            "[Ancestor Tree] Buildings" to 2,
+            "[Ancestor Tree] Buildings by [All] Civilizations" to 3,
+            "[Ancestor Tree] Buildings by [${civ.civName}] Civilizations" to 2,
+            "[Ancestor Tree] Buildings by [${civ2.civName}] Civilizations" to 1,
+            "[Ancestor Tree] Buildings by [City-State] Civilizations" to 0
+        )
+        for ((test, expected) in tests) {
+            val actual = Countables.getCountableAmount(test, GameContext(civ))
+            assertEquals("Testing `$test` countable:", expected, actual)
+        }
     }
 
     @Test
@@ -359,6 +376,33 @@ class CountableTests {
         val happiness = Countables.getCountableAmount("Happiness", GameContext(civ, city))
         // Base 9, -1 city, -3 population +1 deprecated countable should still work, but the bogus one should not
         assertEquals("Testing Happiness", 6, happiness)
+    }
+
+    @Test
+    fun testFilteredTechnologies() {
+        setupModdedGame()
+        val techs = listOf(
+            "Agriculture",
+            "Pottery",
+            "Sailing",
+            "Animal Husbandry",
+            "Optics"
+        )
+        for (techName in techs) {
+            civ.tech.addTechnology(techName, false)
+        }
+        val tests = listOf(
+            "Researched [All] Technologies" to 5,
+            "Researched [Ancient era] Technologies" to 4,
+            "Researched [Classical era] Technologies" to 1, // Optics
+            "Researched [Modern era] Technologies" to 0,
+            "Researched [Pottery] Technologies" to 1,
+            "Researched [Archery] Technologies" to 0,
+        )
+        for ((test, expected) in tests) {
+            val actual = Countables.getCountableAmount(test, GameContext(civ))
+            assertEquals("Testing `$test` countable:", expected, actual)
+        }
     }
 
     private fun setupModdedGame(vararg addGlobalUniques: String, withCiv: Boolean = true): Ruleset {

@@ -236,7 +236,8 @@ class WorldMapHolder(
                 /** ****** Right-click Attack ****** */
                 val attacker = MapUnitCombatant(unit)
                 if (!Battle.movePreparingAttack(attacker, attackableTile)) return
-                SoundPlayer.play(attacker.getAttackSound())
+                if (!SoundPlayer.play(UncivSound(attacker.getName())))
+                    SoundPlayer.play(attacker.getAttackSound())
                 val (damageToDefender, damageToAttacker) = Battle.attackOrNuke(attacker, attackableTile)
                 if (attackableTile.combatant != null)
                     worldScreen.battleAnimationDeferred(attacker, damageToAttacker, attackableTile.combatant, damageToDefender)

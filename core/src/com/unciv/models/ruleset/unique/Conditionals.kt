@@ -149,7 +149,14 @@ object Conditionals {
                 val difficulty = conditional.params[0]
                 if (difficulty in ruleset.difficulties) {
                     val difficulties = ruleset.difficulties.keys.toList()
-                    difficulties.indexOf(difficulty) >= difficulties.indexOf(getDifficulty().name)
+                    difficulties.indexOf(getDifficulty().name) >= difficulties.indexOf(difficulty)
+                } else false
+            }
+            UniqueType.ConditionalDifficultyOrLower -> checkOnGameInfo {
+                val difficulty = conditional.params[0]
+                if (difficulty in ruleset.difficulties) {
+                    val difficulties = ruleset.difficulties.keys.toList()
+                    difficulties.indexOf(getDifficulty().name) <= difficulties.indexOf(difficulty)
                 } else false
             }
             UniqueType.ConditionalVictoryEnabled -> checkOnGameInfo { gameParameters.victoryTypes.contains(conditional.params[0]) }
@@ -159,6 +166,7 @@ object Conditionals {
             UniqueType.ConditionalEspionageEnabled -> checkOnGameInfo { isEspionageEnabled() }
             UniqueType.ConditionalEspionageDisabled -> checkOnGameInfo { !isEspionageEnabled() }
             UniqueType.ConditionalNuclearWeaponsEnabled -> checkOnGameInfo { gameParameters.nuclearWeaponsEnabled }
+            UniqueType.ConditionalNuclearWeaponsDisabled -> checkOnGameInfo { !gameParameters.nuclearWeaponsEnabled }
             UniqueType.ConditionalTech -> checkOnCiv {
                 val filter = conditional.params[0]
                 if (filter in gameInfo.ruleset.technologies) tech.isResearched(conditional.params[0]) // fast common case

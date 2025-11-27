@@ -78,7 +78,7 @@ object UnitActionsGreatPerson {
             //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
             val productionPointsToAdd = min(
                 (300 + 30 * tile.getCity()!!.population.population) * unit.civ.gameInfo.speed.productionCostModifier,
-                cityConstructions.getRemainingWork(cityConstructions.currentConstructionFromQueue).toFloat() - 1
+                cityConstructions.getRemainingWork(cityConstructions. currentConstructionName()).toFloat() - 1
             ).toInt()
             if (productionPointsToAdd <= 0) continue
 
@@ -114,7 +114,7 @@ object UnitActionsGreatPerson {
                     for (goldUnique in unit.getMatchingUniques(UniqueType.PercentGoldFromTradeMissions, checkCivInfoUniques = true))
                         goldEarned *= goldUnique.params[0].toPercent()
 
-                    var goldEarnedInt = goldEarned.toInt()
+                    val goldEarnedInt = goldEarned.toInt()
                     unit.civ.addGold(goldEarnedInt)
                     val tileOwningCiv = tile.owningCity!!.civ
 

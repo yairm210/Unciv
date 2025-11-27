@@ -182,15 +182,18 @@ object SoundPlayer {
      *
      * @param sound The sound to play
      * @see playRepeated
+     *
+     * @return True if the sound was processed correctly.
      */
-    fun play(sound: UncivSound) {
+    fun play(sound: UncivSound): Boolean {
         val volume = UncivGame.Current.settings.soundEffectsVolume
-        if (sound == UncivSound.Silent || volume < 0.01) return
-        val (resource, isFresh) = get(sound) ?: return
+        if (sound == UncivSound.Silent || volume < 0.01) return true
+        val (resource, isFresh) = get(sound) ?: return false
         if (Gdx.app.type == Application.ApplicationType.Android)
             playAndroid(resource, isFresh, volume)
         else
             playDesktop(resource, volume)
+        return true
     }
 
     // Android needs time for a newly created sound to become ready, but in turn AndroidSound.play seems thread-safe.
