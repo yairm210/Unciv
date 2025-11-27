@@ -84,8 +84,7 @@ class CityReligionInfoTable(
         if (religion == null) return icon
         if (religion == iconName)
             icon.onClick {
-                val newScreen = EmpireOverviewScreen(GUI.getViewingPlayer(), EmpireOverviewCategories.Religion, religion)
-                UncivGame.Current.pushScreen(newScreen)
+                GUI.getWorldScreen().openEmpireOverview(EmpireOverviewCategories.Religion, religion)
             }
         else // This is used only for Pantheons
             icon.onClick {
