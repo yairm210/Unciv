@@ -277,7 +277,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
 
     @Readonly
     fun isExplored(player: Civilization): Boolean {
-        if (DebugUtils.VISIBLE_MAP || player.civName == Constants.spectator)
+        if (DebugUtils.VISIBLE_MAP || player.isSpectator())
             return true
         return exploredBy.contains(player.civName)
     }
