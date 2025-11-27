@@ -25,6 +25,7 @@ import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
 import yairm210.purity.annotations.Pure
 import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
 
@@ -98,7 +99,7 @@ class NotificationsScroll(
 
     private val restoreButton = RestoreButton()
 
-    private var userSetting = UserSetting.Visible
+    private lateinit var userSetting: UserSetting
     private var userSettingChanged = false
     private var enlargeHighlight = false
 
@@ -157,7 +158,14 @@ class NotificationsScroll(
         coveredNotificationsTop: Float,
         coveredNotificationsBottom: Float
     ) {
-        if (getUserSettingCheckDisabled()) return
+        getUserSetting()
+        if (userSetting == UserSetting.Disabled) {
+            restoreButton.setPosition(coveredNotificationsBottom)
+            applyUserSettingChange()
+            restoreButton.updateCount(notifications.size)
+            return
+        }
+
         enlargeHighlight = GUI.getSettings().enlargeSelectedNotification
 
         // Remember scroll position _relative to topRight_
@@ -195,6 +203,7 @@ class NotificationsScroll(
         updateVisualScroll()
 
         applyUserSettingChange()
+
         if (!userSetting.static) {
             restoreButton.unblock()
             if (contentChanged && !userSettingChanged && isHidden)
@@ -203,10 +212,7 @@ class NotificationsScroll(
 
         // Do the positioning here since WorldScreen may also call update when just its geometry changed
         setPosition(stage.width - width * scaleFactor, 0f)
-        restoreButton.setPosition(
-            stage.width - restoreButtonPad,
-            coveredNotificationsBottom + restoreButtonPad,
-            Align.bottomRight)
+        restoreButton.setPosition(coveredNotificationsBottom)
     }
 
     private fun updateContent(
@@ -429,7 +435,7 @@ class NotificationsScroll(
         private var blockCheck = true
         private var blockAct = true
         private var active = false
-        private var shownCount = 0
+        private var shownCount = -1
         private val countLabel: Label
         private val labelInnerCircle: Image
         private val labelOuterCircle: Image
@@ -449,16 +455,20 @@ class NotificationsScroll(
             actor.addActor(labelOuterCircle)
             actor.addActor(labelInnerCircle)
             actor.addActor(countLabel)
-            updateCount(1)
 
             color = color.cpy()  // So we don't mutate a skin element while fading
             color.a = 0f  // for first fade-in
-            onClick {
-                scrollX = maxX
-                hide()
-            }
+            onClick(::clicked)
             pack()  // `this` needs to adopt the size of `actor`, won't happen automatically (surprisingly)
         }
+
+        /** Set RestoreButton position - relative to the screen as parent is stage.root */
+        fun setPosition(coveredNotificationsBottom: Float) =
+            setPosition(
+                this@NotificationsScroll.stage.width - restoreButtonPad,
+                coveredNotificationsBottom + restoreButtonPad,
+                Align.bottomRight
+            )
 
         private fun Actor.centerAtNumberPosition() = setPosition(restoreButtonNumbersCenter, restoreButtonNumbersCenter, Align.center)
 
@@ -514,25 +524,32 @@ class NotificationsScroll(
                 show()
         }
 
+        fun clicked() {
+            if (userSetting == UserSetting.Disabled) {
+                worldScreen.openEmpireOverview(EmpireOverviewCategories.Notifications)
+            } else {
+                scrollX = maxX
+                hide()
+            }
+        }
+
         override fun act(delta: Float) {
             // Actions are blocked while update() is rebuilding the UI elements - to be safe from unexpected state changes
             if (!blockAct) super.act(delta)
         }
-
-        override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
     }
 
-    private fun getUserSettingCheckDisabled(): Boolean {
+    private fun getUserSetting() {
         val settingString = GUI.getSettings().notificationScroll
         val setting = UserSetting.entries.firstOrNull { it.name == settingString }
             ?: UserSetting.default()
-        userSettingChanged = false
-        if (setting == userSetting)
-            return setting == UserSetting.Disabled
+        if (::userSetting.isInitialized && setting == userSetting) {
+            userSettingChanged = false
+            return
+        }
 
         userSetting = setting
         userSettingChanged = true
-        if (setting != UserSetting.Disabled) return false
 
         notificationsTable.clear()
         notificationsHash = 0
@@ -540,8 +557,6 @@ class NotificationsScroll(
         updateVisualScroll()
         setScrollingDisabled(x = false, y = false)
         isVisible = false
-        restoreButton.hide()
-        return true
     }
 
     private fun applyUserSettingChange() {
@@ -567,7 +582,10 @@ class NotificationsScroll(
             UserSetting.Permanent -> {
                 restoreButton.hide()
             }
-            else -> return
+            UserSetting.Disabled -> {
+                restoreButton.show()
+                return // Leave the NotificationsScroll invisible
+            }
         }
         isVisible = true
     }
