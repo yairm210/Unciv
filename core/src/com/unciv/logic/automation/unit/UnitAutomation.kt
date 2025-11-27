@@ -238,9 +238,7 @@ object UnitAutomation {
                         && unit.getDamageFromTerrain(it) <= 0 // Don't end turn on damaging terrain for no good reason
                         && (!stayInTerritory || it.getOwner() == unit.civ)
                 }
-            if (reachableTiles.any()) unit.movement.moveToTile(
-                reachableTiles.toList().random()
-            )
+        if (reachableTiles.any()) unit.movement.moveToTile(reachableTiles.toList().random())
     }
 
     internal fun tryUpgradeUnit(unit: MapUnit): Boolean {
