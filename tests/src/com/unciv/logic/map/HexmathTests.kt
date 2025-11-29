@@ -56,8 +56,8 @@ class HexmathTests {
         for (x in -2..2)
             for (y in -2..2){
                 val hexCoord = HexCoord.of(x, y)
-                Assert.assertEquals(hexCoord.getX(), x)
-                Assert.assertEquals(hexCoord.getY(), y)
+                Assert.assertEquals(hexCoord.x, x)
+                Assert.assertEquals(hexCoord.y, y)
             }
     }
 }

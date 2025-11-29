@@ -12,12 +12,9 @@ import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.tile.TerrainType
-import com.unciv.models.ruleset.unique.Conditionals
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.ruleset.unique.UniqueTarget
-import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.utils.addToMapOfSets
 import com.unciv.utils.contains
@@ -211,21 +208,13 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         return toReturn
     }
 
-    @Readonly
-    operator fun contains(vector: Vector2) =
-        contains(vector.x.toInt(), vector.y.toInt())
+    @Readonly operator fun contains(vector: Vector2) = contains(vector.x.toInt(), vector.y.toInt())
+    @Readonly operator fun contains(hexCoord: HexCoord) = contains(hexCoord.x, hexCoord.y)
+    @Readonly fun contains(x: Int, y: Int) = getOrNull(x, y) != null
 
-    @Readonly
-    operator fun get(vector: Vector2) =
-        get(vector.x.toInt(), vector.y.toInt())
-
-    @Readonly
-    fun contains(x: Int, y: Int) =
-        getOrNull(x, y) != null
-
-    @Readonly
-    operator fun get(x: Int, y: Int) =
-        tileMatrix[x - leftX][y - bottomY]!!
+    @Readonly operator fun get(vector: Vector2) = get(vector.x.toInt(), vector.y.toInt())
+    @Readonly operator fun get(hexCoord: HexCoord) = get(hexCoord.x, hexCoord.y)
+    @Readonly operator fun get(x: Int, y: Int) = tileMatrix[x - leftX][y - bottomY]!!
 
     /** @return tile at hex coordinates ([x],[y]) or null if they are outside the map. Does *not* respect world wrap, use [getIfTileExistsOrNull] for that. */
     @Readonly
@@ -385,7 +374,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
      * to the position of the given vector
      */
     @Readonly
-    fun getUnWrappedPosition(position: Vector2): Vector2 {
+    fun getUnwrappedPosition(position: HexCoord): HexCoord {
         if (!contains(position))
             return position //The position is outside the map so its unwrapped already
 
@@ -393,10 +382,16 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             mapParameters.mapSize.width / 2
         else mapParameters.mapSize.radius
 
-        val vectorUnwrappedLeft = Vector2(position.x + radius, position.y - radius)
-        val vectorUnwrappedRight = Vector2(position.x - radius, position.y + radius)
+        val vectorUnwrappedLeft = HexCoord.of(position.x + radius, position.y - radius)
+        val vectorUnwrappedRight = HexCoord.of(position.x - radius, position.y + radius)
+        
+        fun squareSum(hexCoord: HexCoord): Int {
+            val x = hexCoord.x
+            val y = hexCoord.y
+            return x * x + y * y
+        }  
 
-        return if (vectorUnwrappedRight.len() < vectorUnwrappedLeft.len())
+        return if (squareSum(vectorUnwrappedRight) < squareSum(vectorUnwrappedLeft))
             vectorUnwrappedRight
         else
             vectorUnwrappedLeft

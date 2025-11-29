@@ -84,14 +84,14 @@ object HexMath {
     /** returns a vector containing width and height a rectangular map should have to have
      *  approximately the same number of tiles as an hexagonal map given a height/width ratio */
     @Pure
-    fun getEquivalentRectangularSize(size: Int, ratio: Float = 0.65f): Vector2 {
+    fun getEquivalentRectangularSize(size: Int, ratio: Float = 0.65f): HexCoord {
         if (size < 0)
-            return Vector2.Zero
+            return HexCoord.of(0,0)
 
         val nTiles = getNumberOfTilesInHexagon(size)
-        val width = round(sqrt(nTiles.toFloat() / ratio))
-        val height = round(width * ratio)
-        return Vector2(width, height)
+        val width = (sqrt(nTiles.toFloat() / ratio)).roundToInt()
+        val height = (width * ratio).roundToInt()
+        return HexCoord.of(width, height)
     }
 
     /** Returns a radius of a hexagonal map that has approximately the same number of
@@ -115,7 +115,7 @@ object HexMath {
      *
      * @return The closest hex coordinate to [staticHexCoord] that is equivalent to [unwrapHexCoord]. THIS MAY NOT BE A VALID TILE COORDINATE. It may also require rounding for further use.
      *
-     * @see [com.unciv.logic.map.TileMap.getUnWrappedPosition]
+     * @see [com.unciv.logic.map.TileMap.getUnwrappedPosition]
      */
     @Readonly
     fun getUnwrappedNearestTo(unwrapHexCoord: Vector2, staticHexCoord: Vector2, longitudinalRadius: Float): Vector2 {
@@ -387,10 +387,12 @@ object HexMath {
 value class HexCoord(val coords: Int) {
     // x value is stored in the 16 bits, and y value in the bottom 16 bits, allowing range -32768 to 32767
 
-    fun getX(): Int = coords shr 16 // top 16 bits
+    val x: Int
+        get() = coords shr 16
 
     // Extract bottom 16 bits and sign-extend - required to keep negative numbers
-    fun getY(): Int = (coords shl 16) shr 16
+    val y: Int
+        get() = (coords shl 16) shr 16
 
     fun withX(newX: Int): HexCoord {
         require(newX in -32768..32767) { "X value must be in range -32768..32767" }
@@ -404,9 +406,10 @@ value class HexCoord(val coords: Int) {
         return HexCoord((coords and 0xFFFF0000.toInt()) or (newY and 0xFFFF))
     }
 
-    fun toVector2(): Vector2 = Vector2(getX().toFloat(), getY().toFloat())
+    fun toVector2(): Vector2 = Vector2(x.toFloat(), y.toFloat())
 
     companion object {
+        @Pure 
         fun of(x: Int, y: Int): HexCoord {
             require(x in -32768..32767) { "X value must be in range -32768..32767" }
             require(y in -32768..32767) { "Y value must be in range -32768..32767" }
@@ -414,7 +417,7 @@ value class HexCoord(val coords: Int) {
         }
     }
 
-    override fun toString(): String = "HexCoord(x=${getX()}, y=${getY()})"
+    override fun toString(): String = "HexCoord(x=${x}, y=${y})"
 }
 
-fun Vector2.toHexCoord() = HexCoord.of(this.x.toInt(), this.y.toInt())
+@Pure fun Vector2.toHexCoord() = HexCoord.of(this.x.toInt(), this.y.toInt())
