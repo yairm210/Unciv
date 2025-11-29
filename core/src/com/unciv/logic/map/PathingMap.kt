@@ -12,18 +12,14 @@ import com.unciv.logic.map.RouteNode.Companion.MAX_TURNS
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.movement.MovementCost
 import com.unciv.logic.map.mapunit.movement.PathsToTilesWithinTurn
-import com.unciv.logic.map.mapunit.movement.UnitMovement.ParentTileAndTotalMovement
+import com.unciv.logic.map.mapunit.movement.ParentTileAndTotalMovement
 import com.unciv.logic.map.tile.Tile
 import com.unciv.utils.Log
-import com.unciv.utils.LongPriorityQueue
 import com.unciv.utils.forEachSetBit
 import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.InternalState
 import yairm210.purity.annotations.Readonly
-import java.util.BitSet
-import java.util.Formatter
-import java.util.Locale
 import java.util.concurrent.atomic.AtomicReference
 
 /**
@@ -81,10 +77,9 @@ class PathingMap(
     /**
      * This is the only method that is NOT thread-safe.
      */
-    @Suppress("purity")
     fun clear() {
         val cache = cacheRef.get()
-        if (cache != null && VERBOSE_PATHFINDING_LOGS == cache.key.startingPoint || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
+        if (cache != null && VERBOSE_PATHFINDING_LOGS == cache.key.startingPoint.position || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
             Log.debug("#clear explicitly dumping caches for $debugMapType $debugId")
         cacheRef.set(null)
     }
@@ -94,28 +89,28 @@ class PathingMap(
         val latestKey = getCurrentCacheKey()
         val oldCache = cacheRef.get()
         if (oldCache?.isCacheValid(latestKey) == true) {
-            if (VERBOSE_PATHFINDING_LOGS == oldCache.key.startingPoint || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
+            if (VERBOSE_PATHFINDING_LOGS == oldCache.key.startingPoint.position || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
                 Log.debug("#fetchCache() reusing existing $debugMapType $debugId cache $oldCache because keys are unchanged")
             return oldCache  // if the cache is still valid, keep using it
         } else if (oldCache != null) {
-            if (VERBOSE_PATHFINDING_LOGS == oldCache.key.startingPoint || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
+            if (VERBOSE_PATHFINDING_LOGS == oldCache.key.startingPoint.position || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
                 Log.debug("#fetchCache() dumping cache $debugMapType $debugId $oldCache because $latestKey does not match")
             cacheRef.set(null) // if the cache is invalid, dump it
         }
         val newCache = PathingMapCache(latestKey, tileMap) // otherwise, make a new cache
         val movementUsedThisTurn = (latestKey.fullMove - latestKey.moveRemaining).coerceIn(FPM_ZERO, MAX_MOVE_THIS_TURN)
-        val tile = tileMap[latestKey.startingPoint]
+        val tile = latestKey.startingPoint
         val root = RouteNode.rootNode(tile, movementUsedThisTurn)
         newCache.routeNodes[tile.zeroBasedIndex] = root.bits
         newCache.nodesNeedingNeighbors[tile.zeroBasedIndex] = true
         // compareAndSet, in case another thread tried to initialize in parallel
         // get the value that the other thread set
         return if (cacheRef.compareAndSet(null, newCache)) {
-            if (VERBOSE_PATHFINDING_LOGS == latestKey.startingPoint || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
+            if (VERBOSE_PATHFINDING_LOGS == latestKey.startingPoint.position || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
                 Log.debug("#fetchCache() initialized new cache $debugMapType $debugId $newCache")
             newCache
         } else {
-            if (VERBOSE_PATHFINDING_LOGS == latestKey.startingPoint || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
+            if (VERBOSE_PATHFINDING_LOGS == latestKey.startingPoint.position || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
                 Log.debug("#fetchCache() retrying cache fetch due to data race initializing cache $newCache")
             fetchCache()
         }        
@@ -136,12 +131,12 @@ class PathingMap(
     @Suppress("purity")
     fun getShortestPath(destination: Tile, maxTurns: Int = MAX_VALID_TURNS): List<Tile>? {
         val cache = fetchCache()
-        if (destination.position == cache.key.startingPoint) {
-            if (VERBOSE_PATHFINDING_LOGS == cache.key.startingPoint || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
+        if (destination == cache.key.startingPoint) {
+            if (VERBOSE_PATHFINDING_LOGS == cache.key.startingPoint.position || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
                 Log.debug("#getShortestPath returning startingPoint cache.key.startingPoint for $debugMapType $debugId")
             return listOf(destination)
         } else if (cache.key.moveRemaining <= 0) {
-            if (VERBOSE_PATHFINDING_LOGS == cache.key.startingPoint || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
+            if (VERBOSE_PATHFINDING_LOGS == cache.key.startingPoint.position || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
                 Log.debug("#getShortestPath emulating no-movement-pathing bug to $destination for $debugMapType $debugId")
             return listOf()
             
@@ -149,19 +144,19 @@ class PathingMap(
         // if we don't already know the shortest path, and might yet find it, search
         var targetNode = RouteNode(cache.routeNodes[destination.zeroBasedIndex])
         if (!targetNode.initialized  && !cache.nodesNeedingNeighbors.isEmpty) {
-            if (VERBOSE_PATHFINDING_LOGS == cache.key.startingPoint || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
+            if (VERBOSE_PATHFINDING_LOGS == cache.key.startingPoint.position || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
                 Log.debug("#getShortestPath(${destination.position}) calculcating for $debugMapType $debugId")
             stepUntilDestination(cache, destination, maxTurns)
         }
         val bestTarget =  RouteNode(cache.routeNodes[destination.zeroBasedIndex])
         // if the target is not reachable within maxTurns, return nothing
         if (!bestTarget.initialized || bestTarget.isNoPathingNode) {
-            if (VERBOSE_PATHFINDING_LOGS == cache.key.startingPoint || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
+            if (VERBOSE_PATHFINDING_LOGS == cache.key.startingPoint.position || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
                 Log.debug("#getShortestPath returning no path to $destination for $debugMapType $debugId")
             return null
         }
         val result = pathAsList(bestTarget, cache)
-        if (VERBOSE_PATHFINDING_LOGS == cache.key.startingPoint || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
+        if (VERBOSE_PATHFINDING_LOGS == cache.key.startingPoint.position || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
             Log.debug("#getShortestPath returning ${result.map{it.position}} to $destination for $debugMapType $debugId")
         return result
     }
@@ -173,8 +168,8 @@ class PathingMap(
         var turns = currentNode.turns
         while (true) {
             val parentTile = currentNode.parentTile(tileMap)
+            if (parentTile == cache.key.startingPoint) break
             val parentNode = RouteNode(cache.routeNodes[parentTile.zeroBasedIndex])
-            if (parentTile.position == cache.key.startingPoint) break
             if (parentNode.turns < turns && parentNode.endTurnWithoutMoreDamage) {
                 result.add(parentTile)
                 turns = parentNode.turns
@@ -194,53 +189,54 @@ class PathingMap(
     @Suppress("purity")
     fun getMovementToTilesAtPosition(): PathsToTilesWithinTurn {
         val cache = fetchCache()
-        val tilesSameTurn = cache.tilesSameTurn
-        if (tilesSameTurn.isNotEmpty()) {
-            if (VERBOSE_PATHFINDING_LOGS == cache.key.startingPoint || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
+        val tilesSameTurn = cache.tilesSameTurn // map of tileZeroBasedIndex to ParentTileAndTotalMovement
+        if (tilesSameTurn != null) {
+            if (VERBOSE_PATHFINDING_LOGS == cache.key.startingPoint.position || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
                 Log.debug("#getMovementToTilesAtPosition returning cached tilesSameTurn[len=${tilesSameTurn.size}] for $debugMapType $debugId")
             return tilesSameTurn
-        } 
+        }
         // if we've already calculated the results, return that
         // otherwise, if there's uncalculated nodes, step until maxTurns is reached
         if (!cache.nodesNeedingNeighbors.isEmpty) {
-            if (VERBOSE_PATHFINDING_LOGS == cache.key.startingPoint || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
+            if (VERBOSE_PATHFINDING_LOGS == cache.key.startingPoint.position || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
                 Log.debug("#getMovementToTilesAtPosition calculcating for $debugMapType $debugId")
             stepUntilDestination(cache, null, 1)
         }
-        getTilesSameTurn(cache)
-        return tilesSameTurn
+        return buildTilesSameTurn(cache)
     }
 
-    private fun getTilesSameTurn(cache: PathingMapCache) {
-        val tilesSameTurn = cache.tilesSameTurn
+    private fun buildTilesSameTurn(cache: PathingMapCache): PathsToTilesWithinTurn {
         // accumulate all the results
-        synchronized(tilesSameTurn) {
-            if (tilesSameTurn.isNotEmpty()) {
-                if (VERBOSE_PATHFINDING_LOGS == cache.key.startingPoint || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
-                    Log.debug("#getMovementToTilesAtPosition returning cached tilesSameTurn[len=${tilesSameTurn.size}] which was calculated by another thread for $debugMapType $debugId")
-                return
-            } // if we've already calculated the results, return that
+        synchronized(cache) {
+            val parallelCalculatedResult = cache.tilesSameTurn // if we've already calculated the results, return that
+            if (parallelCalculatedResult != null) {
+                if (VERBOSE_PATHFINDING_LOGS == cache.key.startingPoint.position || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
+                    Log.debug("#getMovementToTilesAtPosition returning cached tilesSameTurn[len=${parallelCalculatedResult.size}] which was calculated by another thread for $debugMapType $debugId")
+                return parallelCalculatedResult
+            } 
+            // build results
+            val count = cache.addedNeighborNodes.cardinality() + cache.nodesNeedingNeighbors.cardinality()
+            val builder = PathsToTilesWithinTurn.newBuilder(tileMap, count)
             cache.addedNeighborNodes.forEachSetBit {
                 val node = RouteNode(cache.routeNodes[it])
                 if (node.initialized && node.turns == 0) {
                     val tile = node.tile(tileMap)
-                    tilesSameTurn[tile] =
-                        ParentTileAndTotalMovement(
-                            tile,
-                            node.parentTile(tileMap), node.moveUsedThisTurn.toFloat())
+                    builder[tile] = ParentTileAndTotalMovement(node.parentTile(tileMap), node.moveUsedThisTurn)
                 }
             }
             cache.nodesNeedingNeighbors.forEachSetBit {
                 val node = RouteNode(cache.routeNodes[it])
-                if (node.initialized && node.turns == 0) {
+                if (node.initialized && node.turns == 0 && !cache.addedNeighborNodes.get(it)) {
                     val tile = node.tile(tileMap)
-                    tilesSameTurn[tile] =
-                        ParentTileAndTotalMovement(tile, node.parentTile(tileMap), node.moveUsedThisTurn.toFloat())
+                    builder[tile] = ParentTileAndTotalMovement(node.parentTile(tileMap), node.moveUsedThisTurn)
                 }
             }
+            val result = builder.build()
+            cache.tilesSameTurn = result
+            if (VERBOSE_PATHFINDING_LOGS == cache.key.startingPoint.position || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
+                Log.debug("#getMovementToTilesAtPosition calculcated tilesSameTurn=${result.asTileSequence().map {it.position}} for $debugMapType $debugId")
+            return result
         }
-        if (VERBOSE_PATHFINDING_LOGS == cache.key.startingPoint || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
-            Log.debug("#getMovementToTilesAtPosition calculcated tilesSameTurn=${tilesSameTurn.map {it.key.position}} for $debugMapType $debugId")
     }
 
     @VisibleForTesting
@@ -278,7 +274,7 @@ class PathingMap(
         return "${javaClass.simpleName}[debugMapType=$debugMapType debugId=$debugId key=${cache?.key}]"
     }
 
-    fun toDebugString(destination:Tile?=null) = fetchCache().toDebugString(tileMap, destination)
+    fun toDebugString(destination:Tile?=null) = fetchCache().toDebugString(destination)
 
     companion object {
         const val MAX_VALID_TURNS = RouteNode.MAX_VALID_TURNS
@@ -325,7 +321,7 @@ class PathingMap(
             val getCurrentCacheKey = {
                 val escort = if (includeEscortUnit && unit.isEscorting()) unit.getOtherEscortUnit() else null
                 PathingMapCacheKey(
-                    unit.currentTile.position, 
+                    unit.currentTile, 
                     fpmFromMovement(unit.currentMovement).coerceAtMost(escort?.currentMovement?.toFixedPointMove() ?: MAX_MOVE_THIS_TURN),
                     selfFullMove.coerceAtMost(if (escort != null) otherUntilFullMove else MAX_VALID_TURNS),
                     )
@@ -349,7 +345,7 @@ class PathingMap(
                 civ.gameInfo.tileMap,
                 civ,
                 "createLandAttackPathingMap",
-                { civPathingCacheKey(startingPoint.position)},
+                { civPathingCacheKey(startingPoint)},
                 { isLandTileCanAttackThrough(civ, it, targetCiv) },
                 { 0 },
                 { from, to -> fpmFromMovement(roadPreferredMovementCost(civ, from, to)) },
@@ -364,7 +360,7 @@ class PathingMap(
                 civ.gameInfo.tileMap,
                 civ,
                 "createAmphibiousAttackPathingMap",
-                { civPathingCacheKey(startingPoint.position)},
+                { civPathingCacheKey(startingPoint)},
                 { isTileCanAttackThrough(civ, it, targetCiv) },
                 { 0 },
                 { from, to -> fpmFromMovement(roadPreferredMovementCost(civ, from, to)) },
@@ -379,7 +375,7 @@ class PathingMap(
                 civ.gameInfo.tileMap,
                 civ,
                 "createRoadPathingMap",
-                { civPathingCacheKey(startingPoint.position)},
+                { civPathingCacheKey(startingPoint)},
                 {MapPathing.isValidRoadPathTile(civ, it) },
                 { 0 },
                 { _, to -> if ((to.hasRoadConnection(civ, false) || to.hasRailroadConnection(false))) FPM_POINT_FIVE else FPM_ONE },
@@ -389,7 +385,7 @@ class PathingMap(
         }
         
         @Readonly
-        private fun civPathingCacheKey(startingPoint: HexCoord) = PathingMapCacheKey(startingPoint, MAX_MOVE_THIS_TURN, MAX_VALID_TURNS)
+        private fun civPathingCacheKey(startingPoint: Tile) = PathingMapCacheKey(startingPoint, MAX_MOVE_THIS_TURN, MAX_VALID_TURNS)
 
         @Readonly
         private fun isTileCanAttackThrough(civInfo: Civilization, tile: Tile, targetCiv: Civilization): Boolean {

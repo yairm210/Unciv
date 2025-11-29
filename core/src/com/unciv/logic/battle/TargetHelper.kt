@@ -3,6 +3,7 @@ package com.unciv.logic.battle
 import com.unciv.Constants
 import com.unciv.logic.city.City
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.mapunit.movement.ParentTileAndTotalMovement
 import com.unciv.logic.map.mapunit.movement.PathsToTilesWithinTurn
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.GameContext
@@ -21,20 +22,26 @@ object TargetHelper {
         val attackableTiles = ArrayList<AttackableTile>()
 
         val unitMustBeSetUp = unit.hasUnique(UniqueType.MustSetUp)
-        val tilesToAttackFrom = if (stayOnTile || unit.baseUnit.movesLikeAirUnits)
-            sequenceOf(Pair(unit.currentTile, unit.currentMovement))
-        else getTilesToAttackFromWhenUnitMoves(unitDistanceToTiles, unitMustBeSetUp, unit)
+        val tilesToAttackFrom = 
+            if (stayOnTile || unit.baseUnit.movesLikeAirUnits)
+                PathsToTilesWithinTurn.of(unit.currentTile,
+                    ParentTileAndTotalMovement(unit.currentTile, unit.currentMovement)
+                )
+            else unitDistanceToTiles
 
         val tilesWithEnemies: HashSet<Tile> = HashSet()
         val tilesWithoutEnemies: HashSet<Tile> = HashSet()
-        for ((reachableTile, movementLeft) in tilesToAttackFrom) {  // tiles we'll still have energy after we reach there
+        tilesToAttackFrom.forEachTile { reachableTile, path ->
+            // tiles we'll still have energy after we reach there
+            val movementLeft = getMovementAfterUnitMoves(reachableTile, path, unitMustBeSetUp, unit)
+            if (movementLeft <= Constants.minimumMovementEpsilon) return@forEachTile
             // If we are a melee unit that is escorting, we only want to be able to attack from this
             // tile if the escorted unit can also move into the tile we are attacking if we kill the enemy unit.
             if (unit.baseUnit.isMelee() && unit.isEscorting()) {
                 val escortingUnit = unit.getOtherEscortUnit()!!
                 if (!escortingUnit.movement.canReachInCurrentTurn(reachableTile)
-                    || escortingUnit.currentMovement - escortingUnit.movement.getDistanceToTiles()[reachableTile]!!.totalMovement <= 0f) 
-                    continue
+                    || escortingUnit.currentMovement - escortingUnit.movement.getDistanceToTiles().getValue(reachableTile).totalMovement <= 0f) 
+                    return@forEachTile
             }
 
             val tilesInAttackRange =
@@ -66,28 +73,27 @@ object TargetHelper {
                     else -> tilesWithoutEnemies += tile
                 }
             }
-        }
+        }       
+
         return attackableTiles
     }
-
+    
     @Readonly
-    private fun getTilesToAttackFromWhenUnitMoves(unitDistanceToTiles: PathsToTilesWithinTurn, unitMustBeSetUp: Boolean, unit: MapUnit) =
-        unitDistanceToTiles.asSequence()
-            .map { (tile, distance) ->
-                val movementPointsToExpendAfterMovement = if (unitMustBeSetUp) 1 else 0
-                val movementPointsToExpendHere =
-                    if (unitMustBeSetUp && !unit.isSetUpForSiege()) 1 else 0
-                val movementPointsToExpendBeforeAttack =
-                    if (tile == unit.currentTile) movementPointsToExpendHere else movementPointsToExpendAfterMovement
-                val movementLeft =
-                    unit.currentMovement - distance.totalMovement - movementPointsToExpendBeforeAttack
-                Pair(tile, movementLeft)
-            }
-            // still got leftover movement points after all that, to attack
-            .filter { it.second > Constants.minimumMovementEpsilon }
-            .filter {
-                it.first == unit.getTile() || unit.movement.canMoveTo(it.first)
-            }
+    private fun getMovementAfterUnitMoves(tile: Tile, distance: ParentTileAndTotalMovement, unitMustBeSetUp: Boolean, unit: MapUnit): Float {
+        val movementPointsToExpendAfterMovement = if (unitMustBeSetUp) 1 else 0
+        val movementPointsToExpendHere =
+            if (unitMustBeSetUp && !unit.isSetUpForSiege()) 1 else 0
+        val movementPointsToExpendBeforeAttack =
+            if (tile == unit.currentTile) movementPointsToExpendHere else movementPointsToExpendAfterMovement
+        val movementLeft =
+            unit.currentMovement - distance.totalMovement - movementPointsToExpendBeforeAttack
+        if (movementLeft <= Constants.minimumMovementEpsilon)
+            return 0f
+        // still got leftover movement points after all that, to attack
+        if (tile == unit.getTile() || unit.movement.canMoveTo(tile))
+            return movementLeft
+        return 0f
+    }
 
     @Readonly
     private fun tileContainsAttackableEnemy(unit: MapUnit, tile: Tile, tilesToCheck: List<Tile>?): Boolean {

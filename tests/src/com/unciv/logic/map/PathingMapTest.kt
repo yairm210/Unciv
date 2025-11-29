@@ -11,7 +11,6 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
@@ -210,7 +209,6 @@ class PathingMapTest {
         val path = pathing.getMovementToTilesAtPosition()
 
         assertEquals(path.toString(), 18, path.size)
-        assertNotEquals(path.toString(), path.firstEntry(), path.lastEntry())
         assertEquals("""
         -3     -2     -1     +0     +1     +2     +3    
   +3     /      /      /      /     1/1.0  1/1.0  1/1.0 

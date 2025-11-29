@@ -829,9 +829,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
         if (!hasMovement()) return  // We've already done stuff this turn, and can't do any more stuff
         if (isEscorting() && !getOtherEscortUnit()!!.hasMovement()) return
 
-        val enemyUnitsInWalkingDistance = movement.getDistanceToTiles().keys
-                .filter { it.militaryUnit != null && civ.isAtWarWith(it.militaryUnit!!.civ) }
-        if (enemyUnitsInWalkingDistance.isNotEmpty()) {
+        val enemyUnitsInWalkingDistance = movement.getDistanceToTiles()
+                .anyTile {tile,path -> tile.militaryUnit != null && civ.isAtWarWith(tile.militaryUnit!!.civ) }
+        if (enemyUnitsInWalkingDistance) {
             if (isMoving()) // stop on enemy in sight
                 action = null
             if (!(isExploring() || isAutomated()))  // have fleeing code

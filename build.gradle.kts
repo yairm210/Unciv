@@ -52,11 +52,32 @@ allprojects {
     apply(plugin = "io.github.yairm210.purity-plugin")
     configure<yairm210.purity.PurityConfiguration> {
         wellKnownPureFunctions = setOf(
+            "java.util.stream.StreamSupport.longStream",
+            "java.util.stream.LongStream.parallel",
+            "java.util.Comparator.compare",
+            "java.util.Comparator.naturalOrder",
+            "java.util.LinkedHashMap.forEach",
+            "java.util.LinkedHashMap.computeIfAbsent",
+            "kotlin.sequences.firstNotNullOfOrNull",
+            "kotlin.sequences.minWithOrNull",
+            "kotlin.longArrayOf",
+            "kotlin.LongArray.get",
+            "kotlin.LongArray.iterator",
+            "kotlin.collections.copyOf",
+            "kotlin.collections.copyInto",
+            "kotlin.collections.firstNotNullOfOrNull",
+            "kotlin.collections.slice",
+            "kotlin.collections.IntIterator.hasNext",
+            "kotlin.collections.IntIterator.next",
         )
         wellKnownReadonlyFunctions = setOf(
             "com.badlogic.gdx.math.Vector2.len",
             "com.badlogic.gdx.math.Vector2.cpy",
             "com.badlogic.gdx.math.Vector2.hashCode",
+            "com.badlogic.gdx.utils.IntIntMap.containsKey",
+            "com.badlogic.gdx.utils.IntIntMap.get",
+            "com.badlogic.gdx.utils.IntIntMap.entries",
+            "com.badlogic.gdx.utils.IntIntMap.Entries.iterator",
 
             "com.badlogic.gdx.graphics.Color.cpy",
             "com.badlogic.gdx.graphics.Color.toString",
@@ -68,12 +89,7 @@ allprojects {
             "com.badlogic.gdx.files.FileHandle.isFile",
             "com.badlogic.gdx.files.FileHandle.name",
 
-            "java.util.stream.StreamSupport.longStream",
-            "java.util.stream.LongStream.parallel",
             "kotlin.sequences.shuffled",
-            "kotlin.LongArray.get",
-            "kotlin.LongArray.iterator",
-            "kotlin.collections.copyInto",
         )
         wellKnownPureClasses = setOf(
         )

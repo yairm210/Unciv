@@ -73,22 +73,22 @@ object GreatGeneralImplementation {
         // However, rang-1 generals are difficult to use fully without getting it killed, so it's probably best placed to support 2nd and 3rd row ranged units
         // a 3 or more range generals are less sensitive to positioning, and thus probably suffice with 2-range general logic
 
-        val  militaryUnitTilesInDistance = general.movement.getDistanceToTiles().asSequence()
-            .map { it.key }
-            .filter { tile ->
+        val  militaryUnitTilesInDistance = general.movement.getDistanceToTiles()
+            .filter { tile,path ->
                 val militaryUnit = tile.militaryUnit
                 militaryUnit != null && militaryUnit.civ == general.civ
                     && (tile.civilianUnit == null || tile.civilianUnit == general)
             }
 
         val closestReachableEnemyCity = getEnemyCitiesByPriority(general)
-            .firstOrNull { general.movement.canReach(it.getCenterTile()) } 
+            .firstOrNull { general.movement.canReach(it.getCenterTile()) }
         // Send generals to the same place as our units, so they don't get stuck at the wrong side of our empire. Update this when changing global unit movement
 
-        val militaryUnitTile = militaryUnitTilesInDistance.maxByOrNull { unitTile ->
+
+        val militaryUnitTile = militaryUnitTilesInDistance.maxTileByOrNull { unitTile,path ->
             (2 * unitTile.getTilesInDistance(2).count { it.militaryUnit?.civ == general.civ }
                 - unitTile.getTilesInDistance(2).count { it.militaryUnit?.civ != general.civ }
-                - if (closestReachableEnemyCity != null) 3 * unitTile.aerialDistanceTo(closestReachableEnemyCity.getCenterTile()) else 0)
+                - if (closestReachableEnemyCity != null) 3 * unitTile.aerialDistanceTo(closestReachableEnemyCity.getCenterTile()) else 0).toFloat()
             // Scoring here is found to help AI defeat former AI,
             // a more robust scoring may be necessary to avoid leaving generals en-prise,
             // and improve handling of multiple generals, e.g. use one to support bomber stacks and the other for frontline troops.

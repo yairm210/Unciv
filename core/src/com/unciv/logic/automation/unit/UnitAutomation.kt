@@ -133,10 +133,10 @@ object UnitAutomation {
 
         val unitVisibilityRange = unit.getVisibilityRange()
         val explorableTilesThisTurn =
-                unit.movement.getDistanceToTiles().keys.filter { isGoodTileToExplore(unit, it, unitVisibilityRange) }
+                unit.movement.getDistanceToTiles().filter {tile,path-> isGoodTileToExplore(unit, tile, unitVisibilityRange) }
         if (explorableTilesThisTurn.any()) {
             val bestTile = explorableTilesThisTurn
-                .maxBy { it.tileHeight + it.getTilesAtDistance(unit.getVisibilityRange()).count { tile -> !tile.isExplored(unit.civ) }}
+                .maxTileBy {tile,path -> tile.tileHeight + tile.getTilesAtDistance(unit.getVisibilityRange()).count { !it.isExplored(unit.civ) }.toFloat()}
             // Assign each tile a score for "explore value"
             // This could be more elaborate: for example add a malus for distant tiles such as to move not too far away from capital (barb control)
             // or bonus according to tile yields (likely candidates for city locations), but this comes at a cost of performance
@@ -176,9 +176,9 @@ object UnitAutomation {
         }
 
         val reachableTilesThisTurn =
-                unit.movement.getDistanceToTiles().keys.filter { isGoodTileForFogBusting(unit, it) }
+                unit.movement.getDistanceToTiles().filter {tile,path -> isGoodTileForFogBusting(unit, tile) }
         if (reachableTilesThisTurn.any()) {
-            unit.movement.headTowards(reachableTilesThisTurn.random()) // Just pick one
+            unit.movement.headTowards(reachableTilesThisTurn.randomTile()) // Just pick one
             return true
         }
 
@@ -299,12 +299,12 @@ object UnitAutomation {
         // Finding the distance to the closest enemy is expensive, so lets sort the tiles using a cheaper function
         val sortedTilesToRetreatTo: Sequence<Tile> = if (closestCity != null) {
             // If we have a city, lets favor the tiles closer to that city
-            unitDistanceToTiles.asSequence().map { it.key }.sortedBy { it.aerialDistanceTo(closestCity.getCenterTile()) }
+            unitDistanceToTiles.tilesSortedBy {tile,path -> tile.aerialDistanceTo(closestCity.getCenterTile()).toFloat() }
         } else {
             // Rare case, what if we don't have a city nearby?
             // Lets favor the tiles that don't have enemies close by
             // Ideally we should check in a greater radius but might get way too expensive
-            unitDistanceToTiles.asSequence().map { it.key }.sortedByDescending { unit.civ.threatManager.getDistanceToClosestEnemyUnit(it, 3, false) }
+            unitDistanceToTiles.tilesSortedByDescending { tile,path -> unit.civ.threatManager.getDistanceToClosestEnemyUnit(tile, 3, false).toFloat() }
         }
 
         val ourDistanceToClosestEnemy = unit.civ.threatManager.getDistanceToClosestEnemyUnit(unit.getTile(),4, false)
@@ -363,11 +363,11 @@ object UnitAutomation {
         val currentUnitTile = unit.getTile()
 
 
-        val viableTilesForHealing = unitDistanceToTiles.keys
-                .filter { it !in dangerousTiles && unit.movement.canMoveTo(it) }
-        val tilesByHealingRate = viableTilesForHealing.groupBy { unit.rankTileForHealing(it) }
+        val viableTilesForHealing = unitDistanceToTiles
+                .filter {tile,path -> tile !in dangerousTiles && unit.movement.canMoveTo(tile) }
+        val hasTilesForHealing = viableTilesForHealing.anyTile {tile,path -> unit.rankTileForHealing(tile) > 0 }
 
-        if (tilesByHealingRate.keys.all { it == 0 }) { // We can't heal here at all! We're probably embarked
+        if (!hasTilesForHealing) { // We can't heal here at all! We're probably embarked
             if (!unit.baseUnit.movesLikeAirUnits) {
                 val reachableCityTile = unit.civ.cities.asSequence()
                     .map { it.getCenterTile() }
@@ -383,20 +383,22 @@ object UnitAutomation {
                 .filter { unit.movement.canMoveTo(it) }
             if (emptyCities.none()) return false // Nowhere to move to heal
 
-            val nextTileToMove = unitDistanceToTiles.keys
-                .filter { unit.movement.canMoveTo(it) }
-                .minByOrNull { tile ->
+            val nextTileToMove = unitDistanceToTiles
+                .filter {tile,path -> unit.movement.canMoveTo(tile) }
+                .minTileByOrNull { tile,path ->
                     emptyCities.minOf { city ->
                         city.aerialDistanceTo(tile)
-                    }
+                    }.toFloat()
                 } ?: return false
 
             unit.movement.moveToTile(nextTileToMove)
             return true
         }
 
-        val bestTilesForHealing = tilesByHealingRate.maxByOrNull { it.key }!!.value
-        val bestTileForHealing = bestTilesForHealing.maxByOrNull { it.getDefensiveBonus(unit = unit) }!!
+        val bestTileForHealing = viableTilesForHealing.maxTileBy { tile,path ->
+            // tile with most healing, using defensive bonus as tie-breaker
+            unit.rankTileForHealing(tile) + tile.getDefensiveBonus(unit = unit) / 1000
+        }
         val bestTileForHealingRank = unit.rankTileForHealing(bestTileForHealing)
 
         if (currentUnitTile != bestTileForHealing
@@ -446,13 +448,13 @@ object UnitAutomation {
         if (unit.isCivilian()) return false
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
         val tilesThatCanWalkToAndThenPillage = unitDistanceToTiles
-            .filter { it.value.totalMovement < unit.currentMovement }.keys
-            .filter { unit.movement.canMoveTo(it) && UnitActionsPillage.canPillage(unit, it)
-                    && (it.canPillageTileImprovement()
-                    || (!onlyPillageToHeal && it.canPillageRoad() && it.getRoadOwner() != null && unit.civ.isAtWarWith(it.getRoadOwner()!!))) }
+            .filter {tile,path -> path.totalMovement < unit.currentMovement
+                    && unit.movement.canMoveTo(tile) && UnitActionsPillage.canPillage(unit, tile)
+                    && (tile.canPillageTileImprovement()
+                    || (!onlyPillageToHeal && tile.canPillageRoad() && tile.getRoadOwner() != null && unit.civ.isAtWarWith(tile.getRoadOwner()!!))) }
 
         if (tilesThatCanWalkToAndThenPillage.isEmpty()) return false
-        val tileToPillage = tilesThatCanWalkToAndThenPillage.maxByOrNull { it.getDefensiveBonus(false, unit) }!!
+        val tileToPillage = tilesThatCanWalkToAndThenPillage.maxTileByOrNull { tile,path -> tile.getDefensiveBonus(false, unit) }!!
         if (unit.getTile() != tileToPillage)
             unit.movement.moveToTile(tileToPillage)
 

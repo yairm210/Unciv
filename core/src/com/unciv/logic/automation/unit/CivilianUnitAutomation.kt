@@ -41,9 +41,9 @@ object CivilianUnitAutomation {
         if (shouldClearTileForAddInCapitalUnits(unit, unit.currentTile)) {
             // First off get out of the way, then decide if you actually want to do something else
             val tilesCanMoveTo = unit.movement.getDistanceToTiles()
-                .filter { unit.movement.canMoveTo(it.key) }
+                .filter {tile,path -> unit.movement.canMoveTo(tile) }
             if (tilesCanMoveTo.isNotEmpty())
-                unit.movement.moveToTile(tilesCanMoveTo.minByOrNull { it.value.totalMovement }!!.key)
+                unit.movement.moveToTile(tilesCanMoveTo.minTileByOrNull {tile,path -> path.totalMovement }!!)
         }
 
         if (unit.isAutomatingRoadConnection())
@@ -184,10 +184,10 @@ object CivilianUnitAutomation {
     fun tryRunAwayIfNeccessary(unit: MapUnit): Boolean {
         // This is a little 'Bugblatter Beast of Traal': Run if we can attack an enemy
         // Cheaper than determining which enemies could attack us next turn
-        val enemyUnitsInWalkingDistance = unit.movement.getDistanceToTiles().keys
-            .filter { unit.civ.threatManager.doesTileHaveMilitaryEnemy(it) }
+        val enemyUnitsInWalkingDistance = unit.movement.getDistanceToTiles()
+            .anyTile {tile,path -> unit.civ.threatManager.doesTileHaveMilitaryEnemy(tile) }
 
-        if (enemyUnitsInWalkingDistance.isNotEmpty() && !unit.baseUnit.isMilitary
+        if (enemyUnitsInWalkingDistance && !unit.baseUnit.isMilitary
             && unit.getTile().militaryUnit == null && !unit.getTile().isCityCenter()) {
             runAway(unit)
             return true
@@ -198,15 +198,15 @@ object CivilianUnitAutomation {
 
     private fun runAway(unit: MapUnit) {
         val reachableTiles = unit.movement.getDistanceToTiles()
-        val enterableCity = reachableTiles.keys
-            .firstOrNull { it.isCityCenter() && unit.movement.canMoveTo(it) }
+        val enterableCity = reachableTiles
+            .firstNotNullTileOfOrNull {tile, path -> tile.takeIf { it.isCityCenter() && unit.movement.canMoveTo(it)} }
         if (enterableCity != null) {
             unit.movement.moveToTile(enterableCity)
             return
         }
-        val defensiveUnit = reachableTiles.keys
-            .firstOrNull {
-                it.militaryUnit != null && it.militaryUnit!!.civ == unit.civ && it.civilianUnit == null
+        val defensiveUnit = reachableTiles
+            .firstNotNullTileOfOrNull {tile, path ->
+                tile.takeIf {it.militaryUnit != null && it.militaryUnit!!.civ == unit.civ && it.civilianUnit == null }
             }
         if (defensiveUnit != null) {
             unit.movement.moveToTile(defensiveUnit)
@@ -219,14 +219,14 @@ object CivilianUnitAutomation {
             // Priotirize capture threat over ranged attack
             .sortedByDescending { unit.civ.threatManager.getEnemyUnitsOnTiles(listOf(it)).isNotEmpty() }
             .minByOrNull { it.aerialDistanceTo(unitTile) } ?: unitTile
-        val tileFurthestFromDanger = reachableTiles.keys
-            .filter {
-                unit.movement.canMoveTo(it)
-                    && unit.getDamageFromTerrain(it) < unit.health
-                    && it !in dangerousTiles }
-            .sortedWith(compareByDescending<Tile> { it.aerialDistanceTo(tileClosestToDanger) } // As far away from threat
-                .thenByDescending { it.isFriendlyTerritory(unit.civ) }) // Priotirize friendly territory
-            .firstOrNull() ?: return // can't move anywhere!
+        val tileFurthestFromDanger = reachableTiles
+            .filter {tile,path ->
+                unit.movement.canMoveTo(tile)
+                    && unit.getDamageFromTerrain(tile) < unit.health
+                    && tile !in dangerousTiles }
+            .minTileByOrNull { tile,path ->
+                tile.aerialDistanceTo(tileClosestToDanger) +  if (tile.isFriendlyTerritory(unit.civ)) 0.5f else 0f
+            } ?: return // can't move anywhere!
 
         unit.movement.moveToTile(tileFurthestFromDanger)
     }

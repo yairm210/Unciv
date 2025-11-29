@@ -195,7 +195,7 @@ internal class UnitFormationTests {
         val militaryUnit = testGame.addUnit("Horseman", civInfo, centerTile) // 4 movement
         civilianUnit.startEscorting()
         var civilianDistanceToTiles = civilianUnit.movement.getDistanceToTiles()
-        assertFalse(militaryUnit.movement.getDistanceToTiles().any { !civilianDistanceToTiles.contains(it.key) })
+        assertFalse(militaryUnit.movement.getDistanceToTiles().anyTile { tile, path -> !civilianDistanceToTiles.contains(tile) })
 
         // Test again with caching
         civilianUnit.stopEscorting()
@@ -203,7 +203,7 @@ internal class UnitFormationTests {
         civilianUnit.movement.getDistanceToTiles()
         civilianUnit.startEscorting()
         civilianDistanceToTiles = civilianUnit.movement.getDistanceToTiles()
-        assertFalse(militaryUnit.movement.getDistanceToTiles().any { !civilianDistanceToTiles.contains(it.key) })
+        assertFalse(militaryUnit.movement.getDistanceToTiles().anyTile { tile, path -> !civilianDistanceToTiles.contains(tile) })
     }
 
     @Test

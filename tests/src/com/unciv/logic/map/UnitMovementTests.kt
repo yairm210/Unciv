@@ -8,7 +8,9 @@ import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.logic.map.FixedPointMovement.Companion.fpmFromFixedPointBits
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.mapunit.movement.ParentTileAndTotalMovement
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.metadata.GameSettings.PathfindingAlgorithm
 import com.unciv.models.metadata.GameSettings.PathfindingAlgorithm.ClassicPathfinding
@@ -48,6 +50,19 @@ class UnitMovementTests(
         civInfo.tech.techsResearched.addAll(testGame.ruleset.technologies.keys)
         civInfo.tech.embarkedUnitsCanEnterOcean = true
         civInfo.tech.unitsCanEmbark = true
+    }
+    
+    @Test
+    fun parentTileAndTotalMovementFieldsRoundTrip() {
+        val idx = testGame.tileMap.tileList.size - 1
+        val tile2 = testGame.tileMap.tileList[idx]
+        val movement = fpmFromFixedPointBits(0x2001) // top and least bits both set
+        
+        val item = ParentTileAndTotalMovement(tile2, movement)
+
+        assertEquals(movement, item.totalMovementBits)
+        assertEquals(idx, item.parentTileIdx)
+        assertEquals(tile2, item.parentTile(testGame.tileMap))
     }
 
     @Test

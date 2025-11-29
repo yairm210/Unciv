@@ -292,7 +292,7 @@ value class FixedPointMovement private constructor(val bits: Int) {
 
 
 data class PathingMapCacheKey(
-    val startingPoint: HexCoord,
+    val startingPoint: Tile,
     val moveRemaining: FixedPointMovement,
     val fullMove: Int,
 )
@@ -329,14 +329,17 @@ internal class PathingMapCache private constructor(
      * complexity.
      */
     internal val routeNodes: LongArray,  // Actually Array<RouteNode>
+    
+    internal val tileMap: TileMap,
 ) {
-    internal val tilesSameTurn: PathsToTilesWithinTurn = PathsToTilesWithinTurn()
+    internal var tilesSameTurn : PathsToTilesWithinTurn? = null
         
     constructor(key: PathingMapCacheKey, tileMap: TileMap) : this(
         key,
         BitSet(tileMap.tileList.size),
         BitSet(tileMap.tileList.size),
-        LongArray(tileMap.tileList.size)
+        LongArray(tileMap.tileList.size),
+        tileMap
     )
     
     fun isCacheValid(latestKey: PathingMapCacheKey) = key == latestKey
@@ -350,7 +353,7 @@ internal class PathingMapCache private constructor(
         synchronized(addedNeighborNodes) {
             val codesNeedingNeighborsCopy: BitSet = nodesNeedingNeighbors.clone() as BitSet
             val addedNeighborNodesCopy: BitSet = addedNeighborNodes.clone() as BitSet
-            return PathingMapCache(key, codesNeedingNeighborsCopy, addedNeighborNodesCopy, routeNodes)
+            return PathingMapCache(key, codesNeedingNeighborsCopy, addedNeighborNodesCopy, routeNodes, tileMap)
         }
     }
     
@@ -378,10 +381,10 @@ internal class PathingMapCache private constructor(
         nodesNeedingNeighbors.clear()
         addedNeighborNodes.clear()
         routeNodes.fill(0L)
-        tilesSameTurn.clear()
+        tilesSameTurn = null
     }
 
-    fun toDebugString(tileMap: TileMap, destination: Tile? = null): String {
+    fun toDebugString(destination: Tile? = null): String {
         val routeTiles = tileMap.tileList.filterIndexed { idx, _ -> RouteNode(routeNodes[idx]).initialized }
         if (routeTiles.isEmpty()) return "{}"
         // first determine which rows and columns need printing
@@ -441,5 +444,9 @@ internal class PathingMapCache private constructor(
         }
     }
 
-    override fun toString() = "${javaClass.simpleName}[key=${key.startingPoint}/${key.moveRemaining}/${key.fullMove} nodesNeedingNeighbors=${nodesNeedingNeighbors.cardinality()} addedNeighborNodes=${addedNeighborNodes.cardinality()} routeNodes=${routeNodes.size} tilesSameTurn=${tilesSameTurn.size}"
+    override fun toString() = "${javaClass.simpleName}[key=${key.startingPoint.position}/${key.moveRemaining}/${key.fullMove} nodesNeedingNeighbors=${nodesNeedingNeighbors.cardinality()} addedNeighborNodes=${addedNeighborNodes.cardinality()} routeNodes=${routeNodes.size} tilesSameTurn=${tilesSameTurn?.size}"
+    
+    companion object {
+        const val DEFAULT_PATH_TO_TILES_SIZE = 80
+    }
 }

@@ -646,7 +646,8 @@ class Tile : IsPartOfGameInfoSerialization {
     /** The two tiles have a river between them */
     @Readonly
     fun isConnectedByRiver(otherTile: Tile): Boolean {
-        if (otherTile == this) throw Exception("Should not be called to compare to self!")
+        if (otherTile == this) 
+            throw Exception("Should not be called to compare to self!")
 
         return when (tileMap.getNeighborTileClockPosition(this, otherTile)) {
             2 -> otherTile.hasBottomLeftRiver // we're to the bottom-left of it

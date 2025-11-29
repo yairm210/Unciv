@@ -202,7 +202,6 @@ class PathfindingTests(
         val path = unit.movement.getMovementToTilesAtPosition(originTile.position, 2f)
 
         assertEquals(path.toString(), 18, path.size)
-        assertNotEquals(path.toString(), path.firstEntry(), path.lastEntry())
     }
 
     @Test
@@ -216,7 +215,6 @@ class PathfindingTests(
         val path = unit.movement.getMovementToTilesAtPosition(originTile.position, 1.5f)
 
         assertEquals(path.toString(), 18, path.size)
-        assertNotEquals(path.toString(), path.firstEntry(), path.lastEntry())
     }
 
     @Test
@@ -262,7 +260,7 @@ class PathfindingTests(
         val path = unit.movement.getMovementToTilesAtPosition(originTile.position, 0f)
 
         assertEquals(path.toString(), 1, path.size)
-        assertEquals(path.firstEntry().key, originTile)
+        assertEquals(path.randomTile(), originTile)
     }
 
     @Test
@@ -277,7 +275,7 @@ class PathfindingTests(
         val path = unit.movement.getMovementToTilesAtPosition(originTile.position, -1f)
 
         assertEquals(path.toString(), 1, path.size)
-        assertEquals(path.firstEntry().key, originTile)
+        assertEquals(path.randomTile(), originTile)
     }
 
     @Test
