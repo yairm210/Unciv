@@ -50,4 +50,14 @@ class HexmathTests {
             }
         }
     }
+    
+    @Test
+    fun testHexCoordConversions(){
+        for (x in -2..2)
+            for (y in -2..2){
+                val hexCoord = HexCoord.of(x, y)
+                Assert.assertEquals(hexCoord.getX(), x)
+                Assert.assertEquals(hexCoord.getY(), y)
+            }
+    }
 }

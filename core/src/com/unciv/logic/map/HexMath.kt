@@ -382,3 +382,39 @@ object HexMath {
     }
 
 }
+
+@JvmInline
+value class HexCoord(val coords: Int) {
+    // x value is stored in the 16 bits, and y value in the bottom 16 bits, allowing range -32768 to 32767
+
+    fun getX(): Int = coords shr 16 // top 16 bits
+
+    // Extract bottom 16 bits and sign-extend - required to keep negative numbers
+    fun getY(): Int = (coords shl 16) shr 16
+
+    fun withX(newX: Int): HexCoord {
+        require(newX in -32768..32767) { "X value must be in range -32768..32767" }
+        // Keep bottom 16 bits (y), replace top 16 bits with newX
+        return HexCoord((newX shl 16) or (coords and 0xFFFF))
+    }
+
+    fun withY(newY: Int): HexCoord {
+        require(newY in -32768..32767) { "Y value must be in range -32768..32767" }
+        // Keep top 16 bits (x), replace bottom 16 bits with newY
+        return HexCoord((coords and 0xFFFF0000.toInt()) or (newY and 0xFFFF))
+    }
+
+    fun toVector2(): Vector2 = Vector2(getX().toFloat(), getY().toFloat())
+
+    companion object {
+        fun of(x: Int, y: Int): HexCoord {
+            require(x in -32768..32767) { "X value must be in range -32768..32767" }
+            require(y in -32768..32767) { "Y value must be in range -32768..32767" }
+            return HexCoord((x shl 16) or (y and 0xFFFF))
+        }
+    }
+
+    override fun toString(): String = "HexCoord(x=${getX()}, y=${getY()})"
+}
+
+fun Vector2.toHexCoord() = HexCoord.of(this.x.toInt(), this.y.toInt())
