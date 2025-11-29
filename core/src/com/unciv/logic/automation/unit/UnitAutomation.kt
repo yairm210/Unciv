@@ -501,9 +501,9 @@ object UnitAutomation {
         )
         val closeEnemy = TargetHelper.getAttackableEnemies(unit, unitDistanceToTiles, tilesToCheck = unit.getTile().getTilesInDistance(CLOSE_ENEMY_TILES_AWAY_LIMIT).toList())
             .filterNot { unit.baseUnit.isRanged() && it.tileToAttack.isCityCenter() && it.tileToAttack.getCity()!!.health == 1 } // occurs fairly often probably because AI dumb
-            .filter { unit.getDamageFromTerrain(it.tileToAttackFrom) <= 0 || unit.getDamageFromTerrain(it.tileToAttackFrom) > 0 }  // Don't attack from a mountain
+            .filter { unit.getDamageFromTerrain(it.tileToAttackFrom) <= 0 || unit.getDamageFromTerrain(it.tileToAttackFrom) > 0 }  // Don't attack from a mountain or near enemy citadels
             .filter {
-            // Ignore units that would 1-shot you if you attacked, as well as avoid parking your units next to enemy citadels
+            // Ignore units that would 1-shot you if you attacked
             BattleDamage.calculateDamageToAttacker(MapUnitCombatant(unit), Battle.getMapCombatantOfTile(it.tileToAttack)!!) < unit.health }
             .minByOrNull { it.tileToAttack.aerialDistanceTo(unit.getTile()) }
 
