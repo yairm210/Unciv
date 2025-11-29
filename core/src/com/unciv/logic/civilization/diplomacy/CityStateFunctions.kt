@@ -142,9 +142,9 @@ class CityStateFunctions(val civInfo: Civilization) {
     }
 
     fun giveMilitaryUnitToPatron(receivingCiv: Civilization) {
-        val cities = NextTurnAutomation.getClosestCities(receivingCiv, civInfo) ?: return
+        val cities = NextTurnAutomation.getClosestCities(civInfo, receivingCiv) ?: return
 
-        val city = cities.city1
+        val city = cities.city2
 
         @Readonly
         fun giftableUniqueUnit(): BaseUnit? {
