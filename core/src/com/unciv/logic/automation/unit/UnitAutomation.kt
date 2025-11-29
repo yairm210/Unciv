@@ -624,7 +624,7 @@ object UnitAutomation {
             .filterNot { it is MapUnitCombatant &&
                 it.isCivilian() && !it.unit.hasUnique(UniqueType.Uncapturable) } // Don't bombard capturable civilians
         if (targets.none()) return null
-            return targets.maxByOrNull { BattleDamage.calculateDamageToDefender(CityCombatant(city), it) }
+        return targets.maxByOrNull { BattleDamage.calculateDamageToDefender(CityCombatant(city), it) }
     }
 
     private fun tryTakeBackCapturedCity(unit: MapUnit): Boolean {
