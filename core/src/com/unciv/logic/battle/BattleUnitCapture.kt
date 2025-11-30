@@ -13,6 +13,7 @@ import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.toHexCoord
+import com.unciv.logic.map.toVector2
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import yairm210.purity.annotations.Readonly
@@ -62,7 +63,7 @@ object BattleUnitCapture {
                 .toFloat() * 0.4f
         )
         /** Between 0 and 1.  Defaults to turn and location-based random to avoid save scumming */
-        val random = Random((attacker.getCivInfo().gameInfo.turns * defender.getTile().position.hashCode()).toLong())
+        val random = Random((attacker.getCivInfo().gameInfo.turns * defender.getTile().position.toVector2().hashCode()).toLong())
         return random.nextFloat() <= captureChance
     }
 

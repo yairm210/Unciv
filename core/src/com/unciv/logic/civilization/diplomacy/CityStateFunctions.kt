@@ -16,6 +16,7 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.Proximity
 import com.unciv.logic.map.toHexCoord
+import com.unciv.logic.map.toVector2
 import com.unciv.models.Spy
 import com.unciv.models.SpyAction
 import com.unciv.models.ruleset.Ruleset
@@ -137,7 +138,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         val cities = NextTurnAutomation.getClosestCities(receivingCiv, civInfo) ?: return
         val placedUnit = receivingCiv.units.placeUnitNearTile(cities.city1.location.toHexCoord(), giftedUnit)
             ?: return
-        val locations = LocationAction(placedUnit.getTile().position, cities.city2.location)
+        val locations = LocationAction(placedUnit.getTile().position.toVector2(), cities.city2.location)
         receivingCiv.addNotification( "[${civInfo.civName}] gave us a [${giftedUnit.name}] as a gift!", locations,
             NotificationCategory.Units, civInfo.civName, giftedUnit.name)
     }

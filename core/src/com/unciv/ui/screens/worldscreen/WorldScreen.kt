@@ -16,6 +16,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.map.MapVisualization
 import com.unciv.logic.map.toHexCoord
+import com.unciv.logic.map.toVector2
 import com.unciv.logic.multiplayer.MultiplayerGameUpdated
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
@@ -178,7 +179,7 @@ class WorldScreen(
         val tileToCenterOn: Vector2 =
                 when {
                     viewingCiv.getCapital() != null -> viewingCiv.getCapital()!!.location
-                    viewingCiv.units.getCivUnits().any() -> viewingCiv.units.getCivUnits().first().getTile().position
+                    viewingCiv.units.getCivUnits().any() -> viewingCiv.units.getCivUnits().first().getTile().position.toVector2()
                     else -> Vector2.Zero
                 }
 
@@ -396,7 +397,7 @@ class WorldScreen(
         mapHolder.resetArrows()
         if (UncivGame.Current.settings.showUnitMovements) {
             val allUnits = gameInfo.civilizations.asSequence().flatMap { it.units.getCivUnits() }
-            val allAttacks = allUnits.map { unit -> unit.attacksSinceTurnStart.asSequence().map { attacked -> Triple(unit.civ, unit.getTile().position, attacked) } }.flatten() +
+            val allAttacks = allUnits.map { unit -> unit.attacksSinceTurnStart.asSequence().map { attacked -> Triple(unit.civ, unit.getTile().position.toVector2(), attacked) } }.flatten() +
                 gameInfo.civilizations.asSequence().flatMap { civInfo -> civInfo.attacksSinceTurnStart.asSequence().map { Triple(civInfo, it.source, it.target) } }
             mapHolder.updateMovementOverlay(
                 allUnits.filter(mapVisualization::isUnitPastVisible),

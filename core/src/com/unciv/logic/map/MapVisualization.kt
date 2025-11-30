@@ -12,7 +12,7 @@ class MapVisualization(val gameInfo: GameInfo, val viewingCiv: Civilization) {
     fun isUnitPastVisible(unit: MapUnit): Boolean {
         if (unit.civ == viewingCiv)
             return true
-        val checkPositions = sequenceOf(unit.movementMemories.asSequence().map { it.position }, sequenceOf(unit.getTile().position)).flatten()
+        val checkPositions = sequenceOf(unit.movementMemories.asSequence().map { it.position }, sequenceOf(unit.getTile().position.toVector2())).flatten()
         return checkPositions.all { gameInfo.tileMap[it] in viewingCiv.viewableTiles }
                 && (!unit.isInvisible(viewingCiv) || unit.getTile() in viewingCiv.viewableInvisibleUnitsTiles)
         // Past should always be visible for own units. Past should be visible for foreign units if the unit is visible and both its current tile and previous tiles are visible.

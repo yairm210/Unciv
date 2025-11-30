@@ -3,6 +3,7 @@ package com.unciv.logic.civilization.managers
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.toVector2
 import com.unciv.models.ruleset.RuinReward
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
@@ -43,7 +44,7 @@ class RuinsManager(
             .toMutableList()
         // The resulting List now gets shuffled, using a tile-based random to thwart save-scumming.
         // Note both Sequence.shuffled and Iterable.shuffled (with a 'd') always pull an extra copy of a MutableList internally, even if you feed them one.
-        candidates.shuffle(Random(triggeringUnit.getTile().position.hashCode()))
+        candidates.shuffle(Random(triggeringUnit.getTile().position.toVector2().hashCode()))
         return candidates
     }
 

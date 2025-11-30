@@ -1,6 +1,7 @@
 package com.unciv.logic.city
 
 import com.unciv.logic.map.tile.RoadStatus
+import com.unciv.logic.map.toVector2
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IConstruction
@@ -349,7 +350,7 @@ class CityStats(val city: City) {
         val stats = Stats()
         val workedTiles = city.tilesInRange.asSequence()
             .filter {
-                city.location == it.position
+                city.location == it.position.toVector2()
                         || city.isWorked(it)
                         || it.owningCity == city && (it.getUnpillagedTileImprovement()
                     ?.hasUnique(UniqueType.TileProvidesYieldWithoutPopulation, it.stateThisTile) == true
@@ -357,8 +358,8 @@ class CityStats(val city: City) {
             }
         for (tile in workedTiles) {
             if (tile.isBlockaded() && city.isWorked(tile)) {
-                city.workedTiles.remove(tile.position)
-                city.lockedTiles.remove(tile.position)
+                city.workedTiles.remove(tile.position.toVector2())
+                city.lockedTiles.remove(tile.position.toVector2())
                 city.shouldReassignPopulation = true
                 continue
             }

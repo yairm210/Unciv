@@ -61,8 +61,10 @@ class LocationAction(private val location: Vector2 = Vector2.Zero) : Notificatio
             locations.asSequence().map { LocationAction(it) }
         operator fun invoke(vararg locations: Vector2?): Sequence<LocationAction> =
             locations.asSequence().filterNotNull().map { LocationAction(it) }
-        operator fun invoke(first: HexCoord, second: HexCoord): Sequence<LocationAction> =
-            sequenceOf(LocationAction(first), LocationAction(second))
+        operator fun invoke(first: HexCoord?, second: HexCoord?): Sequence<LocationAction> =
+            sequenceOf(first, second).filterNotNull().map { LocationAction(it) }
+        operator fun invoke(first: HexCoord?): Sequence<LocationAction> =
+            sequenceOf(first).filterNotNull().map { LocationAction(it) }
     }
 }
 

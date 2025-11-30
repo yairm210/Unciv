@@ -13,6 +13,7 @@ import com.unciv.GUI
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.logic.map.toHexCoord
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.PerpetualConstruction
@@ -472,27 +473,27 @@ class CityButton(val city: City, private val tileGroup: TileGroup) : Table(BaseS
         val tilesAroundCity = tileGroup.tile.neighbors
         for (tile in tilesAroundCity)
         {
-            val direction = tileGroup.tile.position.cpy().sub(tile.position)
+            val direction = tileGroup.tile.position.toHexCoord().minus(tile.position.toHexCoord())
 
             if (isButtonMoved) {
                 when {
                     // detect civilian left-below the city
-                    (tile.civilianUnit != null) && direction.epsilonEquals(0f, 1f) ->
+                    (tile.civilianUnit != null) && direction.x == 0 && direction.eq(0, 1) ->
                         insertHiddenUnitMarker(HiddenUnitMarkerPosition.Left)
                     // detect military under the city
-                    (tile.militaryUnit != null && !tile.hasEnemyInvisibleUnit(viewingPlayer)) && direction.epsilonEquals(1f, 1f) ->
+                    (tile.militaryUnit != null && !tile.hasEnemyInvisibleUnit(viewingPlayer)) && direction.eq(1, 1) ->
                         insertHiddenUnitMarker(HiddenUnitMarkerPosition.Center)
                     // detect civilian right-below the city
-                    (tile.civilianUnit != null) && direction.epsilonEquals(1f, 0f) ->
+                    (tile.civilianUnit != null) && direction.eq(1, 0) ->
                         insertHiddenUnitMarker(HiddenUnitMarkerPosition.Right)
                 }
             } else if (tile.militaryUnit != null && !tile.hasEnemyInvisibleUnit(viewingPlayer)) {
                 when {
                     // detect military left from the city
-                    direction.epsilonEquals(0f, 1f) ->
+                    direction.eq(0, 1) ->
                         insertHiddenUnitMarker(HiddenUnitMarkerPosition.Left)
                     // detect military right from the city
-                    direction.epsilonEquals(1f, 0f) ->
+                    direction.eq(1, 0) ->
                         insertHiddenUnitMarker(HiddenUnitMarkerPosition.Right)
                 }
             }

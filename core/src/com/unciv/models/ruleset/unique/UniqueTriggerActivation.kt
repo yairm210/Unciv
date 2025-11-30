@@ -25,6 +25,7 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.tile.TileNormalizer
 import com.unciv.logic.map.toHexCoord
+import com.unciv.logic.map.toVector2
 import com.unciv.models.UpgradeUnitAction
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Event
@@ -291,7 +292,7 @@ object UniqueTriggerActivation {
                             notificationText,
                             sequence {
                                 yield(MapUnitAction(placedUnit))
-                                yieldAll(LocationAction(tile?.position))
+                                yieldAll(LocationAction(tile?.position?.toVector2()))
                             },
                             NotificationCategory.Units,
                             placedUnit.name
@@ -459,7 +460,7 @@ object UniqueTriggerActivation {
                             else notification
                         civInfo.addNotification(
                             notificationText,
-                            LocationAction(randomCity.location, tile?.position),
+                            LocationAction(randomCity.location.toHexCoord(), tile?.position?.toHexCoord()),
                             NotificationCategory.Cities,
                             NotificationIcon.Population
                         )
@@ -509,7 +510,7 @@ object UniqueTriggerActivation {
                         // Notification click for first tech only, supporting multiple adds little value.
                         // Relies on RulesetValidator catching <= 0!
                         val notificationActions: Sequence<NotificationAction> =
-                            LocationAction(tile?.position) + TechAction(techsToResearch.first().name)
+                            LocationAction(tile?.position?.toVector2()) + TechAction(techsToResearch.first().name)
                         civInfo.addNotification(
                             notificationText, notificationActions,
                             NotificationCategory.General, NotificationIcon.Science
@@ -844,8 +845,8 @@ object UniqueTriggerActivation {
                 return {
                     for (explorableTile in explorableTiles) {
                         explorableTile.setExplored(civInfo, true)
-                        civInfo.setLastSeenImprovement(explorableTile.position, explorableTile.improvement)
-                        positions += explorableTile.position
+                        civInfo.setLastSeenImprovement(explorableTile.position.toVector2(), explorableTile.improvement)
+                        positions += explorableTile.position.toVector2()
                     }
 
                     if (notification != null) {

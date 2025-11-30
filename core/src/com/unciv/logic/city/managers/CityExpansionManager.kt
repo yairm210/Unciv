@@ -8,6 +8,8 @@ import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.toHexCoord
+import com.unciv.logic.map.toVector2
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
@@ -32,8 +34,8 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
     @Readonly
     fun tilesClaimed(): Int {
         val tilesAroundCity = city.getCenterTile().neighbors
-                .map { it.position }
-        return city.tiles.count { it != city.location && it !in tilesAroundCity}
+                .map { it.position.toHexCoord() }
+        return city.tiles.count { it.toVector2() != city.location && it.toHexCoord() !in tilesAroundCity}
     }
 
     // This one has conflicting sources -
@@ -140,7 +142,7 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         if (chosenTile != null) {
             cultureStored -= getCultureToNextTile()
             takeOwnership(chosenTile)
-            return chosenTile.position
+            return chosenTile.position.toVector2()
         }
         return null
     }
@@ -151,10 +153,10 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
      * @param tile The tile to relinquish
      */
     fun relinquishOwnership(tile: Tile) {
-        city.tiles = city.tiles.withoutItem(tile.position)
+        city.tiles = city.tiles.withoutItem(tile.position.toVector2())
         for (city in city.civ.cities) {
             if (city.isWorked(tile)) {
-                city.population.stopWorkingTile(tile.position)
+                city.population.stopWorkingTile(tile.position.toVector2())
                 city.population.autoAssignPopulation()
             }
         }
@@ -182,7 +184,7 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         if (tile.getCity() != null)
             tile.getCity()!!.expansion.relinquishOwnership(tile)
 
-        city.tiles = city.tiles.withItem(tile.position)
+        city.tiles = city.tiles.withItem(tile.position.toVector2())
         tile.setOwningCity(city)
         city.population.autoAssignPopulation()
         city.civ.cache.updateOurTiles()

@@ -383,7 +383,7 @@ object HexMath {
 }
 
 @JvmInline
-value class HexCoord(val coords: Int) {
+value class HexCoord(val coords: Int = 0) {
     // x value is stored in the 16 bits, and y value in the bottom 16 bits, allowing range -32768 to 32767
 
     val x: Int
@@ -401,6 +401,8 @@ value class HexCoord(val coords: Int) {
     @Pure fun times(int: Int): HexCoord = HexCoord.of(x * int, y * int)
 
     @Pure fun toVector2(): Vector2 = Vector2(x.toFloat(), y.toFloat())
+
+    @Pure fun eq(x:Int,y:Int): Boolean = this.x == x && this.y == y
     
     // Conversion helpers for 1:1 Vector2 compatibility
     @Pure fun cpy() = this
