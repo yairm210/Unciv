@@ -593,13 +593,13 @@ object NextTurnAutomation {
     
     @Readonly
     fun getMinDistanceBetweenCities(civ1: Civilization, civ2: Civilization): Int {
-        return getClosestCities(civ1, civ2)?.aerialDistance ?: Int.MAX_VALUE
+        return getClosestCitiesToCapital(civ1, civ2)?.aerialDistance ?: Int.MAX_VALUE
     }
 
     data class CityDistance(val city1: City, val city2: City, val aerialDistance: Int)
 
     @Readonly
-    fun getClosestCities(civ1: Civilization, civ2: Civilization): CityDistance? {
+    fun getClosestCitiesToCapital(civ1: Civilization, civ2: Civilization): CityDistance? {
         if (civ1.cities.isEmpty() || civ2.cities.isEmpty())
             return null
         
