@@ -8,6 +8,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.toVector2
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.utils.randomWeighted
@@ -43,8 +44,8 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
 
         for (tile in tileMap.values) {
             if (tile.improvement == Constants.barbarianEncampment
-                    && !existingEncampmentLocations.contains(tile.position)) {
-                encampments.add(Encampment(tile.position))
+                    && !existingEncampmentLocations.contains(tile.position.toVector2())) {
+                encampments.add(Encampment(tile.position.toVector2()))
             }
         }
 
@@ -133,7 +134,7 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
                 tile = viableTiles.random()
 
             tile.setImprovement(Constants.barbarianEncampment)
-            val newCamp = Encampment(tile.position)
+            val newCamp = Encampment(tile.position.toVector2())
             newCamp.gameInfo = gameInfo
             encampments.add(newCamp)
             notifyCivsOfBarbarianEncampment(tile)
@@ -160,7 +161,7 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
         }
             .forEach {
                 it.addNotification("A new barbarian encampment has spawned!", tile.position, NotificationCategory.War, NotificationIcon.War)
-                it.setLastSeenImprovement(tile.position, Constants.barbarianEncampment)
+                it.setLastSeenImprovement(tile.position.toVector2(), Constants.barbarianEncampment)
             }
     }
 }

@@ -30,6 +30,7 @@ import com.unciv.logic.civilization.managers.UnitManager
 import com.unciv.logic.civilization.managers.VictoryManager
 import com.unciv.logic.civilization.transients.CivInfoStatsForNextTurn
 import com.unciv.logic.civilization.transients.CivInfoTransientCache
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.trade.TradeRequest
@@ -962,6 +963,9 @@ class Civilization : IsPartOfGameInfoSerialization {
      *  - Another overload accepts a [Vector2] as shorthand for a [LocationAction] - for several use [LocationAction(positions)][LocationAction.Companion]
      *  @param notificationIcons Zero or more icons to decorate the notification with - see [NotificationIcon]
      */
+    fun addNotification(text: String, location: HexCoord, category: NotificationCategory, vararg notificationIcons: String) =
+        addNotification(text, LocationAction(location.toVector2()), category, *notificationIcons)
+    
     fun addNotification(text: String, location: Vector2, category: NotificationCategory, vararg notificationIcons: String) =
         addNotification(text, LocationAction(location), category, *notificationIcons)
 

@@ -11,15 +11,12 @@ import com.unciv.logic.MultiFilter
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
-import com.unciv.logic.map.HexMath
-import com.unciv.logic.map.MapParameters
-import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.*
 import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.logic.map.mapgenerator.MapResourceSetting
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.UnitTurnManager
 import com.unciv.logic.map.mapunit.movement.UnitMovement
-import com.unciv.logic.map.toHexCoord
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.Terrain
@@ -353,7 +350,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     @Readonly
     fun getShownImprovement(viewingCiv: Civilization?): String? =
         if (viewingCiv == null || viewingCiv.playerType == PlayerType.AI || viewingCiv.isSpectator()) improvement
-        else viewingCiv.getLastSeenImprovement(position)
+        else viewingCiv.getLastSeenImprovement(position.toVector2())
 
     /** Returns true if this tile has fallout or an equivalent terrain feature */
     @Readonly fun hasFalloutEquivalent(): Boolean = terrainFeatures.any { ruleset.terrains[it]!!.hasUnique(UniqueType.NullifyYields)}
@@ -465,7 +462,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     @Readonly
     fun isLocked(): Boolean {
         val workingCity = getWorkingCity()
-        return workingCity != null && workingCity.lockedTiles.contains(position)
+        return workingCity != null && workingCity.lockedTiles.contains(position.toVector2())
     }
     
     @Readonly
@@ -829,7 +826,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         if (owningCity == null && roadOwner != "") {
             if (roadOwnerObject == null && tileMap.hasGameInfo())
                 roadOwnerObject = tileMap.gameInfo.getCivilization(roadOwner)
-            getRoadOwner()!!.neutralRoads.add(this.position)
+            getRoadOwner()!!.neutralRoads.add(this.position.toVector2())
         }
     }
 
@@ -839,7 +836,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         if (city != null) {
             if (roadStatus != RoadStatus.None && roadOwner != "") {
                 // remove previous neutral tile owner
-                getRoadOwner()!!.neutralRoads.remove(this.position)
+                getRoadOwner()!!.neutralRoads.remove(this.position.toVector2())
             }
             roadOwner = city.civ.civName // only when taking control, otherwise last owner
             roadOwnerObject = city.civ
@@ -984,14 +981,14 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         roadIsPillaged = false
         val currentOwner = getOwner()
         if (newRoadStatus == RoadStatus.None && owningCity == null)
-            getRoadOwner()?.neutralRoads?.remove(this.position)
+            getRoadOwner()?.neutralRoads?.remove(this.position.toVector2())
         else if (currentOwner != null && currentOwner != roadOwnerObject) {
             roadOwner = currentOwner.civName
             roadOwnerObject = currentOwner
         } else if (creatingCivInfo != null) {
             roadOwner = creatingCivInfo.civName // neutral tile, use building unit
             roadOwnerObject = creatingCivInfo
-            creatingCivInfo.neutralRoads.add(this.position)
+            creatingCivInfo.neutralRoads.add(this.position.toVector2())
         }
     }
 
@@ -1100,7 +1097,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             }
 
             if (player.playerType == PlayerType.Human)
-                player.exploredRegion.checkTilePosition(position, explorerPosition)
+                player.exploredRegion.checkTilePosition(position.toVector2(), explorerPosition)
         } else {
             exploredBy = exploredBy.withoutItem(player.civName)
         }

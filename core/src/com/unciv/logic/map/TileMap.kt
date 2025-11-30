@@ -160,8 +160,8 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             : this (HexMath.getNumberOfTilesInHexagon(radius)) {
         startingLocations.clear()
         val firstAvailableLandTerrain = MapLandmassGenerator.getInitializationTerrain(ruleset, TerrainType.Land)
-        for (vector in HexMath.getVectorsInDistance(Vector2.Zero, radius, worldWrap))
-            tileList.add(Tile().apply { position = vector; baseTerrain = firstAvailableLandTerrain })
+        for (vector in HexMath.getHexCoordsInDistance(HexCoord.Zero, radius, worldWrap))
+            tileList.add(Tile().apply { position = vector.toVector2(); baseTerrain = firstAvailableLandTerrain })
         setTransients(ruleset)
     }
 
@@ -179,7 +179,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         for (column in -wrapAdjustedWidth / 2 .. (wrapAdjustedWidth-1) / 2)
             for (row in -height / 2 .. (height-1) / 2)
                 tileList.add(Tile().apply {
-                    position = HexMath.getTileCoordsFromColumnRow(column, row)
+                    position = HexMath.getTileCoordsFromColumnRow(column, row).toVector2()
                     baseTerrain = firstAvailableLandTerrain
                 })
 
@@ -282,7 +282,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             for (worldColumnNumber in x until x + rectangle.width.toInt()) {
                 for (worldRowNumber in y until y + rectangle.height.toInt()) {
                     val hexCoords = HexMath.getTileCoordsFromColumnRow(worldColumnNumber, worldRowNumber)
-                    yield(getIfTileExistsOrNull(hexCoords.x.toInt(), hexCoords.y.toInt()))
+                    yield(getIfTileExistsOrNull(hexCoords.x, hexCoords.y))
                 }
             }
         }.filterNotNull()
@@ -707,7 +707,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         usage: StartingLocation.Usage = StartingLocation.Usage.Player
     ): Boolean {
         if (startingLocationsByNation.contains(nationName, tile)) return false
-        startingLocations.add(StartingLocation(tile.position, nationName, usage))
+        startingLocations.add(StartingLocation(tile.position.toVector2(), nationName, usage))
         return startingLocationsByNation.addToMapOfSets(nationName, tile)
     }
 
@@ -715,7 +715,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
      * @return true if the starting position was removed as per [Collection]'s remove */
     fun removeStartingLocation(nationName: String, tile: Tile): Boolean {
         if (!startingLocationsByNation.contains(nationName, tile)) return false
-        startingLocations.remove(StartingLocation(tile.position, nationName))
+        startingLocations.remove(StartingLocation(tile.position.toVector2(), nationName))
         return startingLocationsByNation[nationName]!!.remove(tile)
         // we do not clean up an empty startingLocationsByNation[nationName] set - not worth it
     }
@@ -724,7 +724,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     fun removeStartingLocations(nationName: String) {
         if (startingLocationsByNation[nationName] == null) return
         for (tile in startingLocationsByNation[nationName]!!) {
-            startingLocations.remove(StartingLocation(tile.position, nationName))
+            startingLocations.remove(StartingLocation(tile.position.toVector2(), nationName))
         }
         startingLocationsByNation[nationName]!!.clear()
     }

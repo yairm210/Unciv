@@ -5,6 +5,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.toVector2
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
@@ -214,7 +215,7 @@ object ReligionAutomation {
             for (tile in city.getCenterTile().getTilesInDistance(city.getWorkRange())) {
                 val tileScore = beliefBonusForTile(belief, tile, city)
                 score += tileScore * when {
-                    city.workedTiles.contains(tile.position) -> 1f // worked
+                    city.workedTiles.contains(tile.position.toVector2()) -> 1f // worked
                     tile.getCity() == city -> 0.7f // workable
                     else -> 0.5f // unavailable - for now
                 } * (Random.nextFloat() * 0.05f + 0.975f)

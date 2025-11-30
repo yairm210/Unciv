@@ -11,6 +11,7 @@ import com.unciv.logic.map.MapPathing
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.toVector2
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.utils.Log
 import com.unciv.utils.debug
@@ -244,13 +245,13 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedF
 
         val isCandidateTilePredicate: (Tile) -> Boolean = { it.isLand && MapPathing.isValidRoadPathTile(city.civ, it) }
         val toConnectTile = city.getCenterTile()
-        @LocalState val bfs: BFS = bfsCache[toConnectTile.position] ?: run {
+        @LocalState val bfs: BFS = bfsCache[toConnectTile.position.toVector2()] ?: run {
             val bfs = BFS(toConnectTile, isCandidateTilePredicate)
             bfs.maxSize = HexMath.getNumberOfTilesInHexagon(
                 WorkerAutomationConst.maxBfsReachPadding +
                         tilesOfConnectedCities.minOf { it.aerialDistanceTo(toConnectTile) }
             )
-            bfsCache[toConnectTile.position] = bfs
+            bfsCache[toConnectTile.position.toVector2()] = bfs
             bfs
         }
         val cityTilesToSeek = HashSet(tilesOfConnectedCities)
