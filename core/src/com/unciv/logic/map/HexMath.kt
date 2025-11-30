@@ -2,6 +2,8 @@ package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
+import com.badlogic.gdx.utils.Json
+import com.badlogic.gdx.utils.JsonValue
 import com.unciv.logic.map.tile.Tile
 import yairm210.purity.annotations.Immutable
 import yairm210.purity.annotations.LocalState
@@ -416,6 +418,19 @@ value class HexCoord(val coords: Int) {
     }
 
     override fun toString(): String = "HexCoord(x=${x}, y=${y})"
+
+    /** Ser/deser to be 1:1 with Vector2, to allow us to replace Vector2 in game saves with HexCoord */
+    class Serializer : Json.Serializer<HexCoord> {
+        override fun write(json: Json, coord: HexCoord, knownType: Class<*>?) {
+            json.writeValue(mapOf("x" to coord.x.toFloat(), "y" to coord.y.toFloat()))
+        }
+
+        override fun read(json: Json, jsonData: JsonValue, type: Class<*>?): HexCoord {
+            val x = json.readValue(Float::class.java, jsonData["x"]) ?: 0f
+            val y = json.readValue(Float::class.java, jsonData["y"]) ?: 0f
+            return HexCoord.of(x.toInt(), y.toInt())
+        }
+    }
 }
 
 @Pure fun Vector2.toHexCoord() = HexCoord.of(this.x.toInt(), this.y.toInt())
