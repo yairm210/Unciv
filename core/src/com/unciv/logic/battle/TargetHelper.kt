@@ -5,6 +5,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.movement.PathsToTilesWithinTurn
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.toHexCoord
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import yairm210.purity.annotations.Readonly
@@ -41,7 +42,7 @@ object TargetHelper {
                 if (unit.baseUnit.isMelee()) reachableTile.neighbors
                 else if (unit.baseUnit.movesLikeAirUnits || unit.hasUnique(UniqueType.IndirectFire, checkCivInfoUniques = true))
                     reachableTile.getTilesInDistance(rangeOfAttack)
-                else reachableTile.tileMap.getViewableTiles(reachableTile.position, rangeOfAttack, true).asSequence()
+                else reachableTile.tileMap.getViewableTiles(reachableTile.position.toHexCoord(), rangeOfAttack, true).asSequence()
 
             for (tile in tilesInAttackRange) {
                 when {

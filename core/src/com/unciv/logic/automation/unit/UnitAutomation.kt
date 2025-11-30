@@ -17,6 +17,8 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.toHexCoord
+import com.unciv.logic.map.toVector2
 import com.unciv.models.UpgradeUnitAction
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
@@ -496,8 +498,8 @@ object UnitAutomation {
     private fun tryAdvanceTowardsCloseEnemy(unit: MapUnit): Boolean {
         // this can be sped up if we check each layer separately
         val unitDistanceToTiles = unit.movement.getMovementToTilesAtPosition(
-            unit.getTile().position,
-            unit.getMaxMovement() * CLOSE_ENEMY_TURNS_AWAY_LIMIT
+                unit.getTile().position.toHexCoord(),
+                unit.getMaxMovement() * CLOSE_ENEMY_TURNS_AWAY_LIMIT
         )
         val closeEnemy = TargetHelper.getAttackableEnemies(unit, unitDistanceToTiles, tilesToCheck = unit.getTile().getTilesInDistance(CLOSE_ENEMY_TILES_AWAY_LIMIT).toList())
             .filterNot { unit.baseUnit.isRanged() && it.tileToAttack.isCityCenter() && it.tileToAttack.getCity()!!.health == 1 } // occurs fairly often probably because AI dumb

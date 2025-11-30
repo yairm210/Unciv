@@ -11,6 +11,7 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.ImprovementBuildingProblem
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.toHexCoord
 import com.unciv.models.Counter
 import com.unciv.models.UncivSound
 import com.unciv.models.UnitAction
@@ -427,14 +428,14 @@ object UnitActionsFromUniques {
                     val oldMovement = unit.currentMovement
                     unit.destroy()
                     val newUnit =
-                        civInfo.units.placeUnitNearTile(unitTile.position, unitToTransformTo, unit.id, copiedFrom = unit)
+                        civInfo.units.placeUnitNearTile(unitTile.position.toHexCoord(), unitToTransformTo, unit.id, copiedFrom = unit)
 
                     /** We were UNABLE to place the new unit, which means that the unit failed to upgrade!
                      * The only known cause of this currently is "land units upgrading to water units" which fail to be placed.
                      */
                     if (newUnit == null) {
                         val resurrectedUnit =
-                            civInfo.units.placeUnitNearTile(unitTile.position, unit.baseUnit, unit.id, copiedFrom = unit)!!
+                            civInfo.units.placeUnitNearTile(unitTile.position.toHexCoord(), unit.baseUnit, unit.id, copiedFrom = unit)!!
                         
                     } else { // Managed to upgrade
                         // have to handle movement manually because we killed the old unit

@@ -28,6 +28,7 @@ import com.unciv.logic.github.Github.repoNameToFolderName
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.toVector2
 import com.unciv.models.Religion
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.GlobalUniques
@@ -497,11 +498,11 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         if (tiles.size < 3) {
             for (tile in tiles) {
                 val unitName = tile.militaryUnit!!.name
-                thisPlayer.addNotification("An enemy [$unitName] was spotted $inOrNear our territory", tile.position, NotificationCategory.War, NotificationIcon.War, unitName)
+                thisPlayer.addNotification("An enemy [$unitName] was spotted $inOrNear our territory", tile.position.toVector2(), NotificationCategory.War, NotificationIcon.War, unitName)
             }
         } else {
             val positions = tiles.asSequence().map { it.position }
-            thisPlayer.addNotification("[${tiles.size}] enemy units were spotted $inOrNear our territory", LocationAction(positions), NotificationCategory.War, NotificationIcon.War)
+            thisPlayer.addNotification("[${tiles.size}] enemy units were spotted $inOrNear our territory", LocationAction(positions.map { it.toVector2() }), NotificationCategory.War, NotificationIcon.War)
         }
     }
 
@@ -604,7 +605,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             "[$positionsCount] sources of [$resourceName] revealed, e.g. near [${chosenCity.name}]"
 
         return Notification(text, arrayOf("ResourceIcons/$resourceName"),
-            LocationAction(positions).asIterable(), NotificationCategory.General)
+            LocationAction(positions.map { it.toVector2() }).asIterable(), NotificationCategory.General)
     }
 
     // All cross-game data which needs to be altered (e.g. when removing or changing a name of a building/tech)
