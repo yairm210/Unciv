@@ -1,5 +1,6 @@
 package com.unciv.logic.map.mapunit
 
+import com.unciv.logic.map.toHexCoord
 import com.unciv.models.ruleset.RejectionReasonType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -95,13 +96,13 @@ class UnitUpgradeManager(val unit: MapUnit) {
         unit.destroy(destroyTransportedUnit = false)
         val civ = unit.civ
         val position = unit.currentTile.position
-        val newUnit = civ.units.placeUnitNearTile(position, upgradedUnit, unit.id, copiedFrom = unit)
+        val newUnit = civ.units.placeUnitNearTile(position.toHexCoord(), upgradedUnit, unit.id, copiedFrom = unit)
 
         /** We were UNABLE to place the new unit, which means that the unit failed to upgrade!
          * The only known cause of this currently is "land units upgrading to water units" which fail to be placed.
          */
         if (newUnit == null) {
-            civ.units.placeUnitNearTile(position, unit.baseUnit, copiedFrom = unit)!!
+            civ.units.placeUnitNearTile(position.toHexCoord(), unit.baseUnit, copiedFrom = unit)!!
             return
         }
 

@@ -16,6 +16,7 @@ import com.badlogic.gdx.utils.Array
 import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.UncivGame
+import com.unciv.logic.map.toHexCoord
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSettings.ScreenSize
 import com.unciv.models.metadata.ModCategories
@@ -342,7 +343,7 @@ class AdvancedTab(
             newScreen.minimapWrapper.x = newScreen.stage.width - newScreen.minimapWrapper.width
 
             newScreen.mapHolder.setCenterPosition( // Center on the city
-                currentConfig.centerTile,
+                currentConfig.centerTile.toHexCoord(),
                 immediately = true,
                 selectUnit = true
             )

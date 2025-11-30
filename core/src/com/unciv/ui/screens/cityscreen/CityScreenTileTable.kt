@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.tile.TileDescription
+import com.unciv.logic.map.toVector2
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
@@ -76,7 +77,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen) : Table() {
             if (selectedTile.isLocked()) {
                 val unlockButton = "Unlock".toTextButton()
                 unlockButton.onClick {
-                    city.lockedTiles.remove(selectedTile.position)
+                    city.lockedTiles.remove(selectedTile.position.toVector2())
                     update(selectedTile)
                     cityScreen.update()
                 }
@@ -85,7 +86,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen) : Table() {
             } else {
                 val lockButton = "Lock".toTextButton()
                 lockButton.onClick {
-                    city.lockedTiles.add(selectedTile.position)
+                    city.lockedTiles.add(selectedTile.position.toVector2())
                     update(selectedTile)
                     cityScreen.update()
                 }

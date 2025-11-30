@@ -11,6 +11,7 @@ import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.toHexCoord
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.metadata.Player
@@ -518,7 +519,7 @@ object GameStarter {
     private fun placeStartingUnits(civ: Civilization, startingLocation: Tile, startingUnits: MutableList<String>, ruleset: Ruleset, eraUnitReplacement: String, settlerLikeUnits: Map<String, BaseUnit>) {
         for (unit in startingUnits) {
             val unitToAdd = getEquivalentUnit(civ, unit, ruleset, eraUnitReplacement, settlerLikeUnits)
-            if (unitToAdd != null) civ.units.placeUnitNearTile(startingLocation.position, unitToAdd)
+            if (unitToAdd != null) civ.units.placeUnitNearTile(startingLocation.position.toHexCoord(), unitToAdd)
         }
     }
 
@@ -582,7 +583,7 @@ object GameStarter {
     private fun getFreeTiles(tileMap: TileMap, landTilesInBigEnoughGroup: Map<Tile, Float>, minimumDistanceBetweenStartingLocations: Int): MutableList<Tile> {
         return landTilesInBigEnoughGroup.asSequence()
             .filter {
-                HexMath.getDistanceFromEdge(it.key.position, tileMap.mapParameters) >=
+                HexMath.getDistanceFromEdge(it.key.position.toHexCoord(), tileMap.mapParameters) >=
                     (minimumDistanceBetweenStartingLocations * 2) / 3
             }.sortedBy { it.value }
             .map { it.key }
@@ -607,7 +608,7 @@ object GameStarter {
 
             val distanceToNext = minimumDistanceBetweenStartingLocations /
                 (if (civ.isCityState) 2 else 1) // We allow city states to squeeze in tighter
-            freeTiles.removeAll(tileMap.getTilesInDistance(startingLocation.position, distanceToNext)
+            freeTiles.removeAll(tileMap.getTilesInDistance(startingLocation.position.toHexCoord(), distanceToNext)
                 .toSet())
         }
         return if (startingLocations.size < civsOrderedByAvailableLocations.size) null else startingLocations

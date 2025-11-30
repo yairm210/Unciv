@@ -9,6 +9,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.toHexCoord
 import com.unciv.models.Spy
 import com.unciv.models.SpyAction
 import com.unciv.models.translations.tr
@@ -148,7 +149,7 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
         val label = city.name.toLabel(hideIcons = true)
         label.onClick {
             worldScreen.game.popScreen() // If a detour to this screen (i.e. not directly from worldScreen) is made possible, use resetToWorldScreen instead
-            worldScreen.mapHolder.setCenterPosition(city.location)
+            worldScreen.mapHolder.setCenterPosition(city.location.toHexCoord())
         }
         citySelectionTable.add(label).fill()
         citySelectionTable.add(getSpyIcons(manager.getSpiesInCity(city)))

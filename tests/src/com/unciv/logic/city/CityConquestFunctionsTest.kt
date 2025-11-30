@@ -103,7 +103,7 @@ class CityConquestFunctionsTest {
     @Test
     fun `should plunder more gold with building uniques upon capture`() {
         // given
-        val building = testGame.createBuilding(UniqueType.DoublesGoldFromCapturingCity.text)
+        val building = testGame.createBuilding(UniqueType.GoldFromCapturingCity.text.fillPlaceholders("+100"))
         val city = testGame.addCity(defenderCiv, testGame.getTile(Vector2.X), initialPopulation = 10)
         city.cityConstructions.addBuilding(building.name)
 

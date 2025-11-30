@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.toHexCoord
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.input.KeyboardBinding
@@ -48,7 +49,7 @@ class IdleUnitButton (
                 unitToSelect = idleUnits.elementAt(index)
             }
 
-            tileMapHolder.setCenterPosition(unitToSelect.currentTile.position)
+            tileMapHolder.setCenterPosition(unitToSelect.currentTile.position.toHexCoord())
             unitTable.selectUnit(unitToSelect)
             unitTable.worldScreen.shouldUpdate = true
         }

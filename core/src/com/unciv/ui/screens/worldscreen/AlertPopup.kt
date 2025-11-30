@@ -19,6 +19,7 @@ import com.unciv.logic.civilization.diplomacy.*
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.GameContext
+import com.unciv.logic.map.toHexCoord
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
@@ -362,7 +363,7 @@ class AlertPopup(
 
             if (closestCity != null) {
                 // Attempt to place the unit near their nearest city
-                originalOwner.units.placeUnitNearTile(closestCity.location, unitName)
+                originalOwner.units.placeUnitNearTile(closestCity.location.toHexCoord(), unitName)
             }
 
             if (originalOwner.isCityState) {

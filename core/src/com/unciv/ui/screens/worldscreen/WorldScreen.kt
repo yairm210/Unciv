@@ -15,6 +15,7 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.map.MapVisualization
+import com.unciv.logic.map.toHexCoord
 import com.unciv.logic.multiplayer.MultiplayerGameUpdated
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
@@ -186,9 +187,9 @@ class WorldScreen(
 
         // Don't select unit and change selectedCiv when centering as spectator
         if (viewingCiv.isSpectator())
-            mapHolder.setCenterPosition(tileToCenterOn, immediately = true, selectUnit = false)
+            mapHolder.setCenterPosition(tileToCenterOn.toHexCoord(), immediately = true, selectUnit = false)
         else
-            mapHolder.setCenterPosition(tileToCenterOn, immediately = true, selectUnit = true)
+            mapHolder.setCenterPosition(tileToCenterOn.toHexCoord(), immediately = true, selectUnit = true)
 
         tutorialController.allTutorialsShowedCallback = { shouldUpdate = true }
 
@@ -240,8 +241,8 @@ class WorldScreen(
         }
     }
 
-    fun openEmpireOverview(category: EmpireOverviewCategories? = null) {
-        game.pushScreen(EmpireOverviewScreen(selectedCiv, category))
+    fun openEmpireOverview(category: EmpireOverviewCategories? = null, selection: String = "") {
+        game.pushScreen(EmpireOverviewScreen(selectedCiv, category, selection))
     }
 
     fun openNewGameScreen() {
@@ -274,7 +275,7 @@ class WorldScreen(
         globalShortcuts.add(KeyboardBinding.QuickLoad) { QuickSave.load(this) }
         globalShortcuts.add(KeyboardBinding.ViewCapitalCity) {
             val capital = gameInfo.getCurrentPlayerCivilization().getCapital()
-            if (capital != null && !mapHolder.setCenterPosition(capital.location))
+            if (capital != null && !mapHolder.setCenterPosition(capital.location.toHexCoord()))
                 game.pushScreen(CityScreen(capital))
         }
         globalShortcuts.add(KeyboardBinding.Options) { // Game Options
@@ -678,7 +679,7 @@ class WorldScreen(
         val nextDueUnit = viewingCiv.units.cycleThroughDueUnits(bottomUnitTable.selectedUnit)
         if (nextDueUnit != null) {
             mapHolder.setCenterPosition(
-                nextDueUnit.currentTile.position,
+                nextDueUnit.currentTile.position.toHexCoord(),
                 immediately = false,
                 selectUnit = false
             )

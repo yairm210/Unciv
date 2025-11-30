@@ -1,0 +1,26 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "name": { "type": "string" },
+            "friendBonusUniques": {
+                "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/uniques.json",
+                "description": "List of unique abilities granted to major civilizations when friends with this city state"
+            },
+            "allyBonusUniques": {
+                "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/uniques.json",
+                "description": "List of unique abilities granted to major civilizations when allied to city state"
+            },
+            "color": {
+                "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/color.json",
+                "description": "RGB color of text in civilopedia"
+            }
+        },
+        "required": [
+            "name"
+        ],
+        "additionalProperties": false
+    }
+}

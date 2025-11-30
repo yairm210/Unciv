@@ -2,6 +2,7 @@ package com.unciv.logic.map.mapgenerator
 
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.toHexCoord
 import com.unciv.utils.debug
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -34,7 +35,7 @@ class MapGenerationRandomness {
         lacunarity: Double = 2.0,
         scale: Double = 30.0
     ): Double {
-        val worldCoords = HexMath.hex2WorldCoords(tile.position)
+        val worldCoords = HexMath.hex2WorldCoords(tile.position.toHexCoord())
         return Perlin.noise3d(worldCoords.x.toDouble(), worldCoords.y.toDouble(), seed, nOctaves, persistence, lacunarity, scale)
     }
 

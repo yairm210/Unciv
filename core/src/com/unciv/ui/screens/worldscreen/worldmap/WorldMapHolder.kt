@@ -19,8 +19,7 @@ import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.map.MapPathing
-import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.*
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.movement.UnitMovement
 import com.unciv.logic.map.tile.Tile
@@ -379,7 +378,7 @@ class WorldMapHolder(
 
     internal fun swapMoveUnitToTargetTile(selectedUnit: MapUnit, targetTile: Tile) {
         markUnitMoveTutorialComplete(selectedUnit)
-        selectedUnit.movement.swapMoveToTile(targetTile)
+        selectedUnit.movement.swapMoveToTile(targetTile, keepEscorting = true)
 
         if (selectedUnit.isExploring() || selectedUnit.isMoving())
             selectedUnit.action = null // remove explore on manual swap-move
@@ -590,8 +589,8 @@ class WorldMapHolder(
         }
         for ((from, to) in visibleAttacks) {
             if (selectedUnit != null
-                && selectedUnit.currentTile.position != from
-                && selectedUnit.currentTile.position != to) continue
+                && selectedUnit.currentTile.position.toVector2() != from
+                && selectedUnit.currentTile.position.toVector2() != to) continue
             addArrow(tileMap[from], tileMap[to], MiscArrowTypes.UnitHasAttacked)
         }
     }
@@ -605,8 +604,8 @@ class WorldMapHolder(
      * @param selectUnit Select a unit at the destination
      * @return `true` if scroll position was changed, `false` otherwise
      */
-    fun setCenterPosition(vector: Vector2, immediately: Boolean = false, selectUnit: Boolean = true, forceSelectUnit: MapUnit? = null): Boolean {
-        val tileGroup = tileGroups.values.firstOrNull { it.tile.position == vector } ?: return false
+    fun setCenterPosition(vector: HexCoord, immediately: Boolean = false, selectUnit: Boolean = true, forceSelectUnit: MapUnit? = null): Boolean {
+        val tileGroup = tileGroups.values.firstOrNull { it.tile.position.toHexCoord() == vector } ?: return false
         selectedTile = tileGroup.tile
         if (selectUnit || forceSelectUnit != null)
             worldScreen.bottomUnitTable.tileSelected(selectedTile!!, forceSelectUnit)

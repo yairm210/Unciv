@@ -11,9 +11,7 @@ import com.unciv.logic.MultiFilter
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
-import com.unciv.logic.map.HexMath
-import com.unciv.logic.map.MapParameters
-import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.*
 import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.logic.map.mapgenerator.MapResourceSetting
 import com.unciv.logic.map.mapunit.MapUnit
@@ -177,9 +175,9 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     /** Between -1.0 and 1.0 - For map generation use only */
     var temperature: Double? = null
 
-    val latitude: Float
+    val latitude: Int
         get() = HexMath.getLatitude(position)
-    val longitude: Float
+    val longitude: Int
         get() = HexMath.getLongitude(position)
 
     @Transient
@@ -352,7 +350,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     @Readonly
     fun getShownImprovement(viewingCiv: Civilization?): String? =
         if (viewingCiv == null || viewingCiv.playerType == PlayerType.AI || viewingCiv.isSpectator()) improvement
-        else viewingCiv.getLastSeenImprovement(position)
+        else viewingCiv.getLastSeenImprovement(position.toVector2())
 
     /** Returns true if this tile has fallout or an equivalent terrain feature */
     @Readonly fun hasFalloutEquivalent(): Boolean = terrainFeatures.any { ruleset.terrains[it]!!.hasUnique(UniqueType.NullifyYields)}
@@ -464,7 +462,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     @Readonly
     fun isLocked(): Boolean {
         val workingCity = getWorkingCity()
-        return workingCity != null && workingCity.lockedTiles.contains(position)
+        return workingCity != null && workingCity.lockedTiles.contains(position.toVector2())
     }
     
     @Readonly
@@ -587,10 +585,10 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             resource != null && civInfo.tech.isRevealed(tileResource)
 
 
-    @Readonly fun getViewableTilesList(distance: Int): List<Tile> = tileMap.getViewableTiles(position, distance)
-    @Readonly fun getTilesInDistance(distance: Int): Sequence<Tile> = tileMap.getTilesInDistance(position, distance)
-    @Readonly fun getTilesInDistanceRange(range: IntRange): Sequence<Tile> = tileMap.getTilesInDistanceRange(position, range)
-    @Readonly fun getTilesAtDistance(distance: Int): Sequence<Tile> = tileMap.getTilesAtDistance(position, distance)
+    @Readonly fun getViewableTilesList(distance: Int): List<Tile> = tileMap.getViewableTiles(position.toHexCoord(), distance)
+    @Readonly fun getTilesInDistance(distance: Int): Sequence<Tile> = tileMap.getTilesInDistance(position.toHexCoord(), distance)
+    @Readonly fun getTilesInDistanceRange(range: IntRange): Sequence<Tile> = tileMap.getTilesInDistanceRange(position.toHexCoord(), range)
+    @Readonly fun getTilesAtDistance(distance: Int): Sequence<Tile> = tileMap.getTilesAtDistance(position.toHexCoord(), distance)
 
     @Readonly
     fun getDefensiveBonus(includeImprovementBonus: Boolean = true, unit: MapUnit? = null): Float {
@@ -616,19 +614,22 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
      */
     @Readonly
     fun aerialDistanceTo(otherTile: Tile): Int {
-        val xDelta = position.x - otherTile.position.x
-        val yDelta = position.y - otherTile.position.y
+        val positionHexcoord = position.toHexCoord()
+        val otherPositionHexcoord = otherTile.position.toHexCoord()
+        
+        val xDelta = positionHexcoord.x - otherPositionHexcoord.x
+        val yDelta = positionHexcoord.y - otherPositionHexcoord.y
         val distance = maxOf(abs(xDelta), abs(yDelta), abs(xDelta - yDelta))
 
-        var wrappedDistance = Float.MAX_VALUE
+        var wrappedDistance = Int.MAX_VALUE
         if (tileMap.mapParameters.worldWrap) {
-            val otherTileUnwrappedPos = tileMap.getUnWrappedPosition(otherTile.position)
-            val xDeltaWrapped = position.x - otherTileUnwrappedPos.x
-            val yDeltaWrapped = position.y - otherTileUnwrappedPos.y
+            val otherTileUnwrappedPos = tileMap.getUnwrappedPosition(otherPositionHexcoord)
+            val xDeltaWrapped = positionHexcoord.x - otherTileUnwrappedPos.x
+            val yDeltaWrapped = positionHexcoord.y - otherTileUnwrappedPos.y
             wrappedDistance = maxOf(abs(xDeltaWrapped), abs(yDeltaWrapped), abs(xDeltaWrapped - yDeltaWrapped))
         }
 
-        return min(distance, wrappedDistance).toInt()
+        return min(distance, wrappedDistance)
     }
 
     @Readonly
@@ -825,7 +826,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         if (owningCity == null && roadOwner != "") {
             if (roadOwnerObject == null && tileMap.hasGameInfo())
                 roadOwnerObject = tileMap.gameInfo.getCivilization(roadOwner)
-            getRoadOwner()!!.neutralRoads.add(this.position)
+            getRoadOwner()!!.neutralRoads.add(this.position.toVector2())
         }
     }
 
@@ -835,7 +836,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         if (city != null) {
             if (roadStatus != RoadStatus.None && roadOwner != "") {
                 // remove previous neutral tile owner
-                getRoadOwner()!!.neutralRoads.remove(this.position)
+                getRoadOwner()!!.neutralRoads.remove(this.position.toVector2())
             }
             roadOwner = city.civ.civName // only when taking control, otherwise last owner
             roadOwnerObject = city.civ
@@ -846,7 +847,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         }
         owningCity = city
         stateThisTile = GameContext(tile = this, city = city, gameInfo = tileMap.gameInfo)
-        isCityCenterInternal = getCity()?.location == position
+        isCityCenterInternal = getCity()?.location == position.toVector2()
     }
 
     /**
@@ -980,14 +981,14 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         roadIsPillaged = false
         val currentOwner = getOwner()
         if (newRoadStatus == RoadStatus.None && owningCity == null)
-            getRoadOwner()?.neutralRoads?.remove(this.position)
+            getRoadOwner()?.neutralRoads?.remove(this.position.toVector2())
         else if (currentOwner != null && currentOwner != roadOwnerObject) {
             roadOwner = currentOwner.civName
             roadOwnerObject = currentOwner
         } else if (creatingCivInfo != null) {
             roadOwner = creatingCivInfo.civName // neutral tile, use building unit
             roadOwnerObject = creatingCivInfo
-            creatingCivInfo.neutralRoads.add(this.position)
+            creatingCivInfo.neutralRoads.add(this.position.toVector2())
         }
     }
 
@@ -1096,7 +1097,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             }
 
             if (player.playerType == PlayerType.Human)
-                player.exploredRegion.checkTilePosition(position, explorerPosition)
+                player.exploredRegion.checkTilePosition(position.toVector2(), explorerPosition)
         } else {
             exploredBy = exploredBy.withoutItem(player.civName)
         }

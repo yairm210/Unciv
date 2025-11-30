@@ -9,6 +9,7 @@ import com.unciv.logic.map.MapPathing
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.toVector2
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import yairm210.purity.annotations.Readonly
@@ -61,13 +62,13 @@ class RoadToAutomation(val civInfo: Civilization) {
             }
 
             pathToDest = foundPath // Convert to a list of positions for serialization
-                .map { it.position }
+                .map { it.position.toVector2() }
 
             unit.automatedRoadConnectionPath = pathToDest
             debug("WorkerAutomation: $unit -> found connect road path to destination tile: %s, %s", destinationTile, pathToDest)
         }
 
-        val currTileIndex = pathToDest.indexOf(currentTile.position)
+        val currTileIndex = pathToDest.indexOf(currentTile.position.toVector2())
 
         // The worker was somehow moved off its path, cancel the action
         if (currTileIndex == -1) {
@@ -95,7 +96,7 @@ class RoadToAutomation(val civInfo: Civilization) {
 
                 // Create a new list with tiles where the index is greater than currTileIndex
                 val futureTiles = pathToDest.asSequence()
-                    .dropWhile { it != unit.currentTile.position }
+                    .dropWhile { it != unit.currentTile.position.toVector2() }
                     .drop(1)
                     .map { tileMap[it] }
 

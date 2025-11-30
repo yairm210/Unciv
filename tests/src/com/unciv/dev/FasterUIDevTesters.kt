@@ -39,7 +39,8 @@ internal enum class FasterUIDevTesters : IFasterUITester {
 
             for ((i, civ) in civs.withIndex()) {
                 // civ.isDefeated() is still true, and CS get-relation code runs deep, especially get tribute willingness needs a fully defined capital
-                val pos = HexMath.getClockPositionToHexVector(i * 2).cpy().scl(3f)
+                
+                val pos = HexMath.getClockPositionToHexcoord(i * 2).times(3)
                 game.addCity(civ, game.tileMap[pos])
                 // create random relations
                 for ((j, other) in civs.withIndex()) {

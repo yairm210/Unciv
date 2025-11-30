@@ -5,8 +5,10 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.GUI
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.toHexCoord
 import com.unciv.models.UnitActionType
 import com.unciv.models.UpgradeUnitAction
 import com.unciv.models.translations.tr
@@ -27,13 +29,13 @@ import yairm210.purity.annotations.Readonly
  */
 open class UnitOverviewTabHelpers {
 
-    private fun showWorldScreenAt(position: Vector2, unit: MapUnit?) {
+    private fun showWorldScreenAt(position: HexCoord, unit: MapUnit?) {
         GUI.resetToWorldScreen()
         GUI.getMap().setCenterPosition(position, forceSelectUnit = unit)
     }
 
-    protected fun showWorldScreenAt(unit: MapUnit) = showWorldScreenAt(unit.currentTile.position, unit)
-    protected fun showWorldScreenAt(tile: Tile) = showWorldScreenAt(tile.position, null)
+    protected fun showWorldScreenAt(unit: MapUnit) = showWorldScreenAt(unit.currentTile.position.toHexCoord(), unit)
+    protected fun showWorldScreenAt(tile: Tile) = showWorldScreenAt(tile.position.toHexCoord(), null)
 
     @Readonly
     private fun getWorkerActionText(unit: MapUnit): String? = when {

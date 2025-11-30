@@ -2,9 +2,11 @@ package com.unciv.logic.battle
 
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unit.UnitType
 import yairm210.purity.annotations.Readonly
+
 
 interface ICombatant {
     @Readonly fun getName(): String
@@ -46,4 +48,5 @@ interface ICombatant {
     }
     @Readonly fun isCity(): Boolean = this is CityCombatant
     @Readonly fun isCivilian() = this is MapUnitCombatant && this.unit.isCivilian()
+    fun getNotificationDisplay(leadingTest: String = ""): String = ""
 }

@@ -22,6 +22,7 @@ import com.unciv.logic.civilization.diplomacy.CityStatePersonality
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.toHexCoord
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Quest
 import com.unciv.models.ruleset.QuestName
@@ -996,11 +997,11 @@ class AssignedQuest : IsPartOfGameInfoSerialization {
         when (questNameInstance) {
             QuestName.ClearBarbarianCamp -> {
                 GUI.resetToWorldScreen()
-                GUI.getMap().setCenterPosition(Vector2(data1.toFloat(), data2.toFloat()), selectUnit = false)
+                GUI.getMap().setCenterPosition(Vector2(data1.toFloat(), data2.toFloat()).toHexCoord(), selectUnit = false)
             }
             QuestName.Route -> {
                 GUI.resetToWorldScreen()
-                GUI.getMap().setCenterPosition(assignerCiv.getCapital()!!.location, selectUnit = false)
+                GUI.getMap().setCenterPosition(assignerCiv.getCapital()!!.location.toHexCoord(), selectUnit = false)
             }
             else -> Unit
         }

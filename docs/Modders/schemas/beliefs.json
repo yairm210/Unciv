@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "array",
+  "items": {
+      "type": "object",
+      "properties": {
+          "name": { "type": "string" },
+          "type": {
+              "enum": ["Pantheon", "Founder", "Follower", "Enhancer"]
+          },
+          "uniques": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/uniques.json" },
+          "civilopediaText": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/civilopediaText.json" }
+      },
+      "required": [
+          "name", "type"
+      ],
+      "additionalProperties": false
+  }
+}

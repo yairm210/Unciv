@@ -7,7 +7,10 @@ import com.badlogic.gdx.utils.JsonValue
 import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.City
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.toHexCoord
+import com.unciv.logic.map.toVector2
 import com.unciv.ui.components.MayaCalendar
 import com.unciv.ui.screens.cityscreen.CityScreen
 import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
@@ -37,8 +40,9 @@ interface NotificationAction : IsPartOfGameInfoSerialization {
 
 /** A notification action that shows map places. */
 class LocationAction(private val location: Vector2 = Vector2.Zero) : NotificationAction {
+    constructor(location: HexCoord) : this(location.toVector2())
     override fun execute(worldScreen: WorldScreen) {
-        worldScreen.mapHolder.setCenterPosition(location, selectUnit = false)
+        worldScreen.mapHolder.setCenterPosition(location.toHexCoord(), selectUnit = false)
     }
 
     /**
@@ -57,6 +61,8 @@ class LocationAction(private val location: Vector2 = Vector2.Zero) : Notificatio
             locations.asSequence().map { LocationAction(it) }
         operator fun invoke(vararg locations: Vector2?): Sequence<LocationAction> =
             locations.asSequence().filterNotNull().map { LocationAction(it) }
+        operator fun invoke(first: HexCoord, second: HexCoord): Sequence<LocationAction> =
+            sequenceOf(LocationAction(first), LocationAction(second))
     }
 }
 
@@ -141,12 +147,12 @@ class MapUnitAction(
     private val location: Vector2 = Vector2.Zero,
     private val id: Int = Constants.NO_ID
 ) : NotificationAction {
-    constructor(unit: MapUnit) : this(unit.currentTile.position, unit.id)
+    constructor(unit: MapUnit) : this(unit.currentTile.position.toVector2(), unit.id)
     override fun execute(worldScreen: WorldScreen) {
         val selectUnit = id != Constants.NO_ID  // This is the unspecific "select any unit on that tile", specific works without this being on
         val unit = if (selectUnit) null else
             worldScreen.gameInfo.tileMap[location].getUnits().firstOrNull { it.id == id }
-        worldScreen.mapHolder.setCenterPosition(location, selectUnit = selectUnit, forceSelectUnit = unit)
+        worldScreen.mapHolder.setCenterPosition(location.toHexCoord(), selectUnit = selectUnit, forceSelectUnit = unit)
     }
     companion object {
         // Convenience shortcut as it makes replacing LocationAction calls easier (see above)
@@ -178,7 +184,7 @@ class OverviewAction(
     private val select: String = ""
 ) : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
-        worldScreen.game.pushScreen(EmpireOverviewScreen(worldScreen.selectedCiv, page, select))
+        worldScreen.openEmpireOverview(page, select)
     }
 }
 
@@ -212,7 +218,7 @@ class LinkAction(private val url: String = "") : NotificationAction {
 /** Open [EmpireOverviewScreen] on the [Religion][EmpireOverviewCategories.Religion] tab */
 class ReligionAction(private val religionName: String? = null) : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
-        worldScreen.game.pushScreen(EmpireOverviewScreen(worldScreen.selectedCiv, EmpireOverviewCategories.Religion, religionName.orEmpty()))
+        worldScreen.openEmpireOverview(EmpireOverviewCategories.Religion, religionName.orEmpty())
     }
     companion object {
         fun withLocation(location: Vector2?, religionName: String?): Sequence<NotificationAction> =

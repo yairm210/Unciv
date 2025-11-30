@@ -13,6 +13,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.logic.map.toHexCoord
 import com.unciv.logic.trade.Trade
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
@@ -385,7 +386,7 @@ class DiplomacyScreen(
         val goToOnMapButton = "Go to on map".toTextButton()
         goToOnMapButton.onClick {
             val worldScreen = UncivGame.Current.resetToWorldScreen()
-            worldScreen.mapHolder.setCenterPosition(civilization.getCapital()!!.location, selectUnit = false)
+            worldScreen.mapHolder.setCenterPosition(civilization.getCapital()!!.location.toHexCoord(), selectUnit = false)
         }
         return goToOnMapButton
     }
