@@ -15,6 +15,7 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.Proximity
+import com.unciv.logic.map.toHexCoord
 import com.unciv.models.Spy
 import com.unciv.models.SpyAction
 import com.unciv.models.ruleset.Ruleset
@@ -134,7 +135,7 @@ class CityStateFunctions(val civInfo: Civilization) {
             return
         val giftedUnit = giftableUnits.random()
         val cities = NextTurnAutomation.getForeignCityNearCapital(civInfo.getCapital(), receivingCiv) ?: return
-        val placedUnit = receivingCiv.units.placeUnitNearTile(cities.city.location, giftedUnit)
+        val placedUnit = receivingCiv.units.placeUnitNearTile(cities.city.location.toHexCoord(), giftedUnit)
             ?: return
         val locations = LocationAction(placedUnit.getTile().position, cities.city.location)
         receivingCiv.addNotification( "[${civInfo.civName}] gave us a [${giftedUnit.name}] as a gift!", locations,
@@ -169,7 +170,7 @@ class CityStateFunctions(val civInfo: Civilization) {
             ?: return  // That filter _can_ result in no candidates, if so, quit silently
 
         // placing the unit may fail - in that case stay quiet
-        val placedUnit = receivingCiv.units.placeUnitNearTile(city.location, militaryUnit.name) ?: return
+        val placedUnit = receivingCiv.units.placeUnitNearTile(city.location.toHexCoord(), militaryUnit.name) ?: return
 
         // The unit should have bonuses from Barracks, Alhambra etc as if it was built in the CS capital
         militaryUnit.addConstructionBonuses(placedUnit, civInfo.getCapital()!!.cityConstructions)
@@ -522,7 +523,7 @@ class CityStateFunctions(val civInfo: Civilization) {
                 it.value.isCivilian() && it.value.isBuildable(civInfo)
         }
         if (buildableWorkerLikeUnits.isEmpty()) return  // Bad luck?
-        demandingCiv.units.placeUnitNearTile(civInfo.getCapital()!!.location, buildableWorkerLikeUnits.values.random())
+        demandingCiv.units.placeUnitNearTile(civInfo.getCapital()!!.location.toHexCoord(), buildableWorkerLikeUnits.values.random())
 
         civInfo.getDiplomacyManager(demandingCiv)!!.addInfluence(-50f)
         cityStateBullied(demandingCiv)

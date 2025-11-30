@@ -379,7 +379,7 @@ class WorldMapHolder(
 
     internal fun swapMoveUnitToTargetTile(selectedUnit: MapUnit, targetTile: Tile) {
         markUnitMoveTutorialComplete(selectedUnit)
-        selectedUnit.movement.swapMoveToTile(targetTile)
+        selectedUnit.movement.swapMoveToTile(targetTile, keepEscorting = true)
 
         if (selectedUnit.isExploring() || selectedUnit.isMoving())
             selectedUnit.action = null // remove explore on manual swap-move

@@ -41,6 +41,19 @@ object MayaCalendar {
         Array(23) { next() }
     }
 
+    fun Int.toMayaNumerals(): String = buildString {
+        val digits = ArrayDeque<Int>()
+        var residue = this@toMayaNumerals
+        while (true) {
+            digits.addLast(residue % 20)
+            residue /= 20
+            if (residue == 0) break
+        }
+        while (digits.isNotEmpty()) {
+            append((zero.toCode() + digits.removeLast()).toChar())
+        }
+    }
+
     // Calculation
     private const val daysOn30000101BCE = 36000 + 5040 + 240 + 11
 
