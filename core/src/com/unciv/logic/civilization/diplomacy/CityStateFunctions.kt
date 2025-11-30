@@ -133,18 +133,16 @@ class CityStateFunctions(val civInfo: Civilization) {
         if (giftableUnits.isEmpty()) // For badly defined mods that don't have great people but do have the policy that makes city states grant them
             return
         val giftedUnit = giftableUnits.random()
-        val cities = NextTurnAutomation.getClosestCitiesToCapital(civInfo, receivingCiv) ?: return
-        val placedUnit = receivingCiv.units.placeUnitNearTile(cities.city2.location, giftedUnit)
+        val cities = NextTurnAutomation.getForeignCityNearCapital(civInfo.getCapital(), receivingCiv) ?: return
+        val placedUnit = receivingCiv.units.placeUnitNearTile(cities.city.location, giftedUnit)
             ?: return
-        val locations = LocationAction(placedUnit.getTile().position, cities.city2.location)
+        val locations = LocationAction(placedUnit.getTile().position, cities.city.location)
         receivingCiv.addNotification( "[${civInfo.civName}] gave us a [${giftedUnit.name}] as a gift!", locations,
             NotificationCategory.Units, civInfo.civName, giftedUnit.name)
     }
 
     fun giveMilitaryUnitToPatron(receivingCiv: Civilization) {
-        val cities = NextTurnAutomation.getClosestCitiesToCapital(civInfo, receivingCiv) ?: return
-
-        val city = cities.city2
+        val city = NextTurnAutomation.getForeignCityNearCapital(civInfo.getCapital(), receivingCiv)?.city ?: return
 
         @Readonly
         fun giftableUniqueUnit(): BaseUnit? {
@@ -183,7 +181,7 @@ class CityStateFunctions(val civInfo: Civilization) {
 
         // Point to the gifted unit, then to the other places mentioned in the message
         val unitAction = sequenceOf(MapUnitAction(placedUnit))
-        val notificationActions = unitAction + LocationAction(cities.city2.location, city.location)
+        val notificationActions = unitAction + LocationAction(city.location, city.location)
         receivingCiv.addNotification(
             "[${civInfo.civName}] gave us a [${militaryUnit.name}] as gift near [${city.name}]!",
             notificationActions,

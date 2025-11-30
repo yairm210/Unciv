@@ -590,25 +590,20 @@ object NextTurnAutomation {
         }
         diplomacyManager.removeFlag(demand.violationOccurred)
     }
-    
-    @Readonly
-    fun getMinDistanceBetweenCities(civ1: Civilization, civ2: Civilization): Int {
-        return getClosestCitiesToCapital(civ1, civ2)?.aerialDistance ?: Int.MAX_VALUE
-    }
 
-    data class CityDistance(val city1: City, val city2: City, val aerialDistance: Int)
+    data class CityDistance(val city: City, val aerialDistance: Int)
 
     @Readonly
-    fun getClosestCitiesToCapital(civ1: Civilization, civ2: Civilization): CityDistance? {
-        if (civ1.cities.isEmpty() || civ2.cities.isEmpty())
+    fun getForeignCityNearCapital(capital: City?, foreignCiv: Civilization): CityDistance? {
+        if (capital == null || foreignCiv.cities.isEmpty())
             return null
         
         var minDistance: CityDistance? = null
-        for (civ2city in civ2.cities) { 
+        for (foreignCity in foreignCiv.cities) { 
             val currentDistance =
-                civ2city.getCenterTile().aerialDistanceTo(civ1.getCapital()!!.getCenterTile())
+                foreignCity.getCenterTile().aerialDistanceTo(capital.getCenterTile())
             if (minDistance == null || currentDistance < minDistance.aerialDistance)
-                minDistance = CityDistance(civ1.getCapital()!!, civ2city, currentDistance)
+                minDistance = CityDistance(foreignCity, currentDistance)
         }
         return minDistance
     }
