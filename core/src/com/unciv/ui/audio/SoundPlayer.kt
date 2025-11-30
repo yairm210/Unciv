@@ -9,8 +9,8 @@ import com.unciv.models.UncivSound
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import games.rednblack.miniaudio.MASound
+import games.rednblack.miniaudio.MiniAudio
 import games.rednblack.miniaudio.MiniAudioException
-import games.rednblack.miniaudio.effect.MADelayNode
 import java.io.File
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -152,22 +152,22 @@ object SoundPlayer {
         if (file == null || !file.exists())
             return logAndMarkFailure("Sound ${sound.fileName} not found!")
 
-        val ma = UncivGame.Current.miniAudio
+        return try {
+            storeAndReturn(getSoundForFile(UncivGame.Current.miniAudio, file))
+        } catch (e: Exception) {
+            logAndMarkFailure(e)
+        }
+    }
+
+    private fun getSoundForFile(ma: MiniAudio, file: FileHandle): MASound {
         try {
             // Use Flags.MA_SOUND_FLAG_DECODE: keep decoded in memory?
-            return storeAndReturn(ma.createSound(file.path()))
-        } catch (e: Exception) {
+            return ma.createSound(file.path())
+        } catch (e: MiniAudioException) {
             // TODO follow https://github.com/rednblackgames/gdx-miniaudio/issues/2 - this may become obsolete?
-            if (e is MiniAudioException && file.type() == Files.FileType.Internal && IMediaFinder.isRunFromJar()) {
-                try {
-                    val bytes = file.readBytes()
-                    val newSound = ma.createSound(ma.decodeBytes(bytes, 2))
-                    return storeAndReturn(newSound)
-                } catch (e: Exception) {
-                    return logAndMarkFailure(e)
-                }
-            }
-            return logAndMarkFailure(e)
+            if (file.type() != Files.FileType.Internal || !IMediaFinder.isRunFromJar()) throw e
+            val bytes = file.readBytes()
+            return ma.createSound(ma.decodeBytes(bytes, 2))
         }
     }
 
@@ -199,35 +199,31 @@ object SoundPlayer {
      *
      *  Runs the actual sound player decoupled on the GL thread unlike [SoundPlayer.play], which leaves that responsibility to the caller.
      */
-    fun playRepeated(sound: UncivSound, count: Int = 2, delay: Long = 200) {
+    fun playRepeated(sound: UncivSound, count: Int = 2, interval: Long = 200) {
         if (count <= 1) {
             play(sound)
             return
         }
         val volume = UncivGame.Current.settings.soundEffectsVolume
         if (sound == UncivSound.Silent || volume < 0.01) return
-        val (template, _) = get(sound) ?: return
-        // MiniAudio doesn't rely on GL, so this is just a little postponing
-        Concurrency.runOnGLThread {
-            val ma = UncivGame.Current.miniAudio
-            // Can't modify that instance, or else all normal plays will have the echo
-            val resource = ma.createSound(template.dataSource)
-            val echo = MADelayNode(ma, delay * 0.001f, 0.9f)
-            ma.attachToEngineOutput(echo, 0)
-            echo.attachToThisNode(resource, 0)
-            echo.setOutputBusVolume(0, volume)
-            //TODO won't stop echoing...
-            val stopAt = (resource.length * 1000).toLong() + (count.coerceAtMost(maxEchoes) - 1) * delay
-            Concurrency.run {
-                delay(stopAt)
-                resource.fadeOut(delay * 0.5f)
-                delay(delay)
-                resource.stop()
-                resource.dispose()
-                resource.chainSound(resource)
+        val (firstSound, _) = get(sound) ?: return
+        val file = getFile(sound) ?: return
+        val ma = UncivGame.Current.miniAudio
+        Concurrency.run {
+            val echoes = mutableListOf<MASound>()
+            for (index in 0 until count) {
+                val sound = if (index == 0) firstSound else {
+                    delay(interval)
+                    getSoundForFile(ma, file)
+                }
+                sound.volume = volume * (1f - index * 0.1f)
+                sound.play()
+                if (index > 0) echoes += sound
             }
-            resource.seekTo(0f)
-            resource.play()
+            delay((firstSound.length * 1000).toLong())
+            for (sound in echoes) {
+                sound.dispose()
+            }
         }
     }
 
