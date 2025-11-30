@@ -101,6 +101,7 @@ object SoundPlayer {
     data class GetSoundResult(val resource: MASound, val isFresh: Boolean)
 
     /** Retrieve (if not cached create from resources) a Gdx Sound from an UncivSound
+     *  - Public _only_ to allow UniqueType.PlaySound to test availability before actually playing
      * @param sound The sound to fetch
      * @return `null` if file cannot be found, a [GetSoundResult] otherwise
      */

@@ -150,7 +150,7 @@ object UniqueTriggerActivation {
                 if (civInfo.isAIOrAutoPlaying()) return null
                 val soundName = unique.params[0]
                 if (soundName.isEmpty()) return null
-                var sound = UncivSound(soundName)
+                val sound = UncivSound(soundName)
                 SoundPlayer.get(sound) ?: return null
                 return {
                     SoundPlayer.play(sound)
