@@ -230,14 +230,14 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     /** @return All tiles in a hexagon of radius [distance], including the tile at [origin] and all up to [distance] steps away.
      *  Respects map edges and world wrap. */
     @Readonly
-    fun getTilesInDistance(origin: Vector2, distance: Int): Sequence<Tile> =
+    fun getTilesInDistance(origin: HexCoord, distance: Int): Sequence<Tile> =
             getTilesInDistanceRange(origin, 0..distance)
 
     /** @return All tiles in a hexagonal ring around [origin] with the distances in [range]. Excludes the [origin] tile unless [range] starts at 0.
      *  Respects map edges and world wrap. */
     @Readonly
-    fun getTilesInDistanceRange(origin: Vector2, range: IntRange): Sequence<Tile> =
-            range.asSequence().flatMap { getTilesAtDistance(origin.toHexCoord(), it) }
+    fun getTilesInDistanceRange(origin: HexCoord, range: IntRange): Sequence<Tile> =
+            range.asSequence().flatMap { getTilesAtDistance(origin, it) }
 
     /** @return All tiles in a hexagonal ring 1 tile wide around [origin] with the [distance]. Contains the [origin] if and only if [distance] is <= 0.
      *  Respects map edges and world wrap. */
