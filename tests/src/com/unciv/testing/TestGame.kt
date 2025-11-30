@@ -12,6 +12,7 @@ import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.toVector2
 import com.unciv.models.Religion
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSettings
@@ -198,7 +199,7 @@ class TestGame(vararg addGlobalUniques: String, forUITesting: Boolean = false) {
         replacePalace: Boolean = false,
         initialPopulation: Int = 1
     ): City {
-        val city = CityFounder().foundCity(civInfo, tile.position)
+        val city = CityFounder().foundCity(civInfo, tile.position.toVector2())
         city.population.addPopulation(initialPopulation - 1)
 
         if (replacePalace && civInfo.cities.size == 1) {
@@ -211,7 +212,7 @@ class TestGame(vararg addGlobalUniques: String, forUITesting: Boolean = false) {
     }
 
     fun addTileToCity(city: City, tile: Tile) {
-        city.tiles.add(tile.position)
+        city.tiles.add(tile.position.toVector2())
     }
 
     fun addUnit(name: String, civInfo: Civilization, tile: Tile?): MapUnit {

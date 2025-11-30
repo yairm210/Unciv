@@ -6,6 +6,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.TurnManager
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.toVector2
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert.assertEquals
@@ -131,7 +132,7 @@ class BattleDamageTest {
     @Test
     fun `should retrieve defence terrain modifiers`() {
         // given
-        testGame.setTileFeatures(defaultDefenderTile.position, Constants.hill)
+        testGame.setTileFeatures(defaultDefenderTile.position.toVector2(), Constants.hill)
 
         // when
         val defenceModifiers = BattleDamage.getDefenceModifiers(MapUnitCombatant(defaultAttackerUnit), MapUnitCombatant(defaultDefenderUnit), defaultAttackerTile)
@@ -145,7 +146,7 @@ class BattleDamageTest {
     fun `should not retrieve defence terrain modifiers when unit doesn't get them`() {
         // given
         val defenderTile = testGame.getTile(Vector2.Zero)
-        testGame.setTileFeatures(defenderTile.position, Constants.hill)
+        testGame.setTileFeatures(defenderTile.position.toVector2(), Constants.hill)
         val defenderUnit = testGame.addDefaultMeleeUnitWithUniques(defenderCiv, defenderTile, "No defensive terrain bonus")
 
         // when

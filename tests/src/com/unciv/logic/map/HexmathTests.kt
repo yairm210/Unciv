@@ -69,7 +69,7 @@ class HexmathTests {
         
         for (x in -2..2)
             for (y in -2..2){
-                val hexCoord = HexCoord.of(x, y)
+                val hexCoord = SerializableHexCoord(x, y)
                 val vector2 = Vector2(x.toFloat(), y.toFloat())
                 
                 // hexcoord -> json -> vector2
@@ -79,7 +79,7 @@ class HexmathTests {
                 
                 // vector2 -> json -> hexcoord
                 val vector2Serialized = json.toJson(vector2)
-                val hexCoordDeserialized = json.fromJson(HexCoord::class.java, vector2Serialized)
+                val hexCoordDeserialized = json.fromJson(SerializableHexCoord::class.java, vector2Serialized)
                 Assert.assertEquals(hexCoord, hexCoordDeserialized)
             }
     }

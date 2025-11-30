@@ -34,7 +34,7 @@ class FreshWaterTests {
     fun isAdjacentToFreshWater() {
         for (tile in map.values) {
             val isFresh = tile.isAdjacentTo(Constants.freshWater)
-            val shouldFresh = tile.position in adjacentToFreshWater
+            val shouldFresh = tile.position.toVector2() in adjacentToFreshWater
             Assert.assertFalse("Tile $tile has fresh water but should not", isFresh && !shouldFresh)
             Assert.assertFalse("Tile $tile should have fresh water but doesn't", !isFresh && shouldFresh)
         }

@@ -3,6 +3,7 @@ package com.unciv.logic.city.managers
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.toVector2
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert.assertEquals
@@ -144,7 +145,7 @@ class CityFounderTest {
         city.cityStats.update()
 
         // then
-        assertFalse(city.workedTiles.contains(city.getCenterTile().position)) // no pop required
+        assertFalse(city.workedTiles.contains(city.getCenterTile().position.toVector2())) // no pop required
         assertEquals(2.0f, city.cityStats.statsFromTiles.production)
     }
 

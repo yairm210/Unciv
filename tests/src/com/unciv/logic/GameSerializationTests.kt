@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapSize
+import com.unciv.logic.map.toVector2
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSetupInfo
@@ -74,7 +75,7 @@ class GameSerializationTests {
         val civ = game.getCurrentPlayerCivilization()
         val unit = civ.units.getCivUnits().first { it.hasUnique(UniqueType.FoundCity) }
         val tile = unit.getTile()
-        unit.civ.addCity(tile.position)
+        unit.civ.addCity(tile.position.toVector2())
         if (tile.ruleset.tileImprovements.containsKey(Constants.cityCenter))
             tile.setImprovement(Constants.cityCenter)
         unit.destroy()

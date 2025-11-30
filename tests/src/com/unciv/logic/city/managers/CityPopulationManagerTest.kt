@@ -5,6 +5,7 @@ import com.unciv.Constants
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityFocus
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.toVector2
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert.assertEquals
@@ -205,7 +206,7 @@ class CityPopulationManagerTest {
         val goodTile = testGame.setTileTerrain(Vector2.X, Constants.grassland)
         goodTile.improvement = "Farm"
 
-        assertFalse(city.workedTiles.contains(goodTile.position))
+        assertFalse(city.workedTiles.contains(goodTile.position.toVector2()))
 
         city.population.foodStored = 14
 
@@ -214,7 +215,7 @@ class CityPopulationManagerTest {
 
         // then
         assertEquals(2, city.population.population)
-        assertTrue(city.workedTiles.contains(goodTile.position))
+        assertTrue(city.workedTiles.contains(goodTile.position.toVector2()))
     }
 
     @Test
@@ -226,12 +227,12 @@ class CityPopulationManagerTest {
         city.lockedTiles.add(Vector2(-1f, 0f)) // force the first pop to work on a specific tile to avoid being reassigned
         val goodFoodTile = testGame.setTileTerrain(Vector2.X, Constants.grassland)
         goodFoodTile.improvement = "Farm"
-        assertFalse(city.workedTiles.contains(goodFoodTile.position))
+        assertFalse(city.workedTiles.contains(goodFoodTile.position.toVector2()))
 
         val goodGoldTile = testGame.setTileTerrain(Vector2.Y, Constants.grassland)
         val goldImprovement = testGame.createTileImprovement("[+5 Gold]")
         goodGoldTile.improvement = goldImprovement.name
-        assertFalse(city.workedTiles.contains(goodGoldTile.position))
+        assertFalse(city.workedTiles.contains(goodGoldTile.position.toVector2()))
 
         city.population.foodStored = 14
 
@@ -240,8 +241,8 @@ class CityPopulationManagerTest {
 
         // then
         assertEquals(2, city.population.population)
-        assertTrue(city.workedTiles.contains(goodGoldTile.position))
-        assertFalse(city.workedTiles.contains(goodFoodTile.position))
+        assertTrue(city.workedTiles.contains(goodGoldTile.position.toVector2()))
+        assertFalse(city.workedTiles.contains(goodFoodTile.position.toVector2()))
     }
 
     @Test
