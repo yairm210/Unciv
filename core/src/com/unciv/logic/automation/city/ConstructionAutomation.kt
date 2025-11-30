@@ -324,7 +324,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         var warModifier = if (isAtWar) 1f else .5f
         // If this city is the closest city to another civ, that makes it a likely candidate for attack
         if (civInfo.getKnownCivs()
-                    .mapNotNull { NextTurnAutomation.getClosestCities(it, civInfo) }
+                    .mapNotNull { NextTurnAutomation.getClosestCitiesToCapital(it, civInfo) }
                     .any { it.city2 == city })
             warModifier *= 2f
         value += warModifier * building.cityHealth.toFloat() / city.getMaxHealth() * personality.inverseModifierFocus(PersonalityValue.Aggressive, .3f)
