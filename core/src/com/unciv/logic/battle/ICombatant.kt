@@ -48,5 +48,6 @@ interface ICombatant {
     }
     @Readonly fun isCity(): Boolean = this is CityCombatant
     @Readonly fun isCivilian() = this is MapUnitCombatant && this.unit.isCivilian()
-    fun getNotificationDisplay(leadingTest: String = ""): String = ""
+
+    fun getNotificationDisplay(leadingText: String = ""): String = ""
 }
