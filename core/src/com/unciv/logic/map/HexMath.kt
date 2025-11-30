@@ -403,8 +403,8 @@ value class HexCoord(val coords: Int) {
     @Pure fun toVector2(): Vector2 = Vector2(x.toFloat(), y.toFloat())
     
     // Conversion helpers for 1:1 Vector2 compatibility
-    fun cpy() = this
-    fun toHexCoord() = this
+    @Pure fun cpy() = this
+    @Pure fun toHexCoord() = this
 
     companion object {
         val Zero = HexCoord.of(0,0)
