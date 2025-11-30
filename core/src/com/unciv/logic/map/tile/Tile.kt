@@ -588,7 +588,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             resource != null && civInfo.tech.isRevealed(tileResource)
 
 
-    @Readonly fun getViewableTilesList(distance: Int): List<Tile> = tileMap.getViewableTiles(position, distance)
+    @Readonly fun getViewableTilesList(distance: Int): List<Tile> = tileMap.getViewableTiles(position.toHexCoord(), distance)
     @Readonly fun getTilesInDistance(distance: Int): Sequence<Tile> = tileMap.getTilesInDistance(position.toHexCoord(), distance)
     @Readonly fun getTilesInDistanceRange(range: IntRange): Sequence<Tile> = tileMap.getTilesInDistanceRange(position.toHexCoord(), range)
     @Readonly fun getTilesAtDistance(distance: Int): Sequence<Tile> = tileMap.getTilesAtDistance(position.toHexCoord(), distance)

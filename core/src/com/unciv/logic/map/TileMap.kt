@@ -18,7 +18,6 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.utils.addToMapOfSets
 import com.unciv.utils.contains
-import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.abs
@@ -400,7 +399,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
 
     /** @return List of tiles visible from location [position] for a unit with sight range [sightDistance] */
     @Readonly
-    fun getViewableTiles(position: Vector2, sightDistance: Int, forAttack: Boolean = false): List<Tile> {
+    fun getViewableTiles(position: HexCoord, sightDistance: Int, forAttack: Boolean = false): List<Tile> {
         val aUnitHeight = get(position).unitHeight
         val viewableTiles = mutableListOf(ViewableTile(
             get(position),
@@ -414,7 +413,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             // that is to say, the "viewableTiles.contains(it) check will return false for neighbors from the same distance
             val tilesToAddInDistanceI = ArrayList<ViewableTile>()
 
-            for (cTile in getTilesAtDistance(position.toHexCoord(), i)) { // for each tile in that layer,
+            for (cTile in getTilesAtDistance(position, i)) { // for each tile in that layer,
                 val cTileHeight = cTile.tileHeight
 
                 // For the sightdistance+1 layer - that's "one out of sight" - it's only visible if it's higher than the current tile
