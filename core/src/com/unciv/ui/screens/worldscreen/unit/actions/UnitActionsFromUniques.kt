@@ -12,6 +12,7 @@ import com.unciv.logic.map.tile.ImprovementBuildingProblem
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.toHexCoord
+import com.unciv.logic.map.toVector2
 import com.unciv.models.Counter
 import com.unciv.models.UncivSound
 import com.unciv.models.UnitAction
@@ -65,7 +66,7 @@ object UnitActionsFromUniques {
                 UncivGame.Current.settings.addCompletedTutorialTask(
                     unique.text)
             // Get the city to be able to change it into puppet, for modding.
-            val city = unit.civ.addCity(tile.position, unit)
+            val city = unit.civ.addCity(tile.position.toVector2(), unit)
 
             if (hasActionModifiers) UnitActionModifiers.activateSideEffects(unit, unique)
             else unit.destroy()

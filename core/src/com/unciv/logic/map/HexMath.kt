@@ -118,7 +118,7 @@ object HexMath {
      * @see [com.unciv.logic.map.TileMap.getUnwrappedPosition]
      */
     @Readonly
-    fun getUnwrappedNearestTo(unwrapHexCoord: Vector2, staticHexCoord: Vector2, longitudinalRadius: Int): Vector2 {
+    fun getUnwrappedNearestTo(unwrapHexCoord: HexCoord, staticHexCoord: HexCoord, longitudinalRadius: Int): Vector2 {
         val referenceLong = getLongitude(staticHexCoord)
         val toWrapLat = getLatitude(unwrapHexCoord) // Working in Cartesian space is easier.
         val toWrapLong = getLongitude(unwrapHexCoord)
@@ -127,7 +127,7 @@ object HexMath {
     }
 
     @Readonly
-    fun hex2WorldCoords(hexCoord: Vector2): Vector2 {
+    fun hex2WorldCoords(hexCoord: HexCoord): Vector2 {
         // Distance between cells = 2* normal of triangle = 2* (sqrt(3)/2) = sqrt(3)
         val xVector = getVectorByClockHour(10)
         xVector.scl(sqrt(3.0).toFloat() * hexCoord.x)
@@ -298,12 +298,12 @@ object HexMath {
     // of the 6 clock directions for border and road drawing in TileGroup
     @Immutable
     private val clockPositionToWorldVectorMap: Map<Int,Vector2> = mapOf(
-        2 to hex2WorldCoords(Vector2(0f, -1f)),
-        4 to hex2WorldCoords(Vector2(1f, 0f)),
-        6 to hex2WorldCoords(Vector2(1f, 1f)),
-        8 to hex2WorldCoords(Vector2(0f, 1f)),
-        10 to hex2WorldCoords(Vector2(-1f, 0f)),
-        12 to hex2WorldCoords(Vector2(-1f, -1f)) )
+        2 to hex2WorldCoords(HexCoord.of(0, -1)),
+        4 to hex2WorldCoords(HexCoord.of(1, 0)),
+        6 to hex2WorldCoords(HexCoord.of(1, 1)),
+        8 to hex2WorldCoords(HexCoord.of(0, 1)),
+        10 to hex2WorldCoords(HexCoord.of(-1, 0)),
+        12 to hex2WorldCoords(HexCoord.of(-1, -1)) )
 
     /** Returns the world/screen-space distance corresponding to [clockPosition], or a zero vector if [clockPosition] is invalid */
     @Pure
@@ -417,6 +417,7 @@ value class HexCoord(val coords: Int) {
     }
 
     override fun toString(): String = "HexCoord(x=${x}, y=${y})"
+    fun toPrettyString(): String = "($x,$y)"
 
     /** Ser/deser to be 1:1 with Vector2, to allow us to replace Vector2 in game saves with HexCoord */
     class Serializer : Json.Serializer<HexCoord> {

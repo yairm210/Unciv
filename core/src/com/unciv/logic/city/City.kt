@@ -18,6 +18,7 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.UnitPromotions
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.toVector2
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.TileResource
@@ -188,7 +189,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     @Readonly fun getTiles(): Sequence<Tile> = tiles.asSequence().map { tileMap[it] }
     @Readonly fun getWorkableTiles() = tilesInRange.asSequence().filter { it.getOwner() == civ }
     @Readonly fun getWorkedTiles(): Sequence<Tile> = workedTiles.asSequence().map { tileMap[it] }
-    @Readonly fun isWorked(tile: Tile) = workedTiles.contains(tile.position)
+    @Readonly fun isWorked(tile: Tile) = workedTiles.contains(tile.position.toVector2())
 
     @Readonly fun isCapital(): Boolean = cityConstructions.builtBuildingUniqueMap.hasUnique(UniqueType.IndicatesCapital, state)
     @Readonly fun isCoastal(): Boolean = centerTile.isCoastalTile()

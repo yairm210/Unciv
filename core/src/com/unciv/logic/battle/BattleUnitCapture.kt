@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.PopupAlert
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.toHexCoord
@@ -206,11 +207,11 @@ object BattleUnitCapture {
      *          Returns `null` if there is no Worker replacement for a Settler in the ruleset or placeUnitNearTile couldn't place it.
      *  @see MapUnit.capturedBy
      */
-    fun captureOrConvertToWorker(capturedUnit: MapUnit, capturingCiv: Civilization): Vector2? {
+    fun captureOrConvertToWorker(capturedUnit: MapUnit, capturingCiv: Civilization): HexCoord? {
         // Captured settlers are converted to workers unless captured by barbarians (so they can be returned later).
         if (!capturedUnit.hasUnique(UniqueType.FoundCity, GameContext.IgnoreConditionals) || capturingCiv.isBarbarian) {
             capturedUnit.capturedBy(capturingCiv)
-            return capturedUnit.currentTile.position // if capturedBy has moved the unit, this is updated
+            return capturedUnit.currentTile.position.toHexCoord() // if capturedBy has moved the unit, this is updated
         }
 
         capturedUnit.destroy()
@@ -224,7 +225,7 @@ object BattleUnitCapture {
             .any { unique -> unique.params[0] == "Land" } }
             ?: return null
         return capturingCiv.units.placeUnitNearTile(capturedUnit.currentTile.position.toHexCoord(), workerTypeUnit, capturedUnit.id)
-            ?.currentTile?.position
+            ?.currentTile?.position?.toHexCoord()
     }
 
 }

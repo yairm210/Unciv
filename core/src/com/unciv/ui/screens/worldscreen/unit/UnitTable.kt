@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.city.City
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.toHexCoord
 import com.unciv.models.Spy
 import com.unciv.ui.components.extensions.addRoundCloseButton
 import com.unciv.ui.components.extensions.addSeparator
@@ -127,7 +128,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
             onClick {
                 presenter.position?.let {
                     worldScreen.mapHolder.setCenterPosition(
-                        it,
+                        it.toHexCoord(),
                         immediately = false,
                         selectUnit = false
                     )

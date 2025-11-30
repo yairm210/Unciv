@@ -65,10 +65,10 @@ class TileGroupMap<T: TileGroup>(
         for (tileGroup in tileGroups) {
             val positionalVector = if (tileGroupsToUnwrap?.contains(tileGroup) == true) {
                 HexMath.hex2WorldCoords(
-                    tileGroup.tile.tileMap.getUnwrappedPosition(tileGroup.tile.position.toHexCoord()).toVector2()
+                    tileGroup.tile.tileMap.getUnwrappedPosition(tileGroup.tile.position.toHexCoord())
                 )
             } else {
-                HexMath.hex2WorldCoords(tileGroup.tile.position)
+                HexMath.hex2WorldCoords(tileGroup.tile.position.toHexCoord())
             }
 
             tileGroup.setPosition(

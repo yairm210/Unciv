@@ -14,6 +14,7 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.PromoteUnitAction
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.toVector2
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
@@ -112,12 +113,12 @@ object Battle {
         debug("%s %s attacked %s %s", attacker.getCivInfo().civName, attacker.getName(), defender.getCivInfo().civName, defender.getName())
         val attackedTile = defender.getTile()
         if (attacker is MapUnitCombatant) {
-            attacker.unit.attacksSinceTurnStart.add(Vector2(attackedTile.position))
+            attacker.unit.attacksSinceTurnStart.add(Vector2(attackedTile.position.toVector2()))
         } else {
             attacker.getCivInfo().attacksSinceTurnStart.add(Civilization.HistoricalAttackMemory(
                 null,
-                Vector2(attacker.getTile().position),
-                Vector2(attackedTile.position)
+                Vector2(attacker.getTile().position.toVector2()),
+                Vector2(attackedTile.position.toVector2())
             ))
         }
 
@@ -143,7 +144,7 @@ object Battle {
             postBattleNotifications(attacker, defender, attackedTile, attacker.getTile(), damageDealt)
 
         if (defender.getCivInfo().isBarbarian && attackedTile.improvement == Constants.barbarianEncampment)
-            defender.getCivInfo().gameInfo.barbarians.campAttacked(attackedTile.position)
+            defender.getCivInfo().gameInfo.barbarians.campAttacked(attackedTile.position.toVector2())
 
         // This needs to come BEFORE the move-to-tile, because if we haven't conquered it we can't move there =)
         handleCityDefeated(defender, attacker)
@@ -233,7 +234,7 @@ object Battle {
                 defender.city.destroyCity()
 
                 if (defendingCiv.cities.isEmpty()) {
-                    destroyIfDefeated(defendingCiv, attacker.getCivInfo(), defender.getTile().position)
+                    destroyIfDefeated(defendingCiv, attacker.getCivInfo(), defender.getTile().position.toVector2())
                 }
 
                 return // stop further logic because city was destroyed
@@ -510,14 +511,15 @@ object Battle {
                 if (defender.isCity())
                     if (defender.isDefeated() && attacker.isRanged()) " the defence of [" + defender.getName() + "]"
                     else " [" + defender.getName() + "]"
-                else "${defender.getNotificationDisplay("our ")}"
+                else defender.getNotificationDisplay("our ")
 
         val attackerHurtString = if (damageDealt != null && damageDealt.defenderDealt != 0) " ([-${damageDealt.defenderDealt}] HP)" else ""
         val defenderHurtString = if (damageDealt != null) " ([-${damageDealt.attackerDealt}] HP)" else ""
         val notificationString = "$attackerString$attackerHurtString $battleActionString $defenderString$defenderHurtString"
         val attackerIcon = if (attacker is CityCombatant) NotificationIcon.City else attacker.getName()
         val defenderIcon = if (defender is CityCombatant) NotificationIcon.City else defender.getName()
-        val locations = LocationAction(attackedTile.position, attackerTile?.position)
+        
+        val locations = LocationAction(attackedTile.position.toVector2(), attackerTile?.position?.toVector2())
         defender.getCivInfo().addNotification(notificationString, locations, NotificationCategory.War, attackerIcon, battleActionIcon, defenderIcon)
     }
 
@@ -618,7 +620,7 @@ object Battle {
         if (!thisCombatant.isDefeated() && !unitCouldAlreadyPromote && promotions.canBePromoted()) {
             val pos = thisCombatant.getTile().position
             civ.addNotification("[${thisCombatant.unit.displayName()}] can be promoted!",
-                listOf(MapUnitAction(pos), PromoteUnitAction(thisCombatant.getName(), pos)),
+                listOf(MapUnitAction(pos.toVector2()), PromoteUnitAction(thisCombatant.getName(), pos.toVector2())),
                 NotificationCategory.Units, thisCombatant.unit.name)
         }
     }

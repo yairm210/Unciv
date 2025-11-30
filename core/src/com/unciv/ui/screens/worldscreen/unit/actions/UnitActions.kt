@@ -6,6 +6,7 @@ import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.toHexCoord
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.UniqueType
@@ -162,7 +163,7 @@ object UnitActions {
         // From here we have actions defaulting to the second page
         if (unit.isMoving()) {
             yield(UnitAction(UnitActionType.ShowUnitDestination, 30f) {
-                GUI.getMap().setCenterPosition(unit.getMovementDestination().position, true)
+                GUI.getMap().setCenterPosition(unit.getMovementDestination().position.toHexCoord(), true)
             })
         }
         addEscortAction(unit)

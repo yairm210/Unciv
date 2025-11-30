@@ -1,9 +1,6 @@
 package com.unciv.logic.map.mapgenerator
 
-import com.unciv.logic.map.HexMath
-import com.unciv.logic.map.MapShape
-import com.unciv.logic.map.MapType
-import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.*
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TerrainType
@@ -439,7 +436,7 @@ class MapLandmassGenerator(
                                      persistence: Double = 0.5,
                                      lacunarity: Double = 2.0,
                                      scale: Double = 10.0): Double {
-        val worldCoords = HexMath.hex2WorldCoords(tile.position)
+        val worldCoords = HexMath.hex2WorldCoords(tile.position.toHexCoord())
         return Perlin.ridgedNoise3d(worldCoords.x.toDouble(), worldCoords.y.toDouble(), seed, nOctaves, persistence, lacunarity, scale)
     }
     

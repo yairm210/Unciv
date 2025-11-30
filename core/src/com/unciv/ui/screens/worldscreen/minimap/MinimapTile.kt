@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.tile.TileHistory.TileHistoryState.CityCenterType
+import com.unciv.logic.map.toHexCoord
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.IconCircleGroup
@@ -25,7 +26,7 @@ class MinimapTile(val tile: Tile, tileSize: Float, val onClick: () -> Unit) {
     val isUnrevealed get() = !image.isVisible
 
     init {
-        val positionalVector = HexMath.hex2WorldCoords(tile.position)
+        val positionalVector = HexMath.hex2WorldCoords(tile.position.toHexCoord())
 
         image.isVisible = false
         image.setSize(tileSize, tileSize)
