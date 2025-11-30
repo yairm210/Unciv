@@ -8,6 +8,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.toHexCoord
 import com.unciv.logic.map.toVector2
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -245,7 +246,7 @@ class Encampment() : IsPartOfGameInfoSerialization {
     private fun spawnUnit(naval: Boolean): Boolean {
         updateBarbarianTech()
         val unitToSpawn = chooseBarbarianUnit(naval) ?: return false // return false if we didn't find a unit
-        val spawnedUnit = gameInfo.tileMap.placeUnitNearTile(position, unitToSpawn, gameInfo.getBarbarianCivilization())
+        val spawnedUnit = gameInfo.tileMap.placeUnitNearTile(position.toHexCoord(), unitToSpawn, gameInfo.getBarbarianCivilization())
         return (spawnedUnit != null)
     }
     

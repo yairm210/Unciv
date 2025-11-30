@@ -24,6 +24,7 @@ import com.unciv.logic.map.mapgenerator.RiverGenerator
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.tile.TileNormalizer
+import com.unciv.logic.map.toHexCoord
 import com.unciv.models.UpgradeUnitAction
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Event
@@ -150,7 +151,7 @@ object UniqueTriggerActivation {
                 if (civInfo.isAIOrAutoPlaying()) return null
                 val soundName = unique.params[0]
                 if (soundName.isEmpty()) return null
-                var sound = UncivSound(soundName)
+                val sound = UncivSound(soundName)
                 SoundPlayer.get(sound) ?: return null
                 return {
                     SoundPlayer.play(sound)
@@ -186,10 +187,10 @@ object UniqueTriggerActivation {
                         relevantCity != null || (tile == null && civInfo.cities.isNotEmpty()) ->
                             civInfo.units.addUnit(civUnit, chosenCity) ?: return false
                         // Else set the unit at the given tile
-                        tile != null -> civInfo.units.placeUnitNearTile(tile.position, civUnit) ?: return false
+                        tile != null -> civInfo.units.placeUnitNearTile(tile.position.toHexCoord(), civUnit) ?: return false
                         // Else set unit unit near other units if we have no cities
                         civInfo.units.getCivUnits().any() ->
-                            civInfo.units.placeUnitNearTile(civInfo.units.getCivUnits().first().currentTile.position, civUnit) ?: return false
+                            civInfo.units.placeUnitNearTile(civInfo.units.getCivUnits().first().currentTile.position.toHexCoord(), civUnit) ?: return false
 
                         else -> return false
                     }
@@ -236,10 +237,10 @@ object UniqueTriggerActivation {
                             relevantCity != null || (tile == null && civInfo.cities.isNotEmpty()) ->
                                 civInfo.units.addUnit(civUnit, chosenCity)
                             // Else set the unit at the given tile
-                            tile != null -> civInfo.units.placeUnitNearTile(tile.position, civUnit)
+                            tile != null -> civInfo.units.placeUnitNearTile(tile.position.toHexCoord(), civUnit)
                             // Else set new unit near other units if we have no cities
                             civInfo.units.getCivUnits().any() ->
-                                civInfo.units.placeUnitNearTile(civInfo.units.getCivUnits().first().currentTile.position, civUnit)
+                                civInfo.units.placeUnitNearTile(civInfo.units.getCivUnits().first().currentTile.position.toHexCoord(), civUnit)
 
                             else -> null
                         }
@@ -280,7 +281,7 @@ object UniqueTriggerActivation {
                     tile ?: civInfo.cities.random().getCenterTile()
 
                 fun placeUnit(): Boolean {
-                    val placedUnit = civInfo.units.placeUnitNearTile(placingTile.position, civUnit.name)
+                    val placedUnit = civInfo.units.placeUnitNearTile(placingTile.position.toHexCoord(), civUnit.name)
                     if (notification != null && placedUnit != null) {
                         val notificationText =
                             if (notification.hasPlaceholderParameters())
@@ -1292,7 +1293,7 @@ object UniqueTriggerActivation {
                     unit.promotions.addPromotion(pair.first, true)
                     for (groupUnique in pair.second.uniqueObjects) {
                         if (groupUnique.isTriggerable && !groupUnique.hasTriggerConditional() && groupUnique.conditionalsApply(unit.cache.state)) {
-                            UniqueTriggerActivation.triggerUnique(groupUnique, unit)
+                            triggerUnique(groupUnique, unit)
                         }
                     }
                     true

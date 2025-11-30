@@ -519,7 +519,7 @@ object GameStarter {
     private fun placeStartingUnits(civ: Civilization, startingLocation: Tile, startingUnits: MutableList<String>, ruleset: Ruleset, eraUnitReplacement: String, settlerLikeUnits: Map<String, BaseUnit>) {
         for (unit in startingUnits) {
             val unitToAdd = getEquivalentUnit(civ, unit, ruleset, eraUnitReplacement, settlerLikeUnits)
-            if (unitToAdd != null) civ.units.placeUnitNearTile(startingLocation.position, unitToAdd)
+            if (unitToAdd != null) civ.units.placeUnitNearTile(startingLocation.position.toHexCoord(), unitToAdd)
         }
     }
 

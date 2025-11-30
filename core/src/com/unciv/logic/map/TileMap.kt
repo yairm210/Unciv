@@ -563,7 +563,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
      * @return created [MapUnit] or null if no suitable location was found
      * */
     fun placeUnitNearTile(
-        position: Vector2,
+        position: HexCoord,
         unitName: String,
         civInfo: Civilization,
         unitId: Int? = null
@@ -579,7 +579,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
      * @return created [MapUnit] or null if no suitable location was found
      * */
     fun placeUnitNearTile(
-            position: Vector2,
+            position: HexCoord,
             baseUnit: BaseUnit,
             civInfo: Civilization,
             unitId: Int? = null
