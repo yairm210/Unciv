@@ -1,29 +1,20 @@
 ## 4.18.17
 
-Remove defunct FUNDING.yml - may solve 
-
-chore: Fix detekt
-
-Converted getUnwrappedPosition to HexCoord
-
-Added inline HexCoord class for less memory allocations
-
-perf(cpu): isExplored uses cached isSpectator value
-
-perf(cpu): tryHeadTowardsEncampment performance
+Memory + CPU performance improvements
 
 By RobLoach:
-- Allow removing Religions and Beliefs 
 - Fix Null Exception in searching Civilopedia 
-- Add more JSON Schemas for modders 
+- Modding: Allow removing Religions and Beliefs 
 
 By SomeTroglodyte:
 - Swapping for Escort formation pairs 
 - Make Notifications setting "Disabled" useful 
 
-Gold from pillaging encampments and cities unique - By PLynx01
+Generic'd Gold from pillaging encampments and cities unique - By PLynx01
 
 Using Renamed Unit Names in Battle Notifications - By GameCobra
+
+Enable espionage by default in new games - By unciv-loof
 
 ## 4.18.16
 
