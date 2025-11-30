@@ -237,18 +237,18 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
      *  Respects map edges and world wrap. */
     @Readonly
     fun getTilesInDistanceRange(origin: Vector2, range: IntRange): Sequence<Tile> =
-            range.asSequence().flatMap { getTilesAtDistance(origin, it) }
+            range.asSequence().flatMap { getTilesAtDistance(origin.toHexCoord(), it) }
 
     /** @return All tiles in a hexagonal ring 1 tile wide around [origin] with the [distance]. Contains the [origin] if and only if [distance] is <= 0.
      *  Respects map edges and world wrap. */
     @Readonly
-    fun getTilesAtDistance(origin: Vector2, distance: Int): Sequence<Tile> =
+    fun getTilesAtDistance(origin: HexCoord, distance: Int): Sequence<Tile> =
             if (distance <= 0) // silently take negatives.
                 sequenceOf(get(origin))
             else
                 sequence {
-                    val centerX = origin.x.toInt()
-                    val centerY = origin.y.toInt()
+                    val centerX = origin.x
+                    val centerY = origin.y
 
                     // Start from 6 O'clock point which means (-distance, -distance) away from the center point
                     var currentX = centerX - distance
@@ -415,7 +415,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             // that is to say, the "viewableTiles.contains(it) check will return false for neighbors from the same distance
             val tilesToAddInDistanceI = ArrayList<ViewableTile>()
 
-            for (cTile in getTilesAtDistance(position, i)) { // for each tile in that layer,
+            for (cTile in getTilesAtDistance(position.toHexCoord(), i)) { // for each tile in that layer,
                 val cTileHeight = cTile.tileHeight
 
                 // For the sightdistance+1 layer - that's "one out of sight" - it's only visible if it's higher than the current tile

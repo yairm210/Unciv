@@ -153,12 +153,12 @@ object HexMath {
     }
 
     // Both x - 10 o'clock - and y - 2 o'clock - increase the row by 0.5
-    @Readonly
-    fun getRow(hexCoord: Vector2): Int = (hexCoord.x/2 + hexCoord.y/2).toInt()
+    @Readonly fun getRow(hexCoord: Vector2): Int = (hexCoord.x/2 + hexCoord.y/2).toInt()
+    @Readonly fun getRow(hexCoord: HexCoord): Int = (hexCoord.x + hexCoord.y)/2
 
     // y is 2 o'clock - increases column by 1, x in 10 o'clock - decreases by 1
-    @Readonly
-    fun getColumn(hexCoord: Vector2): Int = (hexCoord.y - hexCoord.x).toInt()
+    @Readonly fun getColumn(hexCoord: Vector2): Int = (hexCoord.y - hexCoord.x).toInt()
+    @Readonly fun getColumn(hexCoord: HexCoord): Int = hexCoord.y - hexCoord.x
 
     @Pure
     fun getTileCoordsFromColumnRow(column: Int, row: Int): Vector2 {
