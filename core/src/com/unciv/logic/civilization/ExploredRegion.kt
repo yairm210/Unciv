@@ -90,8 +90,8 @@ class ExploredRegion : IsPartOfGameInfoSerialization {
     // Check if tilePosition is beyond explored region
     fun checkTilePosition(tilePosition: Vector2, explorerPosition: Vector2?) {
         var mapExplored = false
-        var longitude = getLongitude(tilePosition)
-        val latitude = getLatitude(tilePosition)
+        var longitude = getLongitude(tilePosition).toFloat()
+        val latitude = getLatitude(tilePosition).toFloat()
 
         // First time call
         if (topLeft == Vector2.Zero && bottomRight == Vector2.Zero) {

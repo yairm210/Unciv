@@ -99,10 +99,10 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     var bottomY = 0
 
     @delegate:Transient
-    val maxLatitude: Float by lazy { if (values.isEmpty()) 0f else values.maxOf { abs(it.latitude) } }
+    val maxLatitude: Int by lazy { if (values.isEmpty()) 0 else values.maxOf { abs(it.latitude) } }
 
     @delegate:Transient
-    val maxLongitude: Float by lazy { if (values.isEmpty()) 0f else values.maxOf { abs(it.longitude) } }
+    val maxLongitude: Int by lazy { if (values.isEmpty()) 0 else values.maxOf { abs(it.longitude) } }
 
     @delegate:Transient
     val naturalWonders: Set<String> by lazy { tileList.asSequence().filter { it.isNaturalWonder() }.map { it.naturalWonder!! }.toSet() }

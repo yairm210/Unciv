@@ -178,9 +178,9 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     /** Between -1.0 and 1.0 - For map generation use only */
     var temperature: Double? = null
 
-    val latitude: Float
+    val latitude: Int
         get() = HexMath.getLatitude(position)
-    val longitude: Float
+    val longitude: Int
         get() = HexMath.getLongitude(position)
 
     @Transient

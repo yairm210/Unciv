@@ -48,11 +48,11 @@ object HexMath {
         if (numberOfTiles < 1) 0f else ((sqrt(12f * numberOfTiles - 3) - 3) / 6)
 
     // In our reference system latitude, i.e. how distant from equator we are, is proportional to x + y
-    @Readonly fun getLatitude(vector: Vector2): Float = vector.x + vector.y
+    @Readonly fun getLatitude(vector: Vector2): Int = vector.x.toInt() + vector.y.toInt()
     @Readonly fun getLatitude(hexCoord: HexCoord) = hexCoord.x + hexCoord.y
     
 
-    @Readonly fun getLongitude(vector: Vector2): Float = vector.x - vector.y
+    @Readonly fun getLongitude(vector: Vector2): Int = vector.x.toInt() - vector.y.toInt()
     @Readonly fun getLongitude(hexCoord: HexCoord) = hexCoord.x - hexCoord.y
     
 
@@ -65,7 +65,7 @@ object HexMath {
      * @return Hex coordinate. May need to be passed through [roundHexCoords] for further use.
      * */
     @Pure
-    fun hexFromLatLong(latitude: Float, longitude: Float): Vector2 {
+    fun hexFromLatLong(latitude: Int, longitude: Int): Vector2 {
         val y = (latitude - longitude) / 2f
         val x = longitude + y
         return Vector2(x, y)
@@ -118,11 +118,11 @@ object HexMath {
      * @see [com.unciv.logic.map.TileMap.getUnwrappedPosition]
      */
     @Readonly
-    fun getUnwrappedNearestTo(unwrapHexCoord: Vector2, staticHexCoord: Vector2, longitudinalRadius: Float): Vector2 {
+    fun getUnwrappedNearestTo(unwrapHexCoord: Vector2, staticHexCoord: Vector2, longitudinalRadius: Int): Vector2 {
         val referenceLong = getLongitude(staticHexCoord)
         val toWrapLat = getLatitude(unwrapHexCoord) // Working in Cartesian space is easier.
         val toWrapLong = getLongitude(unwrapHexCoord)
-        return hexFromLatLong(toWrapLat, (toWrapLong - referenceLong + longitudinalRadius).mod(longitudinalRadius * 2f)
+        return hexFromLatLong(toWrapLat, (toWrapLong - referenceLong + longitudinalRadius).mod(longitudinalRadius * 2)
                 - longitudinalRadius + referenceLong)
     }
 
