@@ -12,16 +12,12 @@ import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.tile.TerrainType
-import com.unciv.models.ruleset.unique.Conditionals
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.ruleset.unique.UniqueTarget
-import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.utils.addToMapOfSets
 import com.unciv.utils.contains
-import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.abs
@@ -102,10 +98,10 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     var bottomY = 0
 
     @delegate:Transient
-    val maxLatitude: Float by lazy { if (values.isEmpty()) 0f else values.maxOf { abs(it.latitude) } }
+    val maxLatitude: Int by lazy { if (values.isEmpty()) 0 else values.maxOf { abs(it.latitude) } }
 
     @delegate:Transient
-    val maxLongitude: Float by lazy { if (values.isEmpty()) 0f else values.maxOf { abs(it.longitude) } }
+    val maxLongitude: Int by lazy { if (values.isEmpty()) 0 else values.maxOf { abs(it.longitude) } }
 
     @delegate:Transient
     val naturalWonders: Set<String> by lazy { tileList.asSequence().filter { it.isNaturalWonder() }.map { it.naturalWonder!! }.toSet() }
@@ -211,21 +207,13 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         return toReturn
     }
 
-    @Readonly
-    operator fun contains(vector: Vector2) =
-        contains(vector.x.toInt(), vector.y.toInt())
+    @Readonly operator fun contains(vector: Vector2) = contains(vector.x.toInt(), vector.y.toInt())
+    @Readonly operator fun contains(hexCoord: HexCoord) = contains(hexCoord.x, hexCoord.y)
+    @Readonly fun contains(x: Int, y: Int) = getOrNull(x, y) != null
 
-    @Readonly
-    operator fun get(vector: Vector2) =
-        get(vector.x.toInt(), vector.y.toInt())
-
-    @Readonly
-    fun contains(x: Int, y: Int) =
-        getOrNull(x, y) != null
-
-    @Readonly
-    operator fun get(x: Int, y: Int) =
-        tileMatrix[x - leftX][y - bottomY]!!
+    @Readonly operator fun get(vector: Vector2) = get(vector.x.toInt(), vector.y.toInt())
+    @Readonly operator fun get(hexCoord: HexCoord) = get(hexCoord.x, hexCoord.y)
+    @Readonly operator fun get(x: Int, y: Int) = tileMatrix[x - leftX][y - bottomY]!!
 
     /** @return tile at hex coordinates ([x],[y]) or null if they are outside the map. Does *not* respect world wrap, use [getIfTileExistsOrNull] for that. */
     @Readonly
@@ -241,25 +229,25 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     /** @return All tiles in a hexagon of radius [distance], including the tile at [origin] and all up to [distance] steps away.
      *  Respects map edges and world wrap. */
     @Readonly
-    fun getTilesInDistance(origin: Vector2, distance: Int): Sequence<Tile> =
+    fun getTilesInDistance(origin: HexCoord, distance: Int): Sequence<Tile> =
             getTilesInDistanceRange(origin, 0..distance)
 
     /** @return All tiles in a hexagonal ring around [origin] with the distances in [range]. Excludes the [origin] tile unless [range] starts at 0.
      *  Respects map edges and world wrap. */
     @Readonly
-    fun getTilesInDistanceRange(origin: Vector2, range: IntRange): Sequence<Tile> =
+    fun getTilesInDistanceRange(origin: HexCoord, range: IntRange): Sequence<Tile> =
             range.asSequence().flatMap { getTilesAtDistance(origin, it) }
 
     /** @return All tiles in a hexagonal ring 1 tile wide around [origin] with the [distance]. Contains the [origin] if and only if [distance] is <= 0.
      *  Respects map edges and world wrap. */
     @Readonly
-    fun getTilesAtDistance(origin: Vector2, distance: Int): Sequence<Tile> =
+    fun getTilesAtDistance(origin: HexCoord, distance: Int): Sequence<Tile> =
             if (distance <= 0) // silently take negatives.
                 sequenceOf(get(origin))
             else
                 sequence {
-                    val centerX = origin.x.toInt()
-                    val centerY = origin.y.toInt()
+                    val centerX = origin.x
+                    val centerY = origin.y
 
                     // Start from 6 O'clock point which means (-distance, -distance) away from the center point
                     var currentX = centerX - distance
@@ -365,11 +353,10 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
      */
     @Readonly
     fun getClockPositionNeighborTile(tile: Tile, clockPosition: Int): Tile? {
-        val difference = HexMath.getClockPositionToHexVector(clockPosition)
-        if (difference == Vector2.Zero) return null
-        @LocalState val possibleNeighborPosition = tile.position.cpy()
-        possibleNeighborPosition.add(difference)
-        return getIfTileExistsOrNull(possibleNeighborPosition.x.toInt(), possibleNeighborPosition.y.toInt())
+        val difference = HexMath.getClockPositionToHexcoord(clockPosition)
+        if (difference == HexCoord.Zero) return null
+        val possibleNeighborPosition = tile.position.toHexCoord().plus(difference)
+        return getIfTileExistsOrNull(possibleNeighborPosition.x, possibleNeighborPosition.y)
     }
 
     /** Convert relative direction of [otherTile] seen from [tile]'s position into a vector
@@ -385,7 +372,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
      * to the position of the given vector
      */
     @Readonly
-    fun getUnWrappedPosition(position: Vector2): Vector2 {
+    fun getUnwrappedPosition(position: HexCoord): HexCoord {
         if (!contains(position))
             return position //The position is outside the map so its unwrapped already
 
@@ -393,10 +380,16 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             mapParameters.mapSize.width / 2
         else mapParameters.mapSize.radius
 
-        val vectorUnwrappedLeft = Vector2(position.x + radius, position.y - radius)
-        val vectorUnwrappedRight = Vector2(position.x - radius, position.y + radius)
+        val vectorUnwrappedLeft = HexCoord.of(position.x + radius, position.y - radius)
+        val vectorUnwrappedRight = HexCoord.of(position.x - radius, position.y + radius)
+        
+        fun squareSum(hexCoord: HexCoord): Int {
+            val x = hexCoord.x
+            val y = hexCoord.y
+            return x * x + y * y
+        }  
 
-        return if (vectorUnwrappedRight.len() < vectorUnwrappedLeft.len())
+        return if (squareSum(vectorUnwrappedRight) < squareSum(vectorUnwrappedLeft))
             vectorUnwrappedRight
         else
             vectorUnwrappedLeft
@@ -406,7 +399,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
 
     /** @return List of tiles visible from location [position] for a unit with sight range [sightDistance] */
     @Readonly
-    fun getViewableTiles(position: Vector2, sightDistance: Int, forAttack: Boolean = false): List<Tile> {
+    fun getViewableTiles(position: HexCoord, sightDistance: Int, forAttack: Boolean = false): List<Tile> {
         val aUnitHeight = get(position).unitHeight
         val viewableTiles = mutableListOf(ViewableTile(
             get(position),

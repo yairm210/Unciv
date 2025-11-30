@@ -379,7 +379,8 @@ fun String.toCheckBox(startsOutChecked: Boolean = false, changeAction: ((Boolean
 
 /** Sets the [font color][Label.LabelStyle.fontColor] on a [Label] and returns it to allow chaining */
 fun Label.setFontColor(color: Color): Label {
-    style = Label.LabelStyle(style).apply { fontColor=color }
+    if (color != style.fontColor)
+        style = Label.LabelStyle(style).apply { fontColor = color }
     return this
 }
 
@@ -388,7 +389,7 @@ fun Label.setFontSize(size: Int): Label {
     style = Label.LabelStyle(style)
     style.font = Fonts.font
     @Suppress("UsePropertyAccessSyntax") setStyle(style)
-    setFontScale(size/ Fonts.ORIGINAL_FONT_SIZE)
+    setFontScale(size / Fonts.ORIGINAL_FONT_SIZE)
     return this
 }
 

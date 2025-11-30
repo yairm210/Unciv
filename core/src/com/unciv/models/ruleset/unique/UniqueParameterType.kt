@@ -417,9 +417,18 @@ enum class UniqueParameterType(
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.unitPromotions.keys
     },
 
-    /** [UniqueType.OneTimeFreeTechRuins], [UniqueType.ConditionalDuringEra] and similar */
+    /** [UniqueType.ConditionalDuringEra] and similar */
     Era("era", "Ancient era", "The name of any era") {
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.eras.keys
+    },
+
+    /** [UniqueType.OneTimeFreeTechRuins] and similar */
+    EraFilter("eraFilter", "Ancient era", "The name of an era, `any era`, `Starting Era`, `pre-[era]`, `post-[era]`") {
+        override val staticKnownValues = setOf("any era", "Starting Era")
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
+            staticKnownValues +
+            ruleset.eras.keys.flatMap { listOf(it, "pre-[$it]", "post-[$it]") }
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = getErrorSeverityForFilter(parameterText, ruleset)
     },
 
     Speed("speed", "Quick", "The name of any speed") {
@@ -542,10 +551,11 @@ enum class UniqueParameterType(
         override fun isKnownValue(parameterText: String, ruleset: Ruleset) = when (parameterText) {
             in staticKnownValues -> true
             in ruleset.technologies -> true
-            in ruleset.eras -> true
-            else -> ruleset.technologies.values.any { it.hasTagUnique(parameterText) }
+            else ->
+                ruleset.technologies.values.any { it.hasTagUnique(parameterText) } ||
+                EraFilter.isKnownValue(parameterText, ruleset)
         }
-        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = staticKnownValues + ruleset.technologies.keys + ruleset.eras.keys
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = staticKnownValues + ruleset.technologies.keys + EraFilter.getKnownValuesForAutocomplete(ruleset)
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = getErrorSeverityForFilter(parameterText, ruleset)
     },
 

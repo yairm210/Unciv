@@ -240,8 +240,8 @@ class WorldScreen(
         }
     }
 
-    fun openEmpireOverview(category: EmpireOverviewCategories? = null) {
-        game.pushScreen(EmpireOverviewScreen(selectedCiv, category))
+    fun openEmpireOverview(category: EmpireOverviewCategories? = null, selection: String = "") {
+        game.pushScreen(EmpireOverviewScreen(selectedCiv, category, selection))
     }
 
     fun openNewGameScreen() {
@@ -485,7 +485,7 @@ class WorldScreen(
         displayTutorial(TutorialTrigger.EnemyCityNeedsConqueringWithMeleeUnit) {
             viewingCiv.diplomacy.values.asSequence()
                     .filter { it.diplomaticStatus == DiplomaticStatus.War }
-                    .map { it.otherCiv() } // we're now lazily enumerating over CivilizationInfo's we're at war with
+                    .map { it.otherCiv } // we're now lazily enumerating over CivilizationInfo's we're at war with
                     .flatMap { it.cities.asSequence() } // ... all *their* cities
                     .filter { it.health == 1 } // ... those ripe for conquering
                     .flatMap { it.getCenterTile().getTilesInDistance(2) }

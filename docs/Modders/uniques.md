@@ -92,7 +92,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
-??? example  "[positiveAmount] free random researchable Tech(s) from the [era]"
+??? example  "[positiveAmount] free random researchable Tech(s) from the [eraFilter]"
 	Example: "[3] free random researchable Tech(s) from the [Ancient era]"
 
 	Applicable to: Triggerable
@@ -871,7 +871,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Notified of new Barbarian encampments"
 	Applicable to: Global
 
-??? example  "Receive triple Gold from Barbarian encampments and pillaging Cities"
+??? example  "Receive [relativeAmount]% Gold from Barbarian encampments and pillaging Cities"
+	Example: "Receive [+20]% Gold from Barbarian encampments and pillaging Cities"
+
 	Applicable to: Global
 
 ??? example  "When conquering an encampment, earn [amount] Gold and recruit a Barbarian unit"
@@ -1688,7 +1690,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Never destroyed when the city is captured"
 	Applicable to: Building
 
-??? example  "Doubles Gold given to enemy if city is captured"
+??? example  "[relativeAmount]% Gold given to enemy if city is captured"
+	Example: "[+20]% Gold given to enemy if city is captured"
+
 	Applicable to: Building
 
 ??? example  "Removes extra unhappiness from annexed cities"
@@ -4010,6 +4014,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[countable]: This indicates a number or a numeric variable.They can be tested in the developer console with `civ checkcountable` - for example, `civ checkcountable "[Iron]+2"`.
 *[difficulty]: The name of any difficulty.
 *[era]: The name of any era.
+*[eraFilter]: The name of an era, `any era`, `Starting Era`, `pre-[era]`, `post-[era]`.
 *[event]: The name of any event.
 *[foundingOrEnhancing]: `founding` or `enhancing`.
 *[fraction]: Indicates a fractional number, which can be negative.

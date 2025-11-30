@@ -2,6 +2,8 @@ package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
+import com.badlogic.gdx.utils.Json
+import com.badlogic.gdx.utils.JsonValue
 import com.unciv.logic.map.tile.Tile
 import yairm210.purity.annotations.Immutable
 import yairm210.purity.annotations.LocalState
@@ -46,15 +48,13 @@ object HexMath {
         if (numberOfTiles < 1) 0f else ((sqrt(12f * numberOfTiles - 3) - 3) / 6)
 
     // In our reference system latitude, i.e. how distant from equator we are, is proportional to x + y
-    @Readonly
-    fun getLatitude(vector: Vector2): Float {
-        return vector.x + vector.y
-    }
+    @Readonly fun getLatitude(vector: Vector2): Int = vector.x.toInt() + vector.y.toInt()
+    @Readonly fun getLatitude(hexCoord: HexCoord) = hexCoord.x + hexCoord.y
+    
 
-    @Readonly
-    fun getLongitude(vector: Vector2): Float {
-        return vector.x - vector.y
-    }
+    @Readonly fun getLongitude(vector: Vector2): Int = vector.x.toInt() - vector.y.toInt()
+    @Readonly fun getLongitude(hexCoord: HexCoord) = hexCoord.x - hexCoord.y
+    
 
     /**
      * Convert a latitude and longitude back into a hex coordinate.
@@ -65,7 +65,7 @@ object HexMath {
      * @return Hex coordinate. May need to be passed through [roundHexCoords] for further use.
      * */
     @Pure
-    fun hexFromLatLong(latitude: Float, longitude: Float): Vector2 {
+    fun hexFromLatLong(latitude: Int, longitude: Int): Vector2 {
         val y = (latitude - longitude) / 2f
         val x = longitude + y
         return Vector2(x, y)
@@ -84,14 +84,14 @@ object HexMath {
     /** returns a vector containing width and height a rectangular map should have to have
      *  approximately the same number of tiles as an hexagonal map given a height/width ratio */
     @Pure
-    fun getEquivalentRectangularSize(size: Int, ratio: Float = 0.65f): Vector2 {
+    fun getEquivalentRectangularSize(size: Int, ratio: Float = 0.65f): HexCoord {
         if (size < 0)
-            return Vector2.Zero
+            return HexCoord.of(0,0)
 
         val nTiles = getNumberOfTilesInHexagon(size)
-        val width = round(sqrt(nTiles.toFloat() / ratio))
-        val height = round(width * ratio)
-        return Vector2(width, height)
+        val width = (sqrt(nTiles.toFloat() / ratio)).roundToInt()
+        val height = (width * ratio).roundToInt()
+        return HexCoord.of(width, height)
     }
 
     /** Returns a radius of a hexagonal map that has approximately the same number of
@@ -115,14 +115,14 @@ object HexMath {
      *
      * @return The closest hex coordinate to [staticHexCoord] that is equivalent to [unwrapHexCoord]. THIS MAY NOT BE A VALID TILE COORDINATE. It may also require rounding for further use.
      *
-     * @see [com.unciv.logic.map.TileMap.getUnWrappedPosition]
+     * @see [com.unciv.logic.map.TileMap.getUnwrappedPosition]
      */
     @Readonly
-    fun getUnwrappedNearestTo(unwrapHexCoord: Vector2, staticHexCoord: Vector2, longitudinalRadius: Float): Vector2 {
+    fun getUnwrappedNearestTo(unwrapHexCoord: Vector2, staticHexCoord: Vector2, longitudinalRadius: Int): Vector2 {
         val referenceLong = getLongitude(staticHexCoord)
         val toWrapLat = getLatitude(unwrapHexCoord) // Working in Cartesian space is easier.
         val toWrapLong = getLongitude(unwrapHexCoord)
-        return hexFromLatLong(toWrapLat, (toWrapLong - referenceLong + longitudinalRadius).mod(longitudinalRadius * 2f)
+        return hexFromLatLong(toWrapLat, (toWrapLong - referenceLong + longitudinalRadius).mod(longitudinalRadius * 2)
                 - longitudinalRadius + referenceLong)
     }
 
@@ -153,12 +153,12 @@ object HexMath {
     }
 
     // Both x - 10 o'clock - and y - 2 o'clock - increase the row by 0.5
-    @Readonly
-    fun getRow(hexCoord: Vector2): Int = (hexCoord.x/2 + hexCoord.y/2).toInt()
+    @Readonly fun getRow(hexCoord: Vector2): Int = (hexCoord.x/2 + hexCoord.y/2).toInt()
+    @Readonly fun getRow(hexCoord: HexCoord): Int = (hexCoord.x + hexCoord.y)/2
 
     // y is 2 o'clock - increases column by 1, x in 10 o'clock - decreases by 1
-    @Readonly
-    fun getColumn(hexCoord: Vector2): Int = (hexCoord.y - hexCoord.x).toInt()
+    @Readonly fun getColumn(hexCoord: Vector2): Int = (hexCoord.y - hexCoord.x).toInt()
+    @Readonly fun getColumn(hexCoord: HexCoord): Int = hexCoord.y - hexCoord.x
 
     @Pure
     fun getTileCoordsFromColumnRow(column: Int, row: Int): Vector2 {
@@ -277,23 +277,22 @@ object HexMath {
         else
             (abs(relativeX) + abs(relativeY))
     }
-
+    
     @Immutable
-    private val clockPositionToHexVectorMap: Map<Int, Vector2> = mapOf(
-        0 to Vector2(1f, 1f), // This alias of 12 makes clock modulo logic easier
-        12 to Vector2(1f, 1f),
-        2 to Vector2(0f, 1f),
-        4 to Vector2(-1f, 0f),
-        6 to Vector2(-1f, -1f),
-        8 to Vector2(0f, -1f),
-        10 to Vector2(1f, 0f)
+    private val clockPositionToHexcoordMap: Map<Int, HexCoord> = mapOf(
+        0 to HexCoord.of(1, 1), // This alias of 12 makes clock modulo logic easier
+        12 to HexCoord.of(1, 1),
+        2 to HexCoord.of(0, 1),
+        4 to HexCoord.of(-1, 0),
+        6 to HexCoord.of(-1, -1),
+        8 to HexCoord.of(0, -1),
+        10 to HexCoord.of(1, 0)
     )
-
     /** Returns the hex-space distance corresponding to [clockPosition], or a zero vector if [clockPosition] is invalid */
     @Pure
-    fun getClockPositionToHexVector(clockPosition: Int): Vector2 {
-        return clockPositionToHexVectorMap[clockPosition]?: Vector2.Zero
-    }
+    fun getClockPositionToHexcoord(clockPosition: Int): HexCoord =
+        clockPositionToHexcoordMap[clockPosition]?: HexCoord.Zero
+
 
     // Statically allocate the Vectors (in World coordinates)
     // of the 6 clock directions for border and road drawing in TileGroup
@@ -382,3 +381,61 @@ object HexMath {
     }
 
 }
+
+@JvmInline
+value class HexCoord(val coords: Int) {
+    // x value is stored in the 16 bits, and y value in the bottom 16 bits, allowing range -32768 to 32767
+
+    val x: Int
+        get() = coords shr 16
+
+    // Extract bottom 16 bits and sign-extend - required to keep negative numbers
+    val y: Int
+        get() = (coords shl 16) shr 16
+
+    fun withX(newX: Int): HexCoord {
+        require(newX in -32768..32767) { "X value must be in range -32768..32767" }
+        // Keep bottom 16 bits (y), replace top 16 bits with newX
+        return HexCoord((newX shl 16) or (coords and 0xFFFF))
+    }
+
+    fun withY(newY: Int): HexCoord {
+        require(newY in -32768..32767) { "Y value must be in range -32768..32767" }
+        // Keep top 16 bits (x), replace bottom 16 bits with newY
+        return HexCoord((coords and 0xFFFF0000.toInt()) or (newY and 0xFFFF))
+    }
+    
+    // I'm not 100% sure that adding the two ints to each other will result in a correct result
+    //   because there's the positive/negative aspect... 
+    @Pure fun plus(hexCoord: HexCoord): HexCoord = HexCoord.of(x + hexCoord.x, y + hexCoord.y) 
+    @Pure fun times(int: Int): HexCoord = HexCoord.of(x * int, y * int)
+
+    fun toVector2(): Vector2 = Vector2(x.toFloat(), y.toFloat())
+
+    companion object {
+        val Zero = HexCoord.of(0,0)
+        @Pure 
+        fun of(x: Int, y: Int): HexCoord {
+            require(x in -32768..32767) { "X value must be in range -32768..32767" }
+            require(y in -32768..32767) { "Y value must be in range -32768..32767" }
+            return HexCoord((x shl 16) or (y and 0xFFFF))
+        }
+    }
+
+    override fun toString(): String = "HexCoord(x=${x}, y=${y})"
+
+    /** Ser/deser to be 1:1 with Vector2, to allow us to replace Vector2 in game saves with HexCoord */
+    class Serializer : Json.Serializer<HexCoord> {
+        override fun write(json: Json, coord: HexCoord, knownType: Class<*>?) {
+            json.writeValue(mapOf("x" to coord.x.toFloat(), "y" to coord.y.toFloat()))
+        }
+
+        override fun read(json: Json, jsonData: JsonValue, type: Class<*>?): HexCoord {
+            val x = json.readValue(Float::class.java, jsonData["x"]) ?: 0f
+            val y = json.readValue(Float::class.java, jsonData["y"]) ?: 0f
+            return HexCoord.of(x.toInt(), y.toInt())
+        }
+    }
+}
+
+@Pure fun Vector2.toHexCoord() = HexCoord.of(this.x.toInt(), this.y.toInt())

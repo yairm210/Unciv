@@ -82,13 +82,30 @@ class CityAction(private val city: Vector2 = Vector2.Zero) : NotificationAction 
 }
 
 /** enter diplomacy screen */
-class DiplomacyAction(
-    private val otherCivName: String = "",
-    private var showTrade: Boolean = false
-) : NotificationAction {
+class DiplomacyAction : NotificationAction {
+    private val otherCivName: String
+    private var showTrade: Boolean
+    @Transient
+    private lateinit var otherCiv: Civilization
+
+    @Suppress("unused") // Used for deserialization
+    constructor(): this("", false)
+
+    constructor(otherCivName: String, showTrade: Boolean = false) {
+        this.otherCivName = otherCivName
+        this.showTrade = showTrade
+    }
+
+    constructor(otherCiv: Civilization, showTrade: Boolean = false) {
+        this.otherCiv = otherCiv
+        this.otherCivName = otherCiv.civName
+        this.showTrade = showTrade
+    }
+
     override fun execute(worldScreen: WorldScreen) {
         val currentCiv = worldScreen.selectedCiv
-        val otherCiv = worldScreen.gameInfo.getCivilization(otherCivName)
+        if (!::otherCiv.isInitialized)
+            otherCiv = worldScreen.gameInfo.getCivilization(otherCivName)
 
         if (showTrade && otherCiv == currentCiv)
             // Because TradeTable will set up otherCiv against that one,
@@ -161,7 +178,7 @@ class OverviewAction(
     private val select: String = ""
 ) : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
-        worldScreen.game.pushScreen(EmpireOverviewScreen(worldScreen.selectedCiv, page, select))
+        worldScreen.openEmpireOverview(page, select)
     }
 }
 
@@ -195,7 +212,7 @@ class LinkAction(private val url: String = "") : NotificationAction {
 /** Open [EmpireOverviewScreen] on the [Religion][EmpireOverviewCategories.Religion] tab */
 class ReligionAction(private val religionName: String? = null) : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
-        worldScreen.game.pushScreen(EmpireOverviewScreen(worldScreen.selectedCiv, EmpireOverviewCategories.Religion, religionName.orEmpty()))
+        worldScreen.openEmpireOverview(EmpireOverviewCategories.Religion, religionName.orEmpty())
     }
     companion object {
         fun withLocation(location: Vector2?, religionName: String?): Sequence<NotificationAction> =
