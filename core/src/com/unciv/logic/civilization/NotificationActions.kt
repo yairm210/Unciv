@@ -178,7 +178,7 @@ class OverviewAction(
     private val select: String = ""
 ) : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
-        worldScreen.game.pushScreen(EmpireOverviewScreen(worldScreen.selectedCiv, page, select))
+        worldScreen.openEmpireOverview(page, select)
     }
 }
 
@@ -212,7 +212,7 @@ class LinkAction(private val url: String = "") : NotificationAction {
 /** Open [EmpireOverviewScreen] on the [Religion][EmpireOverviewCategories.Religion] tab */
 class ReligionAction(private val religionName: String? = null) : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
-        worldScreen.game.pushScreen(EmpireOverviewScreen(worldScreen.selectedCiv, EmpireOverviewCategories.Religion, religionName.orEmpty()))
+        worldScreen.openEmpireOverview(EmpireOverviewCategories.Religion, religionName.orEmpty())
     }
     companion object {
         fun withLocation(location: Vector2?, religionName: String?): Sequence<NotificationAction> =
