@@ -214,7 +214,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             if (civilianUnit != null) toReturn.civilianUnit = civilianUnit!!.clone()
             toReturn.airUnits = ArrayList(airUnits.map { it.clone() })
         }
-        toReturn.position = position.cpy()
+        toReturn.position = position
         toReturn.baseTerrain = baseTerrain
         toReturn.terrainFeatures = terrainFeatures // immutable lists can be directly passed around
         toReturn.terrainFeatureObjects = terrainFeatureObjects
