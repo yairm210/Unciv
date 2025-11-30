@@ -354,11 +354,10 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
      */
     @Readonly
     fun getClockPositionNeighborTile(tile: Tile, clockPosition: Int): Tile? {
-        val difference = HexMath.getClockPositionToHexVector(clockPosition)
-        if (difference == Vector2.Zero) return null
-        @LocalState val possibleNeighborPosition = tile.position.cpy()
-        possibleNeighborPosition.add(difference)
-        return getIfTileExistsOrNull(possibleNeighborPosition.x.toInt(), possibleNeighborPosition.y.toInt())
+        val difference = HexMath.getClockPositionToHexcoord(clockPosition)
+        if (difference == HexCoord.Zero) return null
+        val possibleNeighborPosition = tile.position.toHexCoord().plus(difference)
+        return getIfTileExistsOrNull(possibleNeighborPosition.x, possibleNeighborPosition.y)
     }
 
     /** Convert relative direction of [otherTile] seen from [tile]'s position into a vector

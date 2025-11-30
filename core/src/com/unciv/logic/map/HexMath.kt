@@ -277,23 +277,22 @@ object HexMath {
         else
             (abs(relativeX) + abs(relativeY))
     }
-
+    
     @Immutable
-    private val clockPositionToHexVectorMap: Map<Int, Vector2> = mapOf(
-        0 to Vector2(1f, 1f), // This alias of 12 makes clock modulo logic easier
-        12 to Vector2(1f, 1f),
-        2 to Vector2(0f, 1f),
-        4 to Vector2(-1f, 0f),
-        6 to Vector2(-1f, -1f),
-        8 to Vector2(0f, -1f),
-        10 to Vector2(1f, 0f)
+    private val clockPositionToHexcoordMap: Map<Int, HexCoord> = mapOf(
+        0 to HexCoord.of(1, 1), // This alias of 12 makes clock modulo logic easier
+        12 to HexCoord.of(1, 1),
+        2 to HexCoord.of(0, 1),
+        4 to HexCoord.of(-1, 0),
+        6 to HexCoord.of(-1, -1),
+        8 to HexCoord.of(0, -1),
+        10 to HexCoord.of(1, 0)
     )
-
     /** Returns the hex-space distance corresponding to [clockPosition], or a zero vector if [clockPosition] is invalid */
     @Pure
-    fun getClockPositionToHexVector(clockPosition: Int): Vector2 {
-        return clockPositionToHexVectorMap[clockPosition]?: Vector2.Zero
-    }
+    fun getClockPositionToHexcoord(clockPosition: Int): HexCoord =
+        clockPositionToHexcoordMap[clockPosition]?: HexCoord.Zero
+
 
     // Statically allocate the Vectors (in World coordinates)
     // of the 6 clock directions for border and road drawing in TileGroup
@@ -405,10 +404,16 @@ value class HexCoord(val coords: Int) {
         // Keep top 16 bits (x), replace bottom 16 bits with newY
         return HexCoord((coords and 0xFFFF0000.toInt()) or (newY and 0xFFFF))
     }
+    
+    // I'm not 100% sure that adding the two ints to each other will result in a correct result
+    //   because there's the positive/negative aspect... 
+    @Pure fun plus(hexCoord: HexCoord): HexCoord = HexCoord.of(x + hexCoord.x, y + hexCoord.y) 
+    @Pure fun times(int: Int): HexCoord = HexCoord.of(x * int, y * int)
 
     fun toVector2(): Vector2 = Vector2(x.toFloat(), y.toFloat())
 
     companion object {
+        val Zero = HexCoord.of(0,0)
         @Pure 
         fun of(x: Int, y: Int): HexCoord {
             require(x in -32768..32767) { "X value must be in range -32768..32767" }
