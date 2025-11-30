@@ -37,12 +37,8 @@ class Belief() : RulesetObject() {
     fun matchesSingleFilter(filter: String, state: GameContext? = null): Boolean {
         return when (filter) {
             name -> true
-            "any" -> true
             in Constants.all -> true
-            "Founder" -> type == BeliefType.Founder
-            "Follower" -> type == BeliefType.Follower
-            "Enhancer" -> type == BeliefType.Enhancer
-            "Pantheon" -> type == BeliefType.Pantheon
+            type.name -> true // Belief type
             else -> false
         }
     }
