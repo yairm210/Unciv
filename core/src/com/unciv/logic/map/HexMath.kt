@@ -46,15 +46,13 @@ object HexMath {
         if (numberOfTiles < 1) 0f else ((sqrt(12f * numberOfTiles - 3) - 3) / 6)
 
     // In our reference system latitude, i.e. how distant from equator we are, is proportional to x + y
-    @Readonly
-    fun getLatitude(vector: Vector2): Float {
-        return vector.x + vector.y
-    }
+    @Readonly fun getLatitude(vector: Vector2): Float = vector.x + vector.y
+    @Readonly fun getLatitude(hexCoord: HexCoord) = hexCoord.x + hexCoord.y
+    
 
-    @Readonly
-    fun getLongitude(vector: Vector2): Float {
-        return vector.x - vector.y
-    }
+    @Readonly fun getLongitude(vector: Vector2): Float = vector.x - vector.y
+    @Readonly fun getLongitude(hexCoord: HexCoord) = hexCoord.x - hexCoord.y
+    
 
     /**
      * Convert a latitude and longitude back into a hex coordinate.
