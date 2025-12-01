@@ -6,6 +6,7 @@ import com.unciv.logic.automation.Automation
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.toVector2
 import com.unciv.models.Counter
@@ -203,7 +204,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
             //assign population
             if (valueBestTile > valueBestSpecialist) {
                 if (bestTile != null) {
-                    city.workedTiles = city.workedTiles.withItem(bestTile.position.toVector2())
+                    city.workedTiles = city.workedTiles.withItem(bestTile.position)
                     cityStats.food += tileStats[bestTile]!!.food
                 }
             } else if (bestJob != null) {
@@ -214,7 +215,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
         city.cityStats.update()
     }
 
-    fun stopWorkingTile(position: Vector2) {
+    fun stopWorkingTile(position: HexCoord) {
         city.workedTiles = city.workedTiles.withoutItem(position)
         city.lockedTiles.remove(position)
     }
@@ -223,7 +224,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
         for (tile in city.workedTiles.map { city.tileMap[it] }) {
             if (tile.getOwner() != city.civ || tile.getWorkingCity() != city
                     || tile.aerialDistanceTo(city.getCenterTile()) > city.getWorkRange())
-                city.population.stopWorkingTile(tile.position.toVector2())
+                city.population.stopWorkingTile(tile.position)
         }
 
         // unassign specialists that cannot be (e.g. the city was captured and one of the specialist buildings was destroyed)
@@ -260,13 +261,13 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
                 worstAutoJob != null && worstWorkedTile != null -> {
                     // choose between removing a specialist and removing a tile
                     if (valueWorstTile < valueWorstSpecialist) {
-                        stopWorkingTile(worstWorkedTile.position.toVector2())
+                        stopWorkingTile(worstWorkedTile.position)
                     }
                     else
                         specialistAllocations.add(worstAutoJob, -1)
                 }
                 worstAutoJob != null -> specialistAllocations.add(worstAutoJob, -1)
-                worstWorkedTile != null -> stopWorkingTile(worstWorkedTile.position.toVector2())
+                worstWorkedTile != null -> stopWorkingTile(worstWorkedTile.position)
                 else -> {
                     // It happens when "city.manualSpecialists == true"
                     //  and population goes below the number of specialists, e.g. city is razing.

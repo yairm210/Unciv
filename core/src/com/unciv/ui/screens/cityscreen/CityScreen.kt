@@ -287,12 +287,12 @@ class CityScreen(
                 /** Support for [UniqueType.CreatesOneImprovement] */
                 tileGroup.tile == selectedQueueEntryTargetTile ->
                     tileGroup.layerMisc.addHexOutline(Color.BROWN)
-                pickTileData != null && city.tiles.contains(tileGroup.tile.position.toVector2()) ->
+                pickTileData != null && city.tiles.contains(tileGroup.tile.position) ->
                     getPickImprovementColor(tileGroup.tile).run {
                         tileGroup.layerMisc.addHexOutline(first.cpy().apply { this.a = second }) }
             }
 
-            if (fireworks != null && tileGroup.tile.position.toVector2() == city.location)
+            if (fireworks != null && tileGroup.tile.position == city.location)
                 fireworks.setActorBounds(tileGroup)
         }
     }
@@ -410,11 +410,11 @@ class CityScreen(
         // Cycling as: Not-worked -> Worked  -> Not-worked
         if (tileGroup.tileState == CityTileState.WORKABLE) {
             if (!tile.providesYield() && city.population.getFreePopulation() > 0) {
-                city.workedTiles.add(tile.position.toVector2())
+                city.workedTiles.add(tile.position)
                 game.settings.addCompletedTutorialTask("Reassign worked tiles")
             } else {
-                city.workedTiles.remove(tile.position.toVector2())
-                city.lockedTiles.remove(tile.position.toVector2())
+                city.workedTiles.remove(tile.position)
+                city.lockedTiles.remove(tile.position)
             }
             city.cityStats.update()
             update()
@@ -464,7 +464,7 @@ class CityScreen(
             tileWorkedIconOnClick(tileGroup, city)
 
         if (tile.isWorked())
-            city.lockedTiles.add(tile.position.toVector2())
+            city.lockedTiles.add(tile.position)
 
         update()
     }

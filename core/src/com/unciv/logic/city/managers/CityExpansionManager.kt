@@ -153,10 +153,10 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
      * @param tile The tile to relinquish
      */
     fun relinquishOwnership(tile: Tile) {
-        city.tiles = city.tiles.withoutItem(tile.position.toVector2())
+        city.tiles = city.tiles.withoutItem(tile.position)
         for (city in city.civ.cities) {
             if (city.isWorked(tile)) {
-                city.population.stopWorkingTile(tile.position.toVector2())
+                city.population.stopWorkingTile(tile.position)
                 city.population.autoAssignPopulation()
             }
         }
@@ -184,7 +184,7 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         if (tile.getCity() != null)
             tile.getCity()!!.expansion.relinquishOwnership(tile)
 
-        city.tiles = city.tiles.withItem(tile.position.toVector2())
+        city.tiles = city.tiles.withItem(tile.position)
         tile.setOwningCity(city)
         city.population.autoAssignPopulation()
         city.civ.cache.updateOurTiles()

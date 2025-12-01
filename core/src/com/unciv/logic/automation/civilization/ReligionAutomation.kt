@@ -215,7 +215,7 @@ object ReligionAutomation {
             for (tile in city.getCenterTile().getTilesInDistance(city.getWorkRange())) {
                 val tileScore = beliefBonusForTile(belief, tile, city)
                 score += tileScore * when {
-                    city.workedTiles.contains(tile.position.toVector2()) -> 1f // worked
+                    city.workedTiles.contains(tile.position) -> 1f // worked
                     tile.getCity() == city -> 0.7f // workable
                     else -> 0.5f // unavailable - for now
                 } * (Random.nextFloat() * 0.05f + 0.975f)

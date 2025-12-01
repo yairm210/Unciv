@@ -462,7 +462,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     @Readonly
     fun isLocked(): Boolean {
         val workingCity = getWorkingCity()
-        return workingCity != null && workingCity.lockedTiles.contains(position.toVector2())
+        return workingCity != null && workingCity.lockedTiles.contains(position)
     }
     
     @Readonly

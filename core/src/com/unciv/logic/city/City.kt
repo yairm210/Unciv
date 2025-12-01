@@ -86,13 +86,13 @@ class City : IsPartOfGameInfoSerialization, INamed {
     var resourceStockpiles = Counter<String>()
 
     /** All tiles that this city controls */
-    var tiles = HashSet<Vector2>()
+    var tiles = HashSet<HexCoord>()
 
     /** Tiles that have population assigned to them */
-    var workedTiles = HashSet<Vector2>()
+    var workedTiles = HashSet<HexCoord>()
 
     /** Tiles that the population in them won't be reassigned */
-    var lockedTiles = HashSet<Vector2>()
+    var lockedTiles = HashSet<HexCoord>()
     var manualSpecialists = false
     var isBeingRazed = false
     var attackedThisTurn = false
@@ -190,7 +190,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     @Readonly fun getTiles(): Sequence<Tile> = tiles.asSequence().map { tileMap[it] }
     @Readonly fun getWorkableTiles() = tilesInRange.asSequence().filter { it.getOwner() == civ }
     @Readonly fun getWorkedTiles(): Sequence<Tile> = workedTiles.asSequence().map { tileMap[it] }
-    @Readonly fun isWorked(tile: Tile) = workedTiles.contains(tile.position.toVector2())
+    @Readonly fun isWorked(tile: Tile) = workedTiles.contains(tile.position)
 
     @Readonly fun isCapital(): Boolean = cityConstructions.builtBuildingUniqueMap.hasUnique(UniqueType.IndicatesCapital, state)
     @Readonly fun isCoastal(): Boolean = centerTile.isCoastalTile()

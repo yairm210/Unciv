@@ -77,7 +77,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen) : Table() {
             if (selectedTile.isLocked()) {
                 val unlockButton = "Unlock".toTextButton()
                 unlockButton.onClick {
-                    city.lockedTiles.remove(selectedTile.position.toVector2())
+                    city.lockedTiles.remove(selectedTile.position)
                     update(selectedTile)
                     cityScreen.update()
                 }
@@ -86,7 +86,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen) : Table() {
             } else {
                 val lockButton = "Lock".toTextButton()
                 lockButton.onClick {
-                    city.lockedTiles.add(selectedTile.position.toVector2())
+                    city.lockedTiles.add(selectedTile.position)
                     update(selectedTile)
                     cityScreen.update()
                 }

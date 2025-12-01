@@ -358,8 +358,8 @@ class CityStats(val city: City) {
             }
         for (tile in workedTiles) {
             if (tile.isBlockaded() && city.isWorked(tile)) {
-                city.workedTiles.remove(tile.position.toVector2())
-                city.lockedTiles.remove(tile.position.toVector2())
+                city.workedTiles.remove(tile.position)
+                city.lockedTiles.remove(tile.position)
                 city.shouldReassignPopulation = true
                 continue
             }
