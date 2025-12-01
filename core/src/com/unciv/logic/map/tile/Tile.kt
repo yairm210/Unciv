@@ -847,7 +847,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         }
         owningCity = city
         stateThisTile = GameContext(tile = this, city = city, gameInfo = tileMap.gameInfo)
-        isCityCenterInternal = getCity()?.location == position.toVector2()
+        isCityCenterInternal = getCity()?.location?.toHexCoord() == position
     }
 
     /**

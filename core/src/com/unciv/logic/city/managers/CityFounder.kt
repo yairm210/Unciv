@@ -23,7 +23,7 @@ class CityFounder {
 
         city.foundingCivObject = civInfo
         city.turnAcquired = civInfo.gameInfo.turns
-        city.location = cityLocation.toVector2()
+        city.location = cityLocation
         city.setTransients(civInfo)
 
         city.name = generateNewCityName(
