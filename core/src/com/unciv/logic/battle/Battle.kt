@@ -136,7 +136,7 @@ object Battle {
             postBattleNotifications(attacker, defender, attackedTile, attacker.getTile(), damageDealt)
 
         if (defender.getCivInfo().isBarbarian && attackedTile.improvement == Constants.barbarianEncampment)
-            defender.getCivInfo().gameInfo.barbarians.campAttacked(attackedTile.position.toVector2())
+            defender.getCivInfo().gameInfo.barbarians.campAttacked(attackedTile.position)
 
         // This needs to come BEFORE the move-to-tile, because if we haven't conquered it we can't move there =)
         handleCityDefeated(defender, attacker)
