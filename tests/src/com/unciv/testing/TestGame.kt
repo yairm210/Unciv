@@ -1,6 +1,5 @@
 package com.unciv.testing
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
@@ -13,20 +12,10 @@ import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.toVector2
 import com.unciv.models.Religion
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSettings
-import com.unciv.models.ruleset.Belief
-import com.unciv.models.ruleset.BeliefType
-import com.unciv.models.ruleset.Building
-import com.unciv.models.ruleset.IRulesetObject
-import com.unciv.models.ruleset.Policy
-import com.unciv.models.ruleset.PolicyBranch
-import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.ruleset.Specialist
-import com.unciv.models.ruleset.Speed
+import com.unciv.models.ruleset.*
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
@@ -213,7 +202,7 @@ class TestGame(vararg addGlobalUniques: String, forUITesting: Boolean = false) {
     }
 
     fun addTileToCity(city: City, tile: Tile) {
-        city.tiles.add(tile.position.toVector2())
+        city.tiles.add(tile.position)
     }
 
     fun addUnit(name: String, civInfo: Civilization, tile: Tile?): MapUnit {

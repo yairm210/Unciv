@@ -1,6 +1,5 @@
 package com.unciv.logic.city.managers
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.HexCoord
@@ -152,14 +151,14 @@ class CityExpansionManagerTest {
         // given
         val tileToBuy = testGame.getTile(2,0)
         civ.addGold(500)
-        assertFalse(city.tiles.contains(HexCoord(2,0).toVector2()))
+        assertFalse(city.tiles.contains(HexCoord(2,0)))
 
         // when
         cityExpansionManager.buyTile(tileToBuy)
 
         // then
         assertEquals(8, city.tiles.size)
-        assertTrue(city.tiles.contains(HexCoord(2,0).toVector2()))
+        assertTrue(city.tiles.contains(HexCoord(2,0)))
     }
 
     @Test

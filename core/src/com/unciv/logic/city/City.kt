@@ -1,6 +1,5 @@
 package com.unciv.logic.city
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.logic.IsPartOfGameInfoSerialization
@@ -19,7 +18,6 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.UnitPromotions
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.toVector2
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.TileResource

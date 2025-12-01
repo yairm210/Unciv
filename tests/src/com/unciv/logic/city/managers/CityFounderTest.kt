@@ -1,16 +1,11 @@
 package com.unciv.logic.city.managers
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.HexCoord
-import com.unciv.logic.map.toVector2
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
-import org.junit.Assert.fail
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -141,12 +136,12 @@ class CityFounderTest {
 
         // when
         val city = cityFounder.foundCity(civ, HexCoord.Zero)
-        city.workedTiles = hashSetOf(HexCoord(1,0).toVector2())
-        city.lockedTiles = hashSetOf(HexCoord(1,0).toVector2())
+        city.workedTiles = hashSetOf(HexCoord(1,0))
+        city.lockedTiles = hashSetOf(HexCoord(1,0))
         city.cityStats.update()
 
         // then
-        assertFalse(city.workedTiles.contains(city.getCenterTile().position.toVector2())) // no pop required
+        assertFalse(city.workedTiles.contains(city.getCenterTile().position)) // no pop required
         assertEquals(2.0f, city.cityStats.statsFromTiles.production)
     }
 

@@ -1,17 +1,13 @@
 package com.unciv.logic.city.managers
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityFocus
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.HexCoord
-import com.unciv.logic.map.toVector2
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -202,12 +198,12 @@ class CityPopulationManagerTest {
     fun `should automatically assign new pop to best job`() {
         // given
         city.workedTiles.clear()
-        city.workedTiles.add(HexCoord(-1,0).toVector2())
-        city.lockedTiles.add(HexCoord(-1,0).toVector2()) // force the first pop to work on a specific tile to avoid being reassigned
+        city.workedTiles.add(HexCoord(-1,0))
+        city.lockedTiles.add(HexCoord(-1,0)) // force the first pop to work on a specific tile to avoid being reassigned
         val goodTile = testGame.setTileTerrain(HexCoord(1,0), Constants.grassland)
         goodTile.improvement = "Farm"
 
-        assertFalse(city.workedTiles.contains(goodTile.position.toVector2()))
+        assertFalse(city.workedTiles.contains(goodTile.position))
 
         city.population.foodStored = 14
 
@@ -216,7 +212,7 @@ class CityPopulationManagerTest {
 
         // then
         assertEquals(2, city.population.population)
-        assertTrue(city.workedTiles.contains(goodTile.position.toVector2()))
+        assertTrue(city.workedTiles.contains(goodTile.position))
     }
 
     @Test
@@ -224,16 +220,16 @@ class CityPopulationManagerTest {
         // given
         city.setCityFocus(CityFocus.GoldFocus)
         city.workedTiles.clear()
-        city.workedTiles.add(HexCoord(-1,0).toVector2())
-        city.lockedTiles.add(HexCoord(-1,0).toVector2()) // force the first pop to work on a specific tile to avoid being reassigned
+        city.workedTiles.add(HexCoord(-1,0))
+        city.lockedTiles.add(HexCoord(-1,0)) // force the first pop to work on a specific tile to avoid being reassigned
         val goodFoodTile = testGame.setTileTerrain(HexCoord(1,0), Constants.grassland)
         goodFoodTile.improvement = "Farm"
-        assertFalse(city.workedTiles.contains(goodFoodTile.position.toVector2()))
+        assertFalse(city.workedTiles.contains(goodFoodTile.position))
 
         val goodGoldTile = testGame.setTileTerrain(HexCoord(0,1), Constants.grassland)
         val goldImprovement = testGame.createTileImprovement("[+5 Gold]")
         goodGoldTile.improvement = goldImprovement.name
-        assertFalse(city.workedTiles.contains(goodGoldTile.position.toVector2()))
+        assertFalse(city.workedTiles.contains(goodGoldTile.position))
 
         city.population.foodStored = 14
 
@@ -242,8 +238,8 @@ class CityPopulationManagerTest {
 
         // then
         assertEquals(2, city.population.population)
-        assertTrue(city.workedTiles.contains(goodGoldTile.position.toVector2()))
-        assertFalse(city.workedTiles.contains(goodFoodTile.position.toVector2()))
+        assertTrue(city.workedTiles.contains(goodGoldTile.position))
+        assertFalse(city.workedTiles.contains(goodFoodTile.position))
     }
 
     @Test
@@ -251,8 +247,8 @@ class CityPopulationManagerTest {
         // given
         city.setCityFocus(CityFocus.GoldFocus)
         city.workedTiles.clear()
-        city.workedTiles.add(HexCoord(-1,0).toVector2())
-        city.lockedTiles.add(HexCoord(-1,0).toVector2()) // force the first pop to work on a specific tile to avoid being reassigned
+        city.workedTiles.add(HexCoord(-1,0))
+        city.lockedTiles.add(HexCoord(-1,0)) // force the first pop to work on a specific tile to avoid being reassigned
         val specialistBuilding = testGame.createBuilding()
         specialistBuilding.specialistSlots.add("Merchant", 1)
         city.cityConstructions.addBuilding(specialistBuilding)

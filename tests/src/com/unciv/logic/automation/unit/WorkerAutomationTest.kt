@@ -6,7 +6,6 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.TurnManager
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.toVector2
 import com.unciv.models.stats.Stat
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
@@ -92,7 +91,7 @@ internal class WorkerAutomationTest {
         val city = testGame.addCity(civInfo, testGame.tileMap[0,0])
         // Currently worked tile is prioritized for worker actions
         city.workedTiles.clear()
-        city.workedTiles.add(currentTile.position.toVector2())
+        city.workedTiles.add(currentTile.position)
 
         currentTile.baseTerrain = Constants.grassland
         currentTile.resource = "Iron"
