@@ -14,8 +14,6 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.movement.UnitMovement
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.toHexCoord
-import com.unciv.logic.map.toVector2
 import com.unciv.models.Counter
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Ruleset
@@ -103,7 +101,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     var mostRecentMoveType = UnitMovementMemoryType.UnitMoved
 
     /** Array list of all the tiles that this unit has attacked since the start of its most recent turn. Used in movement arrow overlay. */
-    var attacksSinceTurnStart = ArrayList<Vector2>()
+    var attacksSinceTurnStart = ArrayList<HexCoord>()
 
     class UnitStatus(
         val name: String,
@@ -180,11 +178,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
      * @property type Category of the last change in position that brought the unit to this position.
      * @see [movementMemories]
      * */
-    class UnitMovementMemory(position: Vector2, val type: UnitMovementMemoryType) : IsPartOfGameInfoSerialization {
+    class UnitMovementMemory(val position: HexCoord, val type: UnitMovementMemoryType) : IsPartOfGameInfoSerialization {
         @Suppress("unused") // needed because this is part of a save and gets deserialized
-        constructor() : this(Vector2.Zero, UnitMovementMemoryType.UnitMoved)
-
-        val position = Vector2(position)
+        constructor() : this(HexCoord.Zero, UnitMovementMemoryType.UnitMoved)
 
         @Readonly fun clone() = UnitMovementMemory(position, type)
         override fun toString() = "${this::class.simpleName}($position, $type)"
@@ -248,7 +244,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
         toReturn.statusMap = newStatusMap
         toReturn.mostRecentMoveType = mostRecentMoveType
-        toReturn.attacksSinceTurnStart = ArrayList(attacksSinceTurnStart.map { Vector2(it) })
+        toReturn.attacksSinceTurnStart = ArrayList(attacksSinceTurnStart)
         return toReturn
     }
 
@@ -859,7 +855,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             val gotTo = movement.headTowards(destinationTile)
             if (gotTo == currentTile) { // We didn't move at all
                 // pathway blocked? Are we still at the same spot as start of turn?
-                if (movementMemories.last().position == currentTile.position.toVector2())
+                if (movementMemories.last().position == currentTile.position)
                     action = null
                 return
             }
@@ -1116,7 +1112,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     /** Add the current position and the most recent movement type to [movementMemories]. Called once at end and once at start of turn, and at unit creation. */
     fun addMovementMemory() {
-        movementMemories.add(UnitMovementMemory(getTile().position.toVector2(), mostRecentMoveType))
+        movementMemories.add(UnitMovementMemory(getTile().position, mostRecentMoveType))
         while (movementMemories.size > 2) { // O(n) but n == 2.
             // Keep at most one arrow segment— A lot of the time even that won't be rendered because the two positions will be the same.
             // When in the unit's turn— I.E. For a player unit— The last two entries will be from .endTurn() followed by from .startTurn(), so the segment from .movementMemories will have zero length. Instead, what gets seen will be the segment from the end of .movementMemories to the unit's current position.

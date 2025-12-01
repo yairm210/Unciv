@@ -1,18 +1,11 @@
 package com.unciv.logic.battle
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.civilization.CivilopediaAction
-import com.unciv.logic.civilization.LocationAction
-import com.unciv.logic.civilization.Notification
-import com.unciv.logic.civilization.NotificationCategory
-import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.*
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.toHexCoord
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.worldscreen.bottombar.BattleTable
@@ -80,7 +73,7 @@ object Nuke {
 
         if (attacker.isDefeated()) return
 
-        attacker.unit.attacksSinceTurnStart.add(Vector2(targetTile.position.toVector2()))
+        attacker.unit.attacksSinceTurnStart.add(targetTile.position)
 
         for (tile in hitTiles) {
             // Handle complicated effects

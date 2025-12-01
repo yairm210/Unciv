@@ -1,6 +1,5 @@
 package com.unciv.logic.battle
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.civilization.NextTurnAutomation
@@ -106,7 +105,7 @@ object Battle {
         debug("%s %s attacked %s %s", attacker.getCivInfo().civName, attacker.getName(), defender.getCivInfo().civName, defender.getName())
         val attackedTile = defender.getTile()
         if (attacker is MapUnitCombatant) {
-            attacker.unit.attacksSinceTurnStart.add(Vector2(attackedTile.position.toVector2()))
+            attacker.unit.attacksSinceTurnStart.add(attackedTile.position)
         } else {
             attacker.getCivInfo().attacksSinceTurnStart.add(Civilization.HistoricalAttackMemory(
                 null,
