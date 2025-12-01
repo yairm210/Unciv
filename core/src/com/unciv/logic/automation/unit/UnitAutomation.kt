@@ -93,7 +93,7 @@ object UnitAutomation {
         // Accompany settlers
         if (tryAccompanySettlerOrGreatPerson(unit)) return
 
-        if (tryGoToRuinAndEncampment(unit) && !unit.hasMovement()) return
+        if (tryGoToRuin(unit) && !unit.hasMovement()) return
 
         if (unit.health < 50 && (tryRetreat(unit) || tryHealUnit(unit))) return // do nothing but heal
 
@@ -117,12 +117,12 @@ object UnitAutomation {
 
         if (tryStationingMeleeNavalUnit(unit)) return
 
+        if (tryHeadTowardsEncampment(unit)) return
+
         if (unit.health < 80 && tryHealUnit(unit)) return
 
         // move towards the closest reasonably attackable enemy unit within 3 turns of movement (and 5 tiles range)
         if (tryAdvanceTowardsCloseEnemy(unit)) return
-
-        if (tryHeadTowardsEncampment(unit)) return
 
         if (unit.health < 100 && tryHealUnit(unit)) return
 
@@ -152,7 +152,7 @@ object UnitAutomation {
     }
 
     internal fun tryExplore(unit: MapUnit): Boolean {
-        if (tryGoToRuinAndEncampment(unit) && (!unit.hasMovement() || unit.isDestroyed)) return true
+        if (tryGoToRuin(unit) && (!unit.hasMovement() || unit.isDestroyed)) return true
 
         val unitVisibilityRange = unit.getVisibilityRange()
         val explorableTilesThisTurn =
@@ -181,8 +181,7 @@ object UnitAutomation {
 
         val tileWithRuinOrEncampment = unit.viewableTiles
             .firstOrNull {
-                (it.getTileImprovement()?.isAncientRuinsEquivalent(unit.cache.state) == true
-                                || it.improvement == Constants.barbarianEncampment)
+                (it.getTileImprovement()?.isAncientRuinsEquivalent(unit.cache.state) == true)
                         && unit.movement.canMoveTo(it) && unit.movement.canReach(it)
             } ?: return false
         unit.movement.headTowards(tileWithRuinOrEncampment)
