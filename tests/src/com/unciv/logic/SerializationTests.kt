@@ -43,9 +43,9 @@ class SerializationTests {
     //@RedirectOutput(RedirectPolicy.Show)
     fun `test LastSeenImprovement serialization roundtrip`() {
         val data = LastSeenImprovement()
-        data[Vector2.Zero] = "Borehole"
-        data[Vector2.X] = "Smokestack"
-        data[Vector2.Y] = "Waffle stand"
+        data[HexCoord.Zero] = "Borehole"
+        data[HexCoord(1,0)] = "Smokestack"
+        data[HexCoord(0,1)] = "Waffle stand"
         testRoundtrip(data)
     }
 

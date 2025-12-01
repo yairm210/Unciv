@@ -833,7 +833,7 @@ object UniqueTriggerActivation {
                 return {
                     for (explorableTile in explorableTiles) {
                         explorableTile.setExplored(civInfo, true)
-                        civInfo.setLastSeenImprovement(explorableTile.position.toVector2(), explorableTile.improvement)
+                        civInfo.setLastSeenImprovement(explorableTile.position, explorableTile.improvement)
                         positions += explorableTile.position
                     }
 

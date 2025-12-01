@@ -184,7 +184,7 @@ class TileImprovementFunctions(val tile: Tile) {
             for (civ in tile.tileMap.gameInfo.civilizations) {
                 if (civ.isDefeated() || !civ.isMajorCiv()) continue
                 if (civ == civToActivateBroaderEffects || tile.isVisible(civ))
-                    civ.setLastSeenImprovement(tile.position.toVector2(), improvementName)
+                    civ.setLastSeenImprovement(tile.position, improvementName)
             }
         }
 

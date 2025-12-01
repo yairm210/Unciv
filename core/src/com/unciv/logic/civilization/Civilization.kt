@@ -132,7 +132,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     var passThroughImpassableUnlocked = false   // Cached Boolean equal to passableImpassables.isNotEmpty()
 
     @Transient
-    var neutralRoads = HashSet<Vector2>()
+    var neutralRoads = HashSet<HexCoord>()
 
     val modConstants get() = gameInfo.ruleset.modOptions.constants
 
@@ -1123,12 +1123,12 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun asPreview() = CivilizationInfoPreview(this)
 
     @Readonly
-    fun getLastSeenImprovement(position: Vector2): String? {
+    fun getLastSeenImprovement(position: HexCoord): String? {
         if (isAI() || isSpectator()) return null
         return lastSeenImprovement[position]
     }
     
-    fun setLastSeenImprovement(position: Vector2, improvement: String?) {
+    fun setLastSeenImprovement(position: HexCoord, improvement: String?) {
         if (isAI() || isSpectator()) return
         if (improvement == null)
             lastSeenImprovement.remove(position)
