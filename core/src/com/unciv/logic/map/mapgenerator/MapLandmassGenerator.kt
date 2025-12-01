@@ -436,7 +436,7 @@ class MapLandmassGenerator(
                                      persistence: Double = 0.5,
                                      lacunarity: Double = 2.0,
                                      scale: Double = 10.0): Double {
-        val worldCoords = HexMath.hex2WorldCoords(tile.position.toHexCoord())
+        val worldCoords = HexMath.hex2WorldCoords(tile.position)
         return Perlin.ridgedNoise3d(worldCoords.x.toDouble(), worldCoords.y.toDouble(), seed, nOctaves, persistence, lacunarity, scale)
     }
     

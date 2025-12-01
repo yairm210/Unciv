@@ -202,7 +202,7 @@ class VisibilityTests {
 
         assertTrue(viewableTiles.contains(hillForest))
 
-        val attackableTiles = testGame.tileMap.getViewableTiles(grassland.position.toHexCoord(), 2, true)
+        val attackableTiles = testGame.tileMap.getViewableTiles(grassland.position, 2, true)
 
         assertFalse(attackableTiles.contains(hillForest))
     }
@@ -216,7 +216,7 @@ class VisibilityTests {
 
         assertTrue(viewableTiles.contains(mountain))
 
-        val attackableTiles = testGame.tileMap.getViewableTiles(grassland.position.toHexCoord(), 2, true)
+        val attackableTiles = testGame.tileMap.getViewableTiles(grassland.position, 2, true)
 
         assertTrue(attackableTiles.contains(mountain))
     }

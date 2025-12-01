@@ -10,8 +10,6 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.tile.TileDescription
-import com.unciv.logic.map.toHexCoord
-import com.unciv.logic.map.toVector2
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
@@ -258,7 +256,7 @@ class MapEditorViewTab(
         if (tiles.isEmpty()) return
         if (roundRobinIndex >= tiles.size) roundRobinIndex = 0
         val tile = tiles[roundRobinIndex++]
-        editorScreen.mapHolder.setCenterPosition(tile.position.toHexCoord(), blink = true)
+        editorScreen.mapHolder.setCenterPosition(tile.position, blink = true)
         tileClickHandler(tile)
     }
 

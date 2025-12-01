@@ -7,7 +7,6 @@ import com.unciv.UncivGame
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.toHexCoord
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.QuestName
 import com.unciv.models.ruleset.tech.Era
@@ -81,7 +80,7 @@ class WonderOverviewTab(
                 if (wonder.location != null)
                     locationLabel.onClick{
                         val worldScreen = UncivGame.Current.resetToWorldScreen()
-                        worldScreen.mapHolder.setCenterPosition(wonder.location.position.toHexCoord())
+                        worldScreen.mapHolder.setCenterPosition(wonder.location.position)
                     }
                 add(locationLabel).fillY()
             }

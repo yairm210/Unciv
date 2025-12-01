@@ -323,10 +323,10 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         val radius = if (mapParameters.shape == MapShape.rectangular)
             mapParameters.mapSize.width / 2
         else mapParameters.mapSize.radius
-        val x1 = tile.position.x.toInt()
-        val y1 = tile.position.y.toInt()
-        val x2 = otherTile.position.x.toInt()
-        val y2 = otherTile.position.y.toInt()
+        val x1 = tile.position.x
+        val y1 = tile.position.y
+        val x2 = otherTile.position.x
+        val y2 = otherTile.position.y
 
         val xDifference = x1 - x2
         val yDifference = y1 - y2
@@ -355,7 +355,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     fun getClockPositionNeighborTile(tile: Tile, clockPosition: Int): Tile? {
         val difference = HexMath.getClockPositionToHexcoord(clockPosition)
         if (difference == HexCoord.Zero) return null
-        val possibleNeighborPosition = tile.position.toHexCoord().plus(difference)
+        val possibleNeighborPosition = tile.position.plus(difference)
         return getIfTileExistsOrNull(possibleNeighborPosition.x, possibleNeighborPosition.y)
     }
 
@@ -499,10 +499,10 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         check(tileList.isNotEmpty()) { "No tiles were found in the save?!" }
 
         if (tileMatrix.isEmpty()) {
-            val topY = tileList.asSequence().map { it.position.y.toInt() }.max()
-            bottomY = tileList.asSequence().map { it.position.y.toInt() }.min()
-            val rightX = tileList.asSequence().map { it.position.x.toInt() }.max()
-            leftX = tileList.asSequence().map { it.position.x.toInt() }.min()
+            val topY = tileList.asSequence().map { it.position.y }.max()
+            bottomY = tileList.asSequence().map { it.position.y }.min()
+            val rightX = tileList.asSequence().map { it.position.x }.max()
+            leftX = tileList.asSequence().map { it.position.x }.min()
 
             // Initialize arrays with enough capacity to avoid re-allocations (+Arrays.copyOf).
             // We have just calculated the dimensions above, so we know the final size.
@@ -521,7 +521,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         }
 
         for (tileInfo in values) {
-            tileMatrix[tileInfo.position.x.toInt() - leftX][tileInfo.position.y.toInt() - bottomY] = tileInfo
+            tileMatrix[tileInfo.position.x - leftX][tileInfo.position.y - bottomY] = tileInfo
         }
         for ((index, tileInfo) in values.withIndex()) {
             // Do ***NOT*** call Tile.setTerrainTransients before the tileMatrix is complete -

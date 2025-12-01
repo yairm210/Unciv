@@ -136,7 +136,7 @@ class EditorMapHolder(
      * TODO remove code duplication
      */
     fun setCenterPosition(vector: HexCoord, blink: Boolean = false) {
-        val tileGroup = allTileGroups.firstOrNull { it.tile.position.toHexCoord() == vector } ?: return
+        val tileGroup = allTileGroups.firstOrNull { it.tile.position == vector } ?: return
 
         // The Y axis of [scrollY] is inverted - when at 0 we're at the top, not bottom - so we invert it back.
         if (!scrollTo(tileGroup.x + tileGroup.width / 2, maxY - (tileGroup.y + tileGroup.width / 2)))

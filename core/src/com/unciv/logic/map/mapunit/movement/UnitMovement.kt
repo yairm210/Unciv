@@ -2,7 +2,6 @@
 
 package com.unciv.logic.map.mapunit.movement
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.BFS
@@ -10,7 +9,6 @@ import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.toHexCoord
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.UnitMovementMemoryType
@@ -48,7 +46,7 @@ class UnitMovement(val unit: MapUnit) {
 
         val currentUnitTile = unit.currentTile
         // This is for performance, because this is called all the time
-        val unitTile = if (position == currentUnitTile.position.toHexCoord()) currentUnitTile else currentUnitTile.tileMap[position]
+        val unitTile = if (position == currentUnitTile.position) currentUnitTile else currentUnitTile.tileMap[position]
         distanceToTiles[unitTile] = ParentTileAndTotalMovement(unitTile, unitTile, 0f)
 
         // If I can't move my only option is to stay...
@@ -172,7 +170,7 @@ class UnitMovement(val unit: MapUnit) {
                 }
                 else {
                     getMovementToTilesAtPosition(
-                        tileToCheck.position.toHexCoord(),
+                        tileToCheck.position,
                         unitMaxMovement,
                         false,
                         visitedTilesBitset,
@@ -771,7 +769,7 @@ class UnitMovement(val unit: MapUnit) {
         includeOtherEscortUnit: Boolean = true
     ): PathsToTilesWithinTurn {
         val distanceToTiles = getMovementToTilesAtPosition(
-            unit.currentTile.position.toHexCoord(),
+            unit.currentTile.position,
             unit.currentMovement,
             considerZoneOfControl,
             null,

@@ -13,7 +13,6 @@ import com.unciv.GUI
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
-import com.unciv.logic.map.toHexCoord
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.PerpetualConstruction
@@ -473,7 +472,7 @@ class CityButton(val city: City, private val tileGroup: TileGroup) : Table(BaseS
         val tilesAroundCity = tileGroup.tile.neighbors
         for (tile in tilesAroundCity)
         {
-            val direction = tileGroup.tile.position.toHexCoord().minus(tile.position.toHexCoord())
+            val direction = tileGroup.tile.position.minus(tile.position)
 
             if (isButtonMoved) {
                 when {

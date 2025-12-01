@@ -9,8 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
-import com.unciv.logic.map.toHexCoord
-import com.unciv.logic.map.toVector2
 import com.unciv.ui.components.NonTransformGroup
 import com.unciv.ui.images.ClippingImage
 import com.unciv.ui.images.ImageGetter
@@ -188,7 +186,7 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
         for (tileInfo in mapHolder.tileMap.values) {
             if (civInfo?.exploredRegion?.isPositionInRegion(tileInfo.position.toVector2()) == false) continue
             val minimapTile = MinimapTile(tileInfo, tileSize, onClick = {
-                mapHolder.setCenterPosition(tileInfo.position.toHexCoord())
+                mapHolder.setCenterPosition(tileInfo.position)
             })
             if (minimapTile.image.x < leftSide)
                 minimapTile.image.x += pad

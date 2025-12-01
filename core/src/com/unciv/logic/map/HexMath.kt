@@ -402,7 +402,7 @@ data class HexCoord(val x:Int=0, val y:Int=0){
 
     // Conversion helpers for 1:1 Vector2 compatibility
     @Pure fun cpy() = this
-    @Pure fun toHexCoord() = this
+    @Pure fun toHexCoordRemovable() = this
     @Pure fun asSerializable() = HexCoord(x,y)
 
     fun toPrettyString(): String = "($x,$y)"

@@ -34,7 +34,7 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
     @Readonly
     fun tilesClaimed(): Int {
         val tilesAroundCity = city.getCenterTile().neighbors
-                .map { it.position.toHexCoord() }
+                .map { it.position }
         return city.tiles.count { it.toVector2() != city.location && it.toHexCoord() !in tilesAroundCity}
     }
 

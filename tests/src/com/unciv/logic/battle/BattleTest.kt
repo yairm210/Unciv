@@ -3,10 +3,7 @@ package com.unciv.logic.battle
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
-import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.toHexCoord
-import com.unciv.logic.map.toVector2
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
@@ -51,8 +48,8 @@ class BattleTest {
         // thenvi
         assertEquals(0, damageDealt.attackerDealt)
         assertEquals(0, damageDealt.defenderDealt)
-        assertFalse(defenderUnit.getTile().position.toHexCoord().eq(0,1)) // defender moves away
-        assertTrue(defaultAttackerUnit.getTile().position.toHexCoord().eq(1,0))  // attacker didn't move
+        assertFalse(defenderUnit.getTile().position.eq(0,1)) // defender moves away
+        assertTrue(defaultAttackerUnit.getTile().position.eq(1,0))  // attacker didn't move
         assertEquals(0f, defaultAttackerUnit.currentMovement) // warriors cannot move anymore after attacking
     }
 
@@ -90,7 +87,7 @@ class BattleTest {
         Battle.attack(MapUnitCombatant(defaultAttackerUnit), MapUnitCombatant(defaultDefenderUnit))
 
         // then
-        assertTrue(defaultAttackerUnit.getTile().position.toHexCoord().eq(0,0))
+        assertTrue(defaultAttackerUnit.getTile().position.eq(0,0))
         assertTrue(defaultDefenderUnit.isDestroyed)
     }
 
@@ -105,7 +102,7 @@ class BattleTest {
         Battle.attack(MapUnitCombatant(attackerUnit), MapUnitCombatant(defaultDefenderUnit))
 
         // then
-        assertTrue(attackerUnit.getTile().position.toHexCoord().eq(0,1))
+        assertTrue(attackerUnit.getTile().position.eq(0,1))
         assertTrue(defaultDefenderUnit.isDestroyed)
     }
 
@@ -209,7 +206,7 @@ class BattleTest {
         // then
         assertEquals(0, attack.attackerDealt)
         assertEquals(0, attack.defenderDealt)
-        assertTrue(defaultAttackerUnit.getTile().position.toHexCoord().eq(2,0))
+        assertTrue(defaultAttackerUnit.getTile().position.eq(2,0))
         assertEquals(attackerCiv, defaultAttackerUnit.getTile().civilianUnit!!.civ)  // captured unit
         assertEquals("Worker", defaultAttackerUnit.getTile().civilianUnit!!.baseUnit.name)
     }
