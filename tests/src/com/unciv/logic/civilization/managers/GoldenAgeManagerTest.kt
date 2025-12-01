@@ -1,6 +1,5 @@
 package com.unciv.logic.civilization.managers
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.map.HexCoord
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame

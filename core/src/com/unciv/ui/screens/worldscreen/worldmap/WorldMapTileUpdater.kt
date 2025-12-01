@@ -10,7 +10,6 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.MapPathing
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.toVector2
 import com.unciv.models.Spy
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
@@ -184,7 +183,7 @@ object WorldMapTileUpdater {
         // Highlight road path for workers currently connecting roads
         if (unit.isAutomatingRoadConnection()) {
             if (unit.automatedRoadConnectionPath == null) return
-            val currTileIndex = unit.automatedRoadConnectionPath!!.indexOf(unit.currentTile.position.toVector2())
+            val currTileIndex = unit.automatedRoadConnectionPath!!.indexOf(unit.currentTile.position)
             if (currTileIndex != -1) {
                 val futureTiles = unit.automatedRoadConnectionPath!!.filterIndexed { index, _ ->
                     index > currTileIndex

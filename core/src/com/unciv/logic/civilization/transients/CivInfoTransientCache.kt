@@ -1,6 +1,5 @@
 package com.unciv.logic.civilization.transients
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
@@ -10,9 +9,9 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.Proximity
 import com.unciv.logic.civilization.transients.CapitalConnectionsFinder.CapitalConnectionMedium
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.toVector2
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
@@ -99,7 +98,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
     }
 
     // This is a big performance
-    fun updateViewableTiles(explorerPosition: Vector2? = null) {
+    fun updateViewableTiles(explorerPosition: HexCoord? = null) {
         setNewViewableTiles()
 
         updateViewableInvisibleTiles()
@@ -216,7 +215,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         if (civInfo.playerType == PlayerType.AI) return // don't bother for AI, they don't really use the info anyway
 
         for (tile in civInfo.viewableTiles)
-            civInfo.setLastSeenImprovement(tile.position.toVector2(), tile.improvement)
+            civInfo.setLastSeenImprovement(tile.position, tile.improvement)
     }
 
     /** Visible for DevConsole use only */

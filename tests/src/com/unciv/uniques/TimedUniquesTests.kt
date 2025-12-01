@@ -1,7 +1,5 @@
 package com.unciv.uniques
 
-import com.badlogic.gdx.math.Vector2
-import com.unciv.Constants
 import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.civilization.managers.TurnManager

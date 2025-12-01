@@ -1,6 +1,5 @@
 package com.unciv.logic.map
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
@@ -12,7 +11,7 @@ class MapVisualization(val gameInfo: GameInfo, val viewingCiv: Civilization) {
     fun isUnitPastVisible(unit: MapUnit): Boolean {
         if (unit.civ == viewingCiv)
             return true
-        val checkPositions = sequenceOf(unit.movementMemories.asSequence().map { it.position }, sequenceOf(unit.getTile().position.toVector2())).flatten()
+        val checkPositions = sequenceOf(unit.movementMemories.asSequence().map { it.position }, sequenceOf(unit.getTile().position)).flatten()
         return checkPositions.all { gameInfo.tileMap[it] in viewingCiv.viewableTiles }
                 && (!unit.isInvisible(viewingCiv) || unit.getTile() in viewingCiv.viewableInvisibleUnitsTiles)
         // Past should always be visible for own units. Past should be visible for foreign units if the unit is visible and both its current tile and previous tiles are visible.
@@ -23,6 +22,6 @@ class MapVisualization(val gameInfo: GameInfo, val viewingCiv: Civilization) {
     // Plans should be visible always for own units and never for foreign units.
 
     /** @return Whether an attack by a unit to a target should be visible to the player. */
-    fun isAttackVisible(attacker: Civilization, source: Vector2, target: Vector2) = (attacker == viewingCiv || gameInfo.tileMap[source] in viewingCiv.viewableTiles || gameInfo.tileMap[target] in viewingCiv.viewableTiles)
+    fun isAttackVisible(attacker: Civilization, source: HexCoord, target: HexCoord) = (attacker == viewingCiv || gameInfo.tileMap[source] in viewingCiv.viewableTiles || gameInfo.tileMap[target] in viewingCiv.viewableTiles)
     // Attacks by the player civ should always be visible, and attacks by foreign civs should be visible if either the tile they targeted or the attacker's tile are visible. E.G. Civ V shows bombers coming out of the Fog of War.
 }

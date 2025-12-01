@@ -1,6 +1,5 @@
 package com.unciv.ui.screens.devconsole
 
-import com.unciv.logic.map.toVector2
 import com.unciv.models.ruleset.Building
 import com.unciv.ui.screens.devconsole.CliInput.Companion.findCliInput
 

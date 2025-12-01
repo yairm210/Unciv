@@ -1,7 +1,6 @@
 package com.unciv.logic.automation.unit
 
 import com.badlogic.gdx.math.Vector2
-import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
@@ -11,8 +10,6 @@ import com.unciv.logic.map.MapPathing
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.toVector2
-import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import yairm210.purity.annotations.Cache

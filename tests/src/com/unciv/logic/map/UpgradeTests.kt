@@ -2,7 +2,6 @@
 
 package com.unciv.logic.map
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.models.UpgradeUnitAction
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation

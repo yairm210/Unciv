@@ -1,6 +1,5 @@
 package com.unciv.logic.civilization
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.json.LastSeenImprovement
@@ -11,23 +10,8 @@ import com.unciv.logic.UncivShowableException
 import com.unciv.logic.automation.unit.WorkerAutomation
 import com.unciv.logic.city.City
 import com.unciv.logic.city.managers.CityFounder
-import com.unciv.logic.civilization.diplomacy.CityStateFunctions
-import com.unciv.logic.civilization.diplomacy.CityStatePersonality
-import com.unciv.logic.civilization.diplomacy.DiplomacyFunctions
-import com.unciv.logic.civilization.diplomacy.DiplomacyManager
-import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
-import com.unciv.logic.civilization.diplomacy.RelationshipLevel
-import com.unciv.logic.civilization.managers.EspionageManager
-import com.unciv.logic.civilization.managers.GoldenAgeManager
-import com.unciv.logic.civilization.managers.GreatPersonManager
-import com.unciv.logic.civilization.managers.PolicyManager
-import com.unciv.logic.civilization.managers.QuestManager
-import com.unciv.logic.civilization.managers.ReligionManager
-import com.unciv.logic.civilization.managers.RuinsManager
-import com.unciv.logic.civilization.managers.TechManager
-import com.unciv.logic.civilization.managers.ThreatManager
-import com.unciv.logic.civilization.managers.UnitManager
-import com.unciv.logic.civilization.managers.VictoryManager
+import com.unciv.logic.civilization.diplomacy.*
+import com.unciv.logic.civilization.managers.*
 import com.unciv.logic.civilization.transients.CivInfoStatsForNextTurn
 import com.unciv.logic.civilization.transients.CivInfoTransientCache
 import com.unciv.logic.map.HexCoord
@@ -132,7 +116,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     var passThroughImpassableUnlocked = false   // Cached Boolean equal to passableImpassables.isNotEmpty()
 
     @Transient
-    var neutralRoads = HashSet<Vector2>()
+    var neutralRoads = HashSet<HexCoord>()
 
     val modConstants get() = gameInfo.ruleset.modOptions.constants
 
@@ -236,15 +220,15 @@ class Civilization : IsPartOfGameInfoSerialization {
      * @see [MapUnit.UnitMovementMemory], [attacksSinceTurnStart]
      */
     class HistoricalAttackMemory() : IsPartOfGameInfoSerialization {
-        constructor(attackingUnit: String?, source: Vector2, target: Vector2): this() {
+        constructor(attackingUnit: String?, source: HexCoord, target: HexCoord): this() {
             this.attackingUnit = attackingUnit
             this.source = source
             this.target = target
         }
         var attackingUnit: String? = null
-        lateinit var source: Vector2
-        lateinit var target: Vector2
-        @Readonly fun clone() = HistoricalAttackMemory(attackingUnit, Vector2(source), Vector2(target))
+        lateinit var source: HexCoord
+        lateinit var target: HexCoord
+        @Readonly fun clone() = HistoricalAttackMemory(attackingUnit, source, target)
     }
     /** Deep clone an ArrayList of [HistoricalAttackMemory]s. */
     @Readonly private fun ArrayList<HistoricalAttackMemory>.copy() = ArrayList(this.map { it.clone() })
@@ -589,7 +573,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         return when (filter) {
             "Human player" -> isHuman()
             "AI player" -> isAI()
-            "Open Borders" -> state?.civInfo?.diplomacy[civName]?.hasOpenBorders ?: false
+            "Open Borders" -> state?.civInfo?.diplomacy?.get(civName)?.hasOpenBorders ?: false
             "Friendly" -> state?.civInfo?.let { it.civName == civName || (it.diplomacy[civName]?.isRelationshipLevelGE(RelationshipLevel.Friend) == true) } ?: false
             "Hostile" -> state?.civInfo?.let { isAtWarWith(it) } ?: false
             else -> nation.matchesFilter(filter, state, false)
@@ -951,7 +935,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     /** Add a [Notification] to this [civ's][Civilization] [notifications] (No-action version).
      *  - Ignored for AI civ's
      *  - There's overloads accepting zero, one, a Sequence or Iterable of [NotificationAction]s between [text] and [category]
-     *  - Another overload accepts a [Vector2] as shorthand for a [LocationAction] - for several use [LocationAction(positions)][LocationAction.Companion]
+     *  - Another overload accepts a [HexCoord] as shorthand for a [LocationAction] - for several use [LocationAction(positions)][LocationAction.Companion]
      *  @param notificationIcons Zero or more icons to decorate the notification with - see [NotificationIcon]
      */
     fun addNotification(text: String, category: NotificationCategory, vararg notificationIcons: String) =
@@ -960,19 +944,16 @@ class Civilization : IsPartOfGameInfoSerialization {
     /** Add a [Notification] to this [civ's][Civilization] [notifications] (Single-location version).
      *  - Ignored for AI civ's
      *  - There's overloads accepting zero, one, a Sequence or Iterable of [NotificationAction]s between [text] and [category]
-     *  - Another overload accepts a [Vector2] as shorthand for a [LocationAction] - for several use [LocationAction(positions)][LocationAction.Companion]
+     *  - Another overload accepts a [HexCoord] as shorthand for a [LocationAction] - for several use [LocationAction(positions)][LocationAction.Companion]
      *  @param notificationIcons Zero or more icons to decorate the notification with - see [NotificationIcon]
      */
     fun addNotification(text: String, location: HexCoord, category: NotificationCategory, vararg notificationIcons: String) =
-        addNotification(text, LocationAction(location.toVector2()), category, *notificationIcons)
-    
-    fun addNotification(text: String, location: Vector2, category: NotificationCategory, vararg notificationIcons: String) =
         addNotification(text, LocationAction(location), category, *notificationIcons)
-
+    
     /** Add a [Notification] to this [civ's][Civilization] [notifications] (Single-action version).
      *  - Ignored for AI civ's
      *  - There's overloads accepting zero, one, a Sequence or Iterable of [NotificationAction]s between [text] and [category]
-     *  - Another overload accepts a [Vector2] as shorthand for a [LocationAction] - for several use [LocationAction(positions)][LocationAction.Companion]
+     *  - Another overload accepts a [HexCoord] as shorthand for a [LocationAction] - for several use [LocationAction(positions)][LocationAction.Companion]
      *  @param notificationIcons Zero or more icons to decorate the notification with - see [NotificationIcon]
      */
     fun addNotification(text: String, action: NotificationAction, category: NotificationCategory, vararg notificationIcons: String) =
@@ -981,7 +962,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     /** Add a [Notification] to this [civ's][Civilization] [notifications] (Sequence version).
      *  - Ignored for AI civ's
      *  - There's overloads accepting zero, one, a Sequence or Iterable of [NotificationAction]s between [text] and [category]
-     *  - Another overload accepts a [Vector2] as shorthand for a [LocationAction] - for several use [LocationAction(positions)][LocationAction.Companion]
+     *  - Another overload accepts a [HexCoord] as shorthand for a [LocationAction] - for several use [LocationAction(positions)][LocationAction.Companion]
      *  @param notificationIcons Zero or more icons to decorate the notification with - see [NotificationIcon]
      */
     fun addNotification(text: String, actions: Sequence<NotificationAction>, category:NotificationCategory, vararg notificationIcons: String) =
@@ -990,7 +971,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     /** Add a [Notification] to this [civ's][Civilization] [notifications] (Iterable version).
      *  - Ignored for AI civ's
      *  - There's overloads accepting zero, one, a Sequence or Iterable of [NotificationAction]s between [text] and [category]
-     *  - Another overload accepts a [Vector2] as shorthand for a [LocationAction] - for several use [LocationAction(positions)][LocationAction.Companion]
+     *  - Another overload accepts a [HexCoord] as shorthand for a [LocationAction] - for several use [LocationAction(positions)][LocationAction.Companion]
      *  @param notificationIcons Zero or more icons to decorate the notification with - see [NotificationIcon]
      */
     fun addNotification(text: String, actions: Iterable<NotificationAction>?, category: NotificationCategory, vararg notificationIcons: String) {
@@ -1126,12 +1107,12 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun asPreview() = CivilizationInfoPreview(this)
 
     @Readonly
-    fun getLastSeenImprovement(position: Vector2): String? {
+    fun getLastSeenImprovement(position: HexCoord): String? {
         if (isAI() || isSpectator()) return null
         return lastSeenImprovement[position]
     }
     
-    fun setLastSeenImprovement(position: Vector2, improvement: String?) {
+    fun setLastSeenImprovement(position: HexCoord, improvement: String?) {
         if (isAI() || isSpectator()) return
         if (improvement == null)
             lastSeenImprovement.remove(position)

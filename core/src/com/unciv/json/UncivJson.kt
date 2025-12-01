@@ -7,7 +7,6 @@ import com.badlogic.gdx.utils.JsonWriter
 import com.badlogic.gdx.utils.SerializationException
 import com.unciv.logic.map.HexCoord
 import com.unciv.ui.components.input.KeyCharAndCode
-import kotlinx.serialization.builtins.PairSerializer
 import java.time.Duration
 
 

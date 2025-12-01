@@ -1,6 +1,5 @@
 package com.unciv.logic.map
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.testing.GdxTestRunner

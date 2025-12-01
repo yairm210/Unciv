@@ -1,6 +1,5 @@
 ﻿package com.unciv.logic.map.tile
 
-import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
 import com.unciv.Constants
@@ -350,7 +349,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     @Readonly
     fun getShownImprovement(viewingCiv: Civilization?): String? =
         if (viewingCiv == null || viewingCiv.playerType == PlayerType.AI || viewingCiv.isSpectator()) improvement
-        else viewingCiv.getLastSeenImprovement(position.toVector2())
+        else viewingCiv.getLastSeenImprovement(position)
 
     /** Returns true if this tile has fallout or an equivalent terrain feature */
     @Readonly fun hasFalloutEquivalent(): Boolean = terrainFeatures.any { ruleset.terrains[it]!!.hasUnique(UniqueType.NullifyYields)}
@@ -826,7 +825,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         if (owningCity == null && roadOwner != "") {
             if (roadOwnerObject == null && tileMap.hasGameInfo())
                 roadOwnerObject = tileMap.gameInfo.getCivilization(roadOwner)
-            getRoadOwner()!!.neutralRoads.add(this.position.toVector2())
+            getRoadOwner()!!.neutralRoads.add(this.position)
         }
     }
 
@@ -836,7 +835,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         if (city != null) {
             if (roadStatus != RoadStatus.None && roadOwner != "") {
                 // remove previous neutral tile owner
-                getRoadOwner()!!.neutralRoads.remove(this.position.toVector2())
+                getRoadOwner()!!.neutralRoads.remove(this.position)
             }
             roadOwner = city.civ.civName // only when taking control, otherwise last owner
             roadOwnerObject = city.civ
@@ -981,14 +980,14 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         roadIsPillaged = false
         val currentOwner = getOwner()
         if (newRoadStatus == RoadStatus.None && owningCity == null)
-            getRoadOwner()?.neutralRoads?.remove(this.position.toVector2())
+            getRoadOwner()?.neutralRoads?.remove(this.position)
         else if (currentOwner != null && currentOwner != roadOwnerObject) {
             roadOwner = currentOwner.civName
             roadOwnerObject = currentOwner
         } else if (creatingCivInfo != null) {
             roadOwner = creatingCivInfo.civName // neutral tile, use building unit
             roadOwnerObject = creatingCivInfo
-            creatingCivInfo.neutralRoads.add(this.position.toVector2())
+            creatingCivInfo.neutralRoads.add(this.position)
         }
     }
 
@@ -1088,7 +1087,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         }
     }
 
-    fun setExplored(player: Civilization, isExplored: Boolean, explorerPosition: Vector2? = null) {
+    fun setExplored(player: Civilization, isExplored: Boolean, explorerPosition: HexCoord? = null) {
         if (isExplored) {
             // Disable the undo button if a new tile has been explored
             if (!exploredBy.contains(player.civName)) {
@@ -1097,7 +1096,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             }
 
             if (player.playerType == PlayerType.Human)
-                player.exploredRegion.checkTilePosition(position.toVector2(), explorerPosition)
+                player.exploredRegion.checkTilePosition(position, explorerPosition)
         } else {
             exploredBy = exploredBy.withoutItem(player.civName)
         }

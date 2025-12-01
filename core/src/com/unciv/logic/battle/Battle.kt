@@ -1,21 +1,12 @@
 package com.unciv.logic.battle
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.AlertType
-import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.civilization.LocationAction
-import com.unciv.logic.civilization.MapUnitAction
-import com.unciv.logic.civilization.NotificationCategory
-import com.unciv.logic.civilization.NotificationIcon
-import com.unciv.logic.civilization.PopupAlert
-import com.unciv.logic.civilization.PromoteUnitAction
+import com.unciv.logic.civilization.*
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.toVector2
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
@@ -114,12 +105,12 @@ object Battle {
         debug("%s %s attacked %s %s", attacker.getCivInfo().civName, attacker.getName(), defender.getCivInfo().civName, defender.getName())
         val attackedTile = defender.getTile()
         if (attacker is MapUnitCombatant) {
-            attacker.unit.attacksSinceTurnStart.add(Vector2(attackedTile.position.toVector2()))
+            attacker.unit.attacksSinceTurnStart.add(attackedTile.position)
         } else {
             attacker.getCivInfo().attacksSinceTurnStart.add(Civilization.HistoricalAttackMemory(
                 null,
-                Vector2(attacker.getTile().position.toVector2()),
-                Vector2(attackedTile.position.toVector2())
+                attacker.getTile().position,
+                attackedTile.position
             ))
         }
 
@@ -145,7 +136,7 @@ object Battle {
             postBattleNotifications(attacker, defender, attackedTile, attacker.getTile(), damageDealt)
 
         if (defender.getCivInfo().isBarbarian && attackedTile.improvement == Constants.barbarianEncampment)
-            defender.getCivInfo().gameInfo.barbarians.campAttacked(attackedTile.position.toVector2())
+            defender.getCivInfo().gameInfo.barbarians.campAttacked(attackedTile.position)
 
         // This needs to come BEFORE the move-to-tile, because if we haven't conquered it we can't move there =)
         handleCityDefeated(defender, attacker)
@@ -520,7 +511,7 @@ object Battle {
         val attackerIcon = if (attacker is CityCombatant) NotificationIcon.City else attacker.getName()
         val defenderIcon = if (defender is CityCombatant) NotificationIcon.City else defender.getName()
         
-        val locations = LocationAction(attackedTile.position.toVector2(), attackerTile?.position?.toVector2())
+        val locations = LocationAction(attackedTile.position, attackerTile?.position)
         defender.getCivInfo().addNotification(notificationString, locations, NotificationCategory.War, attackerIcon, battleActionIcon, defenderIcon)
     }
 
@@ -621,7 +612,7 @@ object Battle {
         if (!thisCombatant.isDefeated() && !unitCouldAlreadyPromote && promotions.canBePromoted()) {
             val pos = thisCombatant.getTile().position
             civ.addNotification("[${thisCombatant.unit.displayName()}] can be promoted!",
-                listOf(MapUnitAction(pos.toVector2()), PromoteUnitAction(thisCombatant.getName(), pos.toVector2())),
+                listOf(MapUnitAction(pos), PromoteUnitAction(thisCombatant.getName(), pos)),
                 NotificationCategory.Units, thisCombatant.unit.name)
         }
     }

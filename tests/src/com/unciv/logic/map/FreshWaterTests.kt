@@ -1,6 +1,5 @@
 package com.unciv.logic.map
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.files.MapSaver
 import com.unciv.models.ruleset.Ruleset

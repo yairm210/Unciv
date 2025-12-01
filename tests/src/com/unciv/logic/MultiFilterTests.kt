@@ -1,14 +1,9 @@
 package com.unciv.logic
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.city.CityFlags
 import com.unciv.logic.map.HexCoord
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.unique.Conditionals
-import com.unciv.models.ruleset.unique.GameContext
-import com.unciv.models.ruleset.unique.Unique
-import com.unciv.models.ruleset.unique.UniqueParameterType
-import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unique.*
 import com.unciv.models.ruleset.validation.UniqueValidator
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame

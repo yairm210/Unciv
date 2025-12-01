@@ -1,9 +1,8 @@
 package com.unciv.ui.screens.worldscreen.unit.presenter
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.City
-import com.unciv.logic.map.toVector2
+import com.unciv.logic.map.HexCoord
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.screens.pickerscreens.CityRenamePopup
@@ -13,8 +12,8 @@ class CityPresenter(private val unitTable: UnitTable, private val unitPresenter:
 
     var selectedCity : City? = null
 
-    override val position: Vector2?
-        get() = selectedCity?.location?.toVector2()
+    override val position: HexCoord?
+        get() = selectedCity?.location
 
     fun selectCity(city: City) : Boolean {
         // If the last selected unit connecting a road, keep it selected. Otherwise, clear.

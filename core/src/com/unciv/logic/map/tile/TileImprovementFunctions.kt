@@ -7,7 +7,6 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.managers.ImprovementFunctions
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.toHexCoord
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
@@ -184,7 +183,7 @@ class TileImprovementFunctions(val tile: Tile) {
             for (civ in tile.tileMap.gameInfo.civilizations) {
                 if (civ.isDefeated() || !civ.isMajorCiv()) continue
                 if (civ == civToActivateBroaderEffects || tile.isVisible(civ))
-                    civ.setLastSeenImprovement(tile.position.toVector2(), improvementName)
+                    civ.setLastSeenImprovement(tile.position, improvementName)
             }
         }
 

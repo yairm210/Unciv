@@ -1,16 +1,15 @@
 package com.unciv.logic.map.mapgenerator.mapregions
 
 import com.badlogic.gdx.math.Rectangle
-import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapgenerator.mapregions.MapRegions.BiasTypes.PositiveFallback
 import com.unciv.logic.map.mapgenerator.resourceplacement.LuxuryResourcePlacementLogic
 import com.unciv.logic.map.mapgenerator.resourceplacement.StrategicBonusResourcePlacementLogic
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.toVector2
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.Terrain
@@ -26,18 +25,18 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-class TileDataMap : HashMap<Vector2, MapGenTileData>() {
+class TileDataMap : HashMap<HexCoord, MapGenTileData>() {
 
     /** Adds numbers to tileData in a similar way to closeStartPenalty, but for different types */
     fun placeImpact(type: MapRegions.ImpactType, tile: Tile, radius: Int) {
         // Epicenter
-        this[tile.position.toVector2()]!!.impacts[type] = 99
+        this[tile.position]!!.impacts[type] = 99
         if (radius <= 0) return
 
         for (ring in 1..radius) {
             val ringValue = radius - ring + 1
             for (outerTile in tile.getTilesAtDistance(ring)) {
-                val data = this[outerTile.position.toVector2()]!!
+                val data = this[outerTile.position]!!
                 if (data.impacts.containsKey(type))
                     data.impacts[type] = min(50, max(ringValue, data.impacts[type]!!) + 2)
                 else
@@ -237,7 +236,7 @@ class MapRegions (val ruleset: Ruleset) {
         // Generate tile data for all tiles
         for (tile in tileMap.values) {
             val newData = MapGenTileData(tile, regions.firstOrNull { it.tiles.contains(tile) }, ruleset)
-            tileData[tile.position.toVector2()] = newData
+            tileData[tile.position] = newData
         }
 
         // Sort regions by fertility so the worse regions get to pick first

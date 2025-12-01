@@ -1,15 +1,14 @@
 package com.unciv.logic.automation.unit
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.MapPathing
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.toVector2
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import yairm210.purity.annotations.Readonly
@@ -49,7 +48,7 @@ class RoadToAutomation(val civInfo: Civilization) {
 
         val destinationTile = unit.civ.gameInfo.tileMap[unit.automatedRoadConnectionDestination!!]
 
-        var pathToDest: List<Vector2>? = unit.automatedRoadConnectionPath
+        var pathToDest: List<HexCoord>? = unit.automatedRoadConnectionPath
 
         // The path does not exist, create it
         if (pathToDest == null) {
@@ -62,13 +61,13 @@ class RoadToAutomation(val civInfo: Civilization) {
             }
 
             pathToDest = foundPath // Convert to a list of positions for serialization
-                .map { it.position.toVector2() }
+                .map { it.position }
 
             unit.automatedRoadConnectionPath = pathToDest
             debug("WorkerAutomation: $unit -> found connect road path to destination tile: %s, %s", destinationTile, pathToDest)
         }
 
-        val currTileIndex = pathToDest.indexOf(currentTile.position.toVector2())
+        val currTileIndex = pathToDest.indexOf(currentTile.position)
 
         // The worker was somehow moved off its path, cancel the action
         if (currTileIndex == -1) {
@@ -96,7 +95,7 @@ class RoadToAutomation(val civInfo: Civilization) {
 
                 // Create a new list with tiles where the index is greater than currTileIndex
                 val futureTiles = pathToDest.asSequence()
-                    .dropWhile { it != unit.currentTile.position.toVector2() }
+                    .dropWhile { it != unit.currentTile.position }
                     .drop(1)
                     .map { tileMap[it] }
 

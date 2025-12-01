@@ -1,15 +1,13 @@
 package com.unciv.logic.automation.civilization
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.toHexCoord
-import com.unciv.logic.map.toVector2
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.utils.randomWeighted
@@ -45,8 +43,8 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
 
         for (tile in tileMap.values) {
             if (tile.improvement == Constants.barbarianEncampment
-                    && !existingEncampmentLocations.contains(tile.position.toVector2())) {
-                encampments.add(Encampment(tile.position.toVector2()))
+                    && !existingEncampmentLocations.contains(tile.position)) {
+                encampments.add(Encampment(tile.position))
             }
         }
 
@@ -72,7 +70,7 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
     }
 
     /** Called when an encampment was attacked, will speed up time to next spawn */
-    fun campAttacked(position: Vector2) {
+    fun campAttacked(position: HexCoord) {
         encampments.firstOrNull { it.position == position }?.wasAttacked()
     }
 
@@ -135,7 +133,7 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
                 tile = viableTiles.random()
 
             tile.setImprovement(Constants.barbarianEncampment)
-            val newCamp = Encampment(tile.position.toVector2())
+            val newCamp = Encampment(tile.position)
             newCamp.gameInfo = gameInfo
             encampments.add(newCamp)
             notifyCivsOfBarbarianEncampment(tile)
@@ -162,13 +160,13 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
         }
             .forEach {
                 it.addNotification("A new barbarian encampment has spawned!", tile.position, NotificationCategory.War, NotificationIcon.War)
-                it.setLastSeenImprovement(tile.position.toVector2(), Constants.barbarianEncampment)
+                it.setLastSeenImprovement(tile.position, Constants.barbarianEncampment)
             }
     }
 }
 
 class Encampment() : IsPartOfGameInfoSerialization {
-    val position = Vector2()
+    var position = HexCoord()
     var countdown = 0
     var spawnedUnits = -1
     var destroyed = false // destroyed encampments haunt the vicinity for 15 turns preventing new spawns
@@ -176,9 +174,8 @@ class Encampment() : IsPartOfGameInfoSerialization {
     @Transient
     lateinit var gameInfo: GameInfo
 
-    constructor(position: Vector2): this() {
-        this.position.x = position.x
-        this.position.y = position.y
+    constructor(position: HexCoord): this() {
+        this.position = position
     }
 
     fun clone(): Encampment {
