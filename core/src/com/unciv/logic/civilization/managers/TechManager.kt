@@ -14,6 +14,7 @@ import com.unciv.logic.civilization.PolicyAction
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.TechAction
 import com.unciv.logic.map.tile.RoadStatus
+import com.unciv.logic.map.toHexCoord
 import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.tech.Era
 import com.unciv.models.ruleset.tech.Technology
@@ -407,7 +408,7 @@ class TechManager : IsPartOfGameInfoSerialization {
             for(city in cities)
                 city.cityConstructions.validateInProgressConstructions()
 
-            val locationAction = LocationAction(cities.asSequence().map { it.location })
+            val locationAction = LocationAction(cities.asSequence().map { it.location.toHexCoord() })
             val cityText = if (cities.size == 1) "[${cities.first().name}]"
                 else "[${cities.size}] cities"
             val newUnit = obsoleteUnits[unit]?.name

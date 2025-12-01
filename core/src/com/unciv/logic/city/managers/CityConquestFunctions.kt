@@ -12,6 +12,7 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.mapunit.UnitPromotions
+import com.unciv.logic.map.toHexCoord
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeOfferType
@@ -117,7 +118,7 @@ class CityConquestFunctions(val city: City) {
 
         city.moveToCiv(receivingCiv)
 
-        Battle.destroyIfDefeated(conqueredCiv, conqueringCiv, city.location)
+        Battle.destroyIfDefeated(conqueredCiv, conqueringCiv, city.location.toHexCoord())
 
         city.health = city.getMaxHealth() / 2 // I think that cities recover to half health when conquered?
         city.avoidGrowth = false // reset settings

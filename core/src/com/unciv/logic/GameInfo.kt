@@ -502,7 +502,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             }
         } else {
             val positions = tiles.asSequence().map { it.position }
-            thisPlayer.addNotification("[${tiles.size}] enemy units were spotted $inOrNear our territory", LocationAction(positions.map { it.toVector2() }), NotificationCategory.War, NotificationIcon.War)
+            thisPlayer.addNotification("[${tiles.size}] enemy units were spotted $inOrNear our territory", LocationAction(positions.map { it }), NotificationCategory.War, NotificationIcon.War)
         }
     }
 
@@ -605,7 +605,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             "[$positionsCount] sources of [$resourceName] revealed, e.g. near [${chosenCity.name}]"
 
         return Notification(text, arrayOf("ResourceIcons/$resourceName"),
-            LocationAction(positions.map { it.toVector2() }).asIterable(), NotificationCategory.General)
+            LocationAction(positions.map { it }).asIterable(), NotificationCategory.General)
     }
 
     // All cross-game data which needs to be altered (e.g. when removing or changing a name of a building/tech)

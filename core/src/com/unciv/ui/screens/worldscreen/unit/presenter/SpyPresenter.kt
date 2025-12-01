@@ -2,6 +2,7 @@ package com.unciv.ui.screens.worldscreen.unit.presenter
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
+import com.unciv.logic.map.toVector2
 import com.unciv.models.Spy
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.worldscreen.unit.UnitTable
@@ -11,7 +12,7 @@ class SpyPresenter(private val unitTable: UnitTable) : UnitTable.Presenter {
     var selectedSpy: Spy? = null
 
     override val position: Vector2?
-        get() = selectedSpy?.getCityOrNull()?.location
+        get() = selectedSpy?.getCityOrNull()?.location?.toVector2()
     
     fun selectSpy(spy: Spy?) {
         selectedSpy = spy

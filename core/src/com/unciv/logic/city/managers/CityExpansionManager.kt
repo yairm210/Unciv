@@ -210,7 +210,7 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         if (cultureStored >= getCultureToNextTile()) {
             val location = addNewTileWithCulture()
             if (location != null) {
-                val locations = LocationAction(location, city.location)
+                val locations = LocationAction(location.toHexCoord(), city.location.toHexCoord())
                 city.civ.addNotification("[${city.name}] has expanded its borders!", locations,
                     NotificationCategory.Cities, NotificationIcon.Culture)
             }

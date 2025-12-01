@@ -3,7 +3,6 @@ package com.unciv.ui.screens.worldscreen
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
-import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
@@ -14,6 +13,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.event.EventBus
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.MapVisualization
 import com.unciv.logic.map.toHexCoord
 import com.unciv.logic.multiplayer.MultiplayerGameUpdated
@@ -175,21 +175,18 @@ class WorldScreen(
         battleTable.x = stage.width / 3
         stage.addActor(battleTable)
 
-        val tileToCenterOn: Vector2 =
+        val tileToCenterOn: HexCoord =
                 when {
-                    viewingCiv.getCapital() != null -> viewingCiv.getCapital()!!.location
-                    viewingCiv.units.getCivUnits().any() -> viewingCiv.units.getCivUnits().first().getTile().position.toVector2()
-                    else -> Vector2.Zero
+                    viewingCiv.getCapital() != null -> viewingCiv.getCapital()!!.location.toHexCoord()
+                    viewingCiv.units.getCivUnits().any() -> viewingCiv.units.getCivUnits().first().getTile().position
+                    else -> HexCoord.Zero
                 }
 
         mapHolder.isAutoScrollEnabled = Gdx.app.type == Application.ApplicationType.Desktop && game.settings.mapAutoScroll
         mapHolder.mapPanningSpeed = game.settings.mapPanningSpeed
 
         // Don't select unit and change selectedCiv when centering as spectator
-        if (viewingCiv.isSpectator())
-            mapHolder.setCenterPosition(tileToCenterOn.toHexCoord(), immediately = true, selectUnit = false)
-        else
-            mapHolder.setCenterPosition(tileToCenterOn.toHexCoord(), immediately = true, selectUnit = true)
+        mapHolder.setCenterPosition(tileToCenterOn, immediately = true, selectUnit = !viewingCiv.isSpectator())
 
         tutorialController.allTutorialsShowedCallback = { shouldUpdate = true }
 

@@ -13,6 +13,7 @@ import com.unciv.logic.city.managers.CityReligionManager
 import com.unciv.logic.city.managers.SpyFleeReason
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.transients.CapitalConnectionsFinder.CapitalConnectionMedium
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.UnitPromotions

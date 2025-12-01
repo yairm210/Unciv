@@ -12,7 +12,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.toVector2
+import com.unciv.logic.map.toHexCoord
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.worldscreen.bottombar.BattleTable
@@ -221,11 +221,11 @@ object Nuke {
 
         // Damage city and reduce its population
         val city = tile.getCity()
-        if (city != null && tile.position.toVector2() == city.location) {
+        if (city != null && tile.position.toHexCoord() == city.location.toHexCoord()) {
             buildingModifier = city.getAggregateModifier(UniqueType.GarrisonDamageFromNukes)
             doNukeExplosionDamageToCity(city, nukeStrength, damageModifierFromMissingResource)
             Battle.postBattleNotifications(attacker, CityCombatant(city), city.getCenterTile())
-            Battle.destroyIfDefeated(city.civ, attacker.getCivInfo(), city.location)
+            Battle.destroyIfDefeated(city.civ, attacker.getCivInfo(), city.location.toHexCoord())
         }
 
         // Damage and/or destroy units on the tile

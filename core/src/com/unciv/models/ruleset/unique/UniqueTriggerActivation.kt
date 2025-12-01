@@ -1,6 +1,5 @@
 package com.unciv.models.ruleset.unique
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.civilization.NextTurnAutomation
@@ -19,6 +18,7 @@ import com.unciv.logic.civilization.TechAction
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.managers.ReligionState
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapgenerator.NaturalWonderGenerator
 import com.unciv.logic.map.mapgenerator.RiverGenerator
 import com.unciv.logic.map.mapunit.MapUnit
@@ -440,7 +440,7 @@ object UniqueTriggerActivation {
                     if (notification != null)
                         civInfo.addNotification(
                             notification,
-                            LocationAction(applicableCities.map { it.location }),
+                            LocationAction(applicableCities.map { it.location.toHexCoord() }),
                             NotificationCategory.Cities,
                             NotificationIcon.Population
                         )
@@ -830,7 +830,7 @@ object UniqueTriggerActivation {
                 val radius = unique.params[2].toInt()
 
                 val isAll = amount in Constants.all
-                val positions = ArrayList<Vector2>()
+                val positions = ArrayList<HexCoord>()
 
                 var explorableTiles = tile.getTilesInDistance(radius)
                     .filter { !it.isExplored(civInfo) && it.matchesFilter(filter) }
@@ -845,13 +845,13 @@ object UniqueTriggerActivation {
                     for (explorableTile in explorableTiles) {
                         explorableTile.setExplored(civInfo, true)
                         civInfo.setLastSeenImprovement(explorableTile.position.toVector2(), explorableTile.improvement)
-                        positions += explorableTile.position.toVector2()
+                        positions += explorableTile.position
                     }
 
                     if (notification != null) {
                         civInfo.addNotification(
                             notification,
-                            LocationAction(positions),
+                            LocationAction(positions.asSequence()),
                             NotificationCategory.War,
                             if (unique.params[1] == Constants.barbarianEncampment)
                                 NotificationIcon.Barbarians else NotificationIcon.Scout
@@ -961,7 +961,7 @@ object UniqueTriggerActivation {
                         }
                     }
                     if (notification != null)
-                        civInfo.addNotification(notification, LocationAction(applicableCities.map { it.location }), NotificationCategory.Cities, NotificationIcon.City)
+                        civInfo.addNotification(notification, LocationAction(applicableCities.map { it.location.toHexCoord() }), NotificationCategory.Cities, NotificationIcon.City)
                     true
                 }
             }
@@ -1010,7 +1010,7 @@ object UniqueTriggerActivation {
                     if (notification != null)
                         civInfo.addNotification(
                             notification,
-                            LocationAction(applicableCities.map { it.location }),
+                            LocationAction(applicableCities.map { it.location.toHexCoord() }),
                             NotificationCategory.Cities,
                             NotificationIcon.Construction
                         )
@@ -1033,7 +1033,7 @@ object UniqueTriggerActivation {
                     if (notification != null)
                         civInfo.addNotification(
                             notification,
-                            LocationAction(applicableCities.map { it.location }),
+                            LocationAction(applicableCities.map { it.location.toHexCoord() }),
                             NotificationCategory.Cities,
                             NotificationIcon.Gold
                         )

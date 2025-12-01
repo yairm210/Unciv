@@ -8,6 +8,7 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.ReligionAction
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.toHexCoord
 import com.unciv.models.Counter
 import com.unciv.models.Religion
 import com.unciv.models.ruleset.Belief
@@ -487,7 +488,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
             if (civInfo in civ.getKnownCivs()) {
                 if (civ.hasExplored(holyCity.getCenterTile()))
                     civ.addNotification("[${civInfo.civName}] has founded [$displayName] in [${holyCity.name}]!",
-                        ReligionAction.withLocation(holyCity.location, name),
+                        ReligionAction.withLocation(holyCity.location.toHexCoord(), name),
                         Notification.NotificationCategory.Religion, NotificationIcon.Faith)
                 else civ.addNotification("[${civInfo.civName}] has founded [$displayName]!",
                     ReligionAction(name), Notification.NotificationCategory.Religion, NotificationIcon.Faith)

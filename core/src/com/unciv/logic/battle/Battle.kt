@@ -13,6 +13,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.PromoteUnitAction
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.toVector2
 import com.unciv.models.UnitActionType
@@ -234,7 +235,7 @@ object Battle {
                 defender.city.destroyCity()
 
                 if (defendingCiv.cities.isEmpty()) {
-                    destroyIfDefeated(defendingCiv, attacker.getCivInfo(), defender.getTile().position.toVector2())
+                    destroyIfDefeated(defendingCiv, attacker.getCivInfo(), defender.getTile().position)
                 }
 
                 return // stop further logic because city was destroyed
@@ -730,7 +731,7 @@ object Battle {
         return null
     }
 
-    fun destroyIfDefeated(attackedCiv: Civilization, attacker: Civilization, notificationLocation: Vector2? = null) {
+    fun destroyIfDefeated(attackedCiv: Civilization, attacker: Civilization, notificationLocation: HexCoord? = null) {
         if (attackedCiv.isDefeated()) {
             if (attackedCiv.isCityState)
                 attackedCiv.cityStateFunctions.cityStateDestroyed(attacker)

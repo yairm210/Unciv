@@ -55,16 +55,14 @@ class LocationAction(private val location: Vector2 = Vector2.Zero) : Notificatio
      *  Example: `addNotification("Bob hit alice", LocationAction(bob.position, alice.position), NotificationCategory.War)`
      */
     companion object {
-        operator fun invoke(locations: Sequence<Vector2>): Sequence<LocationAction> =
+        operator fun invoke(locations: Sequence<HexCoord>): Sequence<LocationAction> =
             locations.map { LocationAction(it) }
         operator fun invoke(locations: Iterable<Vector2>): Sequence<LocationAction> =
             locations.asSequence().map { LocationAction(it) }
         operator fun invoke(vararg locations: Vector2?): Sequence<LocationAction> =
             locations.asSequence().filterNotNull().map { LocationAction(it) }
-        operator fun invoke(first: HexCoord?, second: HexCoord?): Sequence<LocationAction> =
-            sequenceOf(first, second).filterNotNull().map { LocationAction(it) }
-        operator fun invoke(first: HexCoord?): Sequence<LocationAction> =
-            sequenceOf(first).filterNotNull().map { LocationAction(it) }
+        operator fun invoke(vararg locations: HexCoord?): Sequence<LocationAction> =
+            locations.asSequence().filterNotNull().map { LocationAction(it) }
     }
 }
 
@@ -85,7 +83,7 @@ class CityAction(private val city: Vector2 = Vector2.Zero) : NotificationAction 
             worldScreen.game.pushScreen(CityScreen(cityObject))
     }
     companion object {
-        fun withLocation(city: City) = listOf(LocationAction(city.location), CityAction(city.location))
+        fun withLocation(city: City) = listOf(LocationAction(city.location), CityAction(city.location.toVector2()))
     }
 }
 
@@ -150,6 +148,7 @@ class MapUnitAction(
     private val id: Int = Constants.NO_ID
 ) : NotificationAction {
     constructor(unit: MapUnit) : this(unit.currentTile.position.toVector2(), unit.id)
+    constructor(location: HexCoord) : this(location.toVector2())
     override fun execute(worldScreen: WorldScreen) {
         val selectUnit = id != Constants.NO_ID  // This is the unspecific "select any unit on that tile", specific works without this being on
         val unit = if (selectUnit) null else
@@ -223,7 +222,7 @@ class ReligionAction(private val religionName: String? = null) : NotificationAct
         worldScreen.openEmpireOverview(EmpireOverviewCategories.Religion, religionName.orEmpty())
     }
     companion object {
-        fun withLocation(location: Vector2?, religionName: String?): Sequence<NotificationAction> =
+        fun withLocation(location: HexCoord?, religionName: String?): Sequence<NotificationAction> =
             LocationAction(location) + ReligionAction(religionName)
     }
 }

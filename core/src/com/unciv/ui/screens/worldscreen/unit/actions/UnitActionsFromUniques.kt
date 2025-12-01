@@ -64,7 +64,7 @@ object UnitActionsFromUniques {
                 UncivGame.Current.settings.addCompletedTutorialTask(
                     unique.text)
             // Get the city to be able to change it into puppet, for modding.
-            val city = unit.civ.addCity(tile.position.toVector2(), unit)
+            val city = unit.civ.addCity(tile.position, unit)
 
             if (hasActionModifiers) UnitActionModifiers.activateSideEffects(unit, unique)
             else unit.destroy()
