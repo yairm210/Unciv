@@ -63,7 +63,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     // This is so that military units can enter the city, even before we decide what to do with it
     var hasJustBeenConquered = false
 
-    var location = HexCoord()
+    var location: Vector2 = Vector2.Zero
     var id: String = UUID.randomUUID().toString()
     override var name: String = ""
     /** Serialization field for [foundingCivObject]. Is equivalent to `foundingCivObject.civName` */
