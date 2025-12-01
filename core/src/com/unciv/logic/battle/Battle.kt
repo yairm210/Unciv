@@ -1,18 +1,11 @@
 package com.unciv.logic.battle
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.AlertType
-import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.civilization.LocationAction
-import com.unciv.logic.civilization.MapUnitAction
-import com.unciv.logic.civilization.NotificationCategory
-import com.unciv.logic.civilization.NotificationIcon
-import com.unciv.logic.civilization.PopupAlert
-import com.unciv.logic.civilization.PromoteUnitAction
+import com.unciv.logic.civilization.*
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.GameContext
@@ -112,12 +105,12 @@ object Battle {
         debug("%s %s attacked %s %s", attacker.getCivInfo().civName, attacker.getName(), defender.getCivInfo().civName, defender.getName())
         val attackedTile = defender.getTile()
         if (attacker is MapUnitCombatant) {
-            attacker.unit.attacksSinceTurnStart.add(Vector2(attackedTile.position))
+            attacker.unit.attacksSinceTurnStart.add(attackedTile.position)
         } else {
             attacker.getCivInfo().attacksSinceTurnStart.add(Civilization.HistoricalAttackMemory(
                 null,
-                Vector2(attacker.getTile().position),
-                Vector2(attackedTile.position)
+                attacker.getTile().position,
+                attackedTile.position
             ))
         }
 
@@ -510,13 +503,14 @@ object Battle {
                 if (defender.isCity())
                     if (defender.isDefeated() && attacker.isRanged()) " the defence of [" + defender.getName() + "]"
                     else " [" + defender.getName() + "]"
-                else "${defender.getNotificationDisplay("our ")}"
+                else defender.getNotificationDisplay("our ")
 
         val attackerHurtString = if (damageDealt != null && damageDealt.defenderDealt != 0) " ([-${damageDealt.defenderDealt}] HP)" else ""
         val defenderHurtString = if (damageDealt != null) " ([-${damageDealt.attackerDealt}] HP)" else ""
         val notificationString = "$attackerString$attackerHurtString $battleActionString $defenderString$defenderHurtString"
         val attackerIcon = if (attacker is CityCombatant) NotificationIcon.City else attacker.getName()
         val defenderIcon = if (defender is CityCombatant) NotificationIcon.City else defender.getName()
+        
         val locations = LocationAction(attackedTile.position, attackerTile?.position)
         defender.getCivInfo().addNotification(notificationString, locations, NotificationCategory.War, attackerIcon, battleActionIcon, defenderIcon)
     }
@@ -728,7 +722,7 @@ object Battle {
         return null
     }
 
-    fun destroyIfDefeated(attackedCiv: Civilization, attacker: Civilization, notificationLocation: Vector2? = null) {
+    fun destroyIfDefeated(attackedCiv: Civilization, attacker: Civilization, notificationLocation: HexCoord? = null) {
         if (attackedCiv.isDefeated()) {
             if (attackedCiv.isCityState)
                 attackedCiv.cityStateFunctions.cityStateDestroyed(attacker)

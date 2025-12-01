@@ -11,7 +11,6 @@ import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.toHexCoord
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.metadata.Player
@@ -608,7 +607,7 @@ object GameStarter {
 
             val distanceToNext = minimumDistanceBetweenStartingLocations /
                 (if (civ.isCityState) 2 else 1) // We allow city states to squeeze in tighter
-            freeTiles.removeAll(tileMap.getTilesInDistance(startingLocation.position.toHexCoord(), distanceToNext)
+            freeTiles.removeAll(tileMap.getTilesInDistance(startingLocation.position, distanceToNext)
                 .toSet())
         }
         return if (startingLocations.size < civsOrderedByAvailableLocations.size) null else startingLocations

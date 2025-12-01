@@ -179,7 +179,9 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
     }
     
     private fun flipTopBottom(vector: Vector2): Vector2 = Vector2(-vector.y, -vector.x)
+    private fun flipTopBottom(vector: HexCoord): HexCoord = HexCoord.of(-vector.y, -vector.x)
     private fun flipLeftRight(vector: Vector2): Vector2 = Vector2(vector.y, vector.x)
+    private fun flipLeftRight(vector: HexCoord): HexCoord = HexCoord.of(vector.y, vector.x)
 
     private fun mirror(map: TileMap) {
         fun getMirrorTile(tile: Tile, mirroringType: String): Tile? {

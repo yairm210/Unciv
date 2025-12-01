@@ -1,7 +1,6 @@
 package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.utils.Json
 import com.unciv.json.json
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.Terrain
@@ -21,7 +20,7 @@ class HexmathTests {
     fun testMappingIsOneToOne(){
         val seenCoordsMapping = hashSetOf<Int>()
         for (ring in 1..100) {
-            val coords = HexMath.getVectorsAtDistance(Vector2.Zero, ring, 100, false)
+            val coords = HexMath.getHexCoordsAtDistance(HexCoord.Zero, ring, 100, false)
             val ringStartCoordinate = 1 + 6 * ring * (ring - 1) / 2
             for (coord in coords) {
                 val mapping = HexMath.getZeroBasedIndex(coord.x.toInt(), coord.y.toInt())
@@ -70,7 +69,7 @@ class HexmathTests {
         
         for (x in -2..2)
             for (y in -2..2){
-                val hexCoord = HexCoord.of(x, y)
+                val hexCoord = HexCoord(x, y)
                 val vector2 = Vector2(x.toFloat(), y.toFloat())
                 
                 // hexcoord -> json -> vector2

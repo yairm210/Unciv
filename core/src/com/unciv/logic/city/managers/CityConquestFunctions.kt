@@ -117,7 +117,7 @@ class CityConquestFunctions(val city: City) {
 
         city.moveToCiv(receivingCiv)
 
-        Battle.destroyIfDefeated(conqueredCiv, conqueringCiv, city.location)
+        Battle.destroyIfDefeated(conqueredCiv, conqueringCiv, city.location.toHexCoord())
 
         city.health = city.getMaxHealth() / 2 // I think that cities recover to half health when conquered?
         city.avoidGrowth = false // reset settings

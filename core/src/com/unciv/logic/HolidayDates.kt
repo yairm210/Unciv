@@ -2,7 +2,6 @@ package com.unciv.logic
 
 import com.unciv.ui.screens.mainmenuscreen.EasterEggFloatingArt
 import yairm210.purity.annotations.Pure
-import yairm210.purity.annotations.Readonly
 import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate

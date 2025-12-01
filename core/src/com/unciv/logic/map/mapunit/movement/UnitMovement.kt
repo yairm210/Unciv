@@ -2,10 +2,10 @@
 
 package com.unciv.logic.map.mapunit.movement
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.BFS
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
@@ -34,7 +34,7 @@ class UnitMovement(val unit: MapUnit) {
      */
     @Readonly @Suppress("purity") // mutates passed parameter
     fun getMovementToTilesAtPosition(
-        position: Vector2,
+        position: HexCoord,
         unitMovement: Float,
         considerZoneOfControl: Boolean = true,
         tilesToIgnoreBitset: BitSet? = null,

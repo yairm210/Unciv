@@ -1,9 +1,6 @@
 package com.unciv.logic.map.mapgenerator
 
-import com.unciv.logic.map.HexMath
-import com.unciv.logic.map.MapShape
-import com.unciv.logic.map.MapType
-import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.*
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TerrainType

@@ -118,7 +118,7 @@ object HexMath {
      * @see [com.unciv.logic.map.TileMap.getUnwrappedPosition]
      */
     @Readonly
-    fun getUnwrappedNearestTo(unwrapHexCoord: Vector2, staticHexCoord: Vector2, longitudinalRadius: Int): Vector2 {
+    fun getUnwrappedNearestTo(unwrapHexCoord: HexCoord, staticHexCoord: HexCoord, longitudinalRadius: Int): Vector2 {
         val referenceLong = getLongitude(staticHexCoord)
         val toWrapLat = getLatitude(unwrapHexCoord) // Working in Cartesian space is easier.
         val toWrapLong = getLongitude(unwrapHexCoord)
@@ -127,7 +127,7 @@ object HexMath {
     }
 
     @Readonly
-    fun hex2WorldCoords(hexCoord: Vector2): Vector2 {
+    fun hex2WorldCoords(hexCoord: HexCoord): Vector2 {
         // Distance between cells = 2* normal of triangle = 2* (sqrt(3)/2) = sqrt(3)
         val xVector = getVectorByClockHour(10)
         xVector.scl(sqrt(3.0).toFloat() * hexCoord.x)
@@ -161,7 +161,7 @@ object HexMath {
     @Readonly fun getColumn(hexCoord: HexCoord): Int = hexCoord.y - hexCoord.x
 
     @Pure
-    fun getTileCoordsFromColumnRow(column: Int, row: Int): Vector2 {
+    fun getTileCoordsFromColumnRow(column: Int, row: Int): HexCoord {
         // we know that column = y-x in hex coords
         // And we know that row = (y+x)/2 in hex coords
         // Therefore, 2row+column = 2y, 2row-column=2x
@@ -174,7 +174,7 @@ object HexMath {
         var twoRows = row * 2
         if (abs(column) %2==1) twoRows += 1
 
-        return Vector2(((twoRows-column)/2).toFloat(), ((twoRows+column)/2).toFloat())
+        return HexCoord.of((twoRows-column)/2, (twoRows+column)/2)
     }
 
     /** Todo: find a mathematically equivalent way to round hex coords without cubic magic */
@@ -215,57 +215,57 @@ object HexMath {
     }
 
     @Readonly
-    fun getVectorsAtDistance(origin: Vector2, distance: Int, maxDistance: Int, worldWrap: Boolean): List<Vector2> {
-        val vectors = mutableListOf<Vector2>()
+    fun getHexCoordsAtDistance(origin: HexCoord, distance: Int, maxDistance: Int, worldWrap: Boolean): List<HexCoord> {
+        val vectors = mutableListOf<HexCoord>()
         if (distance == 0) {
             return listOf(origin.cpy())
         }
         
         @Readonly
-        fun getVectorOnOtherSideOfClock(vector: Vector2): Vector2 {
-            @LocalState
-            val vec = origin.cpy()
-            vec.scl(2f)
-            vec.sub(vector)
-            return vec
-        }
+        fun getHexcoordOnOtherSideOfClock(vector: HexCoord): HexCoord = 
+            origin.times(2).minus(vector)
         
         @LocalState
-        val current = origin.cpy()
-        current.sub(distance.toFloat(), distance.toFloat()) // start at 6 o clock
+        var current = origin.minus(HexCoord.of(distance, distance))  // start at 6 o clock
         for (i in 0 until distance) { // From 6 to 8
-            vectors += current.cpy()
-            vectors += getVectorOnOtherSideOfClock(current)
-            current.add(1f, 0f)
+            vectors += current
+            vectors += getHexcoordOnOtherSideOfClock(current)
+            current = current.plus(1, 0)
         }
         for (i in 0 until distance) { // 8 to 10
             vectors += current.cpy()
             if (!worldWrap || distance != maxDistance)
-                vectors += getVectorOnOtherSideOfClock(current)
-            current.add(1f, 1f)
+                vectors += getHexcoordOnOtherSideOfClock(current)
+            current = current.plus(1, 1)
         }
         for (i in 0 until distance) { // 10 to 12
             vectors += current.cpy()
             if (!worldWrap || distance != maxDistance || i != 0)
-                vectors += getVectorOnOtherSideOfClock(current)
-            current.add(0f, 1f)
+                vectors += getHexcoordOnOtherSideOfClock(current)
+            current = current.plus(0, 1)
         }
         return vectors
     }
 
     @Readonly
-    fun getVectorsInDistance(origin: Vector2, distance: Int, worldWrap: Boolean): List<Vector2> {
-        val hexesToReturn = mutableListOf<Vector2>()
+    fun getHexCoordsInDistance(origin: HexCoord, distance: Int, worldWrap: Boolean): List<HexCoord> {
+        val hexesToReturn = mutableListOf<HexCoord>()
         for (i in 0..distance) {
-            hexesToReturn += getVectorsAtDistance(origin, i, distance, worldWrap)
+            hexesToReturn += getHexCoordsAtDistance(origin, i, distance, worldWrap)
         }
         return hexesToReturn
     }
+
+
 
     /** Get number of hexes from [origin] to [destination] _without respecting world-wrap_ */
     @Pure
     fun getDistance(origin: Vector2, destination: Vector2): Int {
         return getDistance(origin.x.toInt(), origin.y.toInt(), destination.x.toInt(), destination.y.toInt())
+    }
+    @Pure
+    fun getDistance(origin: HexCoord, destination: HexCoord): Int {
+        return getDistance(origin.x, origin.y, destination.x, destination.y)
     }
 
     @Pure
@@ -298,12 +298,12 @@ object HexMath {
     // of the 6 clock directions for border and road drawing in TileGroup
     @Immutable
     private val clockPositionToWorldVectorMap: Map<Int,Vector2> = mapOf(
-        2 to hex2WorldCoords(Vector2(0f, -1f)),
-        4 to hex2WorldCoords(Vector2(1f, 0f)),
-        6 to hex2WorldCoords(Vector2(1f, 1f)),
-        8 to hex2WorldCoords(Vector2(0f, 1f)),
-        10 to hex2WorldCoords(Vector2(-1f, 0f)),
-        12 to hex2WorldCoords(Vector2(-1f, -1f)) )
+        2 to hex2WorldCoords(HexCoord.of(0, -1)),
+        4 to hex2WorldCoords(HexCoord.of(1, 0)),
+        6 to hex2WorldCoords(HexCoord.of(1, 1)),
+        8 to hex2WorldCoords(HexCoord.of(0, 1)),
+        10 to hex2WorldCoords(HexCoord.of(-1, 0)),
+        12 to hex2WorldCoords(HexCoord.of(-1, -1)) )
 
     /** Returns the world/screen-space distance corresponding to [clockPosition], or a zero vector if [clockPosition] is invalid */
     @Pure
@@ -311,9 +311,9 @@ object HexMath {
         clockPositionToWorldVectorMap[clockPosition] ?: Vector2.Zero
 
     @Readonly
-    fun getDistanceFromEdge(vector: Vector2, mapParameters: MapParameters): Int {
-        val x = vector.x.toInt()
-        val y = vector.y.toInt()
+    fun getDistanceFromEdge(position: HexCoord, mapParameters: MapParameters): Int {
+        val x = position.x
+        val y = position.y
         if (mapParameters.shape == MapShape.rectangular) {
             val height = mapParameters.mapSize.height
             val width = mapParameters.mapSize.width
@@ -325,17 +325,17 @@ object HexMath {
             return minOf(left, right, top, bottom)
         } else {
             val radius = mapParameters.mapSize.radius
-            if (!mapParameters.worldWrap) return radius - getDistance(vector, Vector2.Zero)
+            if (!mapParameters.worldWrap) return radius - getDistance(position, HexCoord.Zero)
 
             // The non-wrapping method holds in the upper two and lower two 'triangles' of the hexagon
             // but needs special casing for left and right 'wedges', where only distance from the
             // 'choke points' counts (upper and lower hex at the 'seam' where height is smallest).
             // These are at (radius,0) and (0,-radius)
-            if (x.sign == y.sign) return radius - getDistance(vector, Vector2.Zero)
+            if (x.sign == y.sign) return radius - getDistance(position, HexCoord.Zero)
             // left wedge - the 'choke points' are not wrapped relative to us
-            if (x > 0) return min(getDistance(vector, Vector2(radius.toFloat(),0f)), getDistance(vector, Vector2(0f, -radius.toFloat())))
+            if (x > 0) return min(getDistance(position, HexCoord.of(radius,0)), getDistance(position, HexCoord.of(0, -radius)))
             // right wedge - compensate wrap by using a hex 1 off along the edge - same result
-            return min(getDistance(vector, Vector2(1f, radius.toFloat())), getDistance(vector, Vector2(-radius.toFloat(), -1f)))
+            return min(getDistance(position, HexCoord.of(1, radius)), getDistance(position, HexCoord.of(-radius, -1)))
         }
     }
 
@@ -370,8 +370,8 @@ object HexMath {
         if (x == 0 && y == 0) return 0
         val ring = getDistance(0,0, x, y)
         val ringStart = 1 + 6 * ring * (ring - 1) / 2 // 1 for the center tile, then 6 for each ring
-        val vectorsInRing = getVectorsAtDistance(Vector2.Zero, ring, ring, false)
-        val positionInRing = vectorsInRing.indexOf(Vector2(x.toFloat(), y.toFloat()))
+        val vectorsInRing = getHexCoordsAtDistance(HexCoord.Zero, ring, ring, false)
+        val positionInRing = vectorsInRing.indexOf(HexCoord.of(x, y))
         return ringStart + positionInRing
     }
 
@@ -382,48 +382,36 @@ object HexMath {
 
 }
 
-@JvmInline
-value class HexCoord(val coords: Int) {
-    // x value is stored in the 16 bits, and y value in the bottom 16 bits, allowing range -32768 to 32767
+//interface HexCoord{
+//    val x: Int
+//    val y: Int
+//    
+//}
 
-    val x: Int
-        get() = coords shr 16
+/** Required for ser/deser since the stupid json parser can't handle the inline ints -_-  */
+data class HexCoord(val x:Int=0, val y:Int=0){
 
-    // Extract bottom 16 bits and sign-extend - required to keep negative numbers
-    val y: Int
-        get() = (coords shl 16) shr 16
-
-    fun withX(newX: Int): HexCoord {
-        require(newX in -32768..32767) { "X value must be in range -32768..32767" }
-        // Keep bottom 16 bits (y), replace top 16 bits with newX
-        return HexCoord((newX shl 16) or (coords and 0xFFFF))
-    }
-
-    fun withY(newY: Int): HexCoord {
-        require(newY in -32768..32767) { "Y value must be in range -32768..32767" }
-        // Keep top 16 bits (x), replace bottom 16 bits with newY
-        return HexCoord((coords and 0xFFFF0000.toInt()) or (newY and 0xFFFF))
-    }
-    
-    // I'm not 100% sure that adding the two ints to each other will result in a correct result
-    //   because there's the positive/negative aspect... 
-    @Pure fun plus(hexCoord: HexCoord): HexCoord = HexCoord.of(x + hexCoord.x, y + hexCoord.y) 
+    @Pure fun plus(hexCoord: HexCoord): HexCoord = HexCoord.of(x + hexCoord.x, y + hexCoord.y)
+    @Pure fun plus(plusX: Int, plusY: Int): HexCoord = HexCoord.of(x + plusX, y + plusY)
+    @Pure fun minus(hexCoord: HexCoord): HexCoord = HexCoord.of(x - hexCoord.x, y - hexCoord.y)
     @Pure fun times(int: Int): HexCoord = HexCoord.of(x * int, y * int)
 
-    fun toVector2(): Vector2 = Vector2(x.toFloat(), y.toFloat())
+    @Pure fun toVector2(): Vector2 = Vector2(x.toFloat(), y.toFloat())
+
+    @Pure fun eq(x:Int,y:Int): Boolean = this.x == x && this.y == y
+
+    // Conversion helpers for 1:1 Vector2 compatibility
+    @Pure fun cpy() = this
+    @Pure fun toHexCoord() = this
+    @Pure fun asSerializable() = HexCoord(x,y)
+
+    fun toPrettyString(): String = "($x,$y)"
 
     companion object {
         val Zero = HexCoord.of(0,0)
-        @Pure 
-        fun of(x: Int, y: Int): HexCoord {
-            require(x in -32768..32767) { "X value must be in range -32768..32767" }
-            require(y in -32768..32767) { "Y value must be in range -32768..32767" }
-            return HexCoord((x shl 16) or (y and 0xFFFF))
-        }
+        @Pure
+        fun of(x: Int, y: Int): HexCoord = HexCoord(x,y)
     }
-
-    override fun toString(): String = "HexCoord(x=${x}, y=${y})"
-
     /** Ser/deser to be 1:1 with Vector2, to allow us to replace Vector2 in game saves with HexCoord */
     class Serializer : Json.Serializer<HexCoord> {
         override fun write(json: Json, coord: HexCoord, knownType: Class<*>?) {
@@ -433,9 +421,36 @@ value class HexCoord(val coords: Int) {
         override fun read(json: Json, jsonData: JsonValue, type: Class<*>?): HexCoord {
             val x = json.readValue(Float::class.java, jsonData["x"]) ?: 0f
             val y = json.readValue(Float::class.java, jsonData["y"]) ?: 0f
-            return HexCoord.of(x.toInt(), y.toInt())
+            return HexCoord(x.toInt(), y.toInt())
+        }
+    }
+}
+
+@JvmInline
+/** When we need to create a lot of coords we prefer to use this implementation - since it's inline it's passed around as as int
+    and doesn't require memory allocation or memory access */
+value class InlineHexCoord(val coords: Int = 0) {
+    // x value is stored in the 16 bits, and y value in the bottom 16 bits, allowing range -32768 to 32767
+
+    val x: Int
+        get() = coords shr 16
+
+    // Extract bottom 16 bits and sign-extend - required to keep negative numbers
+    val y: Int
+        get() = (coords shl 16) shr 16
+    
+    override fun toString(): String = "HexCoord(x=${x}, y=${y})"
+
+    companion object {
+        @Pure
+        fun of(x: Int, y: Int): InlineHexCoord {
+            require(x in -32768..32767) { "X value must be in range -32768..32767" }
+            require(y in -32768..32767) { "Y value must be in range -32768..32767" }
+            return InlineHexCoord((x shl 16) or (y and 0xFFFF))
         }
     }
 }
 
 @Pure fun Vector2.toHexCoord() = HexCoord.of(this.x.toInt(), this.y.toInt())
+@Pure fun Vector2.toVector2() = this // compatibility
+@Pure fun Vector2.asSerializable() = HexCoord(x.toInt(),y.toInt())
