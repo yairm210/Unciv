@@ -10,9 +10,9 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.Proximity
 import com.unciv.logic.civilization.transients.CapitalConnectionsFinder.CapitalConnectionMedium
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.toVector2
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
@@ -99,7 +99,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
     }
 
     // This is a big performance
-    fun updateViewableTiles(explorerPosition: Vector2? = null) {
+    fun updateViewableTiles(explorerPosition: HexCoord? = null) {
         setNewViewableTiles()
 
         updateViewableInvisibleTiles()

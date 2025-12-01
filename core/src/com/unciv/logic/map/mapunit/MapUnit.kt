@@ -1,6 +1,5 @@
 package com.unciv.logic.map.mapunit
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.MultiFilter
@@ -18,11 +17,7 @@ import com.unciv.models.Counter
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TileImprovement
-import com.unciv.models.ruleset.unique.GameContext
-import com.unciv.models.ruleset.unique.Unique
-import com.unciv.models.ruleset.unique.UniqueMap
-import com.unciv.models.ruleset.unique.UniqueTriggerActivation
-import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unique.*
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.translations.tr
@@ -283,7 +278,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     @Readonly
     fun getMovementDestination(): Tile {
         val destination = action!!.replace("moveTo ", "").split(",").dropLastWhile { it.isEmpty() }
-        val destinationVector = Vector2(destination[0].toFloat(), destination[1].toFloat())
+        val destinationVector = HexCoord(destination[0].toFloat().toInt(), destination[1].toFloat().toInt())
         return currentTile.tileMap[destinationVector]
     }
 
@@ -769,7 +764,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     /**
      * Update this unit's cache of viewable tiles and its civ's as well.
      */
-    fun updateVisibleTiles(updateCivViewableTiles: Boolean = true, explorerPosition: Vector2? = null) {
+    fun updateVisibleTiles(updateCivViewableTiles: Boolean = true, explorerPosition: HexCoord? = null) {
         val oldViewableTiles = viewableTiles
 
         viewableTiles = when {
@@ -975,7 +970,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             promotions.addPromotion(promotion, true)
         }
 
-        updateVisibleTiles(true, currentTile.position.toVector2())
+        updateVisibleTiles(true, currentTile.position)
     }
 
     fun putInTile(tile: Tile) {

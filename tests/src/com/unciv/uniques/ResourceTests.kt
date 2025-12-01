@@ -131,6 +131,11 @@ class ResourceTests {
         city.cityConstructions.addBuilding(doubleStrategicProduction)
         Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 4)
     }
+    
+    @Test
+    fun stringtoint(){
+        assert(1f == "1".toFloat())
+    }
 
 
     // Resource tests

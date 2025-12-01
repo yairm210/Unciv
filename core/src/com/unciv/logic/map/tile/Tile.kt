@@ -1088,7 +1088,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         }
     }
 
-    fun setExplored(player: Civilization, isExplored: Boolean, explorerPosition: Vector2? = null) {
+    fun setExplored(player: Civilization, isExplored: Boolean, explorerPosition: HexCoord? = null) {
         if (isExplored) {
             // Disable the undo button if a new tile has been explored
             if (!exploredBy.contains(player.civName)) {
@@ -1097,7 +1097,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             }
 
             if (player.playerType == PlayerType.Human)
-                player.exploredRegion.checkTilePosition(position.toVector2(), explorerPosition)
+                player.exploredRegion.checkTilePosition(position, explorerPosition)
         } else {
             exploredBy = exploredBy.withoutItem(player.civName)
         }
