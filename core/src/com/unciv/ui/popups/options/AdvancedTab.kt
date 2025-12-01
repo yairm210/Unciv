@@ -257,7 +257,7 @@ internal class AdvancedTab(
                 val extraImagesLocation = "../../extraImages"
                 // I'm not sure why we need to advance the y by 2 for every screenshot... but that's the only way it remains centered
                 generateScreenshots(
-                    settings.settings, arrayListOf(
+                    settings, arrayListOf(
                         ScreenshotConfig(630, 500, ScreenSize.Medium, "$extraImagesLocation/itch.io image.png", HexCoord(-2, 2), false),
                         ScreenshotConfig(1280, 640, ScreenSize.Medium, "$extraImagesLocation/GithubPreviewImage.png", HexCoord(-2, 4)),
                         ScreenshotConfig(1024, 500, ScreenSize.Medium, "$extraImagesLocation/Feature graphic - Google Play.png", HexCoord(-2, 6)),
