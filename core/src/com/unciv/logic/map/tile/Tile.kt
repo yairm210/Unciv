@@ -47,7 +47,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     var civilianUnit: MapUnit? = null
     var airUnits = ArrayList<MapUnit>(0)
 
-    var position: Vector2 = Vector2.Zero
+    var position = HexCoord()
     lateinit var baseTerrain: String
     var terrainFeatures: List<String> = listOf()
         private set

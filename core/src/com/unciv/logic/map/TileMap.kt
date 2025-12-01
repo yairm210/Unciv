@@ -161,7 +161,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         startingLocations.clear()
         val firstAvailableLandTerrain = MapLandmassGenerator.getInitializationTerrain(ruleset, TerrainType.Land)
         for (vector in HexMath.getHexCoordsInDistance(HexCoord.Zero, radius, worldWrap))
-            tileList.add(Tile().apply { position = vector.toVector2(); baseTerrain = firstAvailableLandTerrain })
+            tileList.add(Tile().apply { position = vector.asSerializable(); baseTerrain = firstAvailableLandTerrain })
         setTransients(ruleset)
     }
 
@@ -179,7 +179,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         for (column in -wrapAdjustedWidth / 2 .. (wrapAdjustedWidth-1) / 2)
             for (row in -height / 2 .. (height-1) / 2)
                 tileList.add(Tile().apply {
-                    position = HexMath.getTileCoordsFromColumnRow(column, row).toVector2()
+                    position = HexMath.getTileCoordsFromColumnRow(column, row).asSerializable()
                     baseTerrain = firstAvailableLandTerrain
                 })
 
