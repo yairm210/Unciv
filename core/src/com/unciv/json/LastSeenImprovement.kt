@@ -5,7 +5,6 @@ import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.map.HexCoord
-import com.unciv.ui.components.extensions.toPrettyString
 import yairm210.purity.annotations.Pure
 
 /**

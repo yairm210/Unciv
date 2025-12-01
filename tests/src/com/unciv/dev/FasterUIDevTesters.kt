@@ -14,7 +14,6 @@ import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.LoadingImage
 import com.unciv.ui.components.widgets.LoadingImage.Style
-import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.overviewscreen.GlobalPoliticsDiagramGroup
 import kotlin.random.Random

@@ -9,7 +9,6 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.toHexCoord
-import com.unciv.logic.map.toVector2
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.utils.randomWeighted

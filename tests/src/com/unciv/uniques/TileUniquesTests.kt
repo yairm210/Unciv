@@ -1,6 +1,5 @@
 package com.unciv.uniques
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.map.HexCoord
 import com.unciv.models.UnitActionType

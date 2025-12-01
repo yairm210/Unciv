@@ -1,6 +1,5 @@
 package com.unciv.logic.civilization.transients
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization

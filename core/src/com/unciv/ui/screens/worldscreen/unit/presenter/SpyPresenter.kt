@@ -1,9 +1,7 @@
 package com.unciv.ui.screens.worldscreen.unit.presenter
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.map.HexCoord
-import com.unciv.logic.map.toVector2
 import com.unciv.models.Spy
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.worldscreen.unit.UnitTable

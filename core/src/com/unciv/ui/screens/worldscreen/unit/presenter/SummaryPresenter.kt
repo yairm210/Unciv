@@ -1,6 +1,5 @@
 package com.unciv.ui.screens.worldscreen.unit.presenter
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.map.HexCoord
 import com.unciv.models.translations.tr
 import com.unciv.ui.screens.worldscreen.unit.UnitTable

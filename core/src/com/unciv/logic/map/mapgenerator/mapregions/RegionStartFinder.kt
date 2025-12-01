@@ -13,7 +13,6 @@ import com.unciv.logic.map.mapgenerator.mapregions.MapRegions.Companion.minimumP
 import com.unciv.logic.map.mapgenerator.mapregions.MapRegions.Companion.secondRingFoodScores
 import com.unciv.logic.map.mapgenerator.mapregions.MapRegions.Companion.secondRingProdScores
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.toVector2
 import com.unciv.models.ruleset.tile.TerrainType
 import yairm210.purity.annotations.Pure
 import kotlin.math.roundToInt

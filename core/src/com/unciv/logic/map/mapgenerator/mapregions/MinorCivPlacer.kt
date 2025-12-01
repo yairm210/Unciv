@@ -3,7 +3,6 @@ package com.unciv.logic.map.mapgenerator.mapregions
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.toVector2
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.UniqueType
 import yairm210.purity.annotations.Readonly

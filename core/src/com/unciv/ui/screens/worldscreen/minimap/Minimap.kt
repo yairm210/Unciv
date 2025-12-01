@@ -184,7 +184,7 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
         val leftSide =
                 if (civInfo != null) civInfo.exploredRegion.getMinimapLeft(tileSize) else -Float.MAX_VALUE
         for (tileInfo in mapHolder.tileMap.values) {
-            if (civInfo?.exploredRegion?.isPositionInRegion(tileInfo.position.toVector2()) == false) continue
+            if (civInfo?.exploredRegion?.isPositionInRegion(tileInfo.position) == false) continue
             val minimapTile = MinimapTile(tileInfo, tileSize, onClick = {
                 mapHolder.setCenterPosition(tileInfo.position)
             })

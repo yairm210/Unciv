@@ -204,7 +204,7 @@ class ExploredRegion : IsPartOfGameInfoSerialization {
     }
 
     @Readonly
-    fun isPositionInRegion(postition: Vector2): Boolean {
+    fun isPositionInRegion(postition: HexCoord): Boolean {
         val long = getLongitude(postition)
         val lat = getLatitude(postition)
         return if (topLeft.x > bottomRight.x)

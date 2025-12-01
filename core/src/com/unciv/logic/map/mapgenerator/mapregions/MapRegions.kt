@@ -10,7 +10,6 @@ import com.unciv.logic.map.mapgenerator.mapregions.MapRegions.BiasTypes.Positive
 import com.unciv.logic.map.mapgenerator.resourceplacement.LuxuryResourcePlacementLogic
 import com.unciv.logic.map.mapgenerator.resourceplacement.StrategicBonusResourcePlacementLogic
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.toVector2
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.Terrain

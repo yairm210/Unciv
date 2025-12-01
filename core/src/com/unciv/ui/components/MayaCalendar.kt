@@ -5,8 +5,6 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.civilization.Civilization
-import com.unciv.models.ruleset.unique.UniqueTriggerActivation
-import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.components.input.KeyCharAndCode.Companion.makeChar

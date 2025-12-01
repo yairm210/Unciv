@@ -8,7 +8,6 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.ReligionAction
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.toHexCoord
 import com.unciv.models.Counter
 import com.unciv.models.Religion
 import com.unciv.models.ruleset.Belief

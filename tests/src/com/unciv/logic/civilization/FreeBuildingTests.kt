@@ -2,7 +2,6 @@
 
 package com.unciv.logic.civilization
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert

@@ -5,7 +5,6 @@ import com.unciv.logic.map.mapgenerator.mapregions.TileDataMap
 import com.unciv.logic.map.mapgenerator.mapregions.anonymizeUnique
 import com.unciv.logic.map.mapgenerator.mapregions.getTerrainRule
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.toVector2
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.Terrain
