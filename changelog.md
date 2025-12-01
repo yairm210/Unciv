@@ -1,85 +1,13 @@
 ## 4.18.18
 
-Mapgen to Hexcoords
-
-Encampment to Hexcoords
-
-More cleanup
-
-Converted Presenters to Hexcoords
-
-Removed most remaining vector references
-
-Neutral roads + lastSeenImprovement to hexcoord
-
-Exploration to HexCoord
-
-UnitMovementMemory to HexCoord
-
-MapUnit road plans to HexCoord
-
-Historical attacks to HexCoord
-
-Fix tests...again
-
-Migrate the rest of the actions from Vector2 to HexCoords
-
-Migrate LocationAction from Vector2 to HexCoords
-
-Fix tests
-
-SHIFT 3: City tiles sets converted to HexCoord
-
-SHIFT 2: City.location from Vector2 to Hexcoord
-
-Revert "SHIFT 2: City.location from Vector2 to Hexcoord"
-
-SHIFT 2: City.location from Vector2 to Hexcoord
-
-All tests
-
-City prep for vector to hexcoord conversion, including massive test to hexcoord overhaul
-
-Remove hexcoord-to-hexcoord scaffolding
-
-Fix test
-
-THE BIG SHIFT: Tile.position changes from Vector2 to HexCoords
-
-Disengage InlineHexCoord from HexCoord due to equality and conversion issues
-
-Fix tests
-
-Split HexCoord to serializable and inline classes sharing the same interface
-
-chore: Massive hexcoord conversion 3
-
-chore: Massive hexcoord conversion 2
-
-chore: getMovementToTilesAtPosition to hexcoord
-
-chore: placeUnitNearTile to hexcoord
-
-chore: Massive hexcoord conversion
-
-chore: getViewableTiles to hexcoord
-
-chore: getClockPositionNeighborTile to hexcoord
-
-chore: getTilesInDistance to hexcoord
-
-chore: getTilesAtDistance to hexcoord
-
-Lat/lon are in Int, as Gd intended
-
-Add HexCoord ser/deser equivalent to Vector2 :D
+CPU performance improvements
 
 By EmperorPinguin:
-- Deduplicate heading to encampment logic 
-- Refactor tryAdvanceTowardsCloseEnemy 
-- Simplify target selection in chooseBombardTarget 
+- AI: Separate encampment-finding logic from ruins-finding 
+- AI: Better "city to attack" logic 
+- AI: Simplify target selection for city bombardment 
 
-Fix mistakenly inverted test - By SomeTroglodyte
+Fix battle notification order - By SomeTroglodyte
 
 ## 4.18.17
 
