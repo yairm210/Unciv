@@ -618,29 +618,11 @@ object UnitAutomation {
 
     @Readonly
     private fun chooseBombardTarget(city: City): ICombatant? {
-        var targets = TargetHelper.getBombardableTiles(city).map { Battle.getMapCombatantOfTile(it)!! }
-            .filterNot { it is MapUnitCombatant &&
-                it.isCivilian() && !it.unit.hasUnique(UniqueType.Uncapturable) } // Don't bombard capturable civilians
+        val targets = TargetHelper.getBombardableTiles(city).map { Battle.getMapCombatantOfTile(it)!! }
+            .filterNot { it is MapUnitCombatant && it.isCivilian() }
+            // Don't bombard civilians (they're more efficiently captured/killed by military units if they're indeed this close)
         if (targets.none()) return null
-
-        val siegeUnits = targets
-                .filter { it is MapUnitCombatant && it.unit.baseUnit.isProbablySiegeUnit() }
-        val nonEmbarkedSiege = siegeUnits.filter { it is MapUnitCombatant && !it.unit.isEmbarked() }
-        if (nonEmbarkedSiege.any()) targets = nonEmbarkedSiege
-        else if (siegeUnits.any()) targets = siegeUnits
-        else {
-            val rangedUnits = targets
-                    .filter { it.isRanged() }
-            if (rangedUnits.any()) targets = rangedUnits
-        }
-
-        val hitsToKill = targets.associateWith { it.getHealth().toFloat() / BattleDamage.calculateDamageToDefender(
-            CityCombatant(city),
-            it
-        ).toFloat().coerceAtLeast(1f) }
-        val target = hitsToKill.filter { it.value <= 1 }.maxByOrNull { it.key.getAttackingStrength(CityCombatant(city)) }?.key
-        if (target != null) return target
-        return hitsToKill.minByOrNull { it.value }?.key
+        return targets.maxByOrNull { BattleDamage.calculateDamageToDefender(CityCombatant(city), it) }
     }
 
     private fun tryTakeBackCapturedCity(unit: MapUnit): Boolean {
