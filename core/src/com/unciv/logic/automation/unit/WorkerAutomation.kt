@@ -613,8 +613,10 @@ class WorkerAutomation(
                     ThreatLevel.VeryHigh -> 20
                 }
         }
-        val enemyCivsIsCloseEnough = enemyCivs.filter { NextTurnAutomation.getMinDistanceBetweenCities(
-            civInfo, it) <= threatMapping(it) }
+        val enemyCivsIsCloseEnough = enemyCivs.filter {
+            (NextTurnAutomation.getForeignCityNearCapital(civInfo.getCapital(), it)
+                ?.aerialDistance ?: return@filter false) <= threatMapping(it)
+        }
         // No threat, let's not build fort
         if (enemyCivsIsCloseEnough.none()) return 0f
 
