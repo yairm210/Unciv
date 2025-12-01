@@ -9,6 +9,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.toVector2
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.tile.*
@@ -283,7 +284,7 @@ class MapEditorEditStartsTab(
         val eraser = FormattedLine("Remove starting locations", icon = eraserIcon, size = 24, iconCrossed = true)
         add(eraser.render(0f).apply { onClick {
             editTab.setBrush("Remove", eraserIcon, handlerType = BrushHandlerType.Direct, pediaLink = "", isRemove = true) { tile ->
-                tile.tileMap.removeStartingLocations(tile.position)
+                tile.tileMap.removeStartingLocations(tile.position.toVector2())
             }
         } }).padBottom(0f).row()
 

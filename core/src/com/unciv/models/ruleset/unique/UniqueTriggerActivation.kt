@@ -1,6 +1,5 @@
 package com.unciv.models.ruleset.unique
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.civilization.NextTurnAutomation
@@ -19,6 +18,7 @@ import com.unciv.logic.civilization.TechAction
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.managers.ReligionState
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapgenerator.NaturalWonderGenerator
 import com.unciv.logic.map.mapgenerator.RiverGenerator
 import com.unciv.logic.map.mapunit.MapUnit
@@ -187,10 +187,10 @@ object UniqueTriggerActivation {
                         relevantCity != null || (tile == null && civInfo.cities.isNotEmpty()) ->
                             civInfo.units.addUnit(civUnit, chosenCity) ?: return false
                         // Else set the unit at the given tile
-                        tile != null -> civInfo.units.placeUnitNearTile(tile.position.toHexCoord(), civUnit) ?: return false
+                        tile != null -> civInfo.units.placeUnitNearTile(tile.position, civUnit) ?: return false
                         // Else set unit unit near other units if we have no cities
                         civInfo.units.getCivUnits().any() ->
-                            civInfo.units.placeUnitNearTile(civInfo.units.getCivUnits().first().currentTile.position.toHexCoord(), civUnit) ?: return false
+                            civInfo.units.placeUnitNearTile(civInfo.units.getCivUnits().first().currentTile.position, civUnit) ?: return false
 
                         else -> return false
                     }
@@ -237,10 +237,10 @@ object UniqueTriggerActivation {
                             relevantCity != null || (tile == null && civInfo.cities.isNotEmpty()) ->
                                 civInfo.units.addUnit(civUnit, chosenCity)
                             // Else set the unit at the given tile
-                            tile != null -> civInfo.units.placeUnitNearTile(tile.position.toHexCoord(), civUnit)
+                            tile != null -> civInfo.units.placeUnitNearTile(tile.position, civUnit)
                             // Else set new unit near other units if we have no cities
                             civInfo.units.getCivUnits().any() ->
-                                civInfo.units.placeUnitNearTile(civInfo.units.getCivUnits().first().currentTile.position.toHexCoord(), civUnit)
+                                civInfo.units.placeUnitNearTile(civInfo.units.getCivUnits().first().currentTile.position, civUnit)
 
                             else -> null
                         }
@@ -281,7 +281,7 @@ object UniqueTriggerActivation {
                     tile ?: civInfo.cities.random().getCenterTile()
 
                 fun placeUnit(): Boolean {
-                    val placedUnit = civInfo.units.placeUnitNearTile(placingTile.position.toHexCoord(), civUnit.name)
+                    val placedUnit = civInfo.units.placeUnitNearTile(placingTile.position, civUnit.name)
                     if (notification != null && placedUnit != null) {
                         val notificationText =
                             if (notification.hasPlaceholderParameters())
@@ -291,7 +291,7 @@ object UniqueTriggerActivation {
                             notificationText,
                             sequence {
                                 yield(MapUnitAction(placedUnit))
-                                yieldAll(LocationAction(tile?.position))
+                                yieldAll(LocationAction(tile?.position?.toVector2()))
                             },
                             NotificationCategory.Units,
                             placedUnit.name
@@ -440,7 +440,7 @@ object UniqueTriggerActivation {
                     if (notification != null)
                         civInfo.addNotification(
                             notification,
-                            LocationAction(applicableCities.map { it.location }),
+                            LocationAction(applicableCities.map { it.location.toHexCoord() }),
                             NotificationCategory.Cities,
                             NotificationIcon.Population
                         )
@@ -459,7 +459,7 @@ object UniqueTriggerActivation {
                             else notification
                         civInfo.addNotification(
                             notificationText,
-                            LocationAction(randomCity.location, tile?.position),
+                            LocationAction(randomCity.location.toHexCoord(), tile?.position),
                             NotificationCategory.Cities,
                             NotificationIcon.Population
                         )
@@ -509,7 +509,7 @@ object UniqueTriggerActivation {
                         // Notification click for first tech only, supporting multiple adds little value.
                         // Relies on RulesetValidator catching <= 0!
                         val notificationActions: Sequence<NotificationAction> =
-                            LocationAction(tile?.position) + TechAction(techsToResearch.first().name)
+                            LocationAction(tile?.position?.toVector2()) + TechAction(techsToResearch.first().name)
                         civInfo.addNotification(
                             notificationText, notificationActions,
                             NotificationCategory.General, NotificationIcon.Science
@@ -830,7 +830,7 @@ object UniqueTriggerActivation {
                 val radius = unique.params[2].toInt()
 
                 val isAll = amount in Constants.all
-                val positions = ArrayList<Vector2>()
+                val positions = ArrayList<HexCoord>()
 
                 var explorableTiles = tile.getTilesInDistance(radius)
                     .filter { !it.isExplored(civInfo) && it.matchesFilter(filter) }
@@ -844,14 +844,14 @@ object UniqueTriggerActivation {
                 return {
                     for (explorableTile in explorableTiles) {
                         explorableTile.setExplored(civInfo, true)
-                        civInfo.setLastSeenImprovement(explorableTile.position, explorableTile.improvement)
+                        civInfo.setLastSeenImprovement(explorableTile.position.toVector2(), explorableTile.improvement)
                         positions += explorableTile.position
                     }
 
                     if (notification != null) {
                         civInfo.addNotification(
                             notification,
-                            LocationAction(positions),
+                            LocationAction(positions.asSequence()),
                             NotificationCategory.War,
                             if (unique.params[1] == Constants.barbarianEncampment)
                                 NotificationIcon.Barbarians else NotificationIcon.Scout
@@ -961,7 +961,7 @@ object UniqueTriggerActivation {
                         }
                     }
                     if (notification != null)
-                        civInfo.addNotification(notification, LocationAction(applicableCities.map { it.location }), NotificationCategory.Cities, NotificationIcon.City)
+                        civInfo.addNotification(notification, LocationAction(applicableCities.map { it.location.toHexCoord() }), NotificationCategory.Cities, NotificationIcon.City)
                     true
                 }
             }
@@ -1010,7 +1010,7 @@ object UniqueTriggerActivation {
                     if (notification != null)
                         civInfo.addNotification(
                             notification,
-                            LocationAction(applicableCities.map { it.location }),
+                            LocationAction(applicableCities.map { it.location.toHexCoord() }),
                             NotificationCategory.Cities,
                             NotificationIcon.Construction
                         )
@@ -1033,7 +1033,7 @@ object UniqueTriggerActivation {
                     if (notification != null)
                         civInfo.addNotification(
                             notification,
-                            LocationAction(applicableCities.map { it.location }),
+                            LocationAction(applicableCities.map { it.location.toHexCoord() }),
                             NotificationCategory.Cities,
                             NotificationIcon.Gold
                         )

@@ -13,6 +13,7 @@ import com.unciv.logic.map.mapgenerator.mapregions.MapRegions.Companion.minimumP
 import com.unciv.logic.map.mapgenerator.mapregions.MapRegions.Companion.secondRingFoodScores
 import com.unciv.logic.map.mapgenerator.mapregions.MapRegions.Companion.secondRingProdScores
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.toVector2
 import com.unciv.models.ruleset.tile.TerrainType
 import yairm210.purity.annotations.Pure
 import kotlin.math.roundToInt
@@ -45,18 +46,18 @@ object RegionStartFinder {
         val wetTiles = HashSet<Vector2>()
         val dryTiles = HashSet<Vector2>()
         for (tile in centerTiles) {
-            if (tileData[tile.position]!!.isTwoFromCoast)
+            if (tileData[tile.position.toVector2()]!!.isTwoFromCoast)
                 continue // Don't even consider tiles two from coast
             if (region.continentID != -1 && region.continentID != tile.getContinent())
                 continue // Wrong continent
             if (tile.isLand && !tile.isImpassible()) {
                 evaluateTileForStart(tile, tileData)
                 if (tile.isAdjacentToRiver())
-                    riverTiles.add(tile.position)
+                    riverTiles.add(tile.position.toVector2())
                 else if (tile.isCoastalTile() || tile.isAdjacentTo(Constants.freshWater))
-                    wetTiles.add(tile.position)
+                    wetTiles.add(tile.position.toVector2())
                 else
-                    dryTiles.add(tile.position)
+                    dryTiles.add(tile.position.toVector2())
             }
         }
         // Did we find a good start position?
@@ -85,7 +86,7 @@ object RegionStartFinder {
                 continue // Wrong continent
             if (tile.isLand && !tile.isImpassible()) {
                 evaluateTileForStart(tile, tileData)
-                dryTiles.add(tile.position)
+                dryTiles.add(tile.position.toVector2())
             }
         }
         // Were any of them good?
@@ -157,7 +158,7 @@ object RegionStartFinder {
     /** Evaluates a tile for starting position, setting isGoodStart and startScore in
      *  MapGenTileData. Assumes that all tiles have corresponding MapGenTileData. */
     private fun evaluateTileForStart(tile: Tile, tileData: TileDataMap) {
-        val localData = tileData[tile.position]!!
+        val localData = tileData[tile.position.toVector2()]!!
 
         var totalFood = 0
         var totalProd = 0
@@ -172,7 +173,7 @@ object RegionStartFinder {
         for (ring in 1..3) {
             // Sum up the values for this ring
             for (outerTile in tile.getTilesAtDistance(ring)) {
-                val outerTileData = tileData[outerTile.position]!!
+                val outerTileData = tileData[outerTile.position.toVector2()]!!
                 if (outerTileData.isJunk)
                     totalJunk++
                 else {
@@ -228,7 +229,7 @@ object RegionStartFinder {
 
         for ((ring, penalty) in closeStartPenaltyForRing) {
             for (outerTile in region.tileMap[position].getTilesAtDistance(ring).map { it.position })
-                tileData[outerTile]!!.addCloseStartPenalty(penalty)
+                tileData[outerTile.toVector2()]!!.addCloseStartPenalty(penalty)
         }
     }
 }

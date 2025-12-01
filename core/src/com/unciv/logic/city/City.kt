@@ -13,11 +13,13 @@ import com.unciv.logic.city.managers.CityReligionManager
 import com.unciv.logic.city.managers.SpyFleeReason
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.transients.CapitalConnectionsFinder.CapitalConnectionMedium
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.UnitPromotions
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.toVector2
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.TileResource
@@ -61,7 +63,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     // This is so that military units can enter the city, even before we decide what to do with it
     var hasJustBeenConquered = false
 
-    var location: Vector2 = Vector2.Zero
+    var location = HexCoord()
     var id: String = UUID.randomUUID().toString()
     override var name: String = ""
     /** Serialization field for [foundingCivObject]. Is equivalent to `foundingCivObject.civName` */
@@ -188,7 +190,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     @Readonly fun getTiles(): Sequence<Tile> = tiles.asSequence().map { tileMap[it] }
     @Readonly fun getWorkableTiles() = tilesInRange.asSequence().filter { it.getOwner() == civ }
     @Readonly fun getWorkedTiles(): Sequence<Tile> = workedTiles.asSequence().map { tileMap[it] }
-    @Readonly fun isWorked(tile: Tile) = workedTiles.contains(tile.position)
+    @Readonly fun isWorked(tile: Tile) = workedTiles.contains(tile.position.toVector2())
 
     @Readonly fun isCapital(): Boolean = cityConstructions.builtBuildingUniqueMap.hasUnique(UniqueType.IndicatesCapital, state)
     @Readonly fun isCoastal(): Boolean = centerTile.isCoastalTile()

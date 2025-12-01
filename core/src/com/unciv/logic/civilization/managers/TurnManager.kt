@@ -14,7 +14,6 @@ import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DiplomacyTurnManager.nextTurn
 import com.unciv.logic.map.mapunit.UnitTurnManager
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.toHexCoord
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
@@ -201,7 +200,7 @@ class TurnManager(val civInfo: Civilization) {
 
         repeat(rebelCount) {
             civInfo.gameInfo.tileMap.placeUnitNearTile(
-                spawnTile.position.toHexCoord(),
+                spawnTile.position,
                 unitToSpawn,
                 barbarians
             )

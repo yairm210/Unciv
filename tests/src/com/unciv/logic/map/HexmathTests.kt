@@ -69,7 +69,7 @@ class HexmathTests {
         
         for (x in -2..2)
             for (y in -2..2){
-                val hexCoord = HexCoord.of(x, y)
+                val hexCoord = HexCoord(x, y)
                 val vector2 = Vector2(x.toFloat(), y.toFloat())
                 
                 // hexcoord -> json -> vector2

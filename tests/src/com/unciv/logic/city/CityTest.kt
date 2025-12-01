@@ -2,6 +2,7 @@ package com.unciv.logic.city
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.HexCoord
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.testing.GdxTestRunner
@@ -24,7 +25,7 @@ class CityTest {
     fun setUp() {
         testGame.makeHexagonalMap(2)
         testCiv = testGame.addCiv()
-        capitalCity = testGame.addCity(testCiv, testGame.getTile(Vector2.Zero))
+        capitalCity = testGame.addCity(testCiv, testGame.getTile(HexCoord.Zero))
     }
 
     @Test
@@ -39,7 +40,7 @@ class CityTest {
     @Test
     fun `should destroy city when it's not original capital`() {
         // given
-        val nonCapitalCity = testGame.addCity(testCiv, testGame.getTile(Vector2(1f, 1f)))
+        val nonCapitalCity = testGame.addCity(testCiv, testGame.getTile(1,1))
 
         // when
         nonCapitalCity.destroyCity()
@@ -52,7 +53,7 @@ class CityTest {
     @Test
     fun `should move capital when destroyed`() {
         // given
-        val nonCapitalCity = testGame.addCity(testCiv, testGame.getTile(Vector2(1f, 1f)))
+        val nonCapitalCity = testGame.addCity(testCiv, testGame.getTile(1,1))
         nonCapitalCity.name = "Not capital"
 
         // when
@@ -70,7 +71,7 @@ class CityTest {
         capitalCity.destroyCity(overrideSafeties = true)
 
         // then
-        assertEquals("City ruins", testGame.getTile(Vector2.Zero).improvement)
+        assertEquals("City ruins", testGame.getTile(HexCoord.Zero).improvement)
     }
 
     @Test

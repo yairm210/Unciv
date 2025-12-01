@@ -358,7 +358,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
             setAction(SpyAction.None)
             return
         }
-        location = city.location
+        location = city.location.toVector2()
         this.city = city
         setAction(SpyAction.Moving, 1)
     }

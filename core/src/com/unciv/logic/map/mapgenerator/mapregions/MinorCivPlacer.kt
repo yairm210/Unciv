@@ -3,6 +3,7 @@ package com.unciv.logic.map.mapgenerator.mapregions
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.toVector2
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.UniqueType
 import yairm210.purity.annotations.Readonly
@@ -212,7 +213,7 @@ object MinorCivPlacer {
         while (tileList.isNotEmpty() && civsToPlace.isNotEmpty()) {
             val chosenTile = tileList.random()
             tileList.remove(chosenTile)
-            val data = tileData[chosenTile.position]!!
+            val data = tileData[chosenTile.position.toVector2()]!!
             // If the randomly chosen tile is too close to a player or a city state, discard it
             if (data.impacts.containsKey(MapRegions.ImpactType.MinorCiv))
                 continue
@@ -225,7 +226,7 @@ object MinorCivPlacer {
 
     @Readonly
     private fun canPlaceMinorCiv(tile: Tile, tileData: TileDataMap) = !tile.isWater && !tile.isImpassible() &&
-        !tileData[tile.position]!!.isJunk &&
+        !tileData[tile.position.toVector2()]!!.isJunk &&
         tile.getBaseTerrain().getMatchingUniques(UniqueType.HasQuality).none { it.params[0] == "Undesirable" } && // So we don't get snow hills
         tile.neighbors.count() == 6 // Avoid map edges
 

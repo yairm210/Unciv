@@ -137,7 +137,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         val city = NextTurnAutomation.getForeignCityNearCapital(civInfo.getCapital(), receivingCiv)?.city ?: return
         val placedUnit = receivingCiv.units.placeUnitNearTile(city.location.toHexCoord(), giftedUnit)
             ?: return
-        val locations = LocationAction(placedUnit.getTile().position, civInfo.getCapital()!!.location)
+        val locations = LocationAction(placedUnit.getTile().position, civInfo.getCapital()!!.location.toHexCoord())
         receivingCiv.addNotification( "[${civInfo.civName}] gave us a [${giftedUnit.name}] as a gift!", locations,
             NotificationCategory.Units, civInfo.civName, giftedUnit.name)
     }
@@ -412,7 +412,7 @@ class CityStateFunctions(val civInfo: Civilization) {
             city.moveToCiv(otherCiv)
             city.isPuppet = true // Human players get a popup that allows them to annex instead
         }
-        civInfo.destroy(notificationLocation)
+        civInfo.destroy(notificationLocation.toHexCoord())
     }
 
     @Readonly

@@ -47,7 +47,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     var civilianUnit: MapUnit? = null
     var airUnits = ArrayList<MapUnit>(0)
 
-    var position: Vector2 = Vector2.Zero
+    var position = HexCoord()
     lateinit var baseTerrain: String
     var terrainFeatures: List<String> = listOf()
         private set
@@ -214,7 +214,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             if (civilianUnit != null) toReturn.civilianUnit = civilianUnit!!.clone()
             toReturn.airUnits = ArrayList(airUnits.map { it.clone() })
         }
-        toReturn.position = position.cpy()
+        toReturn.position = position
         toReturn.baseTerrain = baseTerrain
         toReturn.terrainFeatures = terrainFeatures // immutable lists can be directly passed around
         toReturn.terrainFeatureObjects = terrainFeatureObjects
@@ -585,10 +585,10 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             resource != null && civInfo.tech.isRevealed(tileResource)
 
 
-    @Readonly fun getViewableTilesList(distance: Int): List<Tile> = tileMap.getViewableTiles(position.toHexCoord(), distance)
-    @Readonly fun getTilesInDistance(distance: Int): Sequence<Tile> = tileMap.getTilesInDistance(position.toHexCoord(), distance)
-    @Readonly fun getTilesInDistanceRange(range: IntRange): Sequence<Tile> = tileMap.getTilesInDistanceRange(position.toHexCoord(), range)
-    @Readonly fun getTilesAtDistance(distance: Int): Sequence<Tile> = tileMap.getTilesAtDistance(position.toHexCoord(), distance)
+    @Readonly fun getViewableTilesList(distance: Int): List<Tile> = tileMap.getViewableTiles(position, distance)
+    @Readonly fun getTilesInDistance(distance: Int): Sequence<Tile> = tileMap.getTilesInDistance(position, distance)
+    @Readonly fun getTilesInDistanceRange(range: IntRange): Sequence<Tile> = tileMap.getTilesInDistanceRange(position, range)
+    @Readonly fun getTilesAtDistance(distance: Int): Sequence<Tile> = tileMap.getTilesAtDistance(position, distance)
 
     @Readonly
     fun getDefensiveBonus(includeImprovementBonus: Boolean = true, unit: MapUnit? = null): Float {
@@ -614,8 +614,8 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
      */
     @Readonly
     fun aerialDistanceTo(otherTile: Tile): Int {
-        val positionHexcoord = position.toHexCoord()
-        val otherPositionHexcoord = otherTile.position.toHexCoord()
+        val positionHexcoord = position
+        val otherPositionHexcoord = otherTile.position
         
         val xDelta = positionHexcoord.x - otherPositionHexcoord.x
         val yDelta = positionHexcoord.y - otherPositionHexcoord.y
@@ -847,7 +847,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         }
         owningCity = city
         stateThisTile = GameContext(tile = this, city = city, gameInfo = tileMap.gameInfo)
-        isCityCenterInternal = getCity()?.location == position.toVector2()
+        isCityCenterInternal = getCity()?.location?.toHexCoord() == position
     }
 
     /**

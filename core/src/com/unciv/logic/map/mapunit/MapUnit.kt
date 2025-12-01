@@ -13,6 +13,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.mapunit.movement.UnitMovement
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.toVector2
 import com.unciv.models.Counter
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Ruleset
@@ -856,7 +857,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             val gotTo = movement.headTowards(destinationTile)
             if (gotTo == currentTile) { // We didn't move at all
                 // pathway blocked? Are we still at the same spot as start of turn?
-                if (movementMemories.last().position == currentTile.position)
+                if (movementMemories.last().position == currentTile.position.toVector2())
                     action = null
                 return
             }
@@ -891,7 +892,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         currentMovement = 0f
         civ.units.removeUnit(this)
         if (::currentTile.isInitialized) {
-            val currentPosition = Vector2(getTile().position)
+            val currentPosition = Vector2(getTile().position.toVector2())
             civ.attacksSinceTurnStart.addAll(attacksSinceTurnStart.asSequence().map { Civilization.HistoricalAttackMemory(this.name, currentPosition, it) })
             removeFromTile()
             civ.cache.updateViewableTiles()
@@ -976,7 +977,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             promotions.addPromotion(promotion, true)
         }
 
-        updateVisibleTiles(true, currentTile.position)
+        updateVisibleTiles(true, currentTile.position.toVector2())
     }
 
     fun putInTile(tile: Tile) {
@@ -1023,7 +1024,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
         // Notify City-States that this unit cleared a Barbarian Encampment, required for quests
         civ.gameInfo.getAliveCityStates()
-                .forEach { it.questManager.barbarianCampCleared(civ, tile.position) }
+                .forEach { it.questManager.barbarianCampCleared(civ, tile.position.toVector2()) }
 
         var goldGained =
                 civ.getDifficulty().clearBarbarianCampReward * civ.gameInfo.speed.goldCostModifier
@@ -1113,7 +1114,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     /** Add the current position and the most recent movement type to [movementMemories]. Called once at end and once at start of turn, and at unit creation. */
     fun addMovementMemory() {
-        movementMemories.add(UnitMovementMemory(getTile().position, mostRecentMoveType))
+        movementMemories.add(UnitMovementMemory(getTile().position.toVector2(), mostRecentMoveType))
         while (movementMemories.size > 2) { // O(n) but n == 2.
             // Keep at most one arrow segment— A lot of the time even that won't be rendered because the two positions will be the same.
             // When in the unit's turn— I.E. For a player unit— The last two entries will be from .endTurn() followed by from .startTurn(), so the segment from .movementMemories will have zero length. Instead, what gets seen will be the segment from the end of .movementMemories to the unit's current position.

@@ -999,7 +999,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     }
     // endregion
 
-    fun addCity(location: Vector2, unit: MapUnit? = null): City {
+    fun addCity(location: HexCoord, unit: MapUnit? = null): City {
         val newCity = CityFounder().foundCity(this, location, unit)
         newCity.cityConstructions.chooseNextConstruction()
         return newCity
@@ -1012,7 +1012,7 @@ class Civilization : IsPartOfGameInfoSerialization {
      * @param notificationLocation if given *and* the civ receiving the notification can see the tile or knows there was a city there, then the notification can show this location on click
      */
     // At the moment, the "last unit down" callers do not pass a location, the city ones do - because the former isn't interesting
-    fun destroy(notificationLocation: Vector2? = null) {
+    fun destroy(notificationLocation: HexCoord? = null) {
         val destructionText = if (isMajorCiv()) "The civilization of [$civName] has been destroyed!"
             else "The City-State of [$civName] has been destroyed!"
         for (civ in gameInfo.civilizations) {

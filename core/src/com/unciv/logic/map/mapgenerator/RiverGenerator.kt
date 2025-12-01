@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.toVector2
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.utils.debug
@@ -70,7 +71,7 @@ class RiverGenerator(
     fun spawnRiver(initialPosition: Tile, endPosition: Tile, resultingTiles: MutableSet<Tile>?) {
         // Recommendation: Draw a bunch of hexagons on paper before trying to understand this, it's super helpful!
 
-        var riverCoordinate = RiverCoordinate(tileMap, initialPosition.position,
+        var riverCoordinate = RiverCoordinate(tileMap, initialPosition.position.toVector2(),
                 RiverCoordinate.BottomRightOrLeft.entries.random(randomness.RNG))
 
         repeat(maxRiverLength) {     // Arbitrary max on river length, otherwise this will go in circles - rarely
@@ -126,15 +127,15 @@ class RiverGenerator(
             if (bottomRightOrLeft == BottomRightOrLeft.BottomLeft) {
                 yield(RiverCoordinate(tileMap, position, BottomRightOrLeft.BottomRight)) // same tile, other side
                 if (myTopLeft != null)
-                    yield(RiverCoordinate(tileMap, myTopLeft.position, BottomRightOrLeft.BottomRight)) // tile to MY top-left, take its bottom right corner
+                    yield(RiverCoordinate(tileMap, myTopLeft.position.toVector2(), BottomRightOrLeft.BottomRight)) // tile to MY top-left, take its bottom right corner
                 if (myBottomLeft != null)
-                    yield(RiverCoordinate(tileMap, myBottomLeft.position, BottomRightOrLeft.BottomRight)) // Tile to MY bottom-left, take its bottom right
+                    yield(RiverCoordinate(tileMap, myBottomLeft.position.toVector2(), BottomRightOrLeft.BottomRight)) // Tile to MY bottom-left, take its bottom right
             } else {
                 yield(RiverCoordinate(tileMap, position, BottomRightOrLeft.BottomLeft)) // same tile, other side
                 if (myTopRight != null)
-                    yield(RiverCoordinate(tileMap, myTopRight.position, BottomRightOrLeft.BottomLeft)) // tile to MY top-right, take its bottom left
+                    yield(RiverCoordinate(tileMap, myTopRight.position.toVector2(), BottomRightOrLeft.BottomLeft)) // tile to MY top-right, take its bottom left
                 if (myBottomRight != null)
-                    yield(RiverCoordinate(tileMap, myBottomRight.position, BottomRightOrLeft.BottomLeft))  // tile to MY bottom-right, take its bottom left
+                    yield(RiverCoordinate(tileMap, myBottomRight.position.toVector2(), BottomRightOrLeft.BottomLeft))  // tile to MY bottom-right, take its bottom left
             }
         }
 

@@ -3,6 +3,7 @@ package com.unciv.ui.screens.worldscreen.unit.presenter
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.toVector2
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.surroundWithCircle
@@ -32,7 +33,7 @@ class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: W
     var selectedUnitIsConnectingRoad = false
 
     override val position: Vector2?
-        get() = selectedUnit?.currentTile?.position
+        get() = selectedUnit?.currentTile?.position?.toVector2()
 
     fun selectUnit(unit: MapUnit? = null, append: Boolean = false) {
         if (!append) selectedUnits.clear()

@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapSize
+import com.unciv.logic.map.toVector2
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSetupInfo

@@ -262,7 +262,7 @@ class MapEditorViewTab(
 
     private fun TileMap.getTileStartingLocationSummary(tile: Tile) =
         startingLocations.asSequence()
-            .filter { it.position == tile.position }
+            .filter { it.position == tile.position.toVector2() }
             .mapNotNull { if (it.nation in ruleset!!.nations) ruleset!!.nations[it.nation]!! to it.usage else null }
             .sortedWith(compareBy<Pair<Nation,TileMap.StartingLocation.Usage>>{ it.first.isCityState }.thenBy(collator) { it.first.name.tr(hideIcons = true) })
             .joinToString { "{${it.first.name}} ({${it.second.label}})".tr() }
