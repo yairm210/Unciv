@@ -6,7 +6,6 @@ import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonWriter
 import com.badlogic.gdx.utils.SerializationException
 import com.unciv.logic.map.HexCoord
-import com.unciv.logic.map.SerializableHexCoord
 import com.unciv.ui.components.input.KeyCharAndCode
 import kotlinx.serialization.builtins.PairSerializer
 import java.time.Duration
@@ -25,7 +24,7 @@ fun json() = Json(JsonWriter.OutputType.json).apply {
 
     setSerializer(Duration::class.java, DurationSerializer())
     setSerializer(KeyCharAndCode::class.java, KeyCharAndCode.Serializer())
-    setSerializer(SerializableHexCoord::class.java, SerializableHexCoord.Serializer())
+    setSerializer(HexCoord::class.java, HexCoord.Serializer())
 }
 
 /**

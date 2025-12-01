@@ -382,10 +382,15 @@ object HexMath {
 
 }
 
-interface HexCoord{
-    val x: Int
-    val y: Int
-    
+//interface HexCoord{
+//    val x: Int
+//    val y: Int
+//    
+//}
+
+/** Required for ser/deser since the stupid json parser can't handle the inline ints -_-  */
+data class HexCoord(val x:Int=0, val y:Int=0){
+
     @Pure fun plus(hexCoord: HexCoord): HexCoord = HexCoord.of(x + hexCoord.x, y + hexCoord.y)
     @Pure fun plus(plusX: Int, plusY: Int): HexCoord = HexCoord.of(x + plusX, y + plusY)
     @Pure fun minus(hexCoord: HexCoord): HexCoord = HexCoord.of(x - hexCoord.x, y - hexCoord.y)
@@ -398,14 +403,47 @@ interface HexCoord{
     // Conversion helpers for 1:1 Vector2 compatibility
     @Pure fun cpy() = this
     @Pure fun toHexCoord() = this
-    @Pure fun asSerializable() = SerializableHexCoord(x,y)
-    
+    @Pure fun asSerializable() = HexCoord(x,y)
+
     fun toPrettyString(): String = "($x,$y)"
 
     companion object {
         val Zero = HexCoord.of(0,0)
         @Pure
-        fun of(x: Int, y: Int): HexCoord {
+        fun of(x: Int, y: Int): HexCoord = HexCoord(x,y)
+    }
+    /** Ser/deser to be 1:1 with Vector2, to allow us to replace Vector2 in game saves with HexCoord */
+    class Serializer : Json.Serializer<HexCoord> {
+        override fun write(json: Json, coord: HexCoord, knownType: Class<*>?) {
+            json.writeValue(mapOf("x" to coord.x.toFloat(), "y" to coord.y.toFloat()))
+        }
+
+        override fun read(json: Json, jsonData: JsonValue, type: Class<*>?): HexCoord {
+            val x = json.readValue(Float::class.java, jsonData["x"]) ?: 0f
+            val y = json.readValue(Float::class.java, jsonData["y"]) ?: 0f
+            return HexCoord(x.toInt(), y.toInt())
+        }
+    }
+}
+
+@JvmInline
+/** When we need to create a lot of coords we prefer to use this implementation - since it's inline it's passed around as as int
+    and doesn't require memory allocation or memory access */
+value class InlineHexCoord(val coords: Int = 0) {
+    // x value is stored in the 16 bits, and y value in the bottom 16 bits, allowing range -32768 to 32767
+
+    val x: Int
+        get() = coords shr 16
+
+    // Extract bottom 16 bits and sign-extend - required to keep negative numbers
+    val y: Int
+        get() = (coords shl 16) shr 16
+    
+    override fun toString(): String = "HexCoord(x=${x}, y=${y})"
+
+    companion object {
+        @Pure
+        fun of(x: Int, y: Int): InlineHexCoord {
             require(x in -32768..32767) { "X value must be in range -32768..32767" }
             require(y in -32768..32767) { "Y value must be in range -32768..32767" }
             return InlineHexCoord((x shl 16) or (y and 0xFFFF))
@@ -413,39 +451,6 @@ interface HexCoord{
     }
 }
 
-/** Required for ser/deser since the stupid json parser can't handle the inline ints -_-  */
-data class SerializableHexCoord(override val x:Int=0, override val y:Int=0): HexCoord{
-
-    /** Ser/deser to be 1:1 with Vector2, to allow us to replace Vector2 in game saves with HexCoord */
-    class Serializer : Json.Serializer<SerializableHexCoord> {
-        override fun write(json: Json, coord: SerializableHexCoord, knownType: Class<*>?) {
-            json.writeValue(mapOf("x" to coord.x.toFloat(), "y" to coord.y.toFloat()))
-        }
-
-        override fun read(json: Json, jsonData: JsonValue, type: Class<*>?): SerializableHexCoord {
-            val x = json.readValue(Float::class.java, jsonData["x"]) ?: 0f
-            val y = json.readValue(Float::class.java, jsonData["y"]) ?: 0f
-            return SerializableHexCoord(x.toInt(), y.toInt())
-        }
-    }
-}
-
-@JvmInline
-/** Whenever we can we prefer to use this implementation - since it's inline it's passed around as as int
-    and doesn't require memory allocation or memory access */
-value class InlineHexCoord(val coords: Int = 0): HexCoord {
-    // x value is stored in the 16 bits, and y value in the bottom 16 bits, allowing range -32768 to 32767
-
-    override val x: Int
-        get() = coords shr 16
-
-    // Extract bottom 16 bits and sign-extend - required to keep negative numbers
-    override val y: Int
-        get() = (coords shl 16) shr 16
-    
-    override fun toString(): String = "HexCoord(x=${x}, y=${y})"
-}
-
 @Pure fun Vector2.toHexCoord() = HexCoord.of(this.x.toInt(), this.y.toInt())
 @Pure fun Vector2.toVector2() = this // compatibility
-@Pure fun Vector2.asSerializable() = SerializableHexCoord(x.toInt(),y.toInt())
+@Pure fun Vector2.asSerializable() = HexCoord(x.toInt(),y.toInt())
