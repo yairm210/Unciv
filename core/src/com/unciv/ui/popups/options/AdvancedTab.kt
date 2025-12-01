@@ -8,11 +8,11 @@ import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.PixmapIO
-import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.UncivGame
+import com.unciv.logic.map.HexCoord
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSettings.ScreenSize
 import com.unciv.models.metadata.ModCategories
@@ -257,11 +257,11 @@ internal class AdvancedTab(
                 val extraImagesLocation = "../../extraImages"
                 // I'm not sure why we need to advance the y by 2 for every screenshot... but that's the only way it remains centered
                 generateScreenshots(
-                    settings, arrayListOf(
-                        ScreenshotConfig(630, 500, ScreenSize.Medium, "$extraImagesLocation/itch.io image.png", Vector2(-2f, 2f), false),
-                        ScreenshotConfig(1280, 640, ScreenSize.Medium, "$extraImagesLocation/GithubPreviewImage.png", Vector2(-2f, 4f)),
-                        ScreenshotConfig(1024, 500, ScreenSize.Medium, "$extraImagesLocation/Feature graphic - Google Play.png", Vector2(-2f, 6f)),
-                        ScreenshotConfig(1024, 500, ScreenSize.Medium, "../../fastlane/metadata/android/en-US/images/featureGraphic.png", Vector2(-2f, 8f))
+                    settings.settings, arrayListOf(
+                        ScreenshotConfig(630, 500, ScreenSize.Medium, "$extraImagesLocation/itch.io image.png", HexCoord(-2, 2), false),
+                        ScreenshotConfig(1280, 640, ScreenSize.Medium, "$extraImagesLocation/GithubPreviewImage.png", HexCoord(-2, 4)),
+                        ScreenshotConfig(1024, 500, ScreenSize.Medium, "$extraImagesLocation/Feature graphic - Google Play.png", HexCoord(-2, 6)),
+                        ScreenshotConfig(1024, 500, ScreenSize.Medium, "../../fastlane/metadata/android/en-US/images/featureGraphic.png", HexCoord(-2, 8))
                     )
                 )
             }
@@ -275,7 +275,7 @@ internal class AdvancedTab(
         val height: Int,
         val screenSize: ScreenSize,
         var fileLocation: String,
-        var centerTile: Vector2,
+        var centerTile: HexCoord,
         var attackCity: Boolean = true
     )
 

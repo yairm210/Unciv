@@ -1,0 +1,44 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "VictoryTypes",
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "name": {
+                "type": "string",
+                "description": "Name of the victory"
+            },
+            "victoryScreenHeader": {
+                "type": "string",
+                "description": "Shown in the footer of the victory in the our status in the victory screen"
+            },
+            "victoryString": {
+                "type": "string",
+                "description": "Shown in the footer of the victory screen when you won the game with this victory"
+            },
+            "defeatString": {
+                "type": "string",
+                "description": "Shown in the footer of the victory screen when someone else won the game with this victory"
+            },
+            "hiddenInVictoryScreen": {
+                "type": "boolean",
+                "description": "Whether progress of this victory is hidden in the victory screen",
+                "default": false
+            },
+            "requiredSpaceshipParts": {
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "Which units must be added to the capital for the corresponding milestone"
+            },
+            "milestones": {
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "List of milestones that must be accomplished to win. See https://yairm210.github.io/Unciv/Modders/Mod-file-structure/5-Miscellaneous-JSON-files/#milestones"
+            },
+            "civilopediaText": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/civilopediaText.json" }
+        },
+        "required": ["name", "milestones"],
+        "additionalProperties": false
+    }
+}

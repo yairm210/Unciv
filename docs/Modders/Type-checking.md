@@ -26,9 +26,21 @@ Tada! Now Android Studio will recognize all Buildings.json files as belonging to
     "json.schemas": [
         {
             "fileMatch": [
+                "*/Beliefs.json"
+            ],
+            "url": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/beliefs.json"
+        },
+        {
+            "fileMatch": [
                 "*/Buildings.json"
             ],
             "url": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/buildings.json"
+        },
+        {
+            "fileMatch": [
+                "*/CityStateTypes.json"
+            ],
+            "url": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/cityStateTypes.json"
         },
         {
             "fileMatch": [
@@ -41,6 +53,30 @@ Tada! Now Android Studio will recognize all Buildings.json files as belonging to
               "*/Nations.json"
             ],
             "url": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/nations.json"
+        },
+        {
+            "fileMatch": [
+                "*/Personalities.json"
+            ],
+            "url": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/personalities.json"
+        },
+        {
+            "fileMatch": [
+                "*/Policies.json"
+            ],
+            "url": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/policies.json"
+        },
+        {
+            "fileMatch": [
+                "*/Religions.json"
+            ],
+            "url": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/religions.json"
+        },
+        {
+            "fileMatch": [
+                "*/Specialists.json"
+            ],
+            "url": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/specialists.json"
         },
         {
             "fileMatch": [
@@ -89,6 +125,12 @@ Tada! Now Android Studio will recognize all Buildings.json files as belonging to
               "*/UnitNameGroups.json"
             ],
             "url": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/unitNameGroups.json"
+        },
+        {
+            "fileMatch": [
+              "*/VictoryTypes.json"
+            ],
+            "url": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/victoryTypes.json"
         }
     ]
 ```

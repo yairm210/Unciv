@@ -18,6 +18,9 @@ import com.unciv.logic.trade.TradeOfferType
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.ui.components.extensions.toPercent
+import com.unciv.utils.withItem
+import com.unciv.utils.withoutItem
 import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 import kotlin.math.min
@@ -32,9 +35,18 @@ class CityConquestFunctions(val city: City) {
     private fun getGoldForCapturingCity(conqueringCiv: Civilization): Int {
         val baseGold = 20 + 10 * city.population.population + tileBasedRandom.nextInt(40)
         val turnModifier = max(0, min(50, city.civ.gameInfo.turns - city.turnAcquired)) / 50f
-        val cityModifier = if (city.containsBuildingUnique(UniqueType.DoublesGoldFromCapturingCity)) 2f else 1f
-        val conqueringCivModifier = if (conqueringCiv.hasUnique(UniqueType.TripleGoldFromEncampmentsAndCities)) 3f else 1f
-
+        var cityModifier = if (city.containsBuildingUnique(UniqueType.DoublesGoldFromCapturingCity)) 2f else 1f
+        
+        for (unique in city.getMatchingUniques(UniqueType.GoldFromCapturingCity, city.state)) {
+            cityModifier *= unique.params[0].toPercent()
+        }
+        
+        var conqueringCivModifier = if (conqueringCiv.hasUnique(UniqueType.TripleGoldFromEncampmentsAndCities)) 3f else 1f
+        
+        for (unique in conqueringCiv.getMatchingUniques(UniqueType.GoldFromEncampmentsAndCities, conqueringCiv.state)) {
+            conqueringCivModifier *= unique.params[0].toPercent()
+        }
+        
         val goldPlundered = baseGold * turnModifier * cityModifier * conqueringCivModifier
         return goldPlundered.toInt()
     }
@@ -105,7 +117,7 @@ class CityConquestFunctions(val city: City) {
 
         city.moveToCiv(receivingCiv)
 
-        Battle.destroyIfDefeated(conqueredCiv, conqueringCiv, city.location)
+        Battle.destroyIfDefeated(conqueredCiv, conqueringCiv, city.location.toHexCoord())
 
         city.health = city.getMaxHealth() / 2 // I think that cities recover to half health when conquered?
         city.avoidGrowth = false // reset settings
@@ -114,7 +126,7 @@ class CityConquestFunctions(val city: City) {
             city.population.addPopulation(-1 - city.population.population / 4) // so from 2-4 population, remove 1, from 5-8, remove 2, etc.
         city.reassignAllPopulation()
 
-        if (!reconqueredCityWhileStillInResistance && city.foundingCiv != receivingCiv.civName) {
+        if (!reconqueredCityWhileStillInResistance && city.foundingCivObject != receivingCiv) {
             // add resistance
             // I checked, and even if you puppet there's resistance for conquering
             city.setFlag(CityFlags.Resistance, city.population.population)
@@ -182,13 +194,13 @@ class CityConquestFunctions(val city: City) {
     }
 
     fun liberateCity(conqueringCiv: Civilization) {
-        if (city.foundingCiv == "") { // this should never happen but just in case...
+        if (city.foundingCivObject == null) { // this should never happen but just in case...
             this.puppetCity(conqueringCiv)
             this.annexCity()
             return
         }
 
-        val foundingCiv = city.civ.gameInfo.getCivilization(city.foundingCiv)
+        val foundingCiv = city.foundingCivObject!!
         if (foundingCiv.isDefeated()) // resurrected civ
             for (diploManager in foundingCiv.diplomacy.values)
                 if (diploManager.diplomaticStatus == DiplomaticStatus.War)
@@ -231,7 +243,7 @@ class CityConquestFunctions(val city: City) {
 
 
     private fun diplomaticRepercussionsForLiberatingCity(conqueringCiv: Civilization, conqueredCiv: Civilization) {
-        val foundingCiv = conqueredCiv.gameInfo.civilizations.first { it.civName == city.foundingCiv }
+        val foundingCiv = city.foundingCivObject!!
         val percentageOfCivPopulationInThatCity = city.population.population *
                 100f / (foundingCiv.cities.sumOf { it.population.population } + city.population.population)
         val respectForLiberatingOurCity = 10f + percentageOfCivPopulationInThatCity.roundToInt()
@@ -269,8 +281,8 @@ class CityConquestFunctions(val city: City) {
         //  civs so the capitalCityIndicator recognizes the unique buildings of the conquered civ
         if (city.isCapital()) oldCiv.moveCapitalToNextLargest(city)
 
-        oldCiv.cities = oldCiv.cities.toMutableList().apply { remove(city) }
-        newCiv.cities = newCiv.cities.toMutableList().apply { add(city) }
+        oldCiv.cities = oldCiv.cities.withoutItem(city)
+        newCiv.cities = newCiv.cities.withItem(city)
         city.civ = newCiv
         city.state = GameContext(city)
         city.hasJustBeenConquered = false

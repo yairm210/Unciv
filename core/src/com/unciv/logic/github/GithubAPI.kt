@@ -7,7 +7,6 @@ import com.unciv.json.json
 import com.unciv.logic.UncivKtor
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.github.Github.repoNameToFolderName
-import com.unciv.logic.github.GithubAPI.parseUrl
 import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
