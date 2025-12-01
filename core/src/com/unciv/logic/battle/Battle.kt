@@ -110,8 +110,8 @@ object Battle {
         } else {
             attacker.getCivInfo().attacksSinceTurnStart.add(Civilization.HistoricalAttackMemory(
                 null,
-                Vector2(attacker.getTile().position.toVector2()),
-                Vector2(attackedTile.position.toVector2())
+                attacker.getTile().position,
+                attackedTile.position
             ))
         }
 

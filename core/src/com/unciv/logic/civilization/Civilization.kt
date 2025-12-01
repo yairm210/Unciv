@@ -236,15 +236,15 @@ class Civilization : IsPartOfGameInfoSerialization {
      * @see [MapUnit.UnitMovementMemory], [attacksSinceTurnStart]
      */
     class HistoricalAttackMemory() : IsPartOfGameInfoSerialization {
-        constructor(attackingUnit: String?, source: Vector2, target: Vector2): this() {
+        constructor(attackingUnit: String?, source: HexCoord, target: HexCoord): this() {
             this.attackingUnit = attackingUnit
             this.source = source
             this.target = target
         }
         var attackingUnit: String? = null
-        lateinit var source: Vector2
-        lateinit var target: Vector2
-        @Readonly fun clone() = HistoricalAttackMemory(attackingUnit, Vector2(source), Vector2(target))
+        lateinit var source: HexCoord
+        lateinit var target: HexCoord
+        @Readonly fun clone() = HistoricalAttackMemory(attackingUnit, source, target)
     }
     /** Deep clone an ArrayList of [HistoricalAttackMemory]s. */
     @Readonly private fun ArrayList<HistoricalAttackMemory>.copy() = ArrayList(this.map { it.clone() })

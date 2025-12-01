@@ -567,7 +567,7 @@ class WorldMapHolder(
      * @param targetVisibleUnits Sequence of [MapUnit]s for which the active movement target can be displayed.
      * @param visibleAttacks Sequence of pairs of [Vector2] positions of the sources and the targets of all attacks that can be displayed.
      * */
-    internal fun updateMovementOverlay(pastVisibleUnits: Sequence<MapUnit>, targetVisibleUnits: Sequence<MapUnit>, visibleAttacks: Sequence<Pair<Vector2, Vector2>>) {
+    internal fun updateMovementOverlay(pastVisibleUnits: Sequence<MapUnit>, targetVisibleUnits: Sequence<MapUnit>, visibleAttacks: Sequence<Pair<HexCoord, HexCoord>>) {
         val selectedUnit = worldScreen.bottomUnitTable.selectedUnit
         for (unit in pastVisibleUnits) {
             if (unit.movementMemories.isEmpty()) continue
@@ -589,8 +589,8 @@ class WorldMapHolder(
         }
         for ((from, to) in visibleAttacks) {
             if (selectedUnit != null
-                && selectedUnit.currentTile.position.toVector2() != from
-                && selectedUnit.currentTile.position.toVector2() != to) continue
+                && selectedUnit.currentTile.position != from
+                && selectedUnit.currentTile.position != to) continue
             addArrow(tileMap[from], tileMap[to], MiscArrowTypes.UnitHasAttacked)
         }
     }
