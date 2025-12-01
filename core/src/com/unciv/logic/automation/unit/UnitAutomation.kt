@@ -93,7 +93,7 @@ object UnitAutomation {
         // Accompany settlers
         if (tryAccompanySettlerOrGreatPerson(unit)) return
 
-        if (tryGoToRuinAndEncampment(unit) && !unit.hasMovement()) return
+        if (tryGoToRuin(unit) && !unit.hasMovement()) return
 
         if (unit.health < 50 && (tryRetreat(unit) || tryHealUnit(unit))) return // do nothing but heal
 
@@ -115,12 +115,12 @@ object UnitAutomation {
 
         if (tryGarrisoningLandUnit(unit)) return
 
+        if (tryHeadTowardsEncampment(unit)) return
+
         if (unit.health < 80 && tryHealUnit(unit)) return
 
         // move towards the closest reasonably attackable enemy unit within 3 turns of movement (and 5 tiles range)
         if (tryAdvanceTowardsCloseEnemy(unit)) return
-
-        if (tryHeadTowardsEncampment(unit)) return
 
         if (unit.health < 100 && tryHealUnit(unit)) return
 
@@ -150,7 +150,7 @@ object UnitAutomation {
     }
 
     internal fun tryExplore(unit: MapUnit): Boolean {
-        if (tryGoToRuinAndEncampment(unit) && (!unit.hasMovement() || unit.isDestroyed)) return true
+        if (tryGoToRuin(unit) && (!unit.hasMovement() || unit.isDestroyed)) return true
 
         val unitVisibilityRange = unit.getVisibilityRange()
         val explorableTilesThisTurn =
@@ -174,16 +174,15 @@ object UnitAutomation {
         return false
     }
 
-    private fun tryGoToRuinAndEncampment(unit: MapUnit): Boolean {
+    private fun tryGoToRuin(unit: MapUnit): Boolean {
         if (!unit.civ.isMajorCiv()) return false // barbs don't have anything to do in ruins
 
-        val tileWithRuinOrEncampment = unit.viewableTiles
+        val tileWithRuin = unit.viewableTiles
             .firstOrNull {
-                (it.getTileImprovement()?.isAncientRuinsEquivalent(unit.cache.state) == true
-                                || it.improvement == Constants.barbarianEncampment)
+                (it.getTileImprovement()?.isAncientRuinsEquivalent(unit.cache.state) == true)
                         && unit.movement.canMoveTo(it) && unit.movement.canReach(it)
             } ?: return false
-        unit.movement.headTowards(tileWithRuinOrEncampment)
+        unit.movement.headTowards(tileWithRuin)
         return true
     }
 
@@ -684,7 +683,7 @@ object UnitAutomation {
     /** This is what a unit with the 'explore' action does.
     It also explores, but also has other functions, like healing if necessary. */
     fun automatedExplore(unit: MapUnit) {
-        if (tryGoToRuinAndEncampment(unit) && (!unit.hasMovement() || unit.isDestroyed)) return
+        if (tryGoToRuin(unit) && (!unit.hasMovement() || unit.isDestroyed)) return
         if (unit.health < 80 && tryHealUnit(unit)) return
         if (tryExplore(unit)) return
         unit.civ.addNotification("${unit.shortDisplayName()} finished exploring.", MapUnitAction(unit), NotificationCategory.Units, unit.name, "OtherIcons/Sleep")
