@@ -350,7 +350,7 @@ class CityStats(val city: City) {
         val stats = Stats()
         val workedTiles = city.tilesInRange.asSequence()
             .filter {
-                city.location == it.position.toVector2()
+                city.location.toHexCoord() == it.position
                         || city.isWorked(it)
                         || it.owningCity == city && (it.getUnpillagedTileImprovement()
                     ?.hasUnique(UniqueType.TileProvidesYieldWithoutPopulation, it.stateThisTile) == true
