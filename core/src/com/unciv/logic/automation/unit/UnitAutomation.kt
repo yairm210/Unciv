@@ -497,27 +497,16 @@ object UnitAutomation {
                 unit.getTile().position,
                 unit.getMaxMovement() * CLOSE_ENEMY_TURNS_AWAY_LIMIT
         )
-        var closeEnemies = TargetHelper.getAttackableEnemies(
-            unit,
-            unitDistanceToTiles,
-            tilesToCheck = unit.getTile().getTilesInDistance(CLOSE_ENEMY_TILES_AWAY_LIMIT).toList()
-        ).filter {
-            // Ignore units that would 1-shot you if you attacked, as well as avoid parking your units next to enemy citadels
-            BattleDamage.calculateDamageToAttacker(
-                MapUnitCombatant(unit),
-                Battle.getMapCombatantOfTile(it.tileToAttack)!!
-            ) < unit.health || unit.getDamageFromTerrain(it.tileToAttackFrom) > 0
-        }
-
-        if (unit.baseUnit.isRanged())
-            closeEnemies = closeEnemies.filterNot { it.tileToAttack.isCityCenter() && it.tileToAttack.getCity()!!.health == 1 }
-
-        val closestEnemy = closeEnemies
-            .filter { unit.getDamageFromTerrain(it.tileToAttackFrom) <= 0 }  // Don't attack from a mountain
+        val closeEnemy = TargetHelper.getAttackableEnemies(unit, unitDistanceToTiles, tilesToCheck = unit.getTile().getTilesInDistance(CLOSE_ENEMY_TILES_AWAY_LIMIT).toList())
+            .filterNot { unit.baseUnit.isRanged() && it.tileToAttack.isCityCenter() && it.tileToAttack.getCity()!!.health == 1 } // occurs fairly often probably because AI dumb
+            .filter { unit.getDamageFromTerrain(it.tileToAttackFrom) <= 0 }  // Don't attack from a mountain or near enemy citadels
+            .filter {
+            // Ignore units that would 1-shot you if you attacked
+            BattleDamage.calculateDamageToAttacker(MapUnitCombatant(unit), Battle.getMapCombatantOfTile(it.tileToAttack)!!) < unit.health }
             .minByOrNull { it.tileToAttack.aerialDistanceTo(unit.getTile()) }
 
-        if (closestEnemy != null) {
-            unit.movement.headTowards(closestEnemy.tileToAttackFrom)
+        if (closeEnemy != null) {
+            unit.movement.headTowards(closeEnemy.tileToAttackFrom)
             return true
         }
         return false
