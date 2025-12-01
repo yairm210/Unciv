@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.city.City
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.toHexCoord
@@ -269,7 +270,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
 
     interface Presenter {
         /** map position of the selected entity */
-        val position: Vector2?
+        val position: HexCoord?
         /** called every time [WorldScreen] is updated */
         fun update() {}
         /** only called when [UnitTable.shouldUpdate] is true */
