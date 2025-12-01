@@ -3,6 +3,7 @@ package com.unciv.logic.map.mapgenerator.mapregions
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapgenerator.mapregions.MapRegions.Companion.closeStartPenaltyForRing
 import com.unciv.logic.map.mapgenerator.mapregions.MapRegions.Companion.firstRingFoodScores
 import com.unciv.logic.map.mapgenerator.mapregions.MapRegions.Companion.firstRingProdScores
@@ -13,6 +14,7 @@ import com.unciv.logic.map.mapgenerator.mapregions.MapRegions.Companion.minimumP
 import com.unciv.logic.map.mapgenerator.mapregions.MapRegions.Companion.secondRingFoodScores
 import com.unciv.logic.map.mapgenerator.mapregions.MapRegions.Companion.secondRingProdScores
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.toHexCoord
 import com.unciv.models.ruleset.tile.TerrainType
 import yairm210.purity.annotations.Pure
 import kotlin.math.roundToInt
@@ -21,7 +23,7 @@ object RegionStartFinder {
 
     /** Attempts to find a good start close to the center of [region]. Calls setRegionStart with the position*/
     internal fun findStart(region: Region, tileData: TileDataMap) {
-        val fallbackTiles = HashSet<Vector2>()
+        val fallbackTiles = HashSet<HexCoord>()
         // Priority: 1. Adjacent to river, 2. Adjacent to coast or fresh water, 3. Other.
 
         // First check center rect, then middle. Only check the outer area if no good sites found
@@ -40,23 +42,23 @@ object RegionStartFinder {
         findFallbackPosition(fallbackTiles, tileData, region)
     }
 
-    private fun findGoodPosition(centerTiles: Set<Tile>, region: Region, tileData: TileDataMap, fallbackTiles: HashSet<Vector2>): Boolean {
-        val riverTiles = HashSet<Vector2>()
-        val wetTiles = HashSet<Vector2>()
-        val dryTiles = HashSet<Vector2>()
+    private fun findGoodPosition(centerTiles: Set<Tile>, region: Region, tileData: TileDataMap, fallbackTiles: HashSet<HexCoord>): Boolean {
+        val riverTiles = HashSet<HexCoord>()
+        val wetTiles = HashSet<HexCoord>()
+        val dryTiles = HashSet<HexCoord>()
         for (tile in centerTiles) {
-            if (tileData[tile.position.toVector2()]!!.isTwoFromCoast)
+            if (tileData[tile.position]!!.isTwoFromCoast)
                 continue // Don't even consider tiles two from coast
             if (region.continentID != -1 && region.continentID != tile.getContinent())
                 continue // Wrong continent
             if (tile.isLand && !tile.isImpassible()) {
                 evaluateTileForStart(tile, tileData)
                 if (tile.isAdjacentToRiver())
-                    riverTiles.add(tile.position.toVector2())
+                    riverTiles.add(tile.position)
                 else if (tile.isCoastalTile() || tile.isAdjacentTo(Constants.freshWater))
-                    wetTiles.add(tile.position.toVector2())
+                    wetTiles.add(tile.position)
                 else
-                    dryTiles.add(tile.position.toVector2())
+                    dryTiles.add(tile.position)
             }
         }
         // Did we find a good start position?
@@ -77,15 +79,15 @@ object RegionStartFinder {
         outerDonut: Sequence<Tile>,
         region: Region,
         tileData: TileDataMap,
-        fallbackTiles: HashSet<Vector2>
+        fallbackTiles: HashSet<HexCoord>
     ): Boolean {
-        val dryTiles = HashSet<Vector2>()
+        val dryTiles = HashSet<HexCoord>()
         for (tile in outerDonut) {
             if (region.continentID != -1 && region.continentID != tile.getContinent())
                 continue // Wrong continent
             if (tile.isLand && !tile.isImpassible()) {
                 evaluateTileForStart(tile, tileData)
-                dryTiles.add(tile.position.toVector2())
+                dryTiles.add(tile.position)
             }
         }
         // Were any of them good?
@@ -97,7 +99,7 @@ object RegionStartFinder {
                 (region.tileMap.getIfTileExistsOrNull(center.x.roundToInt(), center.y.roundToInt())
                     ?: region.tileMap.values.first())
                     .aerialDistanceTo(
-                        region.tileMap.getIfTileExistsOrNull(it.x.toInt(), it.y.toInt())
+                        region.tileMap.getIfTileExistsOrNull(it.x, it.y)
                             ?: region.tileMap.values.first()
                     )
             }!!
@@ -115,7 +117,7 @@ object RegionStartFinder {
     }
 
     private fun findFallbackPosition(
-        fallbackTiles: HashSet<Vector2>,
+        fallbackTiles: HashSet<HexCoord>,
         tileData: TileDataMap,
         region: Region
     ) {
@@ -127,7 +129,7 @@ object RegionStartFinder {
         }
 
         // Something went extremely wrong and there is somehow no place to start. Spawn some land and start there
-        val panicPosition = region.rect.getPosition(Vector2())
+        val panicPosition = region.rect.getPosition(Vector2()).toHexCoord()
         val panicTerrain = region.tileMap.ruleset!!.terrains.values.first { it.type == TerrainType.Land }.name
         region.tileMap[panicPosition].baseTerrain = panicTerrain
         region.tileMap[panicPosition].setTerrainFeatures(listOf())
@@ -157,7 +159,7 @@ object RegionStartFinder {
     /** Evaluates a tile for starting position, setting isGoodStart and startScore in
      *  MapGenTileData. Assumes that all tiles have corresponding MapGenTileData. */
     private fun evaluateTileForStart(tile: Tile, tileData: TileDataMap) {
-        val localData = tileData[tile.position.toVector2()]!!
+        val localData = tileData[tile.position]!!
 
         var totalFood = 0
         var totalProd = 0
@@ -172,7 +174,7 @@ object RegionStartFinder {
         for (ring in 1..3) {
             // Sum up the values for this ring
             for (outerTile in tile.getTilesAtDistance(ring)) {
-                val outerTileData = tileData[outerTile.position.toVector2()]!!
+                val outerTileData = tileData[outerTile.position]!!
                 if (outerTileData.isJunk)
                     totalJunk++
                 else {
@@ -223,12 +225,12 @@ object RegionStartFinder {
         localData.startScore = totalScore
     }
 
-    private fun setRegionStart(region: Region, position: Vector2, tileData: TileDataMap) {
+    private fun setRegionStart(region: Region, position:HexCoord, tileData: TileDataMap) {
         region.startPosition = position
 
         for ((ring, penalty) in closeStartPenaltyForRing) {
             for (outerTile in region.tileMap[position].getTilesAtDistance(ring).map { it.position })
-                tileData[outerTile.toVector2()]!!.addCloseStartPenalty(penalty)
+                tileData[outerTile]!!.addCloseStartPenalty(penalty)
         }
     }
 }

@@ -51,7 +51,7 @@ object MapRegionResources {
             val possibleResourcesForTile = resourceOptions.filter { it.generatesNaturallyOn(tile) }
             if (possibleResourcesForTile.isEmpty()) continue
 
-            if (tileData[tile.position.toVector2()]!!.impacts.containsKey(impactType)) {
+            if (tileData[tile.position]!!.impacts.containsKey(impactType)) {
                 fallbackTiles.add(tile) // Taken but might be a viable fallback tile
             } else {
                 // Add a resource to the tile
@@ -68,7 +68,7 @@ object MapRegionResources {
         // Second pass - place on least impacted tiles
         while (amountPlaced < amountToPlace && fallbackTiles.isNotEmpty()) {
             // Sorry, we do need to re-sort the list for every pass since new impacts are made with every placement
-            val bestTile = fallbackTiles.minByOrNull { tileData[it.position.toVector2()]!!.impacts[impactType]!! }!!
+            val bestTile = fallbackTiles.minByOrNull { tileData[it.position]!!.impacts[impactType]!! }!!
             fallbackTiles.remove(bestTile)
             val possibleResourcesForTile = resourceOptions.filter { it.generatesNaturallyOn(bestTile) }
             val resourceToPlace = possibleResourcesForTile.randomWeighted { weightings[it] ?: 0f }
@@ -98,7 +98,7 @@ object MapRegionResources {
         for (tile in tiles) {
             if (tile.resource == null && resource.generatesNaturallyOn(tile)) {
                 if (ratioProgress >= 1f &&
-                    !(respectImpacts && tileData[tile.position.toVector2()]!!.impacts.containsKey(impactType))) {
+                    !(respectImpacts && tileData[tile.position]!!.impacts.containsKey(impactType))) {
                     tile.setTileResource(resource, majorDeposit)
                     ratioProgress -= 1f
                     amountAdded++

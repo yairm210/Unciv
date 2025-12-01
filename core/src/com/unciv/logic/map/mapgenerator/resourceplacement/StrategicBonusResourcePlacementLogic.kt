@@ -228,7 +228,7 @@ object StrategicBonusResourcePlacementLogic {
             (landList.size / frequency) + 1 // I sometimes have division by zero errors on this line
         var minorDepositsAdded = 0
         for (tile in landList) {
-            if (tile.resource != null || tileData[tile.position.toVector2()]!!.impacts.containsKey(ImpactType.Strategic))
+            if (tile.resource != null || tileData[tile.position]!!.impacts.containsKey(ImpactType.Strategic))
                 continue
             val conditionalTerrain = GameContext(attackedTile = tile)
             if (tile.getBaseTerrain().hasUnique(UniqueType.BlocksResources, conditionalTerrain))
