@@ -744,7 +744,7 @@ object UnitAutomation {
     /** This is what a unit with the 'explore' action does.
     It also explores, but also has other functions, like healing if necessary. */
     fun automatedExplore(unit: MapUnit) {
-        if (tryGoToRuinAndEncampment(unit) && (!unit.hasMovement() || unit.isDestroyed)) return
+        if (tryGoToRuin(unit) && (!unit.hasMovement() || unit.isDestroyed)) return
         if (unit.health < 80 && tryHealUnit(unit)) return
         if (tryExplore(unit)) return
         unit.civ.addNotification("${unit.shortDisplayName()} finished exploring.", MapUnitAction(unit), NotificationCategory.Units, unit.name, "OtherIcons/Sleep")
