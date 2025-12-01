@@ -3,6 +3,7 @@ package com.unciv.logic.battle
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.testing.GdxTestRunner
@@ -30,16 +31,16 @@ class BattleTest {
         attackerCiv = testGame.addCiv()
         defenderCiv = testGame.addCiv()
 
-        defaultAttackerUnit = testGame.addUnit("Warrior", attackerCiv, testGame.getTile(Vector2.X))
+        defaultAttackerUnit = testGame.addUnit("Warrior", attackerCiv, testGame.getTile(1,0))
         defaultAttackerUnit.currentMovement = 2f
-        defaultDefenderUnit = testGame.addUnit("Warrior", defenderCiv, testGame.getTile(Vector2.Zero))
+        defaultDefenderUnit = testGame.addUnit("Warrior", defenderCiv, testGame.getTile(HexCoord.Zero))
         defaultDefenderUnit.currentMovement = 2f
     }
 
     @Test
     fun `defender should withdraw from melee attack if has the unique to do so`() {
         // given
-        val defenderUnit = testGame.addDefaultMeleeUnitWithUniques(attackerCiv, testGame.getTile(Vector2.Y), UniqueType.WithdrawsBeforeMeleeCombat.text)
+        val defenderUnit = testGame.addDefaultMeleeUnitWithUniques(attackerCiv, testGame.getTile(0,1), UniqueType.WithdrawsBeforeMeleeCombat.text)
         defenderUnit.currentMovement = 2f
 
         // when
@@ -68,7 +69,7 @@ class BattleTest {
     @Test
     fun `only attacker should do damage when he's ranged`() {
         // given
-        val attackerUnit = testGame.addUnit("Archer", attackerCiv, testGame.getTile(Vector2.Y))
+        val attackerUnit = testGame.addUnit("Archer", attackerCiv, testGame.getTile(0,1))
 
         // when
         val damageDealt = Battle.attack(MapUnitCombatant(attackerUnit), MapUnitCombatant(defaultDefenderUnit))
@@ -94,7 +95,7 @@ class BattleTest {
     @Test
     fun `should stay in original position when ranged killing`() {
         // given
-        val attackerUnit = testGame.addUnit("Archer", attackerCiv, testGame.getTile(Vector2.Y))
+        val attackerUnit = testGame.addUnit("Archer", attackerCiv, testGame.getTile(0,1))
         attackerUnit.currentMovement = 2f
         defaultDefenderUnit.health = 1
 
@@ -120,7 +121,7 @@ class BattleTest {
     fun `should earn XP when fighting barbarian and below XP cap`() {
         // given
         val barbarianCiv = testGame.addBarbarianCiv()
-        val barbarianUnit = testGame.addUnit("Brute", barbarianCiv, testGame.getTile(Vector2.Y))
+        val barbarianUnit = testGame.addUnit("Brute", barbarianCiv, testGame.getTile(0,1))
 
         // when
         Battle.attack(MapUnitCombatant(barbarianUnit), MapUnitCombatant(defaultDefenderUnit))
@@ -134,7 +135,7 @@ class BattleTest {
     fun `should not earn XP when fighting barbarian if exceeding XP cap`() {
         // given
         val barbarianCiv = testGame.addBarbarianCiv()
-        val barbarianUnit = testGame.addUnit("Brute", barbarianCiv, testGame.getTile(Vector2.Y))
+        val barbarianUnit = testGame.addUnit("Brute", barbarianCiv, testGame.getTile(0,1))
         defaultDefenderUnit.promotions.XP = 35
 
         // when
@@ -157,7 +158,7 @@ class BattleTest {
     @Test
     fun `attacker should still have movement points left with 'additional attack per turn' unique`() {
         // given
-        val attackerUnit = testGame.addDefaultMeleeUnitWithUniques(attackerCiv, testGame.getTile(Vector2.Y), "[1] additional attacks per turn")
+        val attackerUnit = testGame.addDefaultMeleeUnitWithUniques(attackerCiv, testGame.getTile(0,1), "[1] additional attacks per turn")
         attackerUnit.currentMovement = 2f
 
         // when
@@ -170,7 +171,7 @@ class BattleTest {
     @Test
     fun `attacker should still have movement points left with 'can move after attacking' unique`() {
         // given
-        val attackerUnit = testGame.addDefaultMeleeUnitWithUniques(attackerCiv, testGame.getTile(Vector2.Y), "Can move after attacking")
+        val attackerUnit = testGame.addDefaultMeleeUnitWithUniques(attackerCiv, testGame.getTile(0,1), "Can move after attacking")
         attackerUnit.currentMovement = 2f
 
         // when
@@ -183,7 +184,7 @@ class BattleTest {
     @Test
     fun `should capture civilian`() {
         // given
-        val defenderUnit = testGame.addUnit("Worker", defenderCiv, testGame.getTile(Vector2(2f, 0f)))
+        val defenderUnit = testGame.addUnit("Worker", defenderCiv, testGame.getTile(2, 0))
 
         // when
         val attack = Battle.attack(MapUnitCombatant(defaultAttackerUnit), MapUnitCombatant(defenderUnit))
@@ -191,14 +192,14 @@ class BattleTest {
         // then
         assertEquals(0, attack.attackerDealt)
         assertEquals(0, attack.defenderDealt)
-        assertEquals(Vector2(2f, 0f), defaultAttackerUnit.getTile().position.toVector2())
+        assertEquals(HexCoord(2,0), defaultAttackerUnit.getTile().position)
         assertEquals(attackerCiv, defaultAttackerUnit.getTile().civilianUnit!!.civ)  // captured unit
     }
 
     @Test
     fun `should transform settler into worker upon capture`() {
         // given
-        val defenderUnit = testGame.addUnit("Settler", defenderCiv, testGame.getTile(Vector2(2f, 0f)))
+        val defenderUnit = testGame.addUnit("Settler", defenderCiv, testGame.getTile(2, 0))
 
         // when
         val attack = Battle.attack(MapUnitCombatant(defaultAttackerUnit), MapUnitCombatant(defenderUnit))
@@ -225,7 +226,7 @@ class BattleTest {
     fun `should not earn Great General from combat against barbarians`() {
         // given
         val barbarianCiv = testGame.addBarbarianCiv()
-        val barbarianUnit = testGame.addUnit("Brute", barbarianCiv, testGame.getTile(Vector2.Y))
+        val barbarianUnit = testGame.addUnit("Brute", barbarianCiv, testGame.getTile(0,1))
 
         // when
         Battle.attack(MapUnitCombatant(defaultAttackerUnit), MapUnitCombatant(barbarianUnit))
@@ -238,7 +239,7 @@ class BattleTest {
     @Test
     fun `should earn more Great General Points from uniques`() {
         // given
-        val attackerUnit = testGame.addDefaultMeleeUnitWithUniques(attackerCiv, testGame.getTile(Vector2.Y), "[Great General] is earned [100]% faster")
+        val attackerUnit = testGame.addDefaultMeleeUnitWithUniques(attackerCiv, testGame.getTile(0,1), "[Great General] is earned [100]% faster")
 
         // when
         Battle.attack(MapUnitCombatant(attackerUnit), MapUnitCombatant(defaultDefenderUnit))
@@ -250,7 +251,7 @@ class BattleTest {
     @Test
     fun `should conquer city when defeated and melee attacked`() {
         // given
-        val defenderCity = testGame.addCity(defenderCiv, testGame.getTile(Vector2.Y), initialPopulation = 1)
+        val defenderCity = testGame.addCity(defenderCiv, testGame.getTile(0,1), initialPopulation = 1)
         defenderCity.health = 1
 
         testGame.gameInfo.currentPlayerCiv = testGame.addCiv() // otherwise test crashes when puppetying city
@@ -268,8 +269,8 @@ class BattleTest {
     @Test
     fun `should not conquer city when defeated and ranged attacked`() {
         // given
-        val attackerUnit = testGame.addUnit("Archer", attackerCiv, testGame.getTile(Vector2(0f, 2f)))
-        val defenderCity = testGame.addCity(defenderCiv, testGame.getTile(Vector2.Y), initialPopulation = 1)
+        val attackerUnit = testGame.addUnit("Archer", attackerCiv, testGame.getTile(0,2))
+        val defenderCity = testGame.addCity(defenderCiv, testGame.getTile(0,1), initialPopulation = 1)
         defenderCity.health = 1
 
         // when
@@ -283,8 +284,8 @@ class BattleTest {
     @Test
     fun `should not conquer city when unit has 'unable to capture cities' unique`() {
         // given
-        val attackerUnit = testGame.addDefaultMeleeUnitWithUniques(attackerCiv, testGame.getTile(Vector2(0f, 2f)), "Unable to capture cities")
-        val defenderCity = testGame.addCity(defenderCiv, testGame.getTile(Vector2.Y), initialPopulation = 1)
+        val attackerUnit = testGame.addDefaultMeleeUnitWithUniques(attackerCiv, testGame.getTile(0,2), "Unable to capture cities")
+        val defenderCity = testGame.addCity(defenderCiv, testGame.getTile(0,1), initialPopulation = 1)
         defenderCity.health = 1
 
         // when
@@ -298,8 +299,8 @@ class BattleTest {
     @Test
     fun `should not gain XP when attacking defeated city`() {
         // given
-        val attackerUnit = testGame.addUnit("Archer", attackerCiv, testGame.getTile(Vector2(0f, 2f)))
-        val defenderCity = testGame.addCity(defenderCiv, testGame.getTile(Vector2.Y), initialPopulation = 1)
+        val attackerUnit = testGame.addUnit("Archer", attackerCiv, testGame.getTile(0,2))
+        val defenderCity = testGame.addCity(defenderCiv, testGame.getTile(0,1), initialPopulation = 1)
         defenderCity.health = 1
 
         // when
@@ -331,7 +332,7 @@ class BattleTest {
     @Test
     fun `should heal when defeating units if has unique`() {
         // given
-        val attackerUnit = testGame.addDefaultRangedUnitWithUniques(attackerCiv, testGame.getTile(Vector2.Y), "Heals [10] damage if it kills a unit")
+        val attackerUnit = testGame.addDefaultRangedUnitWithUniques(attackerCiv, testGame.getTile(0,1), "Heals [10] damage if it kills a unit")
         attackerUnit.health = 90
         attackerUnit.currentMovement = 2f
 
@@ -348,10 +349,10 @@ class BattleTest {
     fun `should declare war when nuking neutral civs`() {
         // given
         val thirdCiv = testGame.addCiv()
-        testGame.addUnit("Warrior", thirdCiv, testGame.getTile(Vector2(0f, 2f)))
+        testGame.addUnit("Warrior", thirdCiv, testGame.getTile(0,2))
 
-        testGame.addCity(attackerCiv, testGame.getTile(Vector2.Y))
-        val attackerUnit = testGame.addUnit("Atomic Bomb", attackerCiv, testGame.getTile(Vector2.Y))
+        testGame.addCity(attackerCiv, testGame.getTile(0,1))
+        val attackerUnit = testGame.addUnit("Atomic Bomb", attackerCiv, testGame.getTile(0,1))
 
         attackerCiv.diplomacyFunctions.makeCivilizationsMeet(defenderCiv)
         attackerCiv.diplomacyFunctions.makeCivilizationsMeet(thirdCiv)
@@ -370,10 +371,10 @@ class BattleTest {
     fun `should give diplomacy penality for using a nuke`() {
         // given
         val thirdCiv = testGame.addCiv()
-        testGame.addUnit("Warrior", thirdCiv, testGame.getTile(Vector2(0f, -3f)))  // need unit or civ is considered defeated
+        testGame.addUnit("Warrior", thirdCiv, testGame.getTile(0,-3))  // need unit or civ is considered defeated
 
-        testGame.addCity(attackerCiv, testGame.getTile(Vector2.Y))
-        val attackerUnit = testGame.addUnit("Atomic Bomb", attackerCiv, testGame.getTile(Vector2.Y))
+        testGame.addCity(attackerCiv, testGame.getTile(0,1))
+        val attackerUnit = testGame.addUnit("Atomic Bomb", attackerCiv, testGame.getTile(0,1))
 
         attackerCiv.diplomacyFunctions.makeCivilizationsMeet(defenderCiv)
         attackerCiv.diplomacyFunctions.makeCivilizationsMeet(thirdCiv)
@@ -390,10 +391,10 @@ class BattleTest {
     fun `should always destroy unit directly hit by nuke`() {
         // given
         val megaWarrior = testGame.createBaseUnit("Sword").apply { strength = 1_000_000 }
-        val defenderUnit = testGame.addUnit(megaWarrior.name, defenderCiv, testGame.getTile(Vector2.Y))
+        val defenderUnit = testGame.addUnit(megaWarrior.name, defenderCiv, testGame.getTile(0,1))
 
-        testGame.addCity(attackerCiv, testGame.getTile(Vector2.Y))
-        val attackerUnit = testGame.addUnit("Atomic Bomb", attackerCiv, testGame.getTile(Vector2.Y))
+        testGame.addCity(attackerCiv, testGame.getTile(0,1))
+        val attackerUnit = testGame.addUnit("Atomic Bomb", attackerCiv, testGame.getTile(0,1))
         attackerCiv.resourceStockpiles["Uranium"] = 1
 
         // when
@@ -407,11 +408,11 @@ class BattleTest {
     fun `should damage ALL units in blast radius`() {
         // given
         val thirdCiv = testGame.addCiv()
-        val thirdCivUnit = testGame.addUnit("Warrior", thirdCiv, testGame.getTile(Vector2(0f, 2f)))
-        val defenderUnit = testGame.addUnit("Warrior", defenderCiv, testGame.getTile(Vector2.Y))
+        val thirdCivUnit = testGame.addUnit("Warrior", thirdCiv, testGame.getTile(0,2))
+        val defenderUnit = testGame.addUnit("Warrior", defenderCiv, testGame.getTile(0,1))
 
-        testGame.addCity(attackerCiv, testGame.getTile(Vector2.Y))
-        val attackerUnit = testGame.addUnit("Atomic Bomb", attackerCiv, testGame.getTile(Vector2.Y))
+        testGame.addCity(attackerCiv, testGame.getTile(0,1))
+        val attackerUnit = testGame.addUnit("Atomic Bomb", attackerCiv, testGame.getTile(0,1))
 
         // when
         Battle.attackOrNuke(MapUnitCombatant(attackerUnit), AttackableTile(attackerUnit.getTile(), defaultDefenderUnit.currentTile, 0f, null))
@@ -425,10 +426,10 @@ class BattleTest {
     @Test
     fun `should kill people in city`() {
         // given
-        val defenderCity = testGame.addCity(defenderCiv, testGame.getTile(Vector2(2f, 0f)), initialPopulation = 10)
+        val defenderCity = testGame.addCity(defenderCiv, testGame.getTile(2, 0), initialPopulation = 10)
 
-        testGame.addCity(attackerCiv, testGame.getTile(Vector2.Y))
-        val attackerUnit = testGame.addUnit("Atomic Bomb", attackerCiv, testGame.getTile(Vector2.Y))
+        testGame.addCity(attackerCiv, testGame.getTile(0,1))
+        val attackerUnit = testGame.addUnit("Atomic Bomb", attackerCiv, testGame.getTile(0,1))
 
         // when
         Battle.attackOrNuke(MapUnitCombatant(attackerUnit), AttackableTile(attackerUnit.getTile(), defenderCity.getCenterTile(), 0f, null))
@@ -440,12 +441,12 @@ class BattleTest {
     @Test
     fun `should kill fewer people in city with bomb shelter`() {
         // given
-        val defenderCity = testGame.addCity(defenderCiv, testGame.getTile(Vector2(2f, 0f)), initialPopulation = 10)
+        val defenderCity = testGame.addCity(defenderCiv, testGame.getTile(2, 0), initialPopulation = 10)
         val building = testGame.createBuilding("Population loss from nuclear attacks [-100]% [in this city]")
         defenderCity.cityConstructions.addBuilding(building.name)
 
-        testGame.addCity(attackerCiv, testGame.getTile(Vector2.Y))
-        val attackerUnit = testGame.addUnit("Atomic Bomb", attackerCiv, testGame.getTile(Vector2.Y))
+        testGame.addCity(attackerCiv, testGame.getTile(0,1))
+        val attackerUnit = testGame.addUnit("Atomic Bomb", attackerCiv, testGame.getTile(0,1))
 
         // when
         Battle.attackOrNuke(MapUnitCombatant(attackerUnit), AttackableTile(attackerUnit.getTile(), defenderCity.getCenterTile(), 0f, null))
@@ -457,56 +458,56 @@ class BattleTest {
     @Test
     fun `should not destroy city with nuclear missile when capital`() {
         // given
-        val defenderCity = testGame.addCity(defenderCiv, testGame.getTile(Vector2(2f, 0f)), initialPopulation = 1)
+        val defenderCity = testGame.addCity(defenderCiv, testGame.getTile(2, 0), initialPopulation = 1)
 
-        testGame.addCity(attackerCiv, testGame.getTile(Vector2.Y))
-        val attackerUnit = testGame.addUnit("Nuclear Missile", attackerCiv, testGame.getTile(Vector2.Y))
+        testGame.addCity(attackerCiv, testGame.getTile(0,1))
+        val attackerUnit = testGame.addUnit("Nuclear Missile", attackerCiv, testGame.getTile(0,1))
 
         // when
         Battle.attackOrNuke(MapUnitCombatant(attackerUnit), AttackableTile(attackerUnit.getTile(), defenderCity.getCenterTile(), 0f, null))
 
         // then
-        assertTrue(testGame.getTile(Vector2(2f, 0f)).isCityCenter())
+        assertTrue(testGame.getTile(2, 0).isCityCenter())
     }
 
     @Test
     fun `should destroy city with nuclear missile when not capital and below population threshold`() {
         // given
-        testGame.addCity(defenderCiv, testGame.getTile(Vector2(2f, 0f)), initialPopulation = 1) // capital
-        val nonCapitalDefenderCity = testGame.addCity(defenderCiv, testGame.getTile(Vector2(3f, 0f)), initialPopulation = 1)
+        testGame.addCity(defenderCiv, testGame.getTile(2, 0), initialPopulation = 1) // capital
+        val nonCapitalDefenderCity = testGame.addCity(defenderCiv, testGame.getTile(3, 0), initialPopulation = 1)
 
-        testGame.addCity(attackerCiv, testGame.getTile(Vector2.Y))
-        val attackerUnit = testGame.addUnit("Nuclear Missile", attackerCiv, testGame.getTile(Vector2.Y))
+        testGame.addCity(attackerCiv, testGame.getTile(0,1))
+        val attackerUnit = testGame.addUnit("Nuclear Missile", attackerCiv, testGame.getTile(0,1))
 
         // when
         Battle.attackOrNuke(MapUnitCombatant(attackerUnit), AttackableTile(attackerUnit.getTile(), nonCapitalDefenderCity.getCenterTile(), 0f, null))
 
         // then
-        assertFalse(testGame.getTile(Vector2(3f, 0f)).isCityCenter())
-        assertTrue(testGame.getTile(Vector2(3f, 0f)).terrainFeatures.contains("Fallout"))
+        assertFalse(testGame.getTile(3,0).isCityCenter())
+        assertTrue(testGame.getTile(3,0).terrainFeatures.contains("Fallout"))
     }
 
     @Test
     fun `should not destroy city with nuclear missile when not capital and above population threshold`() {
         // given
-        testGame.addCity(defenderCiv, testGame.getTile(Vector2(2f, 0f)), initialPopulation = 1) // capital
-        val nonCapitalDefenderCity = testGame.addCity(defenderCiv, testGame.getTile(Vector2(3f, 0f)), initialPopulation = 7)
+        testGame.addCity(defenderCiv, testGame.getTile(2, 0), initialPopulation = 1) // capital
+        val nonCapitalDefenderCity = testGame.addCity(defenderCiv, testGame.getTile(3,0), initialPopulation = 7)
 
-        testGame.addCity(attackerCiv, testGame.getTile(Vector2.Y))
-        val attackerUnit = testGame.addUnit("Nuclear Missile", attackerCiv, testGame.getTile(Vector2.Y))
+        testGame.addCity(attackerCiv, testGame.getTile(0,1))
+        val attackerUnit = testGame.addUnit("Nuclear Missile", attackerCiv, testGame.getTile(0,1))
 
         // when
         Battle.attackOrNuke(MapUnitCombatant(attackerUnit), AttackableTile(attackerUnit.getTile(), nonCapitalDefenderCity.getCenterTile(), 0f, null))
 
         // then
-        assertTrue(testGame.getTile(Vector2(3f, 0f)).isCityCenter())
+        assertTrue(testGame.getTile(3,0).isCityCenter())
     }
 
     @Test
     fun `should consume nuke on usage`() {
         // given
-        testGame.addCity(attackerCiv, testGame.getTile(Vector2.Y))
-        val attackerUnit = testGame.addUnit("Atomic Bomb", attackerCiv, testGame.getTile(Vector2.Y))
+        testGame.addCity(attackerCiv, testGame.getTile(0,1))
+        val attackerUnit = testGame.addUnit("Atomic Bomb", attackerCiv, testGame.getTile(0,1))
 
         // when
         Battle.attackOrNuke(MapUnitCombatant(attackerUnit), AttackableTile(attackerUnit.getTile(), defaultDefenderUnit.getTile(), 0f, null))
@@ -522,7 +523,7 @@ class BattleTest {
         val unitType = testGame.createBaseUnit("Archery",
             "[This Unit] takes [5] damage <upon damaging a [Test] unit>")
         unitType.rangedStrength = 10
-        val attackerUnit = testGame.addUnit(unitType.name, attackerCiv, testGame.getTile(Vector2.Y))
+        val attackerUnit = testGame.addUnit(unitType.name, attackerCiv, testGame.getTile(0,1))
         attackerUnit.currentMovement = 2f
         defaultDefenderUnit.health = 1
 

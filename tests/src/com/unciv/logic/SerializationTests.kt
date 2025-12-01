@@ -8,6 +8,7 @@ import com.unciv.json.LastSeenImprovement
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.civilization.Notification
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.tile.TileHistory
 import com.unciv.models.Counter
 import com.unciv.testing.GdxTestRunner
@@ -86,9 +87,9 @@ class SerializationTests {
         val data = arrayListOf(
             Notification("hello", emptyArray(), emptyList(), Notification.NotificationCategory.Espionage),
             Notification("Oh my goddesses", arrayOf("ReligionIcons/Pray"), listOf(CivilopediaAction("Tutorial/Religion")), Notification.NotificationCategory.Religion),
-            Notification("There's Horses", arrayOf("ResourceIcons/Horses"), LocationAction(Vector2.Zero, Vector2.X).asIterable(), Notification.NotificationCategory.General),
+            Notification("There's Horses", arrayOf("ResourceIcons/Horses"), LocationAction(HexCoord.Zero, HexCoord(1,0)).asIterable(), Notification.NotificationCategory.General),
             Notification("An evil overlord has arisen", arrayOf("PersonalityIcons/Devil"), listOf(DiplomacyAction("Russia")), Notification.NotificationCategory.War),
-            Notification("Here's a Wizzard", arrayOf("EmojiIcons/Great Scientist"), listOf(MapUnitAction(Vector2.Y, 42)), Notification.NotificationCategory.Units),
+            Notification("Here's a Wizzard", arrayOf("EmojiIcons/Great Scientist"), listOf(MapUnitAction(HexCoord(0,1).toVector2(), 42)), Notification.NotificationCategory.Units),
         )
 
         // Neither Notification nor NotificationAction support equality contract

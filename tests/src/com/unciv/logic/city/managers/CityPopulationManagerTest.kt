@@ -5,6 +5,7 @@ import com.unciv.Constants
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityFocus
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.toVector2
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
@@ -27,13 +28,13 @@ class CityPopulationManagerTest {
     fun setUp() {
         testGame.makeHexagonalMap(3)
         civ = testGame.addCiv()
-        city = testGame.addCity(civ, testGame.getTile(Vector2.Zero), initialPopulation = 1)
+        city = testGame.addCity(civ, testGame.getTile(HexCoord.Zero), initialPopulation = 1)
     }
 
     @Test
     fun `should increase food requirements for next pop`() {
         // given
-        val biggerCity = testGame.addCity(civ, testGame.getTile(Vector2.X), initialPopulation = 2)
+        val biggerCity = testGame.addCity(civ, testGame.getTile(HexCoord(1,0)), initialPopulation = 2)
 
         // when
         val smallerCityFoodRequirements = city.population.getFoodToNextPopulation()
@@ -47,10 +48,10 @@ class CityPopulationManagerTest {
     fun `should change food requirements for different gamespeeds`() {
         // given
         val quickSpeedGame = TestGame().apply { setSpeed("Quick") }
-        val quickSpeedCity = quickSpeedGame.addCity(quickSpeedGame.addCiv(), quickSpeedGame.getTile(Vector2.Zero), initialPopulation = 1)
+        val quickSpeedCity = quickSpeedGame.addCity(quickSpeedGame.addCiv(), quickSpeedGame.getTile(HexCoord.Zero), initialPopulation = 1)
 
         val epicSpeedGame = TestGame().apply { setSpeed("Epic") }
-        val epicSpeedCity = epicSpeedGame.addCity(epicSpeedGame.addCiv(), epicSpeedGame.getTile(Vector2.Zero), initialPopulation = 1)
+        val epicSpeedCity = epicSpeedGame.addCity(epicSpeedGame.addCiv(), epicSpeedGame.getTile(HexCoord.Zero), initialPopulation = 1)
 
         // when
         val quickFoodRequirements = quickSpeedCity.population.getFoodToNextPopulation()
@@ -66,7 +67,7 @@ class CityPopulationManagerTest {
     fun `should increase food requirements for city states`() {
         // given
         val cityState = testGame.addCiv(cityStateType = "Militaristic")
-        val cityStateCity = testGame.addCity(cityState, testGame.getTile(Vector2.X), initialPopulation = 1)
+        val cityStateCity = testGame.addCity(cityState, testGame.getTile(HexCoord(1,0)), initialPopulation = 1)
 
         // when
         val cityFoodRequirements = city.population.getFoodToNextPopulation()
@@ -80,7 +81,7 @@ class CityPopulationManagerTest {
     fun `should increase food requirements for AI on easier difficulties`() {
         // given
         val easierDifficultyGame = TestGame().apply { setDifficulty("Chieftain") }
-        val easierCity = easierDifficultyGame.addCity(easierDifficultyGame.addCiv(), easierDifficultyGame.getTile(Vector2.Zero), initialPopulation = 1)
+        val easierCity = easierDifficultyGame.addCity(easierDifficultyGame.addCiv(), easierDifficultyGame.getTile(HexCoord.Zero), initialPopulation = 1)
 
         // when
         val cityFoodRequirements = city.population.getFoodToNextPopulation()
@@ -94,7 +95,7 @@ class CityPopulationManagerTest {
     fun `should decrease food requirements for AI on higher difficulties`() {
         // given
         val harderDifficultyGame = TestGame().apply { setDifficulty("Deity") }
-        val harderCity = harderDifficultyGame.addCity(harderDifficultyGame.addCiv(), harderDifficultyGame.getTile(Vector2.Zero), initialPopulation = 1)
+        val harderCity = harderDifficultyGame.addCity(harderDifficultyGame.addCiv(), harderDifficultyGame.getTile(HexCoord.Zero), initialPopulation = 1)
 
         // when
         val cityFoodRequirements = city.population.getFoodToNextPopulation()
@@ -201,9 +202,9 @@ class CityPopulationManagerTest {
     fun `should automatically assign new pop to best job`() {
         // given
         city.workedTiles.clear()
-        city.workedTiles.add(Vector2(-1f, 0f))
-        city.lockedTiles.add(Vector2(-1f, 0f)) // force the first pop to work on a specific tile to avoid being reassigned
-        val goodTile = testGame.setTileTerrain(Vector2.X, Constants.grassland)
+        city.workedTiles.add(HexCoord(-1,0).toVector2())
+        city.lockedTiles.add(HexCoord(-1,0).toVector2()) // force the first pop to work on a specific tile to avoid being reassigned
+        val goodTile = testGame.setTileTerrain(HexCoord(1,0), Constants.grassland)
         goodTile.improvement = "Farm"
 
         assertFalse(city.workedTiles.contains(goodTile.position.toVector2()))
@@ -223,13 +224,13 @@ class CityPopulationManagerTest {
         // given
         city.setCityFocus(CityFocus.GoldFocus)
         city.workedTiles.clear()
-        city.workedTiles.add(Vector2(-1f, 0f))
-        city.lockedTiles.add(Vector2(-1f, 0f)) // force the first pop to work on a specific tile to avoid being reassigned
-        val goodFoodTile = testGame.setTileTerrain(Vector2.X, Constants.grassland)
+        city.workedTiles.add(HexCoord(-1,0).toVector2())
+        city.lockedTiles.add(HexCoord(-1,0).toVector2()) // force the first pop to work on a specific tile to avoid being reassigned
+        val goodFoodTile = testGame.setTileTerrain(HexCoord(1,0), Constants.grassland)
         goodFoodTile.improvement = "Farm"
         assertFalse(city.workedTiles.contains(goodFoodTile.position.toVector2()))
 
-        val goodGoldTile = testGame.setTileTerrain(Vector2.Y, Constants.grassland)
+        val goodGoldTile = testGame.setTileTerrain(HexCoord(0,1), Constants.grassland)
         val goldImprovement = testGame.createTileImprovement("[+5 Gold]")
         goodGoldTile.improvement = goldImprovement.name
         assertFalse(city.workedTiles.contains(goodGoldTile.position.toVector2()))
@@ -250,8 +251,8 @@ class CityPopulationManagerTest {
         // given
         city.setCityFocus(CityFocus.GoldFocus)
         city.workedTiles.clear()
-        city.workedTiles.add(Vector2(-1f, 0f))
-        city.lockedTiles.add(Vector2(-1f, 0f)) // force the first pop to work on a specific tile to avoid being reassigned
+        city.workedTiles.add(HexCoord(-1,0).toVector2())
+        city.lockedTiles.add(HexCoord(-1,0).toVector2()) // force the first pop to work on a specific tile to avoid being reassigned
         val specialistBuilding = testGame.createBuilding()
         specialistBuilding.specialistSlots.add("Merchant", 1)
         city.cityConstructions.addBuilding(specialistBuilding)

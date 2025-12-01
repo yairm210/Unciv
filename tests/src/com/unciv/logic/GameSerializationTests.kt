@@ -75,7 +75,7 @@ class GameSerializationTests {
         val civ = game.getCurrentPlayerCivilization()
         val unit = civ.units.getCivUnits().first { it.hasUnique(UniqueType.FoundCity) }
         val tile = unit.getTile()
-        unit.civ.addCity(tile.position.toVector2())
+        unit.civ.addCity(tile.position)
         if (tile.ruleset.tileImprovements.containsKey(Constants.cityCenter))
             tile.setImprovement(Constants.cityCenter)
         unit.destroy()
