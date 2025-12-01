@@ -4,17 +4,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.AlertType
-import com.unciv.logic.civilization.CivFlags
-import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.civilization.LocationAction
-import com.unciv.logic.civilization.MapUnitAction
-import com.unciv.logic.civilization.NotificationAction
-import com.unciv.logic.civilization.NotificationCategory
-import com.unciv.logic.civilization.NotificationIcon
-import com.unciv.logic.civilization.PolicyAction
-import com.unciv.logic.civilization.PopupAlert
-import com.unciv.logic.civilization.TechAction
+import com.unciv.logic.civilization.*
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.managers.ReligionState
@@ -24,7 +14,7 @@ import com.unciv.logic.map.mapgenerator.RiverGenerator
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.tile.TileNormalizer
-import com.unciv.logic.map.toHexCoord
+import com.unciv.models.UncivSound
 import com.unciv.models.UpgradeUnitAction
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Event
@@ -32,17 +22,16 @@ import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
-import com.unciv.models.UncivSound
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.hasPlaceholderParameters
 import com.unciv.models.translations.tr
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 import com.unciv.ui.audio.SoundPlayer
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 import com.unciv.utils.addToMapOfSets
 import com.unciv.utils.randomWeighted
+import yairm210.purity.annotations.Readonly
 import kotlin.math.roundToInt
 import kotlin.random.Random
-import yairm210.purity.annotations.Readonly
 
 // Buildings, techs, policies, ancient ruins and promotions can have 'triggered' effects
 object UniqueTriggerActivation {
@@ -291,7 +280,7 @@ object UniqueTriggerActivation {
                             notificationText,
                             sequence {
                                 yield(MapUnitAction(placedUnit))
-                                yieldAll(LocationAction(tile?.position?.toVector2()))
+                                yieldAll(LocationAction(tile?.position))
                             },
                             NotificationCategory.Units,
                             placedUnit.name
@@ -509,7 +498,7 @@ object UniqueTriggerActivation {
                         // Notification click for first tech only, supporting multiple adds little value.
                         // Relies on RulesetValidator catching <= 0!
                         val notificationActions: Sequence<NotificationAction> =
-                            LocationAction(tile?.position?.toVector2()) + TechAction(techsToResearch.first().name)
+                            LocationAction(tile?.position) + TechAction(techsToResearch.first().name)
                         civInfo.addNotification(
                             notificationText, notificationActions,
                             NotificationCategory.General, NotificationIcon.Science

@@ -12,6 +12,7 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.managers.EspionageManager
+import com.unciv.logic.map.toHexCoord
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import yairm210.purity.annotations.Readonly
@@ -468,7 +469,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
 
     /** Shorthand for [Civilization.addNotification] specialized for espionage - action, category and icon are always the same */
     fun addNotification(text: String) =
-        civInfo.addNotification(text, EspionageAction.withLocation(location), NotificationCategory.Espionage, NotificationIcon.Spy)
+        civInfo.addNotification(text, EspionageAction.withLocation(location?.toHexCoord()), NotificationCategory.Espionage, NotificationIcon.Spy)
 
     /** Anti-save-scum: Deterministic random from city and turn
      *  @throws NullPointerException for spies in the hideout */

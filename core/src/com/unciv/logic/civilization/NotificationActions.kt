@@ -10,7 +10,6 @@ import com.unciv.logic.city.City
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.toHexCoord
-import com.unciv.logic.map.toVector2
 import com.unciv.ui.components.MayaCalendar
 import com.unciv.ui.screens.cityscreen.CityScreen
 import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
@@ -39,10 +38,9 @@ interface NotificationAction : IsPartOfGameInfoSerialization {
 }
 
 /** A notification action that shows map places. */
-class LocationAction(private val location: Vector2 = Vector2.Zero) : NotificationAction {
-    constructor(location: HexCoord) : this(location.toVector2())
+class LocationAction(private val location: HexCoord = HexCoord.Zero) : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
-        worldScreen.mapHolder.setCenterPosition(location.toHexCoord(), selectUnit = false)
+        worldScreen.mapHolder.setCenterPosition(location, selectUnit = false)
     }
 
     /**
@@ -57,10 +55,6 @@ class LocationAction(private val location: Vector2 = Vector2.Zero) : Notificatio
     companion object {
         operator fun invoke(locations: Sequence<HexCoord>): Sequence<LocationAction> =
             locations.map { LocationAction(it) }
-        operator fun invoke(locations: Iterable<Vector2>): Sequence<LocationAction> =
-            locations.asSequence().map { LocationAction(it) }
-        operator fun invoke(vararg locations: Vector2?): Sequence<LocationAction> =
-            locations.asSequence().filterNotNull().map { LocationAction(it) }
         operator fun invoke(vararg locations: HexCoord?): Sequence<LocationAction> =
             locations.asSequence().filterNotNull().map { LocationAction(it) }
     }
@@ -204,7 +198,7 @@ class EspionageAction : NotificationAction {
         worldScreen.game.pushScreen(EspionageOverviewScreen(worldScreen.selectedCiv, worldScreen))
     }
     companion object {
-        fun withLocation(location: Vector2?): Sequence<NotificationAction> =
+        fun withLocation(location: HexCoord?): Sequence<NotificationAction> =
             LocationAction(location) + EspionageAction()
     }
 }

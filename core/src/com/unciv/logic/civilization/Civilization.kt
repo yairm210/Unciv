@@ -964,11 +964,8 @@ class Civilization : IsPartOfGameInfoSerialization {
      *  @param notificationIcons Zero or more icons to decorate the notification with - see [NotificationIcon]
      */
     fun addNotification(text: String, location: HexCoord, category: NotificationCategory, vararg notificationIcons: String) =
-        addNotification(text, LocationAction(location.toVector2()), category, *notificationIcons)
-    
-    fun addNotification(text: String, location: Vector2, category: NotificationCategory, vararg notificationIcons: String) =
         addNotification(text, LocationAction(location), category, *notificationIcons)
-
+    
     /** Add a [Notification] to this [civ's][Civilization] [notifications] (Single-action version).
      *  - Ignored for AI civ's
      *  - There's overloads accepting zero, one, a Sequence or Iterable of [NotificationAction]s between [text] and [category]
