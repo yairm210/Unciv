@@ -89,7 +89,7 @@ class SerializationTests {
             Notification("Oh my goddesses", arrayOf("ReligionIcons/Pray"), listOf(CivilopediaAction("Tutorial/Religion")), Notification.NotificationCategory.Religion),
             Notification("There's Horses", arrayOf("ResourceIcons/Horses"), LocationAction(HexCoord.Zero, HexCoord(1,0)).asIterable(), Notification.NotificationCategory.General),
             Notification("An evil overlord has arisen", arrayOf("PersonalityIcons/Devil"), listOf(DiplomacyAction("Russia")), Notification.NotificationCategory.War),
-            Notification("Here's a Wizzard", arrayOf("EmojiIcons/Great Scientist"), listOf(MapUnitAction(HexCoord(0,1).toVector2(), 42)), Notification.NotificationCategory.Units),
+            Notification("Here's a Wizzard", arrayOf("EmojiIcons/Great Scientist"), listOf(MapUnitAction(HexCoord(0,1), 42)), Notification.NotificationCategory.Units),
         )
 
         // Neither Notification nor NotificationAction support equality contract
