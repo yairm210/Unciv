@@ -134,7 +134,7 @@ class ConnectRoadOverlayButtonData(val unit: MapUnit, val tile: Tile) : OverlayB
     }
 
     private fun connectRoadToTargetTile(worldMapHolder: WorldMapHolder, selectedUnit: MapUnit, targetTile: Tile) {
-        selectedUnit.automatedRoadConnectionDestination = targetTile.position.toVector2()
+        selectedUnit.automatedRoadConnectionDestination = targetTile.position
         selectedUnit.automatedRoadConnectionPath = null
         selectedUnit.action = UnitActionType.ConnectRoad.value
         selectedUnit.automated = true

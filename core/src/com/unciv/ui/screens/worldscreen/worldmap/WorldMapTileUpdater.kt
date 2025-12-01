@@ -184,7 +184,7 @@ object WorldMapTileUpdater {
         // Highlight road path for workers currently connecting roads
         if (unit.isAutomatingRoadConnection()) {
             if (unit.automatedRoadConnectionPath == null) return
-            val currTileIndex = unit.automatedRoadConnectionPath!!.indexOf(unit.currentTile.position.toVector2())
+            val currTileIndex = unit.automatedRoadConnectionPath!!.indexOf(unit.currentTile.position)
             if (currTileIndex != -1) {
                 val futureTiles = unit.automatedRoadConnectionPath!!.filterIndexed { index, _ ->
                     index > currTileIndex

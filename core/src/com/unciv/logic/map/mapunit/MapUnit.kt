@@ -11,6 +11,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.movement.UnitMovement
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.toHexCoord
@@ -75,10 +76,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
     // We can infer who we are escorting based on our tile
     @Cache private var escorting: Boolean = false
 
-    var automatedRoadConnectionDestination: Vector2? = null
+    var automatedRoadConnectionDestination: HexCoord? = null
     // Temp disable, since this data broke saves
     @Transient
-    var automatedRoadConnectionPath: List<Vector2>? = null
+    var automatedRoadConnectionPath: List<HexCoord>? = null
 
     var attacksThisTurn = 0
     var promotions = UnitPromotions()
