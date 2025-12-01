@@ -1,14 +1,11 @@
 package com.unciv
 
-import com.badlogic.gdx.Application
-import com.badlogic.gdx.Game
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input
-import com.badlogic.gdx.Screen
+import com.badlogic.gdx.*
 import com.unciv.UncivGame.Companion.Current
 import com.unciv.UncivGame.Companion.isCurrentInitialized
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
+import com.unciv.logic.Version
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.Multiplayer
@@ -36,22 +33,19 @@ import com.unciv.ui.screens.savescreens.LoadGameScreen
 import com.unciv.ui.screens.worldscreen.PlayerReadyScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.ui.screens.worldscreen.unit.AutoPlay
-import com.unciv.utils.Concurrency
-import com.unciv.utils.DebugUtils
-import com.unciv.utils.Display
-import com.unciv.utils.Log
-import com.unciv.utils.PlatformSpecific
-import com.unciv.logic.Version
-import com.unciv.utils.debug
-import com.unciv.utils.launchOnGLThread
-import com.unciv.utils.withGLContext
-import com.unciv.utils.withThreadPoolContext
+import com.unciv.utils.*
 import kotlinx.coroutines.CancellationException
-import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 import java.io.PrintWriter
-import java.util.EnumSet
-import java.util.UUID
+import java.util.*
+import kotlin.collections.ArrayDeque
+import kotlin.collections.asSequence
+import kotlin.collections.count
+import kotlin.collections.filter
+import kotlin.collections.forEach
+import kotlin.collections.listOf
+import kotlin.collections.none
+import kotlin.collections.removeAll
 import kotlin.reflect.KClass
 
 /** Represents the Unciv app itself:

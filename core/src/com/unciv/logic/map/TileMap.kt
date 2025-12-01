@@ -42,7 +42,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
      * @param nation Name of the nation
      */
     data class StartingLocation(
-        val position: Vector2 = Vector2.Zero,
+        val position: HexCoord = HexCoord.Zero,
         val nation: String = "",
         val usage: Usage = Usage.default // default for maps saved pior to this feature
     ) : IsPartOfGameInfoSerialization {
@@ -707,7 +707,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         usage: StartingLocation.Usage = StartingLocation.Usage.Player
     ): Boolean {
         if (startingLocationsByNation.contains(nationName, tile)) return false
-        startingLocations.add(StartingLocation(tile.position.toVector2(), nationName, usage))
+        startingLocations.add(StartingLocation(tile.position, nationName, usage))
         return startingLocationsByNation.addToMapOfSets(nationName, tile)
     }
 
@@ -715,7 +715,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
      * @return true if the starting position was removed as per [Collection]'s remove */
     fun removeStartingLocation(nationName: String, tile: Tile): Boolean {
         if (!startingLocationsByNation.contains(nationName, tile)) return false
-        startingLocations.remove(StartingLocation(tile.position.toVector2(), nationName))
+        startingLocations.remove(StartingLocation(tile.position, nationName))
         return startingLocationsByNation[nationName]!!.remove(tile)
         // we do not clean up an empty startingLocationsByNation[nationName] set - not worth it
     }
@@ -724,13 +724,13 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     fun removeStartingLocations(nationName: String) {
         if (startingLocationsByNation[nationName] == null) return
         for (tile in startingLocationsByNation[nationName]!!) {
-            startingLocations.remove(StartingLocation(tile.position.toVector2(), nationName))
+            startingLocations.remove(StartingLocation(tile.position, nationName))
         }
         startingLocationsByNation[nationName]!!.clear()
     }
 
     /** Removes all starting positions for [position], rebuilding the transients */
-    fun removeStartingLocations(position: Vector2) {
+    fun removeStartingLocations(position: HexCoord) {
         startingLocations.removeAll { it.position == position }
         setStartingLocationsTransients()
     }

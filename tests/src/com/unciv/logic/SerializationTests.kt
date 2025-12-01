@@ -1,13 +1,7 @@
 package com.unciv.logic
 
-import com.badlogic.gdx.math.Vector2
-import com.unciv.logic.civilization.CivRankingHistory
-import com.unciv.logic.civilization.CivilopediaAction
-import com.unciv.logic.civilization.DiplomacyAction
 import com.unciv.json.LastSeenImprovement
-import com.unciv.logic.civilization.LocationAction
-import com.unciv.logic.civilization.MapUnitAction
-import com.unciv.logic.civilization.Notification
+import com.unciv.logic.civilization.*
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.tile.TileHistory
 import com.unciv.models.Counter

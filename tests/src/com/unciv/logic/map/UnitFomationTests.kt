@@ -2,7 +2,6 @@
 
 package com.unciv.logic.map
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
@@ -12,9 +11,7 @@ import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
 import com.unciv.utils.DebugUtils
 import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -322,7 +319,7 @@ internal class UnitFormationTests {
         testGame.getTile(3,3).addTerrainFeature("Hill")
         testGame.getTile(3,4).addTerrainFeature("Hill")
         val destinationTile = testGame.getTile(4,5)
-        val tileReached = testGame.getTile(1,2);
+        val tileReached = testGame.getTile(1,2)
         val militaryUnit = testGame.addUnit("Scout", civInfo, centerTile)
         val civilianUnit = testGame.addUnit("Worker", civInfo, centerTile)
         militaryUnit.startEscorting()

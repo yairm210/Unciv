@@ -1,6 +1,5 @@
 ﻿package com.unciv.logic.map.tile
 
-import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
 import com.unciv.Constants

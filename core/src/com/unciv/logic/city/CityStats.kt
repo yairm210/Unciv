@@ -1,7 +1,6 @@
 package com.unciv.logic.city
 
 import com.unciv.logic.map.tile.RoadStatus
-import com.unciv.logic.map.toVector2
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IConstruction
