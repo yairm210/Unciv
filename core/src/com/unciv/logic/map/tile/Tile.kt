@@ -620,14 +620,13 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         val yDelta = positionHexcoord.y - otherPositionHexcoord.y
         val distance = maxOf(abs(xDelta), abs(yDelta), abs(xDelta - yDelta))
 
-        var wrappedDistance = Int.MAX_VALUE
-        if (tileMap.mapParameters.worldWrap) {
-            val otherTileUnwrappedPos = tileMap.getUnwrappedPosition(otherPositionHexcoord)
-            val xDeltaWrapped = positionHexcoord.x - otherTileUnwrappedPos.x
-            val yDeltaWrapped = positionHexcoord.y - otherTileUnwrappedPos.y
-            wrappedDistance = maxOf(abs(xDeltaWrapped), abs(yDeltaWrapped), abs(xDeltaWrapped - yDeltaWrapped))
-        }
-
+        if (!tileMap.mapParameters.worldWrap || distance <= tileMap.width / 2) return distance
+        
+        val otherTileUnwrappedPos = tileMap.getUnwrappedPosition(otherPositionHexcoord)
+        val xDeltaWrapped = positionHexcoord.x - otherTileUnwrappedPos.x
+        val yDeltaWrapped = positionHexcoord.y - otherTileUnwrappedPos.y
+        val wrappedDistance = maxOf(abs(xDeltaWrapped), abs(yDeltaWrapped), abs(xDeltaWrapped - yDeltaWrapped))
+        
         return min(distance, wrappedDistance)
     }
 

@@ -91,11 +91,9 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     @Transient
     var tileMatrix = ArrayList<ArrayList<Tile?>>() // this works several times faster than a hashmap, the performance difference is really astounding
 
-    @Transient
-    var leftX = 0
-
-    @Transient
-    var bottomY = 0
+    @Transient var leftX = 0
+    @Transient var bottomY = 0
+    @Transient var width = 0
 
     @delegate:Transient
     val maxLatitude: Int by lazy { if (values.isEmpty()) 0 else values.maxOf { abs(it.latitude) } }
@@ -503,6 +501,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             bottomY = tileList.asSequence().map { it.position.y }.min()
             val rightX = tileList.asSequence().map { it.position.x }.max()
             leftX = tileList.asSequence().map { it.position.x }.min()
+            width = tileList.asSequence().map { it.position.x }.max() - leftX
 
             // Initialize arrays with enough capacity to avoid re-allocations (+Arrays.copyOf).
             // We have just calculated the dimensions above, so we know the final size.
