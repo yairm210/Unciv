@@ -154,7 +154,7 @@ object Battle {
         // Exploring units surviving an attack should "wake up"
         if (!defender.isDefeated() && defender is MapUnitCombatant && defender.unit.isExploring())
             defender.unit.action = null
-
+        
         if (attacker is MapUnitCombatant) {
             if (attacker.unit.hasUnique(UniqueType.SelfDestructs))
                 attacker.unit.destroy()
@@ -176,10 +176,10 @@ object Battle {
                 .firstOrNull { it.text == "Your city [${attacker.getName()}] can bombard the enemy!" }
             attacker.getCivInfo().notifications.remove(cityCanBombardNotification)
         }
-
+        
         return damageDealt + interceptDamage
     }
-
+    
     private fun triggerPostKillingUniques(
         defender: ICombatant,
         attacker: ICombatant,
@@ -771,6 +771,8 @@ object Battle {
         // Withdraw success: Do it - move defender to toTile for no cost
         // NOT defender.unit.movement.moveToTile(toTile) - we want a free teleport
         defender.unit.removeFromTile()
+        // Ensure transported flag is cleared: withdrawal should place the unit on the ground
+        if (defender.unit.isTransported) defender.unit.isTransported = false
         defender.unit.putInTile(toTile)
         defender.unit.mostRecentMoveType = UnitMovementMemoryType.UnitWithdrew
         // and count 1 attack for attacker but leave it in place
