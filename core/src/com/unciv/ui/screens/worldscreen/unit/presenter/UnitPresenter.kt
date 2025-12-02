@@ -1,7 +1,7 @@
 package com.unciv.ui.screens.worldscreen.unit.presenter
 
-import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Align
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
@@ -31,7 +31,7 @@ class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: W
     // Whether the (first) selected unit is in road-connecting mode
     var selectedUnitIsConnectingRoad = false
 
-    override val position: Vector2?
+    override val position: HexCoord?
         get() = selectedUnit?.currentTile?.position
 
     fun selectUnit(unit: MapUnit? = null, append: Boolean = false) {

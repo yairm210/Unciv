@@ -3,7 +3,6 @@
 //  Taken from https://github.com/TomGrill/gdx-testing
 package com.unciv.logic.map
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
@@ -235,7 +234,7 @@ class UnitMovementTests {
 
         // Don't move him all the way to 1,3 - since there's a closer tile at 1,2
         Assert.assertTrue("Unit must be teleported to closest tile outside of civ's control",
-            unit.currentTile.position == Vector2(1f, 2f))
+            unit.currentTile.position.eq(1, 2))
     }
 
     @Test
@@ -264,7 +263,7 @@ class UnitMovementTests {
         val unit = testGame.addUnit("Warrior", civInfo, testGame.tileMap[1,1])
         // Force the unit to teleport to 1,2 specifically, by blocking all other neighboring tiles with mountains
         for (neighbor in unit.currentTile.neighbors) {
-            if (neighbor.position == Vector2(1f,2f)) continue
+            if (neighbor.position.eq(1,2)) continue
             neighbor.baseTerrain = Constants.mountain
             neighbor.setTransients()
         }
@@ -278,7 +277,7 @@ class UnitMovementTests {
         val otherCiv = testGame.addCiv()
         val city = testGame.addCity(otherCiv, tile)
 
-        Assert.assertTrue("Warrior teleported to 1,2", unit.currentTile.position == Vector2(1f,2f))
+        Assert.assertTrue("Warrior teleported to 1,2", unit.currentTile.position.eq(1,2))
         Assert.assertTrue("Worker must be captured", enemyWorkerUnit.civ == civInfo)
     }
 
@@ -300,7 +299,7 @@ class UnitMovementTests {
 
         // Don't move him all the way to 1,3 - since there's a closer tile at 1,2
         Assert.assertTrue("Unit must be teleported to closest tile outside of civ's control",
-            unit.currentTile.position == Vector2(1f, 2f))
+            unit.currentTile.position.eq(1, 2))
         Assert.assertTrue("Payload must be teleported to the same tile",
             unit.currentTile == payload.currentTile)
     }

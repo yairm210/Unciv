@@ -6,7 +6,6 @@ import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.ThreatLevel
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.automation.unit.UnitAutomation.wander
-import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.civilization.NotificationCategory
@@ -614,8 +613,10 @@ class WorkerAutomation(
                     ThreatLevel.VeryHigh -> 20
                 }
         }
-        val enemyCivsIsCloseEnough = enemyCivs.filter { NextTurnAutomation.getMinDistanceBetweenCities(
-            civInfo, it) <= threatMapping(it) }
+        val enemyCivsIsCloseEnough = enemyCivs.filter {
+            (NextTurnAutomation.getForeignCityNearCapital(civInfo.getCapital(), it)
+                ?.aerialDistance ?: return@filter false) <= threatMapping(it)
+        }
         // No threat, let's not build fort
         if (enemyCivsIsCloseEnough.none()) return 0f
 
