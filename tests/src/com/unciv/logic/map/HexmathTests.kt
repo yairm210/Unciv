@@ -8,6 +8,7 @@ import com.unciv.models.ruleset.tile.TerrainType
 import org.junit.Assert
 import org.junit.Test
 import kotlin.random.Random
+import kotlin.random.nextInt
 
 
 class HexmathTests {
@@ -97,6 +98,19 @@ class HexmathTests {
             val actual = json.fromJson(HexCoord::class.java, serialized)
             val expected = vector.toHexCoord()
             Assert.assertEquals(expected, actual)
+        }
+    }
+
+    @Test
+    fun testHexCoordFormatAndParseBack() {
+        val rnd = Random(42)
+        fun rndCoord() = rnd.nextInt(-20..20)
+
+        repeat(42) {
+            val coord = HexCoord.of(rndCoord(), rndCoord())
+            val pretty = coord.toPrettyString()
+            val fromPretty = HexCoord.fromString(pretty)
+            Assert.assertEquals(coord, fromPretty)
         }
     }
 }
