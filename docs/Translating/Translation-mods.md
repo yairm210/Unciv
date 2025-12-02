@@ -1,5 +1,10 @@
 # Translation generation - for modders
-If you can run desktop with the mod installed, then provide at least one valid translation of something that is present in your mod or the base game in that file. The file can be empty otherwise. Now run Unciv and use options-advanced-"Generate translation files". Reload your translation file and it will have added all the necessary "requires translation" entries specific to your mod (I repeat, works only if there's at least one valid entry already there). AFAIK you can also override base game translations, but those won't be output by the "Generate translation files" tool.
+
+## Generating "needs translation" entries
+If you can run desktop with the mod installed, then provide at least one valid translation of something that is present in your mod or the base game in that file. The file can be empty otherwise. Do this for each language you want to support.
+Now run Unciv and use options-advanced-"Generate translation files". Reload your translation file and it will have added all the necessary "requires translation" entries specific to your mod
+(I repeat, works only if there's at least one valid entry already there).
+You can also override base game translations, but those won't be output by the "Generate translation files" tool.
 
 Here's an example:
 Say you have a new nation in your mod named "The Borg". You create the translations folder, create an empty file named, say, "Hungarian.properties", add "The Borg = The Borg" to that, run Unciv and run the translation generator from options. Reload the new file, bingo all what Unciv would like to see is there.
@@ -12,7 +17,7 @@ Remember, exact case is important both in translations left of the "=" and file 
 
 ## More about translating
 Sometimes you'll see a `English.properties` in the translation folder. For example, if you see `gold = credits` in `English.properties`, It means the word 'gold' will be displayed as 'credits' in the English version.
-So in your translation file, though 'gold' is already translated in vanilla unciv, you should sill translate the line.
+So in your translation file, though 'gold' is already translated in vanilla unciv, you should still translate the line.
 ```
 gold = credits ( <- in your language)
 NOT:gold = gold ( <- in your language)

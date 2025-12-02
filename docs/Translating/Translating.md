@@ -1,4 +1,4 @@
-# Translating
+# Translating - for translators
 
 ## Starting out
 
