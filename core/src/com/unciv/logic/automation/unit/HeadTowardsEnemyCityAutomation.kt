@@ -35,8 +35,8 @@ object HeadTowardsEnemyCityAutomation {
             .filter { unit.civ.isAtWarWith(it) && it.cities.isNotEmpty() }
 
         val closestEnemyCity = enemies
-            .mapNotNull { NextTurnAutomation.getClosestCities(unit.civ, it) }
-            .minByOrNull { it.aerialDistance }?.city2
+            .mapNotNull { NextTurnAutomation.getForeignCityNearCapital(unit.civ.getCapital(), it) }
+            .minByOrNull { it.aerialDistance }?.city
             ?: return emptySequence() // no attackable cities found
 
         // Our main attack target is the closest city, but we're fine with deviating from that a bit

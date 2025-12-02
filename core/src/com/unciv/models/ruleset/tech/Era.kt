@@ -1,7 +1,9 @@
 package com.unciv.models.ruleset.tech
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.UncivGame
 import com.unciv.logic.UncivShowableException
+import com.unciv.logic.MultiFilter
 import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
@@ -113,4 +115,32 @@ class Era : RulesetObject() {
     }
 
     @Readonly fun getHexColor() = "#" + getColor().toString().substring(0, 6)
+
+    /** Implements [UniqueParameterType.EraFilter][com.unciv.models.ruleset.unique.UniqueParameterType.EraFilter] */
+    @Readonly
+    fun matchesFilter(filter: String, state: GameContext? = null, multiFilter: Boolean = true): Boolean =
+        if (multiFilter) MultiFilter.multiFilter(filter, { matchesSingleFilter(it, state) })
+        else matchesSingleFilter(filter, state)
+
+    @Readonly
+    fun matchesSingleFilter(filter: String, state: GameContext? = null): Boolean {
+        if (filter == "any era" || filter == name) return true
+
+        val gameInfo = state?.gameInfo ?: UncivGame.Current.gameInfo
+        return when {
+            gameInfo == null -> false
+            filter == "Starting Era" -> name == gameInfo.gameParameters.startingEra
+            filter.startsWith("pre-[") -> {
+                val targetEraName = filter.removePrefix("pre-[").removeSuffix("]")
+                val targetEra = gameInfo.ruleset.eras[targetEraName]
+                targetEra?.eraNumber?.let { eraNumber < it } == true
+            }
+            filter.startsWith("post-[") -> {
+                val targetEraName = filter.removePrefix("post-[").removeSuffix("]")
+                val targetEra = gameInfo.ruleset.eras[targetEraName]
+                targetEra?.eraNumber?.let { eraNumber > it } == true
+            }
+            else -> false
+        }
+    }
 }

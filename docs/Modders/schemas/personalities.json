@@ -1,0 +1,44 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "name": { "type": "string" },
+            "preferredVictoryType": {
+                "type": "string",
+                "default": "Neutral",
+                "description": "The victory type major civilizations will pursue (need not be specified in VictoryTypes.json)"
+            },
+
+            "production": { "type": "number", "description": "Amount of focus on the stat the computer player will have on production. Typically ranges from 0 (no focus) to 10 (double focus)" },
+            "food": { "type": "number", "description": "Amount of focus on the stat the computer player will have on food. Typically ranges from 0 (no focus) to 10 (double focus)" },
+            "gold": { "type": "number", "description": "Amount of focus on the stat the computer player will have on gold. Typically ranges from 0 (no focus) to 10 (double focus)" },
+            "science": { "type": "number", "description": "Amount of focus on the stat the computer player will have on science. Typically ranges from 0 (no focus) to 10 (double focus)" },
+            "culture": { "type": "number", "description": "Amount of focus on the stat the computer player will have on culture. Typically ranges from 0 (no focus) to 10 (double focus)" },
+            "happiness": { "type": "number", "description": "Amount of focus on the stat the computer player will have on happiness. Typically ranges from 0 (no focus) to 10 (double focus)" },
+            "faith": { "type": "number", "description": "Amount of focus on the stat the computer player will have on faith. Typically ranges from 0 (no focus) to 10 (double focus)" },
+
+            "military": { "type": "number", "description": "Amount of focus on the stat the computer player will have on military power. Typically ranges from 0 (no focus) to 10 (double focus)" },
+            "aggressive": { "type": "number", "description": "Amount of focus on the stat the computer player will have on aggressiveness. Typically ranges from 0 (no focus) to 10 (double focus)" },
+            "declareWar": { "type": "number", "description": "Amount of focus on the stat the computer player will have on declaring war. Typically ranges from 0 (no focus) to 10 (double focus)" },
+            "commerce": { "type": "number", "description": "Amount of focus on the stat the computer player will have on commerce. Typically ranges from 0 (no focus) to 10 (double focus)" },
+            "diplomacy": { "type": "number", "description": "Amount of focus on the stat the computer player will have on diplomacy. Typically ranges from 0 (no focus) to 10 (double focus)" },
+            "loyal": { "type": "number", "description": "Amount of focus on the stat the computer player will have on loyalty. Typically ranges from 0 (no focus) to 10 (double focus)" },
+            "expansion": { "type": "number", "description": "Amount of focus on the stat the computer player will have on expansion. Typically ranges from 0 (no focus) to 10 (double focus)" },
+
+            "priorities": {
+                "type": "object",
+                "description": "Priorities for each policy branch.",
+                "additionalProperties": true
+            },
+
+            "uniques": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/uniques.json" },
+            "civilopediaText": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/civilopediaText.json" }
+        },
+        "required": [
+            "name"
+        ],
+        "additionalProperties": false
+    }
+}

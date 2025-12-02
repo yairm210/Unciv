@@ -17,7 +17,7 @@ import kotlin.math.min
  * A (potentially partial) map view
  * @param T [TileGroup] or a subclass ([WorldTileGroup], [CityTileGroup])
  * @param tileGroups Source of [TileGroup]s to include, will be **iterated several times**.
- * @param tileGroupsToUnwrap For these, coordinates will be unwrapped using [TileMap.getUnWrappedPosition]
+ * @param tileGroupsToUnwrap For these, coordinates will be unwrapped using [TileMap.getUnwrappedPosition]
  */
 class TileGroupMap<T: TileGroup>(
     val mapHolder: ZoomableScrollPane,
@@ -64,7 +64,7 @@ class TileGroupMap<T: TileGroup>(
         for (tileGroup in tileGroups) {
             val positionalVector = if (tileGroupsToUnwrap?.contains(tileGroup) == true) {
                 HexMath.hex2WorldCoords(
-                    tileGroup.tile.tileMap.getUnWrappedPosition(tileGroup.tile.position)
+                    tileGroup.tile.tileMap.getUnwrappedPosition(tileGroup.tile.position)
                 )
             } else {
                 HexMath.hex2WorldCoords(tileGroup.tile.position)

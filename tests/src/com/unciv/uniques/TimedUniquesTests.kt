@@ -1,10 +1,9 @@
 package com.unciv.uniques
 
-import com.badlogic.gdx.math.Vector2
-import com.unciv.Constants
 import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.civilization.managers.TurnManager
+import com.unciv.logic.map.HexCoord
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
@@ -21,9 +20,9 @@ class TimedUniquesTests {
             game.createPolicy("[+42]% Strength <when attacking> <for [Military] units> <for [1] turns>")
     private val enemy = game.addCiv()
     private val attacker =
-            MapUnitCombatant(game.addUnit("Warrior", civInfo, game.getTile(Vector2.Zero)))
+            MapUnitCombatant(game.addUnit("Warrior", civInfo, game.getTile(HexCoord.Zero)))
     private val defender =
-            MapUnitCombatant(game.addUnit("Warrior", enemy, game.getTile(Vector2(1f, 0f))))
+            MapUnitCombatant(game.addUnit("Warrior", enemy, game.getTile(1,0)))
 
     @Test
     fun testConditionalTimedUniqueIsTriggerable() {

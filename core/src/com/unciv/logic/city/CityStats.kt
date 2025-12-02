@@ -172,7 +172,7 @@ class CityStats(val city: City) {
 
     @Readonly
     fun hasExtraAnnexUnhappiness(): Boolean {
-        if (city.civ.civName == city.foundingCiv || city.isPuppet) return false
+        if (city.civ == city.foundingCivObject || city.isPuppet) return false
         return !city.containsBuildingUnique(UniqueType.RemovesAnnexUnhappiness)
     }
 
@@ -349,7 +349,7 @@ class CityStats(val city: City) {
         val stats = Stats()
         val workedTiles = city.tilesInRange.asSequence()
             .filter {
-                city.location == it.position
+                city.location.toHexCoord() == it.position
                         || city.isWorked(it)
                         || it.owningCity == city && (it.getUnpillagedTileImprovement()
                     ?.hasUnique(UniqueType.TileProvidesYieldWithoutPopulation, it.stateThisTile) == true

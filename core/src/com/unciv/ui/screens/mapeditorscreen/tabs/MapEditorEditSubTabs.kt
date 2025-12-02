@@ -368,8 +368,8 @@ class MapEditorEditRiversTab(
                     tile.hasBottomRightRiver = false
                     tile.hasBottomRiver = false
                     // User probably expects all six edges to be cleared
-                    val x = tile.position.x.toInt()
-                    val y = tile.position.y.toInt()
+                    val x = tile.position.x
+                    val y = tile.position.y
                     tile.tileMap.getIfTileExistsOrNull(x, y + 1)?.hasBottomLeftRiver = false
                     tile.tileMap.getIfTileExistsOrNull(x + 1, y)?.hasBottomRightRiver = false
                     tile.tileMap.getIfTileExistsOrNull(x + 1, y + 1)?.hasBottomRiver = false
