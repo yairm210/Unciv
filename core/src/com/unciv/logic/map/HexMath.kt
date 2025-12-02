@@ -407,6 +407,15 @@ data class HexCoord(val x: Int = 0, val y: Int = 0) {
         val Zero = HexCoord.of(0, 0)
         @Pure
         fun of(x: Int, y: Int): HexCoord = HexCoord(x, y)
+
+        fun fromString(string: String): HexCoord {
+            val commaPos = string.indexOf(',')
+            if (commaPos < 1 || !string.startsWith('(') || !string.endsWith(')'))
+                throw NumberFormatException("\"$string\" is not a valid HexCoord representation")
+            val x = string.substring(1, commaPos).toInt()
+            val y = string.substring(commaPos + 1, string.length - 1).toInt()
+            return HexCoord(x, y)
+        }
     }
 
     /** Ser/deser to be 1:1 with Vector2, to allow us to replace Vector2 in game saves with HexCoord */
