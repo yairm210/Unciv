@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.SerializationException
 import com.unciv.Constants
 import com.unciv.logic.GameInfoPreview
-import com.unciv.logic.files.UncivFiles
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.widgets.TranslatedSelectBox

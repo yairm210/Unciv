@@ -187,6 +187,13 @@ class Ruleset {
 
     fun add(ruleset: Ruleset) {
         beliefs.putAll(ruleset.beliefs)
+        ruleset.modOptions.beliefsToRemove
+            .flatMap { beliefsToRemove ->
+                beliefs.filter { it.value.matchesFilter(beliefsToRemove) }.keys
+            }.toSet().forEach {
+                beliefs.remove(it)
+            }
+
         ruleset.modOptions.buildingsToRemove
             .flatMap { buildingToRemove ->
                 buildings.filter { it.value.matchesFilter(buildingToRemove) }.keys
@@ -231,6 +238,7 @@ class Ruleset {
 
         quests.putAll(ruleset.quests)
         religions.addAll(ruleset.religions)
+        religions.removeAll(ruleset.modOptions.religionsToRemove)
         ruinRewards.putAll(ruleset.ruinRewards)
         specialists.putAll(ruleset.specialists)
         ruleset.modOptions.techsToRemove

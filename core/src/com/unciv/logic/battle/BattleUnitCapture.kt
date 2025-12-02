@@ -1,6 +1,5 @@
 package com.unciv.logic.battle
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
@@ -9,6 +8,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.PopupAlert
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.GameContext
@@ -60,7 +60,7 @@ object BattleUnitCapture {
                 .toFloat() * 0.4f
         )
         /** Between 0 and 1.  Defaults to turn and location-based random to avoid save scumming */
-        val random = Random((attacker.getCivInfo().gameInfo.turns * defender.getTile().position.hashCode()).toLong())
+        val random = Random((attacker.getCivInfo().gameInfo.turns * defender.getTile().position.toVector2().hashCode()).toLong())
         return random.nextFloat() <= captureChance
     }
 
@@ -169,7 +169,9 @@ object BattleUnitCapture {
                 attacker.getCivInfo().popupAlerts.add(
                     PopupAlert(
                         AlertType.RecapturedCivilian,
-                        capturedUnit.currentTile.position.toString()
+                        // Currently these are in (1.0,1.0) format
+                        // TODO: Migrate to e.g. 1,1 format, avoid the vector2 nonsense
+                        capturedUnit.currentTile.position.toVector2().toString()
                     )
                 )
             }
@@ -205,7 +207,7 @@ object BattleUnitCapture {
      *          Returns `null` if there is no Worker replacement for a Settler in the ruleset or placeUnitNearTile couldn't place it.
      *  @see MapUnit.capturedBy
      */
-    fun captureOrConvertToWorker(capturedUnit: MapUnit, capturingCiv: Civilization): Vector2? {
+    fun captureOrConvertToWorker(capturedUnit: MapUnit, capturingCiv: Civilization): HexCoord? {
         // Captured settlers are converted to workers unless captured by barbarians (so they can be returned later).
         if (!capturedUnit.hasUnique(UniqueType.FoundCity, GameContext.IgnoreConditionals) || capturingCiv.isBarbarian) {
             capturedUnit.capturedBy(capturingCiv)

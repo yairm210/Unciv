@@ -8,6 +8,7 @@ import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.toHexCoord
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
@@ -140,7 +141,7 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         if (chosenTile != null) {
             cultureStored -= getCultureToNextTile()
             takeOwnership(chosenTile)
-            return chosenTile.position
+            return chosenTile.position.toVector2()
         }
         return null
     }
@@ -208,7 +209,7 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         if (cultureStored >= getCultureToNextTile()) {
             val location = addNewTileWithCulture()
             if (location != null) {
-                val locations = LocationAction(location, city.location)
+                val locations = LocationAction(location.toHexCoord(), city.location.toHexCoord())
                 city.civ.addNotification("[${city.name}] has expanded its borders!", locations,
                     NotificationCategory.Cities, NotificationIcon.Culture)
             }
