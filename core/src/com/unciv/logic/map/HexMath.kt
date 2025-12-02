@@ -48,11 +48,8 @@ object HexMath {
         if (numberOfTiles < 1) 0f else ((sqrt(12f * numberOfTiles - 3) - 3) / 6)
 
     // In our reference system latitude, i.e. how distant from equator we are, is proportional to x + y
-    @Readonly fun getLatitude(vector: Vector2): Int = vector.x.toInt() + vector.y.toInt()
     @Readonly fun getLatitude(hexCoord: HexCoord) = hexCoord.x + hexCoord.y
-
-
-    @Readonly fun getLongitude(vector: Vector2): Int = vector.x.toInt() - vector.y.toInt()
+    
     @Readonly fun getLongitude(hexCoord: HexCoord) = hexCoord.x - hexCoord.y
 
 
@@ -153,11 +150,9 @@ object HexMath {
     }
 
     // Both x - 10 o'clock - and y - 2 o'clock - increase the row by 0.5
-    @Readonly fun getRow(hexCoord: Vector2): Int = (hexCoord.x/2 + hexCoord.y/2).toInt()
     @Readonly fun getRow(hexCoord: HexCoord): Int = (hexCoord.x + hexCoord.y)/2
 
     // y is 2 o'clock - increases column by 1, x in 10 o'clock - decreases by 1
-    @Readonly fun getColumn(hexCoord: Vector2): Int = (hexCoord.y - hexCoord.x).toInt()
     @Readonly fun getColumn(hexCoord: HexCoord): Int = hexCoord.y - hexCoord.x
 
     @Pure
@@ -389,7 +384,7 @@ object HexMath {
 //}
 
 /** Required for ser/deser since the stupid json parser can't handle the inline ints -_-  */
-@Suppress("RemoveRedundantQualifierName")
+@Suppress("RemoveRedundantQualifierName") // `of` looks naked without
 data class HexCoord(val x: Int = 0, val y: Int = 0) {
 
     @Pure fun plus(hexCoord: HexCoord): HexCoord = HexCoord.of(x + hexCoord.x, y + hexCoord.y)
