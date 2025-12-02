@@ -193,6 +193,7 @@ Each policy branch has the following structure:
 | era        | String | Required | Unlocking era as defined in [Eras.json](5-Miscellaneous-JSON-files.md#erasjson)                                                                     |
 | priorities | Object | none     | Priorities for each victory type, [see here](#branch-priorities)                                                                                    |
 | uniques    | List   | empty    | List of [unique abilities](../uniques.md) this policy branch grants upon adopting it                                                                |
+| civilopediaText | List | empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
 | policies   | List   | empty    | List of [member policies](#member-policy-structure) and [branch 'finisher'](#branch-finisher-structure) - pay attention to the nesting of {} and [] |
 
 #### Member policy structure
@@ -204,6 +205,7 @@ Each policy branch has the following structure:
 | column    | Integer | Required | Placement in UI, each unit approximately half the icon size                          |
 | requires  | List    | empty    | List of prerequisite policy names                                                    |
 | uniques   | List    | empty    | List of [unique abilities](../uniques.md) this policy member grants upon adopting it |
+| civilopediaText | List | empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
 
 #### Branch finisher structure
 
@@ -211,6 +213,7 @@ Each policy branch has the following structure:
 |-----------|--------|----------|-------------------------------------------------------------------------------------------------------------------|
 | name      | String | Required |                                                                                                                   |
 | uniques   | List   | empty    | List of [unique abilities](../uniques.md) this finisher grants upon adopting all the policy members in the branch |
+| civilopediaText | List | empty | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
 
 ### Branch priorities
 

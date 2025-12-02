@@ -1,3 +1,32 @@
+## 4.18.18
+
+CPU performance improvements
+
+By EmperorPinguin:
+- AI: Separate encampment-finding logic from ruins-finding 
+- AI: Better "city to attack" logic 
+- AI: Simplify target selection for city bombardment 
+
+Fix battle notification order - By SomeTroglodyte
+
+## 4.18.17
+
+Memory + CPU performance improvements
+
+By RobLoach:
+- Fix Null Exception in searching Civilopedia 
+- Modding: Allow removing Religions and Beliefs 
+
+By SomeTroglodyte:
+- Swapping for Escort formation pairs 
+- Make Notifications setting "Disabled" useful 
+
+Generic'd Gold from pillaging encampments and cities unique - By PLynx01
+
+Using Renamed Unit Names in Battle Notifications - By GameCobra
+
+Enable espionage by default in new games - By unciv-loof
+
 ## 4.18.16
 
 Units that upgrade continue escorting 

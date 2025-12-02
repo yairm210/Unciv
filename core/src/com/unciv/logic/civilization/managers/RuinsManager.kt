@@ -43,7 +43,7 @@ class RuinsManager(
             .toMutableList()
         // The resulting List now gets shuffled, using a tile-based random to thwart save-scumming.
         // Note both Sequence.shuffled and Iterable.shuffled (with a 'd') always pull an extra copy of a MutableList internally, even if you feed them one.
-        candidates.shuffle(Random(triggeringUnit.getTile().position.hashCode()))
+        candidates.shuffle(Random(triggeringUnit.getTile().position.toVector2().hashCode()))
         return candidates
     }
 

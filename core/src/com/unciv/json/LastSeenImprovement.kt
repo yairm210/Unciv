@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
 import com.unciv.logic.IsPartOfGameInfoSerialization
-import com.unciv.ui.components.extensions.toPrettyString
+import com.unciv.logic.map.HexCoord
 import yairm210.purity.annotations.Pure
 
 /**
@@ -16,8 +16,8 @@ import yairm210.purity.annotations.Pure
  *  See git history for previous more complicated solutions.
  */
 class LastSeenImprovement(
-    private val map: HashMap<Vector2, String> = hashMapOf()
-) : MutableMap<Vector2, String> by map, IsPartOfGameInfoSerialization, Json.Serializable {
+    private val map: HashMap<HexCoord, String> = hashMapOf()
+) : MutableMap<HexCoord, String> by map, IsPartOfGameInfoSerialization, Json.Serializable {
     override fun write(json: Json) {
         for ((key, value) in entries) {
             val name = key.toPrettyString()
@@ -27,7 +27,7 @@ class LastSeenImprovement(
 
     override fun read(json: Json, jsonData: JsonValue) {
         for (entry in jsonData) {
-            val key = entry.name.toVector2()
+            val key = entry.name.toHexCoord()
             val value = if (entry.isValue) entry.asString() else entry.getString("value")
             put(key, value)
         }
@@ -37,6 +37,11 @@ class LastSeenImprovement(
     private fun String.toVector2(): Vector2 {
         val (x, y) = removeSurrounding("(", ")").split(',')
         return Vector2(x.toFloat(), y.toFloat())
+    }
+    @Pure
+    private fun String.toHexCoord(): HexCoord {
+        val (x, y) = removeSurrounding("(", ")").split(',')
+        return HexCoord(x.toFloat().toInt(),y.toFloat().toInt())
     }
 
     override fun equals(other: Any?) = when (other) {

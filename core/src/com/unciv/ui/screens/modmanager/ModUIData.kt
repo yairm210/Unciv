@@ -5,7 +5,6 @@ import com.unciv.models.metadata.ModCategories
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.fonts.Fonts
-import com.unciv.ui.screens.modmanager.ModManagementScreen
 
 /** Helper class holds combined mod info for ModManagementScreen, used for both installed and online lists.
  *

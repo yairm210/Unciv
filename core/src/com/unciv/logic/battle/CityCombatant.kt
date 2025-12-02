@@ -18,7 +18,6 @@ class CityCombatant(val city: City) : ICombatant {
     override fun getMaxHealth(): Int {
         return city.getMaxHealth()
     }
-
     override fun getHealth(): Int = city.health
     @Readonly override fun getCivInfo(): Civilization = city.civ
     override fun getTile(): Tile = city.getCenterTile()

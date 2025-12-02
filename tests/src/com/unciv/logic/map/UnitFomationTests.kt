@@ -2,7 +2,6 @@
 
 package com.unciv.logic.map
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
@@ -12,9 +11,7 @@ import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
 import com.unciv.utils.DebugUtils
 import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -36,7 +33,7 @@ internal class UnitFormationTests {
     @Test
     fun `basic formation functionality civilian`() {
         setUp(1)
-        val centerTile = testGame.getTile(Vector2(0f,0f))
+        val centerTile = testGame.getTile(0,0)
         val civilianUnit = testGame.addUnit("Worker", civInfo, centerTile)
         val militaryUnit = testGame.addUnit("Warrior", civInfo, centerTile)
         assertTrue(civilianUnit.getOtherEscortUnit() != null)
@@ -54,7 +51,7 @@ internal class UnitFormationTests {
     @Test
     fun `basic formation functionality military`() {
         setUp(1)
-        val centerTile = testGame.getTile(Vector2(0f,0f))
+        val centerTile = testGame.getTile(0,0)
         val civilianUnit = testGame.addUnit("Worker", civInfo, centerTile)
         val militaryUnit = testGame.addUnit("Warrior", civInfo, centerTile)
         assertTrue(militaryUnit.getOtherEscortUnit() != null)
@@ -72,7 +69,7 @@ internal class UnitFormationTests {
     @Test
     fun `basic formation not available functionality`() {
         setUp(1)
-        val centerTile = testGame.getTile(Vector2(0f,0f))
+        val centerTile = testGame.getTile(0,0)
         val civilianUnit = testGame.addUnit("Worker", civInfo, centerTile)
         assertFalse(civilianUnit.getOtherEscortUnit() != null)
         assertFalse(civilianUnit.isEscorting())
@@ -89,7 +86,7 @@ internal class UnitFormationTests {
     @Test
     fun `formation idle units`() {
         setUp(1)
-        val centerTile = testGame.getTile(Vector2(0f,0f))
+        val centerTile = testGame.getTile(0,0)
         val civilianUnit = testGame.addUnit("Worker", civInfo, centerTile)
         val militaryUnit = testGame.addUnit("Warrior", civInfo, centerTile)
         civilianUnit.startEscorting()
@@ -108,11 +105,11 @@ internal class UnitFormationTests {
     @Test
     fun `formation movement` () {
         setUp(3)
-        val centerTile = testGame.getTile(Vector2(0f,0f))
+        val centerTile = testGame.getTile(0,0)
         val civilianUnit = testGame.addUnit("Worker", civInfo, centerTile)
         val militaryUnit = testGame.addUnit("Warrior", civInfo, centerTile)
         civilianUnit.startEscorting()
-        val targetTile = testGame.getTile(Vector2(0f,2f))
+        val targetTile = testGame.getTile(0,2)
         civilianUnit.movement.moveToTile(targetTile)
         assert(civilianUnit.getTile() == targetTile)
         assert(militaryUnit.getTile() == targetTile)
@@ -123,12 +120,12 @@ internal class UnitFormationTests {
     @Test
     fun `stop formation movement` () {
         setUp(3)
-        val centerTile = testGame.getTile(Vector2(0f,0f))
+        val centerTile = testGame.getTile(0,0)
         val civilianUnit = testGame.addUnit("Worker", civInfo, centerTile)
         val militaryUnit = testGame.addUnit("Warrior", civInfo, centerTile)
         civilianUnit.startEscorting()
         civilianUnit.stopEscorting()
-        val targetTile = testGame.getTile(Vector2(0f,2f))
+        val targetTile = testGame.getTile(0,2)
         civilianUnit.movement.moveToTile(targetTile)
         assert(civilianUnit.getTile() == targetTile)
         assert(militaryUnit.getTile() == centerTile)
@@ -139,10 +136,10 @@ internal class UnitFormationTests {
     @Test
     fun `formation canMoveTo` () {
         setUp(3)
-        val centerTile = testGame.getTile(Vector2(0f,0f))
+        val centerTile = testGame.getTile(0,0)
         val civilianUnit = testGame.addUnit("Worker", civInfo, centerTile)
         val militaryUnit = testGame.addUnit("Warrior", civInfo, centerTile)
-        val targetTile = testGame.getTile(Vector2(0f,2f))
+        val targetTile = testGame.getTile(0,2)
         val blockingCivilianUnit = testGame.addUnit("Worker", civInfo, targetTile)
         assertFalse(civilianUnit.movement.canMoveTo(targetTile))
         assertTrue(militaryUnit.movement.canMoveTo(targetTile))
@@ -153,7 +150,7 @@ internal class UnitFormationTests {
     @Test
     fun `formation canMoveTo water` () {
         setUp(3, "Ocean")
-        val centerTile = testGame.getTile(Vector2(0f,0f))
+        val centerTile = testGame.getTile(0,0)
         centerTile.baseTerrain = "Coast"
         centerTile.isWater = true
         centerTile.isLand = false
@@ -161,7 +158,7 @@ internal class UnitFormationTests {
         civInfo.tech.addTechnology("Astronomy")
         val civilianUnit = testGame.addUnit("Work Boats", civInfo, centerTile) // Can enter ocean
         val militaryUnit = testGame.addUnit("Trireme", civInfo, centerTile) // Can't enter ocean
-        val targetTile = testGame.getTile(Vector2(0f,1f))
+        val targetTile = testGame.getTile(0,1)
         targetTile.isWater = true
         targetTile.isLand = false
         targetTile.isOcean = true
@@ -175,12 +172,12 @@ internal class UnitFormationTests {
     @Test
     fun `formation head towards with faster units` () {
         setUp(5)
-        val centerTile = testGame.getTile(Vector2(0f,0f))
+        val centerTile = testGame.getTile(0,0)
         val civilianUnit = testGame.addUnit("Worker", civInfo, centerTile)
         val militaryUnit = testGame.addUnit("Horseman", civInfo, centerTile) // 4 movement
         civilianUnit.startEscorting()
-        val targetTile = testGame.getTile(Vector2(0f,4f))
-        val excpectedTile = testGame.getTile(Vector2(0f,2f))
+        val targetTile = testGame.getTile(0,4)
+        val excpectedTile = testGame.getTile(0,2)
         militaryUnit.movement.headTowards(targetTile)
         assert(civilianUnit.getTile() == excpectedTile)
         assert(militaryUnit.getTile() == excpectedTile)
@@ -193,7 +190,7 @@ internal class UnitFormationTests {
     @Test
     fun `getDistanceToTiles when in formation`() {
         setUp(5)
-        val centerTile = testGame.getTile(Vector2(0f,0f))
+        val centerTile = testGame.getTile(0,0)
         val civilianUnit = testGame.addUnit("Worker", civInfo, centerTile)
         val militaryUnit = testGame.addUnit("Horseman", civInfo, centerTile) // 4 movement
         civilianUnit.startEscorting()
@@ -215,8 +212,8 @@ internal class UnitFormationTests {
         val enemyCiv = testGame.addCiv()
         civInfo.diplomacyFunctions.makeCivilizationsMeet(enemyCiv)
         civInfo.getDiplomacyManager(enemyCiv)!!.declareWar()
-        val centerTile = testGame.getTile(Vector2(0f,0f))
-        val enemyTile = testGame.getTile(Vector2(2f,2f))
+        val centerTile = testGame.getTile(0,0)
+        val enemyTile = testGame.getTile(2,2)
         val scout = testGame.addUnit("Warrior", civInfo, centerTile)
         val civilianUnit = testGame.addUnit("Worker", civInfo, centerTile)
         val enemyUnit = testGame.addUnit("Warrior", enemyCiv , enemyTile)
@@ -241,8 +238,8 @@ internal class UnitFormationTests {
         DebugUtils.VISIBLE_MAP = true
         civInfo.diplomacyFunctions.makeCivilizationsMeet(enemyCiv)
         civInfo.getDiplomacyManager(enemyCiv)!!.declareWar()
-        val centerTile = testGame.getTile(Vector2(0f,0f))
-        val enemyTile = testGame.getTile(Vector2(3f,3f))
+        val centerTile = testGame.getTile(0,0)
+        val enemyTile = testGame.getTile(3,3)
         val archer = testGame.addUnit("Archer", civInfo, centerTile)
         val civilianUnit = testGame.addUnit("Worker", civInfo, centerTile)
         val enemyUnit = testGame.addUnit("Warrior", enemyCiv , enemyTile)
@@ -265,9 +262,9 @@ internal class UnitFormationTests {
         val enemyCiv = testGame.addCiv()
         civInfo.diplomacyFunctions.makeCivilizationsMeet(enemyCiv)
         civInfo.getDiplomacyManager(enemyCiv)!!.declareWar()
-        val centerTile = testGame.getTile(Vector2(0f,0f))
-        val forestTile = testGame.getTile(Vector2(1f,1f))
-        val enemyTile = testGame.getTile(Vector2(2f,2f))
+        val centerTile = testGame.getTile(0,0)
+        val forestTile = testGame.getTile(1,1)
+        val enemyTile = testGame.getTile(2,2)
         val scout = testGame.addUnit("Warrior", civInfo, centerTile)
         val civilianUnit = testGame.addUnit("Worker", civInfo, centerTile)
         val enemyUnit = testGame.addUnit("Warrior", enemyCiv , enemyTile)
@@ -282,9 +279,9 @@ internal class UnitFormationTests {
     @Test
     fun `test escort path with hills one turn civilian`() {
         setUp(3)
-        val centerTile = testGame.getTile(Vector2(0f,0f))
-        val hillTile = testGame.getTile(Vector2(1f,1f))
-        val destinationTile = testGame.getTile(Vector2(1f,2f))
+        val centerTile = testGame.getTile(0,0)
+        val hillTile = testGame.getTile(1,1)
+        val destinationTile = testGame.getTile(1,2)
         val militaryUnit = testGame.addUnit("Mechanized Infantry", civInfo, centerTile)
         val civilianUnit = testGame.addUnit("Worker", civInfo, centerTile)
         hillTile.addTerrainFeature("Hill")
@@ -298,9 +295,9 @@ internal class UnitFormationTests {
     @Test
     fun `test escort path with hills one turn military`() {
         setUp(3)
-        val centerTile = testGame.getTile(Vector2(0f,0f))
-        val hillTile = testGame.getTile(Vector2(1f,1f))
-        val destinationTile = testGame.getTile(Vector2(1f,2f))
+        val centerTile = testGame.getTile(0,0)
+        val hillTile = testGame.getTile(1,1)
+        val destinationTile = testGame.getTile(1,2)
         val militaryUnit = testGame.addUnit("Mechanized Infantry", civInfo, centerTile)
         val civilianUnit = testGame.addUnit("Worker", civInfo, centerTile)
         hillTile.addTerrainFeature("Hill")
@@ -314,15 +311,15 @@ internal class UnitFormationTests {
     @Test
     fun `test escort with ignore terrain cost unit`() {
         setUp(5)
-        val centerTile = testGame.getTile(Vector2(0f,0f))
-        val marsh = testGame.getTile(Vector2(1f,1f))
+        val centerTile = testGame.getTile(0,0)
+        val marsh = testGame.getTile(1,1)
         marsh.addTerrainFeature("Marsh")
-        val jungle = testGame.getTile(Vector2(2f,2f))
+        val jungle = testGame.getTile(2,2)
         jungle.addTerrainFeature("Jungle")
-        testGame.getTile(Vector2(3f,3f)).addTerrainFeature("Hill")
-        testGame.getTile(Vector2(3f,4f)).addTerrainFeature("Hill")
-        val destinationTile = testGame.getTile(Vector2(4f,5f))
-        val tileReached = testGame.getTile(Vector2(1f,2f));
+        testGame.getTile(3,3).addTerrainFeature("Hill")
+        testGame.getTile(3,4).addTerrainFeature("Hill")
+        val destinationTile = testGame.getTile(4,5)
+        val tileReached = testGame.getTile(1,2)
         val militaryUnit = testGame.addUnit("Scout", civInfo, centerTile)
         val civilianUnit = testGame.addUnit("Worker", civInfo, centerTile)
         militaryUnit.startEscorting()
