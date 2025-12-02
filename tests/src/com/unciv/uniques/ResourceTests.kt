@@ -1,7 +1,7 @@
 package com.unciv.uniques
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.map.HexCoord
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.testing.GdxTestRunner
@@ -130,6 +130,11 @@ class ResourceTests {
         city.cityConstructions.addBuilding(doubleStrategicProduction)
         Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 4)
     }
+    
+    @Test
+    fun stringtoint(){
+        assert(1f == "1".toFloat())
+    }
 
 
     // Resource tests
@@ -139,7 +144,7 @@ class ResourceTests {
         civInfo.tech.addTechnology("Iron Working")
         civInfo.tech.addTechnology("Mining")
 
-        val tile = game.getTile(Vector2(1f, 1f))
+        val tile = game.getTile(1,1)
         tile.resource = "Iron"
         tile.resourceAmount = 4
         tile.improvement = "Mine"
@@ -169,7 +174,7 @@ class ResourceTests {
     @Test
     fun `should handle StatPercentFromObjectToResource with a buildingFilter`() {
         city.cityConstructions.addBuilding("Monument")
-        var building = game.createBuilding("[300]% of [Culture] from every [Monument] in the city added to [Iron]")
+        val building = game.createBuilding("[300]% of [Culture] from every [Monument] in the city added to [Iron]")
         city.cityConstructions.addBuilding(building)
         assertEquals(6, city.getAvailableResourceAmount("Iron")) // 2 Culture * 3
     }
@@ -181,7 +186,7 @@ class ResourceTests {
         tile.resourceAmount = 1
         tile.setImprovement("Farm")
         city.population.addPopulation(5) // Add population, since the tile needs to be worked
-        var building = game.createBuilding("[300]% of [Food] from every [Farm] in the city added to [Iron]")
+        val building = game.createBuilding("[300]% of [Food] from every [Farm] in the city added to [Iron]")
         city.cityConstructions.addBuilding(building)
         assertEquals(3, city.getAvailableResourceAmount("Iron"))
     }
@@ -205,7 +210,7 @@ class ResourceTests {
         val building = game.createBuilding("Provides [4] [Coal]")
         city.cityConstructions.addBuilding(building)
 
-        val otherCity = civInfo.addCity(Vector2(2f,2f))
+        val otherCity = civInfo.addCity(HexCoord(2,2))
 
         // when
         val resourceAmountInOtherCity = otherCity.getAvailableResourceAmount("Coal")
@@ -222,7 +227,7 @@ class ResourceTests {
         val building = game.createBuilding("Provides [4] [${resource.name}]")
         city.cityConstructions.addBuilding(building)
 
-        val otherCity = civInfo.addCity(Vector2(2f,2f))
+        val otherCity = civInfo.addCity(HexCoord(2,2))
 
         // when
         val resourceAmountInOtherCity = otherCity.getAvailableResourceAmount(resource.name)
@@ -254,7 +259,7 @@ class ResourceTests {
         religion.addBeliefs(listOf(belief))
         city.population.setPopulation(1)
         city.religion.addPressure(religion.name, 1000)
-        val otherCity = civInfo.addCity(Vector2(2f,2f)) // NOT religionized
+        val otherCity = civInfo.addCity(HexCoord(2,2)) // NOT religionized
 
         // when
         val resourceAmountInCapital = city.getAvailableResourceAmount("Iron")
@@ -307,7 +312,7 @@ class ResourceTests {
         
         val consumingBuilding = game.createBuilding("Costs [1] [${resource.name}]")
         assert(civInfo.getCivResourcesByName()[resource.name] == 2) // no change yet
-        city.cityConstructions.currentConstructionFromQueue = consumingBuilding.name
+        city.cityConstructions.setCurrentConstruction(consumingBuilding.name)
         civInfo.playerType = PlayerType.Human // to not loop endlessly on "next turn"
         game.gameInfo.currentPlayer = civInfo.civName
         game.gameInfo.currentPlayerCiv = civInfo

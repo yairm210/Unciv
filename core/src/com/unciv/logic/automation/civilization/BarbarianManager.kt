@@ -1,11 +1,11 @@
 package com.unciv.logic.automation.civilization
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.UniqueType
@@ -70,7 +70,7 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
     }
 
     /** Called when an encampment was attacked, will speed up time to next spawn */
-    fun campAttacked(position: Vector2) {
+    fun campAttacked(position: HexCoord) {
         encampments.firstOrNull { it.position == position }?.wasAttacked()
     }
 
@@ -166,7 +166,7 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
 }
 
 class Encampment() : IsPartOfGameInfoSerialization {
-    val position = Vector2()
+    var position = HexCoord()
     var countdown = 0
     var spawnedUnits = -1
     var destroyed = false // destroyed encampments haunt the vicinity for 15 turns preventing new spawns
@@ -174,9 +174,8 @@ class Encampment() : IsPartOfGameInfoSerialization {
     @Transient
     lateinit var gameInfo: GameInfo
 
-    constructor(position: Vector2): this() {
-        this.position.x = position.x
-        this.position.y = position.y
+    constructor(position: HexCoord): this() {
+        this.position = position
     }
 
     fun clone(): Encampment {
@@ -244,7 +243,7 @@ class Encampment() : IsPartOfGameInfoSerialization {
     private fun spawnUnit(naval: Boolean): Boolean {
         updateBarbarianTech()
         val unitToSpawn = chooseBarbarianUnit(naval) ?: return false // return false if we didn't find a unit
-        val spawnedUnit = gameInfo.tileMap.placeUnitNearTile(position, unitToSpawn, gameInfo.getBarbarianCivilization())
+        val spawnedUnit = gameInfo.tileMap.placeUnitNearTile(position.toHexCoord(), unitToSpawn, gameInfo.getBarbarianCivilization())
         return (spawnedUnit != null)
     }
     

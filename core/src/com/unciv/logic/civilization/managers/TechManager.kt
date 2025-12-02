@@ -3,16 +3,7 @@ package com.unciv.logic.civilization.managers
 import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.AlertType
-import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.civilization.LocationAction
-import com.unciv.logic.civilization.MayaLongCountAction
-import com.unciv.logic.civilization.NotificationCategory
-import com.unciv.logic.civilization.NotificationIcon
-import com.unciv.logic.civilization.PlayerType
-import com.unciv.logic.civilization.PolicyAction
-import com.unciv.logic.civilization.PopupAlert
-import com.unciv.logic.civilization.TechAction
+import com.unciv.logic.civilization.*
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.tech.Era
@@ -68,7 +59,7 @@ class TechManager : IsPartOfGameInfoSerialization {
     var repeatingTechsResearched = 0
 
     /** For calculating Great Scientist yields - see https://civilization.fandom.com/wiki/Great_Scientist_(Civ5)  */
-    var scienceOfLast8Turns = IntArray(8) { 0 }
+    var scienceOfLast8Turns = IntArray(8)
     var scienceFromResearchAgreements = 0
     /** This is the list of strings, which is serialized */
     var techsResearched = HashSet<String>()
@@ -98,7 +89,7 @@ class TechManager : IsPartOfGameInfoSerialization {
 
     @Readonly fun getNumberOfTechsResearched(): Int = techsResearched.size
 
-    fun getOverflowScience(): Int = overflowScience
+    @Readonly fun getOverflowScience(): Int = overflowScience
 
     @Readonly
     private fun getScienceModifier(techName: String): Float { // https://forums.civfanatics.com/threads/the-mechanics-of-overflow-inflation.517970/
@@ -407,7 +398,7 @@ class TechManager : IsPartOfGameInfoSerialization {
             for(city in cities)
                 city.cityConstructions.validateInProgressConstructions()
 
-            val locationAction = LocationAction(cities.asSequence().map { it.location })
+            val locationAction = LocationAction(cities.asSequence().map { it.location.toHexCoord() })
             val cityText = if (cities.size == 1) "[${cities.first().name}]"
                 else "[${cities.size}] cities"
             val newUnit = obsoleteUnits[unit]?.name

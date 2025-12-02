@@ -10,7 +10,6 @@ import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.popups.AnimatedMenuPopup
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.ui.screens.worldscreen.unit.AutoPlay
-import com.unciv.utils.Concurrency
 
 /**
  *  The "context" menu for the AutoPlay button

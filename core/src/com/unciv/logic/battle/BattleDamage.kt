@@ -150,7 +150,7 @@ object BattleDamage {
             if (attacker.isMelee()) {
                 val numberOfOtherAttackersSurroundingDefender = defender.getTile().neighbors.count {
                     it.militaryUnit != null && it.militaryUnit != attacker.unit
-                            && it.militaryUnit!!.owner == attacker.getCivInfo().civName
+                            && it.militaryUnit!!.civ == attacker.getCivInfo()
                             && MapUnitCombatant(it.militaryUnit!!).isMelee()
                 }
                 if (numberOfOtherAttackersSurroundingDefender > 0) {
@@ -271,7 +271,7 @@ object BattleDamage {
         tileToAttackFrom: Tile
     ): Float {
         val attackModifier = modifiersToFinalBonus(getAttackModifiers(attacker, defender, tileToAttackFrom))
-        return max(1f, attacker.getAttackingStrength() * attackModifier)
+        return max(1f, attacker.getAttackingStrength(defender) * attackModifier)
     }
 
 
@@ -281,7 +281,7 @@ object BattleDamage {
     @Readonly
     fun getDefendingStrength(attacker: ICombatant, defender: ICombatant, tileToAttackFrom: Tile): Float {
         val defenceModifier = modifiersToFinalBonus(getDefenceModifiers(attacker, defender, tileToAttackFrom))
-        return max(1f, defender.getDefendingStrength(attacker.isRanged()) * defenceModifier)
+        return max(1f, defender.getDefendingStrength(attacker) * defenceModifier)
     }
 
     @Readonly
@@ -290,7 +290,7 @@ object BattleDamage {
         defender: ICombatant,
         tileToAttackFrom: Tile = defender.getTile(),
         /** Between 0 and 1. */
-        randomnessFactor: Float = Random(attacker.getCivInfo().gameInfo.turns * attacker.getTile().position.hashCode().toLong()).nextFloat()
+        randomnessFactor: Float = Random(attacker.getCivInfo().gameInfo.turns * attacker.getTile().position.toVector2().hashCode().toLong()).nextFloat()
     ): Int {
         if (attacker.isRanged() && !attacker.isAirUnit()) return 0
         if (defender.isCivilian()) return 0
@@ -305,7 +305,7 @@ object BattleDamage {
         defender: ICombatant,
         tileToAttackFrom: Tile = defender.getTile(),
         /** Between 0 and 1.  Defaults to turn and location-based random to avoid save scumming */
-        randomnessFactor: Float = Random(defender.getCivInfo().gameInfo.turns * defender.getTile().position.hashCode().toLong()).nextFloat()
+        randomnessFactor: Float = Random(defender.getCivInfo().gameInfo.turns * defender.getTile().position.toVector2().hashCode().toLong()).nextFloat()
         ,
     ): Int {
         if (defender.isCivilian()) return BattleConstants.DAMAGE_TO_CIVILIAN_UNIT

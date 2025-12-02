@@ -2,6 +2,7 @@ package com.unciv.models.ruleset.unique.expressions
 
 import yairm210.purity.annotations.Immutable
 import yairm210.purity.annotations.Pure
+import yairm210.purity.annotations.Readonly
 import kotlin.math.*
 
 internal sealed interface Operator : Tokenizer.Token {
@@ -82,7 +83,7 @@ internal sealed interface Operator : Tokenizer.Token {
     }
 
     companion object {
-        private fun allEntries(): Sequence<Operator> =
+        @Readonly private fun allEntries(): Sequence<Operator> =
             UnaryOperators.entries.asSequence() +
             BinaryOperators.entries +
             UnaryOrBinaryOperators.entries + // Will overwrite the previous entries in the map

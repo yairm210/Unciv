@@ -3,6 +3,7 @@ package com.unciv.models.ruleset.nation
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.logic.MultiFilter
+import com.unciv.models.ImmutableColor
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.unique.GameContext
@@ -19,6 +20,7 @@ import com.unciv.ui.objectdescriptions.BuildingDescriptions
 import com.unciv.ui.objectdescriptions.ImprovementDescriptions
 import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 import kotlin.math.pow
 
@@ -86,13 +88,13 @@ class Nation : RulesetObject() {
     override fun getUniqueTarget() = UniqueTarget.Nation
 
     @Transient
-    private var outerColorObject = Color.WHITE // Not lateinit for unit tests
-    fun getOuterColor(): Color = outerColorObject
+    private var outerColorObject:ImmutableColor = ImmutableColor(Color.WHITE) // Not lateinit for unit tests
+    fun getOuterColor(): ImmutableColor = outerColorObject
 
     @Transient
-    private var innerColorObject = Color.BLACK // Not lateinit for unit tests
+    private var innerColorObject: ImmutableColor = ImmutableColor(Color.BLACK) // Not lateinit for unit tests
 
-    fun getInnerColor(): Color = innerColorObject
+    fun getInnerColor(): ImmutableColor = innerColorObject
 
     val isCityState by lazy { cityStateType != null }
     val isMajorCiv by lazy { !isBarbarian && !isCityState && !isSpectator }
@@ -108,11 +110,11 @@ class Nation : RulesetObject() {
     var ignoreHillMovementCost = false
 
     fun setTransients() {
-        fun safeColorFromRGB(rgb: List<Int>) = if (rgb.size >= 3) colorFromRGB(rgb) else Color.PURPLE
+        fun safeColorFromRGB(rgb: List<Int>) = ImmutableColor(if (rgb.size >= 3) colorFromRGB(rgb) else Color.PURPLE)
 
         outerColorObject = safeColorFromRGB(outerColor)
 
-        innerColorObject = if (innerColor == null) ImageGetter.CHARCOAL
+        innerColorObject = if (innerColor == null) ImmutableColor(ImageGetter.CHARCOAL)
                            else safeColorFromRGB(innerColor!!)
 
         forestsAndJunglesAreRoads = uniqueMap.hasUnique(UniqueType.ForestsAndJunglesAreRoads)
@@ -167,6 +169,7 @@ class Nation : RulesetObject() {
         return textList
     }
 
+    @Readonly
     private fun getCityStateInfo(ruleset: Ruleset): List<FormattedLine> {
         val textList = ArrayList<FormattedLine>()
 
@@ -304,7 +307,9 @@ class Nation : RulesetObject() {
 
 
 /** All defined by https://www.w3.org/TR/WCAG20/#relativeluminancedef */
+@Pure
 fun getRelativeLuminance(color: Color): Double {
+    @Pure
     fun getRelativeChannelLuminance(channel: Float): Double =
             if (channel < 0.03928) channel / 12.92
             else ((channel + 0.055) / 1.055).pow(2.4)

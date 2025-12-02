@@ -7,17 +7,23 @@ import com.unciv.json.json
 import com.unciv.logic.UncivKtor
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.github.Github.repoNameToFolderName
-import com.unciv.logic.github.GithubAPI.parseUrl
 import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import io.ktor.utils.io.jvm.javaio.*
 import kotlinx.coroutines.delay
-import java.io.FileFilter
+import yairm210.purity.annotations.Pure
+import yairm210.purity.annotations.Readonly
 import java.util.zip.ZipException
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
+
+enum class DownloadAndExtractState {
+    Downloading,
+    Extracting
+}
 
 /**
  *  "Namespace" collects all Github API structural knowledge
@@ -86,9 +92,11 @@ object GithubAPI {
     // URL format see: https://docs.github.com/en/repositories/working-with-files/using-files/downloading-source-code-archives#source-code-archive-urls
     // Note: https://api.github.com/repos/owner/mod/zipball would be an alternative. Its response is a redirect, but our lib follows that and delivers the zip just fine.
     // Problems with the latter: Internal zip structure different, finalDestinationName would need a patch. Plus, normal URL escaping for owner/reponame does not work.
+    @Pure
     internal fun getUrlForBranchZip(gitRepoUrl: String, branch: String) = "$gitRepoUrl/archive/refs/heads/$branch.zip"
 
     /** Format a download URL for a release archive */
+    @Readonly
     private fun Repo.getUrlForReleaseZip() = "$html_url/archive/refs/tags/$release_tag.zip"
 
     /** Format a URL to query a repo tree - to calculate actual size */
@@ -118,7 +126,7 @@ object GithubAPI {
         paginatedRequest(page, amountPerPage) {
             url("/search/repositories")
             parameter("sort", "stars")
-            parameter("q", "$search${if (search.isEmpty()) "" else "+"} topic:unciv-mod fork:true")
+            parameter("q", "$search topic:unciv-mod fork:true")
         }
 
     suspend fun fetchGithubTopics() = request {
@@ -134,6 +142,9 @@ object GithubAPI {
 
     suspend fun fetchSingleRepo(owner: String, repoName: String) =
         request { url("/repos/$owner/$repoName") }
+
+    suspend fun fetchSingleRepoOwner(owner: String) =
+        request { url("/users/$owner") }
 
     /**
      * We are not using KtorGithubAPI here because the URL provided is not an API URL
@@ -209,6 +220,14 @@ object GithubAPI {
     class RepoOwner {
         var login = ""
         var avatar_url: String? = null
+        companion object {
+            /** Query Github API for [owner]'s metadata */
+            suspend fun query(owner: String): RepoOwner? {
+                val resp = fetchSingleRepoOwner(owner)
+                return if (!resp.status.isSuccess()) null
+                else json().fromJson(RepoOwner::class.java, resp.bodyAsText())
+            }
+        }
     }
 
     /** Topic search response */
@@ -286,7 +305,7 @@ object GithubAPI {
         if (matchZip != null && matchZip.groups.size > 4)
             return processMatch(matchZip)
 
-        val matchBranch = Regex("""^(.*/(.*)/(.*))/tree/(.*)$""").matchEntire(url)
+        val matchBranch = Regex("""^(.*/(.*)/(.*))/tree/(.+?)/?$""").matchEntire(url) // important non-greedy '+'
         if (matchBranch != null && matchBranch.groups.size > 4)
             return processMatch(matchBranch)
 
@@ -296,7 +315,7 @@ object GithubAPI {
         // TODO Query a specific release for its name attribute - the page will link the tag
         // https://docs.github.com/en/rest/releases/releases#get-a-release-by-tag-name
 
-        val matchTagArchive = Regex("""^(.*/(.*)/(.*))/archive/(?:.*/)?tags/([^.]+).zip$""").matchEntire(url)
+        val matchTagArchive = Regex("""^(.*/(.*)/(.*))/archive/(?:.*/)?tags/(.+).zip$""").matchEntire(url)
         if (matchTagArchive != null && matchTagArchive.groups.size > 4) {
             processMatch(matchTagArchive)
             release_tag = default_branch
@@ -305,7 +324,7 @@ object GithubAPI {
             direct_zip_url = url
             return this
         }
-        val matchTagPage = Regex("""^(.*/(.*)/(.*))/releases/(?:.*/)?tag/([^.]+)$""").matchEntire(url)
+        val matchTagPage = Regex("""^(.*/(.*)/(.*))/releases/(?:.*/)?tag/(.+?)/?$""").matchEntire(url) // important non-greedy '+'
         if (matchTagPage != null && matchTagPage.groups.size > 4) {
             processMatch(matchTagPage)
             release_tag = default_branch
@@ -313,7 +332,15 @@ object GithubAPI {
             return this
         }
 
-        val matchRepo = Regex("""^.*//.*/(.+)/(.+)/?$""").matchEntire(url)
+        val matchCommit = Regex("""^(.*/(.*)/(.*))/archive/([0-9a-z]{40})\.zip$""").matchEntire(url)
+        if (matchCommit != null && matchCommit.groups.size > 4) {
+            processMatch(matchCommit)
+            // the commit hash is now in the default_branch field - let's leave it at that
+            direct_zip_url = url
+            return this
+        }
+
+        val matchRepo = Regex("""^.*//.*/(.+)/(.+?)/?$""").matchEntire(url) // important non-greedy '+'
         if (matchRepo != null && matchRepo.groups.size > 2) {
             // Query API if we got the 'https://github.com/author/repoName' URL format to get the correct default branch
             val repo = Repo.query(matchRepo.groups[1]!!.value, matchRepo.groups[2]!!.value)
@@ -350,7 +377,7 @@ object GithubAPI {
     suspend fun Repo.downloadAndExtract(
         modsFolder: FileHandle,
         /** Should accept a number 0-100 */
-        updateProgressPercent: ((Int) -> Unit)? = null
+        updateProgressPercent: ((DownloadAndExtractState, Int?) -> Unit)? = null
     ): FileHandle? {
         var modNameFromFileName = name
 
@@ -369,47 +396,70 @@ object GithubAPI {
             tempName = "temp-" + toString().hashCode().toString(16)
         }
 
-        val resp = UncivKtor.client.get(zipUrl)
-        /**
-         * This block is borrowed from the deleted method `processRequestHandlingRedirects()`
-         * See: https://github.com/yairm210/Unciv/blob/1cb3f94d36009719b63f6d8e9d2e49c1bd594a8f/core/src/com/unciv/logic/github/Github.kt#L197-L216
-         */
-        when {
-            resp.status == HttpStatusCode.NotFound -> return null
-            (resp.status == HttpStatusCode.Forbidden) &&
-                resp.headers["CF-RAY"] != null && resp.headers["cf-mitigated"].orEmpty() == "challenge" ->
-                throw UncivShowableException("Blocked by Cloudflare")
-
-            (resp.status.value in 401..403) || resp.status == HttpStatusCode.ProxyAuthenticationRequired ->
-                throw UncivShowableException("Servers requiring authentication are not supported")
-
-            resp.status.value in 300..499 ->
-                throw UncivShowableException("Unexpected response: [${resp.bodyAsText()}]")
-
-            resp.status.value in 500..599 ->
-                throw UncivShowableException("Server failure: [${resp.bodyAsText()}}]")
-
-            !resp.status.isSuccess() ->
-                throw UncivShowableException("Unknown Issue!\nStatus: ${resp.status}\nBody:[${resp.bodyAsText()}}]")
+        // If the Content-Length header was missing, fall back to the reported repo size (which should be in kB)
+        // and assume low compression efficiency - bigger mods typically have mostly images.
+        val fallbackSize = size.toLong() * 1024L * 4L / 5L
+        @Pure
+        fun reportProgress(bytesReceivedTotal: Long, contentLength: Long?) {
+            val progressEndsAtSize = contentLength ?: fallbackSize
+            if (progressEndsAtSize <= 0L) return
+            val percent = bytesReceivedTotal * 100L / progressEndsAtSize
+            updateProgressPercent!!(DownloadAndExtractState.Downloading, percent.toInt().coerceIn(0, 100))
         }
 
-        val content = resp.bodyAsBytes()
-        if (content.isEmpty()) return null
+        val tempZipFileHandle = modsFolder.child("$tempName.zip")
+
+        // Thanks to: https://stackoverflow.com/a/74328603/10585461
+        val resp = UncivKtor.client.prepareRequest {
+            url(zipUrl)
+            timeout { requestTimeoutMillis = Long.MAX_VALUE }
+            if (updateProgressPercent != null) onDownload(::reportProgress)
+        }.execute { resp ->
+            /**
+             * This block is borrowed from the deleted method `processRequestHandlingRedirects()`
+             * See: https://github.com/yairm210/Unciv/blob/1cb3f94d36009719b63f6d8e9d2e49c1bd594a8f/core/src/com/unciv/logic/github/Github.kt#L197-L216
+             */
+            when {
+                resp.status == HttpStatusCode.NotFound -> return@execute resp
+
+                (resp.status == HttpStatusCode.Forbidden) &&
+                    resp.headers["CF-RAY"] != null && resp.headers["cf-mitigated"].orEmpty() == "challenge" ->
+                    throw UncivShowableException("Blocked by Cloudflare")
+
+                (resp.status.value in 401..403) || resp.status == HttpStatusCode.ProxyAuthenticationRequired ->
+                    throw UncivShowableException("Servers requiring authentication are not supported")
+
+                resp.status.value in 300..499 ->
+                    throw UncivShowableException("Unexpected response: [${resp.bodyAsText()}]")
+
+                resp.status.value in 500..599 ->
+                    throw UncivShowableException("Server failure: [${resp.bodyAsText()}}]")
+
+                !resp.status.isSuccess() ->
+                    throw UncivShowableException("Unknown Issue!\nStatus: ${resp.status}\nBody:[${resp.bodyAsText()}}]")
+            }
+
+            val stream = resp.bodyAsChannel().toInputStream()
+            tempZipFileHandle.write(stream, false)
+            return@execute resp
+        }
+
+        if (tempZipFileHandle.length() == 0L) {
+            tempZipFileHandle.delete()
+            return null
+        }
 
         val disposition = resp.headers[HttpHeaders.ContentDisposition]
         modNameFromFileName = parseNameFromDisposition(disposition, modNameFromFileName)
-
-        // Download to temporary zip
-        // If the Content-Length header was missing, fall back to the reported repo size (which should be in kB)
-        // and assume low compression efficiency - bigger mods typically have mostly images.
-        val tempZipFileHandle = modsFolder.child("$tempName.zip")
-        tempZipFileHandle.writeBytes(content, false)
 
         // prepare temp unpacking folder
         val unzipDestination = tempZipFileHandle.sibling(tempName) // folder, not file
         // prevent mixing new content with old - hopefully there will never be cadavers of our tempZip stuff
         if (unzipDestination.exists())
             if (unzipDestination.isDirectory) unzipDestination.deleteDirectory() else unzipDestination.delete()
+
+        if (updateProgressPercent !== null)
+            updateProgressPercent(DownloadAndExtractState.Extracting, null)
 
         try {
             Zip.extractFolder(tempZipFileHandle, unzipDestination)
@@ -453,7 +503,9 @@ object GithubAPI {
     private val parseAttachmentDispositionRegex =
         Regex("""attachment;\s*filename\s*=\s*(["'])?(.*?)\1(;|$)""")
 
+    @Pure
     private fun parseNameFromDisposition(disposition: String?, default: String): String {
+        @Pure
         fun String.removeZipExtension() = removeSuffix(".zip").replace('.', ' ')
         if (disposition == null) return default.removeZipExtension()
         val match = parseAttachmentDispositionRegex.matchAt(disposition, 0)
@@ -475,22 +527,30 @@ object GithubAPI {
         moveTo(dest)
     }
 
-    private val goodFolders =
-        listOf("Images", "jsons", "maps", "music", "sounds", "Images\\..*", "scenarios", ".github")
-            .map { Regex(it, RegexOption.IGNORE_CASE) }
-    private val goodFiles = listOf(
+    @Pure
+    private fun regexListOf(vararg pattern: String) =
+        pattern.map { Regex(it, RegexOption.IGNORE_CASE) }
+
+    private val goodFolders = regexListOf(
+        "Images",
+        "jsons",
+        "maps",
+        "music",
+        "scenarios",
+        "sounds",
+        "voices",
+        "Images\\..*",
+        "\\.github"
+    )
+    private val goodFiles = regexListOf(
         ".*\\.atlas",
         ".*\\.png",
         "preview.jpg",
         ".*\\.md",
         "Atlases.json",
-        ".nomedia",
-        "license",
-        "contribute.md",
-        "readme.md",
-        "credits.md"
+        "\\.nomedia",
+        "license"
     )
-        .map { Regex(it, RegexOption.IGNORE_CASE) }
 
     private fun isValidModFolder(dir: FileHandle): Boolean {
         var good = 0
@@ -512,14 +572,23 @@ object GithubAPI {
     ): Pair<FileHandle, String> {
         if (isValidModFolder(dir))
             return dir to defaultModName
-        val subdirs =
-            dir.list(FileFilter { it.isDirectory })  // See detekt/#6822 - a direct lambda-to-SAM with typed `it` fails detektAnalysis
+        val subdirs = dir.list { it.isDirectory }
         if (subdirs.size != 1 || !isValidModFolder(subdirs[0]))
             throw UncivShowableException("Invalid Mod archive structure")
         return subdirs[0] to choosePrettierName(subdirs[0].name(), defaultModName)
     }
 
+    @Pure
     private fun choosePrettierName(folderName: String, defaultModName: String): String {
+        // kotlin's isHexLetter and isAsciiDigit are private
+        @Pure
+        fun Char.isHex() = ((this - '0') and 0xFFFF) < 10 || ((this - 'A') and 0xFFDF) < 6
+        // Special case for specific commit (getting an older point-in-time version of a mod) zips
+        if (defaultModName.all { it.isHex() } && folderName.endsWith(defaultModName)) {
+            return folderName.removeSuffix(defaultModName).removeSuffix("-")
+        }
+
+        @Pure
         fun String.isMixedCase() = this != lowercase() && this != uppercase()
         if (defaultModName.startsWith(
                 folderName,

@@ -1,6 +1,5 @@
 package com.unciv.testing
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
@@ -8,6 +7,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.city.managers.CityFounder
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
@@ -15,16 +15,7 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Religion
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSettings
-import com.unciv.models.ruleset.Belief
-import com.unciv.models.ruleset.BeliefType
-import com.unciv.models.ruleset.Building
-import com.unciv.models.ruleset.IRulesetObject
-import com.unciv.models.ruleset.Policy
-import com.unciv.models.ruleset.PolicyBranch
-import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.ruleset.Specialist
-import com.unciv.models.ruleset.Speed
+import com.unciv.models.ruleset.*
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
@@ -32,12 +23,14 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitType
+import com.unciv.ui.images.ImageGetter
 
 /**
  *  A testing game using a fresh clone of the Civ_V_GnK ruleset so it can be modded in-place
  *  @param addGlobalUniques optional global uniques to add to the ruleset
+ *  @param forUITesting default initializes UncivGame.Current and its settings, `true` initializes ImageGetter ruleset instead. Needed for FasterUIDevelopment.
  */
-class TestGame(vararg addGlobalUniques: String) {
+class TestGame(vararg addGlobalUniques: String, forUITesting: Boolean = false) {
 
     private var objectsCreated = 0
     val ruleset: Ruleset
@@ -47,10 +40,17 @@ class TestGame(vararg addGlobalUniques: String) {
         get() = gameInfo.tileMap
 
     init {
-        // Set UncivGame.Current so that debug variables are initialized
-        UncivGame.Current = UncivGame()
-        // And the settings can be reached for the locale used in .tr()
-        UncivGame.Current.settings = GameSettings()
+        if (!forUITesting) {
+            // Set UncivGame.Current so that debug variables are initialized
+            UncivGame.Current = UncivGame()
+            // And the settings can be reached for the locale used in .tr()
+            UncivGame.Current.settings = GameSettings().apply {
+                musicVolume = 0f
+                soundEffectsVolume = 0f
+                citySoundsVolume = 0f
+                voicesVolume = 0f
+            }
+        }
         UncivGame.Current.gameInfo = gameInfo
 
         // Create a new ruleset we can easily edit, and set the important variables of gameInfo
@@ -58,6 +58,8 @@ class TestGame(vararg addGlobalUniques: String) {
             RulesetCache.loadRulesets(noMods = true)
         ruleset = RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!.clone()
         ruleset.addGlobalUniques(*addGlobalUniques)
+        if (forUITesting)
+            ImageGetter.ruleset = ruleset
 
         gameInfo.ruleset = ruleset
         gameInfo.difficulty = "Prince"
@@ -116,23 +118,23 @@ class TestGame(vararg addGlobalUniques: String) {
         tileMap.gameInfo = gameInfo
     }
 
-    fun getTile(position: Vector2) = tileMap[position]
+    fun getTile(position: HexCoord) = tileMap[position]
     fun getTile(x: Int, y: Int) = tileMap[x, y]
 
     /** Sets the [terrain] and [features] of the tile at [position], and then returns it */
-    fun setTileTerrainAndFeatures(position: Vector2, terrain: String, vararg features: String): Tile {
+    fun setTileTerrainAndFeatures(position: HexCoord, terrain: String, vararg features: String): Tile {
         setTileTerrain(position, terrain)
         return setTileFeatures(position, *features)
     }
 
-    fun setTileTerrain(position: Vector2, terrain: String): Tile {
+    fun setTileTerrain(position: HexCoord, terrain: String): Tile {
         val tile = tileMap[position]
         tile.baseTerrain = terrain
         tile.setTerrainTransients()
         return tile
     }
 
-    fun setTileFeatures(position: Vector2, vararg features: String): Tile {
+    fun setTileFeatures(position: HexCoord, vararg features: String): Tile {
         val tile = tileMap[position]
         tile.setTerrainFeatures(listOf())
         for (feature in features) {
@@ -147,8 +149,12 @@ class TestGame(vararg addGlobalUniques: String) {
             cities = arrayListOf("The Capital")
             this.cityStateType = cityStateType
         }
-        val nation = createRulesetObject(ruleset.nations, *uniques, factory = ::nationFactory)
 
+        val nation = createRulesetObject(ruleset.nations, *uniques, factory = ::nationFactory)
+        return addCiv(nation, isPlayer, cityStateType)
+    }
+
+    fun addCiv(nation: Nation, isPlayer: Boolean = false, cityStateType: String? = nation.cityStateType): Civilization {
         val civInfo = Civilization()
         civInfo.nation = nation
         civInfo.gameInfo = gameInfo
@@ -218,7 +224,7 @@ class TestGame(vararg addGlobalUniques: String) {
     }
 
     fun addReligion(foundingCiv: Civilization): Religion {
-        val religion = Religion("Religion-${objectsCreated++}", gameInfo, foundingCiv.civName)
+        val religion = Religion("Religion-${objectsCreated++}", gameInfo, foundingCiv)
         foundingCiv.religionManager.religion = religion
         gameInfo.religions[religion.name] = religion
         return religion

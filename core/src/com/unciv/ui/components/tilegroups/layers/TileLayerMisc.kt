@@ -10,6 +10,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.toHexCoord
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.MapArrowType
@@ -256,11 +257,11 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
 
         for (arrowToAdd in arrowsToDraw) {
             val targetTile = arrowToAdd.targetTile
-            var targetPos = Vector2(targetTile.position)
+            var targetPos = Vector2(targetTile.position.toVector2())
             if (tile.tileMap.mapParameters.worldWrap)
-                targetPos = HexMath.getUnwrappedNearestTo(targetPos,
+                targetPos = HexMath.getUnwrappedNearestTo(targetPos.toHexCoord(),
                     tile.position, tile.tileMap.maxLongitude)
-            val targetRelative = HexMath.hex2WorldCoords(targetPos)
+            val targetRelative = HexMath.hex2WorldCoords(targetPos.toHexCoord())
                 .sub(HexMath.hex2WorldCoords(tile.position))
 
             val targetDistance = sqrt(targetRelative.x.pow(2) + targetRelative.y.pow(2))
@@ -300,7 +301,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
             return
 
         if (DebugUtils.SHOW_TILE_COORDS) {
-            val label = this.tile.position.toPrettyString()
+            val label = this.tile.position.toVector2().toPrettyString()
             startingLocationIcons.add(label.toLabel(ImageGetter.CHARCOAL.cpy().apply { a = 0.7f }, 14).apply {
                 tileGroup.layerMisc.addActor(this)
                 setOrigin(Align.center)

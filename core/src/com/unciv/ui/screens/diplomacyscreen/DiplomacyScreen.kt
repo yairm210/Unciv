@@ -332,10 +332,10 @@ class DiplomacyScreen(
         messageLines += "Declare war on [${otherCiv.civName}]?"
         // Tell the player who all will join the other side from defensive pacts
         val otherCivDefensivePactList = otherCiv.diplomacy.values.filter {
-            otherCivDiploManager -> otherCivDiploManager.otherCiv() != viewingCiv
+            otherCivDiploManager -> otherCivDiploManager.otherCiv != viewingCiv
             && otherCivDiploManager.diplomaticStatus == DiplomaticStatus.DefensivePact
-            && !otherCivDiploManager.otherCiv().isAtWarWith(viewingCiv) }
-            .map { it.otherCiv() }
+            && !otherCivDiploManager.otherCiv.isAtWarWith(viewingCiv) }
+            .map { it.otherCiv }
 
         // Defensive pact chains are not allowed now
         for (civ in otherCivDefensivePactList) {
@@ -348,9 +348,9 @@ class DiplomacyScreen(
 
         // Tell the player that their defensive pacts will be canceled.
         for (civDiploManager in viewingCiv.diplomacy.values) {
-            if (civDiploManager.otherCiv() != otherCiv
+            if (civDiploManager.otherCiv != otherCiv
                 && civDiploManager.diplomaticStatus == DiplomaticStatus.DefensivePact
-                && !otherCivDefensivePactList.contains(civDiploManager.otherCiv())) {
+                && !otherCivDefensivePactList.contains(civDiploManager.otherCiv)) {
                 messageLines += "This will cancel your defensive pact with [${civDiploManager.otherCivName}]"
             }
         }
@@ -385,7 +385,7 @@ class DiplomacyScreen(
         val goToOnMapButton = "Go to on map".toTextButton()
         goToOnMapButton.onClick {
             val worldScreen = UncivGame.Current.resetToWorldScreen()
-            worldScreen.mapHolder.setCenterPosition(civilization.getCapital()!!.location, selectUnit = false)
+            worldScreen.mapHolder.setCenterPosition(civilization.getCapital()!!.location.toHexCoord(), selectUnit = false)
         }
         return goToOnMapButton
     }

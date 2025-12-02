@@ -222,8 +222,10 @@ object TechnologyDescriptions {
         if (regularBuildings.isNotEmpty()) {
             lineList += FormattedLine()
             lineList += FormattedLine("{Buildings enabled}:")
-            for (building in regularBuildings)
-                lineList += FormattedLine(building.name.tr(true) + " (" + building.getShortDescription(uniqueInclusionFilter=technology::uniqueIsNotRequirementForThisTech) + ")", link = building.makeLink())
+            for (building in regularBuildings) {
+                val text = building.name.tr(true) + " (" + building.getShortDescription(uniqueInclusionFilter = technology::uniqueIsNotRequirementForThisTech) + ")"
+                lineList += FormattedLine(text, padding = 15f, link = building.makeLink())
+            }
         }
 
         val obsoletedObjects = getObsoletedObjects(name, ruleset, null).toList()

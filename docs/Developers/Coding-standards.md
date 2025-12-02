@@ -4,6 +4,14 @@ As an open-source project, there will be a lot of eyes on our code.
 
 The main purpose of having a coding standard is for the code to be as immediately readable as possible to as many potential contributors, and hence most of it focuses on defaulting to coding structures that exist in other similar languages (Java, C#) when possible.
 
+## Remove trailing space before commit (non-Translation)
+
+Trailing spaces are indent characters represented as `..` at the start of line. Android Studio always defaults to create similar indents as previous lines. Thus on attempts to create a blank line (in a code block), it produces trailing space character. Unchecking `Remove trailing spaces on [..]` is necessary for translation part of project but these characters creates annoying code merges.
+
+Settings > Editor > General > Appearence > Check `Show whitespaces` and remove the `..` characters.
+![image](../assets/show_whitespace.png)
+![gif](../assets/trailing_space.gif)
+
 ## Don't use `.let{}` and `?:`
 
 Kotlin is made greater for being strict with nullability. Don't let this fact confuse people new to it. These can be simply replaced by `if(x!=null)` which is much more readable. They all probably compile to the same bytecode anyway, so when in doubt - readability.

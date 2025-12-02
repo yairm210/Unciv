@@ -82,7 +82,8 @@ object SpecificUnitAutomation {
 
         // It's possible that we'll see a tile "over the sea" that's better than the tiles close by, but that's not a reason to abandon the close tiles!
         // Also this lead to some routing problems, see https://github.com/yairm210/Unciv/issues/3653
-        val bestTilesInfo = CityLocationTileRanker.getBestTilesToFoundCity(unit, rangeToSearch, 10f)
+        val minimumTileValue = unit.civ.gameInfo.ruleset.modOptions.constants.minimumCityLocationTileValue // To prevent AI from settling snow regions, could use a better implementation
+        val bestTilesInfo = CityLocationTileRanker.getBestTilesToFoundCity(unit, rangeToSearch, minimumTileValue)
         var bestCityLocation: Tile? = null
 
         if (unit.civ.gameInfo.turns == 0 && unit.civ.cities.isEmpty() && bestTilesInfo.tileRankMap.containsKey(unit.getTile())) {   // Special case, we want AI to settle in place on turn 1.
@@ -146,7 +147,7 @@ object SpecificUnitAutomation {
             @Readonly
             fun getFrontierScore(city: City) = city.getCenterTile()
                 .getTilesAtDistance(city.civ.gameInfo.ruleset.modOptions.constants.minimalCityDistance + 1)
-                .count { it.canBeSettled() && (it.getOwner() == null || it.getOwner() == city.civ ) }
+                .count { it.canBeSettled(unit.civ) }
 
             val frontierCity = unit.civ.cities.maxByOrNull { getFrontierScore(it) }
             if (frontierCity != null && getFrontierScore(frontierCity) > 0  && unit.movement.canReach(frontierCity.getCenterTile()))

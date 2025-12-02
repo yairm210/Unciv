@@ -19,6 +19,8 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.runBlocking
+import yairm210.purity.annotations.Pure
+import yairm210.purity.annotations.Readonly
 import java.io.InputStream
 import java.nio.ByteBuffer
 
@@ -200,7 +202,7 @@ object Github {
          *  - Do it here so it works for `LoadOrSaveScreen.loadMissingMods` too
          */
         if (!modFolder.child("preview.jpg").exists() && !modFolder.child("preview.png").exists())
-            trySaveAvatarAsPreview(modFolder, repo.owner.avatar_url)
+            trySaveAvatarAsPreview(modFolder, repo)
 
         val modOptionsFile = modFolder.child("jsons/ModOptions.json")
         val modOptions = if (modOptionsFile.exists()) json().fromJsonFile(ModOptions::class.java, modOptionsFile) else ModOptions()
@@ -232,6 +234,7 @@ object Github {
      *  As "test-" and "test" are different allowed repository names, trimmed blanks are replaced with one equals sign per side.
      *  @param onlyOuterBlanks If `true` ignores inner dashes - only start and end are treated. Useful when modders have manually created local folder names using dashes.
      */
+    @Pure
     fun String.repoNameToFolderName(onlyOuterBlanks: Boolean = false): String {
         var result = if (onlyOuterBlanks) this else replace('-', ' ')
         if (result.endsWith(' ')) result = result.trimEnd() + outerBlankReplacement
@@ -241,6 +244,7 @@ object Github {
 
     /** Inverse of [repoNameToFolderName] */
     // As of this writing, only used for loadMissingMods
+    @Pure
     fun String.folderNameToRepoName(): String {
         var result = replace(' ', '-')
         if (result.endsWith(outerBlankReplacement)) result = result.trimEnd(outerBlankReplacement) + '-'
@@ -248,8 +252,21 @@ object Github {
         return result
     }
 
-    private fun trySaveAvatarAsPreview(modFolder: FileHandle, avatarUrl: String?) {
-        if (avatarUrl == null) return
+    /** Get owner.avatar_url from [repo], replacing it with a predictable redirecting endpoint if needed.
+     *  We get repo instances with owner.login known but no avatar_url e.g. when using the
+     *  download directly from url feature for some url formats.
+     */
+    @Readonly
+    private fun tryGetMissingAvatar(repo: GithubAPI.Repo): String? {
+        if (!repo.owner.avatar_url.isNullOrEmpty()) return repo.owner.avatar_url!!
+        if (repo.owner.login.isEmpty()) return null
+        // According to https://github.com/orgs/community/discussions/147297
+        return "https://github.com/${repo.owner.login}.png"
+        // This worked too: GithubAPI.RepoOwner.query(repo.owner.login)?.avatar_url
+    }
+
+    private fun trySaveAvatarAsPreview(modFolder: FileHandle, repo: GithubAPI.Repo) {
+        val avatarUrl = tryGetMissingAvatar(repo) ?: return
         Concurrency.run("Save avatar") {
             val response = UncivKtor.getOrNull(avatarUrl) ?: return@run
             if (!response.status.isSuccess()) return@run

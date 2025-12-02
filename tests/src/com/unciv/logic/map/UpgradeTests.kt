@@ -2,7 +2,6 @@
 
 package com.unciv.logic.map
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.models.UpgradeUnitAction
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
@@ -31,10 +30,10 @@ class UpgradeTests {
         testUnit.upgradesTo = "Warrior"
 
         val civ = testGame.addCiv()
-        var unit1 = testGame.addUnit(testUnit.name, civ, testGame.getTile(Vector2.Zero))
+        var unit1 = testGame.addUnit(testUnit.name, civ, testGame.getTile(HexCoord.Zero))
         val triggerUnique = Unique("[This Unit] upgrades for free including special upgrades")
         UniqueTriggerActivation.triggerUnique(triggerUnique, unit1)
-        unit1 = testGame.getTile(Vector2.Zero).getFirstUnit()!!
+        unit1 = testGame.getTile(HexCoord.Zero).getFirstUnit()!!
 
         Assert.assertTrue("Unit should upgrade to special unit, not warrior", unit1.baseUnit == unitToUpgradeTo)
     }
@@ -46,10 +45,10 @@ class UpgradeTests {
         testUnit.upgradesTo = "Warrior"
 
         val civ = testGame.addCiv()
-        var unit1 = testGame.addUnit(testUnit.name, civ, testGame.getTile(Vector2.Zero))
+        var unit1 = testGame.addUnit(testUnit.name, civ, testGame.getTile(HexCoord.Zero))
         val triggerUnique = Unique("[This Unit] upgrades for free including special upgrades")
         UniqueTriggerActivation.triggerUnique(triggerUnique, unit1)
-        unit1 = testGame.getTile(Vector2.Zero).getFirstUnit()!!
+        unit1 = testGame.getTile(HexCoord.Zero).getFirstUnit()!!
 
         Assert.assertTrue("Unit should upgrade to Warrior without unique", unit1.baseUnit.name == "Warrior")
     }
@@ -61,7 +60,7 @@ class UpgradeTests {
         testUnit.upgradesTo = "Warrior"
 
         val civ = testGame.addCiv()
-        var unit1 = testGame.addUnit(testUnit.name, civ, testGame.getTile(Vector2.Zero))
+        var unit1 = testGame.addUnit(testUnit.name, civ, testGame.getTile(HexCoord.Zero))
         val upgradeActions = UnitActionsUpgrade.getFreeUpgradeAction(unit1)
 
         Assert.assertTrue(upgradeActions.count() == 1)
@@ -70,7 +69,7 @@ class UpgradeTests {
 
         val triggerUnique = Unique("[This Unit] upgrades for free")
         UniqueTriggerActivation.triggerUnique(triggerUnique, unit1)
-        unit1 = testGame.getTile(Vector2.Zero).getFirstUnit()!!
+        unit1 = testGame.getTile(HexCoord.Zero).getFirstUnit()!!
 
         Assert.assertTrue(unit1.baseUnit.name == "Warrior")
     }
@@ -84,14 +83,14 @@ class UpgradeTests {
         ))
 
         val civ = testGame.addCiv()
-        var unit1 = testGame.addUnit(testUnit.name, civ, testGame.getTile(Vector2.Zero))
+        var unit1 = testGame.addUnit(testUnit.name, civ, testGame.getTile(HexCoord.Zero))
         val upgradeActions = UnitActionsUpgrade.getFreeUpgradeAction(unit1)
 
         Assert.assertTrue(upgradeActions.count() == 2)
 
         val triggerUnique = Unique("[This Unit] upgrades for free")
         UniqueTriggerActivation.triggerUnique(triggerUnique, unit1)
-        unit1 = testGame.getTile(Vector2.Zero).getFirstUnit()!!
+        unit1 = testGame.getTile(HexCoord.Zero).getFirstUnit()!!
 
         Assert.assertFalse(unit1.baseUnit == testUnit)
     }
@@ -103,9 +102,9 @@ class UpgradeTests {
         testUnit.upgradesTo = unitToUpgradeTo.name
 
         val civ = testGame.addCiv()
-        testGame.addCity(civ, testGame.getTile(Vector2.Zero)) // We need to own the tile to be able to upgrade here
+        testGame.addCity(civ, testGame.getTile(HexCoord.Zero)) // We need to own the tile to be able to upgrade here
 
-        val unit1 = testGame.addUnit(testUnit.name, civ, testGame.getTile(Vector2.Zero))
+        val unit1 = testGame.addUnit(testUnit.name, civ, testGame.getTile(HexCoord.Zero))
         var upgradeActions = UnitActionsUpgrade.getUpgradeActionAnywhere(unit1)
 
         Assert.assertTrue("We should need gold to upgrade here", upgradeActions.all { it.action == null })

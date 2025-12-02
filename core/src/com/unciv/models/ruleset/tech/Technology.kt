@@ -38,25 +38,26 @@ class Technology: RulesetObject() {
 
     override fun era(ruleset: Ruleset) = ruleset.eras[era()]
 
+    /** Implements [UniqueParameterType.TechFilter][com.unciv.models.ruleset.unique.UniqueParameterType.TechFilter] */
     @Readonly
     fun matchesFilter(filter: String, state: GameContext? = null, multiFilter: Boolean = true): Boolean {
         return if (multiFilter) MultiFilter.multiFilter(filter, {
-            matchesSingleFilter(filter) ||
+            matchesSingleFilter(filter, state) ||
                 state != null && hasTagUnique(filter, state) ||
                 state == null && hasTagUnique(filter)
         })
-        else matchesSingleFilter(filter) ||
+        else matchesSingleFilter(filter, state) ||
             state != null && hasTagUnique(filter, state) ||
             state == null && hasTagUnique(filter)
     }
 
     @Readonly
-    fun matchesSingleFilter(filter: String): Boolean {
+    fun matchesSingleFilter(filter: String, state: GameContext? = null): Boolean {
         return when (filter) {
             in Constants.all -> true
             name -> true
             era() -> true
-            else -> false
+            else -> state?.gameInfo?.ruleset?.eras?.get(era())?.matchesFilter(filter, state, false) == true
         }
     }
 

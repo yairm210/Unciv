@@ -29,7 +29,7 @@ Each unit has the following structure:
 | promotions                | List of Strings | empty    | A list of all the promotions the unit automatically receives upon being built. Each promotion must be in [UnitPromotions.json](#unitpromotionsjson) |
 | uniques                   | List of Strings | empty    | List of [unique abilities](../uniques.md) this unit has                                                                                             |
 | replacementTextForUniques | String          | none     | If provided, this will be displayed instead of the list of uniques. Can be used for better formatting.                                              |
-| attackSound               | String          | none     | The sound that is to be played when this unit attacks. For possible values, see [Sounds](../../Images-and-Audio.md#sounds)                          |
+| attackSound               | String          | none     | The sound that will be played when the unit attacks, and if there isn't already a sound named by the unit's name. For possible values, see [Sounds](../../Images-and-Audio.md#sounds) |
 | civilopediaText           | List            | empty    | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text)                                                                       |
 
 ## UnitPromotions.json
@@ -72,3 +72,18 @@ Each unit type has the following structure:
 | movementType | Enum           | Required | The domain through which the unit moves. Allowed values: "Water", "Land", "Air"          |
 | uniques      | List of String | none     | List of [unique abilities](../uniques.md) this promotion grants to units of this type |
 | civilopediaText | List        | empty    | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text)            |
+
+## UnitNameGroups.json
+
+[Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20%26%20Kings/UnitNameGroups.json)
+
+Provides a list of names that can be applied to units. Once a name it taken, it will not be applied again.
+
+Each Unit Name Group has the following structure:
+
+| Attribute       | Type           | Default  | Notes |
+|-----------------|----------------|----------|-------|
+| name            | String         | Required | A unique name for the unit name group (example: Scientist) |
+| names           | List of String | Required | A list of names that can be applied to the group (example: Alan Turing) |
+| uniques         | List of String | none     | List of [triggerable uniques](../uniques.md#triggerable-uniques) that are applied to the unit on creation |
+| civilopediaText | List           | empty    | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |

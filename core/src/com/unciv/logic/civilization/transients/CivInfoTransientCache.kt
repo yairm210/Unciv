@@ -1,6 +1,5 @@
 package com.unciv.logic.civilization.transients
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
@@ -11,6 +10,7 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.Proximity
 import com.unciv.logic.civilization.transients.CapitalConnectionsFinder.CapitalConnectionMedium
 import com.unciv.logic.civilization.transients.CapitalConnectionsFinder.CapitalConnectionMedium.Companion.bestRoadStatus
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
@@ -100,7 +100,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
     }
 
     // This is a big performance
-    fun updateViewableTiles(explorerPosition: Vector2? = null) {
+    fun updateViewableTiles(explorerPosition: HexCoord? = null) {
         setNewViewableTiles()
 
         updateViewableInvisibleTiles()
@@ -203,7 +203,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         newViewableTiles.addAll(civInfo.units.getCivUnits().flatMap { unit -> unit.viewableTiles.asSequence().filter { it.getOwner() != civInfo } })
 
         for (otherCiv in civInfo.getKnownCivs()) {
-            if (otherCiv.getAllyCivName() == civInfo.civName || otherCiv.civName == civInfo.getAllyCivName()) {
+            if (otherCiv.allyCiv == civInfo || otherCiv == civInfo.allyCiv) {
                 newViewableTiles.addAll(otherCiv.cities.asSequence().flatMap { it.getTiles() })
             }
         }
@@ -340,7 +340,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
             var resourceBonusPercentage = 1f
             for (unique in civInfo.getMatchingUniques(UniqueType.CityStateResources))
                 resourceBonusPercentage += unique.params[0].toFloat() / 100
-            for (cityStateAlly in civInfo.getKnownCivs().filter { it.getAllyCivName() == civInfo.civName }) {
+            for (cityStateAlly in civInfo.getKnownCivs().filter { it.allyCiv == civInfo }) {
                 for (resourceSupply in cityStateAlly.cityStateFunctions.getCityStateResourcesForAlly()) {
                     if (resourceSupply.resource.hasUnique(UniqueType.CannotBeTraded, cityStateAlly.state)) continue
                     val newAmount = (resourceSupply.amount * resourceBonusPercentage).toInt()

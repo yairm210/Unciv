@@ -230,6 +230,8 @@ enum class UniqueType(
 
     /// Barbarian Encampments, Pillaging them & Converting Units
     NotifiedOfBarbarianEncampments("Notified of new Barbarian encampments", UniqueTarget.Global),
+    GoldFromEncampmentsAndCities("Receive [relativeAmount]% Gold from Barbarian encampments and pillaging Cities", UniqueTarget.Global),
+    @Deprecated("As of 4.18.15", ReplaceWith("Receive [+200]% Gold from Barbarian encampments and pillaging Cities"), DeprecationLevel.WARNING)
     TripleGoldFromEncampmentsAndCities("Receive triple Gold from Barbarian encampments and pillaging Cities", UniqueTarget.Global),
     GainFromEncampment("When conquering an encampment, earn [amount] Gold and recruit a Barbarian unit", UniqueTarget.Global),
     GainFromDefeatingUnit("When defeating a [mapUnitFilter] unit, earn [amount] Gold and recruit it", UniqueTarget.Global),
@@ -343,6 +345,8 @@ enum class UniqueType(
 
     DestroyedWhenCityCaptured("Destroyed when the city is captured", UniqueTarget.Building),
     NotDestroyedWhenCityCaptured("Never destroyed when the city is captured", UniqueTarget.Building),
+    GoldFromCapturingCity("[relativeAmount]% Gold given to enemy if city is captured", UniqueTarget.Building),
+    @Deprecated("As of 4.18.15", ReplaceWith("[+100]% Gold given to enemy if city is captured"), DeprecationLevel.WARNING)
     DoublesGoldFromCapturingCity("Doubles Gold given to enemy if city is captured", UniqueTarget.Building),
 
 
@@ -391,6 +395,7 @@ enum class UniqueType(
 
     // Strength bonuses
     Strength("[relativeAmount]% Strength", UniqueTarget.Unit, UniqueTarget.Global),
+    StrengthAmount("[relativeAmount] Strength", UniqueTarget.Unit, UniqueTarget.Global),
     StrengthNearCapital("[relativeAmount]% Strength decreasing with distance from the capital", UniqueTarget.Unit, UniqueTarget.Global),
     FlankAttackBonus("[relativeAmount]% to Flank Attack bonuses", UniqueTarget.Unit, UniqueTarget.Global),
     StrengthForAdjacentEnemies("[relativeAmount]% Strength for enemy [mapUnitFilter] units in adjacent [tileFilter] tiles", UniqueTarget.Unit),
@@ -433,7 +438,7 @@ enum class UniqueType(
     CannotPillage("Unable to pillage tiles", UniqueTarget.Unit, UniqueTarget.Global),
     
     // allow any unit to destory cities instead of capturing them, also allows non melee units to destroy cities
-    CanDestroyCities("Destroys [cityFilter] cities instead of capturing", UniqueTarget.Unit, UniqueTarget.Global,
+    CanDestroyCities("Destroys [cityFilter] cities instead of capturing", UniqueTarget.Unit,
         docDescription = "The unit will destroy [cityFilter] cities instead of capturing them, also allows non-melee units to destroy cities." + "Capital cities (including city states) are immune to this effect."),
 
     // Movement
@@ -687,6 +692,7 @@ enum class UniqueType(
     ConditionalSpeed("on [speed] game speed", UniqueTarget.Conditional),
     ConditionalDifficulty("on [difficulty] difficulty", UniqueTarget.Conditional),
     ConditionalDifficultyOrHigher("on [difficulty] difficulty or higher", UniqueTarget.Conditional),
+    ConditionalDifficultyOrLower("on [difficulty] difficulty or lower", UniqueTarget.Conditional),
     ConditionalVictoryEnabled("when [victoryType] Victory is enabled", UniqueTarget.Conditional),
     ConditionalVictoryDisabled("when [victoryType] Victory is disabled", UniqueTarget.Conditional),
     ConditionalReligionEnabled("when religion is enabled", UniqueTarget.Conditional),
@@ -694,6 +700,7 @@ enum class UniqueType(
     ConditionalEspionageEnabled("when espionage is enabled", UniqueTarget.Conditional),
     ConditionalEspionageDisabled("when espionage is disabled", UniqueTarget.Conditional),
     ConditionalNuclearWeaponsEnabled("when nuclear weapons are enabled", UniqueTarget.Conditional),
+    ConditionalNuclearWeaponsDisabled("when nuclear weapons are disabled", UniqueTarget.Conditional),
 
     /////// general conditionals
     ConditionalChance("with [nonNegativeAmount]% chance", UniqueTarget.Conditional),
@@ -837,7 +844,7 @@ enum class UniqueType(
     OneTimeRemovePolicyRefund("Remove [policy] and refund [amount]% of its cost", UniqueTarget.Triggerable),
     OneTimeFreeTech("Free Technology", UniqueTarget.Triggerable),  // used in Buildings
     OneTimeAmountFreeTechs("[positiveAmount] Free Technologies", UniqueTarget.Triggerable),  // used in Policy
-    OneTimeFreeTechRuins("[positiveAmount] free random researchable Tech(s) from the [era]", UniqueTarget.Triggerable),
+    OneTimeFreeTechRuins("[positiveAmount] free random researchable Tech(s) from the [eraFilter]", UniqueTarget.Triggerable),
     OneTimeRevealEntireMap("Reveals the entire map", UniqueTarget.Triggerable),  // used in tech
     OneTimeFreeBelief("Gain a free [beliefType] belief", UniqueTarget.Triggerable),
     OneTimeTriggerVoting("Triggers voting for the Diplomatic Victory", UniqueTarget.Triggerable),  // used in Building
@@ -905,6 +912,7 @@ enum class UniqueType(
                 "Turns left on the status decrease at the *start of turn*, so bonuses applied for 1 turn are stll applied during other civ's turns."),
     OneTimeUnitLoseStatus("[unitTriggerTarget] loses the [promotion] status", UniqueTarget.UnitTriggerable),
     OneTimeUnitDestroyed("[unitTriggerTarget] is destroyed", UniqueTarget.UnitTriggerable),
+    OneTimeUnitGetsName("[unitTriggerTarget] gets a name from the [unitNameGroup] group", UniqueTarget.UnitTriggerable),
     //endregion
 
 

@@ -32,8 +32,8 @@ object LuxuryResourcePlacementLogic {
                 (it.hasUnique(UniqueType.ResourceWeighting) || it.hasUnique(UniqueType.LuxuryWeightingForCityStates)) }
 
         val maxRegionsWithLuxury = when {
-            regions.size > 12 -> 3
-            regions.size > 8 -> 2
+            regions.size > 14 -> 3
+            regions.size > 10 -> 2
             else -> 1
         }
         
@@ -70,7 +70,7 @@ object LuxuryResourcePlacementLogic {
 
 
         val cityStateLuxuries = assignCityStateLuxuries(
-            3, // was probably intended to be "if (tileData.size > 5000) 4 else 3",
+            4, // was probably intended to be "if (tileData.size > 5000) 4 else 3",
             assignableLuxuries,
             amountRegionsWithLuxury,
             fallbackWeightings

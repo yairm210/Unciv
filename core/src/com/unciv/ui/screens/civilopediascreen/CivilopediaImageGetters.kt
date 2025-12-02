@@ -8,7 +8,6 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unit.UnitMovementType
-import com.unciv.models.stats.Stat
 import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.tilegroups.TileGroup
@@ -87,6 +86,12 @@ internal object CivilopediaImageGetters {
     }
     val promotion = { name: String, size: Float ->
         ImageGetter.getPromotionPortrait(name, size)
+    }
+    val unitNameGroup = { name: String, size: Float ->
+        // Use the first applicable unit's portrait
+        val unit = ImageGetter.ruleset.unitNameGroups[name]?.getUnits(ImageGetter.ruleset)?.firstOrNull()
+        if (unit != null) ImageGetter.getConstructionPortrait(unit.name, size)
+        else ImageGetter.getImage("OtherIcons/UnitNameGroups").apply { setSize(size) }
     }
     val terrain = { name: String, size: Float ->
         val terrain = ImageGetter.ruleset.terrains[name]

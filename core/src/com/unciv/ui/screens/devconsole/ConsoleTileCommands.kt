@@ -125,7 +125,7 @@ internal class ConsoleTileCommands: ConsoleCommandNode {
             if (locations.isEmpty()) DevConsoleResponse.hint("None found")
             else {
                 val notification = Notification("tile find ${filter.toStringAsPlaceholder()}: ${locations.size} matches", arrayOf(NotificationIcon.Spy),
-                    LocationAction(locations).asIterable(), NotificationCategory.General)
+                    locations.map { LocationAction(it) }, NotificationCategory.General)
                 console.screen.notificationsScroll.oneTimeNotification = notification
                 notification.execute(console.screen)
                 DevConsoleResponse.OK

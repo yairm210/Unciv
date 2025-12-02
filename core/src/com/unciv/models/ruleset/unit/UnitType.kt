@@ -4,6 +4,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.ui.objectdescriptions.BaseUnitDescriptions.getUnitTypeCivilopediaTextLines
+import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 
 
@@ -26,9 +27,9 @@ class UnitType() : RulesetObject() {
 
     @Readonly fun getMovementType() = unitMovementType
 
-    @Readonly fun isLandUnit() = unitMovementType == UnitMovementType.Land
-    @Readonly fun isWaterUnit() = unitMovementType == UnitMovementType.Water
-    @Readonly fun isAirUnit() = unitMovementType == UnitMovementType.Air
+    @Pure fun isLandUnit() = unitMovementType == UnitMovementType.Land
+    @Pure fun isWaterUnit() = unitMovementType == UnitMovementType.Water
+    @Pure fun isAirUnit() = unitMovementType == UnitMovementType.Air
 
     /** Implements [UniqueParameterType.UnitTypeFilter][com.unciv.models.ruleset.unique.UniqueParameterType.UnitTypeFilter] */
     @Readonly
@@ -46,7 +47,7 @@ class UnitType() : RulesetObject() {
         return if (name.startsWith("Domain: ")) 1 else 2
     }
 
-    fun isUsed(ruleset: Ruleset) = ruleset.units.values.any { it.unitType == name }
+    @Readonly fun isUsed(ruleset: Ruleset) = ruleset.units.values.any { it.unitType == name }
 
     companion object {
         val City = UnitType("City", "Land")
