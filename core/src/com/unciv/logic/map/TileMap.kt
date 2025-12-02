@@ -501,7 +501,6 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             bottomY = tileList.asSequence().map { it.position.y }.min()
             val rightX = tileList.asSequence().map { it.position.x }.max()
             leftX = tileList.asSequence().map { it.position.x }.min()
-            width = tileList.asSequence().map { it.position.x }.max() - leftX
 
             // Initialize arrays with enough capacity to avoid re-allocations (+Arrays.copyOf).
             // We have just calculated the dimensions above, so we know the final size.
@@ -534,6 +533,10 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             tileInfo.setTerrainTransients()
             tileInfo.setUnitTransients(setUnitCivTransients)
         }
+        
+        val minColumn = tileList.asSequence().map { HexMath.getColumn(it.position) }.min()
+        val maxColumn = tileList.asSequence().map { HexMath.getColumn(it.position) }.min()
+        width = maxColumn - minColumn + 1
     }
 
     /** Initialize Civilization.neutralRoads based on Tile.roadOwner
