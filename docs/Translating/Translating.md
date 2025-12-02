@@ -34,6 +34,17 @@ Like most open-source projects, Unciv is developed at Github, so if you don't ha
 
 When you ask to 'edit' a file in yairm210/Unciv, these stages happen _automatically_ - but it's important to understand what's happening behind the scenes do you understand where the changes actually are!
 
+## Help! There's a <span style="color:red">red "x"</span> next to my PR!
+
+Unciv automatically runs unit tests on every PR or push adding commits (inless you're new, in which case someone needs to start the workflows).
+These contain checks for the rules already described here - a failure means either you didn't follow all the rules (see [Pitfalls](#pitfalls)), or problems outside your control.
+
+To see what went wrong, open your PR, look for the "failing check" entry under "Some checks were not successful", and click the "..." menu and "View details" (or look for the red "x" near a commit ID and click that).
+![image](../assets/Failing-checks.png)
+Scroll a little ways up and look for an entry similar to ' TranslationTests > allTranslationsHaveCorrectPlaceholders FAILED' - the exact explanation is in the lines above and below.
+
+Read and fix all reported errors and commit the fixes. Wait for the checks to re-run, rinse, repeat. You'll learn what it takes to avoid such pitfalls quickly.
+
 ## Other notes
 
 Each untranslated phrase will have a ` # Requires translation!" line before it, so you can quickly find them.
