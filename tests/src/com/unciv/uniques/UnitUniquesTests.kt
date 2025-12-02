@@ -1,7 +1,7 @@
 package com.unciv.uniques
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.json.json
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.UnitTurnManager
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.tile.TileImprovement
@@ -32,14 +32,14 @@ class UnitUniquesTests {
         // when
         game.makeHexagonalMap(1)
         val cityState = game.addCiv(cityStateType = "Cultured")
-        val cityStateCapitalTile = game.getTile(Vector2.Zero)
+        val cityStateCapitalTile = game.getTile(HexCoord.Zero)
         val cityStateCapital = game.addCity(cityState, cityStateCapitalTile)
 
         val mainCiv = game.addCiv("Gain [90] Influence with a [Great Person] gift to a City-State",
             isPlayer = true
         )
 
-        val unitTile = game.getTile(Vector2(1f, 0f))
+        val unitTile = game.getTile(1,0)
         cityStateCapital.expansion.takeOwnership(unitTile)
 
         val greatPerson = game.addUnit("Great Scientist", mainCiv, unitTile)
@@ -65,11 +65,11 @@ class UnitUniquesTests {
 
         game.makeHexagonalMap(1)
         val civ = game.addCiv(isPlayer = true)
-        val centerTile = game.getTile(Vector2.Zero)
+        val centerTile = game.getTile(HexCoord.Zero)
         val capital = game.addCity(civ, centerTile)
 
         // Place an Engineer and see if he could create a Manufactory
-        val unitTile = game.getTile(Vector2(1f,0f))
+        val unitTile = game.getTile(HexCoord(1,0))
         val unit = game.addUnit("Great Engineer", civ, unitTile)
         unit.currentMovement = unit.baseUnit.movement.toFloat()  // Required!
         val actionsWithoutIron = try {
@@ -84,7 +84,7 @@ class UnitUniquesTests {
             actionsWithoutIron.none())
 
         // Supply Iron
-        val ironTile = game.getTile(Vector2(0f,1f))
+        val ironTile = game.getTile(HexCoord(0,1))
         ironTile.resource = "Iron"
         ironTile.resourceAmount = 3
         ironTile.improvement = "Mine"
@@ -106,7 +106,7 @@ class UnitUniquesTests {
     @Test
     fun `Check Hakkapeliitta TransferMovement ability`() {
         val civ = game.addCiv(isPlayer = true)
-        val centerTile = game.getTile(Vector2.Zero)
+        val centerTile = game.getTile(HexCoord.Zero)
 
         // Hardcoded names mean test *must* run under G&K ruleset, not Vanilla, which the TestGame class ensures
         val general = game.addUnit("Great General", civ, centerTile)
@@ -128,7 +128,7 @@ class UnitUniquesTests {
     fun testCanGetPromotionsWithXP() {
         val civ = game.addCiv(isPlayer = true)
 
-        val centerTile = game.getTile(Vector2.Zero)
+        val centerTile = game.getTile(HexCoord.Zero)
         val unit = game.addUnit("Scout", civ, centerTile)
         val tree = PromotionTree(unit)
 
@@ -146,7 +146,7 @@ class UnitUniquesTests {
     fun testOneTimeUnitGetsName() {
         val unit = game.addDefaultMeleeUnitWithUniques(
             game.addCiv(),
-            game.getTile(Vector2.Zero),
+            game.getTile(HexCoord.Zero),
             "[This Unit] gets a name from the [Scientist] group <upon turn start>")
         UnitTurnManager(unit).startTurn()
 

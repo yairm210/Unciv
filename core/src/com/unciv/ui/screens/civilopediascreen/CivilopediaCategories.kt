@@ -1,6 +1,5 @@
 package com.unciv.ui.screens.civilopediascreen
 
-import com.unciv.UncivGame
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.ui.components.input.KeyboardBinding

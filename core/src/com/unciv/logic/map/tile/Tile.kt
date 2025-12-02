@@ -1,6 +1,5 @@
 ﻿package com.unciv.logic.map.tile
 
-import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
 import com.unciv.Constants
@@ -11,9 +10,7 @@ import com.unciv.logic.MultiFilter
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
-import com.unciv.logic.map.HexMath
-import com.unciv.logic.map.MapParameters
-import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.*
 import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.logic.map.mapgenerator.MapResourceSetting
 import com.unciv.logic.map.mapunit.MapUnit
@@ -49,7 +46,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     var civilianUnit: MapUnit? = null
     var airUnits = ArrayList<MapUnit>(0)
 
-    var position: Vector2 = Vector2.Zero
+    var position = HexCoord()
     lateinit var baseTerrain: String
     var terrainFeatures: List<String> = listOf()
         private set
@@ -177,9 +174,9 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     /** Between -1.0 and 1.0 - For map generation use only */
     var temperature: Double? = null
 
-    val latitude: Float
+    val latitude: Int
         get() = HexMath.getLatitude(position)
-    val longitude: Float
+    val longitude: Int
         get() = HexMath.getLongitude(position)
 
     @Transient
@@ -216,7 +213,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
             if (civilianUnit != null) toReturn.civilianUnit = civilianUnit!!.clone()
             toReturn.airUnits = ArrayList(airUnits.map { it.clone() })
         }
-        toReturn.position = position.cpy()
+        toReturn.position = position
         toReturn.baseTerrain = baseTerrain
         toReturn.terrainFeatures = terrainFeatures // immutable lists can be directly passed around
         toReturn.terrainFeatureObjects = terrainFeatureObjects
@@ -616,19 +613,21 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
      */
     @Readonly
     fun aerialDistanceTo(otherTile: Tile): Int {
-        val xDelta = position.x - otherTile.position.x
-        val yDelta = position.y - otherTile.position.y
+        val positionHexcoord = position
+        val otherPositionHexcoord = otherTile.position
+        
+        val xDelta = positionHexcoord.x - otherPositionHexcoord.x
+        val yDelta = positionHexcoord.y - otherPositionHexcoord.y
         val distance = maxOf(abs(xDelta), abs(yDelta), abs(xDelta - yDelta))
 
-        var wrappedDistance = Float.MAX_VALUE
-        if (tileMap.mapParameters.worldWrap) {
-            val otherTileUnwrappedPos = tileMap.getUnWrappedPosition(otherTile.position)
-            val xDeltaWrapped = position.x - otherTileUnwrappedPos.x
-            val yDeltaWrapped = position.y - otherTileUnwrappedPos.y
-            wrappedDistance = maxOf(abs(xDeltaWrapped), abs(yDeltaWrapped), abs(xDeltaWrapped - yDeltaWrapped))
-        }
-
-        return min(distance, wrappedDistance).toInt()
+        if (!tileMap.mapParameters.worldWrap || distance <= tileMap.width / 2) return distance
+        
+        val otherTileUnwrappedPos = tileMap.getUnwrappedPosition(otherPositionHexcoord)
+        val xDeltaWrapped = positionHexcoord.x - otherTileUnwrappedPos.x
+        val yDeltaWrapped = positionHexcoord.y - otherTileUnwrappedPos.y
+        val wrappedDistance = maxOf(abs(xDeltaWrapped), abs(yDeltaWrapped), abs(xDeltaWrapped - yDeltaWrapped))
+        
+        return min(distance, wrappedDistance)
     }
 
     @Readonly
@@ -846,7 +845,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         }
         owningCity = city
         stateThisTile = GameContext(tile = this, city = city, gameInfo = tileMap.gameInfo)
-        isCityCenterInternal = getCity()?.location == position
+        isCityCenterInternal = getCity()?.location?.toHexCoord() == position
     }
 
     /**
@@ -1087,7 +1086,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         }
     }
 
-    fun setExplored(player: Civilization, isExplored: Boolean, explorerPosition: Vector2? = null) {
+    fun setExplored(player: Civilization, isExplored: Boolean, explorerPosition: HexCoord? = null) {
         if (isExplored) {
             // Disable the undo button if a new tile has been explored
             if (!exploredBy.contains(player.civName)) {

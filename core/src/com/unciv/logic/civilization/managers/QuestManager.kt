@@ -21,7 +21,9 @@ import com.unciv.logic.civilization.Proximity
 import com.unciv.logic.civilization.diplomacy.CityStatePersonality
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.toHexCoord
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Quest
 import com.unciv.models.ruleset.QuestName
@@ -657,11 +659,11 @@ class QuestManager : IsPartOfGameInfoSerialization {
         for (thirdCiv in civ.getKnownCivs()) {
             if (!thirdCiv.isMajorCiv() || thirdCiv.isDefeated() || thirdCiv.isAtWarWith(civ))
                 continue
-            notifyAskForAssistance(thirdCiv, attacker.civName, unitsToKill, location)
+            notifyAskForAssistance(thirdCiv, attacker.civName, unitsToKill, location?.toHexCoord())
         }
     }
 
-    private fun notifyAskForAssistance(assignee: Civilization, attackerName: String, unitsToKill: Int, location: Vector2?) {
+    private fun notifyAskForAssistance(assignee: Civilization, attackerName: String, unitsToKill: Int, location: HexCoord?) {
         if (attackerName == assignee.civName) return  // No "Hey Bob help us against Bob"
         val message = "[${civ.civName}] is being attacked by [$attackerName]!" +
             // Space relevant in template!
@@ -698,7 +700,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
         if (unitsToKillForCiv.isEmpty()) return
         val location = civ.getCapital(firstCityIfNoCapital = true)?.location
         for ((attackerName, unitsToKill) in unitsToKillForCiv)
-            notifyAskForAssistance(otherCiv, attackerName, unitsToKill, location)
+            notifyAskForAssistance(otherCiv, attackerName, unitsToKill, location?.toHexCoord())
     }
 
     /** Ends War with Major pseudo-quests that aren't relevant any longer */
@@ -996,11 +998,11 @@ class AssignedQuest : IsPartOfGameInfoSerialization {
         when (questNameInstance) {
             QuestName.ClearBarbarianCamp -> {
                 GUI.resetToWorldScreen()
-                GUI.getMap().setCenterPosition(Vector2(data1.toFloat(), data2.toFloat()), selectUnit = false)
+                GUI.getMap().setCenterPosition(Vector2(data1.toFloat(), data2.toFloat()).toHexCoord(), selectUnit = false)
             }
             QuestName.Route -> {
                 GUI.resetToWorldScreen()
-                GUI.getMap().setCenterPosition(assignerCiv.getCapital()!!.location, selectUnit = false)
+                GUI.getMap().setCenterPosition(assignerCiv.getCapital()!!.location.toHexCoord(), selectUnit = false)
             }
             else -> Unit
         }
