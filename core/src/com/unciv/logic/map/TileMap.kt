@@ -91,11 +91,9 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     @Transient
     var tileMatrix = ArrayList<ArrayList<Tile?>>() // this works several times faster than a hashmap, the performance difference is really astounding
 
-    @Transient
-    var leftX = 0
-
-    @Transient
-    var bottomY = 0
+    @Transient var leftX = 0
+    @Transient var bottomY = 0
+    @Transient var width = 0
 
     @delegate:Transient
     val maxLatitude: Int by lazy { if (values.isEmpty()) 0 else values.maxOf { abs(it.latitude) } }
@@ -535,6 +533,10 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             tileInfo.setTerrainTransients()
             tileInfo.setUnitTransients(setUnitCivTransients)
         }
+        
+        val minColumn = tileList.asSequence().map { HexMath.getColumn(it.position) }.min()
+        val maxColumn = tileList.asSequence().map { HexMath.getColumn(it.position) }.min()
+        width = maxColumn - minColumn + 1
     }
 
     /** Initialize Civilization.neutralRoads based on Tile.roadOwner
