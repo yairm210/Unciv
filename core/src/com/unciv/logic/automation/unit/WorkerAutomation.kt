@@ -654,8 +654,7 @@ class WorkerAutomation(
      */
     @Readonly
     fun evaluateFortPlacement(tile: Tile, isCitadel: Boolean): Boolean {
-        return tile.improvement != Constants.fort // don't build fort if it is already here
-            && evaluateFortSurroundings(tile, isCitadel) > 0
+        return false // fort placement logic is in its current form detrimental to the AI
     }
 
     @Readonly fun isImprovementProbablyAFort(improvementName: String): Boolean = isImprovementProbablyAFort(ruleSet.tileImprovements[improvementName]!!)
