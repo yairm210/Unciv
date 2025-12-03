@@ -136,4 +136,73 @@ object ModCompatibility {
         }
         return true
     }
+
+    data class AllDeclaredDependenciesResult(val base: String?, val mods: List<String>, val errors: RulesetErrorList)
+
+    /**
+     *  Build a _recursive_ "set" of requirements, enough to build a "Complex Ruleset" for mod-checking.
+     *
+     *  The returned [AllDeclaredDependenciesResult] has the following fields:
+     *  * [base][AllDeclaredDependenciesResult.base]: The determined base ruleset. Can be the mod itself. `null` means no requirement found a base ruleset
+     *    (mods not caring about declaring requirements or no filter matched any - in which case `errors` might show the problem)
+     *  * [mods][AllDeclaredDependenciesResult.mods]: The mod itself if it is an extension, plus all found extension mods matching any requirement filter
+     *  * [errors][AllDeclaredDependenciesResult.errors]: Lists problems such as loops, infinite recursion, missing mods, no base or too many bases
+     *
+     *  @param forOptions If `true` raises the severity of the error message "No base ruleset declared" to `Error`, otherwise it's `OK` to accommodate non-declaring mods.
+     *      Additionally, a message is appended indicating all found mods (ModCheckTab will use these to check against)
+     */
+    fun getAllDeclaredPrerequisites(mod: Ruleset, forOptions: Boolean): AllDeclaredDependenciesResult {
+        val bases = mutableSetOf<Ruleset>()
+        val mods = mutableSetOf<Ruleset>()
+        val errors = RulesetErrorList() // Not passing [mod] means no suppression checks
+
+        fun scanRecursive(current: Ruleset, level: Int) {
+            when {
+                current.modOptions.isBaseRuleset -> bases += current
+                isExtensionMod(current) -> mods += current
+            }
+
+            if (level > 42) {
+                errors.add("Dependencies for ${mod.name} recurse too deeply", RulesetErrorSeverity.ErrorOptionsOnly)
+                return
+            }
+
+            for (unique in current.modOptions.getMatchingUniques(UniqueType.ModRequires)) {
+                val filter = unique.params[0]
+                var found = false
+                for ((otherName, otherMod) in RulesetCache) {
+                    when {
+                        !modNameFilter(otherName, filter) -> continue
+                        otherMod == mod -> {
+                            if (level == 0)
+                                errors.add("Mod ${mod.name} depends on itself", RulesetErrorSeverity.ErrorOptionsOnly)
+                            else
+                                errors.add("Mod ${mod.name} depends on itself via ${current.name}", RulesetErrorSeverity.ErrorOptionsOnly)
+                            continue
+                        }
+                        else -> {
+                            scanRecursive(otherMod, level + 1)
+                            found = forOptions
+                        }
+                    }
+                }
+                if (!found) errors.add("Missing mod: \"$filter\"", RulesetErrorSeverity.ErrorOptionsOnly)
+            }
+        }
+
+        scanRecursive(mod, 0)
+
+        when {
+            bases.isEmpty() -> errors.add("No base ruleset declared for ${mod.name}", if (forOptions) RulesetErrorSeverity.Error else RulesetErrorSeverity.OK)
+            bases.size > 1 -> errors.add("Multiple base rulesets declared for ${mod.name}", RulesetErrorSeverity.WarningOptionsOnly)
+        }
+
+        val baseName = bases.firstOrNull()?.name
+        val modNames = mods.map { it.name }
+        if (forOptions) {
+            errors.add("Checking combination of: ${listOfNotNull(baseName) + modNames}", RulesetErrorSeverity.OK)
+        }
+
+        return AllDeclaredDependenciesResult(baseName, modNames, errors)
+    }
 }

@@ -116,6 +116,12 @@ class RulesetErrorList(
                         it.text.replace('<','〈').replace('>','〉')
                 }
 
+    /** Combine two RulesetErrorLists */
+    operator fun plus(other: RulesetErrorList) = RulesetErrorList().apply {
+        addAll(this@RulesetErrorList)
+        addAll(other)
+    }
+
     companion object {
         /** Helper factory for a single entry list (which can result in an empty list due to suppression)
          *  Note: Valid source for [addAll] since suppression is already taken care of. */
