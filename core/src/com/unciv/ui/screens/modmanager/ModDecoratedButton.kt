@@ -50,6 +50,8 @@ internal class ModDecoratedButton(private var modInfo: ModUIData) : Table() {
         }
     }
 
+    val isInstalled by modInfo::isInstalled
+
     fun updateIndicators() = stateImages?.update(modInfo)
 
     fun setText(text: String) = textButton.setText(text)

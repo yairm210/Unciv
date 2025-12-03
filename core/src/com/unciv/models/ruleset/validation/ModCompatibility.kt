@@ -137,7 +137,12 @@ object ModCompatibility {
         return true
     }
 
-    data class AllDeclaredDependenciesResult(val base: String?, val mods: List<String>, val errors: RulesetErrorList)
+    data class AllDeclaredDependenciesResult(
+        val base: String?,
+        val mods: List<String>,
+        val missingMods: List<String>,
+        val errors: RulesetErrorList
+    )
 
     /**
      *  Build a _recursive_ "set" of requirements, enough to build a "Complex Ruleset" for mod-checking.
@@ -154,6 +159,7 @@ object ModCompatibility {
     fun getAllDeclaredPrerequisites(mod: Ruleset, forOptions: Boolean): AllDeclaredDependenciesResult {
         val bases = mutableSetOf<Ruleset>()
         val mods = mutableSetOf<Ruleset>()
+        val missingMods = mutableSetOf<String>()
         val errors = RulesetErrorList() // Not passing [mod] means no suppression checks
 
         fun scanRecursive(current: Ruleset, level: Int) {
@@ -182,11 +188,15 @@ object ModCompatibility {
                         }
                         else -> {
                             scanRecursive(otherMod, level + 1)
-                            found = forOptions
+                            found = true
                         }
                     }
                 }
-                if (!found) errors.add("Missing mod: \"$filter\"", RulesetErrorSeverity.ErrorOptionsOnly)
+                if (!found) {
+                    if (!filter.endsWith('*'))
+                        missingMods.add(filter)
+                    errors.add("Missing mod: \"$filter\"", RulesetErrorSeverity.ErrorOptionsOnly)
+                }
             }
         }
 
@@ -203,6 +213,6 @@ object ModCompatibility {
             errors.add("Checking combination of: ${listOfNotNull(baseName) + modNames}", RulesetErrorSeverity.OK)
         }
 
-        return AllDeclaredDependenciesResult(baseName, modNames, errors)
+        return AllDeclaredDependenciesResult(baseName, modNames, missingMods.toList(), errors)
     }
 }

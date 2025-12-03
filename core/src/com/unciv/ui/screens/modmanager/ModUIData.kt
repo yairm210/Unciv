@@ -21,8 +21,8 @@ class ModUIData private constructor(
     var hasUpdate: Boolean = false
 ) {
     // For deserialization from cache file 
-    constructor():this("","")
-    
+    constructor() : this("", "")
+
     constructor(ruleset: Ruleset, isVisual: Boolean): this (
         ruleset.name,
         ruleset.getSummary().let {
