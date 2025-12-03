@@ -445,7 +445,7 @@ object NextTurnAutomation {
             val attackableEnemies = TargetHelper.getAttackableEnemies(unit,
                 unit.movement.getDistanceToTiles(), tilesToTarget)
             if (attackableEnemies.isEmpty()) continue
-            val mostSurroundedEnemy = attackableEnemies.maxBy { it ->
+            val mostSurroundedEnemy = attackableEnemies.maxBy {
                 it.tileToAttack.getTilesAtDistance(1).count { it.militaryUnit?.civ == unit.civ }
             } // aims to maximize flanking bonus and number of hits in order to get kills
 
