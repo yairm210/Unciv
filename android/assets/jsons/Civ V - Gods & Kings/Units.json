@@ -1675,7 +1675,7 @@
 		"name": "Great Admiral",
 		"unitType": "Civilian Water",
 		"uniques": [
-            // TODO: "[Every adjacent [{Friendly} {Water}] unit] heals [100] HP <by consuming this unit>",
+            "[Every adjacent [{Friendly} {Water}] unit] heals [100] HP <by consuming this unit>", // Repair Fleet
             "May Paradrop to [{your} {Coastal} {City center}] tiles up to [25] tiles away <in [City center] tiles>", // Change Port
             "[+15]% Strength bonus for [{Military} {Water}] units within [2] tiles",
 			"Can be earned through combat <for [Water] units>",
