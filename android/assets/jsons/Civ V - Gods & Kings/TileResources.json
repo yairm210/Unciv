@@ -507,5 +507,22 @@
 					"Generated near City States with weight [15]",
 					"Doesn't generate naturally <in [{Forest} {Hill}] tiles>",
 					"Doesn't generate naturally <in [{Tundra} {Forest}] tiles>"]
-	}
+	},
+	{
+		"name": "Mana",
+		"resourceType": "Bonus",
+		"uniques": [
+            "City-level resource",
+            "Stockpiled"
+        ]
+	},
+    {
+        "name": "Arcane Ward Counters",
+        "resourceType": "Bonus",
+        "uniques": [
+            "Cannot be traded",
+            "City-level resource",
+            "Stockpiled"
+        ]
+    }
 ]
