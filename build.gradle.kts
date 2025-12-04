@@ -205,6 +205,7 @@ project(":core") {
             "implementation"(project(":core"))
 
             "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
+            "implementation"("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
 
             "implementation"("junit:junit:4.13.2")
             "implementation"("org.mockito:mockito-core:5.13.0")
