@@ -9,7 +9,7 @@ import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSettings.ScreenSize
 import com.unciv.ui.audio.MusicController
-import com.unciv.ui.components.extensions.MusicControls.addMusicControls
+import com.unciv.ui.components.extensions.MusicControls
 import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.onClick
@@ -22,7 +22,7 @@ import yairm210.purity.annotations.Readonly
 
 class WorldScreenMusicPopup(
     worldScreen: WorldScreen
-) : Popup(worldScreen, maxSizePercentage = calcSize(worldScreen)) {
+) : Popup(worldScreen, maxSizePercentage = calcSize(worldScreen)), MusicControls {
 
     companion object {
         // 3/4 of the screen is just a bit too small on small screen settings

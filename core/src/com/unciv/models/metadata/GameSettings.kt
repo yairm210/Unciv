@@ -10,6 +10,7 @@ import com.unciv.logic.multiplayer.chat.ChatWebSocket
 import com.unciv.models.UncivSound
 import com.unciv.models.metadata.GameSettings.WindowState.Companion.minimumHeight
 import com.unciv.models.metadata.GameSettings.WindowState.Companion.minimumWidth
+import com.unciv.models.translations.tr
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyboardBindings
@@ -261,7 +262,8 @@ class GameSettings {
         Small(900f,600f),
         Medium(1050f,700f),
         Large(1200f,800f),
-        Huge(1500f,1000f)
+        Huge(1500f,1000f);
+        override fun toString() = name.tr() // Allow direct use in a SelectBox
     }
 
     enum class NationPickerListMode { Icons, List }
@@ -338,31 +340,6 @@ class GameSettings {
         var autoPlayPolicies: Boolean = true
         var autoPlayReligion: Boolean = true
         var autoPlayDiplomacy: Boolean = true
-    }
-
-    @Suppress("SuspiciousCallableReferenceInLambda")  // By @Azzurite, safe as long as that warning below is followed
-    enum class GameSetting(
-        val kClass: KClass<*>,
-        private val propertyGetter: (GameSettings) -> KMutableProperty0<*>
-    ) {
-        //     Uncomment these once they are refactored to send events on change
-//     MULTIPLAYER_USER_ID(String::class, { it.multiplayer::userId }),
-//     MULTIPLAYER_SERVER(String::class, { it.multiplayer::server }),
-//     MULTIPLAYER_STATUSBUTTON_IN_SINGLEPLAYER(Boolean::class, { it.multiplayer::statusButtonInSinglePlayer }),
-//     MULTIPLAYER_TURN_CHECKER_ENABLED(Boolean::class, { it.multiplayer::turnCheckerEnabled }),
-//     MULTIPLAYER_TURN_CHECKER_PERSISTENT_NOTIFICATION_ENABLED(Boolean::class, { it.multiplayer::turnCheckerPersistentNotificationEnabled }),
-//     MULTIPLAYER_HIDE_DROPBOX_WARNING(Boolean::class, { it.multiplayer::hideDropboxWarning }),
-        MULTIPLAYER_TURN_CHECKER_DELAY(Duration::class, { it.multiplayer::turnCheckerDelay }),
-        MULTIPLAYER_CURRENT_GAME_REFRESH_DELAY(Duration::class, { it.multiplayer::currentGameRefreshDelay }),
-        MULTIPLAYER_ALL_GAME_REFRESH_DELAY(Duration::class, { it.multiplayer::allGameRefreshDelay }),
-        MULTIPLAYER_CURRENT_GAME_TURN_NOTIFICATION_SOUND(UncivSound::class, { it.multiplayer::currentGameTurnNotificationSound }),
-        MULTIPLAYER_OTHER_GAME_TURN_NOTIFICATION_SOUND(UncivSound::class, { it.multiplayer::otherGameTurnNotificationSound });
-
-        /** **Warning:** It is the obligation of the caller to select the same type [T] that the [kClass] of this property has */
-        fun <T> getProperty(settings: GameSettings): KMutableProperty0<T> {
-            @Suppress("UNCHECKED_CAST")
-            return propertyGetter(settings) as KMutableProperty0<T>
-        }
     }
 
     //endregion
