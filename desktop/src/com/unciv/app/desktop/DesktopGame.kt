@@ -1,6 +1,5 @@
 package com.unciv.app.desktop
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
 import com.sun.jna.platform.win32.Kernel32Util
 import com.unciv.UncivGame
@@ -34,13 +33,6 @@ class DesktopGame(config: Lwjgl3ApplicationConfiguration, override var customDat
         discordUpdater.startUpdates()
     }
 
-    override fun installAudioHooks() {
-        (Gdx.app as HardenGdxAudio).installHooks(
-            musicController.getAudioLoopCallback(),
-            musicController.getAudioExceptionHandler()
-        )
-    }
-
     override fun notifyTurnStarted() {
         windowListener.turnStarted()
     }
@@ -50,6 +42,7 @@ class DesktopGame(config: Lwjgl3ApplicationConfiguration, override var customDat
         super.dispose()
     }
 
+    
     override fun getSystemErrorMessage(errorCode: Int): String? {
         return try {
             if (System.getProperty("os.name")?.contains("Windows") == true)
