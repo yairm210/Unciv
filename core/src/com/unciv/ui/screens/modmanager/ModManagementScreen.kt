@@ -95,7 +95,23 @@ class ModManagementScreen private constructor(
     private val onlineModsTable = Table().apply { defaults().pad(10f) }
     private val scrollOnlineMods = AutoScrollPane(onlineModsTable)
     // Right column
-    private val modActionTable = ModInfoAndActionPane()
+    private val modActionTable = ModInfoAndActionPane { modUrl ->
+        Concurrency.run {
+            val repo = GithubAPI.Repo.parseUrl(modUrl)
+            if (repo == null) {
+                Concurrency.runOnGLThread {
+                    ToastPopup("Invalid mod URL!", this@ModManagementScreen)
+                }
+            } else {
+                downloadMod(repo) {
+                    Concurrency.runOnGLThread {
+                        ToastPopup("Re-downloaded!", this@ModManagementScreen)
+                        refreshInstalledModTable()
+                    }
+                }
+            }
+        }
+    }
     private val scrollActionTable = AutoScrollPane(modActionTable)
     // Manager providing the Widget floating top right in landscape mode, stacked expander in portrait
     private val optionsManager = ModManagementOptions(this)
