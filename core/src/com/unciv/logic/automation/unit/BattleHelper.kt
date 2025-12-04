@@ -159,15 +159,8 @@ object BattleHelper {
         val militaryUnit = attackTile.tileToAttack.militaryUnit
         val civilianUnit = attackTile.tileToAttack.civilianUnit
         if (militaryUnit != null) {
-            attackValue = 100
-            // Associate enemy units with number of hits from this unit to kill them
-            val attacksToKill = (militaryUnit.health.toFloat() /
-                BattleDamage.calculateDamageToDefender(MapUnitCombatant(attacker), MapUnitCombatant(militaryUnit)))
-                .coerceAtLeast(1f).coerceAtMost(10f)
-            // We can kill them in this turn
-            if (attacksToKill <= 1) attackValue += 30
-            // On average, this should take around 3 turns, so -15
-            else attackValue -= (attacksToKill * 5).toInt()
+            attackValue = 200 - militaryUnit.health + // continuously prioritise lower-health units
+                BattleDamage.calculateDamageToDefender(MapUnitCombatant(attacker), MapUnitCombatant(militaryUnit))
         } else if (civilianUnit != null) {
             attackValue = 50
             // Only melee units should really attack/capture civilian units, ranged units may be able to capture by moving
