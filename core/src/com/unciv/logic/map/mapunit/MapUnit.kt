@@ -583,11 +583,17 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     @Readonly
     fun isTransportTypeOf(mapUnit: MapUnit): Boolean {
-        // Currently, only missiles and airplanes can be carried
-        if (!mapUnit.baseUnit.movesLikeAirUnits) return false
-        return getMatchingUniques(UniqueType.CarryAirUnits).any { mapUnit.matchesFilter(it.params[1]) }
-    }
+        // Prevent carriers from being transported since land units can be carried too
+        if (mapUnit.getMatchingUniques(UniqueType.CarryAirUnits).any() || mapUnit.getMatchingUniques(UniqueType.CarryExtraAirUnits).any())
+            return false
 
+        // Allow air-type units or units marked as carriable
+        if (mapUnit.baseUnit.movesLikeAirUnits || mapUnit.hasUnique(UniqueType.CanBeCarried)) {
+            return getMatchingUniques(UniqueType.CarryAirUnits).any { mapUnit.matchesFilter(it.params[1]) }
+        }
+        return false
+    }
+    
     @Readonly
     private fun carryCapacity(unit: MapUnit): Int {
         return (getMatchingUniques(UniqueType.CarryAirUnits)
