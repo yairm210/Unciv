@@ -26,7 +26,7 @@ Each terrain entry has the following structure:
 | civilopediaText            | List                                                                | empty    | See [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text)                 |
 
 [^A]: Some names have special meanings. `Grassland` is used as fallback in some cases - e.g. Civilopedia prefers to displays a TerrainFeature on top of it, unless `occursOn` is not empty and does not contain it.
-      `River` is hardcoded to be used to look up a [Stats](../uniques.md.md#global-uniques) unique to determine the bonuses an actual River provides (remember, rivers live on the edges not as terrain).
+      `River` is hardcoded to be used to look up a [Stats](../uniques.md#global-uniques) unique to determine the bonuses an actual River provides (remember, rivers live on the edges not as terrain).
       River should always be a TerrainFeature and have the same uniques the one in the vanilla rulesets has - if you change that, expect surprises.
 [^B]: A base ruleset mod is always expected to provide at least one Land and at least one Water terrain. We do not support Land-only or Water-only mods, even if they might be possible to pull off.
 [^C]: If set, the base terrain is changed to this after placing the Natural Wonder, and terrain features cleared. Otherwise, terrain features are reduced to only those present in occursOn.
@@ -46,7 +46,7 @@ Each improvement has the following structure:
 | name                 | String          | Required | [^A]                                                                                                                                                                                   |
 | terrainsCanBeBuiltOn | List of Strings | empty    | Terrains that this improvement can be built on [^B]. Removable terrain features will need to be removed before building an improvement [^C]. Must be in [Terrains.json](#terrainsjson) |
 | techRequired         | String          | none     | The name of the technology required to build this improvement                                                                                                                          |
-| replaces             | String          | none     | The name of a improvement that should be replaced by this improvement. Must be in [TileImprovements.json](#TileImprovementsjson)                                                       |
+| replaces             | String          | none     | The name of a improvement that should be replaced by this improvement. Must be in [TileImprovements.json](#tileimprovementsjson)                                                       |
 | uniqueTo             | String          | none     | The name of the nation this improvement is unique for                                                                                                                                  |
 | [`<stats>`](#stats)  | Integer         | 0        | Per-turn bonus yield for the tile                                                                                                                                                      |
 | turnsToBuild         | Integer         | -1       | Number of turns a worker spends building this. If -1, the improvement is unbuildable [^D]. If 0, the improvement is always built in one turn                                           |
@@ -136,16 +136,16 @@ A few uniques can be added to ancient ruin effects to modify when they can be ea
 
 A mod can define new Tilesets or add to existing ones, namely FantasyHex. There is one json file per Tileset, named same as the Tileset, and placed in a subfolder named "TileSets" relative to the other json files. This is called TileSetConfig and has the following structure:
 
-| Attribute                                                                         | Type    | Default      | Notes                                                                                                                                |
-|-----------------------------------------------------------------------------------|---------|--------------|--------------------------------------------------------------------------------------------------------------------------------------|
-| [useColorAsBaseTerrain](../Creating-a-custom-tileset.md#useColorAsBaseTerrain) | Boolean | false        |                                                                                                                                      |
-| [useSummaryImages](../Creating-a-custom-tileset.md#useSummaryImages)           | Boolean | false        |                                                                                                                                      |
-| [unexploredTileColor](../Creating-a-custom-tileset.md#unexploredTileColor)     | Color   | Dark Gray    | `{"r":0.25,"g":0.25,"b":0.25,"a":1}`                                                                                                 |
-| [fogOfWarColor](../Creating-a-custom-tileset.md#fogOfWarColor)                 | Color   | Black        | `{"r":0,"g":0,"b":0,"a":1}`                                                                                                          |
-| [fallbackTileSet](../Creating-a-custom-tileset.md#fallbackTileSet)             | String  | "FantasyHex" | null to disable                                                                                                                      |
-| [tileScale](../Creating-a-custom-tileset.md#tileScale)                         | Float   | 1.0          | The scale of all tiles. Can be used to increase or decrease the size of every tile                                                   |
-| [tileScales](../Creating-a-custom-tileset.md#tileScales)                       | Object  | empty        | Used by the "Minimal" tileset to scale all its tiles except the base terrain down. Overrides `tileScale` value for specified terrain |
-| [ruleVariants](../Creating-a-custom-tileset.md#ruleVariants)                   | Object  | empty        | [See here](#layering-images)                                                                                                         |
+| Attribute                                                                      | Type    | Default      | Notes                                                                                                                                |
+|--------------------------------------------------------------------------------|---------|--------------|--------------------------------------------------------------------------------------------------------------------------------------|
+| [useColorAsBaseTerrain](../Creating-a-custom-tileset.md#usecolorasbaseterrain) | Boolean | false        |                                                                                                                                      |
+| [useSummaryImages](../Creating-a-custom-tileset.md#usesummaryimages)           | Boolean | false        |                                                                                                                                      |
+| [unexploredTileColor](../Creating-a-custom-tileset.md#unexploredtilecolor)     | Color   | Dark Gray    | `{"r":0.25,"g":0.25,"b":0.25,"a":1}`                                                                                                 |
+| [fogOfWarColor](../Creating-a-custom-tileset.md#fogofwarcolor)                 | Color   | Black        | `{"r":0,"g":0,"b":0,"a":1}`                                                                                                          |
+| [fallbackTileSet](../Creating-a-custom-tileset.md#fallbacktileset)             | String  | "FantasyHex" | null to disable                                                                                                                      |
+| [tileScale](../Creating-a-custom-tileset.md#tilescale)                         | Float   | 1.0          | The scale of all tiles. Can be used to increase or decrease the size of every tile                                                   |
+| [tileScales](../Creating-a-custom-tileset.md#tilescales)                       | Object  | empty        | Used by the "Minimal" tileset to scale all its tiles except the base terrain down. Overrides `tileScale` value for specified terrain |
+| [ruleVariants](../Creating-a-custom-tileset.md#rulevariants)                   | Object  | empty        | [See here](#layering-images)                                                                                                         |
 
 ### Layering images
 

@@ -337,14 +337,14 @@ outer list of 'columns', which in turn contains one or more tech each.
 
 Each tech column has the following structure:
 
-| Attribute    | Type    | Default  | Notes                                                                                                                                     |
-|--------------|---------|----------|-------------------------------------------------------------------------------------------------------------------------------------------|
-| columnNumber | Integer | Required | Horizontal placement in the Tech Tree                                                                                                     |
-| era          | String  | Required | Determines era reached after researching any technologies in this column. Must be in [Eras.json](5-Miscellaneous-JSON-files.md#Eras.json) |
-| techCost     | Integer | 0        | Default cost of the techs in this column                                                                                                  |
-| buildingCost | Integer | Required | Default cost of buildings requiring this tech                                                                                             |
-| wonderCost   | Integer | Required | Default cost of wonders requiring this tech                                                                                               |
-| techs        | List    | Required | List of [techs](#tech-structure) - pay attention to the nesting of {} and []                                                              |
+| Attribute    | Type    | Default  | Notes                                                                                                                                    |
+|--------------|---------|----------|------------------------------------------------------------------------------------------------------------------------------------------|
+| columnNumber | Integer | Required | Horizontal placement in the Tech Tree                                                                                                    |
+| era          | String  | Required | Determines era reached after researching any technologies in this column. Must be in [Eras.json](5-Miscellaneous-JSON-files.md#erasjson) |
+| techCost     | Integer | 0        | Default cost of the techs in this column                                                                                                 |
+| buildingCost | Integer | Required | Default cost of buildings requiring this tech                                                                                            |
+| wonderCost   | Integer | Required | Default cost of wonders requiring this tech                                                                                              |
+| techs        | List    | Required | List of [techs](#tech-structure) - pay attention to the nesting of {} and []                                                             |
 
 #### Tech structure
 

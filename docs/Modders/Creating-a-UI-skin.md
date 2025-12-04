@@ -221,7 +221,7 @@ the correct colors.
 
 A dictionary mapping string to a SkinElement. Default value: empty
 
-These variants can be used to define a different image, tint and/or alpha for a specified UI element. The string used to identify the UI element can be taken from the [table](Creating-a-UI-skin.md#Available-UI-elements) above by appending the name to the directory.
+These variants can be used to define a different image, tint and/or alpha for a specified UI element. The string used to identify the UI element can be taken from the [table](Creating-a-UI-skin.md#available-ui-elements) above by appending the name to the directory.
 ```
 | Directory             | Name          |
 |-----------------------|---------------|
