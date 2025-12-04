@@ -15,10 +15,9 @@ abstract class TileLayer(val tileGroup: TileGroup, size: Float) : Group() {
     init {
         touchable = Touchable.disabled
         isTransform = false
-        @Suppress("LeakingThis")
-        setSize(size, size)
+        this.setSize(size, size)
     }
- 
+
     // these should not change
     val tile: Tile = tileGroup.tile
     val strings: TileSetStrings = tileGroup.tileSetStrings

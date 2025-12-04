@@ -38,9 +38,6 @@ import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
-// Both `this is CrashScreen` and `this::createPopupBasedDispatcherVetoer` are flagged.
-// First - not a leak; second - passes out a pure function
-@Suppress("LeakingThis")
 
 abstract class BaseScreen : Screen {
 
@@ -65,8 +62,7 @@ abstract class BaseScreen : Screen {
         if (enableSceneDebug.active && this !is CrashScreen && this !is GameStartScreen)
             stage.setSceneDebugMode()
 
-        @Suppress("LeakingThis")
-        stage.installShortcutDispatcher(globalShortcuts, this::createDispatcherVetoer)
+        stage.installShortcutDispatcher(this.globalShortcuts, this::createDispatcherVetoer)
     }
 
     /** Hook allowing derived Screens to supply a key shortcut vetoer that can exclude parts of the
