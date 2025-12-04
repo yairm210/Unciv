@@ -509,7 +509,7 @@ class WorkerAutomation(
         }
         if (tile.getTileImprovement() != null && isImprovementProbablyAFort(tile.getTileImprovement()!!)) {
             // Replace/build improvements on other tiles before this one
-            // fort building itself is detrimental, but let's keep the ones we got around for a bit
+            // the old fort building logic was found to be detrimental (PR #14309), but let's keep the forts we got around for a bit
             value /= 2
         }
         return value
