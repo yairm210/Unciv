@@ -16,6 +16,7 @@ import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
+import com.unciv.testing.runTestParcours
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Test
@@ -76,7 +77,6 @@ class CountableTests {
         }
     }
 
-
     @Test
     fun testAllCountableAutocompleteValuesMatch() {
         RulesetCache.loadRulesets(noMods = true)
@@ -90,12 +90,11 @@ class CountableTests {
                     countable, matchedCountable
                 )
             }
-                    
         }
     }
-    
+
     @Test
-    fun testPlaceholderParams(){
+    fun testPlaceholderParams() {
         val text = "when number of [Iron] is equal to [3 * 2 + [Iron] + [bob]]"
         val placeholderText = text.getPlaceholderText()
         assertEquals("when number of [] is equal to []", placeholderText)
@@ -121,27 +120,27 @@ class CountableTests {
             "Provides [5] [Coal]",
             "[+1 Gold, +3 Culture] [in this city]"
         ))
-        val tests = listOf(
-            "[Gold] Per Turn" to 4, // Palace provides 3
-            "[Culture] Per Turn" to 4, // Palace provides 1
-            "[Coal] Per Turn" to 5,
-            "[Iron] Per Turn" to 0,
-            "[Null] Per Turn" to null,
+        val context = GameContext(civ)
+
+        runTestParcours("Stat or resource per turn countable", { test: String ->
+            Countables.getCountableAmount(test, context)
+        },
+            "[Gold] Per Turn", 4, // Palace provides 3
+            "[Culture] Per Turn", 4, // Palace provides 1
+            "[Coal] Per Turn", 5,
+            "[Iron] Per Turn", 0,
+            "[Null] Per Turn", null,
         )
-        for ((test, expected) in tests) {
-            val actual = Countables.getCountableAmount(test, GameContext(civ))
-            assertEquals("Testing `$test` countable:", expected, actual)
-        }
     }
 
     @Test
     fun testStatsCountables() {
         setupModdedGame()
-        fun verifyStats(state: GameContext) {
+        fun verifyStats(context: GameContext) {
             for (stat in Stat.entries) {
-                val countableResult = Countables.Stats.eval(stat.name, state)
+                val countableResult = Countables.Stats.eval(stat.name, context)
                 val expected = if (stat == Stat.Happiness) civ.getHappiness()
-                else state.getStatAmount(stat)
+                else context.getStatAmount(stat)
                 assertEquals("Testing $stat countable:", countableResult, expected)
             }
         }
@@ -165,18 +164,18 @@ class CountableTests {
         UniqueTriggerActivation.triggerUnique(Unique("Turn this tile into a [Coast] tile"), civ, tile = game.tileMap[3,0])
 
         game.addCity(civ, game.tileMap[-2,0], initialPopulation = 9)
-        val tests = listOf(
-            "Owned [All] Tiles" to 14,
-            "Owned [worked] Tiles" to 8,
-            "Owned [Coastal] Tiles" to 6,
-            "Owned [Coast] Tiles" to 2,
-            "Owned [Land] Tiles" to 12,
-            "Owned [Farm] Tiles" to 0,
+        val context = GameContext(civ)
+
+        runTestParcours("Owned tiles countable", { test: String ->
+            Countables.getCountableAmount(test, context)
+        },
+            "Owned [All] Tiles", 14,
+            "Owned [worked] Tiles", 8,
+            "Owned [Coastal] Tiles", 6,
+            "Owned [Coast] Tiles", 2,
+            "Owned [Land] Tiles", 12,
+            "Owned [Farm] Tiles", 0,
         )
-        for ((test, expected) in tests) {
-            val actual = Countables.getCountableAmount(test, GameContext(civ))
-            assertEquals("Testing `$test` countable:", expected, actual)
-        }
     }
 
     @Test
@@ -186,16 +185,16 @@ class CountableTests {
 
         val city2 = game.addCity(civ, game.tileMap[-2,0], initialPopulation = 9)
         city2.isPuppet = true
-        val tests = listOf(
-            "[Capital] Cities" to 1,
-            "[Puppeted] Cities" to 1,
-            "[Coastal] Cities" to 1,
-            "[Your] Cities" to 2,
+        val context = GameContext(civ)
+
+        runTestParcours("Filtered cities countable", { test: String ->
+            Countables.getCountableAmount(test, context)
+        },
+            "[Capital] Cities", 1,
+            "[Puppeted] Cities", 1,
+            "[Coastal] Cities", 1,
+            "[Your] Cities", 2,
         )
-        for ((test, expected) in tests) {
-            val actual = Countables.getCountableAmount(test, GameContext(civ))
-            assertEquals("Testing `$test` countable:", expected, actual)
-        }
     }
 
     @Test
@@ -264,29 +263,28 @@ class CountableTests {
 
         // Add a second Civilization
         val civ2 = game.addCiv()
-        val city2 = game.addCity(civ2, game.tileMap[2,2])
+        game.addCity(civ2, game.tileMap[2,2])
         civ2.policies.run {
             freePolicies += 2
             adopt(getPolicyByName("Tradition"))
             adopt(getPolicyByName("Oligarchy"))
         }
+        val context = GameContext(civ)
 
-        val tests = listOf(
-            "Completed Policy branches" to 2,               // Tradition and taggedPolicyBranch
-            "Adopted [Tradition Complete] Policies" to 1,
-            "Adopted [[Tradition] branch] Policies" to 7,   // Branch start and completion plus 5 members
-            "Adopted [Liberty Complete] Policies" to 0,
-            "Adopted [[Liberty] branch] Policies" to 2,     // Liberty has only 1 member adopted
-            "Adopted [Some marker] Policies" to 1,
-            "Adopted [Military Tradition] Policies by [All] Civilizations" to 0,
-            "Adopted [Some marker] Policies by [All] Civilizations" to 1,
-            "Adopted [Oligarchy] Policies by [All] Civilizations" to 2,
-            "Adopted [Oligarchy] Policies by [City-State] Civilizations" to 0,
+        runTestParcours("Filtered policies by filtered civs countable", { test: String ->
+            Countables.getCountableAmount(test, context)
+        },
+            "Completed Policy branches", 2,               // Tradition and taggedPolicyBranch
+            "Adopted [Tradition Complete] Policies", 1,
+            "Adopted [[Tradition] branch] Policies", 7,   // Branch start and completion plus 5 members
+            "Adopted [Liberty Complete] Policies", 0,
+            "Adopted [[Liberty] branch] Policies", 2,     // Liberty has only 1 member adopted
+            "Adopted [Some marker] Policies", 1,
+            "Adopted [Military Tradition] Policies by [All] Civilizations", 0,
+            "Adopted [Some marker] Policies by [All] Civilizations", 1,
+            "Adopted [Oligarchy] Policies by [All] Civilizations", 2,
+            "Adopted [Oligarchy] Policies by [City-State] Civilizations", 0,
         )
-        for ((test, expected) in tests) {
-            val actual = Countables.getCountableAmount(test, GameContext(civ))
-            assertEquals("Testing `$test` countable:", expected, actual)
-        }
     }
 
     @Test
@@ -391,18 +389,18 @@ class CountableTests {
         for (techName in techs) {
             civ.tech.addTechnology(techName, false)
         }
-        val tests = listOf(
-            "Researched [All] Technologies" to 5,
-            "Researched [Ancient era] Technologies" to 4,
-            "Researched [Classical era] Technologies" to 1, // Optics
-            "Researched [Modern era] Technologies" to 0,
-            "Researched [Pottery] Technologies" to 1,
-            "Researched [Archery] Technologies" to 0,
+        val context = GameContext(civ)
+
+        runTestParcours("Filtered technologies countable", { filter: String ->
+            Countables.getCountableAmount("Researched [$filter] Technologies", context)
+        },
+            "All", 5,
+            "Ancient era", 4,
+            "Classical era", 1, // Optics
+            "Modern era", 0,
+            "Pottery", 1,
+            "Archery", 0,
         )
-        for ((test, expected) in tests) {
-            val actual = Countables.getCountableAmount(test, GameContext(civ))
-            assertEquals("Testing `$test` countable:", expected, actual)
-        }
     }
 
     private fun setupModdedGame(vararg addGlobalUniques: String, withCiv: Boolean = true): Ruleset {
