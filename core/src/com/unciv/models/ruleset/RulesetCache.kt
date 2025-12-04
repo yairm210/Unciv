@@ -60,18 +60,8 @@ object RulesetCache : HashMap<String, Ruleset>() {
                 if (modFolder.name().startsWith('.')) continue
                 if (!modFolder.isDirectory) continue
                 modRulesetTasks.add {
-                    try {
-                        val modRuleset = Ruleset()
-                        modRuleset.name = modFolder.name()
-                        modRuleset.load(modFolder.child("jsons"))
-                        modRuleset.folderLocation = modFolder
-                        newRulesets[modRuleset.name] = modRuleset
-                        Log.debug("Mod loaded successfully: %s", modRuleset.name)
-                    } catch (ex: Exception) {
-                        errorLines += "Exception loading mod '${modFolder.name()}':"
-                        errorLines += "  ${ex.localizedMessage}"
-                        errorLines += "  ${ex.cause?.localizedMessage}"
-                    }
+                    val modRuleset = loadSingleRuleset(modFolder, errorLines)
+                    if (modRuleset != null) newRulesets[modRuleset.name] = modRuleset
                 }
             }
             Concurrency.parallelize(modRulesetTasks, parallel)
@@ -88,7 +78,34 @@ object RulesetCache : HashMap<String, Ruleset>() {
         println("Loaded ${this.size} rulesets in ${loadTime}ms")
         return errorLines
     }
-    
+
+    private fun loadSingleRuleset(modFolder: FileHandle, errorLines: MutableList<String>): Ruleset? {
+        return try {
+            val modRuleset = Ruleset()
+            modRuleset.name = modFolder.name()
+            modRuleset.load(modFolder.child("jsons"))
+            modRuleset.folderLocation = modFolder
+            Log.debug("Mod loaded successfully: %s", modRuleset.name)
+            modRuleset
+        } catch (ex: Exception) {
+            errorLines += "Exception loading mod '${modFolder.name()}':"
+            errorLines += "  ${ex.localizedMessage}"
+            errorLines += "  ${ex.cause?.localizedMessage}"
+            null
+        }
+    }
+
+    fun reloadSingleRuleset(modName: String): List<String> {
+        val modFolder = UncivGame.Current.files.getModsFolder().child(modName)
+        if (!modFolder.exists() || !modFolder.isDirectory) return listOf("No such mod") // No translation template - shouldn't ever happen?
+        val errorLines = ArrayList<String>()
+        Concurrency.parallelize(listOf {
+            val newRuleset = loadSingleRuleset(modFolder, errorLines)
+            if (newRuleset != null) this@RulesetCache[modName] = newRuleset
+        }, true) // Same as using runBlocking, launchOnNonDaemonThreadPool and join manually
+        return errorLines
+    }
+
     fun getVanillaRuleset() = this[BaseRuleset.Civ_V_Vanilla.fullName]!!.clone() // safeguard, so no-one edits the base ruleset by mistake
 
     fun getSortedBaseRulesets(): List<String> {

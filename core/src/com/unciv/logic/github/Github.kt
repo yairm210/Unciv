@@ -271,7 +271,7 @@ object Github {
             val response = UncivKtor.getOrNull(avatarUrl) ?: return@run
             if (!response.status.isSuccess()) return@run
             // looking for 0xFFD8 or 0x89504E47 in the body bytes works too, but kotlin's embarrassing bytes & literals support makes that ugly
-            val type = response.headers["Content-Type"] ?: return@run
+            val type = response.headers[HttpHeaders.ContentType] ?: return@run
             val extension = when(type) {
                 "image/png" -> "png"
                 "image/jpeg" -> "jpg"
