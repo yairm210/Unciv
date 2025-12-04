@@ -64,11 +64,11 @@ object SpecificUnitAutomation {
             return true
         }
 
-        // try to build a citadel for defensive purposes
-        if (unit.civ.getWorkerAutomation().evaluateFortPlacement(unit.currentTile, true)) {
-            UnitActionsFromUniques.getImprovementConstructionActionsFromGeneralUnique(unit, unit.currentTile).firstOrNull()?.action?.invoke()
-            return true
-        }
+        // keep in mind that citadels can be stolen by other citadels.
+        // you need 1 more general than your opponent, or be able to place it on a totally unreachable tile,
+        // for it to make sense to make the first move as the defender.
+        // so, let's focus only on the stealing part for now (the old defensive citadel placement logic turned out negative in simulation result)
+
         return false
     }
 
