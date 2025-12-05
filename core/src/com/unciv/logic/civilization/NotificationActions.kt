@@ -160,12 +160,25 @@ class CivilopediaAction(private val link: String = "") : NotificationAction {
     }
 }
 
-/** Show Promotion picker for a MapUnit - by name and location, as they lack a serialized unique ID */
-class PromoteUnitAction(private val name: String = "", private val location: HexCoord = HexCoord.Zero) : NotificationAction {
+/** Show Promotion picker for a MapUnit - by name and location, as they lack a serialized unique ID
+ *  TODO that's no longer true - migration with backward compat is in order - this implements the first step
+ */
+class PromoteUnitAction(
+    private val name: String,
+    private val location: HexCoord,
+    val id: Int
+) : NotificationAction {
+    @Suppress("unused")
+    constructor() : this("", HexCoord.Zero, Constants.NO_ID)
+    constructor(unit: MapUnit) : this(unit.name, unit.currentTile.position, unit.id)
+
     override fun execute(worldScreen: WorldScreen) {
-        val tile = worldScreen.gameInfo.tileMap[location]
-        val unit = tile.militaryUnit?.takeIf { it.name == name && it.civ == worldScreen.selectedCiv }
-            ?: return
+        val unit = if (id != Constants.NO_ID) {
+            worldScreen.selectedCiv.units.getUnitById(id)
+        } else {
+            val tile = worldScreen.gameInfo.tileMap[location]
+            tile.militaryUnit?.takeIf { it.name == name && it.civ == worldScreen.selectedCiv }
+        } ?: return
         worldScreen.game.pushScreen(PromotionPickerScreen(unit))
     }
 }

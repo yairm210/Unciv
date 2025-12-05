@@ -610,9 +610,8 @@ object Battle {
         }
 
         if (!thisCombatant.isDefeated() && !unitCouldAlreadyPromote && promotions.canBePromoted()) {
-            val pos = thisCombatant.getTile().position
             civ.addNotification("[${thisCombatant.unit.displayName()}] can be promoted!",
-                listOf(MapUnitAction(pos), PromoteUnitAction(thisCombatant.getName(), pos)),
+                listOf(MapUnitAction(thisCombatant.unit), PromoteUnitAction(thisCombatant.unit)),
                 NotificationCategory.Units, thisCombatant.unit.name)
         }
     }
