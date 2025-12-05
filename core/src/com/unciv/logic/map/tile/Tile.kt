@@ -80,7 +80,7 @@ class Tile : IsPartOfGameInfoSerialization {
     private val improvementQueue = ArrayList<ImprovementQueueEntry>(1)
 
     var roadStatus = RoadStatus.None
-    
+
     var roadIsPillaged = false
     private var roadOwner: String = "" // either who last built the road or last owner of tile
 
@@ -98,7 +98,7 @@ class Tile : IsPartOfGameInfoSerialization {
     //region Transient fields
     @Transient
     lateinit var tileMap: TileMap
-    
+
     @Transient
     var zeroBasedIndex: Int = 0
 
@@ -282,7 +282,7 @@ class Tile : IsPartOfGameInfoSerialization {
     @Readonly fun isImpassible() = lastTerrain.impassable
 
     @Readonly fun hasImprovementInProgress() = improvementQueue.isNotEmpty()
-    
+
     @Readonly fun getTileImprovement(): TileImprovement? = if (improvement == null) null else ruleset.tileImprovements[improvement!!]
     @Readonly fun isPillaged(): Boolean = improvementIsPillaged || roadIsPillaged
     @Readonly fun getUnpillagedTileImprovement(): TileImprovement? = if (getUnpillagedImprovement() == null) null else ruleset.tileImprovements[improvement!!]
@@ -328,10 +328,10 @@ class Tile : IsPartOfGameInfoSerialization {
                 && !ruleset.tileImprovements[roadStatus.name]!!.hasUnique(UniqueType.Irremovable)
     }
     @Readonly fun getUnpillagedImprovement(): String? = if (improvementIsPillaged) null else improvement
-    
+
     /** @return [RoadStatus] on this [Tile], pillaged road counts as [RoadStatus.None] */
     @Readonly fun getUnpillagedRoad(): RoadStatus = if (roadIsPillaged) RoadStatus.None else roadStatus
-    
+
     @Readonly
     fun getUnpillagedRoadImprovement(): TileImprovement? {
         return if (getUnpillagedRoad() == RoadStatus.None) null
@@ -359,7 +359,7 @@ class Tile : IsPartOfGameInfoSerialization {
     @Readonly fun getBaseTerrain(): Terrain = baseTerrainObject
 
     @Readonly fun getOwner(): Civilization? = getCity()?.civ
-    
+
     @Readonly
     fun getRoadOwner(): Civilization? {
         return roadOwnerObject ?: getOwner()
@@ -447,7 +447,7 @@ class Tile : IsPartOfGameInfoSerialization {
 
     @Readonly
     fun isWorked(): Boolean = getWorkingCity() != null
-    @Readonly 
+    @Readonly
     fun providesYield(): Boolean {
         if (getCity() == null) return false
         return isCityCenter()
@@ -461,7 +461,7 @@ class Tile : IsPartOfGameInfoSerialization {
         val workingCity = getWorkingCity()
         return workingCity != null && workingCity.lockedTiles.contains(position)
     }
-    
+
     @Readonly
     fun providesResources(civInfo: Civilization): Boolean {
         if (!hasViewableResource(civInfo)) return false
@@ -523,7 +523,7 @@ class Tile : IsPartOfGameInfoSerialization {
 
     @Readonly
     private fun matchesSingleTerrainFilter(filter: String, observingCiv: Civilization?): Boolean {
-        // Constant strings get their own 'when' for performance - 
+        // Constant strings get their own 'when' for performance -
         //  see https://yairm210.medium.com/kotlin-when-string-optimization-e15c6eea2734
         when (filter) {
             "Terrain" -> return true
@@ -541,10 +541,10 @@ class Tile : IsPartOfGameInfoSerialization {
             "Water resource" -> return isWater && observingCiv != null && hasViewableResource(observingCiv)
             "Featureless" -> return terrainFeatures.isEmpty()
             "Open terrain" -> return allTerrains.all { !it.isRough() } // special case - if *one* terrain is open, we don't care, we need *all*
-            Constants.freshWaterFilter -> 
+            Constants.freshWaterFilter ->
                 return isAdjacentTo(Constants.freshWater, observingCiv)
         }
-        
+
         return when (filter) {
             baseTerrain -> true
             resource -> observingCiv == null || hasViewableResource(observingCiv)
@@ -574,7 +574,7 @@ class Tile : IsPartOfGameInfoSerialization {
             }
         }
     }
-    
+
     @Readonly fun isCoastalTile() = _isCoastalTile
 
     @Readonly
@@ -605,7 +605,7 @@ class Tile : IsPartOfGameInfoSerialization {
 
     /**
      * See [TileMap] secondary constructor's comment for visual illustration about coordinate system
-     * 
+     *
      * @param otherTile Destination tile
      * @return Shortest distance from this [Tile] to [otherTile] in count of tiles including impassable tiles but not including origin tile
      */
@@ -613,18 +613,18 @@ class Tile : IsPartOfGameInfoSerialization {
     fun aerialDistanceTo(otherTile: Tile): Int {
         val positionHexcoord = position
         val otherPositionHexcoord = otherTile.position
-        
+
         val xDelta = positionHexcoord.x - otherPositionHexcoord.x
         val yDelta = positionHexcoord.y - otherPositionHexcoord.y
         val distance = maxOf(abs(xDelta), abs(yDelta), abs(xDelta - yDelta))
 
         if (!tileMap.mapParameters.worldWrap || distance <= tileMap.width / 2) return distance
-        
+
         val otherTileUnwrappedPos = tileMap.getUnwrappedPosition(otherPositionHexcoord)
         val xDeltaWrapped = positionHexcoord.x - otherTileUnwrappedPos.x
         val yDeltaWrapped = positionHexcoord.y - otherTileUnwrappedPos.y
         val wrappedDistance = maxOf(abs(xDeltaWrapped), abs(yDeltaWrapped), abs(xDeltaWrapped - yDeltaWrapped))
-        
+
         return min(distance, wrappedDistance)
     }
 
@@ -663,7 +663,7 @@ class Tile : IsPartOfGameInfoSerialization {
     private var isAdjacentToRiver = false
     @Transient @Cache
     private var isAdjacentToRiverKnown = false
-    
+
     @Readonly
     fun isAdjacentToRiver(): Boolean {
         if (!isAdjacentToRiverKnown) {
@@ -699,7 +699,7 @@ class Tile : IsPartOfGameInfoSerialization {
                 && !getCity()!!.hasJustBeenConquered) return false
         return civInfo.diplomacyFunctions.canPassThroughTiles(tileOwner)
     }
-    
+
     @Readonly
     fun hasEnemyInvisibleUnit(viewingCiv: Civilization): Boolean {
         if (getFirstUnit() == null) return false // common case
@@ -734,7 +734,7 @@ class Tile : IsPartOfGameInfoSerialization {
             civInfo.nation.forestsAndJunglesAreRoads
                     && (terrainFeatures.contains(Constants.jungle) || terrainFeatures.contains(Constants.forest))
                     && isFriendlyTerritory(civInfo)
-    
+
     @Readonly
     fun getRulesetIncompatibility(ruleset: Ruleset): HashSet<String> {
         val out = HashSet<String>()
@@ -774,7 +774,7 @@ class Tile : IsPartOfGameInfoSerialization {
         return if (probability == 0.0) 0.04  // This is the default of 1 per 25 tiles
         else probability
     }
-    
+
     fun isTilemapInitialized() = ::tileMap.isInitialized
 
     //endregion
@@ -818,7 +818,7 @@ class Tile : IsPartOfGameInfoSerialization {
         if (owningCity == null) stateThisTile = GameContext(tile = this,
             // When generating maps we call this function but there's no gameinfo
             gameInfo = if (tileMap.hasGameInfo()) tileMap.gameInfo else null)
-        
+
         if (owningCity == null && roadOwner != "") {
             if (roadOwnerObject == null && tileMap.hasGameInfo())
                 roadOwnerObject = tileMap.gameInfo.getCivilization(roadOwner)
@@ -971,7 +971,7 @@ class Tile : IsPartOfGameInfoSerialization {
 
     // function handling when removing a road from the tile
     fun removeRoad() = setRoadStatus(RoadStatus.None, null)
-    
+
     fun setRoadStatus(newRoadStatus: RoadStatus, creatingCivInfo: Civilization?) {
         roadStatus = newRoadStatus
         roadIsPillaged = false
