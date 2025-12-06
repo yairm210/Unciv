@@ -500,14 +500,27 @@ class WorkerAutomation(
 
         var value = Automation.rankStatsValue(stats, unit.civ)
         // Calculate the bonus from gaining the resources, this isn't included in the stats above
-        if (tile.resource != null && tile.tileResource.resourceType != ResourceType.Bonus) {
+        if (tile.resource != null) {
             // A better resource ranking system might be required, we don't want the improvement
             // ranking for resources to be too high
-            if (tile.improvement != null && tile.tileResource.isImprovedBy(tile.improvement!!)) {
-                value -= (tile.resourceAmount / 2).coerceIn(1,2)
-            }
-            if (isResourceImprovedByNewImprovement) {
-                value += (tile.resourceAmount / 2).coerceIn(1,2)
+            if (tile.tileResource.resourceType != ResourceType.Bonus) {
+                // Always build the resource-specific improvement for luxuries and strategics,
+                // as it's nontrivial to tell when we won't need them
+                if (tile.improvement != null && tile.tileResource.isImprovedBy(tile.improvement!!)) {
+                    value -= 2f
+                }
+                if (isResourceImprovedByNewImprovement) {
+                    value += 2f
+                }
+            } else {
+                // For bonus resources, we want to build just enough resource-specific improvements
+                // to unlock stone works and stables, otherwise farms are better
+                if (tile.improvement != null && tile.tileResource.isImprovedBy(tile.improvement!!)) {
+                    value -= 0.5f // enough to offset the 0.2f food vs production value difference
+                }
+                if (isResourceImprovedByNewImprovement && tile.getTilesInDistance(4).none { it.getTileImprovement()?.name == improvementName }) {
+                    value += 0.5f 
+                }
             }
         }
         if (isImprovementProbablyAFort(improvement)) {
