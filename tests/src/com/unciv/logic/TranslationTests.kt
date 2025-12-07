@@ -16,8 +16,10 @@ import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.Translations
 import com.unciv.models.translations.Translations.Companion.conditionalOrderingKey
 import com.unciv.models.translations.Translations.Companion.conditionalPlacementKey
+import com.unciv.models.translations.Translations.Companion.defaultConditionalOrderingString
 import com.unciv.models.translations.Translations.Companion.shouldCapitalizeKey
 import com.unciv.models.translations.curlyBraceRegex
+import com.unciv.models.translations.getModifiers
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.squareBraceRegex
@@ -547,26 +549,38 @@ class TranslationTests {
         parcours.map { (name, sequence) -> checkGroup(name, sequence) }.toList().forEach { println(it) }
     }
 
-//    @Test
-//    fun allConditionalsAreContainedInConditionalOrderTranslation() {
-//        val orderedConditionals = Translations.englishConditionalOrderingString
-//        val orderedConditionalsSet = orderedConditionals.getConditionals().map { it.placeholderText }
-//        val translationEntry = translations[orderedConditionals]!!
-//
-//        var allTranslationsCheckedOut = true
-//        for ((language, translation) in translationEntry) {
-//            val translationConditionals = translation.getConditionals().map { it.placeholderText }
-//            if (translationConditionals.toHashSet() != orderedConditionalsSet.toHashSet()
-//                || translationConditionals.count() != translationConditionals.distinct().count()
-//            ) {
-//                allTranslationsCheckedOut = false
-//                println("Not all or double parameters found in the conditional ordering for $language")
-//            }
-//        }
-//
-//        Assert.assertTrue(
-//            "This test will only pass when each of the conditionals exists exactly once in the translations for the conditional ordering",
-//            allTranslationsCheckedOut
-//        )
-//    }
+    @Test
+    fun allConditionalOrderingEntriesAreValid() {
+        val translationEntry = translations[conditionalOrderingKey]
+            ?: TranslationEntry(conditionalOrderingKey)
+        translationEntry[Constants.english] = defaultConditionalOrderingString
+
+        val syntaxCheck = Regex("""^<[^<>]+(> <[^<>]+)*>$""")
+
+        var failures = 0
+        for ((language, translation) in translationEntry) {
+            val prefix = "$conditionalOrderingKey in $language"
+            if (!syntaxCheck.matches(translation)) {
+                failures++
+                println("$prefix is not a list of modifiers (one or many '<conditional>' separated by a single space)")
+            }
+
+            for ((_, list) in translation.getModifiers().groupBy { it.placeholderText }) {
+                for ((index, unique) in list.withIndex()) {
+                    if (unique.type == null) {
+                        failures++
+                        println("$prefix: \"${unique.text}\" is not a valid UniqueType")
+                    }
+                    if (index == 0) continue
+                    failures++
+                    println("$prefix: \"${unique.text}\" is a duplicate of \"${list[0].text}\"")
+                }
+            }
+        }
+
+        Assert.assertEquals(
+            "This test will only pass when each of the conditionals in $conditionalOrderingKey is typed and unique within the list",
+            0, failures
+        )
+    }
 }

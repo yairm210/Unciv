@@ -245,8 +245,9 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
     companion object {
         @VisibleForTesting
         const val conditionalOrderingKey = "ConditionalsOrder"
-        private const val defaultConditionalOrderingString =
-            "<with a garrison> <for [mapUnitFilter] units> <above [amount] HP> <below [amount] HP> <vs cities> <vs [mapUnitFilter] units> <when fighting in [tileFilter] tiles> <when attacking> <when defending> <if this city has at least [amount] specialists> <when at war> <when not at war> <while the empire is happy> <during a Golden Age> <during the [era]> <starting from the [era]> <before the [era]> <with [techOrPolicy]> <without [techOrPolicy]>"
+        @VisibleForTesting
+        const val defaultConditionalOrderingString =
+            "<with a garrison> <for [mapUnitFilter] units> <when above [amount] HP> <when below [amount] HP> <vs cities> <vs [mapUnitFilter] units> <when fighting in [tileFilter] tiles> <when attacking> <when defending> <if this city has at least [amount] specialists> <when at war> <when not at war> <while the empire is happy> <during a Golden Age> <during the [era]> <starting from the [era]> <before the [era]> <with [techOrPolicy]> <without [techOrPolicy]>"
         @VisibleForTesting
         const val conditionalPlacementKey = "ConditionalsPlacement"
         @VisibleForTesting
