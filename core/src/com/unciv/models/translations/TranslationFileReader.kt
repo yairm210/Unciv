@@ -6,7 +6,9 @@ import kotlin.collections.set
 
 object TranslationFileReader {
 
+    private const val templateFileLocation = "jsons/translations/template.properties"
     internal const val percentagesFileLocation = "jsons/translations/completionPercentages.properties"
+
     val charset: String = Charsets.UTF_8.name()
 
     fun read(file: FileHandle): LinkedHashMap<String, String> {
@@ -34,4 +36,22 @@ object TranslationFileReader {
         return hashmap
     }
 
+    /**
+     *  Reads the template file and feeds all lines, including empty and comment ones, to [block].
+     *  Ensures closing of underlying buffers.
+     *
+     *  Usage:
+     *  ```
+     *      TranslationFileReader.readTemplates {
+     *          linesToTranslate.addAll(it)
+     *      }
+     *  ```
+     *
+     *  @return The return value of [block], or null if the file is missing
+     */
+    fun <T> readTemplates(block: (Sequence<String>) -> T): T? {
+        val templateFile = Gdx.files.internal(templateFileLocation) // read the template
+        if (!templateFile.exists()) return null
+        return templateFile.reader(charset).useLines(block)
+    }
 }

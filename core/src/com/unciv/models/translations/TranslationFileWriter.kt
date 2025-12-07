@@ -52,7 +52,6 @@ import yairm210.purity.annotations.Readonly
 object TranslationFileWriter {
 
     private const val specialNewLineCode = "# This is an empty line "
-    const val templateFileLocation = "jsons/translations/template.properties"
     private const val languageFileLocation = "jsons/translations/%s.properties"
     private const val shortDescriptionKey = "Fastlane_short_description"
     private const val shortDescriptionFile = "short_description.txt"
@@ -109,9 +108,9 @@ object TranslationFileWriter {
         val linesToTranslate = mutableListOf<String>()
 
         if (modFolder == null) { // base game
-            val templateFile = getFileHandle(null, templateFileLocation) // read the template
-            if (templateFile.exists())
-                linesToTranslate.addAll(templateFile.reader(TranslationFileReader.charset).readLines())
+            TranslationFileReader.readTemplates {
+                linesToTranslate.addAll(it)
+            }
 
             linesToTranslate += "\n\n#################### Lines from Unique Types #######################\n"
             for (uniqueType in UniqueType.entries) {

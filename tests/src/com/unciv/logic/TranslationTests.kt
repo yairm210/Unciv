@@ -1,7 +1,6 @@
 //  Taken from https://github.com/TomGrill/gdx-testing
 package com.unciv.logic
 
-import com.badlogic.gdx.Gdx
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.metadata.BaseRuleset
@@ -11,6 +10,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.TranslationEntry
+import com.unciv.models.translations.TranslationFileReader
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.Translations
 import com.unciv.models.translations.Translations.Companion.conditionalUniqueOrderString
@@ -184,19 +184,20 @@ class TranslationTests {
     @Test
     fun allTemplatesHaveUniquePlaceholders() {
         // check that the templates have unique placeholders (the translation entries are checked below)
-        val templateLines = Gdx.files.internal(TranslationFileWriter.templateFileLocation).reader().readLines()
         var noTwoPlaceholdersAreTheSame = true
-        for (template in templateLines) {
-            if (template.startsWith("#")) continue
-            val placeholders = squareBraceRegex.findAll(template)
-                .map { it.value }.toList()
+        TranslationFileReader.readTemplates { templateLines ->
+            for (template in templateLines) {
+                if (template.isEmpty() || template.startsWith('#')) continue
+                val placeholders = squareBraceRegex.findAll(template)
+                    .map { it.value }.toList()
 
-            for (placeholder in placeholders)
-                if (placeholders.count { it == placeholder } > 1) {
-                    noTwoPlaceholdersAreTheSame = false
-                    println("Template key $template has the parameter $placeholder more than once")
-                    break
-                }
+                for (placeholder in placeholders)
+                    if (placeholders.count { it == placeholder } > 1) {
+                        noTwoPlaceholdersAreTheSame = false
+                        println("Template key $template has the parameter $placeholder more than once")
+                        break
+                    }
+            }
         }
         Assert.assertTrue(
             "This test will only pass when no translation template keys have the same parameter twice",
@@ -224,13 +225,14 @@ class TranslationTests {
     }
 
     @Test
-        val templateLines = Gdx.files.internal(TranslationFileWriter.templateFileLocation).reader().readLines()
     fun allTemplatesEndWithASpace() {
         var failed = false
-        for (line in templateLines) {
-            if (line.endsWith(" =")) {
-                println("$line ends without a space at the end")
-                failed = true
+        TranslationFileReader.readTemplates { templateLines ->
+            for (line in templateLines) {
+                if (!line.startsWith('#') && line.endsWith(" =")) {
+                    println("$line ends without a space at the end")
+                    failed = true
+                }
             }
         }
         Assert.assertFalse(failed)
