@@ -3,6 +3,7 @@ package com.unciv.logic
 
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.models.UnitActionType
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.LocaleCode
@@ -16,6 +17,7 @@ import com.unciv.models.translations.Translations
 import com.unciv.models.translations.Translations.Companion.conditionalOrderingKey
 import com.unciv.models.translations.Translations.Companion.conditionalPlacementKey
 import com.unciv.models.translations.Translations.Companion.shouldCapitalizeKey
+import com.unciv.models.translations.curlyBraceRegex
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.squareBraceRegex
@@ -24,6 +26,7 @@ import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.RedirectOutput
 import com.unciv.testing.RedirectPolicy
 import com.unciv.ui.components.fonts.DiacriticSupport
+import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.utils.Log
 import org.junit.Assert
 import org.junit.Before
@@ -68,36 +71,30 @@ class TranslationTests {
     }
 
 
-    // This test is incorrectly defined: it should read from the template.properties file and not from the final translation files.
-//    @Test
-//    fun allUnitActionsHaveTranslation() {
-//        val actions: MutableSet<String> = HashSet()
-//        for (action in UnitActionType.entries) {
-//            actions.add(
-//                when(action) {
-//                    UnitActionType.Upgrade -> "Upgrade to [unitType] ([goldCost] gold)"
-//                    UnitActionType.Create -> "Create [improvement]"
-//                    UnitActionType.SpreadReligion -> "Spread [religionName]"
-//                    else -> action.value
-//                }
-//            )
-//        }
-//        val allUnitActionsHaveTranslation = allStringAreTranslated(actions)
-//        Assert.assertTrue("This test will only pass when there is a translation for all unit actions",
-//                allUnitActionsHaveTranslation)
-//    }
-//
-//    private fun allStringAreTranslated(strings: Set<String>): Boolean {
-//        var allStringsHaveTranslation = true
-//        for (entry in strings) {
-//            val key = if (entry.contains('[')) entry.replace(squareBraceRegex, "[]") else entry
-//            if (!translations.containsKey(key)) {
-//                allStringsHaveTranslation = false
-//                println("$entry not translated!")
-//            }
-//        }
-//        return allStringsHaveTranslation
-//    }
+    @Test
+    fun allUnitActionsHaveTemplate() {
+        fun String.getTemplateKey() = if (contains('[')) replace(squareBraceRegex, "[]") else this
+        fun String.getInnerTemplate() = (if (contains('{')) curlyBraceRegex.find(this)?.groupValues[1] else null) ?: this
+
+        val allKeys = TranslationFileReader.readTemplates { lines ->
+            lines.filterNot { it.isEmpty() || it.startsWith('#') || !it.endsWith(" = ") }
+                .map { it.removeSuffix(" = ").getTemplateKey() }
+                .toMutableSet()
+        } ?: return
+
+        // Include auto-templates for keyboard binding UI
+        KeyboardBinding.entries.mapTo(allKeys) { it.label }
+
+        var failures = 0
+        for (action in UnitActionType.entries) {
+            if (action.value.isEmpty()) continue
+            val key = action.value.getInnerTemplate().getTemplateKey()
+            if (key in allKeys) continue
+            failures++
+            println("""UnitActionType.$action (value "${action.value}") is missing its translation template.""")
+        }
+        Assert.assertEquals("This test will only pass when there is a template for all unit actions", 0, failures)
+    }
 
     @Test
     fun translationsFromJSONsCanBeGenerated() {

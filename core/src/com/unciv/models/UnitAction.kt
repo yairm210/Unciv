@@ -114,18 +114,22 @@ class UpgradeUnitAction(
     action: (() -> Unit)?
 ) : UnitAction(UnitActionType.Upgrade, 120f, title, action = action)
 
-/** Unit Actions - generic enum with static properties
+/**
+ * Unit Actions - generic enum with static properties
  *
- * @param value         _default_ label to display, can be overridden in UnitAction instantiation
+ * Note for Creators of new UnitActions:
+ * - If your action uses a dynamic label overriding `UnitActionType.value`,
+ *   then make sure `value` is the required translation template (if it requires multiple templates, leave it empty or use any example template).
+ * - If you use `tr()` language, make sure you use **at most one** pair of `{}` curly braces.
+ *
+ * Reason: `TranslationTests.allUnitActionsHaveTemplate` will check the existence of a matching template.
+ *
+ * @param value         _default_ label to display, can be overridden in UnitAction instantiation. In that case, this must be the translation template or empty.
  * @param imageGetter   optional lambda to get an Icon - `null` if icon is dependent on outside factors and needs special handling
  * @param binding       keyboard binding - omitting it will look up the KeyboardBinding of the same name (recommended)
  * @param isSkippingToNextUnit if "Auto Unit Cycle" setting and this bit are on, this action will skip to the next unit
  * @param uncivSound    _default_ sound, can be overridden in UnitAction instantiation
- */
-
-// Note for Creators of new UnitActions: If your action uses a dynamic label overriding UnitActionType.value,
-// then you need to teach [com.unciv.testing.TranslationTests.allUnitActionsHaveTranslation] how to deal with it!
-
+*/
 enum class UnitActionType(
     val value: String,
     val imageGetter: (()-> Actor)?,
@@ -167,7 +171,7 @@ enum class UnitActionType(
         { ImageGetter.getUnitActionPortrait("Stop") }, false),
     Promote("Promote",
         { ImageGetter.getUnitActionPortrait("Promote") }, false, UncivSound.Promote),
-    Upgrade("Upgrade",
+    Upgrade("Upgrade to [unitType] ([goldCost] gold)",
         { ImageGetter.getUnitActionPortrait("Upgrade") }, UncivSound.Upgrade),
     Transform("Transform",
         { ImageGetter.getUnitActionPortrait("Transform") }, UncivSound.Upgrade),
@@ -201,7 +205,7 @@ enum class UnitActionType(
         { ImageGetter.getUnitActionPortrait("FoundReligion") }, UncivSound.Choir),
     TriggerUnique("Trigger unique",
         null, false, UncivSound.Chimes),
-    SpreadReligion("Spread Religion",
+    SpreadReligion("Spread [religionName]",
         null, UncivSound.Choir),
     RemoveHeresy("Remove Heresy",
         { ImageGetter.getUnitActionPortrait("RemoveHeresy") }, UncivSound.Fire),
