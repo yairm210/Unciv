@@ -63,7 +63,8 @@ class TranslationTests {
     @Test
     fun translationsLoad() {
         Assert.assertTrue("This test will only pass if there are translations",
-                translations.size > 0)
+            translations.isNotEmpty()
+        )
     }
 
 
@@ -181,7 +182,7 @@ class TranslationTests {
     }
 
     @Test
-    fun allTranslationsHaveUniquePlaceholders() {
+    fun allTemplatesHaveUniquePlaceholders() {
         // check that the templates have unique placeholders (the translation entries are checked below)
         val templateLines = Gdx.files.internal(TranslationFileWriter.templateFileLocation).reader().readLines()
         var noTwoPlaceholdersAreTheSame = true
@@ -223,8 +224,8 @@ class TranslationTests {
     }
 
     @Test
-    fun allTranslationsEndWithASpace() {
         val templateLines = Gdx.files.internal(TranslationFileWriter.templateFileLocation).reader().readLines()
+    fun allTemplatesEndWithASpace() {
         var failed = false
         for (line in templateLines) {
             if (line.endsWith(" =")) {

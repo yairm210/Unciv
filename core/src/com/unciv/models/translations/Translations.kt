@@ -72,6 +72,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
     }
 
     /**
+     * Returns a specific translation, or the original [text] if no translation for [language] exists
      * @see get
      */
     @Readonly
@@ -209,6 +210,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
 
         debug("Loading percent complete of languages - %sms", System.currentTimeMillis() - startTime)
     }
+
     @Readonly
     fun getConditionalOrder(language: String): String {
         return getText(englishConditionalOrderingString, language, null)
@@ -222,10 +224,8 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
      * Defaults to a space if no translation is provided
      */
     @Readonly
-    fun getSpaceEquivalent(language: String): String {
-        val translation = getText("\" \"", language, null)
-        return translation.substring(1, translation.length-1)
-    }
+    fun getSpaceEquivalent(language: String) =
+        getText("\" \"", language, null).removeSurrounding("\"")
 
     @Readonly
     fun shouldCapitalize(language: String): Boolean {
@@ -338,8 +338,8 @@ fun String.tr(hideIcons: Boolean = false, hideStats: Boolean = false): String {
     val indexSquare = this.indexOf('[')
     val indexCurly = this.indexOf('{')
 
-    val squareBracketsEncounteredFirst = indexSquare >= 0 && (indexCurly < 0 || indexSquare < indexCurly)
-    val curlyBracketsEncounteredFirst =  indexCurly >= 0 && (indexSquare < 0 || indexCurly < indexSquare)
+    val squareBracketsEncounteredFirst = indexSquare >= 0 && indexCurly !in 0..indexSquare
+    val curlyBracketsEncounteredFirst =  indexCurly >= 0 && indexSquare !in 0..indexCurly
 
     if (squareBracketsEncounteredFirst)
         return translatePlaceholders(language, hideIcons)
