@@ -1,9 +1,9 @@
 //  Taken from https://github.com/TomGrill/gdx-testing
 package com.unciv.logic
 
-import com.badlogic.gdx.Gdx
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.models.UnitActionType
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.LocaleCode
@@ -11,11 +11,15 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.TranslationEntry
+import com.unciv.models.translations.TranslationFileReader
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.Translations
-import com.unciv.models.translations.Translations.Companion.conditionalUniqueOrderString
-import com.unciv.models.translations.Translations.Companion.englishConditionalOrderingString
-import com.unciv.models.translations.Translations.Companion.shouldCapitalizeString
+import com.unciv.models.translations.Translations.Companion.conditionalOrderingKey
+import com.unciv.models.translations.Translations.Companion.conditionalPlacementKey
+import com.unciv.models.translations.Translations.Companion.defaultConditionalOrderingString
+import com.unciv.models.translations.Translations.Companion.shouldCapitalizeKey
+import com.unciv.models.translations.curlyBraceRegex
+import com.unciv.models.translations.getModifiers
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.squareBraceRegex
@@ -24,6 +28,7 @@ import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.RedirectOutput
 import com.unciv.testing.RedirectPolicy
 import com.unciv.ui.components.fonts.DiacriticSupport
+import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.utils.Log
 import org.junit.Assert
 import org.junit.Before
@@ -63,40 +68,35 @@ class TranslationTests {
     @Test
     fun translationsLoad() {
         Assert.assertTrue("This test will only pass if there are translations",
-                translations.size > 0)
+            translations.isNotEmpty()
+        )
     }
 
 
-    // This test is incorrectly defined: it should read from the template.properties file and not from the final translation files.
-//    @Test
-//    fun allUnitActionsHaveTranslation() {
-//        val actions: MutableSet<String> = HashSet()
-//        for (action in UnitActionType.entries) {
-//            actions.add(
-//                when(action) {
-//                    UnitActionType.Upgrade -> "Upgrade to [unitType] ([goldCost] gold)"
-//                    UnitActionType.Create -> "Create [improvement]"
-//                    UnitActionType.SpreadReligion -> "Spread [religionName]"
-//                    else -> action.value
-//                }
-//            )
-//        }
-//        val allUnitActionsHaveTranslation = allStringAreTranslated(actions)
-//        Assert.assertTrue("This test will only pass when there is a translation for all unit actions",
-//                allUnitActionsHaveTranslation)
-//    }
-//
-//    private fun allStringAreTranslated(strings: Set<String>): Boolean {
-//        var allStringsHaveTranslation = true
-//        for (entry in strings) {
-//            val key = if (entry.contains('[')) entry.replace(squareBraceRegex, "[]") else entry
-//            if (!translations.containsKey(key)) {
-//                allStringsHaveTranslation = false
-//                println("$entry not translated!")
-//            }
-//        }
-//        return allStringsHaveTranslation
-//    }
+    @Test
+    fun allUnitActionsHaveTemplate() {
+        fun String.getTemplateKey() = if (contains('[')) replace(squareBraceRegex, "[]") else this
+        fun String.getInnerTemplate() = (if (contains('{')) curlyBraceRegex.find(this)?.groupValues[1] else null) ?: this
+
+        val allKeys = TranslationFileReader.readTemplates { lines ->
+            lines.filterNot { it.isEmpty() || it.startsWith('#') || !it.endsWith(" = ") }
+                .map { it.removeSuffix(" = ").getTemplateKey() }
+                .toMutableSet()
+        } ?: return
+
+        // Include auto-templates for keyboard binding UI
+        KeyboardBinding.entries.mapTo(allKeys) { it.label }
+
+        var failures = 0
+        for (action in UnitActionType.entries) {
+            if (action.value.isEmpty()) continue
+            val key = action.value.getInnerTemplate().getTemplateKey()
+            if (key in allKeys) continue
+            failures++
+            println("""UnitActionType.$action (value "${action.value}") is missing its translation template.""")
+        }
+        Assert.assertEquals("This test will only pass when there is a template for all unit actions", 0, failures)
+    }
 
     @Test
     fun translationsFromJSONsCanBeGenerated() {
@@ -181,21 +181,42 @@ class TranslationTests {
     }
 
     @Test
-    fun allTranslationsHaveUniquePlaceholders() {
-        // check that the templates have unique placeholders (the translation entries are checked below)
-        val templateLines = Gdx.files.internal(TranslationFileWriter.templateFileLocation).reader().readLines()
-        var noTwoPlaceholdersAreTheSame = true
-        for (template in templateLines) {
-            if (template.startsWith("#")) continue
-            val placeholders = squareBraceRegex.findAll(template)
-                .map { it.value }.toList()
-
-            for (placeholder in placeholders)
-                if (placeholders.count { it == placeholder } > 1) {
-                    noTwoPlaceholdersAreTheSame = false
-                    println("Template key $template has the parameter $placeholder more than once")
-                    break
+    fun allTemplatesHaveUniqueKeys() {
+        val keyToEntryMap = mutableMapOf<String, Pair<String, Int>>()
+        var failures = 0
+        TranslationFileReader.readTemplates { templateLines ->
+            for ((index, template) in templateLines.withIndex()) {
+                if (template.isEmpty() || template.startsWith('#')) continue
+                val key = template.replace(squareBraceRegex, "[]")
+                if (key in keyToEntryMap) {
+                    failures++
+                    val (otherEntry, otherLine) = keyToEntryMap[key]!!
+                    println("""Template "$template" (template.properties:${index + 1}) has the same key as "$otherEntry" (template.properties:$otherLine).""")
+                } else {
+                    keyToEntryMap[key] = template to index + 1
                 }
+            }
+        }
+        Assert.assertEquals("The template file should have no duplicate keys (keys are the template without placeholder names)", 0, failures)
+    }
+
+    @Test
+    fun allTemplatesHaveUniquePlaceholders() {
+        // check that the templates have unique placeholders (the translation entries are checked below)
+        var noTwoPlaceholdersAreTheSame = true
+        TranslationFileReader.readTemplates { templateLines ->
+            for (template in templateLines) {
+                if (template.isEmpty() || template.startsWith('#')) continue
+                val placeholders = squareBraceRegex.findAll(template)
+                    .map { it.value }.toList()
+
+                for (placeholder in placeholders)
+                    if (placeholders.count { it == placeholder } > 1) {
+                        noTwoPlaceholdersAreTheSame = false
+                        println("Template key $template has the parameter $placeholder more than once")
+                        break
+                    }
+            }
         }
         Assert.assertTrue(
             "This test will only pass when no translation template keys have the same parameter twice",
@@ -223,13 +244,14 @@ class TranslationTests {
     }
 
     @Test
-    fun allTranslationsEndWithASpace() {
-        val templateLines = Gdx.files.internal(TranslationFileWriter.templateFileLocation).reader().readLines()
+    fun allTemplatesEndWithASpace() {
         var failed = false
-        for (line in templateLines) {
-            if (line.endsWith(" =")) {
-                println("$line ends without a space at the end")
-                failed = true
+        TranslationFileReader.readTemplates { templateLines ->
+            for (line in templateLines) {
+                if (!line.startsWith('#') && line.endsWith(" =")) {
+                    println("$line ends without a space at the end")
+                    failed = true
+                }
             }
         }
         Assert.assertFalse(failed)
@@ -451,11 +473,11 @@ class TranslationTests {
     @Test
     fun testTranslateConditionals() {
         fun setReordered() {
-            addTranslation(englishConditionalOrderingString, englishConditionalOrderingString, "<when attacking> <for [mapUnitFilter] units> <with a garrison>")
+            addTranslation(conditionalOrderingKey, "<when attacking> <for [mapUnitFilter] units> <with a garrison>")
         }
         fun setBeforeAndCapitalized() {
-            addTranslation(conditionalUniqueOrderString, "before")
-            addTranslation(shouldCapitalizeString, "true")
+            addTranslation(conditionalPlacementKey, "before")
+            addTranslation(shouldCapitalizeKey, "true")
         }
         data class TestData(val label: String, val text: String, val expected: String, val setup: ()->Unit = {})
         val testData = listOf(
@@ -527,26 +549,38 @@ class TranslationTests {
         parcours.map { (name, sequence) -> checkGroup(name, sequence) }.toList().forEach { println(it) }
     }
 
-//    @Test
-//    fun allConditionalsAreContainedInConditionalOrderTranslation() {
-//        val orderedConditionals = Translations.englishConditionalOrderingString
-//        val orderedConditionalsSet = orderedConditionals.getConditionals().map { it.placeholderText }
-//        val translationEntry = translations[orderedConditionals]!!
-//
-//        var allTranslationsCheckedOut = true
-//        for ((language, translation) in translationEntry) {
-//            val translationConditionals = translation.getConditionals().map { it.placeholderText }
-//            if (translationConditionals.toHashSet() != orderedConditionalsSet.toHashSet()
-//                || translationConditionals.count() != translationConditionals.distinct().count()
-//            ) {
-//                allTranslationsCheckedOut = false
-//                println("Not all or double parameters found in the conditional ordering for $language")
-//            }
-//        }
-//
-//        Assert.assertTrue(
-//            "This test will only pass when each of the conditionals exists exactly once in the translations for the conditional ordering",
-//            allTranslationsCheckedOut
-//        )
-//    }
+    @Test
+    fun allConditionalOrderingEntriesAreValid() {
+        val translationEntry = translations[conditionalOrderingKey]
+            ?: TranslationEntry(conditionalOrderingKey)
+        translationEntry[Constants.english] = defaultConditionalOrderingString
+
+        val syntaxCheck = Regex("""^<[^<>]+(> <[^<>]+)*>$""")
+
+        var failures = 0
+        for ((language, translation) in translationEntry) {
+            val prefix = "$conditionalOrderingKey in $language"
+            if (!syntaxCheck.matches(translation)) {
+                failures++
+                println("$prefix is not a list of modifiers (one or many '<conditional>' separated by a single space)")
+            }
+
+            for ((_, list) in translation.getModifiers().groupBy { it.placeholderText }) {
+                for ((index, unique) in list.withIndex()) {
+                    if (unique.type == null) {
+                        failures++
+                        println("$prefix: \"${unique.text}\" is not a valid UniqueType")
+                    }
+                    if (index == 0) continue
+                    failures++
+                    println("$prefix: \"${unique.text}\" is a duplicate of \"${list[0].text}\"")
+                }
+            }
+        }
+
+        Assert.assertEquals(
+            "This test will only pass when each of the conditionals in $conditionalOrderingKey is typed and unique within the list",
+            0, failures
+        )
+    }
 }
