@@ -179,6 +179,26 @@ class TranslationTests {
     }
 
     @Test
+    fun allTemplatesHaveUniqueKeys() {
+        val keyToEntryMap = mutableMapOf<String, Pair<String, Int>>()
+        var failures = 0
+        TranslationFileReader.readTemplates { templateLines ->
+            for ((index, template) in templateLines.withIndex()) {
+                if (template.isEmpty() || template.startsWith('#')) continue
+                val key = template.replace(squareBraceRegex, "[]")
+                if (key in keyToEntryMap) {
+                    failures++
+                    val (otherEntry, otherLine) = keyToEntryMap[key]!!
+                    println("""Template "$template" (template.properties:${index + 1}) has the same key as "$otherEntry" (template.properties:$otherLine).""")
+                } else {
+                    keyToEntryMap[key] = template to index + 1
+                }
+            }
+        }
+        Assert.assertEquals("The template file should have no duplicate keys (keys are the template without placeholder names)", 0, failures)
+    }
+
+    @Test
     fun allTemplatesHaveUniquePlaceholders() {
         // check that the templates have unique placeholders (the translation entries are checked below)
         var noTwoPlaceholdersAreTheSame = true
