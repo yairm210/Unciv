@@ -80,6 +80,14 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
         return get(text, language, activeMods)?.get(language) ?: text
     }
 
+    /**
+     * Returns a specific translation, or [default] if no translation for [language] exists
+     */
+    @Readonly
+    fun getText(text: String, language: String, activeMods: HashSet<String>? = null, default: String): String {
+        return get(text, language, activeMods)?.get(language) ?: default
+    }
+
     /** Get all languages present in `this`, used for [TranslationFileWriter] and `TranslationTests` */
     fun getLanguages() = linkedSetOf<String>().apply {
             for (entry in values)
@@ -212,13 +220,12 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
     }
 
     @Readonly
-    fun getConditionalOrder(language: String): String {
-        return getText(englishConditionalOrderingString, language, null)
-    }
+    fun getConditionalOrder(language: String) =
+        getText(conditionalOrderingKey, language, null, defaultConditionalOrderingString)
 
     @Readonly
     fun placeConditionalsAfterUnique(language: String) =
-        get(conditionalUniqueOrderString, language, null)?.get(language) != "before"
+        getText(conditionalPlacementKey, language, null, "") != "before"
 
     /** Returns the equivalent of a space in the given language
      * Defaults to a space if no translation is provided
@@ -228,23 +235,24 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
         getText("\" \"", language, null).removeSurrounding("\"")
 
     @Readonly
-    fun shouldCapitalize(language: String): Boolean {
-        return get(shouldCapitalizeString, language, null)?.get(language)?.toBoolean() ?: true
-    }
+    fun shouldCapitalize(language: String) =
+        getText(shouldCapitalizeKey, language, null, "true").toBoolean()
 
     @Readonly
-    fun triggerNotificationEffectBeforeCause(language: String): Boolean{
-        return get(effectBeforeCause, language, null)?.get(language)?.toBoolean() ?: true
-    }
+    fun triggerNotificationEffectBeforeCause(language: String) =
+        getText(effectBeforeCauseKey, language, null, "true").toBoolean()
 
     companion object {
-        // Whenever this string is changed, it should also be changed in the translation files!
-        // It is mostly used as the template for translating the order of conditionals
-        const val englishConditionalOrderingString =
+        @VisibleForTesting
+        const val conditionalOrderingKey = "ConditionalsOrder"
+        private const val defaultConditionalOrderingString =
             "<with a garrison> <for [mapUnitFilter] units> <above [amount] HP> <below [amount] HP> <vs cities> <vs [mapUnitFilter] units> <when fighting in [tileFilter] tiles> <when attacking> <when defending> <if this city has at least [amount] specialists> <when at war> <when not at war> <while the empire is happy> <during a Golden Age> <during the [era]> <starting from the [era]> <before the [era]> <with [techOrPolicy]> <without [techOrPolicy]>"
-        const val conditionalUniqueOrderString = "ConditionalsPlacement"
-        const val shouldCapitalizeString = "StartWithCapitalLetter"
-        const val effectBeforeCause = "EffectBeforeCause"
+        @VisibleForTesting
+        const val conditionalPlacementKey = "ConditionalsPlacement"
+        @VisibleForTesting
+        const val shouldCapitalizeKey = "StartWithCapitalLetter"
+        @VisibleForTesting
+        const val effectBeforeCauseKey = "EffectBeforeCause"
     }
 }
 

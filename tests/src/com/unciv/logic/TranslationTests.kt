@@ -13,9 +13,9 @@ import com.unciv.models.translations.TranslationEntry
 import com.unciv.models.translations.TranslationFileReader
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.Translations
-import com.unciv.models.translations.Translations.Companion.conditionalUniqueOrderString
-import com.unciv.models.translations.Translations.Companion.englishConditionalOrderingString
-import com.unciv.models.translations.Translations.Companion.shouldCapitalizeString
+import com.unciv.models.translations.Translations.Companion.conditionalOrderingKey
+import com.unciv.models.translations.Translations.Companion.conditionalPlacementKey
+import com.unciv.models.translations.Translations.Companion.shouldCapitalizeKey
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.squareBraceRegex
@@ -454,11 +454,11 @@ class TranslationTests {
     @Test
     fun testTranslateConditionals() {
         fun setReordered() {
-            addTranslation(englishConditionalOrderingString, englishConditionalOrderingString, "<when attacking> <for [mapUnitFilter] units> <with a garrison>")
+            addTranslation(conditionalOrderingKey, "<when attacking> <for [mapUnitFilter] units> <with a garrison>")
         }
         fun setBeforeAndCapitalized() {
-            addTranslation(conditionalUniqueOrderString, "before")
-            addTranslation(shouldCapitalizeString, "true")
+            addTranslation(conditionalPlacementKey, "before")
+            addTranslation(shouldCapitalizeKey, "true")
         }
         data class TestData(val label: String, val text: String, val expected: String, val setup: ()->Unit = {})
         val testData = listOf(
