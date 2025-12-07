@@ -52,7 +52,6 @@ import yairm210.purity.annotations.Readonly
 object TranslationFileWriter {
 
     private const val specialNewLineCode = "# This is an empty line "
-    const val templateFileLocation = "jsons/translations/template.properties"
     private const val languageFileLocation = "jsons/translations/%s.properties"
     private const val shortDescriptionKey = "Fastlane_short_description"
     private const val shortDescriptionFile = "short_description.txt"
@@ -109,9 +108,9 @@ object TranslationFileWriter {
         val linesToTranslate = mutableListOf<String>()
 
         if (modFolder == null) { // base game
-            val templateFile = getFileHandle(null, templateFileLocation) // read the template
-            if (templateFile.exists())
-                linesToTranslate.addAll(templateFile.reader(TranslationFileReader.charset).readLines())
+            TranslationFileReader.readTemplates {
+                linesToTranslate.addAll(it)
+            }
 
             linesToTranslate += "\n\n#################### Lines from Unique Types #######################\n"
             for (uniqueType in UniqueType.entries) {
@@ -203,33 +202,39 @@ object TranslationFileWriter {
 
                 val lineParts = line.split(" = ")
                 val translationKey = lineParts[0].replace("\\n", "\n")
-                val hashMapKey =
-                    if (translationKey == Translations.englishConditionalOrderingString)
-                        Translations.englishConditionalOrderingString
-                    else translationKey
+                val hashMapKey = translationKey
                         .replace(pointyBraceRegex, "")
                         .replace(squareBraceRegex, "[]")
 
                 if (existingTranslationKeys.contains(hashMapKey)) continue // don't add it twice
                 existingTranslationKeys.add(hashMapKey)
 
-                // count translatable lines only once
-                if (languageIndex == 0) countOfTranslatableLines++
+                fun incrementCountOfTranslatableLines() {
+                    // count translatable lines only once
+                    if (languageIndex == 0) countOfTranslatableLines++
+                }
 
                 val isPretranslatable = lineParts[1].isNotEmpty()
                 val existingTranslation = translations[hashMapKey]
                 var translationValue = if (existingTranslation != null && language in existingTranslation) {
+                    // String has translation - copy it
+                    incrementCountOfTranslatableLines()
                     translationsOfThisLanguage++
                     existingTranslation[language]!!
                 } else if (baseTranslations?.get(hashMapKey)?.containsKey(language) == true) {
                     // String is used in the mod but also exists in base - ignore
                     continue
                 } else if (isPretranslatable) {
+                    // We could omit the following two lines so pre-translatables would not count towards completion percentages at all
+                    incrementCountOfTranslatableLines()
                     translationsOfThisLanguage++
                     lineParts[1]
                 } else {
                     // String is not translated either here or in base
-                    stringBuilder.appendLine(" # Requires translation!")
+                    if (translationKey != Translations.conditionalOrderingKey) {
+                        incrementCountOfTranslatableLines()
+                        stringBuilder.appendLine(" # Requires translation!")
+                    }
                     ""
                 }
 
@@ -277,9 +282,10 @@ object TranslationFileWriter {
     }
 
     private fun writeLanguagePercentages(percentages: HashMap<String, Int>, modFolder: FileHandle? = null) {
+        val comment = "# Automatically generated - ${if (modFolder == null) "do not edit manually" else "for your info only"}\n\n"
         val output = percentages.asSequence()
             .sortedBy { it.key }
-            .joinToString("\n", postfix = "\n") { "${it.key} = ${it.value}" }
+            .joinToString("\n", prefix = comment, postfix = "\n") { "${it.key} = ${it.value}" }
         getFileHandle(modFolder, TranslationFileReader.percentagesFileLocation)
             .writeString(output, false)
     }
