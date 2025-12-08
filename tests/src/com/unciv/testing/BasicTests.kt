@@ -6,6 +6,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.models.metadata.BaseRuleset
+import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Unique
@@ -94,29 +95,27 @@ class BasicTests {
 
     @Test
     fun statParserWorks() {
-        Assert.assertTrue(Stats.isStats("+1 Production"))
-        Assert.assertTrue(Stats.isStats("+1 Gold, +2 Production"))
-        Assert.assertFalse(Stats.isStats("+1 Gold from tree"))
+        UncivGame.Current = UncivGame().apply { settings = GameSettings() } // Stats toString() runs tr()
 
-        val statsThatShouldBe = Stats(gold = 1f, production = 2f)
-        Assert.assertTrue(Stats.parse("+1 Gold, +2 Production").equals(statsThatShouldBe))
+        runTestParcours("Stats isStats", Stats::isStats,
+            "+1 Production", true,
+            "+1 Gold, +2 Production", true,
+            "+1 Gold from tree", false,
+        )
 
-        //TODO these were active - why? They only test whether the default UncivGame ctor throws
-        //UncivGame.Current = UncivGame()
-        //UncivGame.Current.settings = GameSettings().apply { language = "Italian" }
+        // Can't use `runTestParcours` thanks to the non-standard Stats.equals()
+        Assert.assertTrue(Stats.parse("+1 Gold, +2 Production").equals(Stats(gold = 1f, production = 2f)))
     }
 
     @Test
     fun baseRulesetHasNoBugs() {
-        var hasFailed = false
-        for (baseRuleset in BaseRuleset.entries) {
+        runTestParcours("Base rulesets have no bugs",
+            *BaseRuleset.entries.map { TestCase(it, false) }.toTypedArray()
+        ) { baseRuleset: BaseRuleset ->
             val ruleset = RulesetCache[baseRuleset.fullName]!!
             val modCheck = ruleset.getErrorList()
-            if (modCheck.isNotOK())
-                debug("%s", modCheck.getErrorText(true))
-            hasFailed = hasFailed || modCheck.isNotOK()
+            modCheck.isNotOK()
         }
-        Assert.assertFalse(hasFailed)
     }
 
     @Test
