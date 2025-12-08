@@ -183,10 +183,7 @@ class WorkerAutomation(
 
         // If we have reached a fort tile that is in progress and shouldn't be there, cancel it.
         // TODO: Replace this code entirely and change [chooseImprovement] to not continue building the improvement by default
-        if (reachedTile == tileToWork
-            && reachedTile.improvementInProgress == Constants.fort
-            && evaluateFortSurroundings(currentTile, false) <= 0
-        ) {
+        if (reachedTile == tileToWork && reachedTile.improvementInProgress == Constants.fort) {
             debug("Replacing fort in progress with new improvement")
             reachedTile.stopWorkingOnImprovement()
         }
@@ -500,20 +497,32 @@ class WorkerAutomation(
 
         var value = Automation.rankStatsValue(stats, unit.civ)
         // Calculate the bonus from gaining the resources, this isn't included in the stats above
-        if (tile.resource != null && tile.tileResource.resourceType != ResourceType.Bonus) {
+        if (tile.resource != null) {
             // A better resource ranking system might be required, we don't want the improvement
             // ranking for resources to be too high
-            if (tile.improvement != null && tile.tileResource.isImprovedBy(tile.improvement!!)) {
-                value -= (tile.resourceAmount / 2).coerceIn(1,2)
-            }
-            if (isResourceImprovedByNewImprovement) {
-                value += (tile.resourceAmount / 2).coerceIn(1,2)
+            if (tile.tileResource.resourceType != ResourceType.Bonus) {
+                // Always build the resource-specific improvement for luxuries and strategics,
+                // as it's nontrivial to tell when we won't need them
+                if (tile.improvement != null && tile.tileResource.isImprovedBy(tile.improvement!!)) {
+                    value -= 2f
+                }
+                if (isResourceImprovedByNewImprovement) {
+                    value += 2f
+                }
+            } else {
+                // For bonus resources, we want to build just enough resource-specific improvements
+                // to unlock stone works and stables, otherwise farms are better
+                if (tile.improvement != null && tile.tileResource.isImprovedBy(tile.improvement!!)) {
+                    value -= 0.5f // enough to offset the 0.2f food vs production value difference
+                }
+                if (isResourceImprovedByNewImprovement && tile.getTilesInDistance(4).none { it.getTileImprovement()?.name == improvementName }) {
+                    value += 0.5f 
+                }
             }
         }
-        if (isImprovementProbablyAFort(improvement)) {
-            value += evaluateFortSurroundings(tile, improvement.hasUnique(UniqueType.OneTimeTakeOverTilesInRadius))
-        } else if (tile.getTileImprovement() != null && isImprovementProbablyAFort(tile.getTileImprovement()!!)) {
+        if (tile.getTileImprovement() != null && isImprovementProbablyAFort(tile.getTileImprovement()!!)) {
             // Replace/build improvements on other tiles before this one
+            // the old fort building logic was found to be detrimental (PR #14309), but let's keep the forts we got around for a bit
             value /= 2
         }
         return value
@@ -536,129 +545,6 @@ class WorkerAutomation(
         }
     }
 
-    /**
-     * Checks whether a given tile allows a Fort and whether a Fort may be undesirable (without checking surroundings or if there is a fort already on the tile).
-     *
-     * -> Checks: city, already built, resource, great improvements.
-     * Used only in [evaluateFortPlacement].
-     */
-    @Readonly
-    private fun isAcceptableTileForFort(tile: Tile): Boolean {
-        //todo Should this not also check impassable and the fort improvement's terrainsCanBeBuiltOn/uniques?
-        if (tile.isCityCenter() // don't build fort in the city
-            || !tile.isLand // don't build fort in the water
-            || (tile.hasViewableResource(civInfo)
-                && tile.tileResource.resourceType != ResourceType.Bonus) // don't build on resource tiles
-            || tile.containsGreatImprovement() // don't build on great improvements (including citadel)
-        ) return false
-
-        return true
-    }
-
-    /**
-     * Do we want a Fort [here][tile] considering surroundings?
-     * (but does not check if if there is already a fort here)
-     *
-     * @param  isCitadel Controls within borders check - true also allows 1 tile outside borders
-     * @return Yes the location is good for a Fort here
-     */
-    @Readonly
-    private fun evaluateFortSurroundings(tile: Tile, isCitadel: Boolean): Float {
-        
-        // build on our land only
-        if (tile.owningCity?.civ != civInfo &&
-            // except citadel which can be built near-by
-            (!isCitadel || tile.neighbors.all { it.getOwner() != civInfo }) ||
-            !isAcceptableTileForFort(tile)) return 0f
-        val enemyCivs = civInfo.getCivsAtWarWith()
-
-        // no potential enemies
-        if (enemyCivs.none()) return 0f
-
-        var valueOfFort = 1f
-
-        if (civInfo.isCityState && civInfo.allyCiv != null) valueOfFort -= 1f // Allied city states probably don't need to build forts
-
-        if (tile.hasViewableResource(civInfo)) valueOfFort -= 1
-
-        // if this place is not perfect, let's see if there is a better one
-        val nearestTiles = tile.getTilesInDistance(1).filter { it.owningCity?.civ == civInfo }
-        for (closeTile in nearestTiles) {
-            // don't build forts too close to the cities
-            if (closeTile.isCityCenter()) {
-                valueOfFort -= .5f
-                continue
-            }
-            // don't build forts too close to other forts
-            if (closeTile.improvement != null
-                && isImprovementProbablyAFort(closeTile.getTileImprovement()!!)
-                || (closeTile.improvementInProgress != null && isImprovementProbablyAFort(closeTile.improvementInProgress!!)))
-                valueOfFort -= 1f
-            // there is probably another better tile for the fort
-            if (!tile.isHill() && closeTile.isHill() &&
-                isAcceptableTileForFort(closeTile)) valueOfFort -= .2f
-            // We want to build forts more in choke points
-            if (tile.isImpassible()) valueOfFort += .2f
-        }
-
-        val threatMapping: (Civilization) -> Int = {
-            // the war is already a good nudge to build forts
-            (if (civInfo.isAtWarWith(it)) 5 else 0) +
-                // let's check also the force of the enemy
-                when (Automation.threatAssessment(civInfo, it)) {
-                    ThreatLevel.VeryLow -> 1 // do not build forts
-                    ThreatLevel.Low -> 6 // too close, let's build until it is late
-                    ThreatLevel.Medium -> 10
-                    ThreatLevel.High -> 15 // they are strong, let's built until they reach us
-                    ThreatLevel.VeryHigh -> 20
-                }
-        }
-        val enemyCivsIsCloseEnough = enemyCivs.filter {
-            (NextTurnAutomation.getForeignCityNearCapital(civInfo.getCapital(), it)
-                ?.aerialDistance ?: return@filter false) <= threatMapping(it)
-        }
-        // No threat, let's not build fort
-        if (enemyCivsIsCloseEnough.none()) return 0f
-
-        // Make a list of enemy cities as sources of threat
-        val enemyCities = mutableListOf<Tile>()
-        enemyCivsIsCloseEnough.forEach { enemyCities.addAll(it.cities.map { city -> city.getCenterTile() }) }
-
-        // Find closest enemy city
-        val closestEnemyCity = enemyCities.minByOrNull { it.aerialDistanceTo(tile) }!!
-        val distanceToEnemyCity = tile.aerialDistanceTo(closestEnemyCity)
-        // Find our closest city to defend from this enemy city
-        val closestCity = civInfo.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(tile) }!!.getCenterTile()
-        val distanceBetweenCities = closestEnemyCity.aerialDistanceTo(closestCity)
-        // Find the distance between the target enemy city to our closest city
-        val distanceOfEnemyCityToClosestCityOfUs = civInfo.cities.map {  it.getCenterTile().aerialDistanceTo(closestEnemyCity) }.minBy { it }
-
-        // We don't want to defend city closest to this this tile if it is behind other cities
-        if (distanceBetweenCities >= distanceOfEnemyCityToClosestCityOfUs + 2) return 0f
-
-        // This location is not between the city and the enemy
-        if (distanceToEnemyCity >= distanceBetweenCities
-            // Don't build in enemy city range
-            || distanceToEnemyCity <= 2) return 0f
-
-        valueOfFort += 2 - abs(distanceBetweenCities - 1 - distanceToEnemyCity)
-        // +2 is a acceptable deviation from the straight line between cities
-        return valueOfFort.coerceAtLeast(0f)
-    }
-
-    /**
-     * Do we want to build a Fort [here][tile] considering surroundings?
-     *
-     * @param  isCitadel Controls within borders check - true also allows 1 tile outside borders
-     * @return Yes the location is good for a Fort here
-     */
-    @Readonly
-    fun evaluateFortPlacement(tile: Tile, isCitadel: Boolean): Boolean {
-        return tile.improvement != Constants.fort // don't build fort if it is already here
-            && evaluateFortSurroundings(tile, isCitadel) > 0
-    }
-
-    @Readonly fun isImprovementProbablyAFort(improvementName: String): Boolean = isImprovementProbablyAFort(ruleSet.tileImprovements[improvementName]!!)
     @Readonly fun isImprovementProbablyAFort(improvement: TileImprovement): Boolean = improvement.hasUnique(UniqueType.DefensiveBonus)
 
 

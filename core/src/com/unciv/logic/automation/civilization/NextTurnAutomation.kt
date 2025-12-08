@@ -1,5 +1,6 @@
 package com.unciv.logic.automation.civilization
 
+import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.ThreatLevel
 import com.unciv.logic.automation.unit.EspionageAutomation
@@ -401,6 +402,35 @@ object NextTurnAutomation {
             .flatMap { it.cities }
             .filter { it.getCenterTile().getTilesInDistance(4).count { it.militaryUnit?.civ == civInfo } > 4 }
             .toList()
+
+        for (unit in sortedUnits) {
+            while (unit.promotions.canBePromoted() &&
+                // Restrict Human automated units from promotions via setting
+                (UncivGame.Current.settings.automatedUnitsChoosePromotions || unit.civ.isAI())
+            ) {
+                val promotions = unit.promotions.getAvailablePromotions()
+                val availablePromotions = if (unit.health <= 60
+                    && promotions.any { it.hasUnique(UniqueType.OneTimeUnitHeal) }
+                    && !(unit.baseUnit.isAirUnit() || unit.hasUnique(UniqueType.CanMoveAfterAttacking))
+                ) {
+                    promotions.filter { it.hasUnique(UniqueType.OneTimeUnitHeal) }
+                } else promotions.filterNot { it.hasUnique(UniqueType.SkipPromotion) }
+
+                if (availablePromotions.none()) break
+                val freePromotions =
+                    availablePromotions.filter { it.hasUnique(UniqueType.FreePromotion) }.toList()
+                val stateForConditionals = unit.cache.state
+
+                val chosenPromotion =
+                    if (freePromotions.isNotEmpty()) freePromotions.randomWeighted {
+                        it.getWeightForAiDecision(stateForConditionals)
+                    }
+                    else availablePromotions.toList()
+                        .randomWeighted { it.getWeightForAiDecision(stateForConditionals) }
+
+                unit.promotions.addPromotion(chosenPromotion.name)
+            }
+        }
         
         for (city in citiesRequiringManualPlacement) automateCityConquer(civInfo, city)
         
@@ -410,7 +440,7 @@ object NextTurnAutomation {
     /** All units will continue after this to the regular automation, so units not moved in this function will still move */
     private fun automateCityConquer(civInfo: Civilization, city: City){
         @Readonly fun ourUnitsInRange(range: Int) = city.getCenterTile().getTilesInDistance(range)
-            .mapNotNull { it.militaryUnit }.filter { it.civ == civInfo }.toList()
+            .mapNotNull { it.militaryUnit }.filter { it.civ == civInfo && (!it.baseUnit.isMelee() || it.health > 30) }.toList()
         
         
         fun attackIfPossible(unit: MapUnit, tile: Tile){

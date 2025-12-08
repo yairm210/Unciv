@@ -43,26 +43,6 @@ object UnitAutomation {
             return
         }
 
-        while (unit.promotions.canBePromoted() &&
-            // Restrict Human automated units from promotions via setting
-            (UncivGame.Current.settings.automatedUnitsChoosePromotions || unit.civ.isAI())) {
-            val promotions = unit.promotions.getAvailablePromotions()
-            val availablePromotions = if (unit.health <= 60
-                && promotions.any {it.hasUnique(UniqueType.OneTimeUnitHeal)}
-                && !(unit.baseUnit.isAirUnit() || unit.hasUnique(UniqueType.CanMoveAfterAttacking))) {
-                promotions.filter { it.hasUnique(UniqueType.OneTimeUnitHeal) }
-            } else promotions.filterNot { it.hasUnique(UniqueType.SkipPromotion) }
-
-            if (availablePromotions.none()) break
-            val freePromotions = availablePromotions.filter { it.hasUnique(UniqueType.FreePromotion) }.toList()
-            val stateForConditionals = unit.cache.state
-
-            val chosenPromotion = if (freePromotions.isNotEmpty()) freePromotions.randomWeighted { it.getWeightForAiDecision(stateForConditionals) }
-            else availablePromotions.toList().randomWeighted { it.getWeightForAiDecision(stateForConditionals) }
-
-            unit.promotions.addPromotion(chosenPromotion.name)
-        }
-
         // AI upgrades units via UseGoldAutomation in NextTurnAutomation
         if (unit.civ.isHuman() && tryUpgradeUnit(unit)) return
 
@@ -113,9 +93,9 @@ object UnitAutomation {
         // Focus all units without a specific target on the enemy city closest to one of our cities
         if (HeadTowardsEnemyCityAutomation.tryHeadTowardsEnemyCity(unit)) return
 
-        if (tryGarrisoningLandUnit(unit)) return
-
         if (tryHeadTowardsEncampment(unit)) return
+
+        if (tryGarrisoningLandUnit(unit)) return
 
         if (unit.health < 80 && tryHealUnit(unit)) return
 
