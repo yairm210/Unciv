@@ -93,9 +93,9 @@ object UnitAutomation {
         // Focus all units without a specific target on the enemy city closest to one of our cities
         if (HeadTowardsEnemyCityAutomation.tryHeadTowardsEnemyCity(unit)) return
 
-        if (tryGarrisoningLandUnit(unit)) return
-
         if (tryHeadTowardsEncampment(unit)) return
+
+        if (tryGarrisoningLandUnit(unit)) return
 
         if (unit.health < 80 && tryHealUnit(unit)) return
 
