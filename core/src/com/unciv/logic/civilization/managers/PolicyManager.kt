@@ -238,7 +238,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
             if (unique.isTriggerable && !unique.hasTriggerConditional() && unique.conditionalsApply(civInfo.state))
                 UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
 
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponAdoptingPolicyOrBelief) {it.params[0] == policy.name})
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponAdoptingPolicyOrBelief) { it.params[0] == policy.name })
             UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
 
         civInfo.cache.updateCivResources()

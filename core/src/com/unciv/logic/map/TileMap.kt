@@ -535,7 +535,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         }
         
         val minColumn = tileList.asSequence().map { HexMath.getColumn(it.position) }.min()
-        val maxColumn = tileList.asSequence().map { HexMath.getColumn(it.position) }.min()
+        val maxColumn = tileList.asSequence().map { HexMath.getColumn(it.position) }.max()
         width = maxColumn - minColumn + 1
     }
 
