@@ -2,30 +2,19 @@
 
 Fix map width for checking distances between tiles
 
-4.18.18-patch1
-
-Resolved  
-
-perf(cpu,mem): Only call getUnwrappedPosition if we're more than half the width of the world away from the tile directly
+CPU performance improvements
 
 By EmperorPinguin:
-- Bugfix(?) AI friendly fighter counting 
 - Simplify military unit attack value 
 - Disable fort placement for AI 
-- Add AI decision weight to Charge promotion 
-- Bugfix unit automation order 
-- Exclude wounded melee from automateCityConquer 
-- Reduce Cover promotion priority for AI 
+- Fix unit automation order 
+- Bugfix AI friendly fighter counting 
+- Better Cover, Charge promotion priority for AI
 - Let AI build quarries for Stone Works 
-- Move unit promotion ahead of automateCityConquer 
+- Move unit promotion ahead & Exclude wounded melee from automateCityConquer 
 
-By SomeTroglodyte:
-- Another unit test helper 
-- Improve Wiki for Translators 
-- chore: Remove obsolete improvement queue compatibility code 
-- Improve unit tests for translations and template comments 
 
-Fixed leading text issue - By GameCobra
+Fixed battle notification texts issue - By GameCobra
 
 ## 4.18.18
 
