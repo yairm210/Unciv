@@ -41,6 +41,7 @@ Allowed values:
 - `Friendly`
 - `Hostile`
 - `Open Borders`
+- `Known`
 - [nationFilter](#nationfilter)
 
 ## nationFilter
