@@ -34,6 +34,7 @@ import kotlin.reflect.full.hasAnnotation
 
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.FUNCTION)
+@Suppress("unused") // The parameter *is* used in `testAllCountablesAreCovered`
 internal annotation class CoversCountable(vararg val countable: Countables)
 
 @RunWith(GdxTestRunner::class)
@@ -55,7 +56,8 @@ class CountableTests {
     /** Test whether a Countables instance has a _specific_ override - by name and parameter signature.
      *
      *  This uses Java reflection, pure kotlin reflection was tested and `declaredFunctions` seems broken.
-     *  With kotlin reflection there should be a nice `overrides` extension, but that seems to be missing in 2.1.21 (and you'd need a lot of boilerplate to get there).
+     *  With kotlin reflection there should be a nice `overrides` extension,
+     *  but that seems to be missing in 2.1.21 (and you'd need a lot of boilerplate to get there).
      */
     private fun Class<out Countables>.hasOverrideFor(name: String, vararg argTypes: Class<out Any?>): Boolean {
         try {
