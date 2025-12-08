@@ -583,17 +583,15 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     @Readonly
     fun isTransportTypeOf(mapUnit: MapUnit): Boolean {
-        // Prevent carriers from being transported since land units can be carried too
-        if (mapUnit.getMatchingUniques(UniqueType.CarryAirUnits).any() || mapUnit.getMatchingUniques(UniqueType.CarryExtraAirUnits).any())
-            return false
-
         // Allow air-type units or units marked as carriable
         if (mapUnit.baseUnit.movesLikeAirUnits || mapUnit.hasUnique(UniqueType.CanBeCarried)) {
-            return getMatchingUniques(UniqueType.CarryAirUnits).any { mapUnit.matchesFilter(it.params[1]) }
+            // Check if this carrier has CarryAirUnits OR CarryExtraAirUnits to carry the payload
+            val carryUniques = getMatchingUniques(UniqueType.CarryAirUnits) + getMatchingUniques(UniqueType.CarryExtraAirUnits)
+            return carryUniques.any { mapUnit.matchesFilter(it.params[1]) }
         }
         return false
     }
-    
+
     @Readonly
     private fun carryCapacity(unit: MapUnit): Int {
         return (getMatchingUniques(UniqueType.CarryAirUnits)
@@ -984,12 +982,12 @@ class MapUnit : IsPartOfGameInfoSerialization {
             !movement.canMoveTo(tile) ->
                 throw Exception("Unit $name of ${civ.civName} at $currentTile can't be put in tile $tile!")
 
-            baseUnit.movesLikeAirUnits -> tile.airUnits.add(this)
+            baseUnit.movesLikeAirUnits || isTransported -> tile.airUnits.add(this)
             isCivilian() -> tile.civilianUnit = this
             else -> tile.militaryUnit = this
         }
         // this check is here in order to not load the fresh built unit into carrier right after the build
-        if (baseUnit.movesLikeAirUnits){
+        if (baseUnit.movesLikeAirUnits) {
             if (!tile.isCityCenter()) isTransported = true
             else {
                 val currentUntransportedUnits = tile.getUnits().count { it.type.isAirUnit() && !it.isTransported }
