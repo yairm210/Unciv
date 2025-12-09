@@ -83,7 +83,7 @@ class NotificationsScroll(
         const val restoreButtonNumbersCenter = restoreButtonSize - restoreButtonNumbersSize / 2
         /** Background tint for [oneTimeNotification] */
         private val oneTimeNotificationColor get() =
-            skinStrings.getUIColor("NotificationScroll/OneTimeNotificationColor", Color.valueOf("fceea8"))
+            skinStrings.getUIColor("NotificationScroll/OneTimeNotificationColor", Color.valueOf("#fceea8"))
     }
 
     //region private fields
