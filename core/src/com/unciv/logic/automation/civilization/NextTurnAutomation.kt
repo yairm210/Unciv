@@ -475,11 +475,11 @@ object NextTurnAutomation {
             val attackableEnemies = TargetHelper.getAttackableEnemies(unit,
                 unit.movement.getDistanceToTiles(), tilesToTarget)
             if (attackableEnemies.isEmpty()) continue
-            val enemyWeWillDamageMost = attackableEnemies.maxBy { 
-                BattleDamage.calculateDamageToDefender(MapUnitCombatant(unit), it.combatant!!, it.tileToAttackFrom, 0.5f)
-            }
-            
-            Battle.moveAndAttack(MapUnitCombatant(unit), enemyWeWillDamageMost)
+            val mostSurroundedEnemy = attackableEnemies.maxBy {
+                it.tileToAttack.getTilesAtDistance(1).count { it.militaryUnit?.civ == unit.civ }
+            } // aims to maximize flanking bonus and number of hits in order to get kills
+
+            Battle.moveAndAttack(MapUnitCombatant(unit), mostSurroundedEnemy)
         }
     }
 
