@@ -3,6 +3,7 @@ package com.unciv.logic.civilization
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.HexMath.getLatitude
 import com.unciv.logic.map.HexMath.getLongitude
 import com.unciv.logic.map.HexMath.worldFromLatLong
@@ -88,10 +89,10 @@ class ExploredRegion : IsPartOfGameInfoSerialization {
     }
 
     // Check if tilePosition is beyond explored region
-    fun checkTilePosition(tilePosition: Vector2, explorerPosition: Vector2?) {
+    fun checkTilePosition(tilePosition: HexCoord, explorerPosition: HexCoord?) {
         var mapExplored = false
-        var longitude = getLongitude(tilePosition)
-        val latitude = getLatitude(tilePosition)
+        var longitude = getLongitude(tilePosition).toFloat()
+        val latitude = getLatitude(tilePosition).toFloat()
 
         // First time call
         if (topLeft == Vector2.Zero && bottomRight == Vector2.Zero) {
@@ -203,7 +204,7 @@ class ExploredRegion : IsPartOfGameInfoSerialization {
     }
 
     @Readonly
-    fun isPositionInRegion(postition: Vector2): Boolean {
+    fun isPositionInRegion(postition: HexCoord): Boolean {
         val long = getLongitude(postition)
         val lat = getLatitude(postition)
         return if (topLeft.x > bottomRight.x)

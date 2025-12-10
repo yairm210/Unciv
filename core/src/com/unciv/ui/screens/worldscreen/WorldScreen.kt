@@ -3,7 +3,6 @@ package com.unciv.ui.screens.worldscreen
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
-import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
@@ -14,6 +13,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.event.EventBus
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.MapVisualization
 import com.unciv.logic.multiplayer.MultiplayerGameUpdated
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
@@ -174,21 +174,18 @@ class WorldScreen(
         battleTable.x = stage.width / 3
         stage.addActor(battleTable)
 
-        val tileToCenterOn: Vector2 =
+        val tileToCenterOn: HexCoord =
                 when {
-                    viewingCiv.getCapital() != null -> viewingCiv.getCapital()!!.location
+                    viewingCiv.getCapital() != null -> viewingCiv.getCapital()!!.location.toHexCoord()
                     viewingCiv.units.getCivUnits().any() -> viewingCiv.units.getCivUnits().first().getTile().position
-                    else -> Vector2.Zero
+                    else -> HexCoord.Zero
                 }
 
         mapHolder.isAutoScrollEnabled = Gdx.app.type == Application.ApplicationType.Desktop && game.settings.mapAutoScroll
         mapHolder.mapPanningSpeed = game.settings.mapPanningSpeed
 
         // Don't select unit and change selectedCiv when centering as spectator
-        if (viewingCiv.isSpectator())
-            mapHolder.setCenterPosition(tileToCenterOn, immediately = true, selectUnit = false)
-        else
-            mapHolder.setCenterPosition(tileToCenterOn, immediately = true, selectUnit = true)
+        mapHolder.setCenterPosition(tileToCenterOn, immediately = true, selectUnit = !viewingCiv.isSpectator())
 
         tutorialController.allTutorialsShowedCallback = { shouldUpdate = true }
 
@@ -240,8 +237,8 @@ class WorldScreen(
         }
     }
 
-    fun openEmpireOverview(category: EmpireOverviewCategories? = null) {
-        game.pushScreen(EmpireOverviewScreen(selectedCiv, category))
+    fun openEmpireOverview(category: EmpireOverviewCategories? = null, selection: String = "") {
+        game.pushScreen(EmpireOverviewScreen(selectedCiv, category, selection))
     }
 
     fun openNewGameScreen() {
@@ -274,7 +271,7 @@ class WorldScreen(
         globalShortcuts.add(KeyboardBinding.QuickLoad) { QuickSave.load(this) }
         globalShortcuts.add(KeyboardBinding.ViewCapitalCity) {
             val capital = gameInfo.getCurrentPlayerCivilization().getCapital()
-            if (capital != null && !mapHolder.setCenterPosition(capital.location))
+            if (capital != null && !mapHolder.setCenterPosition(capital.location.toHexCoord()))
                 game.pushScreen(CityScreen(capital))
         }
         globalShortcuts.add(KeyboardBinding.Options) { // Game Options
@@ -395,7 +392,7 @@ class WorldScreen(
         mapHolder.resetArrows()
         if (UncivGame.Current.settings.showUnitMovements) {
             val allUnits = gameInfo.civilizations.asSequence().flatMap { it.units.getCivUnits() }
-            val allAttacks = allUnits.map { unit -> unit.attacksSinceTurnStart.asSequence().map { attacked -> Triple(unit.civ, unit.getTile().position, attacked) } }.flatten() +
+            val allAttacks = allUnits.map { unit -> unit.attacksSinceTurnStart.asSequence().map { attacked -> Triple(unit.civ, unit.getTile().position, attacked.toHexCoord()) } }.flatten() +
                 gameInfo.civilizations.asSequence().flatMap { civInfo -> civInfo.attacksSinceTurnStart.asSequence().map { Triple(civInfo, it.source, it.target) } }
             mapHolder.updateMovementOverlay(
                 allUnits.filter(mapVisualization::isUnitPastVisible),

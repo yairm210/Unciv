@@ -8,14 +8,12 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unit.UnitMovementType
-import com.unciv.models.stats.Stat
 import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.components.tilegroups.TileSetStrings
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
-import com.unciv.models.ruleset.unit.UnitNameGroup
 
 /** Encapsulates the knowledge on how to get an icon for each of the Civilopedia categories */
 internal object CivilopediaImageGetters {

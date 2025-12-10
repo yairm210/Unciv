@@ -15,8 +15,6 @@ import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Disposable
 import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.Civilization
-import com.unciv.models.ruleset.unique.Countables
-import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.MilestoneType
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.translations.tr

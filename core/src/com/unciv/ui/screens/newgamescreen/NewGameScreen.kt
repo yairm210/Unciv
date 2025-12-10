@@ -3,7 +3,6 @@ package com.unciv.ui.screens.newgamescreen
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup
-import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
@@ -102,7 +101,10 @@ class NewGameScreen(
                     "Are you sure you want to reset all game options to defaults?",
                     "Reset to defaults",
                 ) {
-                    game.replaceCurrentScreen(NewGameScreen(GameSetupInfo()))
+                    val gameSetupInfo = GameSetupInfo().apply {
+                        gameParameters.espionageEnabled = true
+                    }
+                    game.replaceCurrentScreen(NewGameScreen(gameSetupInfo))
                 }.open(true)
             }
             horizontalGroup.addActor(resetToDefaultsButton)

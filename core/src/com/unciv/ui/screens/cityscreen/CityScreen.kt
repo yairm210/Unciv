@@ -544,7 +544,7 @@ class CityScreen(
     fun exit() {
         val newScreen = game.popScreen()
         if (newScreen is WorldScreen) {
-            newScreen.mapHolder.setCenterPosition(city.location, immediately = true)
+            newScreen.mapHolder.setCenterPosition(city.location.toHexCoord(), immediately = true)
             newScreen.bottomUnitTable.selectUnit()
         }
     }

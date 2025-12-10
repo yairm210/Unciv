@@ -24,6 +24,15 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
         if (it == null) UncivSound.Click else UncivSound(it)
     }
 
+    override fun getNotificationDisplay(leadingText: String): String {
+        val isUnitUnnamed = unit.instanceName.isNullOrEmpty()
+        return if (isUnitUnnamed)
+            leadingText + "[" + unit.name + "]"
+        else
+            "[" + unit.instanceName + "]"
+    }
+
+
     override fun takeDamage(damage: Int) = unit.takeDamage(damage)
 
     override fun getAttackingStrength(defender: ICombatant?): Int {

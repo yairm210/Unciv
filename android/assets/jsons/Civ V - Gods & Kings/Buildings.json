@@ -303,7 +303,7 @@
 		"replaces": "Temple",
 		"uniqueTo": "Egypt",
 		"maintenance": 0,
-		"uniques": ["Doubles Gold given to enemy if city is captured"],
+		"uniques": ["[+100]% Gold given to enemy if city is captured"],
 		"faith": 2,
 		"happiness": 2,
 		"requiredBuilding": "Shrine",

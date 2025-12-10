@@ -1,15 +1,13 @@
 package com.unciv.logic.city
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.city.managers.CityConquestFunctions
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.HexCoord
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -33,7 +31,7 @@ class CityConquestFunctionsTest {
         attackerCiv = testGame.addCiv()
         defenderCiv = testGame.addCiv()
 
-        defenderCity = testGame.addCity(defenderCiv, testGame.getTile(Vector2.Zero), initialPopulation = 10)
+        defenderCity = testGame.addCity(defenderCiv, testGame.getTile(HexCoord.Zero), initialPopulation = 10)
         cityConquestFunctions = CityConquestFunctions(defenderCity)
 
         // otherwise test crashes when puppetying city
@@ -84,8 +82,8 @@ class CityConquestFunctionsTest {
         // No repeat like `should plunder gold upon capture` - mor work and one range check might be enough
 
         // given
-        val largeCity = testGame.addCity(defenderCiv, testGame.getTile(Vector2.X), initialPopulation = 20)
-        val smallCity = testGame.addCity(defenderCiv, testGame.getTile(Vector2.Y), initialPopulation = 5)
+        val largeCity = testGame.addCity(defenderCiv, testGame.getTile(1,0), initialPopulation = 20)
+        val smallCity = testGame.addCity(defenderCiv, testGame.getTile(0,1), initialPopulation = 5)
         val secondAttackerCiv = testGame.addCiv()
         testGame.gameInfo.turns = 50
 
@@ -103,8 +101,8 @@ class CityConquestFunctionsTest {
     @Test
     fun `should plunder more gold with building uniques upon capture`() {
         // given
-        val building = testGame.createBuilding(UniqueType.DoublesGoldFromCapturingCity.text)
-        val city = testGame.addCity(defenderCiv, testGame.getTile(Vector2.X), initialPopulation = 10)
+        val building = testGame.createBuilding(UniqueType.GoldFromCapturingCity.text.fillPlaceholders("+100"))
+        val city = testGame.addCity(defenderCiv, testGame.getTile(1,0), initialPopulation = 10)
         city.cityConstructions.addBuilding(building.name)
 
         val secondAttackerCiv = testGame.addCiv()
@@ -160,8 +158,8 @@ class CityConquestFunctionsTest {
     @Test
     fun `should kill population upon capture`() {
         // given
-        val largeCity = testGame.addCity(defenderCiv, testGame.getTile(Vector2.X), initialPopulation = 20)
-        val smallCity = testGame.addCity(defenderCiv, testGame.getTile(Vector2.Y), initialPopulation = 5)
+        val largeCity = testGame.addCity(defenderCiv, testGame.getTile(1,0), initialPopulation = 20)
+        val smallCity = testGame.addCity(defenderCiv, testGame.getTile(0,1), initialPopulation = 5)
 
         // when
         cityConquestFunctions.puppetCity(attackerCiv)
@@ -177,7 +175,7 @@ class CityConquestFunctionsTest {
     @Test
     fun `should never reduce population below 1 upon capture`() {
         // given
-        val onePopCity = testGame.addCity(defenderCiv, testGame.getTile(Vector2.X), initialPopulation = 1)
+        val onePopCity = testGame.addCity(defenderCiv, testGame.getTile(1,0), initialPopulation = 1)
 
         // when
         CityConquestFunctions(onePopCity).puppetCity(attackerCiv)
@@ -198,8 +196,8 @@ class CityConquestFunctionsTest {
     @Test
     fun `should relocate capital to largest upon city moving`() {
         // given
-        val smallerCity = testGame.addCity(defenderCiv, testGame.getTile(Vector2.X), initialPopulation = 5)
-        val largerCity = testGame.addCity(defenderCiv, testGame.getTile(Vector2.Y), initialPopulation = 8)
+        val smallerCity = testGame.addCity(defenderCiv, testGame.getTile(1,0), initialPopulation = 5)
+        val largerCity = testGame.addCity(defenderCiv, testGame.getTile(0,1), initialPopulation = 8)
 
         // when
         cityConquestFunctions.moveToCiv(attackerCiv)
@@ -213,7 +211,7 @@ class CityConquestFunctionsTest {
     fun `should remove free buildings upon city moving`() {
         // given
         val freeBuildingCiv = testGame.addCiv(gainFreeBuildingTestingUniqueText)
-        val city = testGame.addCity(freeBuildingCiv, testGame.getTile(Vector2.Y), initialPopulation = 10)
+        val city = testGame.addCity(freeBuildingCiv, testGame.getTile(0,1), initialPopulation = 10)
 
         // when
         CityConquestFunctions(city).moveToCiv(attackerCiv)

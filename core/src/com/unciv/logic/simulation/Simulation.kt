@@ -7,7 +7,6 @@ import com.unciv.logic.GameStarter
 import com.unciv.models.metadata.GameSetupInfo
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlin.math.max

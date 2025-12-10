@@ -7,7 +7,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.TileMap
-import com.unciv.logic.map.toHexCoord
 import com.unciv.ui.components.tilegroups.layers.*
 import com.unciv.ui.components.widgets.ZoomableScrollPane
 import kotlin.math.max
@@ -65,7 +64,7 @@ class TileGroupMap<T: TileGroup>(
         for (tileGroup in tileGroups) {
             val positionalVector = if (tileGroupsToUnwrap?.contains(tileGroup) == true) {
                 HexMath.hex2WorldCoords(
-                    tileGroup.tile.tileMap.getUnwrappedPosition(tileGroup.tile.position.toHexCoord()).toVector2()
+                    tileGroup.tile.tileMap.getUnwrappedPosition(tileGroup.tile.position)
                 )
             } else {
                 HexMath.hex2WorldCoords(tileGroup.tile.position)

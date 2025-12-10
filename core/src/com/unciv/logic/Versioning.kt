@@ -3,7 +3,6 @@ package com.unciv.logic
 import com.unciv.UncivGame
 import com.unciv.models.translations.tr
 import yairm210.purity.annotations.Pure
-import yairm210.purity.annotations.Readonly
 
 /**
  *  Wrapper for a release version.
