@@ -24,6 +24,7 @@ internal class ConsoleTileCommands: ConsoleCommandNode {
             val newCamp = Encampment(selectedTile.position)
             newCamp.gameInfo = console.gameInfo
             console.gameInfo.barbarians.encampments.add(newCamp)
+            DevConsoleResponse.OK
         },
 
 
