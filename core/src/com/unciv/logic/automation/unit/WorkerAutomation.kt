@@ -122,7 +122,7 @@ class WorkerAutomation(
         val closestUndevelopedCity = unit.civ.cities
             .filter { it != unit.currentTile.owningCity && it.getTiles().any { tile -> tile.isLand
                     && tile.getUnits().none { unit -> unit.cache.hasUniqueToBuildImprovements }
-                    && tile.isPillaged() || tileHasWorkToDo(tile, unit, localUniqueCache) } }
+                    && (tile.isPillaged() || tileHasWorkToDo(tile, unit, localUniqueCache)) } }
             .sortedByDescending { it.getCenterTile().aerialDistanceTo(currentTile) }
             .firstOrNull { unit.movement.canReach(it.getCenterTile()) } //goto closest undeveloped city
 
