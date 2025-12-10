@@ -53,7 +53,7 @@ class VictoryScreen(
         Global('G', caption = "Global status") {
             override fun getContent(parent: VictoryScreen) = VictoryScreenGlobalVictory(parent.worldScreen)
         },
-        Illustration('I', allowAsSecret = true) {
+        Illustration('I') {
             override fun getContent(parent: VictoryScreen) = VictoryScreenIllustrations(parent, parent.worldScreen)
             override fun isHidden(playerCiv: Civilization) = !VictoryScreenIllustrations.enablePage(playerCiv.gameInfo)
         },
@@ -68,7 +68,8 @@ class VictoryScreen(
         Charts('C') {
             override fun getContent(parent: VictoryScreen) = VictoryScreenCharts(parent.worldScreen)
             override fun isHidden(playerCiv: Civilization) =
-                !playerCiv.isSpectator() && playerCiv.statsHistory.size < 2
+                if (playerCiv.isSpectator()) playerCiv.gameInfo.civilizations.any { it.statsHistory.size >= 2 }
+                else playerCiv.statsHistory.size < 2
         },
         Replay('P', allowAsSecret = true) {
             override fun getContent(parent: VictoryScreen) = VictoryScreenReplay(parent.worldScreen)
