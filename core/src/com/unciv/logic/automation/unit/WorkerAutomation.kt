@@ -279,7 +279,6 @@ class WorkerAutomation(
         if (tile.getOwner() == civInfo) {
             priority += Automation.rankStatsValue(tile.stats.getTerrainStatsBreakdown().toStats(), civInfo)
             if (tile.providesYield()) priority += 2
-            if (tile.isPillaged()) priority += 1
             if (tile.hasFalloutEquivalent()) priority += 1
             if (tile.terrainFeatures.isNotEmpty()) {
                 if (tile.lastTerrain.hasUnique(UniqueType.ProductionBonusWhenRemoved)) priority += 0.5f 
