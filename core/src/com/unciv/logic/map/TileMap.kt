@@ -626,6 +626,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
 
         // only once we know the unit can be placed do we add it to the civ's unit list
         unit.putInTile(unitToPlaceTile)
+        unit.originTile = unitToPlaceTile
         unit.currentMovement = unit.getMaxMovement().toFloat()
         unit.addMovementMemory()
 
