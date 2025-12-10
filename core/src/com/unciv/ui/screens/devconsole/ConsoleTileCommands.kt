@@ -1,11 +1,12 @@
 package com.unciv.ui.screens.devconsole
-
 import com.unciv.Constants
+import com.unciv.logic.automation.civilization.Encampment
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.Notification
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.GameInfo
 import com.unciv.logic.map.mapgenerator.RiverGenerator
 import com.unciv.logic.map.mapgenerator.RiverGenerator.RiverDirections
 import com.unciv.logic.map.tile.Tile
@@ -17,6 +18,14 @@ internal class ConsoleTileCommands: ConsoleCommandNode {
     // - we want the console to allow invalid tile configurations.
 
     override val subcommands = hashMapOf<String, ConsoleCommand>(
+        "spawnBarbarians" to ConsoleAction("tile spawnBarbarians") { console, params ->
+            val selectedTile = console.getSelectedTile()
+            selectedTile.setImprovement(Constants.barbarianEncampment)
+            val newCamp = Encampment(selectedTile.position)
+            newCamp.gameInfo = console.gameInfo
+            console.gameInfo.barbarians.encampments.add(newCamp)
+        },
+
 
         "checkfilter" to ConsoleAction("tile checkfilter <tileFilter>") { console, params ->
             val selectedTile = console.getSelectedTile()
