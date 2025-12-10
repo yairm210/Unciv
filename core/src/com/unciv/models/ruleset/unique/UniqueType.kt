@@ -913,6 +913,7 @@ enum class UniqueType(
     OneTimeUnitLoseStatus("[unitTriggerTarget] loses the [promotion] status", UniqueTarget.UnitTriggerable),
     OneTimeUnitDestroyed("[unitTriggerTarget] is destroyed", UniqueTarget.UnitTriggerable),
     OneTimeUnitGetsName("[unitTriggerTarget] gets a name from the [unitNameGroup] group", UniqueTarget.UnitTriggerable),
+    OneTimeUnitChangesOriginTile("[unitTriggerTarget] changes its origin tile", UniqueTarget.UnitTriggerable),
     //endregion
 
 
