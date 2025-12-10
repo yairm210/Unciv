@@ -18,7 +18,7 @@ internal class ConsoleTileCommands: ConsoleCommandNode {
     // - we want the console to allow invalid tile configurations.
 
     override val subcommands = hashMapOf<String, ConsoleCommand>(
-        "spawnBarbarians" to ConsoleAction("tile spawnBarbarians") { console, params ->
+        "spawnbarbarianencampment" to ConsoleAction("tile spawnbarbarianencampment") { console, _ ->
             val selectedTile = console.getSelectedTile()
             selectedTile.setImprovement(Constants.barbarianEncampment)
             val newCamp = Encampment(selectedTile.position)
