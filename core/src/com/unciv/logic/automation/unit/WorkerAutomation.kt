@@ -118,6 +118,7 @@ class WorkerAutomation(
         localUniqueCache: LocalUniqueCache,
         currentTile: Tile
     ): Boolean {
+        // Note, however, that the closest city to a tile isn't necessarily the owning city
         val closestUndevelopedCity = unit.civ.cities
             .filter { it != unit.currentTile.owningCity && it.getTiles().any { tile -> tile.isLand
                     && tile.getUnits().none { unit -> unit.cache.hasUniqueToBuildImprovements }
