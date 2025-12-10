@@ -176,7 +176,7 @@ enum class Countables(
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val filter = parameterText.getPlaceholderParameters()[0]
             val policyManager = gameContext.civInfo?.policies ?: return null
-            return policyManager.getAdoptedPoliciesMatching(filter, gameContext).size
+            return policyManager.getAdoptedPoliciesMatching(filter, gameContext).count()
         }
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
             UniqueParameterType.PolicyFilter.getTranslatedErrorSeverity(parameterText, ruleset)
@@ -191,7 +191,8 @@ enum class Countables(
             val civilizations = gameContext.gameInfo?.civilizations ?: return null
             return civilizations
                 .filter { it.isAlive() && it.matchesFilter(civFilter, gameContext) }
-                .sumOf { it.policies.getAdoptedPoliciesMatching(policyFilter, gameContext).size }
+                .flatMap { it.policies.getAdoptedPoliciesMatching(policyFilter, gameContext) }
+                .count()
         }
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
             val params = parameterText.getPlaceholderParameters()
