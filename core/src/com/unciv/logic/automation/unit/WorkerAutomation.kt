@@ -209,14 +209,14 @@ class WorkerAutomation(
         val currentTile = unit.getTile()
         
         if (isAutomationWorkableTile(currentTile, tilesToAvoid, currentTile, unit)
-            && getBasePriority(currentTile, unit) >= 5
+            && getBasePriority(currentTile, unit) >= 3
             && (currentTile.isPillaged() || currentTile.hasFalloutEquivalent() || tileHasWorkToDo(currentTile, unit, localUniqueCache)))
             return currentTile
         
         val workableTilesCenterFirst = currentTile.getTilesInDistance(3)
             .filter {
                 isAutomationWorkableTile(it, tilesToAvoid, currentTile, unit) 
-                        && getBasePriority(it, unit) > 1
+                        && getBasePriority(it, unit) >= 0
             }
 
         val workableTilesPrioritized = workableTilesCenterFirst.groupBy { getBasePriority(it, unit) }
@@ -277,7 +277,6 @@ class WorkerAutomation(
 
         var priority = 0f
         if (tile.getOwner() == civInfo) {
-            priority += Automation.rankStatsValue(tile.stats.getTerrainStatsBreakdown().toStats(), civInfo)
             if (tile.providesYield()) priority += 2
             if (tile.isPillaged()) priority += 1
             if (tile.hasFalloutEquivalent()) priority += 1
@@ -288,9 +287,6 @@ class WorkerAutomation(
             if (tile.terrainHasUnique(UniqueType.FreshWater)) priority += 1
             // we want our farms up when unlocking Civil Service
         }
-        // give a minor priority to tiles that we could expand onto
-        else if (tile.getOwner() == null && tile.neighbors.any { it.getOwner() == civInfo })
-            priority += 1
 
         if (tile.hasViewableResource(civInfo)) {
             priority += 1
