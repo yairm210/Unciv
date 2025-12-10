@@ -101,7 +101,7 @@ class CityConquestFunctions(val city: City) {
         conqueringCiv.addNotification("Received [$goldPlundered] Gold for capturing [${city.name}]",
             city.getCenterTile().position, NotificationCategory.General, NotificationIcon.Gold)
 
-        val reconqueredCityWhileStillInResistance = city.previousOwner == receivingCiv.civName && city.isInResistance()
+        val reconqueredCityWhileStillInResistance = city.previousOwner == receivingCiv.civID && city.isInResistance()
 
         destroyBuildingsOnCapture()
 
@@ -277,7 +277,7 @@ class CityConquestFunctions(val city: City) {
         city.state = GameContext(city)
         city.hasJustBeenConquered = false
         city.turnAcquired = city.civ.gameInfo.turns
-        city.previousOwner = oldCiv.civName
+        city.previousOwner = oldCiv.civID
 
         // now that the tiles have changed, we need to reassign population
         for (workedTile in city.workedTiles.filterNot { city.tiles.contains(it) }) {

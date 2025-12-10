@@ -126,7 +126,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         if (!civInfo.isBarbarian) {
             for (entry in viewedCivs) {
                 val metCiv = entry.key
-                if (metCiv == civInfo || metCiv.isBarbarian || civInfo.diplomacy.containsKey(metCiv.civName)) continue
+                if (metCiv == civInfo || metCiv.isBarbarian || civInfo.diplomacy.containsKey(metCiv.civID)) continue
                 civInfo.diplomacyFunctions.makeCivilizationsMeet(metCiv)
                 if(!civInfo.isSpectator())
                     civInfo.addNotification("We have encountered [${metCiv.civName}]!",
@@ -377,11 +377,11 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         if (preCalculated != null) {
             // We usually want to update this for a pair of civs at the same time
             // Since this function *should* be symmetrical for both civs, we can just do it once
-            civInfo.proximity[otherCiv.civName] = preCalculated
+            civInfo.proximity[otherCiv.civID] = preCalculated
             return preCalculated
         }
         if (civInfo.cities.isEmpty() || otherCiv.cities.isEmpty()) {
-            civInfo.proximity[otherCiv.civName] = Proximity.None
+            civInfo.proximity[otherCiv.civID] = Proximity.None
             return Proximity.None
         }
 
@@ -440,7 +440,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         if (numMajors <= 4 && proximity > Proximity.Far)
             proximity = Proximity.Far
 
-        civInfo.proximity[otherCiv.civName] = proximity
+        civInfo.proximity[otherCiv.civID] = proximity
 
         return proximity
     }

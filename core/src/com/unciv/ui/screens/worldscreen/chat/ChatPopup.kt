@@ -105,10 +105,10 @@ class ChatPopup(
         val userId = UncivGame.Current.settings.multiplayer.getUserId()
         val currentPlayerCiv = worldScreen.gameInfo.currentPlayerCiv
         val civName = if (currentPlayerCiv.playerId == userId) {
-            currentPlayerCiv.civName
+            currentPlayerCiv.civID
         } else {
             // what do I do if someone is a spectator?
-            worldScreen.gameInfo.civilizations.firstOrNull { civ -> civ.playerId == userId }?.civName
+            worldScreen.gameInfo.civilizations.firstOrNull { civ -> civ.playerId == userId }?.civID
                 ?: "Unknown"
         }
 

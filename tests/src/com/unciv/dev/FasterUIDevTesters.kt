@@ -46,8 +46,8 @@ internal enum class FasterUIDevTesters : IFasterUITester {
                     if (j <= i || Random.nextInt(3) == 0) continue
                     // Do a makeCivilizationsMeet without gifts, notifications, or war joins
                     val status = DiplomaticStatus.entries.random()
-                    civ.diplomacy[other.civName] = diplomacyManagerFactory(civ, other, status)
-                    other.diplomacy[civ.civName] = diplomacyManagerFactory(other, civ, status)
+                    civ.diplomacy[other.civID] = diplomacyManagerFactory(civ, other, status)
+                    other.diplomacy[civ.civID] = diplomacyManagerFactory(other, civ, status)
                 }
             }
 
@@ -56,7 +56,7 @@ internal enum class FasterUIDevTesters : IFasterUITester {
         }
 
         private fun diplomacyManagerFactory(civ: Civilization, other: Civilization, status: DiplomaticStatus): DiplomacyManager {
-            val mgr = DiplomacyManager(civ, other.civName)
+            val mgr = DiplomacyManager(civ, other)
             mgr.diplomaticStatus = status
             mgr.setInfluenceWithoutSideEffects(Random.nextDouble(-90.0, 90.0).toFloat())
             mgr.diplomaticModifiers["Test"] = Random.nextDouble(-90.0, 90.0).toFloat()

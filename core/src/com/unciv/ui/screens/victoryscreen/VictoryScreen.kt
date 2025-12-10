@@ -150,17 +150,18 @@ class VictoryScreen(
     }
 
     private fun displayWinner(victoryData: VictoryData) {
-        // We could add `, victoryTurn` to the left side - undecided how to display
-        val (winningCiv, victoryType) = victoryData
+        // Undecided how to display victoryTurn
+        val victoryType = victoryData.victoryType
+        val winningCiv = victoryData.winningCivObject
         val victory = gameInfo.ruleset.victories[victoryType]
             ?: Victory()  // This contains our default victory/defeat texts
-        if (winningCiv == playerCiv.civName) {
+        if (winningCiv.civID == playerCiv.civID) {
             displayWonOrLost("You have won a [$victoryType] Victory!", victory.victoryString)
             if (!music.chooseTrack(victory.name, MusicMood.Victory, EnumSet.of(MusicTrackChooserFlags.PrefixMustMatch, MusicTrackChooserFlags.SuffixMustMatch))) {
                 music.chooseTrack(playerCiv.civName, listOf(MusicMood.Victory, MusicMood.Theme), EnumSet.of(MusicTrackChooserFlags.SuffixMustMatch))
             }
         } else {
-            displayWonOrLost("[$winningCiv] has won a [$victoryType] Victory!", victory.defeatString)
+            displayWonOrLost("[${winningCiv.civName}] has won a [$victoryType] Victory!", victory.defeatString)
             if (!music.chooseTrack(victory.name, MusicMood.Defeat, EnumSet.of(MusicTrackChooserFlags.PrefixMustMatch, MusicTrackChooserFlags.SuffixMustMatch))) {
                 music.chooseTrack(playerCiv.civName, MusicMood.Defeat, EnumSet.of(MusicTrackChooserFlags.SuffixMustMatch))
             }

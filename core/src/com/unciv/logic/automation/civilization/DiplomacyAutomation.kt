@@ -36,7 +36,7 @@ object DiplomacyAutomation {
             // Default setting is 2, this will be changed according to different civ.
             if ((1..10).random() <= 2 * civInfo.getPersonality().scaledFocus(PersonalityValue.Diplomacy) 
                 && wantsToSignDeclarationOfFrienship(civInfo, otherCiv)) {
-                otherCiv.popupAlerts.add(PopupAlert(AlertType.DeclarationOfFriendship, civInfo.civName))
+                otherCiv.popupAlerts.add(PopupAlert(AlertType.DeclarationOfFriendship, civInfo.civID))
             }
         }
     }
@@ -146,7 +146,7 @@ object DiplomacyAutomation {
                     // else let them make counter offer
                 }
                 
-                otherCiv.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
+                otherCiv.tradeRequests.add(TradeRequest(civInfo.civID, tradeLogic.currentTrade.reverse()))
             }
             else {
                 // Remember this for a few turns to save computation power
@@ -178,7 +178,7 @@ object DiplomacyAutomation {
                 tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.openBorders, TradeOfferType.Agreement, speed = civInfo.gameInfo.speed))
                 tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.openBorders, TradeOfferType.Agreement, speed = civInfo.gameInfo.speed))
 
-                otherCiv.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
+                otherCiv.tradeRequests.add(TradeRequest(civInfo.civID, tradeLogic.currentTrade.reverse()))
             } else {
                 // Remember this for a few turns to save computation power
                 civInfo.getDiplomacyManager(otherCiv)!!.setFlag(DiplomacyFlags.DeclinedOpenBorders, 5)
@@ -249,7 +249,7 @@ object DiplomacyAutomation {
 
             tradeLogic.currentTrade.ourOffers.add(tradeOffer)
             tradeLogic.currentTrade.theirOffers.add(tradeOffer)
-            otherCiv.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
+            otherCiv.tradeRequests.add(TradeRequest(civInfo.civID, tradeLogic.currentTrade.reverse()))
         }
     }
 
@@ -274,7 +274,7 @@ object DiplomacyAutomation {
 
                 tradeLogic.currentTrade.ourOffers.add(tradeOffer)
                 tradeLogic.currentTrade.theirOffers.add(tradeOffer)
-                otherCiv.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
+                otherCiv.tradeRequests.add(TradeRequest(civInfo.civID, tradeLogic.currentTrade.reverse()))
             } else {
                 // Remember this for a few turns to save computation power
                 civInfo.getDiplomacyManager(otherCiv)!!.setFlag(DiplomacyFlags.DeclinedDefensivePact, 5)
@@ -385,7 +385,7 @@ object DiplomacyAutomation {
             // Don't allow AIs to offer peace to city states allied with their enemies
             .filterNot { it.isCityState && it.allyCiv != null && civInfo.isAtWarWith(it.allyCiv!!) }
             // ignore civs that we have already offered peace this turn as a counteroffer to another civ's peace offer
-            .filter { it.tradeRequests.none { tradeRequest -> tradeRequest.requestingCiv == civInfo.civName && tradeRequest.trade.isPeaceTreaty() } }
+            .filter { it.tradeRequests.none { tradeRequest -> tradeRequest.requestingCiv == civInfo.civID && tradeRequest.trade.isPeaceTreaty() } }
             .toList()
 
         for (enemy in enemiesCiv) {
@@ -429,7 +429,7 @@ object DiplomacyAutomation {
                 }
             }
 
-            enemy.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
+            enemy.tradeRequests.add(TradeRequest(civInfo.civID, tradeLogic.currentTrade.reverse()))
         }
     }
 
@@ -450,14 +450,14 @@ object DiplomacyAutomation {
 
             val tradeLogic = TradeLogic(civInfo, civToAsk)
             // TODO: add gold offer here
-            tradeLogic.currentTrade.theirOffers.add(TradeOffer(enemyCiv.civName, TradeOfferType.WarDeclaration, speed = civInfo.gameInfo.speed))
-            civToAsk.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
+            tradeLogic.currentTrade.theirOffers.add(TradeOffer(enemyCiv.civID, TradeOfferType.WarDeclaration, speed = civInfo.gameInfo.speed))
+            civToAsk.tradeRequests.add(TradeRequest(civInfo.civID, tradeLogic.currentTrade.reverse()))
         }
     }
 
     @Readonly
     private fun areWeOfferingTrade(civInfo: Civilization, otherCiv: Civilization, offerName: String): Boolean {
-        return otherCiv.tradeRequests.filter { request -> request.requestingCiv == civInfo.civName }
+        return otherCiv.tradeRequests.filter { request -> request.requestingCiv == civInfo.civID }
             .any { trade -> trade.trade.ourOffers.any { offer -> offer.name == offerName }
                     || trade.trade.theirOffers.any { offer -> offer.name == offerName } }
     }

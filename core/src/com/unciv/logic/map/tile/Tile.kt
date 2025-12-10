@@ -280,7 +280,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     fun isExplored(player: Civilization): Boolean {
         if (DebugUtils.VISIBLE_MAP || player.isSpectator())
             return true
-        return exploredBy.contains(player.civName)
+        return exploredBy.contains(player.civID)
     }
 
     @Readonly fun isCityCenter(): Boolean = isCityCenterInternal
@@ -841,7 +841,7 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
                 // remove previous neutral tile owner
                 getRoadOwner()!!.neutralRoads.remove(this.position)
             }
-            roadOwner = city.civ.civName // only when taking control, otherwise last owner
+            roadOwner = city.civ.civID // only when taking control, otherwise last owner
             roadOwnerObject = city.civ
         } else if (roadStatus != RoadStatus.None && owningCity != null) {
             // Razing City! Remove owner
@@ -986,10 +986,10 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         if (newRoadStatus == RoadStatus.None && owningCity == null)
             getRoadOwner()?.neutralRoads?.remove(this.position)
         else if (currentOwner != null && currentOwner != roadOwnerObject) {
-            roadOwner = currentOwner.civName
+            roadOwner = currentOwner.civID
             roadOwnerObject = currentOwner
         } else if (creatingCivInfo != null) {
-            roadOwner = creatingCivInfo.civName // neutral tile, use building unit
+            roadOwner = creatingCivInfo.civID // neutral tile, use building unit
             roadOwnerObject = creatingCivInfo
             creatingCivInfo.neutralRoads.add(this.position)
         }
@@ -1094,15 +1094,15 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
     fun setExplored(player: Civilization, isExplored: Boolean, explorerPosition: Vector2? = null) {
         if (isExplored) {
             // Disable the undo button if a new tile has been explored
-            if (!exploredBy.contains(player.civName)) {
+            if (!exploredBy.contains(player.civID)) {
                 GUI.clearUndoCheckpoints()
-                exploredBy = exploredBy.withItem(player.civName)
+                exploredBy = exploredBy.withItem(player.civID)
             }
 
             if (player.playerType == PlayerType.Human)
                 player.exploredRegion.checkTilePosition(position, explorerPosition)
         } else {
-            exploredBy = exploredBy.withoutItem(player.civName)
+            exploredBy = exploredBy.withoutItem(player.civID)
         }
     }
 
@@ -1170,8 +1170,8 @@ class Tile : IsPartOfGameInfoSerialization, Json.Serializable {
         if (naturalWonder != null) lineList += naturalWonder!!
         if (roadStatus !== RoadStatus.None && !isCityCenter()) lineList += roadStatus.name
         if (improvement != null) lineList += improvement!!
-        if (civilianUnit != null) lineList += civilianUnit!!.name + " - " + civilianUnit!!.civ.civName
-        if (militaryUnit != null) lineList += militaryUnit!!.name + " - " + militaryUnit!!.civ.civName
+        if (civilianUnit != null) lineList += civilianUnit!!.name + " - " + civilianUnit!!.civ.civID
+        if (militaryUnit != null) lineList += militaryUnit!!.name + " - " + militaryUnit!!.civ.civID
         if (this::baseTerrainObject.isInitialized && isImpassible()) lineList += Constants.impassable
         return lineList.joinToString()
     }

@@ -20,7 +20,7 @@ internal enum class ConsoleParameterType(
     val preferquoted: Boolean = false
 ) {
     none( { emptyList() } ),
-    civName( { civilizations.map { it.civName } } ),
+    civName( { civilizations.map { it.civID } } ),
     unitName( { ruleset.units.keys } ),
     promotionName( { ruleset.unitPromotions.keys } ),
     improvementName( { ruleset.tileImprovements.keys } ),

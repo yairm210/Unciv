@@ -1245,7 +1245,7 @@ object UniqueTriggerActivation {
                             diplomacyCityState.addInfluence(-15f)
 
                             if (!diplomacyCityState.hasFlag(DiplomacyFlags.TilesStolen)) {
-                                civInfo.popupAlerts.add(PopupAlert(AlertType.TilesStolen, otherCiv.civName))
+                                civInfo.popupAlerts.add(PopupAlert(AlertType.TilesStolen, otherCiv.civID))
                                 diplomacyCityState.setFlag(DiplomacyFlags.TilesStolen, 1)
                             }
                         }

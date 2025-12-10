@@ -38,7 +38,7 @@ class CityConquestFunctionsTest {
 
         // otherwise test crashes when puppetying city
         testGame.gameInfo.currentPlayerCiv = testGame.addCiv()
-        testGame.gameInfo.currentPlayer = testGame.gameInfo.currentPlayerCiv.civName
+        testGame.gameInfo.currentPlayer = testGame.gameInfo.currentPlayerCiv.civID
     }
 
     // Note: diplomacy repercussions for capturing/liberating cities are tested in DiplomacyManagerTest
@@ -50,7 +50,7 @@ class CityConquestFunctionsTest {
 
         // then
         assertEquals(attackerCiv, defenderCity.civ)
-        assertEquals(defenderCiv.civName, defenderCity.previousOwner)
+        assertEquals(defenderCiv.civID, defenderCity.previousOwner)
     }
 
     @Test
