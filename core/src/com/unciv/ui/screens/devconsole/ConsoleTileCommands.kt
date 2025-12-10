@@ -18,15 +18,6 @@ internal class ConsoleTileCommands: ConsoleCommandNode {
     // - we want the console to allow invalid tile configurations.
 
     override val subcommands = hashMapOf<String, ConsoleCommand>(
-        "spawnbarbarianencampment" to ConsoleAction("tile spawnbarbarianencampment") { console, _ ->
-            val selectedTile = console.getSelectedTile()
-            selectedTile.setImprovement(Constants.barbarianEncampment)
-            val newCamp = Encampment(selectedTile.position)
-            newCamp.gameInfo = console.gameInfo
-            console.gameInfo.barbarians.encampments.add(newCamp)
-            DevConsoleResponse.OK
-        },
-
 
         "checkfilter" to ConsoleAction("tile checkfilter <tileFilter>") { console, params ->
             val selectedTile = console.getSelectedTile()
@@ -141,6 +132,14 @@ internal class ConsoleTileCommands: ConsoleCommandNode {
                 DevConsoleResponse.OK
             }
         },
+
+        "spawnbarbarianencampment" to ConsoleAction("tile spawnbarbarianencampment") { console, _ ->
+            val selectedTile = console.getSelectedTile()
+            console.gameInfo.barbarians.createNewCamp(selectedTile)
+
+            DevConsoleResponse.OK
+        },
+
     )
 
     private fun setBaseTerrain(tile: Tile, terrain: Terrain): DevConsoleResponse {
