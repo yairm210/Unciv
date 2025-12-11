@@ -8,6 +8,7 @@ import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toPercent
 import kotlin.math.min
 
@@ -98,10 +99,10 @@ object UnitActionsGreatPerson {
     }
 
     internal fun getConductTradeMissionActions(unit: MapUnit, tile: Tile) = sequence {
+        val canConductTradeMission = tile.owningCity?.civ?.isCityState == true
+            && tile.owningCity?.civ != unit.civ
+            && tile.owningCity?.civ?.isAtWarWith(unit.civ) == false
         for (unique in unit.getMatchingUniques(UniqueType.CanTradeWithCityStateForGoldAndInfluence)) {
-            val canConductTradeMission = tile.owningCity?.civ?.isCityState == true
-                && tile.owningCity?.civ != unit.civ
-                && tile.owningCity?.civ?.isAtWarWith(unit.civ) == false
             val influenceEarned = unique.params[0].toFloat()
 
             yield(UnitAction(
@@ -119,7 +120,7 @@ object UnitActionsGreatPerson {
                     val tileOwningCiv = tile.owningCity!!.civ
 
                     tileOwningCiv.getDiplomacyManager(unit.civ)!!.addInfluence(influenceEarned)
-                    unit.civ.addNotification("Your trade mission to [$tileOwningCiv] has earned you [$goldEarnedInt] gold and [$influenceEarned] influence!",
+                    unit.civ.addNotification("Your trade mission to [$tileOwningCiv] has earned you [${goldEarnedInt.tr()}] gold and [${influenceEarned.tr()}] influence!",
                         NotificationCategory.General, tileOwningCiv.civName, NotificationIcon.Gold, NotificationIcon.Culture)
                     unit.consume()
                 }.takeIf { unit.hasMovement() && canConductTradeMission }
