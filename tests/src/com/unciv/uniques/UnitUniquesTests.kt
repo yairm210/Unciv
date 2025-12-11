@@ -206,4 +206,37 @@ class UnitUniquesTests {
             promotionNode2.parents.any { it.promotion == promotionBranch2 }
         )
     }
+
+    @Test
+    fun testTradeMission() {
+        // when
+        game.makeHexagonalMap(1)
+        game.setSpeed("Epic")
+
+        val cityState = game.addCiv(cityStateType = "Cultured")
+        val cityStateCapitalTile = game.getTile(HexCoord.Zero)
+        val cityStateCapital = game.addCity(cityState, cityStateCapitalTile)
+        val unitTile = game.getTile(1,0)
+        cityStateCapital.expansion.takeOwnership(unitTile)
+
+        val mainCiv = game.addCiv(isPlayer = true)
+        mainCiv.tech.addTechnology("Agriculture", false)
+        mainCiv.diplomacyFunctions.makeCivilizationsMeet(cityState)
+        val baseGold = mainCiv.gold
+
+        val statExpression = "[+(350 + 50 * [Era number]) * [Speed modifier for [Gold]] / 100] Gold"
+        val unique = UniqueType.CanTradeWithCityStateForStatsAndInfluence.text.fillPlaceholders("Sell Caravan", statExpression, "30")
+        val merchantBase = game.createBaseUnit("Civilian", unique)
+        val greatMerchant = game.addUnit(merchantBase.name, mainCiv, unitTile)
+
+        // then
+        val tradeAction = UnitActions.getUnitActions(greatMerchant, UnitActionType.ConductTradeMission)
+            .firstOrNull { it.action != null } // This tests that the action should be enabled, too
+        Assert.assertNotNull("Great Merchant should have a Conduct Trade Mission action", tradeAction)
+
+        // execute
+        tradeAction!!.action!!.invoke()
+        Assert.assertEquals("Earned gold should match formula for era 0 and modifier 1.5", 525, mainCiv.gold - baseGold)
+        Assert.assertEquals("Earned influence should match parameter", 30f, cityState.getDiplomacyManager(mainCiv)?.getInfluence())
+    }
 }

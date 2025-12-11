@@ -1,5 +1,6 @@
 package com.unciv.ui.screens.worldscreen.unit.actions
 
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.mapunit.MapUnit
@@ -7,7 +8,10 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.unique.Countables
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.stats.Stats
 import com.unciv.ui.components.extensions.toPercent
 import kotlin.math.min
 
@@ -98,29 +102,52 @@ object UnitActionsGreatPerson {
     }
 
     internal fun getConductTradeMissionActions(unit: MapUnit, tile: Tile) = sequence {
-        for (unique in unit.getMatchingUniques(UniqueType.CanTradeWithCityStateForGoldAndInfluence)) {
+        val uniques = unit.getMatchingUniques(UniqueType.CanTradeWithCityStateForGoldAndInfluence) +
+            unit.getMatchingUniques(UniqueType.CanTradeWithCityStateForStatsAndInfluence)
+        for (unique in uniques) {
+            val isClassicUnique = unique.type == UniqueType.CanTradeWithCityStateForGoldAndInfluence
             val canConductTradeMission = tile.owningCity?.civ?.isCityState == true
                 && tile.owningCity?.civ != unit.civ
                 && tile.owningCity?.civ?.isAtWarWith(unit.civ) == false
-            val influenceEarned = unique.params[0].toFloat()
+            val getStats: (Civilization) -> Stats =
+                if (isClassicUnique) {
+                    // http://civilization.wikia.com/wiki/Great_Merchant_(Civ5)
+                    { Stats(gold = (350 + 50 * it.getEraNumber()) * it.gameInfo.speed.goldCostModifier) }
+                } else {
+                    { Stats.parseUsingCountables(unique.params[1], GameContext(it)) }
+                }
+            val getInfluence: (Civilization) -> Float =
+                if (isClassicUnique) {
+                    { unique.params[0].toFloat() }
+                } else {
+                    { Countables.getCountableAmount(unique.params[2], GameContext(it))?.toFloat() ?: 0f }
+                }
+            val getIcons: (Stats) -> Array<String> =
+                if (isClassicUnique) {
+                    { arrayOf(NotificationIcon.Gold, NotificationIcon.Culture) }
+                } else {
+                    { it.map { (key, _) -> key.notificationIcon }.toTypedArray() }
+                }
+            val notificationName = if (isClassicUnique) "trade mission"
+                else unique.params[0].split(' ').drop(1).joinToString(" ") { it.lowercase() }
 
             yield(UnitAction(
                 UnitActionType.ConductTradeMission, 70f,
+                title = if (isClassicUnique) UnitActionType.ConductTradeMission.value else unique.params[0],
                 action = {
-                    // http://civilization.wikia.com/wiki/Great_Merchant_(Civ5)
-                    var goldEarned = (350 + 50 * unit.civ.getEraNumber()) * unit.civ.gameInfo.speed.goldCostModifier
+                    val statsEarned = getStats(unit.civ)
 
                     // Apply the gold trade mission modifier
                     for (goldUnique in unit.getMatchingUniques(UniqueType.PercentGoldFromTradeMissions, checkCivInfoUniques = true))
-                        goldEarned *= goldUnique.params[0].toPercent()
+                        statsEarned.gold *= goldUnique.params[0].toPercent()
 
-                    val goldEarnedInt = goldEarned.toInt()
-                    unit.civ.addGold(goldEarnedInt)
+                    unit.civ.addStats(statsEarned)
                     val tileOwningCiv = tile.owningCity!!.civ
-
+                    val influenceEarned = getInfluence(unit.civ)
                     tileOwningCiv.getDiplomacyManager(unit.civ)!!.addInfluence(influenceEarned)
-                    unit.civ.addNotification("Your trade mission to [$tileOwningCiv] has earned you [$goldEarnedInt] gold and [$influenceEarned] influence!",
-                        NotificationCategory.General, tileOwningCiv.civName, NotificationIcon.Gold, NotificationIcon.Culture)
+
+                    unit.civ.addNotification("Your [$notificationName] to [$tileOwningCiv] has earned you [$statsEarned] and [$influenceEarned] influence!",
+                        NotificationCategory.General, tileOwningCiv.civName, *getIcons(statsEarned))
                     unit.consume()
                 }.takeIf { unit.hasMovement() && canConductTradeMission }
             ))
