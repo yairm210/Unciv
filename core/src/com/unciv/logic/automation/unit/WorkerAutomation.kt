@@ -513,10 +513,10 @@ class WorkerAutomation(
                 // For bonus resources, we want to build just enough resource-specific improvements
                 // to unlock stone works and stables, otherwise farms are better
                 if (tile.improvement != null && tile.tileResource.isImprovedBy(tile.improvement!!)) {
-                    value -= 0.5f // enough to offset the 0.2f food vs production value difference
+                    value -= 0.3f // enough to offset the 0.2f food vs production value difference
                 }
                 if (isResourceImprovedByNewImprovement && tile.getTilesInDistance(4).none { it.getTileImprovement()?.name == improvementName }) {
-                    value += 0.5f 
+                    value += 0.3f 
                 }
             }
         }
