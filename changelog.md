@@ -1,22 +1,13 @@
-## 4.18.20
+## 4.19.0
 
 By EmperorPinguin:
-- Increase ancient ruin count multiplier 
-- AI: don't build units which cannot attack 
-- Remove pillaged status from getBasePriority in worker automation 
-- Fix bonus resource improvement value 
-- Speedup wander() by moving only 1 tile 
+- CPU performance improvements
+- AI don't build units which cannot attack 
+- AI: Better 'tile-to-work' picking 
 
 By SomeTroglodyte:
-- Unit tests: Complete coverage for Countables 
-- Streamed extracting while downloading mods 
-- Fix  regression 
-- Fix  VictoryScreen crash loopholes 
-- Trade mission notification: show influence without decimals if it happens to be an integer 
-
-Battle notification translation file fixed duplicites - By GameCobra
-
-Move civ json key to a new variable - By SeventhM
+- Faster mod download
+- Fix VictoryScreen crash loopholes
 
 Add Hindi language - By monikaanaaya2021-cmd
 
