@@ -588,7 +588,7 @@ object NextTurnAutomation {
             civ.allyCiv
         }
 
-        civ.diplomaticVoteForCiv(chosenCiv?.civName)
+        civ.diplomaticVoteForCiv(chosenCiv?.civID)
     }
 
     private fun issueRequests(civInfo: Civilization) {
@@ -607,7 +607,7 @@ object NextTurnAutomation {
         when {
             diplomacyManager.hasFlag(demand.willIgnoreViolation) -> {}
             diplomacyManager.hasFlag(demand.agreedToDemand) -> {
-                otherCiv.popupAlerts.add(PopupAlert(demand.violationDiscoveredAlert, civInfo.civName))
+                otherCiv.popupAlerts.add(PopupAlert(demand.violationDiscoveredAlert, civInfo.civID))
                 diplomacyManager.setFlag(demand.willIgnoreViolation, 100)
                 diplomacyManager.setModifier(demand.betrayedPromiseDiplomacyMpodifier, -20f)
                 diplomacyManager.removeFlag(demand.agreedToDemand)
@@ -615,7 +615,7 @@ object NextTurnAutomation {
             else -> {
                 val threatLevel = Automation.threatAssessment(civInfo, otherCiv)
                 if (threatLevel < ThreatLevel.High) // don't piss them off for no reason please.
-                    otherCiv.popupAlerts.add(PopupAlert(demand.demandAlert, civInfo.civName))
+                    otherCiv.popupAlerts.add(PopupAlert(demand.demandAlert, civInfo.civID))
             }
         }
         diplomacyManager.removeFlag(demand.violationOccurred)

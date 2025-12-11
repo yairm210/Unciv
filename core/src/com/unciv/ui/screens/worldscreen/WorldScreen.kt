@@ -339,7 +339,7 @@ class WorldScreen(
             val latestGame = game.onlineMultiplayer.multiplayerServer.downloadGame(gameInfo.gameId)
             debug("loadLatestMultiplayerState downloaded game: gameId: %s, turn: %s, curCiv: %s",
                 latestGame.gameId, latestGame.turns, latestGame.currentPlayer)
-            if (viewingCiv.civName == latestGame.currentPlayer || viewingCiv.civName == Constants.spectator) {
+            if (viewingCiv.civID == latestGame.currentPlayer || viewingCiv.civID == Constants.spectator) {
                 game.notifyTurnStarted()
             }
             launchOnGLThread {
@@ -558,13 +558,13 @@ class WorldScreen(
     
     @Readonly
     fun getRestoreState(): RestoreState {
-        return RestoreState(mapHolder, selectedCiv.civName, viewingCiv.civName, fogOfWar)
+        return RestoreState(mapHolder, selectedCiv.civID, viewingCiv.civID, fogOfWar)
     }
 
     private fun restore(restoreState: RestoreState) {
 
         // This is not the case if you have a multiplayer game where you play as 2 civs
-        if (viewingCiv.civName == restoreState.viewingCivName) {
+        if (viewingCiv.civID == restoreState.viewingCivName) {
             mapHolder.zoom(restoreState.zoom)
             mapHolder.scrollX = restoreState.scrollX
             mapHolder.scrollY = restoreState.scrollY

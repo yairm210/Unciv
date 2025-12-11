@@ -46,11 +46,14 @@ internal object ConsoleLauncher {
     private fun runSimulation() {
         val ruleset = RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!
 
-        ruleset.nations[simulationCiv1] = Nation().apply { name = simulationCiv1 }
-        ruleset.nations[simulationCiv2] = Nation().apply { name = simulationCiv2 }
+        val simulationNation1 = Nation().apply { name = simulationCiv1 }
+        ruleset.nations[simulationCiv1] = simulationNation1
+        val simulationNation2 = Nation().apply { name = simulationCiv2 }
+        ruleset.nations[simulationCiv2] = simulationNation2
         //These names need PascalCase if applied in-game for testing (e.g. if (civInfo.civName == "SimulationCiv2"))
         
-        val gameParameters = getGameParameters(simulationCiv1, simulationCiv2)
+        val gameParameters = getGameParameters(simulationNation1, simulationNation2)
+        gameParameters.players.last().setNationTransient(ruleset) // set the Spectator
         val mapParameters = getMapParameters()
         val gameSetupInfo = GameSetupInfo(gameParameters, mapParameters)
         val newGame = GameStarter.startNewGame(gameSetupInfo)
@@ -76,14 +79,16 @@ internal object ConsoleLauncher {
         }
     }
 
-    private fun getGameParameters(vararg civilizations: String): GameParameters {
+    private fun getGameParameters(vararg civilizations: Nation): GameParameters {
         return GameParameters().apply {
             difficulty = "King" // Prince got little happiness to expand, leading to slow games and few domination victories
             numberOfCityStates = 0
             speed = Speed.DEFAULT
             noBarbarians = true
             players = ArrayList<Player>().apply {
-                civilizations.forEach { add(Player(it)) }
+                for (it in civilizations) {
+                    add(Player(it))
+                }
                 add(Player(Constants.spectator, PlayerType.Human))
             }
         }

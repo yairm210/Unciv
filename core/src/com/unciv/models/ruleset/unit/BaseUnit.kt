@@ -128,7 +128,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         @LocalState val unit = MapUnit()
         unit.name = name
         unit.civ = civInfo
-        unit.owner = civInfo.civName
+        unit.owner = civInfo.civID
         unit.id = unitId ?: ++civInfo.gameInfo.lastUnitId
 
         // must be after setting name & civInfo because it sets the baseUnit according to the name

@@ -96,7 +96,7 @@ class DiplomacyAction : NotificationAction {
 
     constructor(otherCiv: Civilization, showTrade: Boolean = false) {
         this.otherCiv = otherCiv
-        this.otherCivName = otherCiv.civName
+        this.otherCivName = otherCiv.civID
         this.showTrade = showTrade
     }
 

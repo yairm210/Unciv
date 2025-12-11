@@ -314,7 +314,7 @@ class ResourceTests {
         assert(civInfo.getCivResourcesByName()[resource.name] == 2) // no change yet
         city.cityConstructions.setCurrentConstruction(consumingBuilding.name)
         civInfo.playerType = PlayerType.Human // to not loop endlessly on "next turn"
-        game.gameInfo.currentPlayer = civInfo.civName
+        game.gameInfo.currentPlayer = civInfo.civID
         game.gameInfo.currentPlayerCiv = civInfo
         game.gameInfo.nextTurn()
         assert(civInfo.getCivResourcesByName()[resource.name] == 1) // 1 was consumed because production started

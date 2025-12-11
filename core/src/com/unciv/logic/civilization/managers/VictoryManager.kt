@@ -52,7 +52,7 @@ class VictoryManager : IsPartOfGameInfoSerialization {
             .flatMap { civ -> civ.cities.asSequence()
                 .flatMap { it.cityConstructions.getBuiltBuildings() }
                 .filter { it.hasUnique(UniqueType.OneTimeTriggerVoting, GameContext.IgnoreConditionals) }
-                .map { it.name to civ.civName }
+                .map { it.name to civ.civID }
             }.firstOrNull() ?: (null to null)
 
     @Readonly
@@ -78,7 +78,7 @@ class VictoryManager : IsPartOfGameInfoSerialization {
         val bestCiv = results.maxByOrNull { it.value } ?: return false
 
         // If we don't have the highest score, we have not won anyway
-        if (bestCiv.key != civInfo.civName) return false
+        if (bestCiv.key != civInfo.civID) return false
 
         // If we don't have enough votes, we haven't won
         if (bestCiv.value < votesNeededForDiplomaticVictory()) return false

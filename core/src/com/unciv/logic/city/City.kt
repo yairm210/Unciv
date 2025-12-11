@@ -126,7 +126,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         }
         set(value) {
             field = value
-            foundingCiv = value?.civName ?: ""
+            foundingCiv = value?.civID ?: ""
         }
 
 
