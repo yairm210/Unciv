@@ -83,7 +83,7 @@ class ModConstants {
     var naturalWonderCountAddedConstant = 0.1f
 
     // MapGenerator.spreadAncientRuins: number of ruins = suitable tile count * this
-    var ancientRuinCountMultiplier = 0.02f
+    var ancientRuinCountMultiplier = 0.025f
     // MapGenerator.spawnIce: spawn Ice where T < this, with T calculated from temperatureintensity, latitude and perlin noise.
     var spawnIceBelowTemperature = -0.8f
     // MapGenerator.spawnLakesAndCoasts: Water bodies up to this tile count become Lakes
