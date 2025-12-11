@@ -1,5 +1,8 @@
 package com.unciv.models.stats
 
+import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.unique.Countables
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.translations.tr
 import yairm210.purity.annotations.*
 
@@ -282,6 +285,43 @@ open class Stats(
 
         val ZERO = Stats()
         val DefaultCityCenterMinimum = Stats(food = 2f, production = 1f)
+
+        @Suppress("RegExpRedundantEscape")
+        val oneStatUsingCountablesPattern = """([+-]\d+|([+-]\[.+\])|\[([+-].+)\]) ($allStatNames)"""
+        val oneStatUsingCountablesRegex = Regex(oneStatUsingCountablesPattern)
+
+        @Readonly
+        fun isStatsUsingCountables(parameter: String, ruleset: Ruleset): Boolean {
+            if (parameter.isEmpty() || parameter[0] !in "+-[") return false
+            val used = mutableSetOf<Stat>()
+            val entries = parameter.split(", ")
+            for (entry in entries) {
+                val match = oneStatUsingCountablesRegex.matchEntire(entry) ?: return false
+                // 0 is the entire match, 1 the constant/expression, 2 & 3 the two expression variants, 4 the stat name
+                val stat = Stat.valueOf(match.groupValues[4])
+                if (stat in used) return false // allow each Stat no more than once
+                used += stat
+                val countableGroup = match.groups[2] ?: match.groups[3] ?: continue
+                if (!Countables.isKnownValue(countableGroup.value, ruleset)) return false
+            }
+            return true
+        }
+
+        @Readonly
+        fun parseUsingCountables(parameter: String, gameContext: GameContext): Stats {
+            val result = Stats()
+            val entries = parameter.split(", ")
+            for (entry in entries) {
+                val match = oneStatUsingCountablesRegex.matchEntire(entry)!!
+                // 0 is the entire match, 1 the constant/expression, 2 & 3 the part inside [], 4 the stat name
+                val stat = Stat.valueOf(match.groupValues[4])
+                val countableGroup = match.groups[2] ?: match.groups[3]
+                val value = if (countableGroup == null) match.groupValues[1].toInt()
+                    else Countables.getCountableAmount(countableGroup.value, gameContext) ?: 0
+                result[stat] = value.toFloat()
+            }
+            return result
+        }
     }
 }
 
