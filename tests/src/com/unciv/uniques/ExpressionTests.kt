@@ -1,10 +1,15 @@
 package com.unciv.uniques
 
 import com.unciv.logic.map.HexCoord
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.expressions.Parser
+import com.unciv.models.stats.Stats
 import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.RedirectOutput
+import com.unciv.testing.RedirectPolicy
 import com.unciv.testing.TestGame
+import com.unciv.testing.runTestParcours
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -115,5 +120,40 @@ class ExpressionTests {
         }
 
         assertEquals("failure count", 0, fails)
+    }
+
+    @Test
+    fun testIsStatsUsingCountables() {
+        RulesetCache.loadRulesets(noMods = true)
+        val ruleset = RulesetCache.getVanillaRuleset()
+
+        runTestParcours("Test Stats.isStatsUsingCountables", { input: String ->
+            Stats.isStatsUsingCountables(input, ruleset)
+        },
+            "+1 Faith", true,
+            "[+(350 + 50 * [Era number]) * [Speed modifier for [Gold]] / 100] Gold", true,
+            "+[42 / 5 + 9] Science, -[Remaining [Enemy] Civilizations] Happiness", true,
+            "[+[year] / 100] Gold, [-√[turns] * 0.2] Culture", true,
+            "+1 Trust", false,
+            "+[42 / 5 + 9] Science, -[sqrt Cities + sqrt [Units] Happiness", false,
+            "+[Dragons] Production", false,
+        )
+    }
+
+    @Test
+    fun testParseStatsUsingCountables() {
+        val game = TestGame()
+        val civ = game.addCiv()
+        val context = GameContext(civ, gameInfo = game.gameInfo)
+
+        // Stats violates the equality contract by providing a nonstandard `equals`, so we can't let `runTestParcours` do the comparison
+        runTestParcours("Test Stats.parseUsingCountables", { pair: Pair<String, Stats> ->
+            val actual = Stats.parseUsingCountables(pair.first, context)
+            actual.equals(pair.second)
+        },
+            "+1 Faith" to Stats(faith = 1f), true,
+            "+[42 / 5 + 9] Science, -[π] Happiness" to Stats(science = 17f, happiness = -3f), true,
+            "[+[10^2] / 100] Gold, [-√(25) * 0.2] Culture" to Stats(gold = 1f, culture = -1f), true,
+        )
     }
 }
