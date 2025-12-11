@@ -1,3 +1,29 @@
+## 4.18.20
+
+By EmperorPinguin:
+- Increase ancient ruin count multiplier 
+- AI: don't build units which cannot attack 
+- Remove pillaged status from getBasePriority in worker automation 
+- Fix bonus resource improvement value 
+- Speedup wander() by moving only 1 tile 
+
+By SomeTroglodyte:
+- Unit tests: Complete coverage for Countables 
+- Streamed extracting while downloading mods 
+- Fix  regression 
+- Fix  VictoryScreen crash loopholes 
+- Trade mission notification: show influence without decimals if it happens to be an integer 
+
+Battle notification translation file fixed duplicites - By GameCobra
+
+Move civ json key to a new variable - By SeventhM
+
+Add Hindi language - By monikaanaaya2021-cmd
+
+By RobLoach:
+- civFilter: Add a `Known` filter 
+- civilopedia: Add Technologies that provide Resources 
+
 ## 4.18.19
 
 Fix map width for checking distances between tiles
