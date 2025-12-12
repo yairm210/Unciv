@@ -32,6 +32,7 @@ internal sealed interface Operator : Tokenizer.Token {
         override val implementation: (Double) -> Double,
         val description: String
     ) : Unary {
+        Identity("+", { operand -> operand }, "identity"),
         Negation("-", { operand -> -operand }, "negation"),
         Ciel("√", ::sqrt, "square root"),
         Abs("abs", ::abs, "absolute value - turns negative into positive"),
@@ -63,6 +64,7 @@ internal sealed interface Operator : Tokenizer.Token {
         override val unary: Unary,
         override val binary: Binary
     ) : UnaryOrBinary {
+        Plus("+", UnaryOperators.Identity, BinaryOperators.Addition),
         Minus("-", UnaryOperators.Negation, BinaryOperators.Subtraction),
         ;
         override fun toString() = symbol

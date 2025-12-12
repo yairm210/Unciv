@@ -56,7 +56,7 @@ enum class UniqueParameterType(
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) =
             parameterText.getInvariantSeverityUnless { toIntOrNull()?.let { it > 0 } == true }
     },
-    
+
     NonNegativeNumber("nonNegativeAmount", "3", "This indicates a non-negative whole number, larger than or equal to zero, a '+' sign is optional") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) =
             parameterText.getInvariantSeverityUnless { toIntOrNull()?.let { it >= 0 } == true }
@@ -198,6 +198,14 @@ enum class UniqueParameterType(
     ) {
         override fun isKnownValue(parameterText: String, ruleset: Ruleset) =
             com.unciv.models.stats.Stats.isStats(parameterText)
+    },
+
+    /** Like [Stats], but allows countables and expressions where Stats needs constants */
+    CountableStats("countable-stats", "+1 Gold, [+[Cities] / 2] Production",
+        "Like \"stats\", but allows countables including expressions instead of numbers. The sign can be placed inside or outside the expression brackets for translation flexibility."
+    ) {
+        override fun isKnownValue(parameterText: String, ruleset: Ruleset) =
+            com.unciv.models.stats.Stats.isStatsUsingCountables(parameterText, ruleset)
     },
 
     /** Many UniqueTypes like [UniqueType.StatPercentBonus] */
