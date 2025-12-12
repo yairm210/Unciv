@@ -86,7 +86,6 @@ data class VictoryData(
     }
     @Transient
     lateinit var winningCivObject: Civilization
-        private set
 }
 
 /** The virtual world the users play in */
@@ -644,6 +643,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             throw MissingModsException(missingMods)
 
         removeMissingModReferences()
+        victoryData?.also { it.winningCivObject = getCivilization(it.winningCiv) }
 
         for (baseUnit in ruleset.units.values)
             baseUnit.setRuleset(ruleset)
