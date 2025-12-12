@@ -840,8 +840,8 @@ enum class UniqueType(
     OneTimeGainPopulationRandomCity("[amount] population in a random city", UniqueTarget.Triggerable),
     OneTimeDiscoverTech("Discover [tech]", UniqueTarget.Triggerable),
     OneTimeAdoptPolicyOrBelief("Adopt [policy/belief]", UniqueTarget.Triggerable),
-    OneTimeRemovePolicy("Remove [policy]", UniqueTarget.Triggerable),
-    OneTimeRemovePolicyRefund("Remove [policy] and refund [amount]% of its cost", UniqueTarget.Triggerable),
+    OneTimeRemovePolicy("Remove [policyFilter]", UniqueTarget.Triggerable),
+    OneTimeRemovePolicyRefund("Remove [policyFilter] and refund [amount]% of its cost", UniqueTarget.Triggerable),
     OneTimeFreeTech("Free Technology", UniqueTarget.Triggerable),  // used in Buildings
     OneTimeAmountFreeTechs("[positiveAmount] Free Technologies", UniqueTarget.Triggerable),  // used in Policy
     OneTimeFreeTechRuins("[positiveAmount] free random researchable Tech(s) from the [eraFilter]", UniqueTarget.Triggerable),
