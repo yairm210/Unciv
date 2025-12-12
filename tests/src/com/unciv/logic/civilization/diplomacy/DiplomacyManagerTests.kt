@@ -84,7 +84,7 @@ class DiplomacyManagerTests {
         meet(a, b)
 
         // then
-        val opinionOfOtherCiv = a.getDiplomacyManager(b.civName)!!.opinionOfOtherCiv()
+        val opinionOfOtherCiv = a.getDiplomacyManager(b)!!.opinionOfOtherCiv()
         assertEquals(0f, opinionOfOtherCiv)
     }
 
@@ -97,8 +97,8 @@ class DiplomacyManagerTests {
         a.getDiplomacyManager(b)!!.denounce()
 
         // then
-        val aOpinionOfB = a.getDiplomacyManager(b.civName)!!.opinionOfOtherCiv()
-        val bOpinionOfA = b.getDiplomacyManager(a.civName)!!.opinionOfOtherCiv()
+        val aOpinionOfB = a.getDiplomacyManager(b)!!.opinionOfOtherCiv()
+        val bOpinionOfA = b.getDiplomacyManager(a)!!.opinionOfOtherCiv()
 
         assertEquals(-35f, aOpinionOfB)
         assertEquals(-35f, bOpinionOfA)
@@ -115,7 +115,7 @@ class DiplomacyManagerTests {
         meet(c, d)
 
         testGame.gameInfo.currentPlayerCiv = addCiv() // otherwise test crashes when puppetying city
-        testGame.gameInfo.currentPlayer = testGame.gameInfo.currentPlayerCiv.civName
+        testGame.gameInfo.currentPlayer = testGame.gameInfo.currentPlayerCiv.civID
 
         val bCity = testGame.addCity(b, testGame.getTile(HexCoord.Zero), initialPopulation = 2)
         testGame.addCity(b, testGame.getTile(1,1))  // another city otherwise b is destroyed when bCity is captured
@@ -125,10 +125,10 @@ class DiplomacyManagerTests {
         bCity.liberateCity(a)
 
         // then
-        val aOpinionOfB = a.getDiplomacyManager(b.civName)!!.opinionOfOtherCiv()
-        val bOpinionOfA = b.getDiplomacyManager(a.civName)!!.opinionOfOtherCiv()
-        val cOpinionOfA = c.getDiplomacyManager(a.civName)!!.opinionOfOtherCiv()
-        val dOpinionOfA = d.getDiplomacyManager(a.civName)!!.opinionOfOtherCiv()
+        val aOpinionOfB = a.getDiplomacyManager(b)!!.opinionOfOtherCiv()
+        val bOpinionOfA = b.getDiplomacyManager(a)!!.opinionOfOtherCiv()
+        val cOpinionOfA = c.getDiplomacyManager(a)!!.opinionOfOtherCiv()
+        val dOpinionOfA = d.getDiplomacyManager(a)!!.opinionOfOtherCiv()
 
         assertEquals(0f, aOpinionOfB) // A shouldn't change its opinion of others
         assertEquals(66f, bOpinionOfA) // massive boost, liberated their city
@@ -144,7 +144,7 @@ class DiplomacyManagerTests {
         meet(c, b)
 
         testGame.gameInfo.currentPlayerCiv = addCiv() // otherwise test crashes when puppetying city
-        testGame.gameInfo.currentPlayer = testGame.gameInfo.currentPlayerCiv.civName
+        testGame.gameInfo.currentPlayer = testGame.gameInfo.currentPlayerCiv.civID
 
         val bCity = testGame.addCity(b, testGame.getTile(HexCoord.Zero), initialPopulation = 2)
         testGame.addCity(b, testGame.getTile(1,1))  // another city otherwise b is destroyed when bCity is captured
@@ -153,9 +153,9 @@ class DiplomacyManagerTests {
         bCity.puppetCity(a)
 
         // then
-        val aOpinionOfB = a.getDiplomacyManager(b.civName)!!.opinionOfOtherCiv()
-        val bOpinionOfA = b.getDiplomacyManager(a.civName)!!.opinionOfOtherCiv()
-        val cOpinionOfA = c.getDiplomacyManager(a.civName)!!.opinionOfOtherCiv()
+        val aOpinionOfB = a.getDiplomacyManager(b)!!.opinionOfOtherCiv()
+        val bOpinionOfA = b.getDiplomacyManager(a)!!.opinionOfOtherCiv()
+        val cOpinionOfA = c.getDiplomacyManager(a)!!.opinionOfOtherCiv()
 
         assertEquals(0f, aOpinionOfB) // A shouldn't change its opinion of others
         assertEquals(-85f, bOpinionOfA) // massive penality, conquered their city

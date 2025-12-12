@@ -351,7 +351,7 @@ class DiplomacyScreen(
             if (civDiploManager.otherCiv != otherCiv
                 && civDiploManager.diplomaticStatus == DiplomaticStatus.DefensivePact
                 && !otherCivDefensivePactList.contains(civDiploManager.otherCiv)) {
-                messageLines += "This will cancel your defensive pact with [${civDiploManager.otherCivName}]"
+                messageLines += "This will cancel your defensive pact with [${civDiploManager.otherCiv.civName}]"
             }
         }
         return messageLines.joinToString("\n") { "{$it}" }

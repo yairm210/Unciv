@@ -60,10 +60,10 @@ object DeclareWarTargetAutomation {
 
             // Send them an offer
             val tradeLogic = TradeLogic(civInfo, thirdCiv)
-            tradeLogic.currentTrade.ourOffers.add(TradeOffer(target.civName, TradeOfferType.WarDeclaration, speed = civInfo.gameInfo.speed))
-            tradeLogic.currentTrade.theirOffers.add(TradeOffer(target.civName, TradeOfferType.WarDeclaration, speed = civInfo.gameInfo.speed))
+            tradeLogic.currentTrade.ourOffers.add(TradeOffer(target.civID, TradeOfferType.WarDeclaration, speed = civInfo.gameInfo.speed))
+            tradeLogic.currentTrade.theirOffers.add(TradeOffer(target.civID, TradeOfferType.WarDeclaration, speed = civInfo.gameInfo.speed))
 
-            thirdCiv.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
+            thirdCiv.tradeRequests.add(TradeRequest(civInfo.civID, tradeLogic.currentTrade.reverse()))
 
             return true
         }
@@ -89,9 +89,9 @@ object DeclareWarTargetAutomation {
 
             // Send them an offer
             val tradeLogic = TradeLogic(civInfo, thirdCiv)
-            tradeLogic.currentTrade.ourOffers.add(TradeOffer(target.civName, TradeOfferType.WarDeclaration, speed = civInfo.gameInfo.speed))
+            tradeLogic.currentTrade.ourOffers.add(TradeOffer(target.civID, TradeOfferType.WarDeclaration, speed = civInfo.gameInfo.speed))
             // TODO: Maybe add in payment requests in some situations
-            thirdCiv.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
+            thirdCiv.tradeRequests.add(TradeRequest(civInfo.civID, tradeLogic.currentTrade.reverse()))
 
             return true
         }

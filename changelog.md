@@ -1,3 +1,20 @@
+## 4.19.0
+
+By EmperorPinguin:
+- CPU performance improvements
+- AI don't build units which cannot attack 
+- AI: Better 'tile-to-work' picking 
+
+By SomeTroglodyte:
+- Faster mod download
+- Fix VictoryScreen crash loopholes
+
+Add Hindi language - By monikaanaaya2021-cmd
+
+By RobLoach:
+- civFilter: Add a `Known` filter 
+- civilopedia: Add Technologies that provide Resources 
+
 ## 4.18.19
 
 Fix map width for checking distances between tiles

@@ -191,30 +191,6 @@ object Automation {
             city.cityConstructions.setCurrentConstruction(chosenUnit.name)
     }
 
-    @Suppress("MemberVisibilityCanBePrivate")
-    @Readonly
-    fun providesUnneededCarryingSlots(baseUnit: BaseUnit, civInfo: Civilization): Boolean {
-        // Simplified, will not work for crazy mods with more than one carrying filter for a unit
-        val carryUnique = baseUnit.getMatchingUniques(UniqueType.CarryAirUnits).first()
-        val carryFilter = carryUnique.params[1]
-
-        @Readonly
-        fun getCarryAmount(mapUnit: MapUnit): Int {
-            val mapUnitCarryUnique =
-                mapUnit.getMatchingUniques(UniqueType.CarryAirUnits).firstOrNull() ?: return 0
-            if (mapUnitCarryUnique.params[1] != carryFilter) return 0 //Carries a different type of unit
-            return mapUnitCarryUnique.params[0].toInt() +
-                    mapUnit.getMatchingUniques(UniqueType.CarryExtraAirUnits)
-                        .filter { it.params[1] == carryFilter }.sumOf { it.params[0].toInt() }
-        }
-
-        val totalCarriableUnits =
-            civInfo.units.getCivUnits().count { it.matchesFilter(carryFilter) }
-        val totalCarryingSlots = civInfo.units.getCivUnits().sumOf { getCarryAmount(it) }
-                
-        return totalCarriableUnits < totalCarryingSlots
-    }
-
     @Readonly
     fun chooseMilitaryUnit(city: City, availableUnits: Sequence<BaseUnit>): BaseUnit? {
         val currentChoice = city.cityConstructions.getCurrentConstruction()
@@ -250,9 +226,12 @@ object Automation {
             .filterNot { removeShips && it.isWaterUnit }
             .filter { allowSpendingResource(city.civ, it) }
             .filterNot {
-                // filter out carrier-type units that can't attack if we don't need them
-                it.hasUnique(UniqueType.CarryAirUnits)
-                        && providesUnneededCarryingSlots(it, city.civ)
+                // units that can't attack may be very strong meatshields, but current AI
+                // has trouble using them properly, and this conveniently filters out aircraft carriers
+                // (they're kinda useless compared to investing in battleships or extended-range bombers,
+                // and are obsoleted at Stealth. Excluding units based on their carrying slots being
+                // not needed filters out nuclear submarines and missile cruisers, which is not correct)
+                it.hasUnique(UniqueType.CannotAttack)
             }
             // Only now do we filter out the constructable units because that's a heavier check
             .filter { it.isBuildable(city.cityConstructions) }

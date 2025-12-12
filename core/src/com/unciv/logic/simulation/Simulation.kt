@@ -24,9 +24,9 @@ class Simulation(
     private val statTurns: List<Int> = listOf()
 ) {
     private val maxSimulations = threadsNumber * simulationsPerThread
-    //val civilizations = newGameInfo.civilizations.filter { it.civName != Constants.spectator }.map { it.civName }
-    private val majorCivs = newGameInfo.civilizations.filter { it.civName != Constants.spectator }.filter { it.isMajorCiv() }.map { it.civName }
-    private val numMajorCivs = newGameInfo.civilizations.filter { it.civName != Constants.spectator }.filter { it.isMajorCiv() }.size
+    //val civilizations = newGameInfo.civilizations.filter { it.isSpectator() }.map { it.civID }
+    private val majorCivs = newGameInfo.civilizations.filter { it.isSpectator() && it.isMajorCiv() }.map { it.civID }
+    private val numMajorCivs = newGameInfo.civilizations.filter { it.isSpectator() && it.isMajorCiv()  }.size
     private var startTime: Long = 0
     var steps = ArrayList<SimulationStep>()
     var numWins = mutableMapOf<String, MutableInt>()
@@ -86,9 +86,9 @@ class Simulation(
 
         println(
             "Starting new game with major civs: " +
-                newGameInfo.civilizations.filter { it.isMajorCiv() }.joinToString { it.civName } +
+                newGameInfo.civilizations.filter { it.isMajorCiv() }.joinToString { it.civID } +
                 " and minor civs: " +
-                newGameInfo.civilizations.filter { it.isCityState }.joinToString { it.civName }
+                newGameInfo.civilizations.filter { it.isCityState }.joinToString { it.civID }
         )
 
         newGameInfo.gameParameters.shufflePlayerOrder = true

@@ -12,6 +12,7 @@ import com.unciv.models.ruleset.unique.Countables
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stats
+import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toPercent
 import kotlin.math.min
 
@@ -102,13 +103,14 @@ object UnitActionsGreatPerson {
     }
 
     internal fun getConductTradeMissionActions(unit: MapUnit, tile: Tile) = sequence {
+        val canConductTradeMission = tile.owningCity?.civ?.isCityState == true
+            && tile.owningCity?.civ != unit.civ
+            && tile.owningCity?.civ?.isAtWarWith(unit.civ) == false
+
         val uniques = unit.getMatchingUniques(UniqueType.CanTradeWithCityStateForGoldAndInfluence) +
             unit.getMatchingUniques(UniqueType.CanTradeWithCityStateForStatsAndInfluence)
         for (unique in uniques) {
             val isClassicUnique = unique.type == UniqueType.CanTradeWithCityStateForGoldAndInfluence
-            val canConductTradeMission = tile.owningCity?.civ?.isCityState == true
-                && tile.owningCity?.civ != unit.civ
-                && tile.owningCity?.civ?.isAtWarWith(unit.civ) == false
             val getStats: (Civilization) -> Stats =
                 if (isClassicUnique) {
                     // http://civilization.wikia.com/wiki/Great_Merchant_(Civ5)
@@ -146,7 +148,7 @@ object UnitActionsGreatPerson {
                     val influenceEarned = getInfluence(unit.civ)
                     tileOwningCiv.getDiplomacyManager(unit.civ)!!.addInfluence(influenceEarned)
 
-                    unit.civ.addNotification("Your [$notificationName] to [$tileOwningCiv] has earned you [$statsEarned] and [$influenceEarned] influence!",
+                    unit.civ.addNotification("Your [$notificationName] to [$tileOwningCiv] has earned you [$statsEarned] and [$influenceEarned.tr()] influence!",
                         NotificationCategory.General, tileOwningCiv.civName, *getIcons(statsEarned))
                     unit.consume()
                 }.takeIf { unit.hasMovement() && canConductTradeMission }

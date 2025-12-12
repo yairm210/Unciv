@@ -135,12 +135,14 @@ internal class NationPickerPopup(
     }
 
     private fun returnSelected() {
-        val selectedNation = selection?.nation?.name
+        val selectedNation = selection?.nation
             ?: return
 
-        UncivGame.Current.musicController.chooseTrack(selectedNation, MusicMood.themeOrPeace, MusicTrackChooserFlags.setSelectNation)
+        UncivGame.Current.musicController.chooseTrack(selectedNation.name, MusicMood.themeOrPeace, MusicTrackChooserFlags.setSelectNation)
 
-        player.chosenCiv = selectedNation
+        player.chosenCiv = selectedNation.name
+        player.chosenNation = selectedNation
+        
         close()
         playerPicker.update()
     }

@@ -41,6 +41,7 @@ Allowed values:
 - `Friendly`
 - `Hostile`
 - `Open Borders`
+- `Known` - Civilizations that are aware of the relevant Civ. Known includes self.
 - [nationFilter](#nationfilter)
 
 ## nationFilter

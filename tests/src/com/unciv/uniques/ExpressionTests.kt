@@ -2,6 +2,7 @@ package com.unciv.uniques
 
 import com.unciv.logic.map.HexCoord
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.unique.Countables
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.expressions.Parser
 import com.unciv.models.stats.Stats
@@ -91,6 +92,7 @@ class ExpressionTests {
     }
 
     @Test
+    @CoversCountable(Countables.FilteredCities, Countables.OwnedTiles)
     fun testExpressionsWithCountables() {
         val game = TestGame()
         game.makeHexagonalMap(2)
@@ -141,6 +143,7 @@ class ExpressionTests {
     }
 
     @Test
+    @CoversCountable(Countables.Expression)
     fun testParseStatsUsingCountables() {
         val game = TestGame()
         val civ = game.addCiv()
