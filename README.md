@@ -108,7 +108,7 @@ It is definitely illegal:
 
 It is probably illegal (no solid sources on this):
  - To use the Civilization name
- - To impersonate the Civ games (so calling yourself civi|zation with a similar logo, for instance)
+ - To impersonate the Civ games (so calling yourself civilization with a similar logo, for instance)
 
 Interestingly, [Civilization is a registered trademark](https://tsdr.uspto.gov/#caseNumber=74166752&caseType=SERIAL_NO&searchType=statusSearch), but it looks like it's only *that particular logo* which is trademarked, so technically you could make another game called "Civilization" and it'll stick. In any case we're not going there :) 
 
