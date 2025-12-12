@@ -19,8 +19,7 @@ import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.map.MapPathing
-import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.*
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.movement.UnitMovement
 import com.unciv.logic.map.tile.Tile
@@ -307,7 +306,7 @@ class WorldMapHolder(
                     SoundPlayer.play(UncivSound.Whoosh)
                     if (selectedUnit.currentTile != targetTile)
                         selectedUnit.action =
-                                "moveTo ${targetTile.position.x.toInt()},${targetTile.position.y.toInt()}"
+                                "moveTo ${targetTile.position.x},${targetTile.position.y}"
                     if (selectedUnit.hasMovement()) worldScreen.bottomUnitTable.selectUnit(selectedUnit)
 
                     worldScreen.shouldUpdate = true
@@ -379,7 +378,7 @@ class WorldMapHolder(
 
     internal fun swapMoveUnitToTargetTile(selectedUnit: MapUnit, targetTile: Tile) {
         markUnitMoveTutorialComplete(selectedUnit)
-        selectedUnit.movement.swapMoveToTile(targetTile)
+        selectedUnit.movement.swapMoveToTile(targetTile, keepEscorting = true)
 
         if (selectedUnit.isExploring() || selectedUnit.isMoving())
             selectedUnit.action = null // remove explore on manual swap-move
@@ -568,7 +567,7 @@ class WorldMapHolder(
      * @param targetVisibleUnits Sequence of [MapUnit]s for which the active movement target can be displayed.
      * @param visibleAttacks Sequence of pairs of [Vector2] positions of the sources and the targets of all attacks that can be displayed.
      * */
-    internal fun updateMovementOverlay(pastVisibleUnits: Sequence<MapUnit>, targetVisibleUnits: Sequence<MapUnit>, visibleAttacks: Sequence<Pair<Vector2, Vector2>>) {
+    internal fun updateMovementOverlay(pastVisibleUnits: Sequence<MapUnit>, targetVisibleUnits: Sequence<MapUnit>, visibleAttacks: Sequence<Pair<HexCoord, HexCoord>>) {
         val selectedUnit = worldScreen.bottomUnitTable.selectedUnit
         for (unit in pastVisibleUnits) {
             if (unit.movementMemories.isEmpty()) continue
@@ -605,7 +604,7 @@ class WorldMapHolder(
      * @param selectUnit Select a unit at the destination
      * @return `true` if scroll position was changed, `false` otherwise
      */
-    fun setCenterPosition(vector: Vector2, immediately: Boolean = false, selectUnit: Boolean = true, forceSelectUnit: MapUnit? = null): Boolean {
+    fun setCenterPosition(vector: HexCoord, immediately: Boolean = false, selectUnit: Boolean = true, forceSelectUnit: MapUnit? = null): Boolean {
         val tileGroup = tileGroups.values.firstOrNull { it.tile.position == vector } ?: return false
         selectedTile = tileGroup.tile
         if (selectUnit || forceSelectUnit != null)

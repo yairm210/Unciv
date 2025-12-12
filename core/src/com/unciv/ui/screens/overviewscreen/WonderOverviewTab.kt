@@ -125,7 +125,7 @@ class WonderInfo {
         fun getStatusColumn() = when {
             status != WonderStatus.Known -> status.label
             civ == null -> status.label
-            else -> civ.civName
+            else -> civ.civID
         }
 
         fun getLocationColumn() = when {
@@ -149,7 +149,7 @@ class WonderInfo {
     private fun knownFromQuest(viewingPlayer: Civilization, name: String): Boolean {
         // No, *your* civInfo's QuestManager has no idea about your quests
         for (civ in viewingPlayer.gameInfo.civilizations) {
-            for (quest in civ.questManager.getAssignedQuestsFor(viewingPlayer.civName)) {
+            for (quest in civ.questManager.getAssignedQuestsFor(viewingPlayer)) {
                 if (quest.questName == QuestName.FindNaturalWonder.value && quest.data1 == name)
                     return true
             }

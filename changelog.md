@@ -1,3 +1,78 @@
+## 4.19.0
+
+By EmperorPinguin:
+- CPU performance improvements
+- AI don't build units which cannot attack 
+- AI: Better 'tile-to-work' picking 
+
+By SomeTroglodyte:
+- Faster mod download
+- Fix VictoryScreen crash loopholes
+
+Add Hindi language - By monikaanaaya2021-cmd
+
+By RobLoach:
+- civFilter: Add a `Known` filter 
+- civilopedia: Add Technologies that provide Resources 
+
+## 4.18.19
+
+Fix map width for checking distances between tiles
+
+CPU performance improvements
+
+By EmperorPinguin:
+- Simplify military unit attack value 
+- Disable fort placement for AI 
+- Fix unit automation order 
+- Bugfix AI friendly fighter counting 
+- Better Cover, Charge promotion priority for AI
+- Let AI build quarries for Stone Works 
+- Move unit promotion ahead & Exclude wounded melee from automateCityConquer 
+
+
+Fixed battle notification texts issue - By GameCobra
+
+## 4.18.18
+
+CPU performance improvements
+
+By EmperorPinguin:
+- AI: Separate encampment-finding logic from ruins-finding 
+- AI: Better "city to attack" logic 
+- AI: Simplify target selection for city bombardment 
+
+Fix battle notification order - By SomeTroglodyte
+
+## 4.18.17
+
+Memory + CPU performance improvements
+
+By RobLoach:
+- Fix Null Exception in searching Civilopedia 
+- Modding: Allow removing Religions and Beliefs 
+
+By SomeTroglodyte:
+- Swapping for Escort formation pairs 
+- Make Notifications setting "Disabled" useful 
+
+Generic'd Gold from pillaging encampments and cities unique - By PLynx01
+
+Using Renamed Unit Names in Battle Notifications - By GameCobra
+
+Enable espionage by default in new games - By unciv-loof
+
+## 4.18.16
+
+Units that upgrade continue escorting 
+
+Nation colors unchanged by multiplayer chat
+
+By RobLoach:
+- G&K: Fix Kremlin providing a Great Scientist Point 
+- Add `[buildingFilter] Buildings by [civFilter] Civilizations` Countable 
+- Add `eraFilter` to allow filtering by Era 
+
 ## 4.18.15
 
 Display road per-turn costs in the stats

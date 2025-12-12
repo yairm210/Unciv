@@ -1,12 +1,12 @@
 package com.unciv.logic.civilization.managers
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.UncivGame
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.transients.CivInfoTransientCache
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.UniqueTarget
@@ -66,7 +66,7 @@ class UnitManager(val civInfo: Civilization) {
             city != null -> city
             else -> citiesNotInResistance.randomOrNull() ?: civInfo.cities.random()
         } ?: return null // If we got a free water unit with no coastal city to place it in
-        val placedUnit = placeUnitNearTile(cityToAddTo.location, unit.name)
+        val placedUnit = placeUnitNearTile(cityToAddTo.location.toHexCoord(), unit.name)
         // silently bail if no tile to place the unit is found
             ?: return null
         if (unit.isGreatPerson) {
@@ -89,7 +89,7 @@ class UnitManager(val civInfo: Civilization) {
      * @param unitName name of the [BaseUnit] to create and place
      * @return created [MapUnit] or null if no suitable location was found
      * */
-    fun placeUnitNearTile(location: Vector2, unitName: String): MapUnit? {
+    fun placeUnitNearTile(location: HexCoord, unitName: String): MapUnit? {
         val unit = civInfo.gameInfo.ruleset.units[unitName]!!
         return placeUnitNearTile(location, unit)
     }
@@ -99,7 +99,7 @@ class UnitManager(val civInfo: Civilization) {
      * @param baseUnit [BaseUnit] to create and place
      * @return created [MapUnit] or null if no suitable location was found
      * */
-    fun placeUnitNearTile(location: Vector2, baseUnit: BaseUnit, unitId: Int? = null, copiedFrom: MapUnit? = null): MapUnit? {
+    fun placeUnitNearTile(location: HexCoord, baseUnit: BaseUnit, unitId: Int? = null, copiedFrom: MapUnit? = null): MapUnit? {
         val unit = civInfo.gameInfo.tileMap.placeUnitNearTile(location, baseUnit, civInfo, unitId)
 
         if (unit == null) return unit

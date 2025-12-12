@@ -1,12 +1,12 @@
 package com.unciv.ui.screens.worldscreen.unit.presenter
 
-import com.badlogic.gdx.math.Vector2
+import com.unciv.logic.map.HexCoord
 import com.unciv.models.translations.tr
 import com.unciv.ui.screens.worldscreen.unit.UnitTable
 
 class SummaryPresenter(private val unitTable: UnitTable) : UnitTable.Presenter {
     
-    override val position: Vector2? = null
+    override val position: HexCoord? = null
 
     override fun update() {
         unitTable.closeButton.isVisible = false

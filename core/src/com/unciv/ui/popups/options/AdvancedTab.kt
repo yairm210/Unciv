@@ -7,7 +7,6 @@ import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.PixmapIO
-import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
@@ -16,17 +15,14 @@ import com.badlogic.gdx.utils.Array
 import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.UncivGame
+import com.unciv.logic.map.HexCoord
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSettings.ScreenSize
 import com.unciv.models.metadata.ModCategories
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
-import com.unciv.ui.components.extensions.addSeparator
-import com.unciv.ui.components.extensions.disable
-import com.unciv.ui.components.extensions.setFontColor
-import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.extensions.*
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.keyShortcuts
@@ -38,11 +34,7 @@ import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.utils.Concurrency
-import com.unciv.utils.Display
-import com.unciv.utils.isUUID
-import com.unciv.utils.launchOnGLThread
-import com.unciv.utils.withoutItem
+import com.unciv.utils.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -306,10 +298,10 @@ class AdvancedTab(
                 // I'm not sure why we need to advance the y by 2 for every screenshot... but that's the only way it remains centered
                 generateScreenshots(
                     optionsPopup.settings, arrayListOf(
-                        ScreenshotConfig(630, 500, ScreenSize.Medium, "$extraImagesLocation/itch.io image.png", Vector2(-2f, 2f), false),
-                        ScreenshotConfig(1280, 640, ScreenSize.Medium, "$extraImagesLocation/GithubPreviewImage.png", Vector2(-2f, 4f)),
-                        ScreenshotConfig(1024, 500, ScreenSize.Medium, "$extraImagesLocation/Feature graphic - Google Play.png", Vector2(-2f, 6f)),
-                        ScreenshotConfig(1024, 500, ScreenSize.Medium, "../../fastlane/metadata/android/en-US/images/featureGraphic.png", Vector2(-2f, 8f))
+                        ScreenshotConfig(630, 500, ScreenSize.Medium, "$extraImagesLocation/itch.io image.png", HexCoord(-2, 2), false),
+                        ScreenshotConfig(1280, 640, ScreenSize.Medium, "$extraImagesLocation/GithubPreviewImage.png", HexCoord(-2, 4)),
+                        ScreenshotConfig(1024, 500, ScreenSize.Medium, "$extraImagesLocation/Feature graphic - Google Play.png", HexCoord(-2, 6)),
+                        ScreenshotConfig(1024, 500, ScreenSize.Medium, "../../fastlane/metadata/android/en-US/images/featureGraphic.png", HexCoord(-2, 8))
                     )
                 )
             }
@@ -323,7 +315,7 @@ class AdvancedTab(
         val height: Int,
         val screenSize: ScreenSize,
         var fileLocation: String,
-        var centerTile: Vector2,
+        var centerTile: HexCoord,
         var attackCity: Boolean = true
     )
 

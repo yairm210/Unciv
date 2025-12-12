@@ -1,5 +1,6 @@
 package com.unciv.logic.automation.civilization
 
+import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.ThreatLevel
 import com.unciv.logic.automation.unit.EspionageAutomation
@@ -186,9 +187,9 @@ object NextTurnAutomation {
             value -= 5
         }
 
-        if (cityState.getAllyCivName() != null && cityState.getAllyCivName() != civInfo.civName) {
+        if (cityState.allyCiv != null && cityState.allyCiv != civInfo) {
             // easier not to compete if a third civ has this locked down
-            val thirdCivInfluence = cityState.getDiplomacyManager(cityState.getAllyCivName()!!)!!.getInfluence().toInt()
+            val thirdCivInfluence = cityState.getDiplomacyManager(cityState.allyCiv!!)!!.getInfluence().toInt()
             value -= (thirdCivInfluence - 30) / 10
         }
 
@@ -200,7 +201,7 @@ object NextTurnAutomation {
 
         if (includeQuests) {
             // Investing is better if there is an investment bonus quest active.
-            value += (cityState.questManager.getInvestmentMultiplier(civInfo.civName) * 10).toInt() - 10
+            value += (cityState.questManager.getInvestmentMultiplier(civInfo) * 10).toInt() - 10
         }
 
         return value
@@ -216,7 +217,7 @@ object NextTurnAutomation {
 
     private fun bullyCityStates(civInfo: Civilization) {
         for (state in civInfo.getKnownCivs().filter { !it.isDefeated() && it.isCityState }.toList()) {
-            val diplomacyManager = state.getDiplomacyManager(civInfo.civName)!!
+            val diplomacyManager = state.getDiplomacyManager(civInfo)!!
             if (diplomacyManager.isRelationshipLevelLT(RelationshipLevel.Friend)
                     && diplomacyManager.diplomaticStatus == DiplomaticStatus.Peace
                     && valueCityStateAlliance(civInfo, state) <= 0
@@ -401,6 +402,35 @@ object NextTurnAutomation {
             .flatMap { it.cities }
             .filter { it.getCenterTile().getTilesInDistance(4).count { it.militaryUnit?.civ == civInfo } > 4 }
             .toList()
+
+        for (unit in sortedUnits) {
+            while (unit.promotions.canBePromoted() &&
+                // Restrict Human automated units from promotions via setting
+                (UncivGame.Current.settings.automatedUnitsChoosePromotions || unit.civ.isAI())
+            ) {
+                val promotions = unit.promotions.getAvailablePromotions()
+                val availablePromotions = if (unit.health <= 60
+                    && promotions.any { it.hasUnique(UniqueType.OneTimeUnitHeal) }
+                    && !(unit.baseUnit.isAirUnit() || unit.hasUnique(UniqueType.CanMoveAfterAttacking))
+                ) {
+                    promotions.filter { it.hasUnique(UniqueType.OneTimeUnitHeal) }
+                } else promotions.filterNot { it.hasUnique(UniqueType.SkipPromotion) }
+
+                if (availablePromotions.none()) break
+                val freePromotions =
+                    availablePromotions.filter { it.hasUnique(UniqueType.FreePromotion) }.toList()
+                val stateForConditionals = unit.cache.state
+
+                val chosenPromotion =
+                    if (freePromotions.isNotEmpty()) freePromotions.randomWeighted {
+                        it.getWeightForAiDecision(stateForConditionals)
+                    }
+                    else availablePromotions.toList()
+                        .randomWeighted { it.getWeightForAiDecision(stateForConditionals) }
+
+                unit.promotions.addPromotion(chosenPromotion.name)
+            }
+        }
         
         for (city in citiesRequiringManualPlacement) automateCityConquer(civInfo, city)
         
@@ -410,7 +440,7 @@ object NextTurnAutomation {
     /** All units will continue after this to the regular automation, so units not moved in this function will still move */
     private fun automateCityConquer(civInfo: Civilization, city: City){
         @Readonly fun ourUnitsInRange(range: Int) = city.getCenterTile().getTilesInDistance(range)
-            .mapNotNull { it.militaryUnit }.filter { it.civ == civInfo }.toList()
+            .mapNotNull { it.militaryUnit }.filter { it.civ == civInfo && (!it.baseUnit.isMelee() || it.health > 30) }.toList()
         
         
         fun attackIfPossible(unit: MapUnit, tile: Tile){
@@ -445,11 +475,11 @@ object NextTurnAutomation {
             val attackableEnemies = TargetHelper.getAttackableEnemies(unit,
                 unit.movement.getDistanceToTiles(), tilesToTarget)
             if (attackableEnemies.isEmpty()) continue
-            val enemyWeWillDamageMost = attackableEnemies.maxBy { 
-                BattleDamage.calculateDamageToDefender(MapUnitCombatant(unit), it.combatant!!, it.tileToAttackFrom, 0.5f)
-            }
-            
-            Battle.moveAndAttack(MapUnitCombatant(unit), enemyWeWillDamageMost)
+            val mostSurroundedEnemy = attackableEnemies.maxBy {
+                it.tileToAttack.getTilesAtDistance(1).count { it.militaryUnit?.civ == unit.civ }
+            } // aims to maximize flanking bonus and number of hits in order to get kills
+
+            Battle.moveAndAttack(MapUnitCombatant(unit), mostSurroundedEnemy)
         }
     }
 
@@ -540,8 +570,7 @@ object NextTurnAutomation {
     private fun tryVoteForDiplomaticVictory(civ: Civilization) {
         if (!civ.mayVoteForDiplomaticVictory()) return
 
-        val chosenCiv: String? = if (civ.isMajorCiv()) {
-
+        val chosenCiv: Civilization? = if (civ.isMajorCiv()) {
             val knownMajorCivs = civ.getKnownCivs().filter { it.isMajorCiv() }
             val highestOpinion = knownMajorCivs
                 .maxOfOrNull {
@@ -553,13 +582,13 @@ object NextTurnAutomation {
                 null // Abstain if we hate everybody (proportional chance in the RelationshipLevel.Enemy range - lesser evil)
             else knownMajorCivs
                 .filter { civ.getDiplomacyManager(it)!!.opinionOfOtherCiv() == highestOpinion }
-                .toList().random().civName
+                .toList().random()
 
         } else {
-            civ.getAllyCivName()
+            civ.allyCiv
         }
 
-        civ.diplomaticVoteForCiv(chosenCiv)
+        civ.diplomaticVoteForCiv(chosenCiv?.civID)
     }
 
     private fun issueRequests(civInfo: Civilization) {
@@ -578,7 +607,7 @@ object NextTurnAutomation {
         when {
             diplomacyManager.hasFlag(demand.willIgnoreViolation) -> {}
             diplomacyManager.hasFlag(demand.agreedToDemand) -> {
-                otherCiv.popupAlerts.add(PopupAlert(demand.violationDiscoveredAlert, civInfo.civName))
+                otherCiv.popupAlerts.add(PopupAlert(demand.violationDiscoveredAlert, civInfo.civID))
                 diplomacyManager.setFlag(demand.willIgnoreViolation, 100)
                 diplomacyManager.setModifier(demand.betrayedPromiseDiplomacyMpodifier, -20f)
                 diplomacyManager.removeFlag(demand.agreedToDemand)
@@ -586,33 +615,26 @@ object NextTurnAutomation {
             else -> {
                 val threatLevel = Automation.threatAssessment(civInfo, otherCiv)
                 if (threatLevel < ThreatLevel.High) // don't piss them off for no reason please.
-                    otherCiv.popupAlerts.add(PopupAlert(demand.demandAlert, civInfo.civName))
+                    otherCiv.popupAlerts.add(PopupAlert(demand.demandAlert, civInfo.civID))
             }
         }
         diplomacyManager.removeFlag(demand.violationOccurred)
     }
-    
-    @Readonly
-    fun getMinDistanceBetweenCities(civ1: Civilization, civ2: Civilization): Int {
-        return getClosestCities(civ1, civ2)?.aerialDistance ?: Int.MAX_VALUE
-    }
 
-    data class CityDistance(val city1: City, val city2: City, val aerialDistance: Int)
+    data class CityDistance(val city: City, val aerialDistance: Int)
 
     @Readonly
-    fun getClosestCities(civ1: Civilization, civ2: Civilization): CityDistance? {
-        if (civ1.cities.isEmpty() || civ2.cities.isEmpty())
+    fun getForeignCityNearCapital(capital: City?, foreignCiv: Civilization): CityDistance? {
+        if (capital == null || foreignCiv.cities.isEmpty())
             return null
         
         var minDistance: CityDistance? = null
-
-        for (civ1city in civ1.cities)
-            for (civ2city in civ2.cities){
-                val currentDistance = civ1city.getCenterTile().aerialDistanceTo(civ2city.getCenterTile())
-                if (minDistance == null || currentDistance < minDistance.aerialDistance)
-                    minDistance = CityDistance(civ1city, civ2city, currentDistance)
-                }
-
+        for (foreignCity in foreignCiv.cities) { 
+            val currentDistance =
+                foreignCity.getCenterTile().aerialDistanceTo(capital.getCenterTile())
+            if (minDistance == null || currentDistance < minDistance.aerialDistance)
+                minDistance = CityDistance(foreignCity, currentDistance)
+        }
         return minDistance
     }
 }

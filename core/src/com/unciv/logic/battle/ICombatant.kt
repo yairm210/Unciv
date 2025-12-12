@@ -6,6 +6,7 @@ import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unit.UnitType
 import yairm210.purity.annotations.Readonly
 
+
 interface ICombatant {
     @Readonly fun getName(): String
     @Readonly fun getHealth(): Int
@@ -46,4 +47,6 @@ interface ICombatant {
     }
     @Readonly fun isCity(): Boolean = this is CityCombatant
     @Readonly fun isCivilian() = this is MapUnitCombatant && this.unit.isCivilian()
+
+    fun getNotificationDisplay(leadingText: String = ""): String = ""
 }

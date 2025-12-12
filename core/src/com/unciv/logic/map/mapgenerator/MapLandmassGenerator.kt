@@ -1,9 +1,6 @@
 package com.unciv.logic.map.mapgenerator
 
-import com.unciv.logic.map.HexMath
-import com.unciv.logic.map.MapShape
-import com.unciv.logic.map.MapType
-import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.*
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TerrainType
@@ -68,7 +65,7 @@ class MapLandmassGenerator(
 
     private fun generateFlatEarthExtraWater() {
         for (tile in tileMap.values) {
-            val isCenterTile = tile.latitude == 0f && tile.longitude == 0f
+            val isCenterTile = tile.latitude == 0 && tile.longitude == 0
             val isEdgeTile = tile.neighbors.count() < 6
 
             if (!isCenterTile && !isEdgeTile) continue
@@ -268,8 +265,8 @@ class MapLandmassGenerator(
 
         val a = ratio * tileMap.maxLongitude
         val b = ratio * tileMap.maxLatitude
-        val x = tile.longitude
-        val y = tile.latitude
+        val x = tile.longitude.toFloat()
+        val y = tile.latitude.toFloat()
 
         val distanceFactor = x * x / (a * a) + y * y / (b * b) + (x+y).pow(2) / (a+b).pow(2)
 
@@ -280,8 +277,7 @@ class MapLandmassGenerator(
         // The idea here is to create a water area separating the two land areas.
         // So what we do it create a line of water in the middle - where latitude or longitude is close to 0.
         val randomScale = randomness.RNG.nextDouble()
-        var longitudeFactor = abs(tile.longitude) / tileMap.maxLongitude
-        var latitudeFactor = abs(tile.latitude) / tileMap.maxLatitude
+        var (longitudeFactor, latitudeFactor) = getLonLatFactors(tile)
 
         // We then pick one side to become islands instead of a continent
         if (isLatitude) {
@@ -298,8 +294,7 @@ class MapLandmassGenerator(
         // If this is a world wrap, we want it to be separated on both sides -
         // so we make the actual strip of water thinner, but we put it both in the middle of the map and on the edges of the map
         if (tileMap.mapParameters.worldWrap)
-            factor = min(factor,
-                (tileMap.maxLongitude - abs(tile.longitude)) / tileMap.maxLongitude) * 1.1f
+            factor = min(factor, getReverseLongitudeFactor(tile.longitude)) * 1.1f
 
         // there's nothing magical about this, it's just what we got from playing around with a lot of different options -
         //   the numbers can be changed if you find that something else creates better looking continents
@@ -310,16 +305,14 @@ class MapLandmassGenerator(
         // The idea here is to create a water area separating the two land areas.
         // So what we do it create a line of water in the middle - where latitude or longitude is close to 0.
         val randomScale = randomness.RNG.nextDouble()
-        val latitudeFactor = abs(tile.latitude) / tileMap.maxLatitude
-        val longitudeFactor = abs(tile.longitude) / tileMap.maxLongitude
+        val (longitudeFactor, latitudeFactor) = getLonLatFactors(tile)
 
         var factor = if (isLatitude) latitudeFactor else longitudeFactor
 
         // If this is a world wrap, we want it to be separated on both sides -
         // so we make the actual strip of water thinner, but we put it both in the middle of the map and on the edges of the map
         if (tileMap.mapParameters.worldWrap)
-            factor = min(longitudeFactor,
-                (tileMap.maxLongitude - abs(tile.longitude)) / tileMap.maxLongitude) * 1.5f
+            factor = min(longitudeFactor, getReverseLongitudeFactor(tile.longitude)) * 1.5f
 
         // there's nothing magical about this, it's just what we got from playing around with a lot of different options -
         //   the numbers can be changed if you find that something else creates better looking continents
@@ -330,8 +323,7 @@ class MapLandmassGenerator(
         // The idea here is to create a water area separating the three land areas.
         // So what we do it create a line of water in the middle - where latitude or longitude is close to 0.
         val randomScale = randomness.RNG.nextDouble()
-        var longitudeFactor = abs(tile.longitude) / tileMap.maxLongitude
-        var latitudeFactor = abs(tile.latitude) / tileMap.maxLatitude
+        var (longitudeFactor, latitudeFactor) = getLonLatFactors(tile)
 
         // 3rd continent should use only half the map width, or if flat earth, only a third
         val sizeReductionFactor = if (tileMap.mapParameters.shape == MapShape.flatEarth) 3f else 2f
@@ -343,7 +335,7 @@ class MapLandmassGenerator(
                 latitudeFactor = max(0f, tileMap.maxLatitude - abs(tile.latitude * sizeReductionFactor)) / tileMap.maxLatitude
         } else {
             if (isNorth && tile.latitude < 0 || !isNorth && tile.latitude > 0)
-                longitudeFactor = max(0f, tileMap.maxLongitude - abs(tile.longitude * sizeReductionFactor)) / tileMap.maxLongitude
+                longitudeFactor = max(0f, getReverseLongitudeFactor(abs(tile.longitude * sizeReductionFactor).toInt()))
         }
 
         var factor = min(longitudeFactor, latitudeFactor)
@@ -353,7 +345,7 @@ class MapLandmassGenerator(
         if (tileMap.mapParameters.worldWrap) {
             factor = min(
                 factor,
-                (tileMap.maxLongitude - abs(tile.longitude)) / tileMap.maxLongitude
+                getReverseLongitudeFactor(tile.longitude)
             ) * 1.5f
         }
 
@@ -366,9 +358,8 @@ class MapLandmassGenerator(
         // The idea here is to create a water area separating the four land areas.
         // So what we do it create a line of water in the middle - where latitude or longitude is close to 0.
         val randomScale = randomness.RNG.nextDouble()
-        val longitudeFactor = abs(tile.longitude) / tileMap.maxLongitude
-        val latitudeFactor = abs(tile.latitude) / tileMap.maxLatitude
-
+        val (longitudeFactor, latitudeFactor) = getLonLatFactors(tile)
+        
         var factor = sqrt(longitudeFactor * latitudeFactor) /1.5f
 
         // If this is a world wrap, we want it to be separated on both sides -
@@ -376,7 +367,7 @@ class MapLandmassGenerator(
         if (tileMap.mapParameters.worldWrap) {
             factor = min(
                 factor,
-                (tileMap.maxLongitude - abs(tile.longitude)) / tileMap.maxLongitude
+                getReverseLongitudeFactor(tile.longitude)
             ) * 1.5f
         }
 
@@ -402,7 +393,7 @@ class MapLandmassGenerator(
             val startdropoffratio = 0.8 // distance from center at which we start decreasing elevation linearly
             val xdrsquared = xdistanceratio * xdistanceratio
             val ydrsquared = ydistanceratio * ydistanceratio
-            val distancefromcenter = sqrt(xdrsquared+ydrsquared)
+            val distancefromcenter = sqrt((xdrsquared+ydrsquared).toFloat())
             var distanceoffset = 0.0
             if (distancefromcenter > startdropoffratio) {
                 val dropoffdistance = distancefromcenter - startdropoffratio
@@ -448,5 +439,17 @@ class MapLandmassGenerator(
         val worldCoords = HexMath.hex2WorldCoords(tile.position)
         return Perlin.ridgedNoise3d(worldCoords.x.toDouble(), worldCoords.y.toDouble(), seed, nOctaves, persistence, lacunarity, scale)
     }
+    
+    /** Returns lon at lat "percentile from center" - numbers between 0.0-0.1 */
+    private fun getLonLatFactors(tile: Tile): Pair<Float, Float>{
+        val longitudeFactor = abs(tile.longitude) / tileMap.maxLongitude.toFloat()
+        val latitudeFactor = abs(tile.latitude) / tileMap.maxLatitude.toFloat()
+        return longitudeFactor to latitudeFactor
+    }
+    
+    /** For world wrap maps, we want the "1-N" factor of the tile */
+    private fun getReverseLongitudeFactor(longitude: Int): Float = 
+        abs(longitude) / tileMap.maxLongitude.toFloat()
+    
     //endregion
 }

@@ -17,6 +17,7 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.*
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.toHexCoord
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
@@ -190,9 +191,9 @@ class AlertPopup(
         addQuestionAboutTheCity(city.name)
         val conqueringCiv = gameInfo.getCurrentPlayerCivilization()
 
-        if (city.foundingCiv != ""
-                && city.civ.civName != city.foundingCiv // can't liberate if the city actually belongs to those guys
-                && conqueringCiv.civName != city.foundingCiv) { // or belongs originally to us
+        if (city.foundingCivObject != null
+                && city.civ != city.foundingCivObject // can't liberate if the city actually belongs to those guys
+                && conqueringCiv != city.foundingCivObject) { // or belongs originally to us
             addLiberateOption(city, conqueringCiv)
             addSeparator()
         }
@@ -232,7 +233,7 @@ class AlertPopup(
         addQuestionAboutTheCity(city.name)
         val conqueringCiv = gameInfo.getCurrentPlayerCivilization()
 
-        if (!conqueringCiv.isAtWarWith(getCiv(city.foundingCiv))) {
+        if (!conqueringCiv.isAtWarWith(city.foundingCivObject!!)) {
             addLiberateOption(city, conqueringCiv)
             addSeparator()
         }
@@ -323,7 +324,7 @@ class AlertPopup(
 
     private fun addGameHasBeenWon() {
         val victoryData = gameInfo.victoryData!!
-        addGoodSizedLabel("[${victoryData.winningCiv}] has won a [${victoryData.victoryType}] Victory!").row()
+        addGoodSizedLabel("[${victoryData.winningCivObject.civName}] has won a [${victoryData.victoryType}] Victory!").row()
         addButton("Victory status") { close(); worldScreen.game.pushScreen(VictoryScreen(worldScreen)) }.row()
         addCloseButton()
     }
@@ -338,11 +339,11 @@ class AlertPopup(
 
     /** @return false to skip opening this Popup, as we're running in the initialization phase before the Popup is open */
     private fun addRecapturedCivilian(): Boolean {
-        val position = Vector2().fromString(popupAlert.value)
+        val position = Vector2().fromString(popupAlert.value).toHexCoord()
         val tile = gameInfo.tileMap[position]
         val capturedUnit = tile.civilianUnit  // This has got to be it
             ?: return false // the unit disappeared somehow? maybe a modded action?
-        val originalOwner = getCiv(capturedUnit.originalOwner!!)
+        val originalOwner = capturedUnit.originalOwningCiv!!
         if (originalOwner.isDefeated()) return false
         val captor = viewingCiv
 
@@ -360,7 +361,7 @@ class AlertPopup(
 
             if (closestCity != null) {
                 // Attempt to place the unit near their nearest city
-                originalOwner.units.placeUnitNearTile(closestCity.location, unitName)
+                originalOwner.units.placeUnitNearTile(closestCity.location.toHexCoord(), unitName)
             }
 
             if (originalOwner.isCityState) {
@@ -374,7 +375,7 @@ class AlertPopup(
                 yield(LocationAction(tile.position))
                 if (closestCity != null)
                     yield(LocationAction(closestCity.location))
-                yield(DiplomacyAction(captor.civName))
+                yield(DiplomacyAction(captor))
                 yield(CivilopediaAction("Tutorial/Barbarians"))
             }
             originalOwner.addNotification("Your captured [${unitName}] has been returned by [${captor.civName}]", notificationSequence, NotificationCategory.Diplomacy, NotificationIcon.Trade, unitName, captor.civName)
@@ -524,7 +525,7 @@ class AlertPopup(
     }
 
     private fun addLiberateOption(city: City, conqueringCiv: Civilization) {
-        val button = "Liberate (city returns to [originalOwner])".fillPlaceholders(city.foundingCiv).toTextButton()
+        val button = "Liberate (city returns to [originalOwner])".fillPlaceholders(city.foundingCivObject!!.civName).toTextButton()
         button.onActivation {
             city.liberateCity(conqueringCiv)
             close()

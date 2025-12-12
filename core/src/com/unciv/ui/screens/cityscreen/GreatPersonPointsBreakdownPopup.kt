@@ -3,7 +3,6 @@ package com.unciv.ui.screens.cityscreen
 import com.unciv.logic.city.GreatPersonPointsBreakdown
 import com.unciv.ui.components.extensions.toStringSigned
 import com.unciv.ui.popups.Popup
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
 

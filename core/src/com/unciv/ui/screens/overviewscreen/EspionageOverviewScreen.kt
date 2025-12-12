@@ -148,7 +148,7 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
         val label = city.name.toLabel(hideIcons = true)
         label.onClick {
             worldScreen.game.popScreen() // If a detour to this screen (i.e. not directly from worldScreen) is made possible, use resetToWorldScreen instead
-            worldScreen.mapHolder.setCenterPosition(city.location)
+            worldScreen.mapHolder.setCenterPosition(city.location.toHexCoord())
         }
         citySelectionTable.add(label).fill()
         citySelectionTable.add(getSpyIcons(manager.getSpiesInCity(city)))

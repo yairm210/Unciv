@@ -24,8 +24,8 @@ object AirUnitAutomation {
         val enemyAirUnitsInRange = tilesWithEnemyUnitsInRange
             .flatMap { it.airUnits.asSequence() }.filter { it.civ.isAtWarWith(unit.civ) }
         val enemyFighters = enemyAirUnitsInRange.size / 2 // Assume half the planes are fighters
-        val friendlyUnusedFighterCount = friendlyAirUnitsInRange.count { it.health >= 50 && it.canAttack() }
-        val friendlyUsedFighterCount = friendlyAirUnitsInRange.count { it.health >= 50 && !it.canAttack() }
+        val friendlyUnusedFighterCount = friendlyAirUnitsInRange.count { it.canAttack() }
+        val friendlyUsedFighterCount = friendlyAirUnitsInRange.count { !it.canAttack() }
 
         // We need to be on standby in case they attack
         if (friendlyUnusedFighterCount < enemyFighters) return

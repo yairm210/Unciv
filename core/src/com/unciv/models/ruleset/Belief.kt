@@ -1,7 +1,9 @@
 package com.unciv.models.ruleset
 
 import com.unciv.Constants
+import com.unciv.logic.MultiFilter
 import com.unciv.UncivGame
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.translations.tr
 import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
@@ -18,6 +20,28 @@ class Belief() : RulesetObject() {
     override fun getUniqueTarget() =
         if (type.isFounder)  UniqueTarget.FounderBelief
         else UniqueTarget.FollowerBelief
+
+    @Readonly
+    fun matchesFilter(filter: String, state: GameContext? = null, multiFilter: Boolean = true): Boolean {
+        return if (multiFilter) MultiFilter.multiFilter(filter, {
+            matchesSingleFilter(filter, state) ||
+                state != null && hasTagUnique(filter, state) ||
+                state == null && hasTagUnique(filter)
+        })
+        else matchesSingleFilter(filter, state) ||
+            state != null && hasTagUnique(filter, state) ||
+            state == null && hasTagUnique(filter)
+    }
+
+    @Readonly
+    fun matchesSingleFilter(filter: String, state: GameContext? = null): Boolean {
+        return when (filter) {
+            name -> true
+            in Constants.all -> true
+            type.name -> true // Belief type
+            else -> false
+        }
+    }
 
     override fun makeLink() = "Belief/$name"
     override fun getCivilopediaTextHeader() = FormattedLine(name, icon = makeLink(), header = 2, color = if (type == BeliefType.None) "#e34a2b" else "")

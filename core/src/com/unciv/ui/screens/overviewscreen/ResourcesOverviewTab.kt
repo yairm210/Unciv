@@ -78,7 +78,7 @@ class ResourcesOverviewTab(
     private fun ResourceSupplyList.getLabel(resource: TileResource, origin: String): Label? {
         fun isAlliedAndUnimproved(tile: Tile): Boolean {
             val owner = tile.getOwner() ?: return false
-            if (owner != viewingPlayer && !(owner.isCityState && owner.getAllyCivName() == viewingPlayer.civName)) return false
+            if (owner != viewingPlayer && !(owner.isCityState && owner.allyCiv == viewingPlayer)) return false
             return tile.countAsUnimproved()
         }
         val amount = get(resource, origin)?.amount ?: return null
@@ -272,12 +272,12 @@ class ResourcesOverviewTab(
 
         for (otherCiv in viewingPlayer.getKnownCivs()) {
             // Show resources received through trade
-            for (trade in otherCiv.tradeRequests.filter { it.requestingCiv == viewingPlayer.civName })
+            for (trade in otherCiv.tradeRequests.filter { it.requestingCiv == viewingPlayer.civID })
                 for (offer in trade.trade.theirOffers.filter { it.type == TradeOfferType.Strategic_Resource || it.type == TradeOfferType.Luxury_Resource })
                     newResourceSupplyList.add(gameInfo.ruleset.tileResources[offer.name]!!, ExtraInfoOrigin.TradeOffer.name, offer.amount)
 
             // Show resources your city-state allies have left unimproved
-            if (!otherCiv.isCityState || otherCiv.getAllyCivName() != viewingPlayer.civName) continue
+            if (!otherCiv.isCityState || otherCiv.allyCiv != viewingPlayer) continue
             for (city in otherCiv.cities)
                 city.addUnimproved()
         }

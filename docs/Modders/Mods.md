@@ -60,6 +60,12 @@ When you've finished making your map in the Map Editor, save it, and it will be 
 
 Copy it to a `/maps` folder in your mod, and you're done!
 
+## Translations
+
+Just like Unciv itself, mods can be translated into any or all of the languages core Unciv supports.
+
+For details, see [Translation generation - for modders](../Translating/Translation-mods.md).
+
 ## Getting your mod out there
 
 In order to make your mod downloadable by anyone, you need to create a Github repository (instructions [here](https://docs.github.com/en/github/getting-started-with-github/create-a-repo))
