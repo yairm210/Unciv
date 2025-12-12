@@ -36,6 +36,8 @@ import org.junit.runner.RunWith
 
 @RunWith(GdxTestRunner::class)
 class TranslationTests {
+    //region !Helpers
+
     /** Translations to test with - all languages are loaded by [loadTranslations] with diacritic support off */
     private lateinit var translations: Translations
 
@@ -74,6 +76,7 @@ class TranslationTests {
         UncivGame.Current.translations[key] = TranslationEntry(original)
             .apply { this[Constants.english] = result }
     }
+    //endregion
 
     @Test
     fun translationsLoad() {
