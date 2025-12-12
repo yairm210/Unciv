@@ -279,6 +279,12 @@ enum class Countables(
         }
     },
 
+    TilesBetweenUnitAndOrigin("tiles between the unit and its origin", shortDocumentation = "The distance between a unit and where it was born.") {
+        override fun eval(parameterText: String, gameContext: GameContext): Int? {
+            val unit = gameContext.unit ?: return null
+            return unit.currentTile.aerialDistanceTo(unit.originTile)
+        }
+    },
 
     EraNumber("Era number", shortDocumentation = "Number of the era the current player is in") {
         override val documentationStrings = listOf("Zero-based index of the Era in Eras.json.")
