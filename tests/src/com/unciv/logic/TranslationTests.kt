@@ -24,7 +24,6 @@ import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.squareBraceRegex
 import com.unciv.models.translations.tr
 import com.unciv.testing.GdxTestRunner
-import com.unciv.testing.MeasureDuration
 import com.unciv.testing.RedirectOutput
 import com.unciv.testing.RedirectPolicy
 import com.unciv.ui.components.fonts.DiacriticSupport
@@ -36,7 +35,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(GdxTestRunner::class)
-@MeasureDuration
 class TranslationTests {
     /** Translations to test with - all languages are loaded by [loadTranslations] with diacritic support off */
     private lateinit var translations: Translations
