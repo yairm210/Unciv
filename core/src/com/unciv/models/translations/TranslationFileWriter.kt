@@ -46,6 +46,7 @@ import com.unciv.utils.debug
 import java.io.File
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
+import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 
@@ -290,7 +291,7 @@ object TranslationFileWriter {
             .writeString(output, false)
     }
 
-    // used for unit test only
+    @VisibleForTesting
     fun getGeneratedStringsSize(): Int {
         return GenerateStringsFromJSONs(Gdx.files.local("jsons/Civ V - Vanilla")).values.sumOf {
             // exclude empty lines
