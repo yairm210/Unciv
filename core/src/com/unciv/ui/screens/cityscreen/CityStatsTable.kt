@@ -167,7 +167,8 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
 
         // Supply
         for (resourceSupply in CityResources.getCityResourcesAvailableToCity(city))
-            resourceCounter.add(resourceSupply.resource, resourceSupply.amount)
+            if (resourceSupply.resource.getMatchingUniques(UniqueType.NotShownOnWorldScreen, city.state).none())
+                resourceCounter.add(resourceSupply.resource, resourceSupply.amount)
 
         // Stockpiles
         for ((resourceName, amount) in city.resourceStockpiles) {
