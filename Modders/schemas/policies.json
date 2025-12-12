@@ -1,0 +1,47 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "name": { "type": "string" },
+            "era": { "type": "string", "description": "Unlocking era as defined in Eras.json" },
+            "priorities": {
+                "type": "object",
+                "description": "Priorities for each victory type.",
+                "additionalProperties": true
+            },
+            "uniques": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/uniques.json" },
+            "civilopediaText": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/civilopediaText.json" },
+
+            "policies": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "description": "Member policy.",
+                    "additionalProperties": false,
+                    "properties": {
+                        "name": { "type": "string" },
+                        "row": { "type": "integer", "description": "Placement in UI, each unit approximately half the icon size" },
+                        "column": { "type": "integer", "description": "Placement in UI, each unit approximately half the icon size" },
+                        "requires": {
+                            "type": "array",
+                            "items": { "type": "string" },
+                            "description": "List of prerequisite policy names",
+                            "uniqueItems": true
+                        },
+                        "uniques": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/uniques.json" },
+                        "civilopediaText": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/civilopediaText.json" }
+                    },
+                    "required": ["name", "row", "column"]
+                },
+                "description": "List of member policies and branch 'finisher'.",
+                "uniqueItems": true
+            }
+        },
+        "required": [
+            "name", "era"
+        ],
+        "additionalProperties": false
+    }
+}
