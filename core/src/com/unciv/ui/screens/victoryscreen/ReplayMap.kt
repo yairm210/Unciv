@@ -12,7 +12,6 @@ import kotlin.math.sqrt
 
 // Mostly copied from MiniMap
 
-@Suppress("LeakingThis")
 /**
  *  Base for a MiniMap not intertwined with a WorldScreen.
  *  For a _minimal_ implementation see [LoadMapPreview]
