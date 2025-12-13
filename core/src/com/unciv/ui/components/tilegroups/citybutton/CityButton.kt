@@ -1,4 +1,4 @@
-package com.unciv.ui.components.tilegroups
+package com.unciv.ui.components.tilegroups.citybutton
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
@@ -26,6 +26,7 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onRightClick
+import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.components.widgets.BorderedTable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.padTopDescent
@@ -42,8 +43,9 @@ import kotlin.math.min
 class InfluenceTable(
     influence: Float,
     relationshipLevel: RelationshipLevel,
-    width: Float=100f,
-    height: Float=5f) : Table() {
+    width: Float = 100f,
+    height: Float = 5f
+) : Table() {
 
     override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
 
@@ -85,7 +87,7 @@ class InfluenceTable(
 
     }
 
-    private fun getBarPiece(percentage: Float, color: Color, negative: Boolean): Table{
+    private fun getBarPiece(percentage: Float, color: Color, negative: Boolean): Table {
         val barPieceSize = width / 4f
         val barPiece = Table()
         val full = ImageGetter.getWhiteDot()
@@ -134,10 +136,11 @@ private class DefenceTable(city: City) : BorderedTable(
 
 }
 
-class AirUnitTable(city: City, numberOfUnits: Int, size: Float=14f) : BorderedTable(
+private class AirUnitTable(city: City, numberOfUnits: Int, size: Float = 14f) : BorderedTable(
     path="WorldScreen/CityButton/AirUnitTable",
     defaultBgShape = BaseScreen.skinStrings.roundedEdgeRectangleSmallShape,
-    defaultBgBorder = BaseScreen.skinStrings.roundedEdgeRectangleSmallShape) {
+    defaultBgBorder = BaseScreen.skinStrings.roundedEdgeRectangleSmallShape
+) {
 
     init {
 
@@ -206,7 +209,8 @@ private class StatusTable(city: City, iconSize: Float = 18f) : Table() {
 private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
     path = "WorldScreen/CityButton/IconTable",
     defaultBgShape = BaseScreen.skinStrings.roundedEdgeRectangleMidShape,
-    defaultBgBorder = BaseScreen.skinStrings.roundedEdgeRectangleMidBorderShape) {
+    defaultBgBorder = BaseScreen.skinStrings.roundedEdgeRectangleMidBorderShape
+) {
 
     init {
         isTransform = false
@@ -589,7 +593,7 @@ class CityButton(val city: City, private val tileGroup: TileGroup) : Table(BaseS
 
         val espionageVisible = city.civ.gameInfo.isEspionageEnabled()
                 && viewingPlayer.espionageManager.getSpyAssignedToCity(city)?.isSetUp() == true
-        
+
         // If there's nothing to display cuz no Religion - skip popup
         if (!city.civ.gameInfo.isReligionEnabled() && !espionageVisible) return openDiplomacy()
 
@@ -609,8 +613,8 @@ class CityButton(val city: City, private val tileGroup: TileGroup) : Table(BaseS
     }
 
     companion object {
-        val ColorConstruction = colorFromRGB(196,140,62)
-        val ColorGrowth =  colorFromRGB(130,225,78)
+        val ColorConstruction = colorFromRGB(196, 140, 62)
+        val ColorGrowth = colorFromRGB(130, 225, 78)
     }
 
     // For debugging purposes
