@@ -24,10 +24,29 @@ import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
 import com.unciv.utils.DebugUtils
 import yairm210.purity.annotations.Readonly
 
+/**
+ *  The city "button" with decorations on the WorldScreen map.
+ *  - Manages moving down when selected ([moveButtonDown], [moveButtonUp]).
+ *  - Does not include the garrison / air unit list when the city is selected.
+ *
+ *  Top to bottom:
+ *  - [AirUnitTable] (if there are any)
+ *  - [DefenceTable]
+ *  - [CityTable]
+ *  - [InfluenceTable] (city-states only)
+ *  - [StatusTable]
+ *  Floating:
+ *  - Health bar (if damaged and viewable), positioned just inside the upper border of [CityTable]
+ *  - Hidden unit markers (as little triangles just below [CityTable])
+ */
 class CityButton(val city: City, private val tileGroup: TileGroup) : Table(BaseScreen.skin) {
+    companion object {
+        val ColorConstruction: Color = Color.valueOf("#C48C3E")
+        val ColorGrowth: Color = Color.valueOf("#82E14E")
+    }
 
     init {
-        touchable = Touchable.disabled
+        touchable = Touchable.disabled // setButtonActions will override this
     }
 
     private lateinit var cityTable: CityTable
@@ -37,6 +56,8 @@ class CityButton(val city: City, private val tileGroup: TileGroup) : Table(BaseS
     private var isViewable = true
 
     val viewingPlayer = GUI.getViewingPlayer()
+
+    @Readonly private fun belongsToViewingCiv() = city.civ == viewingPlayer
 
     fun update(isCityViewable: Boolean) {
         val selectedPlayer = GUI.getSelectedPlayer()
@@ -76,7 +97,7 @@ class CityButton(val city: City, private val tileGroup: TileGroup) : Table(BaseS
                 city.getMaxHealth().toFloat(), 100f, 3f)
             addActor(healthBar)
             healthBar.center(this)
-            healthBar.y = cityTable.y + cityTable.height-healthBar.height - 1f
+            healthBar.y = cityTable.y + cityTable.height - healthBar.height - 1f
         }
 
         setOrigin(Align.center)
@@ -99,9 +120,7 @@ class CityButton(val city: City, private val tileGroup: TileGroup) : Table(BaseS
         if (!isButtonMoved && (tileGroup.tile.civilianUnit != null))
             insertHiddenUnitMarker(HiddenUnitMarkerPosition.Center)
 
-        val tilesAroundCity = tileGroup.tile.neighbors
-        for (tile in tilesAroundCity)
-        {
+        for (tile in tileGroup.tile.neighbors) {
             val direction = tileGroup.tile.position.minus(tile.position)
 
             if (isButtonMoved) {
@@ -131,7 +150,7 @@ class CityButton(val city: City, private val tileGroup: TileGroup) : Table(BaseS
 
     private fun insertHiddenUnitMarker(pos: HiddenUnitMarkerPosition) {
         // center of the city button +/- size of the 1.5 tiles
-        val positionX = cityTable.width / 2 + (pos.ordinal-1)*60f
+        val positionX = cityTable.width / 2 + (pos.ordinal - 1) * 60f
 
         val indicator = ImageGetter.getTriangle().apply {
             color = city.civ.nation.getInnerColor()
@@ -139,18 +158,15 @@ class CityButton(val city: City, private val tileGroup: TileGroup) : Table(BaseS
             setOrigin(Align.center)
             if (!isButtonMoved) {
                 rotation = 180f
-                setPosition(positionX - width/2, -height)
+                setPosition(positionX - width / 2, -height)
             } else
-                setPosition(positionX - width/2, -height) // height compensation because of asymmetrical icon
+                setPosition(positionX - width / 2, -height) // height compensation because of asymmetrical icon
         }
         cityTable.addActor(indicator)
         listOfHiddenUnitMarkers.add(indicator)
     }
 
-    @Readonly private fun belongsToViewingCiv() = city.civ == viewingPlayer
-
     private fun setButtonActions() {
-
         val unitTable = GUI.getUnitTable()
 
         // So you can click anywhere on the button to go to the city
@@ -159,12 +175,13 @@ class CityButton(val city: City, private val tileGroup: TileGroup) : Table(BaseS
         fun enterCityOrInfoPopup() {
             // second tap on the button will go to the city screen
             // if this city belongs to you and you are not iterating though the air units
-            if (DebugUtils.VISIBLE_MAP || viewingPlayer.isSpectator()
-                || belongsToViewingCiv() && !tileGroup.tile.airUnits.contains(unitTable.selectedUnit)) {
+            val canEnterCity = DebugUtils.VISIBLE_MAP
+                || viewingPlayer.isSpectator()
+                || belongsToViewingCiv() && !tileGroup.tile.airUnits.contains(unitTable.selectedUnit)
+            if (canEnterCity)
                 GUI.pushScreen(CityScreen(city))
-            } else if (viewingPlayer.knows(city.civ)) {
+            else if (viewingPlayer.knows(city.civ))
                 foreignCityInfoPopup()
-            }
         }
 
         onClick {
@@ -181,22 +198,19 @@ class CityButton(val city: City, private val tileGroup: TileGroup) : Table(BaseS
         onRightClick(action = ::enterCityOrInfoPopup)
 
         // when deselected, move city button to its original position
-        if (unitTable.selectedCity != city
-                && unitTable.selectedUnit?.currentTile != city.getCenterTile() && unitTable.selectedSpy == null) {
-
+        if (unitTable.selectedCity != city && unitTable.selectedUnit?.currentTile != city.getCenterTile() && unitTable.selectedSpy == null)
             moveButtonUp()
-        }
     }
 
     fun moveButtonDown() {
         if (isButtonMoved)
             return
         val moveButtonAction = Actions.sequence(
-                Actions.moveTo(tileGroup.x, tileGroup.y-height, 0.4f, Interpolation.swingOut),
-                Actions.run {
-                    isButtonMoved = true
-                    updateHiddenUnitMarkers(isViewable)
-                }
+            Actions.moveTo(tileGroup.x, tileGroup.y - height, 0.4f, Interpolation.swingOut),
+            Actions.run {
+                isButtonMoved = true
+                updateHiddenUnitMarkers(isViewable)
+            }
         )
         parent.addAction(moveButtonAction) // Move the whole cityButtonLayerGroup down, so the CityButton remains clickable
     }
@@ -204,14 +218,14 @@ class CityButton(val city: City, private val tileGroup: TileGroup) : Table(BaseS
     fun moveButtonUp() {
         if (!isButtonMoved)
             return
-        val floatAction = Actions.sequence(
-                Actions.moveTo(tileGroup.x, tileGroup.y, 0.4f, Interpolation.sine),
-                Actions.run {
-                    isButtonMoved = false
-                    updateHiddenUnitMarkers(isViewable)
-                }
+        val moveButtonAction = Actions.sequence(
+            Actions.moveTo(tileGroup.x, tileGroup.y, 0.4f, Interpolation.sine),
+            Actions.run {
+                isButtonMoved = false
+                updateHiddenUnitMarkers(isViewable)
+            }
         )
-        parent.addAction(floatAction)
+        parent.addAction(moveButtonAction)
     }
 
     private fun foreignCityInfoPopup() {
@@ -231,16 +245,11 @@ class CityButton(val city: City, private val tileGroup: TileGroup) : Table(BaseS
             addOKButton("Diplomacy") { openDiplomacy() }
             if (espionageVisible) addButton("View") { GUI.pushScreen(CityScreen(city)) }
             add().expandX()
-            addCloseButton() {
+            addCloseButton {
                 GUI.getWorldScreen().run { nextTurnButton.update() }
             }
         }
         popup.open()
-    }
-
-    companion object {
-        val ColorConstruction: Color = Color.valueOf("#C48C3E")
-        val ColorGrowth: Color = Color.valueOf("#82E14E")
     }
 
     // For debugging purposes
@@ -251,5 +260,4 @@ class CityButton(val city: City, private val tileGroup: TileGroup) : Table(BaseS
     override fun act(delta: Float) {
         return // actions should only be for the CityButtonLayerGroup
     }
-
 }
