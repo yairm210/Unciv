@@ -10,7 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.GUI
-import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.City
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.ruleset.INonPerpetualConstruction
@@ -36,33 +35,6 @@ import com.unciv.ui.screens.cityscreen.CityScreen
 import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
 import com.unciv.utils.DebugUtils
 import yairm210.purity.annotations.Readonly
-
-private class DefenceTable(city: City) : BorderedTable(
-
-    path="WorldScreen/CityButton/DefenceTable",
-    defaultBgShape = BaseScreen.skinStrings.roundedTopEdgeRectangleSmallShape,
-    defaultBgBorder = BaseScreen.skinStrings.roundedTopEdgeRectangleSmallBorderShape) {
-
-    init {
-
-        val selectedCiv = GUI.getSelectedPlayer()
-        borderSize = 4f
-        bgColor = ImageGetter.CHARCOAL
-        bgBorderColor = when {
-            city.civ == selectedCiv -> colorFromRGB(255, 237, 200)
-            city.civ.isAtWarWith(selectedCiv) -> Color.RED
-            else -> ImageGetter.CHARCOAL
-        }
-
-        pad(2f, 3f, 0f, 3f)
-
-        val cityStrength = CityCombatant(city).getDefendingStrength()
-        val cityStrengthLabel = "${Fonts.strength}$cityStrength"
-            .toLabel(fontSize = 12, alignment = Align.center)
-        add(cityStrengthLabel).colspan(2).grow().center()
-    }
-
-}
 
 private class AirUnitTable(city: City, numberOfUnits: Int, size: Float = 14f) : BorderedTable(
     path="WorldScreen/CityButton/AirUnitTable",
@@ -340,7 +312,7 @@ class CityButton(val city: City, private val tileGroup: TileGroup) : Table(BaseS
     val viewingPlayer = GUI.getViewingPlayer()
 
     fun update(isCityViewable: Boolean) {
-
+        val selectedPlayer = GUI.getSelectedPlayer()
         isViewable = isCityViewable
 
         clear()
@@ -354,13 +326,12 @@ class CityButton(val city: City, private val tileGroup: TileGroup) : Table(BaseS
         }
 
         // Add City strength table
-        add(DefenceTable(city)).row()
+        add(DefenceTable(city, selectedPlayer)).row()
 
         // Add City main table: pop, name, religion, construction, nation icon
         cityTable = CityTable(city)
         add(cityTable).row()
 
-        val selectedPlayer = GUI.getSelectedPlayer()
         // If city state - add influence bar
         if (city.civ.isCityState && city.civ.knows(selectedPlayer)) {
             val diplomacyManager = city.civ.getDiplomacyManager(selectedPlayer)!!
