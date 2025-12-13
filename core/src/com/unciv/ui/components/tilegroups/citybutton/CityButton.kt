@@ -12,7 +12,6 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.GUI
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.PerpetualConstruction
@@ -37,77 +36,6 @@ import com.unciv.ui.screens.cityscreen.CityScreen
 import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
 import com.unciv.utils.DebugUtils
 import yairm210.purity.annotations.Readonly
-import kotlin.math.max
-import kotlin.math.min
-
-class InfluenceTable(
-    influence: Float,
-    relationshipLevel: RelationshipLevel,
-    width: Float = 100f,
-    height: Float = 5f
-) : Table() {
-
-    override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
-
-    init {
-
-        defaults().pad(1f)
-        setSize(width, height)
-        background = BaseScreen.skinStrings.getUiBackground(
-            "WorldScreen/CityButton/InfluenceBar",
-            tintColor = ImageGetter.CHARCOAL)
-
-        val normalizedInfluence = max(-60f, min(influence, 60f)) / 30f
-
-        val color = when (relationshipLevel) {
-            RelationshipLevel.Unforgivable -> Color.RED
-            RelationshipLevel.Enemy -> Color.ORANGE
-            RelationshipLevel.Afraid -> Color.YELLOW
-            RelationshipLevel.Neutral, RelationshipLevel.Friend -> Color.LIME
-            RelationshipLevel.Ally -> Color.SKY
-            else -> Color.DARK_GRAY
-        }
-
-        val percentages = arrayListOf(0f, 0f, 0f, 0f)
-        when {
-            normalizedInfluence < -1f -> {
-                percentages[0] = -normalizedInfluence - 1f
-                percentages[1] = 1f
-            }
-            normalizedInfluence < 0f -> percentages[1] = -normalizedInfluence
-            normalizedInfluence < 1f -> percentages[2] = normalizedInfluence
-            else -> {
-                percentages[2] = 1f
-                percentages[3] = (normalizedInfluence - 1f)
-            }
-        }
-
-        for (i in 0..3)
-            add(getBarPiece(percentages[i], color, i < 2))
-
-    }
-
-    private fun getBarPiece(percentage: Float, color: Color, negative: Boolean): Table {
-        val barPieceSize = width / 4f
-        val barPiece = Table()
-        val full = ImageGetter.getWhiteDot()
-        val empty = ImageGetter.getWhiteDot()
-
-        full.color = color
-        empty.color = Color.DARK_GRAY
-
-        if (negative) {
-            barPiece.add(empty).size((1f - percentage) * barPieceSize, height)
-            barPiece.add(full).size(percentage * barPieceSize, height)
-        } else {
-            barPiece.add(full).size(percentage * barPieceSize, height)
-            barPiece.add(empty).size((1f - percentage) * barPieceSize, height)
-        }
-
-        return barPiece
-    }
-
-}
 
 private class DefenceTable(city: City) : BorderedTable(
 
