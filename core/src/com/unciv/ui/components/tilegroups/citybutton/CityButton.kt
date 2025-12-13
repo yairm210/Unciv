@@ -11,7 +11,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.GUI
 import com.unciv.logic.city.City
-import com.unciv.models.TutorialTrigger
 import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.translations.tr
@@ -35,47 +34,6 @@ import com.unciv.ui.screens.cityscreen.CityScreen
 import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
 import com.unciv.utils.DebugUtils
 import yairm210.purity.annotations.Readonly
-
-private class StatusTable(city: City, iconSize: Float = 18f) : Table() {
-
-    init {
-
-        val padBetween = 2f
-        val selectedCiv = GUI.getSelectedPlayer()
-
-        if (city.civ == selectedCiv) {
-            if (city.isBlockaded()) {
-                val connectionImage = ImageGetter.getImage("OtherIcons/Blockade")
-                add(connectionImage).size(iconSize)
-                GUI.getWorldScreen().displayTutorial(TutorialTrigger.CityBlockade)
-            } else if (!city.isCapital() && city.isConnectedToCapital()) {
-                val connectionImage = ImageGetter.getStatIcon("CityConnection")
-                add(connectionImage).size(iconSize)
-            }
-        }
-
-        if (city.isInResistance()) {
-            val resistanceImage = ImageGetter.getImage("StatIcons/Resistance")
-            add(resistanceImage).size(iconSize).padLeft(padBetween)
-        }
-
-        if (city.isPuppet) {
-            val puppetImage = ImageGetter.getImage("OtherIcons/Puppet")
-            add(puppetImage).size(iconSize).padLeft(padBetween)
-        }
-
-        if (city.isBeingRazed) {
-            val fireImage = ImageGetter.getImage("OtherIcons/Fire")
-            add(fireImage).size(iconSize).padLeft(padBetween)
-        }
-
-        if (city.civ == selectedCiv && city.isWeLoveTheKingDayActive()) {
-            val wltkdImage = ImageGetter.getImage("OtherIcons/WLTKD")
-            add(wltkdImage).size(iconSize).padLeft(padBetween)
-        }
-    }
-
-}
 
 private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
     path = "WorldScreen/CityButton/IconTable",
@@ -310,7 +268,7 @@ class CityButton(val city: City, private val tileGroup: TileGroup) : Table(BaseS
         }
 
         // Add statuses: connection, resistance, puppet, raze, WLTKD
-        add(StatusTable(city)).padTop(3f)
+        add(StatusTable(city, selectedPlayer)).padTop(3f)
 
         pack()
 
