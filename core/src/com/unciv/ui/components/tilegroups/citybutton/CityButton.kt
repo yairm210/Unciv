@@ -36,35 +36,6 @@ import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
 import com.unciv.utils.DebugUtils
 import yairm210.purity.annotations.Readonly
 
-private class AirUnitTable(city: City, numberOfUnits: Int, size: Float = 14f) : BorderedTable(
-    path="WorldScreen/CityButton/AirUnitTable",
-    defaultBgShape = BaseScreen.skinStrings.roundedEdgeRectangleSmallShape,
-    defaultBgBorder = BaseScreen.skinStrings.roundedEdgeRectangleSmallShape
-) {
-
-    init {
-
-        padTop(2f)
-        padBottom(2f)
-
-        padLeft(10f)
-        padRight(10f)
-
-        val textColor = city.civ.nation.getInnerColor()
-
-        bgColor = city.civ.nation.getOuterColor()
-        bgBorderColor = city.civ.nation.getOuterColor()
-
-        val aircraftImage = ImageGetter.getImage("OtherIcons/Aircraft")
-        aircraftImage.color = textColor
-        aircraftImage.setSize(size, size)
-
-        add(aircraftImage)
-        add(numberOfUnits.tr().toLabel(textColor, size.toInt()))
-    }
-
-}
-
 private class StatusTable(city: City, iconSize: Float = 18f) : Table() {
 
     init {
