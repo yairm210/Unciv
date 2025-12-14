@@ -264,7 +264,6 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
                     it.getMatchingUniques(UniqueType.NotShownOnWorldScreen, viewingPlayer.state).none()
                 }
                 .map { CityWideResourceColumn(it) }
-                .asSequence()
         }
     }
 
