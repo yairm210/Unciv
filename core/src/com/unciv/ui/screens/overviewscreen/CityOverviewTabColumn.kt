@@ -192,7 +192,7 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
          * @param viewingPlayer The Civilization that is viewing the Overview screen.
          */
         fun getColumns(viewingPlayer: Civilization): List<ISortableGridContentProvider<City, EmpireOverviewScreen>> =
-            CityOverviewTabColumn.values().toList() +
+            CityOverviewTabColumn.entries.toList() +
             CityWideResourceColumn.getColumns(viewingPlayer)
     }
 
