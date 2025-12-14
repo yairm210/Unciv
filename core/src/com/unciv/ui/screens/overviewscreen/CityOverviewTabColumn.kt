@@ -239,9 +239,9 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
         override val headerTip = resource.name.tr()
         override val align = Align.center
         override val fillX = false
-        override val expandX: Boolean get() = false
-        override val equalizeHeight: Boolean get() = false
-        override val defaultSort: SortableGrid.SortDirection get() = SortableGrid.SortDirection.Descending
+        override val expandX = false
+        override val equalizeHeight = false
+        override val defaultSort get() = SortableGrid.SortDirection.Descending
         override fun getHeaderActor(iconSize: Float) = ImageGetter.getResourcePortrait(resource.name, iconSize)
         override fun getEntryValue(item: City) = CityResources.getAvailableResourceAmount(item, resource.name)
         companion object {
