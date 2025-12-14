@@ -20,6 +20,10 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.SortableGrid
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.cityscreen.CityScreen
+import com.unciv.models.ruleset.tile.TileResource
+import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.city.CityResources
+import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.math.roundToInt
 
 
@@ -181,6 +185,17 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
 
     //endregion
 
+    companion object {
+        fun getEntries(viewingPlayer: Civilization): List<ISortableGridContentProvider<City, EmpireOverviewScreen>> =
+            CityOverviewTabColumn.values().toList() +
+            viewingPlayer.gameInfo.ruleset.tileResources.values
+                .filter {
+                    it.isCityWide &&
+                    it.getMatchingUniques(UniqueType.NotShownOnWorldScreen).none()
+                }
+                .map { CityWideResourceColumn(it) }
+    }
+
     /** The Stat constant if this is a Stat column - helps the default getter methods */
     private val stat = Stat.safeValueOf(name)
 
@@ -212,4 +227,22 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
             item.cityStats.currentCityStats[stat!!].roundToInt()
 
     //endregion
+
+    //region Dynamic Columns
+    /** City-Wide Resource Column representing one resource.
+     * @see getEntries()
+     */
+    class CityWideResourceColumn(
+        val resource: TileResource
+    ) : ISortableGridContentProvider<City, EmpireOverviewScreen> {
+        override val headerTip = resource.name.tr()
+        override val align = Align.center
+        override val fillX = false
+        override val expandX: Boolean get() = false
+        override val equalizeHeight: Boolean get() = false
+        override val defaultSort: SortableGrid.SortDirection get() = SortableGrid.SortDirection.Descending
+        override fun isVisible(gameInfo: GameInfo): Boolean = false
+        override fun getHeaderActor(iconSize: Float) = ImageGetter.getResourcePortrait(resource.name, iconSize)
+        override fun getEntryValue(item: City) = CityResources.getAvailableResourceAmount(item, resource.name)
+    }
 }
