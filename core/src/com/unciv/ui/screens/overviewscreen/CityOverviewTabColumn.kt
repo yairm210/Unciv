@@ -244,7 +244,14 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
         override val equalizeHeight = false
         override val defaultSort get() = SortableGrid.SortDirection.Descending
         override fun getHeaderActor(iconSize: Float) = ImageGetter.getResourcePortrait(resource.name, iconSize)
-        override fun getEntryValue(item: City) = CityResources.getAvailableResourceAmount(item, resource.name)
+        override fun getEntryValue(item: City) =
+            // Resource Supply
+            CityResources.getCityResourcesAvailableToCity(item)
+                .filter { it.resource == resource }
+                .sumOf { it.amount } +
+            // Resource Stockpile
+            (item.resourceStockpiles[resource.name] ?: 0)
+
         companion object {
             /**
              * Retrieve all the available city-wide resource columns.
