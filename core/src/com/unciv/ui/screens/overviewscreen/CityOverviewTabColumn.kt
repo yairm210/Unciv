@@ -242,11 +242,14 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
         override val expandX: Boolean get() = false
         override val equalizeHeight: Boolean get() = false
         override val defaultSort: SortableGrid.SortDirection get() = SortableGrid.SortDirection.Descending
-        override fun isVisible(gameInfo: GameInfo): Boolean = false
         override fun getHeaderActor(iconSize: Float) = ImageGetter.getResourcePortrait(resource.name, iconSize)
         override fun getEntryValue(item: City) = CityResources.getAvailableResourceAmount(item, resource.name)
         companion object {
-            /** Retrieve all the available city-wide resource columns. */
+            /**
+             * Retrieve all the available city-wide resource columns.
+             *
+             * @param viewingPlayer The Civilization that has opened the City Overview screen.
+             */
             fun getColumns(viewingPlayer: Civilization) = viewingPlayer.gameInfo.ruleset.tileResources.values
                 .filter {
                     it.isCityWide &&
