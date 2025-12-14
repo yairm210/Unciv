@@ -186,14 +186,14 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
     //endregion
 
     companion object {
-        fun getEntries(viewingPlayer: Civilization): List<ISortableGridContentProvider<City, EmpireOverviewScreen>> =
+        /**
+         * Gets a list of all the available city overview screen columns.
+         *
+         * @param viewingPlayer The Civilization that is viewing the Overview screen.
+         */
+        fun getColumns(viewingPlayer: Civilization): List<ISortableGridContentProvider<City, EmpireOverviewScreen>> =
             CityOverviewTabColumn.values().toList() +
-            viewingPlayer.gameInfo.ruleset.tileResources.values
-                .filter {
-                    it.isCityWide &&
-                    it.getMatchingUniques(UniqueType.NotShownOnWorldScreen).none()
-                }
-                .map { CityWideResourceColumn(it) }
+            CityWideResourceColumn.getColumns(viewingPlayer)
     }
 
     /** The Stat constant if this is a Stat column - helps the default getter methods */
@@ -229,8 +229,9 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
     //endregion
 
     //region Dynamic Columns
-    /** City-Wide Resource Column representing one resource.
-     * @see getEntries()
+
+    /**
+     * City-Wide Resource Column, representing an individual resource.
      */
     class CityWideResourceColumn(
         val resource: TileResource
@@ -244,5 +245,16 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
         override fun isVisible(gameInfo: GameInfo): Boolean = false
         override fun getHeaderActor(iconSize: Float) = ImageGetter.getResourcePortrait(resource.name, iconSize)
         override fun getEntryValue(item: City) = CityResources.getAvailableResourceAmount(item, resource.name)
+        companion object {
+            /** Retrieve all the available city-wide resource columns. */
+            fun getColumns(viewingPlayer: Civilization) = viewingPlayer.gameInfo.ruleset.tileResources.values
+                .filter {
+                    it.isCityWide &&
+                    it.getMatchingUniques(UniqueType.NotShownOnWorldScreen, viewingPlayer.state).none()
+                }
+                .map { CityWideResourceColumn(it) }
+        }
     }
+
+    // endregion
 }

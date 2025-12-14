@@ -26,7 +26,7 @@ class CityOverviewTab(
     override val persistableData = (persistedData as? CityTabPersistableData) ?: CityTabPersistableData()
 
     private val grid = SortableGrid(
-        columns = CityOverviewTabColumn.getEntries(viewingPlayer),
+        columns = CityOverviewTabColumn.getColumns(viewingPlayer),
         data = viewingPlayer.cities,
         actionContext = overviewScreen,
         sortState = persistableData,
