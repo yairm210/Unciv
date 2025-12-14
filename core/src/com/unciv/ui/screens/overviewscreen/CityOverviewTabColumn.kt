@@ -191,9 +191,10 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
          *
          * @param viewingPlayer The Civilization that is viewing the Overview screen.
          */
-        fun getColumns(viewingPlayer: Civilization): List<ISortableGridContentProvider<City, EmpireOverviewScreen>> =
-            CityOverviewTabColumn.entries.toList() +
-            CityWideResourceColumn.getColumns(viewingPlayer)
+        fun getColumns(viewingPlayer: Civilization): Iterable<ISortableGridContentProvider<City, EmpireOverviewScreen>> =
+            CityOverviewTabColumn.entries.asSequence()
+                .plus(CityWideResourceColumn.getColumns(viewingPlayer))
+                .asIterable()
     }
 
     /** The Stat constant if this is a Stat column - helps the default getter methods */
@@ -256,6 +257,7 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
                     it.getMatchingUniques(UniqueType.NotShownOnWorldScreen, viewingPlayer.state).none()
                 }
                 .map { CityWideResourceColumn(it) }
+                .asSequence()
         }
     }
 
