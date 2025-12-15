@@ -24,7 +24,7 @@ Each difficulty level has the following structure:
 | unhappinessModifier               | Float           | 1        |                                                                                                                                                                                                                            |
 | barbarianBonus                    | Float           | 0        |                                                                                                                                                                                                                            |
 | barbarianSpawnDelay               | Integer         | 0        |                                                                                                                                                                                                                            |
-| playerBonusStartingUnits          | List of Strings | empty    | Can also be 'Era Starting Unit', maps to `startingMilitaryUnit` of the Eras file. All other units must be in [Units.json](4-Unit-related-JSON-files.md#Units.json). Applies only to human player civs                      |
+| playerBonusStartingUnits          | List of Strings | empty    | Can also be 'Era Starting Unit', maps to `startingMilitaryUnit` of the Eras file. All other units must be in [Units.json](4-Unit-related-JSON-files.md#unitsjson). Applies only to human player civs                     |
 | aiDifficultyLevel                 | String          | empty    | Applies some modifiers to the AI from the chosen difficulty. Modifiers such as unhappinessModifier and aiUnhappinessModifier stack multiplicatively. If empty: defaults to "Chieftain", or the first available difficulty. |
 | aiCityGrowthModifier              | Float           | 1        |                                                                                                                                                                                                                            |
 | aiUnitCostModifier                | Float           | 1        |                                                                                                                                                                                                                            |
@@ -166,21 +166,21 @@ Incompatibility filtering works so far between extension and base mods, but feel
 
 The file can have the following attributes, not including the values Unciv sets automatically:
 
-| Attribute         | Type    | default | Notes                                                                                                                                                                                  |
-|-------------------|---------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| isBaseRuleset     | Boolean | false   | Replaces vanilla ruleset if true                                                                                                                                                       |
-| uniques           | List    | empty   | Mod-wide specials, [see here](../uniques.md#modoptions-uniques)                                                                                                                     |
-| techsToRemove     | List    | empty   | List of [Technologies](2-Civilization-related-JSON-files.md#techsjson) or [technologyFilter](../../Unique-parameters#technologyfilter) to remove (isBaseRuleset=false only)         |
-| buildingsToRemove | List    | empty   | List of [Buildings or Wonders](2-Civilization-related-JSON-files.md#buildingsjson) or [buildingFilter](../../Unique-parameters#buildingfilter) to remove (isBaseRuleset=false only) |
-| unitsToRemove     | List    | empty   | List of [Units](4-Unit-related-JSON-files.md#unitsjson) or [unitFilter](../../Unique-parameters#baseunitfilter) to remove (isBaseRuleset=false only)                                |
-| nationsToRemove   | List    | empty   | List of [Nations](2-Civilization-related-JSON-files.md#nationsjson) or [nationFilter](../../Unique-parameters#nationfilter) to remove (isBaseRuleset=false only)                    |
-| policyBranchesToRemove | List | empty | List of [Policy Branches](2-Civilization-related-JSON-files.md#policyjson) to remove (isBaseRuleset=false only)                             |
-| policiesToRemove  | List    | empty   | List of [Policies](2-Civilization-related-JSON-files.md#policiesjson) to remove (isBaseRuleset=false only) |
-| beliefsToRemove   | List    | empty   | List of [Beliefs](2-Civilization-related-JSON-files.md#beliefsjson) to remove (isBaseRuleset=false only) |
-| religionsToRemove | List    | empty   | List of [Religions](2-Civilization-related-JSON-files.md#religionsjson) to remove (isBaseRuleset=false only) |
-| constants         | Object  | empty   | See [ModConstants](#modconstants)                                                                                                                                                      |
-| tileset           | String  | empty   | Only applicable for base rulesets                                                                                                                                                      |
-| unitset           | String  | empty   | Only applicable for base rulesets                                                                                                                                                      |
+| Attribute              | Type    | default | Notes                                                                                                                                                                            |
+|------------------------|---------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| isBaseRuleset          | Boolean | false   | Replaces vanilla ruleset if true                                                                                                                                                 |
+| uniques                | List    | empty   | Mod-wide specials, [see here](../uniques.md#modoptions-uniques)                                                                                                                  |
+| techsToRemove          | List    | empty   | List of [Technologies](2-Civilization-related-JSON-files.md#techsjson) or [technologyFilter](../Unique-parameters.md#technologyfilter) to remove (isBaseRuleset=false only)      |
+| buildingsToRemove      | List    | empty   | List of [Buildings or Wonders](2-Civilization-related-JSON-files.md#buildingsjson) or [buildingFilter](../Unique-parameters.md#buildingfilter) to remove (isBaseRuleset=false only) |
+| unitsToRemove          | List    | empty   | List of [Units](4-Unit-related-JSON-files.md#unitsjson) or [unitFilter](../Unique-parameters.md#baseunitfilter) to remove (isBaseRuleset=false only)                             |
+| nationsToRemove        | List    | empty   | List of [Nations](2-Civilization-related-JSON-files.md#nationsjson) or [nationFilter](../Unique-parameters.md#nationfilter) to remove (isBaseRuleset=false only)                 |
+| policyBranchesToRemove | List    | empty   | List of [Policy Branches](2-Civilization-related-JSON-files.md#policiesjson) to remove (isBaseRuleset=false only)                                                                |
+| policiesToRemove       | List    | empty   | List of [Policies](2-Civilization-related-JSON-files.md#policiesjson) to remove (isBaseRuleset=false only)                                                                       |
+| beliefsToRemove        | List    | empty   | List of [Beliefs](2-Civilization-related-JSON-files.md#beliefsjson) to remove (isBaseRuleset=false only)                                                                         |
+| religionsToRemove      | List    | empty   | List of [Religions](2-Civilization-related-JSON-files.md#religionsjson) to remove (isBaseRuleset=false only)                                                                     |
+| constants              | Object  | empty   | See [ModConstants](#modconstants)                                                                                                                                                |
+| tileset                | String  | empty   | Only applicable for base rulesets                                                                                                                                                |
+| unitset                | String  | empty   | Only applicable for base rulesets                                                                                                                                                |
 
 The values normally set automatically from github metadata are:
 

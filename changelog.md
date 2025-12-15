@@ -1,3 +1,51 @@
+## 4.19.1
+
+By RobLoach:
+- options: Add Micro, FullHD, and QuadHD screen sizes 
+- Display City-Wide stockpiled resources in city
+
+By SomeTroglodyte:
+- Add diplomacy actions to game console 
+- Harden mod manager against invalid local preview files 
+- Improve unit tests speed by reducing Translation tests overhead 
+
+Fix crash on reloading/cloning victory data - By SeventhM
+
+## 4.19.0
+
+By EmperorPinguin:
+- CPU performance improvements
+- AI don't build units which cannot attack 
+- AI: Better 'tile-to-work' picking 
+
+By SomeTroglodyte:
+- Faster mod download
+- Fix VictoryScreen crash loopholes
+
+Add Hindi language - By monikaanaaya2021-cmd
+
+By RobLoach:
+- civFilter: Add a `Known` filter 
+- civilopedia: Add Technologies that provide Resources 
+
+## 4.18.19
+
+Fix map width for checking distances between tiles
+
+CPU performance improvements
+
+By EmperorPinguin:
+- Simplify military unit attack value 
+- Disable fort placement for AI 
+- Fix unit automation order 
+- Bugfix AI friendly fighter counting 
+- Better Cover, Charge promotion priority for AI
+- Let AI build quarries for Stone Works 
+- Move unit promotion ahead & Exclude wounded melee from automateCityConquer 
+
+
+Fixed battle notification texts issue - By GameCobra
+
 ## 4.18.18
 
 CPU performance improvements

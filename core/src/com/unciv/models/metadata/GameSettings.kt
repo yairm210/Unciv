@@ -17,6 +17,7 @@ import com.unciv.ui.components.input.KeyboardBindings
 import com.unciv.ui.screens.worldscreen.NotificationsScroll
 import com.unciv.utils.Display
 import com.unciv.utils.ScreenOrientation
+import java.awt.Rectangle
 import yairm210.purity.annotations.Readonly
 import java.text.Collator
 import java.text.NumberFormat
@@ -217,7 +218,7 @@ class GameSettings {
      *  retrieving a valid position from our upstream libraries while the window is maximized or iconified has proven tricky so far.
      */
     data class WindowState(val width: Int = 900, val height: Int = 600) {
-        constructor(bounds: java.awt.Rectangle) : this(bounds.width, bounds.height)
+        constructor(bounds: Rectangle) : this(bounds.width, bounds.height)
 
         companion object {
             /** Our choice of minimum window width */
@@ -249,7 +250,7 @@ class GameSettings {
          *  @return `this` unchanged if it is within valid limits, otherwise a new WindowState that is.
          *  @see coerceIn
          */
-        fun coerceIn(maximumWindowBounds: java.awt.Rectangle) =
+        fun coerceIn(maximumWindowBounds: Rectangle) =
             coerceIn(maximumWindowBounds.width, maximumWindowBounds.height)
     }
 
@@ -258,11 +259,14 @@ class GameSettings {
         val virtualWidth: Float,
         val virtualHeight: Float
     ) {
+        Micro(630f,420f),
         Tiny(750f,500f),
         Small(900f,600f),
         Medium(1050f,700f),
         Large(1200f,800f),
-        Huge(1500f,1000f);
+        Huge(1500f,1000f),
+        FullHD(1920f, 1280f),
+        QuadHD(2560f, 1707f);
         override fun toString() = name.tr() // Allow direct use in a SelectBox
     }
 

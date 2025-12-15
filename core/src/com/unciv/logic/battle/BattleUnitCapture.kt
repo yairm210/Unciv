@@ -169,7 +169,9 @@ object BattleUnitCapture {
                 attacker.getCivInfo().popupAlerts.add(
                     PopupAlert(
                         AlertType.RecapturedCivilian,
-                        capturedUnit.currentTile.position.toString()
+                        // Currently these are in (1.0,1.0) format
+                        // TODO: Migrate to e.g. 1,1 format, avoid the vector2 nonsense
+                        capturedUnit.currentTile.position.toVector2().toString()
                     )
                 )
             }

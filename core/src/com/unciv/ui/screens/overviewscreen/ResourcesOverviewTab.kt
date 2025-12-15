@@ -63,7 +63,11 @@ class ResourcesOverviewTab(
     // UI should not surprise player, thus we need a deterministic and guessable order
     private val resources: List<TileResource> = allResources
         .map { it.resource }
-        .filter { it.resourceType != ResourceType.Bonus && !it.hasUnique(UniqueType.NotShownOnWorldScreen, viewingPlayer.state) }
+        .filter {
+            it.resourceType != ResourceType.Bonus &&
+            !it.hasUnique(UniqueType.NotShownOnWorldScreen, viewingPlayer.state) &&
+            !it.isCityWide // These are Civ-wide resources, so don't show the city-wide ones.
+        }
         .distinct()
         .sortedWith(
             compareBy<TileResource> { it.resourceType }
@@ -272,7 +276,7 @@ class ResourcesOverviewTab(
 
         for (otherCiv in viewingPlayer.getKnownCivs()) {
             // Show resources received through trade
-            for (trade in otherCiv.tradeRequests.filter { it.requestingCiv == viewingPlayer.civName })
+            for (trade in otherCiv.tradeRequests.filter { it.requestingCiv == viewingPlayer.civID })
                 for (offer in trade.trade.theirOffers.filter { it.type == TradeOfferType.Strategic_Resource || it.type == TradeOfferType.Luxury_Resource })
                     newResourceSupplyList.add(gameInfo.ruleset.tileResources[offer.name]!!, ExtraInfoOrigin.TradeOffer.name, offer.amount)
 

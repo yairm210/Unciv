@@ -1,21 +1,24 @@
 //  Taken from https://github.com/TomGrill/gdx-testing
 package com.unciv.logic
 
-import com.badlogic.gdx.Gdx
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.models.UnitActionType
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.LocaleCode
-import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.TranslationEntry
+import com.unciv.models.translations.TranslationFileReader
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.Translations
-import com.unciv.models.translations.Translations.Companion.conditionalUniqueOrderString
-import com.unciv.models.translations.Translations.Companion.englishConditionalOrderingString
-import com.unciv.models.translations.Translations.Companion.shouldCapitalizeString
+import com.unciv.models.translations.Translations.Companion.conditionalOrderingKey
+import com.unciv.models.translations.Translations.Companion.conditionalPlacementKey
+import com.unciv.models.translations.Translations.Companion.defaultConditionalOrderingString
+import com.unciv.models.translations.Translations.Companion.shouldCapitalizeKey
+import com.unciv.models.translations.curlyBraceRegex
+import com.unciv.models.translations.getModifiers
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.squareBraceRegex
@@ -24,84 +27,96 @@ import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.RedirectOutput
 import com.unciv.testing.RedirectPolicy
 import com.unciv.ui.components.fonts.DiacriticSupport
+import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.utils.Log
 import org.junit.Assert
-import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(GdxTestRunner::class)
 class TranslationTests {
-    /** Translations to test with - all languages are loaded with diacritic support off */
-    private var translations = Translations()
-    private var ruleset = Ruleset()
+    //region !Helpers
 
-    @Before
-    // Since the ruleset and translation loader have their own output,
-    // We 'disable' the output stream for their outputs, and only enable it for the test itself.
-    @RedirectOutput(RedirectPolicy.Discard)
-    fun loadTranslations() {
+    /** Translations to test with - all languages are loaded by [loadTranslations] with diacritic support off */
+    private lateinit var translations: Translations
+
+    /** Initialize [translations] with all languages for tests running on a complete set */
+    private fun loadTranslations() {
+        translations = Translations()
         translations.readAllLanguagesTranslation()
-        RulesetCache.loadRulesets(noMods = true)
-        ruleset = RulesetCache.getVanillaRuleset()
     }
 
+    /** Initialize [RulesetCache] when needed */
+    private fun setupRuleset() {
+        RulesetCache.loadRulesets(noMods = true)
+    }
+
+    /** Set up empty [UncivGame] including empty translations, needed to test [String.tr] */
     private fun setupUncivGame() {
         // Needed for .tr() to work
         UncivGame.Current = UncivGame()
         UncivGame.Current.settings = GameSettings()
     }
 
+    /** Copy all entries from [translations] to current UncivGame, so [String.tr] can be run for all languages.
+     *  Requires calling [loadTranslations] and [setupUncivGame] first. */
+    private fun copyTranslationsToUncivGame() {
+        for ((key, value) in translations)
+            UncivGame.Current.translations[key] = value
+    }
+
+    /** Add a translation entry to the current UncivGame, not [translations] - to use with [setupUncivGame], not [loadTranslations] */
     private fun addTranslation(original: String, result: String) =
         addTranslation(original.getPlaceholderText(), original, result)
+
+    /** Add a translation entry to the current UncivGame, not [translations] - to use with [setupUncivGame], not [loadTranslations]
+     *  This overload allows specifying a [key] directly instead of deriving it from [original]. */
     private fun addTranslation(key: String, original: String, result: String) {
         UncivGame.Current.translations[key] = TranslationEntry(original)
             .apply { this[Constants.english] = result }
     }
+    //endregion
 
     @Test
     fun translationsLoad() {
+        loadTranslations()
         Assert.assertTrue("This test will only pass if there are translations",
-                translations.size > 0)
+            translations.isNotEmpty()
+        )
     }
 
 
-    // This test is incorrectly defined: it should read from the template.properties file and not from the final translation files.
-//    @Test
-//    fun allUnitActionsHaveTranslation() {
-//        val actions: MutableSet<String> = HashSet()
-//        for (action in UnitActionType.entries) {
-//            actions.add(
-//                when(action) {
-//                    UnitActionType.Upgrade -> "Upgrade to [unitType] ([goldCost] gold)"
-//                    UnitActionType.Create -> "Create [improvement]"
-//                    UnitActionType.SpreadReligion -> "Spread [religionName]"
-//                    else -> action.value
-//                }
-//            )
-//        }
-//        val allUnitActionsHaveTranslation = allStringAreTranslated(actions)
-//        Assert.assertTrue("This test will only pass when there is a translation for all unit actions",
-//                allUnitActionsHaveTranslation)
-//    }
-//
-//    private fun allStringAreTranslated(strings: Set<String>): Boolean {
-//        var allStringsHaveTranslation = true
-//        for (entry in strings) {
-//            val key = if (entry.contains('[')) entry.replace(squareBraceRegex, "[]") else entry
-//            if (!translations.containsKey(key)) {
-//                allStringsHaveTranslation = false
-//                println("$entry not translated!")
-//            }
-//        }
-//        return allStringsHaveTranslation
-//    }
+    @Test
+    fun allUnitActionsHaveTemplate() {
+        fun String.getTemplateKey() = if (contains('[')) replace(squareBraceRegex, "[]") else this
+        fun String.getInnerTemplate() = (if (contains('{')) curlyBraceRegex.find(this)?.groupValues[1] else null) ?: this
+
+        val allKeys = TranslationFileReader.readTemplates { lines ->
+            lines.filterNot { it.isEmpty() || it.startsWith('#') || !it.endsWith(" = ") }
+                .map { it.removeSuffix(" = ").getTemplateKey() }
+                .toMutableSet()
+        } ?: return
+
+        // Include auto-templates for keyboard binding UI
+        KeyboardBinding.entries.mapTo(allKeys) { it.label }
+
+        var failures = 0
+        for (action in UnitActionType.entries) {
+            if (action.value.isEmpty()) continue
+            val key = action.value.getInnerTemplate().getTemplateKey()
+            if (key in allKeys) continue
+            failures++
+            println("""UnitActionType.$action (value "${action.value}") is missing its translation template.""")
+        }
+        Assert.assertEquals("This test will only pass when there is a template for all unit actions", 0, failures)
+    }
 
     @Test
     fun translationsFromJSONsCanBeGenerated() {
         // Triggers generation of the translation's strings
         // Will output "Translation writer took...", which is suppressed unless you use the @RedirectOutput(RedirectPolicy.Show) annotation
+        setupRuleset()
         val stringsSize = TranslationFileWriter.getGeneratedStringsSize()
 
         Assert.assertTrue("This test will only pass when all .json files are serializable",
@@ -111,8 +126,10 @@ class TranslationTests {
     /** For every translatable string find its placeholders and check if all translations have them */
     @Test
     fun allTranslationsHaveCorrectPlaceholders() {
+        loadTranslations()
         var allTranslationsHaveCorrectPlaceholders = true
         val languages = translations.getLanguages()
+
         for ((key, translation) in translations) {
             val translationEntry = translation.entry
             val placeholders = squareBraceRegex.findAll(translationEntry)
@@ -137,8 +154,10 @@ class TranslationTests {
     /** For every translatable string and all translations check if all translated placeholders are present in the key */
     @Test
     fun allTranslationsHaveNoExtraPlaceholders() {
+        loadTranslations()
         var allTranslationsHaveNoExtraPlaceholders = true
         val languages = translations.getLanguages()
+
         for ((key, translation) in translations) {
             val translationEntry = translation.entry
             val placeholders = squareBraceRegex.findAll(translationEntry)
@@ -163,7 +182,9 @@ class TranslationTests {
 
     @Test
     fun allPlaceholderKeysMatchEntry() {
+        loadTranslations()
         var allPlaceholderKeysMatchEntry = true
+
         for ((key, translation) in translations) {
             if (!key.contains('[') || key.contains('<')) continue
             val translationEntry = translation.entry
@@ -181,21 +202,42 @@ class TranslationTests {
     }
 
     @Test
-    fun allTranslationsHaveUniquePlaceholders() {
-        // check that the templates have unique placeholders (the translation entries are checked below)
-        val templateLines = Gdx.files.internal(TranslationFileWriter.templateFileLocation).reader().readLines()
-        var noTwoPlaceholdersAreTheSame = true
-        for (template in templateLines) {
-            if (template.startsWith("#")) continue
-            val placeholders = squareBraceRegex.findAll(template)
-                .map { it.value }.toList()
-
-            for (placeholder in placeholders)
-                if (placeholders.count { it == placeholder } > 1) {
-                    noTwoPlaceholdersAreTheSame = false
-                    println("Template key $template has the parameter $placeholder more than once")
-                    break
+    fun allTemplatesHaveUniqueKeys() {
+        val keyToEntryMap = mutableMapOf<String, Pair<String, Int>>()
+        var failures = 0
+        TranslationFileReader.readTemplates { templateLines ->
+            for ((index, template) in templateLines.withIndex()) {
+                if (template.isEmpty() || template.startsWith('#')) continue
+                val key = template.replace(squareBraceRegex, "[]")
+                if (key in keyToEntryMap) {
+                    failures++
+                    val (otherEntry, otherLine) = keyToEntryMap[key]!!
+                    println("""Template "$template" (template.properties:${index + 1}) has the same key as "$otherEntry" (template.properties:$otherLine).""")
+                } else {
+                    keyToEntryMap[key] = template to index + 1
                 }
+            }
+        }
+        Assert.assertEquals("The template file should have no duplicate keys (keys are the template without placeholder names)", 0, failures)
+    }
+
+    @Test
+    fun allTemplatesHaveUniquePlaceholders() {
+        // check that the templates have unique placeholders (the translation entries are checked below)
+        var noTwoPlaceholdersAreTheSame = true
+        TranslationFileReader.readTemplates { templateLines ->
+            for (template in templateLines) {
+                if (template.isEmpty() || template.startsWith('#')) continue
+                val placeholders = squareBraceRegex.findAll(template)
+                    .map { it.value }.toList()
+
+                for (placeholder in placeholders)
+                    if (placeholders.count { it == placeholder } > 1) {
+                        noTwoPlaceholdersAreTheSame = false
+                        println("Template key $template has the parameter $placeholder more than once")
+                        break
+                    }
+            }
         }
         Assert.assertTrue(
             "This test will only pass when no translation template keys have the same parameter twice",
@@ -204,7 +246,9 @@ class TranslationTests {
 
     @Test
     fun noTwoPlaceholdersAreTheSame() {
+        loadTranslations()
         var noTwoPlaceholdersAreTheSame = true
+
         for (translationEntry in translations.values) {
             val placeholders = squareBraceRegex.findAll(translationEntry.entry)
                     .map { it.value }.toList()
@@ -223,13 +267,14 @@ class TranslationTests {
     }
 
     @Test
-    fun allTranslationsEndWithASpace() {
-        val templateLines = Gdx.files.internal(TranslationFileWriter.templateFileLocation).reader().readLines()
+    fun allTemplatesEndWithASpace() {
         var failed = false
-        for (line in templateLines) {
-            if (line.endsWith(" =")) {
-                println("$line ends without a space at the end")
-                failed = true
+        TranslationFileReader.readTemplates { templateLines ->
+            for (line in templateLines) {
+                if (!line.startsWith('#') && line.endsWith(" =")) {
+                    println("$line ends without a space at the end")
+                    failed = true
+                }
             }
         }
         Assert.assertFalse(failed)
@@ -238,9 +283,8 @@ class TranslationTests {
     @Test
     fun allStringsTranslate() {
         setupUncivGame()
-
-        for ((key, value) in translations)
-            UncivGame.Current.translations[key] = value
+        loadTranslations()
+        copyTranslationsToUncivGame()
 
         var allWordsTranslatedCorrectly = true
         for (translationEntry in translations.values) {
@@ -262,6 +306,7 @@ class TranslationTests {
 
     @Test
     fun wordBoundaryTranslationIsFormattedCorrectly() {
+        loadTranslations()
         val translationEntry = translations["\" \""]!!
 
         var allTranslationsCheckedOut = true
@@ -335,6 +380,7 @@ class TranslationTests {
 
     @Test
     fun diacriticsSilentForEnglish() {
+        loadTranslations()
         DiacriticSupport.reset()
         val english = translations.values
             .mapNotNull { entry ->
@@ -347,7 +393,7 @@ class TranslationTests {
     @Test
     fun diacriticsWorkForBangla() {
         //todo This test was designed before the Bangla language was merged, and uses its own data.
-        //     With the actual Bangla, the @before will already have loaded that, so there could be an additional, or a different test on the live one...
+        //     With the actual Bangla, we could use [loadTranslations] to load that, so there could be an additional, or a different test on the live one...
 
         // Here's a helper to _generate_ the expected from the listOf:
         // https://play.kotlinlang.org/#eyJ2ZXJzaW9uIjoiMi4wLjAiLCJwbGF0Zm9ybSI6ImphdmEiLCJhcmdzIjoiIiwibm9uZU1hcmtlcnMiOnRydWUsInRoZW1lIjoiaWRlYSIsImNvZGUiOiJwYWNrYWdlIHRvdWhpZHVycnJcblxuY29uc3QgdmFsIEJBTkdMQV9DSEFSU0VUX1NUQVJUID0gMHgwOTgwXG5jb25zdCB2YWwgQkFOR0xBX0NIQVJTRVRfRU5EID0gMHgwOWZmXG5cbnZhbCBCQU5HTEFfRElBQ1JJVElDUyA9IGxpc3RPZihcbiAgICAn4KaBJywgJ+CmgicsICfgpoMnLCAn4Ka8JyxcbiAgICAn4Ka+JywgJ+CmvycsICfgp4AnLCAn4KeBJyxcbiAgICAn4KeCJywgJ+CngycsICfgp4QnLCAn4KeHJyxcbiAgICAn4KeIJywgJ+CniycsICfgp4wnLCAn4KeNJyxcbiAgICAn4KeXJywgJ+CnoicsICfgp6MnLCAn4Ke+JyxcbilcblxuY29uc3QgdmFsIEJBTkdMQV9KT0lORVIgPSAn4KeNJ1xuXG5mdW4gaXNCYW5nbGFDaGFyKGNoOiBDaGFyKTogQm9vbGVhbiB7XG4gICAgcmV0dXJuIGNoLmNvZGUgPj0gQkFOR0xBX0NIQVJTRVRfU1RBUlQgJiYgY2guY29kZSA8PSBCQU5HTEFfQ0hBUlNFVF9FTkRcbn1cblxudmFsIGFsbFNlcXVlbmNlcyA9IG11dGFibGVTZXRPZjxTdHJpbmc+KClcblxuZnVuIG1haW4oKSB7XG4gICAgdmFsIGxpbmVzID0gbGlzdE9mKFxuICAgICAgICBcIuCmruCmvuCmqOCmmuCmv+CmpOCnjeCmsCDgprjgpq7gp43gpqrgpr7gpqbgppVcIiwgXCLgpqbgp4fgppbgp4HgpqhcIiwgXCLgpongp47gpqrgpqjgp43gpqgg4KaV4Kaw4KeB4KaoXCIsIFwi4KaG4KaC4Ka24Ka/4KaVXCIsIFwi4KaW4KeN4Kaw4Ka/4Ka34KeN4Kaf4Kaq4KeC4Kaw4KeN4KasXCIsIFwi4Ka44KaC4KaV4KeN4Ka34Ka/4Kaq4KeN4KakXCIsIFwi4Ka24KaV4KeN4Kak4Ka/XCIsIFwi4Ka34KeN4Kag4KeN4Kav4KeHXCJcbiAgICApXG5cbiAgICBsaW5lcy5mb3JFYWNoIHsgbGluZSAtPlxuICAgICAgICB2YWwgbGFzdFNlcXVlbmNlID0gU3RyaW5nQnVpbGRlcigpXG4gICAgICAgIGxpbmUuZm9yRWFjaCB7IGNoIC0+XG4gICAgICAgICAgICBpZiAoIWlzQmFuZ2xhQ2hhcihjaCkpIHtcbiAgICAgICAgICAgICAgICBpZiAobGFzdFNlcXVlbmNlLmlzTm90RW1wdHkoKSkge1xuICAgICAgICAgICAgICAgICAgICBhbGxTZXF1ZW5jZXMuYWRkKGxhc3RTZXF1ZW5jZS50b1N0cmluZygpKVxuICAgICAgICAgICAgICAgICAgICBsYXN0U2VxdWVuY2UuY2xlYXIoKVxuICAgICAgICAgICAgICAgIH1cbiAgICAgICAgICAgICAgICByZXR1cm5AZm9yRWFjaFxuICAgICAgICAgICAgfVxuXG4gICAgICAgICAgICBpZiAoQkFOR0xBX0RJQUNSSVRJQ1MuY29udGFpbnMoY2gpKSB7XG4gICAgICAgICAgICAgICAgbGFzdFNlcXVlbmNlLmFwcGVuZChjaClcbiAgICAgICAgICAgICAgICByZXR1cm5AZm9yRWFjaFxuICAgICAgICAgICAgfVxuXG4gICAgICAgICAgICBpZiAobGFzdFNlcXVlbmNlLmlzTm90RW1wdHkoKSAmJiBsYXN0U2VxdWVuY2UubGFzdCgpICE9IEJBTkdMQV9KT0lORVIpIHtcbiAgICAgICAgICAgICAgICBhbGxTZXF1ZW5jZXMuYWRkKGxhc3RTZXF1ZW5jZS50b1N0cmluZygpKVxuICAgICAgICAgICAgICAgIGxhc3RTZXF1ZW5jZS5jbGVhcigpXG4gICAgICAgICAgICB9XG4gICAgICAgICAgICBsYXN0U2VxdWVuY2UuYXBwZW5kKGNoKVxuICAgICAgICB9XG5cbiAgICAgICAgaWYgKGxhc3RTZXF1ZW5jZS5pc05vdEVtcHR5KCkpIHtcbiAgICAgICAgICAgIGFsbFNlcXVlbmNlcy5hZGQobGFzdFNlcXVlbmNlLnRvU3RyaW5nKCkpXG4gICAgICAgIH1cbiAgICB9XG5cbiAgICBwcmludGxuKGFsbFNlcXVlbmNlcy5maWx0ZXIgeyBpdC5sZW5ndGggPiAxIH0uam9pblRvU3RyaW5nKFwiXFxcIiwgXFxcIlwiLCBcInZhbCBleHBlY3RlZCA9IHNldE9mKFxcXCJcIiwgXCJcXFwiKVwiKSB7IGl0LmFzU2VxdWVuY2UoKS5qb2luVG9TdHJpbmcoKSB9KVxufSJ9
@@ -376,6 +422,7 @@ class TranslationTests {
     @Test
     fun testNonBasePlaneUnicode() {
         // This tries how a translation of "Test👍" with diacritic support comes out: Should be 5 codepoints not 6 as the original string representation
+        translations = Translations()
         translations.createTranslations("Test", hashMapOf("Test" to "Test\uD83D\uDC4D", "diacritics_support" to "true"))
         testRoundtrip("Test", "Test", "Test\uD83D\uDC4D") { translated ->
             val isOK = translated.startsWith("Test") && translated.length == 5 && translated.last() > DiacriticSupport.getCurrentFreeCode()
@@ -385,10 +432,8 @@ class TranslationTests {
 
     private fun testRoundtrip(language: String, term: String, input: String, additionalTest: ((String)->Unit)? = null) {
         setupUncivGame()
+        copyTranslationsToUncivGame()
         UncivGame.Current.settings.language = language
-
-        for ((key, value) in translations)
-            UncivGame.Current.translations[key] = value
 
         val translated = term.tr()
         if (translated == term) return // No translation present, can't test
@@ -451,11 +496,11 @@ class TranslationTests {
     @Test
     fun testTranslateConditionals() {
         fun setReordered() {
-            addTranslation(englishConditionalOrderingString, englishConditionalOrderingString, "<when attacking> <for [mapUnitFilter] units> <with a garrison>")
+            addTranslation(conditionalOrderingKey, "<when attacking> <for [mapUnitFilter] units> <with a garrison>")
         }
         fun setBeforeAndCapitalized() {
-            addTranslation(conditionalUniqueOrderString, "before")
-            addTranslation(shouldCapitalizeString, "true")
+            addTranslation(conditionalPlacementKey, "before")
+            addTranslation(shouldCapitalizeKey, "true")
         }
         data class TestData(val label: String, val text: String, val expected: String, val setup: ()->Unit = {})
         val testData = listOf(
@@ -497,8 +542,9 @@ class TranslationTests {
     @Ignore("Don't run on github checks, comment out annotation for a local run")
     /** Tool to determine how many of the names that come from their own cultural context have translations differing from their original */
     fun listTranslatedNames() {
+        loadTranslations()
         val languages = translations.getLanguages()
-        ruleset = RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!
+        val ruleset = RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!
         val parcours = listOf(
             "leader names" to ruleset.nations.values.asSequence().map { it.leaderName },
             "city names" to ruleset.nations.values.asSequence().flatMap { it.cities },
@@ -527,26 +573,39 @@ class TranslationTests {
         parcours.map { (name, sequence) -> checkGroup(name, sequence) }.toList().forEach { println(it) }
     }
 
-//    @Test
-//    fun allConditionalsAreContainedInConditionalOrderTranslation() {
-//        val orderedConditionals = Translations.englishConditionalOrderingString
-//        val orderedConditionalsSet = orderedConditionals.getConditionals().map { it.placeholderText }
-//        val translationEntry = translations[orderedConditionals]!!
-//
-//        var allTranslationsCheckedOut = true
-//        for ((language, translation) in translationEntry) {
-//            val translationConditionals = translation.getConditionals().map { it.placeholderText }
-//            if (translationConditionals.toHashSet() != orderedConditionalsSet.toHashSet()
-//                || translationConditionals.count() != translationConditionals.distinct().count()
-//            ) {
-//                allTranslationsCheckedOut = false
-//                println("Not all or double parameters found in the conditional ordering for $language")
-//            }
-//        }
-//
-//        Assert.assertTrue(
-//            "This test will only pass when each of the conditionals exists exactly once in the translations for the conditional ordering",
-//            allTranslationsCheckedOut
-//        )
-//    }
+    @Test
+    fun allConditionalOrderingEntriesAreValid() {
+        loadTranslations()
+        val translationEntry = translations[conditionalOrderingKey]
+            ?: TranslationEntry(conditionalOrderingKey)
+        translationEntry[Constants.english] = defaultConditionalOrderingString
+
+        val syntaxCheck = Regex("""^<[^<>]+(> <[^<>]+)*>$""")
+
+        var failures = 0
+        for ((language, translation) in translationEntry) {
+            val prefix = "$conditionalOrderingKey in $language"
+            if (!syntaxCheck.matches(translation)) {
+                failures++
+                println("$prefix is not a list of modifiers (one or many '<conditional>' separated by a single space)")
+            }
+
+            for ((_, list) in translation.getModifiers().groupBy { it.placeholderText }) {
+                for ((index, unique) in list.withIndex()) {
+                    if (unique.type == null) {
+                        failures++
+                        println("$prefix: \"${unique.text}\" is not a valid UniqueType")
+                    }
+                    if (index == 0) continue
+                    failures++
+                    println("$prefix: \"${unique.text}\" is a duplicate of \"${list[0].text}\"")
+                }
+            }
+        }
+
+        Assert.assertEquals(
+            "This test will only pass when each of the conditionals in $conditionalOrderingKey is typed and unique within the list",
+            0, failures
+        )
+    }
 }

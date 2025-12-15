@@ -102,7 +102,7 @@ object Battle {
     }
 
     fun attack(attacker: ICombatant, defender: ICombatant): DamageDealt {
-        debug("%s %s attacked %s %s", attacker.getCivInfo().civName, attacker.getName(), defender.getCivInfo().civName, defender.getName())
+        debug("%s %s attacked %s %s", attacker.getCivInfo().civID, attacker.getName(), defender.getCivInfo().civID, defender.getName())
         val attackedTile = defender.getTile()
         if (attacker is MapUnitCombatant) {
             attacker.unit.attacksSinceTurnStart.add(attackedTile.position)
@@ -727,7 +727,7 @@ object Battle {
             if (attackedCiv.isCityState)
                 attackedCiv.cityStateFunctions.cityStateDestroyed(attacker)
             attackedCiv.destroy(notificationLocation)
-            attacker.popupAlerts.add(PopupAlert(AlertType.Defeated, attackedCiv.civName))
+            attacker.popupAlerts.add(PopupAlert(AlertType.Defeated, attackedCiv.civID))
         }
     }
     

@@ -43,26 +43,6 @@ object UnitAutomation {
             return
         }
 
-        while (unit.promotions.canBePromoted() &&
-            // Restrict Human automated units from promotions via setting
-            (UncivGame.Current.settings.automatedUnitsChoosePromotions || unit.civ.isAI())) {
-            val promotions = unit.promotions.getAvailablePromotions()
-            val availablePromotions = if (unit.health <= 60
-                && promotions.any {it.hasUnique(UniqueType.OneTimeUnitHeal)}
-                && !(unit.baseUnit.isAirUnit() || unit.hasUnique(UniqueType.CanMoveAfterAttacking))) {
-                promotions.filter { it.hasUnique(UniqueType.OneTimeUnitHeal) }
-            } else promotions.filterNot { it.hasUnique(UniqueType.SkipPromotion) }
-
-            if (availablePromotions.none()) break
-            val freePromotions = availablePromotions.filter { it.hasUnique(UniqueType.FreePromotion) }.toList()
-            val stateForConditionals = unit.cache.state
-
-            val chosenPromotion = if (freePromotions.isNotEmpty()) freePromotions.randomWeighted { it.getWeightForAiDecision(stateForConditionals) }
-            else availablePromotions.toList().randomWeighted { it.getWeightForAiDecision(stateForConditionals) }
-
-            unit.promotions.addPromotion(chosenPromotion.name)
-        }
-
         // AI upgrades units via UseGoldAutomation in NextTurnAutomation
         if (unit.civ.isHuman() && tryUpgradeUnit(unit)) return
 
@@ -113,9 +93,9 @@ object UnitAutomation {
         // Focus all units without a specific target on the enemy city closest to one of our cities
         if (HeadTowardsEnemyCityAutomation.tryHeadTowardsEnemyCity(unit)) return
 
-        if (tryGarrisoningLandUnit(unit)) return
-
         if (tryHeadTowardsEncampment(unit)) return
+
+        if (tryGarrisoningLandUnit(unit)) return
 
         if (unit.health < 80 && tryHealUnit(unit)) return
 
@@ -224,20 +204,18 @@ object UnitAutomation {
     }
 
     fun wander(unit: MapUnit, stayInTerritory: Boolean = false, tilesToAvoid: Set<Tile> = setOf()) {
-        val unitDistanceToTiles = unit.movement.getDistanceToTiles()
+        val unitDistanceToTiles = unit.currentTile.getTilesAtDistance(1)
+        // We could walk further, but wander() is meant to let units not stay on the same tile permanently,
+        // to avoid obstructing human scouts and workers, moving just one tile should be enough
         val reachableTiles = unitDistanceToTiles
                 .filter {
-                    it.key !in tilesToAvoid
-                    && unit.movement.canMoveTo(it.key)
-                    && unit.movement.canReach(it.key)
+                    it !in tilesToAvoid
+                        && unit.movement.canMoveTo(it)
+                        && unit.movement.canReach(it)
+                        && unit.getDamageFromTerrain(it) <= 0 // Don't end turn on damaging terrain for no good reason
+                        && (!stayInTerritory || it.getOwner() == unit.civ)
                 }
-
-        val reachableTilesMaxWalkingDistance = reachableTiles
-                .filter { it.value.totalMovement == unit.currentMovement
-                        && unit.getDamageFromTerrain(it.key) <= 0 // Don't end turn on damaging terrain for no good reason
-                        && (!stayInTerritory || it.key.getOwner() == unit.civ) }
-        if (reachableTilesMaxWalkingDistance.any()) unit.movement.moveToTile(reachableTilesMaxWalkingDistance.toList().random().first)
-        else if (reachableTiles.any()) unit.movement.moveToTile(reachableTiles.keys.random())
+        if (reachableTiles.any()) unit.movement.moveToTile(reachableTiles.toList().random())
     }
 
     internal fun tryUpgradeUnit(unit: MapUnit): Boolean {

@@ -74,6 +74,20 @@ object ResourceDescriptions {
             }
         }
 
+        val technologiesThatProvideThis = ruleset.technologies.values
+            .filter { technology ->
+                technology.uniqueObjects.any { unique ->
+                    unique.type == UniqueType.ProvidesResources && unique.params[1] == resource.name
+                }
+            }
+        if (technologiesThatProvideThis.isNotEmpty()) {
+            textList += FormattedLine()
+            textList += FormattedLine("{Technologies that provide this resource}:")
+            technologiesThatProvideThis.forEach {
+                textList += FormattedLine(it.name, link = it.makeLink(), indent = 1)
+            }
+        }
+
         val buildingsThatConsumeThis = ruleset.buildings.values.filter { it.getResourceRequirementsPerTurn(
             GameContext.IgnoreConditionals).containsKey(resource.name) }
         if (buildingsThatConsumeThis.isNotEmpty()) {

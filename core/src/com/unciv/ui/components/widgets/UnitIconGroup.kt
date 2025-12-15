@@ -212,7 +212,7 @@ class UnitIconGroup(val unit: MapUnit, val size: Float) : NonTransformGroup() {
 
         // Unit base icon is faded out only if out of moves
         // Foreign unit icons are never faded!
-        val shouldBeFaded = (unit.owner == GUI.getSelectedPlayer().civName
+        val shouldBeFaded = (unit.owner == GUI.getSelectedPlayer().civID
                 && !unit.hasMovement() && GUI.getSettings().unitIconOpacity == 1f)
         val alpha = if (shouldBeFaded) opacity * 0.5f else opacity
         flagIcon.color.a = alpha
