@@ -363,7 +363,48 @@ object Conditionals {
                     first, second, third ->
                     first in second..third
                 }
-
+                
+            UniqueType.ConditionalWhenCarriedBy -> {
+                state.relevantUnit != null &&
+                state.relevantUnit!!.isTransported &&
+                state.relevantUnit!!.getTile().militaryUnit?.matchesFilter(conditional.params[0]) == true
+            }
+            
+            UniqueType.ConditionalWhenCarryingExactly -> {
+                state.relevantUnit != null &&
+                state.relevantUnit!!.getTile().airUnits.count { 
+                    it.isTransported && it.matchesFilter(conditional.params[1]) 
+                } == conditional.params[0].toInt()
+            }
+            
+            UniqueType.ConditionalWhenNotCarryingExactly -> {
+                state.relevantUnit != null &&
+                state.relevantUnit!!.getTile().airUnits.count { 
+                    it.isTransported && it.matchesFilter(conditional.params[1]) 
+                } != conditional.params[0].toInt()
+            }
+            
+            UniqueType.ConditionalWhenCarryingMoreThan -> {
+                state.relevantUnit != null &&
+                state.relevantUnit!!.getTile().airUnits.count { 
+                    it.isTransported && it.matchesFilter(conditional.params[1]) 
+                } > conditional.params[0].toInt()
+            }
+            
+            UniqueType.ConditionalWhenCarryingLessThan -> {
+                state.relevantUnit != null &&
+                state.relevantUnit!!.getTile().airUnits.count { 
+                    it.isTransported && it.matchesFilter(conditional.params[1]) 
+                } < conditional.params[0].toInt()
+            }
+            
+            UniqueType.ConditionalWhenCarryingBetween -> {
+                state.relevantUnit != null &&
+                state.relevantUnit!!.getTile().airUnits.count { 
+                    it.isTransported && it.matchesFilter(conditional.params[2]) 
+                }.let { count -> count >= conditional.params[0].toInt() && count <= conditional.params[1].toInt() }
+            }
+            
             UniqueType.ConditionalModEnabled -> checkOnGameInfo {
                 val filter = conditional.params[0]
                 (gameParameters.mods.asSequence() + gameParameters.baseRuleset).any { ModCompatibility.modNameFilter(it, filter) }
