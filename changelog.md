@@ -1,3 +1,25 @@
+## 4.19.1
+
+4.19.0-patch2
+
+Fix civID change crashing MultiplayerScreen 
+
+4.19.0-patch1
+
+By RobLoach:
+- options: Add Micro, FullHD, and QuadHD screen sizes 
+- city: Display City-Wide Resources 
+
+Bugfix: don't run simulation with only spectators - By EmperorPinguin
+
+By SomeTroglodyte:
+- Console diplomacy 
+- Harden mod manager against invalid local preview files 
+- chore: Refactor city button classes (the one inside TileLayerCityButton) 
+- Improve unit tests speed by reducing Translation tests overhead 
+
+Fix crash on reloading/cloning victory data - By SeventhM
+
 ## 4.19.0
 
 By EmperorPinguin:
