@@ -141,6 +141,9 @@ class GameSettings {
     /** Size of automatic display of UnitSet art in Civilopedia - 0 to disable */
     var pediaUnitArtSize = 0f
 
+    /** Cycle units by distance instead of queue */
+    var alternateUnitCycleOrder: Boolean = false
+
     /** Don't close developer console after a successful command */
     var keepConsoleOpen = false
     /** Persist the history of successful developer console commands */
