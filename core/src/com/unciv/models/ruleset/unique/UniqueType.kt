@@ -464,9 +464,12 @@ enum class UniqueType(
     CarryExtraAirUnits("Can carry [amount] extra [mapUnitFilter] units", UniqueTarget.Unit, UniqueTarget.Building,
         docDescription = "For buildings, supports using `Air` for `mapUnitFilter` to increase city air unit capacity."),
     CanBeCarried("Can be carried", UniqueTarget.Unit,
-        docDescription = "Used to allow land and water units to be carried by carriers, has no effects on air units and carrier units cannot be carried."),
+        docDescription = "Used to allow land and water units to be carried by carriers, has no effects on air units."),
     CannotBeCarriedBy("Cannot be carried by [mapUnitFilter] units", UniqueTarget.Unit,
-        docDescription = "Used to prevent being carried by certain carrier units, overwrites \"Can be carried\"."),
+        docDescription = "Used to prevent the unit being carried by certain carrier units, overwrites \"Can be carried\"."),
+    OpenTopped("Open topped", UniqueTarget.Unit,
+        docDescription = "Allows carried non air units to attack without disembarking, has no effects on air units."),
+    
     // Interception
     ChanceInterceptAirAttacks("[relativeAmount]% chance to intercept air attacks", UniqueTarget.Unit),
     DamageFromInterceptionReduced("Damage taken from interception reduced by [relativeAmount]%", UniqueTarget.Unit),
