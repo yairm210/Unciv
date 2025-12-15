@@ -424,6 +424,11 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun canAttack(): Boolean {
         if (!hasMovement()) return false
         if (isCivilian()) return false
+        // Non-air units that are transported can only attack if in an open topped carrier
+        if (isTransported && !baseUnit.movesLikeAirUnits) {
+            val carrier = currentTile.militaryUnit
+            if (carrier == null || !carrier.hasUnique(UniqueType.OpenTopped)) return false
+        }
         return attacksThisTurn < maxAttacksPerTurn()
     }
 
@@ -980,7 +985,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun putInTile(tile: Tile) {
         when {
             !movement.canMoveTo(tile) ->
-                throw IllegalStateException("Unit $name of ${civ.civID} at $currentTile can't be put in tile $tile!")
+                throw Exception("Unit $name of ${civ.civName} at $currentTile can't be put in tile $tile!")
 
             baseUnit.movesLikeAirUnits || isTransported -> tile.airUnits.add(this)
             isCivilian() -> tile.civilianUnit = this
@@ -1085,7 +1090,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
      *  Cannot be used to reassign from one civ to another - doesn't remove from old owner.
      */
     fun assignOwner(civInfo: Civilization, updateCivInfo: Boolean = true) {
-        owner = civInfo.civID
+        owner = civInfo.civName
         this.civ = civInfo
         civInfo.units.addUnit(this, updateCivInfo)
         // commit named "Fixed game load": GameInfo.setTransients code flow and dependency requirements
