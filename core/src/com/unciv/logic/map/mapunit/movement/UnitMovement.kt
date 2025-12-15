@@ -503,13 +503,13 @@ class UnitMovement(val unit: MapUnit) {
                 unit.useMovementPoints(passingMovementSpent)
                 unit.removeFromTile()
                 
-                // Check if boarding a carrier - set flag before putInTile so it places unit in airUnits
+                // Check if boarding a carrier set flag before putInTile so it places unit in airUnits
                 val carrierHere = tile.militaryUnit
                 if (carrierHere != null && carrierHere.owner == unit.owner && carrierHere.canTransport(unit)) {
-                    // Moving onto a carrier - will be placed in airUnits
+                    // Moving onto a carrier will be placed in airUnits
                     unit.isTransported = true
                 } else if (unit.isTransported) {
-                    // Moving off a carrier - will be placed in normal land/military slot
+                    // Moving off a carrier will be placed in normal land/military slot
                     unit.isTransported = false
                 }
                 
