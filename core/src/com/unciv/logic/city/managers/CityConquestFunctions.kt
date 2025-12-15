@@ -36,17 +36,17 @@ class CityConquestFunctions(val city: City) {
         val baseGold = 20 + 10 * city.population.population + tileBasedRandom.nextInt(40)
         val turnModifier = max(0, min(50, city.civ.gameInfo.turns - city.turnAcquired)) / 50f
         var cityModifier = if (city.containsBuildingUnique(UniqueType.DoublesGoldFromCapturingCity)) 2f else 1f
-        
+
         for (unique in city.getMatchingUniques(UniqueType.GoldFromCapturingCity, city.state)) {
             cityModifier *= unique.params[0].toPercent()
         }
-        
+
         var conqueringCivModifier = if (conqueringCiv.hasUnique(UniqueType.TripleGoldFromEncampmentsAndCities)) 3f else 1f
-        
+
         for (unique in conqueringCiv.getMatchingUniques(UniqueType.GoldFromEncampmentsAndCities, conqueringCiv.state)) {
             conqueringCivModifier *= unique.params[0].toPercent()
         }
-        
+
         val goldPlundered = baseGold * turnModifier * cityModifier * conqueringCivModifier
         return goldPlundered.toInt()
     }
@@ -64,7 +64,7 @@ class CityConquestFunctions(val city: City) {
             }
         }
     }
-    
+
     private fun removeAutoPromotion() {
         city.unitShouldUseSavedPromotion = HashMap<String, Boolean>()
         city.unitToPromotions = HashMap<String, UnitPromotions>()
@@ -111,7 +111,7 @@ class CityConquestFunctions(val city: City) {
         conqueringCiv.addNotification("Received [$goldPlundered] Gold for capturing [${city.name}]",
             city.getCenterTile().position, NotificationCategory.General, NotificationIcon.Gold)
 
-        val reconqueredCityWhileStillInResistance = city.previousOwner == receivingCiv.civName && city.isInResistance()
+        val reconqueredCityWhileStillInResistance = city.previousOwner == receivingCiv.civID && city.isInResistance()
 
         destroyBuildingsOnCapture()
 
@@ -134,7 +134,7 @@ class CityConquestFunctions(val city: City) {
             // reconquering or liberating city in resistance so eliminate it
             city.removeFlag(CityFlags.Resistance)
         }
-        
+
         for (unique in conqueredCiv.getTriggeredUniques(UniqueType.TriggerUponLosingCity, GameContext(civInfo = conqueredCiv))) {
             UniqueTriggerActivation.triggerUnique(unique, civInfo = conqueredCiv)
         }
@@ -287,7 +287,7 @@ class CityConquestFunctions(val city: City) {
         city.state = GameContext(city)
         city.hasJustBeenConquered = false
         city.turnAcquired = city.civ.gameInfo.turns
-        city.previousOwner = oldCiv.civName
+        city.previousOwner = oldCiv.civID
 
         // now that the tiles have changed, we need to reassign population
         for (workedTile in city.workedTiles.filterNot { city.tiles.contains(it) }) {
@@ -300,13 +300,13 @@ class CityConquestFunctions(val city: City) {
 
         // Remove their free buildings from this city and remove free buildings provided by the city from their cities
         removeBuildingsOnMoveToCiv()
-        
-        // Remove auto promotion from city that is being moved 
+
+        // Remove auto promotion from city that is being moved
         removeAutoPromotion()
 
         // catch-all - should ideally not happen as we catch the individual cases with an appropriate notification
-        city.espionage.removeAllPresentSpies(SpyFleeReason.Other) 
-        
+        city.espionage.removeAllPresentSpies(SpyFleeReason.Other)
+
 
         // Place palace for newCiv if this is the only city they have.
         if (newCiv.cities.size == 1) newCiv.moveCapitalTo(city, null)

@@ -81,6 +81,11 @@ data class VictoryData(
 ) : IsPartOfGameInfoSerialization {
     @Suppress("unused")  // used by json serialization
     constructor() : this("", "", 0)
+    constructor(winningCiv: Civilization, victoryType: String, victoryTurn: Int) : this(winningCiv.civID, victoryType, victoryTurn) {
+        this.winningCivObject = winningCiv
+    }
+    @Transient
+    lateinit var winningCivObject: Civilization
 }
 
 /** The virtual world the users play in */
@@ -202,7 +207,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         // Iterating on all civs, starting from the the current player, gives us the one that will have the next turn
         // This allows multiple civs from the same UserID
         if (civilizations.any { it.playerId == userId }) {
-            var civIndex = civilizations.map { it.civName }.indexOf(currentPlayer)
+            var civIndex = civilizations.map { it.civID }.indexOf(currentPlayer)
             while (true) {
                 val civToCheck = civilizations[civIndex % civilizations.size]
                 if (civToCheck.playerId == userId) return civToCheck
@@ -215,16 +220,16 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     }
 
     @delegate:Transient
-    val civMap by lazy { civilizations.associateBy { it.civName } }
+    val civMap by lazy { civilizations.associateBy { it.civID } }
     /** Get a civ by name
      *  @throws NoSuchElementException if no civ of that name is in the game (alive or dead)! */
     @Readonly
-    fun getCivilization(civName: String) = civMap[civName]
-        ?: civilizations.first { it.civName == civName } // This is for spectators who are added in later, artificially
+    fun getCivilization(civID: String) = civMap[civID]
+        ?: civilizations.first { it.civID == civID } // This is for spectators who are added in later, artificially
 
     @Readonly
-    fun getCivilizationOrNull(civName: String) = civMap[civName]
-        ?: civilizations.firstOrNull { it.civName == civName }
+    fun getCivilizationOrNull(civID: String) = civMap[civID]
+        ?: civilizations.firstOrNull { it.civID == civID }
 
     fun getCurrentPlayerCivilization() = currentPlayerCiv
     fun getCivilizationsAsPreviews() = civilizations.map { it.asPreview() }.toMutableList()
@@ -408,7 +413,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         // We found a human player, so we are making them current
         currentTurnStartTime = System.currentTimeMillis()
-        currentPlayer = player.civName
+        currentPlayer = player.civID
         currentPlayerCiv = player
 
         // Starting their turn
@@ -638,6 +643,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             throw MissingModsException(missingMods)
 
         removeMissingModReferences()
+        victoryData?.also { it.winningCivObject = getCivilization(it.winningCiv) }
 
         for (baseUnit in ruleset.units.values)
             baseUnit.setRuleset(ruleset)
@@ -672,10 +678,12 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         val tilesWithLowestRow = tileMap.tileList.groupBy { it.getRow() }.minBy { it.key }.value
         if (tilesWithLowestRow.size > 2) tileMap.mapParameters.shape = MapShape.rectangular
 
-        if (currentPlayer == "") currentPlayer =
-            if (gameParameters.isOnlineMultiplayer) civilizations.first { it.isHuman() && !it.isSpectator() }.civName // For MP, spectator doesn't get a 'turn'
-            else civilizations.first { it.isHuman()  }.civName // for non-MP games, you can be a spectator of an AI-only match, and you *do* get a turn, sort of
-        currentPlayerCiv = getCivilization(currentPlayer)
+        if (currentPlayer == "") {
+            currentPlayerCiv =
+                if (gameParameters.isOnlineMultiplayer) civilizations.first { it.isHuman() && !it.isSpectator() } // For MP, spectator doesn't get a 'turn'
+                else civilizations.first { it.isHuman() } // for non-MP games, you can be a spectator of an AI-only match, and you *do* get a turn, sort of
+            currentPlayer = currentPlayerCiv.civID
+        } else currentPlayerCiv = getCivilization(currentPlayer)
 
         for (religion in religions.values) religion.setTransients(this)
 
@@ -797,7 +805,7 @@ class GameInfoPreview() {
         currentTurnStartTime = gameInfo.currentTurnStartTime
     }
 
-    @Readonly fun getCivilization(civName: String) = civilizations.first { it.civName == civName }
+    @Readonly fun getCivilization(civID: String) = civilizations.first { it.civID == civID }
     @Readonly fun getCurrentPlayerCiv() = getCivilization(currentPlayer)
     @Readonly fun getPlayerCiv(playerId: String) = civilizations.firstOrNull { it.playerId == playerId }
 }

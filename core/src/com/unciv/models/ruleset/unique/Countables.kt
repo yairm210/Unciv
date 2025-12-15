@@ -26,7 +26,7 @@ import yairm210.purity.annotations.Readonly
  *    - If it uses exactly one UniqueParameterType placeholder, [getErrorSeverity] can use the [UniqueParameterType.getTranslatedErrorSeverity] extension provided below.
  *    - Implement [getKnownValuesForAutocomplete] only when a meaningful, not too large set of suggestions is obvious.
  *  - A new countable that draws from an existing enum or set of RulesetObjects should work along the lines of the [Stats] or [TileResources] examples.
- *  - Run the unit tests! There was one, now disabled, checking implementation conventions.
+ *  - Run the unit tests! There's one checking implementation conventions.
  *
  *  @param text The "key" to recognize this countable. If not empty, it will be included in translations.
  *              Placeholders should match a `UniqueParameterType` by its `parameterType`.
@@ -96,7 +96,7 @@ enum class Countables(
                 val relevantStat = Stat.safeValueOf(param) ?: return null
                 return civ.stats.getStatMapForNextTurn().values.map { it[relevantStat] }.sum().toInt()
             }
-            return gameContext.civInfo.getCivResourceSupply().sumBy(param)
+            return civ.getCivResourceSupply().sumBy(param)
         }
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
             val param = parameterText.getPlaceholderParameters().firstOrNull() ?: return UniqueType.UniqueParameterErrorSeverity.RulesetInvariant

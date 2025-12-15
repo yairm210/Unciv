@@ -7,7 +7,6 @@ import com.unciv.models.UnitActionType
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.LocaleCode
-import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.TranslationEntry
@@ -31,42 +30,57 @@ import com.unciv.ui.components.fonts.DiacriticSupport
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.utils.Log
 import org.junit.Assert
-import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(GdxTestRunner::class)
 class TranslationTests {
-    /** Translations to test with - all languages are loaded with diacritic support off */
-    private var translations = Translations()
-    private var ruleset = Ruleset()
+    //region !Helpers
 
-    @Before
-    // Since the ruleset and translation loader have their own output,
-    // We 'disable' the output stream for their outputs, and only enable it for the test itself.
-    @RedirectOutput(RedirectPolicy.Discard)
-    fun loadTranslations() {
+    /** Translations to test with - all languages are loaded by [loadTranslations] with diacritic support off */
+    private lateinit var translations: Translations
+
+    /** Initialize [translations] with all languages for tests running on a complete set */
+    private fun loadTranslations() {
+        translations = Translations()
         translations.readAllLanguagesTranslation()
-        RulesetCache.loadRulesets(noMods = true)
-        ruleset = RulesetCache.getVanillaRuleset()
     }
 
+    /** Initialize [RulesetCache] when needed */
+    private fun setupRuleset() {
+        RulesetCache.loadRulesets(noMods = true)
+    }
+
+    /** Set up empty [UncivGame] including empty translations, needed to test [String.tr] */
     private fun setupUncivGame() {
         // Needed for .tr() to work
         UncivGame.Current = UncivGame()
         UncivGame.Current.settings = GameSettings()
     }
 
+    /** Copy all entries from [translations] to current UncivGame, so [String.tr] can be run for all languages.
+     *  Requires calling [loadTranslations] and [setupUncivGame] first. */
+    private fun copyTranslationsToUncivGame() {
+        for ((key, value) in translations)
+            UncivGame.Current.translations[key] = value
+    }
+
+    /** Add a translation entry to the current UncivGame, not [translations] - to use with [setupUncivGame], not [loadTranslations] */
     private fun addTranslation(original: String, result: String) =
         addTranslation(original.getPlaceholderText(), original, result)
+
+    /** Add a translation entry to the current UncivGame, not [translations] - to use with [setupUncivGame], not [loadTranslations]
+     *  This overload allows specifying a [key] directly instead of deriving it from [original]. */
     private fun addTranslation(key: String, original: String, result: String) {
         UncivGame.Current.translations[key] = TranslationEntry(original)
             .apply { this[Constants.english] = result }
     }
+    //endregion
 
     @Test
     fun translationsLoad() {
+        loadTranslations()
         Assert.assertTrue("This test will only pass if there are translations",
             translations.isNotEmpty()
         )
@@ -102,6 +116,7 @@ class TranslationTests {
     fun translationsFromJSONsCanBeGenerated() {
         // Triggers generation of the translation's strings
         // Will output "Translation writer took...", which is suppressed unless you use the @RedirectOutput(RedirectPolicy.Show) annotation
+        setupRuleset()
         val stringsSize = TranslationFileWriter.getGeneratedStringsSize()
 
         Assert.assertTrue("This test will only pass when all .json files are serializable",
@@ -111,8 +126,10 @@ class TranslationTests {
     /** For every translatable string find its placeholders and check if all translations have them */
     @Test
     fun allTranslationsHaveCorrectPlaceholders() {
+        loadTranslations()
         var allTranslationsHaveCorrectPlaceholders = true
         val languages = translations.getLanguages()
+
         for ((key, translation) in translations) {
             val translationEntry = translation.entry
             val placeholders = squareBraceRegex.findAll(translationEntry)
@@ -137,8 +154,10 @@ class TranslationTests {
     /** For every translatable string and all translations check if all translated placeholders are present in the key */
     @Test
     fun allTranslationsHaveNoExtraPlaceholders() {
+        loadTranslations()
         var allTranslationsHaveNoExtraPlaceholders = true
         val languages = translations.getLanguages()
+
         for ((key, translation) in translations) {
             val translationEntry = translation.entry
             val placeholders = squareBraceRegex.findAll(translationEntry)
@@ -163,7 +182,9 @@ class TranslationTests {
 
     @Test
     fun allPlaceholderKeysMatchEntry() {
+        loadTranslations()
         var allPlaceholderKeysMatchEntry = true
+
         for ((key, translation) in translations) {
             if (!key.contains('[') || key.contains('<')) continue
             val translationEntry = translation.entry
@@ -225,7 +246,9 @@ class TranslationTests {
 
     @Test
     fun noTwoPlaceholdersAreTheSame() {
+        loadTranslations()
         var noTwoPlaceholdersAreTheSame = true
+
         for (translationEntry in translations.values) {
             val placeholders = squareBraceRegex.findAll(translationEntry.entry)
                     .map { it.value }.toList()
@@ -260,9 +283,8 @@ class TranslationTests {
     @Test
     fun allStringsTranslate() {
         setupUncivGame()
-
-        for ((key, value) in translations)
-            UncivGame.Current.translations[key] = value
+        loadTranslations()
+        copyTranslationsToUncivGame()
 
         var allWordsTranslatedCorrectly = true
         for (translationEntry in translations.values) {
@@ -284,6 +306,7 @@ class TranslationTests {
 
     @Test
     fun wordBoundaryTranslationIsFormattedCorrectly() {
+        loadTranslations()
         val translationEntry = translations["\" \""]!!
 
         var allTranslationsCheckedOut = true
@@ -357,6 +380,7 @@ class TranslationTests {
 
     @Test
     fun diacriticsSilentForEnglish() {
+        loadTranslations()
         DiacriticSupport.reset()
         val english = translations.values
             .mapNotNull { entry ->
@@ -369,7 +393,7 @@ class TranslationTests {
     @Test
     fun diacriticsWorkForBangla() {
         //todo This test was designed before the Bangla language was merged, and uses its own data.
-        //     With the actual Bangla, the @before will already have loaded that, so there could be an additional, or a different test on the live one...
+        //     With the actual Bangla, we could use [loadTranslations] to load that, so there could be an additional, or a different test on the live one...
 
         // Here's a helper to _generate_ the expected from the listOf:
         // https://play.kotlinlang.org/#eyJ2ZXJzaW9uIjoiMi4wLjAiLCJwbGF0Zm9ybSI6ImphdmEiLCJhcmdzIjoiIiwibm9uZU1hcmtlcnMiOnRydWUsInRoZW1lIjoiaWRlYSIsImNvZGUiOiJwYWNrYWdlIHRvdWhpZHVycnJcblxuY29uc3QgdmFsIEJBTkdMQV9DSEFSU0VUX1NUQVJUID0gMHgwOTgwXG5jb25zdCB2YWwgQkFOR0xBX0NIQVJTRVRfRU5EID0gMHgwOWZmXG5cbnZhbCBCQU5HTEFfRElBQ1JJVElDUyA9IGxpc3RPZihcbiAgICAn4KaBJywgJ+CmgicsICfgpoMnLCAn4Ka8JyxcbiAgICAn4Ka+JywgJ+CmvycsICfgp4AnLCAn4KeBJyxcbiAgICAn4KeCJywgJ+CngycsICfgp4QnLCAn4KeHJyxcbiAgICAn4KeIJywgJ+CniycsICfgp4wnLCAn4KeNJyxcbiAgICAn4KeXJywgJ+CnoicsICfgp6MnLCAn4Ke+JyxcbilcblxuY29uc3QgdmFsIEJBTkdMQV9KT0lORVIgPSAn4KeNJ1xuXG5mdW4gaXNCYW5nbGFDaGFyKGNoOiBDaGFyKTogQm9vbGVhbiB7XG4gICAgcmV0dXJuIGNoLmNvZGUgPj0gQkFOR0xBX0NIQVJTRVRfU1RBUlQgJiYgY2guY29kZSA8PSBCQU5HTEFfQ0hBUlNFVF9FTkRcbn1cblxudmFsIGFsbFNlcXVlbmNlcyA9IG11dGFibGVTZXRPZjxTdHJpbmc+KClcblxuZnVuIG1haW4oKSB7XG4gICAgdmFsIGxpbmVzID0gbGlzdE9mKFxuICAgICAgICBcIuCmruCmvuCmqOCmmuCmv+CmpOCnjeCmsCDgprjgpq7gp43gpqrgpr7gpqbgppVcIiwgXCLgpqbgp4fgppbgp4HgpqhcIiwgXCLgpongp47gpqrgpqjgp43gpqgg4KaV4Kaw4KeB4KaoXCIsIFwi4KaG4KaC4Ka24Ka/4KaVXCIsIFwi4KaW4KeN4Kaw4Ka/4Ka34KeN4Kaf4Kaq4KeC4Kaw4KeN4KasXCIsIFwi4Ka44KaC4KaV4KeN4Ka34Ka/4Kaq4KeN4KakXCIsIFwi4Ka24KaV4KeN4Kak4Ka/XCIsIFwi4Ka34KeN4Kag4KeN4Kav4KeHXCJcbiAgICApXG5cbiAgICBsaW5lcy5mb3JFYWNoIHsgbGluZSAtPlxuICAgICAgICB2YWwgbGFzdFNlcXVlbmNlID0gU3RyaW5nQnVpbGRlcigpXG4gICAgICAgIGxpbmUuZm9yRWFjaCB7IGNoIC0+XG4gICAgICAgICAgICBpZiAoIWlzQmFuZ2xhQ2hhcihjaCkpIHtcbiAgICAgICAgICAgICAgICBpZiAobGFzdFNlcXVlbmNlLmlzTm90RW1wdHkoKSkge1xuICAgICAgICAgICAgICAgICAgICBhbGxTZXF1ZW5jZXMuYWRkKGxhc3RTZXF1ZW5jZS50b1N0cmluZygpKVxuICAgICAgICAgICAgICAgICAgICBsYXN0U2VxdWVuY2UuY2xlYXIoKVxuICAgICAgICAgICAgICAgIH1cbiAgICAgICAgICAgICAgICByZXR1cm5AZm9yRWFjaFxuICAgICAgICAgICAgfVxuXG4gICAgICAgICAgICBpZiAoQkFOR0xBX0RJQUNSSVRJQ1MuY29udGFpbnMoY2gpKSB7XG4gICAgICAgICAgICAgICAgbGFzdFNlcXVlbmNlLmFwcGVuZChjaClcbiAgICAgICAgICAgICAgICByZXR1cm5AZm9yRWFjaFxuICAgICAgICAgICAgfVxuXG4gICAgICAgICAgICBpZiAobGFzdFNlcXVlbmNlLmlzTm90RW1wdHkoKSAmJiBsYXN0U2VxdWVuY2UubGFzdCgpICE9IEJBTkdMQV9KT0lORVIpIHtcbiAgICAgICAgICAgICAgICBhbGxTZXF1ZW5jZXMuYWRkKGxhc3RTZXF1ZW5jZS50b1N0cmluZygpKVxuICAgICAgICAgICAgICAgIGxhc3RTZXF1ZW5jZS5jbGVhcigpXG4gICAgICAgICAgICB9XG4gICAgICAgICAgICBsYXN0U2VxdWVuY2UuYXBwZW5kKGNoKVxuICAgICAgICB9XG5cbiAgICAgICAgaWYgKGxhc3RTZXF1ZW5jZS5pc05vdEVtcHR5KCkpIHtcbiAgICAgICAgICAgIGFsbFNlcXVlbmNlcy5hZGQobGFzdFNlcXVlbmNlLnRvU3RyaW5nKCkpXG4gICAgICAgIH1cbiAgICB9XG5cbiAgICBwcmludGxuKGFsbFNlcXVlbmNlcy5maWx0ZXIgeyBpdC5sZW5ndGggPiAxIH0uam9pblRvU3RyaW5nKFwiXFxcIiwgXFxcIlwiLCBcInZhbCBleHBlY3RlZCA9IHNldE9mKFxcXCJcIiwgXCJcXFwiKVwiKSB7IGl0LmFzU2VxdWVuY2UoKS5qb2luVG9TdHJpbmcoKSB9KVxufSJ9
@@ -398,6 +422,7 @@ class TranslationTests {
     @Test
     fun testNonBasePlaneUnicode() {
         // This tries how a translation of "Test👍" with diacritic support comes out: Should be 5 codepoints not 6 as the original string representation
+        translations = Translations()
         translations.createTranslations("Test", hashMapOf("Test" to "Test\uD83D\uDC4D", "diacritics_support" to "true"))
         testRoundtrip("Test", "Test", "Test\uD83D\uDC4D") { translated ->
             val isOK = translated.startsWith("Test") && translated.length == 5 && translated.last() > DiacriticSupport.getCurrentFreeCode()
@@ -407,10 +432,8 @@ class TranslationTests {
 
     private fun testRoundtrip(language: String, term: String, input: String, additionalTest: ((String)->Unit)? = null) {
         setupUncivGame()
+        copyTranslationsToUncivGame()
         UncivGame.Current.settings.language = language
-
-        for ((key, value) in translations)
-            UncivGame.Current.translations[key] = value
 
         val translated = term.tr()
         if (translated == term) return // No translation present, can't test
@@ -519,8 +542,9 @@ class TranslationTests {
     @Ignore("Don't run on github checks, comment out annotation for a local run")
     /** Tool to determine how many of the names that come from their own cultural context have translations differing from their original */
     fun listTranslatedNames() {
+        loadTranslations()
         val languages = translations.getLanguages()
-        ruleset = RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!
+        val ruleset = RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!
         val parcours = listOf(
             "leader names" to ruleset.nations.values.asSequence().map { it.leaderName },
             "city names" to ruleset.nations.values.asSequence().flatMap { it.cities },
@@ -551,6 +575,7 @@ class TranslationTests {
 
     @Test
     fun allConditionalOrderingEntriesAreValid() {
+        loadTranslations()
         val translationEntry = translations[conditionalOrderingKey]
             ?: TranslationEntry(conditionalOrderingKey)
         translationEntry[Constants.english] = defaultConditionalOrderingString

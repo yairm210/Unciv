@@ -420,8 +420,7 @@ class ModManagementScreen private constructor(
             popup.add(pasteLinkButton).row()
             val actualDownloadButton = "Download".toTextButton()
             actualDownloadButton.onClick {
-                actualDownloadButton.setText("Downloading...".tr())
-                actualDownloadButton.disable()
+                actualDownloadButton.setStartingDownload()
                 Concurrency.run {
                     val repo = GithubAPI.Repo.parseUrl(textField.text)
                     if (repo == null) {
@@ -432,12 +431,7 @@ class ModManagementScreen private constructor(
                         }
                     } else {
                         downloadMod(repo, { state, progress ->
-                            when (state) {
-                                DownloadAndExtractState.Downloading ->
-                                    actualDownloadButton.setText("{Downloading...} ${progress}%".tr())
-                                DownloadAndExtractState.Extracting ->
-                                    actualDownloadButton.setText("Extracting...".tr())
-                            }
+                            actualDownloadButton.setText(state.message(progress).tr())
                         }) { popup.close() }
                     }
                 }
@@ -468,7 +462,7 @@ class ModManagementScreen private constructor(
                                 modActionTable.updateSize(repoSize)
                         }
                     }
-                } catch (ignore: IOException) {
+                } catch (_: IOException) {
                     /* Parsing of mod size failed, do nothing */
                 }
             }
@@ -481,21 +475,27 @@ class ModManagementScreen private constructor(
         rightSideButton.setText(label.tr())
         rightSideButton.clearActivationActions(ActivationTypes.Tap)
         rightSideButton.onClick {
-            rightSideButton.setText("Downloading...".tr())
-            rightSideButton.disable()
-
+            rightSideButton.setStartingDownload()
             downloadMod(repo, { state, progress ->
-                when (state) {
-                    DownloadAndExtractState.Downloading -> rightSideButton.setText("{Downloading...} ${progress}%".tr())
-                    DownloadAndExtractState.Extracting -> rightSideButton.setText("Extracting...".tr())
-                }
+                rightSideButton.setText(state.message(progress).tr())
             }) {
-                rightSideButton.setText("Downloaded!".tr())
+                rightSideButton.setFinishedDownload()
             }
         }
 
         selectedMod = repo
         modActionTable.update(repo)
+    }
+
+    private fun TextButton.setStartingDownload() {
+        setText("Downloading...".tr())
+        disable()
+    }
+    private fun TextButton.setFinishedDownload() {
+        // Note while setStartingDownload is called from three places, this one is only used once.
+        // This serves as reminder that the other uses will close or clear and repopulate the button's container.
+        setText("Downloaded!".tr())
+        // Not re-enabling it here: Changing selection does
     }
 
     /** Download and install a mod in the background, called both from the right-bottom button and the URL entry popup */
@@ -512,7 +512,7 @@ class ModManagementScreen private constructor(
                 launchOnGLThread {
                     val repoName = modFolder.name()  // repo.name still has the replaced "-"'s
                     val toast = ToastPopup("[$repoName] Downloaded!", this@ModManagementScreen)
-                    reloadCachesAfterModChange(modFolder.name()) {
+                    reloadCachesAfterModChange(delete = false, modFolder.name()) {
                         toast.close()
                         val msg = "{[$repoName] was downloaded, but is defective!}" +
                             "\n{For more information, see Options-Locate mod errors.}"
@@ -587,7 +587,7 @@ class ModManagementScreen private constructor(
     */
     private fun refreshInstalledModActions(mod: Ruleset) {
         selectedMod = null
-        // show mod information first
+        // show mod information first - this starts by clearing modActionTable
         modActionTable.update(mod)
 
         val modInfo = installedModInfo[mod.name]!!
@@ -611,9 +611,15 @@ class ModManagementScreen private constructor(
                 refreshInstalledModTable()
         }
 
-        modActionTable.addUpdateModButton(modInfo) {
+        val updateModButton = modActionTable.addUpdateModButton(modInfo) ?: return
+        updateModButton.onClick {
+            updateModButton.setStartingDownload()
             val repo = onlineModInfo[mod.name]!!.repo!!
-            downloadMod(repo) { refreshInstalledModActions(mod) }
+            downloadMod(repo, { state, progress ->
+                updateModButton.setText(state.message(progress).tr())
+            }) {
+                refreshInstalledModActions(mod)
+            }
         }
     }
 
@@ -678,16 +684,20 @@ class ModManagementScreen private constructor(
     /** Delete a Mod, refresh ruleset cache and update installed mod table */
     private fun deleteMod(mod: Ruleset) {
         mod.folderLocation!!.deleteDirectory()
-        reloadCachesAfterModChange()
+        reloadCachesAfterModChange(delete = true, mod.name)
         installedModInfo.remove(mod.name)
         unMarkUpdatedMod(mod.name)
         refreshInstalledModTable()
     }
 
-    private fun reloadCachesAfterModChange(newModName: String? = null, onError: (()->Unit)? = null) {
-        val errorLines = RulesetCache.loadRulesets()
-        if (newModName != null && errorLines.any { newModName in it })
-            onError?.invoke()
+    private fun reloadCachesAfterModChange(delete: Boolean, modName: String, onError: (()->Unit)? = null) {
+        if (delete) {
+            RulesetCache.remove(modName)
+        } else {
+            val errorLines = RulesetCache.reloadSingleRuleset(modName)
+            if (errorLines.isNotEmpty()) onError?.invoke()
+        }
+
         TileSetCache.loadTileSetConfigs()
         ImageGetter.reloadImages()
         UncivGame.Current.translations.tryReadTranslationForCurrentLanguage()

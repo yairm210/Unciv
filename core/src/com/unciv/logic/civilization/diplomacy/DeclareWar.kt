@@ -123,8 +123,8 @@ object DeclareWar {
                 // We only want to send these notifications once, it doesn't matter who sends it though
                 if (civInfo.gameInfo.civilizations.indexOf(civInfo) > civInfo.gameInfo.civilizations.indexOf(allyCiv)) return
 
-                otherCiv.popupAlerts.add(PopupAlert(AlertType.WarDeclaration, civInfo.civName))
-                otherCiv.popupAlerts.add(PopupAlert(AlertType.WarDeclaration, allyCiv.civName))
+                otherCiv.popupAlerts.add(PopupAlert(AlertType.WarDeclaration, civInfo.civID))
+                otherCiv.popupAlerts.add(PopupAlert(AlertType.WarDeclaration, allyCiv.civID))
 
                 civInfo.addNotification("You and [${allyCiv.civName}] have declared war against [${otherCiv.civName}]!",
                         NotificationCategory.Diplomacy, otherCiv.civName, NotificationIcon.War, allyCiv.civName, civInfo.civName)
@@ -148,11 +148,11 @@ object DeclareWar {
         // Cancel all trades.
         for (trade in diplomacyManager.trades)
             for (offer in trade.theirOffers.filter { it.duration > 0 && it.name != Constants.defensivePact})
-                diplomacyManager.civInfo.addNotification("[${offer.name}] from [${diplomacyManager.otherCivName}] has ended",
+                diplomacyManager.civInfo.addNotification("[${offer.name}] from [${diplomacyManager.otherCiv.civName}] has ended",
                     DiplomacyAction(diplomacyManager.otherCiv, true),
-                    NotificationCategory.Trade, diplomacyManager.otherCivName, NotificationIcon.Trade)
+                    NotificationCategory.Trade, diplomacyManager.otherCiv.civName, NotificationIcon.Trade)
         diplomacyManager.trades.clear()
-        diplomacyManager.civInfo.tradeRequests.removeAll { it.requestingCiv == diplomacyManager.otherCivName }
+        diplomacyManager.civInfo.tradeRequests.removeAll { it.requestingCiv == diplomacyManager.otherCiv.civID }
 
         // Must come *before* state is "at war" so units know they're not allowed in tiles without open borders anymore
         diplomacyManager.updateHasOpenBorders()
@@ -300,15 +300,15 @@ object DeclareWar {
                 thirdPartyDiploManager.otherCivDiplomacy().removeFlag(DiplomacyFlags.DefensivePact)
             }
             for (civ in thirdPartyDiploManager.getCommonKnownCivsWithSpectators()) {
-                civ.addNotification("[${diplomacyManager.civInfo.civName}] cancelled their Defensive Pact with [${thirdPartyDiploManager.otherCivName}]!",
-                    NotificationCategory.Diplomacy, diplomacyManager.civInfo.civName, NotificationIcon.Diplomacy, thirdPartyDiploManager.otherCivName)
+                civ.addNotification("[${diplomacyManager.civInfo.civName}] cancelled their Defensive Pact with [${thirdPartyDiploManager.otherCiv.civName}]!",
+                    NotificationCategory.Diplomacy, diplomacyManager.civInfo.civName, NotificationIcon.Diplomacy, thirdPartyDiploManager.otherCiv.civName)
             }
 
             thirdPartyDiploManager.otherCiv.addNotification("[${diplomacyManager.civInfo.civName}] cancelled their Defensive Pact with us!",
-                NotificationCategory.Diplomacy, diplomacyManager.civInfo.civName, NotificationIcon.Diplomacy, thirdPartyDiploManager.otherCivName)
+                NotificationCategory.Diplomacy, diplomacyManager.civInfo.civName, NotificationIcon.Diplomacy, thirdPartyDiploManager.otherCiv.civName)
 
-            thirdPartyDiploManager.civInfo.addNotification("We have cancelled our Defensive Pact with [${thirdPartyDiploManager.otherCivName}]!",
-                NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, thirdPartyDiploManager.otherCivName)
+            thirdPartyDiploManager.civInfo.addNotification("We have cancelled our Defensive Pact with [${thirdPartyDiploManager.otherCiv.civName}]!",
+                NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, thirdPartyDiploManager.otherCiv.civName)
         }
     }
 

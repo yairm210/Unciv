@@ -58,7 +58,7 @@ class UnitMovementTests {
         val unit = MapUnit()
         unit.name = baseUnit.name
         unit.civ = civInfo
-        unit.owner = civInfo.civName
+        unit.owner = civInfo.civID
         unit.baseUnit = baseUnit
         unit.updateUniques()
         return unit
@@ -173,10 +173,9 @@ class UnitMovementTests {
 
     @Test
     fun canNOTPassThroughTileWithEnemyUnits() {
-        val barbCiv = Civilization()
+        val barbNation = Nation().apply { name = Constants.barbarians } // they are always enemies
+        val barbCiv = Civilization(barbNation)
         barbCiv.gameInfo = testGame.gameInfo
-        barbCiv.setNameForUnitTests(Constants.barbarians) // they are always enemies
-        barbCiv.nation = Nation().apply { name = Constants.barbarians }
         barbCiv.cache.updateState()
 
         testGame.gameInfo.civilizations.add(barbCiv)
@@ -200,7 +199,7 @@ class UnitMovementTests {
         Assert.assertFalse("Unit must not enter other civ tile", unit.movement.canPassThrough(tile))
 
         city.hasJustBeenConquered = true
-        civInfo.diplomacy[otherCiv.civName] = DiplomacyManager(otherCiv, otherCiv.civName)
+        civInfo.diplomacy[otherCiv.civName] = DiplomacyManager(civInfo, otherCiv)
         civInfo.getDiplomacyManager(otherCiv)!!.diplomaticStatus = DiplomaticStatus.War
 
         Assert.assertTrue("Unit can capture other civ city", unit.movement.canPassThrough(tile))

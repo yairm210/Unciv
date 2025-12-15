@@ -9,6 +9,7 @@ import com.unciv.models.Spy
 import com.unciv.models.SpyAction
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.CityStateType
+import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
@@ -27,12 +28,11 @@ import kotlin.random.Random
 class CityStateFunctions(val civInfo: Civilization) {
 
     /** Attempts to initialize the city state, returning true if successful. */
-    fun initCityState(ruleset: Ruleset, startingEra: String, usedMajorCivs: Sequence<String>): Boolean {
+    fun initCityState(ruleset: Ruleset, startingEra: String, usedMajorCivs: Sequence<Nation>): Boolean {
         val allMercantileResources = ruleset.tileResources.values.filter { it.hasUnique(UniqueType.CityStateOnlyResource) }.map { it.name }
         val uniqueTypes = HashSet<UniqueType>()    // We look through these to determine what kinds of city states we have
 
-        val nation = ruleset.nations[civInfo.civName]!!
-        val cityStateType = ruleset.cityStateTypes[nation.cityStateType]!!
+        val cityStateType = ruleset.cityStateTypes[civInfo.nation.cityStateType]!!
         uniqueTypes.addAll(cityStateType.friendBonusUniqueMap.getAllUniques().mapNotNull { it.type })
         uniqueTypes.addAll(cityStateType.allyBonusUniqueMap.getAllUniques().mapNotNull { it.type })
 
@@ -44,17 +44,24 @@ class CityStateFunctions(val civInfo: Civilization) {
         if (uniqueTypes.contains(UniqueType.CityStateUniqueLuxury)) {
             civInfo.cityStateResource = allMercantileResources.randomOrNull()
         }
+        
+        fun possibleUnits(): ArrayList<BaseUnit> {
+            val units = ArrayList<BaseUnit>()
+            for (unit in ruleset.units.values) {
+                if (unit.availableInEra(ruleset, startingEra)) continue // Not from the start era or before
+                val uniqueNation = ruleset.nations[unit.uniqueTo]
+                if (uniqueNation == null || !uniqueNation.isMajorCiv) continue // Must be from a major civ
+                if (uniqueNation in usedMajorCivs) continue // But not from a major civ in the game
+                if (!ruleset.unitTypes[unit.unitType]!!.isLandUnit()) continue // Must be a land unit
+                if (unit.strength <= 0 && unit.rangedStrength <= 0) continue // Must be a military unit
+                units.add(unit)
+            }
+            return units
+        }
 
         // Unique unit for militaristic city-states
         if (uniqueTypes.contains(UniqueType.CityStateMilitaryUnits)) {
-            val possibleUnits = ruleset.units.values.filter {
-                return@filter !it.availableInEra(ruleset, startingEra) // Not from the start era or before
-                    && it.uniqueTo != null && it.uniqueTo !in usedMajorCivs // Must be from a major civ not in the game
-                        // Note that this means that units unique to a civ *filter* instead of a civ *name* will not be provided
-                    && ruleset.nations[it.uniqueTo]?.isMajorCiv == true // don't take unique units from other city states / barbs
-                    && ruleset.unitTypes[it.unitType]!!.isLandUnit()
-                    && (it.strength > 0 || it.rangedStrength > 0) // Must be a land military unit
-            }
+            val possibleUnits = possibleUnits()
             if (possibleUnits.isNotEmpty())
                 civInfo.cityStateUniqueUnit = possibleUnits.random().name
         }
@@ -544,7 +551,7 @@ class CityStateFunctions(val civInfo: Civilization) {
             if (unitsInBorder > 0 && diplomacy.isRelationshipLevelLT(RelationshipLevel.Friend)) {
                 diplomacy.addInfluence(-10f)
                 if (!diplomacy.hasFlag(DiplomacyFlags.BorderConflict)) {
-                    otherCiv.popupAlerts.add(PopupAlert(AlertType.BorderConflict, civInfo.civName))
+                    otherCiv.popupAlerts.add(PopupAlert(AlertType.BorderConflict, civInfo.civID))
                     diplomacy.setFlag(DiplomacyFlags.BorderConflict, 10)
                 }
             }
@@ -655,7 +662,7 @@ class CityStateFunctions(val civInfo: Civilization) {
                 continue
             if (!cityState.knows(attacker)) // Must have met
                 continue
-            if (cityState.questManager.wantsDead(civInfo.civName))  // Must not want us dead
+            if (cityState.questManager.wantsDead(civInfo.civID))  // Must not want us dead
                 continue
 
             var probability: Int = if (attacker.isMinorCivWarmonger()) {

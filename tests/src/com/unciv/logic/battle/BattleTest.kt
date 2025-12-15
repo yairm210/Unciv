@@ -254,14 +254,14 @@ class BattleTest {
         defenderCity.health = 1
 
         testGame.gameInfo.currentPlayerCiv = testGame.addCiv() // otherwise test crashes when puppetying city
-        testGame.gameInfo.currentPlayer = testGame.gameInfo.currentPlayerCiv.civName
+        testGame.gameInfo.currentPlayer = testGame.gameInfo.currentPlayerCiv.civID
 
         // when
         Battle.attack(MapUnitCombatant(defaultAttackerUnit), CityCombatant(defenderCity))
 
         // then
         assertEquals(attackerCiv, defenderCity.civ)
-        assertEquals(defenderCiv.civName, defenderCity.previousOwner)
+        assertEquals(defenderCiv.civID, defenderCity.previousOwner)
         assertEquals(defenderCiv, defenderCity.foundingCivObject)
     }
 
@@ -355,15 +355,15 @@ class BattleTest {
 
         attackerCiv.diplomacyFunctions.makeCivilizationsMeet(defenderCiv)
         attackerCiv.diplomacyFunctions.makeCivilizationsMeet(thirdCiv)
-        assertEquals(DiplomaticStatus.Peace, attackerCiv.diplomacy[defenderCiv.civName]!!.diplomaticStatus)
-        assertEquals(DiplomaticStatus.Peace, attackerCiv.diplomacy[thirdCiv.civName]!!.diplomaticStatus)
+        assertEquals(DiplomaticStatus.Peace, attackerCiv.getDiplomacyManager(defenderCiv)!!.diplomaticStatus)
+        assertEquals(DiplomaticStatus.Peace, attackerCiv.getDiplomacyManager(thirdCiv)!!.diplomaticStatus)
 
         // when
         Battle.attackOrNuke(MapUnitCombatant(attackerUnit), AttackableTile(attackerUnit.getTile(), defaultDefenderUnit.currentTile, 0f, null))
 
         // then
-        assertEquals(DiplomaticStatus.War, attackerCiv.diplomacy[defenderCiv.civName]!!.diplomaticStatus)
-        assertEquals(DiplomaticStatus.War, attackerCiv.diplomacy[thirdCiv.civName]!!.diplomaticStatus)
+        assertEquals(DiplomaticStatus.War, attackerCiv.getDiplomacyManager(defenderCiv)!!.diplomaticStatus)
+        assertEquals(DiplomaticStatus.War, attackerCiv.getDiplomacyManager(thirdCiv)!!.diplomaticStatus)
     }
 
     @Test

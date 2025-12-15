@@ -594,7 +594,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         // both the civ name and actual civ need to be in here in order to calculate the canMoveTo...Darn
         unit.assignOwner(civInfo, false)
         // remember our first owner
-        unit.originalOwner = civInfo.civName
+        unit.originalOwner = civInfo.civID
 
         var unitToPlaceTile: Tile? = null
         // try to place at the original point (this is the most probable scenario)
@@ -673,18 +673,18 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
      * @param newNation new nation to be set up
      */
     fun switchPlayersNation(player: Player, newNation: Nation) {
-        val newCiv = Civilization(newNation.name).apply { nation = newNation }
+        val newCiv = Civilization(newNation)
         tileList.forEach {
             for (unit in it.getUnits()) if (unit.owner == player.chosenCiv) {
-                unit.owner = newNation.name
+                unit.owner = newCiv.civID
                 unit.civ = newCiv
                 unit.setTransients(newCiv.gameInfo.ruleset)
             }
         }
         for (element in startingLocations.filter { it.nation != player.chosenCiv }) {
             startingLocations.remove(element)
-            if (startingLocations.none { it.nation == newNation.name && it.position == element.position })
-                startingLocations.add(StartingLocation(element.position, newNation.name))
+            if (startingLocations.none { it.nation == newCiv.civID && it.position == element.position })
+                startingLocations.add(StartingLocation(element.position, newCiv.civID))
         }
         setStartingLocationsTransients()
     }

@@ -331,7 +331,7 @@ class TurnManager(val civInfo: Civilization) {
         val victoryType = civInfo.victoryManager.getVictoryTypeAchieved()
         if (victoryType != null) {
             civInfo.gameInfo.victoryData =
-                    VictoryData(civInfo.civName, victoryType, civInfo.gameInfo.turns)
+                    VictoryData(civInfo, victoryType, civInfo.gameInfo.turns)
 
             // Notify other human players about this civInfo's victory
             for (otherCiv in civInfo.gameInfo.civilizations) {

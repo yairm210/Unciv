@@ -125,7 +125,7 @@ class WonderInfo {
         fun getStatusColumn() = when {
             status != WonderStatus.Known -> status.label
             civ == null -> status.label
-            else -> civ.civName
+            else -> civ.civID
         }
 
         fun getLocationColumn() = when {
