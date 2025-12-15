@@ -16,6 +16,11 @@ import kotlin.math.roundToInt
 
 
 class PolicyManager : IsPartOfGameInfoSerialization {
+    companion object {
+        /** Used in [getCultureRefundMap] when refunding more policies than were bought with culture
+         *  to indicate the "surplus" policies - those must have been adopted as free policies. */
+        const val FREE_POLICY_MARKER = -1
+    }
 
     @Transient
     lateinit var civInfo: Civilization
@@ -143,7 +148,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     @Readonly
     /** Maps [policiesToRemove] to a culture amount to refund.
      *  If more policies are removed than were bought with culture, the "extras" are returned
-     *  with "refund" -1: do not refund in that case, grant the free policy back - or not.
+     *  with value [FREE_POLICY_MARKER]: do not refund in that case, grant the free policy back - or not.
      */
     fun getCultureRefundMap(policiesToRemove: Sequence<Policy>, refundPercentage: Int): Map<Policy, Int> {
         var policyCostInput = numberOfAdoptedPolicies
@@ -154,7 +159,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
             if (policy.policyBranchType == PolicyBranchType.BranchComplete)
                 continue
             policyCostInput--
-            policyMap[policy] = if (policyCostInput < 0) -1 // This is a marker to refund a free policy
+            policyMap[policy] = if (policyCostInput < 0) FREE_POLICY_MARKER
                 else (getPolicyCultureCost(policyCostInput) * refundPercentage/100f).roundToInt()
         }
 

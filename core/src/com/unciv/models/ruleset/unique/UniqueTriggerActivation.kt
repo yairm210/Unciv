@@ -7,6 +7,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.*
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
+import com.unciv.logic.civilization.managers.PolicyManager
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapgenerator.NaturalWonderGenerator
@@ -377,7 +378,7 @@ object UniqueTriggerActivation {
 
                 return {
                     for (policy in policiesToRemoveMap) {
-                        val effectNotificationText = if (policy.value == -1) {
+                        val effectNotificationText = if (policy.value == PolicyManager.FREE_POLICY_MARKER) {
                             civInfo.policies.removePolicy(policy.key, assumeWasFree = true)
                             civInfo.policies.freePolicies++
                             "You lose the [${policy.key.name}] Policy. A free policy has been refunded"
