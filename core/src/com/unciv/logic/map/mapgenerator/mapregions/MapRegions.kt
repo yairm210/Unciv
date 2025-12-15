@@ -421,7 +421,7 @@ class MapRegions (val ruleset: Ruleset) {
 
     private fun assignCivToRegion(civ: Civilization, region: Region) {
         val tile = region.tileMap[region.startPosition!!]
-        region.tileMap.addStartingLocation(civ.civName, tile)
+        region.tileMap.addStartingLocation(civ.civID, tile)
 
         // Place impacts to keep city states etc at appropriate distance
         tileData.placeImpact(ImpactType.MinorCiv,tile, 6)

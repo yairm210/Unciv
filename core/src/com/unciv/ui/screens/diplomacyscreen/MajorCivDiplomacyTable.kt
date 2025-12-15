@@ -153,13 +153,13 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
             otherCiv.popupAlerts.add(
                 PopupAlert(
                     AlertType.DeclarationOfFriendship,
-                    viewingCiv.civName
+                    viewingCiv.civID
                 )
             )
             declareFriendshipButton.disable()
         }
         if (diplomacyScreen.isNotPlayersTurn() || otherCiv.popupAlerts
-                .any { it.type == AlertType.DeclarationOfFriendship && it.value == viewingCiv.civName }
+                .any { it.type == AlertType.DeclarationOfFriendship && it.value == viewingCiv.civID }
         )
             declareFriendshipButton.disable()
         return declareFriendshipButton
@@ -226,12 +226,12 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         for (demand in Demand.entries){
             val button = demand.demandText.toTextButton()
             
-            if (otherCiv.popupAlerts.any { it.type == demand.demandAlert && it.value == viewingCiv.civName } // Already demanded
+            if (otherCiv.popupAlerts.any { it.type == demand.demandAlert && it.value == viewingCiv.civID } // Already demanded
                 || diplomacyManager.hasFlag(demand.agreedToDemand)) { // already agreed
                 button.disable()
             } else {
                 button.onClick {
-                    otherCiv.popupAlerts.add(PopupAlert(demand.demandAlert, viewingCiv.civName))
+                    otherCiv.popupAlerts.add(PopupAlert(demand.demandAlert, viewingCiv.civID))
                     button.disable()
                 }
             }

@@ -155,10 +155,8 @@ class TestGame(vararg addGlobalUniques: String, forUITesting: Boolean = false) {
     }
 
     fun addCiv(nation: Nation, isPlayer: Boolean = false, cityStateType: String? = nation.cityStateType): Civilization {
-        val civInfo = Civilization()
-        civInfo.nation = nation
+        val civInfo = Civilization(nation)
         civInfo.gameInfo = gameInfo
-        civInfo.setNameForUnitTests(nation.name)
         if (isPlayer) civInfo.playerType = PlayerType.Human
         civInfo.cache.updateState()
         gameInfo.civilizations.add(civInfo)
@@ -173,10 +171,9 @@ class TestGame(vararg addGlobalUniques: String, forUITesting: Boolean = false) {
     }
 
     fun addBarbarianCiv() : Civilization {
-        val barbarianCivilization = Civilization(Constants.barbarians)
         val nation = Nation()
         nation.name = Constants.barbarians
-        barbarianCivilization.nation = nation
+        val barbarianCivilization = Civilization(nation)
         barbarianCivilization.gameInfo = gameInfo
         barbarianCivilization.cache.updateState()
         gameInfo.civilizations.add(barbarianCivilization)

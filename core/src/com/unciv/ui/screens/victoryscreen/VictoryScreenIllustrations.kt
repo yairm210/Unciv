@@ -274,7 +274,7 @@ class VictoryScreenIllustrations(
 
     private fun getImages(victory: Victory): List<Actor> {
         game.victoryData?.run {
-            if (victory.name == victoryType && selectedCiv.civName == winningCiv) {
+            if (victory.name == victoryType && selectedCiv.civID == winningCiv) {
                 val image = getImageOrNull(victory, "Won")
                 return getWonOrLostStack(image, victory.victoryString, Color.GOLD)
             }

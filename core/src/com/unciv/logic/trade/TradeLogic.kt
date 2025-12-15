@@ -84,7 +84,7 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
             val civsWeKnowAndTheyDont = otherCivsWeKnow
                 .filter { !otherCiv.knows(it) && !it.isDefeated() }
             for (thirdCiv in civsWeKnowAndTheyDont) {
-                offers.add(TradeOffer(thirdCiv.civName, TradeOfferType.Introduction, speed = civInfo.gameInfo.speed))
+                offers.add(TradeOffer(thirdCiv.civID, TradeOfferType.Introduction, speed = civInfo.gameInfo.speed))
             }
         }
 
@@ -94,7 +94,7 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
             val civsWeArentAtWarWith = civsWeBothKnow
                     .filter { civInfo.getDiplomacyManager(it)!!.canDeclareWar() }
             for (thirdCiv in civsWeArentAtWarWith) {
-                offers.add(TradeOffer(thirdCiv.civName, TradeOfferType.WarDeclaration, speed = civInfo.gameInfo.speed))
+                offers.add(TradeOffer(thirdCiv.civID, TradeOfferType.WarDeclaration, speed = civInfo.gameInfo.speed))
             }
         }
         
@@ -106,7 +106,7 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
         for (thirdCiv in thirdCivsAtWarTheyKnow) {
             // Setting amount to 0 makes TradeOffer.isTradable() return false and also disables the button in trade window
             val amount = if (TradeEvaluation().isPeaceProposalEnabled(thirdCiv, civInfo)) 1 else 0
-            offers.add(TradeOffer(thirdCiv.civName, TradeOfferType.PeaceProposal, amount, civInfo.gameInfo.speed))
+            offers.add(TradeOffer(thirdCiv.civID, TradeOfferType.PeaceProposal, amount, civInfo.gameInfo.speed))
         }
         
         return offers

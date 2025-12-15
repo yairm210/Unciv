@@ -272,7 +272,7 @@ class ResourcesOverviewTab(
 
         for (otherCiv in viewingPlayer.getKnownCivs()) {
             // Show resources received through trade
-            for (trade in otherCiv.tradeRequests.filter { it.requestingCiv == viewingPlayer.civName })
+            for (trade in otherCiv.tradeRequests.filter { it.requestingCiv == viewingPlayer.civID })
                 for (offer in trade.trade.theirOffers.filter { it.type == TradeOfferType.Strategic_Resource || it.type == TradeOfferType.Luxury_Resource })
                     newResourceSupplyList.add(gameInfo.ruleset.tileResources[offer.name]!!, ExtraInfoOrigin.TradeOffer.name, offer.amount)
 

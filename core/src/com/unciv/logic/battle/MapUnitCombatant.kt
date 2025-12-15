@@ -27,9 +27,9 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     override fun getNotificationDisplay(leadingText: String): String {
         val isUnitUnnamed = unit.instanceName.isNullOrEmpty()
         return if (isUnitUnnamed)
-            "[" + unit.name + "]"
+            leadingText + "[" + unit.name + "]"
         else
-            leadingText + "[" + unit.instanceName + "]"
+            "[" + unit.instanceName + "]"
     }
 
 
@@ -58,7 +58,7 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     }
 
     override fun toString(): String {
-        return unit.name+" of "+unit.civ.civName
+        return unit.name + " of " + unit.civ.civID
     }
 
     @Readonly 

@@ -3,6 +3,7 @@ package com.unciv.logic.city
 import com.unciv.logic.city.managers.CityConquestFunctions
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.HexCoord
+import com.unciv.logic.map.HexMath
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.testing.GdxTestRunner
@@ -36,7 +37,7 @@ class CityConquestFunctionsTest {
 
         // otherwise test crashes when puppetying city
         testGame.gameInfo.currentPlayerCiv = testGame.addCiv()
-        testGame.gameInfo.currentPlayer = testGame.gameInfo.currentPlayerCiv.civName
+        testGame.gameInfo.currentPlayer = testGame.gameInfo.currentPlayerCiv.civID
     }
 
     // Note: diplomacy repercussions for capturing/liberating cities are tested in DiplomacyManagerTest
@@ -48,7 +49,7 @@ class CityConquestFunctionsTest {
 
         // then
         assertEquals(attackerCiv, defenderCity.civ)
-        assertEquals(defenderCiv.civName, defenderCity.previousOwner)
+        assertEquals(defenderCiv.civID, defenderCity.previousOwner)
     }
 
     @Test
@@ -116,6 +117,36 @@ class CityConquestFunctionsTest {
         assertTrue(attackerCiv.gold < secondAttackerCiv.gold)
         assertTrue(attackerCiv.gold in 120 until 160) // Range for city size 10 and all modifiers 1
         assertTrue(secondAttackerCiv.gold in 240 until 320) // Doubled by Unique
+    }
+
+    @Test
+    fun `a Burial Tomb equivalent should only apply per city`() {
+        // A building is assumed to give empire-wide bonuses unless this conditional is applied
+        // See Unique.isLocalEffect
+        val uniqueTemplate = UniqueType.GoldFromCapturingCity.text + " <" + UniqueType.ConditionalInThisCity.text + ">"
+        // replace defender civ with one that has a Nation-wide 'bonus' multiplying plundered gold by 1.5
+        defenderCiv = testGame.addCiv(uniqueTemplate.fillPlaceholders("+50"))
+        // define building giving multiplier 2
+        val building = testGame.createBuilding(uniqueTemplate.fillPlaceholders("+100"))
+
+        // add six cities, each with that building (but we'll conquer only the last of them)
+        for (clockDirection in 2..12 step 2) {
+            val pos = HexMath.getClockPositionToHexcoord(clockDirection).times(3)
+            defenderCity = testGame.addCity(defenderCiv, testGame.getTile(pos), initialPopulation = 4)
+            defenderCity.cityConstructions.addBuilding(building.name)
+        }
+        cityConquestFunctions = CityConquestFunctions(defenderCity)
+
+        // given
+        testGame.gameInfo.turns = 50 // turnModifier = 1
+        val baseGold = 60 until 100 // for city size 4
+        val expected = baseGold.first * 3 .. baseGold.last * 3 // expected modifiers: 2 * 1.5
+
+        // when
+        cityConquestFunctions.puppetCity(attackerCiv)
+
+        // then
+        assertTrue("plundered gold should be in range $expected, actual=${attackerCiv.gold}", attackerCiv.gold in expected)
     }
 
     @Test

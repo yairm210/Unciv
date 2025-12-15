@@ -230,7 +230,7 @@ object MinorCivPlacer {
         tile.neighbors.count() == 6 // Avoid map edges
 
     private fun placeMinorCiv(civ: Civilization, tileMap: TileMap, tile: Tile, tileData: TileDataMap, ruleset: Ruleset) {
-        tileMap.addStartingLocation(civ.civName, tile)
+        tileMap.addStartingLocation(civ.civID, tile)
         tileData.placeImpact(MapRegions.ImpactType.MinorCiv,tile, 4)
         tileData.placeImpact(MapRegions.ImpactType.Luxury,  tile, 3)
         tileData.placeImpact(MapRegions.ImpactType.Strategic,tile, 0)

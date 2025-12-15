@@ -5,7 +5,7 @@ import com.unciv.logic.GameInfo
 import kotlin.math.roundToInt
 
 class SimulationStep (gameInfo: GameInfo, statTurns: List<Int> = listOf()) {
-    private val civilizationNames = gameInfo.civilizations.filter { it.civName != Constants.spectator }.filter { it.isMajorCiv() }.map { it.civName }
+    private val civilizationNames = gameInfo.civilizations.filter { it.isSpectator() && it.isMajorCiv() }.map { it.civID }
     var turns = gameInfo.turns
     var victoryType = gameInfo.getCurrentPlayerCivilization().victoryManager.getVictoryTypeAchieved()
     var winner: String? = null
@@ -31,16 +31,16 @@ class SimulationStep (gameInfo: GameInfo, statTurns: List<Int> = listOf()) {
     fun saveTurnStats(gameInfo: GameInfo) {
         victoryType = gameInfo.getCurrentPlayerCivilization().victoryManager.getVictoryTypeAchieved()
         val turn = if (victoryType != null) -1 else gameInfo.turns
-        for (civ in gameInfo.civilizations.filter { it.civName != Constants.spectator }.filter { it.isMajorCiv() }) {
+        for (civ in gameInfo.civilizations.filter { it.isSpectator() && it.isMajorCiv() }) {
             val popsum = civ.cities.sumOf { it.population.population }
             //println("$civ $turn $popsum")
-            turnStatsPop[civ.civName]!![turn]!!.set(popsum)
+            turnStatsPop[civ.civID]!![turn]!!.set(popsum)
             val prodsum = civ.cities.sumOf { it.cityStats.currentCityStats.production.roundToInt() }
             //println("$civ $prodsum")
-            turnStatsProd[civ.civName]!![turn]!!.set(prodsum)
+            turnStatsProd[civ.civID]!![turn]!!.set(prodsum)
             val cityCnt = civ.cities.count()
             //println("$civ $cityCnt")
-            turnStatsCities[civ.civName]!![turn]!!.set(cityCnt)
+            turnStatsCities[civ.civID]!![turn]!!.set(cityCnt)
         }
     }
     

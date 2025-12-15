@@ -976,7 +976,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun putInTile(tile: Tile) {
         when {
             !movement.canMoveTo(tile) ->
-                throw Exception("Unit $name of ${civ.civName} at $currentTile can't be put in tile $tile!")
+                throw IllegalStateException("Unit $name of ${civ.civID} at $currentTile can't be put in tile $tile!")
 
             baseUnit.movesLikeAirUnits -> tile.airUnits.add(this)
             isCivilian() -> tile.civilianUnit = this
@@ -1081,7 +1081,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
      *  Cannot be used to reassign from one civ to another - doesn't remove from old owner.
      */
     fun assignOwner(civInfo: Civilization, updateCivInfo: Boolean = true) {
-        owner = civInfo.civName
+        owner = civInfo.civID
         this.civ = civInfo
         civInfo.units.addUnit(this, updateCivInfo)
         // commit named "Fixed game load": GameInfo.setTransients code flow and dependency requirements
