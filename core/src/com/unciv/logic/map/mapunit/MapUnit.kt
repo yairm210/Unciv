@@ -424,7 +424,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun canAttack(): Boolean {
         if (!hasMovement()) return false
         if (isCivilian()) return false
-        // Non-air units that are transported can only attack if in an open topped carrier
+        // Non-air units that are transported can only attack if inside an open topped carrier
         if (isTransported && !baseUnit.movesLikeAirUnits) {
             val carrier = currentTile.militaryUnit
             if (carrier == null || !carrier.hasUnique(UniqueType.OpenTopped)) return false
@@ -588,13 +588,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     @Readonly
     fun isTransportTypeOf(mapUnit: MapUnit): Boolean {
-        // Allow air-type units or units marked as carriable
-        if (mapUnit.baseUnit.movesLikeAirUnits || mapUnit.hasUnique(UniqueType.CanBeCarried)) {
-            // Check if this carrier has CarryAirUnits OR CarryExtraAirUnits to carry the payload
-            val carryUniques = getMatchingUniques(UniqueType.CarryAirUnits) + getMatchingUniques(UniqueType.CarryExtraAirUnits)
-            return carryUniques.any { mapUnit.matchesFilter(it.params[1]) }
-        }
-        return false
+        // Currently, only missiles and airplanes can be carried
+        if (!mapUnit.baseUnit.movesLikeAirUnits) return false
+        return getMatchingUniques(UniqueType.CarryAirUnits).any { mapUnit.matchesFilter(it.params[1]) }
     }
 
     @Readonly
@@ -985,14 +981,14 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun putInTile(tile: Tile) {
         when {
             !movement.canMoveTo(tile) ->
-                throw Exception("Unit $name of ${civ.civName} at $currentTile can't be put in tile $tile!")
+                throw IllegalStateException("Unit $name of ${civ.civID} at $currentTile can't be put in tile $tile!")
 
-            baseUnit.movesLikeAirUnits || isTransported -> tile.airUnits.add(this)
+            baseUnit.movesLikeAirUnits -> tile.airUnits.add(this)
             isCivilian() -> tile.civilianUnit = this
             else -> tile.militaryUnit = this
         }
         // this check is here in order to not load the fresh built unit into carrier right after the build
-        if (baseUnit.movesLikeAirUnits) {
+        if (baseUnit.movesLikeAirUnits){
             if (!tile.isCityCenter()) isTransported = true
             else {
                 val currentUntransportedUnits = tile.getUnits().count { it.type.isAirUnit() && !it.isTransported }
@@ -1090,7 +1086,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
      *  Cannot be used to reassign from one civ to another - doesn't remove from old owner.
      */
     fun assignOwner(civInfo: Civilization, updateCivInfo: Boolean = true) {
-        owner = civInfo.civName
+        owner = civInfo.civID
         this.civ = civInfo
         civInfo.units.addUnit(this, updateCivInfo)
         // commit named "Fixed game load": GameInfo.setTransients code flow and dependency requirements
