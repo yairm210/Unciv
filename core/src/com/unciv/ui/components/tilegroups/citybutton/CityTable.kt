@@ -174,34 +174,31 @@ internal class CityTable(
 
         val progressTable = Table()
 
-        val nextTurnPercentage: Float
-        val percentage: Float
-        val turns: String
-        val icon: Group?
-        when (cityCurrentConstruction) {
-            PerpetualConstruction.idle -> {
-                nextTurnPercentage = 0f
-                percentage = 0f
-                turns = "-"
-                icon = null
+        // There's two different "idle" states: No entry in the queue and PerpetualConstruction.idle queued.
+        // getCurrentConstruction does not distinuish these, only currentConstructionName does. And we want the icon to only show in the second case.
+        var nextTurnPercentage = 0f
+        var percentage = 0f
+        var turns = "-"
+        val icon = if (cityConstructions.currentConstructionName().isEmpty()) {
+            null
+        } else {
+            when (cityCurrentConstruction) {
+                PerpetualConstruction.idle -> {}
+                is PerpetualConstruction -> {
+                    turns = Fonts.infinity.toString()
+                }
+                else -> {
+                    cityCurrentConstruction as INonPerpetualConstruction
+                    val turnsToConstruction = cityConstructions.turnsToConstruction(cityCurrentConstruction.name)
+                    val workDone = cityConstructions.getWorkDone(cityCurrentConstruction.name).toFloat()
+                    val cost = cityCurrentConstruction.getProductionCost(cityConstructions.city.civ, cityConstructions.city)
+                    fun getPercentage(done: Float) = (done / cost).coerceIn(0f, 1f)
+                    nextTurnPercentage = getPercentage(workDone + city.cityStats.currentCityStats.production)
+                    percentage = getPercentage(workDone)
+                    turns = if (turnsToConstruction < 100) turnsToConstruction.tr() else "-"
+                }
             }
-            is PerpetualConstruction -> {
-                nextTurnPercentage = 0f
-                percentage = 0f
-                turns = Fonts.infinity.toString()
-                icon = null
-            }
-            else -> {
-                cityCurrentConstruction as INonPerpetualConstruction
-                val turnsToConstruction = cityConstructions.turnsToConstruction(cityCurrentConstruction.name)
-                val workDone = cityConstructions.getWorkDone(cityCurrentConstruction.name).toFloat()
-                val cost = cityCurrentConstruction.getProductionCost(cityConstructions.city.civ, cityConstructions.city)
-                fun getPercentage(done: Float) = (done / cost).coerceIn(0f, 1f)
-                nextTurnPercentage = getPercentage(workDone + city.cityStats.currentCityStats.production)
-                percentage = getPercentage(workDone)
-                turns = if (turnsToConstruction < 100) turnsToConstruction.tr() else "-"
-                icon = ImageGetter.getConstructionPortrait(cityCurrentConstruction.name, 24f)
-            }
+            ImageGetter.getConstructionPortrait(cityCurrentConstruction.name, 24f)
         }
 
         val productionBar = ImageGetter.getProgressBarVertical(4f, 30f, percentage,
