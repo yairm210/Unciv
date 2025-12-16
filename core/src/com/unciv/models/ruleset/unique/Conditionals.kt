@@ -365,44 +365,14 @@ object Conditionals {
                 }
                 
             UniqueType.ConditionalWhenCarriedBy -> {
-                state.relevantUnit != null &&
-                state.relevantUnit!!.isTransported &&
-                state.relevantUnit!!.getTile().militaryUnit?.matchesFilter(conditional.params[0]) == true
-            }
-            
-            UniqueType.ConditionalWhenCarryingExactly -> {
-                state.relevantUnit != null &&
-                state.relevantUnit!!.getTile().airUnits.count { 
-                    it.isTransported && it.matchesFilter(conditional.params[1]) 
-                } == conditional.params[0].toInt()
-            }
-            
-            UniqueType.ConditionalWhenNotCarryingExactly -> {
-                state.relevantUnit != null &&
-                state.relevantUnit!!.getTile().airUnits.count { 
-                    it.isTransported && it.matchesFilter(conditional.params[1]) 
-                } != conditional.params[0].toInt()
-            }
-            
-            UniqueType.ConditionalWhenCarryingMoreThan -> {
-                state.relevantUnit != null &&
-                state.relevantUnit!!.getTile().airUnits.count { 
-                    it.isTransported && it.matchesFilter(conditional.params[1]) 
-                } > conditional.params[0].toInt()
-            }
-            
-            UniqueType.ConditionalWhenCarryingLessThan -> {
-                state.relevantUnit != null &&
-                state.relevantUnit!!.getTile().airUnits.count { 
-                    it.isTransported && it.matchesFilter(conditional.params[1]) 
-                } < conditional.params[0].toInt()
-            }
-            
-            UniqueType.ConditionalWhenCarryingBetween -> {
-                state.relevantUnit != null &&
-                state.relevantUnit!!.getTile().airUnits.count { 
-                    it.isTransported && it.matchesFilter(conditional.params[2]) 
-                }.let { count -> count >= conditional.params[0].toInt() && count <= conditional.params[1].toInt() }
+                // Check if the unit is currently transported and being carried by matching filter
+                if (state.relevantUnit == null || !state.relevantUnit!!.isTransported) false
+                else {
+                    val carrier = state.relevantUnit!!.getTile().militaryUnit
+                    // Only true if: 1) carrier exists, 2) carrier is NOT the unit itself, 3) carrier matches filter
+                    carrier != null && carrier != state.relevantUnit && 
+                    carrier.matchesFilter(conditional.params[0]) == true
+                }
             }
             
             UniqueType.ConditionalModEnabled -> checkOnGameInfo {
