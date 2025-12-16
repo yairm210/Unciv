@@ -257,11 +257,14 @@ class GameSettings {
         val virtualWidth: Float,
         val virtualHeight: Float
     ) {
+        Micro(630f,420f),
         Tiny(750f,500f),
         Small(900f,600f),
         Medium(1050f,700f),
         Large(1200f,800f),
-        Huge(1500f,1000f)
+        Huge(1500f,1000f),
+        FullHD(1920f, 1280f),
+        QuadHD(2560f, 1707f)
     }
 
     enum class NationPickerListMode { Icons, List }

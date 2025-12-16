@@ -1,3 +1,16 @@
+## 4.19.1
+
+By RobLoach:
+- options: Add Micro, FullHD, and QuadHD screen sizes 
+- Display City-Wide stockpiled resources in city
+
+By SomeTroglodyte:
+- Add diplomacy actions to game console 
+- Harden mod manager against invalid local preview files 
+- Improve unit tests speed by reducing Translation tests overhead 
+
+Fix crash on reloading/cloning victory data - By SeventhM
+
 ## 4.19.0
 
 By EmperorPinguin:

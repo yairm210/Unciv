@@ -92,6 +92,7 @@ internal class ConsoleCommandRoot : ConsoleCommandNode {
             console.showHistory()
             DevConsoleResponse.hint("") // Trick console into staying open
         },
-        "game" to ConsoleGameCommands()
+        "game" to ConsoleGameCommands(),
+        "diplomacy" to ConsoleDiplomacyCommands(),
     )
 }
