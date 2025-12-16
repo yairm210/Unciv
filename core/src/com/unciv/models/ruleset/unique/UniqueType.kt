@@ -824,7 +824,7 @@ enum class UniqueType(
         docDescription = "'Between' is inclusive - so 'between 1 and 5' includes 1 and 5."),
 
     /////// carrying conditionals
-    ConditionalWhenCarriedBy("When carried by [mapUnitFilter] units", UniqueTarget.Conditional),
+    ConditionalWhenCarriedBy("when carried by [mapUnitFilter] units", UniqueTarget.Conditional),
 
     //endregion
 
