@@ -509,10 +509,10 @@ class CountableTests {
         assertEquals("There should be four units and 2 cities", 42, actual)
     }
 
-        @Test
+    @Test
     @CoversCountable(Countables.RemainingCivs, Countables.FilteredUnits, Countables.Carried)
     fun testFilteredUnitsCountable() {
-        setupModdedGame()
+        val ruleset = setupModdedGame()
         val wetTile = game.tileMap[3,1]
         wetTile.setBaseTerrain(ruleset.terrains[Constants.coast]!!)
         game.addUnit("Carrier", civ, game.tileMap[3,1])
