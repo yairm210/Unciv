@@ -509,10 +509,14 @@ class CountableTests {
         assertEquals("There should be four units and 2 cities", 42, actual)
     }
 
-    @Test
-    @CoversCountable(Countables.RemainingCivs, Countables.FilteredUnits)
+        @Test
+    @CoversCountable(Countables.RemainingCivs, Countables.FilteredUnits, Countables.Carried)
     fun testFilteredUnitsCountable() {
         setupModdedGame()
+        val wetTile = game.tileMap[3,1]
+        wetTile.setBaseTerrain(ruleset.terrains[Constants.coast]!!)
+        game.addUnit("Carrier", civ, game.tileMap[3,1])
+        game.addUnit("Fighter", civ, game.tileMap[3,1])
         game.addUnit("Warrior", civ, city.getCenterTile())
         game.addUnit("Scout", civ, game.tileMap.values.first())
         game.addUnit("Scout", civ, game.tileMap.values.last())
@@ -521,8 +525,8 @@ class CountableTests {
         val deSela = game.addCiv(game.ruleset.nations["Lhasa"]!!)
         val city2 = game.addCity(deSela, game.tileMap[-2,1])
         game.addUnit("Scout", deSela, city2.getCenterTile())
-        val actual = Countables.getCountableAmount("[Remaining [all] Civilizations] + 10 * [[Military] Units]", GameContext(civ))
-        assertEquals("There should be three military units and 2 civilizations", 32, actual)
+        val actual = Countables.getCountableAmount("[Remaining [all] Civilizations] + 100 * [[Military] Units] + 10 * [Carried [Fighter] units]", GameContext(civ))
+        assertEquals("There should be five military units with 1 being carried and 2 civilizations", 512, actual)
     }
 
     @Test
