@@ -518,7 +518,7 @@ class CountableTests {
         val carrier = game.addUnit("Carrier", civ, game.tileMap[3,1])
         val carried = game.addUnit("Fighter", civ, game.tileMap[3,1])
         carried.isTransported = true
-        carried.putInTile(carrier.getTile())
+        carrier.currentTile.airUnits.add(carried)
         game.addUnit("Warrior", civ, city.getCenterTile())
         game.addUnit("Scout", civ, game.tileMap.values.first())
         game.addUnit("Scout", civ, game.tileMap.values.last())
