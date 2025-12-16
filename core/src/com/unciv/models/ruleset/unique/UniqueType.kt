@@ -825,12 +825,6 @@ enum class UniqueType(
 
     /////// carrying conditionals
     ConditionalWhenCarriedBy("When carried by [mapUnitFilter] units", UniqueTarget.Conditional),
-    ConditionalWhenCarryingExactly("When carrying exactly [amount] [mapUnitFilter] units", UniqueTarget.Conditional),
-    ConditionalWhenNotCarryingExactly("When not carrying exactly [amount] [mapUnitFilter] units", UniqueTarget.Conditional),
-    ConditionalWhenCarryingMoreThan("When carrying more than [amount] [mapUnitFilter] units", UniqueTarget.Conditional),
-    ConditionalWhenCarryingLessThan("When carrying less than [amount] [mapUnitFilter] units", UniqueTarget.Conditional),
-    ConditionalWhenCarryingBetween("When carrying between [amount] and [amount] [mapUnitFilter] units", UniqueTarget.Conditional,
-        docDescription = "'Between' is inclusive - so 'between 1 and 5' includes 1 and 5."),
 
     //endregion
 
