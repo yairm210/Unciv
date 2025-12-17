@@ -6,8 +6,10 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.validation.RulesetErrorSeverity
 import com.unciv.models.ruleset.validation.UniqueValidator
 import com.unciv.models.translations.fillPlaceholders
+import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 
 /**
@@ -49,10 +51,11 @@ internal class ConsoleTriggerAction(
                 }
                 val civ = getCiv(console, topLevelCommand, paramStack) ?: city?.civ ?: unit?.civ ?: tile?.getOwner()
                     ?: throw ConsoleErrorException("A trigger command needs a Civilization from some source")
-                val unique = getUnique(console, paramStack, targetType)
-                if (UniqueTriggerActivation.triggerUnique(unique, civ, city, unit, tile, null, "due to cheating"))
-                    DevConsoleResponse.OK
-                else DevConsoleResponse.error("The `triggerUnique` call failed")
+                val (unique, hint) = getUnique(console, topLevelCommand, paramStack, targetType)
+                if (!UniqueTriggerActivation.triggerUnique(unique, civ, city, unit, tile, null, "due to cheating"))
+                    DevConsoleResponse.error("The `triggerUnique` call failed\n$hint")
+                else if (hint.isEmpty()) DevConsoleResponse.OK
+                else DevConsoleResponse.hint(hint)
             }
         }
 
@@ -66,7 +69,7 @@ internal class ConsoleTriggerAction(
             return civ
         }
 
-        private fun getUnique(console: DevConsolePopup, paramStack: ArrayDeque<CliInput>, targetType: UniqueTarget): Unique {
+        private fun getUnique(console: DevConsolePopup, topLevelCommand: String, paramStack: ArrayDeque<CliInput>, targetType: UniqueTarget): Pair<Unique, String> {
             var uniqueText = paramStack.removeFirstOrNull()?.toMethod(CliInput.Method.Quoted)
                 ?: throw ConsoleErrorException("Parameter triggeredUnique missing")
             val uniqueType = getUniqueType(uniqueText, targetType)
@@ -76,11 +79,30 @@ internal class ConsoleTriggerAction(
                 uniqueText = CliInput(uniqueType.placeholderText.fillPlaceholders(*params), CliInput.Method.Quoted)
             }
             val unique = Unique(uniqueText.content, targetType, "DevConsole")
+
+            // Validate the found Unique
             val validator = UniqueValidator(console.gameInfo.ruleset)
             val errors = validator.checkUnique(unique, false, ConsoleRulesetObject(targetType), true)
-            if (errors.isNotOK())
+            if (!errors.isNotOK()) return unique to errors.getErrorText(true)
+
+            // Errors - is deprecation the only problem?
+            val onlyDeprecated = errors.all {
+                it.errorSeverityToReport == RulesetErrorSeverity.ErrorOptionsOnly && "deprecated" in it.text
+            }
+            if (!onlyDeprecated)
                 throw ConsoleErrorException(errors.getErrorText(true))
-            return unique
+
+            // Yes: Replace console text field with the deprecation annotation's recommendation
+            var replaceWith = unique.type?.getDeprecationAnnotation()?.replaceWith?.expression
+            if (replaceWith != null) {
+                val originalPlaceholders = unique.text.getPlaceholderParameters()
+                if (originalPlaceholders.size == replaceWith.getPlaceholderParameters().size) // not guaranteed!
+                    replaceWith = replaceWith.fillPlaceholders(*originalPlaceholders.toTypedArray())
+                console.textField.text = "$topLevelCommand activatetrigger \"$replaceWith\""
+                console.textField.setCursorPosition(1000)
+            }
+            // ... and return the Unique plus the error as hint
+            return unique to errors.getErrorText(true)
         }
 
         private fun getUniqueType(param: CliInput, targetType: UniqueTarget): UniqueType {

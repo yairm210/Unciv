@@ -58,6 +58,7 @@ internal enum class ConsoleParameterType(
             // Not canAcceptUniqueTarget, we want to separate civ/unit triggerables
             UniqueType.entries.asSequence()
                 .filter { target in it.targetTypes }
+                .filterNot { it.getDeprecationAnnotation()?.level == DeprecationLevel.ERROR }
                 .map { it.text }
                 .asIterable()
     }

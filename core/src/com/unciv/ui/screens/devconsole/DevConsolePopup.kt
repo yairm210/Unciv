@@ -35,7 +35,7 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen, Scrollability.All
 
     private var currentHistoryEntry = history.size
 
-    private val textField = UncivTextField("") // always has focus, so a hint won't show
+    internal val textField = UncivTextField("") // always has focus, so a hint won't show
     private val responseLabel = "".toLabel(Color.RED).apply { wrap = true }
     private val inputWrapper = Table()
 
