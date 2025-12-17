@@ -515,7 +515,7 @@ class CountableTests {
         val ruleset = setupModdedGame()
         val wetTile = game.tileMap[3,1]
         wetTile.setBaseTerrain(ruleset.terrains[Constants.coast]!!)
-        val carrier = game.addUnit("Carrier", civ, game.tileMap[3,1])
+        val carrier = game.addUnit("Carrier", civ, wetTile)
         val carried = game.addUnit("Fighter", civ, game.tileMap[3,1])
         carried.isTransported = true
         carrier.currentTile.airUnits.add(carried)
