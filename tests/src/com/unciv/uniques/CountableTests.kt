@@ -525,7 +525,8 @@ class CountableTests {
         val deSela = game.addCiv(game.ruleset.nations["Lhasa"]!!)
         val city2 = game.addCity(deSela, game.tileMap[-2,1])
         game.addUnit("Scout", deSela, city2.getCenterTile())
-        val actual = Countables.getCountableAmount("[Remaining [all] Civilizations] + 100 * [[Military] Units] + 10 * [Carried [Fighter] units]", GameContext(civ))
+        val context = GameContext(civ, unit = carrier) // The carried countable runs on a unit scope
+        val actual = Countables.getCountableAmount("[Remaining [all] Civilizations] + 100 * [[Military] Units] + 10 * [Carried [Fighter] units]", context)
         assertEquals("There should be five military units with 1 being carried and 2 civilizations", 512, actual)
     }
 
