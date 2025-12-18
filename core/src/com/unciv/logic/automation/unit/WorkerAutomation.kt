@@ -277,6 +277,7 @@ class WorkerAutomation(
 
         var priority = 0f
         if (tile.getOwner() == civInfo) {
+            priority += 1f // the fact it's inside our borders means we can do something
             if (tile.providesYield()) priority += 2
             if (tile.hasFalloutEquivalent()) priority += 1
             if (tile.terrainFeatures.isNotEmpty()) {
