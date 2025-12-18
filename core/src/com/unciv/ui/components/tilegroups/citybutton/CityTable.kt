@@ -178,13 +178,14 @@ internal class CityTable(
         // getCurrentConstruction does not distinuish these, only currentConstructionName does. And we want the icon to only show in the second case.
         var nextTurnPercentage = 0f
         var percentage = 0f
-        var turns = "-"
         val icon = if (cityConstructions.currentConstructionName().isEmpty()) null
             else ImageGetter.getConstructionPortrait(cityCurrentConstruction.name, 24f)
-        when (cityCurrentConstruction) {
-            PerpetualConstruction.idle -> {}
+        val turns = when (cityCurrentConstruction) {
+            PerpetualConstruction.idle -> {
+                "-"
+            }
             is PerpetualConstruction -> {
-                turns = Fonts.infinity.toString()
+                Fonts.infinity.toString()
             }
             else -> {
                 cityCurrentConstruction as INonPerpetualConstruction
@@ -194,7 +195,7 @@ internal class CityTable(
                 fun getPercentage(done: Float) = (done / cost).coerceIn(0f, 1f)
                 nextTurnPercentage = getPercentage(workDone + city.cityStats.currentCityStats.production)
                 percentage = getPercentage(workDone)
-                turns = if (turnsToConstruction < 100) turnsToConstruction.tr() else "-"
+                if (turnsToConstruction < 100) turnsToConstruction.tr() else "-"
             }
         }
 
