@@ -110,7 +110,7 @@ object BattleDamage {
             // https://steamcommunity.com/sharedfiles/filedetails/?id=326411722#464287
             val effect = unique.params[0].toInt() - 3 * distance
             if (effect > 0)
-                modifiers.add("${unique.sourceObjectName} (${unique.getSourceNameForUser()})", effect)
+                modifiers.add(getModifierStringFromUnique(unique), effect)
         }
 
         //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
