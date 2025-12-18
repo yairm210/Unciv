@@ -133,7 +133,7 @@ internal class ConsoleTileCommands: ConsoleCommandNode {
             }
         },
 
-        "spawnbarbarianencampment" to ConsoleAction("tile spawnbarbarianencampment") { console, _ ->
+        "spawn-barbarian-encampment" to ConsoleAction("tile spawn-barbarian-encampment") { console, _ ->
             val selectedTile = console.getSelectedTile()
             console.gameInfo.barbarians.createNewCamp(selectedTile)
 
