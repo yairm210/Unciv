@@ -17,6 +17,10 @@ class CityTurnManager(val city: City) {
 
 
     fun startTurn() {
+        for (resource in city.getResourcesGeneratedByCity(city.getResourceModifiers())) {
+            if (resource.resource.isStockpiled && resource.resource.isCityWide)
+                city.gainStockpiledResource(resource.resource, resource.amount)
+        }
         // Construct units at the beginning of the turn,
         // so they won't be generated out in the open and vulnerable to enemy attacks before you can control them
         city.cityConstructions.constructIfEnough()

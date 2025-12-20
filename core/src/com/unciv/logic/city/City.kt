@@ -234,6 +234,29 @@ class City : IsPartOfGameInfoSerialization, INamed {
     @Readonly fun getResourcesGeneratedByCity(civResourceModifiers: Map<String, Float>) = CityResources.getResourcesGeneratedByCity(this, civResourceModifiers)
     @Readonly fun getAvailableResourceAmount(resourceName: String) = CityResources.getAvailableResourceAmount(this, resourceName)
 
+    /**
+     * Returns the resource production modifier as a multiplier.
+     *
+     * For example: 1.0f means no change, 2.0f results in double production.
+     *
+     * @param resource The resource for which to calculate the modifier.
+     * @return The production modifier as a multiplier.
+     */
+    @Readonly
+    fun getResourceModifier(resource: TileResource): Float {
+        var finalModifier = 1f
+
+        for (unique in getMatchingUniques(UniqueType.PercentResourceProduction))
+            if (resource.matchesFilter(unique.params[1]))
+                finalModifier += unique.params[0].toFloat() / 100f
+
+        return finalModifier
+    }
+    /** Gets modifiers for ALL resources */
+    @Readonly
+    fun getResourceModifiers(): Map<String, Float> =
+        civ.gameInfo.ruleset.tileResources.values.associate { it.name to getResourceModifier(it) }
+
     @Readonly fun isGrowing() = foodForNextTurn() > 0
     @Readonly fun isStarving() = foodForNextTurn() < 0
 
