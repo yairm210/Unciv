@@ -1,48 +1,20 @@
-## 4.19.1
+## 4.19.2
 
- 4.19.1
-
-Version rollout 
-
-4.19.0-patch2
-
-Fix civID change crashing MultiplayerScreen 
-
-4.19.0-patch1
-
-By EmperorPinguin:
-- Lower priority for scientist slots 
-- Improve city tile value calculation for resources 
-- Speedup and bugfix tryHeadTowardsUndevelopedCity 
-- 37 
-- Increase base priority 
-- Add check for tiles in road automation 
-- Bugfix: don't run simulation with only spectators 
+AI improvements - By EmperorPinguin
 
 By SomeTroglodyte:
-- Fix OneTimeRemovePolicy triggered Unique 
-- Label two options more clearly by what they actually do 
-- Distance-based unit cycle order with opt-in 
-- Fix regression from CityButton reorg: InfluenceBar size 
-- Reorder resource revealed notification locations to prefer your own territory over city-state allies 
-- Fix regression from CityButton reorg: Perpetual construction icons 
-- Fix "Home Sweet Home" battle modifier not being translated 
-- Console diplomacy 
-- Harden mod manager against invalid local preview files 
-- chore: Refactor city button classes (the one inside TileLayerCityButton) 
-- Improve unit tests speed by reducing Translation tests overhead 
+- Fix City button problems
+- Miscellaneous fixes and small changes 
+- Distance-based unit cycle order (opt-in)  
+- Fix battle modifier not being translated 
+- Fix OneTimeRemovePolicy triggered Unique
+- Prevent crashes from mod preview files
 
 Added a command to spawn barbarian encampments - By GameCobra
 
-Fix stale issue closing message - By BobbyCobby
-
 By RobLoach:
-- docs: Update the JSON Schemas 
-- policy-screen: Fix On Completion translation 
-- options: Add Micro, FullHD, and QuadHD screen sizes 
-- city: Display City-Wide Resources 
-
-Fix crash on reloading/cloning victory data - By SeventhM
+- options: Add Micro, FullHD, and QuadHD screen sizes
+- city: Display City-Wide Resources
 
 ## 4.19.1
 
