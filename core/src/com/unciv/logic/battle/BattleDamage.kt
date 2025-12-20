@@ -38,7 +38,7 @@ object BattleDamage {
     private fun getGeneralModifiers(combatant: ICombatant, enemy: ICombatant, combatAction: CombatAction, tileToAttackFrom: Tile): Counter<String> {
         val modifiers = Counter<String>()
 
-        val conditionalState = getStateForConditionals(combatAction, combatant, enemy)
+        val conditionalState = getGameContext(combatAction, combatant, enemy)
         val civInfo = combatant.getCivInfo()
 
         if (combatant is MapUnitCombatant) {
@@ -50,7 +50,7 @@ object BattleDamage {
             for (resource in combatant.unit.getResourceRequirementsPerTurn().keys)
                 if (civResources[resource]!! < 0 && !civInfo.isBarbarian)
                     modifiers["Missing resource"] = BattleConstants.MISSING_RESOURCES_MALUS
-            
+
             val (greatGeneralName, greatGeneralBonus) = GreatGeneralImplementation.getGreatGeneralBonus(combatant, enemy, combatAction)
             if (greatGeneralBonus != 0)
                 modifiers[greatGeneralName] = greatGeneralBonus
@@ -70,7 +70,7 @@ object BattleDamage {
     }
 
     @Readonly
-    private fun getStateForConditionals(
+    private fun getGameContext(
         combatAction: CombatAction,
         combatant: ICombatant,
         enemy: ICombatant,
@@ -110,7 +110,7 @@ object BattleDamage {
             // https://steamcommunity.com/sharedfiles/filedetails/?id=326411722#464287
             val effect = unique.params[0].toInt() - 3 * distance
             if (effect > 0)
-                modifiers.add("${unique.sourceObjectName} (${unique.getSourceNameForUser()})", effect)
+                modifiers.add(getModifierStringFromUnique(unique), effect)
         }
 
         //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
@@ -137,7 +137,7 @@ object BattleDamage {
         defender: ICombatant, tileToAttackFrom: Tile
     ): Counter<String> {
         @LocalState val modifiers = getGeneralModifiers(attacker, defender, CombatAction.Attack, tileToAttackFrom)
-        
+
         if (attacker is MapUnitCombatant) {
 
             val terrainAttackModifiers = getTerrainAttackModifiers(attacker, defender, tileToAttackFrom)
@@ -158,7 +158,7 @@ object BattleDamage {
 
                     // e.g., Discipline policy - https://civilization.fandom.com/wiki/Discipline_(Civ5)
                     for (unique in attacker.unit.getMatchingUniques(UniqueType.FlankAttackBonus, checkCivInfoUniques = true,
-                            gameContext = getStateForConditionals(CombatAction.Attack, attacker, defender)))
+                            gameContext = getGameContext(CombatAction.Attack, attacker, defender)))
                         flankingBonus *= unique.params[0].toPercent()
                     modifiers["Flanking"] =
                         (flankingBonus * numberOfOtherAttackersSurroundingDefender).toInt()
@@ -243,7 +243,7 @@ object BattleDamage {
 
         return modifiers
     }
-    
+
     @Readonly
     private fun modifiersToFinalBonus(modifiers: Counter<String>): Float {
         var finalModifier = 1f
