@@ -548,7 +548,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         if (!civ.tech.isRevealed(resource)) {
             return null
         }
-        
+
         data class CityTileAndDistance(val city: City, val tile: Tile, val distance: Int)
 
         // Include your city-state allies' cities with your own for the purpose of showing the closest city
@@ -584,7 +584,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
                     }
             }
             .filter { it.distance <= maxDistance && filter(it.tile) }
-            .sortedWith(compareBy { it.distance })
+            // We still want to report tiles on our own territory before those of our cs-allies
+            .sortedWith(compareBy<CityTileAndDistance> { it.city.civ != civ }.thenBy { it.distance })
             .distinctBy { it.tile }
 
         val chosenCity = exploredRevealInfo.firstOrNull()?.city
