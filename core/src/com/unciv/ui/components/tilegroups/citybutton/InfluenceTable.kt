@@ -15,12 +15,12 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 class InfluenceTable(
     influence: Float,
     relationshipLevel: RelationshipLevel,
-    width: Float = 100f,
-    height: Float = 5f
+    private val desiredWidth: Float = 100f, // shadowing Actor.width didn't work, needs differentiation
+    private val desiredHeight: Float = 5f
 ) : Table() {
     init {
         defaults().pad(1f)
-        setSize(width, height)
+        setSize(desiredWidth, desiredHeight)
         background = BaseScreen.skinStrings.getUiBackground(
             "WorldScreen/CityButton/InfluenceBar",
             tintColor = ImageGetter.CHARCOAL)
@@ -55,7 +55,7 @@ class InfluenceTable(
     }
 
     private fun getBarPiece(percentage: Float, color: Color, negative: Boolean) = Table().apply {
-        val barPieceSize = width / 4f
+        val barPieceSize = desiredWidth / 4f
         val full = ImageGetter.getWhiteDot()
         val empty = ImageGetter.getWhiteDot()
 
@@ -63,11 +63,11 @@ class InfluenceTable(
         empty.color = Color.DARK_GRAY
 
         if (negative) {
-            add(empty).size((1f - percentage) * barPieceSize, height)
-            add(full).size(percentage * barPieceSize, height)
+            add(empty).size((1f - percentage) * barPieceSize, desiredHeight)
+            add(full).size(percentage * barPieceSize, desiredHeight)
         } else {
-            add(full).size(percentage * barPieceSize, height)
-            add(empty).size((1f - percentage) * barPieceSize, height)
+            add(full).size(percentage * barPieceSize, desiredHeight)
+            add(empty).size((1f - percentage) * barPieceSize, desiredHeight)
         }
     }
 
