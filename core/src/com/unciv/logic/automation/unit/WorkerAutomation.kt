@@ -257,6 +257,7 @@ class WorkerAutomation(
             return false
         if (tile.owningCity != null && tile.getOwner() != civInfo) return false
         if (tile.isCityCenter()) return false
+        if (tile in roadBetweenCitiesAutomation.tilesOfRoadsMap) return true
         // Don't try to improve tiles we can't benefit from at all
         if (!tile.hasViewableResource(civInfo) && tile.getTilesInDistance(civInfo.gameInfo.ruleset.modOptions.constants.cityWorkRange)
                 .none { it.isCityCenter() && it.getCity()?.civ == civInfo }
