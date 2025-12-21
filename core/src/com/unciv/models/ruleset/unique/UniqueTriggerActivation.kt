@@ -7,6 +7,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.*
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
+import com.unciv.logic.civilization.managers.PolicyManager
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapgenerator.NaturalWonderGenerator
@@ -345,10 +346,12 @@ object UniqueTriggerActivation {
                     else -> return null
                 }
             }
+
             UniqueType.OneTimeRemovePolicy -> {
                 val policyFilter = unique.params[0]
-                val policiesToRemove = civInfo.policies.getAdoptedPoliciesMatching(policyFilter, gameContext)
-                if (policiesToRemove.isEmpty()) return null
+                val policiesToRemove = civInfo.policies
+                    .getAdoptedPoliciesMatching(policyFilter, gameContext, forRemoval = true)
+                if (policiesToRemove.none()) return null
 
                 return {
                     for (policy in policiesToRemove) {
@@ -364,24 +367,28 @@ object UniqueTriggerActivation {
                     true
                 }
             }
-
             UniqueType.OneTimeRemovePolicyRefund -> {
                 val policyFilter = unique.params[0]
-                val refundPercentage = unique.params[1].toInt()
-                val policiesToRemove = civInfo.policies.getAdoptedPoliciesMatching(policyFilter, gameContext)
-                if (policiesToRemove.isEmpty()) return null
+                val policiesToRemove = civInfo.policies
+                    .getAdoptedPoliciesMatching(policyFilter, gameContext, forRemoval = true)
+                if (policiesToRemove.none()) return null
 
+                val refundPercentage = unique.params[1].toInt()
                 val policiesToRemoveMap = civInfo.policies.getCultureRefundMap(policiesToRemove, refundPercentage)
 
                 return {
-                    for (policy in policiesToRemoveMap){
-                        civInfo.policies.removePolicy(policy.key)
-                        civInfo.policies.addCulture(policy.value)
-
-                        val notificationText = getNotificationText(
-                            notification, triggerNotificationText,
+                    for (policy in policiesToRemoveMap) {
+                        val effectNotificationText = if (policy.value == PolicyManager.FREE_POLICY_MARKER) {
+                            civInfo.policies.removePolicy(policy.key, assumeWasFree = true)
+                            civInfo.policies.freePolicies++
+                            "You lose the [${policy.key.name}] Policy. A free policy has been refunded"
+                        } else {
+                            civInfo.policies.removePolicy(policy.key)
+                            civInfo.policies.addCulture(policy.value)
                             "You lose the [${policy.key.name}] Policy. [${policy.value}] Culture has been refunded"
-                        )
+                        }
+                        val notificationText =
+                            getNotificationText(notification, triggerNotificationText, effectNotificationText)
                         if (notificationText != null)
                             civInfo.addNotification(notificationText, PolicyAction(policy.key.name), NotificationCategory.General, NotificationIcon.Culture)
                     }

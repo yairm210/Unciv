@@ -8,6 +8,7 @@ internal class GameplayTab(
         addCheckbox("'Next unit' button cycles idle units", settings::checkForDueUnitsCycles, updateWorld = true)
         addCheckbox("Show Small Skip/Cycle Unit Button", settings::smallUnitButton, updateWorld = true)
         addCheckbox("Auto Unit Cycle", settings::autoUnitCycle, updateWorld = true)
+        addCheckbox("Alternate Unit cycle order", settings::alternateUnitCycleOrder, updateWorld = true)
         addCheckbox("Move units with a single tap", settings::singleTapMove)
         addCheckbox("Move units with a long tap", settings::longTapMove)
         addCheckbox("Order trade offers by amount", settings::orderTradeOffersByAmount)

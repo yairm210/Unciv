@@ -89,7 +89,7 @@ object Automation {
                 if (unique.params[1] == "Specialists" && city.matchesFilter(unique.params[2]))
                     yieldStats.happiness -= (unique.params[0].toFloat() / 100f)  // relative val is negative, make positive
             if (yieldStats.science == 3f || yieldStats.science >= 5f )
-                yieldStats.science *= 2f
+                yieldStats.science *= 1.3f
         }
 
         val surplusFood = city.cityStats.currentCityStats[Stat.Food]

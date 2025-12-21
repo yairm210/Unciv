@@ -1,0 +1,82 @@
+{
+  "$id": "https://raw.githubusercontent.com/yairm210/Unciv/refs/heads/master/docs/Modders/schemas/VictoryTypes.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Victory Types",
+  "description": "A list of different Victory Types, along with their milestones.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "title": "Name",
+        "description": "Name of the victory",
+        "examples": ["Domination", "Science", "Cultural"]
+      },
+      "victoryScreenHeader": {
+        "title": "Victory Screen Header",
+        "type": "string",
+        "description": "Shown in the footer of the victory in the our status in the victory screen"
+      },
+      "victoryString": {
+        "title": "Victory String",
+        "type": "string",
+        "description": "Shown in the footer of the victory screen when you won the game with this victory"
+      },
+      "defeatString": {
+        "title": "Defeat String",
+        "type": "string",
+        "description": "Shown in the footer of the victory screen when someone else won the game with this victory"
+      },
+      "hiddenInVictoryScreen": {
+        "title": "Hidden in Victory Screen",
+        "type": "boolean",
+        "description": "Whether progress of this victory is hidden in the victory screen",
+        "default": false
+      },
+      "requiredSpaceshipParts": {
+        "title": "Requires Spaceship Parts",
+        "type": "array",
+        "items": {
+          "title": "Requires Spaceship Part",
+          "description": "A unit that is required to be added to the capital to accomplish the milestone",
+          "type": "string",
+          "examples": [
+            "SS Engine",
+            "SS Stasis Chamber",
+            "SS Cockpit",
+            "SS Booster"
+          ]
+        },
+        "description": "Which units must be added to the capital for the corresponding milestone"
+      },
+      "milestones": {
+        "title": "Milestones",
+        "type": "array",
+        "items": {
+          "type": "string",
+          "title": "Milestone",
+          "description": "A milestone that must be accomplished to win.",
+          "examples": [
+            "Build [building]",
+            "Anyone should build [building]",
+            "Add all [comment] in capital",
+            "Destroy all players",
+            "Capture all capitals",
+            "Complete [amount] Policy branches",
+            "Win diplomatic vote",
+            "Become the world religion",
+            "Have highest score after max turns",
+            "Have more [countable] than each player's [countable]"
+          ]
+        },
+        "description": "List of milestones that must be accomplished to win. See https://yairm210.github.io/Unciv/Modders/Mod-file-structure/5-Miscellaneous-JSON-files/#milestones"
+      },
+      "civilopediaText": {
+        "$ref": "refs/CivilopediaText.schema.json"
+      }
+    },
+    "required": ["name", "milestones"],
+    "additionalProperties": false
+  }
+}

@@ -1,3 +1,21 @@
+## 4.19.2
+
+AI improvements - By EmperorPinguin
+
+By SomeTroglodyte:
+- Fix City button problems
+- Miscellaneous fixes and small changes 
+- Distance-based unit cycle order (opt-in)  
+- Fix battle modifier not being translated 
+- Fix OneTimeRemovePolicy triggered Unique
+- Prevent crashes from mod preview files
+
+Added a command to spawn barbarian encampments - By GameCobra
+
+By RobLoach:
+- options: Add Micro, FullHD, and QuadHD screen sizes
+- city: Display City-Wide Resources
+
 ## 4.19.1
 
 By RobLoach:

@@ -85,8 +85,8 @@ internal class DisplayTab(
         addHeader("Experimental")
 
         addCheckbox("Experimental Demographics scoreboard", settings::useDemographics)
-        addCheckbox("Unit movement button", settings::unitMovementButtonAnimation)
-        addCheckbox("Unit actions menu", settings::unitActionsTableAnimation)
+        addCheckbox("Animate Unit movement button", settings::unitMovementButtonAnimation)
+        addCheckbox("Animate Unit actions menu", settings::unitActionsTableAnimation)
 
         super.lateInitialize()
     }
