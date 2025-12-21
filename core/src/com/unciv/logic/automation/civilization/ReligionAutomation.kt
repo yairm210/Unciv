@@ -424,18 +424,17 @@ object ReligionAutomation {
 
     private fun foundReligion(civInfo: Civilization) {
         if (civInfo.religionManager.religionState != ReligionState.FoundingReligion) return
-        val availableReligionIcons = civInfo.gameInfo.ruleset.religions
-            .filterNot { civInfo.gameInfo.religions.values.map { religion -> religion.name }.contains(it) }
-        val favoredReligion = civInfo.nation.favoredReligion
-        val nonFavouredReligionIcons = availableReligionIcons.filterNot { icon ->
-            icon in civInfo.gameInfo.civilizations.mapNotNull { it.nation.favoredReligion }.toSet()
-        }
-        val religionIcon =
-            if (favoredReligion != null && favoredReligion in availableReligionIcons) favoredReligion
-            else if (nonFavouredReligionIcons.isNotEmpty()) nonFavouredReligionIcons.random() // maximizes the number of civs getting their preferred religion
-            else availableReligionIcons.randomOrNull() ?: return // Wait what? How did we pass the checking when using a great prophet but not this?
+        val usedReligions = civInfo.gameInfo.religions.values.mapTo(mutableSetOf()) { it.name }
+        val availableReligions = civInfo.gameInfo.ruleset.religions.filterNot { it in usedReligions }
+        val favoredReligion = civInfo.nation.favoredReligion?.takeIf { it in availableReligions }
+        val allFavoredReligions = civInfo.gameInfo.civilizations.mapNotNullTo(mutableSetOf()) { it.nation.favoredReligion}
+        val nonFavoredReligions = availableReligions.filterNot { it in allFavoredReligions }
+        val chosenReligion = favoredReligion
+            ?: nonFavoredReligions.randomOrNull()
+            ?: availableReligions.randomOrNull()
+            ?: return // Wait what? How did we pass the checking when using a great prophet but not this?
 
-        civInfo.religionManager.foundReligion(religionIcon, religionIcon)
+        civInfo.religionManager.foundReligion(chosenReligion, chosenReligion)
 
         val chosenBeliefs = chooseBeliefs(civInfo, civInfo.religionManager.getBeliefsToChooseAtFounding()).toList()
         civInfo.religionManager.chooseBeliefs(chosenBeliefs)
