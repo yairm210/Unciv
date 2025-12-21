@@ -427,11 +427,13 @@ object ReligionAutomation {
         val availableReligionIcons = civInfo.gameInfo.ruleset.religions
             .filterNot { civInfo.gameInfo.religions.values.map { religion -> religion.name }.contains(it) }
         val favoredReligion = civInfo.nation.favoredReligion
+        val nonFavouredReligionIcons = availableReligionIcons.filterNot { icon ->
+            icon in civInfo.gameInfo.civilizations.mapNotNull { it.nation.favoredReligion }.toSet()
+        }
         val religionIcon =
-            if (favoredReligion != null && favoredReligion in availableReligionIcons
-                && (1..10).random() <= 5) favoredReligion
-            else availableReligionIcons.randomOrNull()
-                ?: return // Wait what? How did we pass the checking when using a great prophet but not this?
+            if (favoredReligion != null && favoredReligion in availableReligionIcons) favoredReligion
+            else if (nonFavouredReligionIcons.isNotEmpty()) nonFavouredReligionIcons.random() // maximizes the number of civs getting their preferred religion
+            else availableReligionIcons.randomOrNull() ?: return // Wait what? How did we pass the checking when using a great prophet but not this?
 
         civInfo.religionManager.foundReligion(religionIcon, religionIcon)
 
