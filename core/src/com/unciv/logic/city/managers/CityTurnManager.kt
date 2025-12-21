@@ -18,7 +18,7 @@ class CityTurnManager(val city: City) {
 
 
     fun startTurn() {
-        for (unique in city.getTriggeredUniques(UniqueType.TriggerUponTurnStart, includeCivUniques = false)) {
+        for (unique in city.getTriggeredUniques(UniqueType.TriggerUponTurnStart, includeCivUniques = false).toList()) {
             UniqueTriggerActivation.triggerUnique(unique, city)
         }
 
@@ -121,7 +121,7 @@ class CityTurnManager(val city: City) {
 
 
     fun endTurn() {
-        for (unique in city.getTriggeredUniques(UniqueType.TriggerUponTurnEnd, includeCivUniques = false)) {
+        for (unique in city.getTriggeredUniques(UniqueType.TriggerUponTurnEnd, includeCivUniques = false).toList()) {
             UniqueTriggerActivation.triggerUnique(unique, city)
         }
         val stats = city.cityStats.currentCityStats
