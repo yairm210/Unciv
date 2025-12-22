@@ -506,23 +506,16 @@ object NextTurnAutomation {
             .maxByOrNull { it.baseUnit.strength } // could be more sophisticated based on promotions, movement speed etc.
         
         val settlersToAccompany = civInfo.units.getCivUnits()
-            .filter { 
-                it.isCivilian() 
-                && it.hasUnique(UniqueType.FoundCity)
-            }.toList()
+            .filter { it.isCivilian() && it.hasUnique(UniqueType.FoundCity) }
         
-        if (settlersToAccompany.isNotEmpty()) {
-            for (settler in settlersToAccompany) {
-                val escortUnit = bestUnitInRange(settler.currentTile, 3)
-                if (escortUnit != null) {
-                    escortUnit.movement.headTowards(settler.currentTile)
-                    if (escortUnit.movement.canUnitSwapTo(settler.currentTile)) {
-                        // check if we can swap to replace the current inferior (wounded) escort
-                        escortUnit.movement.swapMoveToTile(settler.currentTile)
-                    }
-                }
+        for (settler in settlersToAccompany) {
+            val escortUnit = bestUnitInRange(settler.currentTile, 3) ?: continue
+            escortUnit.movement.headTowards(settler.currentTile)
+            if (escortUnit.movement.canUnitSwapTo(settler.currentTile)) {
+                // check if we can swap to replace the current inferior (wounded) escort
+                escortUnit.movement.swapMoveToTile(settler.currentTile)
             }
-        } 
+        }
     }
 
     /** Returns the priority of the unit, a lower value is higher priority **/
