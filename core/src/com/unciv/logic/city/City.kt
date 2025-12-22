@@ -247,7 +247,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         var finalModifier = 1f
 
         for (unique in getMatchingUniques(UniqueType.PercentResourceProduction))
-            if (resource.matchesFilter(unique.params[1]))
+            if (resource.matchesFilter(unique.params[1], state))
                 finalModifier += unique.params[0].toFloat() / 100f
 
         return finalModifier
