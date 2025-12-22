@@ -1,8 +1,10 @@
 package com.unciv.logic.map.mapgenerator
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.mapgenerator.RiverGenerator.Companion.continueRiverOn
+import com.unciv.logic.map.mapgenerator.RiverGenerator.RiverCoordinate
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.UniqueType
@@ -97,7 +99,7 @@ class RiverGenerator(
      * such that always the north-most hex and one of the two clock directions 5 / 7 o'clock are used. */
     class RiverCoordinate(
         private val tileMap: TileMap,
-        private val position: Vector2,
+        private val position: HexCoord,
         private val bottomRightOrLeft: BottomRightOrLeft
     ) {
         enum class BottomRightOrLeft {
@@ -108,8 +110,8 @@ class RiverGenerator(
             BottomRight
         }
 
-        private val x = position.x.toInt()
-        private val y = position.y.toInt()
+        private val x = position.x
+        private val y = position.y
         // Depending on the tile instance, some of the following will never be used. Tested with lazies: ~2% slower
         private val myTile = tileMap[position]
         private val myTopLeft = tileMap.getIfTileExistsOrNull(x + 1, y)

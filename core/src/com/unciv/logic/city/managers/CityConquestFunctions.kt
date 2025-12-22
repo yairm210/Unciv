@@ -18,6 +18,9 @@ import com.unciv.logic.trade.TradeOfferType
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.ui.components.extensions.toPercent
+import com.unciv.utils.withItem
+import com.unciv.utils.withoutItem
 import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 import kotlin.math.min
@@ -32,8 +35,17 @@ class CityConquestFunctions(val city: City) {
     private fun getGoldForCapturingCity(conqueringCiv: Civilization): Int {
         val baseGold = 20 + 10 * city.population.population + tileBasedRandom.nextInt(40)
         val turnModifier = max(0, min(50, city.civ.gameInfo.turns - city.turnAcquired)) / 50f
-        val cityModifier = if (city.containsBuildingUnique(UniqueType.DoublesGoldFromCapturingCity)) 2f else 1f
-        val conqueringCivModifier = if (conqueringCiv.hasUnique(UniqueType.TripleGoldFromEncampmentsAndCities)) 3f else 1f
+        var cityModifier = if (city.containsBuildingUnique(UniqueType.DoublesGoldFromCapturingCity)) 2f else 1f
+
+        for (unique in city.getMatchingUniques(UniqueType.GoldFromCapturingCity, city.state)) {
+            cityModifier *= unique.params[0].toPercent()
+        }
+
+        var conqueringCivModifier = if (conqueringCiv.hasUnique(UniqueType.TripleGoldFromEncampmentsAndCities)) 3f else 1f
+
+        for (unique in conqueringCiv.getMatchingUniques(UniqueType.GoldFromEncampmentsAndCities, conqueringCiv.state)) {
+            conqueringCivModifier *= unique.params[0].toPercent()
+        }
 
         val goldPlundered = baseGold * turnModifier * cityModifier * conqueringCivModifier
         return goldPlundered.toInt()
@@ -52,7 +64,7 @@ class CityConquestFunctions(val city: City) {
             }
         }
     }
-    
+
     private fun removeAutoPromotion() {
         city.unitShouldUseSavedPromotion = HashMap<String, Boolean>()
         city.unitToPromotions = HashMap<String, UnitPromotions>()
@@ -99,13 +111,13 @@ class CityConquestFunctions(val city: City) {
         conqueringCiv.addNotification("Received [$goldPlundered] Gold for capturing [${city.name}]",
             city.getCenterTile().position, NotificationCategory.General, NotificationIcon.Gold)
 
-        val reconqueredCityWhileStillInResistance = city.previousOwner == receivingCiv.civName && city.isInResistance()
+        val reconqueredCityWhileStillInResistance = city.previousOwner == receivingCiv.civID && city.isInResistance()
 
         destroyBuildingsOnCapture()
 
         city.moveToCiv(receivingCiv)
 
-        Battle.destroyIfDefeated(conqueredCiv, conqueringCiv, city.location)
+        Battle.destroyIfDefeated(conqueredCiv, conqueringCiv, city.location.toHexCoord())
 
         city.health = city.getMaxHealth() / 2 // I think that cities recover to half health when conquered?
         city.avoidGrowth = false // reset settings
@@ -122,7 +134,7 @@ class CityConquestFunctions(val city: City) {
             // reconquering or liberating city in resistance so eliminate it
             city.removeFlag(CityFlags.Resistance)
         }
-        
+
         for (unique in conqueredCiv.getTriggeredUniques(UniqueType.TriggerUponLosingCity, GameContext(civInfo = conqueredCiv))) {
             UniqueTriggerActivation.triggerUnique(unique, civInfo = conqueredCiv)
         }
@@ -269,13 +281,13 @@ class CityConquestFunctions(val city: City) {
         //  civs so the capitalCityIndicator recognizes the unique buildings of the conquered civ
         if (city.isCapital()) oldCiv.moveCapitalToNextLargest(city)
 
-        oldCiv.cities = oldCiv.cities.toMutableList().apply { remove(city) }
-        newCiv.cities = newCiv.cities.toMutableList().apply { add(city) }
+        oldCiv.cities = oldCiv.cities.withoutItem(city)
+        newCiv.cities = newCiv.cities.withItem(city)
         city.civ = newCiv
         city.state = GameContext(city)
         city.hasJustBeenConquered = false
         city.turnAcquired = city.civ.gameInfo.turns
-        city.previousOwner = oldCiv.civName
+        city.previousOwner = oldCiv.civID
 
         // now that the tiles have changed, we need to reassign population
         for (workedTile in city.workedTiles.filterNot { city.tiles.contains(it) }) {
@@ -288,13 +300,13 @@ class CityConquestFunctions(val city: City) {
 
         // Remove their free buildings from this city and remove free buildings provided by the city from their cities
         removeBuildingsOnMoveToCiv()
-        
-        // Remove auto promotion from city that is being moved 
+
+        // Remove auto promotion from city that is being moved
         removeAutoPromotion()
 
         // catch-all - should ideally not happen as we catch the individual cases with an appropriate notification
-        city.espionage.removeAllPresentSpies(SpyFleeReason.Other) 
-        
+        city.espionage.removeAllPresentSpies(SpyFleeReason.Other)
+
 
         // Place palace for newCiv if this is the only city they have.
         if (newCiv.cities.size == 1) newCiv.moveCapitalTo(city, null)

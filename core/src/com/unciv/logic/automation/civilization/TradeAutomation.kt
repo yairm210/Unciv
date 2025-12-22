@@ -165,7 +165,7 @@ object TradeAutomation {
         tradeLogic.currentTrade.ourOffers.addAll(counterofferGifts)
 
         // Trades reversed, because when *they* get it then the 'ouroffers' become 'theiroffers'
-        return TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse())
+        return TradeRequest(civInfo.civID, tradeLogic.currentTrade.reverse())
     }
 
 
@@ -185,12 +185,12 @@ object TradeAutomation {
         }) {
 
             val isEnemy = civInfo.getDiplomacyManager(otherCiv)!!.isRelationshipLevelLE(RelationshipLevel.Enemy)
-            if (isEnemy || otherCiv.tradeRequests.any { it.requestingCiv == civInfo.civName })
+            if (isEnemy || otherCiv.tradeRequests.any { it.requestingCiv == civInfo.civID })
                 continue
 
             val trades = potentialLuxuryTrades(civInfo, otherCiv)
             for (trade in trades) {
-                val tradeRequest = TradeRequest(civInfo.civName, trade.reverse())
+                val tradeRequest = TradeRequest(civInfo.civID, trade.reverse())
                 otherCiv.tradeRequests.add(tradeRequest)
             }
         }

@@ -1,6 +1,8 @@
 package com.unciv.ui.screens.devconsole
 
 import com.unciv.logic.GameInfo
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.mapgenerator.RiverGenerator
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.UniqueTarget
@@ -20,7 +22,7 @@ internal enum class ConsoleParameterType(
     val preferquoted: Boolean = false
 ) {
     none( { emptyList() } ),
-    civName( { civilizations.map { it.civName } } ),
+    civName( { civilizations.map { it.civID } } ),
     unitName( { ruleset.units.keys } ),
     promotionName( { ruleset.unitPromotions.keys } ),
     improvementName( { ruleset.tileImprovements.keys } ),
@@ -37,6 +39,8 @@ internal enum class ConsoleParameterType(
     triggeredUniqueTemplate( { UniqueType.entries.filter { it.canAcceptUniqueTarget(UniqueTarget.Triggerable) }.map { it.text } }, preferquoted = true ),
     difficulty( { ruleset.difficulties.keys } ),
     boolean( { listOf("true", "false") }),
+    diplomacyFlag( { DiplomacyFlags.entries.map { it.name } }),
+    diplomaticModifier( { DiplomaticModifiers.entries.map { it.name } }),
     ;
 
     private fun getOptions(console: DevConsolePopup) = console.gameInfo.getOptions()

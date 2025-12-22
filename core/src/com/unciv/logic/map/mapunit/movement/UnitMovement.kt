@@ -2,10 +2,10 @@
 
 package com.unciv.logic.map.mapunit.movement
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.BFS
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
@@ -34,7 +34,7 @@ class UnitMovement(val unit: MapUnit) {
      */
     @Readonly @Suppress("purity") // mutates passed parameter
     fun getMovementToTilesAtPosition(
-        position: Vector2,
+        position: HexCoord,
         unitMovement: Float,
         considerZoneOfControl: Boolean = true,
         tilesToIgnoreBitset: BitSet? = null,
@@ -338,29 +338,38 @@ class UnitMovement(val unit: MapUnit) {
      * reachable in the current turn
      */
     @Readonly
-    private fun canUnitSwapToReachableTile(reachableTile: Tile): Boolean {
+    private fun canUnitSwapToReachableTile(reachableTile: Tile, checkEscorted: Boolean = true): Boolean {
         // Air units cannot swap
         if (unit.baseUnit.movesLikeAirUnits) return false
         // We can't swap with ourself
         if (reachableTile == unit.getTile()) return false
         if (unit.cache.cannotMove) return false
-        // Check whether the tile contains a unit of the same type as us that we own and that can
-        // also reach our tile in its current turn.
-        val otherUnit = (
-            if (unit.isCivilian())
-                reachableTile.civilianUnit
-            else
-                reachableTile.militaryUnit
-            ) ?: return false
+
+        // Check whether the tile contains a unit of the same type as us that we own and that can also reach our tile in its current turn.
+        // When looking for escort formation swaps, however, the 'other' unit should be taken disregarding this unit's type.
+        // (So when we have a escorting Warrior+Worker pair, and want to move that pair to a tile with just a Worker or juse a Warrior,
+        // we can get the Swap button no matter which of the pair we selected first)
+        val escortedUnit = if (checkEscorted && unit.isEscorting()) unit.getOtherEscortUnit() else null // Only isEscorting has the actual flag check
+        fun MapUnit.getMatchInReachableTile() =
+            if (isCivilian()) reachableTile.civilianUnit
+            else reachableTile.militaryUnit
+        val otherUnit =
+            unit.getMatchInReachableTile()
+            ?: escortedUnit?.getMatchInReachableTile()
+            ?: return false
         val ourPosition = unit.getTile()
         if (otherUnit.owner != unit.owner
-            || otherUnit.cache.cannotMove  // redundant, line below would cover it too
+            || otherUnit.cache.cannotMove  // redundant but faster, line below would cover it too
             || !otherUnit.movement.canReachInCurrentTurn(ourPosition)) return false
 
         if (!canMoveTo(reachableTile, allowSwap = true)) return false
         if (!otherUnit.movement.canMoveTo(ourPosition, allowSwap = true)) return false
-        // All clear!
-        return true
+
+        if (escortedUnit == null) return true // All clear!
+
+        // Check whether the escorted unit can move OR swap too
+        if (escortedUnit.movement.canMoveTo(reachableTile, allowSwap = false, includeOtherEscortUnit = false)) return true
+        return escortedUnit.movement.canUnitSwapToReachableTile(reachableTile, false)
     }
 
     /**
@@ -552,7 +561,9 @@ class UnitMovement(val unit: MapUnit) {
      * Swaps this unit with the unit on the given tile
      * Precondition: this unit can swap-move to the given tile, as determined by canUnitSwapTo
      */
-    fun swapMoveToTile(destination: Tile) {
+    fun swapMoveToTile(destination: Tile, keepEscorting: Boolean = false) {
+        if (keepEscorting && unit.isEscorting()) return swapMoveEscortPair(destination)
+
         unit.stopEscorting()
         val otherUnit = (
             if (unit.isCivilian())
@@ -595,6 +606,20 @@ class UnitMovement(val unit: MapUnit) {
         // Step 6: Update states
         otherUnit.mostRecentMoveType = UnitMovementMemoryType.UnitMoved
         unit.mostRecentMoveType = UnitMovementMemoryType.UnitMoved
+    }
+
+    private fun swapMoveEscortPair(destination: Tile) {
+        val escortedUnit = unit.getOtherEscortUnit() ?: return
+        val destinationWasEscortingUnit = destination.militaryUnit?.takeIf { it.isEscorting() }
+        unit.stopEscorting() // If a moveToTile comes first - it would try to keep the escort and fail
+        fun MapUnit.needsSwapTo() = (if (isCivilian()) destination.civilianUnit else destination.militaryUnit) != null
+        fun MapUnit.swapOrMoveToDestination() =
+            if (needsSwapTo()) movement.swapMoveToTile(destination)
+            else movement.moveToTile(destination)
+        unit.swapOrMoveToDestination()
+        escortedUnit.swapOrMoveToDestination()
+        unit.startEscorting()
+        destinationWasEscortingUnit?.startEscorting()
     }
 
     @Readonly

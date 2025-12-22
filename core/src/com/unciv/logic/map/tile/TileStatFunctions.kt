@@ -157,7 +157,8 @@ class TileStatFunctions(val tile: Tile) {
      */
     @Readonly
     private fun getSingleTerrainStats(terrain: Terrain, gameContext: GameContext): ArrayList<Pair<String, Stats>> {
-        val list = arrayListOf(terrain.name to (terrain as Stats))
+        val list = ArrayList<Pair<String,Stats>>()
+        list.add(terrain.name to (terrain as Stats))
 
         for (unique in terrain.getMatchingUniques(UniqueType.Stats, gameContext)) {
             list.add(terrain.name+": "+unique.getDisplayText() to unique.stats)

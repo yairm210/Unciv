@@ -7,7 +7,6 @@ import com.unciv.json.json
 import com.unciv.logic.UncivKtor
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.github.Github.repoNameToFolderName
-import com.unciv.logic.github.GithubAPI.parseUrl
 import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -17,13 +16,21 @@ import kotlinx.coroutines.delay
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 import java.util.zip.ZipException
+import java.util.zip.ZipInputStream
+import kotlinx.coroutines.Job
+import kotlin.coroutines.coroutineContext
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 enum class DownloadAndExtractState {
-    Downloading,
-    Extracting
+    Downloading {
+        override fun message(progress: Int?) = if (progress == null) "Downloading..." else "{Downloading...} ${progress.coerceIn(0, 100)}%"
+    },
+    Finishing {
+        override fun message(progress: Int?) = "Finishing..."
+    };
+    abstract fun message(progress: Int?): String
 }
 
 /**
@@ -306,7 +313,7 @@ object GithubAPI {
         if (matchZip != null && matchZip.groups.size > 4)
             return processMatch(matchZip)
 
-        val matchBranch = Regex("""^(.*/(.*)/(.*))/tree/(.*)$""").matchEntire(url)
+        val matchBranch = Regex("""^(.*/(.*)/(.*))/tree/(.+?)/?$""").matchEntire(url) // important non-greedy '+'
         if (matchBranch != null && matchBranch.groups.size > 4)
             return processMatch(matchBranch)
 
@@ -316,7 +323,7 @@ object GithubAPI {
         // TODO Query a specific release for its name attribute - the page will link the tag
         // https://docs.github.com/en/rest/releases/releases#get-a-release-by-tag-name
 
-        val matchTagArchive = Regex("""^(.*/(.*)/(.*))/archive/(?:.*/)?tags/([^.]+).zip$""").matchEntire(url)
+        val matchTagArchive = Regex("""^(.*/(.*)/(.*))/archive/(?:.*/)?tags/(.+).zip$""").matchEntire(url)
         if (matchTagArchive != null && matchTagArchive.groups.size > 4) {
             processMatch(matchTagArchive)
             release_tag = default_branch
@@ -325,7 +332,7 @@ object GithubAPI {
             direct_zip_url = url
             return this
         }
-        val matchTagPage = Regex("""^(.*/(.*)/(.*))/releases/(?:.*/)?tag/([^.]+)$""").matchEntire(url)
+        val matchTagPage = Regex("""^(.*/(.*)/(.*))/releases/(?:.*/)?tag/(.+?)/?$""").matchEntire(url) // important non-greedy '+'
         if (matchTagPage != null && matchTagPage.groups.size > 4) {
             processMatch(matchTagPage)
             release_tag = default_branch
@@ -341,7 +348,7 @@ object GithubAPI {
             return this
         }
 
-        val matchRepo = Regex("""^.*//.*/(.+)/(.+)/?$""").matchEntire(url)
+        val matchRepo = Regex("""^.*//.*/(.+)/(.+?)/?$""").matchEntire(url) // important non-greedy '+'
         if (matchRepo != null && matchRepo.groups.size > 2) {
             // Query API if we got the 'https://github.com/author/repoName' URL format to get the correct default branch
             val repo = Repo.query(matchRepo.groups[1]!!.value, matchRepo.groups[2]!!.value)
@@ -405,13 +412,17 @@ object GithubAPI {
             val progressEndsAtSize = contentLength ?: fallbackSize
             if (progressEndsAtSize <= 0L) return
             val percent = bytesReceivedTotal * 100L / progressEndsAtSize
-            updateProgressPercent!!(DownloadAndExtractState.Downloading, percent.toInt().coerceIn(0, 100))
+            val state = if (percent > 101L) DownloadAndExtractState.Finishing else DownloadAndExtractState.Downloading
+            updateProgressPercent!!(state, percent.toInt())
         }
 
-        val tempZipFileHandle = modsFolder.child("$tempName.zip")
+        val unzipDestination = modsFolder.child(tempName)
+        // prevent mixing new content with old - hopefully there will never be cadavers of our tempZip stuff
+        if (unzipDestination.exists())
+            if (unzipDestination.isDirectory) unzipDestination.deleteDirectory() else unzipDestination.delete()
 
         // Thanks to: https://stackoverflow.com/a/74328603/10585461
-        val resp = UncivKtor.client.prepareRequest {
+        UncivKtor.client.prepareRequest {
             url(zipUrl)
             timeout { requestTimeoutMillis = Long.MAX_VALUE }
             if (updateProgressPercent != null) onDownload(::reportProgress)
@@ -440,32 +451,18 @@ object GithubAPI {
                     throw UncivShowableException("Unknown Issue!\nStatus: ${resp.status}\nBody:[${resp.bodyAsText()}}]")
             }
 
+            val disposition = resp.headers[HttpHeaders.ContentDisposition]
+            modNameFromFileName = parseNameFromDisposition(disposition, modNameFromFileName)
+
             val stream = resp.bodyAsChannel().toInputStream()
-            tempZipFileHandle.write(stream, false)
-            return@execute resp
+            ZipInputStream(stream).use { zipstream ->
+                extractZipStream(zipstream, unzipDestination)
+            }
         }
 
-        if (tempZipFileHandle.length() == 0L) {
-            tempZipFileHandle.delete()
+        if (unzipDestination.exists() && unzipDestination.list().isEmpty()) {
+            unzipDestination.deleteDirectory()
             return null
-        }
-
-        val disposition = resp.headers[HttpHeaders.ContentDisposition]
-        modNameFromFileName = parseNameFromDisposition(disposition, modNameFromFileName)
-
-        // prepare temp unpacking folder
-        val unzipDestination = tempZipFileHandle.sibling(tempName) // folder, not file
-        // prevent mixing new content with old - hopefully there will never be cadavers of our tempZip stuff
-        if (unzipDestination.exists())
-            if (unzipDestination.isDirectory) unzipDestination.deleteDirectory() else unzipDestination.delete()
-
-        if (updateProgressPercent !== null)
-            updateProgressPercent(DownloadAndExtractState.Extracting, null)
-
-        try {
-            Zip.extractFolder(tempZipFileHandle, unzipDestination)
-        } catch (ex: ZipException) {
-            throw UncivShowableException("That is not a valid ZIP file", ex)
         }
 
         val (innerFolder, modName) = resolveZipStructure(unzipDestination, modNameFromFileName)
@@ -492,7 +489,6 @@ object GithubAPI {
         }
 
         // clean up
-        tempZipFileHandle.delete()
         unzipDestination.deleteDirectory()
         if (tempBackup != null)
             if (tempBackup.isDirectory) tempBackup.deleteDirectory() else tempBackup.delete()
@@ -500,6 +496,25 @@ object GithubAPI {
         return finalDestination
     }
 
+    private suspend fun extractZipStream(stream: ZipInputStream, unzipDestination: FileHandle) {
+        // Note: resolveZipStructure re-iterates the content from the file system. We might do that here,
+        // or keep the names for reuse, but that's complicated. Perf gains might not be worth it.
+
+        val job = coroutineContext[Job]
+        // Actual unpacking
+        try {
+            while (job?.isActive != false) {
+                val entry = stream.nextEntry ?: break
+                if (entry.isDirectory) continue  // means we're not creating empty subdirectories, the subdirectory's contents come in other entries
+                val dest = unzipDestination.child(entry.name).file()
+                dest.parentFile?.mkdirs() // Gdx `parent` would hide the null Java delivers when at root
+                dest.outputStream().use { stream.copyTo(it) }
+                stream.closeEntry()
+            }
+        } catch (ex: ZipException) {
+            throw UncivShowableException("That is not a valid ZIP file", ex)
+        }
+    }
 
     private val parseAttachmentDispositionRegex =
         Regex("""attachment;\s*filename\s*=\s*(["'])?(.*?)\1(;|$)""")

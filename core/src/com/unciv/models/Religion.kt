@@ -18,7 +18,6 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
 
     override lateinit var name: String
     var displayName: String? = null
-    lateinit var foundingCivName: String
 
     private var founderBeliefs: HashSet<String> = hashSetOf()
     private var followerBeliefs: HashSet<String> = hashSetOf()
@@ -31,13 +30,15 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
     @Transient
     lateinit var gameInfo: GameInfo
     
+    lateinit var foundingCivName: String
+        private set
     @Transient
     @Cache
-    private lateinit var mFoundingCiv: Civilization
+    private lateinit var _foundingCiv: Civilization
     @get:Readonly
     val foundingCiv: Civilization get() {
-        if (!::mFoundingCiv.isInitialized) mFoundingCiv = gameInfo.getCivilization(foundingCivName)
-        return mFoundingCiv
+        if (!::_foundingCiv.isInitialized) _foundingCiv = gameInfo.getCivilization(foundingCivName)
+        return _foundingCiv
     }
 
     @delegate:Transient
@@ -48,8 +49,8 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
     constructor(name: String, gameInfo: GameInfo, foundingCiv: Civilization): this() {
         this.name = name
         this.gameInfo = gameInfo
-        this.mFoundingCiv = foundingCiv
-        this.foundingCivName = foundingCiv.civName
+        this._foundingCiv = foundingCiv
+        this.foundingCivName = foundingCiv.civID
     }
 
     constructor(name: String, gameInfo: GameInfo, foundingCivName: String) : this() {

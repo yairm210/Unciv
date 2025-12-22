@@ -1,9 +1,9 @@
 package com.unciv.logic.map.mapgenerator.mapregions
 
 import com.badlogic.gdx.math.Rectangle
-import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapgenerator.mapregions.MapRegions.BiasTypes.PositiveFallback
@@ -25,7 +25,7 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-class TileDataMap : HashMap<Vector2, MapGenTileData>() {
+class TileDataMap : HashMap<HexCoord, MapGenTileData>() {
 
     /** Adds numbers to tileData in a similar way to closeStartPenalty, but for different types */
     fun placeImpact(type: MapRegions.ImpactType, tile: Tile, radius: Int) {
@@ -421,7 +421,7 @@ class MapRegions (val ruleset: Ruleset) {
 
     private fun assignCivToRegion(civ: Civilization, region: Region) {
         val tile = region.tileMap[region.startPosition!!]
-        region.tileMap.addStartingLocation(civ.civName, tile)
+        region.tileMap.addStartingLocation(civ.civID, tile)
 
         // Place impacts to keep city states etc at appropriate distance
         tileData.placeImpact(ImpactType.MinorCiv,tile, 6)

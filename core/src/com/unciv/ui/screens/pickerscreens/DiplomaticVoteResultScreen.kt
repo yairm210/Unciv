@@ -32,7 +32,7 @@ class DiplomaticVoteResultScreen(
         val (results, winnerText) = viewingCiv.victoryManager.getDiplomaticVictoryVoteBreakdown()
 
         val orderedCivs = gameInfo.getCivsSorted(civToSortFirst = viewingCiv)
-        for (civ in orderedCivs) addVote(civ, results[civ.civName])
+        for (civ in orderedCivs) addVote(civ, results[civ.civID])
 
         descriptionLabel.setAlignment(Align.center)
         descriptionLabel.setText(winnerText.tr())
@@ -56,7 +56,7 @@ class DiplomaticVoteResultScreen(
         topTable.add(ImageGetter.getNationPortrait(civ.nation, 30f))
         topTable.add(civName.toLabel(hideIcons = true)).padLeft(20f).padRight(20f)
 
-        if (civName == civOwningUN && constructionNameUN != null) {
+        if (civ.civID == civOwningUN && constructionNameUN != null) {
             topTable.add(ImageGetter.getConstructionPortrait(constructionNameUN, 30f))
             topTable.add("[2] votes".toLabel())
         } else {
@@ -64,7 +64,7 @@ class DiplomaticVoteResultScreen(
         }
 
         fun abstained() = topTable.add("Abstained".toLabel()).colspan(3).row()
-        val votedCivName = votesCast[civName]
+        val votedCivName = votesCast[civ.civID]
             ?: return abstained()
 
         val votedCiv = gameInfo.getCivilization(votedCivName)

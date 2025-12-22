@@ -1,8 +1,8 @@
 package com.unciv.logic.city.managers
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.HexCoord
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert.assertEquals
@@ -26,7 +26,7 @@ class CityExpansionManagerTest {
     fun setUp() {
         testGame.makeHexagonalMap(6)
         civ = testGame.addCiv()
-        city = testGame.addCity(civ, testGame.getTile(Vector2.Zero), initialPopulation = 1)
+        city = testGame.addCity(civ, testGame.getTile(HexCoord.Zero), initialPopulation = 1)
         cityExpansionManager.city = city
     }
 
@@ -87,7 +87,7 @@ class CityExpansionManagerTest {
         civ.addGold(500)
 
         // when
-        cityExpansionManager.buyTile(testGame.getTile(Vector2(2f, 0f)))
+        cityExpansionManager.buyTile(testGame.getTile(2,0))
 
         // then
         val cultureToNextTileAfterExpansion = cityExpansionManager.getCultureToNextTile()
@@ -98,7 +98,7 @@ class CityExpansionManagerTest {
     fun `should increase tile culture costs for city states`() {
         // given
         val cityStateCiv = testGame.addCiv(cityStateType = "Militaristic")
-        val cityState = testGame.addCity(cityStateCiv, testGame.getTile(Vector2(4f, 0f)))
+        val cityState = testGame.addCity(cityStateCiv, testGame.getTile(4,0))
         val cityStateExpansionManager = CityExpansionManager()
         cityStateExpansionManager.city = cityState
 
@@ -116,7 +116,7 @@ class CityExpansionManagerTest {
     fun `should change tile culture cost due to uniques`() {
         // given
         val uniqueCiv = testGame.addCiv("[-25]% Culture cost of natural border growth [in all cities]")
-        val uniqueCity = testGame.addCity(uniqueCiv, testGame.getTile(Vector2(4f, 0f)))
+        val uniqueCity = testGame.addCity(uniqueCiv, testGame.getTile(4,0))
         val cityUniqueExpansionManager = CityExpansionManager()
         cityUniqueExpansionManager.city = uniqueCity
 
@@ -133,14 +133,14 @@ class CityExpansionManagerTest {
     fun `should change tile gold cost due to uniques`() {
         // given
         val uniqueCiv = testGame.addCiv("[-25]% Gold cost of acquiring tiles [in all cities]")
-        val uniqueCity = testGame.addCity(uniqueCiv, testGame.getTile(Vector2(4f, 0f)))
+        val uniqueCity = testGame.addCity(uniqueCiv, testGame.getTile(4,0))
         val cityUniqueExpansionManager = CityExpansionManager()
         cityUniqueExpansionManager.city = uniqueCity
 
-        val goldCost2TileDistance = cityExpansionManager.getGoldCostOfTile(testGame.getTile(Vector2(2f, 0f)))
+        val goldCost2TileDistance = cityExpansionManager.getGoldCostOfTile(testGame.getTile(2,0))
 
         // when
-        val goldCost2TileDistanceWithUniques = cityUniqueExpansionManager.getGoldCostOfTile(testGame.getTile(Vector2(4f, -2f)))
+        val goldCost2TileDistanceWithUniques = cityUniqueExpansionManager.getGoldCostOfTile(testGame.getTile(4,-2))
 
         // then
         assertTrue(goldCost2TileDistanceWithUniques < goldCost2TileDistance)
@@ -149,22 +149,22 @@ class CityExpansionManagerTest {
     @Test
     fun `should be able to buy neighbour tile`() {
         // given
-        val tileToBuy = testGame.getTile(Vector2(2f, 0f))
+        val tileToBuy = testGame.getTile(2,0)
         civ.addGold(500)
-        assertFalse(city.tiles.contains(Vector2(2f, 0f)))
+        assertFalse(city.tiles.contains(HexCoord(2,0)))
 
         // when
         cityExpansionManager.buyTile(tileToBuy)
 
         // then
         assertEquals(8, city.tiles.size)
-        assertTrue(city.tiles.contains(Vector2(2f, 0f)))
+        assertTrue(city.tiles.contains(HexCoord(2,0)))
     }
 
     @Test
     fun `should not be able to buy not-neighbour tile`() {
         // given
-        val tileToBuy = testGame.getTile(Vector2(3f, 0f))
+        val tileToBuy = testGame.getTile(3,0)
 
         // when
         try {
@@ -181,7 +181,7 @@ class CityExpansionManagerTest {
     @Test
     fun `should not be able to buy tile without enough gold`() {
         // given
-        val tileToBuy = testGame.getTile(Vector2(2f, 0f))
+        val tileToBuy = testGame.getTile(2,0)
 
         // when
         try {
@@ -198,8 +198,8 @@ class CityExpansionManagerTest {
     @Test
     fun `should increase gold cost the more a tile is farther from the city center`() {
         // given
-        val tileToBuyNear = testGame.getTile(Vector2(2f, 0f))  // two tiles distance
-        val tileToBuyFar = testGame.getTile(Vector2(3f, 0f))  // three tiles distance
+        val tileToBuyNear = testGame.getTile(2,0)  // two tiles distance
+        val tileToBuyFar = testGame.getTile(3,0)  // three tiles distance
 
         // when
         val nearTileCost = cityExpansionManager.getGoldCostOfTile(tileToBuyNear)
@@ -212,8 +212,8 @@ class CityExpansionManagerTest {
     @Test
     fun `should increase gold cost the more tiles a city has claimed`() {
         // given
-        val tileBought = testGame.getTile(Vector2(-2f, 0f))  // two tiles distance
-        val tileToBuy = testGame.getTile(Vector2(2f, 0f))  // still two tiles distance
+        val tileBought = testGame.getTile(-2,0)  // two tiles distance
+        val tileToBuy = testGame.getTile(2,0)  // still two tiles distance
         val tileBoughtCost = cityExpansionManager.getGoldCostOfTile(tileBought)
 
         civ.addGold(500)

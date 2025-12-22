@@ -1,6 +1,5 @@
 package com.unciv.logic.map.mapunit
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.MultiFilter
@@ -11,21 +10,19 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.movement.UnitMovement
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TileImprovement
-import com.unciv.models.ruleset.unique.GameContext
-import com.unciv.models.ruleset.unique.Unique
-import com.unciv.models.ruleset.unique.UniqueMap
-import com.unciv.models.ruleset.unique.UniqueTriggerActivation
-import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unique.*
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.UnitMovementMemoryType
+import com.unciv.ui.components.extensions.toPercent
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
@@ -44,7 +41,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
     /** civName owning the unit */
     lateinit var owner: String
 
-    /** civName of original owner - relevant for returning captured workers from barbarians */
+    /** civName of original owner - relevant for returning captured workers from barbarians 
+     * 
+     * Serialization field for [originalOwningCiv]*/
     var originalOwner: String? = null
 
     /**
@@ -70,10 +69,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
     // We can infer who we are escorting based on our tile
     @Cache private var escorting: Boolean = false
 
-    var automatedRoadConnectionDestination: Vector2? = null
+    var automatedRoadConnectionDestination: HexCoord? = null
     // Temp disable, since this data broke saves
     @Transient
-    var automatedRoadConnectionPath: List<Vector2>? = null
+    var automatedRoadConnectionPath: List<HexCoord>? = null
 
     var attacksThisTurn = 0
     var promotions = UnitPromotions()
@@ -97,21 +96,27 @@ class MapUnit : IsPartOfGameInfoSerialization {
     var mostRecentMoveType = UnitMovementMemoryType.UnitMoved
 
     /** Array list of all the tiles that this unit has attacked since the start of its most recent turn. Used in movement arrow overlay. */
-    var attacksSinceTurnStart = ArrayList<Vector2>()
-    
-    class UnitStatus {
-        var name:String = ""
-        /** Decreses at *start on next turn* so defensive statuses persist on enemy turns */
-        var turnsLeft = 1
-        
+    var attacksSinceTurnStart = ArrayList<HexCoord>()
+
+    class UnitStatus(
+        val name: String,
+        /** Decreases at *start on next turn* so defensive statuses persist on enemy turns */
+        var turnsLeft: Int
+    ) : IsPartOfGameInfoSerialization {
+        @Suppress("unused") // for deserialization
+        constructor() : this("", 1)
+
         @Transient
         lateinit var uniques: List<Unique>
-        
+
         fun setTransients(unit: MapUnit) {
             uniques = unit.civ.gameInfo.ruleset.unitPromotions[name]?.uniqueObjects ?: emptyList()
         }
+
+        @Readonly
+        fun clone() = UnitStatus(name, turnsLeft)
     }
-    
+
     var statusMap = HashMap<String, UnitStatus>()
 
     //endregion
@@ -147,7 +152,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
     @Transient
     var cache = MapUnitCache(this)
 
-    /** civ of original owner - relevant for returning captured workers from barbarians */
+    /** civ of original owner - relevant for returning captured workers from barbarians 
+     * 
+     * Transient field for [originalOwner]*/
     @delegate:Transient
     val originalOwningCiv by lazy { originalOwner?.let { civ.gameInfo.getCivilization(it) } }
 
@@ -166,11 +173,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
      * @property type Category of the last change in position that brought the unit to this position.
      * @see [movementMemories]
      * */
-    class UnitMovementMemory(position: Vector2, val type: UnitMovementMemoryType) : IsPartOfGameInfoSerialization {
+    class UnitMovementMemory(val position: HexCoord, val type: UnitMovementMemoryType) : IsPartOfGameInfoSerialization {
         @Suppress("unused") // needed because this is part of a save and gets deserialized
-        constructor() : this(Vector2.Zero, UnitMovementMemoryType.UnitMoved)
-
-        val position = Vector2(position)
+        constructor() : this(HexCoord.Zero, UnitMovementMemoryType.UnitMoved)
 
         @Readonly fun clone() = UnitMovementMemory(position, type)
         override fun toString() = "${this::class.simpleName}($position, $type)"
@@ -221,15 +226,20 @@ class MapUnit : IsPartOfGameInfoSerialization {
         toReturn.automatedRoadConnectionPath = automatedRoadConnectionPath
         toReturn.attacksThisTurn = attacksThisTurn
         toReturn.turnsFortified = turnsFortified
-        toReturn.promotions = promotions.clone()
+        toReturn.promotions = promotions.clone(toReturn)
         toReturn.isTransported = isTransported
         toReturn.abilityToTimesUsed = HashMap(abilityToTimesUsed)
         toReturn.religion = religion
         toReturn.religiousStrengthLost = religiousStrengthLost
         toReturn.movementMemories = movementMemories.copy()
-        toReturn.statusMap = HashMap(statusMap)
+        @LocalState val newStatusMap = HashMap<String, UnitStatus>((statusMap.size * 4 + 2) / 3)
+        for ((name, status) in statusMap) {
+            @LocalState val newStatus = status.clone()
+            newStatusMap[name] = newStatus
+        }
+        toReturn.statusMap = newStatusMap
         toReturn.mostRecentMoveType = mostRecentMoveType
-        toReturn.attacksSinceTurnStart = ArrayList(attacksSinceTurnStart.map { Vector2(it) })
+        toReturn.attacksSinceTurnStart = ArrayList(attacksSinceTurnStart)
         return toReturn
     }
 
@@ -239,7 +249,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     @Readonly fun getMovementString(): String =
         (DecimalFormat("0.#").format(currentMovement.toDouble()) + "/" + getMaxMovement()).tr()
 
-    
+
     @Readonly fun getTile(): Tile = currentTile
 
     @Readonly
@@ -268,7 +278,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     @Readonly
     fun getMovementDestination(): Tile {
         val destination = action!!.replace("moveTo ", "").split(",").dropLastWhile { it.isEmpty() }
-        val destinationVector = Vector2(destination[0].toFloat(), destination[1].toFloat())
+        val destinationVector = HexCoord(destination[0].toFloat().toInt(), destination[1].toFloat().toInt())
         return currentTile.tileMap[destinationVector]
     }
 
@@ -328,7 +338,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     ): Sequence<Unique> {
         return tempUniquesMap.getTriggeredUniques(trigger, gameContext, triggerFilter)
     }
-    
+
 
     /** Gets *per turn* resource requirements - does not include immediate costs for stockpiled resources.
      * StateForConditionals is assumed to regarding this mapUnit*/
@@ -462,7 +472,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     private fun adjacentHealingBonus(): Int {
         return getMatchingUniques(UniqueType.HealAdjacentUnits).sumOf { it.params[0].toInt() }
     }
-    
+
     @Readonly
     fun getHealAmountForCurrentTile() = when {
         isEmbarked() -> 0 // embarked units can't heal
@@ -510,7 +520,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 .map { it.adjacentHealingBonus() }.maxOrNull()
         if (maxAdjacentHealingBonus != null)
             healing += maxAdjacentHealingBonus
-        
+
         healing -= getDamageFromTerrain(tile)
 
         return healing
@@ -544,8 +554,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         val maxAttacksPerTurn = 1 +
                 getMatchingUniques(UniqueType.ExtraInterceptionsPerTurn)
                         .sumOf { it.params[0].toInt() }
-        if (attacksThisTurn >= maxAttacksPerTurn) return false
-        return true
+        return attacksThisTurn < maxAttacksPerTurn
     }
 
     @Readonly
@@ -628,7 +637,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 if (civ.matchesFilter(filter, cache.state, false)) return true
                 if (nonUnitUniquesMap.hasUnique(filter, cache.state)) return true
                 if (promotions.promotions.contains(filter)) return true
-                if (hasStatus(filter)) return true 
+                if (hasStatus(filter)) return true
                 return false
             }
         }
@@ -637,7 +646,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     @Readonly
     fun canBuildImprovement(improvement: TileImprovement, tile: Tile = currentTile): Boolean {
         if (civ.isBarbarian) return false
-        
+
         // Workers (and similar) should never be able to (instantly) construct things, only build them
         // HOWEVER, they should be able to repair such things if they are pillaged
         if (improvement.turnsToBuild == -1
@@ -649,8 +658,21 @@ class MapUnit : IsPartOfGameInfoSerialization {
             if (tile.isEnemyTerritory(civ)) return false
             return buildImprovementUniques.any()
         }
-        return buildImprovementUniques
-                .any { improvement.matchesFilter(it.params[0], cache.state) || tile.matchesTerrainFilter(it.params[0], civ) }
+
+        // Validate that the improvement is available for the unit
+        if (improvement.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)
+                .any { unique -> !unique.conditionalsApply(cache.state) } ||
+            improvement.getMatchingUniques(UniqueType.Unavailable, GameContext.IgnoreConditionals)
+                .any { unique -> unique.conditionalsApply(cache.state) }) {
+            return false
+        }
+
+        return buildImprovementUniques.any { unique ->
+            // Engage the MultiFilter on the entire filter, prior to checking the individual filters
+            MultiFilter.multiFilter(unique.params[0], {
+                improvement.matchesFilter(it, cache.state) || tile.matchesTerrainFilter(it, civ)
+            })
+        }
     }
 
     @Readonly
@@ -678,7 +700,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     @Readonly
     fun isEscorting(): Boolean {
-        if (escorting) { 
+        if (escorting) {
             if (getOtherEscortUnit() != null) return true
             escorting = false
         }
@@ -702,7 +724,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         promotions.setTransients(this)
         baseUnit = ruleset.units[name]
                 ?: throw java.lang.Exception("Unit $name is not found!")
-        
+
         for (status in statusMap.values) status.setTransients(this)
         updateUniques()
         if (action == UnitActionType.Automate.value){
@@ -715,7 +737,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         val otherUniqueSources = promotions.getPromotions().flatMap { it.uniqueObjects } +
             statusMap.values.flatMap { it.uniques }
         val uniqueSources = baseUnit.rulesetUniqueObjects.asSequence() + otherUniqueSources
-        
+
         tempUniquesMap = UniqueMap(uniqueSources)
         nonUnitUniquesMap = UniqueMap(otherUniqueSources)
         cache.updateUniques()
@@ -731,7 +753,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             if (promotion !in promotions.promotions)
                 promotions.addPromotion(promotion, isFree = true)
 
-        newUnit.promotions = promotions.clone()
+        newUnit.promotions = promotions.clone(newUnit)
         newUnit.automated = automated
         newUnit.action = action // Needed too for Unit Overview action column
 
@@ -742,7 +764,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     /**
      * Update this unit's cache of viewable tiles and its civ's as well.
      */
-    fun updateVisibleTiles(updateCivViewableTiles: Boolean = true, explorerPosition: Vector2? = null) {
+    fun updateVisibleTiles(updateCivViewableTiles: Boolean = true, explorerPosition: HexCoord? = null) {
         val oldViewableTiles = viewableTiles
 
         viewableTiles = when {
@@ -753,14 +775,14 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
 
         // Set equality automatically determines if anything changed - https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-abstract-set/equals.html
-        
+
         val shouldUpdateTiles = updateCivViewableTiles && oldViewableTiles != viewableTiles
                 // Don't bother updating if all previous and current viewable tiles are within our borders
-                && (oldViewableTiles.any { it !in civ.cache.ourTilesAndNeighboringTiles } 
+                && (oldViewableTiles.any { it !in civ.cache.ourTilesAndNeighboringTiles }
                 || viewableTiles.any { it !in civ.cache.ourTilesAndNeighboringTiles })
 
         if (!shouldUpdateTiles) return
-        
+
         val unfilteredTriggeredUniques = getTriggeredUniques(UniqueType.TriggerUponDiscoveringTile, GameContext.IgnoreConditionals).toList()
         if (unfilteredTriggeredUniques.isNotEmpty()) {
             val newlyExploredTiles = viewableTiles.filter { !it.isExplored(civ) }
@@ -817,7 +839,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
 
         val currentTile = getTile()
-        
+
         if (isMoving()) {
             val destinationTile = getMovementDestination()
             if (!movement.canReach(destinationTile)) { // That tile that we were moving towards is now unreachable -
@@ -863,8 +885,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
         currentMovement = 0f
         civ.units.removeUnit(this)
         if (::currentTile.isInitialized) {
-            val currentPosition = Vector2(getTile().position)
-            civ.attacksSinceTurnStart.addAll(attacksSinceTurnStart.asSequence().map { Civilization.HistoricalAttackMemory(this.name, currentPosition, it) })
+            val currentPosition = getTile().position
+            civ.attacksSinceTurnStart.addAll(attacksSinceTurnStart.asSequence().map { Civilization.HistoricalAttackMemory(this.name, currentPosition, it.toHexCoord()) })
             removeFromTile()
             civ.cache.updateViewableTiles()
             if (destroyTransportedUnit) {
@@ -947,14 +969,14 @@ class MapUnit : IsPartOfGameInfoSerialization {
             val promotion = unique.params[0]
             promotions.addPromotion(promotion, true)
         }
-            
+
         updateVisibleTiles(true, currentTile.position)
     }
 
     fun putInTile(tile: Tile) {
         when {
             !movement.canMoveTo(tile) ->
-                throw Exception("Unit $name of ${civ.civName} at $currentTile can't be put in tile $tile!")
+                throw IllegalStateException("Unit $name of ${civ.civID} at $currentTile can't be put in tile $tile!")
 
             baseUnit.movesLikeAirUnits -> tile.airUnits.add(this)
             isCivilian() -> tile.civilianUnit = this
@@ -995,13 +1017,17 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
         // Notify City-States that this unit cleared a Barbarian Encampment, required for quests
         civ.gameInfo.getAliveCityStates()
-                .forEach { it.questManager.barbarianCampCleared(civ, tile.position) }
+                .forEach { it.questManager.barbarianCampCleared(civ, tile.position.toVector2()) }
 
         var goldGained =
                 civ.getDifficulty().clearBarbarianCampReward * civ.gameInfo.speed.goldCostModifier
         if (civ.hasUnique(UniqueType.TripleGoldFromEncampmentsAndCities))
             goldGained *= 3f
-
+        
+        for (unique in civ.getMatchingUniques(UniqueType.GoldFromEncampmentsAndCities, cache.state)) {
+            goldGained *= unique.params[0].toPercent()
+        }
+        
         civ.addGold(goldGained.toInt())
         civ.addNotification(
                 "We have captured a barbarian encampment and recovered [${goldGained.toInt()}] gold!",
@@ -1055,7 +1081,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
      *  Cannot be used to reassign from one civ to another - doesn't remove from old owner.
      */
     fun assignOwner(civInfo: Civilization, updateCivInfo: Boolean = true) {
-        owner = civInfo.civName
+        owner = civInfo.civID
         this.civ = civInfo
         civInfo.units.addUnit(this, updateCivInfo)
         // commit named "Fixed game load": GameInfo.setTransients code flow and dependency requirements
@@ -1093,17 +1119,15 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     @Readonly fun getStatus(name:String): UnitStatus? = statusMap[name]
     @Readonly fun hasStatus(name:String): Boolean = getStatus(name) != null
-    
+
     fun setStatus(name:String, turns:Int){
         val existingStatus = getStatus(name)
         if (existingStatus != null){
             if (turns > existingStatus.turnsLeft) existingStatus.turnsLeft = turns
             return
         }
-        
-        val status = UnitStatus()
-        status.name = name
-        status.turnsLeft = turns
+
+        val status = UnitStatus(name, turns)
         status.setTransients(this)
         statusMap[status.name] = status
         updateUniques()
@@ -1111,7 +1135,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         for (unique in getTriggeredUniques(UniqueType.TriggerUponStatusGain){ it.params[0] == name })
             UniqueTriggerActivation.triggerUnique(unique, this)
     }
-    
+
     fun removeStatus(name:String){
         statusMap.remove(name) ?: return
 

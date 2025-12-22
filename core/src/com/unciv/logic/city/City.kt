@@ -1,6 +1,5 @@
 package com.unciv.logic.city
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.logic.IsPartOfGameInfoSerialization
@@ -13,6 +12,7 @@ import com.unciv.logic.city.managers.CityReligionManager
 import com.unciv.logic.city.managers.SpyFleeReason
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.transients.CapitalConnectionsFinder.CapitalConnectionMedium
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.UnitPromotions
@@ -29,6 +29,7 @@ import com.unciv.models.stats.GameResource
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.SubStat
+import com.unciv.utils.withoutItem
 import yairm210.purity.annotations.Readonly
 import java.util.EnumSet
 import java.util.UUID
@@ -60,10 +61,10 @@ class City : IsPartOfGameInfoSerialization, INamed {
     // This is so that military units can enter the city, even before we decide what to do with it
     var hasJustBeenConquered = false
 
-    var location: Vector2 = Vector2.Zero
+    var location = HexCoord()
     var id: String = UUID.randomUUID().toString()
     override var name: String = ""
-    /**Serialization field for [foundingCivObject]. Is equivalient to ``foundingCivObject.civName``*/
+    /** Serialization field for [foundingCivObject]. Is equivalent to `foundingCivObject.civName` */
     private var foundingCiv = ""
     // This is so that cities in resistance that are recaptured aren't in resistance anymore
     var previousOwner = ""
@@ -83,13 +84,13 @@ class City : IsPartOfGameInfoSerialization, INamed {
     var resourceStockpiles = Counter<String>()
 
     /** All tiles that this city controls */
-    var tiles = HashSet<Vector2>()
+    var tiles = HashSet<HexCoord>()
 
     /** Tiles that have population assigned to them */
-    var workedTiles = HashSet<Vector2>()
+    var workedTiles = HashSet<HexCoord>()
 
     /** Tiles that the population in them won't be reassigned */
-    var lockedTiles = HashSet<Vector2>()
+    var lockedTiles = HashSet<HexCoord>()
     var manualSpecialists = false
     var isBeingRazed = false
     var attackedThisTurn = false
@@ -125,7 +126,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         }
         set(value) {
             field = value
-            foundingCiv = value?.civName ?: ""
+            foundingCiv = value?.civID ?: ""
         }
 
 
@@ -405,8 +406,8 @@ class City : IsPartOfGameInfoSerialization, INamed {
         // Must be before removing existing capital because we may be annexing a puppet which means city stats update - see #8337
         if (isCapital()) civ.moveCapitalToNextLargest(null)
 
-        civ.cities = civ.cities.toMutableList().apply { remove(this@City) }
-        
+        civ.cities = civ.cities.withoutItem(this)
+
         if (getRuleset().tileImprovements.containsKey("City ruins"))
             getCenterTile().setImprovement("City ruins")
 

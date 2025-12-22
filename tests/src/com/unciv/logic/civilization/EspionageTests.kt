@@ -1,6 +1,6 @@
 package com.unciv.logic.civilization
 
-import com.badlogic.gdx.math.Vector2
+import com.unciv.logic.map.HexCoord
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert.assertEquals
@@ -34,7 +34,7 @@ class EspionageTests {
     fun `Espionage check spy effectiveness reduction unique`() {
         val espionageManagerA = civA.espionageManager
         val spy = espionageManagerA.addSpy()
-        val city = civB.addCity(Vector2(1f,1f))
+        val city = civB.addCity(HexCoord(1,1))
         spy.moveTo(city)
         assertEquals(1.0, spy.getEfficiencyModifier(), 0.1)
         city.cityConstructions.addBuilding("Constabulary")
@@ -45,7 +45,7 @@ class EspionageTests {
     fun `Spy effectiveness can't go below zero`() {
         val espionageManagerA = civA.espionageManager
         val spy = espionageManagerA.addSpy()
-        val city = civB.addCity(Vector2(1f,1f))
+        val city = civB.addCity(HexCoord(1,1))
         spy.moveTo(city)
         city.cityConstructions.addBuilding("Constabulary")
         city.cityConstructions.addBuilding("Police Station")

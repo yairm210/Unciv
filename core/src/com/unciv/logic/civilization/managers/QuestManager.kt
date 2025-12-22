@@ -21,7 +21,9 @@ import com.unciv.logic.civilization.Proximity
 import com.unciv.logic.civilization.diplomacy.CityStatePersonality
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.toHexCoord
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Quest
 import com.unciv.models.ruleset.QuestName
@@ -115,7 +117,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
         val toReturn = QuestManager()
         toReturn.globalQuestCountdown = globalQuestCountdown
         toReturn.individualQuestCountdown.putAll(individualQuestCountdown)
-        toReturn.assignedQuests.addAll(assignedQuests)
+        toReturn.assignedQuests.addAll(assignedQuests.map { it.clone() })
         toReturn.unitsToKillForCiv.putAll(unitsToKillForCiv)
         for ((attacker, unitsKilled) in unitsKilledFromCiv) {
             toReturn.unitsKilledFromCiv[attacker] = HashMap(unitsKilled)
@@ -186,7 +188,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
 
         val majorCivs = civ.gameInfo.getAliveMajorCivs()
         for (majorCiv in majorCivs)
-            if (!individualQuestCountdown.containsKey(majorCiv.civName) || individualQuestCountdown[majorCiv.civName] == UNSET)
+            if (!individualQuestCountdown.containsKey(majorCiv.civID) || individualQuestCountdown[majorCiv.civID] == UNSET)
                 seedIndividualQuestsCountdown(majorCiv)
     }
 
@@ -199,7 +201,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
                         INDIVIDUAL_QUEST_RAND_TURNS_BETWEEN
                     )
 
-        individualQuestCountdown[challenger.civName] = (countdown * civ.gameInfo.speed.modifier).toInt()
+        individualQuestCountdown[challenger.civID] = (countdown * civ.gameInfo.speed.modifier).toInt()
     }
 
     // Readability helper - No asSequence(): call frequency * data size is small
@@ -336,10 +338,10 @@ class QuestManager : IsPartOfGameInfoSerialization {
                 QuestName.ConnectResource -> data1 = getResourceForQuest(assignee)!!.name
                 QuestName.ConstructWonder -> data1 = getWonderToBuildForQuest(assignee)!!.name
                 QuestName.GreatPerson -> data1 = getGreatPersonForQuest(assignee)!!.name
-                QuestName.FindPlayer -> data1 = getCivilizationToFindForQuest(assignee)!!.civName
+                QuestName.FindPlayer -> data1 = getCivilizationToFindForQuest(assignee)!!.civID
                 QuestName.FindNaturalWonder -> data1 = getNaturalWonderToFindForQuest(assignee)!!
-                QuestName.ConquerCityState -> data1 = getCityStateTarget(assignee)!!.civName
-                QuestName.BullyCityState -> data1 = getCityStateTarget(assignee)!!.civName
+                QuestName.ConquerCityState -> data1 = getCityStateTarget(assignee)!!.civID
+                QuestName.BullyCityState -> data1 = getCityStateTarget(assignee)!!.civID
                 QuestName.PledgeToProtect -> data1 = getMostRecentBully()!!
                 QuestName.GiveGold -> data1 = getMostRecentBully()!!
                 QuestName.DenounceCiv -> data1 = getMostRecentBully()!!
@@ -368,7 +370,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
 
             assignedQuests.add(newQuest)
             if (quest.isIndividual())
-                individualQuestCountdown[assignee.civName] = UNSET
+                individualQuestCountdown[assignee.civID] = UNSET
 
             assignee.addNotification("[${civ.civName}] assigned you a new quest: [${quest.name}].",
                 notificationActions,
@@ -611,7 +613,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
      */
     fun cityStateConquered(cityState: Civilization, attacker: Civilization) {
         val matchingQuests = getAssignedQuestsOfName(QuestName.ConquerCityState)
-            .filter { it.data1 == cityState.civName && it.assigneeCiv == attacker }
+            .filter { it.data1 == cityState.civID && it.assigneeCiv == attacker }
 
         for (quest in matchingQuests)
             giveReward(quest)
@@ -624,7 +626,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
      */
     fun cityStateBullied(cityState: Civilization, bully: Civilization) {
         val matchingQuests = getAssignedQuestsOfName(QuestName.BullyCityState)
-            .filter { it.data1 == cityState.civName && it.assigneeCiv == bully}
+            .filter { it.data1 == cityState.civID && it.assigneeCiv == bully}
 
         for (quest in matchingQuests)
             giveReward(quest)
@@ -650,19 +652,19 @@ class QuestManager : IsPartOfGameInfoSerialization {
         // Set target number units to kill
         val totalMilitaryUnits = attacker.units.getCivUnits().count { !it.isCivilian() }
         val unitsToKill = (totalMilitaryUnits / 4).coerceAtMost(3)
-        unitsToKillForCiv[attacker.civName] = unitsToKill
+        unitsToKillForCiv[attacker.civID] = unitsToKill
 
         // Ask for assistance
         val location = civ.getCapital(firstCityIfNoCapital = true)?.location
         for (thirdCiv in civ.getKnownCivs()) {
             if (!thirdCiv.isMajorCiv() || thirdCiv.isDefeated() || thirdCiv.isAtWarWith(civ))
                 continue
-            notifyAskForAssistance(thirdCiv, attacker.civName, unitsToKill, location)
+            notifyAskForAssistance(thirdCiv, attacker.civID, unitsToKill, location?.toHexCoord())
         }
     }
 
-    private fun notifyAskForAssistance(assignee: Civilization, attackerName: String, unitsToKill: Int, location: Vector2?) {
-        if (attackerName == assignee.civName) return  // No "Hey Bob help us against Bob"
+    private fun notifyAskForAssistance(assignee: Civilization, attackerName: String, unitsToKill: Int, location: HexCoord?) {
+        if (attackerName == assignee.civID) return  // No "Hey Bob help us against Bob"
         val message = "[${civ.civName}] is being attacked by [$attackerName]!" +
             // Space relevant in template!
             " Kill [$unitsToKill] of the attacker's military units and they will be immensely grateful."
@@ -678,14 +680,14 @@ class QuestManager : IsPartOfGameInfoSerialization {
         if (!civ.knows(killer) || civ.isAtWarWith(killer))  return
 
         // Make the map if we haven't already
-        val unitsKilledFromCivEntry = unitsKilledFromCiv.getOrPut(killed.civName) { HashMap() }
+        val unitsKilledFromCivEntry = unitsKilledFromCiv.getOrPut(killed.civID) { HashMap() }
 
         // Update kill count
-        val updatedKillCount = 1 + (unitsKilledFromCivEntry[killer.civName] ?: 0)
-        unitsKilledFromCivEntry[killer.civName] = updatedKillCount
+        val updatedKillCount = 1 + (unitsKilledFromCivEntry[killer.civID] ?: 0)
+        unitsKilledFromCivEntry[killer.civID] = updatedKillCount
 
         // Quest complete?
-        if (updatedKillCount >= unitsToKillForCiv[killed.civName]!!) {
+        if (updatedKillCount >= unitsToKillForCiv[killed.civID]!!) {
             killer.addNotification("[${civ.civName}] is deeply grateful for your assistance in the war against [${killed.civName}]!",
                 DiplomacyAction(civ), NotificationCategory.Diplomacy, civ.civName, "OtherIcons/Quest")
             civ.getDiplomacyManager(killer)!!.addInfluence(100f) // yikes
@@ -698,7 +700,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
         if (unitsToKillForCiv.isEmpty()) return
         val location = civ.getCapital(firstCityIfNoCapital = true)?.location
         for ((attackerName, unitsToKill) in unitsToKillForCiv)
-            notifyAskForAssistance(otherCiv, attackerName, unitsToKill, location)
+            notifyAskForAssistance(otherCiv, attackerName, unitsToKill, location?.toHexCoord())
     }
 
     /** Ends War with Major pseudo-quests that aren't relevant any longer */
@@ -719,18 +721,18 @@ class QuestManager : IsPartOfGameInfoSerialization {
             thirdCiv.addNotification("[${civ.civName}] no longer needs your assistance against [${attacker.civName}].",
                 DiplomacyAction(civ), NotificationCategory.Diplomacy, civ.civName, "OtherIcons/Quest")
         }
-        unitsToKillForCiv.remove(attacker.civName)
-        unitsKilledFromCiv.remove(attacker.civName)
+        unitsToKillForCiv.remove(attacker.civID)
+        unitsKilledFromCiv.remove(attacker.civID)
     }
 
-    @Readonly fun isWarWithMajorActive(target: Civilization): Boolean = unitsToKillForCiv.containsKey(target.civName)
+    @Readonly fun isWarWithMajorActive(target: Civilization): Boolean = unitsToKillForCiv.containsKey(target.civID)
 
-    @Readonly fun unitsToKill(target: Civilization): Int = unitsToKillForCiv[target.civName] ?: 0
+    @Readonly fun unitsToKill(target: Civilization): Int = unitsToKillForCiv[target.civID] ?: 0
 
     @Readonly
     fun unitsKilledSoFar(target: Civilization, viewingCiv: Civilization): Int {
-        val killMap = unitsKilledFromCiv[target.civName] ?: return 0
-        return killMap[viewingCiv.civName] ?: 0
+        val killMap = unitsKilledFromCiv[target.civID] ?: return 0
+        return killMap[viewingCiv.civID] ?: 0
     }
 
     /**
@@ -873,13 +875,13 @@ class QuestManager : IsPartOfGameInfoSerialization {
     @Readonly
     private fun getCityStateTarget(challenger: Civilization): Civilization? {
         val closestProximity = civ.gameInfo.getAliveCityStates()
-            .mapNotNull { civ.proximity[it.civName] }.filter { it != Proximity.None }.minByOrNull { it.ordinal }
+            .mapNotNull { civ.proximity[it.civID] }.filter { it != Proximity.None }.minByOrNull { it.ordinal }
 
         if (closestProximity == null || closestProximity == Proximity.Distant) // None close enough
             return null
 
         val validTargets = civ.getKnownCivs().filter { it.isCityState && challenger.knows(it)
-                && civ.proximity[it.civName] == closestProximity }
+                && civ.proximity[it.civID] == closestProximity }
 
         return validTargets.toList().randomOrNull()
     }
@@ -918,9 +920,9 @@ class AssignedQuest : IsPartOfGameInfoSerialization {
         this.assignedOnTurn = assignedOnTurn
         this.data1 = data1
         this.data2 = data2
-        this.assigner = assigner.civName
+        this.assigner = assigner.civID
         this.assignerCiv = assigner
-        this.assignee = assignee.civName
+        this.assignee = assignee.civID
         this.assigneeCiv = assignee
     }
 
@@ -964,6 +966,8 @@ class AssignedQuest : IsPartOfGameInfoSerialization {
 
     val questNameInstance get() = quest.questNameInstance
 
+    fun clone() = AssignedQuest(questName, assigner, assignee, assignedOnTurn, data1, data2)
+
     internal fun setTransients(gameInfo: GameInfo, quest: Quest? = null) {
         this.gameInfo = gameInfo
         if (quest != null) {
@@ -994,11 +998,11 @@ class AssignedQuest : IsPartOfGameInfoSerialization {
         when (questNameInstance) {
             QuestName.ClearBarbarianCamp -> {
                 GUI.resetToWorldScreen()
-                GUI.getMap().setCenterPosition(Vector2(data1.toFloat(), data2.toFloat()), selectUnit = false)
+                GUI.getMap().setCenterPosition(Vector2(data1.toFloat(), data2.toFloat()).toHexCoord(), selectUnit = false)
             }
             QuestName.Route -> {
                 GUI.resetToWorldScreen()
-                GUI.getMap().setCenterPosition(assignerCiv.getCapital()!!.location, selectUnit = false)
+                GUI.getMap().setCenterPosition(assignerCiv.getCapital()!!.location.toHexCoord(), selectUnit = false)
             }
             else -> Unit
         }

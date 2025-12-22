@@ -104,7 +104,7 @@ data class GameContext(
     /**  Used ONLY for stateBasedRandom in [Conditionals.conditionalApplies] to prevent save scumming on [UniqueType.ConditionalChance] */
     @Readonly
     override fun hashCode(): Int {
-        fun Civilization?.hash() = this?.civName?.hashCode() ?: 0
+        fun Civilization?.hash() = this?.civID?.hashCode() ?: 0
         fun City?.hash() = this?.id?.hashCode() ?: 0
         fun Tile?.hash() = this?.position?.hashCode() ?: 0
         fun MapUnit?.hash() = if (this == null) 0 else name.hashCode() + (if (hasTile()) 17 * currentTile.hash() else 0)
