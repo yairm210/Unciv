@@ -153,8 +153,13 @@ class CivilopediaScreen(
 
         entrySelectScroll.layout()          // necessary for positioning in selectRow to work
 
+        // Select the first entry if an entry hasn't already been selected
         val entry = currentEntryPerCategory[category]
-        if (entry != null) selectEntry(entry)
+        if (entry != null) {
+            selectEntry(entry)
+        } else if (entries.isNotEmpty()) {
+            selectEntry(entries.first().name, true)
+        }
     }
 
     /** Select a specified entry within the current category. Unknown strings are ignored!
