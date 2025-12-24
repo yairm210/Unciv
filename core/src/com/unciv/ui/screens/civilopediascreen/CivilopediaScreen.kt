@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.SplitPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
@@ -39,21 +40,32 @@ class CivilopediaScreen(
 ) : BaseScreen(), RecreateOnResize {
 
     /** Container collecting data per Civilopedia entry
-     * @param name From [Ruleset] object [INamed.name]
-     * @param image Icon for button
-     * @param flavour [ICivilopediaText]
-     * @param y Y coordinate for scrolling to
-     * @param height Cell height
+     * @property name From [Ruleset] object [INamed.name]
+     * @property image Icon for button
+     * @property flavour Original [ICivilopediaText] reference allowing to render its [ICivilopediaText.civilopediaText]
+     * @property y Y coordinate for scrolling to
+     * @property height Cell height for scrolling to
+     * @property sortBy Optional, enables overriding alphabetical order. Ususally supplied by [ICivilopediaText.getSortGroup]
+     * @property subCategory Optional, enablesg grouping with sub-category labels. Ususally supplied by [ICivilopediaText.getSubCategory]
      */
     private class CivilopediaEntry (
         val name: String,
         val image: Actor? = null,
         val flavour: ICivilopediaText? = null,
-        val y: Float = 0f,              // coordinates of button cell used to scroll to entry
+        val y: Float = 0f,
         val height: Float = 0f,
-        val sortBy: Int = 0             // optional, enabling overriding alphabetical order
+        val sortBy: Int = 0,
+        val subCategory: String? = null
     ) {
-        fun withCoordinates(y: Float, height: Float) = CivilopediaEntry(name, image, flavour, y, height, sortBy)
+        constructor(ruleset: Ruleset, item: ICivilopediaText, category: CivilopediaCategories, imageSize: Float) : this(
+            (item as INamed).name,
+            category.getImage?.invoke(item.getIconName(), imageSize),
+            flavour = item,
+            sortBy = item.getSortGroup(ruleset),
+            subCategory = item.getSubCategory(ruleset)
+        )
+
+        fun withCoordinates(y: Float, height: Float) = CivilopediaEntry(name, image, flavour, y, height, sortBy, subCategory)
     }
 
     private val categoryToEntries = LinkedHashMap<CivilopediaCategories, Collection<CivilopediaEntry>>()
@@ -100,6 +112,9 @@ class CivilopediaScreen(
         selectCategory(category)
     }
 
+    private fun Table.addInlineSeparator() =
+        add(ImageGetter.getWhiteDot()).height(2f).growX()
+
     /** Select a specified category - unselects entry, rebuilds left side buttons.
      * @param category Category key
      */
@@ -128,6 +143,7 @@ class CivilopediaScreen(
             )
 
         var currentY = -1f
+        var currentSubCategory: String? = null
 
         for (entry in entries) {
             val entryButton = Table().apply {
@@ -143,10 +159,24 @@ class CivilopediaScreen(
                 else
                     entryButton.add(entry.image).padLeft(10f)
             entryButton.left().add(entry.name
-                .toLabel(Color.WHITE, 25, hideIcons=true)).pad(10f)
+                .toLabel(Color.WHITE, 25, hideIcons = true)).pad(10f)
             entryButton.onClick { selectEntry(entry) }
             entryButton.name = entry.name               // make button findable
-            val cell = entrySelectTable.add(entryButton).height(75f).expandX().fillX()
+
+            if (currentSubCategory != entry.subCategory) {
+                if (entry.subCategory != null) {
+                    val label = entry.subCategory.toLabel(fontSize = Constants.headingFontSize)
+                    val subCategoryTable = Table().apply {
+                        addInlineSeparator()
+                        add(label).pad(10f, 6f, 0f, 6f)
+                        addInlineSeparator()
+                    }
+                    entrySelectTable.add(subCategoryTable).growX().row()
+                }
+                currentSubCategory = entry.subCategory
+            }
+
+            val cell = entrySelectTable.add(entryButton).height(75f).growX()
             entrySelectTable.row()
             if (currentY < 0f) currentY = cell.padTop
             entryIndex[entry.name] = entry.withCoordinates(currentY, cell.prefHeight)
@@ -215,12 +245,7 @@ class CivilopediaScreen(
             categoryToEntries[loopCategory] =
                 loopCategory.getCategoryIterator(ruleset, tutorialController, game.gameInfo)
                     .filter(::shouldBeDisplayed)
-                    .map { CivilopediaEntry(
-                        (it as INamed).name,
-                        loopCategory.getImage?.invoke(it.getIconName(), imageSize),
-                        flavour = it,
-                        sortBy = it.getSortGroup(ruleset)
-                    ) }
+                    .map { CivilopediaEntry(ruleset, it, loopCategory, imageSize) }
         }
 
         val buttonTable = Table()
