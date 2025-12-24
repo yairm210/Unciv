@@ -5,7 +5,8 @@
     "name": "Introduction",
     "steps": [
       "Welcome to Unciv!\nBecause this is a complex game, there are basic tasks to help familiarize you with the game.\nThese are completely optional, and you're welcome to explore the game on your own!"
-    ]
+    ],
+    "uniques": ["Will not be displayed in Civilopedia"]
   },
 
   // Civilopedia only, because players said this was too wall-of-text
