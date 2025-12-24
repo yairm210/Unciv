@@ -39,111 +39,111 @@ If you'd rather not use the VSCode extension, it is possible enable the schemas 
 ```json
 "json.schemas": [
     {
-        "fileMatch": "jsons/Beliefs.json",
+        "fileMatch": ["jsons/Beliefs.json"],
         "url": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/Beliefs.schema.json"
     },
     {
-        "fileMatch": "jsons/Buildings.json",
+        "fileMatch": ["jsons/Buildings.json"],
         "url": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/Buildings.schema.json"
     },
     {
-        "fileMatch": "jsons/CityStateTypes.json",
+        "fileMatch": ["jsons/CityStateTypes.json"],
         "url": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/CityStateTypes.schema.json"
     },
     {
-        "fileMatch": "jsons/Difficulties.json",
+        "fileMatch": ["jsons/Difficulties.json"],
         "url": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/Difficulties.schema.json"
     },
     {
-        "fileMatch": "jsons/Eras.json",
+        "fileMatch": ["jsons/Eras.json"],
         "url": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/Eras.schema.json"
     },
     {
-        "fileMatch": "jsons/Units.json",
+        "fileMatch": ["jsons/Units.json"],
         "url": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/Units.schema.json"
     },
     {
-        "fileMatch": "jsons/Nations.json",
+        "fileMatch": ["jsons/Nations.json"],
         "url": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/Nations.schema.json"
     },
     {
-        "fileMatch": "jsons/Personalities.json",
+        "fileMatch": ["jsons/Personalities.json"],
         "url": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/Personalities.schema.json"
     },
     {
-        "fileMatch": "jsons/Policies.json",
+        "fileMatch": ["jsons/Policies.json"],
         "url": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/Policies.schema.json"
     },
     {
-        "fileMatch": "jsons/Quests.json",
+        "fileMatch": ["jsons/Quests.json"],
         "url": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/Quests.schema.json"
     },
     {
-        "fileMatch": "jsons/Religions.json",
+        "fileMatch": ["jsons/Religions.json"],
         "url": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/Religions.schema.json"
     },
     {
-        "fileMatch": "jsons/Ruins.json",
+        "fileMatch": ["jsons/Ruins.json"],
         "url": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/Ruins.schema.json"
     },
     {
-        "fileMatch": "jsons/Specialists.json",
+        "fileMatch": ["jsons/Specialists.json"],
         "url": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/Specialists.schema.json"
     },
     {
-        "fileMatch": "jsons/Speeds.json",
+        "fileMatch": ["jsons/Speeds.json"],
         "url": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/Speeds.schema.json"
     },
     {
-        "fileMatch": "jsons/TileImprovements.json",
+        "fileMatch": ["jsons/TileImprovements.json"],
         "url": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/TileImprovements.schema.json"
     },
     {
-        "fileMatch": "jsons/TileSets/*.json",
+        "fileMatch": ["jsons/TileSets/*.json"],
         "url": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/TileSetConfig.schema.json"
     },
     {
-        "fileMatch": "jsons/Techs.json",
+        "fileMatch": ["jsons/Techs.json"],
         "url": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/Techs.schema.json"
     },
     {
-        "fileMatch": "jsons/UnitTypes.json",
+        "fileMatch": ["jsons/UnitTypes.json"],
         "url": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/UnitTypes.schema.json"
     },
     {
-        "fileMatch": "jsons/UnitPromotions.json",
+        "fileMatch": ["jsons/UnitPromotions.json"],
         "url": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/UnitPromotions.schema.json"
     },
     {
-        "fileMatch": "jsons/TileResources.json",
+        "fileMatch": ["jsons/TileResources.json"],
         "url": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/TileResources.schema.json"
     },
     {
-        "fileMatch": "jsons/Events.json",
+        "fileMatch": ["jsons/Events.json"],
         "url": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/Events.schema.json"
     },
     {
-        "fileMatch": "jsons/GlobalUniques.json",
+        "fileMatch": ["jsons/GlobalUniques.json"],
         "url": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/GlobalUniques.schema.json"
     },
     {
-        "fileMatch": "jsons/ModOptions.json",
+        "fileMatch": ["jsons/ModOptions.json"],
         "url": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/ModOptions.schema.json"
     },
     {
-        "fileMatch": "jsons/Terrains.json",
+        "fileMatch": ["jsons/Terrains.json"],
         "url": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/Terrains.schema.json"
     },
     {
-        "fileMatch": "jsons/Tutorials.json",
+        "fileMatch": ["jsons/Tutorials.json"],
         "url": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/Tutorials.schema.json"
     },
     {
-        "fileMatch": "jsons/UnitNameGroups.json",
+        "fileMatch": ["jsons/UnitNameGroups.json"],
         "url": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/UnitNameGroups.schema.json"
     },
     {
-        "fileMatch": "jsons/VictoryTypes.json",
+        "fileMatch": ["jsons/VictoryTypes.json"],
         "url": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/VictoryTypes.schema.json"
     }
 ]
