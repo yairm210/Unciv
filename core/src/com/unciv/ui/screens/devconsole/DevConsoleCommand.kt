@@ -68,9 +68,9 @@ internal interface ConsoleCommandNode : ConsoleCommand {
 
     override fun handle(console: DevConsolePopup, params: List<CliInput>): DevConsoleResponse {
         if (params.isEmpty())
-            return DevConsoleResponse.hint("Available commands: " + subcommands.keys.joinToString())
+            return DevConsoleResponse.hint(availableCommands(false))
         val handler = subcommands[params[0].toString()]
-            ?: return DevConsoleResponse.error("Invalid command.\nAvailable commands:" + subcommands.keys.joinToString("") { "\n- $it" })
+            ?: return DevConsoleResponse.error(availableCommands(true))
         return handler.handle(console, params.drop(1))
     }
 
@@ -79,6 +79,13 @@ internal interface ConsoleCommandNode : ConsoleCommand {
         val handler = subcommands[firstParam.toString()]
             ?: return getAutocompleteString(firstParam, subcommands.keys, console)
         return handler.autocomplete(console, params.drop(1))
+    }
+
+    private fun availableCommands(invalid: Boolean): String {
+        val separator = if (invalid) "\n- " else ", "
+        val available = "Available commands:"
+        val prefix = if (invalid) "Invalid command.\n$available\n- " else "$available "
+        return subcommands.keys.sorted().joinToString(separator, prefix)
     }
 }
 
