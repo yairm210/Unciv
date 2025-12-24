@@ -116,14 +116,16 @@ class CivilopediaScreen(
         buttonTableScroll.scrollX = buttonInfo.x + (buttonInfo.width - buttonTableScroll.width) / 2
 
         if (category !in categoryToEntries) return        // defense, allowing buggy panes to remain empty while others work
-        var entries = categoryToEntries[category]!!
-        if (category != CivilopediaCategories.Difficulty) // this is the only case where we need them in order
-            // Alphabetical order of localized names, using system default locale
-            entries = entries.sortedWith(
-                compareBy<CivilopediaEntry>{ it.sortBy }
-                    .thenBy (UncivGame.Current.settings.getCollatorFromLocale()) {
-                        // In order for the extra icons on Happiness and Faith to not affect sort order
-                        it.name.tr(true, true)})
+        val entries = categoryToEntries[category]!!
+            // Sort by [CivilopediaEntry.sortBy], then alphabetical order of localized names, using system default locale
+            // Categories that should not sort alphabetically, e.g. Difficulties, will override `getSortGroup`.
+            .sortedWith(
+                compareBy<CivilopediaEntry> { it.sortBy }
+                .thenBy (UncivGame.Current.settings.getCollatorFromLocale()) {
+                    // In order for the extra icons on Happiness and Faith to not affect sort order
+                    it.name.tr(hideIcons = true, hideStats = true)
+                }
+            )
 
         var currentY = -1f
 
