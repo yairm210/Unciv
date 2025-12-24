@@ -1,20 +1,19 @@
 ## 4.19.3
 
-When setting the base terrain, we remove improvements in progress that cannot be built on the new terrain
+Remove incompatible improvements in progress upon changing terrain
 
 By EmperorPinguin:
 - AI: choose favoredReligion more often 
 - AI: build settlers also when at war 
-- Increase distance for encampment detection to 6 tiles 
 
-Add city context to turn start and turn end uniques from buildings - By SeventhM
+Modding: Add city context to turn start & end uniques from buildings - By SeventhM
 
 By RobLoach:
 - Fix removed favored Religions 
 - Minor Civilopedia UX Improvements 
 - Flip Defensive Pact opinion comparision 
 
-Console: 'unit activatetrigger' and some minor improvements - By SomeTroglodyte
+Console: 'unit activatetrigger'  - By SomeTroglodyte
 
 ## 4.19.2
 
