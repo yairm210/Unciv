@@ -44,6 +44,7 @@ object TileNormalizer {
 
         // If we're checking this at gameInfo.setTransients, we can't check the top terrain
         if (tile.improvement != null) normalizeTileImprovement(tile, ruleset)
+        if (tile.improvementInProgress != null) normalizeImprovementQueue(tile, ruleset)
         if (tile.isWater || tile.isImpassible())
             tile.removeRoad()
     }
@@ -54,6 +55,18 @@ object TileNormalizer {
         if (tile.improvementFunctions.canImprovementBeBuiltHere(improvementObject, gameContext = GameContext.IgnoreConditionals, isNormalizeCheck = true))
             return
         tile.clearImprovement()
+    }
+    
+    private fun normalizeImprovementQueue(tile: Tile, ruleset: Ruleset) {
+        val oldImprovementQueue = tile.improvementQueue.toList()
+        tile.improvementQueue.clear()
+        
+        // only readd them if they're still buildable
+        for (improvementQueueEntry in oldImprovementQueue){
+            val improvementObject = ruleset.tileImprovements[improvementQueueEntry.improvement] ?: continue
+            if (tile.improvementFunctions.canImprovementBeBuiltHere(improvementObject, gameContext = GameContext.IgnoreConditionals, isNormalizeCheck = true))
+                tile.improvementQueue.add(improvementQueueEntry)
+        }
     }
 
     private fun Tile.clearImprovement() {
