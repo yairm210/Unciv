@@ -574,5 +574,34 @@ class City : IsPartOfGameInfoSerialization, INamed {
         else uniques
     }
 
+    @Readonly
+    fun getTriggeredUniques(
+        trigger: UniqueType,
+        gameContext: GameContext = state,
+        triggerFilter: (Unique) -> Boolean = { true },
+        includeCivUniques: Boolean = true): Sequence<Unique> {
+        if (includeCivUniques) {
+            return civ.getTriggeredUniques(trigger, gameContext, triggerFilter).asSequence() +
+                getLocalTriggeredUniques(trigger, gameContext, triggerFilter)
+        }
+        else {
+            val uniques =
+                cityConstructions.builtBuildingUniqueMap.getAllUniques() + religion.getAllUniques()
+            return uniques.filter {
+                it.getModifiers(trigger).any(triggerFilter) && it.conditionalsApply(gameContext)
+            }.flatMap { it.getMultiplied(gameContext) }
+        }
+    }
+
+    @Readonly
+    fun getLocalTriggeredUniques(trigger: UniqueType, gameContext: GameContext = state,
+        triggerFilter: (Unique) -> Boolean = { true }): Sequence<Unique> {
+        val uniques =
+            cityConstructions.builtBuildingUniqueMap.getAllUniques().filter { it.isLocalEffect } + religion.getAllUniques()
+        return uniques.filter {
+            it.getModifiers(trigger).any(triggerFilter) && it.conditionalsApply(gameContext)
+        }.flatMap { it.getMultiplied(gameContext) }
+    }
+
     //endregion
 }
