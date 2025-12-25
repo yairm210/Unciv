@@ -18,6 +18,12 @@ import com.unciv.ui.images.ImageGetter
  *  The only way to get measurements to dynamically follow growing **and** shrinking is to clear the entire Table...
  */
 internal class SubCategoryTable(subCategory: String) : Table() {
+    private companion object {
+        const val topPad = 10f
+        const val lineToTextPad = 6f
+        const val lineThickness = 2f
+    }
+
     private val label = subCategory.toLabel(fontSize = Constants.headingFontSize)
     private val leftImage = ImageGetter.getWhiteDot()
     private val rightImage = ImageGetter.getWhiteDot()
@@ -31,9 +37,9 @@ internal class SubCategoryTable(subCategory: String) : Table() {
     override fun validate() {
         if (cells.isEmpty) {
             super.childrenChanged()
-            add(leftImage).height(2f).growX()
-            add(label).pad(10f, 6f, 0f, 6f)
-            add(rightImage).height(2f).growX()
+            add(leftImage).height(lineThickness).growX()
+            add(label).pad(topPad, lineToTextPad, 0f, lineToTextPad)
+            add(rightImage).height(lineThickness).growX()
         }
         super.validate()
     }
@@ -48,8 +54,8 @@ internal class SubCategoryTable(subCategory: String) : Table() {
 
     // These are also indispensable for the kludge to function,
     // pref measurements need to return the final values while the Table is still empty.
-    override fun getMinHeight() = label.minHeight + 10f
-    override fun getMinWidth() = label.minWidth + 12f
-    override fun getPrefHeight() = label.prefHeight + 10f
-    override fun getPrefWidth() = label.prefWidth + 12f
+    override fun getMinHeight() = label.minHeight + topPad
+    override fun getMinWidth() = label.minWidth + 2 * lineToTextPad
+    override fun getPrefHeight() = label.prefHeight + topPad
+    override fun getPrefWidth() = label.prefWidth + 2 * lineToTextPad
 }
