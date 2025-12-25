@@ -112,9 +112,6 @@ class CivilopediaScreen(
         selectCategory(category)
     }
 
-    private fun Table.addInlineSeparator() =
-        add(ImageGetter.getWhiteDot()).height(2f).growX()
-
     /** Select a specified category - unselects entry, rebuilds left side buttons.
      * @param category Category key
      */
@@ -164,15 +161,8 @@ class CivilopediaScreen(
             entryButton.name = entry.name               // make button findable
 
             if (currentSubCategory != entry.subCategory) {
-                if (entry.subCategory != null) {
-                    val label = entry.subCategory.toLabel(fontSize = Constants.headingFontSize)
-                    val subCategoryTable = Table().apply {
-                        addInlineSeparator()
-                        add(label).pad(10f, 6f, 0f, 6f)
-                        addInlineSeparator()
-                    }
-                    entrySelectTable.add(subCategoryTable).growX().row()
-                }
+                if (entry.subCategory != null)
+                    entrySelectTable.add(SubCategoryTable(entry.subCategory)).fillX().row()
                 currentSubCategory = entry.subCategory
             }
 
