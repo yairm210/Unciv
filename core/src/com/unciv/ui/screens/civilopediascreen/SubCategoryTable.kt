@@ -1,21 +1,17 @@
 package com.unciv.ui.screens.civilopediascreen
 
+import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.images.ImageGetter
 
 /**
- *  Kludge helper renders a Category header Label flanked by two horizontal lines,
+ *  Helper renders a Category header Label flanked by two horizontal lines,
  *  which adjust their width automatically to the total width assigned by the container's layout.
  *
- *  Doing that directly will break when the containing Table is part of SplitPane and the SplitPane handle is dragged:
- *  Table will never relinquish any column width it has allocated, thus the "Header" will grow ever wider and never shrink back down.
- *  This is due to the `private float[] columnMinWidth, rowMinHeight, columnPrefWidth, rowPrefHeight, columnWidth, rowHeight;` fields,
- *  Which do not get cleared for a layout() run, and the artificial two-level validation using `private boolean sizeInvalid` on top of
- *  `WidgetGroup.needsLayout`.
- *
- *  The only way to get measurements to dynamically follow growing **and** shrinking is to clear the entire Table...
+ *  Note this does ***not*** Use [ImageGetter.getWhiteDot] - the [ImageWithCustomSize][com.unciv.ui.images.ImageWithCustomSize]
+ *  additions would ruin dynamic layout when resizing to smaller widths.
  */
 internal class SubCategoryTable(subCategory: String) : Table() {
     private companion object {
@@ -24,38 +20,13 @@ internal class SubCategoryTable(subCategory: String) : Table() {
         const val lineThickness = 2f
     }
 
-    private val label = subCategory.toLabel(fontSize = Constants.headingFontSize)
-    private val leftImage = ImageGetter.getWhiteDot()
-    private val rightImage = ImageGetter.getWhiteDot()
+    private fun getImage() = Image(ImageGetter.getWhiteDotDrawable())  // NOT an ImageWithCustomSize!!!
+    private fun addLine() = add(getImage()).minWidth(lineToTextPad).height(lineThickness).growX()
 
-    override fun invalidate() {
-        if (!cells.isEmpty)
-            clear()
-        super.invalidate()
+    init {
+        val label = subCategory.toLabel(fontSize = Constants.headingFontSize)
+        addLine()
+        add(label).pad(topPad, lineToTextPad, 0f, lineToTextPad)
+        addLine()
     }
-
-    override fun validate() {
-        if (cells.isEmpty) {
-            super.childrenChanged()
-            add(leftImage).height(lineThickness).growX()
-            add(label).pad(topPad, lineToTextPad, 0f, lineToTextPad)
-            add(rightImage).height(lineThickness).growX()
-        }
-        super.validate()
-    }
-
-    override fun childrenChanged() {
-        /** This is the crux of the kludge! Blocking `super.childrenChanged` avoids
-         *  both endless invalidate recursion and the add in validate clearing the content.
-         *  That we can block it permanently is potentially sensitive to Gdx changes,
-         *  if in doubt introduce a blocking flag and set it during clear and the add block.
-         */
-    }
-
-    // These are also indispensable for the kludge to function,
-    // pref measurements need to return the final values while the Table is still empty.
-    override fun getMinHeight() = label.minHeight + topPad
-    override fun getMinWidth() = label.minWidth + 2 * lineToTextPad
-    override fun getPrefHeight() = label.prefHeight + topPad
-    override fun getPrefWidth() = label.prefWidth + 2 * lineToTextPad
 }
