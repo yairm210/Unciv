@@ -104,6 +104,10 @@
     {
         "name": "Religions",
         // The available Religions will be appended to any civilopediaText defined here by code
+        "civilopediaText": [
+            {"text": "Name and symbol of Religions are purely decorative, neither have any gameplay effects."},
+            {},
+        ],
         "uniques": [
             "Will not be displayed in Civilopedia" // Pulled into the religion category by code
         ]
