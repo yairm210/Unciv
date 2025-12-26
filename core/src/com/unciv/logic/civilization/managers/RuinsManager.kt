@@ -61,10 +61,12 @@ class RuinsManager(
     fun selectNextRuinsReward(triggeringUnit: MapUnit) {
         for (possibleReward in getShuffledPossibleRewards(triggeringUnit)) {
             var atLeastOneUniqueHadEffect = false
-            for (unique in possibleReward.uniqueObjects) {
+            val possibleUniques = possibleReward.uniqueObjects
+                .filter { it.conditionalsApply(triggeringUnit.cache.state) }
+                .flatMap { it.getMultiplied(triggeringUnit.cache.state) }
+            for (unique in possibleUniques) {
                 val uniqueTriggered =
-                    unique.conditionalsApply(triggeringUnit.cache.state) && 
-                        UniqueTriggerActivation.triggerUnique(unique, triggeringUnit, notification = possibleReward.notification, triggerNotificationText = "from the ruins")
+                    UniqueTriggerActivation.triggerUnique(unique, triggeringUnit, notification = possibleReward.notification, triggerNotificationText = "from the ruins")
                 atLeastOneUniqueHadEffect = atLeastOneUniqueHadEffect || uniqueTriggered
             }
             if (atLeastOneUniqueHadEffect) {

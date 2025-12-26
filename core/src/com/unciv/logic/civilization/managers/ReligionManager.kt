@@ -453,9 +453,14 @@ class ReligionManager : IsPartOfGameInfoSerialization {
                     UniqueTriggerActivation.triggerUnique(unique, civInfo,
                         triggerNotificationText = "due to adopting [${belief.name}]")
 
-        for (belief in beliefs)
-            for (unique in belief.uniqueObjects.filter { !it.hasTriggerConditional() && it.conditionalsApply(civInfo.state) })
+        for (belief in beliefs) {
+            val uniques = belief.uniqueObjects.asSequence()
+                .filter { !it.hasTriggerConditional() && it.conditionalsApply(civInfo.state) }
+                .flatMap { it.getMultiplied(civInfo.state) }
+                .toList()
+            for (unique in uniques)
                 UniqueTriggerActivation.triggerUnique(unique, civInfo)
+        }
 
         civInfo.updateStatsForNextTurn()  // a belief can have an immediate effect on stats
     }

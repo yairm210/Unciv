@@ -264,9 +264,12 @@ class PolicyManager : IsPartOfGameInfoSerialization {
 
         //todo Can this be mapped downstream to a PolicyAction:NotificationAction?
         val triggerNotificationText = "due to adopting [${policy.name}]"
-        for (unique in policy.uniqueObjects)
-            if (unique.isTriggerable && !unique.hasTriggerConditional() && unique.conditionalsApply(civInfo.state))
-                UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
+        val uniques = policy.uniqueObjects.asSequence()
+            .filter { it.isTriggerable && !it.hasTriggerConditional() && it.conditionalsApply(civInfo.state) }
+            .flatMap { it.getMultiplied(civInfo.state) }
+            .toList()
+        for (unique in uniques)
+            UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
 
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponAdoptingPolicyOrBelief) { it.params[0] == policy.name })
             UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
