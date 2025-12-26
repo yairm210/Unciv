@@ -86,8 +86,7 @@ class WorkerAutomation(
         }
         val tileToWork = findTileToWork(unit, dangerousTiles, localUniqueCache)
 
-        if (tileToWork != currentTile && tileToWork != null 
-            && (tileToWork.getOwner() == null || tileToWork.getOwner() == unit.civ || tileToWork.getOwner()!!.isCityState)) {
+        if (tileToWork != currentTile && tileToWork != null) {
             headTowardsTileToWork(unit, tileToWork, localUniqueCache)
             return
         }
@@ -208,8 +207,9 @@ class WorkerAutomation(
         
         val workableTilesCenterFirst = currentTile.getTilesInDistance(3)
             .filter {
-                isAutomationWorkableTile(it, tilesToAvoid, currentTile, unit) 
-                        && getBasePriority(it, unit) >= 0
+                (tileToWork.getOwner() == null || tileToWork.getOwner() == unit.civ || tileToWork.getOwner()!!.isCityState)
+                    && isAutomationWorkableTile(it, tilesToAvoid, currentTile, unit) 
+                    && getBasePriority(it, unit) >= 0
             }
 
         val workableTilesPrioritized = workableTilesCenterFirst.groupBy { getBasePriority(it, unit) }
