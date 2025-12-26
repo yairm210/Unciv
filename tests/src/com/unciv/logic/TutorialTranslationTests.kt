@@ -1,9 +1,10 @@
 package com.unciv.logic
 
 import com.unciv.models.TutorialTrigger
+import com.unciv.models.metadata.BaseRuleset
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.Tutorial
 import com.unciv.testing.GdxTestRunner
-import com.unciv.ui.screens.basescreen.TutorialController
 import org.junit.Assert.fail
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -15,7 +16,8 @@ class TutorialTranslationTests {
 
     init {
          try {
-             tutorials = TutorialController.loadTutorialsFromJson(includeMods = false)
+             RulesetCache.loadRulesets(noMods = true)
+             tutorials = RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!.tutorials
          } catch (ex: Throwable) {
              exception = ex
          }

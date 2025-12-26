@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.Constants
 import com.unciv.json.fromJsonFile
@@ -51,9 +52,7 @@ enum class RulesetFile(
     Policies("Policies.json", { policies.values.asSequence() }),
     Techs("Techs.json", { technologies.values.asSequence() }),
     Terrains("Terrains.json", { terrains.values.asSequence() }),
-    /** Tutorials are special and are read in [com.unciv.ui.screens.basescreen.TutorialController.loadTutorialsFromJson]
-     * This is here for completion's sake and to remove ruleset validation error */
-    Tutorials("Tutorials.json"),
+    Tutorials("Tutorials.json", { tutorials.values.asSequence() }),
     TileImprovements("TileImprovements.json", { tileImprovements.values.asSequence() }),
     TileResources("TileResources.json", { tileResources.values.asSequence() }),
     Specialists("Specialists.json"),
@@ -116,6 +115,7 @@ class Ruleset {
     val terrains = LinkedHashMap<String, Terrain>()
     val tileImprovements = LinkedHashMap<String, TileImprovement>()
     val tileResources = LinkedHashMap<String, TileResource>()
+    val tutorials = LinkedHashMap<String, Tutorial>()
     val units = LinkedHashMap<String, BaseUnit>()
     val unitPromotions = LinkedHashMap<String, Promotion>()
     val unitNameGroups = LinkedHashMap<String, UnitNameGroup>()
@@ -258,6 +258,7 @@ class Ruleset {
         terrains.putAll(ruleset.terrains)
         tileImprovements.putAll(ruleset.tileImprovements)
         tileResources.putAll(ruleset.tileResources)
+        tutorials.putAll(ruleset.tutorials)
         unitTypes.putAll(ruleset.unitTypes)
         victories.putAll(ruleset.victories)
         cityStateTypes.putAll(ruleset.cityStateTypes)
@@ -299,6 +300,7 @@ class Ruleset {
         terrains.clear()
         tileImprovements.clear()
         tileResources.clear()
+        tutorials.clear()
         unitPromotions.clear()
         unitNameGroups.clear()
         units.clear()
@@ -485,7 +487,14 @@ class Ruleset {
             events += createHashmap(json().fromJsonFile(Array<Event>::class.java, eventsFile))
         }
 
-
+        // Tutorials exist per builtin ruleset or mod, but there's also a global file that's always loaded
+        // Note we can't rely on UncivGame.Current here, so we do the same thing getBuiltinRulesetFileHandle in RulesetCache does
+        val globalTutorialsFile = Gdx.files.internal("jsons").child(RulesetFile.Tutorials.filename)
+        if (globalTutorialsFile.exists())
+            tutorials += createHashmap(json().fromJsonFile(Array<Tutorial>::class.java, globalTutorialsFile))
+        val tutorialsFile = RulesetFile.Tutorials.file()
+        if (tutorialsFile.exists())
+            tutorials += createHashmap(json().fromJsonFile(Array<Tutorial>::class.java, tutorialsFile))
 
         // Add objects that might not be present in base ruleset mods, but are required
         if (modOptions.isBaseRuleset) {
