@@ -95,11 +95,7 @@ enum class CivilopediaCategories (
         CivilopediaImageGetters.belief,
         KeyboardBinding.PediaBeliefs,
         "ReligionIcons/Religion",
-        { ruleset, _, _ -> (
-            ruleset.beliefs.values.asSequence() +
-            BaseBelief.getCivilopediaBeliefsEntry(ruleset) +
-            BaseBelief.getCivilopediaReligionEntry(ruleset)
-        ).toList() }
+        { ruleset, _ -> getCivilopediaReligionEntries(ruleset) }
     ),
     Tutorial ("Tutorials",
         getImage = null,
@@ -160,5 +156,27 @@ enum class CivilopediaCategories (
             tutorials.values +
                 // Add entry for Global Uniques only if they have anything interesting
                 listOfNotNull(globalUniques.takeIf { it.hasUniques() })
+
+        /** Get all entries for the Religions and Beliefs category */
+        private fun getCivilopediaReligionEntries(ruleset: Ruleset) = sequence {
+            yieldAll(cloneTutorial(ruleset, "Beliefs"))
+            yieldAll(cloneTutorial(ruleset, "Religions") {
+                val religions = ruleset.religions.asSequence()
+                    .sortedWith(compareBy(UncivGame.Current.settings.getCollatorFromLocale()) { it.tr(hideIcons = true) })
+                addAll(religions.map { FormattedLine(it, icon = "Belief/$it") })
+            })
+            yieldAll(ruleset.beliefs.values)
+        }.toList()
+
+        private fun cloneTutorial(ruleset: Ruleset, name: String, block: (MutableList<FormattedLine>.() -> Unit)? = null): Sequence<ICivilopediaText> {
+            val tutorial = ruleset.tutorials[name] ?: return emptySequence()
+            val clone = BaseBelief() // Minor difference to cloning as Tutorial(): overridden getSortGroup and getCivilopediaTextHeader
+            clone.name = tutorial.name
+            val textLines = tutorial.civilopediaText.toMutableList()
+            if (block != null) textLines.block()
+            clone.civilopediaText = textLines
+            clone.uniques.addAll(tutorial.uniques.filterNot { it == UniqueType.HiddenFromCivilopedia.text })
+            return sequenceOf(clone)
+        }
     }
 }

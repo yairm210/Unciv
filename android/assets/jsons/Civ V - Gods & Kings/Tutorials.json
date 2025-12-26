@@ -88,6 +88,24 @@
             {"text":"Building buildings like the constabulary and police station will reduce the technology steal rate of spies in that city."},
             {},
             {"text":"Espionage is available using the Gods and Kings ruleset. To enable it in a new game click advanced settings, then click on the Enable Espionage option."}
+        ],
+        "uniques": ["Only available <when espionage is enabled>"]
+    },
+    {
+        "name": "Beliefs",
+        "civilopediaText": [
+            {"text": "There are four types of beliefs: Pantheon, Founder, Follower and Enhancer beliefs."},
+            {"text": "Pantheon and Follower beliefs apply to each city following your religion, while Founder and Enhancer beliefs only apply to the founder of a religion."}
+        ],
+        "uniques": [
+            "Will not be displayed in Civilopedia" // Pulled into the religion category by code
+        ]
+    },
+    {
+        "name": "Religions",
+        // The available Religions will be appended to any civilopediaText defined here by code
+        "uniques": [
+            "Will not be displayed in Civilopedia" // Pulled into the religion category by code
         ]
     }
 ]
