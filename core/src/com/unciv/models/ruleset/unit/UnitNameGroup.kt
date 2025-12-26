@@ -68,4 +68,10 @@ class UnitNameGroup : RulesetObject() {
 
         return lines
     }
+
+    /**
+     * TODO: Worth introducing grouping for the unit names by unit the names apply to?
+     */
+    override fun getSortGroup(ruleset: Ruleset) = getUnits(ruleset).firstOrNull()?.getSortGroup(ruleset) ?: 100
+    override fun getSubCategory(ruleset: Ruleset): String? = getUnits(ruleset).firstOrNull()?.name ?: "Other"
 }
