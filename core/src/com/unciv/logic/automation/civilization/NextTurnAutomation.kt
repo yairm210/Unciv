@@ -3,6 +3,7 @@ package com.unciv.logic.automation.civilization
 import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.ThreatLevel
+import com.unciv.logic.automation.unit.CivilianUnitAutomation
 import com.unciv.logic.automation.unit.EspionageAutomation
 import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.battle.*
@@ -431,10 +432,20 @@ object NextTurnAutomation {
                 unit.promotions.addPromotion(chosenPromotion.name)
             }
         }
+        for (unit in sortedUnits) {
+            // settlers need to move before automateSettlerEscorting(),
+            // move spaceship parts before that to make sure we're not blocking them
+            if (unit.hasUnique(UniqueType.SpaceshipPart) || unit.hasUnique(UniqueType.FoundCity)) UnitAutomation.automateUnitMoves(unit)
+        }
+
+        if (civInfo.cities.isNotEmpty()) automateSettlerEscorting(civInfo)
         
         for (city in citiesRequiringManualPlacement) automateCityConquer(civInfo, city)
         
-        for (unit in sortedUnits) UnitAutomation.automateUnitMoves(unit)
+        for (unit in sortedUnits) {
+            // spaceship parts and settlers have already moved
+            if (!unit.hasUnique(UniqueType.SpaceshipPart) && !unit.hasUnique(UniqueType.FoundCity)) UnitAutomation.automateUnitMoves(unit)
+        }
     }
     
     /** All units will continue after this to the regular automation, so units not moved in this function will still move */
@@ -480,6 +491,31 @@ object NextTurnAutomation {
             } // aims to maximize flanking bonus and number of hits in order to get kills
 
             Battle.moveAndAttack(MapUnitCombatant(unit), mostSurroundedEnemy)
+        }
+    }
+    private fun automateSettlerEscorting(civInfo: Civilization){
+        val capitalTile = civInfo.getCapital()!!.getCenterTile()
+        @Readonly fun bestUnitInRange(tile: Tile, range: Int) = tile.getTilesInDistance(range)
+            .mapNotNull { it.militaryUnit }.filter {
+                it.civ == civInfo
+                    && it.health >= 100
+                    // only draft a unit from the core of the empire, or it'll interfere with other anti-barb activities
+                    && (it.currentTile.aerialDistanceTo(capitalTile) < tile.aerialDistanceTo(capitalTile))
+                    && it.movement.canReach(tile) 
+            }
+            .sortedBy { it.currentTile.aerialDistanceTo(tile) }
+            .maxByOrNull { it.baseUnit.strength } // could be more sophisticated based on promotions, movement speed etc.
+        
+        val settlersToAccompany = civInfo.units.getCivUnits()
+            .filter { it.isCivilian() && it.hasUnique(UniqueType.FoundCity) }
+        
+        for (settler in settlersToAccompany) {
+            val escortUnit = bestUnitInRange(settler.currentTile, 3) ?: continue
+            escortUnit.movement.headTowards(settler.currentTile)
+            if (escortUnit.movement.canUnitSwapTo(settler.currentTile)) {
+                // check if we can swap to replace the current inferior (wounded) escort
+                escortUnit.movement.swapMoveToTile(settler.currentTile)
+            }
         }
     }
 
@@ -538,9 +574,9 @@ object NextTurnAutomation {
         val personality = civInfo.getPersonality()
         if (civInfo.isCityState) return
         if (civInfo.isOneCityChallenger()) return
-        if (civInfo.isAtWar()) return // don't train settlers when you could be training troops.
         if (civInfo.cities.none()) return
         if (civInfo.getHappiness() <= civInfo.cities.size) return
+        if (CivilianUnitAutomation.isLateGame(civInfo)) return // all suitable land should be occupied already; there will only be a risk of the settler getting bombed
 
         // This is a tough one - if we don't ignore conditionals we could have units that can found only on certain tiles that are ignored
         // If we DO ignore conditionals we could get a unit that can only found if there's a certain tech, or something

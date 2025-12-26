@@ -24,9 +24,8 @@ class Simulation(
     private val statTurns: List<Int> = listOf()
 ) {
     private val maxSimulations = threadsNumber * simulationsPerThread
-    //val civilizations = newGameInfo.civilizations.filter { it.isSpectator() }.map { it.civID }
-    private val majorCivs = newGameInfo.civilizations.filter { it.isSpectator() && it.isMajorCiv() }.map { it.civID }
-    private val numMajorCivs = newGameInfo.civilizations.filter { it.isSpectator() && it.isMajorCiv()  }.size
+    private val majorCivs = newGameInfo.civilizations.filter { !it.isSpectator() && it.isMajorCiv() }.map { it.civID }
+    private val numMajorCivs = newGameInfo.civilizations.filter { !it.isSpectator() && it.isMajorCiv()  }.size
     private var startTime: Long = 0
     var steps = ArrayList<SimulationStep>()
     var numWins = mutableMapOf<String, MutableInt>()

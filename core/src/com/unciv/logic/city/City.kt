@@ -234,6 +234,29 @@ class City : IsPartOfGameInfoSerialization, INamed {
     @Readonly fun getResourcesGeneratedByCity(civResourceModifiers: Map<String, Float>) = CityResources.getResourcesGeneratedByCity(this, civResourceModifiers)
     @Readonly fun getAvailableResourceAmount(resourceName: String) = CityResources.getAvailableResourceAmount(this, resourceName)
 
+    /**
+     * Returns the resource production modifier as a multiplier.
+     *
+     * For example: 1.0f means no change, 2.0f results in double production.
+     *
+     * @param resource The resource for which to calculate the modifier.
+     * @return The production modifier as a multiplier.
+     */
+    @Readonly
+    fun getResourceModifier(resource: TileResource): Float {
+        var finalModifier = 1f
+
+        for (unique in getMatchingUniques(UniqueType.PercentResourceProduction))
+            if (resource.matchesFilter(unique.params[1], state))
+                finalModifier += unique.params[0].toFloat() / 100f
+
+        return finalModifier
+    }
+    /** Gets modifiers for ALL resources */
+    @Readonly
+    fun getResourceModifiers(): Map<String, Float> =
+        civ.gameInfo.ruleset.tileResources.values.associate { it.name to getResourceModifier(it) }
+
     @Readonly fun isGrowing() = foodForNextTurn() > 0
     @Readonly fun isStarving() = foodForNextTurn() < 0
 
@@ -572,6 +595,35 @@ class City : IsPartOfGameInfoSerialization, INamed {
         return if (uniques.any()) uniques.filter { !it.isLocalEffect && !it.isTimedTriggerable
             && it.conditionalsApply(gameContext) }.flatMap { it.getMultiplied(gameContext) }
         else uniques
+    }
+
+    @Readonly
+    fun getTriggeredUniques(
+        trigger: UniqueType,
+        gameContext: GameContext = state,
+        triggerFilter: (Unique) -> Boolean = { true },
+        includeCivUniques: Boolean = true): Sequence<Unique> {
+        if (includeCivUniques) {
+            return civ.getTriggeredUniques(trigger, gameContext, triggerFilter).asSequence() +
+                getLocalTriggeredUniques(trigger, gameContext, triggerFilter)
+        }
+        else {
+            val uniques =
+                cityConstructions.builtBuildingUniqueMap.getAllUniques() + religion.getAllUniques()
+            return uniques.filter {
+                it.getModifiers(trigger).any(triggerFilter) && it.conditionalsApply(gameContext)
+            }.flatMap { it.getMultiplied(gameContext) }
+        }
+    }
+
+    @Readonly
+    fun getLocalTriggeredUniques(trigger: UniqueType, gameContext: GameContext = state,
+        triggerFilter: (Unique) -> Boolean = { true }): Sequence<Unique> {
+        val uniques =
+            cityConstructions.builtBuildingUniqueMap.getAllUniques().filter { it.isLocalEffect } + religion.getAllUniques()
+        return uniques.filter {
+            it.getModifiers(trigger).any(triggerFilter) && it.conditionalsApply(gameContext)
+        }.flatMap { it.getMultiplied(gameContext) }
     }
 
     //endregion

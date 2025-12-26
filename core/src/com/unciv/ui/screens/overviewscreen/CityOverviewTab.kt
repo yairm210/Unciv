@@ -4,7 +4,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.ui.components.extensions.equalizeColumns
 import com.unciv.ui.components.widgets.SortableGrid
 import com.unciv.ui.components.widgets.TabbedPager
-
+import com.unciv.ui.components.ISortableGridContentProvider
 
 /**
  *  Provides the Cities tab for Empire Overview.
@@ -16,8 +16,9 @@ class CityOverviewTab(
     overviewScreen: EmpireOverviewScreen,
     persistedData: EmpireOverviewTabPersistableData? = null
 ) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
-    class CityTabPersistableData : EmpireOverviewTabPersistableData(), SortableGrid.ISortState<CityOverviewTabColumn> {
-        override var sortedBy: CityOverviewTabColumn = CityOverviewTabColumn.CityColumn
+    class CityTabPersistableData : EmpireOverviewTabPersistableData(),
+        SortableGrid.ISortState<ISortableGridContentProvider<com.unciv.logic.city.City, EmpireOverviewScreen>> {
+        override var sortedBy: ISortableGridContentProvider<com.unciv.logic.city.City, EmpireOverviewScreen> = CityOverviewTabColumn.CityColumn
         override var direction: SortableGrid.SortDirection = SortableGrid.SortDirection.None
         override fun isEmpty() = sortedBy == CityOverviewTabColumn.CityColumn && direction != SortableGrid.SortDirection.Descending
     }
@@ -25,7 +26,7 @@ class CityOverviewTab(
     override val persistableData = (persistedData as? CityTabPersistableData) ?: CityTabPersistableData()
 
     private val grid = SortableGrid(
-        columns = CityOverviewTabColumn.entries.asIterable(),
+        columns = CityOverviewTabColumn.getColumns(viewingPlayer),
         data = viewingPlayer.cities,
         actionContext = overviewScreen,
         sortState = persistableData,

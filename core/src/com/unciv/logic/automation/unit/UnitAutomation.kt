@@ -274,7 +274,7 @@ object UnitAutomation {
         if (unit.hasUnique(UniqueType.SelfDestructs)) return false // don't use single-use units against barbarians...
         val cities = unit.civ.cities
         val knownEncampments = cities.asSequence()
-            .flatMap { it.getCenterTile().getTilesInDistance(5) }
+            .flatMap { it.getCenterTile().getTilesInDistance(6) }
                 .filter { it.improvement == Constants.barbarianEncampment && unit.civ.hasExplored(it) }
             .distinct()
         val encampmentsCloseToCities = knownEncampments.asSequence()

@@ -77,7 +77,7 @@ class Tile : IsPartOfGameInfoSerialization {
             return turnsToImprovement > 0
         }
     }
-    private val improvementQueue = ArrayList<ImprovementQueueEntry>(1)
+    internal val improvementQueue = ArrayList<ImprovementQueueEntry>(1)
 
     var roadStatus = RoadStatus.None
 
@@ -287,7 +287,6 @@ class Tile : IsPartOfGameInfoSerialization {
     @Readonly fun isPillaged(): Boolean = improvementIsPillaged || roadIsPillaged
     @Readonly fun getUnpillagedTileImprovement(): TileImprovement? = if (getUnpillagedImprovement() == null) null else ruleset.tileImprovements[improvement!!]
     @Readonly fun getTileImprovementInProgress(): TileImprovement? = improvementQueue.firstOrNull()?.let { ruleset.tileImprovements[it.improvement] }
-    @Readonly fun containsGreatImprovement() = getTileImprovement()?.isGreatImprovement() == true
 
     @Readonly
     fun getImprovementToPillage(): TileImprovement? {

@@ -1,0 +1,66 @@
+{
+  "$id": "https://raw.githubusercontent.com/yairm210/Unciv/refs/heads/master/docs/Modders/schemas/Quests.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Quests",
+  "description": "Schema for quests given to major civilizations by city states.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["name", "description"],
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "Defines criteria of quest. Must be one of the predefined names for behavior.",
+        "examples": [
+          "Route",
+          "Clear Barbarian Camp",
+          "Construct Wonder",
+          "Connect Resource",
+          "Acquire Great Person",
+          "Conquer City State",
+          "Find Player",
+          "Find Natural Wonder",
+          "Give Gold"
+        ]
+      },
+      "description": {
+        "title": "Description",
+        "type": "string",
+        "description": "Description of the quest shown to players."
+      },
+      "type": {
+        "title": "Type",
+        "type": "string",
+        "enum": ["Individual", "Global"],
+        "description": "Individual or Global quest."
+      },
+      "influence": {
+        "title": "Influence",
+        "type": "number",
+        "default": 40,
+        "description": "Influence reward gained on quest completion."
+      },
+      "duration": {
+        "title": "Duration",
+        "type": "integer",
+        "default": 0,
+        "description": "Maximum number of turns to complete the quest. 0 means no turn limit.",
+        "minimum": 0
+      },
+      "minimumCivs": {
+        "type": "integer",
+        "default": 1,
+        "description": "Minimum number of Civs needed to start the quest. Only meaningful for type = Global.",
+        "minimum": 0
+      },
+      "weightForCityStateType": {
+        "type": "object",
+        "description": "Relative weight multiplier for each city state type or personality.",
+        "additionalProperties": {
+          "type": "number"
+        }
+      }
+    },
+    "additionalProperties": false
+  }
+}
