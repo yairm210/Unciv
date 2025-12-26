@@ -37,11 +37,12 @@ import com.unciv.utils.Log
 import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Readonly
 import kotlin.collections.set
+
 enum class RulesetFile(
     val filename: String,
     @Readonly val getRulesetObjects: Ruleset.() -> Sequence<IRulesetObject> = { emptySequence() },
     @Readonly val getUniques: Ruleset.() -> Sequence<Unique> = { getRulesetObjects().flatMap { it.uniqueObjects } }
-){
+) {
     Beliefs("Beliefs.json", { beliefs.values.asSequence() }),
     Buildings("Buildings.json", { buildings.values.asSequence() }),
     Eras("Eras.json", { eras.values.asSequence() }),
@@ -175,7 +176,7 @@ class Ruleset {
         val hashMap = LinkedHashMap<String, T>(items.size)
         for (item in items) {
             val itemName = try { item.name }
-            catch (ex: Exception) {
+            catch (_: Exception) {
                 throw Exception("${T::class.simpleName} is missing a name!")
             }
 
@@ -315,9 +316,11 @@ class Ruleset {
     @Readonly fun allICivilopediaText(): Sequence<ICivilopediaText> = allRulesetObjects() + events.values.flatMap { it.choices }
 
     fun load(folderHandle: FileHandle) {
+        fun RulesetFile.file() = folderHandle.child(filename)
+
         // Note: Most files are loaded using createHashmap, which sets originRuleset automatically.
         // For other files containing IRulesetObject's we'll have to remember to do so manually - e.g. Tech.
-        val modOptionsFile = folderHandle.child("ModOptions.json")
+        val modOptionsFile = RulesetFile.ModOptions.file()
         if (modOptionsFile.exists()) {
             try {
                 modOptions = json().fromJsonFile(ModOptions::class.java, modOptionsFile)
@@ -327,7 +330,7 @@ class Ruleset {
             }
         }
 
-        val techFile = folderHandle.child("Techs.json")
+        val techFile = RulesetFile.Techs.file()
         if (techFile.exists()) {
             val techColumns = json().fromJsonFile(Array<TechColumn>::class.java, techFile)
             for (techColumn in techColumns) {
@@ -341,10 +344,10 @@ class Ruleset {
             }
         }
 
-        val buildingsFile = folderHandle.child("Buildings.json")
+        val buildingsFile = RulesetFile.Buildings.file()
         if (buildingsFile.exists()) buildings += createHashmap(json().fromJsonFile(Array<Building>::class.java, buildingsFile))
 
-        val terrainsFile = folderHandle.child("Terrains.json")
+        val terrainsFile = RulesetFile.Terrains.file()
         if (terrainsFile.exists()) {
             terrains += createHashmap(json().fromJsonFile(Array<Terrain>::class.java, terrainsFile))
             for (terrain in terrains.values) {
@@ -353,43 +356,43 @@ class Ruleset {
             }
         }
 
-        val resourcesFile = folderHandle.child("TileResources.json")
+        val resourcesFile = RulesetFile.TileResources.file()
         if (resourcesFile.exists()) tileResources += createHashmap(json().fromJsonFile(Array<TileResource>::class.java, resourcesFile))
 
-        val improvementsFile = folderHandle.child("TileImprovements.json")
+        val improvementsFile = RulesetFile.TileImprovements.file()
         if (improvementsFile.exists()) tileImprovements += createHashmap(json().fromJsonFile(Array<TileImprovement>::class.java, improvementsFile))
 
-        val erasFile = folderHandle.child("Eras.json")
+        val erasFile = RulesetFile.Eras.file()
         if (erasFile.exists()) eras += createHashmap(json().fromJsonFile(Array<Era>::class.java, erasFile))
         // While `eras.values.toList()` might seem more logical, eras.values is a MutableCollection and
         // therefore does not guarantee keeping the order of elements like a LinkedHashMap does.
         // Using map{} sidesteps this problem
         eras.map { it.value }.withIndex().forEach { it.value.eraNumber = it.index }
 
-        val speedsFile = folderHandle.child("Speeds.json")
+        val speedsFile = RulesetFile.Speeds.file()
         if (speedsFile.exists()) {
             speeds += createHashmap(json().fromJsonFile(Array<Speed>::class.java, speedsFile))
         }
 
-        val unitTypesFile = folderHandle.child("UnitTypes.json")
+        val unitTypesFile = RulesetFile.UnitTypes.file()
         if (unitTypesFile.exists()) unitTypes += createHashmap(json().fromJsonFile(Array<UnitType>::class.java, unitTypesFile))
 
-        val unitsFile = folderHandle.child("Units.json")
+        val unitsFile = RulesetFile.Units.file()
         if (unitsFile.exists()) units += createHashmap(json().fromJsonFile(Array<BaseUnit>::class.java, unitsFile))
 
-        val promotionsFile = folderHandle.child("UnitPromotions.json")
+        val promotionsFile = RulesetFile.UnitPromotions.file()
         if (promotionsFile.exists()) unitPromotions += createHashmap(json().fromJsonFile(Array<Promotion>::class.java, promotionsFile))
 
-        val unitNameGroupsFile = folderHandle.child("UnitNameGroups.json")
+        val unitNameGroupsFile = RulesetFile.UnitNameGroup.file()
         if (unitNameGroupsFile.exists()) unitNameGroups += createHashmap(json().fromJsonFile(Array<UnitNameGroup>::class.java, unitNameGroupsFile))
 
-        val questsFile = folderHandle.child("Quests.json")
+        val questsFile = RulesetFile.Quests.file()
         if (questsFile.exists()) quests += createHashmap(json().fromJsonFile(Array<Quest>::class.java, questsFile))
 
-        val specialistsFile = folderHandle.child("Specialists.json")
+        val specialistsFile = RulesetFile.Specialists.file()
         if (specialistsFile.exists()) specialists += createHashmap(json().fromJsonFile(Array<Specialist>::class.java, specialistsFile))
 
-        val policiesFile = folderHandle.child("Policies.json")
+        val policiesFile = RulesetFile.Policies.file()
         if (policiesFile.exists()) {
             policyBranches += createHashmap(
                 json().fromJsonFile(Array<PolicyBranch>::class.java, policiesFile)
@@ -434,50 +437,50 @@ class Ruleset {
             }
         }
 
-        val beliefsFile = folderHandle.child("Beliefs.json")
+        val beliefsFile = RulesetFile.Beliefs.file()
         if (beliefsFile.exists())
             beliefs += createHashmap(json().fromJsonFile(Array<Belief>::class.java, beliefsFile))
 
-        val religionsFile = folderHandle.child("Religions.json")
+        val religionsFile = RulesetFile.Religions.file()
         if (religionsFile.exists())
             religions += json().fromJsonFile(Array<String>::class.java, religionsFile).toList()
 
-        val ruinRewardsFile = folderHandle.child("Ruins.json")
+        val ruinRewardsFile = RulesetFile.Ruins.file()
         if (ruinRewardsFile.exists())
             ruinRewards += createHashmap(json().fromJsonFile(Array<RuinReward>::class.java, ruinRewardsFile))
 
-        val nationsFile = folderHandle.child("Nations.json")
+        val nationsFile = RulesetFile.Nations.file()
         if (nationsFile.exists()) {
             nations += createHashmap(json().fromJsonFile(Array<Nation>::class.java, nationsFile))
             for (nation in nations.values) nation.setTransients()
         }
 
-        val difficultiesFile = folderHandle.child("Difficulties.json")
+        val difficultiesFile = RulesetFile.Difficulties.file()
         if (difficultiesFile.exists())
             difficulties += createHashmap(json().fromJsonFile(Array<Difficulty>::class.java, difficultiesFile))
 
-        val globalUniquesFile = folderHandle.child("GlobalUniques.json")
+        val globalUniquesFile = RulesetFile.GlobalUniques.file()
         if (globalUniquesFile.exists()) {
             globalUniques = json().fromJsonFile(GlobalUniques::class.java, globalUniquesFile)
             globalUniques.originRuleset = name
         }
 
-        val victoryTypesFile = folderHandle.child("VictoryTypes.json")
+        val victoryTypesFile = RulesetFile.VictoryTypes.file()
         if (victoryTypesFile.exists()) {
             victories += createHashmap(json().fromJsonFile(Array<Victory>::class.java, victoryTypesFile))
         }
 
-        val cityStateTypesFile = folderHandle.child("CityStateTypes.json")
+        val cityStateTypesFile = RulesetFile.CityStateTypes.file()
         if (cityStateTypesFile.exists()) {
             cityStateTypes += createHashmap(json().fromJsonFile(Array<CityStateType>::class.java, cityStateTypesFile))
         }
 
-        val personalitiesFile = folderHandle.child("Personalities.json")
+        val personalitiesFile = RulesetFile.Personalities.file()
         if (personalitiesFile.exists()) {
             personalities += createHashmap(json().fromJsonFile(Array<Personality>::class.java, personalitiesFile))
         }
 
-        val eventsFile = folderHandle.child("Events.json")
+        val eventsFile = RulesetFile.Events.file()
         if (eventsFile.exists()) {
             events += createHashmap(json().fromJsonFile(Array<Event>::class.java, eventsFile))
         }
