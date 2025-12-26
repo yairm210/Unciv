@@ -32,4 +32,15 @@ class Tutorial : RulesetObject() {
 
     override fun getCivilopediaTextLines(ruleset: Ruleset) =
         steps?.map { FormattedLine(it) }.orEmpty()
+
+    /**
+     * The subcategory to place this tutorial within the Civilopedia
+     */
+    var category: String? = null
+
+    /**
+     * TODO: Why are we getting duplicate sub-categories?
+     */
+    override fun getSubCategory(ruleset: Ruleset): String? = if (category == null) "Tutorials" else category
+    override fun getSortGroup(ruleset: Ruleset): Int = if (getSubCategory(ruleset) == "Tutorials") 0 else 1 
 }

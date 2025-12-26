@@ -101,6 +101,9 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> =
             BaseUnitDescriptions.getCivilopediaTextLines(this, ruleset)
 
+    override fun getSortGroup(ruleset: Ruleset): Int = ruleset.technologies[requiredTech]?.era(ruleset)?.eraNumber ?: 100
+    override fun getSubCategory(ruleset: Ruleset): String? = ruleset.technologies[requiredTech]?.era(ruleset)?.name ?: "Other"
+
     @Readonly
     override fun isUnavailableBySettings(gameInfo: GameInfo) =
         super<INonPerpetualConstruction>.isUnavailableBySettings(gameInfo) ||

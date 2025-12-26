@@ -155,6 +155,12 @@ class Promotion : RulesetObject() {
         return textList
     }
 
+    /**
+     * TODO: Why are we getting duplicate sub-categories of the same name?
+     */
+    override fun getSubCategory(ruleset: Ruleset): String? = unitTypes.firstOrNull() ?: "Other"
+    override fun getSortGroup(ruleset: Ruleset): Int = if (getSubCategory(ruleset) == "Other") 2 else 1
+
     companion object {
         data class PromotionBaseNameAndLevel(
             val nameWithoutBrackets: String,
