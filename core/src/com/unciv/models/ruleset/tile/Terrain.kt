@@ -163,8 +163,8 @@ class Terrain : RulesetStatsObject() {
 
     override fun getSortGroup(ruleset: Ruleset) = type.ordinal
     override fun getSubCategory(ruleset: Ruleset): String? = when (type) {
-        TerrainType.Land -> "Terrain"
-        TerrainType.Water -> "Terrain"
+        TerrainType.Land -> "Land"
+        TerrainType.Water -> "Water"
         TerrainType.TerrainFeature -> "Features"
         TerrainType.NaturalWonder -> "Natural Wonders"
     }

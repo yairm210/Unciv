@@ -98,9 +98,9 @@ class TileResource : RulesetStatsObject(), GameResource {
 
     override fun getSortGroup(ruleset: Ruleset) = resourceType.ordinal
     override fun getSubCategory(ruleset: Ruleset): String? = when (resourceType) {
-        ResourceType.Luxury -> "Luxury resources"
-        ResourceType.Strategic -> "Strategic resources"
-        ResourceType.Bonus -> "Bonus resources"
+        ResourceType.Luxury -> "Luxury resource"
+        ResourceType.Strategic -> "Strategic resource"
+        ResourceType.Bonus -> "Bonus resource"
     }
 
     @Readonly

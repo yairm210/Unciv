@@ -22,6 +22,11 @@ class Tutorial : RulesetObject() {
     // -SomeTrog
     override var name = ""  // overridden only to have the name seen first by TranslationFileWriter
 
+    /**
+     * The subcategory to place this tutorial within the Civilopedia.
+     */
+    var category: String? = null
+
     /** These lines will be displayed (when the Tutorial is _triggered_) one after another,
      *  and the Tutorial is marked as completed only once the last line is dismissed with "OK" */
     //todo migrate to civilopediaText then remove or deprecate?
@@ -34,13 +39,17 @@ class Tutorial : RulesetObject() {
         steps?.map { FormattedLine(it) }.orEmpty()
 
     /**
-     * The subcategory to place this tutorial within the Civilopedia
+     * Gets the subcategory of this Tutorial.
+     *
+     * @return The category, or "Tutorials" if one is not provided.
      */
-    var category: String? = null
+    override fun getSubCategory(ruleset: Ruleset): String? = if (category.isNullOrEmpty()) "Tutorials" else category
 
     /**
-     * TODO: Why are we getting duplicate sub-categories?
+     * Builds a sort group number based on the first two characters of the category.
      */
-    override fun getSubCategory(ruleset: Ruleset): String? = if (category == null) "Tutorials" else category
-    override fun getSortGroup(ruleset: Ruleset): Int = if (getSubCategory(ruleset) == "Tutorials") 0 else 1 
+    override fun getSortGroup(ruleset: Ruleset): Int {
+        if (category.isNullOrEmpty()) return -1
+        return category?.take(2)?.lowercase()?.map { it.code }?.fold(0) { acc, code -> acc * 256 + code } ?: -1
+    }
 }

@@ -58,7 +58,7 @@
   },
     {
         "name": "Food",
-        "category": "Cities",
+        "category": "Stats",
         "civilopediaText": [
             {"text": "Food is the resource fundamental to your Cities', and as a result Nation's, population and health."},
             {"text": "Every Citizen in each City consumes Food per turn. Any left over is considered Growth and is stored in the City Center. Once enough accumulates, the City Grows and a new Citizen is added."},
@@ -613,7 +613,7 @@
   },
     {
         "name": "Keyboard Bindings",
-        "category": "UI",
+        "category": "Game Options",
         "civilopediaText": [
             {"text":"Limitations","header":3},
             {"text":"This is a work in progress.","color":"FIREBRICK","starred":true},
