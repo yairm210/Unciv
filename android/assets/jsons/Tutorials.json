@@ -12,7 +12,6 @@
   // Civilopedia only, because players said this was too wall-of-text
   {
       "name": "New Game",
-      "category": "Tutorials",
       "civilopediaText": [
           {"text": "Welcome to Unciv!"},
           {},
