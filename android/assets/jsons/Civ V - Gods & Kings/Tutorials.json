@@ -95,7 +95,10 @@
         "name": "Beliefs",
         "civilopediaText": [
             {"text": "There are four types of beliefs: Pantheon, Founder, Follower and Enhancer beliefs."},
-            {"text": "Pantheon and Follower beliefs apply to each city following your religion, while Founder and Enhancer beliefs only apply to the founder of a religion."}
+            {"text": "Pantheon and Follower beliefs apply to each city following your religion, while Founder and Enhancer beliefs only apply to the founder of a religion."},
+            {},
+            {"extraImage": "Victor Hugo", "imageSize": 80},
+            {"text":  "\"To love or to have loved, that is enough. Ask nothing further. There is no other pearl to be found in the dark folds of life.\" - Victor Hugo"},
         ],
         "uniques": [
             "Will not be displayed in Civilopedia" // Pulled into the religion category by code
@@ -106,6 +109,10 @@
         // The available Religions will be appended to any civilopediaText defined here by code
         "civilopediaText": [
             {"text": "Name and symbol of Religions are purely decorative, neither have any gameplay effects."},
+            {},
+            {"extraImage": "Blaise Pascal", "imageSize": 80},
+            {"text": "\"Belief is a wise wager. Granted that faith cannot be proved, what harm will come to you if you gamble on its truth and it proves false?\" - Blaise Pascal"},
+            {"separator":  true},
             {},
         ],
         "uniques": [
