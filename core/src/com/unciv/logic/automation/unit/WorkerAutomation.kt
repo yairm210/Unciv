@@ -118,23 +118,15 @@ class WorkerAutomation(
         localUniqueCache: LocalUniqueCache,
         currentTile: Tile
     ): Boolean {
-        val citiesToNumberOfUnimprovedTiles = HashMap<String, Int>()
-        
-        for (city in unit.civ.cities) {
-            citiesToNumberOfUnimprovedTiles[city.id] = city.getTiles()
-                .count { tile ->
-                    tile.isLand
-                            && tile.getUnits().none { unit -> unit.cache.hasUniqueToBuildImprovements }
-                            && (tile.isPillaged() || tileHasWorkToDo(tile, unit, localUniqueCache))
-                }
-        }
+        // Note, however, that the closest city to a tile isn't necessarily the owning city
+        val closestUndevelopedCity = unit.civ.cities
+            .filter { it != unit.currentTile.owningCity && it.getTiles().any { tile -> tile.isLand
+                    && tile.getUnits().none { unit -> unit.cache.hasUniqueToBuildImprovements }
+                    && (tile.isPillaged() || tileHasWorkToDo(tile, unit, localUniqueCache)) } }
+            .sortedBy { it.getCenterTile().aerialDistanceTo(currentTile) }
+            .firstOrNull { unit.movement.canReach(it.getCenterTile()) } //goto closest undeveloped city
 
-        val closestUndevelopedCity = unit.civ.cities.asSequence()
-            .filter { citiesToNumberOfUnimprovedTiles[it.id]!! > 0 }
-            .sortedByDescending { it.getCenterTile().aerialDistanceTo(currentTile) }
-            .firstOrNull { unit.movement.canReach(it.getCenterTile()) } //goto most undeveloped city
-
-        if (closestUndevelopedCity != null && closestUndevelopedCity != currentTile.owningCity) {
+        if (closestUndevelopedCity != null) {
             debug("WorkerAutomation: %s -> head towards undeveloped city %s", unit, closestUndevelopedCity.name)
             val reachedTile = unit.movement.headTowards(closestUndevelopedCity.getCenterTile())
             if (reachedTile != currentTile) unit.doAction() // since we've moved, maybe we can do something here - automate
@@ -257,6 +249,7 @@ class WorkerAutomation(
             return false
         if (tile.owningCity != null && tile.getOwner() != civInfo) return false
         if (tile.isCityCenter()) return false
+        if (tile in roadBetweenCitiesAutomation.tilesOfRoadsMap) return true
         // Don't try to improve tiles we can't benefit from at all
         if (!tile.hasViewableResource(civInfo) && tile.getTilesInDistance(civInfo.gameInfo.ruleset.modOptions.constants.cityWorkRange)
                 .none { it.isCityCenter() && it.getCity()?.civ == civInfo }
@@ -277,6 +270,7 @@ class WorkerAutomation(
 
         var priority = 0f
         if (tile.getOwner() == civInfo) {
+            priority += 1f // the fact it's inside our borders means we can do something
             if (tile.providesYield()) priority += 2
             if (tile.hasFalloutEquivalent()) priority += 1
             if (tile.terrainFeatures.isNotEmpty()) {

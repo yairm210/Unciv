@@ -583,6 +583,25 @@ class Civilization : IsPartOfGameInfoSerialization {
         yieldAll(gameInfo.getGlobalUniques().uniqueMap.getTriggeredUniques(trigger, gameContext, triggerFilter))
     }.toList() // Triggers can e.g. add buildings which contain triggers, causing concurrent modification errors
 
+    @Readonly
+    fun getTriggeredUniques(
+        trigger: UniqueType,
+        gameContext: GameContext = state,
+        triggerFilter: (Unique) -> Boolean = { true },
+        ignoreCities: Boolean = false
+    ) : Iterable<Unique> = sequence {
+        yieldAll(nation.uniqueMap.getTriggeredUniques(trigger, gameContext, triggerFilter))
+        if (!ignoreCities) yieldAll(cities.asSequence()
+            .flatMap { city -> city.cityConstructions.builtBuildingUniqueMap.getTriggeredUniques(trigger, gameContext, triggerFilter) }
+        )
+        if (religionManager.religion != null)
+            yieldAll(religionManager.religion!!.founderBeliefUniqueMap.getTriggeredUniques(trigger, gameContext, triggerFilter))
+        yieldAll(policies.policyUniques.getTriggeredUniques(trigger, gameContext, triggerFilter))
+        yieldAll(tech.techUniques.getTriggeredUniques(trigger, gameContext, triggerFilter))
+        yieldAll(getEra().uniqueMap.getTriggeredUniques (trigger, gameContext, triggerFilter))
+        yieldAll(gameInfo.getGlobalUniques().uniqueMap.getTriggeredUniques(trigger, gameContext, triggerFilter))
+    }.toList() // Triggers can e.g. add buildings which contain triggers, causing concurrent modification errors
+
     /** Implements [UniqueParameterType.CivFilter][com.unciv.models.ruleset.unique.UniqueParameterType.CivFilter] */
     @Readonly
     fun matchesFilter(filter: String, state: GameContext? = this.state, multiFilter: Boolean = true): Boolean =

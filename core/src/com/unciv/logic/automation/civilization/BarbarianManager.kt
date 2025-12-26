@@ -132,10 +132,7 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
             } else
                 tile = viableTiles.random()
 
-            tile.setImprovement(Constants.barbarianEncampment)
-            val newCamp = Encampment(tile.position)
-            newCamp.gameInfo = gameInfo
-            encampments.add(newCamp)
+            createNewCamp(tile)
             notifyCivsOfBarbarianEncampment(tile)
             addedCamps++
 
@@ -163,6 +160,14 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
                 it.setLastSeenImprovement(tile.position, Constants.barbarianEncampment)
             }
     }
+    // Creates a new camp without any checks - Does not affect notifications
+    fun createNewCamp(tile: Tile) {
+        tile.setImprovement(Constants.barbarianEncampment)
+        val newCamp = Encampment(tile.position)
+        newCamp.gameInfo = gameInfo
+        encampments.add(newCamp)
+    }
+
 }
 
 class Encampment() : IsPartOfGameInfoSerialization {

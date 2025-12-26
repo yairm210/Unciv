@@ -36,7 +36,8 @@ internal enum class ConsoleParameterType(
     policyName( { ruleset.policyBranches.keys + ruleset.policies.keys } ),
     techName( { ruleset.technologies.keys } ),
     cityName( { civilizations.flatMap { civ -> civ.cities.map { it.name } } } ),
-    triggeredUniqueTemplate( { UniqueType.entries.filter { it.canAcceptUniqueTarget(UniqueTarget.Triggerable) }.map { it.text } }, preferquoted = true ),
+    triggeredCivUniqueTemplate( { getTriggeredUniques(UniqueTarget.Triggerable) }, preferquoted = true ),
+    triggeredUnitUniqueTemplate( { getTriggeredUniques(UniqueTarget.UnitTriggerable) }, preferquoted = true ),
     difficulty( { ruleset.difficulties.keys } ),
     boolean( { listOf("true", "false") }),
     diplomacyFlag( { DiplomacyFlags.entries.map { it.name } }),
@@ -52,5 +53,13 @@ internal enum class ConsoleParameterType(
             else type.getOptions(console).map { CliInput(it) }
         }
         fun multiOptions(name: String, console: DevConsolePopup) = name.split('|').flatMap { getOptions(it, console) }
+
+        private fun getTriggeredUniques(target: UniqueTarget) =
+            // Not canAcceptUniqueTarget, we want to separate civ/unit triggerables
+            UniqueType.entries.asSequence()
+                .filter { target in it.targetTypes }
+                .filterNot { it.getDeprecationAnnotation()?.level == DeprecationLevel.ERROR }
+                .map { it.text }
+                .asIterable()
     }
 }
