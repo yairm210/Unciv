@@ -55,21 +55,6 @@ class TutorialController(screen: BaseScreen) {
         val name = tutorial.value.replace('_', ' ').trimStart()
         return tutorials[name]?.steps ?: emptyList()
     }
-
-    /** Get all Tutorials to be displayed in the Civilopedia */
-    fun getCivilopediaTutorials(): Collection<ICivilopediaText> {
-        // Todo This is essentially an 'un-private' kludge and the accessor
-        //      in CivilopediaCategories desperately needs independence from TutorialController:
-        //      Move storage to RuleSet someday?
-
-        /** Note: **Not** UncivGame.Current.gameInfo?.getGlobalUniques() because this is for pedia display,
-         *        and showing the merged GlobalUniques + Speed uniques + Difficulty might surprise.
-         */
-        val globalUniques = UncivGame.Current.screen?.getCivilopediaRuleset()?.globalUniques
-        return tutorials.values +
-            // Add entry for Global Uniques only if they have anything interesting
-            listOfNotNull(globalUniques?.takeIf { it.hasUniques() })
-    }
 }
 
 
