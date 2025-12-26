@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.unique.LocalUniqueCache
-import com.unciv.ui.components.tilegroups.CityButton
+import com.unciv.ui.components.tilegroups.citybutton.CityButton
 import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.components.tilegroups.WorldTileGroup
 import com.unciv.utils.DebugUtils
@@ -57,7 +57,7 @@ class TileLayerCityButton(tileGroup: TileGroup, size: Float) : TileLayer(tileGro
 
         if (viewingCiv == null) return
         if (city == null || !tileGroup.tile.isCityCenter()) return
-        
+
         // Create (if not yet) and update city button
         if (cityButton == null) {
             cityButton = CityButton(city, tileGroup)

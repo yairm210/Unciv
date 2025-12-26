@@ -1,0 +1,175 @@
+{
+  "$id": "https://raw.githubusercontent.com/yairm210/Unciv/refs/heads/master/docs/Modders/schemas/Buildings.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Buildings",
+  "description": "A list of buildings and wonders you want to use.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "title": "Name",
+        "description": "The name of the Building.",
+        "examples": [
+          "National College",
+          "Granary",
+          "Library",
+          "Workshop",
+          "University"
+        ]
+      },
+      "production": {
+        "type": "number",
+        "title": "Production",
+        "description": "Production yield provided by this building per turn."
+      },
+      "food": {
+        "type": "number",
+        "title": "Food",
+        "description": "Food yield provided by this building per turn."
+      },
+      "gold": {
+        "type": "number",
+        "title": "Gold",
+        "description": "Gold yield provided by this building per turn."
+      },
+      "science": {
+        "type": "number",
+        "title": "Science",
+        "description": "Science yield provided by this building per turn."
+      },
+      "culture": {
+        "type": "number",
+        "title": "Culture",
+        "description": "Culture yield provided by this building per turn."
+      },
+      "happiness": {
+        "type": "number",
+        "title": "Happiness",
+        "description": "Happiness provided by this building."
+      },
+      "faith": {
+        "type": "number",
+        "title": "Faith",
+        "description": "Faith yield provided by this building per turn."
+      },
+      "uniques": {
+        "$ref": "refs/Uniques.schema.json",
+        "description": "Unique effects provided by this building."
+      },
+      "civilopediaText": {
+        "$ref": "refs/CivilopediaText.schema.json",
+        "title": "Civilopedia Text",
+        "description": "Civilopedia entry for this building."
+      },
+      "requiredTech": {
+        "type": "string",
+        "title": "Required Tech",
+        "description": "The tech that should be researched before this building may be built. Must be in Techs.json."
+      },
+      "cost": {
+        "type": "integer",
+        "title": "Cost",
+        "default": -1,
+        "description": "Amount of production required to build the building. If -1, the buildingCost from requiredTech column is used."
+      },
+      "maintenance": {
+        "type": "integer",
+        "title": "Maintenance",
+        "description": "Gold upkeep per turn for this building."
+      },
+      "percentStatBonus": {
+        "$ref": "refs/Stats.schema.json",
+        "title": "Percent Stat Bonus",
+        "description": "Percent-based stat bonuses provided by this building."
+      },
+      "specialistSlots": {
+        "type": "object",
+        "title": "Specialist Slots",
+        "additionalProperties": {
+          "type": "integer"
+        },
+        "description": "How many specialists of each type does this building allow for. Key must be name of existing specialist, as defined in Specialists.json."
+      },
+      "greatPersonPoints": {
+        "type": "object",
+        "title": "Great Person Points",
+        "additionalProperties": {
+          "type": "integer"
+        },
+        "description": "Which Great Person Points this building generates per turn. Key must be name of Great Person unit."
+      },
+      "hurryCostModifier": {
+        "type": "number",
+        "title": "Hurry Cost Modifier",
+        "description": "When this building is bought using gold or faith, the price is increased by this much percent."
+      },
+      "isWonder": {
+        "type": "boolean",
+        "title": "Is Wonder",
+        "description": "Whether this building is a global wonder.",
+        "default": false
+      },
+      "isNationalWonder": {
+        "type": "boolean",
+        "title": "Is National Wonder",
+        "description": "Whether this building is a national wonder.",
+        "default": false
+      },
+      "requiredBuilding": {
+        "type": "string",
+        "title": "Required Building",
+        "description": "A building that has to be built before this building can be built. Must be in Buildings.json."
+      },
+      "requiredResource": {
+        "type": "string",
+        "title": "Required Resource",
+        "description": "The resource that is consumed when building this building. Must be in TileResources.json."
+      },
+      "requiredNearbyImprovedResources": {
+        "type": "array",
+        "title": "Required Nearby Improved Resources",
+        "items": {
+          "type": "string"
+        },
+        "uniqueItems": true,
+        "description": "List of improved resources that must be nearby for this building to be constructed."
+      },
+      "cityStrength": {
+        "description": "Strength bonus the city in which this building is built receives.",
+        "title": "City Strength",
+        "type": "number",
+        "default": 0
+      },
+      "cityHealth": {
+        "description": "Health bonus the city in which this building is built receives.",
+        "title": "City Health",
+        "type": "integer",
+        "default": 0
+      },
+      "uniqueTo": {
+        "type": "string",
+        "title": "Unique To",
+        "description": "If supplied, only the nation with this name can build this building. Must be in Nations.json."
+      },
+      "replaces": {
+        "type": "string",
+        "title": "Replaces",
+        "description": "The name of a building that should be replaced by this building. Must be in Buildings.json."
+      },
+      "quote": {
+        "type": "string",
+        "title": "Quote",
+        "description": "If this building is a wonder, this string will be shown on the completion popup."
+      },
+      "replacementTextForUniques": {
+        "type": "string",
+        "title": "Replacement Text For Uniques",
+        "description": "Freeform text that will be shown to users, overriding the list of uniques."
+      }
+    },
+    "required": ["name"],
+    "additionalProperties": false
+  }
+}

@@ -21,6 +21,7 @@ class Technology: RulesetObject() {
     var column: TechColumn? = null // The column that this tech is in the tech tree
     var row: Int = 0
     var quote = ""
+    override fun getSortGroup(ruleset: Ruleset) = column?.columnNumber ?: 0
 
     @Readonly fun era(): String = column!!.era
 

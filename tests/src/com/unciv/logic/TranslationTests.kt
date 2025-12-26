@@ -271,8 +271,15 @@ class TranslationTests {
         var failed = false
         TranslationFileReader.readTemplates { templateLines ->
             for (line in templateLines) {
-                if (!line.startsWith('#') && line.endsWith(" =")) {
+                if (line.isEmpty() || line.startsWith('#')) continue
+                if (line.endsWith(" =")) {
                     println("$line ends without a space at the end")
+                    failed = true
+                } else if (!line.contains(" = ")) {
+                    println("$line is missing the equals sign")
+                    failed = true
+                } else if (!line.endsWith(" = ")) {
+                    println("$line has extra characters after the equals sign and space")
                     failed = true
                 }
             }

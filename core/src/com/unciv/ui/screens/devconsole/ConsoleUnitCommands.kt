@@ -86,6 +86,8 @@ internal class ConsoleUnitCommands : ConsoleCommandNode {
             val unit = console.getSelectedUnit()
             unit.promotions.XP = xp
             DevConsoleResponse.OK
-        }
+        },
+
+        "activatetrigger" to ConsoleTriggerAction("unit"),
     )
 }

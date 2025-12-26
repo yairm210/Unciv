@@ -93,8 +93,11 @@ enum class CivilopediaCategories (
         CivilopediaImageGetters.belief,
         KeyboardBinding.PediaBeliefs,
         "ReligionIcons/Religion",
-        { ruleset, _, _ -> (ruleset.beliefs.values.asSequence() +
-            BaseBelief.getCivilopediaReligionEntry(ruleset)).toList() }
+        { ruleset, _, _ -> (
+            ruleset.beliefs.values.asSequence() +
+            BaseBelief.getCivilopediaBeliefsEntry(ruleset) +
+            BaseBelief.getCivilopediaReligionEntry(ruleset)
+        ).toList() }
     ),
     Tutorial ("Tutorials",
         getImage = null,

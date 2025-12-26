@@ -16,6 +16,11 @@ import kotlin.math.roundToInt
 
 
 class PolicyManager : IsPartOfGameInfoSerialization {
+    companion object {
+        /** Used in [getCultureRefundMap] when refunding more policies than were bought with culture
+         *  to indicate the "surplus" policies - those must have been adopted as free policies. */
+        const val FREE_POLICY_MARKER = -1
+    }
 
     @Transient
     lateinit var civInfo: Civilization
@@ -141,17 +146,24 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     @Readonly fun getCultureNeededForNextPolicy(): Int = getPolicyCultureCost(numberOfAdoptedPolicies)
 
     @Readonly
-    fun getCultureRefundMap(policiesToRemove: List<Policy>, refundPercentage: Int): Map<Policy, Int> {
+    /** Maps [policiesToRemove] to a culture amount to refund.
+     *  If more policies are removed than were bought with culture, the "extras" are returned
+     *  with value [FREE_POLICY_MARKER]: do not refund in that case, grant the free policy back - or not.
+     */
+    fun getCultureRefundMap(policiesToRemove: Sequence<Policy>, refundPercentage: Int): Map<Policy, Int> {
         var policyCostInput = numberOfAdoptedPolicies
 
         val policyMap = mutableMapOf<Policy, Int>()
 
         for (policy in policiesToRemove) {
+            if (policy.policyBranchType == PolicyBranchType.BranchComplete)
+                continue
             policyCostInput--
-            policyMap[policy] = (getPolicyCultureCost(policyCostInput) * refundPercentage/100f).roundToInt()
+            policyMap[policy] = if (policyCostInput < 0) FREE_POLICY_MARKER
+                else (getPolicyCultureCost(policyCostInput) * refundPercentage/100f).roundToInt()
         }
 
-        return policyMap.toMap()
+        return policyMap
     }
 
     @Readonly
@@ -170,13 +182,31 @@ class PolicyManager : IsPartOfGameInfoSerialization {
 
     @Readonly fun getAdoptedPolicies(): HashSet<String> = adoptedPolicies
 
-    /** Uncached, use carefully */
     @Readonly
-    fun getAdoptedPoliciesMatching(policyFilter: String, gameContext: GameContext) =
-        adoptedPolicies.asSequence()
-            .mapNotNull { getRulesetPolicies()[it] }
+    /**
+     *  Gets a Sequence of those adopted policies as [Policy] objects that match [policyFilter]
+     *
+     *  Uncached, use carefully
+     *
+     *  @param gameContext Passed to [Policy.matchesFilter]
+     *  @param forRemoval When `true` sorts the result by json position descending,
+     *      so a removal in order won't remove a branch start before its members.
+     *      Also, `BranchComplete` policies are skipped - you shouldn't try to remove them explicitly.
+     */
+    fun getAdoptedPoliciesMatching(
+        policyFilter: String,
+        gameContext: GameContext,
+        forRemoval: Boolean = false
+    ): Sequence<Policy> {
+        val rulesetPolicies = getRulesetPolicies()
+        val matchingPolicies = adoptedPolicies.asSequence()
+            .mapNotNull { rulesetPolicies[it] }
             .filter { it.matchesFilter(policyFilter, gameContext) }
-            .toList()
+        if (!forRemoval) return matchingPolicies
+        return matchingPolicies
+            .filterNot { it.policyBranchType == PolicyBranchType.BranchComplete }
+            .sortedByDescending { rulesetPolicies.values.indexOf(it) }
+    }
 
     @Readonly fun isAdopted(policyName: String): Boolean = adoptedPolicies.contains(policyName)
 
