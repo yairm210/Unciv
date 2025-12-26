@@ -86,7 +86,8 @@ class WorkerAutomation(
         }
         val tileToWork = findTileToWork(unit, dangerousTiles, localUniqueCache)
 
-        if (tileToWork != currentTile && tileToWork != null) {
+        if (tileToWork != currentTile && tileToWork != null 
+            && (tileToWork.getOwner() == null || tileToWork.getOwner() == unit.civ || tileToWork.getOwner()!!.isCityState)) {
             headTowardsTileToWork(unit, tileToWork, localUniqueCache)
             return
         }
