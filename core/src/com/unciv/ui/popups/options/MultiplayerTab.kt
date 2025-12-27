@@ -98,23 +98,21 @@ internal class MultiplayerTab(
             multiplayerServerTextField.text = Gdx.app.clipboard.contents
         }).colspan(2).padBottom(Constants.defaultFontSize / 2.0f).row()
 
-        val errorTextField = "".toLabel().also {
-            it.color = Color.RED
-            it.isVisible = false
-        }
-    
+        val errorTextField = "".toLabel(Color.RED)
+        errorTextField.isVisible = false
+
         serverIpTable.add(errorTextField).colspan(2).row()
-    
+
         multiplayerServerTextField.onChange {
             fixTextFieldUrlOnType(multiplayerServerTextField)
-    
+
             try {
                 // we can't trim on 'fixTextFieldUrlOnType' for reasons
                 val uri = URI(multiplayerServerTextField.text.trimEnd('/'))
                 if (uri.scheme !in listOf("http", "https")) {
                     throw Error("URL must start with http:// or https://")
                 }
-    
+
                 // URL has stricter validation than URI
                 settings.multiplayer.setServer(uri.toURL().toString())
                 errorTextField.isVisible = false
