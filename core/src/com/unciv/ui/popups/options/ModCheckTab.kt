@@ -41,7 +41,7 @@ import kotlinx.coroutines.isActive
 private const val MOD_CHECK_WITHOUT_BASE = "-none-"
 private const val MOD_CHECK_DYNAMIC_BASE = "-declared requirements-"
 
-class ModCheckTab(
+internal class ModCheckTab(
     val screen: BaseScreen
 ) : Table(), TabbedPager.IPageExtensions {
     private val fixedContent = Table()

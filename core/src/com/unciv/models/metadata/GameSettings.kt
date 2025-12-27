@@ -10,12 +10,14 @@ import com.unciv.logic.multiplayer.chat.ChatWebSocket
 import com.unciv.models.UncivSound
 import com.unciv.models.metadata.GameSettings.WindowState.Companion.minimumHeight
 import com.unciv.models.metadata.GameSettings.WindowState.Companion.minimumWidth
+import com.unciv.models.translations.tr
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyboardBindings
 import com.unciv.ui.screens.worldscreen.NotificationsScroll
 import com.unciv.utils.Display
 import com.unciv.utils.ScreenOrientation
+import java.awt.Rectangle
 import yairm210.purity.annotations.Readonly
 import java.text.Collator
 import java.text.NumberFormat
@@ -219,7 +221,7 @@ class GameSettings {
      *  retrieving a valid position from our upstream libraries while the window is maximized or iconified has proven tricky so far.
      */
     data class WindowState(val width: Int = 900, val height: Int = 600) {
-        constructor(bounds: java.awt.Rectangle) : this(bounds.width, bounds.height)
+        constructor(bounds: Rectangle) : this(bounds.width, bounds.height)
 
         companion object {
             /** Our choice of minimum window width */
@@ -251,7 +253,7 @@ class GameSettings {
          *  @return `this` unchanged if it is within valid limits, otherwise a new WindowState that is.
          *  @see coerceIn
          */
-        fun coerceIn(maximumWindowBounds: java.awt.Rectangle) =
+        fun coerceIn(maximumWindowBounds: Rectangle) =
             coerceIn(maximumWindowBounds.width, maximumWindowBounds.height)
     }
 
@@ -267,7 +269,8 @@ class GameSettings {
         Large(1200f,800f),
         Huge(1500f,1000f),
         FullHD(1920f, 1280f),
-        QuadHD(2560f, 1707f)
+        QuadHD(2560f, 1707f);
+        override fun toString() = name.tr() // Allow direct use in a SelectBox
     }
 
     enum class NationPickerListMode { Icons, List }
@@ -344,31 +347,6 @@ class GameSettings {
         var autoPlayPolicies: Boolean = true
         var autoPlayReligion: Boolean = true
         var autoPlayDiplomacy: Boolean = true
-    }
-
-    @Suppress("SuspiciousCallableReferenceInLambda")  // By @Azzurite, safe as long as that warning below is followed
-    enum class GameSetting(
-        val kClass: KClass<*>,
-        private val propertyGetter: (GameSettings) -> KMutableProperty0<*>
-    ) {
-        //     Uncomment these once they are refactored to send events on change
-//     MULTIPLAYER_USER_ID(String::class, { it.multiplayer::userId }),
-//     MULTIPLAYER_SERVER(String::class, { it.multiplayer::server }),
-//     MULTIPLAYER_STATUSBUTTON_IN_SINGLEPLAYER(Boolean::class, { it.multiplayer::statusButtonInSinglePlayer }),
-//     MULTIPLAYER_TURN_CHECKER_ENABLED(Boolean::class, { it.multiplayer::turnCheckerEnabled }),
-//     MULTIPLAYER_TURN_CHECKER_PERSISTENT_NOTIFICATION_ENABLED(Boolean::class, { it.multiplayer::turnCheckerPersistentNotificationEnabled }),
-//     MULTIPLAYER_HIDE_DROPBOX_WARNING(Boolean::class, { it.multiplayer::hideDropboxWarning }),
-        MULTIPLAYER_TURN_CHECKER_DELAY(Duration::class, { it.multiplayer::turnCheckerDelay }),
-        MULTIPLAYER_CURRENT_GAME_REFRESH_DELAY(Duration::class, { it.multiplayer::currentGameRefreshDelay }),
-        MULTIPLAYER_ALL_GAME_REFRESH_DELAY(Duration::class, { it.multiplayer::allGameRefreshDelay }),
-        MULTIPLAYER_CURRENT_GAME_TURN_NOTIFICATION_SOUND(UncivSound::class, { it.multiplayer::currentGameTurnNotificationSound }),
-        MULTIPLAYER_OTHER_GAME_TURN_NOTIFICATION_SOUND(UncivSound::class, { it.multiplayer::otherGameTurnNotificationSound });
-
-        /** **Warning:** It is the obligation of the caller to select the same type [T] that the [kClass] of this property has */
-        fun <T> getProperty(settings: GameSettings): KMutableProperty0<T> {
-            @Suppress("UNCHECKED_CAST")
-            return propertyGetter(settings) as KMutableProperty0<T>
-        }
     }
 
     //endregion
