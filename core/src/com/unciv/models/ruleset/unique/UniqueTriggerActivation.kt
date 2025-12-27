@@ -1182,11 +1182,11 @@ object UniqueTriggerActivation {
                 val terrain = ruleset.terrains[unique.params[0]] ?: return null
                 if (terrain.name == Constants.river)
                     return getOneTimeChangeRiverTriggerFunction(tile)
+                if (terrain.type.isBaseTerrain && tile.baseTerrain == terrain.name) return null
+                if (tile.isCityCenter() && terrain.type != TerrainType.Land) return null
+                if (tile.terrainFeatures.contains(terrain.name)) return null
                 if (terrain.type == TerrainType.TerrainFeature && !terrain.occursOn.contains(tile.lastTerrain.name))
                     return null
-                if (tile.terrainFeatures.contains(terrain.name)) return null
-                if (tile.isCityCenter() && terrain.type != TerrainType.Land) return null
-                if (terrain.type.isBaseTerrain && tile.baseTerrain == terrain.name) return null
 
                 return {
                     when (terrain.type) {

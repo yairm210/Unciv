@@ -86,10 +86,17 @@ class Belief() : RulesetObject() {
             yieldAll(matchingBeliefs.map { FormattedLine(it.name, link = it.makeLink(), indent = 1) })
         }
 
+        fun getCivilopediaBeliefsEntry(ruleset: Ruleset) = Belief().apply {
+            name = "Beliefs"
+            val lines = ArrayList<FormattedLine>()
+            lines += FormattedLine("There are four types of beliefs: Pantheon, Founder, Follower and Enhancer beliefs.")
+            lines += FormattedLine("Pantheon and Follower beliefs apply to each city following your religion, while Founder and Enhancer beliefs only apply to the founder of a religion.")
+            civilopediaText = lines
+        }
+
         fun getCivilopediaReligionEntry(ruleset: Ruleset) = Belief().apply {
             name = "Religions"
             val lines = ArrayList<FormattedLine>()
-            lines += FormattedLine(separator = true)
             ruleset.religions.sortedWith(compareBy(UncivGame.Current.settings.getCollatorFromLocale()) { it.tr(hideIcons = true) }).forEach {
                 lines += FormattedLine(it, icon = "Belief/$it")
             }

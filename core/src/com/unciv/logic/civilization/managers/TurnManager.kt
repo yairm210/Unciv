@@ -71,7 +71,7 @@ class TurnManager(val civInfo: Civilization) {
         startTurnFlags()
         updateRevolts()
 
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponTurnStart, civInfo.state))
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponTurnStart, civInfo.state, ignoreCities = true))
             UniqueTriggerActivation.triggerUnique(unique, civInfo)
 
         for (city in civInfo.cities) {
@@ -239,7 +239,7 @@ class TurnManager(val civInfo: Civilization) {
         if (UncivGame.Current.settings.citiesAutoBombardAtEndOfTurn)
             NextTurnAutomation.automateCityBombardment(civInfo) // Bombard with all cities that haven't, maybe you missed one
 
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponTurnEnd, civInfo.state))
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponTurnEnd, civInfo.state, ignoreCities = true))
             UniqueTriggerActivation.triggerUnique(unique, civInfo)
 
         val notificationsLog = civInfo.notificationsLog

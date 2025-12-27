@@ -1,3 +1,38 @@
+## 4.19.4
+
+minor perf(cpu): better order for "ignore terrain change" operations
+
+By RobLoach:
+- Correct MP games' first turn time 
+- Restore Civilopedia Event-based Tutorials 
+
+By EmperorPinguin:
+- AI: don't send workers to other civ's territory 
+- AI: keep wandering if inadvertently ended up in foreign territory 
+
+MP server: Display URL errors & optimize redirects - By touhidurrr
+
+Change mounted attack sounds - By SomeTroglodyte
+
+Gain city-only stockpiles from provides/consumes uniques - By SeventhM
+
+## 4.19.3
+
+Remove incompatible improvements in progress upon changing terrain
+
+By EmperorPinguin:
+- AI: choose favoredReligion more often 
+- AI: build settlers also when at war 
+
+Modding: Add city context to turn start & end uniques from buildings - By SeventhM
+
+By RobLoach:
+- Fix removed favored Religions 
+- Minor Civilopedia UX Improvements 
+- Flip Defensive Pact opinion comparision 
+
+Console: 'unit activatetrigger'  - By SomeTroglodyte
+
 ## 4.19.2
 
 AI improvements - By EmperorPinguin

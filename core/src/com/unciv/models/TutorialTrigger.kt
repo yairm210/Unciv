@@ -43,7 +43,6 @@ enum class TutorialTrigger(val value: String, val isCivilopedia: Boolean = !valu
     Faith("Faith"),
     Religion("Religion"),
     Religion_inside_cities("Religion_inside_cities"),
-    Beliefs("Beliefs"),
     SpreadingReligion("Spreading_Religion"),
     Inquisitors("Inquisitors"),
     MayanCalendar("Maya_Long_Count_calendar_cycle"),

@@ -213,7 +213,7 @@ object UnitAutomation {
                         && unit.movement.canMoveTo(it)
                         && unit.movement.canReach(it)
                         && unit.getDamageFromTerrain(it) <= 0 // Don't end turn on damaging terrain for no good reason
-                        && (!stayInTerritory || it.getOwner() == unit.civ)
+                        && (!stayInTerritory || it.getOwner() == unit.civ || unit.currentTile.getOwner() != unit.civ)
                 }
         if (reachableTiles.any()) unit.movement.moveToTile(reachableTiles.toList().random())
     }
@@ -274,7 +274,7 @@ object UnitAutomation {
         if (unit.hasUnique(UniqueType.SelfDestructs)) return false // don't use single-use units against barbarians...
         val cities = unit.civ.cities
         val knownEncampments = cities.asSequence()
-            .flatMap { it.getCenterTile().getTilesInDistance(5) }
+            .flatMap { it.getCenterTile().getTilesInDistance(6) }
                 .filter { it.improvement == Constants.barbarianEncampment && unit.civ.hasExplored(it) }
             .distinct()
         val encampmentsCloseToCities = knownEncampments.asSequence()
