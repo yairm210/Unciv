@@ -14,6 +14,7 @@ import com.unciv.logic.event.EventBus
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.UncivStage
 import com.unciv.utils.Concurrency
+import games.rednblack.miniaudio.MiniAudio
 
 class AndroidGame(private val activity: Activity) : UncivGame() {
 
@@ -79,4 +80,8 @@ class AndroidGame(private val activity: Activity) : UncivGame() {
     }
 
     fun isInitializedProxy() = super.isInitialized
+
+    override fun initAudio(miniAudio: MiniAudio) {
+        miniAudio.setupAndroid(activity.applicationContext.assets)
+    }
 }
