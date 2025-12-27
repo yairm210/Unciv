@@ -262,8 +262,9 @@ object UnitActionsFromUniques {
                 val triggerFunction = UniqueTriggerActivation.getTriggerFunction(unique, unit.civ, unit = unit, tile = unit.currentTile)
                     ?: return null
                 return { // This is the *action* that will be triggered!
-                    for(i in 0..<unique.getUniqueMultiplier(unit.cache.state))
+                    repeat(unique.getUniqueMultiplier(unit.cache.state)) {
                         triggerFunction.invoke()
+                    }
                     UnitActionModifiers.activateSideEffects(unit, unique)
                 }
             }()

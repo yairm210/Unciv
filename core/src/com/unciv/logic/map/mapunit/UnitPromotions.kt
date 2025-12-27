@@ -131,12 +131,12 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
     }
 
     private fun doDirectPromotionEffects(promotion: Promotion) {
-        val uniques = promotion.uniqueObjects.asSequence()
-            .filter { it.conditionalsApply(unit.cache.state) && !it.hasTriggerConditional() }
-            .flatMap { it.getMultiplied(unit.cache.state) }
-            .toList()
-        for (unique in uniques)
-            UniqueTriggerActivation.triggerUnique(unique, unit, triggerNotificationText = "due to our [${unit.name}] being promoted")
+        for (unique in promotion.uniqueObjects) {
+            if (!unique.conditionalsApply(unit.cache.state) || unique.hasTriggerConditional()) continue
+            repeat(unique.getUniqueMultiplier(unit.cache.state)) {
+                UniqueTriggerActivation.triggerUnique(unique, unit, triggerNotificationText = "due to our [${unit.name}] being promoted")
+            }
+        }
     }
 
     /** Gets all promotions this unit could currently "buy" with enough [XP]

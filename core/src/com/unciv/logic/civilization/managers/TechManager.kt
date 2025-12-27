@@ -315,12 +315,13 @@ class TechManager : IsPartOfGameInfoSerialization {
             civInfo.popupAlerts.add(PopupAlert(AlertType.TechResearched, techName))
 
         val triggerNotificationText = "due to researching [$techName]"
-        val uniques = newTech.uniqueObjects.asSequence()
-            .filter { it.isTriggerable && !it.hasTriggerConditional() && it.conditionalsApply(civInfo.state) }
-            .flatMap { it.getMultiplied(civInfo.state) }
-            .toList()
-        for (unique in uniques)
-            UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
+        for (unique in newTech.uniqueObjects) {
+            if (!unique.isTriggerable || unique.hasTriggerConditional() || !unique.conditionalsApply(civInfo.state))
+                continue
+            repeat(unique.getUniqueMultiplier(civInfo.state)) {
+                UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
+            }
+        }
 
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponResearch) { newTech.matchesFilter(it.params[0], civInfo.state) })
             UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
@@ -455,12 +456,12 @@ class TechManager : IsPartOfGameInfoSerialization {
             .sortedBy { it.eraNumber }
 
         for (era in erasPassed) {
-            val eraUniques = era.uniqueObjects.asSequence()
-                .filter { !it.hasTriggerConditional() && it.conditionalsApply(civInfo.state) }
-                .flatMap { it.getMultiplied(civInfo.state) }
-                .toList()
-            for (unique in eraUniques)
-                UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = "due to entering the [${era.name}]")
+            for (unique in era.uniqueObjects) {
+                if (unique.hasTriggerConditional() || !unique.conditionalsApply(civInfo.state)) continue
+                repeat(unique.getUniqueMultiplier(civInfo.state)) {
+                    UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = "due to entering the [${era.name}]")
+                }
+            }
             
             for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEnteringEra) { it.params[0] == era.name }) {
                 UniqueTriggerActivation.triggerUnique(unique, civInfo, triggerNotificationText = "due to entering the [${era.name}]")
