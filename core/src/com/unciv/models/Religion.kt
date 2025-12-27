@@ -50,7 +50,7 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
         this.name = name
         this.gameInfo = gameInfo
         this._foundingCiv = foundingCiv
-        this.foundingCivName = foundingCiv.civName
+        this.foundingCivName = foundingCiv.civID
     }
 
     constructor(name: String, gameInfo: GameInfo, foundingCivName: String) : this() {

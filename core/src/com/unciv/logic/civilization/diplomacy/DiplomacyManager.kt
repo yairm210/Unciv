@@ -218,7 +218,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     constructor(civilization: Civilization, otherCiv: Civilization) : this() {
         civInfo = civilization
         _otherCiv = otherCiv
-        otherCivName = otherCiv.civName
+        otherCivName = otherCiv.civID
         updateHasOpenBorders()
     }
 
@@ -554,8 +554,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
         for (civ in getCommonKnownCivsWithSpectators()) {
             civ.addNotification(
-                    "[${civInfo.civName}] and [$otherCivName] have signed a Peace Treaty!",
-                    NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCivName
+                    "[${civInfo.civName}] and [${otherCiv.civName}] have signed a Peace Treaty!",
+                    NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCiv.civName
             )
         }
     }
@@ -604,8 +604,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         otherCivDiplomacy().setFlag(DiplomacyFlags.DeclarationOfFriendship, 30)
 
         for (thirdCiv in getCommonKnownCivsWithSpectators()) {
-            thirdCiv.addNotification("[${civInfo.civName}] and [$otherCivName] have signed a Declaration of Friendship!",
-                NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
+            thirdCiv.addNotification("[${civInfo.civName}] and [${otherCiv.civName}] have signed a Declaration of Friendship!",
+                NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCiv.civName)
             thirdCiv.getDiplomacyManager(civInfo)!!.setFriendshipBasedModifier()
             if (thirdCiv.isSpectator()) return
             thirdCiv.getDiplomacyManager(civInfo)!!.setFriendshipBasedModifier()
@@ -655,8 +655,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
 
         for (thirdCiv in getCommonKnownCivsWithSpectators()) {
-            thirdCiv.addNotification("[${civInfo.civName}] and [$otherCivName] have signed a Defensive Pact!",
-                NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
+            thirdCiv.addNotification("[${civInfo.civName}] and [${otherCiv.civName}] have signed a Defensive Pact!",
+                NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCiv.civName)
             if (thirdCiv.isSpectator()) return
             thirdCiv.getDiplomacyManager(civInfo)!!.setDefensivePactBasedModifier()
         }
@@ -727,7 +727,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             thirdCiv.addNotification(
                 "[${civInfo.civName}] has denounced [${otherCiv.civName}]!",
                 NotificationCategory.Diplomacy,
-                civInfo.civName, NotificationIcon.Diplomacy, otherCivName
+                civInfo.civName, NotificationIcon.Diplomacy, otherCiv.civName
             )
             
             if (thirdCiv.isSpectator())

@@ -17,11 +17,11 @@ class TradesOverviewTab(
 
     init {
         defaults().pad(10f)
-        val diplomaciesWithPendingTrade = viewingPlayer.diplomacy.values.filter { it.otherCiv.tradeRequests.any { it.requestingCiv == viewingPlayer.civName } }
+        val diplomaciesWithPendingTrade = viewingPlayer.diplomacy.values.filter { it.otherCiv.tradeRequests.any { it.requestingCiv == viewingPlayer.civID } }
         if (diplomaciesWithPendingTrade.isNotEmpty())
             add("Pending trades".toLabel(fontSize = Constants.headingFontSize)).padTop(10f).row()
         for (diplomacy in diplomaciesWithPendingTrade) {
-            for (tradeRequest in diplomacy.otherCiv.tradeRequests.filter { it.requestingCiv == viewingPlayer.civName })
+            for (tradeRequest in diplomacy.otherCiv.tradeRequests.filter { it.requestingCiv == viewingPlayer.civID })
                 add(createTradeTable(tradeRequest.trade.reverse(), diplomacy.otherCiv)).row()
         }
 

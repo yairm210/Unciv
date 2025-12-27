@@ -92,7 +92,7 @@ object GameStarter {
             // Remove units for civs that aren't in this game
             for (tile in tileMap.values)
                 for (unit in tile.getUnits())
-                    if (gameInfo.civilizations.none { it.civName == unit.owner }) {
+                    if (gameInfo.civilizations.none { it.civID == unit.owner }) {
                         unit.currentTile = tile
                         unit.setTransients(ruleset)
                         unit.removeFromTile()
@@ -247,19 +247,20 @@ object GameStarter {
         val selectedPlayerNames = newGameParameters.players
             .map { it.chosenCiv }.toSet()
         @LocalState val randomNationsPool = (
-                if (gameSetupInfo.gameParameters.enableRandomNationsPool)
-                    gameSetupInfo.gameParameters.randomNationsPool.asSequence()
-                else
-                    ruleset.nations.filter { it.value.isMajorCiv && !it.value.hasUnique(UniqueType.WillNotBeChosenForNewGames) }
-                        .keys.asSequence()
-                ).filter { it !in selectedPlayerNames }
+            if (gameSetupInfo.gameParameters.enableRandomNationsPool)
+                ruleset.nations.asSequence().map { it.value }
+                    .filter { it.name in gameSetupInfo.gameParameters.randomNationsPool }
+            else
+                ruleset.nations.asSequence().map { it.value }
+                    .filter { it.isMajorCiv && !it.hasUnique(UniqueType.WillNotBeChosenForNewGames) }
+            ).filter { it.name !in selectedPlayerNames }
             .shuffled().let { ArrayDeque(it.toList()) }
 
         val civNamesWithStartingLocations =
             if (existingMap) gameInfo.tileMap.startingLocationsByNation.keys
             else emptySet()
         @LocalState val presetRandomNationsPool = randomNationsPool
-            .filter { it in civNamesWithStartingLocations }
+            .filter { it.name in civNamesWithStartingLocations }
             .shuffled().let { ArrayDeque(it) }
         randomNationsPool.removeAll(presetRandomNationsPool)
 
@@ -295,20 +296,20 @@ object GameStarter {
         val chosenPlayers = (
             // Join two Sequences, one the explicitly chosen players...
             newGameParameters.players.asSequence()
-            .filterNot { it in selectedAIToSkip }
-            .sortedWith(compareBy<Player> { it.chosenCiv == Constants.random } // Nonrandom before random
-                .thenBy { it.playerType == PlayerType.AI }) // Human before AI
-            // ...another for the extra random ones
-            + (0 until extraRandomAIPlayers).asSequence().map { Player() }
-        ).mapNotNull {
-            // Resolve random players
-            when {
-                it.chosenCiv != Constants.random -> it
-                presetRandomNationsPool.isNotEmpty() -> Player(presetRandomNationsPool.removeLast(), it.playerType, it.playerId)
-                randomNationsPool.isNotEmpty() -> Player(randomNationsPool.removeLast(), it.playerType, it.playerId)
-                else -> null
-            }
-        }.toMutableList()
+                .filterNot { it in selectedAIToSkip }
+                .sortedWith(compareBy<Player> { it.chosenCiv == Constants.random } // Nonrandom before random
+                    .thenBy { it.playerType == PlayerType.AI }) // Human before AI
+                // ...another for the extra random ones
+                + (0 until extraRandomAIPlayers).asSequence().map { Player() }
+            ).mapNotNull {
+                // Resolve random players
+                when {
+                    it.chosenCiv != Constants.random -> Player(ruleset.nations[it.chosenCiv]!!, it.playerType, it.playerId)
+                    presetRandomNationsPool.isNotEmpty() -> Player(presetRandomNationsPool.removeLast(), it.playerType, it.playerId)
+                    randomNationsPool.isNotEmpty() -> Player(randomNationsPool.removeLast(), it.playerType, it.playerId)
+                    else -> null
+                }
+            }.toMutableList()
 
         // ensure Spectators always first players
         val spectators = chosenPlayers.filter { it.chosenCiv == Constants.spectator }
@@ -334,10 +335,10 @@ object GameStarter {
         chosenPlayers += ruleset.nations.asSequence()
             .filter {
                 it.value.isCityState &&
-                        !it.value.hasUnique(UniqueType.WillNotBeChosenForNewGames)
-            }.map { it.key }
+                    !it.value.hasUnique(UniqueType.WillNotBeChosenForNewGames)
+            }.map { it.value }
             .shuffled()
-            .sortedByDescending { it in civNamesWithStartingLocations }  // please those with location first
+            .sortedByDescending { it.name in civNamesWithStartingLocations }  // please those with location first
             .take(numberOfCityStates)
             .map { Player(it) }
 
@@ -350,28 +351,27 @@ object GameStarter {
         ruleset: Ruleset,
         chosenPlayers: List<Player>
     ) {
-        if (!newGameParameters.noBarbarians && ruleset.nations.containsKey(Constants.barbarians)) {
-            val barbarianCivilization = Civilization(Constants.barbarians)
-            gameInfo.civilizations.add(barbarianCivilization)
+        if (!newGameParameters.noBarbarians) {
+            val barbs = ruleset.nations[Constants.barbarians]
+            if (barbs != null) {
+                val barbarianCivilization = Civilization(barbs)
+                gameInfo.civilizations.add(barbarianCivilization)
+            }
         }
 
-        val usedCivNames = chosenPlayers.map { it.chosenCiv }.toSet()
+        val usedCivNations = chosenPlayers.map { it.chosenNation }.toSet()
         val usedMajorCivs = ruleset.nations.asSequence()
-            .filter { it.value.isMajorCiv }
-            .map { it.key }
-            .filter { it in usedCivNames }
+            .map { it.value }
+            .filter { it.isMajorCiv && it in usedCivNations }
 
         for (player in chosenPlayers) {
-            val civ = Civilization(player.chosenCiv)
-            when (player.chosenCiv) {
-                in usedMajorCivs, Constants.spectator -> {
-                    civ.playerType = player.playerType
-                    civ.playerId = player.playerId
-                }
-                else ->
-                    if (!civ.cityStateFunctions.initCityState(ruleset, newGameParameters.startingEra, usedMajorCivs))
-                        continue
+            val civ = Civilization(player.chosenNation)
+            if (civ.isMajorCiv() || civ.isSpectator()) {
+                civ.playerType = player.playerType
+                civ.playerId = player.playerId
             }
+            else if (!civ.cityStateFunctions.initCityState(ruleset, newGameParameters.startingEra, usedMajorCivs))
+                continue
             gameInfo.civilizations.add(civ)
         }
     }
@@ -396,14 +396,14 @@ object GameStarter {
 
         // First we get start locations for the major civs, on the second pass the city states (without predetermined starts) can squeeze in wherever
         val civNamesWithStartingLocations = tileMap.startingLocationsByNation.keys
-        val bestCivs = allCivs.filter { (!it.isCityState || it.civName in civNamesWithStartingLocations)
+        val bestCivs = allCivs.filter { (!it.isCityState || it.civID in civNamesWithStartingLocations)
             && !it.isSpectator()}
         val bestLocations = getStartingLocations(bestCivs, tileMap, landTilesInBigEnoughGroup, startScores)
         for ((civ, tile) in bestLocations) {
             // A nation can have multiple marked starting locations, of which the first pass may have chosen one
-            tileMap.removeStartingLocations(civ.civName)
+            tileMap.removeStartingLocations(civ.civID)
             // Mark the best start locations so we remember them for the second pass
-            tileMap.addStartingLocation(civ.civName, tile)
+            tileMap.addStartingLocation(civ.civID, tile)
         }
 
         val startingLocations = getStartingLocations(allCivs, tileMap, landTilesInBigEnoughGroup, startScores)
@@ -569,7 +569,7 @@ object GameStarter {
         return civs.shuffled()   // Order should be random since it determines who gets best start
             .sortedBy { civ ->
                 when {
-                    civ.civName in tileMap.startingLocationsByNation -> 1 // harshest requirements
+                    civ.civID in tileMap.startingLocationsByNation -> 1 // harshest requirements
                     civ.nation.startBias.any { it in tileMap.naturalWonders } && !gameSetupInfo.gameParameters.noStartBias -> 2
                     civ.nation.startBias.contains(Constants.tundra) && !gameSetupInfo.gameParameters.noStartBias -> 3    // Tundra starts are hard to find, so let's do them first
                     civ.nation.startBias.isNotEmpty() && !gameSetupInfo.gameParameters.noStartBias -> 4 // less harsh
@@ -619,7 +619,7 @@ object GameStarter {
         freeTiles: MutableList<Tile>,
         startScores: HashMap<Tile, Float>,
     ): Tile? {
-        var startingLocation = tileMap.startingLocationsByNation[civ.civName]?.randomOrNull()
+        var startingLocation = tileMap.startingLocationsByNation[civ.civID]?.randomOrNull()
         if (startingLocation == null) {
             startingLocation = tileMap.startingLocationsByNation[Constants.spectator]?.randomOrNull()
             if (startingLocation != null) {

@@ -114,9 +114,9 @@ class PlayerPickerTable(
                     // no random mode - add first not spectator civ if still available
                     val player = if (noRandom || isRandomNumberOfPlayers) {
                         val availableCiv = getAvailablePlayerCivs().firstOrNull()
-                        if (availableCiv != null) Player(availableCiv.name)
+                        if (availableCiv != null) Player(availableCiv)
                         // Spectators can only be Humans
-                        else Player(Constants.spectator, PlayerType.Human)
+                        else Player(Constants.spectator, PlayerType.Human).apply { setNationTransient(gameBasics) }
                     } else Player()  // normal: add random AI
                     gameParameters.players.add(player)
                     update()
@@ -170,7 +170,9 @@ class PlayerPickerTable(
         // No auto-select if desiredCiv already used
         if (gameParameters.players.any { it.chosenCiv == desiredCiv }) return
         // Do auto-select, silently no-op if no suitable slot (human with 'random' choice)
-        gameParameters.players.firstOrNull { it.chosenCiv == Constants.random && it.playerType == PlayerType.Human }?.chosenCiv = desiredCiv
+        val player = gameParameters.players.firstOrNull { it.chosenCiv == Constants.random && it.playerType == Human }
+        player?.chosenCiv = desiredCiv
+        player?.setNationTransient(previousScreen.ruleset)
     }
 
     /**

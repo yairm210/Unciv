@@ -237,8 +237,13 @@ class Ruleset {
         }
 
         quests.putAll(ruleset.quests)
+
+        // Remove associated Religions, including when they're favored by Nations
         religions.addAll(ruleset.religions)
         religions.removeAll(ruleset.modOptions.religionsToRemove)
+        nations.filter { it.value.favoredReligion in ruleset.modOptions.religionsToRemove }
+            .forEach { it.value.favoredReligion = null }
+
         ruinRewards.putAll(ruleset.ruinRewards)
         specialists.putAll(ruleset.specialists)
         ruleset.modOptions.techsToRemove

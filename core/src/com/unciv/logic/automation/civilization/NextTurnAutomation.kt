@@ -1,7 +1,9 @@
 package com.unciv.logic.automation.civilization
 
+import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.ThreatLevel
+import com.unciv.logic.automation.unit.CivilianUnitAutomation
 import com.unciv.logic.automation.unit.EspionageAutomation
 import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.battle.*
@@ -401,16 +403,55 @@ object NextTurnAutomation {
             .flatMap { it.cities }
             .filter { it.getCenterTile().getTilesInDistance(4).count { it.militaryUnit?.civ == civInfo } > 4 }
             .toList()
+
+        for (unit in sortedUnits) {
+            while (unit.promotions.canBePromoted() &&
+                // Restrict Human automated units from promotions via setting
+                (UncivGame.Current.settings.automatedUnitsChoosePromotions || unit.civ.isAI())
+            ) {
+                val promotions = unit.promotions.getAvailablePromotions()
+                val availablePromotions = if (unit.health <= 60
+                    && promotions.any { it.hasUnique(UniqueType.OneTimeUnitHeal) }
+                    && !(unit.baseUnit.isAirUnit() || unit.hasUnique(UniqueType.CanMoveAfterAttacking))
+                ) {
+                    promotions.filter { it.hasUnique(UniqueType.OneTimeUnitHeal) }
+                } else promotions.filterNot { it.hasUnique(UniqueType.SkipPromotion) }
+
+                if (availablePromotions.none()) break
+                val freePromotions =
+                    availablePromotions.filter { it.hasUnique(UniqueType.FreePromotion) }.toList()
+                val stateForConditionals = unit.cache.state
+
+                val chosenPromotion =
+                    if (freePromotions.isNotEmpty()) freePromotions.randomWeighted {
+                        it.getWeightForAiDecision(stateForConditionals)
+                    }
+                    else availablePromotions.toList()
+                        .randomWeighted { it.getWeightForAiDecision(stateForConditionals) }
+
+                unit.promotions.addPromotion(chosenPromotion.name)
+            }
+        }
+        for (unit in sortedUnits) {
+            // settlers need to move before automateSettlerEscorting(),
+            // move spaceship parts before that to make sure we're not blocking them
+            if (unit.hasUnique(UniqueType.SpaceshipPart) || unit.hasUnique(UniqueType.FoundCity)) UnitAutomation.automateUnitMoves(unit)
+        }
+
+        if (civInfo.cities.isNotEmpty()) automateSettlerEscorting(civInfo)
         
         for (city in citiesRequiringManualPlacement) automateCityConquer(civInfo, city)
         
-        for (unit in sortedUnits) UnitAutomation.automateUnitMoves(unit)
+        for (unit in sortedUnits) {
+            // spaceship parts and settlers have already moved
+            if (!unit.hasUnique(UniqueType.SpaceshipPart) && !unit.hasUnique(UniqueType.FoundCity)) UnitAutomation.automateUnitMoves(unit)
+        }
     }
     
     /** All units will continue after this to the regular automation, so units not moved in this function will still move */
     private fun automateCityConquer(civInfo: Civilization, city: City){
         @Readonly fun ourUnitsInRange(range: Int) = city.getCenterTile().getTilesInDistance(range)
-            .mapNotNull { it.militaryUnit }.filter { it.civ == civInfo }.toList()
+            .mapNotNull { it.militaryUnit }.filter { it.civ == civInfo && (!it.baseUnit.isMelee() || it.health > 30) }.toList()
         
         
         fun attackIfPossible(unit: MapUnit, tile: Tile){
@@ -445,11 +486,36 @@ object NextTurnAutomation {
             val attackableEnemies = TargetHelper.getAttackableEnemies(unit,
                 unit.movement.getDistanceToTiles(), tilesToTarget)
             if (attackableEnemies.isEmpty()) continue
-            val enemyWeWillDamageMost = attackableEnemies.maxBy { 
-                BattleDamage.calculateDamageToDefender(MapUnitCombatant(unit), it.combatant!!, it.tileToAttackFrom, 0.5f)
+            val mostSurroundedEnemy = attackableEnemies.maxBy {
+                it.tileToAttack.getTilesAtDistance(1).count { it.militaryUnit?.civ == unit.civ }
+            } // aims to maximize flanking bonus and number of hits in order to get kills
+
+            Battle.moveAndAttack(MapUnitCombatant(unit), mostSurroundedEnemy)
+        }
+    }
+    private fun automateSettlerEscorting(civInfo: Civilization){
+        val capitalTile = civInfo.getCapital()!!.getCenterTile()
+        @Readonly fun bestUnitInRange(tile: Tile, range: Int) = tile.getTilesInDistance(range)
+            .mapNotNull { it.militaryUnit }.filter {
+                it.civ == civInfo
+                    && it.health >= 100
+                    // only draft a unit from the core of the empire, or it'll interfere with other anti-barb activities
+                    && (it.currentTile.aerialDistanceTo(capitalTile) < tile.aerialDistanceTo(capitalTile))
+                    && it.movement.canReach(tile) 
             }
-            
-            Battle.moveAndAttack(MapUnitCombatant(unit), enemyWeWillDamageMost)
+            .sortedBy { it.currentTile.aerialDistanceTo(tile) }
+            .maxByOrNull { it.baseUnit.strength } // could be more sophisticated based on promotions, movement speed etc.
+        
+        val settlersToAccompany = civInfo.units.getCivUnits()
+            .filter { it.isCivilian() && it.hasUnique(UniqueType.FoundCity) }
+        
+        for (settler in settlersToAccompany) {
+            val escortUnit = bestUnitInRange(settler.currentTile, 3) ?: continue
+            escortUnit.movement.headTowards(settler.currentTile)
+            if (escortUnit.movement.canUnitSwapTo(settler.currentTile)) {
+                // check if we can swap to replace the current inferior (wounded) escort
+                escortUnit.movement.swapMoveToTile(settler.currentTile)
+            }
         }
     }
 
@@ -508,9 +574,9 @@ object NextTurnAutomation {
         val personality = civInfo.getPersonality()
         if (civInfo.isCityState) return
         if (civInfo.isOneCityChallenger()) return
-        if (civInfo.isAtWar()) return // don't train settlers when you could be training troops.
         if (civInfo.cities.none()) return
         if (civInfo.getHappiness() <= civInfo.cities.size) return
+        if (CivilianUnitAutomation.isLateGame(civInfo)) return // all suitable land should be occupied already; there will only be a risk of the settler getting bombed
 
         // This is a tough one - if we don't ignore conditionals we could have units that can found only on certain tiles that are ignored
         // If we DO ignore conditionals we could get a unit that can only found if there's a certain tech, or something
@@ -558,7 +624,7 @@ object NextTurnAutomation {
             civ.allyCiv
         }
 
-        civ.diplomaticVoteForCiv(chosenCiv?.civName)
+        civ.diplomaticVoteForCiv(chosenCiv?.civID)
     }
 
     private fun issueRequests(civInfo: Civilization) {
@@ -577,7 +643,7 @@ object NextTurnAutomation {
         when {
             diplomacyManager.hasFlag(demand.willIgnoreViolation) -> {}
             diplomacyManager.hasFlag(demand.agreedToDemand) -> {
-                otherCiv.popupAlerts.add(PopupAlert(demand.violationDiscoveredAlert, civInfo.civName))
+                otherCiv.popupAlerts.add(PopupAlert(demand.violationDiscoveredAlert, civInfo.civID))
                 diplomacyManager.setFlag(demand.willIgnoreViolation, 100)
                 diplomacyManager.setModifier(demand.betrayedPromiseDiplomacyMpodifier, -20f)
                 diplomacyManager.removeFlag(demand.agreedToDemand)
@@ -585,7 +651,7 @@ object NextTurnAutomation {
             else -> {
                 val threatLevel = Automation.threatAssessment(civInfo, otherCiv)
                 if (threatLevel < ThreatLevel.High) // don't piss them off for no reason please.
-                    otherCiv.popupAlerts.add(PopupAlert(demand.demandAlert, civInfo.civName))
+                    otherCiv.popupAlerts.add(PopupAlert(demand.demandAlert, civInfo.civID))
             }
         }
         diplomacyManager.removeFlag(demand.violationOccurred)

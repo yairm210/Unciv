@@ -5,7 +5,8 @@
     "name": "Introduction",
     "steps": [
       "Welcome to Unciv!\nBecause this is a complex game, there are basic tasks to help familiarize you with the game.\nThese are completely optional, and you're welcome to explore the game on your own!"
-    ]
+    ],
+    "uniques": ["Will not be displayed in Civilopedia"]
   },
 
   // Civilopedia only, because players said this was too wall-of-text
@@ -150,13 +151,6 @@
       "Once you’ve settled 3-4 cities and build universities, you’re probably already 100 to 150 turns into the game.\nNow is a good time to start thinking about how, exactly, you want to win – if you haven’t already.",
       "There are four ways to win in Unciv. They are:\n - Cultural Victory: Complete 5 Social Policy Trees and build the Utopia Project\n - Domination Victory: Conquer the original capital of all other Major civs\n - Science Victory: Be the first to construct a Spaceship\n - Diplomatic Victory: Build the United Nations and win the vote",
       "So to sum it up, these are the basics of Unciv – Found a prosperous first city, expand slowly to manage happiness, and set yourself up for the victory condition you wish to pursue.\nObviously, there is much more to it than that, but it is important not to jump into the deep end before you know how to swim."
-    ],
-    "civilopediaText": [
-        { "text": "Cultural", "link": "Victory/Cultural" },
-        { "text": "Diplomatic", "link": "Victory/Diplomatic" },
-        { "text": "Domination", "link": "Victory/Domination" },
-        { "text": "Scientific", "link": "Victory/Scientific" },
-        { "text": "Time", "link": "Victory/Time" }
     ]
   },
   {
@@ -435,14 +429,6 @@
         "One of these great prophets can then be used to enhance your religion.",
         "This will allow you to choose another follower belief, as well as an enhancer belief, that only applies to you.",
         "Do take care founding a religion soon, only about half the players in the game are able to found a religion!"
-      ],
-    "uniques": ["Only available <when religion is enabled>"]
-  },
-  {
-    "name": "Beliefs",
-    "steps": [
-        "There are four types of beliefs: Pantheon, Founder, Follower and Enhancer beliefs.",
-        "Pantheon and Follower beliefs apply to each city following your religion, while Founder and Enhancer beliefs only apply to the founder of a religion."
       ],
     "uniques": ["Only available <when religion is enabled>"]
   },

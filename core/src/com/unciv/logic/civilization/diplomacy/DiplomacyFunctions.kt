@@ -29,11 +29,11 @@ class DiplomacyFunctions(val civInfo: Civilization) {
     }
 
     private fun meetCiv(otherCiv: Civilization, warOnContact: Boolean = false) {
-        civInfo.diplomacy[otherCiv.civName] = DiplomacyManager(civInfo, otherCiv)
+        civInfo.diplomacy[otherCiv.civID] = DiplomacyManager(civInfo, otherCiv)
             .apply { diplomaticStatus = DiplomaticStatus.Peace }
 
         if (!otherCiv.isSpectator())
-            otherCiv.popupAlerts.add(PopupAlert(AlertType.FirstContact, civInfo.civName))
+            otherCiv.popupAlerts.add(PopupAlert(AlertType.FirstContact, civInfo.civID))
 
         if (civInfo.isCurrentPlayer())
             UncivGame.Current.settings.addCompletedTutorialTask("Meet another civilization")
