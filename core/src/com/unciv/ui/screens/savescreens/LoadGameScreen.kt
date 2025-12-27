@@ -231,6 +231,12 @@ class LoadGameScreen : LoadOrSaveScreen() {
         Concurrency.runOnNonDaemonThreadPool(downloadMissingMods) {
             try {
                 loadMissingMods(missingModsToLoad,
+                    onProgress = { mod, state, percent ->
+                        val labelText = descriptionLabel.text // A Gdx CharArray that has StringBuilder-like methods
+                        labelText.appendLine()
+                        labelText.append("{$mod}: ${state.message(percent)}".tr())
+                        launchOnGLThread { descriptionLabel.setText(labelText) }
+                    },
                     onModDownloaded = {
                         val labelText = descriptionLabel.text // A Gdx CharArray that has StringBuilder-like methods
                         labelText.appendLine()

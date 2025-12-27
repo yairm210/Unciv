@@ -11,8 +11,10 @@ import com.badlogic.gdx.utils.SerializationException
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.UncivShowableException
+import com.unciv.logic.github.DownloadAndExtractState
 import com.unciv.logic.github.Github
 import com.unciv.logic.github.Github.folderNameToRepoName
+import com.unciv.logic.github.Github.repoNameToFolderName
 import com.unciv.logic.github.GithubAPI.downloadAndExtract
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
@@ -32,6 +34,8 @@ import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import com.unciv.utils.launchOnGLThread
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.currentCoroutineContext
 import java.io.FileNotFoundException
 import java.nio.file.attribute.DosFileAttributes
 import java.util.Date
@@ -214,20 +218,32 @@ abstract class LoadOrSaveScreen(
             return Pair(errorText.toString(), isUserFixable)
         }
 
-        suspend fun loadMissingMods(missingMods: Iterable<String>, onModDownloaded:(String)->Unit, onCompleted:()->Unit) {
+        suspend fun loadMissingMods(
+            missingMods: Iterable<String>,
+            onProgress: ((String, DownloadAndExtractState, Int?) -> Unit)? = null,
+            onModDownloaded: (String)->Unit,
+            onCompleted: ()->Unit,
+            onCancelled: (()->Unit)? = null
+        ) {
+            val job = currentCoroutineContext()[Job]
             for (rawName in missingMods) {
-                val modName = rawName.folderNameToRepoName().lowercase()
-                val repos = Github.tryGetGithubReposWithTopic(1, 10, modName)
+                if (job?.isActive == false) break
+                val modQuery = rawName.folderNameToRepoName().lowercase()
+                val repos = Github.tryGetGithubReposWithTopic(1, 10, modQuery)
                     ?: throw UncivShowableException("Could not download mod list.")
-                val repo = repos.items.firstOrNull { it.name.lowercase() == modName }
-                    ?: throw UncivShowableException("Could not find a mod named \"[$modName]\".")
-                val modFolder =
-                    repo.downloadAndExtract(UncivGame.Current.files.getModsFolder())
-                        ?: throw Exception("Unexpected 404 error") // downloadAndExtract returns null for 404 errors and the like -> display something!
+                val repo = repos.items.firstOrNull { it.name.lowercase() == modQuery }
+                    ?: throw UncivShowableException("Could not find a mod named \"[$modQuery]\".")
+                if (job?.isActive == false) break
+                val modName = repo.name.repoNameToFolderName()
+                val modFolder = repo.downloadAndExtract(UncivGame.Current.files.getModsFolder()) {
+                    state, percent ->
+                    onProgress?.invoke(modName, state, percent)
+                } ?: throw Exception("Unexpected 404 error") // downloadAndExtract returns null for 404 errors and the like -> display something!
                 Github.rewriteModOptions(repo, modFolder)
-                onModDownloaded(repo.name)
+                onModDownloaded(modName)
             }
-            onCompleted()
+            if (job?.isActive == false) onCancelled?.invoke()
+            else onCompleted()
         }
     }
 }

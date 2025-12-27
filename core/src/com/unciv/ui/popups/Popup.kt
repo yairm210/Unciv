@@ -103,7 +103,7 @@ open class Popup(
     /** This contains most of the Popup content.
      *  For [Scrollability.WithoutButtons], that excludes the closing buttons which go in [bottomTable].
      *  In other modes, this is an alias for [innerTable]. */
-    private val topTable: Table
+    protected val topTable: Table
     private val topTableCell: Cell<WidgetGroup>
 
     /** This contains the bottom row buttons and does not participate in scrolling

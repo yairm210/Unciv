@@ -20,12 +20,14 @@ import com.unciv.logic.github.GithubAPI
 import com.unciv.logic.github.GithubAPI.downloadAndExtract
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.validation.ModCompatibility
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.isEnabled
+import com.unciv.ui.components.extensions.scrollTo
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.ActivationTypes
@@ -90,13 +92,13 @@ class ModManagementScreen private constructor(
 
     // Left column (in landscape, portrait stacks them within expanders)
     private val installedModsTable = Table().apply { defaults().pad(10f) }
-    private val scrollInstalledMods = AutoScrollPane(installedModsTable)
+    private val scrollInstalledMods = AutoScrollPane(installedModsTable, skin)
     // Center column
     private val onlineModsTable = Table().apply { defaults().pad(10f) }
-    private val scrollOnlineMods = AutoScrollPane(onlineModsTable)
+    private val scrollOnlineMods = AutoScrollPane(onlineModsTable, skin)
     // Right column
     private val modActionTable = ModInfoAndActionPane()
-    private val scrollActionTable = AutoScrollPane(modActionTable)
+    private val scrollActionTable = AutoScrollPane(modActionTable, skin)
     // Manager providing the Widget floating top right in landscape mode, stacked expander in portrait
     private val optionsManager = ModManagementOptions(this)
 
@@ -381,6 +383,13 @@ class ModManagementScreen private constructor(
         onlineModsTable.add(retryLabel)
     }
 
+    private fun syncForLastSelectedButton(modName: String) {
+        val button = lastSelectedButton ?: return
+        if (button.isInstalled)
+            syncInstalledSelected(modName, button)
+        else
+            syncOnlineSelected(modName, button)
+    }
     private fun syncOnlineSelected(modName: String, button: ModDecoratedButton) {
         syncSelected(modName, button, installedModInfo, scrollInstalledMods)
     }
@@ -521,9 +530,10 @@ class ModManagementScreen private constructor(
 
                     updateInstalledModUIData(repoName)
                     refreshInstalledModTable()
-                    lastSelectedButton?.let { syncOnlineSelected(repoName, it) }
+                    syncForLastSelectedButton(repoName)
                     showModDescription(repoName)
                     unMarkUpdatedMod(repoName)
+                    offerLoadDependencies(repoName)
                     postAction()
                 }
             } catch (ex: UncivShowableException) {
@@ -539,6 +549,28 @@ class ModManagementScreen private constructor(
                     postAction()
                 }
             }
+        }
+    }
+
+    private fun offerLoadDependencies(modName: String) {
+        val ruleset = RulesetCache[modName] ?: return
+        val missingMods = ModCompatibility.getAllDeclaredPrerequisites(ruleset, false).missingMods
+        if (missingMods.isEmpty()) return
+        Concurrency.runOnGLThread {
+            DownloadMissingModsPopup(stage, missingMods,
+                onModDownloaded = { mod ->
+                    RulesetCache.loadRulesets() // TODO #14261 has the faster reloadSingleRuleset
+                    updateInstalledModUIData(mod)
+                },
+                onDownloadFinished = {
+                    refreshInstalledModTable()
+                    installedModInfo[modName]?.let { modUiData ->
+                        val button = getCachedModButton(modUiData)
+                        scrollInstalledMods.scrollTo(button)
+                    }
+                    syncForLastSelectedButton(modName)
+                }
+            ).open(true)
         }
     }
 
