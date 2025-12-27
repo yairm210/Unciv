@@ -76,8 +76,9 @@ class MultiplayerServer(
              */
             val multiplayer = UncivGame.Current.settings.multiplayer
             if (server == multiplayer.getServer()) {
-                val respUrl = resp.request.url.toString().removeSuffix(isAliveSuffix)
-                if (server != respUrl) multiplayer.setServer(respUrl)
+                multiplayer.setServer(
+                    resp.request.url.toString().removeSuffix(isAliveSuffix)
+                )
             }
 
             return true
