@@ -783,6 +783,8 @@ HexaRealm tileset images by legacymtgsalvationuser69544 [here](https://github.co
 - [Bell](https://thenounproject.com/icon/bell-2054409) by Lyhn, transparency modified, for Notifications (overview, unhide button)
 - [Celebrity](https://thenounproject.com/icon/elebrity-99330/) by Andy Selimov for "OtherIcons/UnitNameGroups"
 - [Galileo Donatello](https://en.wikipedia.org/wiki/File:Galileo_Donato.jpg) for the "Meet another civilization" tutorial: Public domain
+- [Blaise Pascal](https://commons.wikimedia.org/w/index.php?curid=209146): Public Domain
+- [Victor Hugo](https://commons.wikimedia.org/w/index.php?curid=28384247): Public Domain
 - [ServerRack](https://thenounproject.com/icon/server-rack-922717/) by Chad Remsing
 - [RobotArm](https://thenounproject.com/icon/robot-7300306/) by Faizal khusein
 - [RobotHeadSquare](https://thenounproject.com/icon/robot-head-6356754/) by Ahmad Arzaha

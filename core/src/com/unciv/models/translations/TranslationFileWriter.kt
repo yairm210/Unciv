@@ -166,9 +166,9 @@ object TranslationFileWriter {
                     fileNameToGeneratedStrings[entry.key + " from " + baseRuleset.fullName] = entry.value
             }
 
-            // Tutorials reside one level above the base rulesets - if they were per-ruleset the following lines would be unnecessary
+            // Global Tutorials reside one level above the base rulesets - if we had only per-ruleset tutorials the following lines would be unnecessary
             val tutorialStrings = GenerateStringsFromJSONs(UncivGame.Current.files.getLocalFile("jsons")) { it.name == "Tutorials.json" }
-            fileNameToGeneratedStrings["Tutorials"] = tutorialStrings.values.first()
+            fileNameToGeneratedStrings["Global Tutorials"] = tutorialStrings.values.first()
         } else {
             fileNameToGeneratedStrings.putAll(GenerateStringsFromJSONs(modFolder.child("jsons")))
         }

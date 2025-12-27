@@ -1,13 +1,8 @@
 package com.unciv.ui.screens.basescreen
 
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.files.FileHandle
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.json.fromJsonFile
-import com.unciv.json.json
 import com.unciv.models.TutorialTrigger
-import com.unciv.models.ruleset.Tutorial
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
@@ -21,30 +16,8 @@ class TutorialController(screen: BaseScreen) {
     private var isTutorialShowing = false
     var allTutorialsShowedCallback: (() -> Unit)? = null
     private val tutorialRender = TutorialRender(screen)
-
-    private val tutorials: LinkedHashMap<String, Tutorial> = loadTutorialsFromJson()
-
-    companion object {
-        // static to allow use from TutorialTranslationTests
-        fun loadTutorialsFromJson(includeMods: Boolean = true): LinkedHashMap<String, Tutorial> {
-            val result = linkedMapOf<String, Tutorial>()
-            for (file in tutorialFiles(includeMods)) {
-                json().fromJsonFile(Array<Tutorial>::class.java, file)
-                    .associateByTo(result) { it.name }
-            }
-            return result
-        }
-
-        private fun tutorialFiles(includeMods: Boolean) = sequence<FileHandle> {
-            yield(Gdx.files.internal("jsons/Tutorials.json"))
-            if (!includeMods) return@sequence
-            val mods = UncivGame.Current.gameInfo?.ruleset?.mods
-                ?: return@sequence
-            val files = mods.asSequence()
-                .map { UncivGame.Current.files.getLocalFile("mods/$it/jsons/Tutorials.json") }
-            yieldAll(files.filter { it.exists() })
-        }
-    }
+    //TODO needs more testing whether this holds in all cases
+    private val tutorials by screen.getCivilopediaRuleset()::tutorials
 
     fun showTutorial(tutorial: TutorialTrigger) {
         tutorialQueue.add(tutorial)
@@ -81,21 +54,6 @@ class TutorialController(screen: BaseScreen) {
     private fun getTutorial(tutorial: TutorialTrigger): List<String> {
         val name = tutorial.value.replace('_', ' ').trimStart()
         return tutorials[name]?.steps ?: emptyList()
-    }
-
-    /** Get all Tutorials to be displayed in the Civilopedia */
-    fun getCivilopediaTutorials(): Collection<ICivilopediaText> {
-        // Todo This is essentially an 'un-private' kludge and the accessor
-        //      in CivilopediaCategories desperately needs independence from TutorialController:
-        //      Move storage to RuleSet someday?
-
-        /** Note: **Not** UncivGame.Current.gameInfo?.getGlobalUniques() because this is for pedia display,
-         *        and showing the merged GlobalUniques + Speed uniques + Difficulty might surprise.
-         */
-        val globalUniques = UncivGame.Current.screen?.getCivilopediaRuleset()?.globalUniques
-        return tutorials.values +
-            // Add entry for Global Uniques only if they have anything interesting
-            listOfNotNull(globalUniques?.takeIf { it.hasUniques() })
     }
 }
 
