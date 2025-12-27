@@ -5,7 +5,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.utils.Base64Coder
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.UncivKtor
 import com.unciv.logic.multiplayer.FriendList
 import com.unciv.logic.multiplayer.chat.ChatWebSocket
 import com.unciv.models.UncivSound
@@ -15,12 +14,8 @@ import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyboardBindings
 import com.unciv.ui.screens.worldscreen.NotificationsScroll
-import com.unciv.utils.Concurrency
 import com.unciv.utils.Display
 import com.unciv.utils.ScreenOrientation
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
 import yairm210.purity.annotations.Readonly
 import java.text.Collator
 import java.text.NumberFormat
@@ -316,16 +311,6 @@ class GameSettings {
             if (server != value) {
                 server = value
                 ChatWebSocket.restart(force = true)
-            }
-            
-            // One time optimization that ensures that we are not following redirects every time
-            Concurrency.run {
-                val isAliveSuffix = "/isalive"
-                val resp = UncivKtor.client.get("$server$isAliveSuffix")
-                if (resp.status.isSuccess()) {
-                    val respUrl = resp.request.url.toString().removeSuffix(isAliveSuffix)
-                    if (server != respUrl) server = respUrl
-                }
             }
         }
 
