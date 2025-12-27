@@ -177,6 +177,11 @@ private fun addMultiplayerServerOptions(
             } else {
                 popup.reuseWith("Failed!", true)
             }
+
+            if (connectionSuccess) {
+                // because multiplayer server url can get autopatched during isAilve test
+                multiplayerServerTextField.text = settings.multiplayer.getServer()
+            }
         }
     }).row()
 
