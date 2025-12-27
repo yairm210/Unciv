@@ -53,6 +53,8 @@ open class UnitAction(
                     UniqueType.OneTimeConsumeResources, UniqueType.OneTimeProvideResources, UniqueType.OneTimeGainResource -> ImageGetter.getResourcePortrait(associatedUnique.params[1], size)
                     UniqueType.OneTimeChangeTerrain -> ImageGetter.getUnitActionPortrait("Transform", size)
                     UniqueType.OneTimeRemoveResourcesFromTile, UniqueType.OneTimeRemoveImprovementsFromTile -> ImageGetter.getUnitActionPortrait("Pillage", size)
+                    UniqueType.OneTimeAddResourceInTile -> ImageGetter.getResourcePortrait(associatedUnique.params[0], size)
+                    UniqueType.OneTimeAddResourceAmountInTile -> ImageGetter.getResourcePortrait(associatedUnique.params[1], size, associatedUnique.params[0].toInt())
                     UniqueType.OneTimeGainPopulation, UniqueType.OneTimeGainPopulationRandomCity -> ImageGetter.getStatIcon("Population", size)
                     UniqueType.OneTimeGainStat -> ImageGetter.getStatIcon(associatedUnique.params[1], size)
                     UniqueType.OneTimeGainStatRange -> ImageGetter.getStatIcon(associatedUnique.params[2], size)
