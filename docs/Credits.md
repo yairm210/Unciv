@@ -827,7 +827,8 @@ Sounds are from FreeSound.org unless otherwise noted and are either Creative Com
 - [Crossbow Firing](https://pixabay.com/sound-effects/crossbow-firing-95020/) by GameWithBepis on Pixabay as 'crossbow' for crossbow attacks (Pixabay License)
 - [Metal hit slide](https://freesound.org/people/orginaljun/sounds/149102/) by orginaljun as 'nonmetalhit' for pre-metal melee sounds
 - [wpn 1 generic](https://pixabay.com/sound-effects/wpn-1-generic-100027/) By SlavicMagic on Pixabay as 'metalhit' for metal melee sounds (Pixabay License)
-- [Horse's whinny](https://freesound.org/people/Kubuzz/sounds/347036/) By Kubuzz as 'horse' for cavalry attack sounds
+- [snorting horse](https://freesound.org/people/soundslikewillem/sounds/418427/) By soundslikewillem as part of 'horse' for mounted unit attack sounds
+- [Horse's whinny](https://freesound.org/people/Kubuzz/sounds/347036/) By Kubuzz as part of 'horse' for mounted unit attack sounds
 - [machine gun 001 - loop](https://freesound.org/people/pgi/sounds/212602/) By pgi as 'machinegun' for machine gun attack sound
 - [uzzi_full_single](https://freesound.org/people/Deganoth/sounds/348685/) By Deganoth as 'shot' for bullet attacks
 - [Grenade Launcher 2](https://soundbible.com/2140-Grenade-Launcher-2.html) By Daniel Simon as city bombard sound (CC Attribution 3.0 license)
@@ -837,7 +838,7 @@ Sounds are from FreeSound.org unless otherwise noted and are either Creative Com
 - [Explosion-Ultra-Bass](https://soundbible.com/1807-Explosion-Ultra-Bass.html) by Mark DiAngelo as part of 'nuke' sound (CC Attribution 3.0 license)
 - [Short Choir](https://freesound.org/people/Breviceps/sounds/444491/) by Breviceps as 'choir' for free great person pick
 - [Death Robot! Robotic scream](https://freesound.org/people/vultraz168/sounds/334660/) by vultraz168 for Giant Death Robot Attack (CC0 1.0 Universal license)
-- [ceremonial cannon fire](https://freesound.org/people/DylanSmithSound/sounds/274826/) by DylanSmithSound for cannon and shipCannonVolley
+- [ceremonial cannon fire](https://freesound.org/people/DylanSmithSound/sounds/274826/) by DylanSmithSound for cannon, shipCannonVolley and cavalry
 - [artillery fire](https://freesound.org/people/Tomashevsky/sounds/476664/) by Tomashevsky for artillery
 - [20mm cannons](https://freesound.org/people/Piotr123/sounds/551534/) by Piotr123 for ship guns
 - "bombing" is made by the Unciv team using Audacity from
