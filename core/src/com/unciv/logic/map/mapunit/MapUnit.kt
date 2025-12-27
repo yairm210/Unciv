@@ -131,6 +131,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
     @Transient
     lateinit var currentTile: Tile
 
+    @Transient
+    /** The tile where the unit was "born". */
+    lateinit var originTile: Tile
+
     fun hasTile() = ::currentTile.isInitialized
 
     @Transient

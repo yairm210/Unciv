@@ -1296,6 +1296,15 @@ object UniqueTriggerActivation {
                 }
             }
 
+            UniqueType.OneTimeUnitChangesOriginTile -> {
+                if (unit == null || tile == null) return null
+                if (unit.originTile == tile) return null
+                return {
+                    unit.originTile = tile
+                    true
+                }
+            }
+
             UniqueType.OneTimeGlobalAlert -> {
                 if (triggerNotificationText == null) return null
                 val alertText = unique.params[0]
