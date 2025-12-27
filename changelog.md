@@ -1,3 +1,23 @@
+## 4.19.4
+
+minor perf(cpu): better order for "ignore terrain change" operations
+
+By RobLoach:
+- Revert "Flip Defensive Pact opinion comparision " ()
+- Change GameInfoPreview turnstarttime to current time 
+- Restore Civilopedia Event-based Tutorials 
+- docs: The JSON Schema fileMatch should be an array 
+
+By EmperorPinguin:
+- AI : don't send workers to other (non-CS) territory 
+- AI: keep wandering if inadvertently ended up in foreign territory 
+
+Display URL parse erros on multiplayer server url & optimize redirects - By touhidurrr
+
+Change mounted attack sounds: Soften the annoying whinny, snort instead of cannon fire for earlier units - By SomeTroglodyte
+
+Gain city-only stockpiles from provides/consumes uniques - By SeventhM
+
 ## 4.19.3
 
 Remove incompatible improvements in progress upon changing terrain
