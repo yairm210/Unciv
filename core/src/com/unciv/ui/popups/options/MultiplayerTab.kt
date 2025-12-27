@@ -133,7 +133,7 @@ private fun addMultiplayerServerOptions(
         try {
             // we can't trim on 'fixTextFieldUrlOnType' for reasons
             val uri = URI(multiplayerServerTextField.text.trimEnd('/'))
-            if (listOf("http", "https").indexOf(uri.scheme) < 0) {
+            if (uri.scheme == "http" || uri.scheme == "https") {
                 throw Error("URL must start with http:// or https://")
             }
 
