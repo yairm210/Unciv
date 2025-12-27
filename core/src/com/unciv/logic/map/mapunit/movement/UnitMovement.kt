@@ -417,8 +417,8 @@ class UnitMovement(val unit: MapUnit) {
             val payloadUnits = origin.getUnits().filter { it.isTransported && unit.canTransport(it) }.toList()
             for (payload in payloadUnits) {
                 payload.removeFromTile()
+                payload.isTransported = true // set flag before placement so putInTile knows it's transported
                 payload.putInTile(allowedTile)
-                payload.isTransported = true // restore the flag to not leave the payload in the city
                 payload.mostRecentMoveType = UnitMovementMemoryType.UnitTeleported
             }
         }
@@ -502,7 +502,18 @@ class UnitMovement(val unit: MapUnit) {
                 lastReachedEnterableTile = tile
                 unit.useMovementPoints(passingMovementSpent)
                 unit.removeFromTile()
-                unit.putInTile(tile) // Required for ruins,
+                
+                // Check if boarding a carrier set flag before putInTile so it places unit in airUnits
+                val carrierHere = tile.militaryUnit
+                if (carrierHere != null && carrierHere.owner == unit.owner && carrierHere.canTransport(unit)) {
+                    // Moving onto a carrier will be placed in airUnits
+                    unit.isTransported = true
+                } else if (unit.isTransported) {
+                    // Moving off a carrier will be placed in normal land/military slot
+                    unit.isTransported = false
+                }
+                
+                unit.putInTile(tile) // Required for ruins
 
                 if (escortUnit != null) {
                     escortUnit.movement.moveToTile(tile)
@@ -537,8 +548,8 @@ class UnitMovement(val unit: MapUnit) {
                 payload.moveThroughTile(tile)
                 if (tile == finalTileReached) break // this is the final tile the transport reached
             }
+            payload.isTransported = true // set flag before placement so putInTile knows it's transported
             payload.putInTile(finalTileReached)
-            payload.isTransported = true // restore the flag to not leave the payload in the city
             payload.mostRecentMoveType = UnitMovementMemoryType.UnitMoved
         }
 
@@ -648,6 +659,11 @@ class UnitMovement(val unit: MapUnit) {
         if (includeOtherEscortUnit && unit.isEscorting()
             && !unit.getOtherEscortUnit()!!.movement.canMoveTo(tile, assumeCanPassThrough, allowSwap, includeOtherEscortUnit = false))
             return false
+
+        // Allow boarding carriers: if the tile contains a friendly military unit that can transport this unit, allow entry
+        val militaryOnTile = tile.militaryUnit
+        if (militaryOnTile != null && militaryOnTile.owner == unit.owner && militaryOnTile.canTransport(unit))
+            return true
 
         return if (unit.isCivilian())
             (tile.civilianUnit == null || (allowSwap && tile.civilianUnit!!.owner == unit.owner))

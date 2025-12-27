@@ -424,6 +424,11 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun canAttack(): Boolean {
         if (!hasMovement()) return false
         if (isCivilian()) return false
+        // Non-air units that are transported can only attack if inside an open topped carrier
+        if (isTransported && !baseUnit.movesLikeAirUnits) {
+            val carrier = currentTile.militaryUnit
+            if (carrier == null || !carrier.hasUnique(UniqueType.OpenTopped)) return false
+        }
         return attacksThisTurn < maxAttacksPerTurn()
     }
 
