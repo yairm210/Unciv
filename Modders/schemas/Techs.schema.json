@@ -1,0 +1,112 @@
+{
+  "$id": "https://raw.githubusercontent.com/yairm210/Unciv/refs/heads/master/docs/Modders/schemas/Techs.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Technologies",
+  "description": "A list of technologies, including their costs, prerequisites, and effects.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "columnNumber": {
+        "type": "integer",
+        "minimum": 0,
+        "title": "Column Number",
+        "description": "Horizontal placement in the Tech Tree. 0 is the leftmost column."
+      },
+      "era": {
+        "type": "string",
+        "title": "Era",
+        "description": "Determines era reached after researching any technologies in this column. Must be in Eras.json.",
+        "examples": [
+          "Ancient era",
+          "Classical era",
+          "Medieval era",
+          "Renaissance era",
+          "Industrial era",
+          "Modern era",
+          "Atomic era",
+          "Information era",
+          "Future era"
+        ]
+      },
+      "techCost": {
+        "type": "integer",
+        "title": "Tech Cost",
+        "description": "Default science cost for techs in this column.",
+        "default": 0
+      },
+      "buildingCost": {
+        "type": "integer",
+        "title": "Building Cost",
+        "description": "Default cost of buildings requiring this tech."
+      },
+      "wonderCost": {
+        "type": "integer",
+        "title": "Wonder Cost",
+        "description": "Default cost of wonders requiring this tech."
+      },
+      "techs": {
+        "type": "array",
+        "title": "Technologies",
+        "description": "List of technologies that are presented in this column.",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "title": "Name",
+              "description": "The name of the technology.",
+              "examples": [
+                "Agriculture",
+                "Animal Husbandry",
+                "Archery",
+                "Bronze Working",
+                "Calendar",
+                "Masonry"
+              ]
+            },
+            "row": {
+              "type": "integer",
+              "title": "Row",
+              "description": "Vertical placement in the Tech Tree, must be unique per column.",
+              "minimum": 1
+            },
+            "cost": {
+              "type": "integer",
+              "title": "Cost",
+              "description": "Science cost of this technology. Overrides the column techCost."
+            },
+            "uniques": {
+              "$ref": "refs/Uniques.schema.json",
+              "description": "List of unique abilities this technology grants."
+            },
+            "prerequisites": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "title": "Prerequisite",
+                "description": "A Technology that is required to be researched prior."
+              },
+              "title": "Prerequisites",
+              "description": "Names of technologies that must be researched before this tech can be researched. Only direct prerequisites are necessary.",
+              "uniqueItems": true
+            },
+            "civilopediaText": {
+              "$ref": "refs/CivilopediaText.schema.json",
+              "description": "Civilopedia entry describing this technology."
+            },
+            "quote": {
+              "type": "string",
+              "title": "Quote",
+              "description": "Text that is presented to the player when they finish researching this technology."
+            }
+          },
+          "required": ["name", "row"],
+          "additionalProperties": false
+        }
+      }
+    },
+    "required": ["columnNumber", "era"],
+    "additionalProperties": false
+  }
+}

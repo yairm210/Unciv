@@ -1,0 +1,25 @@
+{
+  "$id": "https://raw.githubusercontent.com/yairm210/Unciv/refs/heads/master/docs/Modders/schemas/Religions.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Religions",
+  "description": "A list of Religion names that will be used.",
+  "type": "array",
+  "items": {
+    "type": "string",
+    "title": "Religion",
+    "description": "A name of a Religion.",
+    "examples": [
+      "Buddhism",
+      "Christianity",
+      "Confucianism",
+      "Hinduism",
+      "Islam",
+      "Judaism",
+      "Shinto",
+      "Sikhism",
+      "Taoism",
+      "Tengriism",
+      "Zoroastrianism"
+    ]
+  }
+}

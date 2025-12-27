@@ -1,0 +1,144 @@
+{
+  "$id": "https://raw.githubusercontent.com/yairm210/Unciv/refs/heads/master/docs/Modders/schemas/Speeds.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Speeds",
+  "description": "A list of available game speeds.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["name", "turns"],
+    "properties": {
+      "name": {
+        "type": "string",
+        "title": "Name",
+        "description": "Name of the speed."
+      },
+      "modifier": {
+        "type": "number",
+        "minimum": 0,
+        "default": 1.0,
+        "title": "Modifier",
+        "description": "Overall game speed modifier."
+      },
+      "productionCostModifier": {
+        "type": "number",
+        "minimum": 0,
+        "title": "Production Cost Modifier",
+        "description": "Scales production cost of units and buildings."
+      },
+      "goldCostModifier": {
+        "type": "number",
+        "minimum": 0,
+        "title": "Gold Cost Modifier",
+        "description": "Scales gold costs."
+      },
+      "scienceCostModifier": {
+        "type": "number",
+        "minimum": 0,
+        "title": "Science Cost Modifier",
+        "description": "Scales science costs."
+      },
+      "cultureCostModifier": {
+        "type": "number",
+        "minimum": 0,
+        "title": "Culture Cost Modifier",
+        "description": "Scales culture costs."
+      },
+      "faithCostModifier": {
+        "type": "number",
+        "minimum": 0,
+        "title": "Faith Cost Modifier",
+        "description": "Scales faith costs."
+      },
+      "improvementBuildLengthModifier": {
+        "type": "number",
+        "minimum": 0,
+        "title": "Improvement Build Length Modifier",
+        "description": "Scales the time it takes for a worker to build tile improvements."
+      },
+      "barbarianModifier": {
+        "type": "number",
+        "minimum": 0,
+        "title": "Barbarian Modifier",
+        "description": "Scales the time between barbarian spawns."
+      },
+      "goldGiftModifier": {
+        "type": "number",
+        "minimum": 0,
+        "title": "Gold Gift Modifier",
+        "description": "Scales the influence gained from gifting gold to city-states."
+      },
+      "cityStateTributeScalingInterval": {
+        "type": "number",
+        "minimum": 0,
+        "default": 6.5,
+        "title": "City-State Tribute Scaling Interval",
+        "description": "Turns for city-state tribute scaling."
+      },
+      "goldenAgeLengthModifier": {
+        "type": "number",
+        "minimum": 0,
+        "title": "Golden Age Length Modifier",
+        "description": "Scales the length of golden ages."
+      },
+      "religiousPressureAdjacentCity": {
+        "type": "integer",
+        "minimum": 0,
+        "default": 6,
+        "title": "Religious Pressure Adjacent City",
+        "description": "Religious pressure exerted on nearby cities."
+      },
+      "peaceDealDuration": {
+        "type": "integer",
+        "minimum": 0,
+        "default": 10,
+        "title": "Peace Deal Duration",
+        "description": "Turns a peace deal lasts."
+      },
+      "dealDuration": {
+        "type": "integer",
+        "minimum": 0,
+        "default": 30,
+        "title": "Deal Duration",
+        "description": "Turns a non-peace deal lasts."
+      },
+      "startYear": {
+        "type": "number",
+        "default": -4000,
+        "title": "Start Year",
+        "description": "Start year of the game."
+      },
+      "turns": {
+        "type": "array",
+        "title": "Turns",
+        "description": "List of time intervals per turn. Each object defines the years per turn and the turn interval.",
+        "items": {
+          "type": "object",
+          "required": ["yearsPerTurn", "untilTurn"],
+          "properties": {
+            "yearsPerTurn": {
+              "type": "number",
+              "title": "Years Per Turn",
+              "description": "Number of years passing between turns.",
+              "minimum": 0
+            },
+            "untilTurn": {
+              "type": "integer",
+              "title": "Until Turn",
+              "description": "End of this interval (if it is the last object, only used for Era.startPercent).",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "uniques": {
+        "$ref": "refs/Uniques.schema.json"
+      },
+      "civilopediaText": {
+        "$ref": "refs/CivilopediaText.schema.json"
+      }
+    },
+    "additionalProperties": false
+  }
+}
