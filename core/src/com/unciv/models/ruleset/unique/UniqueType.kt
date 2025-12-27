@@ -388,6 +388,11 @@ enum class UniqueType(
     CanHurryResearch("Can hurry technology research", UniqueTarget.Unit),
     CanHurryPolicy("Can generate a large amount of culture", UniqueTarget.Unit),
     CanTradeWithCityStateForGoldAndInfluence("Can undertake a trade mission with City-State, giving a large sum of gold and [amount] Influence", UniqueTarget.Unit),
+    CanTradeWithCityStateForStatsAndInfluence("Can [comment] with a City-State, giving [countable-stats] and [countable] Influence", UniqueTarget.Unit,
+        docDescription =
+            "A more flexible version of the Great Merchant's \"Conduct Trade Mission\" unique.\n" +
+            "The first parameter is used as the action display name (the label of the button a player clicks).\n" +
+            "Note that for the success notification, the first word is stripped and the rest is lower-cased."),
     CanTransform("Can transform to [unit]", UniqueTarget.UnitAction,
         docDescription = "By default consumes all movement"),
 

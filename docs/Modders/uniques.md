@@ -1943,6 +1943,17 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Unit
 
+??? example  "Can [comment] with a City-State, giving [countable-stats] and [countable] Influence"
+	A more flexible version of the Great Merchant's "Conduct Trade Mission" unique.
+
+	The first parameter is used as the action display name (the label of the button a player clicks).
+
+	Note that for the success notification, the first word is stripped and the rest is lower-cased.
+
+	Example: "Can [comment] with a City-State, giving [+1 Gold, [+[Cities] / 2] Production] and [1000] Influence"
+
+	Applicable to: Unit
+
 ??? example  "Automation is a primary action"
 	This unique is automatically hidden from users.
 
@@ -4012,6 +4023,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[combatantFilter]: This indicates a combatant, which can either be a unit or a city (when bombarding). Must either be `City` or a `mapUnitFilter`.
 *[costOrStrength]: `Cost` or `Strength`.
 *[countable]: This indicates a number or a numeric variable.They can be tested in the developer console with `civ checkcountable` - for example, `civ checkcountable "[Iron]+2"`.
+*[countable-stats]: Like "stats", but allows countables including expressions instead of numbers. The sign can be placed inside or outside the expression brackets for translation flexibility.
 *[difficulty]: The name of any difficulty.
 *[era]: The name of any era.
 *[eraFilter]: The name of an era, `any era`, `Starting Era`, `pre-[era]`, `post-[era]`.
