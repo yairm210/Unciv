@@ -90,7 +90,10 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 | NewGameScreen/NationTable/ | RightInnerTable | null | |
 | NewGameScreen/NationTable/ | Title | null | |
 | NewGameScreen/PlayerPickerTable/ | PlayerTable | null | |
+| NotificationScroll/ | OneTimeNotificationColor | "#fceea8" | |
 | OverviewScreen/DiplomacyOverviewTab/ | CivTable | null | |
+| OverviewScreen/NotificationLog/ | HighlightColor1 | "#f0ead6" | |
+| OverviewScreen/NotificationLog/ | HighlightColor2 | "#f5c993" | |
 | OverviewScreen/NotificationOverviewTable/ | Notification | roundedEdgeRectangle | |
 | OverviewScreen/ReligionOverviewTab/ | BeliefDescription | null | |
 | OverviewScreen/TradesOverviewTab/ | OffersTable | null | |
