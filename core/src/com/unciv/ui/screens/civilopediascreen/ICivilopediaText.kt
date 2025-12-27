@@ -108,6 +108,13 @@ interface ICivilopediaText {
      */
     fun getSortGroup(ruleset: Ruleset): Int = 0
 
+    /** This can be overridden to add "Subcategory" labels between groups of Civilopedia entries.
+     *  - A new label will be inserted every time this changes and is not null
+     *  - Therefore, in most cases it will be necessary to override [getSortGroup] as well
+     *  @param ruleset The current ruleset in case the function needs to do lookups
+     */
+    fun getSubCategory(ruleset: Ruleset): String? = null
+
     /** Overrides Icon used for Civilopedia entry list (where you select the instance)
      *  This will still be passed to the category-specific image getter.
      */

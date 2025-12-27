@@ -692,14 +692,15 @@ HexaRealm tileset images by legacymtgsalvationuser69544 [here](https://github.co
 -   [Hinduism](https://thenounproject.com/icon/hinduism-20383) by Mugda Damle for Hinduism
 -   [Confucianism](https://thenounproject.com/icon/Confucianism-200406) by Dabid J. Pascual for Confucianism
 -   [Judaism](https://thenounproject.com/icon/Judaism-200418) by Dabid J. Pascual for Judaism
--   [Shinto](https://thenounproject.com/dabid/uploads/?i=238069) by Dabid J. Pascual for Shinto
--   [Sikhism](https://thenounproject.com/dabid/uploads/?i=238064) by Dabid J. Pascual for Sikhism
+-   [Shinto](https://thenounproject.com/icon/shinto-238069/) by Dabid J. Pascual for Shinto
+-   [Sikhism](https://thenounproject.com/icon/sikhism-238064/) by Dabid J. Pascual for Sikhism
 -   [Tengrism](https://thenounproject.com/icon/Tengrism-238067) by Dabid J. Pascual for Tengriism
 -   [Zoroastrianism](https://thenounproject.com/icon/Zoroastrianism-238059) by Dabid J. Pascual for Zoroastrianism
--   [praying](https://thenounproject.com/term/praying/740809/) by parkjisun for Religion (Civilopedia concept entry)
--   [praying](https://thenounproject.com/term/praying/886367/) by Gan Khoon Lay for Follower
--   [Hero](https://thenounproject.com/term/preacher/195465/) by Andrew J. Young for Founder
--   [yell](https://thenounproject.com/term/yell/4159889/) by Adrien Coquet for Enhancer
+-   [praying](https://thenounproject.com/icon/praying/740809/) by parkjisun for Religion (Civilopedia concept entry)
+-   [spirituality](https://thenounproject.com/icon/spirituality-2363/) by Renee Ramsey-Passmore for Beliefs (Civilopedia concept entry)
+-   [praying](https://thenounproject.com/icon/praying/886367/) by Gan Khoon Lay for Follower
+-   [Hero](https://thenounproject.com/icon/preacher/195465/) by Andrew J. Young for Founder
+-   [yell](https://thenounproject.com/icon/yell/4159889/) by Adrien Coquet for Enhancer
 
 ### Others
 
