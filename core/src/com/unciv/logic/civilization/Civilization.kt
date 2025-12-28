@@ -570,18 +570,18 @@ class Civilization : IsPartOfGameInfoSerialization {
         trigger: UniqueType,
         gameContext: GameContext = state,
         triggerFilter: (Unique) -> Boolean = { true }
-    ) : Iterable<Unique> = sequence {
-        yieldAll(nation.uniqueMap.getTriggeredUniques(trigger, gameContext, triggerFilter))
-        yieldAll(cities.asSequence()
-            .flatMap { city -> city.cityConstructions.builtBuildingUniqueMap.getTriggeredUniques(trigger, gameContext, triggerFilter) }
-        )
+    ) : Sequence<Unique> = sequence {
+        yieldAll(nation.uniqueMap.getAllUniques())
+        yieldAll(cities.asSequence().flatMap { city -> city.cityConstructions.builtBuildingUniqueMap.getAllUniques() })
         if (religionManager.religion != null)
-            yieldAll(religionManager.religion!!.founderBeliefUniqueMap.getTriggeredUniques(trigger, gameContext, triggerFilter))
-        yieldAll(policies.policyUniques.getTriggeredUniques(trigger, gameContext, triggerFilter))
-        yieldAll(tech.techUniques.getTriggeredUniques(trigger, gameContext, triggerFilter))
-        yieldAll(getEra().uniqueMap.getTriggeredUniques (trigger, gameContext, triggerFilter))
-        yieldAll(gameInfo.getGlobalUniques().uniqueMap.getTriggeredUniques(trigger, gameContext, triggerFilter))
-    }.toList() // Triggers can e.g. add buildings which contain triggers, causing concurrent modification errors
+            yieldAll(religionManager.religion!!.founderBeliefUniqueMap.getAllUniques())
+        yieldAll(policies.policyUniques.getAllUniques())
+        yieldAll(tech.techUniques.getAllUniques())
+        yieldAll(getEra().uniqueMap.getAllUniques())
+        yieldAll(gameInfo.getGlobalUniques().uniqueMap.getAllUniques())
+    }.toList().asSequence() // Triggers can e.g. add buildings which contain triggers, causing concurrent modification errors
+        .filter { it.getModifiers(trigger).any(triggerFilter) && it.conditionalsApply(gameContext) }
+        .flatMap { it.getMultiplied(gameContext) }
 
     @Readonly
     fun getTriggeredUniques(
@@ -589,18 +589,20 @@ class Civilization : IsPartOfGameInfoSerialization {
         gameContext: GameContext = state,
         triggerFilter: (Unique) -> Boolean = { true },
         ignoreCities: Boolean = false
-    ) : Iterable<Unique> = sequence {
-        yieldAll(nation.uniqueMap.getTriggeredUniques(trigger, gameContext, triggerFilter))
-        if (!ignoreCities) yieldAll(cities.asSequence()
-            .flatMap { city -> city.cityConstructions.builtBuildingUniqueMap.getTriggeredUniques(trigger, gameContext, triggerFilter) }
+    ) : Sequence<Unique> = sequence {
+        yieldAll(nation.uniqueMap.getAllUniques())
+        if(!ignoreCities) yieldAll(cities.asSequence()
+            .flatMap { city -> city.cityConstructions.builtBuildingUniqueMap.getAllUniques() }
         )
         if (religionManager.religion != null)
-            yieldAll(religionManager.religion!!.founderBeliefUniqueMap.getTriggeredUniques(trigger, gameContext, triggerFilter))
-        yieldAll(policies.policyUniques.getTriggeredUniques(trigger, gameContext, triggerFilter))
-        yieldAll(tech.techUniques.getTriggeredUniques(trigger, gameContext, triggerFilter))
-        yieldAll(getEra().uniqueMap.getTriggeredUniques (trigger, gameContext, triggerFilter))
-        yieldAll(gameInfo.getGlobalUniques().uniqueMap.getTriggeredUniques(trigger, gameContext, triggerFilter))
-    }.toList() // Triggers can e.g. add buildings which contain triggers, causing concurrent modification errors
+            yieldAll(religionManager.religion!!.founderBeliefUniqueMap.getAllUniques())
+        yieldAll(policies.policyUniques.getAllUniques())
+        yieldAll(tech.techUniques.getAllUniques())
+        yieldAll(getEra().uniqueMap.getAllUniques())
+        yieldAll(gameInfo.getGlobalUniques().uniqueMap.getAllUniques())
+    }.toList().asSequence() // Triggers can e.g. add buildings which contain triggers, causing concurrent modification errors
+        .filter { it.getModifiers(trigger).any(triggerFilter) && it.conditionalsApply(gameContext) }
+        .flatMap { it.getMultiplied(gameContext) }
 
     /** Implements [UniqueParameterType.CivFilter][com.unciv.models.ruleset.unique.UniqueParameterType.CivFilter] */
     @Readonly
