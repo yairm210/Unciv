@@ -2,6 +2,7 @@ package com.unciv.models.ruleset
 
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import com.unciv.models.translations.tr
 
 /**
  *  Container for json-read "Tutorial" text, potentially decorated.
@@ -49,7 +50,8 @@ class Tutorial : RulesetObject() {
      * Builds a sort group number based on the first two characters of the category.
      */
     override fun getSortGroup(ruleset: Ruleset): Int {
-        if (category.isNullOrEmpty()) return -1
-        return category?.take(2)?.lowercase()?.map { it.code }?.fold(0) { acc, code -> acc * 256 + code } ?: -1
+        val translatedCategory = category?.tr()?.take(2)?.lowercase() ?: return -1 // Default to "Tutorials " on top
+        if (translatedCategory.length < 2) return 0 // After Tutorials
+        return (translatedCategory[0].code shl 16) + translatedCategory[1].code
     }
 }
