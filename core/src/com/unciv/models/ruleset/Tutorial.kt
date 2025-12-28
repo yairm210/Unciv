@@ -51,7 +51,7 @@ class Tutorial : RulesetObject() {
      */
     override fun getSortGroup(ruleset: Ruleset): Int {
         val translatedCategory = category?.tr()?.take(2)?.lowercase() ?: return -1 // Default to "Tutorials " on top
-        if (translatedCategory.length < 2) return 0 // After Tutorials
+        if (translatedCategory.length < 2) return translatedCategory[0].code
         return (translatedCategory[0].code shl 16) + translatedCategory[1].code
     }
 }
