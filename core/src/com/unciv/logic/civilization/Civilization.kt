@@ -571,6 +571,9 @@ class Civilization : IsPartOfGameInfoSerialization {
         gameContext: GameContext = state,
         triggerFilter: (Unique) -> Boolean = { true }
     ) : Sequence<Unique> = sequence {
+        // Gathering all uniques into a list first since triggers can add e.g. buildings 
+        // which contain triggers, causing concurrent modification errors.
+        // Cannont use getTriggeredUniques from uniqueMaps since we don't want to check conditionals yet
         yieldAll(nation.uniqueMap.getAllUniques())
         yieldAll(cities.asSequence().flatMap { city -> city.cityConstructions.builtBuildingUniqueMap.getAllUniques() })
         if (religionManager.religion != null)
@@ -579,7 +582,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         yieldAll(tech.techUniques.getAllUniques())
         yieldAll(getEra().uniqueMap.getAllUniques())
         yieldAll(gameInfo.getGlobalUniques().uniqueMap.getAllUniques())
-    }.toList().asSequence() // Triggers can e.g. add buildings which contain triggers, causing concurrent modification errors
+    }.toList().asSequence() // Then convert back to a Sequence to check conditionals when triggering rather than before triggering
         .filter { it.getModifiers(trigger).any(triggerFilter) && it.conditionalsApply(gameContext) }
         .flatMap { it.getMultiplied(gameContext) }
 
@@ -590,6 +593,9 @@ class Civilization : IsPartOfGameInfoSerialization {
         triggerFilter: (Unique) -> Boolean = { true },
         ignoreCities: Boolean = false
     ) : Sequence<Unique> = sequence {
+        // Gathering all uniques into a list first since triggers can add e.g. buildings 
+        // which contain triggers, causing concurrent modification errors.
+        // Cannont use getTriggeredUniques from uniqueMaps since we don't want to check conditionals yet
         yieldAll(nation.uniqueMap.getAllUniques())
         if(!ignoreCities) yieldAll(cities.asSequence()
             .flatMap { city -> city.cityConstructions.builtBuildingUniqueMap.getAllUniques() }
@@ -600,7 +606,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         yieldAll(tech.techUniques.getAllUniques())
         yieldAll(getEra().uniqueMap.getAllUniques())
         yieldAll(gameInfo.getGlobalUniques().uniqueMap.getAllUniques())
-    }.toList().asSequence() // Triggers can e.g. add buildings which contain triggers, causing concurrent modification errors
+    }.toList().asSequence() // Then convert back to a Sequence to check conditionals when triggering rather than before triggering
         .filter { it.getModifiers(trigger).any(triggerFilter) && it.conditionalsApply(gameContext) }
         .flatMap { it.getMultiplied(gameContext) }
 
