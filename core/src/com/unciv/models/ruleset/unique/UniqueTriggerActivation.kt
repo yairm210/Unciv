@@ -108,7 +108,7 @@ object UniqueTriggerActivation {
             civInfo.cities.firstOrNull { it.isCapital() }
 
         val tileBasedRandom =
-            if (tile != null) Random(tile.position.toString().hashCode())
+            if (tile != null) Random(tile.position.hashCode())
             else Random(-550) // Very random indeed
         val ruleset = civInfo.gameInfo.ruleset
 
