@@ -271,7 +271,7 @@ enum class Countables(
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.tileResources.keys
     },
 
-    TileResourcesByCivs("[resourceFilter] resource by [civFilter] Civilizations") {
+    TileResourcesByCivs("[resourceFilter] resource of [civFilter] Civilizations") {
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val (resouceFilter, civFilter) = parameterText.getPlaceholderParameters()
             val civilizations = gameContext.gameInfo?.civilizations ?: return null

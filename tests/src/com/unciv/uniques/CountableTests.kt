@@ -545,10 +545,10 @@ class CountableTests {
             "[City center] Tiles", 1,
             "[Nation-0] Tiles", 7,
             "[Vegetation] Tiles", 18,
-            "[Horses] resource by [${civ.civName}] Civilizations", 42,
-            "[Strategic] resource by [${civ.civName}] Civilizations", 42,
-            "[Horses] resource by [all] Civilizations", 42,
-            "[Horses] resource by [City-State] Civilizations", 0
+            "[Horses] resource of [${civ.civName}] Civilizations", 42,
+            "[Strategic] resource of [${civ.civName}] Civilizations", 42,
+            "[Horses] resource of [all] Civilizations", 42,
+            "[Horses] resource of [City-State] Civilizations", 0
         )
     }
 
