@@ -412,12 +412,20 @@ data class HexCoord(val x: Int = 0, val y: Int = 0) {
     /** Ser/deser to be 1:1 with Vector2, to allow us to replace Vector2 in game saves with HexCoord */
     class Serializer : Json.Serializer<HexCoord> {
         override fun write(json: Json, coord: HexCoord, knownType: Class<*>?) {
-            json.writeValue(mapOf("x" to coord.x.toFloat(), "y" to coord.y.toFloat()))
+            json.writeObjectStart()
+            if (coord.x != 0)
+                json.writeValue("x", coord.x)
+            if (coord.y != 0)
+                json.writeValue("y", coord.y)
+            json.writeObjectEnd()
         }
 
         override fun read(json: Json, jsonData: JsonValue, type: Class<*>?): HexCoord {
-            val x = json.readValue(Float::class.java, jsonData["x"]) ?: 0f
-            val y = json.readValue(Float::class.java, jsonData["y"]) ?: 0f
+            //TODO once we can assume there are no more games out there serialized in the verbose
+            //     {"class": "java.lang.Float", "value": 23} format, replace with Int::class.java
+            //     and remove `testCanDeserializeVerboseVector2Format`
+            val x = json.readValue("x", Float::class.java, 0f, jsonData)
+            val y = json.readValue("y", Float::class.java, 0f, jsonData)
             return HexCoord(x.toInt(), y.toInt())
         }
     }
