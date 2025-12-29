@@ -82,4 +82,22 @@ class HexmathTests {
                 Assert.assertEquals(hexCoord, hexCoordDeserialized)
             }
     }
+
+    @Test
+    fun testCanDeserializeVerboseVector2Format() {
+        val json = json()
+        val input = """{"x": {"class": "java.lang.Float", "value": 23}, "y": {"class": "java.lang.Float", "value": -23}}"""
+        val actual = json.fromJson(HexCoord::class.java, input)
+        val expected = HexCoord.of(23, -23)
+        Assert.assertEquals(expected, actual)
+    }
+
+    @Test
+    fun testSerializedHexCoordIsCompact() {
+        val json = json()
+        val input = HexCoord.of(-42, 42)
+        val actual = json.toJson(input)
+        val expected = """{"x":-42,"y":42}"""
+        Assert.assertEquals(expected, actual)
+    }
 }
