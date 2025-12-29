@@ -103,7 +103,12 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen, Scrollability.All
     }
 
     private fun onAutocomplete() {
-        val (toRemove, toAdd) = getAutocomplete() ?: return
+        val (toRemove, toAdd) = try {
+            getAutocomplete() ?: return
+        } catch (ex: ConsoleErrorException) {
+            showResponse(ex.error, Color.RED)
+            return
+        }
         fun String.removeFromEnd(n: Int) = substring(0, (length - n).coerceAtLeast(0))
         textField.text = textField.text.removeFromEnd(toRemove) + toAdd
         textField.cursorPosition = Int.MAX_VALUE // because the setText implementation actively resets it after the paste it uses (auto capped at length)
