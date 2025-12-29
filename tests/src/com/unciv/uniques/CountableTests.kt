@@ -526,7 +526,7 @@ class CountableTests {
     }
 
     @Test
-    @CoversCountable(Countables.TileFilterTiles, Countables.TileResources)
+    @CoversCountable(Countables.TileFilterTiles, Countables.TileResources, Countables.TileResourcesByCivs)
     fun testTileFilterTilesCountable() {
         val ruleset = setupModdedGame("Provides [40] [Horses]")
         val wetTile = game.tileMap[0,0]
@@ -545,6 +545,10 @@ class CountableTests {
             "[City center] Tiles", 1,
             "[Nation-0] Tiles", 7,
             "[Vegetation] Tiles", 18,
+            "[Horses] resource by [${civ.civName}] Civilizations", 42,
+            "[Strategic] resource by [${civ.civName}] Civilizations", 42,
+            "[Horses] resource by [all] Civilizations", 42,
+            "[Horses] resource by [City-State] Civilizations", 0
         )
     }
 
