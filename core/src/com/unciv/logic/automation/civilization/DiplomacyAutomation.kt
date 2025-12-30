@@ -260,7 +260,7 @@ object DiplomacyAutomation {
             val ourDiploManager = civInfo.getDiplomacyManager(it)!!
             civInfo.diplomacyFunctions.canSignDefensivePactWith(it)
                 && !ourDiploManager.hasFlag(DiplomacyFlags.DeclinedDefensivePact)
-                && ourDiploManager.opinionOfOtherCiv() >= 70f * civInfo.getPersonality().inverseScaledFocus(PersonalityValue.Aggressive)
+                && ourDiploManager.opinionOfOtherCiv() < 70f * civInfo.getPersonality().inverseScaledFocus(PersonalityValue.Aggressive)
                 && !areWeOfferingTrade(civInfo, it, Constants.defensivePact)
         }
 

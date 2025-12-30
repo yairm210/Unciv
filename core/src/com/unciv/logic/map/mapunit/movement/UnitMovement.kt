@@ -634,43 +634,59 @@ class UnitMovement(val unit: MapUnit) {
      * Leave it as default unless you know what [canMoveTo] does.
      */
     @Readonly
-    fun canMoveTo(tile: Tile, assumeCanPassThrough: Boolean = false, allowSwap: Boolean = false, includeOtherEscortUnit: Boolean = true): Boolean {
+    fun canMoveTo(tile: Tile, assumeCanPassThrough: Boolean = false, allowSwap: Boolean = false, includeOtherEscortUnit: Boolean = true) = 
+        getCannotMoveToReason(tile, assumeCanPassThrough, allowSwap, includeOtherEscortUnit) == null
+    
+    enum class CannotMoveToReason{
+        CannotPassThrough,
+        CannotEnterCityCenter,
+        EscortCannotMove,
+        TileIsNotEmpty,
+        NoAirUnitTransport,
+    }
+    
+    @Readonly
+    fun getCannotMoveToReason(tile: Tile, assumeCanPassThrough: Boolean = false, allowSwap: Boolean = false, includeOtherEscortUnit: Boolean = true): CannotMoveToReason? {
         if (unit.baseUnit.movesLikeAirUnits)
-            return canAirUnitMoveTo(tile, unit)
+            return getAirUnitCannotMoveToReason(tile, unit)
 
         if (!assumeCanPassThrough && !canPassThrough(tile))
-            return false
+            return CannotMoveToReason.CannotPassThrough
 
         // even if they'll let us pass through, we can't enter their city - unless we just captured it
         if (isCityCenterCannotEnter(tile))
-            return false
+            return CannotMoveToReason.CannotEnterCityCenter
 
         if (includeOtherEscortUnit && unit.isEscorting()
             && !unit.getOtherEscortUnit()!!.movement.canMoveTo(tile, assumeCanPassThrough, allowSwap, includeOtherEscortUnit = false))
-            return false
+            return CannotMoveToReason.EscortCannotMove
 
-        return if (unit.isCivilian())
+        val tileIsEmpty = if (unit.isCivilian())
             (tile.civilianUnit == null || (allowSwap && tile.civilianUnit!!.owner == unit.owner))
                 && (tile.militaryUnit == null || tile.militaryUnit!!.owner == unit.owner)
         else
         // can skip checking for airUnit since not a city
             (tile.militaryUnit == null || (allowSwap && tile.militaryUnit!!.owner == unit.owner))
                 && (tile.civilianUnit == null || tile.civilianUnit!!.owner == unit.owner || unit.civ.isAtWarWith(tile.civilianUnit!!.civ))
+        
+        if (!tileIsEmpty) return CannotMoveToReason.TileIsNotEmpty
+        
+        return null
     }
 
     @Readonly
-    private fun canAirUnitMoveTo(tile: Tile, unit: MapUnit): Boolean {
+    private fun getAirUnitCannotMoveToReason(tile: Tile, unit: MapUnit): CannotMoveToReason? {
         // landing in the city
         if (tile.isCityCenter()) {
             if (tile.airUnits.filter { !it.isTransported }.size < tile.getCity()!!.getMaxAirUnits() && tile.getCity()?.civ == unit.civ)
-                return true // if city is free - no problem, get in
+                return null // if city is free - no problem, get in
         } // let's check whether it enters city on carrier now...
 
         if (tile.militaryUnit != null) {
             val unitAtDestination = tile.militaryUnit!!
-            return unitAtDestination.canTransport(unit)
+            if (unitAtDestination.canTransport(unit)) return null
         }
-        return false
+        return CannotMoveToReason.NoAirUnitTransport
     }
 
     // Can a paratrooper land at this tile?

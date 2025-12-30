@@ -213,7 +213,7 @@ object UnitAutomation {
                         && unit.movement.canMoveTo(it)
                         && unit.movement.canReach(it)
                         && unit.getDamageFromTerrain(it) <= 0 // Don't end turn on damaging terrain for no good reason
-                        && (!stayInTerritory || it.getOwner() == unit.civ)
+                        && (!stayInTerritory || it.getOwner() == unit.civ || unit.currentTile.getOwner() != unit.civ)
                 }
         if (reachableTiles.any()) unit.movement.moveToTile(reachableTiles.toList().random())
     }
