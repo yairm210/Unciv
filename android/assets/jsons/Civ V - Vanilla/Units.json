@@ -838,7 +838,7 @@
 		"requiredResource": "Horses",
 		"upgradesTo": "Tank",
 		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities> <when attacking>","[-33]% Strength <vs [Mounted] units>","Never appears as a Barbarian unit"],
-		"attackSound": "horse"
+		"attackSound": "cavalry"
 	},
 	{
 		"name": "Cossack",
@@ -854,7 +854,7 @@
 		"upgradesTo": "Tank",
 		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities> <when attacking>","[-33]% Strength <vs [Mounted] units>"],
 		"promotions":["[Cossack] ability"],
-		"attackSound": "horse"
+		"attackSound": "cavalry"
 	},
 
 	// Industrial Era

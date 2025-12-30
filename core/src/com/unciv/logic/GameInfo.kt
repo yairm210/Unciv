@@ -790,7 +790,7 @@ class GameInfoPreview() {
     var turns = 0
     var gameId = ""
     var currentPlayer = ""
-    var currentTurnStartTime = 0L
+    var currentTurnStartTime = System.currentTimeMillis()
 
     /**
      * Converts a GameInfo object (can be uninitialized) into a GameInfoPreview object.
