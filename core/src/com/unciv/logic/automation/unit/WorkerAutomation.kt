@@ -207,8 +207,9 @@ class WorkerAutomation(
         
         val workableTilesCenterFirst = currentTile.getTilesInDistance(3)
             .filter {
-                isAutomationWorkableTile(it, tilesToAvoid, currentTile, unit) 
-                        && getBasePriority(it, unit) >= 0
+                (it.getOwner() == null || it.getOwner() == unit.civ || it.getOwner()!!.isCityState)
+                    && isAutomationWorkableTile(it, tilesToAvoid, currentTile, unit) 
+                    && getBasePriority(it, unit) >= 0
             }
 
         val workableTilesPrioritized = workableTilesCenterFirst.groupBy { getBasePriority(it, unit) }
