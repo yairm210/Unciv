@@ -545,6 +545,7 @@ class CountableTests {
             "[City center] Tiles", 1,
             "[Nation-0] Tiles", 7,
             "[Vegetation] Tiles", 18,
+            // TileResourcesByCivs
             "[Horses] resource of [${civ.civName}] Civilizations", 42,
             "[Strategic] resource of [${civ.civName}] Civilizations", 42,
             "[Horses] resource of [all] Civilizations", 42,
