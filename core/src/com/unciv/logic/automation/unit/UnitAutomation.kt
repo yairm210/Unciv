@@ -204,6 +204,7 @@ object UnitAutomation {
     }
 
     fun wander(unit: MapUnit, stayInTerritory: Boolean = false, tilesToAvoid: Set<Tile> = setOf()) {
+        if (!unit.hasMovement()) return // return in case we can't move anyways
         val unitDistanceToTiles = unit.currentTile.getTilesAtDistance(1)
         // We could walk further, but wander() is meant to let units not stay on the same tile permanently,
         // to avoid obstructing human scouts and workers, moving just one tile should be enough
@@ -211,9 +212,8 @@ object UnitAutomation {
                 .filter {
                     it !in tilesToAvoid
                         && unit.movement.canMoveTo(it)
-                        && unit.movement.canReach(it)
                         && unit.getDamageFromTerrain(it) <= 0 // Don't end turn on damaging terrain for no good reason
-                        && (!stayInTerritory || it.getOwner() == unit.civ)
+                        && (!stayInTerritory || it.getOwner() == unit.civ || unit.currentTile.getOwner() != unit.civ)
                 }
         if (reachableTiles.any()) unit.movement.moveToTile(reachableTiles.toList().random())
     }

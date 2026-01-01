@@ -5,8 +5,12 @@ import com.unciv.UncivGame
 import com.unciv.json.json
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
+import com.unciv.logic.UncivKtor
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.ServerFeatureSet
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
 
 /**
  * Allows access to games stored on a server for multiplayer purposes.
@@ -51,22 +55,36 @@ class MultiplayerServer(
      * Checks if the server is alive and sets the [serverFeatureSet] accordingly.
      * @return true if the server is alive, false otherwise
      */
-    fun checkServerStatus(): Boolean {
-        var statusOk = false
-        SimpleHttp.sendGetRequest("${getServerUrl()}/isalive") { success, result, _ ->
-            statusOk = success
-            if (result.isNotEmpty()) {
-                setFeatureSet(
-                    try {
-                        json().fromJson(ServerFeatureSet::class.java, result)
-                    } catch (_: Exception) {
-                        // The server does not support server feature set - not an error!
-                        ServerFeatureSet()
-                    }
+    suspend fun checkServerStatus(): Boolean {
+        val server = getServerUrl()
+        val isAliveSuffix = "/isalive"
+        val resp = UncivKtor.client.get("$server$isAliveSuffix")
+
+        if (resp.status.isSuccess()) {
+            setFeatureSet(
+                try {
+                    json().fromJson(ServerFeatureSet::class.java, resp.bodyAsText())
+                } catch (_: Exception) {
+                    // The server does not support server feature set - not an error!
+                    ServerFeatureSet()
+                }
+            )
+
+            /**
+             * The following block is an one time optimization that
+             * ensures that we are not following redirects every time
+             */
+            val multiplayer = UncivGame.Current.settings.multiplayer
+            if (server == multiplayer.getServer()) {
+                multiplayer.setServer(
+                    resp.request.url.toString().removeSuffix(isAliveSuffix)
                 )
             }
+
+            return true
         }
-        return statusOk
+
+        return false
     }
 
 

@@ -271,6 +271,30 @@ enum class Countables(
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.tileResources.keys
     },
 
+    TileResourcesByCivs("[resourceFilter] resource of [civFilter] Civilizations") {
+        override fun eval(parameterText: String, gameContext: GameContext): Int? {
+            val (resouceFilter, civFilter) = parameterText.getPlaceholderParameters()
+            val civilizations = gameContext.gameInfo?.civilizations ?: return null
+            val ruleset = gameContext.gameInfo?.ruleset ?: return null
+            val relevantCivs = civilizations.asSequence().filter {
+                it.isAlive() && it.matchesFilter(civFilter, gameContext)
+            }.toList()
+            return ruleset.tileResources.values
+                .filter { it.matchesFilter(resouceFilter, gameContext) }
+                .sumOf { resource ->
+                    relevantCivs.sumOf { civ ->
+                        civ.getResourceAmount(resource.name)
+                    }
+                }
+        }
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
+            val params = parameterText.getPlaceholderParameters()
+            return UniqueParameterType.ResourceFilter.getErrorSeverity(params[0], ruleset) ?:
+                UniqueParameterType.CivFilter.getErrorSeverity(params[1], ruleset)
+        }
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
+    },
+
     /** Please leave this one in, it is tested against in [com.unciv.uniques.CountableTests.testRulesetValidation] */
     @Deprecated("because it was never actually supported", ReplaceWith("Remaining [City-State] Civilizations"), DeprecationLevel.ERROR)
     CityStates("City-States", shortDocumentation = "counts all undefeated city-states") {
