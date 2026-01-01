@@ -2,6 +2,7 @@ package com.unciv.ui.popups.options
 
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.Constants
@@ -28,6 +29,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread
 import com.unciv.utils.toGdxArray
+import java.net.URI
 import java.time.Duration
 import java.time.temporal.ChronoUnit
 
@@ -117,10 +119,33 @@ private fun addMultiplayerServerOptions(
     serverIpTable.add("Server address".toLabel().onClick {
         multiplayerServerTextField.text = Gdx.app.clipboard.contents
         }).colspan(2).padBottom(Constants.defaultFontSize / 2.0f).row()
+
+    val errorTextField = "".toLabel().also {
+        it.color = Color.RED
+        it.isVisible = false
+    }
+
+    serverIpTable.add(errorTextField).colspan(2).row()
+
     multiplayerServerTextField.onChange {
         fixTextFieldUrlOnType(multiplayerServerTextField)
-        // we can't trim on 'fixTextFieldUrlOnType' for reasons
-        settings.multiplayer.setServer(multiplayerServerTextField.text.trimEnd('/'))
+
+        try {
+            // we can't trim on 'fixTextFieldUrlOnType' for reasons
+            val uri = URI(multiplayerServerTextField.text.trimEnd('/'))
+            if (listOf("http", "https").indexOf(uri.scheme) < 0) {
+                throw Error("URL must start with http:// or https://")
+            }
+
+            // URL has stricter validation than URI
+            settings.multiplayer.setServer(uri.toURL().toString())
+            errorTextField.isVisible = false
+            multiplayerServerTextField.color = Color.GREEN
+        } catch (ex: Throwable) {
+            errorTextField.setText(ex.message)
+            errorTextField.isVisible = true
+            multiplayerServerTextField.color = Color.RED
+        }
 
         val isCustomServer = Multiplayer.usesCustomServer()
         connectionToServerButton.isEnabled = isCustomServer

@@ -317,7 +317,9 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
         //Gdx.graphics.requestRendering()  // Use this if immediate rendering is required
 
         if (!canStillAttack) return
-        SoundPlayer.play(attacker.getAttackSound())
+        if (!SoundPlayer.play(UncivSound(attacker.getName())))
+            SoundPlayer.play(attacker.getAttackSound())
+
         val (damageToDefender, damageToAttacker) = Battle.attackOrNuke(attacker, attackableTile)
 
         worldScreen.battleAnimationDeferred(attacker, damageToAttacker, defender, damageToDefender)

@@ -1,10 +1,11 @@
 package com.unciv.ui.screens.worldscreen
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import com.badlogic.gdx.scenes.scene2d.actions.TemporalAction
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.Image
@@ -16,6 +17,7 @@ import com.unciv.GUI
 import com.unciv.logic.civilization.Notification
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.MayaCalendar.toMayaNumerals
 import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
@@ -25,6 +27,7 @@ import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
 import yairm210.purity.annotations.Pure
 import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
 
@@ -32,7 +35,6 @@ import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
  *  Un-hiding the notifications when new ones arrive is a little pointless due to Categories:
  *      * try to scroll new into view? Very complicated as the "old" state is only "available" in the Widgets
  *      * Don't unless a new user option disables categories, then scroll to top?
- *  Idea: Blink or tint the button when new notifications while Hidden
  */
 
 class NotificationsScroll(
@@ -94,11 +96,11 @@ class NotificationsScroll(
     /** For category header decoration lines */
     private val minCategoryLineWidth = worldScreen.stage.width * 0.075f
     /** Show restoreButton when less than this much of the pane is left */
-    private val scrolledAwayEpsilon = minCategoryLineWidth
+    private val scrolledAwayEpsilon = maxEntryWidth * 0.3f // yes should include inverseScaleFactor
 
     private val restoreButton = RestoreButton()
 
-    private var userSetting = UserSetting.Visible
+    private lateinit var userSetting: UserSetting
     private var userSettingChanged = false
     private var enlargeHighlight = false
 
@@ -157,7 +159,14 @@ class NotificationsScroll(
         coveredNotificationsTop: Float,
         coveredNotificationsBottom: Float
     ) {
-        if (getUserSettingCheckDisabled()) return
+        getUserSetting()
+        if (userSetting == UserSetting.Disabled) {
+            restoreButton.setPosition(coveredNotificationsBottom)
+            applyUserSettingChange()
+            restoreButton.updateCount(notifications.size)
+            return
+        }
+
         enlargeHighlight = GUI.getSettings().enlargeSelectedNotification
 
         // Remember scroll position _relative to topRight_
@@ -195,6 +204,7 @@ class NotificationsScroll(
         updateVisualScroll()
 
         applyUserSettingChange()
+
         if (!userSetting.static) {
             restoreButton.unblock()
             if (contentChanged && !userSettingChanged && isHidden)
@@ -203,10 +213,7 @@ class NotificationsScroll(
 
         // Do the positioning here since WorldScreen may also call update when just its geometry changed
         setPosition(stage.width - width * scaleFactor, 0f)
-        restoreButton.setPosition(
-            stage.width - restoreButtonPad,
-            coveredNotificationsBottom + restoreButtonPad,
-            Align.bottomRight)
+        restoreButton.setPosition(coveredNotificationsBottom)
     }
 
     private fun updateContent(
@@ -429,13 +436,14 @@ class NotificationsScroll(
         private var blockCheck = true
         private var blockAct = true
         private var active = false
-        private var shownCount = 0
+        private var shownCount = -1
         private val countLabel: Label
+        private val bellIcon = ImageGetter.getImage("OtherIcons/Notifications")
         private val labelInnerCircle: Image
         private val labelOuterCircle: Image
 
         init {
-            actor = ImageGetter.getImage("OtherIcons/Notifications")
+            actor = bellIcon
                 .surroundWithCircle(restoreButtonSize * 0.9f, color = BaseScreen.skinStrings.skinConfig.baseColor)
                 .surroundWithCircle(restoreButtonSize, resizeActor = false)
             size(restoreButtonSize)
@@ -449,25 +457,35 @@ class NotificationsScroll(
             actor.addActor(labelOuterCircle)
             actor.addActor(labelInnerCircle)
             actor.addActor(countLabel)
-            updateCount(1)
 
             color = color.cpy()  // So we don't mutate a skin element while fading
             color.a = 0f  // for first fade-in
-            onClick {
-                scrollX = maxX
-                hide()
-            }
+            onClick(::clicked)
             pack()  // `this` needs to adopt the size of `actor`, won't happen automatically (surprisingly)
         }
+
+        /** Set RestoreButton position - relative to the screen as parent is stage.root */
+        fun setPosition(coveredNotificationsBottom: Float) =
+            setPosition(
+                this@NotificationsScroll.stage.width - restoreButtonPad,
+                coveredNotificationsBottom + restoreButtonPad,
+                Align.bottomRight
+            )
 
         private fun Actor.centerAtNumberPosition() = setPosition(restoreButtonNumbersCenter, restoreButtonNumbersCenter, Align.center)
 
         fun updateCount(count: Int) {
             if (count == shownCount) return
             shownCount = count
-            countLabel.setText(if (count > 9) "+" else count.tr()) // should we use Maya numerals for the Maya?
+            val countText = when {
+                count >= 100 -> "+"
+                worldScreen.selectedCiv.isLongCountDisplay() -> count.toMayaNumerals()
+                else -> count.tr()
+            }
+            countLabel.setText(countText) // should we use Maya numerals for the Maya?
             countLabel.pack()
             countLabel.centerAtNumberPosition()
+            if (active) flash()
         }
 
         fun block() {
@@ -488,6 +506,7 @@ class NotificationsScroll(
                 worldScreen.stage.root.addActorAfter(this@NotificationsScroll, this)
             blockAct = false
             addAction(Actions.fadeIn(1f))
+            if (userSetting == UserSetting.Disabled) flash()
         }
 
         fun hide() {
@@ -508,31 +527,51 @@ class NotificationsScroll(
 
         fun checkScrollX(scrollX: Float) {
             if (blockCheck) return
-            if (active && scrollX >= scrolledAwayEpsilon * 2)
+            if (active && scrollX >= scrolledAwayEpsilon * 1.2f)
                 hide()
             if (!active && scrollX <= scrolledAwayEpsilon)
                 show()
+        }
+
+        fun clicked() {
+            if (userSetting == UserSetting.Disabled) {
+                worldScreen.openEmpireOverview(EmpireOverviewCategories.Notifications)
+            } else {
+                scrollX = maxX
+                hide()
+            }
+        }
+
+        fun flash() {
+            addAction(ButtonFlashAction(bellIcon))
         }
 
         override fun act(delta: Float) {
             // Actions are blocked while update() is rebuilding the UI elements - to be safe from unexpected state changes
             if (!blockAct) super.act(delta)
         }
-
-        override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
     }
 
-    private fun getUserSettingCheckDisabled(): Boolean {
+    private class ButtonFlashAction(private val icon: Actor) : TemporalAction(4f) {
+        val tempColor = Color()
+        override fun update(percent: Float) {
+            val shift = (1f - MathUtils.cos(12f * percent * MathUtils.PI)) / 2f
+            tempColor.set(Color.WHITE).lerp(Color.RED, shift)
+            icon.color.set(tempColor)
+        }
+    }
+
+    private fun getUserSetting() {
         val settingString = GUI.getSettings().notificationScroll
         val setting = UserSetting.entries.firstOrNull { it.name == settingString }
             ?: UserSetting.default()
-        userSettingChanged = false
-        if (setting == userSetting)
-            return setting == UserSetting.Disabled
+        if (::userSetting.isInitialized && setting == userSetting) {
+            userSettingChanged = false
+            return
+        }
 
         userSetting = setting
         userSettingChanged = true
-        if (setting != UserSetting.Disabled) return false
 
         notificationsTable.clear()
         notificationsHash = 0
@@ -540,8 +579,6 @@ class NotificationsScroll(
         updateVisualScroll()
         setScrollingDisabled(x = false, y = false)
         isVisible = false
-        restoreButton.hide()
-        return true
     }
 
     private fun applyUserSettingChange() {
@@ -567,7 +604,10 @@ class NotificationsScroll(
             UserSetting.Permanent -> {
                 restoreButton.hide()
             }
-            else -> return
+            UserSetting.Disabled -> {
+                restoreButton.show()
+                return // Leave the NotificationsScroll invisible
+            }
         }
         isVisible = true
     }
@@ -577,8 +617,4 @@ class NotificationsScroll(
         userSetting = newSetting
         GUI.getSettings().notificationScroll = newSetting.name
     }
-
-    override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
-    override fun act(delta: Float) = super.act(delta)
-    override fun hit(x: Float, y: Float, touchable: Boolean): Actor? = super.hit(x, y, touchable)
 }

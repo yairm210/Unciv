@@ -1,6 +1,5 @@
 package com.unciv.logic.civilization.transients
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
@@ -10,6 +9,7 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.Proximity
 import com.unciv.logic.civilization.transients.CapitalConnectionsFinder.CapitalConnectionMedium
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Building
@@ -98,7 +98,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
     }
 
     // This is a big performance
-    fun updateViewableTiles(explorerPosition: Vector2? = null) {
+    fun updateViewableTiles(explorerPosition: HexCoord? = null) {
         setNewViewableTiles()
 
         updateViewableInvisibleTiles()
@@ -126,7 +126,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         if (!civInfo.isBarbarian) {
             for (entry in viewedCivs) {
                 val metCiv = entry.key
-                if (metCiv == civInfo || metCiv.isBarbarian || civInfo.diplomacy.containsKey(metCiv.civName)) continue
+                if (metCiv == civInfo || metCiv.isBarbarian || civInfo.diplomacy.containsKey(metCiv.civID)) continue
                 civInfo.diplomacyFunctions.makeCivilizationsMeet(metCiv)
                 if(!civInfo.isSpectator())
                     civInfo.addNotification("We have encountered [${metCiv.civName}]!",
@@ -201,7 +201,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         newViewableTiles.addAll(civInfo.units.getCivUnits().flatMap { unit -> unit.viewableTiles.asSequence().filter { it.getOwner() != civInfo } })
 
         for (otherCiv in civInfo.getKnownCivs()) {
-            if (otherCiv.getAllyCivName() == civInfo.civName || otherCiv.civName == civInfo.getAllyCivName()) {
+            if (otherCiv.allyCiv == civInfo || otherCiv == civInfo.allyCiv) {
                 newViewableTiles.addAll(otherCiv.cities.asSequence().flatMap { it.getTiles() })
             }
         }
@@ -324,7 +324,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
             var resourceBonusPercentage = 1f
             for (unique in civInfo.getMatchingUniques(UniqueType.CityStateResources))
                 resourceBonusPercentage += unique.params[0].toFloat() / 100
-            for (cityStateAlly in civInfo.getKnownCivs().filter { it.getAllyCivName() == civInfo.civName }) {
+            for (cityStateAlly in civInfo.getKnownCivs().filter { it.allyCiv == civInfo }) {
                 for (resourceSupply in cityStateAlly.cityStateFunctions.getCityStateResourcesForAlly()) {
                     if (resourceSupply.resource.hasUnique(UniqueType.CannotBeTraded, cityStateAlly.state)) continue
                     val newAmount = (resourceSupply.amount * resourceBonusPercentage).toInt()
@@ -377,11 +377,11 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         if (preCalculated != null) {
             // We usually want to update this for a pair of civs at the same time
             // Since this function *should* be symmetrical for both civs, we can just do it once
-            civInfo.proximity[otherCiv.civName] = preCalculated
+            civInfo.proximity[otherCiv.civID] = preCalculated
             return preCalculated
         }
         if (civInfo.cities.isEmpty() || otherCiv.cities.isEmpty()) {
-            civInfo.proximity[otherCiv.civName] = Proximity.None
+            civInfo.proximity[otherCiv.civID] = Proximity.None
             return Proximity.None
         }
 
@@ -440,7 +440,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         if (numMajors <= 4 && proximity > Proximity.Far)
             proximity = Proximity.Far
 
-        civInfo.proximity[otherCiv.civName] = proximity
+        civInfo.proximity[otherCiv.civID] = proximity
 
         return proximity
     }

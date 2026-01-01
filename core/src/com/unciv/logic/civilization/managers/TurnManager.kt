@@ -71,7 +71,7 @@ class TurnManager(val civInfo: Civilization) {
         startTurnFlags()
         updateRevolts()
 
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponTurnStart, civInfo.state))
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponTurnStart, civInfo.state, ignoreCities = true))
             UniqueTriggerActivation.triggerUnique(unique, civInfo)
 
         for (city in civInfo.cities) {
@@ -109,7 +109,7 @@ class TurnManager(val civInfo: Civilization) {
 
             if (flag == CivFlags.CityStateGreatPersonGift.name) {
                 val cityStateAllies: List<Civilization> =
-                        civInfo.getKnownCivs().filter { it.isCityState && it.getAllyCivName() == civInfo.civName }.toList()
+                        civInfo.getKnownCivs().filter { it.isCityState && it.allyCiv == civInfo }.toList()
                 val givingCityState = cityStateAllies.filter { it.cities.isNotEmpty() }.randomOrNull()
 
                 if (cityStateAllies.isNotEmpty()) civInfo.flagsCountdown[flag] = civInfo.flagsCountdown[flag]!! - 1
@@ -239,7 +239,7 @@ class TurnManager(val civInfo: Civilization) {
         if (UncivGame.Current.settings.citiesAutoBombardAtEndOfTurn)
             NextTurnAutomation.automateCityBombardment(civInfo) // Bombard with all cities that haven't, maybe you missed one
 
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponTurnEnd, civInfo.state))
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponTurnEnd, civInfo.state, ignoreCities = true))
             UniqueTriggerActivation.triggerUnique(unique, civInfo)
 
         val notificationsLog = civInfo.notificationsLog
@@ -331,7 +331,7 @@ class TurnManager(val civInfo: Civilization) {
         val victoryType = civInfo.victoryManager.getVictoryTypeAchieved()
         if (victoryType != null) {
             civInfo.gameInfo.victoryData =
-                    VictoryData(civInfo.civName, victoryType, civInfo.gameInfo.turns)
+                    VictoryData(civInfo, victoryType, civInfo.gameInfo.turns)
 
             // Notify other human players about this civInfo's victory
             for (otherCiv in civInfo.gameInfo.civilizations) {

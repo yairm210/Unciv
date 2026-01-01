@@ -8,9 +8,11 @@ import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.toHexCoord
 import com.unciv.ui.components.tilegroups.TileGroupMap
 import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.components.tilegroups.TileSetStrings
@@ -133,7 +135,7 @@ class EditorMapHolder(
      * Copy-pasted from [com.unciv.ui.screens.worldscreen.WorldMapHolder.setCenterPosition]
      * TODO remove code duplication
      */
-    fun setCenterPosition(vector: Vector2, blink: Boolean = false) {
+    fun setCenterPosition(vector: HexCoord, blink: Boolean = false) {
         val tileGroup = allTileGroups.firstOrNull { it.tile.position == vector } ?: return
 
         // The Y axis of [scrollY] is inverted - when at 0 we're at the top, not bottom - so we invert it back.
@@ -228,7 +230,7 @@ class EditorMapHolder(
 
         if (!tileMap.mapParameters.worldWrap)
             return tileMap.getOrNull(rounded)
-        val wrapped = HexMath.getUnwrappedNearestTo(rounded, Vector2.Zero, tileMap.maxLongitude)
+        val wrapped = HexMath.getUnwrappedNearestTo(rounded.toHexCoord(), HexCoord.Zero, tileMap.maxLongitude)
         //todo this works, but means getUnwrappedNearestTo fails - on the x-y == maxLongitude vertical
         return tileMap.getOrNull(wrapped) ?: tileMap.getOrNull(rounded)
     }

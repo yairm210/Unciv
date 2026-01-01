@@ -131,8 +131,8 @@ class MapSize private constructor(
     private fun setNewRadius(radius: Int) {
         this.radius = radius
         val size = HexMath.getEquivalentRectangularSize(radius)
-        width = size.x.toInt()
-        height = size.y.toInt()
+        width = size.x
+        height = size.y
     }
 
     // For debugging and MapGenerator console output

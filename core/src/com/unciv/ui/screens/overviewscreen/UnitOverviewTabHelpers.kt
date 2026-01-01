@@ -1,10 +1,10 @@
 package com.unciv.ui.screens.overviewscreen
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.GUI
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
@@ -27,7 +27,7 @@ import yairm210.purity.annotations.Readonly
  */
 open class UnitOverviewTabHelpers {
 
-    private fun showWorldScreenAt(position: Vector2, unit: MapUnit?) {
+    private fun showWorldScreenAt(position: HexCoord, unit: MapUnit?) {
         GUI.resetToWorldScreen()
         GUI.getMap().setCenterPosition(position, forceSelectUnit = unit)
     }

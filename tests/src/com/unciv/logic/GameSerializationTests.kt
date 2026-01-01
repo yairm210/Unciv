@@ -1,6 +1,7 @@
 package com.unciv.logic
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.utils.Json
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.json.json
@@ -98,7 +99,7 @@ class GameSerializationTests {
 
     @Test
     fun serializedLaziesTest() {
-        val jsonSerializer = com.badlogic.gdx.utils.Json().apply {
+        val jsonSerializer = Json().apply {
             setIgnoreDeprecated(true)
             setDeprecated(classSynchronizedLazyImpl, "initializer", true)
             setDeprecated(classSynchronizedLazyImpl, "lock", true)  // this is the culprit as kotlin initializes it to `this@SynchronizedLazyImpl`

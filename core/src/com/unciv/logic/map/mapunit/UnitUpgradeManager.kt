@@ -91,6 +91,7 @@ class UnitUpgradeManager(val unit: MapUnit) {
         //  This prevents this, since we lack another way to do so -_-'  
         if (unit.isDestroyed) return  
             
+        val wasEscorting = unit.isEscorting()
         unit.destroy(destroyTransportedUnit = false)
         val civ = unit.civ
         val position = unit.currentTile.position
@@ -113,5 +114,8 @@ class UnitUpgradeManager(val unit: MapUnit) {
         // wake up from Guarding if can't Withdraw
         if (newUnit.isGuarding() && !newUnit.hasUnique(UniqueType.WithdrawsBeforeMeleeCombat))
             newUnit.action = null
+        // Re-escort if it was escorting
+        if (newUnit.currentTile.position == position && wasEscorting)
+            newUnit.startEscorting()
     }
 }
