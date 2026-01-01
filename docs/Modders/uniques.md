@@ -4041,7 +4041,7 @@ There is a conversion affecting dashes and leading/trailing blanks. Please make 
 *[terrainFeature]: The name of any terrain that is a terrain feature according to the json file.
 *[tileFilter]: Anything that can be used either in an improvementFilter or in a terrainFilter can be used here, plus 'unimproved'
 *[unitNameGroup]: The name of a unit name group found in UnitNameGroups.json, or one of their unique tags.
-*[unitTriggerTarget]: `This Unit` or `Target Unit`, or `Every adjacent [mapUnitFilter] unit`.
+*[unitTriggerTarget]: `This Unit`, `Target Unit`, or `Every adjacent [mapUnitFilter] unit`.
 *[unitType]: Can be 'Land', 'Water', 'Air', any unit type, a filtering Unique on a unit type, or a multi-filter of these.
 *[validationWarning]: Suppresses one specific Ruleset validation warning. This can specify the full text verbatim including correct upper/lower case, or it can be a wildcard case-insensitive simple pattern starting and ending in an asterisk ('*'). If the suppression unique is used within an object or as modifier (not ModOptions), the wildcard symbols can be omitted, as selectivity is better due to the limited scope.
 *[victoryType]: The name of any victory type: 'Cultural', 'Diplomatic', 'Domination', 'Scientific', 'Time' or one of your mod's VictoryTypes.json names.

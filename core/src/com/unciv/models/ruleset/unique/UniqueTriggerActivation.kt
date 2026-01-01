@@ -115,19 +115,19 @@ object UniqueTriggerActivation {
             else Random(-550) // Very random indeed
         val ruleset = civInfo.gameInfo.ruleset
 
-        // Allow iterating through all unit targets, if needed.
-        if (!unitTriggerableIteration &&
-            tile != null &&
+        // Iterating through all unit targets, it's "Every adjacent [mapUnitFilter] unit".
+        if (!unitTriggerableIteration && tile != null &&
             unique.type?.targetTypes?.contains(UniqueTarget.UnitTriggerable) == true &&
             !UniqueParameterType.UnitTriggerTarget.staticKnownValues.contains(unique.params[0])) {
-            // Every adjacent [mapUnitFilter] unit
-            val triggerFunctions = tile.neighbors
-                .flatMap { it.getUnits() }
+            // Grab all the available triggers for each unit target.
+            val triggerFunctions = tile.neighbors.flatMap { it.getUnits() }
                 .filter {
                     val mapUnitFilter = unique.params.getOrNull(0)?.getPlaceholderParameters()?.firstOrNull()
                     mapUnitFilter != null && it.matchesFilter(mapUnitFilter, gameContext)
                 }
-                .mapNotNull { getTriggerFunction(unique, civInfo, city, it, it.getTile(), notification, triggerNotificationText, true) }
+                .mapNotNull {
+                    getTriggerFunction(unique, civInfo, city, it, it.getTile(), notification, triggerNotificationText, true)
+                }
             if (triggerFunctions.none()) return null
             return {
                 for (triggerFunction in triggerFunctions) {
