@@ -1,3 +1,29 @@
+## 4.19.5
+
+Added "We have destroyed the city of [cityName]!" translation
+
+Get detailed reason for why we cannot move to a tile - see 
+
+4.19.4-patch1
+
+Add new ID to downloaded multiplayer game previews 
+
+Add `[resource] of [civ] Civilizations` Countable - By RobLoach
+
+By SomeTroglodyte:
+- Improve "unit can be promoted" notifications 
+- Fix dev console can be crashed from autocomplete code 
+- chore: HexCoord cleanup 
+- Civilopedia Subcategories 
+
+By SeventhM:
+- Fix Civilization based triggers ignoring gamestate changes from prior triggers 
+- Fix triggerables not multiplying correctly under some circumstances 
+
+reload multiplayerServerTextField on connection success - By touhidurrr
+
+Prevent wandering if unit has no movement - By EmperorPinguin
+
 ## 4.19.4
 
 minor perf(cpu): better order for "ignore terrain change" operations
