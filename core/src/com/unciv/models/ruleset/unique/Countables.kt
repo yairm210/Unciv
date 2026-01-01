@@ -278,7 +278,7 @@ enum class Countables(
             val ruleset = gameContext.gameInfo?.ruleset ?: return null
             val relevantCivs = civilizations.asSequence().filter {
                 it.isAlive() && it.matchesFilter(civFilter, gameContext)
-            }
+            }.toList()
             return ruleset.tileResources.values
                 .filter { it.matchesFilter(resouceFilter, gameContext) }
                 .sumOf { resource ->
