@@ -1,6 +1,5 @@
 package com.unciv.ui.screens.devconsole
 
-import com.unciv.logic.map.toHexCoord
 import com.unciv.ui.screens.devconsole.CliInput.Companion.getAutocompleteString
 import com.unciv.ui.screens.devconsole.CliInput.Companion.orEmpty
 
@@ -16,7 +15,7 @@ internal class ConsoleUnitCommands : ConsoleCommandNode {
             val selectedTile = console.getSelectedTile()
             val civ = console.getCivByName(params[0])
             val baseUnit = params[1].find(console.gameInfo.ruleset.units.values)
-            civ.units.placeUnitNearTile(selectedTile.position.toHexCoord(), baseUnit)
+            civ.units.placeUnitNearTile(selectedTile.position, baseUnit)
             DevConsoleResponse.OK
         },
 
@@ -87,6 +86,8 @@ internal class ConsoleUnitCommands : ConsoleCommandNode {
             val unit = console.getSelectedUnit()
             unit.promotions.XP = xp
             DevConsoleResponse.OK
-        }
+        },
+
+        "activatetrigger" to ConsoleTriggerAction("unit"),
     )
 }

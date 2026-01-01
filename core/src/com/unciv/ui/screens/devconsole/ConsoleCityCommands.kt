@@ -1,6 +1,5 @@
 package com.unciv.ui.screens.devconsole
 
-import com.unciv.logic.map.toVector2
 import com.unciv.models.ruleset.Building
 import com.unciv.ui.screens.devconsole.CliInput.Companion.findCliInput
 
@@ -19,7 +18,7 @@ internal class ConsoleCityCommands : ConsoleCommandNode {
             val selectedTile = console.getSelectedTile()
             if (selectedTile.isCityCenter())
                 throw ConsoleErrorException("Tile already contains a city center")
-            civ.addCity(selectedTile.position.toVector2())
+            civ.addCity(selectedTile.position)
             DevConsoleResponse.OK
         },
 

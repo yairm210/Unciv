@@ -225,9 +225,12 @@ class TileImprovementFunctions(val tile: Tile) {
             civ.gainStockpiledResource(resource, -amount)
         }
 
-        for (unique in improvement.uniqueObjects.filter { !it.hasTriggerConditional()
-            && it.conditionalsApply(gameContext) })
-            UniqueTriggerActivation.triggerUnique(unique, civ, unit = unit, tile = tile)
+        for (unique in improvement.uniqueObjects) {
+            if (unique.hasTriggerConditional() || !unique.conditionalsApply(gameContext)) continue
+            repeat(unique.getUniqueMultiplier(gameContext)) {
+                UniqueTriggerActivation.triggerUnique(unique, civ, unit = unit, tile = tile)
+            }
+        }
 
         for (unique in civ.getTriggeredUniques(UniqueType.TriggerUponBuildingImprovement, gameContext)
             { improvement.matchesFilter(it.params[0], gameContext) })
@@ -288,7 +291,7 @@ class TileImprovementFunctions(val tile: Tile) {
         if (tile.owningCity == null || tile.owningCity!!.civ != civ) stats *= 2 / 3f
         for ((stat, value) in stats) {
             closestCity.addStat(stat, value.toInt())
-            val locations = LocationAction(tile.position, closestCity.location)
+            val locations = LocationAction(tile.position, closestCity.location.toHexCoord())
             civ.addNotification(
                 "Clearing a [$removedTerrainFeature] has created [${stats.toStringForNotifications()}] for [${closestCity.name}]",
                 locations, NotificationCategory.Production, NotificationIcon.Construction

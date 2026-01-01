@@ -1,6 +1,5 @@
 package com.unciv.ui.screens.civilopediascreen
 
-import com.unciv.UncivGame
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.ui.components.input.KeyboardBinding
@@ -94,8 +93,11 @@ enum class CivilopediaCategories (
         CivilopediaImageGetters.belief,
         KeyboardBinding.PediaBeliefs,
         "ReligionIcons/Religion",
-        { ruleset, _, _ -> (ruleset.beliefs.values.asSequence() +
-            BaseBelief.getCivilopediaReligionEntry(ruleset)).toList() }
+        { ruleset, _, _ -> (
+            ruleset.beliefs.values.asSequence() +
+            BaseBelief.getCivilopediaBeliefsEntry(ruleset) +
+            BaseBelief.getCivilopediaReligionEntry(ruleset)
+        ).toList() }
     ),
     Tutorial ("Tutorials",
         getImage = null,

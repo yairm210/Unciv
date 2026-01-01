@@ -2,7 +2,6 @@
 
 package com.unciv.logic.map.mapunit.movement
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.BFS
@@ -10,7 +9,6 @@ import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.toHexCoord
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.UnitMovementMemoryType
@@ -48,7 +46,7 @@ class UnitMovement(val unit: MapUnit) {
 
         val currentUnitTile = unit.currentTile
         // This is for performance, because this is called all the time
-        val unitTile = if (position == currentUnitTile.position.toHexCoord()) currentUnitTile else currentUnitTile.tileMap[position]
+        val unitTile = if (position == currentUnitTile.position) currentUnitTile else currentUnitTile.tileMap[position]
         distanceToTiles[unitTile] = ParentTileAndTotalMovement(unitTile, unitTile, 0f)
 
         // If I can't move my only option is to stay...
@@ -172,7 +170,7 @@ class UnitMovement(val unit: MapUnit) {
                 }
                 else {
                     getMovementToTilesAtPosition(
-                        tileToCheck.position.toHexCoord(),
+                        tileToCheck.position,
                         unitMaxMovement,
                         false,
                         visitedTilesBitset,
@@ -636,43 +634,59 @@ class UnitMovement(val unit: MapUnit) {
      * Leave it as default unless you know what [canMoveTo] does.
      */
     @Readonly
-    fun canMoveTo(tile: Tile, assumeCanPassThrough: Boolean = false, allowSwap: Boolean = false, includeOtherEscortUnit: Boolean = true): Boolean {
+    fun canMoveTo(tile: Tile, assumeCanPassThrough: Boolean = false, allowSwap: Boolean = false, includeOtherEscortUnit: Boolean = true) = 
+        getCannotMoveToReason(tile, assumeCanPassThrough, allowSwap, includeOtherEscortUnit) == null
+    
+    enum class CannotMoveToReason{
+        CannotPassThrough,
+        CannotEnterCityCenter,
+        EscortCannotMove,
+        TileIsNotEmpty,
+        NoAirUnitTransport,
+    }
+    
+    @Readonly
+    fun getCannotMoveToReason(tile: Tile, assumeCanPassThrough: Boolean = false, allowSwap: Boolean = false, includeOtherEscortUnit: Boolean = true): CannotMoveToReason? {
         if (unit.baseUnit.movesLikeAirUnits)
-            return canAirUnitMoveTo(tile, unit)
+            return getAirUnitCannotMoveToReason(tile, unit)
 
         if (!assumeCanPassThrough && !canPassThrough(tile))
-            return false
+            return CannotMoveToReason.CannotPassThrough
 
         // even if they'll let us pass through, we can't enter their city - unless we just captured it
         if (isCityCenterCannotEnter(tile))
-            return false
+            return CannotMoveToReason.CannotEnterCityCenter
 
         if (includeOtherEscortUnit && unit.isEscorting()
             && !unit.getOtherEscortUnit()!!.movement.canMoveTo(tile, assumeCanPassThrough, allowSwap, includeOtherEscortUnit = false))
-            return false
+            return CannotMoveToReason.EscortCannotMove
 
-        return if (unit.isCivilian())
+        val tileIsEmpty = if (unit.isCivilian())
             (tile.civilianUnit == null || (allowSwap && tile.civilianUnit!!.owner == unit.owner))
                 && (tile.militaryUnit == null || tile.militaryUnit!!.owner == unit.owner)
         else
         // can skip checking for airUnit since not a city
             (tile.militaryUnit == null || (allowSwap && tile.militaryUnit!!.owner == unit.owner))
                 && (tile.civilianUnit == null || tile.civilianUnit!!.owner == unit.owner || unit.civ.isAtWarWith(tile.civilianUnit!!.civ))
+        
+        if (!tileIsEmpty) return CannotMoveToReason.TileIsNotEmpty
+        
+        return null
     }
 
     @Readonly
-    private fun canAirUnitMoveTo(tile: Tile, unit: MapUnit): Boolean {
+    private fun getAirUnitCannotMoveToReason(tile: Tile, unit: MapUnit): CannotMoveToReason? {
         // landing in the city
         if (tile.isCityCenter()) {
             if (tile.airUnits.filter { !it.isTransported }.size < tile.getCity()!!.getMaxAirUnits() && tile.getCity()?.civ == unit.civ)
-                return true // if city is free - no problem, get in
+                return null // if city is free - no problem, get in
         } // let's check whether it enters city on carrier now...
 
         if (tile.militaryUnit != null) {
             val unitAtDestination = tile.militaryUnit!!
-            return unitAtDestination.canTransport(unit)
+            if (unitAtDestination.canTransport(unit)) return null
         }
-        return false
+        return CannotMoveToReason.NoAirUnitTransport
     }
 
     // Can a paratrooper land at this tile?
@@ -771,7 +785,7 @@ class UnitMovement(val unit: MapUnit) {
         includeOtherEscortUnit: Boolean = true
     ): PathsToTilesWithinTurn {
         val distanceToTiles = getMovementToTilesAtPosition(
-            unit.currentTile.position.toHexCoord(),
+            unit.currentTile.position,
             unit.currentMovement,
             considerZoneOfControl,
             null,

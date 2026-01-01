@@ -41,6 +41,7 @@ Allowed values:
 - `Friendly`
 - `Hostile`
 - `Open Borders`
+- `Known` - Civilizations that are aware of the relevant Civ. Known includes self.
 - [nationFilter](#nationfilter)
 
 ## nationFilter
@@ -413,6 +414,8 @@ Allowed values:
     - Can be city stats or civilization stats, depending on where the unique is used
     - For example: If a unique is placed on a building, then the retrieved resources will be of the city. If placed on a policy, they will be of the civilization.
     - This can make a difference for e.g. local resources, which are counted per city.
+-   `[resourceFilter] resource of [civFilter] Civilizations`
+    - Example: `Only available <when number of [[Strategic] resource of [City-States] Civilizations] is more than [0]>`
 -   `Era number` - Number of the era the current player is in
     - Example: `Only available <when number of [Era number] is more than [0]>`
     - Zero-based index of the Era in Eras.json.

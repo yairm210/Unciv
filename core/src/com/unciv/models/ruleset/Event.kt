@@ -52,10 +52,13 @@ class EventChoice : ICivilopediaText, RulesetObject() {
 
     fun triggerChoice(gameContext: GameContext): Boolean {
         var success = false
-        val triggerUniques = uniqueObjects
-            .filter { it.isTriggerable && it.conditionalsApply(gameContext) }
-        for (unique in triggerUniques.flatMap { it.getMultiplied(gameContext) })
-            if (UniqueTriggerActivation.triggerUnique(unique, gameContext)) success = true
+        val gameContext = GameContext(civ, unit = unit)
+        for (unique in uniqueObjects) {
+            if (!unique.isTriggerable || !unique.conditionalsApply(gameContext)) continue
+            repeat(unique.getUniqueMultiplier(gameContext)) {
+                if (UniqueTriggerActivation.triggerUnique(unique, civ, unit = unit)) success = true
+            }
+        }
         return success
     }
 }

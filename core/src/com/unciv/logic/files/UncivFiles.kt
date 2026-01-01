@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.SerializationException
 import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
+import com.unciv.logic.BackwardCompatibility.migrateCivID
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.UncivShowableException
@@ -253,7 +254,10 @@ class UncivFiles(
     }
 
     fun loadGamePreviewFromFile(gameFile: FileHandle): GameInfoPreview {
-        return json().fromJson(GameInfoPreview::class.java, gameFile) ?: throw emptyFile(gameFile)
+        val preview = json().fromJson(GameInfoPreview::class.java, gameFile)
+            ?: throw emptyFile(gameFile)
+        preview.migrateCivID()
+        return preview
     }
 
     /**
@@ -428,7 +432,9 @@ class UncivFiles(
          * @throws SerializationException
          */
         fun gameInfoPreviewFromString(gameData: String): GameInfoPreview {
-            return json().fromJson(GameInfoPreview::class.java, Gzip.unzip(gameData))
+            val preview = json().fromJson(GameInfoPreview::class.java, Gzip.unzip(gameData))
+            preview.migrateCivID()
+            return preview
         }
 
         /** Returns gzipped serialization of [game], optionally gzipped ([forceZip] overrides [saveZipped]) */

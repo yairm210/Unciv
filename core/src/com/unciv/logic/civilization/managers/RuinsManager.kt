@@ -43,7 +43,7 @@ class RuinsManager(
             .toMutableList()
         // The resulting List now gets shuffled, using a tile-based random to thwart save-scumming.
         // Note both Sequence.shuffled and Iterable.shuffled (with a 'd') always pull an extra copy of a MutableList internally, even if you feed them one.
-        candidates.shuffle(Random(triggeringUnit.getTile().position.hashCode()))
+        candidates.shuffle(Random(triggeringUnit.getTile().position.toVector2().hashCode()))
         return candidates
     }
 
@@ -62,9 +62,17 @@ class RuinsManager(
         for (possibleReward in getShuffledPossibleRewards(triggeringUnit)) {
             var atLeastOneUniqueHadEffect = false
             for (unique in possibleReward.uniqueObjects) {
-                val uniqueTriggered =
-                    unique.conditionalsApply(triggeringUnit.cache.state) && 
-                        UniqueTriggerActivation.triggerUnique(unique, triggeringUnit, notification = possibleReward.notification, triggerNotificationText = "from the ruins")
+                if (!unique.conditionalsApply(triggeringUnit.cache.state)) continue
+                var uniqueTriggered = false
+                repeat(unique.getUniqueMultiplier(triggeringUnit.cache.state)) {
+                    uniqueTriggered =
+                        UniqueTriggerActivation.triggerUnique(
+                            unique,
+                            triggeringUnit,
+                            notification = possibleReward.notification,
+                            triggerNotificationText = "from the ruins"
+                        ) || uniqueTriggered
+                }
                 atLeastOneUniqueHadEffect = atLeastOneUniqueHadEffect || uniqueTriggered
             }
             if (atLeastOneUniqueHadEffect) {

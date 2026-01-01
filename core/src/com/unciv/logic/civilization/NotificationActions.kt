@@ -1,7 +1,6 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
 import com.unciv.Constants
@@ -9,8 +8,6 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.City
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.toHexCoord
-import com.unciv.logic.map.toVector2
 import com.unciv.ui.components.MayaCalendar
 import com.unciv.ui.screens.cityscreen.CityScreen
 import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
@@ -39,30 +36,25 @@ interface NotificationAction : IsPartOfGameInfoSerialization {
 }
 
 /** A notification action that shows map places. */
-class LocationAction(private val location: Vector2 = Vector2.Zero) : NotificationAction {
-    constructor(location: HexCoord) : this(location.toVector2())
+class LocationAction(private val location: HexCoord = HexCoord.Zero) : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
-        worldScreen.mapHolder.setCenterPosition(location.toHexCoord(), selectUnit = false)
+        worldScreen.mapHolder.setCenterPosition(location, selectUnit = false)
     }
 
     /**
      *  This Companion implements constructor-like factories through [invoke] to simulate the old [LocationAction]
      *  which stored several locations (back then in turn there was only one action per Notification).
      *  - Meant to be used in [Civilization.addNotification] calls.
-     *  - Note there are overloads accepting `Iterable`, `Sequence` or `vararg` of [Vector2]
+     *  - Note there are overloads accepting `Iterable`, `Sequence` or `vararg` of [HexCoord]
      *  - The `vararg` version accepts and ignores `null`s, often making pre-filtering of conditionally available locations unnecessary.
      *
      *  Example: `addNotification("Bob hit alice", LocationAction(bob.position, alice.position), NotificationCategory.War)`
      */
     companion object {
-        operator fun invoke(locations: Sequence<Vector2>): Sequence<LocationAction> =
+        operator fun invoke(locations: Sequence<HexCoord>): Sequence<LocationAction> =
             locations.map { LocationAction(it) }
-        operator fun invoke(locations: Iterable<Vector2>): Sequence<LocationAction> =
-            locations.asSequence().map { LocationAction(it) }
-        operator fun invoke(vararg locations: Vector2?): Sequence<LocationAction> =
+        operator fun invoke(vararg locations: HexCoord?): Sequence<LocationAction> =
             locations.asSequence().filterNotNull().map { LocationAction(it) }
-        operator fun invoke(first: HexCoord, second: HexCoord): Sequence<LocationAction> =
-            sequenceOf(LocationAction(first), LocationAction(second))
     }
 }
 
@@ -75,7 +67,7 @@ class TechAction(private val techName: String = "") : NotificationAction {
 }
 
 /** enter city */
-class CityAction(private val city: Vector2 = Vector2.Zero) : NotificationAction {
+class CityAction(private val city: HexCoord = HexCoord.Zero) : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
         val cityObject = worldScreen.mapHolder.tileMap[city].getCity()
             ?: return
@@ -104,7 +96,7 @@ class DiplomacyAction : NotificationAction {
 
     constructor(otherCiv: Civilization, showTrade: Boolean = false) {
         this.otherCiv = otherCiv
-        this.otherCivName = otherCiv.civName
+        this.otherCivName = otherCiv.civID
         this.showTrade = showTrade
     }
 
@@ -144,10 +136,10 @@ class MayaLongCountAction : NotificationAction {
  *  Activation without unit id also works for cities, selecting them - so a bombard is one click less.
  */
 class MapUnitAction(
-    private val location: Vector2 = Vector2.Zero,
+    private val location: HexCoord = HexCoord.Zero,
     private val id: Int = Constants.NO_ID
 ) : NotificationAction {
-    constructor(unit: MapUnit) : this(unit.currentTile.position.toVector2(), unit.id)
+    constructor(unit: MapUnit) : this(unit.currentTile.position.toHexCoord(), unit.id)
     override fun execute(worldScreen: WorldScreen) {
         val selectUnit = id != Constants.NO_ID  // This is the unspecific "select any unit on that tile", specific works without this being on
         val unit = if (selectUnit) null else
@@ -168,12 +160,25 @@ class CivilopediaAction(private val link: String = "") : NotificationAction {
     }
 }
 
-/** Show Promotion picker for a MapUnit - by name and location, as they lack a serialized unique ID */
-class PromoteUnitAction(private val name: String = "", private val location: Vector2 = Vector2.Zero) : NotificationAction {
+/** Show Promotion picker for a MapUnit - by name and location, as they lack a serialized unique ID
+ *  TODO that's no longer true - migration with backward compat is in order - this implements the first step
+ */
+class PromoteUnitAction(
+    private val name: String,
+    private val location: HexCoord,
+    val id: Int
+) : NotificationAction {
+    @Suppress("unused")
+    constructor() : this("", HexCoord.Zero, Constants.NO_ID)
+    constructor(unit: MapUnit) : this(unit.name, unit.currentTile.position, unit.id)
+
     override fun execute(worldScreen: WorldScreen) {
-        val tile = worldScreen.gameInfo.tileMap[location]
-        val unit = tile.militaryUnit?.takeIf { it.name == name && it.civ == worldScreen.selectedCiv }
-            ?: return
+        val unit = if (id != Constants.NO_ID) {
+            worldScreen.selectedCiv.units.getUnitById(id)
+        } else {
+            val tile = worldScreen.gameInfo.tileMap[location]
+            tile.militaryUnit?.takeIf { it.name == name && it.civ == worldScreen.selectedCiv }
+        } ?: return
         worldScreen.game.pushScreen(PromotionPickerScreen(unit))
     }
 }
@@ -203,7 +208,7 @@ class EspionageAction : NotificationAction {
         worldScreen.game.pushScreen(EspionageOverviewScreen(worldScreen.selectedCiv, worldScreen))
     }
     companion object {
-        fun withLocation(location: Vector2?): Sequence<NotificationAction> =
+        fun withLocation(location: HexCoord?): Sequence<NotificationAction> =
             LocationAction(location) + EspionageAction()
     }
 }
@@ -221,7 +226,7 @@ class ReligionAction(private val religionName: String? = null) : NotificationAct
         worldScreen.openEmpireOverview(EmpireOverviewCategories.Religion, religionName.orEmpty())
     }
     companion object {
-        fun withLocation(location: Vector2?, religionName: String?): Sequence<NotificationAction> =
+        fun withLocation(location: HexCoord?, religionName: String?): Sequence<NotificationAction> =
             LocationAction(location) + ReligionAction(religionName)
     }
 }

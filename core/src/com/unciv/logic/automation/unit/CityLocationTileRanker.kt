@@ -107,11 +107,16 @@ object CityLocationTileRanker {
         if (newCityTile.isAdjacentToRiver()) tileValue += 20
         // We want to found the city on an oasis because it can't be improved otherwise
         if (newCityTile.terrainHasUnique(UniqueType.Unbuildable)) tileValue += 3
-        // If we build the city on a resource tile, then we can't build any special improvements on it
-        if (newCityTile.hasViewableResource(civ)) tileValue -= 4
-        if (newCityTile.hasViewableResource(civ) && newCityTile.tileResource.resourceType == ResourceType.Bonus) tileValue -= 8
-        // Settling on bonus resources tends to waste a food
-        // Settling on luxuries generally speeds up our game, and settling on strategics as well, as the AI cheats and can see them.
+        if (newCityTile.hasViewableResource(civ)) {
+            tileValue -= 4
+            // Settling on bonus resources tends to waste a food
+            if (newCityTile.tileResource.resourceType == ResourceType.Bonus) tileValue -= 8
+            // Build on jungle luxuries for tempo
+            if (newCityTile.tileResource.resourceType == ResourceType.Luxury
+                && newCityTile.lastTerrain.hasUnique(UniqueType.Vegetation)
+                && !newCityTile.lastTerrain.hasUnique(UniqueType.ProductionBonusWhenRemoved)
+                ) tileValue += 10
+        }
 
         var tiles = 0
         for (i in 0..2) {

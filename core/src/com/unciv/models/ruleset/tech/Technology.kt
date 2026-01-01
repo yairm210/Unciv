@@ -22,6 +22,9 @@ class Technology: RulesetObject() {
     var row: Int = 0
     var quote = ""
 
+    override fun getSortGroup(ruleset: Ruleset) = if (column == null) -1 else era(ruleset)?.eraNumber ?: -1
+    override fun getSubCategory(ruleset: Ruleset): String? = if (column == null) null else era(ruleset)?.name
+
     @Readonly fun era(): String = column!!.era
 
     @Readonly fun isContinuallyResearchable() = hasUnique(UniqueType.ResearchableMultipleTimes)

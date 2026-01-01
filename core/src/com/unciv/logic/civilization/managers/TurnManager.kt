@@ -11,10 +11,10 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.PopupAlert
+import com.unciv.logic.civilization.PromoteUnitAction
 import com.unciv.logic.civilization.diplomacy.DiplomacyTurnManager.nextTurn
 import com.unciv.logic.map.mapunit.UnitTurnManager
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.toHexCoord
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
@@ -72,7 +72,7 @@ class TurnManager(val civInfo: Civilization) {
         startTurnFlags()
         updateRevolts()
 
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponTurnStart, civInfo.state))
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponTurnStart, civInfo.state, ignoreCities = true))
             UniqueTriggerActivation.triggerUnique(unique, civInfo)
 
         for (city in civInfo.cities) {
@@ -201,7 +201,7 @@ class TurnManager(val civInfo: Civilization) {
 
         repeat(rebelCount) {
             civInfo.gameInfo.tileMap.placeUnitNearTile(
-                spawnTile.position.toHexCoord(),
+                spawnTile.position,
                 unitToSpawn,
                 barbarians
             )
@@ -240,7 +240,7 @@ class TurnManager(val civInfo: Civilization) {
         if (UncivGame.Current.settings.citiesAutoBombardAtEndOfTurn)
             NextTurnAutomation.automateCityBombardment(civInfo) // Bombard with all cities that haven't, maybe you missed one
 
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponTurnEnd, civInfo.state))
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponTurnEnd, civInfo.state, ignoreCities = true))
             UniqueTriggerActivation.triggerUnique(unique, civInfo)
 
         val notificationsLog = civInfo.notificationsLog
@@ -257,6 +257,17 @@ class TurnManager(val civInfo: Civilization) {
         civInfo.notifications.clear()
 
         if (civInfo.isDefeated() || civInfo.isSpectator()) return  // yes they do call this, best not update any further stuff
+
+        // "can be promoted" notifications are usually posted when the unit is not actually allowed to promote - e.g. after an attack
+        // So add all such notifications from last turn if the unit still can be promoted
+        notificationsThisTurn.notifications.asSequence()
+            .flatMap { notification ->
+                notification.actions.asSequence()
+                    .filterIsInstance<PromoteUnitAction>()
+                    .map { notification to it.id }
+            }.filter { (_, id) ->
+                civInfo.units.getUnitById(id)?.promotions?.canBePromoted() == true
+            }.mapTo(civInfo.notifications) { (notification, _) -> notification }
 
         var nextTurnStats =
             if (civInfo.isBarbarian)
@@ -332,7 +343,7 @@ class TurnManager(val civInfo: Civilization) {
         val victoryType = civInfo.victoryManager.getVictoryTypeAchieved()
         if (victoryType != null) {
             civInfo.gameInfo.victoryData =
-                    VictoryData(civInfo.civName, victoryType, civInfo.gameInfo.turns)
+                    VictoryData(civInfo, victoryType, civInfo.gameInfo.turns)
 
             // Notify other human players about this civInfo's victory
             for (otherCiv in civInfo.gameInfo.civilizations) {

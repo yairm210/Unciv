@@ -9,7 +9,6 @@ import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
-import com.unciv.logic.map.toHexCoord
 import com.unciv.models.ruleset.Policy.PolicyBranchType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
@@ -172,7 +171,7 @@ class GlobalPoliticsOverviewTable(
                 if (wonder.location != null) {
                     wonderName.onClick {
                         val worldScreen = UncivGame.Current.resetToWorldScreen()
-                        worldScreen.mapHolder.setCenterPosition(wonder.location.position.toHexCoord())
+                        worldScreen.mapHolder.setCenterPosition(wonder.location.position)
                     }
                 }
                 wonderTable.add(wonderName).left().row()

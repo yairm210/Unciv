@@ -1,3 +1,132 @@
+## 4.19.5
+
+Add `[resource] of [civ] Civilizations` Countable - By RobLoach
+
+By SomeTroglodyte:
+- Civilopedia Subcategories 
+- Improve "unit can be promoted" notifications 
+- Fix dev console crashable from autocomplete code 
+
+By SeventhM:
+- Fix Civi-based triggers ignoring changes from prior triggers 
+- Fix triggerables not multiplying correctly under some circumstances 
+
+Reload multiplayer text on connection success - By touhidurrr
+
+Prevent wandering if unit has no movement - By EmperorPinguin
+
+## 4.19.4
+
+minor perf(cpu): better order for "ignore terrain change" operations
+
+By RobLoach:
+- Correct MP games' first turn time 
+- Restore Civilopedia Event-based Tutorials 
+
+By EmperorPinguin:
+- AI: don't send workers to other civ's territory 
+- AI: keep wandering if inadvertently ended up in foreign territory 
+
+MP server: Display URL errors & optimize redirects - By touhidurrr
+
+Change mounted attack sounds - By SomeTroglodyte
+
+Gain city-only stockpiles from provides/consumes uniques - By SeventhM
+
+## 4.19.3
+
+Remove incompatible improvements in progress upon changing terrain
+
+By EmperorPinguin:
+- AI: choose favoredReligion more often 
+- AI: build settlers also when at war 
+
+Modding: Add city context to turn start & end uniques from buildings - By SeventhM
+
+By RobLoach:
+- Fix removed favored Religions 
+- Minor Civilopedia UX Improvements 
+- Flip Defensive Pact opinion comparision 
+
+Console: 'unit activatetrigger'  - By SomeTroglodyte
+
+## 4.19.2
+
+AI improvements - By EmperorPinguin
+
+By SomeTroglodyte:
+- Fix City button problems
+- Miscellaneous fixes and small changes 
+- Distance-based unit cycle order (opt-in)  
+- Fix battle modifier not being translated 
+- Fix OneTimeRemovePolicy triggered Unique
+- Prevent crashes from mod preview files
+
+Added a command to spawn barbarian encampments - By GameCobra
+
+By RobLoach:
+- options: Add Micro, FullHD, and QuadHD screen sizes
+- city: Display City-Wide Resources
+
+## 4.19.1
+
+By RobLoach:
+- options: Add Micro, FullHD, and QuadHD screen sizes 
+- Display City-Wide stockpiled resources in city
+
+By SomeTroglodyte:
+- Add diplomacy actions to game console 
+- Harden mod manager against invalid local preview files 
+- Improve unit tests speed by reducing Translation tests overhead 
+
+Fix crash on reloading/cloning victory data - By SeventhM
+
+## 4.19.0
+
+By EmperorPinguin:
+- CPU performance improvements
+- AI don't build units which cannot attack 
+- AI: Better 'tile-to-work' picking 
+
+By SomeTroglodyte:
+- Faster mod download
+- Fix VictoryScreen crash loopholes
+
+Add Hindi language - By monikaanaaya2021-cmd
+
+By RobLoach:
+- civFilter: Add a `Known` filter 
+- civilopedia: Add Technologies that provide Resources 
+
+## 4.18.19
+
+Fix map width for checking distances between tiles
+
+CPU performance improvements
+
+By EmperorPinguin:
+- Simplify military unit attack value 
+- Disable fort placement for AI 
+- Fix unit automation order 
+- Bugfix AI friendly fighter counting 
+- Better Cover, Charge promotion priority for AI
+- Let AI build quarries for Stone Works 
+- Move unit promotion ahead & Exclude wounded melee from automateCityConquer 
+
+
+Fixed battle notification texts issue - By GameCobra
+
+## 4.18.18
+
+CPU performance improvements
+
+By EmperorPinguin:
+- AI: Separate encampment-finding logic from ruins-finding 
+- AI: Better "city to attack" logic 
+- AI: Simplify target selection for city bombardment 
+
+Fix battle notification order - By SomeTroglodyte
+
 ## 4.18.17
 
 Memory + CPU performance improvements

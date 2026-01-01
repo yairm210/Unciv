@@ -453,9 +453,12 @@ class ReligionManager : IsPartOfGameInfoSerialization {
                     UniqueTriggerActivation.triggerUnique(unique, civInfo,
                         triggerNotificationText = "due to adopting [${belief.name}]")
 
-        for (belief in beliefs)
-            for (unique in belief.uniqueObjects.filter { !it.hasTriggerConditional() && it.conditionalsApply(civInfo.state) })
-                UniqueTriggerActivation.triggerUnique(unique, civInfo)
+        for (belief in beliefs) {
+            for (unique in belief.uniqueObjects) {
+                if (unique.hasTriggerConditional() || !unique.conditionalsApply(civInfo.state)) continue
+                repeat(unique.getUniqueMultiplier(civInfo.state)) { UniqueTriggerActivation.triggerUnique(unique, civInfo) }
+            }
+        }
 
         civInfo.updateStatsForNextTurn()  // a belief can have an immediate effect on stats
     }
@@ -487,7 +490,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
             if (civInfo in civ.getKnownCivs()) {
                 if (civ.hasExplored(holyCity.getCenterTile()))
                     civ.addNotification("[${civInfo.civName}] has founded [$displayName] in [${holyCity.name}]!",
-                        ReligionAction.withLocation(holyCity.location, name),
+                        ReligionAction.withLocation(holyCity.location.toHexCoord(), name),
                         Notification.NotificationCategory.Religion, NotificationIcon.Faith)
                 else civ.addNotification("[${civInfo.civName}] has founded [$displayName]!",
                     ReligionAction(name), Notification.NotificationCategory.Religion, NotificationIcon.Faith)

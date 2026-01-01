@@ -42,7 +42,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
      * @param nation Name of the nation
      */
     data class StartingLocation(
-        val position: Vector2 = Vector2.Zero,
+        val position: HexCoord = HexCoord.Zero,
         val nation: String = "",
         val usage: Usage = Usage.default // default for maps saved pior to this feature
     ) : IsPartOfGameInfoSerialization {
@@ -91,11 +91,9 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     @Transient
     var tileMatrix = ArrayList<ArrayList<Tile?>>() // this works several times faster than a hashmap, the performance difference is really astounding
 
-    @Transient
-    var leftX = 0
-
-    @Transient
-    var bottomY = 0
+    @Transient var leftX = 0
+    @Transient var bottomY = 0
+    @Transient var width = 0
 
     @delegate:Transient
     val maxLatitude: Int by lazy { if (values.isEmpty()) 0 else values.maxOf { abs(it.latitude) } }
@@ -161,7 +159,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         startingLocations.clear()
         val firstAvailableLandTerrain = MapLandmassGenerator.getInitializationTerrain(ruleset, TerrainType.Land)
         for (vector in HexMath.getHexCoordsInDistance(HexCoord.Zero, radius, worldWrap))
-            tileList.add(Tile().apply { position = vector.toVector2(); baseTerrain = firstAvailableLandTerrain })
+            tileList.add(Tile().apply { position = vector.asSerializable(); baseTerrain = firstAvailableLandTerrain })
         setTransients(ruleset)
     }
 
@@ -179,7 +177,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         for (column in -wrapAdjustedWidth / 2 .. (wrapAdjustedWidth-1) / 2)
             for (row in -height / 2 .. (height-1) / 2)
                 tileList.add(Tile().apply {
-                    position = HexMath.getTileCoordsFromColumnRow(column, row).toVector2()
+                    position = HexMath.getTileCoordsFromColumnRow(column, row).asSerializable()
                     baseTerrain = firstAvailableLandTerrain
                 })
 
@@ -323,10 +321,10 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         val radius = if (mapParameters.shape == MapShape.rectangular)
             mapParameters.mapSize.width / 2
         else mapParameters.mapSize.radius
-        val x1 = tile.position.x.toInt()
-        val y1 = tile.position.y.toInt()
-        val x2 = otherTile.position.x.toInt()
-        val y2 = otherTile.position.y.toInt()
+        val x1 = tile.position.x
+        val y1 = tile.position.y
+        val x2 = otherTile.position.x
+        val y2 = otherTile.position.y
 
         val xDifference = x1 - x2
         val yDifference = y1 - y2
@@ -355,7 +353,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     fun getClockPositionNeighborTile(tile: Tile, clockPosition: Int): Tile? {
         val difference = HexMath.getClockPositionToHexcoord(clockPosition)
         if (difference == HexCoord.Zero) return null
-        val possibleNeighborPosition = tile.position.toHexCoord().plus(difference)
+        val possibleNeighborPosition = tile.position.plus(difference)
         return getIfTileExistsOrNull(possibleNeighborPosition.x, possibleNeighborPosition.y)
     }
 
@@ -499,10 +497,10 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         check(tileList.isNotEmpty()) { "No tiles were found in the save?!" }
 
         if (tileMatrix.isEmpty()) {
-            val topY = tileList.asSequence().map { it.position.y.toInt() }.max()
-            bottomY = tileList.asSequence().map { it.position.y.toInt() }.min()
-            val rightX = tileList.asSequence().map { it.position.x.toInt() }.max()
-            leftX = tileList.asSequence().map { it.position.x.toInt() }.min()
+            val topY = tileList.asSequence().map { it.position.y }.max()
+            bottomY = tileList.asSequence().map { it.position.y }.min()
+            val rightX = tileList.asSequence().map { it.position.x }.max()
+            leftX = tileList.asSequence().map { it.position.x }.min()
 
             // Initialize arrays with enough capacity to avoid re-allocations (+Arrays.copyOf).
             // We have just calculated the dimensions above, so we know the final size.
@@ -521,7 +519,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         }
 
         for (tileInfo in values) {
-            tileMatrix[tileInfo.position.x.toInt() - leftX][tileInfo.position.y.toInt() - bottomY] = tileInfo
+            tileMatrix[tileInfo.position.x - leftX][tileInfo.position.y - bottomY] = tileInfo
         }
         for ((index, tileInfo) in values.withIndex()) {
             // Do ***NOT*** call Tile.setTerrainTransients before the tileMatrix is complete -
@@ -535,6 +533,10 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             tileInfo.setTerrainTransients()
             tileInfo.setUnitTransients(setUnitCivTransients)
         }
+        
+        val minColumn = tileList.asSequence().map { HexMath.getColumn(it.position) }.min()
+        val maxColumn = tileList.asSequence().map { HexMath.getColumn(it.position) }.max()
+        width = maxColumn - minColumn + 1
     }
 
     /** Initialize Civilization.neutralRoads based on Tile.roadOwner
@@ -592,7 +594,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         // both the civ name and actual civ need to be in here in order to calculate the canMoveTo...Darn
         unit.assignOwner(civInfo, false)
         // remember our first owner
-        unit.originalOwner = civInfo.civName
+        unit.originalOwner = civInfo.civID
 
         var unitToPlaceTile: Tile? = null
         // try to place at the original point (this is the most probable scenario)
@@ -671,18 +673,18 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
      * @param newNation new nation to be set up
      */
     fun switchPlayersNation(player: Player, newNation: Nation) {
-        val newCiv = Civilization(newNation.name).apply { nation = newNation }
+        val newCiv = Civilization(newNation)
         tileList.forEach {
             for (unit in it.getUnits()) if (unit.owner == player.chosenCiv) {
-                unit.owner = newNation.name
+                unit.owner = newCiv.civID
                 unit.civ = newCiv
                 unit.setTransients(newCiv.gameInfo.ruleset)
             }
         }
         for (element in startingLocations.filter { it.nation != player.chosenCiv }) {
             startingLocations.remove(element)
-            if (startingLocations.none { it.nation == newNation.name && it.position == element.position })
-                startingLocations.add(StartingLocation(element.position, newNation.name))
+            if (startingLocations.none { it.nation == newCiv.civID && it.position == element.position })
+                startingLocations.add(StartingLocation(element.position, newCiv.civID))
         }
         setStartingLocationsTransients()
     }
@@ -707,7 +709,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         usage: StartingLocation.Usage = StartingLocation.Usage.Player
     ): Boolean {
         if (startingLocationsByNation.contains(nationName, tile)) return false
-        startingLocations.add(StartingLocation(tile.position.toVector2(), nationName, usage))
+        startingLocations.add(StartingLocation(tile.position, nationName, usage))
         return startingLocationsByNation.addToMapOfSets(nationName, tile)
     }
 
@@ -715,7 +717,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
      * @return true if the starting position was removed as per [Collection]'s remove */
     fun removeStartingLocation(nationName: String, tile: Tile): Boolean {
         if (!startingLocationsByNation.contains(nationName, tile)) return false
-        startingLocations.remove(StartingLocation(tile.position.toVector2(), nationName))
+        startingLocations.remove(StartingLocation(tile.position, nationName))
         return startingLocationsByNation[nationName]!!.remove(tile)
         // we do not clean up an empty startingLocationsByNation[nationName] set - not worth it
     }
@@ -724,13 +726,13 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     fun removeStartingLocations(nationName: String) {
         if (startingLocationsByNation[nationName] == null) return
         for (tile in startingLocationsByNation[nationName]!!) {
-            startingLocations.remove(StartingLocation(tile.position.toVector2(), nationName))
+            startingLocations.remove(StartingLocation(tile.position, nationName))
         }
         startingLocationsByNation[nationName]!!.clear()
     }
 
     /** Removes all starting positions for [position], rebuilding the transients */
-    fun removeStartingLocations(position: Vector2) {
+    fun removeStartingLocations(position: HexCoord) {
         startingLocations.removeAll { it.position == position }
         setStartingLocationsTransients()
     }

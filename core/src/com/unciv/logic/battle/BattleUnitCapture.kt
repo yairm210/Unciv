@@ -1,6 +1,5 @@
 package com.unciv.logic.battle
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
@@ -12,7 +11,6 @@ import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.toHexCoord
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import yairm210.purity.annotations.Readonly
@@ -62,7 +60,7 @@ object BattleUnitCapture {
                 .toFloat() * 0.4f
         )
         /** Between 0 and 1.  Defaults to turn and location-based random to avoid save scumming */
-        val random = Random((attacker.getCivInfo().gameInfo.turns * defender.getTile().position.hashCode()).toLong())
+        val random = Random((attacker.getCivInfo().gameInfo.turns * defender.getTile().position.toVector2().hashCode()).toLong())
         return random.nextFloat() <= captureChance
     }
 
@@ -99,7 +97,7 @@ object BattleUnitCapture {
      * Adds a notification to [attacker]'s civInfo and returns whether the captured unit could be placed */
     private fun spawnCapturedUnit(defender: MapUnitCombatant, attacker: MapUnitCombatant): Boolean {
         val defenderTile = defender.getTile()
-        val addedUnit = attacker.getCivInfo().units.placeUnitNearTile(defenderTile.position.toHexCoord(), defender.getName()) ?: return false
+        val addedUnit = attacker.getCivInfo().units.placeUnitNearTile(defenderTile.position, defender.getName()) ?: return false
         addedUnit.currentMovement = 0f
         addedUnit.health = 50
         attacker.getCivInfo().addNotification("An enemy [${defender.getName()}] has joined us!", MapUnitAction(addedUnit), NotificationCategory.War, defender.getName())
@@ -171,7 +169,7 @@ object BattleUnitCapture {
                 attacker.getCivInfo().popupAlerts.add(
                     PopupAlert(
                         AlertType.RecapturedCivilian,
-                        capturedUnit.currentTile.position.toString()
+                        capturedUnit.currentTile.position.toPrettyString()
                     )
                 )
             }
@@ -211,7 +209,7 @@ object BattleUnitCapture {
         // Captured settlers are converted to workers unless captured by barbarians (so they can be returned later).
         if (!capturedUnit.hasUnique(UniqueType.FoundCity, GameContext.IgnoreConditionals) || capturingCiv.isBarbarian) {
             capturedUnit.capturedBy(capturingCiv)
-            return capturedUnit.currentTile.position.toHexCoord() // if capturedBy has moved the unit, this is updated
+            return capturedUnit.currentTile.position // if capturedBy has moved the unit, this is updated
         }
 
         capturedUnit.destroy()
@@ -224,8 +222,8 @@ object BattleUnitCapture {
             .firstOrNull { it.isCivilian() && it.getMatchingUniques(UniqueType.BuildImprovements, GameContext.IgnoreConditionals)
             .any { unique -> unique.params[0] == "Land" } }
             ?: return null
-        return capturingCiv.units.placeUnitNearTile(capturedUnit.currentTile.position.toHexCoord(), workerTypeUnit, capturedUnit.id)
-            ?.currentTile?.position?.toHexCoord()
+        return capturingCiv.units.placeUnitNearTile(capturedUnit.currentTile.position, workerTypeUnit, capturedUnit.id)
+            ?.currentTile?.position
     }
 
 }

@@ -15,5 +15,5 @@ Id-dinja qed tistenniek! Ħa tibni ċivilizzazzjoni li tista' tgħix għal sekli
 Il-permess "Ippermetti aċċess sħiħ għan-netwerk" huwa meħtieġ għall-karatteristiċi li ġejjin:
 - Listing u tniżżil ta' mods disponibbli
 - Tniżżil ta' mużika u ħsejjes
-- Tlugħ u tniżżil tal-istatus tal-logħba multiplayer onlajn
-Il-permessi l-oħra kollha msemmija huma mmaniġġjati awtomatikament mill-API għall-karatteristika ta' notifika tad-dawra tal-multiplayer.
+- Tlugħ u tniżżil tal-istatus tal-logħba mal-oħrajn onlajn
+Il-permessi l-oħra kollha msemmija huma mmaniġġjati awtomatikament mill-API għall-karatteristika ta' notifika tad-dawra tal-multiplejer.

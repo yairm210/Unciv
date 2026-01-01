@@ -13,7 +13,6 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
-import com.unciv.logic.map.toHexCoord
 import com.unciv.logic.trade.Trade
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
@@ -29,7 +28,7 @@ import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
-import com.unciv.ui.components.tilegroups.InfluenceTable
+import com.unciv.ui.components.tilegroups.citybutton.InfluenceTable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -352,7 +351,7 @@ class DiplomacyScreen(
             if (civDiploManager.otherCiv != otherCiv
                 && civDiploManager.diplomaticStatus == DiplomaticStatus.DefensivePact
                 && !otherCivDefensivePactList.contains(civDiploManager.otherCiv)) {
-                messageLines += "This will cancel your defensive pact with [${civDiploManager.otherCivName}]"
+                messageLines += "This will cancel your defensive pact with [${civDiploManager.otherCiv.civName}]"
             }
         }
         return messageLines.joinToString("\n") { "{$it}" }

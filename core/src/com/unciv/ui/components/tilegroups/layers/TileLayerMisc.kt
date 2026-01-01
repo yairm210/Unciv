@@ -11,7 +11,6 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.toHexCoord
-import com.unciv.logic.map.toVector2
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.MapArrowType
@@ -261,9 +260,9 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
             var targetPos = Vector2(targetTile.position.toVector2())
             if (tile.tileMap.mapParameters.worldWrap)
                 targetPos = HexMath.getUnwrappedNearestTo(targetPos.toHexCoord(),
-                    tile.position.toHexCoord(), tile.tileMap.maxLongitude)
+                    tile.position, tile.tileMap.maxLongitude)
             val targetRelative = HexMath.hex2WorldCoords(targetPos.toHexCoord())
-                .sub(HexMath.hex2WorldCoords(tile.position.toHexCoord()))
+                .sub(HexMath.hex2WorldCoords(tile.position))
 
             val targetDistance = sqrt(targetRelative.x.pow(2) + targetRelative.y.pow(2))
             val targetAngle = atan2(targetRelative.y, targetRelative.x)

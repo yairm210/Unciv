@@ -4,22 +4,12 @@ import com.unciv.Constants
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.managers.SpyFleeReason
-import com.unciv.logic.civilization.AlertType
-import com.unciv.logic.civilization.CivFlags
-import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.civilization.DiplomacyAction
-import com.unciv.logic.civilization.LocationAction
-import com.unciv.logic.civilization.MapUnitAction
-import com.unciv.logic.civilization.NotificationCategory
-import com.unciv.logic.civilization.NotificationIcon
-import com.unciv.logic.civilization.PlayerType
-import com.unciv.logic.civilization.PopupAlert
-import com.unciv.logic.civilization.Proximity
-import com.unciv.logic.map.toHexCoord
+import com.unciv.logic.civilization.*
 import com.unciv.models.Spy
 import com.unciv.models.SpyAction
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.CityStateType
+import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
@@ -38,12 +28,11 @@ import kotlin.random.Random
 class CityStateFunctions(val civInfo: Civilization) {
 
     /** Attempts to initialize the city state, returning true if successful. */
-    fun initCityState(ruleset: Ruleset, startingEra: String, usedMajorCivs: Sequence<String>): Boolean {
+    fun initCityState(ruleset: Ruleset, startingEra: String, usedMajorCivs: Sequence<Nation>): Boolean {
         val allMercantileResources = ruleset.tileResources.values.filter { it.hasUnique(UniqueType.CityStateOnlyResource) }.map { it.name }
         val uniqueTypes = HashSet<UniqueType>()    // We look through these to determine what kinds of city states we have
 
-        val nation = ruleset.nations[civInfo.civName]!!
-        val cityStateType = ruleset.cityStateTypes[nation.cityStateType]!!
+        val cityStateType = ruleset.cityStateTypes[civInfo.nation.cityStateType]!!
         uniqueTypes.addAll(cityStateType.friendBonusUniqueMap.getAllUniques().mapNotNull { it.type })
         uniqueTypes.addAll(cityStateType.allyBonusUniqueMap.getAllUniques().mapNotNull { it.type })
 
@@ -55,17 +44,24 @@ class CityStateFunctions(val civInfo: Civilization) {
         if (uniqueTypes.contains(UniqueType.CityStateUniqueLuxury)) {
             civInfo.cityStateResource = allMercantileResources.randomOrNull()
         }
+        
+        fun possibleUnits(): ArrayList<BaseUnit> {
+            val units = ArrayList<BaseUnit>()
+            for (unit in ruleset.units.values) {
+                if (unit.availableInEra(ruleset, startingEra)) continue // Not from the start era or before
+                val uniqueNation = ruleset.nations[unit.uniqueTo]
+                if (uniqueNation == null || !uniqueNation.isMajorCiv) continue // Must be from a major civ
+                if (uniqueNation in usedMajorCivs) continue // But not from a major civ in the game
+                if (!ruleset.unitTypes[unit.unitType]!!.isLandUnit()) continue // Must be a land unit
+                if (unit.strength <= 0 && unit.rangedStrength <= 0) continue // Must be a military unit
+                units.add(unit)
+            }
+            return units
+        }
 
         // Unique unit for militaristic city-states
         if (uniqueTypes.contains(UniqueType.CityStateMilitaryUnits)) {
-            val possibleUnits = ruleset.units.values.filter {
-                return@filter !it.availableInEra(ruleset, startingEra) // Not from the start era or before
-                    && it.uniqueTo != null && it.uniqueTo !in usedMajorCivs // Must be from a major civ not in the game
-                        // Note that this means that units unique to a civ *filter* instead of a civ *name* will not be provided
-                    && ruleset.nations[it.uniqueTo]?.isMajorCiv == true // don't take unique units from other city states / barbs
-                    && ruleset.unitTypes[it.unitType]!!.isLandUnit()
-                    && (it.strength > 0 || it.rangedStrength > 0) // Must be a land military unit
-            }
+            val possibleUnits = possibleUnits()
             if (possibleUnits.isNotEmpty())
                 civInfo.cityStateUniqueUnit = possibleUnits.random().name
         }
@@ -134,18 +130,16 @@ class CityStateFunctions(val civInfo: Civilization) {
         if (giftableUnits.isEmpty()) // For badly defined mods that don't have great people but do have the policy that makes city states grant them
             return
         val giftedUnit = giftableUnits.random()
-        val cities = NextTurnAutomation.getClosestCities(receivingCiv, civInfo) ?: return
-        val placedUnit = receivingCiv.units.placeUnitNearTile(cities.city1.location.toHexCoord(), giftedUnit)
+        val city = NextTurnAutomation.getForeignCityNearCapital(civInfo.getCapital(), receivingCiv)?.city ?: return
+        val placedUnit = receivingCiv.units.placeUnitNearTile(city.location.toHexCoord(), giftedUnit)
             ?: return
-        val locations = LocationAction(placedUnit.getTile().position, cities.city2.location)
+        val locations = LocationAction(placedUnit.getTile().position, civInfo.getCapital()!!.location.toHexCoord())
         receivingCiv.addNotification( "[${civInfo.civName}] gave us a [${giftedUnit.name}] as a gift!", locations,
             NotificationCategory.Units, civInfo.civName, giftedUnit.name)
     }
 
     fun giveMilitaryUnitToPatron(receivingCiv: Civilization) {
-        val cities = NextTurnAutomation.getClosestCities(receivingCiv, civInfo) ?: return
-
-        val city = cities.city1
+        val city = NextTurnAutomation.getForeignCityNearCapital(civInfo.getCapital(), receivingCiv)?.city ?: return
 
         @Readonly
         fun giftableUniqueUnit(): BaseUnit? {
@@ -184,7 +178,7 @@ class CityStateFunctions(val civInfo: Civilization) {
 
         // Point to the gifted unit, then to the other places mentioned in the message
         val unitAction = sequenceOf(MapUnitAction(placedUnit))
-        val notificationActions = unitAction + LocationAction(cities.city2.location, city.location)
+        val notificationActions = unitAction + LocationAction(city.location, city.location)
         receivingCiv.addNotification(
             "[${civInfo.civName}] gave us a [${militaryUnit.name}] as gift near [${city.name}]!",
             notificationActions,
@@ -414,7 +408,7 @@ class CityStateFunctions(val civInfo: Civilization) {
             city.moveToCiv(otherCiv)
             city.isPuppet = true // Human players get a popup that allows them to annex instead
         }
-        civInfo.destroy(notificationLocation)
+        civInfo.destroy(notificationLocation.toHexCoord())
     }
 
     @Readonly
@@ -557,7 +551,7 @@ class CityStateFunctions(val civInfo: Civilization) {
             if (unitsInBorder > 0 && diplomacy.isRelationshipLevelLT(RelationshipLevel.Friend)) {
                 diplomacy.addInfluence(-10f)
                 if (!diplomacy.hasFlag(DiplomacyFlags.BorderConflict)) {
-                    otherCiv.popupAlerts.add(PopupAlert(AlertType.BorderConflict, civInfo.civName))
+                    otherCiv.popupAlerts.add(PopupAlert(AlertType.BorderConflict, civInfo.civID))
                     diplomacy.setFlag(DiplomacyFlags.BorderConflict, 10)
                 }
             }
@@ -668,7 +662,7 @@ class CityStateFunctions(val civInfo: Civilization) {
                 continue
             if (!cityState.knows(attacker)) // Must have met
                 continue
-            if (cityState.questManager.wantsDead(civInfo.civName))  // Must not want us dead
+            if (cityState.questManager.wantsDead(civInfo.civID))  // Must not want us dead
                 continue
 
             var probability: Int = if (attacker.isMinorCivWarmonger()) {

@@ -10,8 +10,6 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.tile.TileDescription
-import com.unciv.logic.map.toHexCoord
-import com.unciv.logic.map.toVector2
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
@@ -179,7 +177,7 @@ class MapEditorViewTab(
 
         val lines = ArrayList<FormattedLine>()
 
-        lines += FormattedLine("Position: [${tile.position.toString().replace(".0","")}]")
+        lines += FormattedLine("Position: [${tile.position.toPrettyString()}]")
         lines += FormattedLine()
 
         lines.addAll(TileDescription.toMarkup(tile, null))
@@ -258,13 +256,13 @@ class MapEditorViewTab(
         if (tiles.isEmpty()) return
         if (roundRobinIndex >= tiles.size) roundRobinIndex = 0
         val tile = tiles[roundRobinIndex++]
-        editorScreen.mapHolder.setCenterPosition(tile.position.toHexCoord(), blink = true)
+        editorScreen.mapHolder.setCenterPosition(tile.position, blink = true)
         tileClickHandler(tile)
     }
 
     private fun TileMap.getTileStartingLocationSummary(tile: Tile) =
         startingLocations.asSequence()
-            .filter { it.position == tile.position.toVector2() }
+            .filter { it.position == tile.position }
             .mapNotNull { if (it.nation in ruleset!!.nations) ruleset!!.nations[it.nation]!! to it.usage else null }
             .sortedWith(compareBy<Pair<Nation,TileMap.StartingLocation.Usage>>{ it.first.isCityState }.thenBy(collator) { it.first.name.tr(hideIcons = true) })
             .joinToString { "{${it.first.name}} ({${it.second.label}})".tr() }
