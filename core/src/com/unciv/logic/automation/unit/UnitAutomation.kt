@@ -23,7 +23,6 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
-import com.unciv.utils.randomWeighted
 import yairm210.purity.annotations.Readonly
 
 object UnitAutomation {
@@ -212,6 +211,7 @@ object UnitAutomation {
                 .filter {
                     it !in tilesToAvoid
                         && unit.movement.canMoveTo(it)
+                        && unit.movement.canReachInCurrentTurn(it) // Yes this is required despite the above line - see #14461
                         && unit.getDamageFromTerrain(it) <= 0 // Don't end turn on damaging terrain for no good reason
                         && (!stayInTerritory || it.getOwner() == unit.civ || unit.currentTile.getOwner() != unit.civ)
                 }
