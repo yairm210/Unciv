@@ -503,12 +503,8 @@ class ModManagementScreen private constructor(
         Concurrency.run("DownloadMod") { // to avoid ANRs - we've learnt our lesson from previous download-related actions
             try {
                 val modFolder =
-                    repo.downloadAndExtract(
-                        UncivGame.Current.files.getModsFolder(),
-                        updateProgressPercent
-                    )
+                    repo.downloadAndExtract(updateProgressPercent)
                         ?: throw Exception("Exception during GitHub download")    // downloadAndExtract returns null for 404 errors and the like -> display something!
-                Github.rewriteModOptions(repo, modFolder)
                 launchOnGLThread {
                     val repoName = modFolder.name()  // repo.name still has the replaced "-"'s
                     val toast = ToastPopup("[$repoName] Downloaded!", this@ModManagementScreen)

@@ -3,10 +3,7 @@ package com.unciv.logic.civilization
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.json.LastSeenImprovement
-import com.unciv.logic.GameInfo
-import com.unciv.logic.IsPartOfGameInfoSerialization
-import com.unciv.logic.MultiFilter
-import com.unciv.logic.UncivShowableException
+import com.unciv.logic.*
 import com.unciv.logic.automation.unit.WorkerAutomation
 import com.unciv.logic.city.City
 import com.unciv.logic.city.managers.CityFounder
@@ -837,7 +834,7 @@ class Civilization : IsPartOfGameInfoSerialization {
      *  */
     fun setNationTransient() {
         nation = gameInfo.ruleset.nations[civName]
-                ?: throw UncivShowableException("Nation $civName is not found!")
+                ?: throw MissingNationException("Nation $civName is not found!", gameInfo.ruleset.mods)
     }
 
     fun setTransients() {
