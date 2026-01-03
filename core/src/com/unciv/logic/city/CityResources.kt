@@ -86,10 +86,10 @@ object CityResources {
     private fun getResourceFromUniqueImprovedTiles(city: City, resourceModifer: Map<String, Float>): ResourceSupplyList {
         val resourceSupplyList = ResourceSupplyList()
         val applicableTiles = city.getTiles().filter { it.getUnpillagedImprovement() != null }
-        val gameContext = GameContext(city.civ)
 
         // Calculate how much resource is available.
         for (tileInfo in applicableTiles) {
+            val gameContext = GameContext(city.civ, city, tile = tileInfo)
             val tileImprovement = tileInfo.getUnpillagedTileImprovement()
             for (unique in tileImprovement!!.getMatchingUniques(UniqueType.ProvidesResources, gameContext)) {
                 val resource = city.getRuleset().tileResources[unique.params[1]] ?: continue
@@ -103,8 +103,9 @@ object CityResources {
         // Apply the resource modifiers.
         resourceSupplyList.applyModifiers(resourceModifer)
 
-        // After resources are modified, consume them.
+        // After resources have been modified, consume them.
         for (tileInfo in applicableTiles) {
+            val gameContext = GameContext(city.civ, city, tile = tileInfo)
             val tileImprovement = tileInfo.getUnpillagedTileImprovement()
             for (unique in tileImprovement!!.getMatchingUniques(UniqueType.ConsumesResources, gameContext)) {
                 val resource = city.getRuleset().tileResources[unique.params[1]] ?: continue
