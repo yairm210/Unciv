@@ -96,10 +96,10 @@ class ResourceSupplyList(
     /**
      * Applies the given modifiers list to the resource supplies.
      *
-     * @param resourceModifier The list of modifiers to apply to each resource.
+     * @param resourceModifiers The list of resource modifiers to apply to the supply list.
      */
-    fun applyModifiers(resourceModifer: Map<String, Float>) {
-        for ((resourceName, modifier) in resourceModifer) {
+    fun applyModifiers(resourceModifiers: Map<String, Float>) {
+        for ((resourceName, modifier) in resourceModifiers) {
             if (modifier == 1f) continue
             for (resourceSupply in this) {
                 if (resourceSupply.resource.name == resourceName) {
