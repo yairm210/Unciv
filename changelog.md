@@ -1,3 +1,23 @@
+## 4.19.6
+
+fix detekt
+
+Resolved  - Fixed crash on unit wander
+
+When loading a game, auto-download
+
+By SomeTroglodyte:
+- Redo Notification log page in empire overview 
+- Fix links to Translation wiki 
+- Options reworked - faster opening 
+
+By RobLoach:
+- Add Remaining Civilopedia Sub-Categories 
+- Fix notification of perpetrual stat conversion 
+- Fix Resource Production Modifier Calculations 
+
+Carrying conditional and countable - By PhiRite
+
 ## 4.19.5
 
 Add `[resource] of [civ] Civilizations` Countable - By RobLoach
