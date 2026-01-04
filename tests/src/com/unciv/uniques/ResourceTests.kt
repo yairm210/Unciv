@@ -150,7 +150,7 @@ class ResourceTests {
         tile.improvement = "Mine"
 
         // when
-        val cityResources = city.getResourcesGeneratedByCity(civInfo.getResourceModifiers())
+        val cityResources = city.getResourcesGeneratedByCity(city.getResourceModifiers())
 
         // then
         assertEquals(1, cityResources.size)
