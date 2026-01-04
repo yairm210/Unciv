@@ -363,7 +363,18 @@ object Conditionals {
                     first, second, third ->
                     first in second..third
                 }
-
+                
+            UniqueType.ConditionalWhenCarriedBy -> {
+                // Check if the unit is currently transported and being carried by matching filter
+                if (state.relevantUnit == null || !state.relevantUnit!!.isTransported) false
+                else {
+                    val carrier = state.relevantUnit!!.getTile().militaryUnit
+                    // Only true if: 1) carrier exists, 2) carrier is NOT the unit itself, 3) carrier matches filter
+                    carrier != null && carrier != state.relevantUnit && 
+                    carrier.matchesFilter(conditional.params[0]) == true
+                }
+            }
+            
             UniqueType.ConditionalModEnabled -> checkOnGameInfo {
                 val filter = conditional.params[0]
                 (gameParameters.mods.asSequence() + gameParameters.baseRuleset).any { ModCompatibility.modNameFilter(it, filter) }

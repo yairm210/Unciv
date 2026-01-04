@@ -139,6 +139,23 @@ enum class Countables(
             (ruleset.unitTypes.keys + ruleset.units.keys).map { "[$it] Units" }.toSet()
     },
 
+    Carried("Carried [mapUnitFilter] units", shortDocumentation = "The number of units being carried by this unit") {
+        override val documentationStrings = listOf("Only counts transported units matching the filter. For use with 'when number of' conditionals.")
+        override val example: String = "Carried [Air] units"
+        override fun eval(parameterText: String, gameContext: GameContext): Int? {
+            if (gameContext.relevantUnit == null) return null
+            val filter = parameterText.getPlaceholderParameters()[0]
+            // Count transported units on the same tile matching the filter
+            return gameContext.relevantUnit!!.getTile().airUnits.count { 
+                it.isTransported && it.matchesFilter(filter) 
+            }
+        }
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
+            UniqueParameterType.MapUnitFilter.getTranslatedErrorSeverity(parameterText, ruleset)
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
+            (ruleset.unitTypes.keys + ruleset.units.keys).map { "Carried [$it] units" }.toSet()
+    },
+    
     FilteredBuildings("[buildingFilter] Buildings") {
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val filter = parameterText.getPlaceholderParameters()[0]
