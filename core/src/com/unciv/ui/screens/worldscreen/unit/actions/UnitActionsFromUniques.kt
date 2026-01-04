@@ -520,6 +520,7 @@ object UnitActionsFromUniques {
             title = "${UnitActionType.Repair} [${unit.currentTile.getImprovementToRepair()!!.name}] - [${turnsToBuild}${Fonts.turn}]",
             action = {
                 tile.queueImprovement(Constants.repair, turnsToBuild)
+                unit.action = null
             }.takeIf { couldConstruct }
         )
     }
