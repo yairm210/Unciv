@@ -161,6 +161,14 @@ class Terrain : RulesetStatsObject() {
         return textList
     }
 
+    override fun getSortGroup(ruleset: Ruleset) = type.ordinal
+    override fun getSubCategory(ruleset: Ruleset): String? = when (type) {
+        TerrainType.Land -> "Land"
+        TerrainType.Water -> "Water"
+        TerrainType.TerrainFeature -> "Features"
+        TerrainType.NaturalWonder -> "Natural Wonders"
+    }
+
     /** Terrain filter matching is "pure" - input always returns same output, and it's called a bajillion times */
     @Cache private val cachedMatchesFilterResult = HashMap<String, Boolean>()
 
