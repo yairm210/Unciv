@@ -6,7 +6,7 @@ import com.unciv.models.ruleset.Speed
 
 class GameParameters : IsPartOfGameInfoSerialization { // Default values are the default new game
     var difficulty = "Prince"
-    var speed = Speed.DEFAULT
+    var speed: String = Speed.DEFAULT // Not an instance of class Speed
 
     var randomNumberOfPlayers = false
     var minNumberOfPlayers = 3
@@ -42,6 +42,7 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
     var anyoneCanSpectate = true
     /** After this amount of minutes, anyone can choose to 'skip turn' of the current player to keep the game going */
     var minutesUntilSkipTurn = 60 * 24
+    var hoursUntilForceResign = 3 * 24
 
     var baseRuleset: String = BaseRuleset.Civ_V_GnK.fullName
     var mods = LinkedHashSet<String>()

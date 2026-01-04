@@ -70,11 +70,11 @@ class Multiplayer {
                 val currentGame = getCurrentGame()
                 val preview = currentGame?.preview
                 if (currentGame != null && (usesCustomServer() || preview == null || !preview.isUsersTurn())) {
-                    throttle(lastCurGameRefresh, multiplayerSettings.currentGameRefreshDelay, {}) { currentGame.requestUpdate() }
+                    throttle(lastCurGameRefresh, multiplayerSettings.currentGameRefreshDelay, {}, {}) { currentGame.requestUpdate() }
                 }
 
                 val doNotUpdate = if (currentGame == null) listOf() else listOf(currentGame)
-                throttle(lastAllGamesRefresh, multiplayerSettings.allGameRefreshDelay, {}) { requestUpdate(doNotUpdate = doNotUpdate) }
+                throttle(lastAllGamesRefresh, multiplayerSettings.allGameRefreshDelay, {}, {}) { requestUpdate(doNotUpdate = doNotUpdate) }
             }
         }.launchIn(CoroutineScope(Dispatcher.DAEMON))
     }
@@ -96,8 +96,8 @@ class Multiplayer {
      */
     suspend fun requestUpdate(forceUpdate: Boolean = false, doNotUpdate: List<MultiplayerGamePreview> = listOf()) {
         val fileThrottleInterval = if (forceUpdate) Duration.ZERO else FILE_UPDATE_THROTTLE_PERIOD
-        // An exception only happens here if the files can't be listed, should basically never happen
-        throttle(lastFileUpdate, fileThrottleInterval, {}, action = {multiplayerFiles.updateSavesFromFiles()})
+        // An exception only happens muhere if the files can't be listed, should basically never happen
+        throttle(lastFileUpdate, fileThrottleInterval, {}, {}, action = {multiplayerFiles.updateSavesFromFiles()})
 
         for (game in multiplayerFiles.savedGames.values.toList()) { // since updates are long, .toList for immutability
             if (game in doNotUpdate) continue
@@ -308,7 +308,7 @@ suspend fun <T> throttle(
     lastSuccessfulExecution: AtomicReference<Instant?>,
     throttleInterval: Duration,
     onNoExecution: () -> T,
-    onFailed: (Throwable) -> T = { throw it },
+    onFailed: (Throwable) -> T,
     action: suspend () -> T
 ): T {
     val lastExecution = lastSuccessfulExecution.get()

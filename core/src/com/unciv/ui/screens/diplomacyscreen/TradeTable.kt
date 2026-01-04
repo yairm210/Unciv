@@ -25,10 +25,10 @@ class TradeTable(
     val offerTradeText = "{Offer trade}\n({They'll decide on their turn})"
     private val offerButton = offerTradeText.toTextButton()
 
-    private fun isTradeOffered() = otherCivilization.tradeRequests.any { it.requestingCiv == civ.civName }
+    private fun isTradeOffered() = otherCivilization.tradeRequests.any { it.requestingCiv == civ.civID }
 
     private fun retractOffer() {
-        otherCivilization.tradeRequests.removeAll { it.requestingCiv == civ.civName }
+        otherCivilization.tradeRequests.removeAll { it.requestingCiv == civ.civID }
         civ.cache.updateCivResources()
         offerButton.setText(offerTradeText.tr())
     }
@@ -39,7 +39,7 @@ class TradeTable(
 
         val lowerTable = Table().apply { defaults().pad(10f) }
 
-        val existingOffer = otherCivilization.tradeRequests.firstOrNull { it.requestingCiv == civ.civName }
+        val existingOffer = otherCivilization.tradeRequests.firstOrNull { it.requestingCiv == civ.civID }
         if (existingOffer != null) {
             tradeLogic.currentTrade.set(existingOffer.trade.reverse())
             offerColumnsTable.update()
@@ -74,7 +74,7 @@ class TradeTable(
                 }
             }
 
-            otherCivilization.tradeRequests.add(TradeRequest(civ.civName, tradeLogic.currentTrade.reverse()))
+            otherCivilization.tradeRequests.add(TradeRequest(civ.civID, tradeLogic.currentTrade.reverse()))
             civ.cache.updateCivResources()
             offerButton.setText("Retract offer".tr())
         }

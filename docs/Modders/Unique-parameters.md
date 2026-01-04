@@ -38,6 +38,10 @@ Allowed values:
 
 - `Human player`
 - `AI player`
+- `Friendly`
+- `Hostile`
+- `Open Borders`
+- `Known` - Civilizations that are aware of the relevant Civ. Known includes self.
 - [nationFilter](#nationfilter)
 
 ## nationFilter
@@ -149,6 +153,18 @@ cityFilters allow us to choose the range of cities affected by this unique:
 - [civFilter]
 
 You can check this in-game using the console with the `city checkfilter <filter>` command
+
+## eraFilter
+
+For filtering a specific era.
+
+Allowed values:
+
+- Era name (e.g.: `Modern era`)
+- `any era`
+- `Starting Era` - The era in which the game began
+- `pre-[era]` - Any era that appears prior to the given era (e.g.: `pre-[Modern era]`)
+- `post-[era]` - Any era that appears after the given era (e.g.: `post-[Ancient era]`)
 
 ## improvementFilter
 
@@ -276,7 +292,7 @@ At the moment only implemented for [ModOptions.techsToRemove](Mod-file-structure
 Allowed values:
 
 - `All`, `all`
-- The name of an Era
+- An [eraFilter](#erafilter) matching the technology's era
 - The name of a Technology
 - A unique a Technology has (verbatim, no placeholders)
 
@@ -377,8 +393,16 @@ Allowed values:
     - Example: `Only available <when number of [[Wounded] Units] is more than [0]>`
 -   `[buildingFilter] Buildings`
     - Example: `Only available <when number of [[Culture] Buildings] is more than [0]>`
+-   `[buildingFilter] Buildings by [civFilter] Civilizations`
+    - Example: `Only available <when number of [[Culture] Buildings by [City-States] Civilizations] is more than [0]>`
 -   `Adopted [policyFilter] Policies`
     - Example: `Only available <when number of [Adopted [Oligarchy] Policies] is more than [0]>`
+-   `Adopted [policyFilter] Policies by [civFilter] Civilizations`
+    - Example: `Only available <when number of [Adopted [Oligarchy] Policies by [City-States] Civilizations] is more than [0]>`
+-   `Researched [techFilter] Technologies`
+    - Example: `Only available <when number of [Researched [Agriculture] Technologies] is more than [0]>`
+    - Counts researched matching technologies for the relevant Civilization
+    - Repeatable technologies, like Future Tech, are only counted once
 -   `Remaining [civFilter] Civilizations`
     - Example: `Only available <when number of [Remaining [City-States] Civilizations] is more than [0]>`
 -   `Owned [tileFilter] Tiles`
@@ -390,6 +414,8 @@ Allowed values:
     - Can be city stats or civilization stats, depending on where the unique is used
     - For example: If a unique is placed on a building, then the retrieved resources will be of the city. If placed on a policy, they will be of the civilization.
     - This can make a difference for e.g. local resources, which are counted per city.
+-   `[resourceFilter] resource of [civFilter] Civilizations`
+    - Example: `Only available <when number of [[Strategic] resource of [City-States] Civilizations] is more than [0]>`
 -   `Era number` - Number of the era the current player is in
     - Example: `Only available <when number of [Era number] is more than [0]>`
     - Zero-based index of the Era in Eras.json.

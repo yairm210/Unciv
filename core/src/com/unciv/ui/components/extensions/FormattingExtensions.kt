@@ -21,10 +21,27 @@ import java.util.SortedMap
 /** Translate a percentage number - e.g. 25 - to the multiplication value - e.g. 1.25f */
 @Pure fun Float.toPercent() = 1 + this/100
 
-/** Convert a [resource name][this] into "Consumes [amount] $resource" string (untranslated) */
-@Pure fun String.getConsumesAmountString(amount: Int, isStockpiled: Boolean): String {
+/**
+ * Convert a [resource name][this] into "Consumes [amount] $resource" string (untranslated)
+ *
+ * @param [available] Appends ` ([amount] available)` when the available parameter is provided.
+ */
+@Pure fun String.getConsumesAmountString(amount: Int, isStockpiled: Boolean, available: Int = -1): String {
     val uniqueString = "{Consumes [$amount] [$this]}"
-    return if (isStockpiled) "$uniqueString /${Fonts.turn}" else uniqueString
+    val perTurnString = if(isStockpiled) " /${Fonts.turn}" else ""
+    val availableString = if (available >= 0) " ({[$available] available})" else ""
+    return uniqueString + perTurnString + availableString
+}
+
+/**
+ * Convert a [resource name][this] into "Costs [amount] $resource" string (untranslated).
+ *
+ * @param [available] Appends ` ([amount] available)` when the available parameter is provided.
+ */
+@Pure fun String.getCostsAmountString(amount: Int, available: Int = -1): String {
+    val uniqueString = "{Costs [$amount] [$this]}"
+    val availableString = if (available >= 0) " ({[$available] available})" else ""
+    return uniqueString + availableString
 }
 
 /** Convert a [resource name][this] into "Need [amount] more $resource" string (untranslated) */

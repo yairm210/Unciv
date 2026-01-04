@@ -16,7 +16,7 @@ fun <R> (() -> R).wrapCrashHandling(
     try {
         this()
     } catch (e: Throwable) {
-        UncivGame.Current.handleUncaughtThrowable(e)
+        UncivGame.handleUncaughtThrowable(e)
         null
     }
 }

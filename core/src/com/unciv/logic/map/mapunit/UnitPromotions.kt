@@ -7,6 +7,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.ui.components.extensions.toPercent
 import yairm210.purity.annotations.LocalState
+import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 
 class UnitPromotions : IsPartOfGameInfoSerialization {
@@ -52,14 +53,14 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
     }
 
     /** @return the XP points needed to "buy" the next promotion. 10, 30, 60, 100, 150,... */
-    @Readonly fun xpForNextPromotion(): Int = Math.round(baseXpForPromotionNumber(numberOfPromotions + 1) * promotionCostModifier())
+    @Readonly fun xpForNextPromotion(): Int = (baseXpForPromotionNumber(numberOfPromotions + 1) * promotionCostModifier()).toInt()
     
     /** @return the XP points needed to "buy" the next [count] promotions. */
     @Readonly
     fun xpForNextNPromotions(count: Int) = (1..count).sumOf { 
         baseXpForPromotionNumber(numberOfPromotions+it)} * promotionCostModifier()
 
-    @Readonly
+    @Pure
     private fun baseXpForPromotionNumber(numberOfPromotions: Int) = (numberOfPromotions) * 10
 
     @Readonly
@@ -130,10 +131,12 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
     }
 
     private fun doDirectPromotionEffects(promotion: Promotion) {
-        for (unique in promotion.uniqueObjects)
-            if (unique.conditionalsApply(unit.cache.state)
-                    && !unique.hasTriggerConditional())
+        for (unique in promotion.uniqueObjects) {
+            if (!unique.conditionalsApply(unit.cache.state) || unique.hasTriggerConditional()) continue
+            repeat(unique.getUniqueMultiplier(unit.cache.state)) {
                 UniqueTriggerActivation.triggerUnique(unique, unit, triggerNotificationText = "due to our [${unit.name}] being promoted")
+            }
+        }
     }
 
     /** Gets all promotions this unit could currently "buy" with enough [XP]
@@ -163,6 +166,12 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
         toReturn.XP = XP
         toReturn.promotions = HashSet(promotions)
         toReturn.numberOfPromotions = numberOfPromotions
+        return toReturn
+    }
+
+    @Readonly
+    fun clone(unit: MapUnit): UnitPromotions {
+        @LocalState val toReturn = clone()
         toReturn.unit = unit
         return toReturn
     }

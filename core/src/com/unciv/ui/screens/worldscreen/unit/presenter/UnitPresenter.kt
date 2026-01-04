@@ -1,7 +1,7 @@
 package com.unciv.ui.screens.worldscreen.unit.presenter
 
-import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Align
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
@@ -15,6 +15,7 @@ import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.screens.pickerscreens.UnitRenamePopup
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.ui.screens.worldscreen.unit.UnitTable
+import yairm210.purity.annotations.Readonly
 
 class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: WorldScreen) : UnitTable.Presenter {
 
@@ -30,7 +31,7 @@ class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: W
     // Whether the (first) selected unit is in road-connecting mode
     var selectedUnitIsConnectingRoad = false
 
-    override val position: Vector2?
+    override val position: HexCoord?
         get() = selectedUnit?.currentTile?.position
 
     fun selectUnit(unit: MapUnit? = null, append: Boolean = false) {
@@ -153,6 +154,7 @@ class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: W
         Unit
     } ?: Unit
 
+    @Readonly
     private fun buildNameLabelText(unit: MapUnit) : String {
         var nameLabelText = unit.displayName().tr(true)
         if (unit.health < 100) nameLabelText += " (${unit.health.tr()})"

@@ -6,3248 +6,3269 @@ filter: MipMapLinearLinear, MipMapLinearLinear
 repeat: none
 TileSets/AbsoluteUnits/Units/African Forest Elephant
   rotate: false
-  xy: 416, 695
+  xy: 1533, 1238
   size: 77, 79
   orig: 77, 79
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/African Forest Elephant-Carthage
   rotate: false
-  xy: 416, 695
+  xy: 1533, 1238
   size: 77, 79
   orig: 77, 79
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/African Forest Elephant-1
   rotate: false
-  xy: 107, 325
+  xy: 1533, 1151
   size: 77, 79
   orig: 77, 79
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/African Forest Elephant-Carthage-2
   rotate: false
-  xy: 107, 325
+  xy: 1533, 1151
   size: 77, 79
   orig: 77, 79
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/African Forest Elephant-2
   rotate: false
-  xy: 107, 238
+  xy: 1618, 1238
   size: 77, 79
   orig: 77, 79
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/African Forest Elephant-Carthage-1
   rotate: false
-  xy: 107, 238
+  xy: 1618, 1238
   size: 77, 79
   orig: 77, 79
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Anti-Aircraft Gun
   rotate: false
-  xy: 1971, 1948
+  xy: 448, 1097
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Anti-Aircraft Gun-1
   rotate: false
-  xy: 1182, 637
+  xy: 1971, 1987
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Anti-Aircraft Gun-2
   rotate: false
-  xy: 1971, 1884
+  xy: 872, 1069
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Anti-Tank Gun
   rotate: false
-  xy: 1966, 1820
+  xy: 702, 825
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Anti-Tank Gun-1
   rotate: false
-  xy: 1970, 1312
+  xy: 787, 908
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Anti-Tank Gun-2
   rotate: false
-  xy: 1970, 1248
+  xy: 944, 1069
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Archer
   rotate: false
-  xy: 112, 1834
+  xy: 112, 1873
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Archer-1
   rotate: false
-  xy: 220, 1923
+  xy: 220, 1962
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Archer-2
   rotate: false
-  xy: 108, 1745
+  xy: 108, 1784
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Artillery
   rotate: false
-  xy: 1970, 1184
+  xy: 872, 1005
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Artillery-1
   rotate: false
-  xy: 1969, 1120
+  xy: 702, 761
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Artillery-2
   rotate: false
-  xy: 1097, 565
+  xy: 1016, 1069
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Atlatlist
   rotate: false
-  xy: 4, 1329
+  xy: 4, 1056
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Atlatlist-The Maya
   rotate: false
-  xy: 4, 1329
+  xy: 4, 1056
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Atlatlist-1
   rotate: false
-  xy: 215, 1834
+  xy: 215, 1873
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Atlatlist-2
   rotate: false
-  xy: 323, 1923
+  xy: 323, 1962
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Ballista
   rotate: false
-  xy: 1120, 1316
+  xy: 1618, 1165
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Ballista-1
   rotate: false
-  xy: 1413, 1391
+  xy: 1703, 1252
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Ballista-2
   rotate: false
-  xy: 107, 165
+  xy: 1703, 1179
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Battering Ram
   rotate: false
-  xy: 1498, 1391
+  xy: 1788, 1252
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Battering Ram-1
   rotate: false
-  xy: 107, 92
+  xy: 1788, 1179
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Battering Ram-2
   rotate: false
-  xy: 1583, 1391
+  xy: 1873, 1252
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Battering Ram-The Huns
   rotate: false
-  xy: 1668, 1391
+  xy: 1873, 1179
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Battleship
   rotate: false
-  xy: 1096, 501
+  xy: 944, 1005
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Battleship-1
   rotate: false
-  xy: 1078, 437
+  xy: 702, 697
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Battleship-2
   rotate: false
-  xy: 1078, 373
+  xy: 1016, 1005
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Berserker
   rotate: false
-  xy: 108, 1656
+  xy: 108, 1695
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Berserker-1
   rotate: false
-  xy: 211, 1745
+  xy: 211, 1784
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Berserker-2
   rotate: false
-  xy: 4, 1240
+  xy: 4, 967
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Bowman
   rotate: false
-  xy: 318, 1834
+  xy: 318, 1873
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Bowman-1
   rotate: false
-  xy: 426, 1923
+  xy: 426, 1962
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Bowman-2
   rotate: false
-  xy: 108, 1567
+  xy: 108, 1606
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Brute
   rotate: false
-  xy: 211, 1656
+  xy: 211, 1695
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Camel Archer
   rotate: false
-  xy: 1753, 1376
+  xy: 1958, 1217
   size: 77, 80
   orig: 77, 80
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Camel Archer-1
   rotate: false
-  xy: 1838, 1376
+  xy: 1958, 1129
   size: 77, 80
   orig: 77, 80
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Camel Archer-2
   rotate: false
-  xy: 107, 4
+  xy: 1447, 1091
   size: 77, 80
   orig: 77, 80
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Camel Archer-Arabia
   rotate: false
-  xy: 1923, 1376
+  xy: 1532, 1063
   size: 77, 80
   orig: 77, 80
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Cannon
   rotate: false
-  xy: 1078, 309
+  xy: 702, 633
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Cannon-1
   rotate: false
-  xy: 1078, 245
+  xy: 702, 569
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Cannon-2
   rotate: false
-  xy: 1078, 181
+  xy: 702, 505
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Caravel
   rotate: false
-  xy: 1150, 437
+  xy: 702, 441
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Caravel-1
   rotate: false
-  xy: 1150, 373
+  xy: 702, 377
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Caravel-2
   rotate: false
-  xy: 1150, 309
+  xy: 702, 313
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Carolean
   rotate: false
-  xy: 314, 1745
+  xy: 314, 1784
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Carolean-1
   rotate: false
-  xy: 4, 1151
+  xy: 4, 878
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Carolean-2
   rotate: false
-  xy: 421, 1834
+  xy: 421, 1873
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Carolean-Sweden
   rotate: false
-  xy: 529, 1923
+  xy: 529, 1962
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Carrier
   rotate: false
-  xy: 1150, 245
+  xy: 702, 249
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Carrier-1
   rotate: false
-  xy: 1150, 181
+  xy: 702, 185
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Carrier-2
   rotate: false
-  xy: 1168, 501
+  xy: 702, 121
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Cataphract
   rotate: false
-  xy: 416, 617
+  xy: 108, 1083
   size: 77, 70
   orig: 77, 70
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Cataphract-1
   rotate: false
-  xy: 622, 882
+  xy: 193, 1083
   size: 77, 70
   orig: 77, 70
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Cataphract-2
   rotate: false
-  xy: 1205, 1311
+  xy: 278, 1083
   size: 77, 70
   orig: 77, 70
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Cataphract-Byzantium
   rotate: false
-  xy: 1290, 1313
+  xy: 363, 1083
   size: 77, 70
   orig: 77, 70
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Catapult
   rotate: false
-  xy: 1169, 565
+  xy: 1088, 1069
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Catapult-1
   rotate: false
-  xy: 1222, 437
+  xy: 1088, 1005
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Catapult-2
   rotate: false
-  xy: 1222, 373
+  xy: 1160, 1083
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Cavalry
   rotate: false
-  xy: 1375, 1318
+  xy: 107, 1010
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Cavalry-1
   rotate: false
-  xy: 1460, 1318
+  xy: 107, 937
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Cavalry-2
   rotate: false
-  xy: 1545, 1318
+  xy: 192, 1010
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Chariot Archer
   rotate: false
-  xy: 1630, 1313
+  xy: 107, 859
   size: 77, 70
   orig: 77, 70
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Chariot Archer-1
   rotate: false
-  xy: 1715, 1298
+  xy: 192, 932
   size: 77, 70
   orig: 77, 70
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Chariot Archer-2
   rotate: false
-  xy: 1800, 1298
+  xy: 277, 1005
   size: 77, 70
   orig: 77, 70
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Chu-Ko-Nu
   rotate: false
-  xy: 108, 1478
+  xy: 108, 1517
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Chu-Ko-Nu-1
   rotate: false
-  xy: 211, 1567
+  xy: 211, 1606
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Chu-Ko-Nu-2
   rotate: false
-  xy: 314, 1656
+  xy: 314, 1695
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Chu-Ko-Nu-China
   rotate: false
-  xy: 417, 1745
+  xy: 417, 1784
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Companion Cavalry
   rotate: false
-  xy: 1885, 1298
+  xy: 107, 781
   size: 77, 70
   orig: 77, 70
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Companion Cavalry-1
   rotate: false
-  xy: 725, 971
+  xy: 192, 854
   size: 77, 70
   orig: 77, 70
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Companion Cavalry-2
   rotate: false
-  xy: 828, 1060
+  xy: 277, 927
   size: 77, 70
   orig: 77, 70
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Companion Cavalry-Greece
   rotate: false
-  xy: 931, 1149
+  xy: 362, 1005
   size: 77, 70
   orig: 77, 70
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Composite Bowman
   rotate: false
-  xy: 4, 1062
+  xy: 4, 789
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Composite Bowman-1
   rotate: false
-  xy: 524, 1834
+  xy: 524, 1873
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Composite Bowman-2
   rotate: false
-  xy: 632, 1923
+  xy: 632, 1962
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Conquistador
   rotate: false
-  xy: 210, 419
+  xy: 107, 699
   size: 77, 74
   orig: 77, 74
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Conquistador-1
   rotate: false
-  xy: 313, 508
+  xy: 192, 772
   size: 77, 74
   orig: 77, 74
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Conquistador-2
   rotate: false
-  xy: 1034, 1234
+  xy: 277, 845
   size: 77, 74
   orig: 77, 74
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Conquistador-Spain
   rotate: false
-  xy: 1119, 1234
+  xy: 362, 923
   size: 77, 74
   orig: 77, 74
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Cossack
   rotate: false
-  xy: 1204, 1225
+  xy: 107, 613
   size: 77, 78
   orig: 77, 78
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Cossack-1
   rotate: false
-  xy: 399, 531
+  xy: 192, 686
   size: 77, 78
   orig: 77, 78
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Cossack-2
   rotate: false
-  xy: 398, 445
+  xy: 277, 759
   size: 77, 78
   orig: 77, 78
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Cossack-Russia
   rotate: false
-  xy: 484, 531
+  xy: 362, 837
   size: 77, 78
   orig: 77, 78
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Crossbowman
   rotate: false
-  xy: 211, 1478
+  xy: 108, 1428
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Crossbowman-1
   rotate: false
-  xy: 314, 1567
+  xy: 211, 1517
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Crossbowman-2
   rotate: false
-  xy: 417, 1656
+  xy: 314, 1606
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Destroyer
   rotate: false
-  xy: 1222, 309
+  xy: 1160, 1019
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Destroyer-1
   rotate: false
-  xy: 1222, 245
+  xy: 872, 941
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Destroyer-2
   rotate: false
-  xy: 1222, 181
+  xy: 944, 941
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Dromon
   rotate: false
-  xy: 1168, 1004
+  xy: 1016, 933
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Dromon-Byzantium
   rotate: false
-  xy: 1168, 1004
+  xy: 1016, 933
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Dromon-1
   rotate: false
-  xy: 1182, 932
+  xy: 1088, 933
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Dromon-Byzantium-2
   rotate: false
-  xy: 1182, 932
+  xy: 1088, 933
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Dromon-2
   rotate: false
-  xy: 1200, 860
+  xy: 1160, 947
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Dromon-Byzantium-1
   rotate: false
-  xy: 1200, 788
+  xy: 702, 49
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/EmbarkedUnit-Civilian
   rotate: false
-  xy: 1240, 501
+  xy: 859, 877
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/EmbarkedUnit-Civilian-1
   rotate: false
-  xy: 1294, 437
+  xy: 931, 877
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/EmbarkedUnit-Civilian-2
   rotate: false
-  xy: 1294, 373
+  xy: 787, 844
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/EmbarkedUnit-Civilian-Denmark
   rotate: false
-  xy: 1294, 309
+  xy: 774, 780
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/EmbarkedUnit-Civilian-Modern era
   rotate: false
-  xy: 1294, 245
+  xy: 774, 716
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/EmbarkedUnit-Civilian-Spain-Modern era
   rotate: false
-  xy: 1294, 245
+  xy: 774, 716
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/EmbarkedUnit-Civilian-Modern era-1
   rotate: false
-  xy: 1294, 181
+  xy: 774, 652
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/EmbarkedUnit-Civilian-Spain-Modern era-1
   rotate: false
-  xy: 1294, 181
+  xy: 774, 652
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/EmbarkedUnit-Civilian-Modern era-2
   rotate: false
-  xy: 1254, 637
+  xy: 774, 588
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/EmbarkedUnit-Civilian-Spain-Modern era-2
   rotate: false
-  xy: 1254, 637
+  xy: 774, 588
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/EmbarkedUnit-Civilian-Polynesia
   rotate: false
-  xy: 1241, 573
+  xy: 774, 524
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/EmbarkedUnit-Civilian-Renaissance era
   rotate: false
-  xy: 1313, 573
+  xy: 774, 460
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/EmbarkedUnit-Civilian-Renaissance era-1
   rotate: false
-  xy: 1312, 509
+  xy: 774, 396
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/EmbarkedUnit-Civilian-Renaissance era-2
   rotate: false
-  xy: 1366, 445
+  xy: 774, 332
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/EmbarkedUnit-Civilian-Spain-Renaissance era
   rotate: false
-  xy: 1366, 381
+  xy: 774, 268
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/EmbarkedUnit-Military
   rotate: false
-  xy: 1366, 317
+  xy: 774, 204
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/EmbarkedUnit-Military-1
   rotate: false
-  xy: 1366, 253
+  xy: 774, 140
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/EmbarkedUnit-Military-2
   rotate: false
-  xy: 1366, 189
+  xy: 774, 76
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/EmbarkedUnit-Military-Denmark
   rotate: false
-  xy: 1384, 509
+  xy: 1003, 869
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/EmbarkedUnit-Military-Modern era
   rotate: false
-  xy: 1438, 445
+  xy: 1075, 869
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/EmbarkedUnit-Military-Spain-Modern era
   rotate: false
-  xy: 1438, 445
+  xy: 1075, 869
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/EmbarkedUnit-Military-Modern era-1
   rotate: false
-  xy: 1438, 381
+  xy: 859, 813
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/EmbarkedUnit-Military-Spain-Modern era-1
   rotate: false
-  xy: 1438, 381
+  xy: 859, 813
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/EmbarkedUnit-Military-Modern era-2
   rotate: false
-  xy: 1438, 317
+  xy: 931, 813
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/EmbarkedUnit-Military-Spain-Modern era-2
   rotate: false
-  xy: 1438, 317
+  xy: 931, 813
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/EmbarkedUnit-Military-Polynesia
   rotate: false
-  xy: 1438, 253
+  xy: 1003, 805
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/EmbarkedUnit-Military-Renaissance era
   rotate: false
-  xy: 1438, 189
+  xy: 1075, 805
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/EmbarkedUnit-Military-Renaissance era-1
   rotate: false
-  xy: 1366, 125
+  xy: 846, 749
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/EmbarkedUnit-Military-Renaissance era-2
   rotate: false
-  xy: 1438, 125
+  xy: 846, 685
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/EmbarkedUnit-Military-Spain-Renaissance era
   rotate: false
-  xy: 1385, 1094
+  xy: 918, 749
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Foreign Legion
   rotate: false
-  xy: 520, 1745
+  xy: 417, 1695
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Foreign Legion-1
   rotate: false
-  xy: 4, 973
+  xy: 520, 1784
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Foreign Legion-2
   rotate: false
-  xy: 627, 1834
+  xy: 4, 700
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Foreign Legion-France
   rotate: false
-  xy: 735, 1923
+  xy: 627, 1873
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Frigate
   rotate: false
-  xy: 1457, 1094
+  xy: 846, 621
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Frigate-1
   rotate: false
-  xy: 1529, 1094
+  xy: 918, 685
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Frigate-2
   rotate: false
-  xy: 1601, 1094
+  xy: 846, 557
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Frigate-Barbarians
   rotate: false
-  xy: 1673, 1083
+  xy: 918, 621
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Galleass
   rotate: false
-  xy: 1745, 1083
+  xy: 846, 493
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Galleass-1
   rotate: false
-  xy: 1817, 1083
+  xy: 918, 557
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Galleass-2
   rotate: false
-  xy: 1889, 1083
+  xy: 846, 429
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Galley
   rotate: false
-  xy: 1961, 1056
+  xy: 918, 493
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Gatling Gun
   rotate: false
-  xy: 1385, 1030
+  xy: 846, 365
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Gatling Gun-1
   rotate: false
-  xy: 1457, 1030
+  xy: 918, 429
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Gatling Gun-2
   rotate: false
-  xy: 1529, 1030
+  xy: 846, 301
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Giant Death Robot
   rotate: false
-  xy: 1601, 1002
+  xy: 918, 337
   size: 64, 84
   orig: 64, 84
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Giant Death Robot-1
   rotate: false
-  xy: 1673, 991
+  xy: 846, 209
   size: 64, 84
   orig: 64, 84
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Giant Death Robot-2
   rotate: false
-  xy: 1745, 991
+  xy: 918, 245
   size: 64, 84
   orig: 64, 84
   offset: 0, 0
   index: -1
+TileSets/AbsoluteUnits/Units/Great Admiral
+  rotate: false
+  xy: 4, 1769
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Great Admiral-1
+  rotate: false
+  xy: 4, 1665
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Great Admiral-2
+  rotate: false
+  xy: 4, 1561
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
 TileSets/AbsoluteUnits/Units/Great Artist
   rotate: false
-  xy: 314, 1478
+  xy: 735, 1962
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Great Artist-1
   rotate: false
-  xy: 417, 1567
+  xy: 108, 1339
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Great Artist-2
   rotate: false
-  xy: 520, 1656
+  xy: 211, 1428
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Great Artist-Industrial era
   rotate: false
-  xy: 623, 1745
+  xy: 314, 1517
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Great Artist-Industrial era-1
   rotate: false
-  xy: 4, 884
+  xy: 417, 1606
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Great Artist-Industrial era-2
   rotate: false
-  xy: 730, 1834
+  xy: 520, 1695
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Great Engineer
   rotate: false
-  xy: 838, 1923
+  xy: 623, 1784
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Great Engineer-1
   rotate: false
-  xy: 417, 1478
+  xy: 4, 611
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Great Engineer-2
   rotate: false
-  xy: 520, 1567
+  xy: 730, 1873
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Great Engineer-Industrial era
   rotate: false
-  xy: 483, 458
+  xy: 107, 540
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Great Engineer-Industrial era-1
   rotate: false
-  xy: 483, 385
+  xy: 192, 613
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Great Engineer-Industrial era-2
   rotate: false
-  xy: 605, 809
+  xy: 277, 686
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Great General
   rotate: false
-  xy: 1962, 1712
+  xy: 362, 729
   size: 77, 100
   orig: 77, 100
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Great General-1
   rotate: false
-  xy: 1962, 1604
+  xy: 107, 432
   size: 77, 100
   orig: 77, 100
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Great General-2
   rotate: false
-  xy: 1962, 1496
+  xy: 192, 505
   size: 77, 100
   orig: 77, 100
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Great General-Industrial era
   rotate: false
-  xy: 623, 1656
+  xy: 838, 1962
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Great General-Industrial era-1
   rotate: false
-  xy: 726, 1745
+  xy: 108, 1250
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Great General-Industrial era-2
   rotate: false
-  xy: 4, 795
+  xy: 211, 1339
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Great Merchant
   rotate: false
-  xy: 1375, 1240
+  xy: 277, 608
   size: 77, 70
   orig: 77, 70
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Great Merchant-1
   rotate: false
-  xy: 1460, 1240
+  xy: 362, 651
   size: 77, 70
   orig: 77, 70
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Great Merchant-2
   rotate: false
-  xy: 1545, 1240
+  xy: 107, 354
   size: 77, 70
   orig: 77, 70
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Great Merchant-Industrial era
   rotate: false
-  xy: 1630, 1240
+  xy: 192, 432
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Great Merchant-Industrial era-1
   rotate: false
-  xy: 1290, 1240
+  xy: 277, 535
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Great Merchant-Industrial era-2
   rotate: false
-  xy: 1715, 1225
+  xy: 362, 578
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Great Prophet
   rotate: false
-  xy: 833, 1834
+  xy: 314, 1428
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Great Prophet-1
   rotate: false
-  xy: 941, 1923
+  xy: 417, 1517
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Great Prophet-2
   rotate: false
-  xy: 520, 1478
+  xy: 520, 1606
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Great Prophet-Industrial era
   rotate: false
-  xy: 623, 1567
+  xy: 623, 1695
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Great Prophet-Industrial era-1
   rotate: false
-  xy: 726, 1656
+  xy: 726, 1784
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Great Prophet-Industrial era-2
   rotate: false
-  xy: 829, 1745
+  xy: 4, 522
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Great Scientist
   rotate: false
-  xy: 4, 706
+  xy: 833, 1873
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Great Scientist-1
   rotate: false
-  xy: 936, 1834
+  xy: 941, 1962
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Great Scientist-2
   rotate: false
-  xy: 1044, 1923
+  xy: 108, 1161
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Great Scientist-Industrial era
   rotate: false
-  xy: 1800, 1225
+  xy: 107, 281
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Great Scientist-Industrial era-1
   rotate: false
-  xy: 1885, 1225
+  xy: 192, 359
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Great Scientist-Industrial era-2
   rotate: false
-  xy: 1289, 1167
+  xy: 277, 462
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Great War Infantry
   rotate: false
-  xy: 623, 1478
+  xy: 211, 1250
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Great War Infantry-1
   rotate: false
-  xy: 726, 1567
+  xy: 314, 1339
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Great War Infantry-2
   rotate: false
-  xy: 829, 1656
+  xy: 417, 1428
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Hakkapeliitta
   rotate: false
-  xy: 1374, 1158
+  xy: 362, 496
   size: 77, 74
   orig: 77, 74
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Hakkapeliitta-1
   rotate: false
-  xy: 1459, 1158
+  xy: 107, 199
   size: 77, 74
   orig: 77, 74
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Hakkapeliitta-2
   rotate: false
-  xy: 1544, 1158
+  xy: 192, 277
   size: 77, 74
   orig: 77, 74
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Hakkapeliitta-Sweden
   rotate: false
-  xy: 1629, 1158
+  xy: 277, 380
   size: 77, 74
   orig: 77, 74
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Helicopter Gunship
   rotate: false
-  xy: 1817, 1019
+  xy: 846, 145
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Helicopter Gunship-1
   rotate: false
-  xy: 1889, 1019
+  xy: 918, 181
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Helicopter Gunship-2
   rotate: false
-  xy: 1961, 992
+  xy: 846, 81
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Hoplite
   rotate: false
-  xy: 932, 1745
+  xy: 520, 1517
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Hoplite-1
   rotate: false
-  xy: 4, 617
+  xy: 623, 1606
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Hoplite-2
   rotate: false
-  xy: 1039, 1834
+  xy: 726, 1695
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Hoplite-Greece
   rotate: false
-  xy: 1147, 1923
+  xy: 829, 1784
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Hoplite-Greece-1
   rotate: false
-  xy: 726, 1478
+  xy: 4, 433
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Hoplite-Greece-2
   rotate: false
-  xy: 829, 1567
+  xy: 936, 1873
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Horse Archer
   rotate: false
-  xy: 1714, 1147
+  xy: 362, 418
   size: 77, 70
   orig: 77, 70
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Horse Archer-The Huns
   rotate: false
-  xy: 1714, 1147
+  xy: 362, 418
   size: 77, 70
   orig: 77, 70
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Horse Archer-1
   rotate: false
-  xy: 1799, 1147
+  xy: 107, 121
   size: 77, 70
   orig: 77, 70
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Horse Archer-The Huns-2
   rotate: false
-  xy: 1799, 1147
+  xy: 107, 121
   size: 77, 70
   orig: 77, 70
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Horse Archer-2
   rotate: false
-  xy: 1884, 1147
+  xy: 192, 199
   size: 77, 70
   orig: 77, 70
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Horse Archer-The Huns-1
   rotate: false
-  xy: 1884, 1147
+  xy: 192, 199
   size: 77, 70
   orig: 77, 70
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Horse Archer-Barbarians
   rotate: false
-  xy: 690, 804
+  xy: 277, 302
   size: 77, 70
   orig: 77, 70
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Horseman
   rotate: false
-  xy: 707, 882
+  xy: 362, 340
   size: 77, 70
   orig: 77, 70
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Horseman-1
   rotate: false
-  xy: 775, 804
+  xy: 192, 121
   size: 77, 70
   orig: 77, 70
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Horseman-2
   rotate: false
-  xy: 502, 777
+  xy: 277, 224
   size: 77, 70
   orig: 77, 70
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Hussar
   rotate: false
-  xy: 501, 691
+  xy: 362, 254
   size: 77, 78
   orig: 77, 78
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Hussar-1
   rotate: false
-  xy: 587, 723
+  xy: 277, 138
   size: 77, 78
   orig: 77, 78
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Hussar-2
   rotate: false
-  xy: 672, 718
+  xy: 362, 168
   size: 77, 78
   orig: 77, 78
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Hussar-Austria
   rotate: false
-  xy: 757, 718
+  xy: 107, 35
   size: 77, 78
   orig: 77, 78
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Hwach'a
   rotate: false
-  xy: 501, 618
+  xy: 192, 48
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Hwach'a-1
   rotate: false
-  xy: 586, 650
+  xy: 277, 65
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Hwach'a-2
   rotate: false
-  xy: 671, 645
+  xy: 362, 95
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Hwach'a-Korea
   rotate: false
-  xy: 756, 645
+  xy: 362, 22
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Infantry
   rotate: false
-  xy: 932, 1656
+  xy: 1044, 1962
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Infantry-1
   rotate: false
-  xy: 1035, 1745
+  xy: 211, 1161
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Infantry-2
   rotate: false
-  xy: 4, 528
+  xy: 314, 1250
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Inquisitor
   rotate: false
-  xy: 1142, 1834
+  xy: 417, 1339
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Inquisitor-1
   rotate: false
-  xy: 1250, 1923
+  xy: 520, 1428
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Inquisitor-2
   rotate: false
-  xy: 829, 1478
+  xy: 623, 1517
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Inquisitor-Industrial era
   rotate: false
-  xy: 932, 1567
+  xy: 726, 1606
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Inquisitor-Industrial era-1
   rotate: false
-  xy: 1035, 1656
+  xy: 829, 1695
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Inquisitor-Industrial era-2
   rotate: false
-  xy: 1138, 1745
+  xy: 932, 1784
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Ironclad
   rotate: false
-  xy: 1817, 955
+  xy: 918, 117
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Ironclad-1
   rotate: false
-  xy: 1889, 955
+  xy: 990, 741
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Ironclad-2
   rotate: false
-  xy: 1961, 928
+  xy: 990, 677
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Jaguar
   rotate: false
-  xy: 4, 439
+  xy: 4, 344
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Jaguar-Aztecs
   rotate: false
-  xy: 4, 439
+  xy: 4, 344
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Jaguar-1
   rotate: false
-  xy: 1245, 1834
+  xy: 1039, 1873
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Jaguar-2
   rotate: false
-  xy: 1353, 1923
+  xy: 1147, 1962
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Janissary
   rotate: false
-  xy: 932, 1478
+  xy: 314, 1161
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Janissary-1
   rotate: false
-  xy: 1035, 1567
+  xy: 417, 1250
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Janissary-2
   rotate: false
-  xy: 1138, 1656
+  xy: 520, 1339
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Janissary-The Ottomans
   rotate: false
-  xy: 1241, 1745
+  xy: 623, 1428
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Keshik
   rotate: false
-  xy: 586, 572
+  xy: 1618, 1087
   size: 77, 70
   orig: 77, 70
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Keshik-1
   rotate: false
-  xy: 671, 567
+  xy: 1703, 1101
   size: 77, 70
   orig: 77, 70
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Keshik-2
   rotate: false
-  xy: 756, 567
+  xy: 1788, 1101
   size: 77, 70
   orig: 77, 70
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Khan
   rotate: false
-  xy: 568, 423
+  xy: 1873, 1071
   size: 77, 100
   orig: 77, 100
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Khan-1
   rotate: false
-  xy: 653, 459
+  xy: 1958, 1021
   size: 77, 100
   orig: 77, 100
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Khan-2
   rotate: false
-  xy: 738, 459
+  xy: 447, 975
   size: 77, 100
   orig: 77, 100
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Knight
   rotate: false
-  xy: 568, 345
+  xy: 447, 897
   size: 77, 70
   orig: 77, 70
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Knight-1
   rotate: false
-  xy: 653, 381
+  xy: 447, 819
   size: 77, 70
   orig: 77, 70
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Knight-2
   rotate: false
-  xy: 738, 381
+  xy: 447, 741
   size: 77, 70
   orig: 77, 70
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Lancer
   rotate: false
-  xy: 653, 308
+  xy: 447, 668
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Lancer-1
   rotate: false
-  xy: 738, 308
+  xy: 447, 595
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Lancer-2
   rotate: false
-  xy: 842, 731
+  xy: 447, 522
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Lancer-Barbarians
   rotate: false
-  xy: 842, 658
+  xy: 447, 449
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Landship
   rotate: false
-  xy: 841, 585
+  xy: 447, 376
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Landship-1
   rotate: false
-  xy: 841, 512
+  xy: 447, 303
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Landship-2
   rotate: false
-  xy: 823, 439
+  xy: 447, 230
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Landsknecht
   rotate: false
-  xy: 4, 336
+  xy: 726, 1503
   size: 95, 95
   orig: 95, 95
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Landsknecht-1
   rotate: false
-  xy: 4, 233
+  xy: 829, 1592
   size: 95, 95
   orig: 95, 95
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Landsknecht-2
   rotate: false
-  xy: 4, 130
+  xy: 932, 1681
   size: 95, 95
   orig: 95, 95
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Landsknecht-Germany
   rotate: false
-  xy: 4, 27
+  xy: 1035, 1770
   size: 95, 95
   orig: 95, 95
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Legion
   rotate: false
-  xy: 1348, 1834
+  xy: 4, 255
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Legion-1
   rotate: false
-  xy: 1456, 1923
+  xy: 1142, 1873
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Legion-2
   rotate: false
-  xy: 1035, 1478
+  xy: 1250, 1962
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Legion-Rome
   rotate: false
-  xy: 1138, 1567
+  xy: 417, 1161
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Longbowman
   rotate: false
-  xy: 1241, 1642
+  xy: 520, 1236
   size: 95, 95
   orig: 95, 95
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Longbowman-1
   rotate: false
-  xy: 1344, 1731
+  xy: 623, 1325
   size: 95, 95
   orig: 95, 95
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Longbowman-2
   rotate: false
-  xy: 1451, 1820
+  xy: 726, 1400
   size: 95, 95
   orig: 95, 95
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Longbowman-England
   rotate: false
-  xy: 1559, 1909
+  xy: 829, 1489
   size: 95, 95
   orig: 95, 95
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Longswordsman
   rotate: false
-  xy: 1662, 1909
+  xy: 932, 1578
   size: 95, 95
   orig: 95, 95
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Longswordsman-1
   rotate: false
-  xy: 1765, 1909
+  xy: 1035, 1667
   size: 95, 95
   orig: 95, 95
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Longswordsman-2
   rotate: false
-  xy: 1868, 1909
+  xy: 1138, 1770
   size: 95, 95
   orig: 95, 95
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Longswordsman-Barbarians
   rotate: false
-  xy: 1138, 1478
+  xy: 4, 166
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Machine Gun
   rotate: false
-  xy: 1385, 966
+  xy: 1062, 741
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Machine Gun-1
   rotate: false
-  xy: 1457, 966
+  xy: 990, 613
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Machine Gun-2
   rotate: false
-  xy: 1529, 966
+  xy: 1062, 677
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Mandekalu Cavalry
   rotate: false
-  xy: 823, 357
+  xy: 447, 148
   size: 77, 74
   orig: 77, 74
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Mandekalu Cavalry-1
   rotate: false
-  xy: 823, 275
+  xy: 447, 66
   size: 77, 74
   orig: 77, 74
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Mandekalu Cavalry-2
   rotate: false
-  xy: 908, 430
+  xy: 1617, 1005
   size: 77, 74
   orig: 77, 74
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Mandekalu Cavalry-Songhai
   rotate: false
-  xy: 908, 348
+  xy: 532, 1065
   size: 77, 74
   orig: 77, 74
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Maori Warrior
   rotate: false
-  xy: 1241, 1553
+  xy: 1245, 1873
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Maori Warrior-Polynesia
   rotate: false
-  xy: 1241, 1553
+  xy: 1245, 1873
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Maori Warrior-1
   rotate: false
-  xy: 1344, 1642
+  xy: 1353, 1962
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Maori Warrior-2
   rotate: false
-  xy: 1344, 1553
+  xy: 623, 1236
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Marauder
   rotate: false
-  xy: 1447, 1731
+  xy: 726, 1311
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Marine
   rotate: false
-  xy: 1447, 1642
+  xy: 829, 1400
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Marine-1
   rotate: false
-  xy: 1447, 1553
+  xy: 932, 1489
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Marine-2
   rotate: false
-  xy: 1554, 1820
+  xy: 1035, 1578
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Mechanized Infantry
   rotate: false
-  xy: 908, 275
+  xy: 617, 1074
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Mechanized Infantry-1
   rotate: false
-  xy: 927, 1076
+  xy: 532, 992
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Mechanized Infantry-2
   rotate: false
-  xy: 913, 1003
+  xy: 617, 1001
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Mehal Sefari
   rotate: false
-  xy: 1550, 1731
+  xy: 1138, 1681
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Mehal Sefari-1
   rotate: false
-  xy: 1657, 1820
+  xy: 1241, 1784
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Mehal Sefari-2
   rotate: false
-  xy: 1550, 1642
+  xy: 4, 77
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Mehal Sefari-Ethiopia
   rotate: false
-  xy: 1653, 1731
+  xy: 1348, 1873
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Minuteman
   rotate: false
-  xy: 1760, 1820
+  xy: 1456, 1962
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Minuteman-1
   rotate: false
-  xy: 1550, 1553
+  xy: 829, 1311
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Minuteman-2
   rotate: false
-  xy: 1653, 1642
+  xy: 932, 1400
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Minuteman-America
   rotate: false
-  xy: 1756, 1731
+  xy: 1035, 1489
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Missile Cruiser
   rotate: false
-  xy: 1601, 938
+  xy: 990, 549
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Missile Cruiser-1
   rotate: false
-  xy: 1673, 927
+  xy: 1062, 613
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Missile Cruiser-2
   rotate: false
-  xy: 1745, 927
+  xy: 990, 485
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Missionary
   rotate: false
-  xy: 1863, 1820
+  xy: 1138, 1592
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Missionary-1
   rotate: false
-  xy: 1653, 1553
+  xy: 1241, 1695
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Missionary-2
   rotate: false
-  xy: 1756, 1642
+  xy: 1344, 1784
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Missionary-Industrial era
   rotate: false
-  xy: 1859, 1731
+  xy: 1451, 1873
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Missionary-Industrial era-1
   rotate: false
-  xy: 1756, 1553
+  xy: 1559, 1962
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Missionary-Industrial era-2
   rotate: false
-  xy: 1859, 1642
+  xy: 932, 1311
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Mobile SAM
   rotate: false
-  xy: 998, 1003
+  xy: 532, 919
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Mobile SAM-1
   rotate: false
-  xy: 1012, 1076
+  xy: 617, 928
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Mobile SAM-2
   rotate: false
-  xy: 1083, 1003
+  xy: 532, 846
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Modern Armor
   rotate: false
-  xy: 927, 930
+  xy: 617, 855
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Modern Armor-1
   rotate: false
-  xy: 1012, 930
+  xy: 532, 773
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Modern Armor-2
   rotate: false
-  xy: 1097, 930
+  xy: 617, 782
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Mohawk Warrior
   rotate: false
-  xy: 1859, 1553
+  xy: 1035, 1400
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Mohawk Warrior-1
   rotate: false
-  xy: 1241, 1464
+  xy: 1138, 1503
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Mohawk Warrior-2
   rotate: false
-  xy: 1344, 1464
+  xy: 1241, 1606
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Mohawk Warrior-Iroquois
   rotate: false
-  xy: 1447, 1464
+  xy: 1344, 1695
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Musketeer
   rotate: false
-  xy: 1550, 1464
+  xy: 1447, 1784
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Musketeer-1
   rotate: false
-  xy: 1653, 1464
+  xy: 1554, 1873
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Musketeer-2
   rotate: false
-  xy: 1756, 1464
+  xy: 1662, 1962
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Musketeer-France
   rotate: false
-  xy: 1859, 1464
+  xy: 1035, 1311
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Musketman
   rotate: false
-  xy: 108, 1389
+  xy: 1138, 1414
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Musketman-1
   rotate: false
-  xy: 211, 1389
+  xy: 1241, 1517
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Musketman-2
   rotate: false
-  xy: 314, 1389
+  xy: 1344, 1606
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Musketman-Barbarians
   rotate: false
-  xy: 417, 1389
+  xy: 1447, 1695
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/img
   rotate: false
-  xy: 417, 1389
+  xy: 1447, 1695
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Naresuan's Elephant
   rotate: false
-  xy: 792, 888
+  xy: 532, 690
   size: 77, 75
   orig: 77, 75
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Naresuan's Elephant-Siam
   rotate: false
-  xy: 792, 888
+  xy: 532, 690
   size: 77, 75
   orig: 77, 75
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Naresuan's Elephant-1
   rotate: false
-  xy: 860, 805
+  xy: 617, 699
   size: 77, 75
   orig: 77, 75
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Naresuan's Elephant-2
   rotate: false
-  xy: 945, 847
+  xy: 532, 607
   size: 77, 75
   orig: 77, 75
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Norwegian Ski Infantry
   rotate: false
-  xy: 520, 1389
+  xy: 1550, 1784
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Norwegian Ski Infantry-1
   rotate: false
-  xy: 623, 1389
+  xy: 1657, 1873
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Norwegian Ski Infantry-2
   rotate: false
-  xy: 726, 1389
+  xy: 1765, 1962
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Norwegian Ski Infantry-Denmark
   rotate: false
-  xy: 829, 1389
+  xy: 1138, 1325
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Nuclear Submarine
   rotate: false
-  xy: 1817, 891
+  xy: 1062, 549
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Nuclear Submarine-1
   rotate: false
-  xy: 1889, 891
+  xy: 990, 421
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Nuclear Submarine-2
   rotate: false
-  xy: 1961, 864
+  xy: 1062, 485
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Panzer
   rotate: false
-  xy: 1030, 857
+  xy: 617, 626
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Panzer-1
   rotate: false
-  xy: 1115, 857
+  xy: 532, 534
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Panzer-2
   rotate: false
-  xy: 945, 774
+  xy: 617, 553
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Panzer-Germany
   rotate: false
-  xy: 1030, 784
+  xy: 532, 461
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Paratrooper
   rotate: false
-  xy: 932, 1389
+  xy: 1241, 1428
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Paratrooper-1
   rotate: false
-  xy: 1035, 1389
+  xy: 1344, 1517
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Paratrooper-2
   rotate: false
-  xy: 1138, 1389
+  xy: 1447, 1606
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Persian Immortal
   rotate: false
-  xy: 107, 1300
+  xy: 1550, 1695
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Persian Immortal-1
   rotate: false
-  xy: 107, 1211
+  xy: 1653, 1784
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Persian Immortal-2
   rotate: false
-  xy: 210, 1300
+  xy: 1760, 1873
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Pictish Warrior
   rotate: false
-  xy: 107, 1122
+  xy: 1868, 1962
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Pictish Warrior-Celts
   rotate: false
-  xy: 107, 1122
+  xy: 1868, 1962
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Pictish Warrior-1
   rotate: false
-  xy: 210, 1211
+  xy: 1241, 1339
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Pictish Warrior-2
   rotate: false
-  xy: 313, 1300
+  xy: 1344, 1428
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Pikeman
   rotate: false
-  xy: 107, 1033
+  xy: 1447, 1517
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Pikeman-1
   rotate: false
-  xy: 210, 1122
+  xy: 1550, 1606
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Pikeman-2
   rotate: false
-  xy: 313, 1211
+  xy: 1653, 1695
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Pikeman-Barbarians
   rotate: false
-  xy: 416, 1300
+  xy: 1756, 1784
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Privateer
   rotate: false
-  xy: 1385, 902
+  xy: 990, 357
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Privateer-1
   rotate: false
-  xy: 1457, 902
+  xy: 1062, 421
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Privateer-2
   rotate: false
-  xy: 1529, 902
+  xy: 990, 293
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Quinquereme
   rotate: false
-  xy: 1601, 866
+  xy: 1062, 349
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Quinquereme-1
   rotate: false
-  xy: 1673, 855
+  xy: 990, 221
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Quinquereme-2
   rotate: false
-  xy: 1745, 855
+  xy: 1062, 277
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Quinquereme-Carthage
   rotate: false
-  xy: 1817, 819
+  xy: 990, 149
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Rider-Barbarians
   rotate: false
-  xy: 107, 944
+  xy: 1863, 1873
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Rifleman
   rotate: false
-  xy: 210, 1033
+  xy: 1344, 1339
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Rifleman-1
   rotate: false
-  xy: 313, 1122
+  xy: 1447, 1428
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Rifleman-2
   rotate: false
-  xy: 416, 1211
+  xy: 1550, 1517
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Rocket Artillery
   rotate: false
-  xy: 1115, 784
+  xy: 617, 480
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Rocket Artillery-1
   rotate: false
-  xy: 927, 701
+  xy: 532, 388
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Rocket Artillery-2
   rotate: false
-  xy: 927, 628
+  xy: 617, 407
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/SS Booster
   rotate: false
-  xy: 1241, 1391
+  xy: 4, 4
   size: 78, 65
   orig: 78, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/SS Booster-1
   rotate: false
-  xy: 416, 782
+  xy: 1447, 1252
   size: 78, 65
   orig: 78, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/SS Booster-2
   rotate: false
-  xy: 519, 857
+  xy: 1447, 1179
   size: 78, 65
   orig: 78, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/SS Cockpit
   rotate: false
-  xy: 622, 960
+  xy: 1966, 1889
   size: 78, 65
   orig: 78, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/SS Cockpit-1
   rotate: false
-  xy: 725, 1049
+  xy: 1966, 1816
   size: 78, 65
   orig: 78, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/SS Cockpit-2
   rotate: false
-  xy: 828, 1138
+  xy: 1962, 1743
   size: 78, 65
   orig: 78, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/SS Engine
   rotate: false
-  xy: 931, 1227
+  xy: 1962, 1670
   size: 78, 65
   orig: 78, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/SS Engine-1
   rotate: false
-  xy: 1034, 1316
+  xy: 1962, 1597
   size: 78, 65
   orig: 78, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/SS Engine-2
   rotate: false
-  xy: 107, 412
+  xy: 1962, 1524
   size: 78, 65
   orig: 78, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/SS Stasis Chamber
   rotate: false
-  xy: 210, 501
+  xy: 1962, 1451
   size: 78, 65
   orig: 78, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/SS Stasis Chamber-1
   rotate: false
-  xy: 313, 590
+  xy: 1962, 1378
   size: 78, 65
   orig: 78, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/SS Stasis Chamber-2
   rotate: false
-  xy: 1327, 1391
+  xy: 1962, 1305
   size: 78, 65
   orig: 78, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Samurai
   rotate: false
-  xy: 519, 1286
+  xy: 1653, 1592
   size: 95, 95
   orig: 95, 95
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Samurai-1
   rotate: false
-  xy: 107, 841
+  xy: 1756, 1681
   size: 95, 95
   orig: 95, 95
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Samurai-2
   rotate: false
-  xy: 210, 930
+  xy: 1859, 1770
   size: 95, 95
   orig: 95, 95
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Samurai-Japan
   rotate: false
-  xy: 313, 1019
+  xy: 1447, 1325
   size: 95, 95
   orig: 95, 95
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Scout
   rotate: false
-  xy: 416, 1122
+  xy: 1550, 1428
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Scout-1
   rotate: false
-  xy: 519, 1197
+  xy: 1653, 1503
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Scout-2
   rotate: false
-  xy: 622, 1300
+  xy: 1756, 1592
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Sea Beggar
   rotate: false
-  xy: 1889, 827
+  xy: 1062, 213
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Sea Beggar-1
   rotate: false
-  xy: 1961, 800
+  xy: 1062, 149
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Sea Beggar-2
   rotate: false
-  xy: 1889, 763
+  xy: 918, 53
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Settler
   rotate: false
-  xy: 4, 1730
+  xy: 4, 1457
   size: 96, 96
   orig: 96, 96
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Settler-Ancient era
   rotate: false
-  xy: 4, 1730
+  xy: 4, 1457
   size: 96, 96
   orig: 96, 96
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Settler-1
   rotate: false
-  xy: 4, 1626
+  xy: 4, 1353
   size: 96, 96
   orig: 96, 96
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Settler-Ancient era-1
   rotate: false
-  xy: 4, 1626
+  xy: 4, 1353
   size: 96, 96
   orig: 96, 96
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Settler-2
   rotate: false
-  xy: 4, 1522
+  xy: 4, 1249
   size: 96, 96
   orig: 96, 96
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Settler-Ancient era-2
   rotate: false
-  xy: 4, 1522
+  xy: 4, 1249
   size: 96, 96
   orig: 96, 96
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Settler-Industrial era
   rotate: false
-  xy: 4, 1923
+  xy: 4, 1962
   size: 100, 81
   orig: 100, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Settler-Industrial era-1
   rotate: false
-  xy: 4, 1834
+  xy: 4, 1873
   size: 100, 81
   orig: 100, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Settler-Industrial era-2
   rotate: false
-  xy: 112, 1923
+  xy: 112, 1962
   size: 100, 81
   orig: 100, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Settler-Medieval era
   rotate: false
-  xy: 107, 752
+  xy: 1859, 1681
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Settler-Medieval era-1
   rotate: false
-  xy: 210, 841
+  xy: 1550, 1339
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Settler-Medieval era-2
   rotate: false
-  xy: 313, 930
+  xy: 1653, 1414
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Ship of the Line
   rotate: false
-  xy: 1961, 736
+  xy: 990, 85
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Ship of the Line-1
   rotate: false
-  xy: 1385, 838
+  xy: 1062, 85
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Ship of the Line-2
   rotate: false
-  xy: 1457, 838
+  xy: 846, 17
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Sipahi
   rotate: false
-  xy: 926, 546
+  xy: 532, 306
   size: 77, 74
   orig: 77, 74
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Sipahi-1
   rotate: false
-  xy: 1097, 1076
+  xy: 617, 325
   size: 77, 74
   orig: 77, 74
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Sipahi-2
   rotate: false
-  xy: 1012, 692
+  xy: 532, 224
   size: 77, 74
   orig: 77, 74
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Sipahi-The Ottomans
   rotate: false
-  xy: 1097, 702
+  xy: 617, 243
   size: 77, 74
   orig: 77, 74
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Skirmisher
   rotate: false
-  xy: 416, 1033
+  xy: 1756, 1503
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Slinger
   rotate: false
-  xy: 519, 1108
+  xy: 1859, 1592
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Slinger-1
   rotate: false
-  xy: 622, 1211
+  xy: 1756, 1414
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Slinger-2
   rotate: false
-  xy: 725, 1300
+  xy: 1859, 1503
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Spearman
   rotate: false
-  xy: 107, 663
+  xy: 1859, 1414
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Spearman-1
   rotate: false
-  xy: 210, 752
+  xy: 520, 1147
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Spearman-2
   rotate: false
-  xy: 313, 841
+  xy: 623, 1147
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Submarine
   rotate: false
-  xy: 1529, 838
+  xy: 774, 12
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Submarine-1
   rotate: false
-  xy: 1601, 802
+  xy: 990, 21
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Submarine-2
   rotate: false
-  xy: 1673, 791
+  xy: 1062, 21
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Swordsman
   rotate: false
-  xy: 416, 944
+  xy: 726, 1222
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Swordsman-1
   rotate: false
-  xy: 519, 1019
+  xy: 829, 1222
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Swordsman-2
   rotate: false
-  xy: 622, 1122
+  xy: 932, 1222
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Swordsman-Barbarians
   rotate: false
-  xy: 725, 1211
+  xy: 1035, 1222
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Tank
   rotate: false
-  xy: 1012, 619
+  xy: 532, 151
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Tank-1
   rotate: false
-  xy: 1097, 629
+  xy: 617, 170
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Tank-2
   rotate: false
-  xy: 1011, 546
+  xy: 532, 78
   size: 77, 65
   orig: 77, 65
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Tercio
   rotate: false
-  xy: 828, 1300
+  xy: 1138, 1236
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Tercio-1
   rotate: false
-  xy: 107, 574
+  xy: 1241, 1250
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Tercio-2
   rotate: false
-  xy: 210, 663
+  xy: 1344, 1250
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Tercio-Spain
   rotate: false
-  xy: 313, 752
+  xy: 1653, 1325
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Trebuchet
   rotate: false
-  xy: 1745, 791
+  xy: 1241, 1097
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Trebuchet-1
   rotate: false
-  xy: 1817, 755
+  xy: 1313, 1097
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Trebuchet-2
   rotate: false
-  xy: 1889, 699
+  xy: 1232, 1033
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Trireme
   rotate: false
-  xy: 1961, 672
+  xy: 1232, 969
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Trireme-1
   rotate: false
-  xy: 1385, 774
+  xy: 1304, 1033
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Trireme-2
   rotate: false
-  xy: 1457, 774
+  xy: 1304, 969
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Trireme-Barbarians
   rotate: false
-  xy: 1529, 774
+  xy: 1232, 905
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Turtle Ship
   rotate: false
-  xy: 1601, 734
+  xy: 1304, 901
   size: 64, 60
   orig: 64, 60
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Turtle Ship-1
   rotate: false
-  xy: 1673, 723
+  xy: 1160, 879
   size: 64, 60
   orig: 64, 60
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Turtle Ship-2
   rotate: false
-  xy: 1745, 723
+  xy: 1147, 811
   size: 64, 60
   orig: 64, 60
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/War Chariot
   rotate: false
-  xy: 810, 971
+  xy: 617, 92
   size: 77, 70
   orig: 77, 70
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/War Chariot-Egypt
   rotate: false
-  xy: 810, 971
+  xy: 617, 92
   size: 77, 70
   orig: 77, 70
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/War Chariot-1
   rotate: false
-  xy: 993, 468
+  xy: 702, 1055
   size: 77, 70
   orig: 77, 70
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/War Chariot-Egypt-2
   rotate: false
-  xy: 993, 468
+  xy: 702, 1055
   size: 77, 70
   orig: 77, 70
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/War Chariot-2
   rotate: false
-  xy: 993, 390
+  xy: 787, 1055
   size: 77, 70
   orig: 77, 70
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/War Chariot-Egypt-1
   rotate: false
-  xy: 993, 390
+  xy: 787, 1055
   size: 77, 70
   orig: 77, 70
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/War Elephant
   rotate: false
-  xy: 993, 307
+  xy: 702, 972
   size: 77, 75
   orig: 77, 75
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/War Elephant-1
   rotate: false
-  xy: 993, 224
+  xy: 702, 889
   size: 77, 75
   orig: 77, 75
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/War Elephant-2
   rotate: false
-  xy: 1182, 701
+  xy: 787, 972
   size: 77, 75
   orig: 77, 75
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Warrior
   rotate: false
-  xy: 416, 855
+  xy: 1756, 1325
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Warrior-1
   rotate: false
-  xy: 519, 930
+  xy: 1859, 1325
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Warrior-2
   rotate: false
-  xy: 622, 1033
+  xy: 726, 1133
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Work Boats
   rotate: false
-  xy: 1817, 691
+  xy: 1232, 841
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Work Boats-1
   rotate: false
-  xy: 1889, 635
+  xy: 1304, 837
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Work Boats-2
   rotate: false
-  xy: 1961, 608
+  xy: 1219, 777
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Work Boats-Industrial era
   rotate: false
-  xy: 1385, 710
+  xy: 1291, 773
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Work Boats-Industrial era-1
   rotate: false
-  xy: 1457, 710
+  xy: 1147, 747
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Work Boats-Industrial era-2
   rotate: false
-  xy: 1529, 710
+  xy: 1134, 683
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Worker
   rotate: false
-  xy: 725, 1122
+  xy: 829, 1133
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Worker-1
   rotate: false
-  xy: 828, 1211
+  xy: 932, 1133
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Worker-2
   rotate: false
-  xy: 931, 1300
+  xy: 1035, 1133
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Worker-Barbarians
   rotate: false
-  xy: 4, 1418
+  xy: 4, 1145
   size: 96, 96
   orig: 96, 96
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Worker-Industrial era
   rotate: false
-  xy: 107, 485
+  xy: 1138, 1147
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Worker-Industrial era-1
   rotate: false
-  xy: 210, 574
+  xy: 1241, 1161
   size: 95, 81
   orig: 95, 81
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Worker-Industrial era-2
   rotate: false
-  xy: 313, 663
+  xy: 1344, 1161
   size: 95, 81
   orig: 95, 81
   offset: 0, 0

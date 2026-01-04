@@ -7,8 +7,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
-import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.screens.basescreen.BaseScreen
 
 /**
@@ -23,10 +23,11 @@ open class IconTextButton(
     text: String,
     val icon: Actor? = null,
     fontSize: Int = Constants.defaultFontSize,
-    fontColor: Color = Color.WHITE
-): Button(BaseScreen.skin) {
+    val fontColor: Color = Color.WHITE
+) : Button(BaseScreen.skin) {
     /** [Label] instance produced by, and with content and formatting as specified in [String.toLabel]. */
     val label = text.toLabel(fontColor, fontSize, hideIcons = true) // Since by definition we already have an icon
+
     /** Table cell containing the [icon] if any, or `null` (that is, when no [icon] was supplied, the Cell will exist but have no Actor). */
     val iconCell: Cell<Actor> =
         if (icon != null) {
@@ -37,6 +38,7 @@ open class IconTextButton(
         } else {
             add().padRight(fontSize / 2f)
         }
+
     /** Table cell instance containing the [label]. */
     val labelCell: Cell<Label> = add(label)
 

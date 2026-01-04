@@ -1,11 +1,12 @@
 package com.unciv.ui.screens.devconsole
-
 import com.unciv.Constants
+import com.unciv.logic.automation.civilization.Encampment
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.Notification
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.GameInfo
 import com.unciv.logic.map.mapgenerator.RiverGenerator
 import com.unciv.logic.map.mapgenerator.RiverGenerator.RiverDirections
 import com.unciv.logic.map.tile.Tile
@@ -125,12 +126,20 @@ internal class ConsoleTileCommands: ConsoleCommandNode {
             if (locations.isEmpty()) DevConsoleResponse.hint("None found")
             else {
                 val notification = Notification("tile find ${filter.toStringAsPlaceholder()}: ${locations.size} matches", arrayOf(NotificationIcon.Spy),
-                    LocationAction(locations).asIterable(), NotificationCategory.General)
+                    locations.map { LocationAction(it) }, NotificationCategory.General)
                 console.screen.notificationsScroll.oneTimeNotification = notification
                 notification.execute(console.screen)
                 DevConsoleResponse.OK
             }
         },
+
+        "spawn-barbarian-encampment" to ConsoleAction("tile spawn-barbarian-encampment") { console, _ ->
+            val selectedTile = console.getSelectedTile()
+            console.gameInfo.barbarians.createNewCamp(selectedTile)
+
+            DevConsoleResponse.OK
+        },
+
     )
 
     private fun setBaseTerrain(tile: Tile, terrain: Terrain): DevConsoleResponse {

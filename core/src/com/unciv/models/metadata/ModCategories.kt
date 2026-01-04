@@ -51,7 +51,7 @@ class ModCategories : ArrayList<ModCategories.Category>() {
         }
 
         fun default() = Category.All
-        fun mergeOnline() = INSTANCE.mergeOnline()
+        suspend fun mergeOnline() = INSTANCE.mergeOnline()
         fun fromSelectBox(selectBox: TranslatedSelectBox) = INSTANCE.fromSelectBox(selectBox)
         fun asSequence() = INSTANCE.asSequence().filter { !it.hidden }
         operator fun iterator() = asSequence().iterator()
@@ -69,7 +69,7 @@ class ModCategories : ArrayList<ModCategories.Category>() {
         return firstOrNull { it.label == selected } ?: Category.All
     }
 
-    fun mergeOnline(): String {
+    suspend fun mergeOnline(): String {
         val topics = Github.tryGetGithubTopics() ?: return "Failed"
         var newCount = 0
         for (topic in topics.items.sortedBy { it.name }) {

@@ -18,6 +18,7 @@ import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.MilestoneType
 import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.nation.PersonalityValue
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -93,7 +94,10 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
                                           val remainingWork: Int, val production: Int)
 
     private fun addChoice(choices: ArrayList<ConstructionChoice>, choice: IConstruction, choiceModifier: Float) {
-        choices.add(ConstructionChoice(choice, choiceModifier,
+        val extraAiModifier = if (civInfo.isAI() && choice is INonPerpetualConstruction)
+            choice.getWeightForAiDecision(GameContext(civInfo, city))
+        else 1f
+        choices.add(ConstructionChoice(choice, choiceModifier * extraAiModifier,
             cityConstructions.getRemainingWork(choice.name), cityConstructions.productionForConstruction(choice.name)))
     }
 
@@ -139,13 +143,13 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         // Also do not notify when the decision hasn't changed - duh!
         val noNotification = city.isInResistance()
             || civInfo.isAI() // Optimization: addNotification filters anyway, but saves a string builder and a CityAction instantiation
-            || cityConstructions.currentConstructionFromQueue == chosenConstruction.name
+            || cityConstructions.currentConstructionName() == chosenConstruction.name
             || UncivGame.Current.screen is CityScreen
-        cityConstructions.currentConstructionFromQueue = chosenConstruction.name
+        cityConstructions.setCurrentConstruction(chosenConstruction.name)
         if (noNotification) return
 
         civInfo.addNotification(
-            "[${city.name}] has started working on [$chosenConstruction]",
+            "[${city.name}] has started working on [${chosenConstruction.name}]",
             CityAction.withLocation(city),
             NotificationCategory.Production,
             NotificationIcon.Construction
@@ -296,8 +300,9 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             }
         } else value += when {
             building.hasUnique(UniqueType.CreatesOneImprovement) -> 5f // District-type buildings, should be weighed by the stats (incl. adjacencies) of the improvement
-            building.hasUnique(UniqueType.ProvidesResources) -> 2f // Should be weighed by how much we need the resources
+            building.hasUnique(UniqueType.ProvidesResources) -> 3f // Should be weighed by how much we need the resources
             building.hasUnique(UniqueType.StatPercentFromObjectToResource) -> 1.5f // Should be weighed by the amount of active improvementFilter/buildingFilter in the city
+            building.requiredResource != null && building.requiredResource in civInfo.gameInfo.spaceResources -> -4f // This may need to be reverted when resource management is bugfixed elsewhere
             else -> 0f
         }
         return value
@@ -319,8 +324,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         var warModifier = if (isAtWar) 1f else .5f
         // If this city is the closest city to another civ, that makes it a likely candidate for attack
         if (civInfo.getKnownCivs()
-                    .mapNotNull { NextTurnAutomation.getClosestCities(civInfo, it) }
-                    .any { it.city1 == city })
+                    .mapNotNull { NextTurnAutomation.getForeignCityNearCapital(it.getCapital(), civInfo) }
+                    .any { it.city == city })
             warModifier *= 2f
         value += warModifier * building.cityHealth.toFloat() / city.getMaxHealth() * personality.inverseModifierFocus(PersonalityValue.Aggressive, .3f)
         value += warModifier * building.cityStrength.toFloat() / (city.getStrength() + 3) * personality.inverseModifierFocus(PersonalityValue.Aggressive, .3f) // The + 3 here is to reduce the priority of building walls immedietly
@@ -333,7 +338,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             value += modifier
         }
         if (building.hasUnique(UniqueType.EnablesNuclearWeapons) && !civInfo.hasUnique(UniqueType.EnablesNuclearWeapons))
-            value += 4f * personality.modifierFocus(PersonalityValue.Military, 0.3f)
+            value += 10f * personality.modifierFocus(PersonalityValue.Military, 0.3f)
         return value
     }
 

@@ -23,6 +23,7 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
+import com.unciv.models.ruleset.unit.UnitNameGroup
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.ruleset.validation.RulesetValidator
 import com.unciv.models.ruleset.validation.UniqueValidator
@@ -57,6 +58,7 @@ enum class RulesetFile(
     Specialists("Specialists.json"),
     Units("Units.json", { units.values.asSequence() }),
     UnitPromotions("UnitPromotions.json", { unitPromotions.values.asSequence() }),
+    UnitNameGroup("UnitNameGroups.json", { unitNameGroups.values.asSequence() }),
     UnitTypes("UnitTypes.json", { unitTypes.values.asSequence() }),
     VictoryTypes("VictoryTypes.json"),
     CityStateTypes("CityStateTypes.json", getUniques =
@@ -115,6 +117,7 @@ class Ruleset {
     val tileResources = LinkedHashMap<String, TileResource>()
     val units = LinkedHashMap<String, BaseUnit>()
     val unitPromotions = LinkedHashMap<String, Promotion>()
+    val unitNameGroups = LinkedHashMap<String, UnitNameGroup>()
     val unitTypes = LinkedHashMap<String, UnitType>()
     var victories = LinkedHashMap<String, Victory>()
     var cityStateTypes = LinkedHashMap<String, CityStateType>()
@@ -184,6 +187,13 @@ class Ruleset {
 
     fun add(ruleset: Ruleset) {
         beliefs.putAll(ruleset.beliefs)
+        ruleset.modOptions.beliefsToRemove
+            .flatMap { beliefsToRemove ->
+                beliefs.filter { it.value.matchesFilter(beliefsToRemove) }.keys
+            }.toSet().forEach {
+                beliefs.remove(it)
+            }
+
         ruleset.modOptions.buildingsToRemove
             .flatMap { buildingToRemove ->
                 buildings.filter { it.value.matchesFilter(buildingToRemove) }.keys
@@ -194,12 +204,7 @@ class Ruleset {
         difficulties.putAll(ruleset.difficulties)
         eras.putAll(ruleset.eras)
         speeds.putAll(ruleset.speeds)
-        globalUniques = GlobalUniques().apply {
-            uniques.addAll(globalUniques.uniques)
-            uniques.addAll(ruleset.globalUniques.uniques)
-            unitUniques.addAll(globalUniques.unitUniques)
-            unitUniques.addAll(ruleset.globalUniques.unitUniques)
-        }
+        globalUniques = GlobalUniques.combine(globalUniques, ruleset.globalUniques)
         ruleset.modOptions.nationsToRemove
             .flatMap { nationToRemove ->
                 nations.filter { it.value.matchesFilter(nationToRemove) }.keys
@@ -232,7 +237,13 @@ class Ruleset {
         }
 
         quests.putAll(ruleset.quests)
+
+        // Remove associated Religions, including when they're favored by Nations
         religions.addAll(ruleset.religions)
+        religions.removeAll(ruleset.modOptions.religionsToRemove)
+        nations.filter { it.value.favoredReligion in ruleset.modOptions.religionsToRemove }
+            .forEach { it.value.favoredReligion = null }
+
         ruinRewards.putAll(ruleset.ruinRewards)
         specialists.putAll(ruleset.specialists)
         ruleset.modOptions.techsToRemove
@@ -262,6 +273,7 @@ class Ruleset {
         modOptions.constants.merge(ruleset.modOptions.constants)
 
         unitPromotions.putAll(ruleset.unitPromotions)
+        unitNameGroups.putAll(ruleset.unitNameGroups)
 
         mods += ruleset.mods
     }
@@ -287,6 +299,7 @@ class Ruleset {
         tileImprovements.clear()
         tileResources.clear()
         unitPromotions.clear()
+        unitNameGroups.clear()
         units.clear()
         unitTypes.clear()
         victories.clear()
@@ -366,6 +379,9 @@ class Ruleset {
 
         val promotionsFile = folderHandle.child("UnitPromotions.json")
         if (promotionsFile.exists()) unitPromotions += createHashmap(json().fromJsonFile(Array<Promotion>::class.java, promotionsFile))
+
+        val unitNameGroupsFile = folderHandle.child("UnitNameGroups.json")
+        if (unitNameGroupsFile.exists()) unitNameGroups += createHashmap(json().fromJsonFile(Array<UnitNameGroup>::class.java, unitNameGroupsFile))
 
         val questsFile = folderHandle.child("Quests.json")
         if (questsFile.exists()) quests += createHashmap(json().fromJsonFile(Array<Quest>::class.java, questsFile))

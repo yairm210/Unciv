@@ -286,8 +286,8 @@ The current list of triggers is as follows:
 | Diplomacy: Select player                           | (nation name)     | [^M] | Peace or War[^3] |       | [^S]  |
 | First contact[^4]                                  | (civ name)        | [^M] |   Theme or Peace | [^X]  |       |
 | War declaration[^5]                                | (civ name)        | [^M] |              War | [^X]  |       |
-| Civ defeated                                       | (civ name)        |      |           Defeat | [^X]  |       |
-| Player wins                                        | (civ name)        |      |          Victory | [^X]  |       |
+| Civ defeated                                       | (victory/civ name) |     |           Defeat | [^X]  |       |
+| Player wins                                        | (victory/civ name) |     |          Victory | [^X]  |       |
 | Golden Age                                         | (civ name)        | [^M] |           Golden | [^X]  |       |
 | Wonder built                                       | (wonder name)     | [^M] |           Wonder | [^X]  |       |
 | Tech researched                                    | (tech name)       | [^M] |       Researched | [^X]  |       |

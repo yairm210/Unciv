@@ -13,6 +13,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.github.Github
 import com.unciv.logic.github.Github.folderNameToRepoName
+import com.unciv.logic.github.GithubAPI.downloadAndExtract
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.UncivDateFormat.formatDate
@@ -213,19 +214,15 @@ abstract class LoadOrSaveScreen(
             return Pair(errorText.toString(), isUserFixable)
         }
 
-        fun loadMissingMods(missingMods: Iterable<String>, onModDownloaded:(String)->Unit, onCompleted:()->Unit) {
+        suspend fun loadMissingMods(missingMods: Iterable<String>, onModDownloaded:(String)->Unit, onCompleted:()->Unit) {
             for (rawName in missingMods) {
                 val modName = rawName.folderNameToRepoName().lowercase()
-                val repos = Github.tryGetGithubReposWithTopic(10, 1, modName)
+                val repos = Github.tryGetGithubReposWithTopic(1, 10, modName)
                     ?: throw UncivShowableException("Could not download mod list.")
                 val repo = repos.items.firstOrNull { it.name.lowercase() == modName }
                     ?: throw UncivShowableException("Could not find a mod named \"[$modName]\".")
-                val modFolder = Github.downloadAndExtract(
-                    repo,
-                    UncivGame.Current.files.getModsFolder()
-                )
-                    ?: throw Exception("Unexpected 404 error") // downloadAndExtract returns null for 404 errors and the like -> display something!
-                Github.rewriteModOptions(repo, modFolder)
+                repo.downloadAndExtract()
+                        ?: throw Exception("Unexpected 404 error") // downloadAndExtract returns null for 404 errors and the like -> display something!
                 onModDownloaded(repo.name)
             }
             onCompleted()

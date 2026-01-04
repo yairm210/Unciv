@@ -28,6 +28,10 @@ buildscript {
 // Fixes the error "Please initialize at least one Kotlin target in 'Unciv (:)'"
 kotlin {
     jvm()
+    java {
+        // required for building Unciv with a Java version higher than 24 (e.g. Java 25)
+        sourceCompatibility = JavaVersion.VERSION_21
+    }
 }
 
 
@@ -37,7 +41,7 @@ plugins {
     kotlin("multiplatform") version kotlinVersion
     kotlin("plugin.serialization") version kotlinVersion
     id("io.gitlab.arturbosch.detekt") version "1.23.8"
-    id("io.github.yairm210.purity-plugin") version "1.3.0" apply false
+    id("io.github.yairm210.purity-plugin") version "1.3.2" apply false
 }
 
 allprojects {
@@ -54,19 +58,24 @@ allprojects {
             "com.badlogic.gdx.math.Vector2.cpy",
             "com.badlogic.gdx.math.Vector2.hashCode",
 
+            "com.badlogic.gdx.graphics.Color.cpy",
+            "com.badlogic.gdx.graphics.Color.toString",
+
             "com.badlogic.gdx.files.FileHandle.child",
             "com.badlogic.gdx.files.FileHandle.list",
             "com.badlogic.gdx.files.FileHandle.exists",
             "com.badlogic.gdx.files.FileHandle.isDirectory",
             "com.badlogic.gdx.files.FileHandle.isFile",
             "com.badlogic.gdx.files.FileHandle.name",
+            
+            "kotlin.sequences.shuffled",
         )
         wellKnownPureClasses = setOf(
         )
         wellKnownInternalStateClasses = setOf(
             "com.badlogic.gdx.math.Vector2",
         )
-        warnOnPossibleAnnotations = true
+        warnOnPossibleAnnotations = false
     }
 
     apply(plugin = "eclipse")
@@ -174,7 +183,7 @@ project(":core") {
         "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
         "implementation"("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
 
-        "implementation"("io.github.yairm210:purity-annotations:0.0.51")
+        "implementation"("io.github.yairm210:purity-annotations:1.3.0")
 
         "implementation"("io.ktor:ktor-client-core:$ktorVersion")
         "implementation"("io.ktor:ktor-client-cio:$ktorVersion")
@@ -196,6 +205,7 @@ project(":core") {
             "implementation"(project(":core"))
 
             "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
+            "implementation"("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
 
             "implementation"("junit:junit:4.13.2")
             "implementation"("org.mockito:mockito-core:5.13.0")

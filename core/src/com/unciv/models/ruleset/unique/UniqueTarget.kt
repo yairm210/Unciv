@@ -11,9 +11,7 @@ import yairm210.purity.annotations.Readonly
 enum class UniqueTarget(
     val documentationString: String = "",
     val inheritsFrom: UniqueTarget? = null,
-    val modifierType: ModifierType = ModifierType.None,
-    /** Limits modifiers to only be available for specific unique types */
-    val modifierFor: Set<UniqueTarget> = emptySet()
+    val modifierType: ModifierType = ModifierType.None
 ) {
 
     /** Only includes uniques that have immediate effects, caused by UniqueTriggerActivation */
@@ -71,13 +69,31 @@ enum class UniqueTarget(
     Conditional("Modifiers that can be added to other uniques to limit when they will be active",
         modifierType = ModifierType.Conditional,
     ),
+    
     TriggerCondition("Special conditionals that can be added to Triggerable uniques, to make them activate upon specific actions.",
-        modifierType = ModifierType.Other, modifierFor = setOf(Triggerable, UnitTriggerable)
-    ),
+        modifierType = ModifierType.Other
+    ){
+        override fun isAcceptableModifierFor(unique: Unique): Boolean = unique.isTriggerable
+    },
+    
     UnitTriggerCondition("Special conditionals that can be added to UnitTriggerable uniques, to make them activate upon specific actions.",
-        modifierType = ModifierType.Other, modifierFor = setOf(UnitTriggerable)),
+        modifierType = ModifierType.Other){
+
+        override fun isAcceptableModifierFor(unique: Unique): Boolean {
+            val targetTypes = unique.type?.targetTypes ?: return false
+            // Also needs to accept triggerables
+            return targetTypes.any { UnitTriggerable.canAcceptUniqueTarget(it) }
+        }
+    },
+    
     UnitActionModifier("Modifiers that can be added to UnitAction uniques as conditionals",    
-        modifierType = ModifierType.Other, modifierFor = setOf(UnitAction)),
+        modifierType = ModifierType.Other){
+        override fun isAcceptableModifierFor(unique: Unique): Boolean {
+            val targetTypes = unique.type?.targetTypes ?: return false
+            // Also needs to accept triggerables
+            return targetTypes.any { UnitAction.canAcceptUniqueTarget(it) }
+        }
+    },
     MetaModifier("Modifiers that can be added to other uniques changing user experience, not their behavior", 
         modifierType = ModifierType.Other),
     ;
@@ -97,9 +113,7 @@ enum class UniqueTarget(
     }
     
     @Readonly
-    fun getInheritanceList(): List<UniqueTarget>{
-        return entries.filter { this.canAcceptUniqueTarget(it) }
-    } 
+    open fun isAcceptableModifierFor(unique: Unique): Boolean = true
     
     companion object {
         /** All targets that can display their Uniques */

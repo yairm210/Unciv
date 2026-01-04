@@ -1,8 +1,8 @@
 package com.unciv.logic.civilization.diplomacy
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyTurnManager.nextTurn
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.testing.GdxTestRunner
@@ -84,7 +84,7 @@ class DiplomacyManagerTests {
         meet(a, b)
 
         // then
-        val opinionOfOtherCiv = a.getDiplomacyManager(b.civName)!!.opinionOfOtherCiv()
+        val opinionOfOtherCiv = a.getDiplomacyManager(b)!!.opinionOfOtherCiv()
         assertEquals(0f, opinionOfOtherCiv)
     }
 
@@ -97,8 +97,8 @@ class DiplomacyManagerTests {
         a.getDiplomacyManager(b)!!.denounce()
 
         // then
-        val aOpinionOfB = a.getDiplomacyManager(b.civName)!!.opinionOfOtherCiv()
-        val bOpinionOfA = b.getDiplomacyManager(a.civName)!!.opinionOfOtherCiv()
+        val aOpinionOfB = a.getDiplomacyManager(b)!!.opinionOfOtherCiv()
+        val bOpinionOfA = b.getDiplomacyManager(a)!!.opinionOfOtherCiv()
 
         assertEquals(-35f, aOpinionOfB)
         assertEquals(-35f, bOpinionOfA)
@@ -115,20 +115,20 @@ class DiplomacyManagerTests {
         meet(c, d)
 
         testGame.gameInfo.currentPlayerCiv = addCiv() // otherwise test crashes when puppetying city
-        testGame.gameInfo.currentPlayer = testGame.gameInfo.currentPlayerCiv.civName
+        testGame.gameInfo.currentPlayer = testGame.gameInfo.currentPlayerCiv.civID
 
-        val bCity = testGame.addCity(b, testGame.getTile(Vector2.Zero), initialPopulation = 2)
-        testGame.addCity(b, testGame.getTile(Vector2(1f, 1f)))  // another city otherwise b is destroyed when bCity is captured
+        val bCity = testGame.addCity(b, testGame.getTile(HexCoord.Zero), initialPopulation = 2)
+        testGame.addCity(b, testGame.getTile(1,1))  // another city otherwise b is destroyed when bCity is captured
         bCity.puppetCity(c)
 
         // when
         bCity.liberateCity(a)
 
         // then
-        val aOpinionOfB = a.getDiplomacyManager(b.civName)!!.opinionOfOtherCiv()
-        val bOpinionOfA = b.getDiplomacyManager(a.civName)!!.opinionOfOtherCiv()
-        val cOpinionOfA = c.getDiplomacyManager(a.civName)!!.opinionOfOtherCiv()
-        val dOpinionOfA = d.getDiplomacyManager(a.civName)!!.opinionOfOtherCiv()
+        val aOpinionOfB = a.getDiplomacyManager(b)!!.opinionOfOtherCiv()
+        val bOpinionOfA = b.getDiplomacyManager(a)!!.opinionOfOtherCiv()
+        val cOpinionOfA = c.getDiplomacyManager(a)!!.opinionOfOtherCiv()
+        val dOpinionOfA = d.getDiplomacyManager(a)!!.opinionOfOtherCiv()
 
         assertEquals(0f, aOpinionOfB) // A shouldn't change its opinion of others
         assertEquals(66f, bOpinionOfA) // massive boost, liberated their city
@@ -144,18 +144,18 @@ class DiplomacyManagerTests {
         meet(c, b)
 
         testGame.gameInfo.currentPlayerCiv = addCiv() // otherwise test crashes when puppetying city
-        testGame.gameInfo.currentPlayer = testGame.gameInfo.currentPlayerCiv.civName
+        testGame.gameInfo.currentPlayer = testGame.gameInfo.currentPlayerCiv.civID
 
-        val bCity = testGame.addCity(b, testGame.getTile(Vector2.Zero), initialPopulation = 2)
-        testGame.addCity(b, testGame.getTile(Vector2(1f, 1f)))  // another city otherwise b is destroyed when bCity is captured
+        val bCity = testGame.addCity(b, testGame.getTile(HexCoord.Zero), initialPopulation = 2)
+        testGame.addCity(b, testGame.getTile(1,1))  // another city otherwise b is destroyed when bCity is captured
 
         // when
         bCity.puppetCity(a)
 
         // then
-        val aOpinionOfB = a.getDiplomacyManager(b.civName)!!.opinionOfOtherCiv()
-        val bOpinionOfA = b.getDiplomacyManager(a.civName)!!.opinionOfOtherCiv()
-        val cOpinionOfA = c.getDiplomacyManager(a.civName)!!.opinionOfOtherCiv()
+        val aOpinionOfB = a.getDiplomacyManager(b)!!.opinionOfOtherCiv()
+        val bOpinionOfA = b.getDiplomacyManager(a)!!.opinionOfOtherCiv()
+        val cOpinionOfA = c.getDiplomacyManager(a)!!.opinionOfOtherCiv()
 
         assertEquals(0f, aOpinionOfB) // A shouldn't change its opinion of others
         assertEquals(-85f, bOpinionOfA) // massive penality, conquered their city
@@ -238,8 +238,8 @@ class DiplomacyManagerTests {
     @Test
     fun `should gain previous influence in city state after indirect war`() {
         // given
-        val cityState = addCiv(cityStateType = "Militaristic", testGame.getTile(Vector2.Zero)) // making peace tries to move units around, so we need to initialize their positions
-        val e = addCiv(defaultUnitTile = testGame.getTile(Vector2.X))
+        val cityState = addCiv(cityStateType = "Militaristic", testGame.getTile(HexCoord.Zero)) // making peace tries to move units around, so we need to initialize their positions
+        val e = addCiv(defaultUnitTile = testGame.getTile(HexCoord(1,0)))
         meet(e, cityState)
         // we cannot be allied and simoultaneously having a city state declare indirect war on us
         cityState.getDiplomacyManager(e)!!.addInfluence(31f)
@@ -294,8 +294,8 @@ class DiplomacyManagerTests {
         meet(a, cityState)
 
         // to spread religion, need cities
-        testGame.addCity(a, testGame.getTile(Vector2.Zero))
-        val cityStateCapital = testGame.addCity(cityState, testGame.getTile(Vector2.X), initialPopulation = 2)
+        testGame.addCity(a, testGame.getTile(HexCoord.Zero))
+        val cityStateCapital = testGame.addCity(cityState, testGame.getTile(HexCoord(1,0)), initialPopulation = 2)
 
         val religion = testGame.addReligion(a)
         val belief = testGame.createBelief(BeliefType.Founder, "[+1 Food] from every [Shrine]")
@@ -335,8 +335,8 @@ class DiplomacyManagerTests {
         meet(a, cityState)
 
         // to spread religion, need cities
-        testGame.addCity(a, testGame.getTile(Vector2.Zero))
-        val cityStateCapital = testGame.addCity(cityState, testGame.getTile(Vector2.X), initialPopulation = 2)
+        testGame.addCity(a, testGame.getTile(HexCoord.Zero))
+        val cityStateCapital = testGame.addCity(cityState, testGame.getTile(HexCoord(1,0)), initialPopulation = 2)
 
         val religion = testGame.addReligion(a)
         val belief = testGame.createBelief(BeliefType.Founder, "[+1 Food] from every [Shrine]")
@@ -357,8 +357,8 @@ class DiplomacyManagerTests {
         // given
         meet(a, b)
 
-        testGame.addCity(a, testGame.getTile(Vector2.Zero), initialPopulation = 10)
-        testGame.addCity(b, testGame.getTile(Vector2.X), initialPopulation = 20)
+        testGame.addCity(a, testGame.getTile(HexCoord.Zero), initialPopulation = 10)
+        testGame.addCity(b, testGame.getTile(HexCoord(1,0)), initialPopulation = 20)
 
         val expectedSciencePerTurnCivA = 13 // 10 pop, 3 palace. Smaller than 23 science per turn of civ B (20 pop, 3 palace)
         val turns = 10

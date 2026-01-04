@@ -1,5 +1,5 @@
 {
-    "name": "Global uniques",
+    "name": "Global Uniques",
     "uniques": [
         "Requires establishing embassies to conduct advanced diplomacy",
         "[-75]% growth [in all cities] <when between [-10] and [-1] [Happiness]>",
@@ -23,5 +23,8 @@
 
         // "[+20]% [Production] [in cities connected via railroad]"
         // something something unit supply
+    ],
+    "civilopediaText": [
+        {"text": "Global uniques are ruleset-wide modifiers that apply to all civilizations."}
     ]
 }

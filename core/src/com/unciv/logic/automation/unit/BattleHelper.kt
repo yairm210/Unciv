@@ -101,11 +101,15 @@ object BattleHelper {
     private fun getCityAttackValue(attacker: MapUnit, city: City): Int {
         val attackerUnit = MapUnitCombatant(attacker)
         val cityUnit = CityCombatant(city)
-        val isCityCapturable = city.health == 1
-            || attacker.baseUnit.isMelee() && city.health <= BattleDamage.calculateDamageToDefender(attackerUnit, cityUnit).coerceAtLeast(1)
-        if (isCityCapturable)
-            return if (attacker.baseUnit.isMelee()) 10000 // Capture the city immediatly!
-            else 0 // Don't attack the city anymore since we are a ranged unit
+        
+        val canCaptureCity = attacker.baseUnit.isMelee() && !attacker.hasUnique(UniqueType.CannotCaptureCities)
+        if (city.health == 1)
+            return if (canCaptureCity) 10000 // Capture the city immediately!
+            else 0 // No reason to attack, we won't make any difference
+        
+        if (canCaptureCity && city.health <= BattleDamage.calculateDamageToDefender(attackerUnit, cityUnit).coerceAtLeast(1))
+            return 10000
+            
 
         if (attacker.baseUnit.isMelee()) {
             val battleDamage = BattleDamage.calculateDamageToAttacker(attackerUnit, cityUnit)
@@ -155,15 +159,8 @@ object BattleHelper {
         val militaryUnit = attackTile.tileToAttack.militaryUnit
         val civilianUnit = attackTile.tileToAttack.civilianUnit
         if (militaryUnit != null) {
-            attackValue = 100
-            // Associate enemy units with number of hits from this unit to kill them
-            val attacksToKill = (militaryUnit.health.toFloat() /
-                BattleDamage.calculateDamageToDefender(MapUnitCombatant(attacker), MapUnitCombatant(militaryUnit)))
-                .coerceAtLeast(1f).coerceAtMost(10f)
-            // We can kill them in this turn
-            if (attacksToKill <= 1) attackValue += 30
-            // On average, this should take around 3 turns, so -15
-            else attackValue -= (attacksToKill * 5).toInt()
+            attackValue = 200 - militaryUnit.health + // continuously prioritise lower-health units
+                BattleDamage.calculateDamageToDefender(MapUnitCombatant(attacker), MapUnitCombatant(militaryUnit))
         } else if (civilianUnit != null) {
             attackValue = 50
             // Only melee units should really attack/capture civilian units, ranged units may be able to capture by moving

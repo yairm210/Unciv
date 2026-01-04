@@ -13,14 +13,15 @@ import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.SerializationException
 import com.unciv.UncivGame
 import com.unciv.logic.UncivShowableException
+import com.unciv.logic.github.DownloadAndExtractState
 import com.unciv.logic.github.Github
 import com.unciv.logic.github.Github.repoNameToFolderName
 import com.unciv.logic.github.GithubAPI
+import com.unciv.logic.github.GithubAPI.downloadAndExtract
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
@@ -36,6 +37,7 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.components.widgets.LoadingImage
+import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
@@ -111,8 +113,8 @@ class ModManagementScreen private constructor(
 
     // Enable re-sorting and syncing entries in 'installed' and 'repo search' ScrollPanes
     // Keep metadata and buttons in separate pools
-    private val installedModInfo = previousInstalledMods ?: HashMap(10)
-    private val onlineModInfo = previousOnlineMods ?: HashMap(game.files.loadModCache().associateBy { it.name })
+    private val installedModInfo = previousInstalledMods ?: HashMap(RulesetCache.size)
+    private val onlineModInfo = previousOnlineMods ?: game.files.loadModCache().associateByTo(HashMap()) { it.name }
     private val modButtons: HashMap<ModUIData, ModDecoratedButton> = HashMap(100)
 
     // cleanup - background processing needs to be stopped on exit and memory freed
@@ -142,7 +144,7 @@ class ModManagementScreen private constructor(
                 game.settings.tileSet = tileSets.first()
             }
             val screen = game.popScreen()
-            
+
             // We want to immediately display/hide Scenario button based on changes
             if (screen is MainMenuScreen)
                 screen.game.replaceCurrentScreen(MainMenuScreen())
@@ -165,10 +167,10 @@ class ModManagementScreen private constructor(
         if (isPortrait) initPortrait()
         else initLandscape()
         showLoadingImage()
-        
+
         if (installedModInfo.isEmpty())
             refreshInstalledModInfo()
-        
+
         refreshInstalledModTable()
 
         refreshOnlineModTable() // Refresh table - chances are we have cached data...
@@ -244,7 +246,7 @@ class ModManagementScreen private constructor(
 
         loading.show()  // Now that it's on stage, start animation
         replaceLoadingWithOptions()
-        
+
         // Allow clicking the loading icon to stop the query
         loading.onClick {
             if (runningSearchJob?.isActive != true) return@onClick
@@ -280,9 +282,9 @@ class ModManagementScreen private constructor(
      */
     private fun tryDownloadPage(pageNum: Int) {
         runningSearchJob = Concurrency.run("GitHubSearch") {
-            val repoSearch: GithubAPI.RepoSearch
+            val repoSearch: GithubAPI.RepoSearch?
             try {
-                repoSearch = Github.tryGetGithubReposWithTopic(amountPerPage, pageNum)!!
+                repoSearch = Github.tryGetGithubReposWithTopic(pageNum, amountPerPage)
             } catch (ex: Exception) {
                 Log.error("Could not download mod list", ex)
                 launchOnGLThread {
@@ -292,12 +294,12 @@ class ModManagementScreen private constructor(
                     // If it's too large Android won't let you copy, hence the guardrails
                     Gdx.app.clipboard.contents = ex.stackTraceToString()
                 } catch (_:Exception) {}
-                
+
                 runningSearchJob = null
                 return@run
             }
 
-            if (!isActive) {
+            if (!isActive || repoSearch == null) {
                 return@run
             }
 
@@ -418,8 +420,7 @@ class ModManagementScreen private constructor(
             popup.add(pasteLinkButton).row()
             val actualDownloadButton = "Download".toTextButton()
             actualDownloadButton.onClick {
-                actualDownloadButton.setText("Downloading...".tr())
-                actualDownloadButton.disable()
+                actualDownloadButton.setStartingDownload()
                 Concurrency.run {
                     val repo = GithubAPI.Repo.parseUrl(textField.text)
                     if (repo == null) {
@@ -428,10 +429,11 @@ class ModManagementScreen private constructor(
                             actualDownloadButton.setText("Download".tr())
                             actualDownloadButton.enable()
                         }
-                    } else
-                        downloadMod(repo, {
-                            actualDownloadButton.setText("{Downloading...} ${it}%".tr())
+                    } else {
+                        downloadMod(repo, { state, progress ->
+                            actualDownloadButton.setText(state.message(progress).tr())
                         }) { popup.close() }
+                    }
                 }
             }
             popup.add(actualDownloadButton).row()
@@ -460,7 +462,7 @@ class ModManagementScreen private constructor(
                                 modActionTable.updateSize(repoSize)
                         }
                     }
-                } catch (ignore: IOException) {
+                } catch (_: IOException) {
                     /* Parsing of mod size failed, do nothing */
                 }
             }
@@ -473,13 +475,11 @@ class ModManagementScreen private constructor(
         rightSideButton.setText(label.tr())
         rightSideButton.clearActivationActions(ActivationTypes.Tap)
         rightSideButton.onClick {
-            rightSideButton.setText("Downloading...".tr())
-            rightSideButton.disable()
-            
-            downloadMod(repo,{
-                rightSideButton.setText("{Downloading...} ${it}%".tr())
+            rightSideButton.setStartingDownload()
+            downloadMod(repo, { state, progress ->
+                rightSideButton.setText(state.message(progress).tr())
             }) {
-                rightSideButton.setText("Downloaded!".tr())
+                rightSideButton.setFinishedDownload()
             }
         }
 
@@ -487,21 +487,33 @@ class ModManagementScreen private constructor(
         modActionTable.update(repo)
     }
 
+    private fun TextButton.setStartingDownload() {
+        setText("Downloading...".tr())
+        disable()
+    }
+    private fun TextButton.setFinishedDownload() {
+        // Note while setStartingDownload is called from three places, this one is only used once.
+        // This serves as reminder that the other uses will close or clear and repopulate the button's container.
+        setText("Downloaded!".tr())
+        // Not re-enabling it here: Changing selection does
+    }
+
     /** Download and install a mod in the background, called both from the right-bottom button and the URL entry popup */
-    private fun downloadMod(repo: GithubAPI.Repo, updateProgressPercent: ((Int)->Unit)? = null, postAction: () -> Unit = {}) {
+    private fun downloadMod(repo: GithubAPI.Repo, updateProgressPercent: ((DownloadAndExtractState, Int?)->Unit)? = null, postAction: () -> Unit = {}) {
         Concurrency.run("DownloadMod") { // to avoid ANRs - we've learnt our lesson from previous download-related actions
             try {
-                val modFolder = Github.downloadAndExtract(
-                    repo,
-                    UncivGame.Current.files.getModsFolder(),
-                    updateProgressPercent
-                )
-                    ?: throw Exception("Exception during GitHub download")    // downloadAndExtract returns null for 404 errors and the like -> display something!
-                Github.rewriteModOptions(repo, modFolder)
+                val modFolder =
+                    repo.downloadAndExtract(updateProgressPercent)
+                        ?: throw Exception("Exception during GitHub download")    // downloadAndExtract returns null for 404 errors and the like -> display something!
                 launchOnGLThread {
                     val repoName = modFolder.name()  // repo.name still has the replaced "-"'s
-                    ToastPopup("[$repoName] Downloaded!", this@ModManagementScreen)
-                    reloadCachesAfterModChange()
+                    val toast = ToastPopup("[$repoName] Downloaded!", this@ModManagementScreen)
+                    reloadCachesAfterModChange(delete = false, modFolder.name()) {
+                        toast.close()
+                        val msg = "{[$repoName] was downloaded, but is defective!}" +
+                            "\n{For more information, see Options-Locate mod errors.}"
+                        ToastPopup(msg, this@ModManagementScreen, 4000L)
+                    }
 
                     updateInstalledModUIData(repoName)
                     refreshInstalledModTable()
@@ -571,7 +583,7 @@ class ModManagementScreen private constructor(
     */
     private fun refreshInstalledModActions(mod: Ruleset) {
         selectedMod = null
-        // show mod information first
+        // show mod information first - this starts by clearing modActionTable
         modActionTable.update(mod)
 
         val modInfo = installedModInfo[mod.name]!!
@@ -595,9 +607,15 @@ class ModManagementScreen private constructor(
                 refreshInstalledModTable()
         }
 
-        modActionTable.addUpdateModButton(modInfo) {
+        val updateModButton = modActionTable.addUpdateModButton(modInfo) ?: return
+        updateModButton.onClick {
+            updateModButton.setStartingDownload()
             val repo = onlineModInfo[mod.name]!!.repo!!
-            downloadMod(repo) { refreshInstalledModActions(mod) }
+            downloadMod(repo, { state, progress ->
+                updateModButton.setText(state.message(progress).tr())
+            }) {
+                refreshInstalledModActions(mod)
+            }
         }
     }
 
@@ -662,14 +680,20 @@ class ModManagementScreen private constructor(
     /** Delete a Mod, refresh ruleset cache and update installed mod table */
     private fun deleteMod(mod: Ruleset) {
         mod.folderLocation!!.deleteDirectory()
-        reloadCachesAfterModChange()
+        reloadCachesAfterModChange(delete = true, mod.name)
         installedModInfo.remove(mod.name)
         unMarkUpdatedMod(mod.name)
         refreshInstalledModTable()
     }
 
-    private fun reloadCachesAfterModChange() {
-        RulesetCache.loadRulesets()
+    private fun reloadCachesAfterModChange(delete: Boolean, modName: String, onError: (()->Unit)? = null) {
+        if (delete) {
+            RulesetCache.remove(modName)
+        } else {
+            val errorLines = RulesetCache.reloadSingleRuleset(modName)
+            if (errorLines.isNotEmpty()) onError?.invoke()
+        }
+
         TileSetCache.loadTileSetConfigs()
         ImageGetter.reloadImages()
         UncivGame.Current.translations.tryReadTranslationForCurrentLanguage()

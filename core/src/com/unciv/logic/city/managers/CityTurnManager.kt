@@ -9,15 +9,23 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.OverviewAction
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
-import kotlin.math.min
 import kotlin.random.Random
 
 class CityTurnManager(val city: City) {
 
 
     fun startTurn() {
+        for (resource in city.getResourcesGeneratedByCity(city.getResourceModifiers())) {
+            if (resource.resource.isStockpiled && resource.resource.isCityWide)
+                city.gainStockpiledResource(resource.resource, resource.amount)
+        }
+        for (unique in city.getTriggeredUniques(UniqueType.TriggerUponTurnStart, includeCivUniques = false).toList()) {
+            UniqueTriggerActivation.triggerUnique(unique, city)
+        }
+
         // Construct units at the beginning of the turn,
         // so they won't be generated out in the open and vulnerable to enemy attacks before you can control them
         city.cityConstructions.constructIfEnough()
@@ -117,6 +125,9 @@ class CityTurnManager(val city: City) {
 
 
     fun endTurn() {
+        for (unique in city.getTriggeredUniques(UniqueType.TriggerUponTurnEnd, includeCivUniques = false).toList()) {
+            UniqueTriggerActivation.triggerUnique(unique, city)
+        }
         val stats = city.cityStats.currentCityStats
 
         city.cityConstructions.endTurn(stats)
@@ -147,7 +158,7 @@ class CityTurnManager(val city: City) {
         if (city.civ.gameInfo.isReligionEnabled()) city.religion.endTurn()
 
         if (city in city.civ.cities) { // city was not destroyed
-            city.health = min(city.health + 20, city.getMaxHealth())
+            city.health = (city.health + 20).coerceAtMost(city.getMaxHealth())
             city.population.unassignExtraPopulation()
         }
     }

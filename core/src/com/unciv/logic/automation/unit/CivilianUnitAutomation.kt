@@ -33,7 +33,7 @@ object CivilianUnitAutomation {
         
         val hasSettlerUnique = hasSettlerAction(UniqueType.FoundCity) || hasSettlerAction(UniqueType.FoundPuppetCity)
         
-        if (hasSettlerUnique)
+        if (hasSettlerUnique && !(unit.civ.isCityState && unit.isMilitary()))
             return SpecificUnitAutomation.automateSettlerActions(unit, dangerousTiles)
 
         if (tryRunAwayIfNeccessary(unit)) return
@@ -174,10 +174,10 @@ object CivilianUnitAutomation {
     }
 
     @Readonly
-    private fun isLateGame(civ: Civilization): Boolean {
+    fun isLateGame(civ: Civilization): Boolean {
         val researchCompletePercent =
             (civ.tech.researchedTechnologies.size * 1.0f) / civ.gameInfo.ruleset.technologies.size
-        return researchCompletePercent >= 0.6f
+        return researchCompletePercent >= 0.55f
     }
 
     /** Returns whether the civilian spends its turn hiding and not moving */
