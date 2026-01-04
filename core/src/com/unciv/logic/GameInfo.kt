@@ -433,6 +433,9 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         // Start our turn immediately before the player can make decisions - affects
         // whether our units can commit automated actions and then be attacked immediately etc.
         notifyOfCloseEnemyUnits(player)
+
+        // This would belong at the end of TurnManager.startTurn, but needs to come after notifyOfCloseEnemyUnits
+        player.notificationCountAtStartTurn = player.notifications.size
     }
 
     private fun notifyOfCloseEnemyUnits(thisPlayer: Civilization) {
