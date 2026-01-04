@@ -1,19 +1,17 @@
 ## 4.19.6
 
-fix detekt
+Units unset sleep/automation on manual repair commands
 
-Resolved  - Fixed crash on unit wander
-
-When loading a game, auto-download
+Fixed crash on unit wander
 
 By SomeTroglodyte:
+- Options reworked - faster opening 
 - Redo Notification log page in empire overview 
 - Fix links to Translation wiki 
-- Options reworked - faster opening 
 
 By RobLoach:
 - Add Remaining Civilopedia Sub-Categories 
-- Fix notification of perpetrual stat conversion 
+- Fix notification of perpetual stat conversion 
 - Fix Resource Production Modifier Calculations 
 
 Carrying conditional and countable - By PhiRite
