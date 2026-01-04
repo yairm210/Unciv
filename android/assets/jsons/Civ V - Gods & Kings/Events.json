@@ -183,7 +183,7 @@
             {"text":"Enter the Overview screen (top right corner) → Click on 'Stats'."},
 		],
         "uniques": [
-            "Only available <if tutorials are enabled> <after turn number [40]>",
+            "Only available <if tutorials are enabled> <when number of [Cities] is more than [0]> <after turn number [5]>",
             "Unavailable <if tutorial [See your stats breakdown] is completed>"
         ]
     },
