@@ -69,19 +69,19 @@ class ExpanderTab(
     val header = Table(skin)
 
     /** Additional elements can be added to the `ExpanderTab`'s header using this container, empty by default. */
-    val headerContent = Table(skin)
+    val headerContent = Table()
 
     private val headerLabel = title.toLabel(fontSize = fontSize, hideIcons = true)
     val headerIcon = ImageGetter.getImage(arrowImage)
     private val contentWrapper = Table()  // Wrapper for innerTable, this is what will be shown/hidden
 
     /** The container where the client should add the content to toggle */
-    val innerTable = Table(skin)
+    val innerTable = Table()
 
     /** Indicates whether the contents are currently shown, changing this will animate the widget */
     // This works because a HashMap _could_ store an entry for the null key but we cannot actually store one when declaring as HashMap<String, Boolean>
     var isOpen = persistedStates[persistenceID] ?: startsOutOpened
-        set(value) {
+        private set(value) {
             if (value == field) return
             field = value
             update()
