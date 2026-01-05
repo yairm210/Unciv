@@ -255,7 +255,6 @@ class TurnManager(val civInfo: Civilization) {
             notificationsLog.add(notificationsThisTurn)
 
         civInfo.notifications.clear()
-        civInfo.notificationCountAtStartTurn = null
 
         if (civInfo.isDefeated() || civInfo.isSpectator()) return  // yes they do call this, best not update any further stuff
 
