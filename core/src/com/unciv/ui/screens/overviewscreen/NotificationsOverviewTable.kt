@@ -188,7 +188,6 @@ class NotificationsOverviewTable(
 
     private fun getSelectBox() = SelectBox<SelectItem>(skin).apply {
         items = selectItems.toGdxArray()
-        selectedIndex = 0
         onChange {
             val selectTurn = selected.turn
             val selectedExpander = expanders[selectTurn] ?: return@onChange
