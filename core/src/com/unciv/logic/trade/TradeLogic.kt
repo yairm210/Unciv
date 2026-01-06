@@ -193,7 +193,7 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
                             from.getDiplomacyManager(nameOfCivToDeclareWarOn)!!
                                 .declareWar(DeclareWarReason(warType))
                         }
-                        else -> {}
+                        else -> {throw IllegalStateException("Unhandled WarType found within TradeOfferType.WarDeclaration")}
                     }
                 }
                 TradeOfferType.PeaceProposal -> {
