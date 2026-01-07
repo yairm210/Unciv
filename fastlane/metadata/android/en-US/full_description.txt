@@ -6,7 +6,7 @@ Requests? Bugs? Want to help development? Todo list for the application is https
 
 Questions? Comments? Join us on discord at https://discord.gg/bjrB4Xw ;)
 
-Want to help translating the game into your language? See https://yairm210.github.io/Unciv/Other/Translating/
+Want to help translating the game into your language? See https://yairm210.github.io/Unciv/Translating/Translating/
 
 The world awaits! Will you build your civilization into an empire that will stand the test of time?
 

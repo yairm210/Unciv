@@ -1,3 +1,38 @@
+## 4.19.6
+
+Units unset sleep/automation on manual repair commands
+
+Fixed crash on unit wander
+
+By SomeTroglodyte:
+- Options reworked - faster opening 
+- Redo Notification log page in empire overview 
+- Fix links to Translation wiki 
+
+By RobLoach:
+- Add Remaining Civilopedia Sub-Categories 
+- Fix notification of perpetual stat conversion 
+- Fix Resource Production Modifier Calculations 
+
+Carrying conditional and countable - By PhiRite
+
+## 4.19.5
+
+Add `[resource] of [civ] Civilizations` Countable - By RobLoach
+
+By SomeTroglodyte:
+- Civilopedia Subcategories 
+- Improve "unit can be promoted" notifications 
+- Fix dev console crashable from autocomplete code 
+
+By SeventhM:
+- Fix Civi-based triggers ignoring changes from prior triggers 
+- Fix triggerables not multiplying correctly under some circumstances 
+
+Reload multiplayer text on connection success - By touhidurrr
+
+Prevent wandering if unit has no movement - By EmperorPinguin
+
 ## 4.19.4
 
 minor perf(cpu): better order for "ignore terrain change" operations

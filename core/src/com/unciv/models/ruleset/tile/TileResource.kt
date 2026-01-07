@@ -96,6 +96,13 @@ class TileResource : RulesetStatsObject(), GameResource {
     override fun getCivilopediaTextLines(ruleset: Ruleset) =
         ResourceDescriptions.getCivilopediaTextLines(this, ruleset)
 
+    override fun getSortGroup(ruleset: Ruleset) = resourceType.ordinal
+    override fun getSubCategory(ruleset: Ruleset): String? = when (resourceType) {
+        ResourceType.Luxury -> "Luxury resource"
+        ResourceType.Strategic -> "Strategic resource"
+        ResourceType.Bonus -> "Bonus resource"
+    }
+
     @Readonly
     fun isImprovedBy(improvementName: String): Boolean {
         return getImprovements().contains(improvementName)

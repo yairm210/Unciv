@@ -829,6 +829,9 @@ enum class UniqueType(
     ConditionalCountableBetween("when number of [countable] is between [countable] and [countable]", UniqueTarget.Conditional,
         docDescription = "'Between' is inclusive - so 'between 1 and 5' includes 1 and 5."),
 
+    /////// carrying conditionals
+    ConditionalWhenCarriedBy("when carried by [mapUnitFilter] units", UniqueTarget.Conditional),
+
     //endregion
 
     ///////////////////////////////////////// region 09 TRIGGERED ONE-TIME /////////////////////////////////////////

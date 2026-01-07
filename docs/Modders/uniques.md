@@ -3687,6 +3687,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
+??? example  "&lt;when carried by [mapUnitFilter] units&gt;"
+	Example: "&lt;when carried by [Wounded] units&gt;"
+
+	Applicable to: Conditional
+
 ??? example  "&lt;if [modFilter] is enabled&gt;"
 	Example: "&lt;if [DeCiv Redux] is enabled&gt;"
 
