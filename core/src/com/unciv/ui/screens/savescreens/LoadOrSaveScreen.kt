@@ -221,10 +221,8 @@ abstract class LoadOrSaveScreen(
                     ?: throw UncivShowableException("Could not download mod list.")
                 val repo = repos.items.firstOrNull { it.name.lowercase() == modName }
                     ?: throw UncivShowableException("Could not find a mod named \"[$modName]\".")
-                val modFolder =
-                    repo.downloadAndExtract(UncivGame.Current.files.getModsFolder())
+                repo.downloadAndExtract()
                         ?: throw Exception("Unexpected 404 error") // downloadAndExtract returns null for 404 errors and the like -> display something!
-                Github.rewriteModOptions(repo, modFolder)
                 onModDownloaded(repo.name)
             }
             onCompleted()

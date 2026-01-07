@@ -23,7 +23,6 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
-import com.unciv.utils.randomWeighted
 import yairm210.purity.annotations.Readonly
 
 object UnitAutomation {
@@ -204,6 +203,7 @@ object UnitAutomation {
     }
 
     fun wander(unit: MapUnit, stayInTerritory: Boolean = false, tilesToAvoid: Set<Tile> = setOf()) {
+        if (!unit.hasMovement()) return // return in case we can't move anyways
         val unitDistanceToTiles = unit.currentTile.getTilesAtDistance(1)
         // We could walk further, but wander() is meant to let units not stay on the same tile permanently,
         // to avoid obstructing human scouts and workers, moving just one tile should be enough
@@ -211,7 +211,7 @@ object UnitAutomation {
                 .filter {
                     it !in tilesToAvoid
                         && unit.movement.canMoveTo(it)
-                        && unit.movement.canReach(it)
+                        && unit.movement.canReachInCurrentTurn(it) // Yes this is required despite the above line - see #14461
                         && unit.getDamageFromTerrain(it) <= 0 // Don't end turn on damaging terrain for no good reason
                         && (!stayInTerritory || it.getOwner() == unit.civ || unit.currentTile.getOwner() != unit.civ)
                 }

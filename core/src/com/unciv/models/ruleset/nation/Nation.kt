@@ -128,6 +128,11 @@ class Nation : RulesetObject() {
         isBarbarian -> 9
         else -> 0
     }
+    override fun getSubCategory(ruleset: Ruleset): String? = when {
+        isCityState -> "City-States"
+        isBarbarian -> "Other"
+        else -> "Civilizations"
+    }
 
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         val textList = ArrayList<FormattedLine>()
