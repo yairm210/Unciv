@@ -3,6 +3,7 @@ package com.unciv.ui.screens.victoryscreen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.unciv.ui.images.ImageGetter
+import yairm210.purity.annotations.Pure
 
 enum class RankingType(
     label: String?,
@@ -26,7 +27,7 @@ enum class RankingType(
     constructor(idForSerialization: Char) : this(null, { null }, idForSerialization)
 
     companion object {
-        fun fromIdForSerialization(char: Char): RankingType? =
+        @Pure fun fromIdForSerialization(char: Char): RankingType? =
                 entries.firstOrNull { it.idForSerialization == char }
     }
 }

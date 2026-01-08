@@ -1,3 +1,321 @@
+## 4.19.6
+
+Units unset sleep/automation on manual repair commands
+
+Fixed crash on unit wander
+
+By SomeTroglodyte:
+- Options reworked - faster opening 
+- Redo Notification log page in empire overview 
+- Fix links to Translation wiki 
+
+By RobLoach:
+- Add Remaining Civilopedia Sub-Categories 
+- Fix notification of perpetual stat conversion 
+- Fix Resource Production Modifier Calculations 
+
+Carrying conditional and countable - By PhiRite
+
+## 4.19.5
+
+Add `[resource] of [civ] Civilizations` Countable - By RobLoach
+
+By SomeTroglodyte:
+- Civilopedia Subcategories 
+- Improve "unit can be promoted" notifications 
+- Fix dev console crashable from autocomplete code 
+
+By SeventhM:
+- Fix Civi-based triggers ignoring changes from prior triggers 
+- Fix triggerables not multiplying correctly under some circumstances 
+
+Reload multiplayer text on connection success - By touhidurrr
+
+Prevent wandering if unit has no movement - By EmperorPinguin
+
+## 4.19.4
+
+minor perf(cpu): better order for "ignore terrain change" operations
+
+By RobLoach:
+- Correct MP games' first turn time 
+- Restore Civilopedia Event-based Tutorials 
+
+By EmperorPinguin:
+- AI: don't send workers to other civ's territory 
+- AI: keep wandering if inadvertently ended up in foreign territory 
+
+MP server: Display URL errors & optimize redirects - By touhidurrr
+
+Change mounted attack sounds - By SomeTroglodyte
+
+Gain city-only stockpiles from provides/consumes uniques - By SeventhM
+
+## 4.19.3
+
+Remove incompatible improvements in progress upon changing terrain
+
+By EmperorPinguin:
+- AI: choose favoredReligion more often 
+- AI: build settlers also when at war 
+
+Modding: Add city context to turn start & end uniques from buildings - By SeventhM
+
+By RobLoach:
+- Fix removed favored Religions 
+- Minor Civilopedia UX Improvements 
+- Flip Defensive Pact opinion comparision 
+
+Console: 'unit activatetrigger'  - By SomeTroglodyte
+
+## 4.19.2
+
+AI improvements - By EmperorPinguin
+
+By SomeTroglodyte:
+- Fix City button problems
+- Miscellaneous fixes and small changes 
+- Distance-based unit cycle order (opt-in)  
+- Fix battle modifier not being translated 
+- Fix OneTimeRemovePolicy triggered Unique
+- Prevent crashes from mod preview files
+
+Added a command to spawn barbarian encampments - By GameCobra
+
+By RobLoach:
+- options: Add Micro, FullHD, and QuadHD screen sizes
+- city: Display City-Wide Resources
+
+## 4.19.1
+
+By RobLoach:
+- options: Add Micro, FullHD, and QuadHD screen sizes 
+- Display City-Wide stockpiled resources in city
+
+By SomeTroglodyte:
+- Add diplomacy actions to game console 
+- Harden mod manager against invalid local preview files 
+- Improve unit tests speed by reducing Translation tests overhead 
+
+Fix crash on reloading/cloning victory data - By SeventhM
+
+## 4.19.0
+
+By EmperorPinguin:
+- CPU performance improvements
+- AI don't build units which cannot attack 
+- AI: Better 'tile-to-work' picking 
+
+By SomeTroglodyte:
+- Faster mod download
+- Fix VictoryScreen crash loopholes
+
+Add Hindi language - By monikaanaaya2021-cmd
+
+By RobLoach:
+- civFilter: Add a `Known` filter 
+- civilopedia: Add Technologies that provide Resources 
+
+## 4.18.19
+
+Fix map width for checking distances between tiles
+
+CPU performance improvements
+
+By EmperorPinguin:
+- Simplify military unit attack value 
+- Disable fort placement for AI 
+- Fix unit automation order 
+- Bugfix AI friendly fighter counting 
+- Better Cover, Charge promotion priority for AI
+- Let AI build quarries for Stone Works 
+- Move unit promotion ahead & Exclude wounded melee from automateCityConquer 
+
+
+Fixed battle notification texts issue - By GameCobra
+
+## 4.18.18
+
+CPU performance improvements
+
+By EmperorPinguin:
+- AI: Separate encampment-finding logic from ruins-finding 
+- AI: Better "city to attack" logic 
+- AI: Simplify target selection for city bombardment 
+
+Fix battle notification order - By SomeTroglodyte
+
+## 4.18.17
+
+Memory + CPU performance improvements
+
+By RobLoach:
+- Fix Null Exception in searching Civilopedia 
+- Modding: Allow removing Religions and Beliefs 
+
+By SomeTroglodyte:
+- Swapping for Escort formation pairs 
+- Make Notifications setting "Disabled" useful 
+
+Generic'd Gold from pillaging encampments and cities unique - By PLynx01
+
+Using Renamed Unit Names in Battle Notifications - By GameCobra
+
+Enable espionage by default in new games - By unciv-loof
+
+## 4.18.16
+
+Units that upgrade continue escorting 
+
+Nation colors unchanged by multiplayer chat
+
+By RobLoach:
+- G&K: Fix Kremlin providing a Great Scientist Point 
+- Add `[buildingFilter] Buildings by [civFilter] Civilizations` Countable 
+- Add `eraFilter` to allow filtering by Era 
+
+## 4.18.15
+
+Display road per-turn costs in the stats
+
+Modding: Cloned units' triggers happen after the data is copied to them
+
+By RobLoach:
+- modding: Allow attack sounds by unit name 
+- modding: Add a Researched Technologies Countable
+- Fix `<on [difficulty] or higher/lower>` Conditional 
+- Fix Worker Improvement Automation Checks 
+- civilopedia: Only show active Victory Types 
+
+Link historical Great Person names to Wikipedia - By SomeTroglodyte
+
+## 4.18.14
+
+Faster map generation
+
+Less memory usage for large maps
+
+By SomeTroglodyte:
+- New CircularButton Widget 
+- Improve recognition of GitHub url types passed to "Download mod from URL" 
+
+By RobLoach:
+- Fix Unit Stats across Vanilla 
+- Fix Spaceship Parts requiring a Scientific Victory 
+- Fix Unit Name Group unique type
+- Allow modding of Great Prophet names
+
+Fix incorrect target civ used to determine defensive pact modifiers - By unciv-loof
+
+Add plus strength amount unique - By SeventhM
+
+## 4.18.13
+
+By unciv-loof:
+- Fix broken minimap state after maximizing minimap + tile tap
+- Relocate maximize minimap button for compatibility with rounded corner displays 
+- New MP games display correct "time since last turn" 
+- Disallow settling cities in territory of other civs
+
+Add Great People Names - By RobLoach
+
+Faster mod download & display status - By touhidurrr
+
+Add Nuclear Weapons Disabled conditional unique - By PLynx01
+
+Bug fixes for city destroy mechanic - By PhiRite
+
+## 4.18.12
+
+By SomeTroglodyte:
+- Align buttons on MainMenuScreen 
+- Adapt main menu background maps to aspect ratio 
+- Fix resource stats in Civilopedia 
+
+By SidedYapper:
+- Added popup for "about tab" when clicking Version in main menu 
+
+## 4.18.11
+
+Happiness shown in city stat overview
+
+By SomeTroglodyte:
+- Show Mod json parse errors right after download 
+- Fix translation of multiple conditionals of the same type 
+- Fix upgrading from Unit overview won't show changes
+- Make ToastPopups stay on screen when tapped, for leisurely reading
+
+Fix City-States asking you to find Natural Wonders they already found - By RobLoach
+
+## 4.18.10
+
+By RobLoach:
+- Add more notifications to Triggerable Uniques 
+- Fix Victory Type translations in Civilopedia 
+- Fix Wonder Alert without a quote 
+- Great Admiral: Add 'Change Port' Ability 
+
+By EmperorPinguin:
+- Adjust luxury resource placement logic thresholds
+- Add minimumCityLocationTileValue mod constant
+
+By SomeTroglodyte:
+- Fix broken "download missing mods"  
+- Better Resource descriptions  
+
+Run Android tasks in parallel - By nbd-boss (new constributor!)
+
+## 4.18.9
+
+Updated Libgdx to 1.14.0 - solving Wayand and Android bugs
+
+Fix super-rare bug on bringing in allies when declaring war
+
+Fix Leader Titles when with a suffixing title - By RobLoach
+
+By SomeTroglodyte: 
+- Selecting local mods without preview will now display an avatar 
+- Workaround for certain rare Java Runtime quirks (construction queue crash) 
+
+## 4.18.8
+
+Remove building-improvement if the building is no longer buildable
+
+By RobLoach:
+- Add 'when not stacked with a [mapUnitFilter] unit' Conditional 
+- Fix relevent Civ for within tiles Conditional 
+- City Screen: Display Stockpile Amount Available for Cost 
+
+Display promises in diplomacy overview for human players - By unciv-loof
+
+Fix battle notification translations - by dadadnet (new contributor!)
+
+## 4.18.7
+
+Improve Civilopedia display of GlobalUniques - By SomeTroglodyte
+
+Naval Tradition Policy under Commerce as per Civ V - By JhandeFlores
+
+By RobLoach:
+- Fix Ancient Ruins when there are conditionals 
+- Add Leader Titles unique 
+
+Modding/Feature: Allow units to destroy cities instead of capturing - By PhiRite
+
+## 4.18.6
+
+Game startup performance improvements
+
+Mod preview performance improvements
+
+Avoid rare crash concurrent modification when calculating construction costs
+
+By RobLoach:
+- Modding: Ancient Ruins can have unit-related conditionals 
+- AbsoluteUnits: Add Great Admiral by Basil 
+
+Allow naval units to be spawn in water city - By Emandac
+
 ## 4.18.5
 
 AI will not attack cities with no health with siege units

@@ -72,11 +72,20 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
     }
 
     /**
+     * Returns a specific translation, or the original [text] if no translation for [language] exists
      * @see get
      */
     @Readonly
     fun getText(text: String, language: String, activeMods: HashSet<String>? = null): String {
         return get(text, language, activeMods)?.get(language) ?: text
+    }
+
+    /**
+     * Returns a specific translation, or [default] if no translation for [language] exists
+     */
+    @Readonly
+    fun getText(text: String, language: String, activeMods: HashSet<String>? = null, default: String): String {
+        return get(text, language, activeMods)?.get(language) ?: default
     }
 
     /** Get all languages present in `this`, used for [TranslationFileWriter] and `TranslationTests` */
@@ -209,42 +218,42 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
 
         debug("Loading percent complete of languages - %sms", System.currentTimeMillis() - startTime)
     }
+
     @Readonly
-    fun getConditionalOrder(language: String): String {
-        return getText(englishConditionalOrderingString, language, null)
-    }
+    fun getConditionalOrder(language: String) =
+        getText(conditionalOrderingKey, language, null, defaultConditionalOrderingString)
 
     @Readonly
     fun placeConditionalsAfterUnique(language: String) =
-        get(conditionalUniqueOrderString, language, null)?.get(language) != "before"
+        getText(conditionalPlacementKey, language, null, "") != "before"
 
     /** Returns the equivalent of a space in the given language
      * Defaults to a space if no translation is provided
      */
     @Readonly
-    fun getSpaceEquivalent(language: String): String {
-        val translation = getText("\" \"", language, null)
-        return translation.substring(1, translation.length-1)
-    }
+    fun getSpaceEquivalent(language: String) =
+        getText("\" \"", language, null).removeSurrounding("\"")
 
     @Readonly
-    fun shouldCapitalize(language: String): Boolean {
-        return get(shouldCapitalizeString, language, null)?.get(language)?.toBoolean() ?: true
-    }
+    fun shouldCapitalize(language: String) =
+        getText(shouldCapitalizeKey, language, null, "true").toBoolean()
 
     @Readonly
-    fun triggerNotificationEffectBeforeCause(language: String): Boolean{
-        return get(effectBeforeCause, language, null)?.get(language)?.toBoolean() ?: true
-    }
+    fun triggerNotificationEffectBeforeCause(language: String) =
+        getText(effectBeforeCauseKey, language, null, "true").toBoolean()
 
     companion object {
-        // Whenever this string is changed, it should also be changed in the translation files!
-        // It is mostly used as the template for translating the order of conditionals
-        const val englishConditionalOrderingString =
-            "<with a garrison> <for [mapUnitFilter] units> <above [amount] HP> <below [amount] HP> <vs cities> <vs [mapUnitFilter] units> <when fighting in [tileFilter] tiles> <when attacking> <when defending> <if this city has at least [amount] specialists> <when at war> <when not at war> <while the empire is happy> <during a Golden Age> <during the [era]> <starting from the [era]> <before the [era]> <with [techOrPolicy]> <without [techOrPolicy]>"
-        const val conditionalUniqueOrderString = "ConditionalsPlacement"
-        const val shouldCapitalizeString = "StartWithCapitalLetter"
-        const val effectBeforeCause = "EffectBeforeCause"
+        @VisibleForTesting
+        const val conditionalOrderingKey = "ConditionalsOrder"
+        @VisibleForTesting
+        const val defaultConditionalOrderingString =
+            "<with a garrison> <for [mapUnitFilter] units> <when above [amount] HP> <when below [amount] HP> <vs cities> <vs [mapUnitFilter] units> <when fighting in [tileFilter] tiles> <when attacking> <when defending> <if this city has at least [amount] specialists> <when at war> <when not at war> <while the empire is happy> <during a Golden Age> <during the [era]> <starting from the [era]> <before the [era]> <with [techOrPolicy]> <without [techOrPolicy]>"
+        @VisibleForTesting
+        const val conditionalPlacementKey = "ConditionalsPlacement"
+        @VisibleForTesting
+        const val shouldCapitalizeKey = "StartWithCapitalLetter"
+        @VisibleForTesting
+        const val effectBeforeCauseKey = "EffectBeforeCause"
     }
 }
 
@@ -338,8 +347,8 @@ fun String.tr(hideIcons: Boolean = false, hideStats: Boolean = false): String {
     val indexSquare = this.indexOf('[')
     val indexCurly = this.indexOf('{')
 
-    val squareBracketsEncounteredFirst = indexSquare >= 0 && (indexCurly < 0 || indexSquare < indexCurly)
-    val curlyBracketsEncounteredFirst =  indexCurly >= 0 && (indexSquare < 0 || indexCurly < indexSquare)
+    val squareBracketsEncounteredFirst = indexSquare >= 0 && indexCurly !in 0..indexSquare
+    val curlyBracketsEncounteredFirst =  indexCurly >= 0 && indexSquare !in 0..indexCurly
 
     if (squareBracketsEncounteredFirst)
         return translatePlaceholders(language, hideIcons)
@@ -366,47 +375,40 @@ private fun String.translateConditionals(hideIcons: Boolean, language: String): 
      * together into the final fully translated string.
      */
 
-    var translatedBaseUnique = this.removeConditionals().tr(hideIcons)
-
-    val conditionals = this.getModifiers().map { it.placeholderText }
-    val conditionsWithTranslation: LinkedHashMap<String, String> = linkedMapOf()
-
-    for (conditional in this.getModifiers())
-        conditionsWithTranslation[conditional.placeholderText] = conditional.text.tr(hideIcons)
-
-    val translatedConditionals: MutableList<String> = mutableListOf()
+    // Get all special parameters stored in the translation files
+    val conditionalOrdering = UncivGame.Current.translations.getConditionalOrder(language)
+    val conditionalsAfterUnique = UncivGame.Current.translations.placeConditionalsAfterUnique(language)
+    val shouldCapitalize = UncivGame.Current.translations.shouldCapitalize(language)
+    val spaceEquivalent = UncivGame.Current.translations.getSpaceEquivalent(language)
 
     // Somewhere, we asked the translators to reorder all possible conditionals in a way that
-    // makes sense in their language. We get this ordering, and than extract each of the
-    // translated conditionals, removing the <> surrounding them, and removing param values
-    // where it exists.
-    val conditionalOrdering = UncivGame.Current.translations.getConditionalOrder(language)
-    for (placedConditional in pointyBraceRegex.findAll(conditionalOrdering)
-        .map { it.value.substring(1, it.value.length - 1).getPlaceholderText() }) {
-        if (placedConditional in conditionals) {
-            translatedConditionals.add(conditionsWithTranslation[placedConditional]!!)
-            conditionsWithTranslation.remove(placedConditional)
-        }
-    }
+    // makes sense in their language. We get this ordering, and map their placeholderText to their ordinal.
+    val sortPriorities: Map<String, Int> = pointyBraceRegex
+        .findAll(conditionalOrdering)
+        .map { it.groupValues[1].getPlaceholderText() }
+        .withIndex()
+        .associate { (index, key) -> key to index }
 
-    // If the translated string that should contain all conditionals doesn't contain
-    // a few conditionals used here, just add the translations of these to the end.
-    // We do test for this, but just in case.
-    translatedConditionals.addAll(conditionsWithTranslation.values)
+    // Now sort the input conditionals by looking their sort priority up (sorting to the end if none defined).
+    // Remember this sort operator is stable - entries with identical priority keep their original ordering,
+    // so if the conditional order definition is empty, all conditionals keep their place.
+    fun sortPriority(unique: Unique) = sortPriorities.getOrDefault(unique.placeholderText, Int.MAX_VALUE)
+    val translatedConditionals = this.getModifiersSequence()
+        .sortedBy(::sortPriority)
+        .map { it.text.tr(hideIcons) }
 
     // After that, add the translation of the base unique either before or after these conditionals
-    if (UncivGame.Current.translations.placeConditionalsAfterUnique(language)) {
-        translatedConditionals.add(0, translatedBaseUnique)
-    } else {
-        if (UncivGame.Current.translations.shouldCapitalize(language) && translatedBaseUnique[0].isUpperCase())
-            translatedBaseUnique = translatedBaseUnique.replaceFirstChar { it.lowercase() }
-        translatedConditionals.add(translatedBaseUnique)
+    val translatedBaseUnique = this.removeConditionals().tr(hideIcons)
+    val translatedComponents = sequence {
+        if (conditionalsAfterUnique) yield(translatedBaseUnique)
+        yieldAll(translatedConditionals)
+        if (!conditionalsAfterUnique)
+            if (shouldCapitalize) yield(translatedBaseUnique.replaceFirstChar { it.lowercase() })
+            else yield(translatedBaseUnique)
     }
 
-    var fullyTranslatedString = translatedConditionals.joinToString(
-        UncivGame.Current.translations.getSpaceEquivalent(language)
-    )
-    if (UncivGame.Current.translations.shouldCapitalize(language))
+    var fullyTranslatedString = translatedComponents.joinToString(spaceEquivalent)
+    if (shouldCapitalize)
         fullyTranslatedString = fullyTranslatedString.replaceFirstChar { it.uppercase() }
     return fullyTranslatedString
 }
@@ -491,7 +493,7 @@ fun String.getPlaceholderParameters(): List<String> {
     if (!this.contains('[')) return emptyList()
 
     val stringToParse = this.removeConditionals()
-    
+
     val parameters = ArrayList<String>()
     var depthOfBraces = 0
     var startOfCurrentParameter = -1
@@ -547,12 +549,13 @@ fun String.fillPlaceholders(vararg strings: String): String {
 }
 
 @Pure
-fun String.getModifiers(): List<Unique> {
-    if (!this.contains('<')) return emptyList()
+private fun String.getModifiersSequence(): Sequence<Unique> {
+    if (!this.contains('<')) return emptySequence()
     @Immutable val matchResults = pointyBraceRegex.findAll(this)
-    @Immutable val uniques = matchResults.map { Unique(it.groups[1]!!.value) }
-    return uniques.toList()
+    return matchResults.map { Unique(it.groups[1]!!.value) }
 }
+@Readonly
+fun String.getModifiers() = getModifiersSequence().toList()
 
 @Pure
 fun String.removeConditionals(): String {

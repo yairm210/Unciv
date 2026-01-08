@@ -34,45 +34,45 @@ fun <T> List<T>.randomWeighted(weights: List<Float>, random: Random = Random): T
 fun <T> List<T>.randomWeighted(random: Random = Random, getWeight: (T) -> Float): T =
     randomWeighted(map(getWeight), random)
 
-/** Gets a clone of an [ArrayList] with an additional item
+/** Gets a clone of any [List] as [ArrayList] with an additional item
  *
  * Solves concurrent modification problems - everyone who had a reference to the previous arrayList can keep using it because it hasn't changed
  */
 @Readonly
-fun <T> ArrayList<T>.withItem(item: T): ArrayList<T> {
+fun <T> List<T>.withItem(item: T): ArrayList<T> {
     val newArrayList = ArrayList(this)
     newArrayList.add(item)
     return newArrayList
 }
 
-/** Gets a clone of a [HashSet] with an additional item
+/** Gets a clone of any [Set] as [HashSet] with an additional item
  *
  * Solves concurrent modification problems - everyone who had a reference to the previous hashSet can keep using it because it hasn't changed
  */
 @Readonly
-fun <T> HashSet<T>.withItem(item: T): HashSet<T> {
+fun <T> Set<T>.withItem(item: T): HashSet<T> {
     val newHashSet = HashSet(this)
     newHashSet.add(item)
     return newHashSet
 }
 
-/** Gets a clone of an [ArrayList] without a given item
+/** Gets a clone of any [List] as [ArrayList] without a given item
  *
  * Solves concurrent modification problems - everyone who had a reference to the previous arrayList can keep using it because it hasn't changed
  */
 @Readonly
-fun <T> ArrayList<T>.withoutItem(item: T): ArrayList<T> {
+fun <T> List<T>.withoutItem(item: T): ArrayList<T> {
     val newArrayList = ArrayList(this)
     newArrayList.remove(item)
     return newArrayList
 }
 
-/** Gets a clone of a [HashSet] without a given item
+/** Gets a clone of any [Set] as [HashSet] without a given item
  *
  * Solves concurrent modification problems - everyone who had a reference to the previous hashSet can keep using it because it hasn't changed
  */
 @Readonly
-fun <T> HashSet<T>.withoutItem(item: T): HashSet<T> {
+fun <T> Set<T>.withoutItem(item: T): HashSet<T> {
     val newHashSet = HashSet(this)
     newHashSet.remove(item)
     return newHashSet

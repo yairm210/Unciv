@@ -11,6 +11,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.PopupAlert
+import com.unciv.logic.civilization.PromoteUnitAction
 import com.unciv.logic.civilization.diplomacy.DiplomacyTurnManager.nextTurn
 import com.unciv.logic.map.mapunit.UnitTurnManager
 import com.unciv.logic.map.tile.Tile
@@ -22,6 +23,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.ui.components.MayaCalendar
 import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.utils.Log
+import yairm210.purity.annotations.Readonly
 import kotlin.math.min
 import kotlin.random.Random
 
@@ -70,7 +72,7 @@ class TurnManager(val civInfo: Civilization) {
         startTurnFlags()
         updateRevolts()
 
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponTurnStart, civInfo.state))
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponTurnStart, civInfo.state, ignoreCities = true))
             UniqueTriggerActivation.triggerUnique(unique, civInfo)
 
         for (city in civInfo.cities) {
@@ -108,7 +110,7 @@ class TurnManager(val civInfo: Civilization) {
 
             if (flag == CivFlags.CityStateGreatPersonGift.name) {
                 val cityStateAllies: List<Civilization> =
-                        civInfo.getKnownCivs().filter { it.isCityState && it.getAllyCivName() == civInfo.civName }.toList()
+                        civInfo.getKnownCivs().filter { it.isCityState && it.allyCiv == civInfo }.toList()
                 val givingCityState = cityStateAllies.filter { it.cities.isNotEmpty() }.randomOrNull()
 
                 if (cityStateAllies.isNotEmpty()) civInfo.flagsCountdown[flag] = civInfo.flagsCountdown[flag]!! - 1
@@ -212,6 +214,7 @@ class TurnManager(val civInfo: Civilization) {
     }
 
     // Higher is better
+    @Readonly
     private fun rateTileForRevoltSpawn(tile: Tile): Int {
         if (tile.isWater || tile.militaryUnit != null || tile.civilianUnit != null || tile.isCityCenter() || tile.isImpassible())
             return -1
@@ -226,7 +229,8 @@ class TurnManager(val civInfo: Civilization) {
             score += 4
         return score
     }
-
+    
+    @Readonly
     private fun getTurnsBeforeRevolt() =
         ((civInfo.gameInfo.ruleset.modOptions.constants.baseTurnsUntilRevolt + Random.Default.nextInt(3)) 
             * civInfo.gameInfo.speed.modifier.coerceAtLeast(1f)).toInt()
@@ -236,7 +240,7 @@ class TurnManager(val civInfo: Civilization) {
         if (UncivGame.Current.settings.citiesAutoBombardAtEndOfTurn)
             NextTurnAutomation.automateCityBombardment(civInfo) // Bombard with all cities that haven't, maybe you missed one
 
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponTurnEnd, civInfo.state))
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponTurnEnd, civInfo.state, ignoreCities = true))
             UniqueTriggerActivation.triggerUnique(unique, civInfo)
 
         val notificationsLog = civInfo.notificationsLog
@@ -253,6 +257,17 @@ class TurnManager(val civInfo: Civilization) {
         civInfo.notifications.clear()
 
         if (civInfo.isDefeated() || civInfo.isSpectator()) return  // yes they do call this, best not update any further stuff
+
+        // "can be promoted" notifications are usually posted when the unit is not actually allowed to promote - e.g. after an attack
+        // So add all such notifications from last turn if the unit still can be promoted
+        notificationsThisTurn.notifications.asSequence()
+            .flatMap { notification ->
+                notification.actions.asSequence()
+                    .filterIsInstance<PromoteUnitAction>()
+                    .map { notification to it.id }
+            }.filter { (_, id) ->
+                civInfo.units.getUnitById(id)?.promotions?.canBePromoted() == true
+            }.mapTo(civInfo.notifications) { (notification, _) -> notification }
 
         var nextTurnStats =
             if (civInfo.isBarbarian)
@@ -328,7 +343,7 @@ class TurnManager(val civInfo: Civilization) {
         val victoryType = civInfo.victoryManager.getVictoryTypeAchieved()
         if (victoryType != null) {
             civInfo.gameInfo.victoryData =
-                    VictoryData(civInfo.civName, victoryType, civInfo.gameInfo.turns)
+                    VictoryData(civInfo, victoryType, civInfo.gameInfo.turns)
 
             // Notify other human players about this civInfo's victory
             for (otherCiv in civInfo.gameInfo.civilizations) {

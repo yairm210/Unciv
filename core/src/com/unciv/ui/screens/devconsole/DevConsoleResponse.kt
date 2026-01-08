@@ -3,7 +3,7 @@ package com.unciv.ui.screens.devconsole
 
 import com.badlogic.gdx.graphics.Color
 
-@Suppress("DataClassPrivateConstructor") // abuser need to find copy() first
+@ConsistentCopyVisibility  // See https://youtrack.jetbrains.com/issue/KT-11914
 internal data class DevConsoleResponse private constructor (
     val color: Color,
     val message: String? = null,

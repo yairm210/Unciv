@@ -8,7 +8,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unit.UnitMovementType
-import com.unciv.models.stats.Stat
+import com.unciv.models.ruleset.Policy
 import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.tilegroups.TileGroup
@@ -68,6 +68,8 @@ internal object CivilopediaImageGetters {
         else ImageGetter.getNationPortrait(nation, size)
     }
     val policy = fun(name: String, size: Float): IconCircleGroup? {
+        val complete = name.endsWith(Policy.branchCompleteSuffix)
+        val policyName = if (complete) name.replace(Policy.branchCompleteSuffix, "") else name
         // result is nullable: policy branch complete have no icons but are linked -> nonexistence must be passed down
         fun tryImage(path: String, color: Color): IconCircleGroup? {
             if (ImageGetter.imageExists(path)) return ImageGetter.getImage(path).apply {
@@ -76,7 +78,7 @@ internal object CivilopediaImageGetters {
             }.surroundWithCircle(size)
             return null
         }
-        return tryImage("$policyBranchIconFolder/$name", ImageGetter.CHARCOAL)
+        return tryImage("$policyBranchIconFolder/$policyName", if (complete) Color.BROWN else ImageGetter.CHARCOAL)
             ?: tryImage("$policyIconFolder/$name", Color.BROWN)
     }
     val resource = { name: String, size: Float ->
@@ -87,6 +89,12 @@ internal object CivilopediaImageGetters {
     }
     val promotion = { name: String, size: Float ->
         ImageGetter.getPromotionPortrait(name, size)
+    }
+    val unitNameGroup = { name: String, size: Float ->
+        // Use the first applicable unit's portrait
+        val unit = ImageGetter.ruleset.unitNameGroups[name]?.getUnits(ImageGetter.ruleset)?.firstOrNull()
+        if (unit != null) ImageGetter.getConstructionPortrait(unit.name, size)
+        else ImageGetter.getImage("OtherIcons/UnitNameGroups").apply { setSize(size) }
     }
     val terrain = { name: String, size: Float ->
         val terrain = ImageGetter.ruleset.terrains[name]

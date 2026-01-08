@@ -71,9 +71,10 @@ open class Policy : RulesetObject() {
 
     override fun makeLink() = "Policy/$name"
     override fun getSortGroup(ruleset: Ruleset) =
-        ruleset.eras[branch.era]!!.eraNumber * 10000 +
+        (ruleset.eras[branch.era]?.eraNumber ?: 0) * 10000 +
                 ruleset.policyBranches.keys.indexOf(branch.name) * 100 +
                 policyBranchType.ordinal
+    override fun getSubCategory(ruleset: Ruleset): String? = branch.name
 
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         val lineList = ArrayList<FormattedLine>()

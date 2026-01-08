@@ -81,7 +81,7 @@ object WorldMapTileUpdater {
 
                 // Fade out improvement icons (but not barb camps or ruins)
                 if (shownImprovement != null && shownImprovement != Constants.barbarianEncampment
-                    && !unit.civ.gameInfo.ruleset.tileImprovements[shownImprovement]!!.isAncientRuinsEquivalent())
+                    && !unit.civ.gameInfo.ruleset.tileImprovements[shownImprovement]!!.isAncientRuinsEquivalent(unit.cache.state))
                     group.layerImprovement.dimImprovement(true)
             }
         }

@@ -10,6 +10,7 @@ import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 import com.unciv.ui.objectdescriptions.uniquesToDescription
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
+import yairm210.purity.annotations.Pure
 
 class Promotion : RulesetObject() {
     var prerequisites = listOf<String>()
@@ -154,6 +155,13 @@ class Promotion : RulesetObject() {
         return textList
     }
 
+    override fun getSubCategory(ruleset: Ruleset): String? = unitTypes.firstOrNull() ?: "Other"
+    override fun getSortGroup(ruleset: Ruleset): Int {
+        val unitTypeName = unitTypes.firstOrNull() ?: return 1000
+        if (!ruleset.unitTypes.contains(unitTypeName)) return 1000
+        return ruleset.unitTypes.keys.indexOf(unitTypeName)
+    }
+
     companion object {
         data class PromotionBaseNameAndLevel(
             val nameWithoutBrackets: String,
@@ -165,6 +173,7 @@ class Promotion : RulesetObject() {
          *  Used by Portrait (where it only has the string, the Promotion object is forgotten) and
          *  PromotionPickerScreen. Here to allow clear "Promotion.getBaseNameAndLevel" signature.
          */
+        @Pure
         fun getBaseNameAndLevel(promotionName: String): PromotionBaseNameAndLevel {
             val nameWithoutBrackets = promotionName.replace("[", "").replace("]", "")
             val level = when {

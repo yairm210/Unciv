@@ -28,6 +28,7 @@ import com.unciv.ui.components.input.onDoubleClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.utils.Concurrency
+import yairm210.purity.annotations.Readonly
 import kotlin.math.abs
 
 
@@ -441,6 +442,7 @@ class TechPickerScreen(
         setButtonsInfo()
     }
 
+    @Readonly
     private fun getTechProgressLabel(techs: List<String>): String {
         val progress = techs.sumOf { tech -> civTech.researchOfTech(tech) } + civTech.getOverflowScience()
         val techCost = techs.sumOf { tech -> civInfo.tech.costOfTech(tech) }
