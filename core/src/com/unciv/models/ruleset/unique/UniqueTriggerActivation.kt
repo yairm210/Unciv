@@ -261,14 +261,10 @@ object UniqueTriggerActivation {
                 val civUnit = civInfo.getEquivalentUnit(baseUnit)
                 if (civUnit.isCityFounder() && civInfo.isOneCityChallenger())
                     return null
-
                 fun placeUnit(): Boolean {
                     val placedUnit = when {
-                        // Set unit at city if there's an explict city or if there's no tile to set at
-                        relevantCity != null || (tile == null && civInfo.cities.isNotEmpty()) ->
-                            civInfo.units.addUnit(civUnit, chosenCity) ?: return false
                         // Else set the unit at the given tile
-                        tile != null -> civInfo.units.placeUnitNearTile(tile.position, civUnit) ?: return false
+                        tile != null -> civInfo.gameInfo.tileMap.placeUnitNearTile(tile.position,baseUnit,barbarians) ?: return false
                         // Else set unit unit near other units if we have no cities
                         civInfo.units.getCivUnits().any() ->
                             civInfo.gameInfo.tileMap.placeUnitNearTile(civInfo.units.getCivUnits().first().currentTile.position,baseUnit,barbarians) ?: return false
@@ -314,12 +310,9 @@ object UniqueTriggerActivation {
                     val placedUnits: MutableList<MapUnit> = mutableListOf()
                     repeat(actualAmount) {
                         val placedUnit = when {
-                            // Set unit at city if there's an explict city or if there's no tile to set at
-                            relevantCity != null || (tile == null && civInfo.cities.isNotEmpty()) ->
-                                civInfo.units.addUnit(civUnit, chosenCity)
                             // Else set the unit at the given tile
-                            tile != null -> civInfo.units.placeUnitNearTile(tile.position, civUnit)
-                            // Else set new unit near other units if we have no cities
+                            tile != null -> civInfo.gameInfo.tileMap.placeUnitNearTile(tile.position,baseUnit,barbarians) ?: return false
+                            // Else set unit unit near other units if we have no cities
                             civInfo.units.getCivUnits().any() ->
                                 civInfo.gameInfo.tileMap.placeUnitNearTile(civInfo.units.getCivUnits().first().currentTile.position,baseUnit,barbarians) ?: return false
 
