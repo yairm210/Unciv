@@ -60,6 +60,7 @@ body:
         - Android
         - Windows
         - Linux
+        - MacOS
     validations:
       required: true
   - type: textarea
