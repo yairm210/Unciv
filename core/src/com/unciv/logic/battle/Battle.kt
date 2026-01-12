@@ -2,6 +2,7 @@ package com.unciv.logic.battle
 
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com. unciv. utils. Log
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.*
