@@ -18,7 +18,6 @@ import com.unciv.ui.screens.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.screens.pickerscreens.TechPickerScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
-import com.unciv.utils.Log
 
 
 /** defines what to do if the user clicks on a notification */
@@ -145,7 +144,6 @@ class MapUnitAction(
         val selectUnit = id != Constants.NO_ID && (worldScreen.selectedCiv.units.getUnitById(id) != null) // This is the unspecific "select any unit on that tile", specific works without this being on
         val unit = if (selectUnit) null else
             worldScreen.gameInfo.tileMap[location].getUnits().firstOrNull { it.id == id }
-        Log.debug(unit.toString())
         if (selectUnit) {
             val unitLocation = worldScreen.selectedCiv.units.getUnitById(id)!!.currentTile.position.toHexCoord()
             worldScreen.mapHolder.setCenterPosition(unitLocation, selectUnit = true, forceSelectUnit = unit)
@@ -187,7 +185,6 @@ class PromoteUnitAction(
             val tile = worldScreen.gameInfo.tileMap[location]
             tile.militaryUnit?.takeIf { it.name == name && it.civ == worldScreen.selectedCiv }
         } ?: return
-        Log.debug(unit.toString())
         worldScreen.game.pushScreen(PromotionPickerScreen(unit))
     }
 }
