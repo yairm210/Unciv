@@ -324,7 +324,7 @@ object UniqueTriggerActivation {
 
                     val notificationText = getNotificationText(
                         notification, triggerNotificationText,
-                        "[${placedUnits.size}] [${civUnit.name}] unit(s) has rebelled against us!"
+                        "[${placedUnits.size}] [${civUnit.name}] unit(s) have rebelled against us!"
                     )
 
                     if (notificationText != null)
