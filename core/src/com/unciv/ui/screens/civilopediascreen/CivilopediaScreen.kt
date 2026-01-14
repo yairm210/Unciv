@@ -83,7 +83,7 @@ class CivilopediaScreen(
     private var currentEntry: String = ""
     private val currentEntryPerCategory = HashMap<CivilopediaCategories, String>()
 
-    private val searchPopup by lazy { CivilopediaSearchPopup(this, tutorialController) {
+    private val searchPopup by lazy { CivilopediaSearchPopup(this) {
         selectLink(it)
     } }
 
@@ -233,7 +233,7 @@ class CivilopediaScreen(
         for (loopCategory in CivilopediaCategories.entries) {
             if (!religionEnabled && loopCategory == CivilopediaCategories.Belief) continue
             categoryToEntries[loopCategory] =
-                loopCategory.getCategoryIterator(ruleset, tutorialController, game.gameInfo)
+                loopCategory.getCategoryIterator(ruleset, game.gameInfo)
                     .filter(::shouldBeDisplayed)
                     .map { CivilopediaEntry(ruleset, it, loopCategory, imageSize) }
         }
