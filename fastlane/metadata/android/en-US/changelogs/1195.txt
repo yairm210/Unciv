@@ -1,21 +1,11 @@
-
-
 modchecker: Improvements can grant sight on tiles
 
-Resolved  - Handle case of viewing charts before any turn has happened
+Handle case of viewing charts before any turn has happened
 
-4.19.6-patch1
-
-Revert "Redo Notification log page in empire overview " ()
-
-A Rebel Unique！！！ - By chenxing61
+modding: Rebel unit unique - By chenxing61
 
 Traded Declarations of War can affect single Civ instead of both trading Civs - By itanasi
 
-By SomeTroglodyte:
-- Fixed notifications log 
-- Move tutorial storage 
+Fixed notifications log - By SomeTroglodyte
 
 Fix bug with "Unit can be promoted" notification - By Nicholas-py
-
-Add MacOS to bug report template - By BobbyCobby
