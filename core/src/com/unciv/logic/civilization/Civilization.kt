@@ -157,6 +157,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     var naturalWonders = ArrayList<String>()
 
     var notifications = ArrayList<Notification>()
+    var notificationCountAtStartTurn: Int? = null  // Used by NotificationsOverviewTable to highlight new entries
 
     var notificationsLog = ArrayList<NotificationsLog>()
     class NotificationsLog(val turn: Int = 0) : IsPartOfGameInfoSerialization {
@@ -299,6 +300,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.leaderTitle = leaderTitle
         toReturn.notifications.addAll(notifications)
         toReturn.notificationsLog.addAll(notificationsLog)
+        toReturn.notificationCountAtStartTurn = notificationCountAtStartTurn
         toReturn.citiesCreated = citiesCreated
         toReturn.popupAlerts.addAll(popupAlerts)
         toReturn.tradeRequests.addAll(tradeRequests)
