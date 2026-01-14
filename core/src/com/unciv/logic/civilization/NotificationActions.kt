@@ -141,10 +141,18 @@ class MapUnitAction(
 ) : NotificationAction {
     constructor(unit: MapUnit) : this(unit.currentTile.position.toHexCoord(), unit.id)
     override fun execute(worldScreen: WorldScreen) {
-        val selectUnit = id != Constants.NO_ID  // This is the unspecific "select any unit on that tile", specific works without this being on
-        val unit = if (selectUnit) null else
+        val selectUnit = id != Constants.NO_ID // This is the unspecific "select any unit on that tile", specific works without this being on
+        val unit = if (selectUnit) 
+            worldScreen.selectedCiv.units.getUnitById(id) 
+        else
             worldScreen.gameInfo.tileMap[location].getUnits().firstOrNull { it.id == id }
-        worldScreen.mapHolder.setCenterPosition(location.toHexCoord(), selectUnit = selectUnit, forceSelectUnit = unit)
+        if (unit != null) {
+            val unitLocation = unit.currentTile.position.toHexCoord()
+            worldScreen.mapHolder.setCenterPosition(unitLocation, selectUnit = selectUnit, forceSelectUnit = unit)
+        }
+        else {
+            worldScreen.mapHolder.setCenterPosition(location.toHexCoord(), selectUnit = false)
+        }
     }
     companion object {
         // Convenience shortcut as it makes replacing LocationAction calls easier (see above)
