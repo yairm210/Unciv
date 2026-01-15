@@ -155,6 +155,13 @@ class Promotion : RulesetObject() {
         return textList
     }
 
+    override fun getSubCategory(ruleset: Ruleset): String? = unitTypes.firstOrNull() ?: "Other"
+    override fun getSortGroup(ruleset: Ruleset): Int {
+        val unitTypeName = unitTypes.firstOrNull() ?: return 1000
+        if (!ruleset.unitTypes.contains(unitTypeName)) return 1000
+        return ruleset.unitTypes.keys.indexOf(unitTypeName)
+    }
+
     companion object {
         data class PromotionBaseNameAndLevel(
             val nameWithoutBrackets: String,

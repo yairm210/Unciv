@@ -74,6 +74,7 @@ open class Policy : RulesetObject() {
         (ruleset.eras[branch.era]?.eraNumber ?: 0) * 10000 +
                 ruleset.policyBranches.keys.indexOf(branch.name) * 100 +
                 policyBranchType.ordinal
+    override fun getSubCategory(ruleset: Ruleset): String? = branch.name
 
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         val lineList = ArrayList<FormattedLine>()

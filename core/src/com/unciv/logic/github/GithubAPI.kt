@@ -18,6 +18,7 @@ import yairm210.purity.annotations.Readonly
 import java.util.zip.ZipException
 import java.util.zip.ZipInputStream
 import kotlinx.coroutines.Job
+import java.io.FileFilter
 import kotlin.coroutines.coroutineContext
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -383,10 +384,11 @@ object GithubAPI {
      * @return FileHandle for the downloaded Mod's folder or null if download failed.
      */
     suspend fun Repo.downloadAndExtract(
-        modsFolder: FileHandle,
         /** Should accept a number 0-100 */
         updateProgressPercent: ((DownloadAndExtractState, Int?) -> Unit)? = null
     ): FileHandle? {
+        val modsFolder = UncivGame.Current.files.getModsFolder()
+        
         var modNameFromFileName = name
 
         val defaultBranch = default_branch
@@ -493,6 +495,7 @@ object GithubAPI {
         if (tempBackup != null)
             if (tempBackup.isDirectory) tempBackup.deleteDirectory() else tempBackup.delete()
 
+        Github.rewriteModOptions(this, finalDestination)
         return finalDestination
     }
 
@@ -588,7 +591,7 @@ object GithubAPI {
     ): Pair<FileHandle, String> {
         if (isValidModFolder(dir))
             return dir to defaultModName
-        val subdirs = dir.list { it.isDirectory }
+        val subdirs = dir.list(FileFilter { it.isDirectory })
         if (subdirs.size != 1 || !isValidModFolder(subdirs[0]))
             throw UncivShowableException("Invalid Mod archive structure")
         return subdirs[0] to choosePrettierName(subdirs[0].name(), defaultModName)

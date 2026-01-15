@@ -141,10 +141,18 @@ class MapUnitAction(
 ) : NotificationAction {
     constructor(unit: MapUnit) : this(unit.currentTile.position.toHexCoord(), unit.id)
     override fun execute(worldScreen: WorldScreen) {
-        val selectUnit = id != Constants.NO_ID  // This is the unspecific "select any unit on that tile", specific works without this being on
-        val unit = if (selectUnit) null else
+        val selectUnit = id != Constants.NO_ID // This is the unspecific "select any unit on that tile", specific works without this being on
+        val unit = if (selectUnit) 
+            worldScreen.selectedCiv.units.getUnitById(id) 
+        else
             worldScreen.gameInfo.tileMap[location].getUnits().firstOrNull { it.id == id }
-        worldScreen.mapHolder.setCenterPosition(location.toHexCoord(), selectUnit = selectUnit, forceSelectUnit = unit)
+        if (unit != null) {
+            val unitLocation = unit.currentTile.position.toHexCoord()
+            worldScreen.mapHolder.setCenterPosition(unitLocation, selectUnit = selectUnit, forceSelectUnit = unit)
+        }
+        else {
+            worldScreen.mapHolder.setCenterPosition(location.toHexCoord(), selectUnit = false)
+        }
     }
     companion object {
         // Convenience shortcut as it makes replacing LocationAction calls easier (see above)
@@ -160,12 +168,25 @@ class CivilopediaAction(private val link: String = "") : NotificationAction {
     }
 }
 
-/** Show Promotion picker for a MapUnit - by name and location, as they lack a serialized unique ID */
-class PromoteUnitAction(private val name: String = "", private val location: HexCoord = HexCoord.Zero) : NotificationAction {
+/** Show Promotion picker for a MapUnit - by name and location, as they lack a serialized unique ID
+ *  TODO that's no longer true - migration with backward compat is in order - this implements the first step
+ */
+class PromoteUnitAction(
+    private val name: String,
+    private val location: HexCoord,
+    val id: Int
+) : NotificationAction {
+    @Suppress("unused")
+    constructor() : this("", HexCoord.Zero, Constants.NO_ID)
+    constructor(unit: MapUnit) : this(unit.name, unit.currentTile.position, unit.id)
+
     override fun execute(worldScreen: WorldScreen) {
-        val tile = worldScreen.gameInfo.tileMap[location]
-        val unit = tile.militaryUnit?.takeIf { it.name == name && it.civ == worldScreen.selectedCiv }
-            ?: return
+        val unit = if (id != Constants.NO_ID) {
+            worldScreen.selectedCiv.units.getUnitById(id)
+        } else {
+            val tile = worldScreen.gameInfo.tileMap[location]
+            tile.militaryUnit?.takeIf { it.name == name && it.civ == worldScreen.selectedCiv }
+        } ?: return
         worldScreen.game.pushScreen(PromotionPickerScreen(unit))
     }
 }

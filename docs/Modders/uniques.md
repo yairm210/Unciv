@@ -35,6 +35,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
+??? example  "A [unit] rebels"
+	Example: "A [Musketman] rebels"
+
+	Applicable to: Triggerable
+
+??? example  "[positiveAmount] [unit]s rebel"
+	Example: "[3] [Musketman]s rebel"
+
+	Applicable to: Triggerable
+
 ??? example  "Free Social Policy"
 	Applicable to: Triggerable
 
@@ -1010,7 +1020,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "[amount] Sight"
 	Example: "[3] Sight"
 
-	Applicable to: Global, Unit, Terrain
+	Applicable to: Global, Unit, Terrain, Improvement
 
 ??? example  "[amount] Range"
 	Example: "[3] Range"
@@ -1991,7 +2001,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "[amount] Sight"
 	Example: "[3] Sight"
 
-	Applicable to: Global, Unit, Terrain
+	Applicable to: Global, Unit, Terrain, Improvement
 
 ??? example  "[amount] Range"
 	Example: "[3] Range"
@@ -2436,7 +2446,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "[amount] Sight"
 	Example: "[3] Sight"
 
-	Applicable to: Global, Unit, Terrain
+	Applicable to: Global, Unit, Terrain, Improvement
 
 ??? example  "Must be adjacent to [amount] [simpleTerrain] tiles"
 	Example: "Must be adjacent to [3] [Elevated] tiles"
@@ -2732,6 +2742,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Example: "Obsolete with [Agriculture]"
 
 	Applicable to: Building, Improvement, Resource
+
+??? example  "[amount] Sight"
+	Example: "[3] Sight"
+
+	Applicable to: Global, Unit, Terrain, Improvement
 
 ??? example  "Vegetation"
 	This unique is automatically hidden from users.
@@ -3684,6 +3699,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	'Between' is inclusive - so 'between 1 and 5' includes 1 and 5.
 
 	Example: "&lt;when number of [1000] is between [1000] and [1000]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;when carried by [mapUnitFilter] units&gt;"
+	Example: "&lt;when carried by [Wounded] units&gt;"
 
 	Applicable to: Conditional
 

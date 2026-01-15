@@ -29,7 +29,7 @@ import kotlin.random.Random
 
 /** Helper class for containing 200 lines of "how to move cities between civs" */
 class CityConquestFunctions(val city: City) {
-    private val tileBasedRandom = Random(city.getCenterTile().position.toString().hashCode())
+    private val tileBasedRandom = Random(city.getCenterTile().position.hashCode())
 
     @Readonly
     private fun getGoldForCapturingCity(conqueringCiv: Civilization): Int {

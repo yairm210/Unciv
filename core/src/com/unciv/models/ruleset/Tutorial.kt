@@ -2,6 +2,7 @@ package com.unciv.models.ruleset
 
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import com.unciv.models.translations.tr
 
 /**
  *  Container for json-read "Tutorial" text, potentially decorated.
@@ -22,6 +23,11 @@ class Tutorial : RulesetObject() {
     // -SomeTrog
     override var name = ""  // overridden only to have the name seen first by TranslationFileWriter
 
+    /**
+     * The subcategory to place this tutorial within the Civilopedia.
+     */
+    var category: String? = null
+
     /** These lines will be displayed (when the Tutorial is _triggered_) one after another,
      *  and the Tutorial is marked as completed only once the last line is dismissed with "OK" */
     //todo migrate to civilopediaText then remove or deprecate?
@@ -32,4 +38,20 @@ class Tutorial : RulesetObject() {
 
     override fun getCivilopediaTextLines(ruleset: Ruleset) =
         steps?.map { FormattedLine(it) }.orEmpty()
+
+    /**
+     * Gets the subcategory of this Tutorial.
+     *
+     * @return The category, or "Tutorials" if one is not provided.
+     */
+    override fun getSubCategory(ruleset: Ruleset): String? = if (category.isNullOrEmpty()) "Tutorials" else category
+
+    /**
+     * Builds a sort group number based on the first two characters of the category.
+     */
+    override fun getSortGroup(ruleset: Ruleset): Int {
+        val translatedCategory = category?.tr()?.take(2)?.lowercase() ?: return -1 // Default to "Tutorials " on top
+        if (translatedCategory.length < 2) return translatedCategory[0].code
+        return (translatedCategory[0].code shl 16) + translatedCategory[1].code
+    }
 }

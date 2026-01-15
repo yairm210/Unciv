@@ -6,7 +6,7 @@ Wünsche? Bugs? Die Liste der offenen Themen findest du auf der <a href="https:/
 
 Fragen? Kommentare? Einfach nur gelangweilt? Chatte mit uns auf <a href="https://discord.gg/bjrB4Xw">Discord</a>.
 
-Willst Du bei der Übersetzung helfen? Schau im <a href="https://yairm210.github.io/Unciv/Other/Translating">Wiki</a> vorbei, dort ist detailliert beschrieben, wie Übersetzungen erstellt und vorgeschlagen werden.
+Willst Du bei der Übersetzung helfen? Schau im <a href="https://yairm210.github.io/Unciv/Translating/Translating">Wiki</a> vorbei, dort ist detailliert beschrieben, wie Übersetzungen erstellt und vorgeschlagen werden.
 
 Schnallst Du Kotlin oder Java? Unterstütze gerne bei der Entwicklung im <a href="https://github.com/yairm210/Unciv">GitHub Repository</a>.
 

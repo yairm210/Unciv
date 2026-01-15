@@ -108,7 +108,7 @@ object UniqueTriggerActivation {
             civInfo.cities.firstOrNull { it.isCapital() }
 
         val tileBasedRandom =
-            if (tile != null) Random(tile.position.toString().hashCode())
+            if (tile != null) Random(tile.position.hashCode())
             else Random(-550) // Very random indeed
         val ruleset = civInfo.gameInfo.ruleset
 
@@ -241,6 +241,90 @@ object UniqueTriggerActivation {
                     val notificationText = getNotificationText(
                         notification, triggerNotificationText,
                         "Gained [${placedUnits.size}] [${civUnit.name}] unit(s)"
+                    )
+
+                    if (notificationText != null)
+                        civInfo.addNotification(
+                            notificationText,
+                            MapUnitAction(placedUnits),
+                            NotificationCategory.Units,
+                            civUnit.name
+                        )
+                    return true
+                }
+                return { placeUnits() }
+            }
+            UniqueType.OneTimeRebel -> {
+                val barbarians = civInfo.gameInfo.getBarbarianCivilization()
+                val unitName = unique.params[0]
+                val baseUnit = ruleset.units[unitName] ?: return null
+                val civUnit = civInfo.getEquivalentUnit(baseUnit)
+                if (civUnit.isCityFounder() && civInfo.isOneCityChallenger())
+                    return null
+                fun placeUnit(): Boolean {
+                    val placedUnit = when {
+                        // Else set the unit at the given tile
+                        tile != null -> civInfo.gameInfo.tileMap.placeUnitNearTile(tile.position,baseUnit,barbarians) ?: return false
+                        // Else set unit unit near other units if we have no cities
+                        civInfo.units.getCivUnits().any() ->
+                            civInfo.gameInfo.tileMap.placeUnitNearTile(civInfo.units.getCivUnits().first().currentTile.position,baseUnit,barbarians) ?: return false
+
+                        else -> return false
+                    }
+                    val notificationText = getNotificationText(
+                        notification, triggerNotificationText,
+                        "[1] [${civUnit.name}] has rebelled against us!"
+                    )
+                    if (notificationText != null)
+                        civInfo.addNotification(
+                            notificationText,
+                            MapUnitAction(placedUnit),
+                            NotificationCategory.Units,
+                            placedUnit.name
+                        )
+                    return true
+                }
+                return { placeUnit() }
+            }
+
+            UniqueType.OneTimeAmountRebels -> {
+                val barbarians = civInfo.gameInfo.getBarbarianCivilization()
+                val unitName = unique.params[1]
+                val baseUnit = ruleset.units[unitName] ?: return null
+                val civUnit = civInfo.getEquivalentUnit(baseUnit)
+                if (civUnit.isCityFounder() && civInfo.isOneCityChallenger())
+                    return null
+                val limit = civUnit.getMatchingUniques(UniqueType.MaxNumberBuildable)
+                    .map { it.params[0].toInt() }.minOrNull()
+                val unitCount = civInfo.units.getCivUnits().count { it.name == civUnit.name }
+                val amountFromTriggerable = unique.params[0].toInt()
+                val actualAmount = when {
+                    limit == null -> amountFromTriggerable
+                    amountFromTriggerable + unitCount > limit -> limit - unitCount
+                    else -> amountFromTriggerable
+                }
+
+                if (actualAmount <= 0) return null
+
+                fun placeUnits(): Boolean {
+                    val placedUnits: MutableList<MapUnit> = mutableListOf()
+                    repeat(actualAmount) {
+                        val placedUnit = when {
+                            // Else set the unit at the given tile
+                            tile != null -> civInfo.gameInfo.tileMap.placeUnitNearTile(tile.position,baseUnit,barbarians) ?: return false
+                            // Else set unit unit near other units if we have no cities
+                            civInfo.units.getCivUnits().any() ->
+                                civInfo.gameInfo.tileMap.placeUnitNearTile(civInfo.units.getCivUnits().first().currentTile.position,baseUnit,barbarians) ?: return false
+
+                            else -> null
+                        }
+                        if (placedUnit != null) placedUnits += placedUnit
+                    }
+                    if (placedUnits.isEmpty()) return false
+
+                    val notificationText = getNotificationText(
+                        notification, triggerNotificationText,
+                        "[${placedUnits.size}] [${civUnit.name}] unit(s) have rebelled against us!"
                     )
 
                     if (notificationText != null)
