@@ -42,7 +42,10 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
     var anyoneCanSpectate = true
     /** After this amount of minutes, anyone can choose to 'skip turn' of the current player to keep the game going */
     var minutesUntilSkipTurn = 60 * 24
+    @Deprecated("use minutes until force resign instead")
     var hoursUntilForceResign = 3 * 24
+    var minutesUntilForceResign = 3 * 24 * 60
+    var minutesRecoveredPerTurn = 60 * 24
 
     var baseRuleset: String = BaseRuleset.Civ_V_GnK.fullName
     var mods = LinkedHashSet<String>()

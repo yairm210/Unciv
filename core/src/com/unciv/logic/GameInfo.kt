@@ -50,6 +50,8 @@ import com.unciv.utils.debug
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 import java.security.MessageDigest
+import java.time.Duration
+import java.time.Instant
 import java.util.UUID
 
 
@@ -296,6 +298,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     private fun createTemporarySpectatorCiv(playerId: String) = Civilization(Constants.spectator).also {
         it.playerType = PlayerType.Human
         it.playerId = playerId
+        it.playerMinutesBeforeForceResign = gameParameters.minutesUntilForceResign
         civilizations.add(it)
         it.gameInfo = this
         it.setNationTransient()
@@ -340,10 +343,30 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     fun isSimulation(): Boolean = turns < DebugUtils.SIMULATE_UNTIL_TURN
             || turns < simulateMaxTurns && simulateUntilWin
 
-    fun nextTurn(progressBar: NextTurnProgress? = null) {
+    fun nextTurn(progressBar: NextTurnProgress? = null, shouldGainTime: Boolean =false) {
 
         var player = currentPlayerCiv
         var playerIndex = civilizations.indexOf(player)
+
+        if (gameParameters.isOnlineMultiplayer)
+        {
+            // Update remaining time before force resign for the player
+            var gain: Int = 0
+            if (shouldGainTime) {gain = gameParameters.minutesRecoveredPerTurn}
+            val loss =
+                Duration.between(Instant.ofEpochMilli(currentTurnStartTime), Instant.now())
+                    .toMinutes().toInt()
+            var maxTime: Int
+            // To keep compatibility with old version
+            if (gameParameters.hoursUntilForceResign != 0) {
+                maxTime = 60 * gameParameters.hoursUntilForceResign
+            } else {
+                maxTime = gameParameters.minutesUntilForceResign
+            }
+            player.playerMinutesBeforeForceResign = player.playerMinutesBeforeForceResign + gain - loss
+            player.playerMinutesBeforeForceResign = player.playerMinutesBeforeForceResign.coerceIn(0, maxTime)
+        }
+
 
         // We rotate Players in cycle: 1,2...N,1,2...
         fun setNextPlayer() {

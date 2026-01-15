@@ -139,6 +139,7 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     /** Used in online multiplayer for human players */
     var playerId = ""
+    var playerMinutesBeforeForceResign = 3*24*60
     /** The Civ's gold reserves. Public get, private set - please use [addGold] method to modify. */
     var gold = 0
         private set
@@ -261,6 +262,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.gold = gold
         toReturn.playerType = playerType
         toReturn.playerId = playerId
+        toReturn.playerMinutesBeforeForceResign = playerMinutesBeforeForceResign
         toReturn.civName = civName
         toReturn.tech = tech.clone()
         toReturn.policies = policies.clone()
@@ -1089,6 +1091,7 @@ class CivilizationInfoPreview() {
     var civName = ""
     var playerType = PlayerType.AI
     var playerId = ""
+    var playerMinutesBeforeForceResign = 60*24*3
     @Readonly fun isPlayerCivilization() = playerType == PlayerType.Human
 
     /**
@@ -1098,6 +1101,7 @@ class CivilizationInfoPreview() {
         civName = civilization.civName
         playerType = civilization.playerType
         playerId = civilization.playerId
+        playerMinutesBeforeForceResign = civilization.playerMinutesBeforeForceResign
     }
 }
 

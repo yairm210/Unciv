@@ -370,6 +370,7 @@ object GameStarter {
                 in usedMajorCivs, Constants.spectator -> {
                     civ.playerType = player.playerType
                     civ.playerId = player.playerId
+                    civ.playerMinutesBeforeForceResign = newGameParameters.minutesUntilForceResign
                 }
                 else ->
                     if (!civ.cityStateFunctions.initCityState(ruleset, newGameParameters.startingEra, usedMajorCivs))
