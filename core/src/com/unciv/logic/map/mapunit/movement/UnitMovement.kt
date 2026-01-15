@@ -504,8 +504,8 @@ class UnitMovement(val unit: MapUnit) {
                 unit.removeFromTile()
                 
                 // Check if boarding a carrier set flag before putInTile so it places unit in airUnits
-                val carrierHere = tile.militaryUnit
-                if (carrierHere != null && carrierHere.owner == unit.owner && carrierHere.canTransport(unit)) {
+                val carrierHere = tile.getUnits().firstOrNull { it.owner == unit.owner && it.canTransport(unit) }
+                if (carrierHere != null) {
                     // Moving onto a carrier will be placed in airUnits
                     unit.isTransported = true
                 } else if (unit.isTransported) {
@@ -672,9 +672,9 @@ class UnitMovement(val unit: MapUnit) {
             && !unit.getOtherEscortUnit()!!.movement.canMoveTo(tile, assumeCanPassThrough, allowSwap, includeOtherEscortUnit = false))
             return CannotMoveToReason.EscortCannotMove
 
-        // Allow boarding carriers: if the tile contains a friendly military unit that can transport this unit, allow entry
-        val militaryOnTile = tile.militaryUnit
-        if (militaryOnTile != null && militaryOnTile.owner == unit.owner && militaryOnTile.canTransport(unit))
+        // Allow boarding carriers: if the tile contains a friendly unit that can transport this unit, allow entry
+        val carrierOnTile = tile.getUnits().firstOrNull { it.owner == unit.owner && it.canTransport(unit) }
+        if (carrierOnTile != null)
             return null
 
         val tileIsEmpty = if (unit.isCivilian())

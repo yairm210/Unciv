@@ -467,8 +467,8 @@ enum class UniqueType(
         docDescription = "Used to allow land and water units to be carried by carriers, has no effects on air units."),
     CannotBeCarriedBy("Cannot be carried by [mapUnitFilter] units", UniqueTarget.Unit,
         docDescription = "Used to prevent the unit being carried by certain carrier units, overwrites \"Can be carried\"."),
-    OpenTopped("Open topped", UniqueTarget.Unit,
-        docDescription = "Allows carried non air units to attack without disembarking, has no effects on air units."),
+    CarriedUnitsCanAttackWithoutDisembarking("Carried units can attack without disembarking", UniqueTarget.Unit,
+        docDescription = "Allows carried non-air units to attack without disembarking."),
     
     // Interception
     ChanceInterceptAirAttacks("[relativeAmount]% chance to intercept air attacks", UniqueTarget.Unit),
