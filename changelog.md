@@ -1,3 +1,17 @@
+## 4.19.7
+
+modchecker: Improvements can grant sight on tiles
+
+Handle case of viewing charts before any turn has happened
+
+modding: Rebel unit unique - By chenxing61
+
+Traded Declarations of War can affect single Civ instead of both trading Civs - By itanasi
+
+Fixed notifications log - By SomeTroglodyte
+
+Fix bug with "Unit can be promoted" notification - By Nicholas-py
+
 ## 4.19.6
 
 Units unset sleep/automation on manual repair commands

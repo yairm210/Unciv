@@ -33,7 +33,6 @@ import com.badlogic.gdx.utils.Array as GdxArray
 
 class CivilopediaSearchPopup(
     private val pediaScreen: CivilopediaScreen,
-    private val tutorialController: TutorialController,
     private val linkAction: (String) -> Unit
 ) : Popup(pediaScreen) {
     private var ruleset = pediaScreen.ruleset
@@ -119,7 +118,7 @@ class CivilopediaSearchPopup(
             if (!isActive) break
             if (!ruleset.modOptions.isBaseRuleset && category == CivilopediaCategories.Tutorial)
                 continue  // Search tutorials only when the mod filter is a base ruleset
-            for (entry in category.getCategoryIterator(ruleset, tutorialController, gameInfo)) {
+            for (entry in category.getCategoryIterator(ruleset, gameInfo)) {
                 if (!isActive) break
                 if (entry !is INamed) continue
                 if (!ruleset.modOptions.isBaseRuleset) {
