@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.GUI
-import com.unciv.UncivGame
 import com.unciv.logic.city.managers.CityReligionManager
 import com.unciv.models.Religion
 import com.unciv.ui.components.extensions.addSeparator
@@ -17,7 +16,6 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.Portrait
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
-import com.unciv.ui.screens.overviewscreen.EmpireOverviewScreen
 
 class CityReligionInfoTable(
     private val religionManager: CityReligionManager,
@@ -84,8 +82,7 @@ class CityReligionInfoTable(
         if (religion == null) return icon
         if (religion == iconName)
             icon.onClick {
-                val newScreen = EmpireOverviewScreen(GUI.getViewingPlayer(), EmpireOverviewCategories.Religion, religion)
-                UncivGame.Current.pushScreen(newScreen)
+                GUI.getWorldScreen().openEmpireOverview(EmpireOverviewCategories.Religion, religion)
             }
         else // This is used only for Pantheons
             icon.onClick {

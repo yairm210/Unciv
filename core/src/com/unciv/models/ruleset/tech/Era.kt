@@ -1,7 +1,9 @@
 package com.unciv.models.ruleset.tech
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.UncivGame
 import com.unciv.logic.UncivShowableException
+import com.unciv.logic.MultiFilter
 import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
@@ -12,6 +14,7 @@ import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import yairm210.purity.annotations.Readonly
 
 class Era : RulesetObject() {
     var eraNumber: Int = -1
@@ -64,6 +67,7 @@ class Era : RulesetObject() {
     }.toList()
     override fun getSortGroup(ruleset: Ruleset): Int = eraNumber
 
+    @Readonly
     private fun getEraGatedObjects(ruleset: Ruleset): Sequence<IRulesetObject> {
         val policyBranches = ruleset.policyBranches.values.asSequence()
             .filter { it.era == name }
@@ -83,6 +87,7 @@ class Era : RulesetObject() {
             }.map { it.first }.distinct()
     }
 
+    @Readonly
     fun getStartingUnits(ruleset: Ruleset): MutableList<String> {
         val startingUnits = mutableListOf<String>()
         val startingSettlerName: String =
@@ -103,10 +108,39 @@ class Era : RulesetObject() {
         return startingUnits
     }
 
+    @Readonly 
     fun getColor(): Color {
         if (iconRGB == null) return Color.WHITE.cpy()
         return colorFromRGB(iconRGB!![0], iconRGB!![1], iconRGB!![2])
     }
 
-    fun getHexColor() = "#" + getColor().toString().substring(0, 6)
+    @Readonly fun getHexColor() = "#" + getColor().toString().substring(0, 6)
+
+    /** Implements [UniqueParameterType.EraFilter][com.unciv.models.ruleset.unique.UniqueParameterType.EraFilter] */
+    @Readonly
+    fun matchesFilter(filter: String, state: GameContext? = null, multiFilter: Boolean = true): Boolean =
+        if (multiFilter) MultiFilter.multiFilter(filter, { matchesSingleFilter(it, state) })
+        else matchesSingleFilter(filter, state)
+
+    @Readonly
+    fun matchesSingleFilter(filter: String, state: GameContext? = null): Boolean {
+        if (filter == "any era" || filter == name) return true
+
+        val gameInfo = state?.gameInfo ?: UncivGame.Current.gameInfo
+        return when {
+            gameInfo == null -> false
+            filter == "Starting Era" -> name == gameInfo.gameParameters.startingEra
+            filter.startsWith("pre-[") -> {
+                val targetEraName = filter.removePrefix("pre-[").removeSuffix("]")
+                val targetEra = gameInfo.ruleset.eras[targetEraName]
+                targetEra?.eraNumber?.let { eraNumber < it } == true
+            }
+            filter.startsWith("post-[") -> {
+                val targetEraName = filter.removePrefix("post-[").removeSuffix("]")
+                val targetEra = gameInfo.ruleset.eras[targetEraName]
+                targetEra?.eraNumber?.let { eraNumber > it } == true
+            }
+            else -> false
+        }
+    }
 }

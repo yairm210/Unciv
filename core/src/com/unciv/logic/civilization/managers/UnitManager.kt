@@ -1,12 +1,13 @@
 package com.unciv.logic.civilization.managers
 
-import com.badlogic.gdx.math.Vector2
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.transients.CivInfoTransientCache
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.UniqueTarget
@@ -66,7 +67,7 @@ class UnitManager(val civInfo: Civilization) {
             city != null -> city
             else -> citiesNotInResistance.randomOrNull() ?: civInfo.cities.random()
         } ?: return null // If we got a free water unit with no coastal city to place it in
-        val placedUnit = placeUnitNearTile(cityToAddTo.location, unit.name)
+        val placedUnit = placeUnitNearTile(cityToAddTo.location.toHexCoord(), unit.name)
         // silently bail if no tile to place the unit is found
             ?: return null
         if (unit.isGreatPerson) {
@@ -89,7 +90,7 @@ class UnitManager(val civInfo: Civilization) {
      * @param unitName name of the [BaseUnit] to create and place
      * @return created [MapUnit] or null if no suitable location was found
      * */
-    fun placeUnitNearTile(location: Vector2, unitName: String): MapUnit? {
+    fun placeUnitNearTile(location: HexCoord, unitName: String): MapUnit? {
         val unit = civInfo.gameInfo.ruleset.units[unitName]!!
         return placeUnitNearTile(location, unit)
     }
@@ -99,34 +100,43 @@ class UnitManager(val civInfo: Civilization) {
      * @param baseUnit [BaseUnit] to create and place
      * @return created [MapUnit] or null if no suitable location was found
      * */
-    fun placeUnitNearTile(location: Vector2, baseUnit: BaseUnit, unitId: Int? = null): MapUnit? {
+    fun placeUnitNearTile(location: HexCoord, baseUnit: BaseUnit, unitId: Int? = null, copiedFrom: MapUnit? = null): MapUnit? {
         val unit = civInfo.gameInfo.tileMap.placeUnitNearTile(location, baseUnit, civInfo, unitId)
 
-        if (unit != null) {
-            val triggerNotificationText = "due to gaining a [${unit.name}]"
-            for (unique in unit.getUniques())
-                // Promotion triggerables are ALREADY handled in placeUnitNearTile -> addPromotion, where they were added
-                if (!unique.hasTriggerConditional() && unique.sourceObjectType != UniqueTarget.Promotion
-                    && unique.conditionalsApply(unit.cache.state))
-                    UniqueTriggerActivation.triggerUnique(unique, unit, triggerNotificationText = triggerNotificationText)
+        if (unit == null) return unit
+        
+        // Must happen before the triggers or else things like "[This Unit] loses the [promotionName] promotion"
+        //    will trigger *before* the unit actually has the promotion, and then will get the promotion anyway.
+        copiedFrom?.copyStatisticsTo(unit)
 
-            for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponGainingUnit, unit.cache.state) 
-                    { unit.matchesFilter(it.params[0]) })
+        val triggerNotificationText = "due to gaining a [${unit.name}]"
+        for (unique in unit.getUniques().toList()) {
+            // Promotion triggerables are ALREADY handled in placeUnitNearTile -> addPromotion, where they were added
+            if (unique.hasTriggerConditional() ||
+                unique.sourceObjectType == UniqueTarget.Promotion ||
+                !unique.conditionalsApply(unit.cache.state)
+            ) continue
+            repeat(unique.getUniqueMultiplier(unit.cache.state)) {
                 UniqueTriggerActivation.triggerUnique(unique, unit, triggerNotificationText = triggerNotificationText)
-
-            if (unit.getResourceRequirementsPerTurn().isNotEmpty())
-                civInfo.cache.updateCivResources()
-
-            for (unique in civInfo.getMatchingUniques(UniqueType.LandUnitsCrossTerrainAfterUnitGained, unit.cache.state)) {
-                if (unit.matchesFilter(unique.params[1])) {
-                    civInfo.passThroughImpassableUnlocked = true    // Update the cached Boolean
-                    civInfo.passableImpassables.add(unique.params[0])   // Add to list of passable impassables
-                }
             }
+        }
 
-            if (unit.hasUnique(UniqueType.ReligiousUnit) && civInfo.gameInfo.isReligionEnabled()) {
-                unit.religion = civInfo.religionManager.religion?.name
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponGainingUnit, unit.cache.state) 
+                { unit.matchesFilter(it.params[0]) })
+            UniqueTriggerActivation.triggerUnique(unique, unit, triggerNotificationText = triggerNotificationText)
+
+        if (unit.getResourceRequirementsPerTurn().isNotEmpty())
+            civInfo.cache.updateCivResources()
+
+        for (unique in civInfo.getMatchingUniques(UniqueType.LandUnitsCrossTerrainAfterUnitGained, unit.cache.state)) {
+            if (unit.matchesFilter(unique.params[1])) {
+                civInfo.passThroughImpassableUnlocked = true    // Update the cached Boolean
+                civInfo.passableImpassables.add(unique.params[0])   // Add to list of passable impassables
             }
+        }
+
+        if (unit.hasUnique(UniqueType.ReligiousUnit) && civInfo.gameInfo.isReligionEnabled()) {
+            unit.religion = civInfo.religionManager.religion?.name
         }
         return unit
     }
@@ -137,7 +147,7 @@ class UnitManager(val civInfo: Civilization) {
 
     // Similar to getCivUnits(), but the returned list is rotated so that the
     // 'nextPotentiallyDueAt' unit is first here.
-    private fun getCivUnitsStartingAtNextDue(): Sequence<MapUnit> = sequenceOf(unitList.subList(nextPotentiallyDueAt, unitList.size) + unitList.subList(0, nextPotentiallyDueAt)).flatten()
+    @Readonly private fun getCivUnitsStartingAtNextDue(): Sequence<MapUnit> = sequenceOf(unitList.subList(nextPotentiallyDueAt, unitList.size) + unitList.subList(0, nextPotentiallyDueAt)).flatten()
 
     /** Assigns an existing [mapUnit] to this manager.
      *
@@ -175,18 +185,20 @@ class UnitManager(val civInfo: Civilization) {
             civInfo.cache.updateCivResources()
     }
 
-    fun getIdleUnits() = getCivUnits().filter { it.isIdle() }
+    @Readonly fun getIdleUnits() = getCivUnits().filter { it.isIdle() }
 
-    fun getDueUnits(): Sequence<MapUnit> = getCivUnitsStartingAtNextDue().filter { it.due && it.isIdle() }
+    @Readonly fun getDueUnits(): Sequence<MapUnit> = getCivUnitsStartingAtNextDue().filter { it.due && it.isIdle() }
 
     fun shouldGoToDueUnit() = UncivGame.Current.settings.checkForDueUnits && getDueUnits().any()
 
-    fun getUnitById(id: Int) = getCivUnits().firstOrNull { it.id == id }
+    @Readonly fun getUnitById(id: Int) = getCivUnits().firstOrNull { it.id == id }
 
     // Return the next due unit, but preferably not 'unitToSkip': this is returned only if it is the only remaining due unit.
     fun cycleThroughDueUnits(unitToSkip: MapUnit? = null): MapUnit? {
         if (unitList.none()) return null
 
+        if (GUI.getSettings().alternateUnitCycleOrder)
+            return alternateCycleThroughDueUnits(unitToSkip)
         var returnAt = nextPotentiallyDueAt
         var fallbackAt = -1
 
@@ -206,7 +218,18 @@ class UnitManager(val civInfo: Civilization) {
             nextPotentiallyDueAt = (fallbackAt + 1) % unitList.size
             return unitList[fallbackAt]
         }
-        else return null
+        return null
     }
 
+    private fun alternateCycleThroughDueUnits(unitToSkip: MapUnit? = null): MapUnit? {
+        val center = unitToSkip?.currentTile
+            ?: civInfo.getCapital(true)?.getCenterTile()
+            ?: civInfo.gameInfo.tileMap[0, 0]
+        val nextUnitEntry = unitList.withIndex()
+            .filter { it.value.due && it.value != unitToSkip && it.value.isIdle() }
+            .minByOrNull { it.value.currentTile.aerialDistanceTo(center) }
+            ?: return null
+        nextPotentiallyDueAt = (nextUnitEntry.index + 1) % unitList.size
+        return nextUnitEntry.value
+    }
 }

@@ -30,10 +30,12 @@ import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.surroundWithThinCircle
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onLongPress
 import com.unciv.ui.components.tilegroups.TileGroupMap
 import com.unciv.ui.components.widgets.AutoScrollPane
@@ -43,6 +45,7 @@ import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.popups.closeAllPopups
 import com.unciv.ui.popups.hasOpenPopups
+import com.unciv.ui.popups.options.aboutTab
 import com.unciv.ui.popups.popups
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
@@ -60,7 +63,8 @@ import com.unciv.ui.screens.worldscreen.mainmenu.WorldScreenMenuPopup
 import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread
 import kotlinx.coroutines.Job
-import kotlin.math.min
+import yairm210.purity.annotations.Pure
+import kotlin.math.ceil
 
 
 class MainMenuScreen: BaseScreen(), RecreateOnResize {
@@ -77,6 +81,10 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         const val mapFadeTime = 1.3f
         const val mapFirstFadeTime = 0.3f
         const val mapReplaceDelay = 20f
+        /** Inner size of the Civilopedia+Discord+Github buttons (effective size adds 2f for the thin circle) */
+        const val buttonsSize = 60f
+        /** Distance of the Civilopedia and Discord+Github buttons from the stage edges */
+        const val buttonsPosFromEdge = 30f
     }
 
     /** Create one **Main Menu Button** including onClick/key binding
@@ -199,63 +207,66 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
 
         val civilopediaButton = "?".toLabel(fontSize = 48)
             .apply { setAlignment(Align.center) }
-            .surroundWithCircle(60f, color = skinStrings.skinConfig.baseColor)
-            .apply { actor.y -= 2.5f } // compensate font baseline (empirical)
-            .surroundWithCircle(64f, resizeActor = false)
+            .surroundWithCircle(buttonsSize, color = skinStrings.skinConfig.baseColor)
+            .apply { actor.y -= Fonts.getDescenderHeight(48) / 2 } // compensate font baseline
+            .surroundWithThinCircle(Color.WHITE)
         civilopediaButton.touchable = Touchable.enabled
         // Passing the binding directly to onActivation gives you a size 26 tooltip...
         civilopediaButton.onActivation { openCivilopedia() }
         civilopediaButton.keyShortcuts.add(KeyboardBinding.Civilopedia)
         civilopediaButton.addTooltip(KeyboardBinding.Civilopedia, 30f)
-        civilopediaButton.setPosition(30f, 30f)
+        civilopediaButton.setPosition(buttonsPosFromEdge, buttonsPosFromEdge)
         stage.addActor(civilopediaButton)
 
-        val rightSideButtons = Table().apply { defaults().pad(10f) }
+        val rightSideButtons = Table().apply { defaults().space(10f) }
         val discordButton = ImageGetter.getImage("OtherIcons/Discord")
-            .surroundWithCircle(60f, color = skinStrings.skinConfig.baseColor)
+            .surroundWithCircle(buttonsSize, color = skinStrings.skinConfig.baseColor)
             .surroundWithThinCircle(Color.WHITE)
             .onActivation { Gdx.net.openURI("https://discord.gg/bjrB4Xw") }
         rightSideButtons.add(discordButton)
 
         val githubButton = ImageGetter.getImage("OtherIcons/Github")
-            .surroundWithCircle(60f, color = skinStrings.skinConfig.baseColor)
+            .surroundWithCircle(buttonsSize, color = skinStrings.skinConfig.baseColor)
             .surroundWithThinCircle(Color.WHITE)
-            .onActivation { Gdx.net.openURI("https://github.com/yairm210/Unciv") }
+            .onActivation { Gdx.net.openURI(Constants.uncivRepoURL) }
         rightSideButtons.add(githubButton)
-        
-        rightSideButtons.pack()
-        rightSideButtons.setPosition(stage.width - 30, 30f, Align.bottomRight)
-        stage.addActor(rightSideButtons)
 
+        rightSideButtons.pack()
+        rightSideButtons.setPosition(stage.width - buttonsPosFromEdge, buttonsPosFromEdge, Align.bottomRight)
+        stage.addActor(rightSideButtons)
 
         val versionLabel = "{Version} ${UncivGame.VERSION.text}".toLabel()
         versionLabel.setAlignment(Align.center)
         val versionTable = Table()
         versionTable.background = skinStrings.getUiBackground("MainMenuScreen/Version",
-            skinStrings.roundedEdgeRectangleShape, Color.DARK_GRAY.cpy().apply { a=0.7f })
+            skinStrings.roundedEdgeRectangleShape, Color.DARK_GRAY.cpy().apply { a = 0.7f })
         versionTable.add(versionLabel)
         versionTable.pack()
-        versionTable.setPosition(stage.width/2, 10f, Align.bottom)
+        versionTable.setPosition(stage.width / 2, 10f, Align.bottom)
+        versionTable.touchable = Touchable.enabled
+        versionTable.onClick {
+            val popup = Popup(stage)
+            popup.add(aboutTab()).row()
+            popup.addCloseButton()
+            popup.open()
+        }
         stage.addActor(versionTable)
     }
 
     private fun startBackgroundMapGeneration() {
         stopBackgroundMapGeneration()  // shouldn't be necessary as resize re-instantiates this class
         backgroundMapGenerationJob = Concurrency.run("ShowMapBackground") {
-            var scale = 1f
-            var mapWidth = stage.width / TileGroupMap.groupHorizontalAdvance
-            var mapHeight = stage.height / TileGroupMap.groupSize
-            if (mapWidth * mapHeight > 3000f) {  // 3000 as max estimated number of tiles is arbitrary (we had typically 721 before)
-                scale = mapWidth * mapHeight / 3000f
-                mapWidth /= scale
-                mapHeight /= scale
-                scale = min(scale, 20f)
-            }
+            // MapSize.Small has easily enough tiles to fill the entire background - unless the user sized their window to some extreme aspect ratio
+            val mapWidth = stage.width / TileGroupMap.groupHorizontalAdvance
+            val mapHeight = stage.height / TileGroupMap.groupSize
+            @Pure fun Float.scaleCoord(scale: Float) = ceil(this * scale).toInt().coerceAtLeast(6)
+            // These scale values are chosen so that a common 4:3 screen minus taskbar gives the same as MapSize.Small
+            val backgroundMapSize = MapSize(mapWidth.scaleCoord(.77f), mapHeight.scaleCoord(1f))
 
             val newMap = MapGenerator(backgroundMapRuleset, this)
                 .generateMap(MapParameters().apply {
                     shape = MapShape.rectangular
-                    mapSize = MapSize.Small
+                    mapSize = backgroundMapSize
                     type = MapType.pangaea
                     temperatureintensity = .7f
                     waterThreshold = -0.1f // mainly land, gets about 30% water
@@ -268,7 +279,6 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
                     this@MainMenuScreen,
                     newMap
                 ) {}
-                mapHolder.setScale(scale)
                 mapHolder.color = mapHolder.color.cpy()
                 mapHolder.color.a = 0f
                 backgroundStack.add(mapHolder)

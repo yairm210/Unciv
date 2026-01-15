@@ -1,6 +1,5 @@
 package com.unciv.logic.map
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.testing.GdxTestRunner
@@ -33,14 +32,14 @@ class PathfindingTests {
     fun shortestPathByTurnsNotSumOfMovements(){
         // Naive Djikstra would calculate distance to 0,3 to be 5 movement points through hills, and only 4 by going around hills.
         // However, from a *unit turn* perspective, going through the hills is 3 turns, and going around is 4, so through the hills is the correct solution
-        testGame.setTileTerrain(Vector2(0f,1f), "Hill")
-        testGame.setTileTerrain(Vector2(0f,2f), "Hill")
+        testGame.setTileTerrain(HexCoord(0,1), "Hill")
+        testGame.setTileTerrain(HexCoord(0,2), "Hill")
         val baseUnit = testGame.createBaseUnit()
         baseUnit.movement = 1
 
         val unit = testGame.addUnit(baseUnit.name, civInfo, tile)
         // expect movement through hills (2 hill tiles plus one default desert)
-        Assert.assertEquals(3, unit.movement.getShortestPath(testGame.getTile(Vector2(0f, 3f))).size)
+        Assert.assertEquals(3, unit.movement.getShortestPath(testGame.getTile(0,3)).size)
     }
 
 
@@ -49,14 +48,14 @@ class PathfindingTests {
     fun maximizeRemainingMovementWhenReachingDestination(){
         // Moving in a direct path, you'd waste 5 movement points to get there, ending up with 0.
         // Moving around the hills, you'd waste 4 movement points, leaving you with one remaining
-        testGame.setTileTerrain(Vector2(0f,1f), "Hill")
-        testGame.setTileTerrain(Vector2(0f,2f), "Hill")
+        testGame.setTileTerrain(HexCoord(0,1), "Hill")
+        testGame.setTileTerrain(HexCoord(0,2), "Hill")
         val baseUnit = testGame.createBaseUnit()
         baseUnit.movement = 5
 
         val unit = testGame.addUnit(baseUnit.name, civInfo, tile)
-//         val pathToTile = unit.movement.getDistanceToTilesWithinTurn(Vector2(0f, 0f), 5f).getPathToTile(testGame.getTile(Vector2(0f, 3f)))
-        unit.movement.moveToTile(testGame.getTile(Vector2(0f, 3f)))
+//         val pathToTile = unit.movement.getDistanceToTilesWithinTurn(HexCoord(0,0), 5f).getPathToTile(testGame.getTile(0,3))
+        unit.movement.moveToTile(testGame.getTile(0,3))
         Assert.assertEquals(1f, unit.currentMovement)
     }
 }

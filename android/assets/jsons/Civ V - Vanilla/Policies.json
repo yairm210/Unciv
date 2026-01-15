@@ -63,7 +63,8 @@
                 "name": "Tradition Complete",
                 "uniques": [
                     "[+15]% growth [in all cities]",
-                    "[+2 Food] [in all cities]"
+                    "[+2 Food] [in all cities]",
+                    "Get the leader title of [Lord [leaderName]]"
                 ]
             }
         ]
@@ -131,7 +132,10 @@
             },
             {
                 "name": "Liberty Complete",
-                "uniques": ["Free Great Person"]
+                "uniques": [
+                    "Free Great Person",
+                    "Get the leader title of [Consul [leaderName]]"
+                ]
             }
         ]
     },
@@ -202,7 +206,8 @@
             {
                 "name": "Honor Complete",
                 "uniques": [
-                    "Earn [10]% of killed [Military] unit's [Cost] as [Gold]"
+                    "Earn [10]% of killed [Military] unit's [Cost] as [Gold]",
+                    "Get the leader title of [[leaderName] the Great]"
                 ]
             }
         ]
@@ -270,7 +275,8 @@
             {
                 "name": "Piety Complete",
                 "uniques": [
-                    "[-10]% Culture cost of adopting new Policies"
+                    "[-10]% Culture cost of adopting new Policies",
+                    "Get the leader title of [[leaderName] the Pious]"
                 ]
             }
         ]
@@ -338,7 +344,8 @@
                 "name": "Patronage Complete",
                 "uniques": [
                     "Influence of all other civilizations with all city-states degrades [33]% faster",
-                    "Triggers the following global alert: [Our influence with City-States has started dropping faster!]"
+                    "Triggers the following global alert: [Our influence with City-States has started dropping faster!]",
+                    "Get the leader title of [[leaderName] the Enlightened]"
                 ]
             }
         ]
@@ -400,7 +407,8 @@
             {
                 "name": "Commerce Complete",
                 "uniques": [
-                    "[+1 Gold] from every specialist [in all cities]"
+                    "[+1 Gold] from every specialist [in all cities]",
+                    "Get the leader title of [Doge [leaderName]]"
                 ]
             }
         ]
@@ -466,6 +474,7 @@
                 "name": "Rationalism Complete",
                 "uniques": [
                     "[+1 Gold] from all [Science] buildings",
+                    "Get the leader title of [[leaderName] the Wise]"
                 ]
             }
         ]
@@ -527,6 +536,7 @@
                 "uniques": [
                     "[+100]% Yield from every [Great Improvement]",
                     "[+50]% Golden Age length",
+                    "Get the leader title of [President [leaderName]]"
                 ]
             }
         ]
@@ -591,7 +601,8 @@
             {
                 "name": "Autocracy Complete",
                 "uniques": [
-                    "[+20]% Strength <when attacking> <for [Military] units> <for [30] turns>"
+                    "[+20]% Strength <when attacking> <for [Military] units> <for [30] turns>",
+                    "Get the leader title of [[leaderName] the Terrible]"
                 ]
             }
         ]
@@ -658,7 +669,8 @@
             {
                 "name": "Order Complete",
                 "uniques": [
-                    "[+1 Food, +1 Production, +1 Science, +1 Gold, +1 Culture] [in all cities]"
+                    "[+1 Food, +1 Production, +1 Science, +1 Gold, +1 Culture] [in all cities]",
+                    "Get the leader title of [Chairman [leaderName]]"
                 ]
             }
         ]

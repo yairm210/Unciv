@@ -60,7 +60,7 @@ class StatTreeNode {
     fun clone() : StatTreeNode {
         val new = StatTreeNode()
         new.innerStats = this.innerStats?.clone()
-        new.children.putAll(this.children)
+        new.children.putAll(this.children.mapValues { it.value.clone() })
         return new
     }
 
@@ -117,9 +117,9 @@ class CityStats(val city: City) {
 
     @Readonly
     private fun getStatsFromProduction(production: Float): Stats? {
-        if (city.cityConstructions.currentConstructionFromQueue in Stat.statsWithCivWideField.map { it.name }) {
+        if (city.cityConstructions.currentConstructionName() in Stat.statsWithCivWideField.map { it.name }) {
             val stats = Stats()
-            val stat = Stat.valueOf(city.cityConstructions.currentConstructionFromQueue)
+            val stat = Stat.valueOf(city.cityConstructions.currentConstructionName())
             stats[stat] = production * getStatConversionRate(stat)
             return stats
         }
@@ -172,7 +172,7 @@ class CityStats(val city: City) {
 
     @Readonly
     fun hasExtraAnnexUnhappiness(): Boolean {
-        if (city.civ.civName == city.foundingCiv || city.isPuppet) return false
+        if (city.civ == city.foundingCivObject || city.isPuppet) return false
         return !city.containsBuildingUnique(UniqueType.RemovesAnnexUnhappiness)
     }
 
@@ -314,22 +314,21 @@ class CityStats(val city: City) {
 
     @Readonly
     fun isConnectedToCapital(roadType: RoadStatus): Boolean {
-        if (city.civ.cities.size < 2) return false// first city!
+        if (city.civ.cities.size < 2) return false // first city!
 
         // Railroad, or harbor from railroad
         return if (roadType == RoadStatus.Railroad)
                 city.isConnectedToCapital {
-                    roadTypes ->
-                    roadTypes.any { it.contains(RoadStatus.Railroad.name) }
+                    mediums ->
+                    mediums.any { it.roadType == RoadStatus.Railroad }
                 }
             else city.isConnectedToCapital()
     }
 
     @Readonly
     fun getRoadTypeOfConnectionToCapital(): RoadStatus {
-        return if (isConnectedToCapital(RoadStatus.Railroad)) RoadStatus.Railroad
-        else if (isConnectedToCapital(RoadStatus.Road)) RoadStatus.Road
-        else RoadStatus.None
+        return city.civ.cache.citiesConnectedToCapitalToMediums[city]?.maxOfOrNull { it.roadType }
+            ?: RoadStatus.None
     }
 
     @Readonly
@@ -350,7 +349,7 @@ class CityStats(val city: City) {
         val stats = Stats()
         val workedTiles = city.tilesInRange.asSequence()
             .filter {
-                city.location == it.position
+                city.location.toHexCoord() == it.position
                         || city.isWorked(it)
                         || it.owningCity == city && (it.getUnpillagedTileImprovement()
                     ?.hasUnique(UniqueType.TileProvidesYieldWithoutPopulation, it.stateThisTile) == true

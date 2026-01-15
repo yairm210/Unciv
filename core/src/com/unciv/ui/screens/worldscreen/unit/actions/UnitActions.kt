@@ -17,6 +17,7 @@ import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.getActionDefaul
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.getPagingActions
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.getUnitActions
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.invokeUnitAction
+import yairm210.purity.annotations.Readonly
 
 /**
  *  Manages creation of [UnitAction] instances.
@@ -99,6 +100,7 @@ object UnitActions {
     )
 
     /** Gets the preferred "page" to display a [UnitAction] of type [unitActionType] on, possibly dynamic depending on the state or situation [unit] is in. */
+    @Readonly
     fun getActionDefaultPage(unit: MapUnit, unitActionType: UnitActionType) =
         actionTypeToPageGetter[unitActionType]?.invoke(unit) ?: unitActionType.defaultPage
 

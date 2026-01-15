@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.utils.GdxRuntimeException
 import com.unciv.UncivGame
 import com.unciv.logic.github.Github
 import com.unciv.logic.github.GithubAPI
@@ -19,7 +21,10 @@ import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.popups.ToastPopup
+import com.unciv.ui.screens.modmanager.ModManagementScreen.Companion.cleanModName
 import com.unciv.utils.Concurrency
+import com.unciv.utils.Log
+import java.io.IOException
 import kotlin.math.max
 
 internal class ModInfoAndActionPane : Table() {
@@ -43,6 +48,7 @@ internal class ModInfoAndActionPane : Table() {
         isBuiltin = false
         enableVisualCheckBox = false
         update(
+            isLocal = false,
             repo.name, repo.html_url, repo.default_branch,
             repo.pushed_at, repo.owner.login, repo.size,
             repo.owner.avatar_url
@@ -58,19 +64,21 @@ internal class ModInfoAndActionPane : Table() {
         isBuiltin = modOptions.modUrl.isEmpty() && BaseRuleset.entries.any { it.fullName == modName }
         enableVisualCheckBox = ModCompatibility.isAudioVisualMod(mod)
         update(
+            isLocal = true,
             modName, modOptions.modUrl, modOptions.defaultBranch,
             modOptions.lastUpdated, modOptions.author, modOptions.modSize
         )
     }
 
     private fun update(
-           modName: String,
-           repoUrl: String,
-           defaultBranch: String,
-           updatedAt: String,
-           author: String,
-           modSize: Int,
-           avatarUrl: String? = null
+        isLocal: Boolean,
+        modName: String,
+        repoUrl: String,
+        defaultBranch: String,
+        updatedAt: String,
+        author: String,
+        modSize: Int,
+        avatarUrl: String? = null
     ) {
         // Display metadata
         clear()
@@ -79,7 +87,7 @@ internal class ModInfoAndActionPane : Table() {
         imageHolder.clear()
         when {
             isBuiltin -> addUncivLogo(modName)
-            repoUrl.isEmpty() -> addLocalPreviewImage(modName)
+            isLocal -> addLocalPreviewImage(modName)
             else -> addPreviewImage(modName, repoUrl, defaultBranch, avatarUrl)
         }
         add(imageHolder).row()
@@ -125,14 +133,11 @@ internal class ModInfoAndActionPane : Table() {
             add("Permanent audiovisual mod".toCheckBox(startsOutChecked, changeAction)).row()
     }
 
-    fun addUpdateModButton(modInfo: ModUIData, doDownload: () -> Unit) {
-        if (!modInfo.hasUpdate) return
-        val updateModTextbutton = "Update [${modInfo.name}]".toTextButton()
-        updateModTextbutton.onClick {
-            updateModTextbutton.setText("Downloading...".tr())
-            doDownload()
-        }
+    fun addUpdateModButton(modInfo: ModUIData): TextButton? {
+        if (!modInfo.hasUpdate) return null
+        val updateModTextbutton = "Update [${cleanModName(modInfo.name)}]".toTextButton()
         add(updateModTextbutton).row()
+        return updateModTextbutton
     }
 
     private fun addPreviewImage(modName: String, repoUrl: String, defaultBranch: String, avatarUrl: String?) {
@@ -166,7 +171,13 @@ internal class ModInfoAndActionPane : Table() {
         val previewFile = modFolder.child("preview.jpg").takeIf { it.exists() }
             ?: modFolder.child("preview.png").takeIf { it.exists() }
             ?: return
-        setTextureAsPreview(Texture(previewFile), modName)
+        try {
+            setTextureAsPreview(Texture(previewFile), modName)
+        } catch (ex: Throwable) {
+            val cause = if (ex is GdxRuntimeException) ex.cause else ex
+            Log.debug("Could not load local preview file %s: %s", previewFile.path(), cause)
+            if (cause is IOException) previewFile.delete() // File content invalid and not loadable as pixmap gives this
+        }
     }
 
     private fun addUncivLogo(modName: String) {

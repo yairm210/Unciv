@@ -1,17 +1,13 @@
 package com.unciv.models
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.CivFlags
-import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.civilization.EspionageAction
-import com.unciv.logic.civilization.NotificationCategory
-import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.*
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.managers.EspionageManager
+import com.unciv.logic.map.HexCoord
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import yairm210.purity.annotations.Readonly
@@ -45,7 +41,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         private set
 
     // `location == null` means that the spy is in its hideout
-    private var location: Vector2? = null
+    private var location: HexCoord? = null
 
     var action = SpyAction.None
         private set
@@ -266,7 +262,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
     }
 
     @Readonly fun canDoCoup(): Boolean = getCityOrNull() != null && getCity().civ.isCityState && isSetUp()
-            && getCity().civ.getAllyCivName() != civInfo.civName
+            && getCity().civ.allyCiv != civInfo
 
     /**
      * Initiates a coup if this spies civ is not the ally of the city-state.
@@ -281,7 +277,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
             return
         }
         val cityState = getCity().civ
-        val allyCiv = cityState.getAllyCivName()?.let { civInfo.gameInfo.getCivilization(it) }
+        val allyCiv = cityState.allyCiv
 
         val successChance = getCoupChanceOfSuccess(true)
         val randomValue = Random(randomSeed()).nextFloat()
@@ -333,15 +329,15 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         var successPercentage = 50f
 
         // Influence difference should always be a positive value
-        var influenceDifference: Float = if (cityState.getAllyCivName() != null)
-            cityState.getDiplomacyManager(cityState.getAllyCivName()!!)!!.getInfluence()
+        var influenceDifference: Float = if (cityState.allyCiv != null)
+            cityState.getDiplomacyManager(cityState.allyCiv!!)!!.getInfluence()
         else 60f
         influenceDifference -= cityState.getDiplomacyManager(civInfo)!!.getInfluence()
         successPercentage -= influenceDifference / 2f
 
         // If we are viewing the success chance we don't want to reveal that there is a defending spy
         val defendingSpy = if (includeunknownFactors) 
-            cityState.getAllyCiv()?.espionageManager?.getSpyAssignedToCity(getCity()) 
+            cityState.allyCiv?.espionageManager?.getSpyAssignedToCity(getCity()) 
         else null
 
         val spyRanks = getSkillModifierPercent() - (defendingSpy?.getSkillModifierPercent() ?: 0)
@@ -372,17 +368,14 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         val ourResearchTechSize = civInfo.tech.techsResearched.size.toFloat()
         val otherCivResearchTechSize =  otherCiv.tech.techsResearched.size.toFloat()
         
-        val ourTechResearchLevel = ((ourResearchTechSize/techSize)*100f)
-        val otherCivTechResearchLevel = ((otherCivResearchTechSize/techSize)*100f)
-        if (otherCivDiplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSendSpies) &&
-            /*
-            * if there is equal or more than 10% difference in tech, 
-            * compare to the other civ in tech we the Ai will bypass the agreement
-            * */
-            otherCivTechResearchLevel <= ourTechResearchLevel + 10f) {
-            return true
-        }
-        return false
+        val ourTechResearchLevel = (ourResearchTechSize/techSize)*100f
+        val otherCivTechResearchLevel = (otherCivResearchTechSize/techSize)*100f
+        return otherCivDiplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSendSpies) &&
+                /*
+                * if there is equal or more than 10% difference in tech, 
+                * compare to the other civ in tech we the Ai will bypass the agreement
+                * */
+                otherCivTechResearchLevel <= ourTechResearchLevel + 10f
     }
 
     @Readonly
@@ -468,7 +461,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
 
     /** Shorthand for [Civilization.addNotification] specialized for espionage - action, category and icon are always the same */
     fun addNotification(text: String) =
-        civInfo.addNotification(text, EspionageAction.withLocation(location), NotificationCategory.Espionage, NotificationIcon.Spy)
+        civInfo.addNotification(text, EspionageAction.withLocation(location?.toHexCoord()), NotificationCategory.Espionage, NotificationIcon.Spy)
 
     /** Anti-save-scum: Deterministic random from city and turn
      *  @throws NullPointerException for spies in the hideout */

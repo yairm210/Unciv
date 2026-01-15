@@ -372,11 +372,11 @@ class MapFileSelectTable(
         val players = newGameScreen.playerPickerTable.gameParameters.players
         players.clear()
         mapNations.asSequence()
-            .map { it.name to it.name.tr(hideIcons = true) } // Sort by translation but keep untranslated name
+            .map { it to it.name.tr(hideIcons = true) } // Sort by translation but keep untranslated name
             .sortedWith(
-                compareBy<Pair<String, String>>{ it.first != mapHumanPick }
+                compareBy<Pair<Nation, String>>{ it.first.name != mapHumanPick }
                 .thenBy(collator) { it.second }
-            ).map { Player(it.first, if (it.first == mapHumanPick) PlayerType.Human else PlayerType.AI) }
+            ).map { Player(it.first, if (it.first.name == mapHumanPick) PlayerType.Human else PlayerType.AI) }
             .toCollection(players)
         newGameScreen.playerPickerTable.update()
     }

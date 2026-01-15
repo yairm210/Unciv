@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.images.ImageGetter
+import com.unciv.utils.Log
 
 
 private typealias AddToStringBuilderFactory = (sb: StringBuilder) -> Unit
@@ -85,6 +86,15 @@ internal class StageMouseOverDebug {
         batch.end()
 
         stage.drawAxes()
+    }
+
+    fun touchDown(stage: Stage, screenX: Int, screenY: Int, pointer: Int, button: Int) {
+        mouseCoords.set(screenX.toFloat(), screenY.toFloat())
+        stage.screenToStageCoordinates(mouseCoords)
+        sb.clear()
+        val actor = stage.hit(mouseCoords.x, mouseCoords.y, true)
+        addActorLabel(actor)
+        Log.debug("touchDown %d/%d, %d, %d hitting %s", screenX, screenY, pointer, button, sb)
     }
 
     private fun addActorLabel(actor: Actor?) {
@@ -185,15 +195,19 @@ internal class StageMouseOverDebug {
         sr.begin()
         sr.set(ShapeRenderer.ShapeType.Filled)
 
+        val y2 = height
+        val y1 = y2 - axisTickLength
         for (x in 0..width.toInt() step axisInterval) {
             val xf = x.toFloat()
             sr.rectLine(xf, 0f, xf, axisTickLength, axisTickWidth, axisColor, axisColor)
+            sr.rectLine(xf, y1, xf, y2, axisTickWidth, axisColor, axisColor)
         }
 
         val x2 = width
         val x1 = x2 - axisTickLength
         for (y in 0..height.toInt() step axisInterval) {
             val yf = y.toFloat()
+            sr.rectLine(0f, yf, axisTickLength, yf, axisTickWidth, axisColor, axisColor)
             sr.rectLine(x1, yf, x2, yf, axisTickWidth, axisColor, axisColor)
         }
 

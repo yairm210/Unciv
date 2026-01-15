@@ -32,7 +32,9 @@ class VictoryScreenOurVictory(
 
         row()
         for (victory in victoriesToShow.values) {
-            add(victory.victoryScreenHeader.toLabel())
+            val victoryScreenHeaderLabel = victory.victoryScreenHeader.toLabel()
+            victoryScreenHeaderLabel.wrap = true
+            add(victoryScreenHeaderLabel).width(stageWidth / 5)
         }
 
         header.addSeparator(Color.GRAY)

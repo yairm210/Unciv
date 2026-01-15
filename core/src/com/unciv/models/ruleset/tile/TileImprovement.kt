@@ -55,7 +55,7 @@ class TileImprovement : RulesetStatsObject() {
 
     @Readonly fun isGreatImprovement() = hasUnique(UniqueType.GreatImprovement)
     @Readonly fun isRoad() = RoadStatus.entries.any { it != RoadStatus.None && it.name == this.name }
-    @Readonly fun isAncientRuinsEquivalent(state: GameContext? = null) = hasUnique(UniqueType.IsAncientRuinsEquivalent, state)
+    @Readonly fun isAncientRuinsEquivalent(state: GameContext? = GameContext.IgnoreConditionals) = hasUnique(UniqueType.IsAncientRuinsEquivalent, state)
 
     @Readonly fun canBeBuiltOn(terrain: String): Boolean = terrain in terrainsCanBeBuiltOn
     @Readonly fun canBeBuiltOn(terrain: Terrain): Boolean = terrainsCanBeBuiltOn.any { terrain.matchesFilter(it) }
@@ -104,6 +104,21 @@ class TileImprovement : RulesetStatsObject() {
 
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> =
         ImprovementDescriptions.getCivilopediaTextLines(this, ruleset)
+
+    override fun getSortGroup(ruleset: Ruleset) = when {
+        isGreatImprovement() -> 1
+        name.startsWith("Cancel ") -> 2
+        name.startsWith("Remove ") -> 2
+        name == "Repair" -> 2
+        else -> 0
+    }
+    override fun getSubCategory(ruleset: Ruleset): String? = when {
+        isGreatImprovement() -> "Great Improvement"
+        name.startsWith("Cancel ") -> "Action"
+        name.startsWith("Remove ") -> "Action"
+        name == "Repair" -> "Action"
+        else -> "Tile Improvements"
+    }
 
     @Readonly
     fun getConstructorUnits(ruleset: Ruleset): List<BaseUnit> {

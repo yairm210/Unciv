@@ -151,7 +151,7 @@ class HardenGdxAudio(
      implementations, though DefaultAndroidAudio just calls the SDK's MediaPlayer so it likely
      already supports m4a, flac, opus and others...)
 
-    class AacMusic(audio: OpenALLwjgl3Audio?, file: FileHandle?) : OpenALMusic(audio, file) {
+    class AacMusic(audio: OpenALLwjgl3Audio, file: FileHandle) : OpenALMusic(audio, file) {
         override fun read(buffer: ByteArray?): Int {
             //...
         }
@@ -160,6 +160,6 @@ class HardenGdxAudio(
         }
     }
     fun registerCodecs(audio: OpenALLwjgl3Audio) {
-        audio.registerMusic("m4a", AacMusic::class.java)
+        audio.registerMusic("m4a", ::AacMusic)
     }
 */

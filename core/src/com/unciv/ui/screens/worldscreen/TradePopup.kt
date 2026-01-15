@@ -15,6 +15,7 @@ import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
 import com.unciv.ui.screens.diplomacyscreen.LeaderIntroTable
+import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 import kotlin.math.min
 import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
@@ -56,6 +57,7 @@ class TradePopup(worldScreen: WorldScreen) : Popup(worldScreen) {
         tradeOffersTable.row()
 
         
+        @Readonly
         fun getOfferText(offer:TradeOffer): String {
             var tradeText = offer.getOfferText()
             if (offer.type == TradeOfferType.Luxury_Resource || offer.type == TradeOfferType.Strategic_Resource)

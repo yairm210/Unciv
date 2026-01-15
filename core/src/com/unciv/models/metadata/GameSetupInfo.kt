@@ -29,6 +29,7 @@ class GameSetupInfo(
                 if (defaultDifficulty != null) gameParameters.difficulty = defaultDifficulty
                 mapParameters.shape = MapShape.rectangular
                 mapParameters.worldWrap = true
+                gameParameters.espionageEnabled = true
             }
             else GameSetupInfo(lastGameSetup!!).apply {
                 mapParameters.reseed()

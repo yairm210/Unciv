@@ -20,7 +20,7 @@ class DiplomaticVotePickerScreen(private val votingCiv: Civilization) : PickerSc
 
         val choosableCivs = votingCiv.diplomacyFunctions.getKnownCivsSorted(false)
         for (civ in choosableCivs) {
-            addButton(civ.civName, "Vote for [${civ.civName}]", civ.civName,
+            addButton(civ.civName, "Vote for [${civ.civName}]", civ.civID,
                 ImageGetter.getNationPortrait(
                     civ.nation,
                     PickerPane.pickerOptionIconSize
