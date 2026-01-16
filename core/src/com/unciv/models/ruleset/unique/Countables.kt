@@ -290,8 +290,11 @@ enum class Countables(
         )
         override val matchesWithRuleset = true
         override fun matches(parameterText: String, ruleset: Ruleset) = parameterText in ruleset.tileResources
-        override fun eval(parameterText: String, gameContext: GameContext) =
-            gameContext.getResourceAmount(parameterText)
+        override fun eval(parameterText: String, gameContext: GameContext) {
+            val resource = gameContext.gameInfo?.ruleset?.tileResources[parameterText] ?: return null
+            val city = gameContext.city
+            return city?.getAvailableResourceAmount(resource) ?: gameContext.civInfo?.getResourceAmount(resource)
+        }
 
         override val example = "Iron"
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.tileResources.keys

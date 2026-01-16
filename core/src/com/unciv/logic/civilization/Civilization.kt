@@ -511,6 +511,15 @@ class Civilization : IsPartOfGameInfoSerialization {
         return getCivResourceSupply().firstOrNull { !it.resource.isStockpiled && it.resource.name == resourceName }?.amount ?: 0
     }
 
+    /** Gets the number of resources available to this city
+     * Does not include city-wide resources
+     * Returns 0 for undefined resources */
+    @Readonly
+    fun getResourceAmount(resource: TileResource): Int {
+        if (resource.isStockpiled) return resourceStockpiles[resource.name]
+        return getCivResourceSupply().firstOrNull { !it.resource.isStockpiled && it.resource == resource }?.amount ?: 0
+    }
+
     /** Gets modifiers for ALL resources */
     @Readonly
     fun getResourceModifiers(): Map<String, Float> =
