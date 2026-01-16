@@ -70,9 +70,6 @@ enum class Countables(
         override fun matches(parameterText: String) = Stat.isStat(parameterText)
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val relevantStat = Stat.safeValueOf(parameterText) ?: return null
-            // This one isn't covered by City.getStatReserve or Civilization.getStatReserve but should be available here
-            if (relevantStat == Stat.Happiness)
-                return gameContext.civInfo?.getHappiness()
             return gameContext.getStatAmount(relevantStat)
         }
 
