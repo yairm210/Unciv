@@ -70,7 +70,9 @@ enum class Countables(
         override fun matches(parameterText: String) = Stat.isStat(parameterText)
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val relevantStat = Stat.safeValueOf(parameterText) ?: return null
-            return gameContext.getStatAmount(relevantStat)
+            val city = gameContext.city
+            return city?.getStatReserve(relevantStat)
+                ?: gameContext.civInfo?.getStatReserve(relevantStat)
         }
 
         override val example = "Science"
