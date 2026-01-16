@@ -22,7 +22,7 @@ enum class Stat(
     Happiness(NotificationIcon.Happiness, UncivSound.Click, Fonts.happiness, colorFromHex(0xffd800)),
     Faith(NotificationIcon.Faith, UncivSound.Choir, Fonts.faith, colorFromHex(0xcbdfff))
     ;
-    val isCityWide by lazy { this in statsWithCivWideField }
+    val isCityWide by lazy { this !in statsWithCivWideField }
 
     companion object {
         @Immutable val statsUsableToBuy = setOf(Gold, Food, Science, Culture, Faith)
