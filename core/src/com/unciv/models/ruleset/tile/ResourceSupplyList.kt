@@ -114,6 +114,17 @@ class ResourceSupplyList(
     }
 
     /**
+     * Applies the given modifier function to the resource supplies.
+     */
+    fun applyModifiers(resourceModifier: (TileResource) -> Float) {
+        for (resourceSupply in this) {
+            val modifier = resourceModifier(resourceSupply.resource)
+            if (modifier == 1f) continue
+            resourceSupply.amount = (resourceSupply.amount.toFloat() * modifier).toInt()
+        }
+    }
+
+    /**
      *  Remove all entries from a specific [origin]
      *  @return `this`, allowing chaining
      */
