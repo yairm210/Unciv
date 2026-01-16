@@ -34,6 +34,10 @@ class ResourceSupplyList(
     @Readonly fun sumBy(resourceName: String) =
         asSequence().filter { it.resource.name == resourceName }.sumOf { it.amount }
 
+    /** Get the total amount for a resource by [resource] */
+    @Readonly fun sumBy(resource: TileResource) =
+        asSequence().filter { it.resource == resource }.sumOf { it.amount }
+
     /**
      *  Add [element] unless one for [resource][ResourceSupply.resource]/[origin][ResourceSupply.origin] already exists,
      *  in which case the amounts are added up. Ensures the list contains no entries with [amount][ResourceSupply.amount] 0 unless [keepZeroAmounts] is on.

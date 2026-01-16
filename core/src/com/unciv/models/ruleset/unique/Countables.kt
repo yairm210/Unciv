@@ -92,11 +92,21 @@ enum class Countables(
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val param = parameterText.getPlaceholderParameters().firstOrNull() ?: return null
             val civ = gameContext.civInfo ?: return null
-            if (Stat.isStat(param)) {
-                val relevantStat = Stat.safeValueOf(param) ?: return null
-                return civ.stats.getStatMapForNextTurn().values.map { it[relevantStat] }.sum().toInt()
+            val city = gameContext.city
+
+            var resource: GameResource? = Stat.safeValueOf(param)
+            if (resource is Stat) { // Type check instead of null check for smart cast
+                if (city != null && resource.isCityWide) {
+                    return city.cityStats.currentCityStats[resource].toInt()
+                }
+                return civ.stats.getStatMapForNextTurn().values.map { it[resource] }.sum().toInt()
             }
-            return civ.getCivResourceSupply().sumBy(param)
+
+            resource = gameContext.gameInfo!!.ruleset.tileResources[param] ?: return null
+            if (city != null) {
+                return city.getResourcesGeneratedByCity().sumBy(resource)
+            }
+            return civ.getCivResourceSupply().sumBy(resource)
         }
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
             val param = parameterText.getPlaceholderParameters().firstOrNull() ?: return UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
