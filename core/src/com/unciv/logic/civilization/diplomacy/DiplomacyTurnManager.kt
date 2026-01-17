@@ -266,16 +266,15 @@ object DiplomacyTurnManager {
     }
 
     private fun DiplomacyManager.nextTurnDiplomaticModifiers() {
-        if (diplomaticStatus == DiplomaticStatus.Peace) {
-            if (getModifier(DiplomaticModifiers.YearsOfPeace) < 30)
-                addModifier(DiplomaticModifiers.YearsOfPeace, 0.5f)
-        } else revertToZero(DiplomaticModifiers.YearsOfPeace, 0.5f) // war makes you forget the good ol' days
+        if (diplomaticStatus == DiplomaticStatus.Peace)
+            increaseToAtMost(DiplomaticModifiers.YearsOfPeace, 0.5f, 30f)
+        else
+            revertToZero(DiplomaticModifiers.YearsOfPeace, 0.5f) // war makes you forget the good ol' days
 
         var openBorders = 0
         if (hasOpenBorders) openBorders += 1
-
         if (otherCivDiplomacy().hasOpenBorders) openBorders += 1
-        if (openBorders > 0) addModifier(DiplomaticModifiers.OpenBorders, openBorders / 8f) // so if we both have open borders it'll grow by 0.25 per turn
+        if (openBorders > 0) increaseToAtMost(DiplomaticModifiers.OpenBorders, openBorders / 8f) // so if we both have open borders it'll grow by 0.25 per turn
         else revertToZero(DiplomaticModifiers.OpenBorders, 1 / 8f)
 
         // Negatives
@@ -356,11 +355,28 @@ object DiplomacyTurnManager {
 
     /** @param amount always positive, so you don't need to think about it */
     private fun DiplomacyManager.revertToZero(modifier: DiplomaticModifiers, amount: Float) {
+        val speedAdjustedAmount = amount / civInfo.gameInfo.speed.modifier
         if (!hasModifier(modifier)) return
         val currentAmount = getModifier(modifier)
-        if (amount >= currentAmount.absoluteValue) diplomaticModifiers.remove(modifier.name)
-        else if (currentAmount > 0) addModifier(modifier, -amount)
-        else addModifier(modifier, amount)
+        if (speedAdjustedAmount >= currentAmount.absoluteValue) diplomaticModifiers.remove(modifier.name)
+        else if (currentAmount > 0) addModifier(modifier, -speedAdjustedAmount)
+        else addModifier(modifier, speedAdjustedAmount)
     }
 
+    /**
+     * @param amount should always positive
+     * @param maxAmount modifier value will not increase beyond this value
+     */
+    private fun DiplomacyManager.increaseToAtMost(modifier: DiplomaticModifiers, amount: Float, maxAmount: Float = Float.MAX_VALUE) {
+        val speedAdjustedAmount = amount / civInfo.gameInfo.speed.modifier
+        val currentAmount = getModifier(modifier)
+        // no effect if >= max
+        if (currentAmount >= maxAmount)
+            return
+        // do not increase beyond max
+        if (speedAdjustedAmount >= maxAmount - currentAmount)
+            setModifier(modifier, maxAmount)
+        else
+            addModifier(modifier, speedAdjustedAmount)
+    }
 }
