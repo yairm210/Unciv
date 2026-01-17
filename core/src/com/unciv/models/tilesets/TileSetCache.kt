@@ -97,21 +97,4 @@ object TileSetCache : HashMap<String, TileSet>() {
             set(name, tileset)
         }
     }
-
-    /** Determines potentially available TileSets - by scanning for TileSet jsons.
-     *  Available before initialization finishes.
-     */
-    fun getAvailableTilesets(imageGetterTilesets: Sequence<String>): Set<String> {
-        val modTilesetConfigFiles = UncivGame.Current.files.getModsFolder().list().asSequence()
-            .filter { it.isDirectory && !it.name().startsWith('.') }
-            .flatMap { it.child("jsons/TileSets").list().asSequence() }
-
-        val builtinTilesetConfigFiles = imageGetterTilesets
-            .map { Gdx.files.internal("jsons/TileSets/$it.json") }
-
-        return (builtinTilesetConfigFiles + modTilesetConfigFiles)
-            .filter { it.exists() }
-            .map { it.nameWithoutExtension().removeSuffix("Config") }
-            .toSet()
-    }
 }

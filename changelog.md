@@ -1,3 +1,11 @@
+## 4.19.8
+
+Fixed map generation on world wrap and 3 continents
+
+Use default tileset if the configured one exists but cannot be loaded
+
+Adjust turn-end diplomatic modifier accumulation and reversion by game speed - By unciv-loof
+
 ## 4.19.7
 
 modchecker: Improvements can grant sight on tiles

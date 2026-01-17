@@ -18,7 +18,7 @@ class CityTurnManager(val city: City) {
 
 
     fun startTurn() {
-        for (resource in city.getResourcesGeneratedByCity(city.getResourceModifiers())) {
+        for (resource in city.getResourcesGeneratedByCity()) {
             if (resource.resource.isStockpiled && resource.resource.isCityWide)
                 city.gainStockpiledResource(resource.resource, resource.amount)
         }

@@ -48,14 +48,14 @@ internal class MultiplayerTab(
             createRefreshOptions(ChronoUnit.SECONDS, 3, 5),
             createRefreshOptions(ChronoUnit.SECONDS, 10, 20, 30, 60)
         )
-        addSelectBox("Update status of currently played game every:", curRefreshSelect::value, curRefreshSelect.getItems())
+        curRefreshSelect.selectBox = addSelectBox("Update status of currently played game every:", curRefreshSelect::value, curRefreshSelect.getItems())
 
         val allRefreshSelect = RefreshSelectOptions(
             mpSettings::allGameRefreshDelay,
             createRefreshOptions(ChronoUnit.SECONDS, 15, 30),
             createRefreshOptions(ChronoUnit.MINUTES, 1, 2, 5, 15)
         )
-        addSelectBox("In-game, update status of all games every:", allRefreshSelect::value, allRefreshSelect.getItems())
+        allRefreshSelect.selectBox = addSelectBox("In-game, update status of all games every:", allRefreshSelect::value, allRefreshSelect.getItems())
 
         addSeparator()
 
@@ -222,7 +222,7 @@ internal class MultiplayerTab(
             createRefreshOptions(ChronoUnit.SECONDS, 30),
             createRefreshOptions(ChronoUnit.MINUTES, 1, 2, 5, 15)
         )
-        addSelectBox("Out-of-game, update status of all games every:", turnCheckerSelect::value, turnCheckerSelect.getItems())
+        turnCheckerSelect.selectBox = addSelectBox("Out-of-game, update status of all games every:", turnCheckerSelect::value, turnCheckerSelect.getItems())
 
         addCheckbox("Show persistent notification for turn notifier service", mpSettings::turnCheckerPersistentNotificationEnabled)
 
