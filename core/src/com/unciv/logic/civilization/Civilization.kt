@@ -517,7 +517,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     @Readonly
     fun getResourceAmount(resource: TileResource): Int {
         if (resource.isStockpiled) return resourceStockpiles[resource.name]
-        return getCivResourceSupply().firstOrNull { !it.resource.isStockpiled && it.resource == resource }?.amount ?: 0
+        return getCivResourceSupply().firstOrNull { it.resource == resource }?.amount ?: 0
     }
 
     /** Gets modifiers for ALL resources */
