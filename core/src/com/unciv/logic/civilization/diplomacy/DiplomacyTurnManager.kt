@@ -361,9 +361,9 @@ object DiplomacyTurnManager {
 
     /** @param amount always positive, so you don't need to think about it */
     private fun DiplomacyManager.revertToZero(modifier: DiplomaticModifiers, amount: Float) {
-        val speedAdjustedAmount = SPEED_ADJUSTMENT_NORMALIZION_FACTOR * amount / civInfo.gameInfo.speed.modifier
         if (!hasModifier(modifier)) return
         val currentAmount = getModifier(modifier)
+        val speedAdjustedAmount = SPEED_ADJUSTMENT_NORMALIZION_FACTOR * amount / civInfo.gameInfo.speed.modifier
         if (speedAdjustedAmount >= currentAmount.absoluteValue) diplomaticModifiers.remove(modifier.name)
         else if (currentAmount > 0) addModifier(modifier, -speedAdjustedAmount)
         else addModifier(modifier, speedAdjustedAmount)
@@ -374,10 +374,10 @@ object DiplomacyTurnManager {
      * @param maxAmount modifier value will not increase beyond this value
      */
     private fun DiplomacyManager.accumulateToAtMost(modifier: DiplomaticModifiers, amount: Float, maxAmount: Float = Float.MAX_VALUE) {
-        val speedAdjustedAmount = SPEED_ADJUSTMENT_NORMALIZION_FACTOR * amount / civInfo.gameInfo.speed.modifier
         val currentAmount = getModifier(modifier)
         // no effect if >= max
         if (currentAmount >= maxAmount) return
+        val speedAdjustedAmount = SPEED_ADJUSTMENT_NORMALIZION_FACTOR * amount / civInfo.gameInfo.speed.modifier
         // do not increase beyond max
         if (speedAdjustedAmount >= maxAmount - currentAmount) setModifier(modifier, maxAmount)
         else addModifier(modifier, speedAdjustedAmount)
