@@ -266,16 +266,15 @@ object DiplomacyTurnManager {
     }
 
     private fun DiplomacyManager.nextTurnDiplomaticModifiers() {
-        if (diplomaticStatus == DiplomaticStatus.Peace) {
-            if (getModifier(DiplomaticModifiers.YearsOfPeace) < 30)
-                addModifier(DiplomaticModifiers.YearsOfPeace, 0.5f)
-        } else revertToZero(DiplomaticModifiers.YearsOfPeace, 0.5f) // war makes you forget the good ol' days
+        if (diplomaticStatus == DiplomaticStatus.Peace)
+            accumulateToAtMost(DiplomaticModifiers.YearsOfPeace, 0.5f, 30f)
+        else
+            revertToZero(DiplomaticModifiers.YearsOfPeace, 0.5f) // war makes you forget the good ol' days
 
         var openBorders = 0
         if (hasOpenBorders) openBorders += 1
-
         if (otherCivDiplomacy().hasOpenBorders) openBorders += 1
-        if (openBorders > 0) addModifier(DiplomaticModifiers.OpenBorders, openBorders / 8f) // so if we both have open borders it'll grow by 0.25 per turn
+        if (openBorders > 0) accumulateToAtMost(DiplomaticModifiers.OpenBorders, openBorders / 8f) // so if we both have open borders it'll grow by 0.25 per turn
         else revertToZero(DiplomaticModifiers.OpenBorders, 1 / 8f)
 
         // Negatives
@@ -354,13 +353,33 @@ object DiplomacyTurnManager {
         }
     }
 
+    /**
+     * Uses Quick speed as baseline for turn based adjustment of diplomatic modifiers.
+     * This way, the values set in [nextTurnDiplomaticModifiers] will apply 1:1 to Quick speed, which is the most popular speed.
+     */
+    private const val SPEED_ADJUSTMENT_NORMALIZATION_FACTOR = 0.67f
+
     /** @param amount always positive, so you don't need to think about it */
     private fun DiplomacyManager.revertToZero(modifier: DiplomaticModifiers, amount: Float) {
         if (!hasModifier(modifier)) return
         val currentAmount = getModifier(modifier)
-        if (amount >= currentAmount.absoluteValue) diplomaticModifiers.remove(modifier.name)
-        else if (currentAmount > 0) addModifier(modifier, -amount)
-        else addModifier(modifier, amount)
+        val speedAdjustedAmount = SPEED_ADJUSTMENT_NORMALIZATION_FACTOR * amount / civInfo.gameInfo.speed.modifier
+        if (speedAdjustedAmount >= currentAmount.absoluteValue) diplomaticModifiers.remove(modifier.name)
+        else if (currentAmount > 0) addModifier(modifier, -speedAdjustedAmount)
+        else addModifier(modifier, speedAdjustedAmount)
     }
 
+    /**
+     * @param amount should always be positive
+     * @param maxAmount modifier value will not increase beyond this value
+     */
+    private fun DiplomacyManager.accumulateToAtMost(modifier: DiplomaticModifiers, amount: Float, maxAmount: Float = Float.MAX_VALUE) {
+        val currentAmount = getModifier(modifier)
+        // no effect if >= max
+        if (currentAmount >= maxAmount) return
+        val speedAdjustedAmount = SPEED_ADJUSTMENT_NORMALIZATION_FACTOR * amount / civInfo.gameInfo.speed.modifier
+        // do not increase beyond max
+        if (speedAdjustedAmount >= maxAmount - currentAmount) setModifier(modifier, maxAmount)
+        else addModifier(modifier, speedAdjustedAmount)
+    }
 }
