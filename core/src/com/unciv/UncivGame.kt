@@ -129,12 +129,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
         ImageGetter.resetAtlases()
         ImageGetter.reloadImages()  // This needs to come after the settings, since we may have default visual mods
-        val imageGetterTilesets = ImageGetter.getAvailableTilesets()
-        val availableTileSets = TileSetCache.getAvailableTilesets(imageGetterTilesets)
-        if (settings.tileSet !in availableTileSets) { // If the configured tileset is no longer available, default back
-            settings.tileSet = Constants.defaultTileset
-        }
-
+        
         Gdx.graphics.isContinuousRendering = settings.continuousRendering
 
         Concurrency.run("LoadJSON") {
@@ -142,6 +137,10 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
             translations.tryReadTranslationForCurrentLanguage()
             translations.loadPercentageCompleteOfLanguages()
             TileSetCache.loadTileSetConfigs()
+            if (settings.tileSet !in TileSetCache) { // The configured tileset is no longer available, default back
+                settings.tileSet = Constants.defaultTileset
+            }
+
             SkinCache.loadSkinConfigs()
 
             val vanillaRuleset = RulesetCache.getVanillaRuleset()
