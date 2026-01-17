@@ -5,6 +5,7 @@ import com.unciv.models.ruleset.unique.Countables.Stats
 import com.unciv.models.ruleset.unique.Countables.TileResources
 import com.unciv.models.ruleset.unique.expressions.Expressions
 import com.unciv.models.ruleset.unique.expressions.Operator
+import com.unciv.models.stats.GameResource
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.fillPlaceholders
