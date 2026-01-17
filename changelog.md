@@ -1,3 +1,13 @@
+## 4.19.8
+
+Resolved  - Use default tileset if the configured one cannot be loaded, not only if "does not exist" - unloadable tilesets cause crash when attempting to get their config
+
+Fixed map generation on world wrap and 3 continents
+
+Adjust turn-end diplomatic modifier accumulation and reversion by game speed - By unciv-loof
+
+Refactor: Change resource functions from map to lambda - By SeventhM
+
 ## 4.19.7
 
 modchecker: Improvements can grant sight on tiles
