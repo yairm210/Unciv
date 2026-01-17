@@ -290,7 +290,7 @@ enum class Countables(
         )
         override val matchesWithRuleset = true
         override fun matches(parameterText: String, ruleset: Ruleset) = parameterText in ruleset.tileResources
-        override fun eval(parameterText: String, gameContext: GameContext) {
+        override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val resource = gameContext.gameInfo?.ruleset?.tileResources[parameterText] ?: return null
             val city = gameContext.city
             return city?.getAvailableResourceAmount(resource) ?: gameContext.civInfo?.getResourceAmount(resource)
