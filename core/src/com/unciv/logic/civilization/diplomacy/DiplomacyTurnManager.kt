@@ -357,13 +357,13 @@ object DiplomacyTurnManager {
      * Uses Quick speed as baseline for turn based adjustment of diplomatic modifiers.
      * This way, the values set in [nextTurnDiplomaticModifiers] will apply 1:1 to Quick speed, which is the most popular speed.
      */
-    private const val SPEED_ADJUSTMENT_NORMALIZION_FACTOR = 0.67f
+    private const val SPEED_ADJUSTMENT_NORMALIZATION_FACTOR = 0.67f
 
     /** @param amount always positive, so you don't need to think about it */
     private fun DiplomacyManager.revertToZero(modifier: DiplomaticModifiers, amount: Float) {
         if (!hasModifier(modifier)) return
         val currentAmount = getModifier(modifier)
-        val speedAdjustedAmount = SPEED_ADJUSTMENT_NORMALIZION_FACTOR * amount / civInfo.gameInfo.speed.modifier
+        val speedAdjustedAmount = SPEED_ADJUSTMENT_NORMALIZATION_FACTOR * amount / civInfo.gameInfo.speed.modifier
         if (speedAdjustedAmount >= currentAmount.absoluteValue) diplomaticModifiers.remove(modifier.name)
         else if (currentAmount > 0) addModifier(modifier, -speedAdjustedAmount)
         else addModifier(modifier, speedAdjustedAmount)
@@ -377,7 +377,7 @@ object DiplomacyTurnManager {
         val currentAmount = getModifier(modifier)
         // no effect if >= max
         if (currentAmount >= maxAmount) return
-        val speedAdjustedAmount = SPEED_ADJUSTMENT_NORMALIZION_FACTOR * amount / civInfo.gameInfo.speed.modifier
+        val speedAdjustedAmount = SPEED_ADJUSTMENT_NORMALIZATION_FACTOR * amount / civInfo.gameInfo.speed.modifier
         // do not increase beyond max
         if (speedAdjustedAmount >= maxAmount - currentAmount) setModifier(modifier, maxAmount)
         else addModifier(modifier, speedAdjustedAmount)
