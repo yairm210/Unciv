@@ -674,7 +674,7 @@ class UnitMovement(val unit: MapUnit) {
 
         // Allow boarding carriers: if the tile contains a friendly unit that can transport this unit, allow entry
         val carrierOnTile = tile.getUnits().firstOrNull { it.owner == unit.owner && it.canTransport(unit) }
-        if (carrierOnTile != null)
+        if (carrierOnTile != null && !tile.isCityCenter())
             return null
 
         val tileIsEmpty = if (unit.isCivilian())

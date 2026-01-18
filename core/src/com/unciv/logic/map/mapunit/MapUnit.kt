@@ -427,7 +427,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         // Non-air units that are transported can only attack if inside an open topped carrier
         if (isTransported && !baseUnit.movesLikeAirUnits) {
             val carrier = currentTile.militaryUnit
-            if (carrier == null || !carrier.hasUnique(UniqueType.CarriedUnitsCanAttackWithoutDisembarking)) return false
+            if (carrier == null || !carrier.hasUnique(UniqueType.CarriedUnitsDisembarkWhenAttacking)) return false
         }
         return attacksThisTurn < maxAttacksPerTurn()
     }
