@@ -387,7 +387,7 @@ class WorkerAutomation(
             potentialTileImprovements.containsKey(Constants.remove + terrain.name)
 
         val improvementStringForResource: String? = when {
-            civInfo.canSeeResource(tile.tileResourceOrNull) -> null
+            !civInfo.canSeeResource(tile.tileResourceOrNull) -> null
             
             tile.terrainFeatures.isNotEmpty()
                 && lastTerrain.unbuildable
