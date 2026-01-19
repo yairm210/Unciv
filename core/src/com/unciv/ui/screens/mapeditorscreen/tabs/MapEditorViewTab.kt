@@ -177,7 +177,7 @@ class MapEditorViewTab(
 
         val lines = ArrayList<FormattedLine>()
 
-        lines += FormattedLine("Position: [${tile.position.toString().replace(".0","")}]")
+        lines += FormattedLine("Position: [${tile.position.toPrettyString()}]")
         lines += FormattedLine()
 
         lines.addAll(TileDescription.toMarkup(tile, null))

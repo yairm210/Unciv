@@ -110,6 +110,9 @@ class VictoryScreenCharts(
             .flatMap { turn ->
                 turn.value.map { (civ, value) -> DataPoint(turn.key, value, civ) }
             }.toMutableList()
+        
+        if (dataPoints.isEmpty()) // e.g. spectator on first turn, before any civ has had a chance to have a turn
+            return emptyList()
 
         // Historical data does not include data for current turn for civs which haven't got their turn yet,
         // so we append missing stat for current turn to the data for each such civ

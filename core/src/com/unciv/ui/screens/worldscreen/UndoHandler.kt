@@ -1,6 +1,7 @@
 package com.unciv.ui.screens.worldscreen
 
 import com.unciv.utils.Concurrency
+import yairm210.purity.annotations.Readonly
 
 /** Encapsulates the Undo functionality.
  *
@@ -10,7 +11,7 @@ import com.unciv.utils.Concurrency
 class UndoHandler(private val worldScreen: WorldScreen) {
     private var preActionGameInfo = worldScreen.gameInfo
 
-    fun canUndo() = preActionGameInfo != worldScreen.gameInfo && worldScreen.canChangeState
+    @Readonly fun canUndo() = preActionGameInfo != worldScreen.gameInfo && worldScreen.canChangeState
 
     fun recordCheckpoint() {
         preActionGameInfo = worldScreen.gameInfo.clone()
@@ -31,7 +32,7 @@ class UndoHandler(private val worldScreen: WorldScreen) {
 
     /** Simple readability proxies so the caller can pretend the interface exists directly on WorldScreen (imports ugly but calls neat) */
     companion object {
-        fun WorldScreen.canUndo() = undoHandler.canUndo()
+        @Readonly fun WorldScreen.canUndo() = undoHandler.canUndo()
         fun WorldScreen.recordUndoCheckpoint() = undoHandler.recordCheckpoint()
         fun WorldScreen.restoreUndoCheckpoint() = undoHandler.restoreCheckpoint()
         fun WorldScreen.clearUndoCheckpoints() = undoHandler.clearCheckpoints()

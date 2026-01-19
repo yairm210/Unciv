@@ -36,7 +36,7 @@ By the end of this guide, you will have Unciv running locally from code, so you 
         -   Set the module classpath (the box to the right of the Java selection) to `Unciv.desktop.main` (`Unciv.desktop` for Bumblebee or below), main class to `com.unciv.app.desktop.DesktopLauncher` and `$ProjectFileDir$/android/assets` as the Working directory, OK to close the window
             - It _may_ be useful to set some VM options - activate the field in the run config editor with Alt-V or via the Modify Options menu, then add `-Xmx4096m -Xms256m -XX:MaxMetaspaceSize=256m` to allow a debugged game a little more memory. Or, use the `-DnoLog=` or `-DonlyLog=` options to control console logging. See the [Log.kt](https://github.com/yairm210/Unciv/blob/master/core/src/com/unciv/utils/Log.kt) comments for details.
             - If you get a `../../docs/uniques.md (No such file or directory)` error that means you forgot to set the working directory!
-            ![image](/Unciv/assets/Desktop_Build.png)
+            ![image](../assets/Desktop_Build.png)
     -   If the "Run unit tests" is missing - look for the top-level "tests" folder, right-klick -> Modify Run Configuration...
 -   Select the Desktop configuration (or however you chose to name it) and click the green arrow button to run! Or you can use the next button -the green critter with six legs and two feelers - to start debugging.
 -   A few Android Studio settings that are recommended:
@@ -46,6 +46,7 @@ By the end of this guide, you will have Unciv running locally from code, so you 
       ![image](https://user-images.githubusercontent.com/44038014/169315352-9ba0c4cf-307c-44d1-b3bc-2a58752c6854.png)
     - Settings > Editor > General > On Save > Uncheck Remove trailing spaces on: [...] to prevent it from removing necessary trailing whitespace in template.properties for translation files
       ![image](https://user-images.githubusercontent.com/44038014/169316243-07e36b8e-4c9e-44c4-941c-47e634c68b4c.png)
+      > Important: Unchecking this creates annoying merge conflicts. Before commits (non-translation) remove those trailing space. For more info check [Coding Standard](https://yairm210.github.io/Unciv/Developers/Coding-standards/).
     - Right-click the `android/assets/SaveFiles` folder once you have one, "Mark directory as" > Excluded
       - If you download mods do the same for the `android/assets/mods` folder and any other files you may create while testing that do not belong in the public project.
       - This [disables indexing](https://www.jetbrains.com/help/idea/indexing.html#exclude) for performance.

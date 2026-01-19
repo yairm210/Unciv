@@ -35,6 +35,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
+??? example  "A [unit] rebels"
+	Example: "A [Musketman] rebels"
+
+	Applicable to: Triggerable
+
+??? example  "[positiveAmount] [unit]s rebel"
+	Example: "[3] [Musketman]s rebel"
+
+	Applicable to: Triggerable
+
 ??? example  "Free Social Policy"
 	Applicable to: Triggerable
 
@@ -74,12 +84,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
-??? example  "Remove [policy]"
+??? example  "Remove [policyFilter]"
 	Example: "Remove [Oligarchy]"
 
 	Applicable to: Triggerable
 
-??? example  "Remove [policy] and refund [amount]% of its cost"
+??? example  "Remove [policyFilter] and refund [amount]% of its cost"
 	Example: "Remove [Oligarchy] and refund [3]% of its cost"
 
 	Applicable to: Triggerable
@@ -92,7 +102,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
-??? example  "[positiveAmount] free random researchable Tech(s) from the [era]"
+??? example  "[positiveAmount] free random researchable Tech(s) from the [eraFilter]"
 	Example: "[3] free random researchable Tech(s) from the [Ancient era]"
 
 	Applicable to: Triggerable
@@ -241,6 +251,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
+??? example  "Get the leader title of [leaderTitle]"
+	Example: "Get the leader title of [Sovereign [leaderName] the Great]"
+
+	This unique is automatically hidden from users.
+
+	Applicable to: Triggerable
+
 ??? example  "Suppress warning [validationWarning]"
 	Allows suppressing specific validation warnings. Errors, deprecation warnings, or warnings about untyped and non-filtering uniques should be heeded, not suppressed, and are therefore not accepted. Note that this can be used in ModOptions, in the uniques a warning is about, or as modifier on the unique triggering a warning - but you still need to be specific. Even in the modifier case you will need to specify a sufficiently selective portion of the warning text as parameter.
 
@@ -316,6 +333,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "[unitTriggerTarget] is destroyed"
 	Example: "[This Unit] is destroyed"
+
+	Applicable to: UnitTriggerable
+
+??? example  "[unitTriggerTarget] gets a name from the [unitNameGroup] group"
+	Example: "[This Unit] gets a name from the [Scientist] group"
 
 	Applicable to: UnitTriggerable
 
@@ -859,7 +881,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Notified of new Barbarian encampments"
 	Applicable to: Global
 
-??? example  "Receive triple Gold from Barbarian encampments and pillaging Cities"
+??? example  "Receive [relativeAmount]% Gold from Barbarian encampments and pillaging Cities"
+	Example: "Receive [+20]% Gold from Barbarian encampments and pillaging Cities"
+
 	Applicable to: Global
 
 ??? example  "When conquering an encampment, earn [amount] Gold and recruit a Barbarian unit"
@@ -968,6 +992,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, Unit
 
+??? example  "[relativeAmount] Strength"
+	Example: "[+20] Strength"
+
+	Applicable to: Global, Unit
+
 ??? example  "[relativeAmount]% Strength decreasing with distance from the capital"
 	Example: "[+20]% Strength decreasing with distance from the capital"
 
@@ -991,7 +1020,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "[amount] Sight"
 	Example: "[3] Sight"
 
-	Applicable to: Global, Unit, Terrain
+	Applicable to: Global, Unit, Terrain, Improvement
 
 ??? example  "[amount] Range"
 	Example: "[3] Range"
@@ -1671,7 +1700,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Never destroyed when the city is captured"
 	Applicable to: Building
 
-??? example  "Doubles Gold given to enemy if city is captured"
+??? example  "[relativeAmount]% Gold given to enemy if city is captured"
+	Example: "[+20]% Gold given to enemy if city is captured"
+
 	Applicable to: Building
 
 ??? example  "Removes extra unhappiness from annexed cities"
@@ -1932,6 +1963,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, Unit
 
+??? example  "[relativeAmount] Strength"
+	Example: "[+20] Strength"
+
+	Applicable to: Global, Unit
+
 ??? example  "[relativeAmount]% Strength decreasing with distance from the capital"
 	Example: "[+20]% Strength decreasing with distance from the capital"
 
@@ -1965,7 +2001,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "[amount] Sight"
 	Example: "[3] Sight"
 
-	Applicable to: Global, Unit, Terrain
+	Applicable to: Global, Unit, Terrain, Improvement
 
 ??? example  "[amount] Range"
 	Example: "[3] Range"
@@ -2053,6 +2089,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Unable to pillage tiles"
 	Applicable to: Global, Unit
+
+??? example  "Destroys [cityFilter] cities instead of capturing"
+	The unit will destroy [cityFilter] cities instead of capturing them, also allows non-melee units to destroy cities.Capital cities (including city states) are immune to this effect.
+
+	Example: "Destroys [in all cities] cities instead of capturing"
+
+	Applicable to: Unit
 
 ??? example  "No movement cost to pillage"
 	Applicable to: Global, Unit
@@ -2403,7 +2446,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "[amount] Sight"
 	Example: "[3] Sight"
 
-	Applicable to: Global, Unit, Terrain
+	Applicable to: Global, Unit, Terrain, Improvement
 
 ??? example  "Must be adjacent to [amount] [simpleTerrain] tiles"
 	Example: "Must be adjacent to [3] [Elevated] tiles"
@@ -2699,6 +2742,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Example: "Obsolete with [Agriculture]"
 
 	Applicable to: Building, Improvement, Resource
+
+??? example  "[amount] Sight"
+	Example: "[3] Sight"
+
+	Applicable to: Global, Unit, Terrain, Improvement
 
 ??? example  "Vegetation"
 	This unique is automatically hidden from users.
@@ -3218,6 +3266,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
+??? example  "&lt;on [difficulty] difficulty or lower&gt;"
+	Example: "&lt;on [Prince] difficulty or lower&gt;"
+
+	Applicable to: Conditional
+
 ??? example  "&lt;when [victoryType] Victory is enabled&gt;"
 	Example: "&lt;when [Domination] Victory is enabled&gt;"
 
@@ -3241,6 +3294,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;when nuclear weapons are enabled&gt;"
+	Applicable to: Conditional
+
+??? example  "&lt;when nuclear weapons are disabled&gt;"
 	Applicable to: Conditional
 
 ??? example  "&lt;with [nonNegativeAmount]% chance&gt;"
@@ -3571,6 +3627,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
+??? example  "&lt;when not stacked with a [mapUnitFilter] unit&gt;"
+	Example: "&lt;when not stacked with a [Wounded] unit&gt;"
+
+	Applicable to: Conditional
+
 ??? example  "&lt;with [nonNegativeAmount] to [nonNegativeAmount] neighboring [tileFilter] tiles&gt;"
 	Example: "&lt;with [3] to [3] neighboring [Farm] tiles&gt;"
 
@@ -3638,6 +3699,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	'Between' is inclusive - so 'between 1 and 5' includes 1 and 5.
 
 	Example: "&lt;when number of [1000] is between [1000] and [1000]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;when carried by [mapUnitFilter] units&gt;"
+	Example: "&lt;when carried by [Wounded] units&gt;"
 
 	Applicable to: Conditional
 
@@ -3968,10 +4034,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[countable]: This indicates a number or a numeric variable.They can be tested in the developer console with `civ checkcountable` - for example, `civ checkcountable "[Iron]+2"`.
 *[difficulty]: The name of any difficulty.
 *[era]: The name of any era.
+*[eraFilter]: The name of an era, `any era`, `Starting Era`, `pre-[era]`, `post-[era]`.
 *[event]: The name of any event.
 *[foundingOrEnhancing]: `founding` or `enhancing`.
 *[fraction]: Indicates a fractional number, which can be negative.
 *[improvementName]: The name of any improvement excluding 'Cancel improvement order'
+*[leaderTitle]: Provides a leader title that includes the leader's name in parameters.
 *[modFilter]: A Mod name, case-sensitive _or_ a simple wildcard filter beginning and ending in an Asterisk, case-insensitive.
 Note that this must use the Mod name as Unciv displays it, not the Repository name.
 There is a conversion affecting dashes and leading/trailing blanks. Please make sure not to get confused.
@@ -3992,6 +4060,7 @@ There is a conversion affecting dashes and leading/trailing blanks. Please make 
 *[tech]: The name of any tech.
 *[terrainFeature]: The name of any terrain that is a terrain feature according to the json file.
 *[tileFilter]: Anything that can be used either in an improvementFilter or in a terrainFilter can be used here, plus 'unimproved'
+*[unitNameGroup]: The name of a unit name group found in UnitNameGroups.json, or one of their unique tags.
 *[unitTriggerTarget]: `This Unit` or `Target Unit`.
 *[unitType]: Can be 'Land', 'Water', 'Air', any unit type, a filtering Unique on a unit type, or a multi-filter of these.
 *[validationWarning]: Suppresses one specific Ruleset validation warning. This can specify the full text verbatim including correct upper/lower case, or it can be a wildcard case-insensitive simple pattern starting and ending in an asterisk ('*'). If the suppression unique is used within an object or as modifier (not ModOptions), the wildcard symbols can be omitted, as selectivity is better due to the limited scope.

@@ -1,12 +1,14 @@
 package com.unciv.ui.screens.civilopediascreen
 
-import com.unciv.UncivGame
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.unciv.models.ruleset.Ruleset
-import com.unciv.ui.components.input.KeyboardBinding
-import com.unciv.ui.screens.basescreen.TutorialController
+import com.unciv.UncivGame
+import com.unciv.logic.GameInfo
 import com.unciv.models.ruleset.Belief as BaseBelief
+import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.UnitType as BaseUnitType
+import com.unciv.models.translations.tr
+import com.unciv.ui.components.input.KeyboardBinding
 import yairm210.purity.annotations.Readonly
 
 /** Enum used as keys for Civilopedia "pages" (categories).
@@ -21,7 +23,7 @@ enum class CivilopediaCategories (
     val getImage: ((name: String, size: Float) -> Actor?)?,
     val binding: KeyboardBinding,
     val headerIcon: String,
-    val getCategoryIterator: (ruleset: Ruleset, tutorialController: TutorialController) -> Collection<ICivilopediaText>
+    val getCategoryIterator: (ruleset: Ruleset, gameInfo: GameInfo?) -> Collection<ICivilopediaText>
 ) {
     Building ("Buildings",
         CivilopediaImageGetters.construction,
@@ -93,20 +95,38 @@ enum class CivilopediaCategories (
         CivilopediaImageGetters.belief,
         KeyboardBinding.PediaBeliefs,
         "ReligionIcons/Religion",
-        { ruleset, _ -> (ruleset.beliefs.values.asSequence() +
-            BaseBelief.getCivilopediaReligionEntry(ruleset)).toList() }
+        { ruleset, _ -> (
+            ruleset.beliefs.values.asSequence() +
+            BaseBelief.getCivilopediaBeliefsEntry(ruleset) +
+            BaseBelief.getCivilopediaReligionEntry(ruleset)
+        ).toList() }
     ),
     Tutorial ("Tutorials",
         getImage = null,
         KeyboardBinding.PediaTutorials,
         "OtherIcons/ExclamationMark",
-        { _, tutorialController -> tutorialController.getCivilopediaTutorials() }
+        { ruleset, _ -> ruleset.getCivilopediaTutorials() }
     ),
     Victory ("Victory Types",
         CivilopediaImageGetters.victoryType,
         KeyboardBinding.PediaVictoryTypes,
         "OtherIcons/Score",
-        { ruleset, _ -> ruleset.victories.values }
+        { ruleset, gameInfo -> ruleset.victories.values
+            .filter {
+                // Only display active victory types
+                gameInfo?.gameParameters?.victoryTypes?.contains(it.name) ?: true
+            }
+        }
+    ),
+    UnitNameGroup("Unit Names",
+        CivilopediaImageGetters.unitNameGroup,
+        KeyboardBinding.PediaUnitNameGroups,
+        "OtherIcons/UnitNameGroups",
+        { ruleset, _ -> ruleset.unitNameGroups.values
+            .filter {
+                it.unitNames.isNotEmpty() && it.getUnits(ruleset).isNotEmpty()
+            }
+        }
     ),
     Difficulty ("Difficulty levels",
         getImage = null,
@@ -131,5 +151,14 @@ enum class CivilopediaCategories (
         @Readonly fun fromLink(name: String): CivilopediaCategories? =
             entries.firstOrNull { it.name == name }
             ?: entries.firstOrNull { it.label == name }
+
+        /** Get all Tutorials to be displayed in the Civilopedia (hiding is done later, however) */
+        private fun Ruleset.getCivilopediaTutorials() =
+            /** Note: **Not** UncivGame.Current.gameInfo?.getGlobalUniques() because this is for pedia display,
+             *        and showing the merged GlobalUniques + Speed uniques + Difficulty might surprise.
+             */
+            tutorials.values +
+                // Add entry for Global Uniques only if they have anything interesting
+                listOfNotNull(globalUniques.takeIf { it.hasUniques() })
     }
 }

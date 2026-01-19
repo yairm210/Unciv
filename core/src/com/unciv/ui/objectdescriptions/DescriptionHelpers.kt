@@ -29,12 +29,12 @@ fun IHasUniques.uniquesToDescription(
 /**
  *  A Sequence of user-visible Uniques as [FormattedLine]s.
  *
- *  @param leadingSeparator Tristate: If there are lines to display and this parameter is not `null`, a leading line is output, as separator or empty line.
+ *  @param leadingSeparator Runs on a SequenceScope<FormattedLine> to emit any kind of separator when content follows. Defaults to an empty line. Nullable to have no separator at all.
  *  @param colorConsumesResources If set, ConsumesResources Uniques get a reddish color.
  *  @param exclude Predicate that can exclude Uniques by returning `true` (defaults to return `false`).
  */
 fun IHasUniques.uniquesToCivilopediaTextLines(
-    leadingSeparator: Boolean? = false,
+    leadingSeparator: (suspend SequenceScope<FormattedLine>.() -> Unit)? = { yield(FormattedLine()) },
     colorConsumesResources: Boolean = false,
     exclude: Unique.() -> Boolean = {false}
 ) = sequence {
@@ -43,7 +43,7 @@ fun IHasUniques.uniquesToCivilopediaTextLines(
 
     for ((index, unique) in orderedUniques.withIndex()) {
         if (leadingSeparator != null && index == 0)
-            yield(FormattedLine(separator = leadingSeparator))
+            leadingSeparator()
         // Optionally special-case ConsumesResources to give it a reddish color. Also ensures link always points to the resource
         // (the other constructor guesses the first object by name in the Unique parameters).
         yield(
@@ -63,7 +63,7 @@ fun IHasUniques.uniquesToCivilopediaTextLines(
  */
 fun IHasUniques.uniquesToCivilopediaTextLines(
     lineList: MutableCollection<FormattedLine>,
-    leadingSeparator: Boolean? = false,
+    leadingSeparator: (suspend SequenceScope<FormattedLine>.() -> Unit)? = { yield(FormattedLine()) },
     colorConsumesResources: Boolean = false,
     exclude: Unique.() -> Boolean = {false}
 ) {

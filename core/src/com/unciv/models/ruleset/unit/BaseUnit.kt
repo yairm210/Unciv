@@ -60,8 +60,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     @Readonly fun techsThatObsoleteThis(): Sequence<String> = if (obsoleteTech == null) emptySequence() else sequenceOf(obsoleteTech!!)
     @Readonly fun techsAtWhichAutoUpgradeInProduction(): Sequence<String> = techsThatObsoleteThis()
     @Readonly fun techsAtWhichNoLongerAvailable(): Sequence<String> = techsThatObsoleteThis()
-    @Suppress("unused") // Keep the how-to around
-    fun isObsoletedBy(techName: String): Boolean = techsThatObsoleteThis().contains(techName)
     var upgradesTo: String? = null
     var replaces: String? = null
     var uniqueTo: String? = null
@@ -103,6 +101,9 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> =
             BaseUnitDescriptions.getCivilopediaTextLines(this, ruleset)
 
+    override fun getSortGroup(ruleset: Ruleset): Int = ruleset.technologies[requiredTech]?.era(ruleset)?.eraNumber ?: 100
+    override fun getSubCategory(ruleset: Ruleset): String? = ruleset.technologies[requiredTech]?.era(ruleset)?.name ?: "Other"
+
     @Readonly
     override fun isUnavailableBySettings(gameInfo: GameInfo) =
         super<INonPerpetualConstruction>.isUnavailableBySettings(gameInfo) ||
@@ -130,7 +131,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         @LocalState val unit = MapUnit()
         unit.name = name
         unit.civ = civInfo
-        unit.owner = civInfo.civName
+        unit.owner = civInfo.civID
         unit.id = unitId ?: ++civInfo.gameInfo.lastUnitId
 
         // must be after setting name & civInfo because it sets the baseUnit according to the name
@@ -418,17 +419,17 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     @Readonly
     fun matchesFilter(filter: String, state: GameContext? = null, multiFilter: Boolean = true): Boolean {
         return if (multiFilter) MultiFilter.multiFilter(filter, {
-            cachedMatchesFilterResult.getOrPut(it) { matchesSingleFilter(it) } ||
+            cachedMatchesFilterResult.getOrPut(it) { matchesSingleFilter(it, state) } ||
                 state != null && hasTagUnique(it, state) ||
                 state == null && hasTagUnique(it)
         })
-        else cachedMatchesFilterResult.getOrPut(filter) { matchesSingleFilter(filter) } ||
+        else cachedMatchesFilterResult.getOrPut(filter) { matchesSingleFilter(filter, state) } ||
             state != null && hasTagUnique(filter, state) ||
             state == null && hasTagUnique(filter)
     }
     
     @Readonly
-    fun matchesSingleFilter(filter: String): Boolean {
+    fun matchesSingleFilter(filter: String, state: GameContext? = null): Boolean {
         // all cases are constants for performance
         return when (filter) {
             "all", "All" -> true
@@ -451,7 +452,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 else if (filter == replaces) return true
                 
                 for (requiredTech: String in requiredTechs())
-                    if (ruleset.technologies[requiredTech]?.matchesFilter(filter, multiFilter = false) == true) return true
+                    if (ruleset.technologies[requiredTech]?.matchesFilter(filter, state, false) == true) return true
                 if (
                 // Uniques using these kinds of filters should be deprecated and replaced with adjective-only parameters
                     filter.endsWith(" units")
@@ -569,8 +570,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                         power *= (unique.params[0].toInt() / 4f).toPercent()  // Bonus decreasing with distance from capital - not worth much most of the map???
 
                 UniqueType.MayParadrop // Paradrop - 25% bonus
-                    -> power *= 1.25f
-                UniqueType.MayParadropOld // ParadropOld - 25% bonus
                     -> power *= 1.25f
                 UniqueType.MustSetUp // Must set up - 20 % penalty
                     -> power /= 1.20f

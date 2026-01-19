@@ -147,7 +147,7 @@
     {
         "name": "Holy Warriors",
         "type": "Follower",
-        "uniques": ["May buy [{Military} {Land}] units with [Faith] for [2] times their normal Production cost <before the [Industrial era]>"]
+        "uniques": ["May buy [{pre-[Industrial era]} {Military} {Land}] units with [Faith] for [2] times their normal Production cost <in [in cities following this religion] cities>"]
     },
     {
         "name": "Liturgical Drama",

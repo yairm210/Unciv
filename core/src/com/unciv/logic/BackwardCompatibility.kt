@@ -38,6 +38,18 @@ object BackwardCompatibility {
 
         removeTechAndPolicies()
         updateMissingStartingEra()
+        migrateCivID()
+    }
+
+    fun GameInfo.migrateCivID() {
+        for (civ in civilizations) {
+            if (civ.civID == "") civ.civID = civ.civName
+        }
+    }
+    fun GameInfoPreview.migrateCivID() {
+        for (civ in civilizations) {
+            if (civ.civID == "") civ.civID = civ.civName
+        }
     }
 
     private fun GameInfo.updateMissingStartingEra() {
@@ -158,9 +170,7 @@ object BackwardCompatibility {
         }
         // Replace in construction queue
         if (!cityConstructions.isBuilt(newBuildingName) && !cityConstructions.constructionQueue.contains(newBuildingName))
-            cityConstructions.constructionQueue = cityConstructions.constructionQueue
-                .map { if (it == oldBuildingName) newBuildingName else it }
-                .toMutableList()
+            cityConstructions.transformQueue { entry, _ -> if (entry == oldBuildingName) newBuildingName else entry }
         else
             cityConstructions.constructionQueue.remove(oldBuildingName)
         // Replace in in-progress constructions
