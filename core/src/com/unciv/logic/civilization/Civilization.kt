@@ -139,7 +139,8 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     /** Used in online multiplayer for human players */
     var playerId = ""
-    var playerMinutesBeforeForceResign = 3*24*60
+    /** Used in online multiplayer, if a player exceed this time to complete their turn, others can force them to resign*/
+    var playerMinutesBeforeForceResign = 3 * 24 * 60
     /** The Civ's gold reserves. Public get, private set - please use [addGold] method to modify. */
     var gold = 0
         private set

@@ -593,7 +593,7 @@ class WorldScreen(
             gameInfoClone.setTransients()  // this can get expensive on large games, not the clone itself
 
             progressBar.increment()
-
+            
             gameInfoClone.nextTurn(progressBar, true)
 
             if (originalGameInfo.gameParameters.isOnlineMultiplayer) {

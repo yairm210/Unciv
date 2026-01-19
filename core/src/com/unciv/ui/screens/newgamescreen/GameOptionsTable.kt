@@ -108,16 +108,13 @@ class GameOptionsTable(
 
         val checkboxTable = Table().apply { defaults().left().pad(2.5f) }
         val selectBoxTable = Table()
-
         checkboxTable.addIsOnlineMultiplayerCheckbox()
-        
         if (gameParameters.isOnlineMultiplayer){
             checkboxTable.addAnyoneCanSpectateCheckbox()
             selectBoxTable.addDurationSelectBox("Time until skip turn:", GameParameters::minutesUntilSkipTurn, 1, 0, 0)
             selectBoxTable.addDurationSelectBox("Total time to play:", GameParameters::minutesUntilForceResign, 3, 0, 0)
             selectBoxTable.addDurationSelectBox("Time recovered per turn:", GameParameters::minutesRecoveredPerTurn, 3, 0, 0)
         }
-        
         add(checkboxTable).center().row()
         add(selectBoxTable).center().row()
 
@@ -433,11 +430,11 @@ class GameOptionsTable(
         param: KMutableProperty1<GameParameters, Int>,
         defaultDayValue: Int,
         defaultHourValue: Int,
-        dafaultMinuteValue: Int
+        defaultMinuteValue: Int
     ) {
         add(title.toLabel(hideIcons = true)).right()
 
-        val selector = DurationSelector(gameParameters, param, defaultDayValue, defaultHourValue, dafaultMinuteValue)
+        val selector = DurationSelector(gameParameters, param, defaultDayValue, defaultHourValue, defaultMinuteValue)
 
         add(selector.dayBox)
         add(selector.hourBox)
@@ -474,6 +471,7 @@ class GameOptionsTable(
 
             param.set(gameParameters, value)
         }
+        
         fun createTimeCell(intValues: Array<Int>, initialValue: Int, suffix: String): SelectBox<String> {
             val timeBox = SelectBox<String>(BaseScreen.skin)
             val stringValues =  Array(intValues.size) { i -> "${intValues[i]}" + suffix }

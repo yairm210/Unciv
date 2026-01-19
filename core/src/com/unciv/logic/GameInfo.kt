@@ -343,7 +343,12 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     fun isSimulation(): Boolean = turns < DebugUtils.SIMULATE_UNTIL_TURN
             || turns < simulateMaxTurns && simulateUntilWin
 
-    fun nextTurn(progressBar: NextTurnProgress? = null, shouldGainTime: Boolean =false) {
+    /**
+     *  Advance a turn, running automation for AI players, stopping for human players
+     *  @param progressBar Optional reference to UI widget either provided by [WorldScreen.nextTurn][com.unciv.ui.screens.worldscreen.WorldScreen.nextTurn] or `null` when simulating
+     *  @param shouldGainTime on a multiplayer game, if true, makes the player who's turn is ended recover time to play before risking to get forced to resign, 'false' by default 
+     */
+    fun nextTurn(progressBar: NextTurnProgress? = null, shouldGainTime: Boolean = false) {
 
         var player = currentPlayerCiv
         var playerIndex = civilizations.indexOf(player)
@@ -351,7 +356,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         if (gameParameters.isOnlineMultiplayer)
         {
             // Update remaining time before force resign for the player
-            var gain: Int = 0
+            var gain  = 0
             if (shouldGainTime) {gain = gameParameters.minutesRecoveredPerTurn}
             val loss =
                 Duration.between(Instant.ofEpochMilli(currentTurnStartTime), Instant.now())
@@ -366,7 +371,6 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             player.playerMinutesBeforeForceResign = player.playerMinutesBeforeForceResign + gain - loss
             player.playerMinutesBeforeForceResign = player.playerMinutesBeforeForceResign.coerceIn(0, maxTime)
         }
-
 
         // We rotate Players in cycle: 1,2...N,1,2...
         fun setNextPlayer() {
