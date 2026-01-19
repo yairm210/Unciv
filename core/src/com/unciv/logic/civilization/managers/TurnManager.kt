@@ -11,6 +11,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.PopupAlert
+import com.unciv.logic.civilization.PromoteUnitAction
 import com.unciv.logic.civilization.diplomacy.DiplomacyTurnManager.nextTurn
 import com.unciv.logic.map.mapunit.UnitTurnManager
 import com.unciv.logic.map.tile.Tile
@@ -254,8 +255,20 @@ class TurnManager(val civInfo: Civilization) {
             notificationsLog.add(notificationsThisTurn)
 
         civInfo.notifications.clear()
+        civInfo.notificationCountAtStartTurn = null
 
         if (civInfo.isDefeated() || civInfo.isSpectator()) return  // yes they do call this, best not update any further stuff
+
+        // "can be promoted" notifications are usually posted when the unit is not actually allowed to promote - e.g. after an attack
+        // So add all such notifications from last turn if the unit still can be promoted
+        notificationsThisTurn.notifications.asSequence()
+            .flatMap { notification ->
+                notification.actions.asSequence()
+                    .filterIsInstance<PromoteUnitAction>()
+                    .map { notification to it.id }
+            }.filter { (_, id) ->
+                civInfo.units.getUnitById(id)?.promotions?.canBePromoted() == true
+            }.mapTo(civInfo.notifications) { (notification, _) -> notification }
 
         var nextTurnStats =
             if (civInfo.isBarbarian)

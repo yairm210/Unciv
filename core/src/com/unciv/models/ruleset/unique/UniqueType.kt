@@ -404,7 +404,7 @@ enum class UniqueType(
     // Stat bonuses
     AdditionalAttacks("[amount] additional attacks per turn", UniqueTarget.Unit, UniqueTarget.Global),
     Movement("[amount] Movement", UniqueTarget.Unit, UniqueTarget.Global),
-    Sight("[amount] Sight", UniqueTarget.Unit, UniqueTarget.Global, UniqueTarget.Terrain),
+    Sight("[amount] Sight", UniqueTarget.Unit, UniqueTarget.Global, UniqueTarget.Terrain, UniqueTarget.Improvement),
     Range("[amount] Range", UniqueTarget.Unit, UniqueTarget.Global),
     AirInterceptionRange("[relativeAmount] Air Interception Range", UniqueTarget.Unit, UniqueTarget.Global),
     Heal("[amount] HP when healing", UniqueTarget.Unit, UniqueTarget.Global),
@@ -823,6 +823,9 @@ enum class UniqueType(
     ConditionalCountableBetween("when number of [countable] is between [countable] and [countable]", UniqueTarget.Conditional,
         docDescription = "'Between' is inclusive - so 'between 1 and 5' includes 1 and 5."),
 
+    /////// carrying conditionals
+    ConditionalWhenCarriedBy("when carried by [mapUnitFilter] units", UniqueTarget.Conditional),
+
     //endregion
 
     ///////////////////////////////////////// region 09 TRIGGERED ONE-TIME /////////////////////////////////////////
@@ -830,6 +833,8 @@ enum class UniqueType(
 
     OneTimeFreeUnit("Free [unit] appears", UniqueTarget.Triggerable),  // used in Policies, Buildings
     OneTimeAmountFreeUnits("[positiveAmount] free [unit] units appear", UniqueTarget.Triggerable), // used in Buildings
+    OneTimeRebel("A [unit] rebels", UniqueTarget.Triggerable),  // used in Policies, Buildings
+    OneTimeAmountRebels("[positiveAmount] [unit]s rebel", UniqueTarget.Triggerable), // used in Buildings
     OneTimeFreeUnitRuins("Free [unit] found in the ruins", UniqueTarget.Ruins), // Differs from "Free [] appears" in that it spawns near the ruins instead of in a city
     OneTimeFreePolicy("Free Social Policy", UniqueTarget.Triggerable), // used in Buildings
     OneTimeAmountFreePolicies("[positiveAmount] Free Social Policies", UniqueTarget.Triggerable),  // Not used in Vanilla

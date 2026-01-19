@@ -131,10 +131,12 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
     }
 
     private fun doDirectPromotionEffects(promotion: Promotion) {
-        for (unique in promotion.uniqueObjects)
-            if (unique.conditionalsApply(unit.cache.state)
-                    && !unique.hasTriggerConditional())
+        for (unique in promotion.uniqueObjects) {
+            if (!unique.conditionalsApply(unit.cache.state) || unique.hasTriggerConditional()) continue
+            repeat(unique.getUniqueMultiplier(unit.cache.state)) {
                 UniqueTriggerActivation.triggerUnique(unique, unit, triggerNotificationText = "due to our [${unit.name}] being promoted")
+            }
+        }
     }
 
     /** Gets all promotions this unit could currently "buy" with enough [XP]

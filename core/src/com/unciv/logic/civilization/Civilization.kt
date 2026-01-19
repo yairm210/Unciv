@@ -3,10 +3,7 @@ package com.unciv.logic.civilization
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.json.LastSeenImprovement
-import com.unciv.logic.GameInfo
-import com.unciv.logic.IsPartOfGameInfoSerialization
-import com.unciv.logic.MultiFilter
-import com.unciv.logic.UncivShowableException
+import com.unciv.logic.*
 import com.unciv.logic.automation.unit.WorkerAutomation
 import com.unciv.logic.city.City
 import com.unciv.logic.city.managers.CityFounder
@@ -160,6 +157,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     var naturalWonders = ArrayList<String>()
 
     var notifications = ArrayList<Notification>()
+    var notificationCountAtStartTurn: Int? = null  // Used by NotificationsOverviewTable to highlight new entries
 
     var notificationsLog = ArrayList<NotificationsLog>()
     class NotificationsLog(val turn: Int = 0) : IsPartOfGameInfoSerialization {
@@ -302,6 +300,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.leaderTitle = leaderTitle
         toReturn.notifications.addAll(notifications)
         toReturn.notificationsLog.addAll(notificationsLog)
+        toReturn.notificationCountAtStartTurn = notificationCountAtStartTurn
         toReturn.citiesCreated = citiesCreated
         toReturn.popupAlerts.addAll(popupAlerts)
         toReturn.tradeRequests.addAll(tradeRequests)
@@ -570,18 +569,21 @@ class Civilization : IsPartOfGameInfoSerialization {
         trigger: UniqueType,
         gameContext: GameContext = state,
         triggerFilter: (Unique) -> Boolean = { true }
-    ) : Iterable<Unique> = sequence {
-        yieldAll(nation.uniqueMap.getTriggeredUniques(trigger, gameContext, triggerFilter))
-        yieldAll(cities.asSequence()
-            .flatMap { city -> city.cityConstructions.builtBuildingUniqueMap.getTriggeredUniques(trigger, gameContext, triggerFilter) }
-        )
+    ) : Sequence<Unique> = sequence {
+        // Gathering all uniques into a list first since triggers can add e.g. buildings 
+        // which contain triggers, causing concurrent modification errors.
+        // Cannont use getTriggeredUniques from uniqueMaps since we don't want to check conditionals yet
+        yieldAll(nation.uniqueMap.getAllUniques())
+        yieldAll(cities.asSequence().flatMap { city -> city.cityConstructions.builtBuildingUniqueMap.getAllUniques() })
         if (religionManager.religion != null)
-            yieldAll(religionManager.religion!!.founderBeliefUniqueMap.getTriggeredUniques(trigger, gameContext, triggerFilter))
-        yieldAll(policies.policyUniques.getTriggeredUniques(trigger, gameContext, triggerFilter))
-        yieldAll(tech.techUniques.getTriggeredUniques(trigger, gameContext, triggerFilter))
-        yieldAll(getEra().uniqueMap.getTriggeredUniques (trigger, gameContext, triggerFilter))
-        yieldAll(gameInfo.getGlobalUniques().uniqueMap.getTriggeredUniques(trigger, gameContext, triggerFilter))
-    }.toList() // Triggers can e.g. add buildings which contain triggers, causing concurrent modification errors
+            yieldAll(religionManager.religion!!.founderBeliefUniqueMap.getAllUniques())
+        yieldAll(policies.policyUniques.getAllUniques())
+        yieldAll(tech.techUniques.getAllUniques())
+        yieldAll(getEra().uniqueMap.getAllUniques())
+        yieldAll(gameInfo.getGlobalUniques().uniqueMap.getAllUniques())
+    }.toList().asSequence() // Then convert back to a Sequence to check conditionals when triggering rather than before triggering
+        .filter { it.getModifiers(trigger).any(triggerFilter) && it.conditionalsApply(gameContext) }
+        .flatMap { it.getMultiplied(gameContext) }
 
     @Readonly
     fun getTriggeredUniques(
@@ -589,18 +591,23 @@ class Civilization : IsPartOfGameInfoSerialization {
         gameContext: GameContext = state,
         triggerFilter: (Unique) -> Boolean = { true },
         ignoreCities: Boolean = false
-    ) : Iterable<Unique> = sequence {
-        yieldAll(nation.uniqueMap.getTriggeredUniques(trigger, gameContext, triggerFilter))
-        if (!ignoreCities) yieldAll(cities.asSequence()
-            .flatMap { city -> city.cityConstructions.builtBuildingUniqueMap.getTriggeredUniques(trigger, gameContext, triggerFilter) }
+    ) : Sequence<Unique> = sequence {
+        // Gathering all uniques into a list first since triggers can add e.g. buildings 
+        // which contain triggers, causing concurrent modification errors.
+        // Cannont use getTriggeredUniques from uniqueMaps since we don't want to check conditionals yet
+        yieldAll(nation.uniqueMap.getAllUniques())
+        if(!ignoreCities) yieldAll(cities.asSequence()
+            .flatMap { city -> city.cityConstructions.builtBuildingUniqueMap.getAllUniques() }
         )
         if (religionManager.religion != null)
-            yieldAll(religionManager.religion!!.founderBeliefUniqueMap.getTriggeredUniques(trigger, gameContext, triggerFilter))
-        yieldAll(policies.policyUniques.getTriggeredUniques(trigger, gameContext, triggerFilter))
-        yieldAll(tech.techUniques.getTriggeredUniques(trigger, gameContext, triggerFilter))
-        yieldAll(getEra().uniqueMap.getTriggeredUniques (trigger, gameContext, triggerFilter))
-        yieldAll(gameInfo.getGlobalUniques().uniqueMap.getTriggeredUniques(trigger, gameContext, triggerFilter))
-    }.toList() // Triggers can e.g. add buildings which contain triggers, causing concurrent modification errors
+            yieldAll(religionManager.religion!!.founderBeliefUniqueMap.getAllUniques())
+        yieldAll(policies.policyUniques.getAllUniques())
+        yieldAll(tech.techUniques.getAllUniques())
+        yieldAll(getEra().uniqueMap.getAllUniques())
+        yieldAll(gameInfo.getGlobalUniques().uniqueMap.getAllUniques())
+    }.toList().asSequence() // Then convert back to a Sequence to check conditionals when triggering rather than before triggering
+        .filter { it.getModifiers(trigger).any(triggerFilter) && it.conditionalsApply(gameContext) }
+        .flatMap { it.getMultiplied(gameContext) }
 
     /** Implements [UniqueParameterType.CivFilter][com.unciv.models.ruleset.unique.UniqueParameterType.CivFilter] */
     @Readonly
@@ -829,7 +836,7 @@ class Civilization : IsPartOfGameInfoSerialization {
      *  */
     fun setNationTransient() {
         nation = gameInfo.ruleset.nations[civName]
-                ?: throw UncivShowableException("Nation $civName is not found!")
+                ?: throw MissingNationException("Nation $civName is not found!", gameInfo.ruleset.mods)
     }
 
     fun setTransients() {

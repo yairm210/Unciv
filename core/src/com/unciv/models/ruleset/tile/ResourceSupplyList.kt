@@ -94,6 +94,33 @@ class ResourceSupplyList(
     fun sumByResource(newOrigin: String) = ResourceSupplyList(keepZeroAmounts).addByResource(this, newOrigin)
 
     /**
+     * Applies the given modifiers list to the resource supplies.
+     *
+     * @param resourceModifiers The list of resource modifiers to apply to the supply list.
+     */
+    fun applyModifiers(resourceModifiers: Map<String, Float>) {
+        for ((resourceName, modifier) in resourceModifiers) {
+            if (modifier == 1f) continue
+            for (resourceSupply in this) {
+                if (resourceSupply.resource.name == resourceName) {
+                    resourceSupply.amount = (resourceSupply.amount.toFloat() * modifier).toInt()
+                }
+            }
+        }
+    }
+
+    /**
+     * Applies the given modifier function to the resource supplies.
+     */
+    fun applyModifiers(resourceModifier: (TileResource) -> Float) {
+        for (resourceSupply in this) {
+            val modifier = resourceModifier(resourceSupply.resource)
+            if (modifier == 1f) continue
+            resourceSupply.amount = (resourceSupply.amount.toFloat() * modifier).toInt()
+        }
+    }
+
+    /**
      *  Remove all entries from a specific [origin]
      *  @return `this`, allowing chaining
      */

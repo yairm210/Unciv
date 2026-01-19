@@ -449,7 +449,7 @@ class MapLandmassGenerator(
     
     /** For world wrap maps, we want the "1-N" factor of the tile */
     private fun getReverseLongitudeFactor(longitude: Int): Float = 
-        abs(longitude) / tileMap.maxLongitude.toFloat()
+        1 - abs(longitude) / tileMap.maxLongitude.toFloat()
     
     //endregion
 }

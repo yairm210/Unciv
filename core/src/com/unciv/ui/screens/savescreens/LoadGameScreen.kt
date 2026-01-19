@@ -6,15 +6,17 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
 import com.unciv.logic.MissingModsException
+import com.unciv.logic.MissingNationException
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.files.PlatformSaverLoader
 import com.unciv.logic.files.UncivFiles
+import com.unciv.logic.github.GithubAPI
+import com.unciv.logic.github.GithubAPI.downloadAndExtract
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
-import com.unciv.ui.components.extensions.isEnabled
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.keyShortcuts
@@ -30,9 +32,7 @@ import kotlinx.coroutines.CoroutineScope
 
 class LoadGameScreen : LoadOrSaveScreen() {
     private val copySavedGameToClipboardButton = getCopyExistingSaveToClipboardButton()
-    private val loadMissingModsButton = getLoadMissingModsButton()
-    private var missingModsToLoad: Iterable<String> = emptyList()
-
+    
     /** Inheriting here again exposes [getLoadExceptionMessage] and [loadMissingMods] to
      *  other clients (WorldScreen, QuickSave, Multiplayer) without needing to rewrite many imports 
      */
@@ -79,7 +79,6 @@ class LoadGameScreen : LoadOrSaveScreen() {
         add(getLoadFromClipboardButton()).row()
         addLoadFromCustomLocationButton()
         add(errorLabel).width(stage.width / 2).center().row()
-        add(loadMissingModsButton).row()
         add(deleteSaveButton).row()
         add(copySavedGameToClipboardButton).row()
         add(showAutosavesCheckbox).row()
@@ -198,15 +197,6 @@ class LoadGameScreen : LoadOrSaveScreen() {
         }
     }
 
-    private fun getLoadMissingModsButton(): TextButton {
-        val button = downloadMissingMods.toTextButton()
-        button.onClick {
-            loadMissingMods()
-        }
-        button.isVisible = false
-        return button
-    }
-
     private fun handleLoadGameException(ex: Exception, primaryText: String = "Could not load game!") {
         val isUserFixable = handleException(ex, primaryText)
         if (!isUserFixable) {
@@ -220,17 +210,51 @@ class LoadGameScreen : LoadOrSaveScreen() {
         }
 
         if (ex is MissingModsException) {
-            loadMissingModsButton.isVisible = true
-            missingModsToLoad = ex.missingMods
+            loadMissingModsAsync(ex.missingMods)
+        }
+        if (ex is MissingNationException){
+            redownloadUnupdatedMods(ex.modNames)
         }
     }
 
-    private fun loadMissingMods() {
-        loadMissingModsButton.isEnabled = false
+    /** If any nation is missing from a saved game, chances are that one of the mods needs to be redownloaded
+     * Since we don't know which one, we check all mods that
+     * A. Have at least one nation
+     * B. Are outdated
+     * */
+    private fun redownloadUnupdatedMods(modNames: LinkedHashSet<String>) {
+        descriptionLabel.setText("Downloading unupdated mods...")
+        Concurrency.runOnNonDaemonThreadPool("redownloadUnupdatedMods") { 
+            val modsToCheck = modNames.mapNotNull { RulesetCache[it] }
+                .filter { it.nations.any() && it.modOptions.modUrl.isNotEmpty()  }
+            
+            val reposToUpdate = modsToCheck
+                .mapNotNull { 
+                    val repo = GithubAPI.Repo.parseUrl(it.modOptions.modUrl) ?: return@mapNotNull null
+                    if (it.modOptions.lastUpdated == repo.pushed_at) return@mapNotNull null
+                    repo
+                }
+            
+            Concurrency.runOnGLThread {
+                ToastPopup("Updating mods: $reposToUpdate", this@LoadGameScreen)
+                descriptionLabel.setText("Downloading unupdated mods - 0/${reposToUpdate.size}")
+            }
+
+            for ((index, repo) in reposToUpdate.withIndex()) {
+                repo.downloadAndExtract()
+                Concurrency.runOnGLThread {
+                    ToastPopup("Downloaded ${repo.name}", this@LoadGameScreen)
+                    descriptionLabel.setText("Downloading unupdated mods - ${index+1}/${reposToUpdate.size}")
+                }
+            }
+        }
+    }
+
+    private fun loadMissingModsAsync(missingMods: Iterable<String>) {
         descriptionLabel.setText(Constants.loading.tr())
         Concurrency.runOnNonDaemonThreadPool(downloadMissingMods) {
             try {
-                loadMissingMods(missingModsToLoad,
+                loadMissingMods(missingMods,
                     onModDownloaded = {
                         val labelText = descriptionLabel.text // A Gdx CharArray that has StringBuilder-like methods
                         labelText.appendLine()
@@ -240,8 +264,6 @@ class LoadGameScreen : LoadOrSaveScreen() {
                     onCompleted = {
                         launchOnGLThread {
                             RulesetCache.loadRulesets()
-                            missingModsToLoad = emptyList()
-                            loadMissingModsButton.isVisible = false
                             errorLabel.isVisible = false
                             rightSideTable.pack()
                             ToastPopup("Missing mods are downloaded successfully.", this@LoadGameScreen)
@@ -254,7 +276,6 @@ class LoadGameScreen : LoadOrSaveScreen() {
                 }
             } finally {
                 launchOnGLThread {
-                    loadMissingModsButton.isEnabled = true
                     descriptionLabel.setText("")
                 }
             }

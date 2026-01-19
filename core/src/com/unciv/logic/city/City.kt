@@ -231,7 +231,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     @Readonly fun getRuleset() = civ.gameInfo.ruleset
 
-    @Readonly fun getResourcesGeneratedByCity(civResourceModifiers: Map<String, Float>) = CityResources.getResourcesGeneratedByCity(this, civResourceModifiers)
+    @Readonly fun getResourcesGeneratedByCity(resourceModifier: (TileResource) -> Float = ::getResourceModifier) = CityResources.getResourcesGeneratedByCity(this, resourceModifier)
     @Readonly fun getAvailableResourceAmount(resourceName: String) = CityResources.getAvailableResourceAmount(this, resourceName)
 
     /**

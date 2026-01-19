@@ -68,4 +68,7 @@ class UnitNameGroup : RulesetObject() {
 
         return lines
     }
+
+    override fun getSortGroup(ruleset: Ruleset) = getUnits(ruleset).firstOrNull()?.getSortGroup(ruleset) ?: 100
+    override fun getSubCategory(ruleset: Ruleset): String? = getUnits(ruleset).firstOrNull()?.name ?: "Other"
 }
