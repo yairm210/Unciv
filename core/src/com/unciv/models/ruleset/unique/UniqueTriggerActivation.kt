@@ -130,10 +130,11 @@ object UniqueTriggerActivation {
                 }
             if (triggerFunctions.none()) return null
             return {
+                var result = false
                 for (triggerFunction in triggerFunctions) {
-                    triggerFunction.invoke()
+                    if (triggerFunction.invoke()) result = true
                 }
-                true
+                return result
             }
         }
 
