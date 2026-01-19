@@ -147,10 +147,12 @@ object UseGoldAutomation {
 
         @Readonly fun hasNaturalWonder() = it.naturalWonder != null
 
-        @Readonly  fun hasLuxury() =
-            it.hasViewableResource(civInfo)
-                && it.tileResource.resourceType == ResourceType.Luxury
-                && civInfo.getResourceAmount(it.resource!!) < 2 // At 2 or more, we haven't been able to trade it away for another duplicate...
+        @Readonly  fun hasLuxury(): Boolean {
+            val resource = it.tileResourceOrNull
+            return civInfo.canSeeResource(resource) &&
+                resource.resourceType == ResourceType.Luxury &&
+                civInfo.getResourceAmount(resource) < 2 // At 2 or more, we haven't been able to trade it away for another duplicate...
+        }
 
         @Readonly fun hasHighYields(): Boolean {
             val tileStats = it.stats.getTileStats(civInfo)

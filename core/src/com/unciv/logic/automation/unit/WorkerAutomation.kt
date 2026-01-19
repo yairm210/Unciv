@@ -252,7 +252,7 @@ class WorkerAutomation(
         if (tile.isCityCenter()) return false
         if (tile in roadBetweenCitiesAutomation.tilesOfRoadsMap) return true
         // Don't try to improve tiles we can't benefit from at all
-        if (!tile.hasViewableResource(civInfo) && tile.getTilesInDistance(civInfo.gameInfo.ruleset.modOptions.constants.cityWorkRange)
+        if (!civInfo.canSeeResource(tile.tileResourceOrNull) && tile.getTilesInDistance(civInfo.gameInfo.ruleset.modOptions.constants.cityWorkRange)
                 .none { it.isCityCenter() && it.getCity()?.civ == civInfo }
         ) return false
         if (tile.getTileImprovement()?.hasUnique(UniqueType.AutomatedUnitsWillNotReplace) == true && !tile.isPillaged()) return false
@@ -282,9 +282,9 @@ class WorkerAutomation(
             // we want our farms up when unlocking Civil Service
         }
 
-        if (tile.hasViewableResource(civInfo)) {
+        if (civInfo.canSeeResource(tile.tileResourceOrNull)) {
             priority += 1
-            if (tile.tileResource.resourceType == ResourceType.Luxury) priority += 5
+            if (tile.tileResourceOrNull?.resourceType == ResourceType.Luxury) priority += 5
             //luxuries are more important than other types of resources
         }
             
@@ -387,7 +387,7 @@ class WorkerAutomation(
             potentialTileImprovements.containsKey(Constants.remove + terrain.name)
 
         val improvementStringForResource: String? = when {
-            tile.resource == null || !tile.hasViewableResource(civInfo) -> null
+            civInfo.canSeeResource(tile.tileResourceOrNull) -> null
             
             tile.terrainFeatures.isNotEmpty()
                 && lastTerrain.unbuildable
@@ -409,9 +409,11 @@ class WorkerAutomation(
                 if (improvementStringForResource==tile.improvement) null else improvementStringForResource
             
             // If this is a resource that HAS an improvement that we can see, but this unit can't build it, don't waste your time
-            tile.resource != null && tile.hasViewableResource(civInfo)
-                    && tile.tileResource.resourceType != ResourceType.Bonus
-                    && tile.tileResource.getImprovements().any() -> return null
+            tile.tileResourceOrNull.let {
+                civInfo.canSeeResource(it) &&
+                    it.resourceType != ResourceType.Bonus &&
+                    it.getImprovements().any()
+            } -> return null
             
             bestBuildableImprovement == null -> null
 
@@ -452,8 +454,8 @@ class WorkerAutomation(
             return 0f
 
         @LocalState val stats = tile.stats.getStatDiffForImprovement(improvement, civInfo, tile.getCity(), localUniqueCache, currentTileStats)
-
-        var isResourceImprovedByNewImprovement = tile.hasViewableResource(civInfo) && tile.tileResource.isImprovedBy(improvementName)
+        
+        var isResourceImprovedByNewImprovement = civInfo.canSeeResource(tile.tileResourceOrNull) && tile.tileResource.isImprovedBy(improvementName)
 
         if (improvementName.startsWith(Constants.remove)) {
             // We need to look beyond what we are doing right now and at the final improvement that will be on this tile
@@ -570,14 +572,16 @@ class WorkerAutomation(
          *  Does not check tile ownership - caller [automateWorkBoats] already did, other callers need to ensure this explicitly.
          */
         @Readonly
-        fun hasWorkableSeaResource(tile: Tile, civInfo: Civilization) = when {
-            !tile.isWater -> false
-            tile.resource == null -> false
-            tile.improvement != null && tile.tileResource.isImprovedBy(tile.improvement!!) -> false
-            !tile.hasViewableResource(civInfo) -> false
-            else -> tile.tileResource.getImprovements().any {
-                val improvement = civInfo.gameInfo.ruleset.tileImprovements[it]!!
-                tile.improvementFunctions.canBuildImprovement(improvement, civInfo.state)
+        fun hasWorkableSeaResource(tile: Tile, civInfo: Civilization): Boolean {
+            val resource = tile.tileResourceOrNull
+            return when {
+                !tile.isWater -> false
+                !civInfo.canSeeResource(resource) -> false
+                tile.improvement != null && resource.isImprovedBy(tile.improvement!!) -> false
+                else -> resource.getImprovements().any {
+                    val improvement = civInfo.gameInfo.ruleset.tileImprovements[it]!!
+                    tile.improvementFunctions.canBuildImprovement(improvement, civInfo.state)
+                }
             }
         }
 
