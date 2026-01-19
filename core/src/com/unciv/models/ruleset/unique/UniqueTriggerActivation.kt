@@ -115,26 +115,27 @@ object UniqueTriggerActivation {
             else Random(-550) // Very random indeed
         val ruleset = civInfo.gameInfo.ruleset
 
-        // Iterating through all unit targets, it's "Every adjacent [mapUnitFilter] unit".
-        if (!unitTriggerableIteration && tile != null &&
-            unique.type?.targetTypes?.contains(UniqueTarget.UnitTriggerable) == true &&
-            !UniqueParameterType.UnitTriggerTarget.staticKnownValues.contains(unique.params[0])) {
-            // Grab all the available triggers for each unit target.
-            val triggerFunctions = tile.neighbors.flatMap { it.getUnits() }
-                .filter {
-                    val mapUnitFilter = unique.params.getOrNull(0)?.getPlaceholderParameters()?.firstOrNull()
-                    mapUnitFilter != null && it.matchesFilter(mapUnitFilter, gameContext)
+        // Unit Triggerable Uniques allow iteration through multiple unit targets.
+        if (!unitTriggerableIteration && tile != null && unique.type?.targetTypes?.contains(UniqueTarget.UnitTriggerable) == true) {
+            val unitTarget = unique.params.getOrNull(0)
+            // "Every adjacent [mapUnitFilter] unit"
+            if (unitTarget?.startsWith("Every adjacent [") == true && unitTarget?.endsWith("] unit") == true) {
+                val mapUnitFilter = unitTarget?.getPlaceholderParameters()?.firstOrNull() ?: return null
+                // Grab all the available triggers for each unit target.
+                val triggerFunctions = tile.neighbors
+                    .flatMap { it.getUnits() }
+                    .filter { it.matchesFilter(mapUnitFilter, gameContext) }
+                    .mapNotNull {
+                        getTriggerFunction(unique, civInfo, city, it, it.getTile(), notification, triggerNotificationText, true)
+                    }
+                if (triggerFunctions.none()) return null
+                return {
+                    var result = false
+                    for (triggerFunction in triggerFunctions) {
+                        if (triggerFunction.invoke()) result = true
+                    }
+                    result
                 }
-                .mapNotNull {
-                    getTriggerFunction(unique, civInfo, city, it, it.getTile(), notification, triggerNotificationText, true)
-                }
-            if (triggerFunctions.none()) return null
-            return {
-                var result = false
-                for (triggerFunction in triggerFunctions) {
-                    if (triggerFunction.invoke()) result = true
-                }
-                return result
             }
         }
 
