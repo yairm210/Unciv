@@ -365,20 +365,11 @@ object GameStarter {
             .filter { it.isMajorCiv && it in usedCivNations }
 
         for (player in chosenPlayers) {
-            val civ = Civilization(player.chosenCiv)
-            when (player.chosenCiv) {
-                in usedMajorCivs, Constants.spectator -> {
-                    civ.playerType = player.playerType
-                    civ.playerId = player.playerId
-                    civ.playerMinutesBeforeForceResign = newGameParameters.minutesUntilForceResign
-                }
-                else ->
-                    if (!civ.cityStateFunctions.initCityState(ruleset, newGameParameters.startingEra, usedMajorCivs))
-                        continue
             val civ = Civilization(player.chosenNation)
             if (civ.isMajorCiv() || civ.isSpectator()) {
                 civ.playerType = player.playerType
                 civ.playerId = player.playerId
+                civ.playerMinutesBeforeForceResign = newGameParameters.minutesUntilForceResign
             }
             else if (!civ.cityStateFunctions.initCityState(ruleset, newGameParameters.startingEra, usedMajorCivs))
                 continue

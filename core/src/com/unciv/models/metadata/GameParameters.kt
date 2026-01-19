@@ -42,9 +42,9 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
     var anyoneCanSpectate = true
     /** After this amount of minutes, anyone can choose to 'skip turn' of the current player to keep the game going */
     var minutesUntilSkipTurn = 60 * 24
-    @Deprecated("use minutes until force resign instead")
-    var hoursUntilForceResign = 3 * 24
+    /** Initial players' timer to play before they can be forced to resign permanently*/
     var minutesUntilForceResign = 3 * 24 * 60
+    /** Time a player recover on their timer before they can be forced to resign. Time isn't added if the player get their turn skipped*/
     var minutesRecoveredPerTurn = 60 * 24
 
     var baseRuleset: String = BaseRuleset.Civ_V_GnK.fullName

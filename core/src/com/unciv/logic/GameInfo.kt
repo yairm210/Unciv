@@ -345,25 +345,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         var player = currentPlayerCiv
         var playerIndex = civilizations.indexOf(player)
 
-        if (gameParameters.isOnlineMultiplayer)
-        {
-            // Update remaining time before force resign for the player
-            var gain  = 0
-            if (shouldGainTime) {gain = gameParameters.minutesRecoveredPerTurn}
-            val loss =
-                Duration.between(Instant.ofEpochMilli(currentTurnStartTime), Instant.now())
-                    .toMinutes().toInt()
-            var maxTime: Int
-            // To keep compatibility with old version
-            if (gameParameters.hoursUntilForceResign != 0) {
-                maxTime = 60 * gameParameters.hoursUntilForceResign
-            } else {
-                maxTime = gameParameters.minutesUntilForceResign
-            }
-            player.playerMinutesBeforeForceResign = player.playerMinutesBeforeForceResign + gain - loss
-            player.playerMinutesBeforeForceResign = player.playerMinutesBeforeForceResign.coerceIn(0, maxTime)
-        }
-
+        if (gameParameters.isOnlineMultiplayer) updateMinutesBeforeForceResign(player, shouldGainTime)
         // We rotate Players in cycle: 1,2...N,1,2...
         fun setNextPlayer() {
             playerIndex = (playerIndex + 1) % civilizations.size
@@ -464,6 +446,16 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         // This would belong at the end of TurnManager.startTurn, but needs to come after notifyOfCloseEnemyUnits
         player.notificationCountAtStartTurn = player.notifications.size
+    }
+    
+    private fun updateMinutesBeforeForceResign(player: Civilization, shouldGainTime: Boolean) {
+            // Update remaining time before the player who's turn is ending can be forced to resign
+            val turnStart: Instant  = Instant.ofEpochMilli(currentTurnStartTime)
+            val timeUsed = Duration.between(turnStart, Instant.now()).toMinutes().toInt()
+            val timeRegained = if (shouldGainTime) gameParameters.minutesRecoveredPerTurn else 0
+            val rawNewTime = player.playerMinutesBeforeForceResign + timeUsed - timeRegained
+            val maxNewTime = gameParameters.minutesUntilForceResign
+            player.playerMinutesBeforeForceResign = rawNewTime.coerceIn(0, maxNewTime)
     }
 
     private fun notifyOfCloseEnemyUnits(thisPlayer: Civilization) {
