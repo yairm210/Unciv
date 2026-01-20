@@ -547,10 +547,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         filter: (Tile) -> Boolean = { true }
     ): Notification? {
 
-        val resource = ruleset.tileResources[resourceName] ?: return null
-        if (!civ.tech.isRevealed(resource)) {
-            return null
-        }
+        val resource = ruleset.tileResources[resourceName]
+        if (!civ.canSeeResource(resource)) return null
 
         data class CityTileAndDistance(val city: City, val tile: Tile, val distance: Int)
 
@@ -562,7 +560,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         // All sources of the resource on the map, using a city-state's capital center tile for the CityStateOnlyResource types
         val exploredRevealTiles: Sequence<Tile> =
-                if (ruleset.tileResources[resourceName]!!.hasUnique(UniqueType.CityStateOnlyResource)) {
+                if (resource.hasUnique(UniqueType.CityStateOnlyResource)) {
                     // Look for matching mercantile CS centers
                     getAliveCityStates()
                         .asSequence()

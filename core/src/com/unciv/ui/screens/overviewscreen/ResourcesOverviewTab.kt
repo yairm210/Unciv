@@ -291,7 +291,7 @@ class ResourcesOverviewTab(
         /** Show unlocked **strategic** resources even if you have no access at all */
         for (resource in viewingPlayer.gameInfo.ruleset.tileResources.values) {
             if (resource.resourceType != ResourceType.Strategic) continue
-            if (viewingPlayer.tech.isRevealed(resource))
+            if (viewingPlayer.canSeeResource(resource))
                 newResourceSupplyList.add(resource, "No source", 0)
         }
 
