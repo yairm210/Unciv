@@ -71,6 +71,16 @@ object UniqueTriggerActivation {
         return function.invoke()
     }
 
+    /**
+     * @return whether an action was successfully performed.
+     */
+    fun triggerUnique(
+        unique: Unique,
+        gameContext: GameContext,
+        notification: String? = null,
+        triggerNotificationText: String? = null
+    ): Boolean = if (gameContext.civInfo != null) triggerUnique(unique, gameContext.civInfo, gameContext.city, gameContext.unit, gameContext.tile, notification, triggerNotificationText) else false
+
     /** @return The action to be performed if possible, else null
      * This is so the unit actions can be displayed as "disabled" if they won't actually do anything
      * Even if the action itself is performable, there are still cases where it can fail -
@@ -115,21 +125,30 @@ object UniqueTriggerActivation {
         when (unique.type) {
             UniqueType.TriggerEvent -> {
                 val event = ruleset.events[unique.params[0]] ?: return null
-                val choices = event.getMatchingChoices(gameContext)
-                    ?: return null
-                if (civInfo.isAI() || event.presentation == Event.Presentation.None) return {
-                    val choice = choices.toList().randomWeighted { it.getWeightForAiDecision(gameContext) }
-                    choice.triggerChoice(civInfo, unit)
+                val choices = event.getMatchingChoices(gameContext) ?: return null
+                if (choices.isEmpty()) return null
+                return when {
+                    civInfo.isAI() || event.presentation == Event.Presentation.None -> {
+                        {
+                            choices.toList()
+                                .randomWeighted { it.getWeightForAiDecision(gameContext) }
+                                .triggerChoice(gameContext)
+                        }
+                    }
+                    event.presentation == Event.Presentation.Alert -> {
+                        {
+                            val serializedString = event.name + Constants.stringSplitCharacter + gameContext.toSerializedString()
+                            civInfo.popupAlerts.add(PopupAlert(AlertType.Event, serializedString))
+                            true
+                        }
+                    }
+                    // event.presentation == Event.Presentation.Floating // TODO: Park them in a Queue in GameInfo?
+                    else -> {
+                        {
+                            throw NotImplementedError("Event ${event.name} has presentation type ${event.presentation} which is not implemented for use via TriggerEvent")
+                        }
+                    }
                 }
-                if (event.presentation == Event.Presentation.Alert) return {
-                    /** See [com.unciv.ui.screens.worldscreen.AlertPopup.addEvent] for the deserializing of this string to the context */
-                    var eventText = event.name
-                    if (unit != null) eventText += Constants.stringSplitCharacter + "unitId=" + unit.id
-                    civInfo.popupAlerts.add(PopupAlert(AlertType.Event, eventText))
-                    true
-                }
-                // if (event.presentation == Event.Presentation.Floating) return { //todo: Park them in a Queue in GameInfo???
-                throw NotImplementedError("Event ${event.name} has presentation type ${event.presentation} which is not implemented for use via TriggerEvent")
             }
 
             UniqueType.MarkTutorialComplete -> return {
