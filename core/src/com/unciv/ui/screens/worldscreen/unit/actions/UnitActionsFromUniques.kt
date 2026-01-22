@@ -251,7 +251,9 @@ object UnitActionsFromUniques {
                     )
                 }
                 UniqueType.TriggerEvent -> unique.params[0]
-                else -> unique.text.removeConditionals()
+
+                // Display the text without the conditional, also making sure it's translated to clean up the text.
+                else -> unique.text.removeConditionals().tr()
             }
             val title = UnitActionModifiers.actionTextWithSideEffects(baseTitle, unique, unit)
 
