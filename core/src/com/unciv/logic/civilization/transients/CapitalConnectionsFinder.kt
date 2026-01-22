@@ -23,6 +23,13 @@ class CapitalConnectionsFinder(private val civInfo: Civilization) {
         Harbor,
         HarborFromRoad(RoadStatus.Road),
         HarborFromRailroad(RoadStatus.Railroad, true),
+        ;
+        companion object {
+            /** TODO ignores Harbor - but the notification code in updateCitiesConnectedToCapital should probably include it.
+             *       The use for CityStats.getRoadTypeOfConnectionToCapital, however, shoudl not - it's used for Worker automation */
+            @Readonly
+            fun EnumSet<CapitalConnectionMedium>?.bestRoadStatus() = this?.maxOfOrNull { it.roadType } ?: RoadStatus.None
+        }
     }
 
     private var citiesToCheck = listOfNotNull(civInfo.getCapital()).toMutableList()
