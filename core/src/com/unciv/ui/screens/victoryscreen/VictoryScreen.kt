@@ -68,7 +68,7 @@ class VictoryScreen(
         Charts('C') {
             override fun getContent(parent: VictoryScreen) = VictoryScreenCharts(parent.worldScreen)
             override fun isHidden(playerCiv: Civilization) =
-                if (playerCiv.isSpectator()) playerCiv.gameInfo.civilizations.any { it.statsHistory.size >= 2 }
+                if (playerCiv.isSpectator()) playerCiv.gameInfo.civilizations.all { it.statsHistory.size < 2 }
                 else playerCiv.statsHistory.size < 2
         },
         Replay('P', allowAsSecret = true) {
