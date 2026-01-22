@@ -39,6 +39,8 @@ import com.unciv.ui.screens.victoryscreen.RankingType
 import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.Readonly
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -441,6 +443,14 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     @Readonly
     fun getHappiness() = stats.happiness
+    
+    @OptIn(ExperimentalContracts::class)
+    @Readonly
+    fun canSeeResource(resource: TileResource?): Boolean {
+        contract { returns(true) implies(resource != null) }
+        if (resource == null) return false
+        return tech.isRevealed(resource)
+    }
 
     /** Note that for stockpiled resources, this gives by how much it grows per turn, not current amount */
     @Readonly
@@ -545,6 +555,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     }
 
     @Readonly fun hasResource(resourceName: String): Boolean = getResourceAmount(resourceName) > 0
+    @Readonly fun hasResource(resource: TileResource): Boolean = getResourceAmount(resource) > 0
 
     @Readonly
     fun hasUnique(uniqueType: UniqueType, gameContext: GameContext = state) =

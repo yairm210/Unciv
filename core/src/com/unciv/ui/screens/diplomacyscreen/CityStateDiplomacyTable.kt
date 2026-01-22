@@ -354,9 +354,10 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
     }
 
     private fun getImprovableResourceTiles(otherCiv:Civilization) = otherCiv.cities.flatMap { it.getTiles() }.filter {
-        it.hasViewableResource(otherCiv)
-            && it.tileResource.resourceType != ResourceType.Bonus
-            && (it.improvement == null || !it.tileResource.isImprovedBy(it.improvement!!))
+        val resource = it.tileResourceOrNull
+        otherCiv.canSeeResource(resource) &&
+            resource.resourceType != ResourceType.Bonus &&
+            (it.improvement == null || !resource.isImprovedBy(it.improvement!!))
     }
 
     private fun getImprovementGiftTable(otherCiv: Civilization): Table {

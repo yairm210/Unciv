@@ -188,6 +188,11 @@ class Tile : IsPartOfGameInfoSerialization {
             }
             return tileResourceCache!!
         }
+    val tileResourceOrNull: TileResource?
+        get() {
+            if (resource == null) return null
+            return tileResource
+        }
 
 
     val improvementInProgress get() = improvementQueue.firstOrNull()?.improvement
@@ -463,9 +468,10 @@ class Tile : IsPartOfGameInfoSerialization {
 
     @Readonly
     fun providesResources(civInfo: Civilization): Boolean {
-        if (!hasViewableResource(civInfo)) return false
+        val resource = tileResourceOrNull // To avoid additional checks later
+        if (!civInfo.canSeeResource(resource)) return false
         if (isCityCenter()) {
-            val possibleImprovements = tileResource.getImprovements()
+            val possibleImprovements = resource.getImprovements()
             if (possibleImprovements.isEmpty()) return true
             // Per Civ V, resources under city tiles require the *possibility of extraction* -
             //  that is, there needs to be a tile improvement you have the tech for.
@@ -478,11 +484,11 @@ class Tile : IsPartOfGameInfoSerialization {
             }
         }
         val improvement = getUnpillagedTileImprovement()
-        if (improvement != null && improvement.name in tileResource.getImprovements()
+        if (improvement != null && improvement.name in resource.getImprovements()
                 && (improvement.techRequired == null || civInfo.tech.isResearched(improvement.techRequired!!))
             ) return true
         // TODO: Generic-ify to unique
-        return (tileResource.resourceType == ResourceType.Strategic
+        return (resource.resourceType == ResourceType.Strategic
             && improvement != null
             && improvement.isGreatImprovement())
     }
@@ -536,8 +542,8 @@ class Tile : IsPartOfGameInfoSerialization {
             "Foreign Land", "Foreign" -> return observingCiv != null && !isFriendlyTerritory(observingCiv)
             "Friendly Land", "Friendly" -> return observingCiv != null && isFriendlyTerritory(observingCiv)
             "Enemy Land", "Enemy" -> return observingCiv != null && isEnemyTerritory(observingCiv)
-            "resource" -> return observingCiv != null && hasViewableResource(observingCiv)
-            "Water resource" -> return isWater && observingCiv != null && hasViewableResource(observingCiv)
+            "resource" -> return observingCiv != null && observingCiv.canSeeResource(tileResourceOrNull)
+            "Water resource" -> return isWater && observingCiv != null && observingCiv.canSeeResource(tileResourceOrNull)
             "Featureless" -> return terrainFeatures.isEmpty()
             "Open terrain" -> return allTerrains.all { !it.isRough() } // special case - if *one* terrain is open, we don't care, we need *all*
             Constants.freshWaterFilter ->
@@ -546,7 +552,7 @@ class Tile : IsPartOfGameInfoSerialization {
 
         return when (filter) {
             baseTerrain -> true
-            resource -> observingCiv == null || hasViewableResource(observingCiv)
+            resource -> observingCiv == null || observingCiv.canSeeResource(tileResourceOrNull)
 
             else -> {
                 val owner = getOwner()
@@ -557,7 +563,7 @@ class Tile : IsPartOfGameInfoSerialization {
                 if (resource == null) return false
 
                 // Checks 'luxury resource', 'strategic resource' and 'bonus resource' - only those that are visible of course
-                // not using hasViewableResource as observingCiv is often not passed in,
+                // not using canSeeResource as observingCiv is often not passed in,
                 // and we want to be able to at least test for non-strategic in that case.
                 val resourceObject = tileResource
                 val hasResourceWithFilter =
@@ -569,17 +575,12 @@ class Tile : IsPartOfGameInfoSerialization {
                 // Now that we know that this resource matches the filter - can the observer see that there's a resource here?
                 if (resourceObject.revealedBy == null) return true  // no need for tech
                 if (observingCiv == null) return false  // can't check tech
-                return observingCiv.tech.isResearched(resourceObject.revealedBy!!)
+                return observingCiv.canSeeResource(tileResourceOrNull)
             }
         }
     }
 
     @Readonly fun isCoastalTile() = _isCoastalTile
-
-    @Readonly
-    fun hasViewableResource(civInfo: Civilization): Boolean =
-            resource != null && civInfo.tech.isRevealed(tileResource)
-
 
     @Readonly fun getViewableTilesList(distance: Int): List<Tile> = tileMap.getViewableTiles(position, distance)
     @Readonly fun getTilesInDistance(distance: Int): Sequence<Tile> = tileMap.getTilesInDistance(position, distance)
