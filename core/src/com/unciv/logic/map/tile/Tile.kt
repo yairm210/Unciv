@@ -627,14 +627,33 @@ class Tile : IsPartOfGameInfoSerialization {
 
         return min(distance, wrappedDistance)
     }
-
+    
     @Readonly
-    fun canBeSettled(civ: Civilization): Boolean {
+    fun canBeSettled(civ: Civilization,unitCanFoundUnique: Unique?=null): Boolean {
+
         val modConstants = tileMap.gameInfo.ruleset.modOptions.constants
+        var addedDistanceBeweenContinents: Int
+        var canSettleInTileWithUnique = false
+        if (unitCanFoundUnique != null) {
+            canSettleInTileWithUnique = !unitCanFoundUnique.getModifiers(UniqueType.ConditionalInTiles).none{
+                    matchesFilter(it.params[0]) 
+                }
+        }
+        /*
+        If the Player can settle in water/moutain add extra tile before they 
+        can settle because water/moutain tiles don't count has being in a contient.
+        */
+        addedDistanceBeweenContinents = if (!canSettleInTileWithUnique) 1 else 0
+        
         return when {
-            isWater || isImpassible() -> false
-            getTilesInDistance(modConstants.minimalCityDistanceOnDifferentContinents)
-                .any { it.isCityCenter() && it.getContinent() != getContinent() } -> false
+            canSettleInTileWithUnique -> false
+            getTilesInDistance(modConstants.minimalCityDistanceOnDifferentContinents+
+                /*
+                 Make sure, settler unit has the unique with condition <in [tileFilter] tiles>.
+                 Because this can crash the game in automateSettlerActions in SpecificUnitAutomation.kt.
+                 */
+                if (unitCanFoundUnique != null) addedDistanceBeweenContinents else 0)  
+                .any { it.isCityCenter() && it.getContinent() != getContinent() && unitCanFoundUnique != null } -> false
             getTilesInDistance(modConstants.minimalCityDistance)
                 .any { it.isCityCenter() && it.getContinent() == getContinent() } -> false
             // cannot settle in someone else's territory
