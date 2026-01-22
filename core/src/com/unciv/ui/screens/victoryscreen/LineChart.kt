@@ -30,7 +30,7 @@ class LineChart(
     private val axisLineWidth = 2f
     private val axisColor = Color.WHITE
     private val axisLabelColor = axisColor
-    private val axisLabelStyle = Label.LabelStyle(Fonts.font, axisLabelColor)
+    private val axisLabelStyle by lazy { Label.LabelStyle(Fonts.font, axisLabelColor) } // lazy due to unit tests instantiating this without initializing font or skin
     private val axisToLabelPadding = 5f
     private val chartLineWidth = 3f
     private val orientationLineWidth = 1f
