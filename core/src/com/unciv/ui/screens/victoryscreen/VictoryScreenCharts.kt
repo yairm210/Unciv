@@ -48,7 +48,7 @@ class VictoryScreenCharts(
         defaults().fill().pad(20f)
         add(controlsColumn)
         updateControls()
-        add(lineChart).growX().top().padLeft(0f)
+        add(lineChart).growX().expandY().top().padLeft(0f)
 
         val onChartClick = OnClickListener(function = { _ , x, _ ->
             zoomAtX = if (zoomAtX == null) lineChart.getTurnAt(x) else null

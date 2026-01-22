@@ -1,13 +1,13 @@
 package com.unciv.ui.screens.victoryscreen
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.MathUtils.lerp
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.victoryscreen.VictoryScreenCivGroup.DefeatedPlayerStyle
@@ -49,14 +49,30 @@ class LineChart(
     private var dataPoints = emptyList<DataPoint<Int>>()
     private var selectedCiv = viewingCiv
 
+    //region Layout kludge
+    private val dummyLabel = "100".toLabel()
+    private var preparedForWidth = 0f
+    private var preparedForHeight = 0f
 
+    override fun getMinWidth() = maxLabels * (dummyLabel.prefWidth + axisToLabelPadding)
+    override fun getMinHeight() = maxLabels * (dummyLabel.prefHeight + axisToLabelPadding)
+    override fun getPrefWidth() = if (hasChildren()) width else minWidth
+    override fun getPrefHeight() = if (hasChildren()) height else minHeight
+
+    override fun validate() {
+        if (preparedForWidth != width || preparedForHeight != height)
+            prepareForDraw() // Pre-Layout kluge this was called instead of invalidate in update
+        super.validate()
+    }
+    //endregion
 
     fun update(newData: List<DataPoint<Int>>, newSelectedCiv: Civilization) {
         selectedCiv = newSelectedCiv
 
         dataPoints = newData
         updateLabels(dataPoints)
-        prepareForDraw()
+        preparedForWidth = 0f
+        invalidate()
     }
 
     private fun updateLabels(newData: List<DataPoint<Int>>) {
@@ -129,12 +145,7 @@ class LineChart(
         return (floor(value / oneWithZeros) * oneWithZeros).toInt()
     }
 
-    override fun draw(batch: Batch, parentAlpha: Float) {
-        super.draw(batch, parentAlpha)
-    }
-
     private fun prepareForDraw() {
-
         clearChildren()
 
         if (xLabels.isEmpty() || yLabels.isEmpty()) return
@@ -266,6 +277,9 @@ class LineChart(
                 }
             }
         }
+
+        preparedForWidth = width
+        preparedForHeight = height
     }
 
     private fun useActualColor(civ: Civilization) : Boolean {
