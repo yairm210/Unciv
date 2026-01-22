@@ -1,0 +1,30 @@
+{
+  "$id": "https://raw.githubusercontent.com/yairm210/Unciv/refs/heads/master/docs/Modders/schemas/Beliefs.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Beliefs",
+  "description": "Beliefs that can be chosen for religions.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "title": "Name",
+        "description": "The name of the Belief."
+      },
+      "type": {
+        "title": "Type",
+        "enum": ["Pantheon", "Founder", "Follower", "Enhancer"],
+        "default": "Pantheon"
+      },
+      "uniques": {
+        "$ref": "refs/Uniques.schema.json"
+      },
+      "civilopediaText": {
+        "$ref": "refs/CivilopediaText.schema.json"
+      }
+    },
+    "required": ["name", "type"],
+    "additionalProperties": false
+  }
+}

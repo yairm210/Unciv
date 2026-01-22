@@ -1,0 +1,95 @@
+{
+  "$id": "https://raw.githubusercontent.com/yairm210/Unciv/refs/heads/master/docs/Modders/schemas/TileImprovements.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Tile Improvements",
+  "description": "A list of tile improvements, including build requirements and effects.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "title": "Name",
+        "description": "The name of the tile improvement."
+      },
+      "terrainsCanBeBuiltOn": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "uniqueItems": true,
+        "title": "Terrains Can Be Built On",
+        "description": "Terrains that this improvement can be built on. Removable terrain features will need to be removed before building an improvement. Must be in Terrains.json"
+      },
+      "turnsToBuild": {
+        "type": "integer",
+        "title": "Turns To Build",
+        "description": "Number of turns a worker spends building this. If -1, the improvement is unbuildable [^D]. If 0, the improvement is always built in one turn"
+      },
+      "techRequired": {
+        "type": "string",
+        "title": "Tech Required",
+        "description": "The name of the technology required to build this improvement"
+      },
+      "replaces": {
+        "type": "string",
+        "title": "Replaces",
+        "description": "The name of a improvement that should be replaced by this improvement. Must be in TileImprovements.json"
+      },
+      "uniqueTo": {
+        "type": "string",
+        "title": "Unique To",
+        "description": "The name of the nation this improvement is unique for"
+      },
+      "shortcutKey": {
+        "type": "string",
+        "maxLength": 1,
+        "title": "Shortcut Key",
+        "description": "Keyboard shortcut key for this improvement (single character)."
+      },
+      "production": {
+        "type": "number",
+        "title": "Production",
+        "description": "Per-turn bonus Production yield for the tile"
+      },
+      "food": {
+        "type": "number",
+        "title": "Food",
+        "description": "Per-turn bonus Food yield for the tile"
+      },
+      "gold": {
+        "type": "number",
+        "title": "Gold",
+        "description": "Per-turn bonus Gold yield for the tile"
+      },
+      "science": {
+        "type": "number",
+        "title": "Science",
+        "description": "Per-turn bonus Science yield for the tile"
+      },
+      "culture": {
+        "type": "number",
+        "title": "Culture",
+        "description": "Per-turn bonus Culture yield for the tile"
+      },
+      "happiness": {
+        "type": "number",
+        "title": "Happiness",
+        "description": "Happiness provieded for the tile"
+      },
+      "faith": {
+        "type": "number",
+        "title": "Faith",
+        "description": "Per-turn bonus Faith yield for the tile"
+      },
+      "uniques": {
+        "$ref": "refs/Uniques.schema.json"
+      },
+      "civilopediaText": {
+        "$ref": "refs/CivilopediaText.schema.json"
+      }
+    },
+    "required": ["name"],
+    "additionalProperties": false
+  }
+}

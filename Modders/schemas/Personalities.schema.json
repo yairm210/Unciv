@@ -1,0 +1,134 @@
+{
+  "$id": "https://raw.githubusercontent.com/yairm210/Unciv/refs/heads/master/docs/Modders/schemas/Personalities.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Personalities",
+  "description": "A list of AI personalities, including their preferred victory types and stat focuses.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "title": "Name",
+        "description": "The name for the Personality, commonly is the Leader's name."
+      },
+      "preferredVictoryType": {
+        "type": "string",
+        "default": "Neutral",
+        "description": "The victory type major civilizations will pursue (need not be specified in VictoryTypes.json)",
+        "title": "Preferred Victory Type",
+        "examples": ["Scientific", "Cultural", "Domination", "Diplomatic"]
+      },
+      "production": {
+        "type": "number",
+        "description": "Amount of focus on the stat the computer player will have on production. Typically ranges from 0 (no focus) to 10 (double focus)",
+        "title": "Production",
+        "minimum": 0,
+        "default": 5
+      },
+      "food": {
+        "type": "number",
+        "description": "Amount of focus on the stat the computer player will have on food. Typically ranges from 0 (no focus) to 10 (double focus)",
+        "title": "Food",
+        "minimum": 0,
+        "default": 5
+      },
+      "gold": {
+        "type": "number",
+        "description": "Amount of focus on the stat the computer player will have on gold. Typically ranges from 0 (no focus) to 10 (double focus)",
+        "title": "Gold",
+        "minimum": 0,
+        "default": 5
+      },
+      "science": {
+        "type": "number",
+        "description": "Amount of focus on the stat the computer player will have on science. Typically ranges from 0 (no focus) to 10 (double focus)",
+        "title": "Science",
+        "minimum": 0,
+        "default": 5
+      },
+      "culture": {
+        "type": "number",
+        "description": "Amount of focus on the stat the computer player will have on culture. Typically ranges from 0 (no focus) to 10 (double focus)",
+        "title": "Culture",
+        "minimum": 0,
+        "default": 5
+      },
+      "happiness": {
+        "type": "number",
+        "description": "Amount of focus on the stat the computer player will have on happiness. Typically ranges from 0 (no focus) to 10 (double focus)",
+        "title": "Happiness",
+        "minimum": 0,
+        "default": 5
+      },
+      "faith": {
+        "type": "number",
+        "description": "Amount of focus on the stat the computer player will have on faith. Typically ranges from 0 (no focus) to 10 (double focus)",
+        "title": "Faith",
+        "minimum": 0,
+        "default": 5
+      },
+      "military": {
+        "type": "number",
+        "description": "Amount of focus on the stat the computer player will have on military power. Typically ranges from 0 (no focus) to 10 (double focus)",
+        "title": "Military",
+        "minimum": 0,
+        "default": 5
+      },
+      "aggressive": {
+        "type": "number",
+        "description": "Amount of focus on the stat the computer player will have on aggressiveness. Typically ranges from 0 (no focus) to 10 (double focus)",
+        "title": "Aggressive",
+        "minimum": 0,
+        "default": 5
+      },
+      "declareWar": {
+        "type": "number",
+        "description": "Amount of focus on the stat the computer player will have on declaring war. Typically ranges from 0 (no focus) to 10 (double focus)",
+        "title": "Declare War",
+        "minimum": 0,
+        "default": 5
+      },
+      "commerce": {
+        "type": "number",
+        "description": "Amount of focus on the stat the computer player will have on commerce. Typically ranges from 0 (no focus) to 10 (double focus)",
+        "title": "Commerce",
+        "minimum": 0,
+        "default": 5
+      },
+      "diplomacy": {
+        "type": "number",
+        "description": "Amount of focus on the stat the computer player will have on diplomacy. Typically ranges from 0 (no focus) to 10 (double focus)",
+        "title": "Diplomacy",
+        "minimum": 0,
+        "default": 5
+      },
+      "loyal": {
+        "type": "number",
+        "description": "Amount of focus on the stat the computer player will have on loyalty. Typically ranges from 0 (no focus) to 10 (double focus)",
+        "title": "Loyal",
+        "minimum": 0,
+        "default": 5
+      },
+      "expansion": {
+        "type": "number",
+        "description": "Amount of focus on the stat the computer player will have on expansion. Typically ranges from 0 (no focus) to 10 (double focus)",
+        "title": "Expansion",
+        "minimum": 0,
+        "default": 5
+      },
+      "priorities": {
+        "$ref": "refs/Priorities.schema.json",
+        "description": "Priorities for each policy branch."
+      },
+      "uniques": {
+        "$ref": "refs/Uniques.schema.json"
+      },
+      "civilopediaText": {
+        "$ref": "refs/CivilopediaText.schema.json"
+      }
+    },
+    "required": ["name"],
+    "additionalProperties": false
+  }
+}

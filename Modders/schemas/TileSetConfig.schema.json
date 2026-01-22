@@ -1,0 +1,108 @@
+{
+  "$id": "https://raw.githubusercontent.com/yairm210/Unciv/refs/heads/master/docs/Modders/schemas/TileSetConfig.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TileSet Config",
+  "description": "A TileSet definition.",
+  "type": "object",
+  "properties": {
+    "useColorAsBaseTerrain": {
+      "type": "boolean",
+      "title": "Use Color As Base Terrain",
+      "description": "If true, an additional Hexagon image is placed below each tile and colored in the corresponding BaseTerrain color. This removes the necessity to add individual BaseTerrain images. This is how the Minimal tileset works."
+    },
+    "useSummaryImages": {
+      "type": "boolean",
+      "title": "Use Summary Images",
+      "description": "If true, summary images are used for specific groups of images instead of using individual tile images. The summary images must be placed in the same folder as every other tile image."
+    },
+    "unexploredTileColor": {
+      "type": "object",
+      "title": "Unexplored Tile Color",
+      "description": "The color used for unexplored tiles. The color gets approximated by 60% to allow the colors of the images below to shine through.",
+      "properties": {
+        "r": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "g": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "b": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "a": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": ["r", "g", "b", "a"],
+      "additionalProperties": false
+    },
+    "fogOfWarColor": {
+      "type": "object",
+      "title": "Fog Of War Color",
+      "description": "The color used for fog of war tiles.",
+      "properties": {
+        "r": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "g": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "b": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "a": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": ["r", "g", "b", "a"],
+      "additionalProperties": false
+    },
+    "fallbackTileSet": {
+      "type": ["string", "null"],
+      "title": "Fallback Tile Set",
+      "description": "The name of another tileset whose images should be used if this tileset is missing images. Can be set to null to disable the the fallback tileset.",
+      "examples": ["FantasyHex"]
+    },
+    "tileScale": {
+      "type": "number",
+      "title": "Tile Scale",
+      "description": "The scale of all tiles. Can be used to increase or decrease the size of every tile."
+    },
+    "tileScales": {
+      "type": "object",
+      "title": "Tile Scales",
+      "description": "Used by the Minimal tileset to scale all its tiles except the base terrain down. Each entry overrides the tileScale value for the specified tile.",
+      "additionalProperties": {
+        "type": "number"
+      }
+    },
+    "ruleVariants": {
+      "type": "object",
+      "title": "Rule Variants",
+      "description": "A mapping of rule variant names to arrays of strings.",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

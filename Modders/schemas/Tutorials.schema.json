@@ -1,0 +1,41 @@
+{
+  "$id": "https://raw.githubusercontent.com/yairm210/Unciv/refs/heads/master/docs/Modders/schemas/Tutorials.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Tutorials",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "The name for the Tutorial.",
+        "title": "Name"
+      },
+      "category": {
+        "type": "string",
+        "description": "The sub-category in which to place this Tutorial within the Civilopedia.",
+        "title": "Category",
+        "default": "Tutorials",
+        "examples": ["Cities", "Stats", "Units"]
+      },
+      "steps": {
+        "title": "Steps",
+        "type": "array",
+        "items": {
+          "type": "string",
+          "title": "Step",
+          "description": "A step that is taken within the Tutorial."
+        },
+        "description": "An array of step descriptions for the tutorial."
+      },
+      "uniques": {
+        "$ref": "refs/Uniques.schema.json"
+      },
+      "civilopediaText": {
+        "$ref": "refs/CivilopediaText.schema.json"
+      }
+    },
+    "required": ["name"],
+    "additionalProperties": false
+  }
+}

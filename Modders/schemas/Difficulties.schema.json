@@ -1,0 +1,195 @@
+{
+  "$id": "https://raw.githubusercontent.com/yairm210/Unciv/refs/heads/master/docs/Modders/schemas/Difficulties.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Difficulties",
+  "description": "Lists all the available Difficulties.",
+  "type": "array",
+  "items": {
+    "title": "Difficulty",
+    "description": "A Difficulty that will be available within the Ruleset.",
+    "type": "object",
+    "required": ["name"],
+    "properties": {
+      "name": {
+        "type": "string",
+        "title": "Name",
+        "description": "The name of the difficulty level."
+      },
+      "baseHappiness": {
+        "type": "integer",
+        "default": 0,
+        "title": "Base Happiness",
+        "description": "The base happiness value provided at this difficulty."
+      },
+      "extraHappinessPerLuxury": {
+        "type": "number",
+        "default": 0,
+        "title": "Extra Happiness Per Luxury",
+        "description": "Additional happiness gained per luxury resource."
+      },
+      "researchCostModifier": {
+        "type": "number",
+        "default": 1,
+        "title": "Research Cost Modifier",
+        "description": "Multiplier for research costs at this difficulty."
+      },
+      "unitCostModifier": {
+        "type": "number",
+        "default": 1,
+        "title": "Unit Cost Modifier",
+        "description": "Multiplier for unit production costs."
+      },
+      "unitSupplyBase": {
+        "type": "integer",
+        "default": 5,
+        "title": "Unit Supply Base",
+        "description": "Base number of units that can be supplied."
+      },
+      "unitSupplyPerCity": {
+        "type": "integer",
+        "default": 2,
+        "title": "Unit Supply Per City",
+        "description": "Additional unit supply provided per city."
+      },
+      "buildingCostModifier": {
+        "type": "number",
+        "default": 1,
+        "title": "Building Cost Modifier",
+        "description": "Multiplier for building production costs."
+      },
+      "policyCostModifier": {
+        "type": "number",
+        "default": 1,
+        "title": "Policy Cost Modifier",
+        "description": "Multiplier for policy adoption costs."
+      },
+      "unhappinessModifier": {
+        "type": "number",
+        "default": 1,
+        "title": "Unhappiness Modifier",
+        "description": "Multiplier for unhappiness effects."
+      },
+      "barbarianBonus": {
+        "type": "number",
+        "default": 0,
+        "title": "Barbarian Bonus",
+        "description": "Bonus applied to barbarians at this difficulty."
+      },
+      "barbarianSpawnDelay": {
+        "type": "integer",
+        "default": 0,
+        "title": "Barbarian Spawn Delay",
+        "description": "Number of turns before barbarians start spawning."
+      },
+      "playerBonusStartingUnits": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "default": [],
+        "title": "Player Bonus Starting Units",
+        "description": "Units given to human players at the start. Can also be 'Era Starting Unit', which maps to startingMilitaryUnit of the Eras file. All other units must be in Units.json. Applies only to human player civs."
+      },
+      "aiDifficultyLevel": {
+        "type": "string",
+        "default": "",
+        "title": "AI Difficulty Level",
+        "description": "Difficulty level used for AI modifiers. If empty, defaults to Chieftain or the first available difficulty."
+      },
+      "aiCityGrowthModifier": {
+        "type": "number",
+        "default": 1,
+        "title": "AI City Growth Modifier",
+        "description": "Multiplier for AI city growth rate."
+      },
+      "aiUnitCostModifier": {
+        "type": "number",
+        "default": 1,
+        "title": "AI Unit Cost Modifier",
+        "description": "Multiplier for AI unit production costs."
+      },
+      "aiBuildingCostModifier": {
+        "type": "number",
+        "default": 1,
+        "title": "AI Building Cost Modifier",
+        "description": "Multiplier for AI building production costs."
+      },
+      "aiWonderCostModifier": {
+        "type": "number",
+        "default": 1,
+        "title": "AI Wonder Cost Modifier",
+        "description": "Multiplier for AI wonder production costs."
+      },
+      "aiBuildingMaintenanceModifier": {
+        "type": "number",
+        "default": 1,
+        "title": "AI Building Maintenance Modifier",
+        "description": "Multiplier for AI building maintenance costs."
+      },
+      "aiUnitMaintenanceModifier": {
+        "type": "number",
+        "default": 1,
+        "title": "AI Unit Maintenance Modifier",
+        "description": "Multiplier for AI unit maintenance costs."
+      },
+      "aiUnitSupplyModifier": {
+        "type": "number",
+        "default": 5,
+        "title": "AI Unit Supply Modifier",
+        "description": "Modifier for the number of units the AI can supply."
+      },
+      "aiFreeTechs": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "default": [],
+        "title": "AI Free Techs",
+        "description": "Technologies granted to AI at the start."
+      },
+      "aiMajorCivBonusStartingUnits": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "default": [],
+        "title": "AI Major Civ Bonus Starting Units",
+        "description": "Units given to AI major civilizations at the start."
+      },
+      "aiCityStateBonusStartingUnits": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "default": [],
+        "title": "AI City-State Bonus Starting Units",
+        "description": "Units given to AI city-states at the start."
+      },
+      "aiUnhappinessModifier": {
+        "type": "number",
+        "default": 1,
+        "title": "AI Unhappiness Modifier",
+        "description": "Multiplier for AI unhappiness effects."
+      },
+      "turnBarbariansCanEnterPlayerTiles": {
+        "type": "integer",
+        "default": 0,
+        "title": "Turn Barbarians Can Enter Player Tiles",
+        "description": "Turn number after which barbarians can enter player tiles."
+      },
+      "clearBarbarianCampReward": {
+        "type": "integer",
+        "default": 25,
+        "title": "Clear Barbarian Camp Reward",
+        "description": "Gold reward for clearing a barbarian camp."
+      },
+      "uniques": {
+        "$ref": "refs/Uniques.schema.json"
+      },
+      "civilopediaText": {
+        "$ref": "refs/CivilopediaText.schema.json"
+      }
+    },
+    "additionalProperties": false
+  }
+}
