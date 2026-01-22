@@ -1,3 +1,13 @@
+## 4.19.9
+
+Resolved "divide by zero" errors in expressions by defaulting to zero
+
+Fixed mp server change on options, crashing the game
+
+By SeventhM:
+- Refactor: Move function for viewable resource to civ 
+- Add city context to stat and resource countables 
+
 ## 4.19.8
 
 Fixed map generation on world wrap and 3 continents
