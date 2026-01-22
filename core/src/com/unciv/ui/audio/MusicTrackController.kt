@@ -1,13 +1,19 @@
 package com.unciv.ui.audio
 
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.audio.Music
 import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.utils.Disposable
+import com.unciv.logic.files.IMediaFinder
 import com.unciv.utils.Log
 import com.unciv.utils.debug
+import games.rednblack.miniaudio.MASound
+import games.rednblack.miniaudio.MiniAudio
 
 /** Wraps one Gdx Music instance and manages loading, playback, fading and cleanup */
-internal class MusicTrackController(private var volume: Float, initialFadeVolume: Float = 1f) {
+internal class MusicTrackController(
+    private val miniAudio: MiniAudio,
+    private var volume: Float,
+    initialFadeVolume: Float = 1f
+) : Disposable {
 
     /** Internal state of this Music track */
     enum class State(val canPlay: Boolean) {
@@ -22,15 +28,16 @@ internal class MusicTrackController(private var volume: Float, initialFadeVolume
 
     var state = State.None
         private set
-    var music: Music? = null
+    var music: MASound? = null
         private set
+    private var path: String? = null
     private var fadeStep = MusicController.defaultFadingStep
     private var fadeVolume: Float = initialFadeVolume
 
     //region Functions for MusicController
 
     /** Clean up and dispose resources */
-    fun clear() {
+    override fun dispose() {
         state = State.None
         if (music == null) return
         music!!.dispose()
@@ -53,9 +60,11 @@ internal class MusicTrackController(private var volume: Float, initialFadeVolume
 
         state = State.Loading
         try {
-            music = Gdx.audio.newMusic(file)
-            if (state != State.Loading) {  // in case clear was called in the meantime
-                clear()
+            val flags = if (file.extension() == IMediaFinder.SupportedAudioExtensions.ogg.name) 0.toShort() else MASound.Flags.MA_SOUND_FLAG_STREAM
+            music = miniAudio.createSound(file.path(), flags, null)
+            path = file.path()
+            if (state != State.Loading) {  // in case dispose was called in the meantime
+                dispose()
             } else {
                 state = State.Idle
                 debug("Music loaded %s", file)
@@ -100,9 +109,11 @@ internal class MusicTrackController(private var volume: Float, initialFadeVolume
         return timerTick() == State.Idle
     }
 
-    /** @return [Music.isPlaying] (Gdx music stream is playing)
+    /** @return [MASound.isPlaying] (miniAudio music stream is playing)
      *      unless [state] says it won't make sense */
     fun isPlaying() = state.canPlay && music?.isPlaying == true
+
+    fun getPath() = if (state.canPlay) path else null
 
     /** Calls play() on the wrapped Gdx Music, catching exceptions to console.
      *  @return success
@@ -110,7 +121,7 @@ internal class MusicTrackController(private var volume: Float, initialFadeVolume
      */
     fun play(): Boolean {
         if (!state.canPlay || music == null) {
-            clear() // reset to correct state
+            dispose() // reset to correct state
             return false
         }
 
@@ -126,7 +137,7 @@ internal class MusicTrackController(private var volume: Float, initialFadeVolume
     /** Adjust master volume without affecting a fade-in/out */
     fun setVolume(newVolume: Float) {
         volume = newVolume
-        music?.volume = volume * fadeVolume
+        music?.setVolume(volume * fadeVolume)
     }
 
     //endregion
@@ -136,10 +147,10 @@ internal class MusicTrackController(private var volume: Float, initialFadeVolume
         // fade-in: linearly ramp fadeVolume to 1.0, then continue playing
         fadeVolume += fadeStep
         if (fadeVolume < 1f  && music != null && music!!.isPlaying) {
-            music!!.volume = volume * fadeVolume
+            music!!.setVolume(volume * fadeVolume)
             return
         }
-        music!!.volume = volume
+        music!!.setVolume(volume)
         fadeVolume = 1f
         state = State.Playing
     }
@@ -150,19 +161,19 @@ internal class MusicTrackController(private var volume: Float, initialFadeVolume
         fadeVolume -= fadeStep
         try {
             if (fadeVolume >= 0.001f && music != null && music!!.isPlaying) {
-                music!!.volume = volume * fadeVolume
+                music!!.setVolume(volume * fadeVolume)
                 return
             }
             fadeVolume = 0f
-            music!!.volume = 0f
+            music!!.setVolume(0f)
             music!!.pause()
         } catch (_: Throwable) {}
         state = State.Idle
     }
 
-    private fun tryPlay(music: Music): Boolean {
+    private fun tryPlay(music: MASound): Boolean {
         return try {
-            music.volume = volume * fadeVolume
+            music.setVolume(volume * fadeVolume)
             // for fade-over this could be called by the end of the previous track:
             if (!music.isPlaying) music.play()
             true
@@ -173,7 +184,7 @@ internal class MusicTrackController(private var volume: Float, initialFadeVolume
     }
 
     private fun audioExceptionHandler(ex: Throwable) {
-        clear()
+        dispose()
         Log.error("Error playing music", ex)
     }
 
