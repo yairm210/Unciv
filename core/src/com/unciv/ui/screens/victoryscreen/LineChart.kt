@@ -1,16 +1,17 @@
 package com.unciv.ui.screens.victoryscreen
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.MathUtils.lerp
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.victoryscreen.VictoryScreenCivGroup.DefeatedPlayerStyle
+import org.jetbrains.annotations.VisibleForTesting
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -29,6 +30,7 @@ class LineChart(
     private val axisLineWidth = 2f
     private val axisColor = Color.WHITE
     private val axisLabelColor = axisColor
+    private val axisLabelStyle by lazy { Label.LabelStyle(Fonts.font, axisLabelColor) } // lazy due to unit tests instantiating this without initializing font or skin
     private val axisToLabelPadding = 5f
     private val chartLineWidth = 3f
     private val orientationLineWidth = 1f
@@ -45,39 +47,42 @@ class LineChart(
     private var yLabelsAsLabels = emptyList<Label>()
 
     private var dataPoints = emptyList<DataPoint<Int>>()
-    private var selectedCiv = Civilization()
+    private var selectedCiv = viewingCiv
 
+    //region Layout kludge
+    private var preparedForWidth = 0f
+    private var preparedForHeight = 0f
 
+    override fun getMinWidth() = maxLabels * (21f + axisToLabelPadding) // 21f ~= "99".toLabel().prefWidth
+    override fun getMinHeight() = maxLabels * (18f + axisToLabelPadding) // 18f ~= "99".toLabel().prefHeight
+    override fun getPrefWidth() = if (hasChildren()) width else minWidth
+    override fun getPrefHeight() = if (hasChildren()) height else minHeight
 
-    fun getTurnAt(x: Float): IntRange? {
-        if (xLabels.isEmpty() || xLabelsAsLabels.isEmpty() || yLabelsAsLabels.isEmpty()) return null
-        val widestYLabelWidth = yLabelsAsLabels.maxOf { it.width }
-        val linesMinX = widestYLabelWidth + axisToLabelPadding + axisLineWidth
-        val linesMaxX = width - xLabelsAsLabels.last().width / 2
-        if (linesMinX.compareTo(linesMaxX) == 0) return (xLabels.first()..xLabels.last())
-        val ratio = (x - linesMinX) / (linesMaxX - linesMinX)
-        val turn = max(1, lerp(xLabels.first().toFloat(), xLabels.last().toFloat(), ratio).toInt())
-        return (getPrevNumberDivisibleByPowOfTen(turn-1)..getNextNumberDivisibleByPowOfTen(turn+1))
+    override fun validate() {
+        if (preparedForWidth != width || preparedForHeight != height)
+            prepareForDraw() // Pre-Layout kluge this was called instead of invalidate in update
+        super.validate()
     }
+    //endregion
 
     fun update(newData: List<DataPoint<Int>>, newSelectedCiv: Civilization) {
         selectedCiv = newSelectedCiv
 
         dataPoints = newData
         updateLabels(dataPoints)
-        prepareForDraw()
+        preparedForWidth = 0f
+        invalidate()
     }
 
     private fun updateLabels(newData: List<DataPoint<Int>>) {
         xLabels = generateLabels(newData, false)
         yLabels = generateLabels(newData, true)
 
-        xLabelsAsLabels =
-            xLabels.map { Label(it.tr(), Label.LabelStyle(Fonts.font, axisLabelColor)) }
-        yLabelsAsLabels =
-            yLabels.map { Label(it.tr(), Label.LabelStyle(Fonts.font, axisLabelColor)) }
+        xLabelsAsLabels = xLabels.map { Label(it.tr(), axisLabelStyle) }
+        yLabelsAsLabels = yLabels.map { Label(it.tr(), axisLabelStyle) }
     }
 
+    @VisibleForTesting
     fun generateLabels(value: List<DataPoint<Int>>, yAxis: Boolean): List<Int> {
         if (value.isEmpty()) return listOf(0)
         val minLabelValue = getPrevNumberDivisibleByPowOfTen(value.minOf { if (yAxis) it.y else it.x })
@@ -117,7 +122,7 @@ class LineChart(
      */
     private fun getNextNumberDivisibleByPowOfTen(value: Int): Int {
         if (value == 0) return 0
-        val numberOfDigits = max(2, min(ceil(log10(abs(value).toDouble())).toInt(), 3))
+        val numberOfDigits = ceil(log10(abs(value).toDouble())).toInt().coerceIn(2,3)
         val oneWithZeros = 10.0.pow(numberOfDigits - 1)
         // E.g., 3 => 10^(2-1) = 10 ; ceil(3 / 10) * 10 = 10
         //     567 => 10^(3-1) = 100 ; ceil(567 / 100) * 100 = 600
@@ -139,12 +144,7 @@ class LineChart(
         return (floor(value / oneWithZeros) * oneWithZeros).toInt()
     }
 
-    override fun draw(batch: Batch, parentAlpha: Float) {
-        super.draw(batch, parentAlpha)
-    }
-
     private fun prepareForDraw() {
-
         clearChildren()
 
         if (xLabels.isEmpty() || yLabels.isEmpty()) return
@@ -227,45 +227,42 @@ class LineChart(
         val negativeScaleY = (negativeOrientationLineYPosition - zeroAxisYPosition) / if (minYLabel < 0) minYLabel else 1
         val sortedPoints = dataPoints.sortedBy { it.x }
         val pointsByCiv = sortedPoints.groupBy { it.civ }
-        // We want the current player civ to be drawn last, so it is never overlapped by another player.
+
+        // By default the players with the highest points will be drawn last (i.e. they will overlap others).
         val civIterationOrder =
-                 // By default the players with the highest points will be drawn last (i.e. they will
-                // overlap others).
-                pointsByCiv.keys.toList().sortedBy { lastTurnDataPoints[it]!!.y }
-                    .toMutableList()
-        // The current player might be a spectator.
-        if (selectedCiv in civIterationOrder) {
-            civIterationOrder.remove(selectedCiv)
+            pointsByCiv.keys.sortedBy { lastTurnDataPoints[it]!!.y }
+            .toMutableList()
+        // We want the current player civ to be drawn last, so it is never overlapped by another player.
+        // (The current player might be a spectator - but the spectator has no data points).
+        if (civIterationOrder.remove(selectedCiv))
             civIterationOrder.add(selectedCiv)
-        }
         for (civ in civIterationOrder) {
             val points = pointsByCiv[civ]!!
             val scaledPoints : List<DataPoint<Float>> = points.map {
-                if (it.y < 0f)
-                    DataPoint(linesMinX + (it.x - minXLabel) * scaleX, zeroAxisYPosition + it.y * negativeScaleY, it.civ)
-                else
-                    DataPoint(linesMinX + (it.x - minXLabel) * scaleX, linesMinY + (it.y - minYLabel) * scaleY, it.civ)
+                val y = if (it.y >= 0f) linesMinY + (it.y - minYLabel) * scaleY
+                    else zeroAxisYPosition + it.y * negativeScaleY
+                DataPoint(linesMinX + (it.x - minXLabel) * scaleX, y, it.civ)
             }
             // Probably nobody can tell the difference of one pixel, so that seems like a reasonable epsilon.
             val simplifiedScaledPoints = douglasPeucker(scaledPoints, 1f)
             // Draw a background line for the selected civ. We need to do this before all other
             // lines of the selected civ, but after all lines of other civs.
             if (civ == selectedCiv) {
+                val selectedCivBackgroundColor =
+                    if (useActualColor(civ)) civ.nation.getInnerColor() else Color.LIGHT_GRAY
                 for (i in 1 until simplifiedScaledPoints.size) {
                     val a = simplifiedScaledPoints[i - 1]
                     val b = simplifiedScaledPoints[i]
-                    val selectedCivBackgroundColor =
-                        if (useActualColor(civ)) civ.nation.getInnerColor() else Color.LIGHT_GRAY
                     drawLine(
                         a.x, a.y, b.x, b.y,
                         selectedCivBackgroundColor, chartLineWidth * 3
                     )
                 }
             }
+            val civLineColor = if (useActualColor(civ)) civ.nation.getOuterColor() else Color.DARK_GRAY
             for (i in 1 until simplifiedScaledPoints.size) {
                 val a = simplifiedScaledPoints[i - 1]
                 val b = simplifiedScaledPoints[i]
-                val civLineColor = if (useActualColor(civ)) civ.nation.getOuterColor() else Color.DARK_GRAY
                 drawLine(a.x, a.y, b.x, b.y, civLineColor, chartLineWidth)
 
                 // Draw the selected Civ icon on its last datapoint
@@ -279,6 +276,9 @@ class LineChart(
                 }
             }
         }
+
+        preparedForWidth = width
+        preparedForHeight = height
     }
 
     private fun useActualColor(civ: Civilization) : Boolean {
@@ -378,4 +378,14 @@ class LineChart(
         return sqrt((dx * dx + dy * dy).toDouble()).toFloat()
     }
 
+    fun getTurnAt(x: Float): IntRange? {
+        if (xLabels.isEmpty() || xLabelsAsLabels.isEmpty() || yLabelsAsLabels.isEmpty()) return null
+        val widestYLabelWidth = yLabelsAsLabels.maxOf { it.width }
+        val linesMinX = widestYLabelWidth + axisToLabelPadding + axisLineWidth
+        val linesMaxX = width - xLabelsAsLabels.last().width / 2
+        if (linesMinX.compareTo(linesMaxX) == 0) return (xLabels.first()..xLabels.last())
+        val ratio = (x - linesMinX) / (linesMaxX - linesMinX)
+        val turn = lerp(xLabels.first().toFloat(), xLabels.last().toFloat(), ratio).toInt().coerceAtLeast(1)
+        return (getPrevNumberDivisibleByPowOfTen(turn-1)..getNextNumberDivisibleByPowOfTen(turn+1))
+    }
 }

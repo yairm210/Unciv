@@ -68,7 +68,7 @@ class VictoryScreen(
         Charts('C') {
             override fun getContent(parent: VictoryScreen) = VictoryScreenCharts(parent.worldScreen)
             override fun isHidden(playerCiv: Civilization) =
-                if (playerCiv.isSpectator()) playerCiv.gameInfo.civilizations.any { it.statsHistory.size >= 2 }
+                if (playerCiv.isSpectator()) playerCiv.gameInfo.civilizations.all { it.statsHistory.size < 2 }
                 else playerCiv.statsHistory.size < 2
         },
         Replay('P', allowAsSecret = true) {
@@ -102,7 +102,7 @@ class VictoryScreen(
                 icon, iconSize,
                 scrollAlign = Align.topLeft,
                 shortcutKey = KeyCharAndCode(tab.key),
-                secret = tabHidden && tab.allowAsSecret
+                secret = tabHidden
             )
         }
         tabs.selectPage(pageNumber)
