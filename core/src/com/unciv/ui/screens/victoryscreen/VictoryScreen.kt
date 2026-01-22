@@ -102,7 +102,7 @@ class VictoryScreen(
                 icon, iconSize,
                 scrollAlign = Align.topLeft,
                 shortcutKey = KeyCharAndCode(tab.key),
-                secret = tabHidden && tab.allowAsSecret
+                secret = tabHidden
             )
         }
         tabs.selectPage(pageNumber)
