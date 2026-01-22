@@ -50,12 +50,11 @@ class LineChart(
     private var selectedCiv = viewingCiv
 
     //region Layout kludge
-    private val dummyLabel = "100".toLabel()
     private var preparedForWidth = 0f
     private var preparedForHeight = 0f
 
-    override fun getMinWidth() = maxLabels * (dummyLabel.prefWidth + axisToLabelPadding)
-    override fun getMinHeight() = maxLabels * (dummyLabel.prefHeight + axisToLabelPadding)
+    override fun getMinWidth() = maxLabels * (21f + axisToLabelPadding) // 21f ~= "99".toLabel().prefWidth
+    override fun getMinHeight() = maxLabels * (18f + axisToLabelPadding) // 18f ~= "99".toLabel().prefHeight
     override fun getPrefWidth() = if (hasChildren()) width else minWidth
     override fun getPrefHeight() = if (hasChildren()) height else minHeight
 
