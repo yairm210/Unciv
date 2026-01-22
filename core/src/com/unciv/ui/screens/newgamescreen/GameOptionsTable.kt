@@ -3,6 +3,7 @@ package com.unciv.ui.screens.newgamescreen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
@@ -35,6 +36,7 @@ import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.multiplayerscreens.MultiplayerHelpers
 import kotlin.reflect.KMutableProperty0
+import kotlin.reflect.KMutableProperty1
 
 class GameOptionsTable(
     private val previousScreen: IPreviousScreen,
@@ -105,10 +107,16 @@ class GameOptionsTable(
         addVictoryTypeCheckboxes()
 
         val checkboxTable = Table().apply { defaults().left().pad(2.5f) }
+        val selectBoxTable = Table()
         checkboxTable.addIsOnlineMultiplayerCheckbox()
-        if (gameParameters.isOnlineMultiplayer)
+        if (gameParameters.isOnlineMultiplayer){
             checkboxTable.addAnyoneCanSpectateCheckbox()
+            selectBoxTable.addDurationSelectBox("Time until skip turn:", GameParameters::minutesUntilSkipTurn, 1, 0, 0)
+            selectBoxTable.addDurationSelectBox("Total time to play:", GameParameters::minutesUntilForceResign, 3, 0, 0)
+            selectBoxTable.addDurationSelectBox("Time recovered per turn:", GameParameters::minutesRecoveredPerTurn, 3, 0, 0)
+        }
         add(checkboxTable).center().row()
+        add(selectBoxTable).center().row()
 
         val expander = ExpanderTab(
             "Advanced Settings",
@@ -417,6 +425,61 @@ class GameOptionsTable(
         { gameParameters.startingEra = it; null }
     }
 
+    private fun Table.addDurationSelectBox(
+        title: String,
+        param: KMutableProperty1<GameParameters, Int>,
+        defaultDayValue: Int,
+        defaultHourValue: Int,
+        defaultMinuteValue: Int
+    ) {
+        add(title.toLabel(hideIcons = true)).right()
+
+        val selector = DurationSelector(gameParameters, param, defaultDayValue, defaultHourValue, defaultMinuteValue)
+
+        add(selector.dayBox)
+        add(selector.hourBox)
+        add(selector.minuteBox).row()
+    }
+    private class DurationSelector(
+        private val gameParameters: GameParameters,
+        private val param: KMutableProperty1<GameParameters, Int>,
+        private val defaultDayValue: Int,
+        private val defaultHourValue: Int,
+        private val defaultMinuteValue: Int,
+        private val dayValues: Array<Int> = arrayOf(0,1,2,3,4,5,6,7,8,9,10,11),
+        private val hourValues: Array<Int> = arrayOf(0,1,2,3,4,5,6,8,10,12,16,20),
+        private val minuteValues: Array<Int> = arrayOf(0,3,5,10,15,20,25,30,35,40,45,50)
+        
+    ) {
+        val dayBox: SelectBox<String> = createTimeCell(dayValues, defaultDayValue, "d")
+        val hourBox: SelectBox<String> = createTimeCell(hourValues, defaultHourValue, "h")
+        val minuteBox: SelectBox<String> = createTimeCell(minuteValues, defaultMinuteValue, "m")
+        val boxes: List<SelectBox<String>> = listOf(dayBox, hourBox, minuteBox)
+
+        init { for (box in boxes) {box.onChange {preventNullTime(); updateGameParameter()}} }
+
+        fun preventNullTime() {
+            if (dayBox.selected == "0d" && hourBox.selected == "0h" && minuteBox.selected == "0m") {
+                minuteBox.selected ="3m"
+            }
+        }
+            
+        fun updateGameParameter() {
+            val value = dayValues[dayBox.selectedIndex] * 24 * 60 +
+                hourValues[hourBox.selectedIndex] * 60 +
+                minuteValues[minuteBox.selectedIndex]
+
+            param.set(gameParameters, value)
+        }
+        
+        fun createTimeCell(intValues: Array<Int>, initialValue: Int, suffix: String): SelectBox<String> {
+            val timeBox = SelectBox<String>(BaseScreen.skin)
+            val stringValues =  Array(intValues.size) { i -> "${intValues[i]}" + suffix }
+            timeBox.setItems(*stringValues)
+            timeBox.selected = "$initialValue" + suffix
+            return timeBox
+        }
+    }
     private fun addVictoryTypeCheckboxes() {
         add("{Victory Conditions}:".toLabel()).colspan(2).row()
 

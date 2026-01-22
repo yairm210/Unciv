@@ -591,7 +591,7 @@ class WorldScreen(
 
             progressBar.increment()
 
-            gameInfoClone.nextTurn(progressBar)
+            gameInfoClone.nextTurn(progressBar, true)
 
             if (originalGameInfo.gameParameters.isOnlineMultiplayer) {
                 // outer try-catch for non-auth exceptions

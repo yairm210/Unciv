@@ -369,6 +369,7 @@ object GameStarter {
             if (civ.isMajorCiv() || civ.isSpectator()) {
                 civ.playerType = player.playerType
                 civ.playerId = player.playerId
+                civ.playerMinutesBeforeForceResign = newGameParameters.minutesUntilForceResign
             }
             else if (!civ.cityStateFunctions.initCityState(ruleset, newGameParameters.startingEra, usedMajorCivs))
                 continue
