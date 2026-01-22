@@ -1,7 +1,3 @@
-import org.jetbrains.kotlin.konan.properties.loadProperties
-
-val gdxVersion: String by loadProperties("${projectDir.parent}/gradle.properties")
-
 plugins {
     `kotlin-dsl`
 }
@@ -11,7 +7,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.badlogicgames.gdx:gdx-tools:$gdxVersion") {
+    implementation(libs.gdx.tools) {
         exclude("com.badlogicgames.gdx", "gdx-backend-lwjgl")
     }
 }
