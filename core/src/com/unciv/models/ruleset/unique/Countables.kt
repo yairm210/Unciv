@@ -5,6 +5,7 @@ import com.unciv.models.ruleset.unique.Countables.Stats
 import com.unciv.models.ruleset.unique.Countables.TileResources
 import com.unciv.models.ruleset.unique.expressions.Expressions
 import com.unciv.models.ruleset.unique.expressions.Operator
+import com.unciv.models.stats.GameResource
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.fillPlaceholders
@@ -70,10 +71,9 @@ enum class Countables(
         override fun matches(parameterText: String) = Stat.isStat(parameterText)
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val relevantStat = Stat.safeValueOf(parameterText) ?: return null
-            // This one isn't covered by City.getStatReserve or Civilization.getStatReserve but should be available here
-            if (relevantStat == Stat.Happiness)
-                return gameContext.civInfo?.getHappiness()
-            return gameContext.getStatAmount(relevantStat)
+            val city = gameContext.city
+            return city?.getStatReserve(relevantStat)
+                ?: gameContext.civInfo?.getStatReserve(relevantStat)
         }
 
         override val example = "Science"
@@ -92,11 +92,21 @@ enum class Countables(
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val param = parameterText.getPlaceholderParameters().firstOrNull() ?: return null
             val civ = gameContext.civInfo ?: return null
-            if (Stat.isStat(param)) {
-                val relevantStat = Stat.safeValueOf(param) ?: return null
-                return civ.stats.getStatMapForNextTurn().values.map { it[relevantStat] }.sum().toInt()
+            val city = gameContext.city
+
+            var resource: GameResource? = Stat.safeValueOf(param)
+            if (resource is Stat) { // Type check instead of null check for smart cast
+                if (city != null && resource.isCityWide) {
+                    return city.cityStats.currentCityStats[resource].toInt()
+                }
+                return civ.stats.getStatMapForNextTurn().values.map { it[resource] }.sum().toInt()
             }
-            return civ.getCivResourceSupply().sumBy(param)
+
+            resource = gameContext.gameInfo!!.ruleset.tileResources[param] ?: return null
+            if (city != null) {
+                return city.getResourcesGeneratedByCity().sumBy(resource)
+            }
+            return civ.getCivResourceSupply().sumBy(resource)
         }
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
             val param = parameterText.getPlaceholderParameters().firstOrNull() ?: return UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
@@ -281,8 +291,11 @@ enum class Countables(
         )
         override val matchesWithRuleset = true
         override fun matches(parameterText: String, ruleset: Ruleset) = parameterText in ruleset.tileResources
-        override fun eval(parameterText: String, gameContext: GameContext) =
-            gameContext.getResourceAmount(parameterText)
+        override fun eval(parameterText: String, gameContext: GameContext): Int? {
+            val resource = gameContext.gameInfo?.ruleset?.tileResources[parameterText] ?: return null
+            val city = gameContext.city
+            return city?.getAvailableResourceAmount(resource) ?: gameContext.civInfo?.getResourceAmount(resource)
+        }
 
         override val example = "Iron"
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.tileResources.keys

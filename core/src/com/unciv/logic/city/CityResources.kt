@@ -61,9 +61,15 @@ object CityResources {
     @Readonly
     fun getAvailableResourceAmount(city: City, resourceName: String): Int {
         val resource = city.getRuleset().tileResources[resourceName] ?: return 0
+        return getAvailableResourceAmount(city, resource)
+    }
 
-        if (!resource.isCityWide) return city.civ.getResourceAmount(resourceName)
-        if (resource.isStockpiled) return city.resourceStockpiles[resourceName]
+    /** Gets the number of resources available to this city
+     * Accommodates both city-wide and civ-wide resources */
+    @Readonly
+    fun getAvailableResourceAmount(city: City, resource: TileResource): Int {
+        if (!resource.isCityWide) return city.civ.getResourceAmount(resource)
+        if (resource.isStockpiled) return city.resourceStockpiles[resource.name]
         return getCityResourcesAvailableToCity(city).asSequence().filter { it.resource == resource }.sumOf { it.amount }
     }
 
