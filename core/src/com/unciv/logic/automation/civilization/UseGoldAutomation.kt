@@ -54,7 +54,7 @@ object UseGoldAutomation {
 
         if (civ.gold < 500 || knownCityStates.none()) return // skip checks if tryGainInfluence will bail anyway
         val cityState = knownCityStates
-            .filter { it.getAllyCivName() != civ.civName }
+            .filter { it.allyCiv != civ }
             .associateWith { NextTurnAutomation.valueCityStateAlliance(civ, it, true) }
             .maxByOrNull { it.value }?.takeIf { it.value > 0 }?.key
         if (cityState != null) {
@@ -147,10 +147,12 @@ object UseGoldAutomation {
 
         @Readonly fun hasNaturalWonder() = it.naturalWonder != null
 
-        @Readonly  fun hasLuxury() =
-            it.hasViewableResource(civInfo)
-                && it.tileResource.resourceType == ResourceType.Luxury
-                && civInfo.getResourceAmount(it.resource!!) < 2 // At 2 or more, we haven't been able to trade it away for another duplicate...
+        @Readonly  fun hasLuxury(): Boolean {
+            val resource = it.tileResourceOrNull
+            return civInfo.canSeeResource(resource) &&
+                resource.resourceType == ResourceType.Luxury &&
+                civInfo.getResourceAmount(resource) < 2 // At 2 or more, we haven't been able to trade it away for another duplicate...
+        }
 
         @Readonly fun hasHighYields(): Boolean {
             val tileStats = it.stats.getTileStats(civInfo)

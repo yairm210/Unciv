@@ -37,6 +37,7 @@ import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.models.ruleset.unit.UnitNameGroup
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.components.input.KeyboardBinding
@@ -45,13 +46,13 @@ import com.unciv.utils.debug
 import java.io.File
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
+import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 
 object TranslationFileWriter {
 
     private const val specialNewLineCode = "# This is an empty line "
-    const val templateFileLocation = "jsons/translations/template.properties"
     private const val languageFileLocation = "jsons/translations/%s.properties"
     private const val shortDescriptionKey = "Fastlane_short_description"
     private const val shortDescriptionFile = "short_description.txt"
@@ -108,9 +109,9 @@ object TranslationFileWriter {
         val linesToTranslate = mutableListOf<String>()
 
         if (modFolder == null) { // base game
-            val templateFile = getFileHandle(null, templateFileLocation) // read the template
-            if (templateFile.exists())
-                linesToTranslate.addAll(templateFile.reader(TranslationFileReader.charset).readLines())
+            TranslationFileReader.readTemplates {
+                linesToTranslate.addAll(it)
+            }
 
             linesToTranslate += "\n\n#################### Lines from Unique Types #######################\n"
             for (uniqueType in UniqueType.entries) {
@@ -165,9 +166,9 @@ object TranslationFileWriter {
                     fileNameToGeneratedStrings[entry.key + " from " + baseRuleset.fullName] = entry.value
             }
 
-            // Tutorials reside one level above the base rulesets - if they were per-ruleset the following lines would be unnecessary
+            // Global Tutorials reside one level above the base rulesets - if we had only per-ruleset tutorials the following lines would be unnecessary
             val tutorialStrings = GenerateStringsFromJSONs(UncivGame.Current.files.getLocalFile("jsons")) { it.name == "Tutorials.json" }
-            fileNameToGeneratedStrings["Tutorials"] = tutorialStrings.values.first()
+            fileNameToGeneratedStrings["Global Tutorials"] = tutorialStrings.values.first()
         } else {
             fileNameToGeneratedStrings.putAll(GenerateStringsFromJSONs(modFolder.child("jsons")))
         }
@@ -200,30 +201,41 @@ object TranslationFileWriter {
                     continue
                 }
 
-                val translationKey = line.split(" = ")[0].replace("\\n", "\n")
-                val hashMapKey =
-                    if (translationKey == Translations.englishConditionalOrderingString)
-                        Translations.englishConditionalOrderingString
-                    else translationKey
+                val lineParts = line.split(" = ")
+                val translationKey = lineParts[0].replace("\\n", "\n")
+                val hashMapKey = translationKey
                         .replace(pointyBraceRegex, "")
                         .replace(squareBraceRegex, "[]")
 
                 if (existingTranslationKeys.contains(hashMapKey)) continue // don't add it twice
                 existingTranslationKeys.add(hashMapKey)
 
-                // count translatable lines only once
-                if (languageIndex == 0) countOfTranslatableLines++
+                fun incrementCountOfTranslatableLines() {
+                    // count translatable lines only once
+                    if (languageIndex == 0) countOfTranslatableLines++
+                }
 
+                val isPretranslatable = lineParts[1].isNotEmpty()
                 val existingTranslation = translations[hashMapKey]
                 var translationValue = if (existingTranslation != null && language in existingTranslation) {
+                    // String has translation - copy it
+                    incrementCountOfTranslatableLines()
                     translationsOfThisLanguage++
                     existingTranslation[language]!!
                 } else if (baseTranslations?.get(hashMapKey)?.containsKey(language) == true) {
                     // String is used in the mod but also exists in base - ignore
                     continue
+                } else if (isPretranslatable) {
+                    // We could omit the following two lines so pre-translatables would not count towards completion percentages at all
+                    incrementCountOfTranslatableLines()
+                    translationsOfThisLanguage++
+                    lineParts[1]
                 } else {
                     // String is not translated either here or in base
-                    stringBuilder.appendLine(" # Requires translation!")
+                    if (translationKey != Translations.conditionalOrderingKey) {
+                        incrementCountOfTranslatableLines()
+                        stringBuilder.appendLine(" # Requires translation!")
+                    }
                     ""
                 }
 
@@ -271,14 +283,15 @@ object TranslationFileWriter {
     }
 
     private fun writeLanguagePercentages(percentages: HashMap<String, Int>, modFolder: FileHandle? = null) {
+        val comment = "# Automatically generated - ${if (modFolder == null) "do not edit manually" else "for your info only"}\n\n"
         val output = percentages.asSequence()
             .sortedBy { it.key }
-            .joinToString("\n", postfix = "\n") { "${it.key} = ${it.value}" }
+            .joinToString("\n", prefix = comment, postfix = "\n") { "${it.key} = ${it.value}" }
         getFileHandle(modFolder, TranslationFileReader.percentagesFileLocation)
             .writeString(output, false)
     }
 
-    // used for unit test only
+    @VisibleForTesting
     fun getGeneratedStringsSize(): Int {
         return GenerateStringsFromJSONs(Gdx.files.local("jsons/Civ V - Vanilla")).values.sumOf {
             // exclude empty lines
@@ -369,6 +382,11 @@ object TranslationFileWriter {
             resultStrings.add("$string = ")
         }
 
+        fun submitPretranslatableString(string: String) {
+            if (string.isEmpty()) return
+            resultStrings.add("$string = $string")
+        }
+
         fun submitString(string: String, unique: Unique) {
             if (unique.isHiddenToUsers())
                 return // We don't need to translate this at all, not user-visible
@@ -442,6 +460,13 @@ object TranslationFileWriter {
                 if (element is Tutorial && field.name == "name"
                         && UniqueType.HiddenFromCivilopedia.placeholderText in element.uniques)
                     continue
+                val isPreTranslatable = isFieldPreTranslatable(element.javaClass, field)
+                fun submitCollectionItem(item: Any?) {
+                    if (item === null) return
+                    if (item !is String) serializeElement(item)
+                    else if (isPreTranslatable) submitPretranslatableString(item)
+                    else submitString(item)
+                }
                 // this field can contain sub-objects, let's serialize them as well
                 @Suppress("RemoveRedundantQualifierName")  // to clarify List does _not_ inherit from anything in java.util
                 when {
@@ -454,10 +479,10 @@ object TranslationFileWriter {
                             if (item is String) submitString(item, Unique(item)) else serializeElement(item!!)
                     fieldValue is java.util.AbstractCollection<*> ->
                         for (item in fieldValue)
-                            if (item is String) submitString(item) else serializeElement(item!!)
+                            submitCollectionItem(item)
                     fieldValue is kotlin.collections.List<*> ->
                         for (item in fieldValue)
-                            if (item is String) submitString(item) else serializeElement(item!!)
+                            submitCollectionItem(item)
                     element is Promotion && field.name == "name" ->  // see above
                         submitString(fieldValue.toString(), Unique(fieldValue.toString()))
                     else -> submitString(fieldValue.toString())
@@ -486,6 +511,19 @@ object TranslationFileWriter {
                 "Era.citySound",
                 "keyShortcut",
                 "originRuleset"
+            )
+
+            /** Fields that are collections of simple strings that will be offered pre-translated.
+             *  Matching rules as in [untranslatableFieldSet].
+             *
+             *  Note This is determined in [GenerateStringsFromJSONs], then communicated to [generateTranslationFiles]
+             *  by emitting e.g. 'Paris = Paris' instead of 'Paris = '. [generateTranslationFiles] then detects that and ensures
+             *  it's written out like that and not commented with " # Requires translation!".
+             */
+            private val preTranslatableFieldSet = setOf(
+                "Nation.cities",
+                "Nation.spyNames",
+                "UnitNameGroup.unitNames"
             )
 
             /** Specifies Enums where the name property _is_ translatable, by Class name */
@@ -523,6 +561,14 @@ object TranslationFileWriter {
                         (clazz.componentType?.simpleName ?: clazz.simpleName) + "." + field.name !in untranslatableFieldSet
             }
 
+            /** Checks whether a field's content should be marked as "pre-translatable", meaning if it's not yet translated for a language,
+             *  then `thing = thing` gets written instead of `# requires translation`...
+             *  ONLY applies to collections of simple strings which can't contain {} placeholders.
+             */
+            private fun isFieldPreTranslatable(clazz: Class<*>, field: Field) =
+                field.name in preTranslatableFieldSet ||
+                (clazz.componentType?.simpleName ?: clazz.simpleName) + "." + field.name in preTranslatableFieldSet
+
             private fun getJavaClassByName(name: String): Class<Any>? {
                 return when (name) {
                     "Beliefs" -> emptyArray<Belief>().javaClass
@@ -532,6 +578,7 @@ object TranslationFileWriter {
                     "Eras" -> emptyArray<Era>().javaClass
                     "Events" -> emptyArray<Event>().javaClass
                     "GlobalUniques" -> GlobalUniques().javaClass
+                    "UnitNameGroups" -> emptyArray<UnitNameGroup>().javaClass
                     "Nations" -> emptyArray<Nation>().javaClass
                     "Policies" -> emptyArray<PolicyBranch>().javaClass
                     "Quests" -> emptyArray<Quest>().javaClass

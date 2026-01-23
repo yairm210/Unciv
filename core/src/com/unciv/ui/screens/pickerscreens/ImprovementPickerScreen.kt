@@ -14,6 +14,7 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.SmallButtonStyle
@@ -155,8 +156,9 @@ class ImprovementPickerScreen(
         else improvement.getTurnsToBuild(currentPlayerCiv, unit)
 
         if (turnsToBuild > 0) labelText += " - $turnsToBuild${Fonts.turn}"
-        val provideResource = tile.hasViewableResource(currentPlayerCiv) && tile.tileResource.isImprovedBy(improvement.name)
-        if (provideResource) labelText += "\n" + "Provides [${tile.resource}]".tr()
+        val tileResource = tile.tileResourceOrNull
+        val provideResource = currentPlayerCiv.canSeeResource(tileResource) && tileResource.isImprovedBy(improvement.name)
+        if (provideResource) labelText += "\n" + "Provides [${tileResource.name}]".tr()
         val removeImprovement = (!improvement.isRoad()
             && !improvement.name.startsWith(Constants.remove)
             && improvement.name != Constants.cancelImprovementOrder)
@@ -171,6 +173,15 @@ class ImprovementPickerScreen(
             tile.getCity(),
             cityUniqueCache
         )
+        
+        // Add per-turn maintenance costs as negative stats
+        val maintenanceUniques = improvement.getMatchingUniques(UniqueType.ImprovementMaintenance) + 
+                improvement.getMatchingUniques(UniqueType.ImprovementAllMaintenance)
+        for (maintenanceUnique in maintenanceUniques ) {
+            val amount = maintenanceUnique.params[0].toFloat()
+            val statName = Stat.safeValueOf(maintenanceUnique.params[1]) ?: continue
+            stats.add(statName, -amount)
+        }
 
         //Warn when the current improvement will increase a stat for the tile,
         // but the tile is outside of the range (> 3 tiles from any city center) that can be
@@ -247,7 +258,8 @@ class ImprovementPickerScreen(
         }
 
         // icon for removing the resource by replacing improvement
-        if (removeImprovement && tile.hasViewableResource(currentPlayerCiv) && tile.improvement != null && tile.tileResource.isImprovedBy(tile.improvement!!)) {
+        val resource = tile.tileResourceOrNull
+        if (removeImprovement && tile.improvement != null && currentPlayerCiv.canSeeResource(resource) && resource.isImprovedBy(tile.improvement!!)) {
             val resourceIcon = ImageGetter.getResourcePortrait(tile.resource!!, 30f)
             statIcons.add(ImageGetter.getCrossedImage(resourceIcon, 30f))
         }

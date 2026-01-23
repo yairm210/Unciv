@@ -110,7 +110,8 @@ class TileStatFunctions(val tile: Tile) {
         var minimumStats = if (tile.isCityCenter()) Stats.DefaultCityCenterMinimum else Stats.ZERO
         if (observingCiv != null) {
             // resource base
-            if (tile.hasViewableResource(observingCiv)) listOfStats.add(tile.tileResource.name to tile.tileResource)
+            val resource = tile.tileResourceOrNull
+            if (observingCiv.canSeeResource(resource)) listOfStats.add(resource.name to resource)
 
             if (improvement != null)
                 improvementStats.add(getExtraImprovementStats(improvement, observingCiv, city))
@@ -157,7 +158,8 @@ class TileStatFunctions(val tile: Tile) {
      */
     @Readonly
     private fun getSingleTerrainStats(terrain: Terrain, gameContext: GameContext): ArrayList<Pair<String, Stats>> {
-        val list = arrayListOf(terrain.name to (terrain as Stats))
+        val list = ArrayList<Pair<String,Stats>>()
+        list.add(terrain.name to (terrain as Stats))
 
         for (unique in terrain.getMatchingUniques(UniqueType.Stats, gameContext)) {
             list.add(terrain.name+": "+unique.getDisplayText() to unique.stats)
@@ -315,10 +317,11 @@ class TileStatFunctions(val tile: Tile) {
     ): Stats {
         val stats = Stats()
 
-        if (tile.hasViewableResource(observingCiv) && tile.tileResource.isImprovedBy(improvement.name)
-                && tile.tileResource.improvementStats != null
+        val resource = tile.tileResourceOrNull
+        if (observingCiv.canSeeResource(resource) && resource.isImprovedBy(improvement.name)
+                && resource.improvementStats != null
         )
-            stats.add(tile.tileResource.improvementStats!!) // resource-specific improvement
+            stats.add(resource.improvementStats!!) // resource-specific improvement
 
         val conditionalState = GameContext(civInfo = observingCiv, city = city, tile = tile)
         for (unique in improvement.getMatchingUniques(UniqueType.Stats, conditionalState)) {

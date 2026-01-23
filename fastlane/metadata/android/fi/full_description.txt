@@ -6,7 +6,7 @@ Pyyntöjä? Bugeja? Haluatko auttaa kehityksessä? Tehtävälista sovellukselle 
 
 Kysymyksiä? Kommentteja? Liity meihin discordissa osoitteessa https://discord.gg/bjrB4Xw ;)
 
-Haluatko auttaa pelin kääntämisessä sinun kielellesi? Katso https://yairm210.github.io/Unciv/Other/Translating/
+Haluatko auttaa pelin kääntämisessä sinun kielellesi? Katso https://yairm210.github.io/Unciv/Translating/Translating/
 
 Maailma odottaa! Rakennatko sivilisaatiostasi imperiumin, joka kestää ajan koetuksen?
 

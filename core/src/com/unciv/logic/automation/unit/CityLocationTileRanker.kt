@@ -8,6 +8,7 @@ import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
@@ -96,7 +97,7 @@ object CityLocationTileRanker {
         val onHill = newCityTile.isHill()
         val isNextToMountain = newCityTile.isAdjacentTo("Mountain")
         // Only count a luxury resource that we don't have yet as unique once
-        val newUniqueLuxuryResources = HashSet<String>()
+        val newUniqueLuxuryResources = HashSet<TileResource>()
 
         if (onCoast) tileValue += 3
         // Hills are free production and defence
@@ -107,11 +108,17 @@ object CityLocationTileRanker {
         if (newCityTile.isAdjacentToRiver()) tileValue += 20
         // We want to found the city on an oasis because it can't be improved otherwise
         if (newCityTile.terrainHasUnique(UniqueType.Unbuildable)) tileValue += 3
-        // If we build the city on a resource tile, then we can't build any special improvements on it
-        if (newCityTile.hasViewableResource(civ)) tileValue -= 4
-        if (newCityTile.hasViewableResource(civ) && newCityTile.tileResource.resourceType == ResourceType.Bonus) tileValue -= 8
-        // Settling on bonus resources tends to waste a food
-        // Settling on luxuries generally speeds up our game, and settling on strategics as well, as the AI cheats and can see them.
+        val resource = newCityTile.tileResourceOrNull
+        if (civ.canSeeResource(resource)) {
+            tileValue -= 4
+            // Settling on bonus resources tends to waste a food
+            if (resource.resourceType == ResourceType.Bonus) tileValue -= 8
+            // Build on jungle luxuries for tempo
+            if (resource.resourceType == ResourceType.Luxury &&
+                newCityTile.lastTerrain.hasUnique(UniqueType.Vegetation) &&
+                !newCityTile.lastTerrain.hasUnique(UniqueType.ProductionBonusWhenRemoved)
+                ) tileValue += 10
+        }
 
         var tiles = 0
         for (i in 0..2) {
@@ -156,17 +163,21 @@ object CityLocationTileRanker {
         return modifier
     }
 
-    private fun rankTile(rankTile: Tile, civ: Civilization, onCoast: Boolean, newUniqueLuxuryResources: HashSet<String>,
+    private fun rankTile(rankTile: Tile, civ: Civilization, onCoast: Boolean, newUniqueLuxuryResources: HashSet<TileResource>,
                          baseTileMap: HashMap<Tile, Float>, uniqueCache: LocalUniqueCache): Float {
         if (rankTile.getCity() != null) return -1f
         var locationSpecificTileValue = 0f
         // Don't settle near but not on the coast
         if (rankTile.isWater && !onCoast) locationSpecificTileValue -= 1
         // Check if there are any new unique luxury resources
-        if (rankTile.hasViewableResource(civ) && rankTile.tileResource.resourceType == ResourceType.Luxury
-            && !(civ.hasResource(rankTile.resource!!) || newUniqueLuxuryResources.contains(rankTile.resource))) {
+        val resource = rankTile.tileResourceOrNull
+        if (civ.canSeeResource(resource) &&
+            resource.resourceType == ResourceType.Luxury &&
+            !civ.hasResource(resource) &&
+            !newUniqueLuxuryResources.contains(resource)
+        ) {
             locationSpecificTileValue += 10
-            newUniqueLuxuryResources.add(rankTile.resource!!)
+            newUniqueLuxuryResources.add(resource)
         }
 
         // Check if everything else has been calculated, if so return it
@@ -175,8 +186,8 @@ object CityLocationTileRanker {
 
         var rankTileValue = Automation.rankStatsValue(rankTile.stats.getTileStats(null, civ, uniqueCache), civ)
 
-        if (rankTile.hasViewableResource(civ)) {
-            rankTileValue += when (rankTile.tileResource.resourceType) {
+        if (civ.canSeeResource(resource)) {
+            rankTileValue += when (resource.resourceType) {
                 ResourceType.Bonus -> 1f
                 ResourceType.Strategic -> 2f
                 ResourceType.Luxury -> 10f //very important for humans who might want to conquer the AI

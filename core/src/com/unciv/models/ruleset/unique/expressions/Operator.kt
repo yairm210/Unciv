@@ -51,7 +51,7 @@ internal sealed interface Operator : Tokenizer.Token {
         Addition("+", 2, true, { left, right -> left + right }),
         Subtraction("-", 2, true, { left, right -> left - right }),
         Multiplication("*", 3, true, { left, right -> left * right }),
-        Division("/", 3, true, { left, right -> left / right }),
+        Division("/", 3, true, { left, right -> if (right == 0.0) 0.0 else left / right }),
         Remainder("%", 3, true, { left, right -> ((left % right) + right) % right }), // true modulo, always non-negative
         Exponent("^", 4, false, { left, right -> left.pow(right) }),
         ;

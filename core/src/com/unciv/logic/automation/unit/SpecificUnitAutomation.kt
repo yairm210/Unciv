@@ -1,4 +1,4 @@
-﻿package com.unciv.logic.automation.unit
+package com.unciv.logic.automation.unit
 
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.unit.CivilianUnitAutomation.tryRunAwayIfNeccessary
@@ -9,6 +9,7 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
@@ -64,11 +65,11 @@ object SpecificUnitAutomation {
             return true
         }
 
-        // try to build a citadel for defensive purposes
-        if (unit.civ.getWorkerAutomation().evaluateFortPlacement(unit.currentTile, true)) {
-            UnitActionsFromUniques.getImprovementConstructionActionsFromGeneralUnique(unit, unit.currentTile).firstOrNull()?.action?.invoke()
-            return true
-        }
+        // keep in mind that citadels can be stolen by other citadels.
+        // you need 1 more general than your opponent, or be able to place it on a totally unreachable tile,
+        // for it to make sense to make the first move as the defender.
+        // so, let's focus only on the stealing part for now (the old defensive citadel placement logic turned out negative in simulation result)
+
         return false
     }
 
@@ -147,7 +148,7 @@ object SpecificUnitAutomation {
             @Readonly
             fun getFrontierScore(city: City) = city.getCenterTile()
                 .getTilesAtDistance(city.civ.gameInfo.ruleset.modOptions.constants.minimalCityDistance + 1)
-                .count { it.canBeSettled() && (it.getOwner() == null || it.getOwner() == city.civ ) }
+                .count { it.canBeSettled(unit.civ) }
 
             val frontierCity = unit.civ.cities.maxByOrNull { getFrontierScore(it) }
             if (frontierCity != null && getFrontierScore(frontierCity) > 0  && unit.movement.canReach(frontierCity.getCenterTile()))
@@ -196,11 +197,12 @@ object SpecificUnitAutomation {
         val localUniqueCache = LocalUniqueCache()
         for (city in citiesByStatBoost) {
             val applicableTiles = city.getWorkableTiles().filter {
-                it.isLand && it.resource == null && !it.isCityCenter()
-                        && (unit.currentTile == it || unit.movement.canMoveTo(it))
-                        && it.improvement == null
-                        && it.improvementFunctions.canBuildImprovement(improvement, unit.cache.state)
-                        && Automation.rankTile(it, unit.civ, localUniqueCache) > averageTerrainStatsValue
+                it.isLand && (it.resource == null || it.tileResource.isImprovedBy(improvementName)) && !it.isCityCenter()
+                    && (unit.currentTile == it || unit.movement.canMoveTo(it))
+                    // okay if we replace regular improvements by great improvements, but not the other way around
+                    && (it.improvement == null || !it.getTileImprovement()!!.hasUnique(UniqueType.GreatImprovement))
+                    && it.improvementFunctions.canBuildImprovement(improvement, unit.cache.state)
+                    && (!improvement.hasUnique(UniqueType.GreatImprovement) || Automation.rankStatsValue(it.getBaseTerrain().cloneStats(), unit.civ) > averageTerrainStatsValue)
             }
 
             if (applicableTiles.none()) continue

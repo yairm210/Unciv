@@ -217,7 +217,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
                     UniqueType.NaturalWonderLatitude -> {
                         val lower = tile.tileMap.maxLatitude * unique.getIntParam(0) * 0.01f
                         val upper = tile.tileMap.maxLatitude * unique.getIntParam(1) * 0.01f
-                        abs(tile.latitude) in lower..upper
+                        abs(tile.latitude.toFloat()) in lower..upper
                     }
 
                     else -> true

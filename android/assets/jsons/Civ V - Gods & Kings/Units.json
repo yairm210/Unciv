@@ -7,6 +7,7 @@
 		"name": "Worker",
 		"unitType": "Civilian",
 		"movement": 2,
+		"requiredTech": "Agriculture",
 		"uniques": ["Can build [Land] improvements on tiles", "Automation is a primary action"],
 		"cost": 70
 	},
@@ -15,6 +16,7 @@
 		"unitType": "Civilian",
 		"movement": 2,
 		"cost": 106,
+		"requiredTech": "Agriculture",
 		"uniques": ["Founds a new city <by consuming this unit>", "Excess Food converted to Production when under construction",
 			"Requires at least [2] population"],
 		"hurryCostModifier": 20
@@ -25,6 +27,7 @@
 		"movement": 2,
 		"strength": 5,
 		"cost": 25,
+		"requiredTech": "Agriculture",
 		"obsoleteTech": "Scientific Theory",
 		"uniques": ["May upgrade to [Archer] through ruins-like effects", "Never appears as a Barbarian unit"],
 		"promotions": ["Ignore terrain cost"],
@@ -36,6 +39,7 @@
 		"movement": 2,
 		"strength": 8,
 		"cost": 40,
+		"requiredTech": "Agriculture",
 		"obsoleteTech": "Metal Casting",
 		"upgradesTo": "Swordsman",
 		"uniques": ["May upgrade to [Spearman] through ruins-like effects"],
@@ -52,6 +56,7 @@
 		"movement": 2,
 		"strength": 8,
 		"cost": 40,
+		"requiredTech": "Agriculture",
 		"obsoleteTech": "Metal Casting",
 		"promotions": ["Haka War Dance"],
 		"upgradesTo": "Swordsman",
@@ -65,6 +70,7 @@
 		"movement": 2,
 		"strength": 8,
 		"cost": 40,
+		"requiredTech": "Agriculture",
 		"obsoleteTech": "Metal Casting",
 		"promotions": ["[Jaguar] ability","Woodsman"],
 		"upgradesTo": "Swordsman",
@@ -1061,7 +1067,7 @@
 		"requiredResource": "Horses",
 		"upgradesTo": "Landship",
 		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities> <when attacking>", "Never appears as a Barbarian unit"],
-		"attackSound": "horse"
+		"attackSound": "cavalry"
 	},
 	{
 		"name": "Cossack",
@@ -1077,7 +1083,7 @@
 		"upgradesTo": "Landship",
 		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities> <when attacking>"],
 		"promotions": ["[Cossack] ability"],
-		"attackSound": "horse"
+		"attackSound": "cavalry"
 	},
 	{
 		"name": "Hussar",
@@ -1094,7 +1100,7 @@
 		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities> <when attacking>",
 			"[+1] Sight"],
 		"promotions": ["[Hussar] ability"],
-		"attackSound": "horse"
+		"attackSound": "cavalry"
 	},
 	{
 		"name": "Ironclad",
@@ -1586,6 +1592,7 @@
             "Empire enters a [8]-turn Golden Age <by consuming this unit>",
             "Can instantly construct a [Landmark] improvement <by consuming this unit>",
             "Is part of Great Person group [Great Person]",
+            "[This Unit] gets a name from the [Artist] group",
             "Great Person - [Culture]", "Unbuildable", "Uncapturable"],
 		"movement": 2
 	},
@@ -1596,6 +1603,7 @@
             "Can hurry technology research",
             "Can instantly construct a [Academy] improvement <by consuming this unit>",
             "Is part of Great Person group [Great Person]",
+            "[This Unit] gets a name from the [Scientist] group",
             "Great Person - [Science]", "Unbuildable", "Uncapturable"],
 		"movement": 2
 	},
@@ -1605,6 +1613,7 @@
 		"uniques": ["Can undertake a trade mission with City-State, giving a large sum of gold and [30] Influence",
             "Can instantly construct a [Customs house] improvement <by consuming this unit>",
             "Is part of Great Person group [Great Person]",
+            "[This Unit] gets a name from the [Merchant] group",
 			"Great Person - [Gold]", "Unbuildable", "Uncapturable"],
 		"movement": 2
 	},
@@ -1614,6 +1623,7 @@
 		"uniques": ["Can speed up construction of a building",
             "Can instantly construct a [Manufactory] improvement <by consuming this unit>",
             "Is part of Great Person group [Great Person]",
+            "[This Unit] gets a name from the [Engineer] group",
             "Great Person - [Production]", "Unbuildable", "Uncapturable"],
 		"movement": 2
 	},
@@ -1627,6 +1637,7 @@
             "May found a religion <by consuming this unit> <if it hasn't used other actions yet>",
             "May enhance a religion <by consuming this unit>  <if it hasn't used other actions yet>",
             "Is part of Great Person group [Prophet]",
+            "[This Unit] gets a name from the [Prophet] group",
 			"May enter foreign tiles without open borders", "[-1] Sight", "Great Person - [Faith]",
 			"Unbuildable", "Religious Unit", "Only available <when religion is enabled>",
 			"Takes your religion over the one in their birth city"],
@@ -1641,6 +1652,7 @@
             "Can instantly construct a [Citadel] improvement <by consuming this unit>",
 			"Can be earned through combat <for [Land] units>",
             "Is part of Great Person group [General]",
+            "[This Unit] gets a name from the [General] group",
 			"Great Person - [War]", "Unbuildable", "Uncapturable"],
 		"movement": 2
 	},
@@ -1655,6 +1667,7 @@
             "Can instantly construct a [Citadel] improvement <by consuming this unit>",
 			"Can be earned through combat <for [Land] units>",
             "Is part of Great Person group [General]",
+            "[This Unit] gets a name from the [Khan] group",
             "Great Person - [War]", "Unbuildable", "Uncapturable"],
 		"movement": 5
 	},
@@ -1667,6 +1680,7 @@
             "[+15]% Strength bonus for [{Military} {Water}] units within [2] tiles",
 			"Can be earned through combat <for [Water] units>",
             "Is part of Great Person group [Admiral]",
+            "[This Unit] gets a name from the [Admiral] group",
             "Great Person - [War]", "Unbuildable", "Uncapturable"],
 		"movement": 4
 	},
@@ -1706,7 +1720,7 @@
 		"cost": 750,
 		"requiredTech": "Advanced Ballistics",
 		"requiredResource": "Aluminum",
-		"uniques": ["Spaceship part", "Cannot be purchased", "Only available <if [Apollo Program] is constructed>", "Uncapturable", "Can be added to [The Spaceship] in the Capital", "Limited to [3] per Civilization"]
+		"uniques": ["Spaceship part", "Cannot be purchased", "Only available <if [Apollo Program] is constructed>", "Uncapturable", "Can be added to [The Spaceship] in the Capital", "Limited to [3] per Civilization", "Only available <when [Scientific] Victory is enabled>"]
 		// costs 1500 in BNW
 	},
 	{
@@ -1716,7 +1730,7 @@
 		"cost": 750,
 		"requiredTech": "Satellites",
 		"requiredResource": "Aluminum",
-		"uniques": ["Spaceship part", "Cannot be purchased", "Only available <if [Apollo Program] is constructed>", "Uncapturable", "Can be added to [The Spaceship] in the Capital", "Limited to [1] per Civilization"]
+		"uniques": ["Spaceship part", "Cannot be purchased", "Only available <if [Apollo Program] is constructed>", "Uncapturable", "Can be added to [The Spaceship] in the Capital", "Limited to [1] per Civilization", "Only available <when [Scientific] Victory is enabled>"]
 		// costs 1500 in BNW
 	},
 	{
@@ -1726,7 +1740,7 @@
 		"cost": 750,
 		"requiredTech": "Particle Physics",
 		"requiredResource": "Aluminum",
-		"uniques": ["Spaceship part", "Cannot be purchased", "Only available <if [Apollo Program] is constructed>", "Uncapturable", "Can be added to [The Spaceship] in the Capital", "Limited to [1] per Civilization"]
+		"uniques": ["Spaceship part", "Cannot be purchased", "Only available <if [Apollo Program] is constructed>", "Uncapturable", "Can be added to [The Spaceship] in the Capital", "Limited to [1] per Civilization", "Only available <when [Scientific] Victory is enabled>"]
 		// costs 1500 in BNW
 	},
 	{
@@ -1736,7 +1750,7 @@
 		"cost": 750,
 		"requiredTech": "Nanotechnology",
 		"requiredResource": "Aluminum",
-		"uniques": ["Spaceship part", "Cannot be purchased", "Only available <if [Apollo Program] is constructed>", "Uncapturable", "Can be added to [The Spaceship] in the Capital", "Limited to [1] per Civilization"]
+		"uniques": ["Spaceship part", "Cannot be purchased", "Only available <if [Apollo Program] is constructed>", "Uncapturable", "Can be added to [The Spaceship] in the Capital", "Limited to [1] per Civilization", "Only available <when [Scientific] Victory is enabled>"]
 		// costs 1500 in BNW
 	}
 ]

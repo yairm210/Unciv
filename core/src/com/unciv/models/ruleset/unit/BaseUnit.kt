@@ -101,6 +101,9 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> =
             BaseUnitDescriptions.getCivilopediaTextLines(this, ruleset)
 
+    override fun getSortGroup(ruleset: Ruleset): Int = ruleset.technologies[requiredTech]?.era(ruleset)?.eraNumber ?: 100
+    override fun getSubCategory(ruleset: Ruleset): String? = ruleset.technologies[requiredTech]?.era(ruleset)?.name ?: "Other"
+
     @Readonly
     override fun isUnavailableBySettings(gameInfo: GameInfo) =
         super<INonPerpetualConstruction>.isUnavailableBySettings(gameInfo) ||
@@ -128,7 +131,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         @LocalState val unit = MapUnit()
         unit.name = name
         unit.civ = civInfo
-        unit.owner = civInfo.civName
+        unit.owner = civInfo.civID
         unit.id = unitId ?: ++civInfo.gameInfo.lastUnitId
 
         // must be after setting name & civInfo because it sets the baseUnit according to the name
@@ -416,17 +419,17 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     @Readonly
     fun matchesFilter(filter: String, state: GameContext? = null, multiFilter: Boolean = true): Boolean {
         return if (multiFilter) MultiFilter.multiFilter(filter, {
-            cachedMatchesFilterResult.getOrPut(it) { matchesSingleFilter(it) } ||
+            cachedMatchesFilterResult.getOrPut(it) { matchesSingleFilter(it, state) } ||
                 state != null && hasTagUnique(it, state) ||
                 state == null && hasTagUnique(it)
         })
-        else cachedMatchesFilterResult.getOrPut(filter) { matchesSingleFilter(filter) } ||
+        else cachedMatchesFilterResult.getOrPut(filter) { matchesSingleFilter(filter, state) } ||
             state != null && hasTagUnique(filter, state) ||
             state == null && hasTagUnique(filter)
     }
     
     @Readonly
-    fun matchesSingleFilter(filter: String): Boolean {
+    fun matchesSingleFilter(filter: String, state: GameContext? = null): Boolean {
         // all cases are constants for performance
         return when (filter) {
             "all", "All" -> true
@@ -449,7 +452,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 else if (filter == replaces) return true
                 
                 for (requiredTech: String in requiredTechs())
-                    if (ruleset.technologies[requiredTech]?.matchesFilter(filter, multiFilter = false) == true) return true
+                    if (ruleset.technologies[requiredTech]?.matchesFilter(filter, state, false) == true) return true
                 if (
                 // Uniques using these kinds of filters should be deprecated and replaced with adjective-only parameters
                     filter.endsWith(" units")

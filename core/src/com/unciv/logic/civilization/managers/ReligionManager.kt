@@ -71,12 +71,12 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         // Find our religion from the map of founded religions.
         // First check if there is any major religion
         religion = civInfo.gameInfo.religions.values.firstOrNull {
-            it.foundingCivName == civInfo.civName && it.isMajorReligion()
+            it.foundingCiv == civInfo && it.isMajorReligion()
         }
         // If there isn't, check for just pantheons.
         if (religion != null) return
         religion = civInfo.gameInfo.religions.values.firstOrNull {
-            it.foundingCivName == civInfo.civName
+            it.foundingCiv == civInfo
         }
     }
 
@@ -144,7 +144,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
             // paid for the initial pantheon using faith
             storedFaith -= faithForPantheon()
         }
-        religion = Religion(beliefName, civInfo.gameInfo, civInfo.civName)
+        religion = Religion(beliefName, civInfo.gameInfo, civInfo)
         civInfo.gameInfo.religions[beliefName] = religion!!
         for (city in civInfo.cities)
             city.religion.addPressure(beliefName, 200 * city.population.population)
@@ -453,16 +453,19 @@ class ReligionManager : IsPartOfGameInfoSerialization {
                     UniqueTriggerActivation.triggerUnique(unique, civInfo,
                         triggerNotificationText = "due to adopting [${belief.name}]")
 
-        for (belief in beliefs)
-            for (unique in belief.uniqueObjects.filter { !it.hasTriggerConditional() && it.conditionalsApply(civInfo.state) })
-                UniqueTriggerActivation.triggerUnique(unique, civInfo)
+        for (belief in beliefs) {
+            for (unique in belief.uniqueObjects) {
+                if (unique.hasTriggerConditional() || !unique.conditionalsApply(civInfo.state)) continue
+                repeat(unique.getUniqueMultiplier(civInfo.state)) { UniqueTriggerActivation.triggerUnique(unique, civInfo) }
+            }
+        }
 
         civInfo.updateStatsForNextTurn()  // a belief can have an immediate effect on stats
     }
 
 
     internal fun foundReligion(displayName: String, name: String) {
-        val newReligion = Religion(name, civInfo.gameInfo, civInfo.civName)
+        val newReligion = Religion(name, civInfo.gameInfo, civInfo)
         newReligion.displayName = displayName
         if (religion != null) {
             newReligion.addBeliefs(religion!!.getAllBeliefsOrdered().asIterable())
@@ -487,7 +490,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
             if (civInfo in civ.getKnownCivs()) {
                 if (civ.hasExplored(holyCity.getCenterTile()))
                     civ.addNotification("[${civInfo.civName}] has founded [$displayName] in [${holyCity.name}]!",
-                        ReligionAction.withLocation(holyCity.location, name),
+                        ReligionAction.withLocation(holyCity.location.toHexCoord(), name),
                         Notification.NotificationCategory.Religion, NotificationIcon.Faith)
                 else civ.addNotification("[${civInfo.civName}] has founded [$displayName]!",
                     ReligionAction(name), Notification.NotificationCategory.Religion, NotificationIcon.Faith)

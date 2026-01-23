@@ -1,0 +1,5 @@
+Fixed mp server change on options, crashing the game
+
+Modding: Resolved "divide by zero" errors in expressions by defaulting to zero
+
+Add city context to stat and resource countables - By SeventhM

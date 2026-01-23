@@ -37,7 +37,7 @@ class TileHistory(
         }
 
         constructor(tile: Tile) : this(
-            tile.getOwner()?.civName,
+            tile.getOwner()?.civID,
             when {
                 !tile.isCityCenter() -> CityCenterType.None
                 tile.getCity()?.isCapital() == true -> CityCenterType.Capital

@@ -34,6 +34,10 @@ class ResourceSupplyList(
     @Readonly fun sumBy(resourceName: String) =
         asSequence().filter { it.resource.name == resourceName }.sumOf { it.amount }
 
+    /** Get the total amount for a resource by [resource] */
+    @Readonly fun sumBy(resource: TileResource) =
+        asSequence().filter { it.resource == resource }.sumOf { it.amount }
+
     /**
      *  Add [element] unless one for [resource][ResourceSupply.resource]/[origin][ResourceSupply.origin] already exists,
      *  in which case the amounts are added up. Ensures the list contains no entries with [amount][ResourceSupply.amount] 0 unless [keepZeroAmounts] is on.
@@ -92,6 +96,33 @@ class ResourceSupplyList(
 
     /** Create a new [ResourceSupplyList] aggregating resources over all origins */
     fun sumByResource(newOrigin: String) = ResourceSupplyList(keepZeroAmounts).addByResource(this, newOrigin)
+
+    /**
+     * Applies the given modifiers list to the resource supplies.
+     *
+     * @param resourceModifiers The list of resource modifiers to apply to the supply list.
+     */
+    fun applyModifiers(resourceModifiers: Map<String, Float>) {
+        for ((resourceName, modifier) in resourceModifiers) {
+            if (modifier == 1f) continue
+            for (resourceSupply in this) {
+                if (resourceSupply.resource.name == resourceName) {
+                    resourceSupply.amount = (resourceSupply.amount.toFloat() * modifier).toInt()
+                }
+            }
+        }
+    }
+
+    /**
+     * Applies the given modifier function to the resource supplies.
+     */
+    fun applyModifiers(resourceModifier: (TileResource) -> Float) {
+        for (resourceSupply in this) {
+            val modifier = resourceModifier(resourceSupply.resource)
+            if (modifier == 1f) continue
+            resourceSupply.amount = (resourceSupply.amount.toFloat() * modifier).toInt()
+        }
+    }
 
     /**
      *  Remove all entries from a specific [origin]

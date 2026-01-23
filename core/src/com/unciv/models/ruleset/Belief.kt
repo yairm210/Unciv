@@ -1,7 +1,9 @@
 package com.unciv.models.ruleset
 
 import com.unciv.Constants
+import com.unciv.logic.MultiFilter
 import com.unciv.UncivGame
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.translations.tr
 import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
@@ -19,9 +21,32 @@ class Belief() : RulesetObject() {
         if (type.isFounder)  UniqueTarget.FounderBelief
         else UniqueTarget.FollowerBelief
 
+    @Readonly
+    fun matchesFilter(filter: String, state: GameContext? = null, multiFilter: Boolean = true): Boolean {
+        return if (multiFilter) MultiFilter.multiFilter(filter, {
+            matchesSingleFilter(filter, state) ||
+                state != null && hasTagUnique(filter, state) ||
+                state == null && hasTagUnique(filter)
+        })
+        else matchesSingleFilter(filter, state) ||
+            state != null && hasTagUnique(filter, state) ||
+            state == null && hasTagUnique(filter)
+    }
+
+    @Readonly
+    fun matchesSingleFilter(filter: String, state: GameContext? = null): Boolean {
+        return when (filter) {
+            name -> true
+            in Constants.all -> true
+            type.name -> true // Belief type
+            else -> false
+        }
+    }
+
     override fun makeLink() = "Belief/$name"
     override fun getCivilopediaTextHeader() = FormattedLine(name, icon = makeLink(), header = 2, color = if (type == BeliefType.None) "#e34a2b" else "")
     override fun getSortGroup(ruleset: Ruleset) = type.ordinal
+    override fun getSubCategory(ruleset: Ruleset) = type.getSubCategory()
 
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         return getCivilopediaTextLines(false)
@@ -62,10 +87,17 @@ class Belief() : RulesetObject() {
             yieldAll(matchingBeliefs.map { FormattedLine(it.name, link = it.makeLink(), indent = 1) })
         }
 
+        fun getCivilopediaBeliefsEntry(ruleset: Ruleset) = Belief().apply {
+            name = "Beliefs"
+            val lines = ArrayList<FormattedLine>()
+            lines += FormattedLine("There are four types of beliefs: Pantheon, Founder, Follower and Enhancer beliefs.")
+            lines += FormattedLine("Pantheon and Follower beliefs apply to each city following your religion, while Founder and Enhancer beliefs only apply to the founder of a religion.")
+            civilopediaText = lines
+        }
+
         fun getCivilopediaReligionEntry(ruleset: Ruleset) = Belief().apply {
             name = "Religions"
             val lines = ArrayList<FormattedLine>()
-            lines += FormattedLine(separator = true)
             ruleset.religions.sortedWith(compareBy(UncivGame.Current.settings.getCollatorFromLocale()) { it.tr(hideIcons = true) }).forEach {
                 lines += FormattedLine(it, icon = "Belief/$it")
             }
@@ -79,10 +111,16 @@ class Belief() : RulesetObject() {
  *  @param isFounder - Behaves as "founder" belief, Uniques processed globally for founding civ only
  * */
 enum class BeliefType(val color: String, val isFollower: Boolean = false, val isFounder: Boolean = false) {
-    None(""),
+    None("") {
+        override fun getSubCategory() = null
+    },
     Pantheon("#44c6cc", isFollower = true),
     Founder("#c00000", isFounder = true),
     Follower("#ccaa44", isFollower = true),
     Enhancer("#72cc45", isFounder = true),
-    Any(""),
+    Any("") {
+        override fun getSubCategory() = null
+    },
+    ;
+    internal open fun getSubCategory(): String? = name
 }

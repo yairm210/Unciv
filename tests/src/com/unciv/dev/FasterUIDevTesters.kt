@@ -14,7 +14,6 @@ import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.LoadingImage
 import com.unciv.ui.components.widgets.LoadingImage.Style
-import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.overviewscreen.GlobalPoliticsDiagramGroup
 import kotlin.random.Random
@@ -39,15 +38,16 @@ internal enum class FasterUIDevTesters : IFasterUITester {
 
             for ((i, civ) in civs.withIndex()) {
                 // civ.isDefeated() is still true, and CS get-relation code runs deep, especially get tribute willingness needs a fully defined capital
-                val pos = HexMath.getClockPositionToHexVector(i * 2).cpy().scl(3f)
+                
+                val pos = HexMath.getClockPositionToHexcoord(i * 2).times(3)
                 game.addCity(civ, game.tileMap[pos])
                 // create random relations
                 for ((j, other) in civs.withIndex()) {
                     if (j <= i || Random.nextInt(3) == 0) continue
                     // Do a makeCivilizationsMeet without gifts, notifications, or war joins
                     val status = DiplomaticStatus.entries.random()
-                    civ.diplomacy[other.civName] = diplomacyManagerFactory(civ, other, status)
-                    other.diplomacy[civ.civName] = diplomacyManagerFactory(other, civ, status)
+                    civ.diplomacy[other.civID] = diplomacyManagerFactory(civ, other, status)
+                    other.diplomacy[civ.civID] = diplomacyManagerFactory(other, civ, status)
                 }
             }
 
@@ -56,7 +56,7 @@ internal enum class FasterUIDevTesters : IFasterUITester {
         }
 
         private fun diplomacyManagerFactory(civ: Civilization, other: Civilization, status: DiplomaticStatus): DiplomacyManager {
-            val mgr = DiplomacyManager(civ, other.civName)
+            val mgr = DiplomacyManager(civ, other)
             mgr.diplomaticStatus = status
             mgr.setInfluenceWithoutSideEffects(Random.nextDouble(-90.0, 90.0).toFloat())
             mgr.diplomaticModifiers["Test"] = Random.nextDouble(-90.0, 90.0).toFloat()

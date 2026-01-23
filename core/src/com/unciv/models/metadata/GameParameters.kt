@@ -6,7 +6,7 @@ import com.unciv.models.ruleset.Speed
 
 class GameParameters : IsPartOfGameInfoSerialization { // Default values are the default new game
     var difficulty = "Prince"
-    var speed = Speed.DEFAULT
+    var speed: String = Speed.DEFAULT // Not an instance of class Speed
 
     var randomNumberOfPlayers = false
     var minNumberOfPlayers = 3
