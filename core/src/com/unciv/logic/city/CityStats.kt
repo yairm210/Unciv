@@ -641,12 +641,23 @@ class CityStats(val city: City) {
     private fun calcFoodEaten(): Float {
         var foodEaten = city.population.population.toFloat() * 2
         var foodEatenBySpecialists = 2f * city.population.getNumberOfSpecialists()
-
+        var foodEatenByPopulationFilter = 0f
+        var foodEatenByPopulationFilterMultiplied = 0f
+        
         for (unique in city.getMatchingUniques(UniqueType.FoodConsumptionBySpecialists))
             if (city.matchesFilter(unique.params[1]))
                 foodEatenBySpecialists *= unique.params[0].toPercent()
 
         foodEaten -= 2f * city.population.getNumberOfSpecialists() - foodEatenBySpecialists
+        
+        for (unique in city.getMatchingUniques(UniqueType.FoodConsumptionByPopulation))
+            if (city.matchesFilter(unique.params[2])) {
+                foodEatenByPopulationFilter += 2f * city.population.getPopulationFilterAmount(unique.params[1])
+                foodEatenByPopulationFilterMultiplied += 2f * city.population.getPopulationFilterAmount(unique.params[1]) * unique.params[0].toPercent()
+            }
+            
+        foodEaten -= foodEatenByPopulationFilter - foodEatenByPopulationFilterMultiplied    
+        
         return foodEaten
     }
 
