@@ -132,7 +132,7 @@ class TileImprovementFunctions(val tile: Tile) {
 
             // Can't build it if it is only allowed to improve resources and it doesn't improve this resource
             improvement.hasUnique(UniqueType.CanOnlyImproveResource, gameContext) && (
-                    !resourceIsVisible || !tile.tileResource.isImprovedBy(improvement.name)
+                    !resourceIsVisible || !tile.tileResource!!.isImprovedBy(improvement.name)
                     ) -> false
 
             // At this point we know this is a normal improvement and that there is no reason not to allow it to be built.
@@ -146,7 +146,7 @@ class TileImprovementFunctions(val tile: Tile) {
                     && tile.isAdjacentTo(Constants.freshWater) -> true
 
             // I don't particularly like this check, but it is required to build mines on non-hill resources
-            resourceIsVisible && tile.tileResource.isImprovedBy(improvement.name) -> true
+            resourceIsVisible && tile.tileResource!!.isImprovedBy(improvement.name) -> true
             // No reason this improvement should be built here, so can't build it
             else -> false
         }

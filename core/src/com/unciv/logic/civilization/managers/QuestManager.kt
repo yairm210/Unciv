@@ -788,7 +788,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
         val ownedByCityStateResources = civ.detailedCivResources.map { it.resource }
         val ownedByMajorResources = challenger.detailedCivResources.map { it.resource }
 
-        val resourcesOnMap = civ.gameInfo.tileMap.values.asSequence().mapNotNull { it.tileResourceOrNull }.distinct()
+        val resourcesOnMap = civ.gameInfo.tileMap.values.asSequence().mapNotNull { it.tileResource }.distinct()
         val viewableResourcesForChallenger = resourcesOnMap.filter { challenger.canSeeResource(it) }
 
         val notOwnedResources = viewableResourcesForChallenger.filter {

@@ -72,7 +72,7 @@ class ResourceTests {
     @Test
     fun testTileProvidesResourceOnlyWithRequiredTech() {
         val tile = game.tileMap[1,1]
-        tile.resource = "Coal"
+        tile.setTileResource("Coal")
         tile.resourceAmount = 1
         tile.setImprovement("Mine")
 
@@ -88,7 +88,7 @@ class ResourceTests {
     @Test
     fun testTileDoesNotProvideResourceWithPillagedImprovement() {
         val tile = game.tileMap[1,1]
-        tile.resource = "Coal"
+        tile.setTileResource("Coal")
         tile.resourceAmount = 1
         tile.setImprovement("Mine")
 
@@ -145,7 +145,7 @@ class ResourceTests {
         civInfo.tech.addTechnology("Mining")
 
         val tile = game.getTile(1,1)
-        tile.resource = "Iron"
+        tile.setTileResource("Iron")
         tile.resourceAmount = 4
         tile.improvement = "Mine"
 
@@ -182,7 +182,7 @@ class ResourceTests {
     @Test
     fun `should handle StatPercentFromObjectToResource with a improvementFilter`() {
         val tile = game.tileMap[1,1]
-        tile.resource = "Wheat"
+        tile.setTileResource("Wheat")
         tile.resourceAmount = 1
         tile.setImprovement("Farm")
         city.population.addPopulation(5) // Add population, since the tile needs to be worked

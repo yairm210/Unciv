@@ -41,7 +41,7 @@ internal class WorkerAutomationTest {
 
         val currentTile = testGame.tileMap[1,1] // owned by city
         currentTile.improvement = "Farm" // Set existing improvement
-        currentTile.resource = "Iron" // This tile also has a resource needs to be enabled by a building a Mine
+        currentTile.setTileResource("Iron") // This tile also has a resource needs to be enabled by a building a Mine
 
         val mapUnit = testGame.addUnit("Worker", civInfo, currentTile)
 
@@ -67,7 +67,7 @@ internal class WorkerAutomationTest {
         val currentTile = testGame.tileMap[1,1]
         currentTile.addTerrainFeature("Hill")
         currentTile.addTerrainFeature("Forest")
-        currentTile.resource = "Citrus"
+        currentTile.setTileResource("Citrus")
         currentTile.resourceAmount = 1
 
         val mapUnit = testGame.addUnit("Worker", civInfo, currentTile)
@@ -94,7 +94,7 @@ internal class WorkerAutomationTest {
         city.workedTiles.add(currentTile.position)
 
         currentTile.baseTerrain = Constants.grassland
-        currentTile.resource = "Iron"
+        currentTile.setTileResource("Iron")
 
         val mapUnit = testGame.addUnit("Worker", civInfo, currentTile)
 
@@ -123,7 +123,7 @@ internal class WorkerAutomationTest {
         val currentTile = testGame.tileMap[1,1]
         currentTile.baseTerrain = Constants.grassland
         currentTile.addTerrainFeature(Constants.hill)
-        currentTile.resource = "Gold Ore"
+        currentTile.setTileResource("Gold Ore")
 
         val mapUnit = testGame.addUnit("Worker", civInfo, currentTile)
 
@@ -336,7 +336,7 @@ internal class WorkerAutomationTest {
         testGame.addCity(civInfo, testGame.tileMap[0,0])
 
         val currentTile = testGame.tileMap[1,1] // owned by city
-        currentTile.resource = "Iron" // This tile also has a resource needs to be enabled by a building a Mine
+        currentTile.setTileResource("Iron") // This tile also has a resource needs to be enabled by a building a Mine
         currentTile.setImprovement("Mine")
         currentTile.setPillaged()
 
