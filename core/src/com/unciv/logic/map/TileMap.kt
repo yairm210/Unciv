@@ -12,6 +12,7 @@ import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.tile.TerrainType
+import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
@@ -105,7 +106,10 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     val naturalWonders: Set<String> by lazy { tileList.asSequence().filter { it.isNaturalWonder() }.map { it.naturalWonder!! }.toSet() }
 
     @delegate:Transient
-    val resources: Set<String> by lazy { tileList.asSequence().filter { it.resource != null }.map { it.resource!! }.toSet() }
+    val resources: Set<String> by lazy { tileList.asSequence().mapNotNull { it.resource }.toSet() }
+
+    @delegate:Transient
+    val resourceObjects: Set<TileResource> by lazy { tileList.asSequence().mapNotNull { it.tileResource }.toSet() }
 
     // Excluded from Serialization by having no own backing field
     val values: Collection<Tile>

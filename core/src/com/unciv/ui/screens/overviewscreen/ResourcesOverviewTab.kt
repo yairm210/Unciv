@@ -90,7 +90,7 @@ class ResourcesOverviewTab(
             else amount.toLabel()
         if (origin == ExtraInfoOrigin.Unimproved.name)
             label.onClick { overviewScreen.showOneTimeNotification(
-                gameInfo.getExploredResourcesNotification(viewingPlayer, resource.name, filter = ::isAlliedAndUnimproved)
+                gameInfo.getExploredResourcesNotification(viewingPlayer, resource, filter = ::isAlliedAndUnimproved)
             ) }
         return label
     }
@@ -248,7 +248,7 @@ class ResourcesOverviewTab(
     }
 
     private fun Tile.countAsUnimproved(): Boolean {
-        val resource = tileResourceOrNull
+        val resource = tileResource
         return viewingPlayer.canSeeResource(resource) &&
             resource.resourceType != ResourceType.Bonus &&
             !providesResources(viewingPlayer)
@@ -260,7 +260,7 @@ class ResourcesOverviewTab(
         fun City.addUnimproved() {
             for (tile in getTiles())
                 if (tile.countAsUnimproved())
-                    newResourceSupplyList.add(tile.tileResource, ExtraInfoOrigin.Unimproved.name)
+                    newResourceSupplyList.add(tile.tileResource!!, ExtraInfoOrigin.Unimproved.name)
         }
 
         // Show resources relevant to WTLK day and/or needing improvement

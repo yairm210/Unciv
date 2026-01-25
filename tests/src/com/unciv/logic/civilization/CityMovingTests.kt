@@ -115,11 +115,11 @@ class CityMovingTests {
     fun moveTheirCityToUsWhenTheyHaveResources() {
         val theirCapital = testGame.addCity(enemy, testGame.tileMap[2,0])
 
-        theirCapital.getCenterTile().resource = "Salt"
+        theirCapital.getCenterTile().setTileResource("Salt")
         theirCapital.getCenterTile().resourceAmount = 1
 
         val resourceTile = testGame.tileMap[0,1]
-        resourceTile.resource = "Iron"
+        resourceTile.setTileResource("Iron")
         resourceTile.resourceAmount = 3
         resourceTile.setImprovement("Mine")
         theirCapital.expansion.takeOwnership(resourceTile)

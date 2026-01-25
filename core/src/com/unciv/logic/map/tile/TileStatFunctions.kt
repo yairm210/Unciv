@@ -110,7 +110,7 @@ class TileStatFunctions(val tile: Tile) {
         var minimumStats = if (tile.isCityCenter()) Stats.DefaultCityCenterMinimum else Stats.ZERO
         if (observingCiv != null) {
             // resource base
-            val resource = tile.tileResourceOrNull
+            val resource = tile.tileResource
             if (observingCiv.canSeeResource(resource)) listOfStats.add(resource.name to resource)
 
             if (improvement != null)
@@ -280,7 +280,7 @@ class TileStatFunctions(val tile: Tile) {
 
     private fun getTileStartYield(minimumStats: Stats) =
         getTerrainStatsBreakdown().toStats().run {
-            if (tile.resource != null) add(tile.tileResource)
+            if (tile.tileResource != null) add(tile.tileResource!!)
             add(missingFromMinimum(this, minimumStats))
             food + production + gold
         }
@@ -317,7 +317,7 @@ class TileStatFunctions(val tile: Tile) {
     ): Stats {
         val stats = Stats()
 
-        val resource = tile.tileResourceOrNull
+        val resource = tile.tileResource
         if (observingCiv.canSeeResource(resource) && resource.isImprovedBy(improvement.name)
                 && resource.improvementStats != null
         )

@@ -1232,11 +1232,11 @@ object UniqueTriggerActivation {
 
             UniqueType.OneTimeRemoveResourcesFromTile -> {
                 if (tile == null) return null
-                if (tile.resource == null) return null
+                val resource = tile.tileResource ?: return null
                 val resourceFilter = unique.params[0]
-                if (!tile.tileResource.matchesFilter(resourceFilter)) return null
+                if (!resource.matchesFilter(resourceFilter)) return null
                 return {
-                    tile.resource = null
+                    tile.tileResource = null
                     tile.resourceAmount = 0
                     true
                 }

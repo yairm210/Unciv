@@ -1,12 +1,10 @@
 package com.unciv.ui.screens.devconsole
 import com.unciv.Constants
-import com.unciv.logic.automation.civilization.Encampment
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.Notification
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
-import com.unciv.logic.GameInfo
 import com.unciv.logic.map.mapgenerator.RiverGenerator
 import com.unciv.logic.map.mapgenerator.RiverGenerator.RiverDirections
 import com.unciv.logic.map.tile.Tile
@@ -91,7 +89,7 @@ internal class ConsoleTileCommands: ConsoleCommandNode {
         "setresource" to ConsoleAction("tile setresource <resourceName>") { console, params ->
             val selectedTile = console.getSelectedTile()
             val resource = params[0].find(console.gameInfo.ruleset.tileResources.values)
-            selectedTile.resource = resource.name
+            selectedTile.tileResource = resource
             selectedTile.setTerrainTransients()
             selectedTile.getCity()?.reassignPopulation()
             DevConsoleResponse.OK
@@ -99,7 +97,7 @@ internal class ConsoleTileCommands: ConsoleCommandNode {
 
         "removeresource" to ConsoleAction("tile removeresource") { console, _ ->
             val selectedTile = console.getSelectedTile()
-            selectedTile.resource = null
+            selectedTile.tileResource = null
             selectedTile.setTerrainTransients()
             selectedTile.getCity()?.reassignPopulation()
             DevConsoleResponse.OK

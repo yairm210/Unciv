@@ -301,9 +301,9 @@ object UnitActionsFromUniques {
     }
 
     private fun getWaterImprovementAction(unit: MapUnit, tile: Tile): UnitAction? {
-        if (!tile.isWater || !unit.hasUnique(UniqueType.CreateWaterImprovements) || tile.resource == null) return null
+        if (!tile.isWater || !unit.hasUnique(UniqueType.CreateWaterImprovements)) return null
 
-        val improvementName = tile.tileResource.getImprovingImprovement(tile, unit.cache.state) ?: return null
+        val improvementName = tile.tileResource?.getImprovingImprovement(tile, unit.cache.state) ?: return null
         val improvement = tile.ruleset.tileImprovements[improvementName] ?: return null
         if (!tile.improvementFunctions.canBuildImprovement(improvement, unit.cache.state)) return null
 

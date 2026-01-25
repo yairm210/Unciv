@@ -29,7 +29,7 @@ object TileDescription {
         lineList += FormattedLine(tile.baseTerrain, link="Terrain/${tile.baseTerrain}")
         for (terrainFeature in tile.terrainFeatures)
             lineList += FormattedLine(terrainFeature, link="Terrain/$terrainFeature")
-        val resource = tile.tileResourceOrNull
+        val resource = tile.tileResource
         if (resource != null && (viewingCiv == null || viewingCiv.canSeeResource(resource)))
             lineList += if (resource.resourceType == ResourceType.Strategic)
                 FormattedLine("{${tile.resource}} (${tile.resourceAmount})", link="Resource/${tile.resource}")

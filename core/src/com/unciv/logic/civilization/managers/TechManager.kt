@@ -330,7 +330,7 @@ class TechManager : IsPartOfGameInfoSerialization {
         val revealedResources = getRuleset().tileResources.values.filter { techName == it.revealedBy }
         if (civInfo.playerType == PlayerType.Human) {
             for (revealedResource in revealedResources) {
-                civInfo.gameInfo.notifyExploredResources(civInfo, revealedResource.name, 5)
+                civInfo.gameInfo.notifyExploredResources(civInfo, revealedResource, 5)
             }
         }
 

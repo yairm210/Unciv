@@ -417,11 +417,13 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (requiredNearbyImprovedResources != null) {
             val containsResourceWithImprovement = cityConstructions.city.getWorkableTiles()
                 .any {
-                    it.resource != null
-                    && requiredNearbyImprovedResources!!.contains(it.resource!!)
-                    && it.getOwner() == civ
-                    && ((it.getUnpillagedImprovement() != null && it.tileResource.isImprovedBy(it.improvement!!)) || it.isCityCenter()
-                       || (it.getUnpillagedTileImprovement()?.isGreatImprovement() == true && it.tileResource.resourceType == ResourceType.Strategic)
+                    val tileResource = it.tileResource
+                    tileResource != null &&
+                        requiredNearbyImprovedResources!!.contains(tileResource.name) &&
+                        it.getOwner() == civ &&
+                        ((it.getUnpillagedImprovement() != null && tileResource.isImprovedBy(it.improvement!!)) ||
+                            it.isCityCenter() ||
+                            (it.getUnpillagedTileImprovement()?.isGreatImprovement() == true && tileResource.resourceType == ResourceType.Strategic)
                     )
                 }
             if (!containsResourceWithImprovement)

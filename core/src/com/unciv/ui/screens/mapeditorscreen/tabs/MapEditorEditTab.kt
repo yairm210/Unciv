@@ -325,7 +325,7 @@ class MapEditorEditTab(
         // 90% copy w/o position, improvement times or transients. Add units once Unit paint is in.
         baseTerrain = other.baseTerrain
         setTerrainFeatures(other.terrainFeatures)
-        resource = other.resource
+        tileResource = other.tileResource
         improvement = other.improvement
         naturalWonder = other.naturalWonder
         roadStatus = other.roadStatus
