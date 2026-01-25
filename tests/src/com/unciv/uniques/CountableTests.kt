@@ -521,14 +521,14 @@ class CountableTests {
         runTestParcours("Filtered cities by civs countable", { test: String ->
             Countables.getCountableAmount(test, context)
         },
-            "[Capital] Cities by [All] Civilizations", 2,
-            "[Puppeted] Cities by [All] Civilizations", 1,
-            "[All] Cities by [All] Civilizations", 2,
-            "[Capital] Cities by [${civ.civName}] Civilizations", 1,
-            "[Puppeted] Cities by [${civ.civName}] Civilizations", 0,
-            "[Puppeted] Cities by [${civ2.civName}] Civilizations", 1,
-            "[All] Cities by [${civ2.civName}] Civilizations", 1,
-            "[Capital] Cities by [City-State] Civilizations", 0,
+            "[Capital] Cities of [All] Civilizations", 2,
+            "[Puppeted] Cities of [All] Civilizations", 1,
+            "[All] Cities of [All] Civilizations", 2,
+            "[Capital] Cities of [${civ.civName}] Civilizations", 1,
+            "[Puppeted] Cities of [${civ.civName}] Civilizations", 0,
+            "[Puppeted] Cities of [${civ2.civName}] Civilizations", 1,
+            "[All] Cities of [${civ2.civName}] Civilizations", 1,
+            "[Capital] Cities of [City-State] Civilizations", 0,
         )
     }
 

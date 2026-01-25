@@ -199,7 +199,7 @@ enum class Countables(
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
     },
 
-    FilteredCitiesByCivs("[cityFilter] Cities by [civFilter] Civilizations") {
+    FilteredCitiesByCivs("[cityFilter] Cities of [civFilter] Civilizations") {
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val (cityFilter, civFilter) = parameterText.getPlaceholderParameters()
             val civilizations = gameContext.gameInfo?.civilizations ?: return null
