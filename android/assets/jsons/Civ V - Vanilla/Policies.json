@@ -510,7 +510,7 @@
             {
                 "name": "Civil Society",
                 "uniques": [
-                    "[-50]% Food consumption by specialists [in all cities]"
+                    "[-50]% Food consumption by [Specialists] [in all cities]"
                 ],
                 "row": 1,
                 "column": 5
