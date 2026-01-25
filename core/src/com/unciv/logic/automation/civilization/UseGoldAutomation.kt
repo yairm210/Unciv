@@ -118,9 +118,9 @@ object UseGoldAutomation {
     @Readonly
     private fun getHighlyDesirableTilesToCityMap(civInfo: Civilization): SortedMap<Tile, MutableSet<City>> {
         val highlyDesirableTiles: SortedMap<Tile, MutableSet<City>> = TreeMap(
-            compareByDescending<Tile> { it.naturalWonder != null }
-                .thenByDescending { it.tileResource?.resourceType == ResourceType.Luxury }
-                .thenByDescending { it.tileResource?.resourceType == ResourceType.Strategic }
+            compareByDescending<Tile?> { it?.naturalWonder != null }
+                .thenByDescending { it?.tileResource?.resourceType == ResourceType.Luxury }
+                .thenByDescending { it?.tileResource?.resourceType == ResourceType.Strategic }
                 // This is necessary, so that the map keeps Tiles with the same resource as two
                 // separate entries.
                 .thenBy { it.hashCode() }
