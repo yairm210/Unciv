@@ -96,7 +96,8 @@ enum class UniqueType(
     /// Growth
     GrowthPercentBonus("[relativeAmount]% growth [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     CarryOverFood("[amount]% Food is carried over after population increases [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    // Todo: moddability: specialists -> [populationFilter]
+    FoodConsumptionByPopulation("[relativeAmount]% Food consumption by [populationFilter] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    @Deprecated("As of 4.19.10", ReplaceWith("[relativeAmount]% Food consumption by [Specialists] [cityFilter]"), DeprecationLevel.WARNING)
     FoodConsumptionBySpecialists("[relativeAmount]% Food consumption by specialists [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
 
     /// Happiness
