@@ -108,7 +108,7 @@ object CityLocationTileRanker {
         if (newCityTile.isAdjacentToRiver()) tileValue += 20
         // We want to found the city on an oasis because it can't be improved otherwise
         if (newCityTile.terrainHasUnique(UniqueType.Unbuildable)) tileValue += 3
-        val resource = newCityTile.tileResourceOrNull
+        val resource = newCityTile.tileResource
         if (civ.canSeeResource(resource)) {
             tileValue -= 4
             // Settling on bonus resources tends to waste a food
@@ -170,7 +170,7 @@ object CityLocationTileRanker {
         // Don't settle near but not on the coast
         if (rankTile.isWater && !onCoast) locationSpecificTileValue -= 1
         // Check if there are any new unique luxury resources
-        val resource = rankTile.tileResourceOrNull
+        val resource = rankTile.tileResource
         if (civ.canSeeResource(resource) &&
             resource.resourceType == ResourceType.Luxury &&
             !civ.hasResource(resource) &&

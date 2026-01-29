@@ -76,8 +76,8 @@ object CityResources {
     @Readonly
     private fun getResourcesFromTiles(city: City, resourceModifer: (TileResource) -> Float): ResourceSupplyList {
         val resourceSupplyList = ResourceSupplyList()
-        for (tileInfo in city.getTiles().filter { it.resource != null }) {
-            val resource = tileInfo.tileResource
+        for (tileInfo in city.getTiles()) {
+            val resource = tileInfo.tileResource ?: continue
             val amount = getTileResourceAmount(city, tileInfo)
             if (amount > 0) resourceSupplyList.add(resource, "Tiles", amount.toInt())
         }
@@ -185,10 +185,9 @@ object CityResources {
 
     @Readonly
     private fun getTileResourceAmount(city: City, tile: Tile): Int {
-        if (tile.resource == null) return 0
+        val resource = tile.tileResource ?: return 0
         if (!tile.providesResources(city.civ)) return 0
 
-        val resource = tile.tileResource
         var amountToAdd = if (resource.resourceType == ResourceType.Strategic) tile.resourceAmount
         else 1
         if (resource.resourceType == ResourceType.Luxury

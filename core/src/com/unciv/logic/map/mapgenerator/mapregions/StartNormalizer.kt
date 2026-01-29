@@ -159,11 +159,11 @@ object StartNormalizer {
                 val plot = grassTypePlots.random()
                 grassTypePlots.remove(plot)
 
-                if (plot.resource != null) continue
+                if (plot.tileResource != null) continue
 
                 val bonusToPlace = productionBonuses.filter { it.generatesNaturallyOn(plot) }.randomOrNull()
                 if (bonusToPlace != null) {
-                    plot.resource = bonusToPlace.name
+                    plot.tileResource = bonusToPlace
                     productionBonusesNeeded--
                 }
             }

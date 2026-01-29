@@ -101,10 +101,10 @@ class CityTurnManager(val city: City) {
             it.resourceType == ResourceType.Luxury && // Must be luxury
                     !it.hasUnique(UniqueType.CityStateOnlyResource) && // Not a city-state only resource eg jewelry
                     it.name != city.demandedResource && // Not same as last time
-                    it.name in city.tileMap.resources && // Must exist somewhere on the map
-                    city.getCenterTile().getTilesInDistance(city.getWorkRange()).none { nearTile -> nearTile.resource == it.name } // Not in this city's radius
+                    it in city.tileMap.resourceObjects && // Must exist somewhere on the map
+                    city.getCenterTile().getTilesInDistance(city.getWorkRange()).none { nearTile -> nearTile.tileResource == it } // Not in this city's radius
         }
-        val missingResources = candidates.filter { !city.civ.hasResource(it.name) }
+        val missingResources = candidates.filter { !city.civ.hasResource(it) }
         
         if (missingResources.isEmpty()) { // hooray happpy day forever!
             city.demandedResource = candidates.randomOrNull()?.name ?: ""

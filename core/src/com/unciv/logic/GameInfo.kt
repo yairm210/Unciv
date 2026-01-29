@@ -28,6 +28,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.Speed
 import com.unciv.models.ruleset.nation.Difficulty
+import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
@@ -553,6 +554,24 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         civInfo.notifications.add(notification)
         return true
     }
+    /** Generate and show a notification pointing out resources.
+     *  Used by [addTechnology][TechManager.addTechnology] and [ResourcesOverviewTab][com.unciv.ui.screens.overviewscreen.ResourcesOverviewTab]
+     * @param maxDistance from next City, 0 removes distance limitation.
+     * @param filter optional tile filter predicate, e.g. to exclude foreign territory.
+     * @return `false` if no resources were found and no notification was added.
+     * @see getExploredResourcesNotification
+     */
+    fun notifyExploredResources(
+        civInfo: Civilization,
+        resource: TileResource,
+        maxDistance: Int = Int.MAX_VALUE,
+        filter: (Tile) -> Boolean = { true }
+    ): Boolean {
+        val notification = getExploredResourcesNotification(civInfo, resource, maxDistance, filter)
+            ?: return false
+        civInfo.notifications.add(notification)
+        return true
+    }
 
     /** Generate a notification pointing out resources. Only researched Resources are considered.
      * @param maxDistance from next City, default removes distance limitation.
@@ -566,8 +585,22 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         maxDistance: Int = Int.MAX_VALUE,
         filter: (Tile) -> Boolean = { true }
     ): Notification? {
-
         val resource = ruleset.tileResources[resourceName]
+        return getExploredResourcesNotification(civ, resource, maxDistance, filter)
+    }
+
+    /** Generate a notification pointing out resources. Only researched Resources are considered.
+     * @param maxDistance from next City, default removes distance limitation.
+     * @param filter optional tile filter predicate, e.g. to exclude foreign territory.
+     * @return `null` if no resources were found, otherwise a Notification instance.
+     * @see notifyExploredResources
+     */
+    fun getExploredResourcesNotification(
+        civ: Civilization,
+        resource: TileResource?,
+        maxDistance: Int = Int.MAX_VALUE,
+        filter: (Tile) -> Boolean = { true }
+    ): Notification? {
         if (!civ.canSeeResource(resource)) return null
 
         data class CityTileAndDistance(val city: City, val tile: Tile, val distance: Int)
@@ -584,12 +617,12 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
                     // Look for matching mercantile CS centers
                     getAliveCityStates()
                         .asSequence()
-                        .filter { it.cityStateResource == resourceName }
+                        .filter { it.cityStateResource == resource.name }
                         .map { it.getCapital()!!.getCenterTile() }
                 } else {
                     tileMap.values
                         .asSequence()
-                        .filter { it.resource == resourceName }
+                        .filter { it.tileResource == resource }
                 }
 
         // Apply all filters to the above collection and sort them by distance to closest city
@@ -618,11 +651,11 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         val positionsCount = positions.count()
         val text = if (positionsCount == 1)
-            "[$resourceName] revealed near [${chosenCity.name}]"
+            "[${resource.name}] revealed near [${chosenCity.name}]"
         else
-            "[$positionsCount] sources of [$resourceName] revealed, e.g. near [${chosenCity.name}]"
+            "[$positionsCount] sources of [${resource.name}] revealed, e.g. near [${chosenCity.name}]"
 
-        return Notification(text, arrayOf("ResourceIcons/$resourceName"),
+        return Notification(text, arrayOf("ResourceIcons/${resource.name}"),
             LocationAction(positions.map { it }).asIterable(), NotificationCategory.General)
     }
 

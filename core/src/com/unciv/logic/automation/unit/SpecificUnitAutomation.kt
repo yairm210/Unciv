@@ -9,7 +9,6 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Building
-import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
@@ -197,7 +196,7 @@ object SpecificUnitAutomation {
         val localUniqueCache = LocalUniqueCache()
         for (city in citiesByStatBoost) {
             val applicableTiles = city.getWorkableTiles().filter {
-                it.isLand && (it.resource == null || it.tileResource.isImprovedBy(improvementName)) && !it.isCityCenter()
+                it.isLand && (it.tileResource?.isImprovedBy(improvementName) == true) && !it.isCityCenter()
                     && (unit.currentTile == it || unit.movement.canMoveTo(it))
                     // okay if we replace regular improvements by great improvements, but not the other way around
                     && (it.improvement == null || !it.getTileImprovement()!!.hasUnique(UniqueType.GreatImprovement))

@@ -85,7 +85,7 @@ class UnitUniquesTests {
 
         // Supply Iron
         val ironTile = game.getTile(HexCoord(0,1))
-        ironTile.resource = "Iron"
+        ironTile.setTileResource("Iron")
         ironTile.resourceAmount = 3
         ironTile.improvement = "Mine"
         civ.tech.addTechnology("Mining")
