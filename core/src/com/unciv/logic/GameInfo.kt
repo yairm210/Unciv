@@ -39,6 +39,9 @@ import com.unciv.utils.DebugUtils
 import com.unciv.utils.debug
 import yairm210.purity.annotations.Readonly
 import java.security.MessageDigest
+import java.time.Duration
+import java.time.Instant
+import java.util.UUID
 import java.util.*
 
 
@@ -287,6 +290,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     private fun createTemporarySpectatorCiv(playerId: String) = Civilization(Constants.spectator).also {
         it.playerType = PlayerType.Human
         it.playerId = playerId
+        it.playerMinutesBeforeForceResign = gameParameters.minutesUntilForceResign
         civilizations.add(it)
         it.gameInfo = this
         it.setNationTransient()
@@ -331,11 +335,17 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     fun isSimulation(): Boolean = turns < DebugUtils.SIMULATE_UNTIL_TURN
             || turns < simulateMaxTurns && simulateUntilWin
 
-    fun nextTurn(progressBar: NextTurnProgress? = null) {
+    /**
+     *  Advance a turn, running automation for AI players, stopping for human players
+     *  @param progressBar Optional reference to UI widget either provided by [WorldScreen.nextTurn][com.unciv.ui.screens.worldscreen.WorldScreen.nextTurn] or `null` when simulating
+     *  @param shouldGainTime on a multiplayer game, if true, makes the player who's turn is ended recover time to play before risking to get forced to resign, 'false' by default 
+     */
+    fun nextTurn(progressBar: NextTurnProgress? = null, shouldGainTime: Boolean = false) {
 
         var player = currentPlayerCiv
         var playerIndex = civilizations.indexOf(player)
 
+        if (gameParameters.isOnlineMultiplayer) updateMinutesBeforeForceResign(player, shouldGainTime)
         // We rotate Players in cycle: 1,2...N,1,2...
         fun setNextPlayer() {
             playerIndex = (playerIndex + 1) % civilizations.size
@@ -436,6 +446,16 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         // This would belong at the end of TurnManager.startTurn, but needs to come after notifyOfCloseEnemyUnits
         player.notificationCountAtStartTurn = player.notifications.size
+    }
+    
+    private fun updateMinutesBeforeForceResign(player: Civilization, shouldGainTime: Boolean) {
+            // Update remaining time before the player who's turn is ending can be forced to resign
+            val turnStart: Instant  = Instant.ofEpochMilli(currentTurnStartTime)
+            val timeUsed = Duration.between(turnStart, Instant.now()).toMinutes().toInt()
+            val timeRegained = if (shouldGainTime) gameParameters.minutesRecoveredPerTurn else 0
+            val rawNewTime = player.playerMinutesBeforeForceResign + timeUsed - timeRegained
+            val maxNewTime = gameParameters.minutesUntilForceResign
+            player.playerMinutesBeforeForceResign = rawNewTime.coerceIn(0, maxNewTime)
     }
 
     private fun notifyOfCloseEnemyUnits(thisPlayer: Civilization) {

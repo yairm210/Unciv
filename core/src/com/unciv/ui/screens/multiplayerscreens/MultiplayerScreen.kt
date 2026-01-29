@@ -422,9 +422,11 @@ class MultiplayerScreen : PickerScreen() {
             forceResignButton.isVisible = false
         } else {
             val durationInactive = Duration.between(Instant.ofEpochMilli(preview.currentTurnStartTime), Instant.now())
+            val playerDurationBeforeForceResign = Duration.ofMinutes(preview.getCurrentPlayerCiv().playerMinutesBeforeForceResign.toLong())
             val weAreAPlayer = game.settings.multiplayer.getUserId() in preview.civilizations.map { it.playerId }
             skipTurnButton.isVisible = weAreAPlayer && durationInactive > Duration.ofMinutes(preview.gameParameters.minutesUntilSkipTurn.toLong())
-            forceResignButton.isVisible = weAreAPlayer && durationInactive > Duration.ofHours(preview.gameParameters.hoursUntilForceResign.toLong())
+            forceResignButton.isVisible = weAreAPlayer && (durationInactive > playerDurationBeforeForceResign)
+                                                
         }
         
         descriptionLabel.setText(MultiplayerHelpers.buildDescriptionText(multiplayerGame))
