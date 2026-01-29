@@ -1,14 +1,12 @@
 ## 4.19.10
 
-Refactor: make tile.tileResource nullable - By SeventhM
-
 Add `[cityFilter] Cities of [civFilter] Civilizations` countable - By RobLoach
 
 Food consumption by population unique - By PLynx01
 
 Fix VictoryScreen Charts Visibility for Spectator and Layout - By SomeTroglodyte
 
-Customizable game duration during online games - By AubertJocelyn
+Customizable game duration during online games - By AubertJocelyn (new contributor!)
 
 ## 4.19.9
 

@@ -542,8 +542,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "[relativeAmount]% Food consumption by specialists [cityFilter]"
-	Example: "[+20]% Food consumption by specialists [in all cities]"
+??? example  "[relativeAmount]% Food consumption by [populationFilter] [cityFilter]"
+	Example: "[+20]% Food consumption by [Followers of this Religion] [in all cities]"
 
 	Applicable to: Global, FollowerBelief
 
@@ -1411,8 +1411,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "[relativeAmount]% Food consumption by specialists [cityFilter]"
-	Example: "[+20]% Food consumption by specialists [in all cities]"
+??? example  "[relativeAmount]% Food consumption by [populationFilter] [cityFilter]"
+	Example: "[+20]% Food consumption by [Followers of this Religion] [in all cities]"
 
 	Applicable to: Global, FollowerBelief
 
