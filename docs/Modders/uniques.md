@@ -409,21 +409,29 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, FollowerBelief
 
 ??? example  "[relativeAmount]% [stat]"
+	Multiple bonuses stack additively: +50% + +50% = +100%
+
 	Example: "[+20]% [Culture]"
 
 	Applicable to: Global, FollowerBelief
 
 ??? example  "[relativeAmount]% [stat] [cityFilter]"
+	Multiple bonuses stack additively: +50% + +50% = +100%
+
 	Example: "[+20]% [Culture] [in all cities]"
 
 	Applicable to: Global, FollowerBelief
 
 ??? example  "[relativeAmount]% [stat] from every [tileFilter/buildingFilter]"
+	Multiple bonuses stack additively: +50% + +50% = +100%
+
 	Example: "[+20]% [Culture] from every [Farm]"
 
 	Applicable to: Global, FollowerBelief
 
 ??? example  "[relativeAmount]% Yield from every [tileFilter/buildingFilter]"
+	Multiple bonuses stack additively: +50% + +50% = +100%
+
 	Example: "[+20]% Yield from every [Farm]"
 
 	Applicable to: Global, FollowerBelief
@@ -449,16 +457,22 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global
 
 ??? example  "[relativeAmount]% Production when constructing [buildingFilter] buildings [cityFilter]"
+	Multiple bonuses stack additively: +50% + +50% = +100%
+
 	Example: "[+20]% Production when constructing [Culture] buildings [in all cities]"
 
 	Applicable to: Global, FollowerBelief
 
 ??? example  "[relativeAmount]% Production when constructing [baseUnitFilter] units [cityFilter]"
+	Multiple bonuses stack additively: +50% + +50% = +100%
+
 	Example: "[+20]% Production when constructing [Melee] units [in all cities]"
 
 	Applicable to: Global, FollowerBelief
 
 ??? example  "[relativeAmount]% Production when constructing [buildingFilter] wonders [cityFilter]"
+	Multiple bonuses stack additively: +50% + +50% = +100%
+
 	Example: "[+20]% Production when constructing [Culture] wonders [in all cities]"
 
 	Applicable to: Global, FollowerBelief
@@ -538,6 +552,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, FollowerBelief
 
 ??? example  "[amount]% Food is carried over after population increases [cityFilter]"
+	Multiple bonuses stack additively: +50% + +50% = +100%
+
 	Example: "[3]% Food is carried over after population increases [in all cities]"
 
 	Applicable to: Global, FollowerBelief
@@ -621,16 +637,22 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, FollowerBelief
 
 ??? example  "[stat] cost of purchasing items in cities [relativeAmount]%"
+	Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%
+
 	Example: "[Culture] cost of purchasing items in cities [+20]%"
 
 	Applicable to: Global, FollowerBelief
 
 ??? example  "[stat] cost of purchasing [buildingFilter] buildings [relativeAmount]%"
+	Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%
+
 	Example: "[Culture] cost of purchasing [Culture] buildings [+20]%"
 
 	Applicable to: Global, FollowerBelief
 
 ??? example  "[stat] cost of purchasing [baseUnitFilter] units [relativeAmount]%"
+	Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%
+
 	Example: "[Culture] cost of purchasing [Melee] units [+20]%"
 
 	Applicable to: Global, FollowerBelief
@@ -652,6 +674,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global
 
 ??? example  "[relativeAmount]% maintenance on road & railroads"
+	Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%
+
 	Example: "[+20]% maintenance on road & railroads"
 
 	Applicable to: Global
@@ -679,6 +703,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Triggerable, Global
 
 ??? example  "[relativeAmount]% maintenance cost for [buildingFilter] buildings [cityFilter]"
+	Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%
+
 	Example: "[+20]% maintenance cost for [Culture] buildings [in all cities]"
 
 	Applicable to: Global, FollowerBelief
@@ -694,11 +720,15 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Triggerable, Global
 
 ??? example  "[relativeAmount]% Culture cost of natural border growth [cityFilter]"
+	Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%
+
 	Example: "[+20]% Culture cost of natural border growth [in all cities]"
 
 	Applicable to: Global, FollowerBelief
 
 ??? example  "[relativeAmount]% Gold cost of acquiring tiles [cityFilter]"
+	Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%
+
 	Example: "[+20]% Gold cost of acquiring tiles [in all cities]"
 
 	Applicable to: Global, FollowerBelief
@@ -709,6 +739,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global
 
 ??? example  "[relativeAmount]% Culture cost of adopting new Policies"
+	Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%
+
 	Example: "[+20]% Culture cost of adopting new Policies"
 
 	Applicable to: Global
@@ -719,6 +751,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global
 
 ??? example  "[relativeAmount]% Science cost of researching new Technologies"
+	Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%
+
 	Example: "[+20]% Science cost of researching new Technologies"
 
 	Applicable to: Global
@@ -817,16 +851,22 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, FollowerBelief
 
 ??? example  "[relativeAmount]% XP required for promotions"
+	Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%
+
 	Example: "[+20]% XP required for promotions"
 
 	Applicable to: Global
 
 ??? example  "[relativeAmount]% City Strength from defensive buildings"
+	Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%
+
 	Example: "[+20]% City Strength from defensive buildings"
 
 	Applicable to: Global
 
 ??? example  "[relativeAmount]% Strength for cities"
+	Multiple bonuses stack additively: +50% + +50% = +100%
+
 	Example: "[+20]% Strength for cities"
 
 	Applicable to: Global, FollowerBelief
@@ -914,6 +954,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global
 
 ??? example  "[relativeAmount]% Natural religion spread [cityFilter]"
+	Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%
+
 	Example: "[+20]% Natural religion spread [in all cities]"
 
 	Applicable to: Global, FollowerBelief
@@ -970,6 +1012,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global
 
 ??? example  "[relativeAmount]% Golden Age length"
+	Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%
+
 	Example: "[+20]% Golden Age length"
 
 	Applicable to: Global
@@ -988,6 +1032,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global
 
 ??? example  "[relativeAmount]% Strength"
+	Multiple bonuses stack additively: +50% + +50% = +100%
+
 	Example: "[+20]% Strength"
 
 	Applicable to: Global, Unit
@@ -1003,6 +1049,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, Unit
 
 ??? example  "[relativeAmount]% to Flank Attack bonuses"
+	Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%
+
 	Example: "[+20]% to Flank Attack bonuses"
 
 	Applicable to: Global, Unit
@@ -1038,6 +1086,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, Unit
 
 ??? example  "[relativeAmount]% Spread Religion Strength"
+	Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%
+
 	Example: "[+20]% Spread Religion Strength"
 
 	Applicable to: Global, Unit
@@ -1083,11 +1133,15 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, Unit
 
 ??? example  "[relativeAmount]% maintenance costs"
+	Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%
+
 	Example: "[+20]% maintenance costs"
 
 	Applicable to: Global, Unit
 
 ??? example  "[relativeAmount]% Gold cost of upgrading"
+	Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%
+
 	Example: "[+20]% Gold cost of upgrading"
 
 	Applicable to: Global, Unit
@@ -1113,6 +1167,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, Unit
 
 ??? example  "[relativeAmount]% XP gained from combat"
+	Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%
+
 	Example: "[+20]% XP gained from combat"
 
 	Applicable to: Global, Unit
@@ -1357,21 +1413,29 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, FollowerBelief
 
 ??? example  "[relativeAmount]% [stat]"
+	Multiple bonuses stack additively: +50% + +50% = +100%
+
 	Example: "[+20]% [Culture]"
 
 	Applicable to: Global, FollowerBelief
 
 ??? example  "[relativeAmount]% [stat] [cityFilter]"
+	Multiple bonuses stack additively: +50% + +50% = +100%
+
 	Example: "[+20]% [Culture] [in all cities]"
 
 	Applicable to: Global, FollowerBelief
 
 ??? example  "[relativeAmount]% [stat] from every [tileFilter/buildingFilter]"
+	Multiple bonuses stack additively: +50% + +50% = +100%
+
 	Example: "[+20]% [Culture] from every [Farm]"
 
 	Applicable to: Global, FollowerBelief
 
 ??? example  "[relativeAmount]% Yield from every [tileFilter/buildingFilter]"
+	Multiple bonuses stack additively: +50% + +50% = +100%
+
 	Example: "[+20]% Yield from every [Farm]"
 
 	Applicable to: Global, FollowerBelief
@@ -1382,16 +1446,22 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: FounderBelief, FollowerBelief
 
 ??? example  "[relativeAmount]% Production when constructing [buildingFilter] buildings [cityFilter]"
+	Multiple bonuses stack additively: +50% + +50% = +100%
+
 	Example: "[+20]% Production when constructing [Culture] buildings [in all cities]"
 
 	Applicable to: Global, FollowerBelief
 
 ??? example  "[relativeAmount]% Production when constructing [baseUnitFilter] units [cityFilter]"
+	Multiple bonuses stack additively: +50% + +50% = +100%
+
 	Example: "[+20]% Production when constructing [Melee] units [in all cities]"
 
 	Applicable to: Global, FollowerBelief
 
 ??? example  "[relativeAmount]% Production when constructing [buildingFilter] wonders [cityFilter]"
+	Multiple bonuses stack additively: +50% + +50% = +100%
+
 	Example: "[+20]% Production when constructing [Culture] wonders [in all cities]"
 
 	Applicable to: Global, FollowerBelief
@@ -1407,6 +1477,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, FollowerBelief
 
 ??? example  "[amount]% Food is carried over after population increases [cityFilter]"
+	Multiple bonuses stack additively: +50% + +50% = +100%
+
 	Example: "[3]% Food is carried over after population increases [in all cities]"
 
 	Applicable to: Global, FollowerBelief
@@ -1462,31 +1534,43 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, FollowerBelief
 
 ??? example  "[stat] cost of purchasing items in cities [relativeAmount]%"
+	Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%
+
 	Example: "[Culture] cost of purchasing items in cities [+20]%"
 
 	Applicable to: Global, FollowerBelief
 
 ??? example  "[stat] cost of purchasing [buildingFilter] buildings [relativeAmount]%"
+	Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%
+
 	Example: "[Culture] cost of purchasing [Culture] buildings [+20]%"
 
 	Applicable to: Global, FollowerBelief
 
 ??? example  "[stat] cost of purchasing [baseUnitFilter] units [relativeAmount]%"
+	Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%
+
 	Example: "[Culture] cost of purchasing [Melee] units [+20]%"
 
 	Applicable to: Global, FollowerBelief
 
 ??? example  "[relativeAmount]% maintenance cost for [buildingFilter] buildings [cityFilter]"
+	Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%
+
 	Example: "[+20]% maintenance cost for [Culture] buildings [in all cities]"
 
 	Applicable to: Global, FollowerBelief
 
 ??? example  "[relativeAmount]% Culture cost of natural border growth [cityFilter]"
+	Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%
+
 	Example: "[+20]% Culture cost of natural border growth [in all cities]"
 
 	Applicable to: Global, FollowerBelief
 
 ??? example  "[relativeAmount]% Gold cost of acquiring tiles [cityFilter]"
+	Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%
+
 	Example: "[+20]% Gold cost of acquiring tiles [in all cities]"
 
 	Applicable to: Global, FollowerBelief
@@ -1512,6 +1596,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, FollowerBelief
 
 ??? example  "[relativeAmount]% Strength for cities"
+	Multiple bonuses stack additively: +50% + +50% = +100%
+
 	Example: "[+20]% Strength for cities"
 
 	Applicable to: Global, FollowerBelief
@@ -1522,6 +1608,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, FollowerBelief, Improvement
 
 ??? example  "[relativeAmount]% Natural religion spread [cityFilter]"
+	Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%
+
 	Example: "[+20]% Natural religion spread [in all cities]"
 
 	Applicable to: Global, FollowerBelief
@@ -1638,7 +1726,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Building, Unit
 
 ??? example  "[amount]% production cost"
-	Intended to be used with conditionals to dynamically alter construction costs
+	Intended to be used with conditionals to dynamically alter construction costs. Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%
 
 	Example: "[3]% production cost"
 
@@ -1898,7 +1986,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Building, Unit
 
 ??? example  "[amount]% production cost"
-	Intended to be used with conditionals to dynamically alter construction costs
+	Intended to be used with conditionals to dynamically alter construction costs. Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%
 
 	Example: "[3]% production cost"
 
@@ -1959,6 +2047,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Unit
 
 ??? example  "[relativeAmount]% Strength"
+	Multiple bonuses stack additively: +50% + +50% = +100%
+
 	Example: "[+20]% Strength"
 
 	Applicable to: Global, Unit
@@ -1974,6 +2064,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, Unit
 
 ??? example  "[relativeAmount]% to Flank Attack bonuses"
+	Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%
+
 	Example: "[+20]% to Flank Attack bonuses"
 
 	Applicable to: Global, Unit
@@ -2019,6 +2111,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, Unit
 
 ??? example  "[relativeAmount]% Spread Religion Strength"
+	Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%
+
 	Example: "[+20]% Spread Religion Strength"
 
 	Applicable to: Global, Unit
@@ -2190,11 +2284,15 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Unit
 
 ??? example  "[relativeAmount]% maintenance costs"
+	Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%
+
 	Example: "[+20]% maintenance costs"
 
 	Applicable to: Global, Unit
 
 ??? example  "[relativeAmount]% Gold cost of upgrading"
+	Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%
+
 	Example: "[+20]% Gold cost of upgrading"
 
 	Applicable to: Global, Unit
@@ -2225,6 +2323,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, Unit
 
 ??? example  "[relativeAmount]% XP gained from combat"
+	Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%
+
 	Example: "[+20]% XP gained from combat"
 
 	Applicable to: Global, Unit

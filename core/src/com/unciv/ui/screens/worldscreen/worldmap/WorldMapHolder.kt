@@ -301,6 +301,13 @@ class WorldMapHolder(
                     // but it's so rare and edge-case-y that ignoring its failure is actually acceptable, hence the empty catch
                     val previousTile = selectedUnit.currentTile
                     selectedUnit.movement.moveToTile(tileToMoveTo)
+                    
+                    // If you try to send a unit to a tile that it can't even get nearer to, then this is actualy a dud
+                    if (previousTile == selectedUnit.currentTile){
+                        removeUnitActionOverlay() // so the user knows the action 'has been performed'
+                        return@launchOnGLThread
+                    }
+                    
                     if (selectedUnit.isExploring() || selectedUnit.isMoving())
                         selectedUnit.action = null // remove explore on manual move
                     SoundPlayer.play(UncivSound.Whoosh)
