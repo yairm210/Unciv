@@ -196,7 +196,7 @@ object SpecificUnitAutomation {
         val localUniqueCache = LocalUniqueCache()
         for (city in citiesByStatBoost) {
             val applicableTiles = city.getWorkableTiles().filter {
-                it.isLand && (it.tileResource?.isImprovedBy(improvementName) == true) && !it.isCityCenter()
+                it.isLand && (it.tileResource?.isImprovedBy(improvementName) != false) && !it.isCityCenter()
                     && (unit.currentTile == it || unit.movement.canMoveTo(it))
                     // okay if we replace regular improvements by great improvements, but not the other way around
                     && (it.improvement == null || !it.getTileImprovement()!!.hasUnique(UniqueType.GreatImprovement))
