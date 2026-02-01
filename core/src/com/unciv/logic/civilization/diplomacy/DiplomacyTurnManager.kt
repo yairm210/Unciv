@@ -284,6 +284,9 @@ object DiplomacyTurnManager {
         revertToZero(DiplomaticModifiers.BetrayedDeclarationOfFriendship, 1 / 8f) // That's a bastardly thing to do
         revertToZero(DiplomaticModifiers.BetrayedDefensivePact, 1 / 16f) // That's an outrageous thing to do
         revertToZero(DiplomaticModifiers.RefusedToNotSettleCitiesNearUs, 1 / 4f)
+        revertToZero(DiplomaticModifiers.BulliedProtectedMinor, 1 / 2f) // Decays at same rate as warmongering
+        revertToZero(DiplomaticModifiers.AttackedProtectedMinor, 1 / 2f) // Decays at same rate as warmongering
+        revertToZero(DiplomaticModifiers.DestroyedProtectedMinor, 1 / 4f) // Decays slower, similar to capturing cities
         for (demand in Demand.entries) {
             revertToZero(demand.betrayedPromiseDiplomacyMpodifier, 1 / 8f)
         }

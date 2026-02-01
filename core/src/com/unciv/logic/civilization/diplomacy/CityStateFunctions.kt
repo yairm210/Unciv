@@ -603,9 +603,9 @@ class CityStateFunctions(val civInfo: Civilization) {
             val protectorDiplomacy = protector.getDiplomacyManager(bully)!!
             if (protectorDiplomacy.hasModifier(DiplomaticModifiers.BulliedProtectedMinor)
                 && protectorDiplomacy.getFlag(DiplomacyFlags.RememberBulliedProtectedMinor) > 50)
-                protectorDiplomacy.addModifier(DiplomaticModifiers.BulliedProtectedMinor, -10f) // Penalty less severe for second offence
+                protectorDiplomacy.addModifier(DiplomaticModifiers.BulliedProtectedMinor, -10f, limit = -100f) // Penalty less severe for second offence
             else
-                protectorDiplomacy.addModifier(DiplomaticModifiers.BulliedProtectedMinor, -15f)
+                protectorDiplomacy.addModifier(DiplomaticModifiers.BulliedProtectedMinor, -15f, limit = -100f)
             protectorDiplomacy.setFlag(DiplomacyFlags.RememberBulliedProtectedMinor, 75)    // Reset their memory
 
             if (protector.playerType != PlayerType.Human)   // Humans can have their own emotions
@@ -697,14 +697,10 @@ class CityStateFunctions(val civInfo: Civilization) {
         for (protector in civInfo.cityStateFunctions.getProtectorCivs()) {
             val protectorDiplomacy = protector.getDiplomacyManager(attacker) ?: continue // Who?
             if (protectorDiplomacy.hasModifier(DiplomaticModifiers.AttackedProtectedMinor)
-                && protectorDiplomacy.getFlag(DiplomacyFlags.RememberAttackedProtectedMinor) > 50
-            )
-                protectorDiplomacy.addModifier(
-                    DiplomaticModifiers.AttackedProtectedMinor,
-                    -15f
-                ) // Penalty less severe for second offence
+                && protectorDiplomacy.getFlag(DiplomacyFlags.RememberAttackedProtectedMinor) > 50)
+                protectorDiplomacy.addModifier(DiplomaticModifiers.AttackedProtectedMinor, -15f, limit = -100f) // Penalty less severe for second offence
             else
-                protectorDiplomacy.addModifier(DiplomaticModifiers.AttackedProtectedMinor, -20f)
+                protectorDiplomacy.addModifier(DiplomaticModifiers.AttackedProtectedMinor, -20f, limit = -100f)
             protectorDiplomacy.setFlag(DiplomacyFlags.RememberAttackedProtectedMinor, 75)   // Reset their memory
 
             if (protector.playerType != PlayerType.Human)   // Humans can have their own emotions
@@ -754,9 +750,9 @@ class CityStateFunctions(val civInfo: Civilization) {
                 continue
             val protectorDiplomacy = protector.getDiplomacyManager(attacker)!!
             if (protectorDiplomacy.hasModifier(DiplomaticModifiers.DestroyedProtectedMinor))
-                protectorDiplomacy.addModifier(DiplomaticModifiers.DestroyedProtectedMinor, -10f) // Penalty less severe for second offence
+                protectorDiplomacy.addModifier(DiplomaticModifiers.DestroyedProtectedMinor, -10f, limit = -100f) // Penalty less severe for second offence
             else
-                protectorDiplomacy.addModifier(DiplomaticModifiers.DestroyedProtectedMinor, -40f) // Oof
+                protectorDiplomacy.addModifier(DiplomaticModifiers.DestroyedProtectedMinor, -40f, limit = -100f) // Oof
             protectorDiplomacy.setFlag(DiplomacyFlags.RememberDestroyedProtectedMinor, 125)   // Reset their memory
 
             if (protector.playerType != PlayerType.Human)   // Humans can have their own emotions

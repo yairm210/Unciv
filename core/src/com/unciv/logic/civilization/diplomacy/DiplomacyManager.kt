@@ -571,10 +571,15 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         flagsCountdown.remove(flag.name)
     }
 
-    fun addModifier(modifier: DiplomaticModifiers, amount: Float) {
+    fun addModifier(modifier: DiplomaticModifiers, amount: Float, limit: Float? = null) {
         val modifierString = modifier.name
         if (!hasModifier(modifier)) setModifier(modifier, 0f)
-        diplomaticModifiers[modifierString] = diplomaticModifiers[modifierString]!! + amount
+        var newValue = diplomaticModifiers[modifierString]!! + amount
+        if (limit != null) {
+            if (limit < 0) newValue = newValue.coerceAtLeast(limit)
+            else newValue = newValue.coerceAtMost(limit)
+        }
+        diplomaticModifiers[modifierString] = newValue
         if (diplomaticModifiers[modifierString] == 0f) diplomaticModifiers.remove(modifierString)
     }
 
