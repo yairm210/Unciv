@@ -2567,14 +2567,14 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	This unique is automatically hidden from users.
 
-	Applicable to: Terrain
+	Applicable to: Terrain, Resource
 
 ??? example  "Must be on [amount] largest landmasses"
 	Example: "Must be on [3] largest landmasses"
 
 	This unique is automatically hidden from users.
 
-	Applicable to: Terrain
+	Applicable to: Terrain, Resource
 
 ??? example  "Occurs on latitudes from [amount] to [amount] percent of distance equator to pole"
 	Example: "Occurs on latitudes from [3] to [3] percent of distance equator to pole"
@@ -2990,6 +2990,20 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Example: "Obsolete with [Agriculture]"
 
 	Applicable to: Building, Improvement, Resource
+
+??? example  "Must not be on [amount] largest landmasses"
+	Example: "Must not be on [3] largest landmasses"
+
+	This unique is automatically hidden from users.
+
+	Applicable to: Terrain, Resource
+
+??? example  "Must be on [amount] largest landmasses"
+	Example: "Must be on [3] largest landmasses"
+
+	This unique is automatically hidden from users.
+
+	Applicable to: Terrain, Resource
 
 ??? example  "Doesn't generate naturally"
 	This unique is automatically hidden from users.
