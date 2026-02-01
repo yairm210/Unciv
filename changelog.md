@@ -1,3 +1,25 @@
+## 4.19.11
+
+Resolved  - "Unit can be promoted" notification shows correct unit name
+
+.
+
+Fixed DOF diplomacy changes for 3rd party civs
+
+Resolved  - added limit to diplomatic modifiers that accumulate, specifically to negative protected-city-state modifiers
+
+Make getRandom readonly
+
+Resolved  - City state quests are "consistent random"
+
+Resolved  - Fixed great people not creating improvements
+
+Sending a unit where it can't move any closer no longer makes the unit image disappear
+
+Add doc to all percentage modifiers of whether it's additive or multiplicative
+
+"Must not be on [amount] largest landmasses" Compat with resource - By chenxing61
+
 ## 4.19.10
 
 Add `[cityFilter] Cities of [civFilter] Civilizations` countable - By RobLoach
