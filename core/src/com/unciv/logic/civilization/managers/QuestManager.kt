@@ -208,7 +208,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
     @Readonly private fun getQuests(predicate: (Quest) -> Boolean) = ruleset.quests.values.filter(predicate)
 
     // by turn so the same civ doesn't give the same quests always, and by civID so on the same turn different civs give different quests
-    private fun getRandom() = Random(civ.gameInfo.turns + civ.civID.hashCode())
+    @Readonly private fun getRandom() = Random(civ.gameInfo.turns + civ.civID.hashCode())
     
     private fun tryStartNewGlobalQuest() {
         if (globalQuestCountdown != 0)
