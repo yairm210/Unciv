@@ -140,31 +140,24 @@ class TileResource : RulesetStatsObject(), GameResource {
     @Readonly
     fun generatesNaturallyOn(tile: Tile): Boolean {
         
-        val continentsRelevant = hasUnique(UniqueType.NaturalWonderLargerLandmass) ||
-            hasUnique(UniqueType.NaturalWonderSmallerLandmass)
-        val sortedContinents = if (continentsRelevant)
-                tile.tileMap.continentSizes.asSequence()
-                    .sortedByDescending { it.value }
-                    .map { it.key }
-                    .toList()
-        else listOf()
-
         if (tile.lastTerrain.name !in terrainsCanBeFoundOn) return false
         val gameContext = GameContext(tile = tile)
         if (hasUnique(UniqueType.NoNaturalGeneration, gameContext)) return false
         if (tile.allTerrains.any { it.hasUnique(UniqueType.BlocksResources, gameContext) }) return false
         
-        if (continentsRelevant) {
-            for (unique in getMatchingUniques(
-                UniqueType.NaturalWonderSmallerLandmass,
-                gameContext
-            )) {
+        val smallerLandmassUniques = getMatchingUniques(UniqueType.NaturalWonderSmallerLandmass, gameContext).toList()
+        val largerLandmassUniques = getMatchingUniques(UniqueType.NaturalWonderLargerLandmass, gameContext).toList()
+
+        if (smallerLandmassUniques.any() || largerLandmassUniques.any()) {
+            val sortedContinents = tile.tileMap.continentSizes.asSequence()
+                .sortedByDescending { it.value }
+                .map { it.key }
+                .toList()
+
+            for (unique in smallerLandmassUniques) {
                 if (tile.getContinent() in sortedContinents.take(unique.params[0].toInt())) return false
             }
-            for (unique in getMatchingUniques(
-                UniqueType.NaturalWonderLargerLandmass,
-                gameContext
-            )) {
+            for (unique in largerLandmassUniques) {
                 if (tile.getContinent() !in sortedContinents.take(unique.params[0].toInt())) return false
             }
         }
