@@ -139,11 +139,28 @@ class TileResource : RulesetStatsObject(), GameResource {
 
     @Readonly
     fun generatesNaturallyOn(tile: Tile): Boolean {
+        
         if (tile.lastTerrain.name !in terrainsCanBeFoundOn) return false
         val gameContext = GameContext(tile = tile)
         if (hasUnique(UniqueType.NoNaturalGeneration, gameContext)) return false
         if (tile.allTerrains.any { it.hasUnique(UniqueType.BlocksResources, gameContext) }) return false
+        
+        val smallerLandmassUniques = getMatchingUniques(UniqueType.NaturalWonderSmallerLandmass, gameContext).toList()
+        val largerLandmassUniques = getMatchingUniques(UniqueType.NaturalWonderLargerLandmass, gameContext).toList()
 
+        if (smallerLandmassUniques.any() || largerLandmassUniques.any()) {
+            val sortedContinents = tile.tileMap.continentSizes.asSequence()
+                .sortedByDescending { it.value }
+                .map { it.key }
+                .toList()
+
+            for (unique in smallerLandmassUniques) {
+                if (tile.getContinent() in sortedContinents.take(unique.params[0].toInt())) return false
+            }
+            for (unique in largerLandmassUniques) {
+                if (tile.getContinent() !in sortedContinents.take(unique.params[0].toInt())) return false
+            }
+        }
         if (tile.temperature!=null && tile.humidity!=null) // Only works when in map generation
             for (unique in getMatchingUniques(UniqueType.TileGenerationConditions, gameContext)){
                 if (tile.temperature!! !in unique.params[0].toDouble() .. unique.params[1].toDouble()) return false
