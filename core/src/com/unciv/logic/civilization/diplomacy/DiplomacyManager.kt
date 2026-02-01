@@ -611,9 +611,9 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         for (thirdCiv in getCommonKnownCivsWithSpectators()) {
             thirdCiv.addNotification("[${civInfo.civName}] and [${otherCiv.civName}] have signed a Declaration of Friendship!",
                 NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCiv.civName)
-            thirdCiv.getDiplomacyManager(civInfo)!!.setFriendshipBasedModifier()
             if (thirdCiv.isSpectator()) return
             thirdCiv.getDiplomacyManager(civInfo)!!.setFriendshipBasedModifier()
+            thirdCiv.getDiplomacyManager(otherCiv)!!.setFriendshipBasedModifier()
         }
 
         // Ignore contitionals as triggerUnique will check again, and that would break
