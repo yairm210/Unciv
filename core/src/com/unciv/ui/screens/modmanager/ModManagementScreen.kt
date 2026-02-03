@@ -287,14 +287,6 @@ class ModManagementScreen private constructor(
                 repoSearch = Github.tryGetGithubReposWithTopic(pageNum, amountPerPage)
             } catch (ex: Exception) {
                 Log.error("Could not download mod list", ex)
-                launchOnGLThread {
-                    ToastPopup("Could not download mod list", this@ModManagementScreen)
-                }
-                try {
-                    // If it's too large Android won't let you copy, hence the guardrails
-                    Gdx.app.clipboard.contents = ex.stackTraceToString()
-                } catch (_:Exception) {}
-
                 runningSearchJob = null
                 return@run
             }
