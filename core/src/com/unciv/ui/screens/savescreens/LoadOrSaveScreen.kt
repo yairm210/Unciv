@@ -13,6 +13,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.github.Github
 import com.unciv.logic.github.Github.folderNameToRepoName
+import com.unciv.logic.github.GithubAPI
 import com.unciv.logic.github.GithubAPI.downloadAndExtract
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
@@ -215,12 +216,23 @@ abstract class LoadOrSaveScreen(
         }
 
         suspend fun loadMissingMods(missingMods: Iterable<String>, onModDownloaded:(String)->Unit, onCompleted:()->Unit) {
-            for (rawName in missingMods) {
-                val modName = rawName.folderNameToRepoName().lowercase()
-                val repos = Github.tryGetGithubReposWithTopic(1, 10, modName)
+            // Load mod cache to check for repo information before querying GitHub
+            val cachedRepos = UncivGame.Current.files.loadModCache().mapNotNull { it.repo }
+            val cachedReposByName = cachedRepos.associateBy { it.name }
+            
+            suspend fun getRepo(repoName: String): GithubAPI.Repo {
+                val cachedRepo = cachedReposByName[repoName]
+                if (cachedRepo != null) return cachedRepo
+                
+                val reposFromGithub = Github.tryGetGithubReposWithTopic(1, 10, repoName)
                     ?: throw UncivShowableException("Could not download mod list.")
-                val repo = repos.items.firstOrNull { it.name.lowercase() == modName }
-                    ?: throw UncivShowableException("Could not find a mod named \"[$modName]\".")
+                return reposFromGithub.items.firstOrNull { it.name.lowercase() == repoName }
+                    ?: throw UncivShowableException("Could not find a mod named \"[$repoName]\".")
+            }
+
+            for (rawName in missingMods) {
+                val repoName = rawName.folderNameToRepoName().lowercase()
+                val repo = getRepo(repoName)
                 repo.downloadAndExtract()
                         ?: throw Exception("Unexpected 404 error") // downloadAndExtract returns null for 404 errors and the like -> display something!
                 onModDownloaded(repo.name)
