@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import org.teavm.tooling.TeaVMTargetType;
 import org.teavm.tooling.TeaVMTool;
 import org.teavm.vm.TeaVMOptimizationLevel;
@@ -55,6 +56,7 @@ final class BuildWebCommon {
 
         TeaBuilder.build(tool);
         flattenWebapp(webappPath, outputPath);
+        sanitizeAtlasFiltersForWeb(outputPath.resolve("assets"));
     }
 
     private static void ensureDirectory(Path path) {
@@ -102,6 +104,35 @@ final class BuildWebCommon {
                     });
         } catch (IOException e) {
             throw new RuntimeException("Failed deleting path " + path, e);
+        }
+    }
+
+    /**
+     * TeaVM/WebGL currently logs GL_INVALID_ENUM for mipmap filter tokens from atlas headers.
+     * Rewrite copied atlas files for web output only to avoid noisy warnings.
+     */
+    private static void sanitizeAtlasFiltersForWeb(Path assetsPath) {
+        if (!Files.isDirectory(assetsPath)) return;
+        try {
+            Files.walk(assetsPath)
+                    .filter(path -> Files.isRegularFile(path) && path.toString().toLowerCase(Locale.ROOT).endsWith(".atlas"))
+                    .forEach(path -> {
+                        try {
+                            String content = Files.readString(path);
+                            String sanitized = content
+                                    .replace("MipMapLinearLinear", "Linear")
+                                    .replace("MipMapLinearNearest", "Linear")
+                                    .replace("MipMapNearestLinear", "Nearest")
+                                    .replace("MipMapNearestNearest", "Nearest");
+                            if (!sanitized.equals(content)) {
+                                Files.writeString(path, sanitized);
+                            }
+                        } catch (IOException e) {
+                            throw new RuntimeException("Failed sanitizing atlas filters for " + path, e);
+                        }
+                    });
+        } catch (IOException e) {
+            throw new RuntimeException("Failed scanning atlas files in " + assetsPath, e);
         }
     }
 }

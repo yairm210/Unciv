@@ -9,7 +9,10 @@
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
   "forwardPorts": [8080, 9323],
   "mounts": [
-    "source=unciv-gradle-cache,target=/home/vscode/.gradle,type=volume"
+    "source=unciv-gradle-cache,target=/home/vscode/.gradle,type=volume",
+    "source=unciv-gradle-cache,target=/root/.gradle,type=volume",
+    "source=unciv-node-cache,target=/home/vscode/.npm,type=volume",
+    "source=unciv-playwright-cache,target=/ms-playwright,type=volume"
   ],
   "customizations": {
     "vscode": {

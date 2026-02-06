@@ -240,9 +240,16 @@ private fun replaceLambdasWithValues(params: Array<out Any?>): Array<out Any?> {
 
 @Readonly
 private fun getTag(): Tag {
-    @Suppress("ThrowingExceptionsWithoutMessageOrCause")
-    val firstOutsideStacktrace = Throwable().stackTrace.first { "com.unciv.utils.Log" !in it.className }
-    val simpleClassName = firstOutsideStacktrace.className.substringAfterLast('.')
+    val stackTrace = Throwable().stackTrace
+    val firstOutsideStacktrace = stackTrace.firstOrNull {
+        val className = it.className
+        className.isNotEmpty() && !className.startsWith("com.unciv.utils.Log")
+    } ?: stackTrace.firstOrNull()
+
+    val className = firstOutsideStacktrace?.className.orEmpty()
+    val simpleClassName = className.substringAfterLast('.').ifBlank {
+        className.ifBlank { "Unknown" }
+    }
     return Tag(removeAnonymousSuffix(simpleClassName))
 }
 

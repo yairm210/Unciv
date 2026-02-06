@@ -4,6 +4,11 @@ import com.badlogic.gdx.Gdx
 import com.unciv.UncivGame
 
 class WebGame : UncivGame() {
+    override fun create() {
+        WebValidationRunner.maybeStart(this)
+        super.create()
+    }
+
     override fun installAudioHooks() {
         // Phase-1: no platform-specific audio hook wiring required.
     }

@@ -4,9 +4,14 @@ services:
       context: .
       dockerfile: .devcontainer/Dockerfile
     working_dir: /workspace
+    environment:
+      GRADLE_USER_HOME: /root/.gradle
+      PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
     volumes:
       - .:/workspace
-      - unciv-gradle-cache:/home/vscode/.gradle
+      - unciv-gradle-cache:/root/.gradle
+      - unciv-node-cache:/root/.npm
+      - unciv-playwright-cache:/ms-playwright
     ports:
       - "8080:8080"
       - "9323:9323"
@@ -14,3 +19,5 @@ services:
 
 volumes:
   unciv-gradle-cache:
+  unciv-node-cache:
+  unciv-playwright-cache:
