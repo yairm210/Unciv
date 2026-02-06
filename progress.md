@@ -83,3 +83,4 @@
 2026-02-06T03:37:05Z | commit | created phase1 commit 1ce78d856 for docker/web scaffolding, CI workflow, and execution tracking artifacts | done | stage core portability and gating changes for phase2 commit
 2026-02-06T03:37:39Z | commit | created phase2 commit ff5822fb7 for core capability gates and TeaVM portability fixes | done | finalize progress log and create final phase commit
 2026-02-06T03:41:09Z | validation | ran containerized static-serve smoke via tmp/web-smoke.sh; successfully fetched web/build/dist/index.html over localhost:8080 | done | keep gameplay/browser-interaction checks marked pending in features.csv
+2026-02-06T03:47:16Z | validation | attempted containerized Playwright startup smoke; headless page crashed during runtime bootstrap (likely WebGL/headless constraints), so browser-interaction smoke remains pending | blocked | keep build/static-serve checks as validated baseline
