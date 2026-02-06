@@ -1,0 +1,16 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+    working_dir: /workspace
+    volumes:
+      - .:/workspace
+      - unciv-gradle-cache:/home/vscode/.gradle
+    ports:
+      - "8080:8080"
+      - "9323:9323"
+    command: bash -lc "sleep infinity"
+
+volumes:
+  unciv-gradle-cache:

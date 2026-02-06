@@ -1,0 +1,12 @@
+feature,web_status,phase,blocking_issue,notes,last_verified
+Boot/Main menu,BLOCKED,phase-1,runtime_smoke_pending,container webBuildWasm/webBuildJs pass and dist generated; browser interaction not yet executed,2026-02-06T03:34:04Z
+Start new game,BLOCKED,phase-1,runtime_smoke_pending,compile/build path is green; in-browser gameplay smoke still pending,2026-02-06T03:34:04Z
+End turn loop,BLOCKED,phase-1,runtime_smoke_pending,compile/build path is green; 10-turn manual web smoke still pending,2026-02-06T03:34:04Z
+Local save/load,BLOCKED,phase-1,browser_storage_smoke_pending,web saver loader wiring done but browser persistence roundtrip not yet verified,2026-02-06T03:34:04Z
+Clipboard import/export,BLOCKED,phase-1,browser_clipboard_smoke_pending,requires browser permission/runtime validation on served dist,2026-02-06T03:34:04Z
+Audio,BLOCKED,phase-1,browser_audio_smoke_pending,requires manual web audio playback validation,2026-02-06T03:34:04Z
+Multiplayer,DISABLED_BY_DESIGN,phase-1,phase_1_scope_disabled,explicitly gated off on web via PlatformCapabilities,2026-02-06T03:34:04Z
+Mod download/update,DISABLED_BY_DESIGN,phase-1,phase_1_scope_disabled,explicitly gated off on web via PlatformCapabilities,2026-02-06T03:34:04Z
+Custom file picker save/load,DISABLED_BY_DESIGN,phase-1,phase_1_scope_disabled,explicitly gated off on web via PlatformCapabilities,2026-02-06T03:34:04Z
+Translation/font selection,BLOCKED,phase-1,web_font_smoke_pending,system font enumeration disabled and deterministic web font path wired; render parity still pending,2026-02-06T03:34:04Z
+External links,BLOCKED,phase-1,runtime_smoke_pending,requires browser click-through validation on served dist,2026-02-06T03:34:04Z

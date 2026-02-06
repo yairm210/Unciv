@@ -1,0 +1,62 @@
+name: Web Build (TeaVM)
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - main
+  workflow_dispatch:
+
+jobs:
+  web-build:
+    name: Build Web WASM Artifact
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build web toolchain container
+        run: docker build -f .devcontainer/Dockerfile -t unciv-web-builder .
+
+      - name: Build WASM bundle
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/workspace" \
+            -w /workspace \
+            unciv-web-builder \
+            bash -lc "./gradlew :web:webBuildWasm"
+
+      - name: Upload web dist artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: unciv-web-dist
+          path: web/build/dist
+          if-no-files-found: error
+
+  deploy-preview:
+    name: Deploy Web Preview (Manual)
+    if: github.event_name == 'workflow_dispatch'
+    needs: web-build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Download web dist artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: unciv-web-dist
+          path: web-dist
+
+      - name: Upload pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: web-dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

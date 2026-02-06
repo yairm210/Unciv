@@ -1,0 +1,23 @@
+{
+  "name": "Unciv Web",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "remoteUser": "vscode",
+  "workspaceFolder": "/workspace",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+  "forwardPorts": [8080, 9323],
+  "mounts": [
+    "source=unciv-gradle-cache,target=/home/vscode/.gradle,type=volume"
+  ],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "vscjava.vscode-java-pack",
+        "fwcd.kotlin"
+      ]
+    }
+  },
+  "postCreateCommand": "./gradlew --version"
+}
