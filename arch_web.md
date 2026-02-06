@@ -6,7 +6,7 @@ Last updated: 2026-02-06
 
 These are intentionally fixed for the phase-1 web deliverable.
 
-1. Runtime: TeaVM via `gdx-teavm` (`1.4.0`), WASM-first.
+1. Runtime: TeaVM via `gdx-teavm` (snapshot track), WASM-first.
 2. Scope: playable single-player core loop + local browser-backed saves.
 3. Packaging target: static deploy bundle (`web/build/dist`) for CDN/static hosting.
 4. Rendering stack: keep existing LibGDX rendering pipeline; do not add Three.js.
@@ -18,7 +18,16 @@ These are intentionally fixed for the phase-1 web deliverable.
    - online mod download/update disabled
    - system font enumeration disabled
 
-## 2) Explicitly Deferred (May Change Later)
+## 2) Snapshot Compatibility Decisions (Alterable Later)
+
+These are temporary implementation decisions and may be reverted once upstream snapshot/tag artifacts are aligned.
+
+1. Web build currently uses `com.github.xpenatan.gdx-teavm:backend-teavm:-SNAPSHOT` and `com.github.xpenatan.gdx-teavm:gdx-freetype-teavm:-SNAPSHOT`.
+2. Snapshot import namespace is `com.github.xpenatan.gdx.teavm.backends.*` (renamed from legacy `com.github.xpenatan.gdx.backends.teavm.*`).
+3. Added compatibility shim `web/src/main/java/com/github/xpenatan/gdx/teavm/backends/web/assetloader/TeaBlob.java` to bridge backend runtime references to `TeaBlob` against snapshot asset-loader rename.
+4. `TeaBuildConfiguration.reflectionListener` assignment is intentionally disabled in web build bootstrap due split-jar type mismatch in current snapshot set.
+
+## 3) Explicitly Deferred (May Change Later)
 
 These are deferred, not rejected permanently.
 
@@ -29,14 +38,14 @@ These are deferred, not rejected permanently.
 5. Re-enabling custom file picker IO: after stable browser file system policy and UX are finalized.
 6. Expanded font strategy (system fonts/full selection): after deterministic baseline font path is proven stable.
 
-## 3) Why These Locks Exist
+## 4) Why These Locks Exist
 
 1. Minimize unknowns during first web bring-up.
 2. Keep architecture single-renderer and avoid split ownership.
 3. Establish deterministic runtime behavior before optimization layers.
 4. Separate parity/stability work from optimization/feature expansion.
 
-## 4) Change-Control Rule for Deferred Decisions
+## 5) Change-Control Rule for Deferred Decisions
 
 A deferred decision can be changed only when all are true:
 
@@ -45,10 +54,9 @@ A deferred decision can be changed only when all are true:
 3. Change has a written impact note (bundle size/startup/perf/risk/testing).
 4. Change has a rollback path.
 
-## 5) Current Phase-1 Acceptance Focus
+## 6) Current Phase-1 Acceptance Focus
 
 1. `:web:webBuildWasm` and `:web:webBuildJs` succeed in container tooling.
 2. App boots from static files without fatal startup errors.
 3. Main menu/start new game/end-turn/save-load/clipboard roundtrip works.
 4. Disabled-by-design web features are hidden or non-actionable in UI flows.
-

@@ -1,5 +1,5 @@
 feature,web_status,phase,blocking_issue,notes,last_verified
-Boot/Main menu,BLOCKED,phase-1,runtime_smoke_pending,container webBuildWasm/webBuildJs pass and dist generated; browser interaction not yet executed,2026-02-06T03:34:04Z
+Boot/Main menu,PASS,phase-1,,host Playwright wasm smoke passed (canvas present and no runtime console/page errors),2026-02-06T10:43:59Z
 Start new game,BLOCKED,phase-1,runtime_smoke_pending,compile/build path is green; in-browser gameplay smoke still pending,2026-02-06T03:34:04Z
 End turn loop,BLOCKED,phase-1,runtime_smoke_pending,compile/build path is green; 10-turn manual web smoke still pending,2026-02-06T03:34:04Z
 Local save/load,BLOCKED,phase-1,browser_storage_smoke_pending,web saver loader wiring done but browser persistence roundtrip not yet verified,2026-02-06T03:34:04Z
