@@ -7,7 +7,7 @@ plugins {
 val gdxVersion: String by project
 val coroutinesVersion: String by project
 val ktorVersion: String by project
-val gdxTeaVMVersion = "1.4.0"
+val gdxTeaVMVersion = "-SNAPSHOT"
 
 sourceSets {
     main {

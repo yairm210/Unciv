@@ -1,7 +1,7 @@
 package com.unciv.app.web;
 
-import com.github.xpenatan.gdx.backends.teavm.TeaApplication;
-import com.github.xpenatan.gdx.backends.teavm.TeaApplicationConfiguration;
+import com.github.xpenatan.gdx.teavm.backends.web.TeaApplication;
+import com.github.xpenatan.gdx.teavm.backends.web.TeaApplicationConfiguration;
 import com.unciv.logic.files.PlatformSaverLoader;
 import com.unciv.logic.files.UncivFiles;
 import com.unciv.platform.PlatformCapabilities;

@@ -1,8 +1,8 @@
 package com.unciv.app.web;
 
-import com.github.xpenatan.gdx.backends.teavm.config.AssetFileHandle;
-import com.github.xpenatan.gdx.backends.teavm.config.TeaBuildConfiguration;
-import com.github.xpenatan.gdx.backends.teavm.config.TeaBuilder;
+import com.github.xpenatan.gdx.teavm.backends.shared.config.AssetFileHandle;
+import com.github.xpenatan.gdx.teavm.backends.web.config.TeaBuildConfiguration;
+import com.github.xpenatan.gdx.teavm.backends.web.config.TeaBuilder;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -29,6 +29,8 @@ final class BuildWebCommon {
         Path resourcesPath = repoRoot.resolve("web/build/resources/main");
 
         cleanupOutput(outputPath);
+        ensureDirectory(outputPath);
+
         ensureDirectory(resourcesPath);
 
         TeaBuildConfiguration configuration = new TeaBuildConfiguration();
@@ -39,7 +41,6 @@ final class BuildWebCommon {
         configuration.htmlWidth = 0;
         configuration.htmlHeight = 0;
         configuration.assetsPath.add(new AssetFileHandle(assetsPath.toString()));
-        configuration.reflectionListener = className -> REFLECTION_PREFIXES.stream().anyMatch(className::startsWith);
 
         TeaBuilder.config(configuration);
 
