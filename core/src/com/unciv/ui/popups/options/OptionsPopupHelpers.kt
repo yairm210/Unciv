@@ -24,13 +24,13 @@ import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.utils.Concurrency
+import com.unciv.utils.Dispatcher
+import com.unciv.utils.delayMillis
 import com.unciv.utils.launchOnGLThread
 import com.unciv.utils.toGdxArray
 import com.unciv.utils.withGLContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlin.reflect.KMutableProperty0
 
@@ -191,7 +191,7 @@ internal interface OptionsPopupHelpers {
         text: String,
         property: KMutableProperty0<T>,
         provider: suspend () -> Flow<T>,
-        dispatcher: CoroutineDispatcher = Dispatchers.IO,
+        dispatcher: CoroutineDispatcher = Dispatcher.DAEMON,
         action: ((T) -> Unit)? = null
     ) {
         val label = text.toLabel(Color.GRAY)
@@ -319,7 +319,7 @@ internal interface OptionsPopupHelpers {
      */
     fun reopenOptions(force: Boolean = false) {
         Concurrency.run("Reload from options") {
-            delay(if (force) 0 else 100)
+            delayMillis(if (force) 0 else 100)
             withGLContext {
                 val screen = UncivGame.Current.screen ?: return@withGLContext
                 if (force && screen.activePopup is OptionsPopup) screen.activePopup!!.close()

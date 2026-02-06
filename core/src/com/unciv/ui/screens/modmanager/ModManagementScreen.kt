@@ -18,6 +18,7 @@ import com.unciv.logic.github.Github
 import com.unciv.logic.github.Github.repoNameToFolderName
 import com.unciv.logic.github.GithubAPI
 import com.unciv.logic.github.GithubAPI.downloadAndExtract
+import com.unciv.platform.PlatformCapabilities
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
@@ -174,7 +175,8 @@ class ModManagementScreen private constructor(
         refreshInstalledModTable()
 
         refreshOnlineModTable() // Refresh table - chances are we have cached data...
-        reloadOnlineMods() //... and still try to get fresh data from online
+        if (PlatformCapabilities.current.onlineModDownloads)
+            reloadOnlineMods() //... and still try to get fresh data from online
     }
 
     private fun initPortrait() {
@@ -599,6 +601,7 @@ class ModManagementScreen private constructor(
                 refreshInstalledModTable()
         }
 
+        if (!PlatformCapabilities.current.onlineModDownloads) return
         val updateModButton = modActionTable.addUpdateModButton(modInfo) ?: return
         updateModButton.onClick {
             updateModButton.setStartingDownload()
@@ -692,6 +695,18 @@ class ModManagementScreen private constructor(
     }
 
     internal fun refreshOnlineModTable() {
+        if (!PlatformCapabilities.current.onlineModDownloads) {
+            val newHeaderText = optionsManager.getOnlineHeader()
+            onlineHeaderLabel?.setText(newHeaderText)
+            onlineExpanderTab?.setText(newHeaderText)
+
+            onlineModsTable.clear()
+            onlineModsTable.add("Online mod downloads are disabled on this platform.".toLabel(Color.LIGHT_GRAY)).pad(10f).row()
+            onlineModsTable.pack()
+            scrollOnlineMods.actor = onlineModsTable
+            return
+        }
+
 //        if (runningSearchJob != null) {
 //            ToastPopup("Sorting and filtering needs to wait until the online query finishes", this)
 //            return  // cowardice: prevent concurrent modification, avoid a manager layer

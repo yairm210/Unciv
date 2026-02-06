@@ -9,9 +9,10 @@ import com.unciv.logic.multiplayer.storage.DropBox
 import com.unciv.models.metadata.GameSettings
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
+import com.unciv.utils.delayMillis
+import com.unciv.utils.launchOnGLThread
 import java.util.EnumSet
 import java.util.Timer
-import kotlin.concurrent.thread
 import kotlin.concurrent.timer
 import kotlin.math.roundToInt
 
@@ -320,10 +321,10 @@ class MusicController {
         Log.error("Error playing music", ex)
 
         // Since this is a rare emergency, go a simple way to reboot music later
-        thread(isDaemon = true) {
-            Thread.sleep(2000)
-            Gdx.app.postRunnable {
-                this.chooseTrack()
+        Concurrency.run("MusicRetryAfterError") {
+            delayMillis(2000)
+            launchOnGLThread {
+                this@MusicController.chooseTrack()
             }
         }
     }

@@ -15,6 +15,7 @@ import com.unciv.logic.github.Github
 import com.unciv.logic.github.Github.folderNameToRepoName
 import com.unciv.logic.github.GithubAPI
 import com.unciv.logic.github.GithubAPI.downloadAndExtract
+import com.unciv.platform.PlatformCapabilities
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.UncivDateFormat.formatDate
@@ -34,10 +35,7 @@ import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import com.unciv.utils.launchOnGLThread
 import java.io.FileNotFoundException
-import java.nio.file.attribute.DosFileAttributes
 import java.util.Date
-import kotlin.io.path.Path
-import kotlin.io.path.readAttributes
 
 
 abstract class LoadOrSaveScreen(
@@ -178,8 +176,7 @@ abstract class LoadOrSaveScreen(
 
             fun FileHandle.isReadOnly(): Boolean {
                 try {
-                    val attr = Path(file().absolutePath).readAttributes<DosFileAttributes>()
-                    return attr.isReadOnly
+                    return !file().canWrite()
                 } catch (_: Throwable) { return false }
             }
 
@@ -216,6 +213,9 @@ abstract class LoadOrSaveScreen(
         }
 
         suspend fun loadMissingMods(missingMods: Iterable<String>, onModDownloaded:(String)->Unit, onCompleted:()->Unit) {
+            if (!PlatformCapabilities.current.onlineModDownloads) {
+                throw UncivShowableException("Online mod download is disabled on this platform.")
+            }
             // Load mod cache to check for repo information before querying GitHub
             val cachedRepos = UncivGame.Current.files.loadModCache().mapNotNull { it.repo }
             val cachedReposByName = cachedRepos.associateBy { it.name }

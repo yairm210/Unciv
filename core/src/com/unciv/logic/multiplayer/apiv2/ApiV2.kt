@@ -11,6 +11,8 @@ import com.unciv.logic.multiplayer.storage.ApiV2FileStorageWrapper
 import com.unciv.logic.multiplayer.storage.MultiplayerFileNotFoundException
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
+import com.unciv.utils.delayDuration
+import com.unciv.utils.delayMillis
 import io.ktor.client.call.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.client.request.*
@@ -25,7 +27,6 @@ import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.channels.ClosedSendChannelException
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import java.time.Instant
@@ -350,7 +351,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
         var job: Job? = null
         if (timeout != null) {
             job = Concurrency.run {
-                delay(timeout)
+                delayDuration(timeout)
                 channel.close()
             }
         }
@@ -404,7 +405,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
                         }
                     }
                 }
-                delay(DEFAULT_WEBSOCKET_PING_FREQUENCY)
+                delayDuration(DEFAULT_WEBSOCKET_PING_FREQUENCY)
             }
             Log.debug("It looks like the WebSocket channel has been replaced")
         })
@@ -445,11 +446,11 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
                                             try {
                                                 c.send((msg as WebSocketMessageWithContent).content)
                                             } catch (_: ClosedSendChannelException) {
-                                                delay(10)
+                                                delayMillis(10)
                                                 eventChannelList.remove(c)
                                             } catch (t: Throwable) {
                                                 Log.debug("Sending event %s to event channel %s failed: %s", (msg as WebSocketMessageWithContent).content, c, t)
-                                                delay(10)
+                                                delayMillis(10)
                                                 eventChannelList.remove(c)
                                             }
                                         }

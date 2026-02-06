@@ -12,6 +12,7 @@ import com.unciv.logic.files.PlatformSaverLoader
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.github.GithubAPI
 import com.unciv.logic.github.GithubAPI.downloadAndExtract
+import com.unciv.platform.PlatformCapabilities
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
@@ -77,7 +78,8 @@ class LoadGameScreen : LoadOrSaveScreen() {
 
     private fun Table.initRightSideTable() {
         add(getLoadFromClipboardButton()).row()
-        addLoadFromCustomLocationButton()
+        if (PlatformCapabilities.current.customFileChooser)
+            addLoadFromCustomLocationButton()
         add(errorLabel).width(stage.width / 2).center().row()
         add(deleteSaveButton).row()
         add(copySavedGameToClipboardButton).row()
@@ -209,7 +211,7 @@ class LoadGameScreen : LoadOrSaveScreen() {
             cantLoadGamePopup.open()
         }
 
-        if (ex is MissingModsException) {
+        if (ex is MissingModsException && PlatformCapabilities.current.onlineModDownloads) {
             loadMissingModsAsync(ex.missingMods)
         }
         if (ex is MissingNationException){

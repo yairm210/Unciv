@@ -675,7 +675,8 @@ open class RulesetValidator protected constructor(
     private fun checkTilesetSanity(lines: RulesetErrorList) {
         // If running from a jar *and* checking a builtin ruleset, skip this check.
         // - We can't list() the jsons, and the unit test before release is sufficient, the tileset config can't have changed since then.
-        if (ruleset.folderLocation == null && this::class.java.`package`?.specificationVersion != null)
+        val isRunningFromJar = System.getProperty("java.class.path").orEmpty().contains(".jar")
+        if (ruleset.folderLocation == null && isRunningFromJar)
             return
 
         val tilesetConfigFolder = (ruleset.folderLocation ?: Gdx.files.internal("")).child("jsons/TileSets")

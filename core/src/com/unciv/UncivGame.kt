@@ -9,6 +9,7 @@ import com.unciv.logic.Version
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.Multiplayer
+import com.unciv.platform.PlatformCapabilities
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.skins.SkinCache
@@ -116,14 +117,15 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         musicController = MusicController()  // early, but at this point does only copy volume from settings
         installAudioHooks()
 
-        onlineMultiplayer = Multiplayer()
-
-        Concurrency.run {
-            // Check if the server is available in case the feature set has changed
-            try {
-                onlineMultiplayer.multiplayerServer.checkServerStatus()
-            } catch (ex: Exception) {
-                debug("Couldn't connect to server: " + ex.message)
+        if (PlatformCapabilities.current.onlineMultiplayer) {
+            onlineMultiplayer = Multiplayer()
+            Concurrency.run {
+                // Check if the server is available in case the feature set has changed
+                try {
+                    onlineMultiplayer.multiplayerServer.checkServerStatus()
+                } catch (ex: Exception) {
+                    debug("Couldn't connect to server: " + ex.message)
+                }
             }
         }
 
@@ -165,7 +167,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
                 when {
                     settings.isFreshlyCreated -> setAsRootScreen(LanguagePickerScreen())
-                    deepLinkedMultiplayerGame == null -> setAsRootScreen(MainMenuScreen())
+                    deepLinkedMultiplayerGame == null || !PlatformCapabilities.current.onlineMultiplayer -> setAsRootScreen(MainMenuScreen())
                     else -> tryLoadDeepLinkedGame()
                 }
 
@@ -424,20 +426,23 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         if (curGameInfo != null) {
             val autoSaveJob = files.autosaves.autoSaveJob
             if (autoSaveJob != null && autoSaveJob.isActive) {
-                // auto save is already in progress (e.g. started by onPause() event)
-                // let's allow it to finish and do not try to autosave second time
-                Concurrency.runBlocking {
-                    autoSaveJob.join()
+                if (PlatformCapabilities.current.backgroundThreadPools) {
+                    // auto save is already in progress (e.g. started by onPause() event)
+                    // let's allow it to finish and do not try to autosave second time
+                    Concurrency.runBlocking {
+                        autoSaveJob.join()
+                    }
                 }
             } else {
                 files.autosaves.autoSave(curGameInfo)      // NO new thread
             }
         }
         settings.save()
-        Concurrency.stopThreadPools()
-
-        // On desktop this should only be this one and "DestroyJavaVM"
-        logRunningThreads()
+        if (PlatformCapabilities.current.backgroundThreadPools) {
+            Concurrency.stopThreadPools()
+            // On desktop this should only be this one and "DestroyJavaVM"
+            logRunningThreads()
+        }
 
         // DO NOT `exitProcess(0)` - bypasses all Gdx and GLFW cleanup
     }

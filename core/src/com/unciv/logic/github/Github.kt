@@ -11,12 +11,12 @@ import com.unciv.logic.github.Github.repoNameToFolderName
 import com.unciv.logic.github.GithubAPI.fetchReleaseZip
 import com.unciv.models.ruleset.ModOptions
 import com.unciv.utils.Concurrency
+import com.unciv.utils.delayMillis
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.runBlocking
 import yairm210.purity.annotations.Pure
@@ -84,7 +84,7 @@ object Github {
                         stopTracking()
                         break
                     }
-                    delay(100)
+                    delayMillis(100)
                 }
             }
         }

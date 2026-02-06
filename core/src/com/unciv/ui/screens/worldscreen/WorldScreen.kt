@@ -24,6 +24,7 @@ import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Event
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.platform.PlatformCapabilities
 import com.unciv.ui.components.extensions.centerX
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
@@ -70,12 +71,12 @@ import com.unciv.utils.debug
 import com.unciv.utils.launchOnGLThread
 import com.unciv.utils.launchOnThreadPool
 import com.unciv.utils.withGLContext
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.coroutineScope
 import yairm210.purity.annotations.Readonly
 import java.util.Timer
 import kotlin.concurrent.timer
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 /**
  * Do not create this screen without seriously thinking about the implications: this is the single most memory-intensive class in the application.
@@ -193,10 +194,13 @@ class WorldScreen(
         addKeyboardPresses()  // shortcut keys like F1
 
 
-        if (gameInfo.gameParameters.isOnlineMultiplayer && !gameInfo.isUpToDate)
+        if (gameInfo.gameParameters.isOnlineMultiplayer
+            && PlatformCapabilities.current.onlineMultiplayer
+            && !gameInfo.isUpToDate
+        )
             isPlayersTurn = false // until we're up to date, don't let the player do anything
 
-        if (gameInfo.gameParameters.isOnlineMultiplayer) {
+        if (gameInfo.gameParameters.isOnlineMultiplayer && PlatformCapabilities.current.onlineMultiplayer) {
             val gameId = gameInfo.gameId
             events.receive(MultiplayerGameUpdated::class, { it.preview.gameId == gameId }) {
                 if (isNextTurnUpdateRunning() || game.onlineMultiplayer.hasLatestGameState(gameInfo, it.preview)) {
@@ -324,11 +328,11 @@ class WorldScreen(
     // We contain a map...
     override fun getShortcutDispatcherVetoer() = KeyShortcutDispatcherVeto.createTileGroupMapDispatcherVetoer()
 
-    private suspend fun loadLatestMultiplayerState(): Unit = coroutineScope {
-        if (game.screen != this@WorldScreen) return@coroutineScope // User already went somewhere else
+    private suspend fun loadLatestMultiplayerState() {
+        if (game.screen != this@WorldScreen) return // User already went somewhere else
 
         val loadingGamePopup = Popup(this@WorldScreen)
-        launchOnGLThread {
+        Concurrency.runOnGLThread {
             loadingGamePopup.addGoodSizedLabel("Loading latest game state...")
             loadingGamePopup.open()
         }
@@ -342,12 +346,12 @@ class WorldScreen(
             if (viewingCiv.civID == latestGame.currentPlayer || viewingCiv.civID == Constants.spectator) {
                 game.notifyTurnStarted()
             }
-            launchOnGLThread {
+            Concurrency.runOnGLThread {
                 loadingGamePopup.close()
             }
             startNewScreenJob(latestGame, autoPlay)
         } catch (ex: Throwable) {
-            launchOnGLThread {
+            Concurrency.runOnGLThread {
                 val (message) = LoadGameScreen.getLoadExceptionMessage(ex, "Couldn't download the latest game state!")
                 loadingGamePopup.clear()
                 loadingGamePopup.addGoodSizedLabel(message).colspan(2).row()
@@ -359,6 +363,17 @@ class WorldScreen(
                 loadingGamePopup.addButton("Main menu") {
                     game.pushScreen(MainMenuScreen())
                 }.left()
+            }
+        }
+    }
+
+    private suspend fun awaitAuthPopupResult(): Boolean = suspendCoroutine { continuation ->
+        Concurrency.runOnGLThread("Multiplayer auth popup") {
+            try {
+                AuthPopup(this@WorldScreen, continuation::resume).open(true)
+            } catch (ex: Exception) {
+                continuation.resume(false)
+                throw ex
             }
         }
     }
@@ -593,7 +608,7 @@ class WorldScreen(
 
             gameInfoClone.nextTurn(progressBar, true)
 
-            if (originalGameInfo.gameParameters.isOnlineMultiplayer) {
+            if (originalGameInfo.gameParameters.isOnlineMultiplayer && PlatformCapabilities.current.onlineMultiplayer) {
                 // outer try-catch for non-auth exceptions
                 try {
                     // keep retrying if upload fails AND reauthentication succeeds
@@ -604,20 +619,7 @@ class WorldScreen(
                             // upload succeeded
                             retryUpload = false
                         } catch (_: MultiplayerAuthException) {
-                            // true only if authentication succeeds (the popup permits retries)
-                            // false only if user closes the auth popup or the popup init crashes
-                            val authResult = CompletableDeferred<Boolean>()
-                            launchOnGLThread {
-                                try {
-                                    AuthPopup(this@WorldScreen, authResult::complete).open(true)
-                                } catch (ex: Exception) {
-                                    // GL thread crashed during AuthPopup init, let's wrap up
-                                    authResult.complete(false)
-                                    // ensure exception is passed to crash handler
-                                    throw ex
-                                }
-                            }
-                            retryUpload = authResult.await()
+                            retryUpload = awaitAuthPopupResult()
                         }
                     } while (retryUpload)
                 } catch (ex: Exception) { // non-auth exceptions
@@ -658,6 +660,7 @@ class WorldScreen(
 
             // Special case: when you are the only alive human player, the game will always be up to date
             if (gameInfo.gameParameters.isOnlineMultiplayer
+                    && PlatformCapabilities.current.onlineMultiplayer
                     && gameInfoClone.civilizations.count { it.isAlive() && it.playerType == PlayerType.Human } == 1) {
                 gameInfoClone.isUpToDate = true
             }
@@ -724,6 +727,10 @@ class WorldScreen(
     }
 
     private fun updateMultiplayerStatusButton() {
+        if (!PlatformCapabilities.current.onlineMultiplayer) {
+            statusButtons.multiplayerStatusButton = null
+            return
+        }
         if (gameInfo.gameParameters.isOnlineMultiplayer || game.settings.multiplayer.statusButtonInSinglePlayer) {
             if (statusButtons.multiplayerStatusButton != null) return
             statusButtons.multiplayerStatusButton = MultiplayerStatusButton(this,

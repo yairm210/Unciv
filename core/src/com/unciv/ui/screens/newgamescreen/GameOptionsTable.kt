@@ -12,6 +12,7 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.Player
+import com.unciv.platform.PlatformCapabilities
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.nation.Nation
@@ -108,12 +109,16 @@ class GameOptionsTable(
 
         val checkboxTable = Table().apply { defaults().left().pad(2.5f) }
         val selectBoxTable = Table()
-        checkboxTable.addIsOnlineMultiplayerCheckbox()
-        if (gameParameters.isOnlineMultiplayer){
-            checkboxTable.addAnyoneCanSpectateCheckbox()
-            selectBoxTable.addDurationSelectBox("Time until skip turn:", GameParameters::minutesUntilSkipTurn, 1, 0, 0)
-            selectBoxTable.addDurationSelectBox("Total time to play:", GameParameters::minutesUntilForceResign, 3, 0, 0)
-            selectBoxTable.addDurationSelectBox("Time recovered per turn:", GameParameters::minutesRecoveredPerTurn, 3, 0, 0)
+        if (PlatformCapabilities.current.onlineMultiplayer) {
+            checkboxTable.addIsOnlineMultiplayerCheckbox()
+            if (gameParameters.isOnlineMultiplayer){
+                checkboxTable.addAnyoneCanSpectateCheckbox()
+                selectBoxTable.addDurationSelectBox("Time until skip turn:", GameParameters::minutesUntilSkipTurn, 1, 0, 0)
+                selectBoxTable.addDurationSelectBox("Total time to play:", GameParameters::minutesUntilForceResign, 3, 0, 0)
+                selectBoxTable.addDurationSelectBox("Time recovered per turn:", GameParameters::minutesRecoveredPerTurn, 3, 0, 0)
+            }
+        } else {
+            gameParameters.isOnlineMultiplayer = false
         }
         add(checkboxTable).center().row()
         add(selectBoxTable).center().row()

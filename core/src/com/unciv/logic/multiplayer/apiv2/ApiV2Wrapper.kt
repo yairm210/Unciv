@@ -16,7 +16,6 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import java.util.concurrent.ConcurrentLinkedQueue
@@ -157,32 +156,29 @@ open class ApiV2Wrapper(baseUrl: String) {
     internal suspend fun websocket(handler: suspend (ClientWebSocketSession) -> Unit, jobCallback: ((Job) -> Unit)? = null): Boolean {
         Log.debug("Starting a new WebSocket connection ...")
 
-        coroutineScope {
-            try {
-                val session = client.webSocketRawSession {
-                    authHelper.add(this)
-                    url {
-                        protocol = if (Url(baseServer).protocol.isSecure()) URLProtocol.WSS else URLProtocol.WS
-                        port = Url(baseServer).specifiedPort.takeUnless { it == DEFAULT_PORT } ?: protocol.defaultPort
-                        appendPathSegments("api/v2/ws")
-                    }
+        try {
+            val session = client.webSocketRawSession {
+                authHelper.add(this)
+                url {
+                    protocol = if (Url(baseServer).protocol.isSecure()) URLProtocol.WSS else URLProtocol.WS
+                    port = Url(baseServer).specifiedPort.takeUnless { it == DEFAULT_PORT } ?: protocol.defaultPort
+                    appendPathSegments("api/v2/ws")
                 }
-                val job = Concurrency.runOnNonDaemonThreadPool {
-                    handler(session)
-                }
-                websocketJobs.add(job)
-                Log.debug("A new WebSocket has been created, running in job $job")
-                if (jobCallback != null) {
-                    jobCallback(job)
-                }
-                true
-            } catch (e: SerializationException) {
-                Log.debug("Failed to create a WebSocket: %s", e.localizedMessage)
-                return@coroutineScope false
-            } catch (e: Exception) {
-                Log.debug("Failed to establish WebSocket connection: %s", e.localizedMessage)
-                return@coroutineScope false
             }
+            val job = Concurrency.runOnNonDaemonThreadPool {
+                handler(session)
+            }
+            websocketJobs.add(job)
+            Log.debug("A new WebSocket has been created, running in job $job")
+            if (jobCallback != null) {
+                jobCallback(job)
+            }
+        } catch (e: SerializationException) {
+            Log.debug("Failed to create a WebSocket: %s", e.localizedMessage)
+            return false
+        } catch (e: Exception) {
+            Log.debug("Failed to establish WebSocket connection: %s", e.localizedMessage)
+            return false
         }
 
         return true

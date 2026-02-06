@@ -69,7 +69,14 @@ enum class LocaleCode(val languageTag: String, private val fastlaneFolder: Strin
     Zulu("zu-ZA")
     ;
 
-    @Readonly fun locale(): Locale = Locale.forLanguageTag(languageTag)
+    @Readonly
+    fun locale(): Locale {
+        val parts = languageTag.split('-')
+        if (parts.isEmpty()) return Locale.getDefault()
+        val language = parts.first().ifBlank { return Locale.getDefault() }
+        val country = parts.drop(1).firstOrNull { it.length == 2 && it.all(Char::isLetter) } ?: ""
+        return if (country.isEmpty()) Locale(language) else Locale(language, country)
+    }
     fun fastlaneFolder(): String = this.fastlaneFolder ?: locale().language
 
     companion object {

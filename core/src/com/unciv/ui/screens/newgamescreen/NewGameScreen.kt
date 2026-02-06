@@ -41,8 +41,6 @@ import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import com.unciv.utils.isUUID
-import com.unciv.utils.launchOnGLThread
-import kotlinx.coroutines.coroutineScope
 import java.net.URI
 import kotlin.math.floor
 import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
@@ -283,9 +281,9 @@ class NewGameScreen(
         }
     }
 
-    private suspend fun startNewGame() = coroutineScope {
+    private fun startNewGame() {
         val popup = Popup(this@NewGameScreen)
-        launchOnGLThread {
+        Concurrency.runOnGLThread {
             popup.addGoodSizedLabel(Constants.working).row()
             popup.open()
             ImageGetter.setNewRuleset(ruleset) // To build the temp atlases
@@ -307,7 +305,7 @@ class NewGameScreen(
             }
         } catch (exception: Exception) {
             exception.printStackTrace()
-            launchOnGLThread {
+            Concurrency.runOnGLThread {
                 popup.apply {
                     reuseWith("It looks like we can't make a map with the parameters you requested!")
                     row()
@@ -321,38 +319,40 @@ class NewGameScreen(
                 rightSideButton.enable()
                 rightSideButton.setText("Start game!".tr())
             }
-            return@coroutineScope
+            return
         }
 
         if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
             newGame.isUpToDate = true // So we don't try to download it from dropbox the second after we upload it - the file is not yet ready for loading!
             try {
-                game.onlineMultiplayer.createGame(newGame)
+                Concurrency.runBlocking {
+                    game.onlineMultiplayer.createGame(newGame)
+                }
                 game.files.autosaves.requestAutoSave(newGame)
             } catch (ex: FileStorageRateLimitReached) {
-                launchOnGLThread {
+                Concurrency.runOnGLThread {
                     popup.reuseWith("Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds", true)
                     rightSideButton.enable()
                     rightSideButton.setText("Start game!".tr())
                 }
                 Gdx.input.inputProcessor = stage
-                return@coroutineScope
+                return
             } catch (ex: Exception) {
                 Log.error("Error while creating game", ex)
-                launchOnGLThread {
+                Concurrency.runOnGLThread {
                     popup.reuseWith("Could not upload game!", true)
                     rightSideButton.enable()
                     rightSideButton.setText("Start game!".tr())
                 }
                 Gdx.input.inputProcessor = stage
-                return@coroutineScope
+                return
             }
         }
 
-        val worldScreen = game.loadGame(newGame)
+        val worldScreen = Concurrency.runBlocking { game.loadGame(newGame) } ?: return
 
         if (newGame.gameParameters.isOnlineMultiplayer) {
-            launchOnGLThread {
+            Concurrency.runOnGLThread {
                     // Save gameId to clipboard because you have to do it anyway.
                     Gdx.app.clipboard.contents = newGame.gameId
                     // Popup to notify the User that the gameID got copied to the clipboard

@@ -49,7 +49,7 @@ import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import com.unciv.utils.launchOnGLThread
 import yairm210.purity.annotations.Readonly
-import java.lang.Float.max
+import kotlin.math.max
 
 
 class WorldMapHolder(

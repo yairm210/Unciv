@@ -21,6 +21,7 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.ThreadFactory
 import kotlin.coroutines.CoroutineContext
+import kotlin.time.Duration
 
 /**
  * Created to make handling multiple threads as simple as possible. Everything is based upon [Kotlin Coroutines](https://kotlinlang.org/docs/coroutines-guide.html),
@@ -130,6 +131,10 @@ suspend fun <T> withNonDaemonThreadPoolContext(block: suspend CoroutineScope.() 
     Dispatcher.NON_DAEMON, block)
 /** See [withContext]. Runs on the GDX GL thread. Use this for all code that manipulates the GDX UI classes. */
 suspend fun <T> withGLContext(block: suspend CoroutineScope.() -> T): T = withContext(Dispatcher.GL, block)
+/** Coroutine delay wrapper to allow platform overrides. */
+suspend fun delayMillis(millis: Long) = kotlinx.coroutines.delay(millis)
+/** Coroutine delay wrapper to allow platform overrides. */
+suspend fun delayDuration(duration: Duration) = kotlinx.coroutines.delay(duration)
 
 
 /** Wraps one instance of [Dispatchers], ensuring they are alive when used.

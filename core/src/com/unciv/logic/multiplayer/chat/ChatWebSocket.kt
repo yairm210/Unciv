@@ -4,6 +4,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.multiplayer.chat.ChatWebSocket.job
 import com.unciv.logic.multiplayer.chat.ChatWebSocket.start
 import com.unciv.utils.Concurrency
+import com.unciv.utils.delayDuration
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.websocket.*
@@ -15,7 +16,6 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
@@ -136,7 +136,7 @@ object ChatWebSocket {
         Concurrency.run("MultiplayerChatSendMessage") {
             withTimeoutOrNull(INITIAL_SESSION_WAIT_FOR_TIME) {
                 while (session == null) {
-                    delay(100.milliseconds)
+                    delayDuration(100.milliseconds)
                 }
             }
             session?.runCatching {
@@ -243,7 +243,7 @@ object ChatWebSocket {
         GlobalScope.launch {
             if (!force) {
                 // exponential backoff same as described here: https://cloud.google.com/memorystore/docs/redis/exponential-backoff
-                delay(Random.nextLong(1000).milliseconds + reconnectTime)
+                delayDuration(Random.nextLong(1000).milliseconds + reconnectTime)
                 reconnectTime = (reconnectTime * 2).coerceAtMost(MAX_RECONNECT_TIME)
                 if (job?.isActive == true) return@launch
             }

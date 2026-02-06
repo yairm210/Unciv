@@ -41,13 +41,17 @@ class ModCategories : ArrayList<ModCategories.Category>() {
     companion object {
         private const val fileLocation = "jsons/ModCategories.json"
 
-        private val INSTANCE: ModCategories
+        private val INSTANCE: ModCategories by lazy { loadInstance() }
 
-        init {
+        private fun loadInstance(): ModCategories {
+            if (Gdx.files == null) {
+                return ModCategories().apply { add(default()) }
+            }
             val file = Gdx.files.internal(fileLocation)
-            INSTANCE = if (file.exists())
+            return if (file.exists())
                 json().fromJson(ModCategories::class.java, Category::class.java, file)
-                else ModCategories().apply { add(default()) }
+            else
+                ModCategories().apply { add(default()) }
         }
 
         fun default() = Category.All

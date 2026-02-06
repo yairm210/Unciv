@@ -15,7 +15,7 @@ import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
-private val smallButtonStyle = SmallButtonStyle()
+private val smallButtonStyle by lazy { SmallButtonStyle() }
 
 class ChatButton(val worldScreen: WorldScreen) : IconTextButton(
     "Chat", ImageGetter.getImage("OtherIcons/Chat"), 23

@@ -39,7 +39,6 @@ import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.utils.DebugUtils
 import com.unciv.utils.debug
 import yairm210.purity.annotations.Readonly
-import java.security.MessageDigest
 import java.time.Duration
 import java.time.Instant
 import java.util.UUID
@@ -321,11 +320,14 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     fun calculateChecksum(): String {
         val oldChecksum = checksum
         checksum = "" // Checksum calculation cannot include old checksum, obvs
-        val bytes = MessageDigest
-            .getInstance("SHA-1")
-            .digest(json().toJson(this).toByteArray(Charsets.UTF_8))
+        val bytes = json().toJson(this).toByteArray(Charsets.UTF_8)
+        var hash = 0xcbf29ce484222325uL
+        for (byte in bytes) {
+            hash = hash xor (byte.toInt() and 0xff).toULong()
+            hash *= 0x100000001b3uL
+        }
         checksum = oldChecksum
-        return Gzip.encode(bytes)
+        return hash.toString(16).padStart(16, '0')
     }
 
     //endregion

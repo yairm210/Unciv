@@ -11,10 +11,9 @@ import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.MultiplayerServer
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.extensions.isLargerThan
+import com.unciv.utils.Concurrency
 import com.unciv.utils.debug
-import com.unciv.utils.launchOnGLThread
 import com.unciv.utils.withGLContext
-import kotlinx.coroutines.coroutineScope
 import java.time.Duration
 import java.time.Instant
 import java.util.concurrent.atomic.AtomicReference
@@ -75,14 +74,14 @@ class MultiplayerGamePreview(
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
      * @throws  MultiplayerFileNotFoundException if the file can't be found
      */
-    suspend fun requestUpdate(forceUpdate: Boolean = false) = coroutineScope {
+    suspend fun requestUpdate(forceUpdate: Boolean = false) {
         val onUnchanged = { GameUpdateResult(UNCHANGED, preview!!) }
         val onError = { t: Throwable ->
             error = t
             GameUpdateResult(t)
         }
         debug("Starting multiplayer game update for %s with id %s", name, preview?.gameId)
-        launchOnGLThread {
+        Concurrency.runOnGLThread {
             EventBus.send(MultiplayerGameUpdateStarted(name))
         }
         val throttleInterval = if (forceUpdate) Duration.ZERO else getUpdateThrottleInterval()
@@ -107,7 +106,7 @@ class MultiplayerGamePreview(
             }
             else -> error("Unknown update event")
         }
-        launchOnGLThread {
+        Concurrency.runOnGLThread {
             EventBus.send(updateEvent)
         }
     }

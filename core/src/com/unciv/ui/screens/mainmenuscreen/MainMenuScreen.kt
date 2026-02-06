@@ -21,6 +21,7 @@ import com.unciv.logic.map.MapType
 import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSetupInfo
+import com.unciv.platform.PlatformCapabilities
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
@@ -169,9 +170,11 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             { game.pushScreen(LoadGameScreen()) }
         column1.add(loadGameTable).row()
 
-        val multiplayerTable = getMenuButton("Multiplayer", "OtherIcons/Multiplayer", KeyboardBinding.Multiplayer)
-            { game.pushScreen(MultiplayerScreen()) }
-        column2.add(multiplayerTable).row()
+        if (PlatformCapabilities.current.onlineMultiplayer) {
+            val multiplayerTable = getMenuButton("Multiplayer", "OtherIcons/Multiplayer", KeyboardBinding.Multiplayer)
+                { game.pushScreen(MultiplayerScreen()) }
+            column2.add(multiplayerTable).row()
+        }
 
         val mapEditorScreenTable = getMenuButton("Map editor", "OtherIcons/MapEditor", KeyboardBinding.MapEditor)
             { game.pushScreen(MapEditorScreen()) }

@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.GUI
 import com.unciv.models.metadata.BaseRuleset
+import com.unciv.platform.PlatformCapabilities
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.components.extensions.areSecretKeysPressed
 import com.unciv.ui.components.extensions.center
@@ -97,11 +98,13 @@ class OptionsPopup(
             SoundTab(this),
             ImageGetter.getImage("OtherIcons/Speaker"), 24f
         )
-        tabs.addPage(
-            "Multiplayer",
-            MultiplayerTab(this),
-            ImageGetter.getImage("OtherIcons/Multiplayer"), 24f
-        )
+        if (PlatformCapabilities.current.onlineMultiplayer) {
+            tabs.addPage(
+                "Multiplayer",
+                MultiplayerTab(this),
+                ImageGetter.getImage("OtherIcons/Multiplayer"), 24f
+            )
+        }
 
         if (GUI.keyboardAvailable) {
             tabs.addPage(

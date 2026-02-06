@@ -22,9 +22,9 @@ import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.UncivStage
 import com.unciv.utils.Concurrency
+import com.unciv.utils.delayMillis
 import com.unciv.utils.withGLContext
 import java.text.ParseException
-import kotlinx.coroutines.delay
 
 /**
  * Creates a text field that has nicer platform-specific input added compared to the default Gdx [TextField].
@@ -76,7 +76,7 @@ open class UncivTextField(
                 if (stage == null || !hasKeyboardFocus()) return@receive
                 Concurrency.run {
                     // If anything resizes, it also does so with this event. So we need to wait for that to finish to update the scroll position.
-                    delay(100)
+                    delayMillis(100)
                     withGLContext {
                         if (stage == null) return@withGLContext
 

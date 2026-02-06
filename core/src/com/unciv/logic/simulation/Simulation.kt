@@ -5,8 +5,8 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameStarter
 import com.unciv.models.metadata.GameSetupInfo
+import com.unciv.utils.Dispatcher
 import kotlinx.coroutines.CoroutineName
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlin.math.max
@@ -93,7 +93,7 @@ class Simulation(
         newGameInfo.gameParameters.shufflePlayerOrder = true
 
         val jobs = (1..threadsNumber).map { threadId ->
-            launch(Dispatchers.Default + CoroutineName("simulation-$threadId")) {
+            launch(Dispatcher.DAEMON + CoroutineName("simulation-$threadId")) {
                 repeat(simulationsPerThread) {
                     val step = SimulationStep(newGameInfo, statTurns)
                     val gameSetupInfo = GameSetupInfo(newGameInfo)
@@ -311,4 +311,3 @@ class Simulation(
         return if (x >= 0) 1 - tau else tau - 1
     }
 }
-

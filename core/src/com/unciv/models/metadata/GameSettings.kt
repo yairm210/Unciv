@@ -17,9 +17,7 @@ import com.unciv.ui.components.input.KeyboardBindings
 import com.unciv.ui.screens.worldscreen.NotificationsScroll
 import com.unciv.utils.Display
 import com.unciv.utils.ScreenOrientation
-import java.awt.Rectangle
 import yairm210.purity.annotations.Readonly
-import java.text.Collator
 import java.text.NumberFormat
 import java.time.Duration
 import java.util.Locale
@@ -196,8 +194,16 @@ class GameSettings {
         return locale!!
     }
 
-    fun getCollatorFromLocale(): Collator {
-        return Collator.getInstance(getCurrentLocale())
+    fun getCollatorFromLocale(): Comparator<String?> {
+        val locale = getCurrentLocale()
+        return Comparator { first, second ->
+            when {
+                first == null && second == null -> 0
+                first == null -> -1
+                second == null -> 1
+                else -> first.lowercase(locale).compareTo(second.lowercase(locale))
+            }
+        }
     }
 
     @Readonly
@@ -221,8 +227,6 @@ class GameSettings {
      *  retrieving a valid position from our upstream libraries while the window is maximized or iconified has proven tricky so far.
      */
     data class WindowState(val width: Int = 900, val height: Int = 600) {
-        constructor(bounds: Rectangle) : this(bounds.width, bounds.height)
-
         companion object {
             /** Our choice of minimum window width */
             const val minimumWidth = 120
@@ -247,14 +251,6 @@ class GameSettings {
             )
         }
 
-        /**
-         *  Constrains the dimensions of `this` [WindowState] to be within [minimumWidth] x [minimumHeight] to `maximumWidth` x `maximumHeight`.
-         *  @param maximumWindowBounds provides maximum sizes
-         *  @return `this` unchanged if it is within valid limits, otherwise a new WindowState that is.
-         *  @see coerceIn
-         */
-        fun coerceIn(maximumWindowBounds: Rectangle) =
-            coerceIn(maximumWindowBounds.width, maximumWindowBounds.height)
     }
 
     enum class ScreenSize(

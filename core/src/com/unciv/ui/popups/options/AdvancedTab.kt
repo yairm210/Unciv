@@ -1,7 +1,6 @@
 package com.unciv.ui.popups.options
 
 import com.badlogic.gdx.Application
-import com.badlogic.gdx.Files
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.files.FileHandle
@@ -16,6 +15,7 @@ import com.unciv.logic.map.HexCoord
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSettings.ScreenSize
 import com.unciv.models.metadata.ModCategories
+import com.unciv.platform.PlatformCapabilities
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
@@ -35,23 +35,16 @@ import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.utils.Concurrency
+import com.unciv.utils.delayMillis
 import com.unciv.utils.Display
 import com.unciv.utils.isUUID
 import com.unciv.utils.launchOnGLThread
+import com.unciv.utils.withThreadPoolContext
 import com.unciv.utils.withoutItem
-import java.nio.file.Path
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import java.util.zip.Deflater
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
-import kotlin.io.path.exists
-import kotlin.io.path.extension
-import kotlin.io.path.isDirectory
-import kotlin.io.path.name
-import kotlin.io.path.nameWithoutExtension
-import kotlin.io.path.pathString
 
 internal class AdvancedTab(
     optionsPopup: OptionsPopup
@@ -79,10 +72,12 @@ internal class AdvancedTab(
         addCheckbox("Enlarge selected notifications", settings::enlargeSelectedNotification)
         addSeparator()
 
-        addSetUserId()
+        if (PlatformCapabilities.current.onlineMultiplayer)
+            addSetUserId()
 
         addTranslationGeneration()
-        addUpdateModCategories()
+        if (PlatformCapabilities.current.onlineModDownloads)
+            addUpdateModCategories()
         addScreenhotGeneration()
 
         super.lateInitialize()
@@ -154,43 +149,35 @@ internal class AdvancedTab(
 
     private fun addFontFamilySelect() {
         /** Build provider for [addAsyncSelectBox]: per-mod scan */
-        @Suppress("NewApi")
-        fun loadModFonts(mod: Path) = flow {
-            kotlin.io.path.fileVisitor {  }
-            if (!mod.isDirectory()) return@flow
-            val fontsPath = mod.resolve("fonts")
-            if (!fontsPath.exists() || !fontsPath.isDirectory()) return@flow
-            java.nio.file.Files.list(fontsPath).use { stream->
-                for (file in stream) {
-                    if (file.extension.lowercase() != "ttf") continue
-                    emit(FontFamilyData(
-                        "${file.nameWithoutExtension} (${mod.name})",
-                        file.nameWithoutExtension,
-                        file.pathString
-                    ))
-                }
+        fun loadModFonts(mod: FileHandle) = flow {
+            if (!mod.exists() || !mod.isDirectory) return@flow
+            val fontsPath = mod.child("fonts")
+            if (!fontsPath.exists() || !fontsPath.isDirectory) return@flow
+            for (file in fontsPath.list()) {
+                if (file.extension().lowercase() != "ttf") continue
+                emit(FontFamilyData(
+                    "${file.nameWithoutExtension()} (${mod.name()})",
+                    file.nameWithoutExtension(),
+                    file.path()
+                ))
             }
         }
 
         /** Build provider for [addAsyncSelectBox]: default, mods, system */
-        @Suppress("NewApi")
         fun loadFonts() = flow {
             // Add default font
             emit(FontFamilyData.default)
             // List mod fonts
             val modsDir = UncivGame.Current.files.getModsFolder()
-            if (Gdx.app.type != Application.ApplicationType.Android || Gdx.app.version >= 26) {
-                if (modsDir.type() == Files.FileType.External) {
-                    val modNio = modsDir.file().toPath()
-                    java.nio.file.Files.list(modNio).use { stream ->
-                        for (mod in stream)
-                            emitAll(loadModFonts(mod))
-                    }
-                }
+            if (modsDir.exists() && modsDir.isDirectory) {
+                for (mod in modsDir.list())
+                    emitAll(loadModFonts(mod))
             }
-            // Add system fonts
-            for (font in Fonts.getSystemFonts())
-                emit(font)
+            if (PlatformCapabilities.current.systemFontEnumeration) {
+                // Add system fonts
+                for (font in Fonts.getSystemFonts())
+                    emit(font)
+            }
         }
 
         addAsyncSelectBox("Font family", settings::fontFamilyData, ::loadFonts) { reloadWorldAndOptions() }
@@ -303,8 +290,8 @@ internal class AdvancedTab(
             if (currentConfig.attackCity)
                 newScreen.mapHolder.onTileClicked(newScreen.mapHolder.tileMap[-2, 2]) // Then click city again for attack table
             newScreen.mapHolder.zoomIn(true)
-            withContext(Dispatchers.IO) {
-                Thread.sleep(300)
+            withThreadPoolContext {
+                delayMillis(300)
                 launchOnGLThread {
                     val pixmap = Pixmap.createFromFrameBuffer(
                         0, 0,

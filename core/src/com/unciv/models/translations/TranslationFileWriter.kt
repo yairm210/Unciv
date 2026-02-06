@@ -70,7 +70,8 @@ object TranslationFileWriter {
             var fastlaneOutput = ""
             // check to make sure we're not running from a jar since these users shouldn't need to
             // regenerate base game translation and fastlane files
-            if (TranslationFileWriter.javaClass.`package`.specificationVersion == null) {
+            val isRunningFromJar = System.getProperty("java.class.path").orEmpty().contains(".jar")
+            if (!isRunningFromJar) {
                 val percentages = generateTranslationFiles(translations)
                 writeLanguagePercentages(percentages)
                 fastlaneOutput = "\n" + writeTranslatedFastlaneFiles(translations)

@@ -4,15 +4,13 @@ import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.utils.Timer
 import com.unciv.UncivGame
 import com.unciv.models.UncivSound
 import com.unciv.utils.Concurrency
 import com.unciv.utils.debug
 import java.io.File
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
 
 /*
  * Problems on Android
@@ -212,21 +210,16 @@ object SoundPlayer {
         CCodecConfig            com.unciv.app                        D  read media type: audio/vorbis
  */
         if (!isFresh && resource.play(volume) != -1L) return // If it's already cached we should be able to play immediately
-        Concurrency.run("DelayedSound") {
-            delay(40L)
-            var repeatCount = 0
-            while (resource.play(volume) == -1L && ++repeatCount < 12) // quarter second tops
-                delay(20L)
+        var repeatCount = 0
+        while (resource.play(volume) == -1L && ++repeatCount < 12) {
+            // no-op
         }
     }
 
     // Let's do just one silent retry on Desktop. In turn, OpenALSound.play is not thread-safe.
     private fun playDesktop(resource: Sound, volume: Float) {
         if (resource.play(volume) != -1L) return
-        Concurrency.runOnGLThread("SoundRetry") {
-            delay(20L)
-            resource.play(volume)
-        }
+        Gdx.app.postRunnable { resource.play(volume) }
     }
 
     /** Play a sound repeatedly - e.g. to express that an action was applied multiple times or to multiple targets.
@@ -234,14 +227,15 @@ object SoundPlayer {
      *  Runs the actual sound player decoupled on the GL thread unlike [SoundPlayer.play], which leaves that responsibility to the caller.
      */
     fun playRepeated(sound: UncivSound, count: Int = 2, delay: Long = 200) {
-        Concurrency.runOnGLThread {
-            play(sound)
-            if (count > 1) Concurrency.run {
-                repeat(count - 1) {
-                    delay(delay)
-                    Concurrency.runOnGLThread { play(sound) }
+        Gdx.app.postRunnable { play(sound) }
+        if (count <= 1) return
+        repeat(count - 1) { index ->
+            val seconds = ((index + 1) * delay).coerceAtLeast(0L).toFloat() / 1000f
+            Timer.schedule(object : Timer.Task() {
+                override fun run() {
+                    Gdx.app.postRunnable { play(sound) }
                 }
-            }
+            }, seconds)
         }
     }
 
@@ -254,15 +248,12 @@ object SoundPlayer {
             invokeOnCompletion { preloader = null }
         }
 
-        private suspend fun CoroutineScope.preload() {
+        private fun preload() {
             for (sound in UncivSound.getPreloadList()) {
-                delay(10L)
-                if (!isActive) break
                 // This way skips minor things as compared to get(sound) - the cache stale check and result instantiation on cache hit
                 if (sound in soundMap) continue
                 debug("Preload $sound")
                 createAndCacheResult(sound, getFile(sound))
-                if (!isActive) break
             }
         }
 

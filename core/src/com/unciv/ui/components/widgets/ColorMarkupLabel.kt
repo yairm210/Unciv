@@ -80,16 +80,8 @@ class ColorMarkupLabel private constructor(
 
     override fun getPrefWidth(): Float {
         if (!wrap) return super.getPrefWidth()
-        // Label has a Quirk that together with bad choices in Table become a bug:
-        // Label.getPrefWidth will always return 0 if wrap is on, and Table will NOT
-        // interpret that as "unknown" like it should but as "I want to be 0 wide".
-        super.getPrefHeight()  // Ensure scaleAndComputePrefSize has been run
-        // private field prefWidth now has the correct value. However, there is no way
-        // to get it because temporarily turning wrap off (to circumvent the bad check)
-        // will invalidate which will run scaleAndComputePrefSize again without wrap...
-        val field = Label::class.java.getDeclaredField("prefWidth")
-        field.isAccessible = true
-        val result = field.getFloat(this)
+        // Label#getPrefWidth returns 0 when wrap is enabled; use the tracked unwrapped width instead.
+        val result = if (unwrappedPrefWidth > 0f) unwrappedPrefWidth else super.getPrefWidth()
         // That prefWidth we got still might have to be wrapped in some background metrics
         if (style.background == null) return result
         return style.background.run { (result + leftWidth + rightWidth).coerceAtLeast(minWidth) }

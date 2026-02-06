@@ -7,6 +7,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.files.PlatformSaverLoader
 import com.unciv.logic.files.UncivFiles
+import com.unciv.platform.PlatformCapabilities
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
@@ -65,7 +66,8 @@ class SaveGameScreen(private val gameInfo: GameInfo) : LoadOrSaveScreen("Current
         copyJsonButton.addTooltip(ctrlC)
         add(copyJsonButton).row()
 
-        addSaveToCustomLocation()
+        if (PlatformCapabilities.current.customFileChooser)
+            addSaveToCustomLocation()
         add(errorLabel).width(stage.width / 2).center().row()
         row() // For uniformity with LoadScreen which has a load missing mods button here
         add(deleteSaveButton).row()

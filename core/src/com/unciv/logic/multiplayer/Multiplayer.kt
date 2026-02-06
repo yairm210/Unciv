@@ -15,6 +15,7 @@ import com.unciv.logic.multiplayer.storage.MultiplayerServer
 import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.components.extensions.isLargerThan
 import com.unciv.utils.Dispatcher
+import com.unciv.utils.delayMillis
 import com.unciv.utils.debug
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.flow
@@ -60,7 +61,7 @@ class Multiplayer {
          */
         multiplayerGameUpdater = flow<Unit> {
             while (true) {
-                delay(500)
+                delayMillis(500)
                 if (!currentCoroutineContext().isActive) return@flow
                 val multiplayerSettings: GameSettings.GameSettingsMultiplayer
                 try { // Fails in unknown cases - cannot debug :/ This is just so it doesn't appear in GP analytics
@@ -223,7 +224,7 @@ class Multiplayer {
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
      * @throws MultiplayerFileNotFoundException if the file can't be found
      */
-    suspend fun downloadGame(gameId: String) = coroutineScope {
+    suspend fun downloadGame(gameId: String) {
         val gameInfo = multiplayerServer.downloadGame(gameId)
         val preview = gameInfo.asPreview()
         val onlineGame = multiplayerFiles.getGameByGameId(gameId)
@@ -239,7 +240,7 @@ class Multiplayer {
     /**
      * Checks if the given game is current and loads it, otherwise loads the game from the server
      */
-    suspend fun downloadGame(gameInfo: GameInfo) = coroutineScope {
+    suspend fun downloadGame(gameInfo: GameInfo) {
         val gameId = gameInfo.gameId
         val preview = multiplayerServer.tryDownloadGamePreview(gameId)
         if (hasLatestGameState(gameInfo, preview)) {

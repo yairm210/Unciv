@@ -37,11 +37,11 @@ import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.mapeditorscreen.tabs.MapEditorOptionsTab
 import com.unciv.ui.screens.worldscreen.ZoomButtonPair
 import com.unciv.utils.Concurrency
+import com.unciv.utils.delayMillis
 import com.unciv.utils.Dispatcher
 import com.unciv.utils.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 
 
@@ -128,7 +128,7 @@ class MapEditorScreen(map: TileMap? = null) : BaseScreen(), RecreateOnResize {
     private fun startMapAutosaveLoop() {
         startBackgroundJob("MapEditorAutosaveLoop", true) {
             while (true) {
-                delay(10_000L) // every 10 seconds
+                delayMillis(10_000L) // every 10 seconds
 
                 if (!isActive) return@startBackgroundJob
                 if (!isDirty) continue
