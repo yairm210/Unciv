@@ -36,8 +36,6 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.multiplayerscreens.MultiplayerHelpers
-import kotlin.reflect.KMutableProperty0
-import kotlin.reflect.KMutableProperty1
 
 class GameOptionsTable(
     private val previousScreen: IPreviousScreen,
@@ -48,6 +46,7 @@ class GameOptionsTable(
     private var gameParameters = previousScreen.gameSetupInfo.gameParameters
     private var ruleset = previousScreen.ruleset
     internal var locked = false
+    private var isUpdating = false
 
     private var baseRulesetHash = gameParameters.baseRuleset.hashCode()
 
@@ -67,13 +66,25 @@ class GameOptionsTable(
     private var baseRulesetSelectBox: TranslatedSelectBox? = null
 
     init {
-        background = BaseScreen.skinStrings.getUiBackground("NewGameScreen/GameOptionsTable", tintColor = BaseScreen.skinStrings.skinConfig.clearColor)
-        top()
-        defaults().pad(5f)
-        update()
+        var initStep = "start"
+        try {
+            initStep = "set background/top/defaults"
+            background = BaseScreen.skinStrings.getUiBackground("NewGameScreen/GameOptionsTable", tintColor = BaseScreen.skinStrings.skinConfig.clearColor)
+            top()
+            defaults().pad(5f)
+            initStep = "update"
+            update()
+        } catch (ex: Exception) {
+            throw IllegalStateException("GameOptionsTable init failed at step: $initStep", ex)
+        }
     }
 
     fun update() {
+        if (isUpdating) return
+        isUpdating = true
+        var updateStep = "start"
+        try {
+        updateStep = "clear"
         clear()
 
         // Mods may have changed (e.g. custom map selection)
@@ -84,6 +95,7 @@ class GameOptionsTable(
             modCheckboxes.setBaseRuleset(gameParameters.baseRuleset)
         }
 
+        updateStep = "add basic select tables"
         add(Table().apply {
             defaults().pad(5f)
             addBaseRulesetSelectBox()
@@ -105,29 +117,29 @@ class GameOptionsTable(
                 }
             }).colspan(2).fillX().row()
         }).row()
+        updateStep = "add victory checkboxes"
         addVictoryTypeCheckboxes()
 
+        updateStep = "build checkbox/select tables"
         val checkboxTable = Table().apply { defaults().left().pad(2.5f) }
         val selectBoxTable = Table()
         if (PlatformCapabilities.current.onlineMultiplayer) {
             checkboxTable.addIsOnlineMultiplayerCheckbox()
             if (gameParameters.isOnlineMultiplayer){
                 checkboxTable.addAnyoneCanSpectateCheckbox()
-                selectBoxTable.addDurationSelectBox("Time until skip turn:", GameParameters::minutesUntilSkipTurn, 1, 0, 0)
-                selectBoxTable.addDurationSelectBox("Total time to play:", GameParameters::minutesUntilForceResign, 3, 0, 0)
-                selectBoxTable.addDurationSelectBox("Time recovered per turn:", GameParameters::minutesRecoveredPerTurn, 3, 0, 0)
+                selectBoxTable.addDurationSelectBox("Time until skip turn:", { gameParameters.minutesUntilSkipTurn }, { gameParameters.minutesUntilSkipTurn = it }, 1, 0, 0)
+                selectBoxTable.addDurationSelectBox("Total time to play:", { gameParameters.minutesUntilForceResign }, { gameParameters.minutesUntilForceResign = it }, 3, 0, 0)
+                selectBoxTable.addDurationSelectBox("Time recovered per turn:", { gameParameters.minutesRecoveredPerTurn }, { gameParameters.minutesRecoveredPerTurn = it }, 3, 0, 0)
             }
         } else {
             gameParameters.isOnlineMultiplayer = false
         }
+        updateStep = "attach checkbox/select tables"
         add(checkboxTable).center().row()
         add(selectBoxTable).center().row()
 
-        val expander = ExpanderTab(
-            "Advanced Settings",
-            startsOutOpened = gameParameters.enableRandomNationsPool,
-            persistenceID = "GameOptionsTable.Advanced"
-        ) {
+        updateStep = "advanced settings expander"
+        val fillAdvancedSettings: (Table) -> Unit = {
             it.defaults().pad(5f, 0f)
             it.addNoCityRazingCheckbox()
             it.addNoBarbariansCheckbox()
@@ -143,12 +155,32 @@ class GameOptionsTable(
                 it.addNationsSelectTextButton()
             }
         }
-        add(expander).pad(10f).row()
+        if (PlatformCapabilities.current.backgroundThreadPools) {
+            val expander = ExpanderTab(
+                "Advanced Settings",
+                startsOutOpened = gameParameters.enableRandomNationsPool,
+                persistenceID = "GameOptionsTable.Advanced",
+                initContent = fillAdvancedSettings
+            )
+            add(expander).pad(10f).row()
+        } else {
+            val advancedTable = Table()
+            advancedTable.add("Advanced Settings".toLabel()).left().row()
+            fillAdvancedSettings(advancedTable)
+            add(advancedTable).pad(10f).row()
+        }
 
+        updateStep = "mods section"
         if (!isPortrait)
             add(modCheckboxes).padTop(0f).row()
 
+        updateStep = "pack"
         pack()
+        } catch (ex: Exception) {
+            throw IllegalStateException("GameOptionsTable update failed at step: $updateStep", ex)
+        } finally {
+            isUpdating = false
+        }
     }
 
     private fun Table.addCheckbox(
@@ -288,29 +320,31 @@ class GameOptionsTable(
     private fun Table.addLinkedMinMaxSliders(
         minValue: Int, maxValue: Int,
         minText: String, maxText: String,
-        minField: KMutableProperty0<Int>,
-        maxField: KMutableProperty0<Int>,
+        minGetter: () -> Int,
+        minSetter: (Int) -> Unit,
+        maxGetter: () -> Int,
+        maxSetter: (Int) -> Unit,
         onChangeCallback: (() -> Unit)? = null
     ) {
         if (maxValue < minValue) return
 
         lateinit var maxSlider: UncivSlider  // lateinit safe because the closure won't use it until the user operates a slider
-        val minSlider = UncivSlider(minValue.toFloat(), maxValue.toFloat(), 1f, initial = minField.get().toFloat()) {
+        val minSlider = UncivSlider(minValue.toFloat(), maxValue.toFloat(), 1f, initial = minGetter().toFloat()) {
             val newMin = it.toInt()
-            minField.set(newMin)
+            minSetter(newMin)
             if (newMin > maxSlider.value.toInt()) {
                 maxSlider.value = it
-                maxField.set(newMin)
+                maxSetter(newMin)
             }
             onChangeCallback?.invoke()
         }
         minSlider.isDisabled = locked
-        maxSlider = UncivSlider(minValue.toFloat(), maxValue.toFloat(), 1f, initial = maxField.get().toFloat()) {
+        maxSlider = UncivSlider(minValue.toFloat(), maxValue.toFloat(), 1f, initial = maxGetter().toFloat()) {
             val newMax = it.toInt()
-            maxField.set(newMax)
+            maxSetter(newMax)
             if (newMax < minSlider.value.toInt()) {
                 minSlider.value = it
-                minField.set(newMax)
+                minSetter(newMax)
             }
             onChangeCallback?.invoke()
         }
@@ -325,7 +359,8 @@ class GameOptionsTable(
     private fun Table.addMinMaxPlayersSliders() {
         addLinkedMinMaxSliders(2, numberOfMajorCivs(),
             "{Min number of Civilizations}:", "{Max number of Civilizations}:",
-            gameParameters::minNumberOfPlayers, gameParameters::maxNumberOfPlayers,
+            { gameParameters.minNumberOfPlayers }, { gameParameters.minNumberOfPlayers = it },
+            { gameParameters.maxNumberOfPlayers }, { gameParameters.maxNumberOfPlayers = it },
             updatePlayerPickerRandomLabel
         )
     }
@@ -333,7 +368,8 @@ class GameOptionsTable(
     private fun Table.addMinMaxCityStatesSliders() {
         addLinkedMinMaxSliders( 0, numberOfCityStates(),
             "{Min number of City-States}:", "{Max number of City-States}:",
-            gameParameters::minNumberOfCityStates, gameParameters::maxNumberOfCityStates
+            { gameParameters.minNumberOfCityStates }, { gameParameters.minNumberOfCityStates = it },
+            { gameParameters.maxNumberOfCityStates }, { gameParameters.maxNumberOfCityStates = it }
         )
     }
 
@@ -432,22 +468,23 @@ class GameOptionsTable(
 
     private fun Table.addDurationSelectBox(
         title: String,
-        param: KMutableProperty1<GameParameters, Int>,
+        getter: () -> Int,
+        setter: (Int) -> Unit,
         defaultDayValue: Int,
         defaultHourValue: Int,
         defaultMinuteValue: Int
     ) {
         add(title.toLabel(hideIcons = true)).right()
 
-        val selector = DurationSelector(gameParameters, param, defaultDayValue, defaultHourValue, defaultMinuteValue)
+        val selector = DurationSelector(getter, setter, defaultDayValue, defaultHourValue, defaultMinuteValue)
 
         add(selector.dayBox)
         add(selector.hourBox)
         add(selector.minuteBox).row()
     }
     private class DurationSelector(
-        private val gameParameters: GameParameters,
-        private val param: KMutableProperty1<GameParameters, Int>,
+        private val getter: () -> Int,
+        private val setter: (Int) -> Unit,
         private val defaultDayValue: Int,
         private val defaultHourValue: Int,
         private val defaultMinuteValue: Int,
@@ -474,7 +511,7 @@ class GameOptionsTable(
                 hourValues[hourBox.selectedIndex] * 60 +
                 minuteValues[minuteBox.selectedIndex]
 
-            param.set(gameParameters, value)
+            setter(value)
         }
         
         fun createTimeCell(intValues: Array<Int>, initialValue: Int, suffix: String): SelectBox<String> {

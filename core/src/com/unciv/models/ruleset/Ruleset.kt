@@ -2,6 +2,7 @@ package com.unciv.models.ruleset
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.utils.JsonReader
 import com.unciv.Constants
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
@@ -17,6 +18,7 @@ import com.unciv.models.ruleset.tech.Era
 import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.tile.Terrain
+import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.GameContext
@@ -32,6 +34,7 @@ import com.unciv.models.stats.GameResource
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.SubStat
+import com.unciv.platform.PlatformCapabilities
 import com.unciv.models.translations.tr
 import com.unciv.ui.screens.civilopediascreen.ICivilopediaText
 import com.unciv.utils.Log
@@ -184,6 +187,98 @@ class Ruleset {
             (item as? IRulesetObject)?.originRuleset = name // RULESET name
         }
         return hashMap
+    }
+
+    private fun <T : INamed> loadNamedArray(arrayClass: Class<Array<T>>, fileHandle: FileHandle): Array<T> {
+        val items = json().fromJsonFile(arrayClass, fileHandle)
+        if (PlatformCapabilities.current.backgroundThreadPools) return items
+
+        val rawArray = JsonReader().parse(fileHandle)
+        var raw = rawArray.child
+        var index = 0
+        while (raw != null && index < items.size) {
+            val item = items[index]
+            val currentName = try { item.name } catch (_: Exception) { "" }
+            if (currentName.isBlank()) {
+                val fallbackName = raw.getString("name", "")
+                if (fallbackName.isNotBlank()) item.name = fallbackName
+            }
+            if (item is BaseUnit && item.unitType.isBlank()) {
+                val fallbackUnitType = raw.getString("unitType", "")
+                if (fallbackUnitType.isNotBlank()) item.unitType = fallbackUnitType
+            }
+            if (item is Terrain) {
+                val hasType = try {
+                    item.type
+                    true
+                } catch (_: Exception) {
+                    false
+                }
+                if (!hasType) {
+                    val fallbackType = raw.getString("type", "")
+                    if (fallbackType.isNotBlank()) {
+                        runCatching { TerrainType.valueOf(fallbackType) }
+                            .onSuccess { item.type = it }
+                    }
+                }
+            }
+            if (item is Speed && item.turns.isEmpty()) {
+                var turnRow = raw.get("turns")?.child
+                while (turnRow != null) {
+                    val yearsPerTurn = turnRow.getFloat("yearsPerTurn", Float.NaN)
+                    val untilTurn = turnRow.getFloat("untilTurn", Float.NaN)
+                    if (!yearsPerTurn.isNaN() && !untilTurn.isNaN()) {
+                        item.turns += hashMapOf(
+                            "yearsPerTurn" to yearsPerTurn,
+                            "untilTurn" to untilTurn
+                        )
+                    }
+                    turnRow = turnRow.next
+                }
+            }
+            if (item is PolicyBranch) {
+                if (item.priorities.isEmpty()) {
+                    var priority = raw.get("priorities")?.child
+                    while (priority != null) {
+                        val key = priority.name ?: ""
+                        if (key.isNotBlank()) item.priorities[key] = priority.asInt()
+                        priority = priority.next
+                    }
+                }
+                if (item.policies.isEmpty()) {
+                    var policyRaw = raw.get("policies")?.child
+                    while (policyRaw != null) {
+                        val policyName = policyRaw.getString("name", "")
+                        if (policyName.isNotBlank()) {
+                            val policy = Policy().apply {
+                                name = policyName
+                                row = policyRaw.getInt("row", 0)
+                                column = policyRaw.getInt("column", 0)
+                                var unique = policyRaw.get("uniques")?.child
+                                while (unique != null) {
+                                    val uniqueText = unique.asString()
+                                    if (uniqueText.isNotBlank()) uniques += uniqueText
+                                    unique = unique.next
+                                }
+                                val requires = ArrayList<String>()
+                                var requirement = policyRaw.get("requires")?.child
+                                while (requirement != null) {
+                                    val requirementText = requirement.asString()
+                                    if (requirementText.isNotBlank()) requires += requirementText
+                                    requirement = requirement.next
+                                }
+                                this.requires = if (requires.isEmpty()) null else requires
+                            }
+                            item.policies += policy
+                        }
+                        policyRaw = policyRaw.next
+                    }
+                }
+            }
+            raw = raw.next
+            index++
+        }
+        return items
     }
 
     fun add(ruleset: Ruleset) {
@@ -362,11 +457,11 @@ class Ruleset {
         }
 
         val buildingsFile = RulesetFile.Buildings.file()
-        if (buildingsFile.exists()) buildings += createHashmap(json().fromJsonFile(Array<Building>::class.java, buildingsFile))
+        if (buildingsFile.exists()) buildings += createHashmap(loadNamedArray(Array<Building>::class.java, buildingsFile))
 
         val terrainsFile = RulesetFile.Terrains.file()
         if (terrainsFile.exists()) {
-            terrains += createHashmap(json().fromJsonFile(Array<Terrain>::class.java, terrainsFile))
+            terrains += createHashmap(loadNamedArray(Array<Terrain>::class.java, terrainsFile))
             for (terrain in terrains.values) {
                 terrain.originRuleset = name
                 terrain.setTransients()
@@ -374,13 +469,13 @@ class Ruleset {
         }
 
         val resourcesFile = RulesetFile.TileResources.file()
-        if (resourcesFile.exists()) tileResources += createHashmap(json().fromJsonFile(Array<TileResource>::class.java, resourcesFile))
+        if (resourcesFile.exists()) tileResources += createHashmap(loadNamedArray(Array<TileResource>::class.java, resourcesFile))
 
         val improvementsFile = RulesetFile.TileImprovements.file()
-        if (improvementsFile.exists()) tileImprovements += createHashmap(json().fromJsonFile(Array<TileImprovement>::class.java, improvementsFile))
+        if (improvementsFile.exists()) tileImprovements += createHashmap(loadNamedArray(Array<TileImprovement>::class.java, improvementsFile))
 
         val erasFile = RulesetFile.Eras.file()
-        if (erasFile.exists()) eras += createHashmap(json().fromJsonFile(Array<Era>::class.java, erasFile))
+        if (erasFile.exists()) eras += createHashmap(loadNamedArray(Array<Era>::class.java, erasFile))
         // While `eras.values.toList()` might seem more logical, eras.values is a MutableCollection and
         // therefore does not guarantee keeping the order of elements like a LinkedHashMap does.
         // Using map{} sidesteps this problem
@@ -388,31 +483,31 @@ class Ruleset {
 
         val speedsFile = RulesetFile.Speeds.file()
         if (speedsFile.exists()) {
-            speeds += createHashmap(json().fromJsonFile(Array<Speed>::class.java, speedsFile))
+            speeds += createHashmap(loadNamedArray(Array<Speed>::class.java, speedsFile))
         }
 
         val unitTypesFile = RulesetFile.UnitTypes.file()
-        if (unitTypesFile.exists()) unitTypes += createHashmap(json().fromJsonFile(Array<UnitType>::class.java, unitTypesFile))
+        if (unitTypesFile.exists()) unitTypes += createHashmap(loadNamedArray(Array<UnitType>::class.java, unitTypesFile))
 
         val unitsFile = RulesetFile.Units.file()
-        if (unitsFile.exists()) units += createHashmap(json().fromJsonFile(Array<BaseUnit>::class.java, unitsFile))
+        if (unitsFile.exists()) units += createHashmap(loadNamedArray(Array<BaseUnit>::class.java, unitsFile))
 
         val promotionsFile = RulesetFile.UnitPromotions.file()
-        if (promotionsFile.exists()) unitPromotions += createHashmap(json().fromJsonFile(Array<Promotion>::class.java, promotionsFile))
+        if (promotionsFile.exists()) unitPromotions += createHashmap(loadNamedArray(Array<Promotion>::class.java, promotionsFile))
 
         val unitNameGroupsFile = RulesetFile.UnitNameGroup.file()
-        if (unitNameGroupsFile.exists()) unitNameGroups += createHashmap(json().fromJsonFile(Array<UnitNameGroup>::class.java, unitNameGroupsFile))
+        if (unitNameGroupsFile.exists()) unitNameGroups += createHashmap(loadNamedArray(Array<UnitNameGroup>::class.java, unitNameGroupsFile))
 
         val questsFile = RulesetFile.Quests.file()
-        if (questsFile.exists()) quests += createHashmap(json().fromJsonFile(Array<Quest>::class.java, questsFile))
+        if (questsFile.exists()) quests += createHashmap(loadNamedArray(Array<Quest>::class.java, questsFile))
 
         val specialistsFile = RulesetFile.Specialists.file()
-        if (specialistsFile.exists()) specialists += createHashmap(json().fromJsonFile(Array<Specialist>::class.java, specialistsFile))
+        if (specialistsFile.exists()) specialists += createHashmap(loadNamedArray(Array<Specialist>::class.java, specialistsFile))
 
         val policiesFile = RulesetFile.Policies.file()
         if (policiesFile.exists()) {
             policyBranches += createHashmap(
-                json().fromJsonFile(Array<PolicyBranch>::class.java, policiesFile)
+                loadNamedArray(Array<PolicyBranch>::class.java, policiesFile)
             )
             for (branch in policyBranches.values) {
                 // Setup this branch
@@ -449,14 +544,18 @@ class Ruleset {
                 }
 
                 // Add a finisher
-                branch.policies.last().name =
-                    branch.name + Policy.branchCompleteSuffix
+                if (branch.policies.isNotEmpty()) {
+                    branch.policies.last().name =
+                        branch.name + Policy.branchCompleteSuffix
+                } else {
+                    Log.error("PolicyBranch '${branch.name}' has no policies after load (ruleset=$name)")
+                }
             }
         }
 
         val beliefsFile = RulesetFile.Beliefs.file()
         if (beliefsFile.exists())
-            beliefs += createHashmap(json().fromJsonFile(Array<Belief>::class.java, beliefsFile))
+            beliefs += createHashmap(loadNamedArray(Array<Belief>::class.java, beliefsFile))
 
         val religionsFile = RulesetFile.Religions.file()
         if (religionsFile.exists())
@@ -464,17 +563,17 @@ class Ruleset {
 
         val ruinRewardsFile = RulesetFile.Ruins.file()
         if (ruinRewardsFile.exists())
-            ruinRewards += createHashmap(json().fromJsonFile(Array<RuinReward>::class.java, ruinRewardsFile))
+            ruinRewards += createHashmap(loadNamedArray(Array<RuinReward>::class.java, ruinRewardsFile))
 
         val nationsFile = RulesetFile.Nations.file()
         if (nationsFile.exists()) {
-            nations += createHashmap(json().fromJsonFile(Array<Nation>::class.java, nationsFile))
+            nations += createHashmap(loadNamedArray(Array<Nation>::class.java, nationsFile))
             for (nation in nations.values) nation.setTransients()
         }
 
         val difficultiesFile = RulesetFile.Difficulties.file()
         if (difficultiesFile.exists())
-            difficulties += createHashmap(json().fromJsonFile(Array<Difficulty>::class.java, difficultiesFile))
+            difficulties += createHashmap(loadNamedArray(Array<Difficulty>::class.java, difficultiesFile))
 
         val globalUniquesFile = RulesetFile.GlobalUniques.file()
         if (globalUniquesFile.exists()) {
@@ -484,22 +583,22 @@ class Ruleset {
 
         val victoryTypesFile = RulesetFile.VictoryTypes.file()
         if (victoryTypesFile.exists()) {
-            victories += createHashmap(json().fromJsonFile(Array<Victory>::class.java, victoryTypesFile))
+            victories += createHashmap(loadNamedArray(Array<Victory>::class.java, victoryTypesFile))
         }
 
         val cityStateTypesFile = RulesetFile.CityStateTypes.file()
         if (cityStateTypesFile.exists()) {
-            cityStateTypes += createHashmap(json().fromJsonFile(Array<CityStateType>::class.java, cityStateTypesFile))
+            cityStateTypes += createHashmap(loadNamedArray(Array<CityStateType>::class.java, cityStateTypesFile))
         }
 
         val personalitiesFile = RulesetFile.Personalities.file()
         if (personalitiesFile.exists()) {
-            personalities += createHashmap(json().fromJsonFile(Array<Personality>::class.java, personalitiesFile))
+            personalities += createHashmap(loadNamedArray(Array<Personality>::class.java, personalitiesFile))
         }
 
         val eventsFile = RulesetFile.Events.file()
         if (eventsFile.exists()) {
-            events += createHashmap(json().fromJsonFile(Array<Event>::class.java, eventsFile))
+            events += createHashmap(loadNamedArray(Array<Event>::class.java, eventsFile))
         }
 
         // Tutorials exist per builtin ruleset or mod, but there's also a global file that's always loaded
@@ -507,12 +606,11 @@ class Ruleset {
         if (Gdx.files != null) { // we're not running console mode
             val globalTutorialsFile = Gdx.files.internal("jsons").child(RulesetFile.Tutorials.filename)
             if (globalTutorialsFile.exists())
-                tutorials += createHashmap(json().fromJsonFile(Array<Tutorial>::class.java, globalTutorialsFile))
+                tutorials += createHashmap(loadNamedArray(Array<Tutorial>::class.java, globalTutorialsFile))
         }
-        
         val tutorialsFile = RulesetFile.Tutorials.file()
         if (tutorialsFile.exists())
-            tutorials += createHashmap(json().fromJsonFile(Array<Tutorial>::class.java, tutorialsFile))
+            tutorials += createHashmap(loadNamedArray(Array<Tutorial>::class.java, tutorialsFile))
 
         // Add objects that might not be present in base ruleset mods, but are required
         if (modOptions.isBaseRuleset) {

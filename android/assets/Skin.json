@@ -388,18 +388,5 @@
             "cursor": "white",
             "selection": "selection"
         }
-    },
-    "com.unciv.ui.screens.pickerscreens.PromotionScreenColors": {
-        "default": {
-            "default": "promotion-default",
-            "selected": "promotion-selected",
-            "pathToSelection": "promotion-path",
-            "promoted": "promotion-promoted",
-            "promotedText": "promotion-promoted-text",
-            "pickable": "promotion-pickable",
-            "prerequisite": "promotion-prerequisite",
-            "groupLines": "promotion-grouplines",
-            "otherLines": "promotion-otherlines"
-        }
     }
 }

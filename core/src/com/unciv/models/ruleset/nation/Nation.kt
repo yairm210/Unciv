@@ -65,7 +65,7 @@ class Nation : RulesetObject() {
     /** Shown in DiplomacyScreen when a player contacts another major civ with RelationshipLevel.Enemy or worse */
     var hateHello = ""
 
-    lateinit var outerColor: List<Int>
+    var outerColor: List<Int> = listOf(255, 255, 255)
     var uniqueName = ""
     var uniqueText = ""
     var innerColor: List<Int>? = null

@@ -10,6 +10,7 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.Multiplayer
 import com.unciv.platform.PlatformCapabilities
+import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.skins.SkinCache
@@ -135,7 +136,19 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         Gdx.graphics.isContinuousRendering = settings.continuousRendering
 
         Concurrency.run("LoadJSON") {
-            RulesetCache.loadRulesets()
+            try {
+                RulesetCache.loadRulesets()
+            } catch (ex: Exception) {
+                Log.error("RulesetCache.loadRulesets failed", ex)
+                throw ex
+            }
+            val vanillaRulesetKey = BaseRuleset.Civ_V_Vanilla.fullName
+            val loadedRulesetCount = RulesetCache.size
+            if (loadedRulesetCount == 0 || vanillaRulesetKey !in RulesetCache) {
+                throw IllegalStateException(
+                    "Ruleset bootstrap failed: count=$loadedRulesetCount, expectedVanillaKey=$vanillaRulesetKey, hasVanilla=${vanillaRulesetKey in RulesetCache}"
+                )
+            }
             translations.tryReadTranslationForCurrentLanguage()
             translations.loadPercentageCompleteOfLanguages()
             TileSetCache.loadTileSetConfigs()
@@ -158,21 +171,55 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
             // This stuff needs to run on the main thread because it needs the GL context
             launchOnGLThread {
-                BaseScreen.setSkin() // needs to come AFTER the Texture reset, since the buttons depend on it and after loadSkinConfigs to be able to use the SkinConfig
-
-                musicController.chooseTrack(suffixes = listOf(MusicMood.Menu, MusicMood.Ambient),
-                    flags = EnumSet.of(MusicTrackChooserFlags.SuffixMustMatch))
-
-                ImageGetter.ruleset = vanillaRuleset // so that we can enter the map editor without having to load a game first
-
-                when {
-                    settings.isFreshlyCreated -> setAsRootScreen(LanguagePickerScreen())
-                    deepLinkedMultiplayerGame == null || !PlatformCapabilities.current.onlineMultiplayer -> setAsRootScreen(MainMenuScreen())
-                    else -> tryLoadDeepLinkedGame()
+                runStartupStep("BaseScreen.setSkin") {
+                    BaseScreen.setSkin() // needs to come AFTER the Texture reset, since the buttons depend on it and after loadSkinConfigs to be able to use the SkinConfig
+                }
+                runStartupStep("MusicController.chooseTrack") {
+                    musicController.chooseTrack(
+                        suffixes = listOf(MusicMood.Menu, MusicMood.Ambient),
+                        flags = EnumSet.of(MusicTrackChooserFlags.SuffixMustMatch),
+                    )
+                }
+                runStartupStep("ImageGetter.ruleset assignment") {
+                    ImageGetter.ruleset = vanillaRuleset // so that we can enter the map editor without having to load a game first
+                }
+                runStartupStep("root screen selection") {
+                    val shouldShowLanguagePicker =
+                        settings.isFreshlyCreated && PlatformCapabilities.current.systemFontEnumeration
+                    when {
+                        shouldShowLanguagePicker -> setAsRootScreen(LanguagePickerScreen())
+                        deepLinkedMultiplayerGame == null || !PlatformCapabilities.current.onlineMultiplayer -> {
+                            val mainMenuScreen = runStartupStepResult("MainMenuScreen() constructor") {
+                                MainMenuScreen()
+                            }
+                            runStartupStep("setAsRootScreen(MainMenuScreen)") {
+                                setAsRootScreen(mainMenuScreen)
+                            }
+                        }
+                        else -> tryLoadDeepLinkedGame()
+                    }
                 }
 
                 isInitialized = true
             }
+        }
+    }
+
+    private inline fun runStartupStep(name: String, block: () -> Unit) {
+        try {
+            block()
+        } catch (ex: Exception) {
+            Log.error("Startup step exception: $name", ex)
+            throw IllegalStateException("Startup step failed: $name", ex)
+        }
+    }
+
+    private inline fun <T> runStartupStepResult(name: String, block: () -> T): T {
+        try {
+            return block()
+        } catch (ex: Exception) {
+            Log.error("Startup step exception: $name", ex)
+            throw IllegalStateException("Startup step failed: $name", ex)
         }
     }
 
@@ -498,6 +545,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
                 return // kotlin coroutines use this for control flow... so we can just ignore them.
             }
             Log.error("Uncaught throwable", ex)
+            Log.error("Uncaught throwable diagnostic: %s", ex.buildDiagnostic())
             dumpLastError(ex)
             Gdx.app.postRunnable {
                 Gdx.input.inputProcessor =
@@ -520,6 +568,22 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
                 Log.debug("Failed to write exception to lasterror.txt", ex)
                 // ignore
             }
+        }
+
+        private fun Throwable.buildDiagnostic(maxFramesPerThrowable: Int = 20): String {
+            val chunks = ArrayList<String>()
+            var current: Throwable? = this
+            var depth = 0
+            while (current != null && depth < 6) {
+                val header = "[$depth] ${current::class.qualifiedName}: ${current.message.orEmpty()}"
+                val frames = current.stackTrace
+                    .take(maxFramesPerThrowable)
+                    .joinToString(separator = " <- ") { "${it.className}.${it.methodName}:${it.lineNumber}" }
+                chunks.add("$header | $frames")
+                current = current.cause
+                depth++
+            }
+            return chunks.joinToString(" || ")
         }
     }
 }

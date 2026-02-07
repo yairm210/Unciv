@@ -39,7 +39,7 @@ class PromotionPickerScreen private constructor(
         : this(unit, closeOnPick, unit.instanceName, onChange)
 
     // Style stuff
-    private val colors = skin[PromotionScreenColors::class.java]
+    private val colors = PromotionScreenColors()
     private val promotedLabelStyle = Label.LabelStyle(skin[Label.LabelStyle::class.java]).apply {
         fontColor = colors.promotedText
     }

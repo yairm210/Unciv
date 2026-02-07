@@ -11,64 +11,84 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen) : Table() {
 
     private val mapParameters = newGameScreen.gameSetupInfo.mapParameters
     private var mapTypeSpecificTable = Table()
-    internal val generatedMapOptionsTable = MapParametersTable(newGameScreen, mapParameters, MapGeneratedMainType.generated)
-    private val randomMapOptionsTable = MapParametersTable(newGameScreen, mapParameters, MapGeneratedMainType.randomGenerated)
-    private val savedMapOptionsTable = MapFileSelectTable(newGameScreen, mapParameters)
-    private val scenarioOptionsTable = ScenarioSelectTable(newGameScreen)
+    internal lateinit var generatedMapOptionsTable: MapParametersTable
+    private lateinit var randomMapOptionsTable: MapParametersTable
+    private lateinit var savedMapOptionsTable: MapFileSelectTable
+    private lateinit var scenarioOptionsTable: ScenarioSelectTable
     internal val mapTypeSelectBox: TranslatedSelectBox
 
     init {
-        //defaults().pad(5f) - each nested table having the same can give 'stairs' effects,
-        // better control directly. Besides, the first Labels/Buttons should have 10f to look nice
-        background = BaseScreen.skinStrings.getUiBackground("NewGameScreen/MapOptionsTable", tintColor = BaseScreen.skinStrings.skinConfig.clearColor)
+        var step = "start"
+        try {
+            //defaults().pad(5f) - each nested table having the same can give 'stairs' effects,
+            // better control directly. Besides, the first Labels/Buttons should have 10f to look nice
+            step = "background"
+            background = BaseScreen.skinStrings.getUiBackground("NewGameScreen/MapOptionsTable", tintColor = BaseScreen.skinStrings.skinConfig.clearColor)
 
-        val mapTypes = arrayListOf(MapGeneratedMainType.generated, MapGeneratedMainType.randomGenerated)
-        if (savedMapOptionsTable.isNotEmpty()) mapTypes.add(MapGeneratedMainType.custom)
-        if (newGameScreen.game.files.getScenarioFiles().any()) mapTypes.add(MapGeneratedMainType.scenario)
+            step = "create generated map options"
+            generatedMapOptionsTable = MapParametersTable(newGameScreen, mapParameters, MapGeneratedMainType.generated)
+            step = "create random map options"
+            randomMapOptionsTable = MapParametersTable(newGameScreen, mapParameters, MapGeneratedMainType.randomGenerated)
+            step = "create saved map options"
+            savedMapOptionsTable = MapFileSelectTable(newGameScreen, mapParameters)
+            step = "create scenario options"
+            scenarioOptionsTable = ScenarioSelectTable(newGameScreen)
 
-        mapTypeSelectBox = TranslatedSelectBox(mapTypes, MapGeneratedMainType.generated)
+            step = "collect map types"
+            val mapTypes = arrayListOf(MapGeneratedMainType.generated, MapGeneratedMainType.randomGenerated)
+            if (savedMapOptionsTable.isNotEmpty()) mapTypes.add(MapGeneratedMainType.custom)
+            if (newGameScreen.game.files.getScenarioFiles().any()) mapTypes.add(MapGeneratedMainType.scenario)
 
-        fun updateOnMapTypeChange() {
-            mapTypeSpecificTable.clear()
-            when (mapTypeSelectBox.selected.value) {
-                MapGeneratedMainType.custom -> {
-                    mapParameters.type = MapGeneratedMainType.custom
-                    mapTypeSpecificTable.add(savedMapOptionsTable)
-                    savedMapOptionsTable.activateCustomMaps()
-                    newGameScreen.unlockTables()
+            step = "create map type select"
+            mapTypeSelectBox = TranslatedSelectBox(mapTypes, MapGeneratedMainType.generated)
+
+            fun updateOnMapTypeChange() {
+                mapTypeSpecificTable.clear()
+                when (mapTypeSelectBox.selected.value) {
+                    MapGeneratedMainType.custom -> {
+                        mapParameters.type = MapGeneratedMainType.custom
+                        mapTypeSpecificTable.add(savedMapOptionsTable)
+                        savedMapOptionsTable.activateCustomMaps()
+                        newGameScreen.unlockTables()
+                    }
+                    MapGeneratedMainType.generated -> {
+                        mapParameters.name = ""
+                        mapParameters.type = generatedMapOptionsTable.mapTypeSelectBox.selected.value
+                        mapTypeSpecificTable.add(generatedMapOptionsTable)
+                        newGameScreen.unlockTables()
+                    }
+                    MapGeneratedMainType.randomGenerated -> {
+                        mapParameters.name = ""
+                        mapTypeSpecificTable.add(randomMapOptionsTable)
+                        newGameScreen.unlockTables()
+                    }
+                    MapGeneratedMainType.scenario -> {
+                        mapParameters.name = ""
+                        mapTypeSpecificTable.add(scenarioOptionsTable)
+                        scenarioOptionsTable.selectScenario()
+                        newGameScreen.lockTables()
+                    }
                 }
-                MapGeneratedMainType.generated -> {
-                    mapParameters.name = ""
-                    mapParameters.type = generatedMapOptionsTable.mapTypeSelectBox.selected.value
-                    mapTypeSpecificTable.add(generatedMapOptionsTable)
-                    newGameScreen.unlockTables()
-                }
-                MapGeneratedMainType.randomGenerated -> {
-                    mapParameters.name = ""
-                    mapTypeSpecificTable.add(randomMapOptionsTable)
-                    newGameScreen.unlockTables()
-                }
-                MapGeneratedMainType.scenario -> {
-                    mapParameters.name = ""
-                    mapTypeSpecificTable.add(scenarioOptionsTable)
-                    scenarioOptionsTable.selectScenario()
-                    newGameScreen.lockTables()
-                }
+                newGameScreen.gameSetupInfo.gameParameters.godMode = false
+                newGameScreen.updateTables()
             }
-            newGameScreen.gameSetupInfo.gameParameters.godMode = false
-            newGameScreen.updateTables()
+
+            step = "activate selected map type"
+            // activate once, so the MapGeneratedMainType.generated controls show
+            updateOnMapTypeChange()
+
+            step = "wire map type select change"
+            mapTypeSelectBox.onChange { updateOnMapTypeChange() }
+
+            step = "build map options table layout"
+            val mapTypeSelectWrapper = Table()  // wrap to center-align Label and SelectBox easier
+            mapTypeSelectWrapper.add("{Map Type}:".toLabel()).left().expandX()
+            mapTypeSelectWrapper.add(mapTypeSelectBox).right()
+            add(mapTypeSelectWrapper).pad(10f).fillX().row()
+            add(mapTypeSpecificTable).row()
+        } catch (ex: Exception) {
+            throw IllegalStateException("MapOptionsTable init failed at step: $step", ex)
         }
-
-        // activate once, so the MapGeneratedMainType.generated controls show
-        updateOnMapTypeChange()
-
-        mapTypeSelectBox.onChange { updateOnMapTypeChange() }
-
-        val mapTypeSelectWrapper = Table()  // wrap to center-align Label and SelectBox easier
-        mapTypeSelectWrapper.add("{Map Type}:".toLabel()).left().expandX()
-        mapTypeSelectWrapper.add(mapTypeSelectBox).right()
-        add(mapTypeSelectWrapper).pad(10f).fillX().row()
-        add(mapTypeSpecificTable).row()
     }
 
     internal fun getSelectedScenario(): ScenarioSelectTable.ScenarioData? {

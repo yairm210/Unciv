@@ -70,14 +70,24 @@ fun CoroutineScope.launchCrashHandling(
     name: String? = null,
     block: suspend CoroutineScope.() -> Unit,
 ): Job {
-    val scope = SimpleScope(addName(EmptyCoroutineContext, name))
-    block.startCoroutine(scope, object : Continuation<Unit> {
-        override val context: CoroutineContext = EmptyCoroutineContext
-        override fun resumeWith(result: Result<Unit>) {
-            val failure = result.exceptionOrNull()
-            if (failure != null) UncivGame.handleUncaughtThrowable(failure)
-        }
-    })
+    val launchContext = addName(EmptyCoroutineContext, name)
+    val launchBlock = {
+        val scope = SimpleScope(launchContext)
+        block.startCoroutine(scope, object : Continuation<Unit> {
+            override val context: CoroutineContext = EmptyCoroutineContext
+            override fun resumeWith(result: Result<Unit>) {
+                val failure = result.exceptionOrNull()
+                if (failure != null) UncivGame.handleUncaughtThrowable(failure)
+            }
+        })
+    }
+    if (context === Dispatcher.GL) {
+        val app = Gdx.app
+        if (app == null) launchBlock()
+        else app.postRunnable(launchBlock)
+    } else {
+        launchBlock()
+    }
     return NonCancellable
 }
 

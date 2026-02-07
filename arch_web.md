@@ -1,6 +1,6 @@
 # Unciv Web Architecture Decisions (Phase-1)
 
-Last updated: 2026-02-06
+Last updated: 2026-02-07
 
 ## 1) Locked Decisions (Phase-1)
 
@@ -60,3 +60,14 @@ A deferred decision can be changed only when all are true:
 2. App boots from static files without fatal startup errors.
 3. Main menu/start new game/end-turn/save-load/clipboard roundtrip works.
 4. Disabled-by-design web features are hidden or non-actionable in UI flows.
+
+## 7) Runtime Validation Status (Current)
+
+1. JS target (`:web:webBuildJs`) is currently the validated gameplay path in this environment:
+   - headed Playwright flow passes: main menu -> new game -> world screen -> 3 turn clicks, no crash.
+2. WASM target (`:web:webBuildWasm`) compiles successfully, but runtime in current Playwright Chromium still fails before boot with repeated `dereferencing a null pointer`.
+3. Attempting to switch TeaVM target from `WEBASSEMBLY_GC` to `WEBASSEMBLY` is not viable with this backend set:
+   - compile-time native import annotation errors in `backend-web` classes.
+4. Current operational decision:
+   - keep WASM-first build support in place (`WEBASSEMBLY_GC`) and track runtime blocker separately.
+   - use JS build for E2E regression validation until WASM runtime issue is resolved.

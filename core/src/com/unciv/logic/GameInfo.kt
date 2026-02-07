@@ -688,6 +688,16 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
                 gameParameters.mods.add(mod.replace("-", " "))
             }
         }
+
+        // If the saved base ruleset or extension mods are not present in the cache, normalize to available values.
+        val selectedBaseRuleset = RulesetCache[gameParameters.baseRuleset]
+        if (selectedBaseRuleset == null || !selectedBaseRuleset.modOptions.isBaseRuleset) {
+            gameParameters.baseRuleset = RulesetCache.getVanillaRuleset().name
+        }
+        gameParameters.mods = LinkedHashSet(gameParameters.mods.filter {
+            val mod = RulesetCache[it] ?: return@filter false
+            !mod.modOptions.isBaseRuleset
+        })
         
         ruleset = RulesetCache.getComplexRuleset(gameParameters)
         

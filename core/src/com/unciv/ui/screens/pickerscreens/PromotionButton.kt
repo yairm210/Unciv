@@ -21,7 +21,7 @@ internal class PromotionButton(
 ) {
     private val label = node.promotion.name.toLabel(hideIcons = true)
     private val defaultLabelStyle = label.style
-    private val colors = BaseScreen.skin[PromotionScreenColors::class.java]
+    private val colors = PromotionScreenColors()
 
     init {
 
@@ -44,7 +44,7 @@ internal class PromotionButton(
             node.promotion in pathToSelection -> colors.pathToSelection
             node in prerequisites -> colors.prerequisite
             isPickable -> colors.pickable
-            else -> colors.default
+            else -> colors.normal
         }
 
         label.style = if (!isSelected && node.isAdopted) adoptedLabelStyle

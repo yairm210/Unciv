@@ -1,7 +1,7 @@
 feature,web_status,phase,blocking_issue,notes,last_verified
-Boot/Main menu,PASS,phase-1,,headed Playwright smoke reaches MainMenuScreen without crash after web startup fixes,2026-02-07T19:12:54Z
-Start new game,PASS,phase-1,,headed Playwright click-scan transitions to NewGameScreen with no crash signals,2026-02-07T19:12:54Z
-End turn loop,BLOCKED,phase-1,runtime_smoke_pending,compile/build path is green; 10-turn manual web smoke still pending,2026-02-06T03:34:04Z
+Boot/Main menu,PASS,phase-1,,headed Playwright reaches MainMenuScreen on JS dist without crash,2026-02-07T21:38:03Z
+Start new game,PASS,phase-1,,headed Playwright transitions MainMenu->NewGame and triggers startGame callback on JS dist,2026-02-07T21:38:03Z
+End turn loop,PASS,phase-1,,headed Playwright reaches WorldScreen and performs 3 next-turn clicks without crash on JS dist,2026-02-07T21:38:03Z
 Local save/load,BLOCKED,phase-1,browser_storage_smoke_pending,web saver loader wiring done but browser persistence roundtrip not yet verified,2026-02-06T03:34:04Z
 Clipboard import/export,BLOCKED,phase-1,browser_clipboard_smoke_pending,requires browser permission/runtime validation on served dist,2026-02-06T03:34:04Z
 Audio,BLOCKED,phase-1,browser_audio_smoke_pending,requires manual web audio playback validation,2026-02-06T03:34:04Z

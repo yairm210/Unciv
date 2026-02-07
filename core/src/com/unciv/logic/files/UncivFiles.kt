@@ -45,6 +45,16 @@ class UncivFiles(
     /** If not null, this is the path to the directory in which to store the local files - mods, saves, maps, etc */
     val customDataDirectory: String? = null
 ) {
+    private val supportsExternalStorage: Boolean by lazy {
+        if (!files.isExternalStorageAvailable) return@lazy false
+        runCatching {
+            val probe = files.external("")
+            probe.path()
+            probe.exists()
+            true
+        }.getOrElse { false }
+    }
+
     init {
         debug("Creating UncivFiles, localStoragePath: %s, externalStoragePath: %s",
             files.localStoragePath, files.externalStoragePath)
@@ -77,9 +87,9 @@ class UncivFiles(
             gameName, saveFolder, preferExternalStorage, files.externalStoragePath)
         val location = "${saveFolder}/$gameName"
         val localFile = getLocalFile(location)
-        val externalFile = files.external(location)
+        val externalFile = if (supportsExternalStorage) files.external(location) else null
 
-        val toReturn = if (files.isExternalStorageAvailable && (
+        val toReturn = if (externalFile != null && (
                 externalFile.exists() && !localFile.exists() || // external file is only valid choice
                 preferExternalStorage && (externalFile.exists() || !localFile.exists()) // unless local file is only valid choice, choose external
                 ) ) {
@@ -90,7 +100,7 @@ class UncivFiles(
             localFile
         }
 
-        debug("Save found: %s", toReturn.file().absolutePath)
+        debug("Save found: %s", toReturn.path())
         return toReturn
     }
 
@@ -103,7 +113,7 @@ class UncivFiles(
     }
 
     fun pathToFileHandle(path: String): FileHandle {
-        return if (preferExternalStorage && files.isExternalStorageAvailable) files.external(path)
+        return if (preferExternalStorage && supportsExternalStorage) files.external(path)
         else getLocalFile(path)
     }
 
@@ -126,14 +136,14 @@ class UncivFiles(
         val localFiles = Sequence { getLocalFile(saveFolder).list().iterator() }
 
         val externalFiles = when {
-            !files.isExternalStorageAvailable -> emptySequence()
-            getDataFolder().file().absolutePath == files.external("").file().absolutePath -> emptySequence()
+            !supportsExternalStorage -> emptySequence()
+            getDataFolder().path() == files.external("").path() -> emptySequence()
             else -> Sequence { files.external(saveFolder).list().iterator() }
         }
 
         debug("Local files: %s, external files: %s",
-            { localFiles.joinToString(prefix = "[", postfix = "]", transform = { it.file().absolutePath }) },
-            { externalFiles.joinToString(prefix = "[", postfix = "]", transform = { it.file().absolutePath }) })
+            { localFiles.joinToString(prefix = "[", postfix = "]", transform = { it.path() }) },
+            { externalFiles.joinToString(prefix = "[", postfix = "]", transform = { it.path() }) })
         return localFiles + externalFiles
     }
 
