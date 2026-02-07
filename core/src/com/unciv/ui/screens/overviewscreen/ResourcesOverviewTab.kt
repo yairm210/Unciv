@@ -183,17 +183,30 @@ class ResourcesOverviewTab(
         for (resource in resources) {
             add(resourceDrilldown.getTotalLabel(resource))
         }
-        addSeparator()
+        
 
         // Separate rows for origins not part of the totals
-        for (origin in extraOrigins) {
-            add(origin.horizontalCaption.toLabel().apply {
-                addTooltip(origin.tooltip, tooltipSize, tipAlign = Align.left)
-            }).left()
-            for (resource in resources) {
-                add(extraDrilldown.getLabel(resource, origin.name))
+        if (extraOrigins.any()) {
+            addSeparator()
+            for (origin in extraOrigins) {
+                add(origin.horizontalCaption.toLabel().apply {
+                    addTooltip(origin.tooltip, tooltipSize, tipAlign = Align.left)
+                }).left()
+                for (resource in resources) {
+                    add(extraDrilldown.getLabel(resource, origin.name))
+                }
+                row()
             }
-            row()
+        }
+        
+        // A row for stockpiles resources if required
+        if (resources.any { it.isStockpiled }){
+            addSeparator()
+            add("Stockpiled resources".toLabel()).left()
+            for (resource in resources) {
+                if (!resource.isStockpiled) add()
+                else add(viewingPlayer.getResourceAmount(resource).toLabel())
+            }
         }
     }
 
