@@ -417,3 +417,4 @@
 2026-02-07T21:37:06Z | build | rebuilt JS dist after wasm debugging to restore validated runtime target for e2e smoke | success | rerun targeted 3-turn live probe and update tracking
 2026-02-07T21:38:10Z | tracking | updated features.csv: Boot/Main menu, Start new game, End turn loop marked PASS from latest headed JS e2e probe (world + 3 turns, no crash) | done | refresh architecture notes and prepare commit
 2026-02-07T21:38:36Z | docs | updated arch_web.md with current validation state: JS e2e path passes, WASM_GC runtime still blocked in current Chromium (null-pointer trap), and decision to keep wasm build support while validating on JS | done | prepare commit with latest fixes and evidence
+2026-02-07T21:39:32Z | commit | committed web stabilization phase as 489f726cb (ruleset loader backfills, reflection safety, keyboard split fix, worldscreen crash fix, tracking/docs updates) | done | run final status check and report validated JS e2e + wasm blocker
