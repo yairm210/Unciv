@@ -222,6 +222,7 @@ object WebValidationRunner {
     private suspend fun validateLocalSaveLoad(game: WebGame): Pair<Boolean, String> {
         return try {
             val currentGame = game.gameInfo ?: return false to "No active game to save."
+            val serializationProbe = describeSerialization(currentGame)
             game.files.saveGame(currentGame, testSaveName)
             val saveFile = game.files.getSave(testSaveName)
             if (!saveFile.exists()) return false to "Save file was not created for [$testSaveName]."
@@ -239,7 +240,9 @@ object WebValidationRunner {
 
             true to "Saved and reloaded [$testSaveName] (turn=${loadedGame.turns})."
         } catch (throwable: Throwable) {
-            false to "Exception during local save/load: ${throwable::class.simpleName} ${throwable.message ?: ""}".trim()
+            val currentGame = game.gameInfo
+            val probe = if (currentGame != null) " | ${describeSerialization(currentGame)}" else ""
+            false to "Exception during local save/load: ${throwable::class.simpleName} ${throwable.message ?: ""}$probe".trim()
         }
     }
 
@@ -247,17 +250,34 @@ object WebValidationRunner {
         return try {
             val currentGame = game.gameInfo ?: return false to "No active game for clipboard export."
             val encoded = UncivFiles.gameInfoToString(currentGame, forceZip = true, updateChecksum = true)
+            val probe = describeSerialization(currentGame, encoded)
             Gdx.app.clipboard.contents = encoded
             val imported = UncivFiles.gameInfoFromString(Gdx.app.clipboard.contents.trim())
             val matches = imported.gameId == currentGame.gameId && imported.turns == currentGame.turns
             if (matches) {
                 true to "Clipboard export/import roundtrip succeeded for gameId=${currentGame.gameId}."
             } else {
-                false to "Clipboard roundtrip mismatched game identity."
+                false to "Clipboard roundtrip mismatched game identity. $probe"
             }
         } catch (throwable: Throwable) {
-            false to "Exception during clipboard roundtrip: ${throwable::class.simpleName} ${throwable.message ?: ""}".trim()
+            val currentGame = game.gameInfo
+            val probe = if (currentGame != null) " | ${describeSerialization(currentGame)}" else ""
+            false to "Exception during clipboard roundtrip: ${throwable::class.simpleName} ${throwable.message ?: ""}$probe".trim()
         }
+    }
+
+    private fun describeSerialization(game: com.unciv.logic.GameInfo, encodedInput: String? = null): String {
+        val encoded = encodedInput ?: UncivFiles.gameInfoToString(game, forceZip = true, updateChecksum = true)
+        val plain = try {
+            com.unciv.ui.screens.savescreens.Gzip.unzip(encoded)
+        } catch (_: Throwable) {
+            encoded
+        }
+        val hasTileMap = plain.contains("\"tileMap\"")
+        val hasTileList = plain.contains("\"tileList\"")
+        val hasEmptyTileList = plain.contains("\"tileList\":[]")
+        val tileListCount = "\"tileList\"".toRegex().findAll(plain).count()
+        return "serializeProbe(hasTileMap=$hasTileMap,hasTileList=$hasTileList,emptyTileList=$hasEmptyTileList,tileListTokens=$tileListCount,plainLen=${plain.length},liveTiles=${game.tileMap.tileList.size})"
     }
 
     private fun validateAudio(): Pair<Boolean, String> {

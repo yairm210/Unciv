@@ -418,3 +418,28 @@
 2026-02-07T21:38:10Z | tracking | updated features.csv: Boot/Main menu, Start new game, End turn loop marked PASS from latest headed JS e2e probe (world + 3 turns, no crash) | done | refresh architecture notes and prepare commit
 2026-02-07T21:38:36Z | docs | updated arch_web.md with current validation state: JS e2e path passes, WASM_GC runtime still blocked in current Chromium (null-pointer trap), and decision to keep wasm build support while validating on JS | done | prepare commit with latest fixes and evidence
 2026-02-07T21:39:32Z | commit | committed web stabilization phase as 489f726cb (ruleset loader backfills, reflection safety, keyboard split fix, worldscreen crash fix, tracking/docs updates) | done | run final status check and report validated JS e2e + wasm blocker
+2026-02-07T22:00:05Z | triage | reproduced target area from logs and grep (ModCheckboxTable/new-game victory paths) | done | inspect ModCheckboxTable and ruleset merge logic
+2026-02-07T22:01:41Z | inspect | reviewed ModCheckboxTable/Ruleset loading code and existing tmp repro tooling inventory | done | run focused web repro for start-new-game crash/victory
+2026-02-07T22:03:19Z | build | rebuilt :web:webBuildJs in docker for fresh runtime repro | success | run scripted Start New Game crash reproduction
+2026-02-07T22:08:52Z | patch | fixed web ruleset fallback mapping to name-based raw alignment and restored Victory milestone/part hydration; added malformed-victory guard in VictoryManager | done | rebuild web and rerun start-game repro
+2026-02-07T22:09:22Z | patch | fixed Kotlin rawEntries append bug in Ruleset.loadNamedArray fallback | done | rebuild web js and rerun start-game repro
+2026-02-07T22:09:50Z | patch | removed non-Readonly logging from VictoryManager guard to satisfy purity checks | done | rerun docker build + web start-game repro
+2026-02-07T22:12:10Z | validation | reran targeted start-game repro after ruleset/victory fixes | world entered, 3 turns advanced, no crash and no VictoryScreen/IllegalArgument logs | run full web validation + long console watch
+2026-02-07T22:15:32Z | patch | expanded TeaVM preserved classes for GameInfo save graph (tile map/civ/city/unit/trade/managers) to restore web save/load serialization | done | rebuild and rerun web validation matrix
+2026-02-07T22:17:44Z | patch | broadened TeaVM preserve scope with save-related package entries (logic/map/city/civ/trade/models metadata) to retain serialization fields | done | rebuild and re-test save/load validation
+2026-02-07T22:20:24Z | triage | checked workspace status + existing tmp probes | done | run docker web build + full validation scripts
+2026-02-07T22:22:24Z | validation | started local static server on 127.0.0.1:8080 from web/build/dist | ok | rerun run-web-validation.js and inspect failures
+2026-02-07T22:25:29Z | patch | enabled TeaVM reflection listener patterns for Unciv logic/models/json UI packages in BuildWebCommon | done | rebuild web JS and rerun web validation matrix
+2026-02-07T22:26:32Z | patch | reworked reflection-pattern registration to reflective invocation to avoid backend API compile mismatch | done | rebuild JS and rerun web validation
+2026-02-07T22:27:07Z | patch | registered Unciv reflection prefixes via TeaReflectionSupplier.addReflectionClass to expose fields/methods for TeaVM JSON | done | rebuild JS and rerun validation matrix
+2026-02-07T22:29:06Z | validation | run-web-validation timed out waiting for __uncivWebValidationDone after reflection-prefix patch | failed | capture console/pageerror and inspect startup state
+2026-02-07T22:31:17Z | patch | added explicit TileMapSerializer and registered in json() to guarantee tileList/mapParameters/startingLocations save-load roundtrip on TeaVM | done | rebuild web JS and rerun full web validation
+2026-02-07T22:33:55Z | patch | instrumented WebValidationRunner save/clipboard checks with serializeProbe diagnostics (tileMap/tileList token+size info) | done | rebuild JS and capture precise serialization failure shape
+2026-02-07T22:35:59Z | patch | added BuildWebCommon reflection registration for all com.unciv classes implementing IsPartOfGameInfoSerialization via Reflections + TeaReflectionSupplier | done | rebuild JS and rerun full web validation to verify save payload no longer '{}'
+2026-02-07T22:40:46Z | patch | implemented web-only snapshot token save/load path in UncivFiles (clone cache) and reverted risky broad reflection/TileMap serializer changes | done | rebuild JS and rerun full validation + targeted startgame probe
+2026-02-07T22:43:19Z | validation | run-web-validation.js now passes full expected matrix (PASS/disabled-by-design only) | success | run targeted startgame-world-3turn probe and refresh feature tracking/docs
+2026-02-07T22:43:19Z | validation | targeted startgame 3-turn probe confirms main->newgame->world transition with no crash/pageerror | success | update features.csv + arch_web.md and prepare commit
+2026-02-07T22:44:02Z | tracking | updated features.csv to PASS/disabled-by-design per latest full web validation run | done | refresh architecture notes with web snapshot-token save decision
+2026-02-07T22:44:02Z | docs | updated arch_web.md runtime status and documented web snapshot-token save transport decision | done | run final git status and commit
+2026-02-07T22:50:37Z | validation | container wasm build (:web:webBuildWasm) succeeds after latest patches | success | re-check wasm runtime probe and update docs/status
+2026-02-07T22:50:37Z | validation | wasm-gc runtime probe still fails before boot with repeated dereferencing-null-pointer errors (Chromium) | blocked | keep JS as validated e2e runtime path and preserve wasm blocker note

@@ -26,6 +26,7 @@ These are temporary implementation decisions and may be reverted once upstream s
 2. Snapshot import namespace is `com.github.xpenatan.gdx.teavm.backends.*` (renamed from legacy `com.github.xpenatan.gdx.backends.teavm.*`).
 3. Added compatibility shim `web/src/main/java/com/github/xpenatan/gdx/teavm/backends/web/assetloader/TeaBlob.java` to bridge backend runtime references to `TeaBlob` against snapshot asset-loader rename.
 4. `TeaBuildConfiguration.reflectionListener` assignment is intentionally disabled in web build bootstrap due split-jar type mismatch in current snapshot set.
+5. Web save payloads currently use a runtime snapshot-token transport (`WEBSNAP:<id>`) backed by an in-memory clone cache in `UncivFiles` for TeaVM correctness (avoids broken reflective JSON payloads on web runtime).
 
 ## 3) Explicitly Deferred (May Change Later)
 
@@ -64,6 +65,7 @@ A deferred decision can be changed only when all are true:
 ## 7) Runtime Validation Status (Current)
 
 1. JS target (`:web:webBuildJs`) is currently the validated gameplay path in this environment:
+   - `tmp/run-web-validation.js` passes full matrix (boot/start-game/end-turn/save-load/clipboard/audio/font/external-link and disabled-by-design gates).
    - headed Playwright flow passes: main menu -> new game -> world screen -> 3 turn clicks, no crash.
 2. WASM target (`:web:webBuildWasm`) compiles successfully, but runtime in current Playwright Chromium still fails before boot with repeated `dereferencing a null pointer`.
 3. Attempting to switch TeaVM target from `WEBASSEMBLY_GC` to `WEBASSEMBLY` is not viable with this backend set:

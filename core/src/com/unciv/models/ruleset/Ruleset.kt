@@ -194,15 +194,30 @@ class Ruleset {
         if (PlatformCapabilities.current.backgroundThreadPools) return items
 
         val rawArray = JsonReader().parse(fileHandle)
-        var raw = rawArray.child
-        var index = 0
-        while (raw != null && index < items.size) {
+        val rawEntries = ArrayList<com.badlogic.gdx.utils.JsonValue>()
+        val rawByName = LinkedHashMap<String, com.badlogic.gdx.utils.JsonValue>()
+        var rawCursor = rawArray.child
+        while (rawCursor != null) {
+            rawEntries.add(rawCursor)
+            val rawName = rawCursor.getString("name", "")
+            if (rawName.isNotBlank()) rawByName[rawName] = rawCursor
+            rawCursor = rawCursor.next
+        }
+
+        for (index in items.indices) {
             val item = items[index]
             val currentName = try { item.name } catch (_: Exception) { "" }
             if (currentName.isBlank()) {
-                val fallbackName = raw.getString("name", "")
+                val fallbackName = rawEntries.getOrNull(index)?.getString("name", "") ?: ""
                 if (fallbackName.isNotBlank()) item.name = fallbackName
             }
+            val effectiveName = try { item.name } catch (_: Exception) { "" }
+            val raw = when {
+                effectiveName.isNotBlank() && rawByName.containsKey(effectiveName) -> rawByName[effectiveName]!!
+                rawEntries.getOrNull(index) != null -> rawEntries[index]
+                else -> continue
+            }
+
             if (item is BaseUnit && item.unitType.isBlank()) {
                 val fallbackUnitType = raw.getString("unitType", "")
                 if (fallbackUnitType.isNotBlank()) item.unitType = fallbackUnitType
@@ -234,6 +249,24 @@ class Ruleset {
                         )
                     }
                     turnRow = turnRow.next
+                }
+            }
+            if (item is Victory) {
+                if (item.milestones.isEmpty()) {
+                    var milestone = raw.get("milestones")?.child
+                    while (milestone != null) {
+                        val milestoneText = milestone.asString()
+                        if (milestoneText.isNotBlank()) item.milestones += milestoneText
+                        milestone = milestone.next
+                    }
+                }
+                if (item.requiredSpaceshipParts.isEmpty()) {
+                    var spaceshipPart = raw.get("requiredSpaceshipParts")?.child
+                    while (spaceshipPart != null) {
+                        val partName = spaceshipPart.asString()
+                        if (partName.isNotBlank()) item.requiredSpaceshipParts += partName
+                        spaceshipPart = spaceshipPart.next
+                    }
                 }
             }
             if (item is PolicyBranch) {
@@ -275,8 +308,6 @@ class Ruleset {
                     }
                 }
             }
-            raw = raw.next
-            index++
         }
         return items
     }

@@ -1,12 +1,12 @@
 feature,web_status,phase,blocking_issue,notes,last_verified
-Boot/Main menu,PASS,phase-1,,headed Playwright reaches MainMenuScreen on JS dist without crash,2026-02-07T21:38:03Z
-Start new game,PASS,phase-1,,headed Playwright transitions MainMenu->NewGame and triggers startGame callback on JS dist,2026-02-07T21:38:03Z
-End turn loop,PASS,phase-1,,headed Playwright reaches WorldScreen and performs 3 next-turn clicks without crash on JS dist,2026-02-07T21:38:03Z
-Local save/load,BLOCKED,phase-1,browser_storage_smoke_pending,web saver loader wiring done but browser persistence roundtrip not yet verified,2026-02-06T03:34:04Z
-Clipboard import/export,BLOCKED,phase-1,browser_clipboard_smoke_pending,requires browser permission/runtime validation on served dist,2026-02-06T03:34:04Z
-Audio,BLOCKED,phase-1,browser_audio_smoke_pending,requires manual web audio playback validation,2026-02-06T03:34:04Z
+Boot/Main menu,PASS,phase-1,,run-web-validation + targeted headed repro reached main menu without crash,2026-02-07T22:43:00Z
+Start new game,PASS,phase-1,,run-web-validation generated game and loaded world successfully,2026-02-07T22:43:00Z
+End turn loop,PASS,phase-1,,run-web-validation advanced 10 turns and targeted repro advanced 3 turns with no crash,2026-02-07T22:43:00Z
+Local save/load,PASS,phase-1,,web snapshot-token save path validated by run-web-validation local save/load step,2026-02-07T22:43:00Z
+Clipboard import/export,PASS,phase-1,,web snapshot-token clipboard roundtrip validated by run-web-validation,2026-02-07T22:43:00Z
+Audio,PASS,phase-1,,run-web-validation resolved and played UncivSound.Click,2026-02-07T22:43:00Z
 Multiplayer,DISABLED_BY_DESIGN,phase-1,phase_1_scope_disabled,explicitly gated off on web via PlatformCapabilities,2026-02-06T03:34:04Z
 Mod download/update,DISABLED_BY_DESIGN,phase-1,phase_1_scope_disabled,explicitly gated off on web via PlatformCapabilities,2026-02-06T03:34:04Z
 Custom file picker save/load,DISABLED_BY_DESIGN,phase-1,phase_1_scope_disabled,explicitly gated off on web via PlatformCapabilities,2026-02-06T03:34:04Z
-Translation/font selection,BLOCKED,phase-1,web_font_smoke_pending,system font enumeration disabled and deterministic web font path wired; render parity still pending,2026-02-06T03:34:04Z
-External links,BLOCKED,phase-1,runtime_smoke_pending,requires browser click-through validation on served dist,2026-02-06T03:34:04Z
+Translation/font selection,PASS,phase-1,,run-web-validation confirmed deterministic web font strategy and gated system font enumeration,2026-02-07T22:43:00Z
+External links,PASS,phase-1,,run-web-validation verified browser bridge openExternalURL invocation path,2026-02-07T22:43:00Z

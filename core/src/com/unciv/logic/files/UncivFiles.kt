@@ -24,16 +24,21 @@ import com.unciv.logic.CompatibilityVersion
 import com.unciv.utils.Concurrency
 import com.unciv.logic.GameInfoSerializationVersion
 import com.unciv.logic.HasGameInfoSerializationVersion
+import com.unciv.platform.PlatformCapabilities
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import kotlinx.coroutines.Job
 import java.io.Writer
+import java.util.LinkedHashMap
+import java.util.UUID
 
 private const val SAVE_FILES_FOLDER = "SaveFiles"
 private const val MULTIPLAYER_FILES_FOLDER = "MultiplayerGames"
 private const val AUTOSAVE_FILE_NAME = "Autosave"
 const val SETTINGS_FILE_NAME = "GameSettings.json"
 const val MOD_LIST_CACHE_FILE_NAME = "ModListCache.json"
+private const val WEB_SNAPSHOT_PREFIX = "WEBSNAP:"
+private const val WEB_SNAPSHOT_CACHE_MAX = 12
 
 class UncivFiles(
     /**
@@ -382,6 +387,12 @@ class UncivFiles(
 
     companion object {
 
+        private val webSnapshotCache = object : LinkedHashMap<String, GameInfo>(WEB_SNAPSHOT_CACHE_MAX + 1, 0.75f, true) {
+            override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, GameInfo>?): Boolean {
+                return size > WEB_SNAPSHOT_CACHE_MAX
+            }
+        }
+
         var saveZipped = false
 
         /**
@@ -421,6 +432,12 @@ class UncivFiles(
             } catch (ex: Exception) {
                 fixedData
             }
+            if (!PlatformCapabilities.current.backgroundThreadPools && unzippedJson.startsWith(WEB_SNAPSHOT_PREFIX)) {
+                val snapshotId = unzippedJson.removePrefix(WEB_SNAPSHOT_PREFIX)
+                val snapshot = webSnapshotCache[snapshotId]
+                    ?: throw UncivShowableException("Saved web snapshot expired. Please save again.")
+                return snapshot.clone().apply { setTransients() }
+            }
             val gameInfo = try {
                 json().fromJson(GameInfo::class.java, unzippedJson)
             } catch (ex: Exception) {
@@ -450,6 +467,13 @@ class UncivFiles(
         /** Returns gzipped serialization of [game], optionally gzipped ([forceZip] overrides [saveZipped]) */
         fun gameInfoToString(game: GameInfo, forceZip: Boolean? = null, updateChecksum: Boolean = false): String {
             game.version = CompatibilityVersion.CURRENT_COMPATIBILITY_VERSION
+
+            if (!PlatformCapabilities.current.backgroundThreadPools) {
+                val snapshotId = UUID.randomUUID().toString()
+                webSnapshotCache[snapshotId] = game.clone()
+                val snapshotToken = "$WEB_SNAPSHOT_PREFIX$snapshotId"
+                return if (forceZip ?: saveZipped) Gzip.zip(snapshotToken) else snapshotToken
+            }
 
             if (updateChecksum) game.checksum = game.calculateChecksum()
             val plainJson = json().toJson(game)
