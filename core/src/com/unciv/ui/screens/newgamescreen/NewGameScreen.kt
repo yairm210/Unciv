@@ -19,6 +19,7 @@ import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
+import com.unciv.platform.PlatformCapabilities
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.addSeparatorVertical
 import com.unciv.ui.components.extensions.disable
@@ -56,42 +57,62 @@ class NewGameScreen(
     private val mapOptionsTable: MapOptionsTable
 
     init {
+        var initStep = "start"
+        try {
+        initStep = "layout mode"
         val isPortrait = isNarrowerThan4to3()
 
+        initStep = "tryUpdateRuleset"
         tryUpdateRuleset(updateUI = false)  // must come before playerPickerTable so mod nations from fromSettings
 
         // remove the victory types which are not in the rule set (e.g. were in the recently disabled mod)
+        initStep = "cleanup victory types"
         gameSetupInfo.gameParameters.victoryTypes.removeAll { it !in ruleset.victories.keys }
 
         if (gameSetupInfo.gameParameters.victoryTypes.isEmpty())
             gameSetupInfo.gameParameters.victoryTypes.addAll(ruleset.victories.keys)
 
+        initStep = "create player picker"
         rightSideButton.enable()  // now because PlayerPickerTable init might disable it again
         playerPickerTable = PlayerPickerTable(
             this, gameSetupInfo.gameParameters,
             if (isPortrait) stage.width - 20f else 0f
         )
+        initStep = "create game options table"
         newGameOptionsTable = GameOptionsTable(
             this, isPortrait,
             updatePlayerPickerTable = { desiredCiv -> playerPickerTable.update(desiredCiv) },
             updatePlayerPickerRandomLabel = { playerPickerTable.updateRandomNumberLabel() }
         )
+        initStep = "create map options table"
         mapOptionsTable = MapOptionsTable(this)
-        closeButton.onActivation {
-            mapOptionsTable.cancelBackgroundJobs()
-            game.popScreen()
+        initStep = "wire close button"
+        if (PlatformCapabilities.current.backgroundThreadPools) {
+            closeButton.onActivation {
+                mapOptionsTable.cancelBackgroundJobs()
+                game.popScreen()
+            }
+            closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
+        } else {
+            closeButton.onClick {
+                mapOptionsTable.cancelBackgroundJobs()
+                game.popScreen()
+            }
         }
-        closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
 
+        initStep = "init orientation layout"
         if (isPortrait) initPortrait()
         else initLandscape()
+        initStep = "set table backgrounds"
         bottomTable.background = skinStrings.getUiBackground("NewGameScreen/BottomTable", tintColor = skinStrings.skinConfig.clearColor)
         topTable.background = skinStrings.getUiBackground("NewGameScreen/TopTable", tintColor = skinStrings.skinConfig.clearColor)
 
+        initStep = "create bottom controls"
         val horizontalGroup = HorizontalGroup().padBottom(5f).space(10f)
         rightSideGroup.addActorAt(0, horizontalGroup)
 
         if (UncivGame.Current.settings.lastGameSetup != null) {
+            initStep = "create reset defaults button"
             val resetToDefaultsButton = "Reset to defaults".toTextButton()
             resetToDefaultsButton.onClick {
                 ConfirmPopup(
@@ -108,10 +129,15 @@ class NewGameScreen(
             horizontalGroup.addActor(resetToDefaultsButton)
         }
 
+        initStep = "create start game button"
         val startGameButton = "Start game!".toTextButton().apply { color = Color.GREEN }        
         startGameButton.onClick(this::startGameAvoidANRs)
         horizontalGroup.addActor(startGameButton)
         pickerPane.rightSideButton.remove()
+        } catch (ex: Exception) {
+            Log.error("NewGameScreen init failed at step: %s", initStep)
+            throw IllegalStateException("NewGameScreen init failed at step: $initStep", ex)
+        }
     }
 
     private fun startGameAvoidANRs(){

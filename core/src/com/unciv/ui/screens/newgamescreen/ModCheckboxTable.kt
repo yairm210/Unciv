@@ -7,8 +7,10 @@ import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.validation.ModCompatibility
+import com.unciv.platform.PlatformCapabilities
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toCheckBox
+import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.components.widgets.UncivTextField
@@ -16,6 +18,7 @@ import com.unciv.ui.screens.modmanager.ModManagementScreen
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Concurrency
+import com.unciv.utils.Log
 
 /**
  * A widget containing one expander for extension mods.
@@ -52,10 +55,14 @@ class ModCheckboxTable(
     private val expanderPadTop = if (isPortrait) 0f else 16f
 
     init {
+        var initStep = "start"
+        try {
+        initStep = "collect mod rulesets"
         val modRulesets = RulesetCache.values.filter {
             ModCompatibility.isExtensionMod(it)
         }
 
+        initStep = "create checkbox widgets"
         for (mod in modRulesets.sortedBy { it.name }) {
             val checkBox = mod.name.toCheckBox(mod.name in mods)
             checkBox.setText(ModManagementScreen.cleanModName(mod.name))
@@ -67,7 +74,12 @@ class ModCheckboxTable(
             modWidgets += ModWithCheckBox(mod, checkBox)
         }
 
+        initStep = "setBaseRuleset($initialBaseRuleset)"
         setBaseRuleset(initialBaseRuleset)
+        } catch (ex: Exception) {
+            Log.error("ModCheckboxTable init failed at step: %s", initStep)
+            throw IllegalStateException("ModCheckboxTable init failed at step: $initStep", ex)
+        }
     }
 
     fun updateSelection() {
@@ -81,50 +93,82 @@ class ModCheckboxTable(
     }
 
     fun setBaseRuleset(newBaseRulesetName: String) {
-        val newBaseRuleset = RulesetCache[newBaseRulesetName]
-            // We're calling this from init, baseRuleset is lateinit, and the mod may have been deleted: Must make sure baseRuleset is initialized
-            ?: return setBaseRuleset(BaseRuleset.Civ_V_GnK.fullName)
-        baseRulesetName = newBaseRulesetName
-        baseRuleset = newBaseRuleset
-        savedModcheckResult = null
-        clear()
-        mods.clear()  // We'll regenerate this from checked widgets
+        var step = "resolve base ruleset"
+        try {
+            val newBaseRuleset = RulesetCache[newBaseRulesetName]
+                // We're calling this from init, baseRuleset is lateinit, and the mod may have been deleted: Must make sure baseRuleset is initialized
+                ?: return setBaseRuleset(BaseRuleset.Civ_V_GnK.fullName)
+            baseRulesetName = newBaseRulesetName
+            baseRuleset = newBaseRuleset
+            savedModcheckResult = null
 
-        val compatibleMods = modWidgets
-            .filter { ModCompatibility.meetsBaseRequirements(it.mod, baseRuleset) }
+            step = "clear current table/mod selection"
+            clear()
+            mods.clear()  // We'll regenerate this from checked widgets
 
-        if (compatibleMods.none()) return
+            step = "filter compatible mods"
+            val compatibleMods = modWidgets
+                .filter { ModCompatibility.meetsBaseRequirements(it.mod, baseRuleset) }
+                .distinctBy { it.mod.name }
 
-        for (mod in compatibleMods) {
-            if (mod.widget.isChecked) mods += mod.mod.name
-        }
+            if (compatibleMods.none()) return
 
-        add(ExpanderTab("Extension mods", persistenceID = "NewGameExpansionMods", defaultPad = 0f) {
-            it.defaults().pad(5f,0f)
-
-            val searchModsTextField = UncivTextField("Search mods")
-            
-            if (compatibleMods.size > 10) 
-                it.add(searchModsTextField).row()
-            
-            val modsTable = Table()
-            modsTable.defaults().pad(5f)
-            it.add(modsTable)
-            
-            fun populateModsTable(){
-                modsTable.clear()
-                val searchText = searchModsTextField.text.lowercase()
-                for (mod in compatibleMods)
-                    if (searchText.isEmpty() || mod.mod.name.lowercase().contains(searchText))
-                        modsTable.add(mod.widget).left().row()
+            step = "sync checked compatible mods"
+            for (mod in compatibleMods) {
+                if (mod.widget.isChecked) mods += mod.mod.name
             }
-            populateModsTable()
-            searchModsTextField.onChange { populateModsTable() }
-        }).padTop(expanderPadTop).growX().row()
 
-        disableIncompatibleMods()
+            step = "build extension mods section"
+            val buildSection: (Table) -> Unit = { container ->
+                container.defaults().pad(5f, 0f)
+                val searchModsTextField = UncivTextField("Search mods")
+                if (compatibleMods.size > 10) container.add(searchModsTextField).row()
 
-        Concurrency.run { complexModCheckReturnsErrors() }
+                val modsTable = Table()
+                modsTable.defaults().pad(5f)
+                container.add(modsTable)
+
+                fun populateModsTable() {
+                    modsTable.clear()
+                    val searchText = searchModsTextField.text.lowercase()
+                    val addedWidgets = HashSet<CheckBox>()
+                    for (mod in compatibleMods) {
+                        if (!addedWidgets.add(mod.widget)) continue
+                        if (searchText.isNotEmpty() && !mod.mod.name.lowercase().contains(searchText)) continue
+                        modsTable.add(mod.widget).left().row()
+                    }
+                }
+                populateModsTable()
+                searchModsTextField.onChange { populateModsTable() }
+            }
+
+            if (PlatformCapabilities.current.backgroundThreadPools) {
+                add(ExpanderTab("Extension mods", persistenceID = "NewGameExpansionMods", defaultPad = 0f, initContent = buildSection))
+                    .padTop(expanderPadTop).growX().row()
+            } else {
+                val flatSection = Table()
+                flatSection.add("Extension mods".toLabel())
+                    .left().row()
+                buildSection(flatSection)
+                add(flatSection).padTop(expanderPadTop).growX().row()
+            }
+
+            step = "disable incompatible checkboxes"
+            disableIncompatibleMods()
+
+            step = "async complex mod check"
+            if (PlatformCapabilities.current.backgroundThreadPools) {
+                Concurrency.run { complexModCheckReturnsErrors() }
+            } else {
+                savedModcheckResult = null
+            }
+        } catch (ex: Exception) {
+            val topFrames = ex.stackTrace.take(8).joinToString(" | ") { "${it.className}.${it.methodName}:${it.lineNumber}" }
+            Log.error("ModCheckboxTable.setBaseRuleset failed at step: %s", step)
+            Log.error("ModCheckboxTable.setBaseRuleset throwable: %s: %s", ex::class.java.name, ex.message ?: "")
+            Log.error("ModCheckboxTable.setBaseRuleset top frames: %s", topFrames)
+            throw IllegalStateException("ModCheckboxTable.setBaseRuleset failed at step: $step", ex)
+        }
     }
 
     fun disableAllCheckboxes() {
@@ -159,6 +203,15 @@ class ModCheckboxTable(
         mod: Ruleset
     ) {
         if (disableChangeEvents) return
+
+        if (!PlatformCapabilities.current.backgroundThreadPools) {
+            if (checkBox.isChecked) mods.add(mod.name) else mods.remove(mod.name)
+            Concurrency.runOnGLThread {
+                disableIncompatibleMods()
+                onUpdate(mod.name)
+            }
+            return
+        }
 
         if (checkBox.isChecked) {
             // First the quick standalone check

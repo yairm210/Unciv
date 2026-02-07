@@ -10,6 +10,7 @@ import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.logic.map.mapgenerator.MapResourceSetting
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.platform.PlatformCapabilities
 import com.unciv.ui.components.extensions.*
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
@@ -72,25 +73,39 @@ class MapParametersTable(
     }
 
     fun update() {
-        clear()
+        var step = "clear"
+        try {
+            clear()
 
-        skin = BaseScreen.skin
-        defaults().pad(5f, 5f)
-        if (mapGeneratedMainType == MapGeneratedMainType.randomGenerated) {
-            val prompt = "Which options should be available to the random selection?"
-            val width = (previousScreen as? NewGameScreen)?.getColumnWidth() ?: 200f
-            val label = WrappableLabel(prompt, width - 10f)  // 20 is the defaults() padding
-            label.setAlignment(Align.center)
-            label.wrap = true
-            add(label).colspan(2).grow().row()
+            step = "base skin/defaults"
+            skin = BaseScreen.skin
+            defaults().pad(5f, 5f)
+            if (mapGeneratedMainType == MapGeneratedMainType.randomGenerated) {
+                step = "random generated prompt"
+                val prompt = "Which options should be available to the random selection?"
+                val width = (previousScreen as? NewGameScreen)?.getColumnWidth() ?: 200f
+                val label = WrappableLabel(prompt, width - 10f)  // 20 is the defaults() padding
+                label.setAlignment(Align.center)
+                label.wrap = true
+                add(label).colspan(2).grow().row()
+            }
+            step = "addMapShapeSelectBox"
+            addMapShapeSelectBox()
+            step = "addMapTypeSelectBox"
+            addMapTypeSelectBox()
+            step = "addWorldSizeTable"
+            addWorldSizeTable()
+            step = "addResourceSelectBox"
+            addResourceSelectBox()
+            step = "addWrappedCheckBoxes"
+            addWrappedCheckBoxes()
+            step = "addAdvancedSettings"
+            addAdvancedSettings()
+            step = "generateExampleMap"
+            generateExampleMap()
+        } catch (ex: Exception) {
+            throw IllegalStateException("MapParametersTable update failed at step: $step", ex)
         }
-        addMapShapeSelectBox()
-        addMapTypeSelectBox()
-        addWorldSizeTable()
-        addResourceSelectBox()
-        addWrappedCheckBoxes()
-        addAdvancedSettings()
-        generateExampleMap()
     }
 
     fun reseed() {
@@ -130,6 +145,13 @@ class MapParametersTable(
     }
 
     private fun generateExampleMap(){
+        if (!PlatformCapabilities.current.backgroundThreadPools) {
+            mapTypeExample.clear()
+            if (!forMapEditor) {
+                mapTypeExample.add("Preview unavailable on Web".toLabel()).pad(10f)
+            }
+            return
+        }
         val ruleset = if (previousScreen is NewGameScreen) previousScreen.ruleset else RulesetCache.getVanillaRuleset()
         Concurrency.run("Generate example map") {
             val mapParametersForExample = if (forMapEditor) mapParameters else mapParameters.clone().apply { seed = 0 }
@@ -342,15 +364,28 @@ class MapParametersTable(
     private fun addWrappedCheckBoxes() {
         val worldWrapWarning = "World wrap maps are very memory intensive - creating large world wrap maps on Android can lead to crashes!"
         if (mapGeneratedMainType == MapGeneratedMainType.randomGenerated) {
-            add(ExpanderTab("{Other Settings}", persistenceID = "NewGameOtherSettings", startsOutOpened = false) {
-                it.defaults().pad(5f,0f)
-                it.addStrategicBalanceCheckbox()
-                it.addLegendaryStartCheckbox()
-                it.addNoRuinsCheckbox()
-                it.addNoNaturalWondersCheckbox()
-                it.addWorldWrapCheckbox()
-                it.add(worldWrapWarning.toLabel(fontSize = 14).apply { wrap=true }).colspan(2).fillX().row()
-            }).pad(10f).padTop(10f).colspan(2).growX().row()
+            if (PlatformCapabilities.current.backgroundThreadPools) {
+                add(ExpanderTab("{Other Settings}", persistenceID = "NewGameOtherSettings", startsOutOpened = false) {
+                    it.defaults().pad(5f,0f)
+                    it.addStrategicBalanceCheckbox()
+                    it.addLegendaryStartCheckbox()
+                    it.addNoRuinsCheckbox()
+                    it.addNoNaturalWondersCheckbox()
+                    it.addWorldWrapCheckbox()
+                    it.add(worldWrapWarning.toLabel(fontSize = 14).apply { wrap=true }).colspan(2).fillX().row()
+                }).pad(10f).padTop(10f).colspan(2).growX().row()
+            } else {
+                add(Table(skin).apply {
+                    defaults().left().pad(2.5f)
+                    add("{Other Settings}".toLabel()).row()
+                    addStrategicBalanceCheckbox()
+                    addLegendaryStartCheckbox()
+                    addNoRuinsCheckbox()
+                    addNoNaturalWondersCheckbox()
+                    addWorldWrapCheckbox()
+                    add(worldWrapWarning.toLabel(fontSize = 14).apply { wrap = true }).colspan(2).fillX().row()
+                }).pad(10f).padTop(10f).colspan(2).growX().row()
+            }
         } else {
             add(Table(skin).apply {
                 defaults().left().pad(2.5f)
@@ -365,10 +400,17 @@ class MapParametersTable(
     }
 
     private fun addAdvancedSettings() {
-        val expander = ExpanderTab("Advanced Settings", startsOutOpened = false, defaultPad = 0f) {
-            addAdvancedControls(it)
+        if (PlatformCapabilities.current.backgroundThreadPools) {
+            val expander = ExpanderTab("Advanced Settings", startsOutOpened = false, defaultPad = 0f) {
+                addAdvancedControls(it)
+            }
+            add(expander).padTop(10f).colspan(2).growX().row()
+        } else {
+            val advancedTable = Table(skin)
+            advancedTable.add("Advanced Settings".toLabel()).left().row()
+            addAdvancedControls(advancedTable)
+            add(advancedTable).padTop(10f).colspan(2).growX().row()
         }
-        add(expander).padTop(10f).colspan(2).growX().row()
     }
 
     private fun addAdvancedControls(table: Table) {

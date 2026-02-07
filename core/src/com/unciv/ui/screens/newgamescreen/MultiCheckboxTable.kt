@@ -6,6 +6,7 @@ import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.widgets.ExpanderTab
+import com.unciv.platform.PlatformCapabilities
 
 /**
  * A widget containing one expander for check boxes.
@@ -36,10 +37,21 @@ class MultiCheckboxTable(
         }
 
         if (checkBoxes.any()) {
-            add(ExpanderTab(title, persistenceID = persistenceID, startsOutOpened = false) {
-                it.defaults().pad(5f,0f)
-                for (checkbox in checkBoxes) it.add(checkbox).row()
-            }).pad(0f).padTop(10f).colspan(2).growX().row()
+            if (PlatformCapabilities.current.backgroundThreadPools) {
+                add(ExpanderTab(title, persistenceID = persistenceID, startsOutOpened = false) {
+                    it.defaults().pad(5f,0f)
+                    for (checkbox in checkBoxes) it.add(checkbox).row()
+                }).pad(0f).padTop(10f).colspan(2).growX().row()
+            } else {
+                val table = Table()
+                table.defaults().pad(5f, 0f)
+                table.add(title.toCheckBox(true).apply {
+                    isDisabled = true
+                    isChecked = true
+                }).row()
+                for (checkbox in checkBoxes) table.add(checkbox).row()
+                add(table).pad(0f).padTop(10f).colspan(2).growX().row()
+            }
         }
     }
 
