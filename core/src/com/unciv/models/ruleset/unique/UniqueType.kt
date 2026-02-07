@@ -890,6 +890,7 @@ enum class UniqueType(
     OneTimeConsumeResources("Instantly consumes [positiveAmount] [stockpiledResource]", UniqueTarget.Triggerable),
     OneTimeProvideResources("Instantly provides [positiveAmount] [stockpiledResource]", UniqueTarget.Triggerable),
 
+    OneTimeSetStockpile("Set [stockpile] to [amount]", UniqueTarget.Triggerable, flags = setOf(UniqueFlag.AcceptsSpeedModifier)),
     OneTimeGainResource("Instantly gain [amount] [stockpile]", UniqueTarget.Triggerable, flags = setOf(UniqueFlag.AcceptsSpeedModifier)),
     OneTimeGainStat("Gain [amount] [stat]", UniqueTarget.Triggerable, flags = setOf(UniqueFlag.AcceptsSpeedModifier)),
     OneTimeGainStatRange("Gain [amount]-[amount] [stat]", UniqueTarget.Triggerable, flags = setOf(UniqueFlag.AcceptsSpeedModifier)),

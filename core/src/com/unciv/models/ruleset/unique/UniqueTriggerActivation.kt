@@ -677,6 +677,38 @@ object UniqueTriggerActivation {
                 }
             }
 
+            UniqueType.OneTimeSetStockpile -> {
+                val resourceName = unique.params[0]
+                val resource = ruleset.getGameResource(resourceName) ?: return null
+                if (resource is TileResource && !resource.isStockpiled) return null
+
+                return {
+                    var amountRequired = unique.params[0].toInt()
+                    if (unique.isModifiedByGameSpeed()) {
+                        amountRequired = if (resource is Stat) (amountRequired * civInfo.gameInfo.speed.statCostModifiers[resource]!!).roundToInt()
+                        else (amountRequired * civInfo.gameInfo.speed.modifier).roundToInt()
+                    }
+                    if (city != null){
+                        val currentAmount = city.getGameResource(resource)
+                        val missingAmount = amountRequired - currentAmount
+                        city.addGameResource(resource, missingAmount)
+                    }
+                    else {
+                        val currentAmount = civInfo.getGameResource(resource)
+                        val missingAmount = amountRequired - currentAmount
+                        civInfo.addGameResource(resource, missingAmount)
+                    }
+                    
+                    val notificationText = getNotificationText(
+                        notification, triggerNotificationText,
+                        "[$resourceName] has been set to [$amountRequired]"
+                    )
+                    if (notificationText != null)
+                        civInfo.addNotification(notificationText, NotificationCategory.General, resourceName)
+                    true
+                }
+            }
+
             UniqueType.UnitsGainPromotion -> {
                 val filter = unique.params[0]
                 val promotionName = unique.params[1]

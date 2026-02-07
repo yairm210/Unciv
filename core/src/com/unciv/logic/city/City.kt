@@ -253,10 +253,6 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
         return finalModifier
     }
-    /** Gets modifiers for ALL resources */
-    @Readonly
-    fun getResourceModifiers(): Map<String, Float> =
-        civ.gameInfo.ruleset.tileResources.values.associate { it.name to getResourceModifier(it) }
 
     @Readonly fun isGrowing() = foodForNextTurn() > 0
     @Readonly fun isStarving() = foodForNextTurn() < 0
@@ -270,17 +266,22 @@ class City : IsPartOfGameInfoSerialization, INamed {
     @Readonly fun getGreatPersonPercentageBonus() = GreatPersonPointsBreakdown.getGreatPersonPercentageBonus(this)
     @Readonly fun getGreatPersonPoints() = GreatPersonPointsBreakdown(this).sum()
 
-    fun gainStockpiledResource(resource: TileResource, amount: Int) {
+    fun gainStockpiledResource(resource: TileResource, amount: Int) =
         if (resource.isCityWide) resourceStockpiles.add(resource.name, amount)
         else civ.resourceStockpiles.add(resource.name, amount)
-    }
 
-    fun addStat(stat: Stat, amount: Int) {
-        when (stat) {
-            Stat.Production -> cityConstructions.addProductionPoints(amount)
-            Stat.Food -> population.foodStored += amount
-            else -> civ.addStat(stat, amount)
-        }
+    fun addStat(stat: Stat, amount: Int) = when (stat) {
+        Stat.Production -> cityConstructions.addProductionPoints(amount)
+        Stat.Food -> population.foodStored += amount
+        else -> civ.addStat(stat, amount)
+    }
+    
+    @Readonly
+    fun getGameResource(gameResource: GameResource): Int = when (gameResource){
+        is TileResource -> getAvailableResourceAmount(gameResource)
+        is Stat -> getStatReserve(gameResource)
+        SubStat.StoredFood -> population.foodStored
+        else -> civ.getGameResource(gameResource) // assume it's a global substat - as of now only golden age points
     }
 
     fun addGameResource(stat: GameResource, amount: Int) {
@@ -297,21 +298,17 @@ class City : IsPartOfGameInfoSerialization, INamed {
     }
     
     @Readonly
-    fun getStatReserve(stat: Stat): Int {
-        return when (stat) {
-            Stat.Production -> cityConstructions.getWorkDone(cityConstructions.getCurrentConstruction().name)
-            Stat.Food -> population.foodStored
-            else -> civ.getStatReserve(stat)
-        }
+    fun getStatReserve(stat: Stat): Int = when (stat) {
+        Stat.Production -> cityConstructions.getWorkDone(cityConstructions.getCurrentConstruction().name)
+        Stat.Food -> population.foodStored
+        else -> civ.getStatReserve(stat)
     }
 
     @Readonly
-    fun hasStatToBuy(stat: Stat, price: Int): Boolean {
-        return when {
-            civ.gameInfo.gameParameters.godMode -> true
-            price == 0 -> true
-            else -> getStatReserve(stat) >= price
-        }
+    fun hasStatToBuy(stat: Stat, price: Int): Boolean = when {
+        civ.gameInfo.gameParameters.godMode -> true
+        price == 0 -> true
+        else -> getStatReserve(stat) >= price
     }
 
     @Readonly internal fun getMaxHealth() = 200 + cityConstructions.getBuiltBuildings().sumOf { it.cityHealth }

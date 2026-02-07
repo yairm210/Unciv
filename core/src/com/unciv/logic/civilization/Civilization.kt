@@ -981,6 +981,16 @@ class Civilization : IsPartOfGameInfoSerialization {
             // Happiness cannot be added as it is recalculated again, use a unique instead
         }
     }
+    
+    @Readonly
+    fun getGameResource(gameResource:GameResource): Int {
+        return when (gameResource) {
+            is TileResource -> getResourceAmount(gameResource)
+            is Stat -> getStatReserve(gameResource)
+            SubStat.GoldenAgePoints -> goldenAges.storedHappiness
+            else -> throw Exception("Unrecognized gameResource ${gameResource.name}")
+        }
+    }
 
     fun gainStockpiledResource(resource: TileResource, amount: Int) {
         if (resource.isCityWide) return
