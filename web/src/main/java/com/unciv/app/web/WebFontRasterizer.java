@@ -64,4 +64,48 @@ public final class WebFontRasterizer {
                             + "for (var i = 0; i < data.length; i++) out[3 + i] = data[i];"
                             + "return out;")
     public static native int[] rasterizeGlyph(String text, int fontSize, String fontFamily);
+
+    @JSBody(
+            params = {"text", "fontSize", "fontFamily", "ascent", "descent", "height", "leading"},
+            script =
+                    "var root = typeof window !== 'undefined' ? window : globalThis;"
+                            + "if (!root.__uncivFontCanvas) {"
+                            + "  root.__uncivFontCanvas = root.document.createElement('canvas');"
+                            + "  root.__uncivFontCtx = root.__uncivFontCanvas.getContext('2d', { willReadFrequently: true });"
+                            + "}"
+                            + "if (text == null || text.length === 0) text = ' ';"
+                            + "var canvas = root.__uncivFontCanvas;"
+                            + "var ctx = root.__uncivFontCtx;"
+                            + "ctx.font = fontSize + 'px ' + fontFamily;"
+                            + "ctx.textAlign = 'left';"
+                            + "ctx.textBaseline = 'alphabetic';"
+                            + "var measuredWidth = ctx.measureText(text).width;"
+                            + "var width = Math.max(1, Math.ceil(measuredWidth));"
+                            + "var fixedHeight = Math.max(1, Math.ceil(height));"
+                            + "canvas.width = width;"
+                            + "canvas.height = fixedHeight;"
+                            + "ctx = canvas.getContext('2d', { willReadFrequently: true });"
+                            + "root.__uncivFontCtx = ctx;"
+                            + "ctx.font = fontSize + 'px ' + fontFamily;"
+                            + "ctx.textAlign = 'left';"
+                            + "ctx.textBaseline = 'alphabetic';"
+                            + "ctx.fillStyle = 'rgba(255,255,255,1)';"
+                            + "ctx.clearRect(0, 0, width, fixedHeight);"
+                            + "var baseline = Math.max(1, Math.ceil(leading + ascent));"
+                            + "ctx.fillText(text, 0, baseline);"
+                            + "var data = ctx.getImageData(0, 0, width, fixedHeight).data;"
+                            + "var out = new Array(2 + data.length);"
+                            + "out[0] = width;"
+                            + "out[1] = fixedHeight;"
+                            + "for (var i = 0; i < data.length; i++) out[2 + i] = data[i];"
+                            + "return out;")
+    public static native int[] rasterizeGlyphAligned(
+            String text,
+            int fontSize,
+            String fontFamily,
+            float ascent,
+            float descent,
+            float height,
+            float leading
+    );
 }

@@ -33,15 +33,23 @@ class WebFont : FontImplementation {
     override fun getFontSize(): Int = fontSize
 
     override fun getCharPixmap(symbolString: String): Pixmap {
-        val rasterized = WebFontRasterizer.rasterizeGlyph(symbolString, fontSize, fontFamily)
-        if (rasterized.size < 3) {
+        val rasterized = WebFontRasterizer.rasterizeGlyphAligned(
+            symbolString,
+            fontSize,
+            fontFamily,
+            metrics.ascent,
+            metrics.descent,
+            metrics.height,
+            metrics.leading,
+        )
+        if (rasterized.size < 2) {
             val fallbackSize = fontSize.coerceAtLeast(8)
             return Pixmap(fallbackSize, fallbackSize, Pixmap.Format.RGBA8888)
         }
         val width = rasterized[0].coerceAtLeast(1)
         val height = rasterized[1].coerceAtLeast(1)
         val pixmap = Pixmap(width, height, Pixmap.Format.RGBA8888)
-        var src = 3
+        var src = 2
         for (y in 0 until height) {
             for (x in 0 until width) {
                 val r = rasterized.getOrElse(src) { 0 } and 0xFF
