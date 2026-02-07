@@ -1,6 +1,7 @@
 ﻿package com.unciv.ui.screens.mainmenuscreen
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Application
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
@@ -97,32 +98,57 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
     private fun getMenuButton(
         text: String,
         icon: String,
-        binding: KeyboardBinding,
+        binding: KeyboardBinding?,
         function: () -> Unit
     ): Table {
-        val table = Table().pad(15f, 30f, 15f, 30f)
-        table.background = skinStrings.getUiBackground(
-            "MainMenuScreen/MenuButton",
-            skinStrings.roundedEdgeRectangleShape,
-            skinStrings.skinConfig.baseColor
-        )
-        table.add(ImageGetter.getImage(icon)).size(50f).padRight(20f)
-        table.add(text.toLabel(fontSize = 30, alignment = Align.left)).expand().left().minWidth(200f)
-            .padTopDescent()
+        var buildStep = "start"
+        try {
+            buildStep = "create table"
+            val table = Table().pad(15f, 30f, 15f, 30f)
+            buildStep = "set background"
+            table.background = skinStrings.getUiBackground(
+                "MainMenuScreen/MenuButton",
+                skinStrings.roundedEdgeRectangleShape,
+                skinStrings.skinConfig.baseColor
+            )
+            buildStep = "add icon=$icon"
+            table.add(ImageGetter.getImage(icon)).size(50f).padRight(20f)
+            buildStep = "add label=$text"
+            table.add(text.toLabel(fontSize = 30, alignment = Align.left)).expand().left().minWidth(200f)
+                .padTopDescent()
 
-        table.touchable = Touchable.enabled
-        table.onActivation(binding = binding) {
-            stopBackgroundMapGeneration()
-            function()
+            buildStep = "set touch + activation"
+            table.touchable = Touchable.enabled
+            if (binding != null) {
+                table.onActivation(binding = binding) {
+                    stopBackgroundMapGeneration()
+                    function()
+                }
+            } else {
+                table.onClick {
+                    stopBackgroundMapGeneration()
+                    function()
+                }
+            }
+
+            buildStep = "pack"
+            table.pack()
+            return table
+        } catch (ex: Exception) {
+            throw IllegalStateException(
+                "MainMenu button build failed (text=$text icon=$icon binding=$binding step=$buildStep)",
+                ex
+            )
         }
-
-        table.pack()
-        return table
     }
 
     init {
+        var initStep = "init-start"
+        try {
+        initStep = "SoundPlayer.initializeForMainMenu"
         SoundPlayer.initializeForMainMenu()
 
+        initStep = "background actor setup"
         val background = skinStrings.getUiBackground("MainMenuScreen/Background", tintColor = clearColor)
         backgroundStack.add(BackgroundActor(background, Align.center))
         stage.addActor(backgroundStack)
@@ -130,9 +156,11 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
 
         // If we were in a mod, some of the resource images for the background map we're creating
         // will not exist unless we reset the ruleset and images
+        initStep = "load base ruleset"
         val baseRuleset = RulesetCache.getVanillaRuleset()
         ImageGetter.setNewRuleset(baseRuleset)
 
+        initStep = "setup easter eggs"
         if (game.settings.enableEasterEggs) {
             val holiday = HolidayDates.getHolidayByDate()
             if (holiday != null)
@@ -146,50 +174,72 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         // This is an extreme safeguard - should an invalid settings.tileSet ever make it past the
         // guard in UncivGame.create, simply omit the background so the user can at least get to options
         // (let him crash when loading a game but avoid locking him out entirely)
+        initStep = "start background map generation"
         if (game.settings.tileSet in TileSetCache)
             startBackgroundMapGeneration()
 
+        initStep = "build main menu columns"
         val column1 = Table().apply { defaults().pad(10f).fillX() }
         val column2 = if (singleColumn) column1 else Table().apply { defaults().pad(10f).fillX() }
+        val enableKeyboardBindings = Gdx.app.type != Application.ApplicationType.WebGL
 
+        initStep = "autosave resume button check"
         if (game.files.autosaves.autosaveExists()) {
-            val resumeTable = getMenuButton("Resume","OtherIcons/Resume", KeyboardBinding.Resume)
+            val resumeBinding = if (enableKeyboardBindings) KeyboardBinding.Resume else null
+            val resumeTable = getMenuButton("Resume","OtherIcons/Resume", resumeBinding)
                 { resumeGame() }
             column1.add(resumeTable).row()
         }
 
-        val quickstartTable = getMenuButton("Quickstart", "OtherIcons/Quickstart", KeyboardBinding.Quickstart)
+        initStep = "quickstart button:binding"
+        val quickstartBinding = if (enableKeyboardBindings) KeyboardBinding.Quickstart else null
+        initStep = "quickstart button:create"
+        val quickstartTable = getMenuButton("Quickstart", "OtherIcons/Quickstart", quickstartBinding)
             { quickstartNewGame() }
+        initStep = "quickstart button:add"
         column1.add(quickstartTable).row()
 
-        val newGameButton = getMenuButton("Start new game", "OtherIcons/New", KeyboardBinding.StartNewGame)
+        initStep = "start new game button"
+        val startNewGameBinding = if (enableKeyboardBindings) KeyboardBinding.StartNewGame else null
+        val newGameButton = getMenuButton("Start new game", "OtherIcons/New", startNewGameBinding)
             { game.pushScreen(NewGameScreen()) }
         column1.add(newGameButton).row()
 
-        val loadGameTable = getMenuButton("Load game", "OtherIcons/Load", KeyboardBinding.MainMenuLoad)
+        initStep = "load game button"
+        val loadGameBinding = if (enableKeyboardBindings) KeyboardBinding.MainMenuLoad else null
+        val loadGameTable = getMenuButton("Load game", "OtherIcons/Load", loadGameBinding)
             { game.pushScreen(LoadGameScreen()) }
         column1.add(loadGameTable).row()
 
         if (PlatformCapabilities.current.onlineMultiplayer) {
-            val multiplayerTable = getMenuButton("Multiplayer", "OtherIcons/Multiplayer", KeyboardBinding.Multiplayer)
+            initStep = "multiplayer button"
+            val multiplayerBinding = if (enableKeyboardBindings) KeyboardBinding.Multiplayer else null
+            val multiplayerTable = getMenuButton("Multiplayer", "OtherIcons/Multiplayer", multiplayerBinding)
                 { game.pushScreen(MultiplayerScreen()) }
             column2.add(multiplayerTable).row()
         }
 
-        val mapEditorScreenTable = getMenuButton("Map editor", "OtherIcons/MapEditor", KeyboardBinding.MapEditor)
+        initStep = "map editor button"
+        val mapEditorBinding = if (enableKeyboardBindings) KeyboardBinding.MapEditor else null
+        val mapEditorScreenTable = getMenuButton("Map editor", "OtherIcons/MapEditor", mapEditorBinding)
             { game.pushScreen(MapEditorScreen()) }
         column2.add(mapEditorScreenTable).row()
 
-        val modsTable = getMenuButton("Mods", "OtherIcons/Mods", KeyboardBinding.ModManager)
+        initStep = "mods button"
+        val modsBinding = if (enableKeyboardBindings) KeyboardBinding.ModManager else null
+        val modsTable = getMenuButton("Mods", "OtherIcons/Mods", modsBinding)
             { game.pushScreen(ModManagementScreen()) }
         column2.add(modsTable).row()
 
-        val optionsTable = getMenuButton("Options", "OtherIcons/Options", KeyboardBinding.MainMenuOptions)
+        initStep = "options button"
+        val optionsBinding = if (enableKeyboardBindings) KeyboardBinding.MainMenuOptions else null
+        val optionsTable = getMenuButton("Options", "OtherIcons/Options", optionsBinding)
             { openOptionsPopup() }
         optionsTable.onLongPress { openOptionsPopup(withDebug = true) }
         column2.add(optionsTable).row()
 
 
+        initStep = "menu table + scroll pane"
         val table = Table().apply { defaults().pad(10f) }
         table.add(column1)
         if (!singleColumn) table.add(column2)
@@ -200,14 +250,18 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         stage.addActor(scrollPane)
         table.center(scrollPane)
 
-        globalShortcuts.add(KeyboardBinding.QuitMainMenu) {
-            if (hasOpenPopups()) {
-                closeAllPopups()
-                return@add
+        initStep = "global shortcuts setup"
+        if (enableKeyboardBindings) {
+            globalShortcuts.add(KeyboardBinding.QuitMainMenu) {
+                if (hasOpenPopups()) {
+                    closeAllPopups()
+                    return@add
+                }
+                game.popScreen()
             }
-            game.popScreen()
         }
 
+        initStep = "civilopedia button setup"
         val civilopediaButton = "?".toLabel(fontSize = 48)
             .apply { setAlignment(Align.center) }
             .surroundWithCircle(buttonsSize, color = skinStrings.skinConfig.baseColor)
@@ -216,11 +270,14 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         civilopediaButton.touchable = Touchable.enabled
         // Passing the binding directly to onActivation gives you a size 26 tooltip...
         civilopediaButton.onActivation { openCivilopedia() }
-        civilopediaButton.keyShortcuts.add(KeyboardBinding.Civilopedia)
-        civilopediaButton.addTooltip(KeyboardBinding.Civilopedia, 30f)
+        if (enableKeyboardBindings) {
+            civilopediaButton.keyShortcuts.add(KeyboardBinding.Civilopedia)
+            civilopediaButton.addTooltip(KeyboardBinding.Civilopedia, 30f)
+        }
         civilopediaButton.setPosition(buttonsPosFromEdge, buttonsPosFromEdge)
         stage.addActor(civilopediaButton)
 
+        initStep = "right-side buttons setup"
         val rightSideButtons = Table().apply { defaults().space(10f) }
         val discordButton = ImageGetter.getImage("OtherIcons/Discord")
             .surroundWithCircle(buttonsSize, color = skinStrings.skinConfig.baseColor)
@@ -238,6 +295,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         rightSideButtons.setPosition(stage.width - buttonsPosFromEdge, buttonsPosFromEdge, Align.bottomRight)
         stage.addActor(rightSideButtons)
 
+        initStep = "version label setup"
         val versionLabel = "{Version} ${UncivGame.VERSION.text}".toLabel()
         versionLabel.setAlignment(Align.center)
         val versionTable = Table()
@@ -254,6 +312,9 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             popup.open()
         }
         stage.addActor(versionTable)
+        } catch (ex: Exception) {
+            throw IllegalStateException("MainMenuScreen init failed at step: $initStep", ex)
+        }
     }
 
     private fun startBackgroundMapGeneration() {

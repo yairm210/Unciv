@@ -3,6 +3,7 @@ package com.unciv.ui.components.input
 import com.badlogic.gdx.Input
 import com.unciv.Constants
 import com.unciv.models.stats.Stat
+import com.unciv.utils.Log
 
 
 private val unCamelCaseRegex = Regex("([A-Z])([A-Z])([a-z])|([a-z])([A-Z])")
@@ -255,7 +256,12 @@ enum class KeyboardBinding(
 
     init {
         this.label = label ?: unCamelCase(name)
-        this.defaultKey = key ?: KeyCharAndCode(name[0])
+        this.defaultKey = try {
+            key ?: KeyCharAndCode(name[0])
+        } catch (ex: IllegalArgumentException) {
+            Log.error("KeyboardBinding default key fallback: %s", name)
+            KeyCharAndCode.UNKNOWN
+        }
     }
 
     //region Helper constructors

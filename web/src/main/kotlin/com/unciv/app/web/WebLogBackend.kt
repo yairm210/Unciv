@@ -6,11 +6,15 @@ import java.time.Instant
 
 class WebLogBackend : LogBackend {
     override fun debug(tag: Tag, curThreadName: String, msg: String) {
-        println("${Instant.now()} [$curThreadName] [${tag.name}] $msg")
+        val line = "${Instant.now()} [$curThreadName] [${tag.name}] $msg"
+        println(line)
+        WebConsole.log(line)
     }
 
     override fun error(tag: Tag, curThreadName: String, msg: String) {
-        println("${Instant.now()} [$curThreadName] [${tag.name}] [ERROR] $msg")
+        val line = "${Instant.now()} [$curThreadName] [${tag.name}] [ERROR] $msg"
+        println(line)
+        WebConsole.error(line)
     }
 
     override fun isRelease(): Boolean = false

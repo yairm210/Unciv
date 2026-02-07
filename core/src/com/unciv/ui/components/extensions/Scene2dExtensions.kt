@@ -456,7 +456,11 @@ object GdxKeyCodeFixes {
         "Del" -> DEL
         "Backspace" -> BACKSPACE
         else -> {
-            val code = Input.Keys.valueOf(name)
+            val code = try {
+                Input.Keys.valueOf(name)
+            } catch (_: IllegalArgumentException) {
+                UNKNOWN
+            }
             if (code == -1) UNKNOWN else code
         }
     }
