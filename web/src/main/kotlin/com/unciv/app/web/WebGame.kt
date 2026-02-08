@@ -5,8 +5,9 @@ import com.unciv.UncivGame
 
 class WebGame : UncivGame() {
     override fun create() {
-        WebValidationRunner.maybeStart(this)
         super.create()
+        enforceWebInputDefaults()
+        WebValidationRunner.maybeStart(this)
     }
 
     override fun installAudioHooks() {
@@ -28,5 +29,14 @@ class WebGame : UncivGame() {
             settings.save()
         } catch (_: UninitializedPropertyAccessException) {
         }
+    }
+
+    private fun enforceWebInputDefaults() {
+        var changed = false
+        if (!settings.singleTapMove) {
+            settings.singleTapMove = true
+            changed = true
+        }
+        if (changed) settings.save()
     }
 }
