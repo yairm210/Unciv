@@ -1,5 +1,6 @@
 package com.unciv.app.desktop
 
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.glutils.HdpiMode
@@ -8,8 +9,8 @@ import com.badlogic.gdx.utils.SharedLibraryLoader
 import com.unciv.UncivGame
 import com.unciv.app.desktop.DesktopScreenMode.Companion.getMaximumWindowBounds
 import com.unciv.json.json
-import com.unciv.logic.files.SETTINGS_FILE_NAME
 import com.unciv.logic.files.UncivFiles
+import com.unciv.logic.files.UncivFiles.Companion.SETTINGS_FILE_NAME
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSettings.ScreenSize
 import com.unciv.models.metadata.GameSettings.WindowState
@@ -141,10 +142,8 @@ internal object DesktopLauncher {
             UiElementDocsWriter().write()
         }
 
-
-
-        // HardenGdxAudio extends Lwjgl3Application, and the Lwjgl3Application constructor runs as long as the game runs
-        HardenGdxAudio(DesktopGame(config, customDataDir), config)
+        // the Lwjgl3Application constructor runs as long as the game runs
+        Lwjgl3Application(DesktopGame(config, customDataDir), config)
         exitProcess(0)
     }
 
