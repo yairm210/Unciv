@@ -268,8 +268,19 @@ object ImageGetter {
 
     fun getPromotionPortrait(promotionName: String, size: Float = 30f): Group = PortraitPromotion(promotionName, size)
 
-    fun getResourcePortrait(resourceName: String, size: Float, amount: Int= 0): Group =
-        PortraitResource(resourceName, size, amount)
+    /**
+     * Gets the associated resource portait.
+     * @param resourceName The name of the resource, or a tag that matches it.
+     */
+    fun getResourcePortrait(resourceName: String, size: Float, amount: Int = 0): Group {
+        if (ruleset.tileResources.containsKey(resourceName)) {
+            return PortraitResource(resourceName, size, amount)
+        }
+        for (tileResource in ruleset.tileResources.values) {
+            if (tileResource.matchesFilter(resourceName)) return PortraitResource(tileResource.name, size, amount)
+        }
+        return PortraitResource("Fallback", size, amount)
+    }
 
     fun getTechIconPortrait(techName: String, circleSize: Float): Group = PortraitTech(techName, circleSize)
 
