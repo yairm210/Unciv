@@ -229,14 +229,20 @@ abstract class LoadOrSaveScreen(
                 return reposFromGithub.items.firstOrNull { it.name.lowercase() == repoName }
                     ?: throw UncivShowableException("Could not find a mod named \"[$repoName]\".")
             }
-
-            for (rawName in missingMods) {
-                val repoName = rawName.folderNameToRepoName().lowercase()
-                val repo = getRepo(repoName)
-                repo.downloadAndExtract()
+            
+            val exceptions = mutableListOf<String>()
+            for (rawModName in missingMods) {
+                try {
+                    val repoName = rawModName.folderNameToRepoName().lowercase()
+                    val repo = getRepo(repoName)
+                    repo.downloadAndExtract()
                         ?: throw Exception("Unexpected 404 error") // downloadAndExtract returns null for 404 errors and the like -> display something!
-                onModDownloaded(repo.name)
+                    onModDownloaded(repo.name)
+                } catch (e: Exception) {
+                    if (e.message != null) exceptions.add(e.message!!)
+                }
             }
+            if (exceptions.isNotEmpty()) throw UncivShowableException(exceptions.joinToString("\n"))
             onCompleted()
         }
     }
