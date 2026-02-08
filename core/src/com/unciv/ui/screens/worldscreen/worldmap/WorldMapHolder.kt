@@ -25,6 +25,7 @@ import com.unciv.logic.map.mapunit.movement.UnitMovement
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Spy
 import com.unciv.models.UncivSound
+import com.unciv.platform.PlatformCapabilities
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.MapArrowType
 import com.unciv.ui.components.MiscArrowTypes
@@ -91,7 +92,9 @@ class WorldMapHolder(
             val isEnabled = !isZooming() && !isPanning
             (stage as UncivStage).performPointerEnterExitEvents = isEnabled
             tileGroupMap.shouldAct = isEnabled
-            tileGroupMap.shouldHit = isEnabled
+            // TeaVM/WebGL can miss pan/zoom stop transitions, which can leave map hit-testing disabled.
+            // Keep map hit-testing enabled on web so tile taps reliably trigger unit movement.
+            tileGroupMap.shouldHit = isEnabled || Gdx.app.type == Application.ApplicationType.WebGL
         }
 
         onPanStartListener = { setActHit() }
@@ -176,6 +179,19 @@ class WorldMapHolder(
             }
 
             if (isTileDifferent && isPlayerTurn && canPerformActionsOnTile && existsUnitNotPreparingAirSweep) {
+                if (Gdx.app.type == Application.ApplicationType.WebGL)
+                    Log.debug("web-move click accepted target=%s selected=%d", tile.position.toString(), previousSelectedUnits.size)
+                if (
+                    Gdx.app.type == Application.ApplicationType.WebGL
+                    && UncivGame.Current.settings.singleTapMove
+                    && !previousSelectedUnitIsSwapping
+                    && !previousSelectedUnitIsConnectingRoad
+                ) {
+                    Log.debug("web-move direct-dispatch target=%s", tile.position.toString())
+                    moveUnitToTargetTile(previousSelectedUnits, tile)
+                    worldScreen.shouldUpdate = true
+                    return
+                }
                 when {
                     previousSelectedUnitIsSwapping -> addTileOverlaysWithUnitSwapping(previousSelectedUnits.first(), tile)
                     previousSelectedUnitIsConnectingRoad -> addTileOverlaysWithUnitRoadConnecting(previousSelectedUnits.first(), tile)
@@ -265,76 +281,111 @@ class WorldMapHolder(
         // and then calling the function again but without the unit that moved.
 
         val selectedUnit = selectedUnits.first()
+        if (Gdx.app.type == Application.ApplicationType.WebGL)
+            Log.debug("web-move start unit=%s from=%s target=%s", selectedUnit.name, selectedUnit.currentTile.position.toString(), targetTile.position.toString())
         markUnitMoveTutorialComplete(selectedUnit) // not too expensive to have it repeat too often
 
-        Concurrency.run("TileToMoveTo") {
-            // these are the heavy parts, finding where we want to go
-            // Since this runs in a different thread, even if we check movement.canReach()
-            // then it might change until we get to the getTileToMoveTo, so we just try/catch it
-            val tileToMoveTo: Tile
-            var pathToTile: List<Tile>? = null
-            try {
-                tileToMoveTo = selectedUnit.movement.getTileToMoveToThisTurn(targetTile)
-                if (!selectedUnit.type.isAirUnit() && !selectedUnit.isPreparingParadrop())
-                    pathToTile = selectedUnit.movement.getDistanceToTiles().getPathToTile(tileToMoveTo)
+        fun resolveMoveTarget(): Pair<Tile, List<Tile>?>? {
+            return try {
+                val tileToMoveTo = selectedUnit.movement.getTileToMoveToThisTurn(targetTile)
+                val pathToTile =
+                    if (!selectedUnit.type.isAirUnit() && !selectedUnit.isPreparingParadrop())
+                        selectedUnit.movement.getDistanceToTiles().getPathToTile(tileToMoveTo)
+                    else null
+                tileToMoveTo to pathToTile
             } catch (ex: Exception) {
+                if (Gdx.app.type == Application.ApplicationType.WebGL) {
+                    val canMoveTo = runCatching { selectedUnit.movement.canMoveTo(targetTile) }.getOrDefault(false)
+                    val canReach = runCatching { selectedUnit.movement.canReach(targetTile) }.getOrDefault(false)
+                    Log.debug(
+                        "web-move resolve-failed unit=%s from=%s target=%s move=%s canMoveTo=%s canReach=%s ex=%s:%s",
+                        selectedUnit.name,
+                        selectedUnit.currentTile.position.toString(),
+                        targetTile.position.toString(),
+                        selectedUnit.currentMovement.toString(),
+                        canMoveTo.toString(),
+                        canReach.toString(),
+                        ex::class.simpleName ?: "Exception",
+                        ex.message ?: ""
+                    )
+                }
                 when (ex) {
                     is UnitMovement.UnreachableDestinationException -> {
-                        // This is normal e.g. when selecting an air unit then right-clicking on an empty tile
-                        // Or telling a ship to run onto a coastal land tile.
-                        // Do nothing
+                        // This is normal e.g. when selecting an air unit then clicking on an empty tile
+                        // or sending a naval unit to an invalid land tile.
                     }
                     else -> Log.error("Exception in getTileToMoveToThisTurn", ex)
                 }
-                return@run // can't move here
+                null
             }
+        }
 
+        fun applyResolvedMove(tileToMoveTo: Tile, pathToTile: List<Tile>?) {
+            try {
+                // Because this is darned concurrent (as it MUST be to avoid ANRs),
+                // there are edge cases where the canReach is true,
+                // but until it reaches the headTowards the board has changed and so the headTowards fails.
+                // I can't think of any way to avoid this,
+                // but it's so rare and edge-case-y that ignoring its failure is actually acceptable, hence the empty catch
+                val previousTile = selectedUnit.currentTile
+                selectedUnit.movement.moveToTile(tileToMoveTo)
+
+                // If you try to send a unit to a tile that it can't even get nearer to, then this is actualy a dud
+                if (previousTile == selectedUnit.currentTile){
+                    if (Gdx.app.type == Application.ApplicationType.WebGL)
+                        Log.debug("web-move no-op unit=%s target=%s", selectedUnit.name, targetTile.position.toString())
+                    removeUnitActionOverlay() // so the user knows the action 'has been performed'
+                    return
+                }
+
+                if (selectedUnit.isExploring() || selectedUnit.isMoving())
+                    selectedUnit.action = null // remove explore on manual move
+                SoundPlayer.play(UncivSound.Whoosh)
+                if (selectedUnit.currentTile != targetTile)
+                    selectedUnit.action =
+                            "moveTo ${targetTile.position.x},${targetTile.position.y}"
+                if (selectedUnit.hasMovement()) worldScreen.bottomUnitTable.selectUnit(selectedUnit)
+                if (Gdx.app.type == Application.ApplicationType.WebGL)
+                    Log.debug("web-move success unit=%s to=%s", selectedUnit.name, selectedUnit.currentTile.position.toString())
+
+                worldScreen.shouldUpdate = true
+
+                if (pathToTile != null) {
+                    animateMovement(previousTile, selectedUnit, tileToMoveTo, pathToTile)
+                    if (selectedUnit.isEscorting()) {
+                        animateMovement(previousTile, selectedUnit.getOtherEscortUnit()!!, tileToMoveTo, pathToTile)
+                    }
+                }
+
+                if (selectedUnits.size > 1) { // We have more tiles to move
+                    moveUnitToTargetTile(selectedUnits.subList(1, selectedUnits.size), targetTile)
+                } else removeUnitActionOverlay() //we're done here
+
+                if (UncivGame.Current.settings.autoUnitCycle && !selectedUnit.hasMovement())
+                    worldScreen.switchToNextUnit()
+
+            } catch (ex: Exception) {
+                Log.error("Exception in moveUnitToTargetTile", ex)
+            }
+        }
+
+        // TeaVM/Web has no real thread pools; run movement synchronously to avoid dropping unit actions.
+        if (!PlatformCapabilities.current.backgroundThreadPools) {
+            val move = resolveMoveTarget() ?: return
+            worldScreen.recordUndoCheckpoint()
+            applyResolvedMove(move.first, move.second)
+            return
+        }
+
+        Concurrency.run("TileToMoveTo") {
+            val move = resolveMoveTarget() ?: return@run // can't move here
+            val tileToMoveTo = move.first
+            val pathToTile = move.second
 
             worldScreen.recordUndoCheckpoint()
 
             launchOnGLThread {
-                try {
-                    // Because this is darned concurrent (as it MUST be to avoid ANRs),
-                    // there are edge cases where the canReach is true,
-                    // but until it reaches the headTowards the board has changed and so the headTowards fails.
-                    // I can't think of any way to avoid this,
-                    // but it's so rare and edge-case-y that ignoring its failure is actually acceptable, hence the empty catch
-                    val previousTile = selectedUnit.currentTile
-                    selectedUnit.movement.moveToTile(tileToMoveTo)
-                    
-                    // If you try to send a unit to a tile that it can't even get nearer to, then this is actualy a dud
-                    if (previousTile == selectedUnit.currentTile){
-                        removeUnitActionOverlay() // so the user knows the action 'has been performed'
-                        return@launchOnGLThread
-                    }
-                    
-                    if (selectedUnit.isExploring() || selectedUnit.isMoving())
-                        selectedUnit.action = null // remove explore on manual move
-                    SoundPlayer.play(UncivSound.Whoosh)
-                    if (selectedUnit.currentTile != targetTile)
-                        selectedUnit.action =
-                                "moveTo ${targetTile.position.x},${targetTile.position.y}"
-                    if (selectedUnit.hasMovement()) worldScreen.bottomUnitTable.selectUnit(selectedUnit)
-
-                    worldScreen.shouldUpdate = true
-
-                    if (pathToTile != null) {
-                        animateMovement(previousTile, selectedUnit, tileToMoveTo, pathToTile)
-                        if (selectedUnit.isEscorting()) {
-                            animateMovement(previousTile, selectedUnit.getOtherEscortUnit()!!, tileToMoveTo, pathToTile)
-                        }
-                    }
-
-                    if (selectedUnits.size > 1) { // We have more tiles to move
-                        moveUnitToTargetTile(selectedUnits.subList(1, selectedUnits.size), targetTile)
-                    } else removeUnitActionOverlay() //we're done here
-
-                    if (UncivGame.Current.settings.autoUnitCycle && !selectedUnit.hasMovement())
-                        worldScreen.switchToNextUnit()
-
-                } catch (ex: Exception) {
-                    Log.error("Exception in moveUnitToTargetTile", ex)
-                }
+                applyResolvedMove(tileToMoveTo, pathToTile)
             }
         }
     }
@@ -434,12 +485,15 @@ class WorldMapHolder(
                 }
 
                 val turnsToGetThere = unitsWhoCanMoveThere.values.maxOrNull()!!
+                val oneTapMoveOnWeb = Gdx.app.type == Application.ApplicationType.WebGL
 
-                if (UncivGame.Current.settings.singleTapMove && turnsToGetThere == 1) {
+                if (UncivGame.Current.settings.singleTapMove && (turnsToGetThere == 1 || oneTapMoveOnWeb)) {
                     // single turn instant move
                     val selectedUnit = unitsWhoCanMoveThere.keys.first()
                     for (unit in unitsWhoCanMoveThere.keys) {
                         unit.movement.headTowards(tile)
+                        if (Gdx.app.type == Application.ApplicationType.WebGL)
+                            Log.debug("web-move single-tap unit=%s to=%s", unit.name, unit.currentTile.position.toString())
                     }
                     worldScreen.bottomUnitTable.selectUnit(selectedUnit) // keep moved unit selected
                 } else {

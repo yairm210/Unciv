@@ -1,6 +1,6 @@
 # Unciv Web Architecture Decisions (Phase-1)
 
-Last updated: 2026-02-07
+Last updated: 2026-02-08
 
 ## 1) Locked Decisions (Phase-1)
 
@@ -65,11 +65,13 @@ A deferred decision can be changed only when all are true:
 ## 7) Runtime Validation Status (Current)
 
 1. JS target (`:web:webBuildJs`) is currently the validated gameplay path in this environment:
-   - `tmp/run-web-validation.js` passes full matrix (boot/start-game/end-turn/save-load/clipboard/audio/font/external-link and disabled-by-design gates).
-   - headed Playwright flow passes: main menu -> new game -> world screen -> 3 turn clicks, no crash.
-2. WASM target (`:web:webBuildWasm`) compiles successfully, but runtime in current Playwright Chromium still fails before boot with repeated `dereferencing a null pointer`.
-3. Attempting to switch TeaVM target from `WEBASSEMBLY_GC` to `WEBASSEMBLY` is not viable with this backend set:
+   - `tmp/run-web-validation.js` passes full matrix (boot/start-game/end-turn/save-load/clipboard/audio/font/external-link and disabled-by-design gates), with explicit `Start new game` notes for Settler founding and Warrior melee combat.
+   - headed browser repro confirms quickstart opens world, settler action list includes `FoundCity`, and web movement success markers for warrior/settler.
+2. Web correctness fix applied at source:
+   - `Ruleset.loadNamedArray()` web fallback hydration now restores full `BaseUnit` fields from raw JSON (not only name/unitType), which removes partial-unit initialization on TeaVM and unblocks settler actions + movement logic.
+3. WASM target (`:web:webBuildWasm`) compiles successfully, but runtime in current Playwright Chromium still fails before boot with repeated `dereferencing a null pointer`.
+4. Attempting to switch TeaVM target from `WEBASSEMBLY_GC` to `WEBASSEMBLY` is not viable with this backend set:
    - compile-time native import annotation errors in `backend-web` classes.
-4. Current operational decision:
+5. Current operational decision:
    - keep WASM-first build support in place (`WEBASSEMBLY_GC`) and track runtime blocker separately.
    - use JS build for E2E regression validation until WASM runtime issue is resolved.

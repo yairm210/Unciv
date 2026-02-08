@@ -61,7 +61,10 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
         parameters.randomNumberOfPlayers = randomNumberOfPlayers
         parameters.minNumberOfPlayers = minNumberOfPlayers
         parameters.maxNumberOfPlayers = maxNumberOfPlayers
-        parameters.players = ArrayList(players)
+        parameters.players = ArrayList(players.size)
+        for (player in players) {
+            parameters.players.add(Player(player.chosenCiv, player.playerType, player.playerId))
+        }
         parameters.randomNumberOfCityStates = randomNumberOfCityStates
         parameters.minNumberOfCityStates = minNumberOfCityStates
         parameters.maxNumberOfCityStates = maxNumberOfCityStates

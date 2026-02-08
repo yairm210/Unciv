@@ -7,13 +7,19 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.GameStarter
 import com.unciv.logic.UncivShowableException
+import com.unciv.logic.battle.Battle
+import com.unciv.logic.battle.MapUnitCombatant
+import com.unciv.logic.battle.TargetHelper
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.files.PlatformSaverLoader
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.MapType
+import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.UncivSound
+import com.unciv.models.UnitActionType
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.metadata.Player
 import com.unciv.models.translations.tr
@@ -25,6 +31,7 @@ import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.ui.screens.savescreens.LoadGameScreen
 import com.unciv.ui.screens.savescreens.LoadOrSaveScreen
 import com.unciv.ui.screens.savescreens.SaveGameScreen
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import com.unciv.utils.Concurrency
 import java.time.Instant
 import kotlin.coroutines.resume
@@ -83,11 +90,33 @@ object WebValidationRunner {
 
             WebValidationInterop.publishState("running:Start new game")
             val startGame = validateStartNewGame(game)
-            record(results, "Start new game", startGame.first, "start_game_failed", startGame.second)
             if (!startGame.first) {
+                fail(results, "Start new game", "start_game_failed", startGame.second)
                 publish(results)
                 return
             }
+
+            WebValidationInterop.publishState("running:Settler found city")
+            val settlerFounding = validateSettlerFoundCity(game)
+            if (!settlerFounding.first) {
+                fail(results, "Start new game", "settler_found_city_failed", settlerFounding.second)
+                publish(results)
+                return
+            }
+
+            WebValidationInterop.publishState("running:Warrior melee combat")
+            val warriorCombat = validateWarriorMeleeCombat(game)
+            if (!warriorCombat.first) {
+                fail(results, "Start new game", "warrior_combat_failed", warriorCombat.second)
+                publish(results)
+                return
+            }
+
+            pass(
+                results,
+                "Start new game",
+                "${startGame.second} ${settlerFounding.second} ${warriorCombat.second}".trim()
+            )
 
             WebValidationInterop.publishState("running:End turn loop")
             val turnLoop = validateEndTurnLoop(game, turns = 10)
@@ -197,6 +226,105 @@ object WebValidationRunner {
             else false to "Generated test game but did not load to world screen in time."
         } catch (throwable: Throwable) {
             false to "Exception while starting game: ${throwable::class.simpleName} ${throwable.message ?: ""}".trim()
+        }
+    }
+
+    private suspend fun validateSettlerFoundCity(game: WebGame): Pair<Boolean, String> {
+        val gameInfo = game.gameInfo ?: return false to "No active game when validating settler founding."
+        val playerCiv = gameInfo.getCurrentPlayerCivilization()
+        val settler = findUsableCityFounder(playerCiv)
+            ?: return false to "No settler with enabled FoundCity action was found."
+
+        val cityCountBefore = playerCiv.cities.size
+        val settlerId = settler.id
+        val invoked = UnitActions.invokeUnitAction(settler, UnitActionType.FoundCity)
+        if (!invoked) return false to "FoundCity action could not be invoked for settler id=$settlerId."
+
+        val founded = waitUntilFrames(3600) {
+            val settlerStillExists = playerCiv.units.getUnitById(settlerId) != null
+            playerCiv.cities.size == cityCountBefore + 1 && !settlerStillExists
+        }
+        if (!founded) {
+            return false to "FoundCity did not complete (citiesBefore=$cityCountBefore, citiesAfter=${playerCiv.cities.size})."
+        }
+
+        val foundedCity = playerCiv.cities.lastOrNull()?.name ?: "unknown"
+        return true to "Settler founding validated (newCity=$foundedCity)."
+    }
+
+    private fun findUsableCityFounder(civ: Civilization): MapUnit? {
+        civ.units.getCivUnits().firstOrNull { unit ->
+            UnitActions.getUnitActions(unit, UnitActionType.FoundCity).any { it.action != null }
+        }?.let { return it }
+
+        val founderBase = civ.gameInfo.ruleset.units["Settler"]?.takeIf { it.isCityFounder() && it.isLandUnit }
+            ?: civ.gameInfo.ruleset.units.values.firstOrNull { base ->
+            base.isCityFounder() && base.isLandUnit
+        } ?: return null
+
+        val settleCandidates = civ.gameInfo.tileMap.tileList.asSequence()
+            .filter { tile -> tile.canBeSettled(civ) && tile.militaryUnit == null && tile.civilianUnit == null }
+            .take(64)
+
+        for (tile in settleCandidates) {
+            val spawned = civ.units.placeUnitNearTile(tile.position, founderBase) ?: continue
+            spawned.currentMovement = spawned.getMaxMovement().toFloat()
+            if (UnitActions.getUnitActions(spawned, UnitActionType.FoundCity).any { it.action != null }) {
+                return spawned
+            }
+            spawned.destroy()
+        }
+
+        return null
+    }
+
+    private suspend fun validateWarriorMeleeCombat(game: WebGame): Pair<Boolean, String> {
+        val gameInfo = game.gameInfo ?: return false to "No active game when validating warrior combat."
+        val playerCiv = gameInfo.getCurrentPlayerCivilization()
+        val enemyCiv = gameInfo.getAliveMajorCivs().firstOrNull { it != playerCiv }
+            ?: return false to "No enemy major civilization available for warrior combat validation."
+        val warrior = playerCiv.units.getCivUnits().firstOrNull { it.isMilitary() && it.baseUnit.isMelee() }
+            ?: return false to "No melee military unit found for current player."
+
+        ensureWarState(playerCiv, enemyCiv)
+        if (!playerCiv.isAtWarWith(enemyCiv)) {
+            return false to "Unable to establish war state with ${enemyCiv.civID}."
+        }
+
+        val spawnAnchor = warrior.getTile().neighbors
+            .firstOrNull { tile -> tile.isLand && !tile.isImpassible() && tile.militaryUnit == null && tile.civilianUnit == null }
+            ?: return false to "No valid adjacent tile to spawn enemy warrior."
+        val enemyWarrior = enemyCiv.units.placeUnitNearTile(spawnAnchor.position, warrior.baseUnit)
+            ?: return false to "Failed to spawn enemy warrior near player warrior."
+
+        warrior.currentMovement = warrior.getMaxMovement().toFloat()
+        warrior.attacksThisTurn = 0
+        warrior.action = null
+        val enemyHealthBefore = enemyWarrior.health
+
+        val attackable = TargetHelper.getAttackableEnemies(warrior, warrior.movement.getDistanceToTiles())
+            .firstOrNull { attackTile -> (attackTile.combatant as? MapUnitCombatant)?.unit?.id == enemyWarrior.id }
+            ?: return false to "No attackable enemy tile resolved for warrior-vs-warrior check."
+
+        Battle.moveAndAttack(MapUnitCombatant(warrior), attackable)
+        waitFrames(30)
+
+        val enemyAfter: MapUnit? = enemyCiv.units.getUnitById(enemyWarrior.id)
+        val damagedOrKilled = enemyAfter == null || enemyAfter.health < enemyHealthBefore
+        val attackConsumed = warrior.attacksThisTurn > 0 || warrior.currentMovement < warrior.getMaxMovement()
+        if (!damagedOrKilled || !attackConsumed) {
+            return false to "Warrior combat did not resolve as expected (damagedOrKilled=$damagedOrKilled, attackConsumed=$attackConsumed)."
+        }
+
+        return true to "Warrior melee combat validated (enemyDamaged=${enemyAfter?.health ?: 0}/$enemyHealthBefore)."
+    }
+
+    private fun ensureWarState(playerCiv: Civilization, enemyCiv: Civilization) {
+        if (!playerCiv.knows(enemyCiv)) {
+            playerCiv.diplomacyFunctions.makeCivilizationsMeet(enemyCiv)
+        }
+        if (!playerCiv.isAtWarWith(enemyCiv)) {
+            playerCiv.getDiplomacyManager(enemyCiv)?.declareWar()
         }
     }
 

@@ -193,6 +193,22 @@ class Ruleset {
         val items = json().fromJsonFile(arrayClass, fileHandle)
         if (PlatformCapabilities.current.backgroundThreadPools) return items
 
+        fun com.badlogic.gdx.utils.JsonValue.readStringOrNull(name: String): String? {
+            val value = getString(name, "")
+            return value.takeIf { it.isNotBlank() }
+        }
+
+        fun com.badlogic.gdx.utils.JsonValue.readStringArray(name: String): ArrayList<String> {
+            val values = ArrayList<String>()
+            var cursor = get(name)?.child
+            while (cursor != null) {
+                val item = cursor.asString()
+                if (item.isNotBlank()) values += item
+                cursor = cursor.next
+            }
+            return values
+        }
+
         val rawArray = JsonReader().parse(fileHandle)
         val rawEntries = ArrayList<com.badlogic.gdx.utils.JsonValue>()
         val rawByName = LinkedHashMap<String, com.badlogic.gdx.utils.JsonValue>()
@@ -218,9 +234,35 @@ class Ruleset {
                 else -> continue
             }
 
-            if (item is BaseUnit && item.unitType.isBlank()) {
-                val fallbackUnitType = raw.getString("unitType", "")
-                if (fallbackUnitType.isNotBlank()) item.unitType = fallbackUnitType
+            if (item is BaseUnit) {
+                val fallbackUnitType = raw.readStringOrNull("unitType")
+                if (fallbackUnitType != null) item.unitType = fallbackUnitType
+
+                item.cost = raw.getInt("cost", item.cost)
+                item.hurryCostModifier = raw.getInt("hurryCostModifier", item.hurryCostModifier)
+                item.movement = raw.getInt("movement", item.movement)
+                item.strength = raw.getInt("strength", item.strength)
+                item.rangedStrength = raw.getInt("rangedStrength", item.rangedStrength)
+                item.religiousStrength = raw.getInt("religiousStrength", item.religiousStrength)
+                item.range = raw.getInt("range", item.range)
+                item.interceptRange = raw.getInt("interceptRange", item.interceptRange)
+
+                item.requiredTech = raw.readStringOrNull("requiredTech")
+                item.requiredResource = raw.readStringOrNull("requiredResource")
+                item.obsoleteTech = raw.readStringOrNull("obsoleteTech")
+                item.upgradesTo = raw.readStringOrNull("upgradesTo")
+                item.replaces = raw.readStringOrNull("replaces")
+                item.uniqueTo = raw.readStringOrNull("uniqueTo")
+                item.attackSound = raw.readStringOrNull("attackSound")
+
+                val replacementText = raw.getString("replacementTextForUniques", item.replacementTextForUniques)
+                if (replacementText.isNotBlank()) item.replacementTextForUniques = replacementText
+
+                val rawPromotions = raw.readStringArray("promotions")
+                if (rawPromotions.isNotEmpty()) item.promotions = rawPromotions.toHashSet()
+
+                val rawUniques = raw.readStringArray("uniques")
+                if (rawUniques.isNotEmpty()) item.uniques = rawUniques
             }
             if (item is Terrain) {
                 val hasType = try {

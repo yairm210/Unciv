@@ -15,6 +15,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.GameStarter
 import com.unciv.logic.HolidayDates
 import com.unciv.logic.UncivShowableException
+import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
@@ -63,7 +64,9 @@ import com.unciv.ui.screens.worldscreen.BackgroundActor
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.ui.screens.worldscreen.mainmenu.WorldScreenMenuPopup
 import com.unciv.utils.Concurrency
+import com.unciv.utils.Log
 import com.unciv.utils.launchOnGLThread
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import yairm210.purity.annotations.Pure
 import kotlin.math.ceil
@@ -397,24 +400,30 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
     private fun quickstartNewGame() {
         ToastPopup(Constants.working, this)
         val errorText = "Cannot start game with the default new game parameters!"
-        Concurrency.run("QuickStart") {
+
+        val runQuickStart: suspend CoroutineScope.() -> Unit = runQuickStart@{
             val newGame: GameInfo
             // Can fail when starting the game...
             try {
                 val gameInfo = GameSetupInfo.fromSettings("Chieftain")
+                sanitizeQuickstartPlayers(gameInfo)
                 if (gameInfo.gameParameters.victoryTypes.isEmpty()) {
                     val ruleSet = RulesetCache.getComplexRuleset(gameInfo.gameParameters)
                     gameInfo.gameParameters.victoryTypes.addAll(ruleSet.victories.keys)
+                }
+                if (Gdx.app.type == Application.ApplicationType.WebGL) {
+                    val playersSummary = gameInfo.gameParameters.players.joinToString { "${it.playerType}:${it.chosenCiv}" }
+                    Log.debug("web-quickstart players=%s", playersSummary)
                 }
                 newGame = GameStarter.startNewGame(gameInfo)
 
             } catch (notAPlayer: UncivShowableException) {
                 val (message) = LoadGameScreen.getLoadExceptionMessage(notAPlayer)
                 launchOnGLThread { ToastPopup(message, this@MainMenuScreen) }
-                return@run
+                return@runQuickStart
             } catch (_: Exception) {
                 launchOnGLThread { ToastPopup(errorText, this@MainMenuScreen) }
-                return@run
+                return@runQuickStart
             }
 
             // ...or when loading the game
@@ -433,6 +442,37 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
                 launchOnGLThread {
                     ToastPopup(errorText, this@MainMenuScreen)
                 }
+            }
+        }
+
+        if (PlatformCapabilities.current.backgroundThreadPools)
+            Concurrency.run("QuickStart") { runQuickStart() }
+        else Concurrency.runOnGLThread("QuickStart") { runQuickStart() }
+    }
+
+    /**
+     * Quickstart should always launch a playable major-civ human game even when the persisted setup
+     * contains stale/invalid player civ references (e.g. city-state entries).
+     */
+    private fun sanitizeQuickstartPlayers(gameSetupInfo: GameSetupInfo) {
+        val gameParameters = gameSetupInfo.gameParameters
+        val ruleset = RulesetCache.getComplexRuleset(gameParameters)
+        for (player in gameParameters.players) {
+            if (player.chosenCiv == Constants.random || player.chosenCiv == Constants.spectator) continue
+            val nation = ruleset.nations[player.chosenCiv]
+            if (nation == null || !nation.isMajorCiv) {
+                player.chosenCiv = Constants.random
+            }
+        }
+
+        val hasHumanPlayer = gameParameters.players.any {
+            it.playerType == PlayerType.Human && it.chosenCiv != Constants.spectator
+        }
+        if (!hasHumanPlayer) {
+            val firstPlayable = gameParameters.players.firstOrNull { it.chosenCiv != Constants.spectator }
+            if (firstPlayable != null) {
+                firstPlayable.playerType = PlayerType.Human
+                if (firstPlayable.chosenCiv == Constants.spectator) firstPlayable.chosenCiv = Constants.random
             }
         }
     }

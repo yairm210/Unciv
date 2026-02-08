@@ -1,12 +1,12 @@
 feature,web_status,phase,blocking_issue,notes,last_verified
-Boot/Main menu,PASS,phase-1,,run-web-validation + targeted headed repro reached main menu without crash,2026-02-07T22:43:00Z
-Start new game,PASS,phase-1,,run-web-validation generated game and loaded world successfully,2026-02-07T22:43:00Z
-End turn loop,PASS,phase-1,,run-web-validation advanced 10 turns and targeted repro advanced 3 turns with no crash,2026-02-07T22:43:00Z
-Local save/load,PASS,phase-1,,web snapshot-token save path validated by run-web-validation local save/load step,2026-02-07T22:43:00Z
-Clipboard import/export,PASS,phase-1,,web snapshot-token clipboard roundtrip validated by run-web-validation,2026-02-07T22:43:00Z
-Audio,PASS,phase-1,,run-web-validation resolved and played UncivSound.Click,2026-02-07T22:43:00Z
+Boot/Main menu,PASS,phase-1,,run-web-validation and headed repro load main menu without crash or console/page errors,2026-02-08T01:27:45Z
+Start new game,PASS,phase-1,,run-web-validation generated and loaded a tiny game with Settler founding and Warrior melee combat validated,2026-02-08T01:27:45Z
+End turn loop,PASS,phase-1,,run-web-validation turn-flow checks pass and headed world repro reaches/acts in world without crash,2026-02-08T01:27:45Z
+Local save/load,PASS,phase-1,,web snapshot-token save path validated by run-web-validation local save/load step,2026-02-08T01:27:45Z
+Clipboard import/export,PASS,phase-1,,web snapshot-token clipboard roundtrip validated by run-web-validation,2026-02-08T01:27:45Z
+Audio,PASS,phase-1,,run-web-validation resolved and played UncivSound.Click,2026-02-08T01:27:45Z
 Multiplayer,DISABLED_BY_DESIGN,phase-1,phase_1_scope_disabled,explicitly gated off on web via PlatformCapabilities,2026-02-06T03:34:04Z
 Mod download/update,DISABLED_BY_DESIGN,phase-1,phase_1_scope_disabled,explicitly gated off on web via PlatformCapabilities,2026-02-06T03:34:04Z
 Custom file picker save/load,DISABLED_BY_DESIGN,phase-1,phase_1_scope_disabled,explicitly gated off on web via PlatformCapabilities,2026-02-06T03:34:04Z
-Translation/font selection,PASS,phase-1,,run-web-validation confirmed deterministic web font strategy and gated system font enumeration,2026-02-07T22:43:00Z
-External links,PASS,phase-1,,run-web-validation verified browser bridge openExternalURL invocation path,2026-02-07T22:43:00Z
+Translation/font selection,PASS,phase-1,,run-web-validation confirms deterministic web font path and gated system font enumeration,2026-02-08T01:27:45Z
+External links,PASS,phase-1,,run-web-validation verified browser bridge openExternalURL invocation path,2026-02-08T01:27:45Z
