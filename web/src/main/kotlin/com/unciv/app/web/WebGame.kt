@@ -7,7 +7,10 @@ class WebGame : UncivGame() {
     override fun create() {
         super.create()
         enforceWebInputDefaults()
-        WebValidationRunner.maybeStart(this)
+        val startedJsTests = WebJsTestRunner.maybeStart()
+        if (!startedJsTests) {
+            WebValidationRunner.maybeStart(this)
+        }
     }
 
     override fun installAudioHooks() {

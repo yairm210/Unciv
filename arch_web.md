@@ -81,3 +81,22 @@ A deferred decision can be changed only when all are true:
 6. Current operational decision:
    - keep WASM-first build support in place (`WEBASSEMBLY_GC`) and track runtime blocker separately.
    - use JS build for E2E regression validation until WASM runtime issue is resolved.
+
+## 8) Browser JS Test Harness Status (Current)
+
+1. All test sources are now compiled into the web JS build path:
+   - `web/build.gradle.kts` includes `../tests/src` and generated browser suite code.
+   - `CountableTests` is included (web compile classpath now includes `kotlin-reflect`).
+   - Minimal JUnit/Hamcrest compatibility stubs exist under `web/src/main/java/org/junit/*`, `web/src/main/java/junit/*`, and `web/src/main/java/org/hamcrest/*` for TeaVM/browser compileability.
+2. Browser execution mode is enabled via `index.html?jstests=1`:
+   - launcher routes to `WebJsTestsGame`.
+   - runner executes generated suite in Chromium and publishes JSON (`window.__uncivJsTestsResultJson`).
+3. Current measured browser JS suite result:
+   - classCount: 27
+   - totalRun: 224
+   - totalFailures: 157
+   - totalIgnored: 5
+4. Failure profile is dominated by backend-incompatible/unit-test-assumption gaps (desktop file APIs, reflection access differences, locale/number rendering differences, and tests that depend on JVM/headless runner semantics), not by startup/runtime fatal crashes.
+5. Decision for release gating:
+   - keep full browser JS suite execution available for visibility/regression tracking.
+   - keep gameplay readiness gate on browser E2E validation (`tmp/run-web-validation.js` and targeted headed world-flow repros), which currently pass.

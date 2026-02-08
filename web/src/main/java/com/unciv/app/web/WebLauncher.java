@@ -11,6 +11,7 @@ import com.unciv.utils.Log;
 
 public class WebLauncher {
     public static void main(String[] args) {
+        boolean jsTestsMode = WebJsTestInterop.isEnabled();
         PlatformCapabilities.setCurrent(PlatformCapabilities.webPhase1());
         Display.INSTANCE.setPlatform(new WebDisplay());
         Fonts.INSTANCE.setFontImplementation(new WebFont());
@@ -24,6 +25,10 @@ public class WebLauncher {
         config.useGL30 = true;
         config.showDownloadLogs = true;
 
+        if(jsTestsMode) {
+            new TeaApplication(new WebJsTestsGame(), config);
+            return;
+        }
         new TeaApplication(new WebGame(), config);
     }
 }

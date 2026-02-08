@@ -8,11 +8,16 @@ val gdxVersion: String by project
 val coroutinesVersion: String by project
 val ktorVersion: String by project
 val gdxTeaVMVersion = "-SNAPSHOT"
+val generatedWebJsTestsDir = layout.buildDirectory.dir("generated/web-jstests/kotlin")
 
 sourceSets {
     main {
         java.srcDir("src/main/java")
         java.srcDir("src/main/kotlin")
+        java.srcDir("../tests/src")
+        java.srcDir(generatedWebJsTestsDir)
+        java.exclude("com/unciv/dev/**")
+        java.exclude("com/unciv/testing/GdxTestRunner.kt")
     }
 }
 
@@ -39,11 +44,144 @@ java {
 
 dependencies {
     implementation(project(":core"))
+    implementation(kotlin("reflect"))
     implementation("com.badlogicgames.gdx:gdx:$gdxVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
     implementation("io.ktor:ktor-client-core:$ktorVersion")
     implementation("com.github.xpenatan.gdx-teavm:backend-teavm:$gdxTeaVMVersion")
     implementation("com.github.xpenatan.gdx-teavm:gdx-freetype-teavm:$gdxTeaVMVersion")
+}
+
+val generateWebJsTestSuite by tasks.registering {
+    group = "web"
+    description = "Generate deterministic browser JS test suite from tests/src classes."
+
+    val testsSourceRoot = rootProject.file("tests/src")
+    inputs.dir(testsSourceRoot)
+    outputs.dir(generatedWebJsTestsDir)
+
+    doLast {
+        val outputRoot = generatedWebJsTestsDir.get().asFile
+        val outputFile = outputRoot.resolve("com/unciv/app/web/WebJsTestSuite.kt")
+        outputFile.parentFile.mkdirs()
+
+        val packageRegex = Regex("^\\s*package\\s+([A-Za-z0-9_.]+)", setOf(RegexOption.MULTILINE))
+        val classRegex = Regex("^\\s*(?:class|object)\\s+([A-Za-z0-9_]+)", setOf(RegexOption.MULTILINE))
+        val methodRegex = Regex("^\\s*(?:public\\s+|private\\s+|internal\\s+|protected\\s+)?(?:suspend\\s+)?fun\\s+([A-Za-z0-9_]+)\\s*\\(")
+
+        val candidateFiles = testsSourceRoot.walkTopDown()
+            .filter { it.isFile && it.extension == "kt" }
+            .filterNot { file ->
+                val normalized = file.invariantSeparatorsPath
+                normalized.contains("/com/unciv/dev/")
+                    || normalized.endsWith("/com/unciv/testing/GdxTestRunner.kt")
+            }
+            .sortedBy { it.invariantSeparatorsPath }
+            .toList()
+
+        val body = buildString {
+            appendLine("package com.unciv.app.web")
+            appendLine()
+            appendLine("data class WebJsGeneratedTestMethod(")
+            appendLine("    val name: String,")
+            appendLine("    val ignoredReason: String?,")
+            appendLine("    val execute: (Any) -> Unit,")
+            appendLine(")")
+            appendLine()
+            appendLine("data class WebJsGeneratedTestClass(")
+            appendLine("    val className: String,")
+            appendLine("    val createInstance: () -> Any,")
+            appendLine("    val beforeMethods: List<(Any) -> Unit>,")
+            appendLine("    val afterMethods: List<(Any) -> Unit>,")
+            appendLine("    val testMethods: List<WebJsGeneratedTestMethod>,")
+            appendLine(")")
+            appendLine()
+            appendLine("object WebJsTestSuite {")
+            appendLine("    val classes: List<WebJsGeneratedTestClass> = listOf(")
+
+            var classCount = 0
+            for (file in candidateFiles) {
+                val text = file.readText()
+                if (!text.contains("@Test")) continue
+                val packageName = packageRegex.find(text)?.groupValues?.get(1) ?: continue
+                val className = classRegex.find(text)?.groupValues?.get(1) ?: continue
+                val pendingAnnotations = mutableListOf<String>()
+                val beforeMethods = mutableListOf<String>()
+                val afterMethods = mutableListOf<String>()
+                val testMethods = mutableListOf<Pair<String, String?>>()
+
+                for (rawLine in text.lineSequence()) {
+                    val line = rawLine.trim()
+                    if (line.contains("@Before")) pendingAnnotations += "@Before"
+                    if (line.contains("@After")) pendingAnnotations += "@After"
+                    if (line.contains("@Test")) pendingAnnotations += "@Test"
+                    if (line.contains("@Ignore")) pendingAnnotations += "@Ignore"
+
+                    val methodName = methodRegex.find(line)?.groupValues?.get(1)
+                    if (methodName != null) {
+                        if (pendingAnnotations.any { it == "@Before" }) beforeMethods += methodName
+                        if (pendingAnnotations.any { it == "@After" }) afterMethods += methodName
+                        if (pendingAnnotations.any { it == "@Test" }) {
+                            val ignored = pendingAnnotations.any { it == "@Ignore" }
+                            testMethods += methodName to if (ignored) "ignored" else null
+                        }
+                        pendingAnnotations.clear()
+                        continue
+                    }
+
+                    if (line.isBlank() || line.startsWith("//") || line.startsWith("*") || line.startsWith("/*") || line.startsWith("*/")) {
+                        continue
+                    }
+                    if (!line.startsWith("@")) {
+                        pendingAnnotations.clear()
+                    }
+                }
+
+                if (testMethods.isEmpty()) continue
+                classCount++
+                val fqn = "$packageName.$className"
+                appendLine("        WebJsGeneratedTestClass(")
+                appendLine("            className = \"$fqn\",")
+                appendLine("            createInstance = { $fqn() },")
+
+                if (beforeMethods.isEmpty()) {
+                    appendLine("            beforeMethods = emptyList(),")
+                } else {
+                    appendLine("            beforeMethods = listOf(")
+                    beforeMethods.forEach { method ->
+                        appendLine("                { instance -> (instance as $fqn).$method() },")
+                    }
+                    appendLine("            ),")
+                }
+
+                if (afterMethods.isEmpty()) {
+                    appendLine("            afterMethods = emptyList(),")
+                } else {
+                    appendLine("            afterMethods = listOf(")
+                    afterMethods.forEach { method ->
+                        appendLine("                { instance -> (instance as $fqn).$method() },")
+                    }
+                    appendLine("            ),")
+                }
+
+                appendLine("            testMethods = listOf(")
+                testMethods.forEach { (method, ignoredReason) ->
+                    val ignoredValue = ignoredReason?.let { "\"$it\"" } ?: "null"
+                    appendLine("                WebJsGeneratedTestMethod(\"$method\", $ignoredValue, { instance -> (instance as $fqn).$method() }),")
+                }
+                appendLine("            ),")
+                appendLine("        ),")
+            }
+            appendLine("    )")
+            appendLine("}")
+            logger.lifecycle("Generated WebJsTestSuite with $classCount classes at ${outputFile.invariantSeparatorsPath}")
+        }
+        outputFile.writeText(body)
+    }
+}
+
+tasks.named("compileKotlin") {
+    dependsOn(generateWebJsTestSuite)
 }
 
 tasks.register<JavaExec>("webBuildWasm") {
