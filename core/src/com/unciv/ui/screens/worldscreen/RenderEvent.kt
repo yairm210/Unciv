@@ -2,7 +2,10 @@ package com.unciv.ui.screens.worldscreen
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.logic.city.City
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Event
 import com.unciv.models.ruleset.EventChoice
 import com.unciv.models.ruleset.unique.GameContext
@@ -22,6 +25,9 @@ class RenderEvent(
     event: Event,
     val worldScreen: WorldScreen,
     val unit: MapUnit? = null,
+    val civInfo: Civilization? = null,
+    val city: City? = null,
+    val tile: Tile? = null,
     val onChoice: (EventChoice) -> Unit
 ) : Table() {
     private val gameInfo get() = worldScreen.gameInfo
@@ -33,8 +39,11 @@ class RenderEvent(
 
     init {
         defaults().fillX().center().pad(5f)
-
-        val gameContext = GameContext(gameInfo.currentPlayerCiv, unit = unit)
+        val gameContext = GameContext(
+            if (civInfo == null) gameInfo.currentPlayerCiv else civInfo,
+            unit = unit,
+            city = city,
+            tile = tile)
         val choices = event.getMatchingChoices(gameContext)
         isValid = choices != null
         if (isValid) {
@@ -49,17 +58,17 @@ class RenderEvent(
                 add(event.renderCivilopediaText(stageWidth * 0.5f, ::openCivilopedia)).row()
             }
 
-            for (choice in choices!!) addChoice(choice)
+            for (choice in choices!!) addChoice(choice, gameContext)
         }
     }
 
-    private fun addChoice(choice: EventChoice) {
+    private fun addChoice(choice: EventChoice, gameContext: GameContext) {
         addSeparator()
 
         val button = choice.text.toTextButton()
         button.onActivation {
             onChoice(choice)
-            choice.triggerChoice(gameInfo.currentPlayerCiv, unit)
+            choice.triggerChoice(gameContext)
         }
         val key = KeyCharAndCode.parse(choice.keyShortcut)
         if (key != KeyCharAndCode.UNKNOWN) {

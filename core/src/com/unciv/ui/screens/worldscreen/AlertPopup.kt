@@ -18,6 +18,8 @@ import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.*
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.tile.Tile
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.logic.map.toHexCoord
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
@@ -568,19 +570,12 @@ class AlertPopup(
     private fun addEvent(): Boolean {
         // The event string is in the format "eventName" + (Constants.stringSplitCharacter + "unitId=1234")?
         // We explicitly specify that this is a unitId, to enable us to add other context info in the future - for example city id
-        val splitString = popupAlert.value.split(Constants.stringSplitCharacter)
-        val eventName = splitString[0]
-        var unit: MapUnit? = null
-        for (i in 1 until splitString.size) {
-            if (splitString[i].startsWith("unitId=")){
-                val unitId = splitString[i].substringAfter("unitId=").toInt()
-                unit = viewingCiv.units.getUnitById(unitId)
-            }
-        }
-        
-        
+        val eventName = popupAlert.value.substringBefore(Constants.stringSplitCharacter)
         val event = gameInfo.ruleset.events[eventName] ?: return false
-        val render = RenderEvent(event, worldScreen, unit) { close() }
+        val contextString = popupAlert.value.substringAfter(Constants.stringSplitCharacter, "")
+        if (contextString.isEmpty()) return false
+        val gameContext = GameContext.fromSerializedString(contextString, viewingCiv)
+        val render = RenderEvent(event, worldScreen, gameContext.unit, gameContext.civInfo, gameContext.city, gameContext.tile) { close() }
         if (!render.isValid) return false
         add(render).pad(0f).row()
         return true
