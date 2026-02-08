@@ -27,6 +27,10 @@ These are temporary implementation decisions and may be reverted once upstream s
 3. Added compatibility shim `web/src/main/java/com/github/xpenatan/gdx/teavm/backends/web/assetloader/TeaBlob.java` to bridge backend runtime references to `TeaBlob` against snapshot asset-loader rename.
 4. `TeaBuildConfiguration.reflectionListener` assignment is intentionally disabled in web build bootstrap due split-jar type mismatch in current snapshot set.
 5. Web save payloads currently use a runtime snapshot-token transport (`WEBSNAP:<id>`) backed by an in-memory clone cache in `UncivFiles` for TeaVM correctness (avoids broken reflective JSON payloads on web runtime).
+6. TeaVM reflection preservation is hardened by marker-based class discovery:
+   - scan `com/unciv/` classpath entries
+   - include classes assignable to `IsPartOfGameInfoSerialization`, `IRulesetObject`, or `Json.Serializable`
+   - exclude `com.unciv.logic.multiplayer.*` and `com.unciv.ui.screens.devconsole.*` from auto-preserve to avoid web-unsupported pull-ins/static-init failures.
 
 ## 3) Explicitly Deferred (May Change Later)
 
@@ -69,9 +73,11 @@ A deferred decision can be changed only when all are true:
    - headed browser repro confirms quickstart opens world, settler action list includes `FoundCity`, and web movement success markers for warrior/settler.
 2. Web correctness fix applied at source:
    - `Ruleset.loadNamedArray()` web fallback hydration now restores full `BaseUnit` fields from raw JSON (not only name/unitType), which removes partial-unit initialization on TeaVM and unblocks settler actions + movement logic.
-3. WASM target (`:web:webBuildWasm`) compiles successfully, but runtime in current Playwright Chromium still fails before boot with repeated `dereferencing a null pointer`.
-4. Attempting to switch TeaVM target from `WEBASSEMBLY_GC` to `WEBASSEMBLY` is not viable with this backend set:
+3. Web correctness hardening for JSON loads:
+   - `BuildWebCommon` now auto-preserves serialization marker types (not broad package preserve), reducing future field-stripping regressions while keeping TeaVM compile/runtime stable.
+4. WASM target (`:web:webBuildWasm`) compiles successfully, but runtime in current Playwright Chromium still fails before boot with repeated `dereferencing a null pointer`.
+5. Attempting to switch TeaVM target from `WEBASSEMBLY_GC` to `WEBASSEMBLY` is not viable with this backend set:
    - compile-time native import annotation errors in `backend-web` classes.
-5. Current operational decision:
+6. Current operational decision:
    - keep WASM-first build support in place (`WEBASSEMBLY_GC`) and track runtime blocker separately.
    - use JS build for E2E regression validation until WASM runtime issue is resolved.

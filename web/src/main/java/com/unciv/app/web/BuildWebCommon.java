@@ -4,19 +4,37 @@ import com.github.xpenatan.gdx.teavm.backends.shared.config.AssetFileHandle;
 import com.github.xpenatan.gdx.teavm.backends.web.config.TeaBuildConfiguration;
 import com.github.xpenatan.gdx.teavm.backends.web.config.TeaBuilder;
 import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
+import java.nio.file.FileVisitOption;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Comparator;
+import java.util.EnumSet;
+import java.util.LinkedHashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import org.teavm.tooling.TeaVMTargetType;
 import org.teavm.tooling.TeaVMTool;
 import org.teavm.vm.TeaVMOptimizationLevel;
 
 final class BuildWebCommon {
     private static final String OUTPUT_NAME = "unciv";
+    private static final List<String> SCANNED_PACKAGE_PREFIXES = List.of("com/unciv/");
+    private static final List<String> EXCLUDED_PRESERVE_CLASS_PREFIXES = List.of(
+            "com.unciv.logic.multiplayer.",
+            "com.unciv.ui.screens.devconsole.");
+    private static final List<String> SERIALIZATION_MARKER_CLASS_NAMES = List.of(
+            "com.unciv.logic.IsPartOfGameInfoSerialization",
+            "com.unciv.models.ruleset.IRulesetObject",
+            "com.badlogic.gdx.utils.Json$Serializable");
     private static final List<String> PRESERVED_CLASSES = List.of(
             "com.badlogic.gdx.scenes.scene2d.ui.Skin",
             "com.unciv.models.stats.NamedStats",
@@ -99,9 +117,11 @@ final class BuildWebCommon {
         Path assetsPath = repoRoot.resolve("android/assets");
         Path outputPath = repoRoot.resolve("web/build/dist");
         Path webappPath = outputPath.resolve("webapp");
+        Path webResourcesPath = repoRoot.resolve("web/build/resources/main");
 
         cleanupOutput(outputPath);
         ensureDirectory(outputPath);
+        ensureDirectory(webResourcesPath);
 
         TeaBuildConfiguration configuration = new TeaBuildConfiguration();
         configuration.webappPath = outputPath.toString();
@@ -112,6 +132,7 @@ final class BuildWebCommon {
         configuration.htmlHeight = 0;
         configuration.assetsPath.add(new AssetFileHandle(assetsPath.toString()));
         configuration.classesToPreserve.addAll(PRESERVED_CLASSES);
+        configuration.classesToPreserve.addAll(discoverSerializableClasses());
 
         TeaBuilder.config(configuration);
 
@@ -218,6 +239,127 @@ final class BuildWebCommon {
         } catch (IOException e) {
             throw new RuntimeException("Failed creating favicon at " + faviconPath, e);
         }
+    }
+
+    /**
+     * Preserve all application classes under the given package path (e.g. "com/unciv/")
+     * from the current Java classpath so TeaVM reflection-backed JSON loading does not
+     * silently drop fields when new model classes are introduced.
+     */
+    private static Set<String> discoverClasspathClasses(List<String> packagePathPrefixes) {
+        Set<String> discovered = new LinkedHashSet<>();
+        String classPath = System.getProperty("java.class.path", "");
+        if (classPath.isBlank()) return discovered;
+
+        String[] entries = classPath.split(java.io.File.pathSeparator);
+        for (String entry : entries) {
+            if (entry == null || entry.isBlank()) continue;
+            Path path = Paths.get(entry);
+            if (Files.isDirectory(path)) {
+                discoverFromDirectory(path, packagePathPrefixes, discovered);
+            } else if (entry.endsWith(".jar")) {
+                discoverFromJar(path, packagePathPrefixes, discovered);
+            }
+        }
+        return discovered;
+    }
+
+    private static Set<String> discoverSerializableClasses() {
+        Set<String> classNames = discoverClasspathClasses(SCANNED_PACKAGE_PREFIXES);
+        if (classNames.isEmpty()) return classNames;
+
+        ClassLoader classLoader = BuildWebCommon.class.getClassLoader();
+        List<Class<?>> markers = new ArrayList<>();
+        for (String markerClassName : SERIALIZATION_MARKER_CLASS_NAMES) {
+            Class<?> marker = tryLoadClass(classLoader, markerClassName);
+            if (marker != null) markers.add(marker);
+        }
+        if (markers.isEmpty()) return Set.of();
+
+        Set<String> preserved = new LinkedHashSet<>();
+        for (String className : classNames) {
+            if (isExcludedPreserveClass(className)) continue;
+            Class<?> candidate = tryLoadClass(classLoader, className);
+            if (candidate == null) continue;
+            for (Class<?> marker : markers) {
+                if (marker.isAssignableFrom(candidate)) {
+                    preserved.add(className);
+                    break;
+                }
+            }
+        }
+        return preserved;
+    }
+
+    private static boolean isExcludedPreserveClass(String className) {
+        for (String excludedPrefix : EXCLUDED_PRESERVE_CLASS_PREFIXES) {
+            if (className.startsWith(excludedPrefix)) return true;
+        }
+        return false;
+    }
+
+    private static Class<?> tryLoadClass(ClassLoader classLoader, String className) {
+        try {
+            return Class.forName(className, false, classLoader);
+        } catch (Throwable ignored) {
+            return null;
+        }
+    }
+
+    private static void discoverFromDirectory(Path root, List<String> packagePathPrefixes, Set<String> output) {
+        try {
+            Files.walkFileTree(root, EnumSet.noneOf(FileVisitOption.class), Integer.MAX_VALUE, new FileVisitor<>() {
+                @Override
+                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                    String relative = root.relativize(file).toString().replace('\\', '/');
+                    maybeAddClassName(relative, packagePathPrefixes, output);
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult visitFileFailed(Path file, IOException exc) {
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        } catch (IOException ignored) {
+            // Best-effort discovery; keep build resilient.
+        }
+    }
+
+    private static void discoverFromJar(Path jarPath, List<String> packagePathPrefixes, Set<String> output) {
+        try (JarFile jarFile = new JarFile(jarPath.toFile())) {
+            for (JarEntry entry : java.util.Collections.list(jarFile.entries())) {
+                maybeAddClassName(entry.getName(), packagePathPrefixes, output);
+            }
+        } catch (IOException ignored) {
+            // Best-effort discovery; keep build resilient.
+        }
+    }
+
+    private static void maybeAddClassName(String entryName, List<String> packagePathPrefixes, Set<String> output) {
+        if (entryName == null) return;
+        boolean prefixMatch = false;
+        for (String prefix : packagePathPrefixes) {
+            if (entryName.startsWith(prefix)) {
+                prefixMatch = true;
+                break;
+            }
+        }
+        if (!prefixMatch) return;
+        if (!entryName.endsWith(".class")) return;
+        if (entryName.equals("module-info.class")) return;
+        String className = entryName.substring(0, entryName.length() - ".class".length()).replace('/', '.');
+        output.add(className);
     }
 
     /**
