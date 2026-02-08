@@ -459,6 +459,19 @@ enum class UniqueType(
     IndirectFire("Ranged attacks may be performed over obstacles", UniqueTarget.Unit, UniqueTarget.Global),
     NuclearWeapon("Nuclear weapon of Strength [amount]", UniqueTarget.Unit),
 
+    //Aoe Attacks
+    AoeFlatAttack("Attacks also target [mapUnitFilter] units within [positiveAmount] tiles", UniqueTarget.Unit,
+        docDescription = "Performs an attack against every unit that matches the filter inside the radius including allied units or own units if not filtered out, dealing equal damage. Status effects and on-hit abilities apply to all affected units.\n" +
+                "If both this and decreasing area attacks are present, only decreasing area attacks will be used."),
+    AoeDegradeAttack("Attacks also target [mapUnitFilter] units within [positiveAmount] tiles, with damage decreasing by distance", UniqueTarget.Unit,
+        docDescription = "Performs an attack against every unit that matches the filter inside the radius with the damage decreasing with distance from the main target. Status effects and on-hit abilities apply.\n" +
+                "If both this and equal area attacks are present, only this will be used, also affects counter damage and damage from own area attacks.\n" +
+                "Damage formula: Damage = (1 - (distance / radius)) * baseDamage"),
+    DamageSelfInAOE("Takes [relativeAmount]% damage from own area attacks", UniqueTarget.Unit, 
+        docDescription = "This unit takes damage from its own area attacks when it is in range, 100 = 100% damage."),
+    TakeCounterDamageFromAOE("Takes [relativeAmount]% counter damage from each unit hit by its area attacks", UniqueTarget.Unit,
+        docDescription = "Only works for melee units, 100 = 100% damage, negative values work but are taken as positive."),
+
     NoDefensiveTerrainBonus("No defensive terrain bonus", UniqueTarget.Unit, UniqueTarget.Global),
     NoDefensiveTerrainPenalty("No defensive terrain penalty", UniqueTarget.Unit, UniqueTarget.Global),
     NoDamagePenaltyWoundedUnits("No damage penalty for wounded units", UniqueTarget.Unit, UniqueTarget.Global),
