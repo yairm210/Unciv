@@ -12,6 +12,7 @@ import com.unciv.models.ruleset.unique.UniqueParameterType.Companion.guessTypeFo
 import com.unciv.models.ruleset.validation.Suppression
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.SubStat
+import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.hasPlaceholderParameters
 import yairm210.purity.annotations.Pure
@@ -618,9 +619,18 @@ enum class UniqueParameterType(
         override val staticKnownValues = setOf("Cost", "Strength")
     },
 
-
-    UnitTriggerTarget("unitTriggerTarget", Constants.thisUnit, "`${Constants.thisUnit}` or `${Constants.targetUnit}`") {
+    UnitTriggerTarget("unitTriggerTarget", Constants.thisUnit, "`${Constants.thisUnit}`, `${Constants.targetUnit}`, or `Every adjacent [mapUnitFilter] unit`") {
         override val staticKnownValues = setOf(Constants.thisUnit, Constants.targetUnit)
+        override fun isKnownValue(parameterText: String, ruleset: Ruleset): Boolean {
+            if (parameterText in staticKnownValues) return true
+            // Every adjacent [mapUnitFilter] unit
+            if (parameterText.startsWith("Every adjacent [") && parameterText.endsWith("] unit")) {
+                val params = parameterText.getPlaceholderParameters()
+                return MultiFilter.multiFilter(params[0], { MapUnitFilter.isKnownValue(it, ruleset) }, true)
+            }
+            return false
+        }
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = getErrorSeverityForFilter(parameterText, ruleset)
     },
 
     /** Mod declarative compatibility: Define Mod relations by their name. */
