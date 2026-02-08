@@ -2252,8 +2252,20 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Building, Unit
 
+??? example  "Can be carried"
+	Used to allow land and water units to be carried by carriers, has no effects on air units.
+
+	Applicable to: Unit
+
 ??? example  "Cannot be carried by [mapUnitFilter] units"
+	Used to prevent the unit being carried by certain carrier units, overwrites "Can be carried".
+
 	Example: "Cannot be carried by [Wounded] units"
+
+	Applicable to: Unit
+
+??? example  "Carried units disembark when attacking"
+	Carried non-air units need to disembark when attacking.
 
 	Applicable to: Unit
 
