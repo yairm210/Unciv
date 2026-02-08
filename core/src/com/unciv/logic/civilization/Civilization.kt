@@ -704,7 +704,7 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     @Readonly
     fun getEquivalentUnit(baseUnit: BaseUnit): BaseUnit {
-        if (baseUnit.replaces != null)
+        if (baseUnit.replaces != null && baseUnit.replaces in gameInfo.ruleset.units)
             return getEquivalentUnit(baseUnit.replaces!!) // Equivalent of unique unit is the equivalent of the replaced unit
 
         for (unit in cache.uniqueUnits)
