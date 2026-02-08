@@ -27,7 +27,7 @@ import com.unciv.utils.Log
 import java.io.IOException
 import kotlin.math.max
 
-internal class ModInfoAndActionPane : Table() {
+internal class ModInfoAndActionPane(private val onDownloadModFromUrl: ((String) -> Unit)? = null) : Table() {
     private val repoUrlToPreviewImage = HashMap<String, Texture?>()
     private val imageHolder = Table()
     private val sizeLabel = "".toLabel()
@@ -109,6 +109,16 @@ internal class ModInfoAndActionPane : Table() {
                 ToastPopup("Link copied to clipboard", stage)
             }
             add(githubButton).row()
+        }
+        
+        // allow to re-download mod from on-file link in case of mod update or corruption
+        if (repoUrl.isNotEmpty()) {
+            val redownloadButton = "Re-download Mod".toTextButton()
+            redownloadButton.onClick {
+                redownloadButton.setText("Downloading...".tr())
+                onDownloadModFromUrl?.invoke(repoUrl)
+            }
+            add(redownloadButton).row()
         }
 
         // display "updated" date
