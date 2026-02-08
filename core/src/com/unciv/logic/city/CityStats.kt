@@ -1,5 +1,6 @@
 package com.unciv.logic.city
 
+import com.unciv.logic.civilization.transients.CapitalConnectionsFinder.CapitalConnectionMedium.Companion.bestRoadStatus
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
@@ -327,8 +328,7 @@ class CityStats(val city: City) {
 
     @Readonly
     fun getRoadTypeOfConnectionToCapital(): RoadStatus {
-        return city.civ.cache.citiesConnectedToCapitalToMediums[city]?.maxOfOrNull { it.roadType }
-            ?: RoadStatus.None
+        return city.civ.cache.citiesConnectedToCapitalToMediums[city].bestRoadStatus()
     }
 
     @Readonly
