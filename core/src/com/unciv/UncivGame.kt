@@ -545,6 +545,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
                 return // kotlin coroutines use this for control flow... so we can just ignore them.
             }
             Log.error("Uncaught throwable", ex)
+            Log.error("Uncaught throwable stacktrace: %s", ex.stackTraceToString())
             Log.error("Uncaught throwable diagnostic: %s", ex.buildDiagnostic())
             dumpLastError(ex)
             Gdx.app.postRunnable {

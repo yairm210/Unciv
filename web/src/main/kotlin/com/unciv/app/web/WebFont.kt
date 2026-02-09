@@ -7,7 +7,7 @@ import com.unciv.ui.components.fonts.FontMetricsCommon
 
 class WebFont : FontImplementation {
     private var fontSize = 100
-    private var fontFamily = "sans-serif"
+    private var fontFamily = "Arial, Helvetica, sans-serif"
     private var metrics = FontMetricsCommon(
         ascent = 80f,
         descent = 20f,
@@ -18,7 +18,7 @@ class WebFont : FontImplementation {
     override fun setFontFamily(fontFamilyData: FontFamilyData, size: Int) {
         fontSize = size.coerceAtLeast(8)
         // Keep a deterministic default family on web in phase-1.
-        fontFamily = "sans-serif"
+        fontFamily = "Arial, Helvetica, sans-serif"
         val measured = WebFontRasterizer.measureMetrics(fontSize, fontFamily)
         if (measured.size >= 4) {
             metrics = FontMetricsCommon(

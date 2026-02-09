@@ -15,6 +15,16 @@ final class WebJsTestInterop {
     static native boolean isEnabled();
 
     @JSBody(
+            script =
+                    "if (typeof window === 'undefined') return null;"
+                            + "if (typeof window.__uncivJsTestsFilter === 'string' && window.__uncivJsTestsFilter.length > 0) return window.__uncivJsTestsFilter;"
+                            + "var search = (window.location && window.location.search) || '';"
+                            + "var match = /(?:\\?|&)jstestsFilter=([^&]+)/.exec(search);"
+                            + "if (!match) return null;"
+                            + "try { return decodeURIComponent(match[1]); } catch (e) { return match[1]; }")
+    static native String getClassFilter();
+
+    @JSBody(
             params = "state",
             script =
                     "if (typeof window === 'undefined') return;"

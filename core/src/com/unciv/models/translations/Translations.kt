@@ -580,7 +580,24 @@ fun String.removeConditionals(): String {
  */
 @Readonly
 fun Number.tr(): String {
-    return UncivGame.Current.settings.getCurrentNumberFormat().format(this)
+    val language = UncivGame.Current.settings.language
+    val formatted = UncivGame.Current.settings.getCurrentNumberFormat().format(this)
+    if (language != "Bangla") return formatted
+    return formatted.replace(digitsRegex) {
+        when (it.value[0]) {
+            '0' -> "০"
+            '1' -> "১"
+            '2' -> "২"
+            '3' -> "৩"
+            '4' -> "৪"
+            '5' -> "৫"
+            '6' -> "৬"
+            '7' -> "৭"
+            '8' -> "৮"
+            '9' -> "৯"
+            else -> it.value
+        }
+    }
 }
 
 /** Formats number according to a specific [language]
@@ -591,5 +608,21 @@ fun Number.tr(): String {
  */
 @Readonly
 fun Number.tr(language: String): String {
-    return LocaleCode.getNumberFormatFromLanguage(language).format(this)
+    val formatted = LocaleCode.getNumberFormatFromLanguage(language).format(this)
+    if (language != "Bangla") return formatted
+    return formatted.replace(digitsRegex) {
+        when (it.value[0]) {
+            '0' -> "০"
+            '1' -> "১"
+            '2' -> "২"
+            '3' -> "৩"
+            '4' -> "৪"
+            '5' -> "৫"
+            '6' -> "৬"
+            '7' -> "৭"
+            '8' -> "৮"
+            '9' -> "৯"
+            else -> it.value
+        }
+    }
 }

@@ -17,7 +17,9 @@ public class WebLauncher {
         Fonts.INSTANCE.setFontImplementation(new WebFont());
         UncivFiles.Companion.setSaverLoader(PlatformSaverLoader.Companion.getNone());
         UncivFiles.Companion.setPreferExternalStorage(false);
-        Log.INSTANCE.setBackend(new WebLogBackend());
+        if(!jsTestsMode) {
+            Log.INSTANCE.setBackend(new WebLogBackend());
+        }
 
         TeaApplicationConfiguration config = new TeaApplicationConfiguration("canvas");
         config.width = 0;

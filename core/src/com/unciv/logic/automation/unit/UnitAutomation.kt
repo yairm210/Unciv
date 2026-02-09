@@ -133,7 +133,9 @@ object UnitAutomation {
 
         val unitVisibilityRange = unit.getVisibilityRange()
         val explorableTilesThisTurn =
-                unit.movement.getDistanceToTiles().keys.filter { isGoodTileToExplore(unit, it, unitVisibilityRange) }
+                unit.movement.getDistanceToTiles().keys.filter {
+                    it != unit.currentTile && isGoodTileToExplore(unit, it, unitVisibilityRange)
+                }
         if (explorableTilesThisTurn.any()) {
             val bestTile = explorableTilesThisTurn
                 .maxBy { it.tileHeight + it.getTilesAtDistance(unit.getVisibilityRange()).count { tile -> !tile.isExplored(unit.civ) }}
@@ -146,7 +148,7 @@ object UnitAutomation {
 
         // Nothing immediate, lets look further. Number increases exponentially with distance - at 10 this took a looong time
         for (tile in unit.currentTile.getTilesInDistance(5))
-            if (isGoodTileToExplore(unit, tile, unitVisibilityRange)) {
+            if (tile != unit.currentTile && isGoodTileToExplore(unit, tile, unitVisibilityRange)) {
                 unit.movement.headTowards(tile)
                 return true
             }

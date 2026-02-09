@@ -859,7 +859,8 @@ class Civilization : IsPartOfGameInfoSerialization {
      *  */
     fun setNationTransient() {
         nation = gameInfo.ruleset.nations[civName]
-                ?: throw MissingNationException("Nation $civName is not found!", gameInfo.ruleset.mods)
+            ?: gameInfo.ruleset.nations.values.firstOrNull { it.name == civName }
+            ?: throw MissingNationException("Nation $civName is not found!", gameInfo.ruleset.mods)
     }
 
     fun setTransients() {

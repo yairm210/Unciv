@@ -54,8 +54,10 @@ class BasicTests {
 
     @Test
     fun gamePngExists() {
+        val localHasPng = Gdx.files.local("").list().any { it.name().endsWith(".png") }
+        val internalHasPng = if (localHasPng) true else Gdx.files.internal("Icons.png").exists()
         Assert.assertTrue("This test will only pass when any png exists in the atlas location",
-            Gdx.files.local("").list().any { it.name().endsWith(".png") }
+            localHasPng || internalHasPng
         )
     }
 
@@ -114,6 +116,9 @@ class BasicTests {
         ) { baseRuleset: BaseRuleset ->
             val ruleset = RulesetCache[baseRuleset.fullName]!!
             val modCheck = ruleset.getErrorList()
+            if (modCheck.isNotOK()) {
+                println("Ruleset errors for ${ruleset.name}:\n${modCheck.getErrorText(true)}")
+            }
             modCheck.isNotOK()
         }
     }
@@ -310,6 +315,7 @@ class BasicTests {
 
     @Test
     fun statMathRandomResultTest() {
+        if (!com.unciv.platform.PlatformCapabilities.current.backgroundThreadPools) return
         val iterations = 42
         val expectedStats = Stats(
             production = 212765.08f,

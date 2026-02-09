@@ -5,6 +5,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.files.UncivFiles
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.platform.PlatformCapabilities
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.RedirectOutput
 import com.unciv.testing.RedirectPolicy
@@ -46,6 +47,7 @@ class LoadGameTest {
 
     @Test
     fun loadScreenshotGameTest() {
+        if (!PlatformCapabilities.current.backgroundThreadPools) return
         val files = UncivFiles(Gdx.files)
         // Switch to java.io since Gdx doesn't like '..'ing out of their virtual roots
         val file = files.getSave(screenshotGamePath).file().canonicalFile

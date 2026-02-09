@@ -236,94 +236,116 @@ class TurnManager(val civInfo: Civilization) {
 
 
     fun endTurn(progressBar: NextTurnProgress? = null) {
-        if (UncivGame.Current.settings.citiesAutoBombardAtEndOfTurn)
-            NextTurnAutomation.automateCityBombardment(civInfo) // Bombard with all cities that haven't, maybe you missed one
+        var stage = "init"
+        try {
+            stage = "auto-bombard"
+            if (UncivGame.Current.settings.citiesAutoBombardAtEndOfTurn)
+                NextTurnAutomation.automateCityBombardment(civInfo) // Bombard with all cities that haven't, maybe you missed one
 
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponTurnEnd, civInfo.state, ignoreCities = true))
-            UniqueTriggerActivation.triggerUnique(unique, civInfo)
+            stage = "trigger-uniques"
+            for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponTurnEnd, civInfo.state, ignoreCities = true))
+                UniqueTriggerActivation.triggerUnique(unique, civInfo)
 
-        val notificationsLog = civInfo.notificationsLog
-        val notificationsThisTurn = Civilization.NotificationsLog(civInfo.gameInfo.turns)
-        notificationsThisTurn.notifications.addAll(civInfo.notifications)
+            stage = "log-notifications"
+            val notificationsLog = civInfo.notificationsLog
+            val notificationsThisTurn = Civilization.NotificationsLog(civInfo.gameInfo.turns)
+            notificationsThisTurn.notifications.addAll(civInfo.notifications)
 
-        while (notificationsLog.size >= UncivGame.Current.settings.notificationsLogMaxTurns) {
-            notificationsLog.removeAt(0)
-        }
-
-        if (notificationsThisTurn.notifications.isNotEmpty())
-            notificationsLog.add(notificationsThisTurn)
-
-        civInfo.notifications.clear()
-        civInfo.notificationCountAtStartTurn = null
-
-        if (civInfo.isDefeated() || civInfo.isSpectator()) return  // yes they do call this, best not update any further stuff
-        
-        var nextTurnStats =
-            if (civInfo.isBarbarian)
-                Stats()
-            else {
-                civInfo.updateStatsForNextTurn()
-                civInfo.stats.statsForNextTurn
+            while (notificationsLog.size >= UncivGame.Current.settings.notificationsLogMaxTurns) {
+                notificationsLog.removeAt(0)
             }
 
-        civInfo.policies.endTurn(nextTurnStats.culture.toInt())
-        civInfo.totalCultureForContests += nextTurnStats.culture.toInt()
+            if (notificationsThisTurn.notifications.isNotEmpty())
+                notificationsLog.add(notificationsThisTurn)
 
-        if (civInfo.isCityState) {
-            civInfo.questManager.endTurn()
+            civInfo.notifications.clear()
+            civInfo.notificationCountAtStartTurn = null
 
-            // Set turns to elections to a random number so not every city-state has the same election date
-            // May be called at game start or when migrating a game from an older version
-            if (civInfo.gameInfo.isEspionageEnabled() && !civInfo.hasFlag(CivFlags.TurnsTillCityStateElection.name)) {
-                civInfo.addFlag(CivFlags.TurnsTillCityStateElection.name, Random.nextInt(civInfo.gameInfo.ruleset.modOptions.constants.cityStateElectionTurns + 1))
+            if (civInfo.isDefeated() || civInfo.isSpectator()) return  // yes they do call this, best not update any further stuff
+
+            stage = "compute-next-turn-stats"
+            var nextTurnStats =
+                if (civInfo.isBarbarian)
+                    Stats()
+                else {
+                    civInfo.updateStatsForNextTurn()
+                    civInfo.stats.statsForNextTurn
+                }
+
+            stage = "policies-end-turn"
+            civInfo.policies.endTurn(nextTurnStats.culture.toInt())
+            civInfo.totalCultureForContests += nextTurnStats.culture.toInt()
+
+            stage = "city-state-end-turn"
+            if (civInfo.isCityState) {
+                civInfo.questManager.endTurn()
+
+                // Set turns to elections to a random number so not every city-state has the same election date
+                // May be called at game start or when migrating a game from an older version
+                if (civInfo.gameInfo.isEspionageEnabled() && !civInfo.hasFlag(CivFlags.TurnsTillCityStateElection.name)) {
+                    civInfo.addFlag(CivFlags.TurnsTillCityStateElection.name, Random.nextInt(civInfo.gameInfo.ruleset.modOptions.constants.cityStateElectionTurns + 1))
+                }
             }
+
+            stage = "bankruptcy-disband"
+            // disband units until there are none left OR the gold values are normal
+            if (!civInfo.isBarbarian && civInfo.gold <= -200 && nextTurnStats.gold.toInt() < 0) {
+                do {
+                    val militaryUnits = civInfo.units.getCivUnits().filter { it.isMilitary() }  // New sequence as disband replaces unitList
+                    val unitToDisband = militaryUnits.minByOrNull { it.baseUnit.cost }
+                        // or .firstOrNull()?
+                        ?: break
+                    unitToDisband.disband()
+                    val unitName = unitToDisband.shortDisplayName()
+                    civInfo.addNotification("Cannot provide unit upkeep for $unitName - unit has been disbanded!", NotificationCategory.Units, unitName, NotificationIcon.Death)
+                    // No need to recalculate unit upkeep, disband did that in UnitManager.removeUnit
+                    nextTurnStats = civInfo.stats.statsForNextTurn
+                } while (civInfo.gold <= -200 && nextTurnStats.gold.toInt() < 0)
+            }
+
+            stage = "gold-tech-religion"
+            civInfo.addGold(nextTurnStats.gold.toInt())
+
+            if (civInfo.cities.isNotEmpty() && civInfo.gameInfo.ruleset.technologies.isNotEmpty())
+                civInfo.tech.endTurn(nextTurnStats.science.toInt())
+
+            civInfo.religionManager.endTurn(nextTurnStats.faith.toInt())
+            civInfo.totalFaithForContests += nextTurnStats.faith.toInt()
+
+            stage = "espionage-great-people"
+            civInfo.espionageManager.endTurn()
+
+            if (civInfo.isMajorCiv()) // City-states don't get great people!
+                civInfo.greatPeople.addGreatPersonPoints()
+
+            stage = "cities-end-turn"
+            // To handle tile's owner issue (#8246), we need to run cities being razed first.
+            // a city can be removed while iterating (if it's being razed) so we need to iterate over a copy - sorting does one
+            for (city in civInfo.cities.sortedByDescending { it.isBeingRazed }) {
+                progressBar?.increment()
+                CityTurnManager(city).endTurn()
+            }
+
+            stage = "temporary-uniques-golden-ages"
+            civInfo.temporaryUniques.endTurn()
+
+            civInfo.goldenAges.endTurn(civInfo.getHappiness())
+            stage = "units-end-turn"
+            civInfo.units.getCivUnits().forEach { UnitTurnManager(it).endTurn() }  // This is the most expensive part of endTurn
+            stage = "diplomacy-end-turn"
+            civInfo.diplomacy.values.toList().forEach { it.nextTurn() } // we copy the diplomacy values so if it changes in-loop we won't crash
+            stage = "cache-reset-winning-civ"
+            civInfo.cache.updateHasActiveEnemyMovementPenalty()
+
+            civInfo.resetMilitaryMightCache()
+
+            updateWinningCiv() // Maybe we did something this turn to win
+        } catch (ex: Throwable) {
+            throw IllegalStateException(
+                "TurnManager.endTurn failed at stage=$stage civ=${civInfo.civID} turn=${civInfo.gameInfo.turns}",
+                ex
+            )
         }
-
-        // disband units until there are none left OR the gold values are normal
-        if (!civInfo.isBarbarian && civInfo.gold <= -200 && nextTurnStats.gold.toInt() < 0) {
-            do {
-                val militaryUnits = civInfo.units.getCivUnits().filter { it.isMilitary() }  // New sequence as disband replaces unitList
-                val unitToDisband = militaryUnits.minByOrNull { it.baseUnit.cost }
-                    // or .firstOrNull()?
-                    ?: break
-                unitToDisband.disband()
-                val unitName = unitToDisband.shortDisplayName()
-                civInfo.addNotification("Cannot provide unit upkeep for $unitName - unit has been disbanded!", NotificationCategory.Units, unitName, NotificationIcon.Death)
-                // No need to recalculate unit upkeep, disband did that in UnitManager.removeUnit
-                nextTurnStats = civInfo.stats.statsForNextTurn
-            } while (civInfo.gold <= -200 && nextTurnStats.gold.toInt() < 0)
-        }
-
-        civInfo.addGold(nextTurnStats.gold.toInt() )
-
-        if (civInfo.cities.isNotEmpty() && civInfo.gameInfo.ruleset.technologies.isNotEmpty())
-            civInfo.tech.endTurn(nextTurnStats.science.toInt())
-
-        civInfo.religionManager.endTurn(nextTurnStats.faith.toInt())
-        civInfo.totalFaithForContests += nextTurnStats.faith.toInt()
-
-        civInfo.espionageManager.endTurn()
-
-        if (civInfo.isMajorCiv()) // City-states don't get great people!
-            civInfo.greatPeople.addGreatPersonPoints()
-
-        // To handle tile's owner issue (#8246), we need to run cities being razed first.
-        // a city can be removed while iterating (if it's being razed) so we need to iterate over a copy - sorting does one
-        for (city in civInfo.cities.sortedByDescending { it.isBeingRazed }) {
-            progressBar?.increment()
-            CityTurnManager(city).endTurn()
-        }
-
-        civInfo.temporaryUniques.endTurn()
-
-        civInfo.goldenAges.endTurn(civInfo.getHappiness())
-        civInfo.units.getCivUnits().forEach { UnitTurnManager(it).endTurn() }  // This is the most expensive part of endTurn
-        civInfo.diplomacy.values.toList().forEach { it.nextTurn() } // we copy the diplomacy values so if it changes in-loop we won't crash
-        civInfo.cache.updateHasActiveEnemyMovementPenalty()
-
-        civInfo.resetMilitaryMightCache()
-
-        updateWinningCiv() // Maybe we did something this turn to win
     }
 
     fun updateWinningCiv() {

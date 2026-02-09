@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.UncivGame
+import com.unciv.json.WebJsonFallback
 import com.unciv.json.json
 import com.unciv.logic.BackwardCompatibility.convertFortify
 import com.unciv.logic.BackwardCompatibility.ensureUnitIds
@@ -32,6 +33,7 @@ import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
+import com.unciv.platform.PlatformCapabilities
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.screens.savescreens.Gzip
@@ -344,111 +346,128 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
      *  @param shouldGainTime on a multiplayer game, if true, makes the player who's turn is ended recover time to play before risking to get forced to resign, 'false' by default 
      */
     fun nextTurn(progressBar: NextTurnProgress? = null, shouldGainTime: Boolean = false) {
-
+        var stage = "init"
         var player = currentPlayerCiv
         var playerIndex = civilizations.indexOf(player)
-
-        if (gameParameters.isOnlineMultiplayer) updateMinutesBeforeForceResign(player, shouldGainTime)
-        // We rotate Players in cycle: 1,2...N,1,2...
-        fun setNextPlayer() {
-            playerIndex = (playerIndex + 1) % civilizations.size
-            if (playerIndex == 0) {
-                turns++
-                if (DebugUtils.SIMULATE_UNTIL_TURN != 0)
-                    debug("Starting simulation of turn %s", turns)
+        try {
+            stage = "pre-turn-online-time"
+            if (gameParameters.isOnlineMultiplayer) updateMinutesBeforeForceResign(player, shouldGainTime)
+            // We rotate Players in cycle: 1,2...N,1,2...
+            fun setNextPlayer() {
+                playerIndex = (playerIndex + 1) % civilizations.size
+                if (playerIndex == 0) {
+                    turns++
+                    if (DebugUtils.SIMULATE_UNTIL_TURN != 0)
+                        debug("Starting simulation of turn %s", turns)
+                }
+                player = civilizations[playerIndex]
             }
-            player = civilizations[playerIndex]
-        }
 
 
-        // Ending current player's turn
-        //  (Check is important or else switchTurn
-        //  would skip a turn if an AI civ calls nextTurn
-        //  this happens when resigning a multiplayer game)
-        if (player.isHuman()) {
-            TurnManager(player).endTurn(progressBar)
-            setNextPlayer()
-        }
+            // Ending current player's turn
+            //  (Check is important or else switchTurn
+            //  would skip a turn if an AI civ calls nextTurn
+            //  this happens when resigning a multiplayer game)
+            if (player.isHuman()) {
+                stage = "end-turn:${player.civID}"
+                TurnManager(player).endTurn(progressBar)
+                stage = "next-player-after-end-turn"
+                setNextPlayer()
+            }
 
 
-        val isOnline = gameParameters.isOnlineMultiplayer
+            val isOnline = gameParameters.isOnlineMultiplayer
 
-        // Skip the player if we are playing hotseat
-        // If all hotseat players are defeated then skip all but the first one
-        @Readonly
-        fun shouldAutoProcessHotseatPlayer(): Boolean =
-            !isOnline &&
-            player.isDefeated() && (civilizations.any { it.isHuman() && it.isAlive() }
-                || civilizations.first { it.isHuman() } != player)
+            // Skip the player if we are playing hotseat
+            // If all hotseat players are defeated then skip all but the first one
+            @Readonly
+            fun shouldAutoProcessHotseatPlayer(): Boolean =
+                !isOnline &&
+                player.isDefeated() && (civilizations.any { it.isHuman() && it.isAlive() }
+                    || civilizations.first { it.isHuman() } != player)
 
-        // Skip all spectators and defeated players
-        // If all players are defeated then let the first player control next turn
-        @Readonly
-        fun shouldAutoProcessOnlinePlayer(): Boolean =
-            isOnline && (player.isSpectator() || player.isDefeated() &&
-                (civilizations.any { it.isHuman() && it.isAlive() }
-                    || civilizations.first { it.isHuman() } != player))
+            // Skip all spectators and defeated players
+            // If all players are defeated then let the first player control next turn
+            @Readonly
+            fun shouldAutoProcessOnlinePlayer(): Boolean =
+                isOnline && (player.isSpectator() || player.isDefeated() &&
+                    (civilizations.any { it.isHuman() && it.isAlive() }
+                        || civilizations.first { it.isHuman() } != player))
 
-        // We process player automatically if:
-        while (isSimulation() ||                    // simulation is active
-                player.isAI() ||                    // or player is AI
-            shouldAutoProcessHotseatPlayer() ||     // or a player is defeated in hotseat
-            shouldAutoProcessOnlinePlayer())        // or player is online spectator
-        {
+            // We process player automatically if:
+            while (isSimulation() ||                    // simulation is active
+                    player.isAI() ||                    // or player is AI
+                shouldAutoProcessHotseatPlayer() ||     // or a player is defeated in hotseat
+                shouldAutoProcessOnlinePlayer())        // or player is online spectator
+            {
 
-            // Starting preparations
+                // Starting preparations
+                stage = "auto-start-turn:${player.civID}"
+                TurnManager(player).startTurn(progressBar)
+
+                // Automation done here
+                stage = "auto-automate-turn:${player.civID}"
+                TurnManager(player).automateTurn()
+
+                val worldScreen = UncivGame.Current.worldScreen
+                // Do we need to break if player won?
+                if (simulateUntilWin && player.victoryManager.hasWon()) {
+                    simulateUntilWin = false
+                    worldScreen?.autoPlay?.stopAutoPlay()
+                    break
+                }
+
+                // Do we need to stop AutoPlay?
+                if (worldScreen != null && worldScreen.autoPlay.isAutoPlaying() && player.victoryManager.hasWon() && !oneMoreTurnMode)
+                    worldScreen.autoPlay.stopAutoPlay()
+
+                // Clean up
+                stage = "auto-end-turn:${player.civID}"
+                TurnManager(player).endTurn(progressBar)
+
+                // To the next player
+                stage = "auto-next-player"
+                setNextPlayer()
+            }
+
+            if (turns == DebugUtils.SIMULATE_UNTIL_TURN)
+                DebugUtils.SIMULATE_UNTIL_TURN = 0
+
+            // We found a human player, so we are making them current
+            stage = "switch-to-human:${player.civID}"
+            currentTurnStartTime = System.currentTimeMillis()
+            currentPlayer = player.civID
+            currentPlayerCiv = player
+
+            // Starting their turn
+            stage = "human-start-turn:${player.civID}"
             TurnManager(player).startTurn(progressBar)
 
-            // Automation done here
-            TurnManager(player).automateTurn()
+            // No popups for spectators
+            if (currentPlayerCiv.isSpectator())
+                currentPlayerCiv.popupAlerts.clear()
 
-            val worldScreen = UncivGame.Current.worldScreen
-            // Do we need to break if player won?
-            if (simulateUntilWin && player.victoryManager.hasWon()) {
-                simulateUntilWin = false
-                worldScreen?.autoPlay?.stopAutoPlay()
-                break
-            }
+            // Play some nice music TODO: measuring actual play time might be nicer
+            if (turns % 10 == 0 && Gdx.app != null)
+                UncivGame.Current.musicController.chooseTrack(
+                    currentPlayerCiv.civName,
+                    MusicMood.peaceOrWar(currentPlayerCiv.isAtWar()), MusicTrackChooserFlags.setNextTurn
+                )
 
-            // Do we need to stop AutoPlay?
-            if (worldScreen != null && worldScreen.autoPlay.isAutoPlaying() && player.victoryManager.hasWon() && !oneMoreTurnMode)
-                worldScreen.autoPlay.stopAutoPlay()
+            // Start our turn immediately before the player can make decisions - affects
+            // whether our units can commit automated actions and then be attacked immediately etc.
+            stage = "notify-close-enemies:${player.civID}"
+            notifyOfCloseEnemyUnits(player)
 
-            // Clean up
-            TurnManager(player).endTurn(progressBar)
-
-            // To the next player
-            setNextPlayer()
-        }
-
-        if (turns == DebugUtils.SIMULATE_UNTIL_TURN)
-            DebugUtils.SIMULATE_UNTIL_TURN = 0
-
-        // We found a human player, so we are making them current
-        currentTurnStartTime = System.currentTimeMillis()
-        currentPlayer = player.civID
-        currentPlayerCiv = player
-
-        // Starting their turn
-        TurnManager(player).startTurn(progressBar)
-
-        // No popups for spectators
-        if (currentPlayerCiv.isSpectator())
-            currentPlayerCiv.popupAlerts.clear()
-
-        // Play some nice music TODO: measuring actual play time might be nicer
-        if (turns % 10 == 0 && Gdx.app != null)
-            UncivGame.Current.musicController.chooseTrack(
-                currentPlayerCiv.civName,
-                MusicMood.peaceOrWar(currentPlayerCiv.isAtWar()), MusicTrackChooserFlags.setNextTurn
+            // This would belong at the end of TurnManager.startTurn, but needs to come after notifyOfCloseEnemyUnits
+            stage = "finalize-notification-count:${player.civID}"
+            player.notificationCountAtStartTurn = player.notifications.size
+        } catch (ex: Throwable) {
+            throw IllegalStateException(
+                "GameInfo.nextTurn failed at stage=$stage turn=$turns player=${player.civID} currentPlayer=${currentPlayerCiv.civID}",
+                ex
             )
-
-        // Start our turn immediately before the player can make decisions - affects
-        // whether our units can commit automated actions and then be attacked immediately etc.
-        notifyOfCloseEnemyUnits(player)
-
-        // This would belong at the end of TurnManager.startTurn, but needs to come after notifyOfCloseEnemyUnits
-        player.notificationCountAtStartTurn = player.notifications.size
+        }
     }
     
     private fun updateMinutesBeforeForceResign(player: Civilization, shouldGainTime: Boolean) {
@@ -682,6 +701,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             gameParameters.baseRuleset = gameParameters.baseRuleset.replace("-", " ")
         }
 
+        WebJsonFallback.ensureBaseRulesetForCivilizations(this)
+
         for (mod in gameParameters.mods) {
             if (mod !in RulesetCache && mod.replace("-", " ") in RulesetCache) {
                 gameParameters.mods.remove(mod)
@@ -700,6 +721,20 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         })
         
         ruleset = RulesetCache.getComplexRuleset(gameParameters)
+
+        if (!PlatformCapabilities.current.backgroundThreadPools) {
+            val civKeys = civilizations.asSequence()
+                .flatMap { sequenceOf(it.civName, it.civID) }
+                .filter { it.isNotBlank() && it != Constants.barbarians && it != Constants.spectator }
+                .toSet()
+            if (civKeys.isNotEmpty() && civKeys.any { it !in ruleset.nations }) {
+                val beforeBase = gameParameters.baseRuleset
+                WebJsonFallback.ensureBaseRulesetForCivilizations(this)
+                if (gameParameters.baseRuleset != beforeBase) {
+                    ruleset = RulesetCache.getComplexRuleset(gameParameters)
+                }
+            }
+        }
         
         // any mod the saved game lists that is currently not installed causes null pointer
         // exceptions in this routine unless it contained no new objects or was very simple.
@@ -747,8 +782,18 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         if (currentPlayer == "") {
             currentPlayerCiv =
-                if (gameParameters.isOnlineMultiplayer) civilizations.first { it.isHuman() && !it.isSpectator() } // For MP, spectator doesn't get a 'turn'
-                else civilizations.first { it.isHuman() } // for non-MP games, you can be a spectator of an AI-only match, and you *do* get a turn, sort of
+                if (gameParameters.isOnlineMultiplayer) {
+                    // For MP, spectator doesn't get a 'turn'. Web/TeaVM can occasionally miss
+                    // playerType hydration on old saves, so keep a deterministic fallback.
+                    civilizations.firstOrNull { it.isHuman() && !it.isSpectator() }
+                        ?: civilizations.firstOrNull { !it.isSpectator() }
+                        ?: civilizations.first()
+                } else {
+                    // For non-MP games, spectator-only saves are valid; prefer human if present.
+                    civilizations.firstOrNull { it.isHuman() }
+                        ?: civilizations.firstOrNull { it.isSpectator() }
+                        ?: civilizations.first()
+                }
             currentPlayer = currentPlayerCiv.civID
         } else currentPlayerCiv = getCivilization(currentPlayer)
 

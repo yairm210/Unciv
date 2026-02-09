@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.SerializationException
 import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
+import com.unciv.json.WebJsonFallback
 import com.unciv.logic.BackwardCompatibility.migrateCivID
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
@@ -446,10 +447,14 @@ class UncivFiles(
                 throw IncompatibleGameInfoVersionException(onlyVersion.version, ex)
             } ?: throw UncivShowableException("The file data seems to be corrupted.")
 
+            WebJsonFallback.hydrateGameParameters(gameInfo, unzippedJson)
+            WebJsonFallback.hydrateGameInfoIfMissingCivilizations(gameInfo, unzippedJson)
+
             if (gameInfo.version > CompatibilityVersion.CURRENT_COMPATIBILITY_VERSION) {
                 // this means there wasn't an immediate error while serializing, but this version will cause other errors later down the line
                 throw IncompatibleGameInfoVersionException(gameInfo.version)
             }
+            WebJsonFallback.hydrateTileMapIfMissingTiles(gameInfo.tileMap, unzippedJson)
             gameInfo.setTransients()
             return gameInfo
         }

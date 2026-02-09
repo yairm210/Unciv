@@ -96,6 +96,14 @@ object WebValidationRunner {
                 return
             }
 
+            WebValidationInterop.publishState("running:Unit move/automation")
+            val unitMoveAndAutomation = validateUnitMovementAndAutomation(game)
+            if (!unitMoveAndAutomation.first) {
+                fail(results, "Start new game", "unit_move_automation_failed", unitMoveAndAutomation.second)
+                publish(results)
+                return
+            }
+
             WebValidationInterop.publishState("running:Settler found city")
             val settlerFounding = validateSettlerFoundCity(game)
             if (!settlerFounding.first) {
@@ -112,10 +120,18 @@ object WebValidationRunner {
                 return
             }
 
+            WebValidationInterop.publishState("running:Quickstart flow")
+            val quickstartFlow = validateQuickstartFlow(game)
+            if (!quickstartFlow.first) {
+                fail(results, "Start new game", "quickstart_flow_failed", quickstartFlow.second)
+                publish(results)
+                return
+            }
+
             pass(
                 results,
                 "Start new game",
-                "${startGame.second} ${settlerFounding.second} ${warriorCombat.second}".trim()
+                "${startGame.second} ${unitMoveAndAutomation.second} ${settlerFounding.second} ${warriorCombat.second} ${quickstartFlow.second}".trim()
             )
 
             WebValidationInterop.publishState("running:End turn loop")
@@ -229,6 +245,63 @@ object WebValidationRunner {
         }
     }
 
+    private suspend fun validateUnitMovementAndAutomation(game: WebGame): Pair<Boolean, String> {
+        val gameInfo = game.gameInfo ?: return false to "No active game for unit movement validation."
+        val playerCiv = gameInfo.getCurrentPlayerCivilization()
+
+        val settler = findUsableCityFounder(playerCiv)
+            ?: return false to "No settler with FoundCity action available for movement validation."
+        val settlerOrigin = settler.currentTile
+        settler.currentMovement = settler.getMaxMovement().toFloat()
+        val settlerTarget = settlerOrigin.neighbors.firstOrNull { neighbor ->
+            neighbor != settlerOrigin
+                && settler.movement.canMoveTo(neighbor)
+                && settler.movement.canReachInCurrentTurn(neighbor)
+                && neighbor.civilianUnit == null
+                && neighbor.militaryUnit == null
+        } ?: return false to "No reachable adjacent tile found for settler movement validation."
+
+        settler.movement.headTowards(settlerTarget)
+        waitFrames(10)
+        if (settler.currentTile == settlerOrigin && settler.movement.canReachInCurrentTurn(settlerTarget)) {
+            settler.movement.moveToTile(settlerTarget)
+        }
+        val settlerMoved = waitUntilFrames(600) { settler.currentTile == settlerTarget }
+        if (!settlerMoved) {
+            return false to "Settler did not move to adjacent tile (origin=${settlerOrigin.position}, target=${settlerTarget.position}, current=${settler.currentTile.position})."
+        }
+
+        val warrior = playerCiv.units.getCivUnits().firstOrNull { it.isMilitary() && it.baseUnit.isMelee() }
+            ?: return false to "No melee unit available for explore/automate validation."
+
+        warrior.currentMovement = warrior.getMaxMovement().toFloat()
+        val exploreInvoked = UnitActions.invokeUnitAction(warrior, UnitActionType.Explore)
+        waitFrames(30)
+        val exploreApplied = warrior.isExploring() || warrior.isMoving()
+        if (!exploreInvoked || !exploreApplied) {
+            return false to "Explore action failed (invoked=$exploreInvoked, applied=$exploreApplied, action=${warrior.action ?: "null"})."
+        }
+
+        // Reset exploration so automation can be tested independently.
+        UnitActions.invokeUnitAction(warrior, UnitActionType.StopExploration)
+        waitFrames(10)
+        warrior.currentMovement = warrior.getMaxMovement().toFloat()
+
+        val automateInvoked = UnitActions.invokeUnitAction(warrior, UnitActionType.Automate)
+        waitFrames(30)
+        val automateApplied = warrior.isAutomated() || warrior.isMoving()
+        if (!automateInvoked || !automateApplied) {
+            return false to "Automate action failed (invoked=$automateInvoked, applied=$automateApplied, automated=${warrior.isAutomated()}, action=${warrior.action ?: "null"})."
+        }
+        // Keep end-turn validation deterministic: do not leave the test warrior automated.
+        UnitActions.invokeUnitAction(warrior, UnitActionType.StopAutomation)
+        warrior.automated = false
+        warrior.action = null
+        warrior.due = true
+
+        return true to "Unit movement/explore/automate validated (settlerMoved=${settlerOrigin.position}->${settlerTarget.position}, explore=$exploreApplied, automate=$automateApplied)."
+    }
+
     private suspend fun validateSettlerFoundCity(game: WebGame): Pair<Boolean, String> {
         val gameInfo = game.gameInfo ?: return false to "No active game when validating settler founding."
         val playerCiv = gameInfo.getCurrentPlayerCivilization()
@@ -317,6 +390,71 @@ object WebValidationRunner {
         }
 
         return true to "Warrior melee combat validated (enemyDamaged=${enemyAfter?.health ?: 0}/$enemyHealthBefore)."
+    }
+
+    private suspend fun validateQuickstartFlow(game: WebGame): Pair<Boolean, String> {
+        val originalGame = game.gameInfo ?: return false to "No active game available before quickstart validation."
+        val originalGameId = originalGame.gameId
+        return try {
+            val quickstartSetup = GameSetupInfo.fromSettings("Chieftain").apply {
+                gameParameters.isOnlineMultiplayer = false
+            }
+            sanitizeQuickstartPlayers(quickstartSetup)
+            if (quickstartSetup.gameParameters.victoryTypes.isEmpty()) {
+                val ruleSet = com.unciv.models.ruleset.RulesetCache.getComplexRuleset(quickstartSetup.gameParameters)
+                quickstartSetup.gameParameters.victoryTypes.addAll(ruleSet.victories.keys)
+            }
+            val quickstartGame = GameStarter.startNewGame(quickstartSetup)
+            game.loadGame(quickstartGame)
+            val quickstartLoaded = waitUntilFrames(3600) {
+                game.worldScreen != null && game.gameInfo?.gameId == quickstartGame.gameId
+            }
+            if (!quickstartLoaded) {
+                return false to "Quickstart game did not load to world screen in time."
+            }
+
+            val moveAndAutomation = validateUnitMovementAndAutomation(game)
+            if (!moveAndAutomation.first) {
+                return false to "Quickstart movement/automation failed: ${moveAndAutomation.second}"
+            }
+            val settling = validateSettlerFoundCity(game)
+            if (!settling.first) {
+                return false to "Quickstart FoundCity failed: ${settling.second}"
+            }
+
+            game.loadGame(originalGame)
+            val restored = waitUntilFrames(3600) { game.worldScreen != null && game.gameInfo?.gameId == originalGameId }
+            if (!restored) {
+                return false to "Failed to restore baseline game after quickstart validation."
+            }
+
+            true to "Quickstart validated (move/automate/explore/found-city)."
+        } catch (throwable: Throwable) {
+            false to "Exception during quickstart validation: ${throwable::class.simpleName} ${throwable.message ?: ""}".trim()
+        }
+    }
+
+    private fun sanitizeQuickstartPlayers(gameSetupInfo: GameSetupInfo) {
+        val gameParameters = gameSetupInfo.gameParameters
+        val ruleset = com.unciv.models.ruleset.RulesetCache.getComplexRuleset(gameParameters)
+        for (player in gameParameters.players) {
+            if (player.chosenCiv == com.unciv.Constants.random || player.chosenCiv == com.unciv.Constants.spectator) continue
+            val nation = ruleset.nations[player.chosenCiv]
+            if (nation == null || !nation.isMajorCiv) {
+                player.chosenCiv = com.unciv.Constants.random
+            }
+        }
+
+        val hasHumanPlayer = gameParameters.players.any {
+            it.playerType == PlayerType.Human && it.chosenCiv != com.unciv.Constants.spectator
+        }
+        if (!hasHumanPlayer) {
+            val firstPlayable = gameParameters.players.firstOrNull { it.chosenCiv != com.unciv.Constants.spectator }
+            if (firstPlayable != null) {
+                firstPlayable.playerType = PlayerType.Human
+                if (firstPlayable.chosenCiv == com.unciv.Constants.spectator) firstPlayable.chosenCiv = com.unciv.Constants.random
+            }
+        }
     }
 
     private fun ensureWarState(playerCiv: Civilization, enemyCiv: Civilization) {

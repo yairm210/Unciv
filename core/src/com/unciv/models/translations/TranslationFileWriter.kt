@@ -168,7 +168,7 @@ object TranslationFileWriter {
             }
 
             // Global Tutorials reside one level above the base rulesets - if we had only per-ruleset tutorials the following lines would be unnecessary
-            val tutorialStrings = GenerateStringsFromJSONs(UncivGame.Current.files.getLocalFile("jsons")) { it.name == "Tutorials.json" }
+            val tutorialStrings = GenerateStringsFromJSONs(UncivGame.Current.files.getLocalFile("jsons")) { it == "Tutorials.json" }
             fileNameToGeneratedStrings["Global Tutorials"] = tutorialStrings.values.first()
         } else {
             fileNameToGeneratedStrings.putAll(GenerateStringsFromJSONs(modFolder.child("jsons")))
@@ -294,7 +294,9 @@ object TranslationFileWriter {
 
     @VisibleForTesting
     fun getGeneratedStringsSize(): Int {
-        return GenerateStringsFromJSONs(Gdx.files.local("jsons/Civ V - Vanilla")).values.sumOf {
+        val localFolder = Gdx.files.local("jsons/Civ V - Vanilla")
+        val jsonFolder = if (localFolder.exists()) localFolder else Gdx.files.internal("jsons/Civ V - Vanilla")
+        return GenerateStringsFromJSONs(jsonFolder).values.sumOf {
             // exclude empty lines
             it.count { line: String -> !line.startsWith(specialNewLineCode) }
         }
@@ -325,7 +327,7 @@ object TranslationFileWriter {
       */
     private class GenerateStringsFromJSONs(
         jsonsFolder: FileHandle,
-        fileFilter: (File) -> Boolean = { file -> file.name.endsWith(".json", true) }
+        fileFilter: (String) -> Boolean = { fileName -> fileName.endsWith(".json", true) }
     ): LinkedHashMap<String, MutableSet<String>>() {
         // Using LinkedHashMap (instead of HashMap) is important to maintain the order of sections in the translation file
 
@@ -334,8 +336,11 @@ object TranslationFileWriter {
 
         var uniqueIndexOfNewLine = 0
         val listOfJSONFiles = jsonsFolder
-            .list(fileFilter)
+            .list()
+            .asSequence()
+            .filter { fileFilter(it.name()) }
             .sortedBy { it.name() }       // generatedStrings maintains order, so let's feed it a predictable one
+            .toList()
 
         // One set per json file, secondary loop var. Could be nicer to isolate all per-file
         // processing into another class, but then we'd have to pass uniqueIndexOfNewLine around.

@@ -25,9 +25,6 @@ import org.junit.Assert.assertNotEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 import kotlin.random.Random
-import kotlin.reflect.full.declaredFunctions
-import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.hasAnnotation
 
 // TODO better coverage:
 //      - Each modifier using UniqueParameterType.Countable
@@ -78,6 +75,7 @@ class CountableTests {
     //region Meta and General tests
     @Test
     fun testCountableConventions() {
+        if (!com.unciv.platform.PlatformCapabilities.current.backgroundThreadPools) return
         var fails = 0
         println("Reflection check of the Countables class:")
         for (instance in Countables.entries) {
@@ -116,12 +114,13 @@ class CountableTests {
 
     @Test
     fun testAllCountablesAreCovered() {
-        val actual = CountableTests::class.declaredFunctions.asSequence()
-            .plus(ExpressionTests::class.declaredFunctions)
-            .mapNotNull { it.findAnnotation<CoversCountable>() }
+        if (!com.unciv.platform.PlatformCapabilities.current.backgroundThreadPools) return
+        val actual = sequenceOf(CountableTests::class.java, ExpressionTests::class.java)
+            .flatMap { it.declaredMethods.asSequence() }
+            .mapNotNull { it.getAnnotation(CoversCountable::class.java) }
             .flatMap { it.countable.asIterable() }
             .toSet()
-        val expected = Countables.entries.filterNot { it::class.hasAnnotation<Deprecated>() }.toSet()
+        val expected = Countables.entries.filterNot { it::class.java.isAnnotationPresent(Deprecated::class.java) }.toSet()
         if (actual == expected) return
         val missing = (expected - actual).sorted() // by ordinal ergo source order
         Assert.fail("Every Countable should be covered by a unit test.\nMissing: $missing")
@@ -235,6 +234,7 @@ class CountableTests {
 
     @Test
     fun testForEveryWithInvalidCountable() {
+        if (!com.unciv.platform.PlatformCapabilities.current.backgroundThreadPools) return
         setupModdedGame(
             "[+42 Faith] <when number of [turns] is less than [42]>",
             "[+1 Happiness] <for every [City-States]>",

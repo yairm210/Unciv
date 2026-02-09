@@ -3,6 +3,7 @@ package com.unciv.logic.files
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.UncivGame
 import com.unciv.json.json
+import com.unciv.json.WebJsonFallback
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.TileMap
 import com.unciv.ui.screens.savescreens.Gzip
@@ -38,7 +39,11 @@ object MapSaver {
 
     fun getMaps(): Array<FileHandle> = UncivGame.Current.files.getLocalFile(mapsFolder).list()
 
-    private fun mapFromJson(json: String): TileMap = json().fromJson(TileMap::class.java, json)
+    private fun mapFromJson(jsonString: String): TileMap {
+        val tileMap = json().fromJson(TileMap::class.java, jsonString)
+        WebJsonFallback.hydrateTileMapIfMissingTiles(tileMap, jsonString)
+        return tileMap
+    }
 
     fun loadMapParameters(mapFile: FileHandle): MapParameters {
         return loadMapPreview(mapFile).mapParameters

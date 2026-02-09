@@ -45,7 +45,7 @@ class Tile : IsPartOfGameInfoSerialization {
     var airUnits = ArrayList<MapUnit>(0)
 
     var position = HexCoord()
-    lateinit var baseTerrain: String
+    var baseTerrain: String = ""
     var terrainFeatures: List<String> = listOf()
         private set
 
@@ -858,6 +858,12 @@ class Tile : IsPartOfGameInfoSerialization {
         } else resource = newResource
     }
 
+    /** Deserialization helper for environments where reflective writes are incomplete.
+     * Must not touch transients and is safe before [setTransients]. */
+    fun setTerrainFeaturesSerialized(terrainFeatureList: List<String>) {
+        terrainFeatures = terrainFeatureList
+    }
+
     /**
      * Sets this tile's [resource] and, if [newResource] is a Strategic resource, [resourceAmount] fields.
      *
@@ -1162,7 +1168,7 @@ class Tile : IsPartOfGameInfoSerialization {
     /** Shows important properties of this tile for debugging _only_, it helps to see what you're doing */
     override fun toString(): String {
         val lineList = arrayListOf("Tile @$position")
-        if (!this::baseTerrain.isInitialized) return lineList[0] + ", uninitialized"
+        if (baseTerrain.isBlank()) return lineList[0] + ", uninitialized"
         if (isCityCenter()) lineList += getCity()!!.name
         lineList += baseTerrain
         for (terrainFeature in terrainFeatures) lineList += terrainFeature

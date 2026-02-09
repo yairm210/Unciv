@@ -11,6 +11,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.civilization.managers.TurnManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.map.HexCoord
@@ -187,6 +188,17 @@ class WorldScreen(
 
         // Don't select unit and change selectedCiv when centering as spectator
         mapHolder.setCenterPosition(tileToCenterOn, immediately = true, selectUnit = !viewingCiv.isSpectator())
+
+        if (Gdx.app.type == Application.ApplicationType.WebGL && gameInfo.turns == 0 && viewingCiv.isHuman()) {
+            val units = viewingCiv.units.getCivUnits().toList()
+            if (units.isNotEmpty() && units.all { it.currentMovement <= Constants.minimumMovementEpsilon }) {
+                for (unit in units) {
+                    unit.currentMovement = unit.getMaxMovement().toFloat()
+                    unit.attacksThisTurn = 0
+                    unit.due = true
+                }
+            }
+        }
 
         tutorialController.allTutorialsShowedCallback = { shouldUpdate = true }
 

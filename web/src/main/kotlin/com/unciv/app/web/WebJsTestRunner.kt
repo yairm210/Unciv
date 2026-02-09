@@ -35,6 +35,16 @@ object WebJsTestRunner {
 
     private fun runSuite() {
         WebJsTestInterop.publishState("running")
+        val classFilter = WebJsTestInterop.getClassFilter()?.trim()?.takeIf { it.isNotEmpty() }
+        val filteredClasses = if (classFilter == null) {
+            WebJsTestSuite.classes
+        } else {
+            WebJsTestSuite.classes.filter { it.className.contains(classFilter, ignoreCase = true) }
+        }
+        if (classFilter != null && filteredClasses.isEmpty()) {
+            WebJsTestInterop.publishError("No JS test classes matched filter: $classFilter")
+            return
+        }
         val classResults = ArrayList<ClassResult>(WebJsTestSuite.classes.size)
         var totalRun = 0
         var totalFailures = 0
@@ -42,7 +52,7 @@ object WebJsTestRunner {
         var totalRuntimeMs = 0L
         val failureDetails = ArrayList<String>()
 
-        for (testClass in WebJsTestSuite.classes) {
+        for (testClass in filteredClasses) {
             WebJsTestInterop.publishState("running:${testClass.className}")
             val result = runClass(testClass)
             classResults += result
