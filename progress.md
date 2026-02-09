@@ -743,3 +743,4 @@
 2026-02-09T13:18:41Z | validation | headed web gameplay validation passed (settler move/found, explore/automate, warrior combat) | success | update features.csv/progress and commit changes
 2026-02-09T13:19:55Z | tracking | updated features.csv with latest web validation timestamp and notes | done | update arch_web.md if needed and prepare commit
 2026-02-09T13:20:55Z | docs | updated arch_web.md with latest JS suite pass status and gating requirements | done | stage changes and commit
+2026-02-09T13:22:37Z | commit | committed base ruleset detection + tracking/docs updates | done | report test results and remaining work
