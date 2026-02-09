@@ -61,10 +61,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
 
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps
+        run: |
+          npm config set fund false
+          npm config set audit false
+          npm install -D playwright
+          npx playwright install --with-deps chromium
 
       - name: Start static server
         run: |
