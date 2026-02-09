@@ -762,3 +762,4 @@
 2026-02-09T23:02:40Z | tests | fix CityStates countable test by adding city state city | done | rerun CI
 2026-02-09T23:14:10Z | web-e2e | make validation artifacts path relative to repo tmp for CI | done | rerun web build workflow
 2026-02-09T23:19:52Z | hygiene | removed hardcoded local paths from plan/progress | done | rewrite authorship history
+2026-02-09T23:22:56Z | git | force-push blocked; created codex/author-fix branch with author/path cleanup | done | open PR or ask admin to allow force-push
