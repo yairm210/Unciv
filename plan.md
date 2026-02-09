@@ -1,4 +1,4 @@
-# `/Users/haimlamper/Unciv` Web E2E Phase-1 Implementation Plan (WASM-first, Docker-only)
+# `<repo>` Web E2E Phase-1 Implementation Plan (WASM-first, Docker-only)
 
 ## Summary
 Ship a static-host-ready web build of Unciv using `gdx-teavm 1.4.0` with these locked decisions:
@@ -11,22 +11,22 @@ Ship a static-host-ready web build of Unciv using `gdx-teavm 1.4.0` with these l
 
 ## Step 0: Required persistence and tracking files (first execution commit)
 Create these files immediately when execution mode starts:
-1. `/Users/haimlamper/Unciv/plan.md` with this full plan.
-2. `/Users/haimlamper/Unciv/progress.md` as append-only log.
-3. `/Users/haimlamper/Unciv/features.csv` with phase tracking rows.
-4. `/Users/haimlamper/Unciv/tmp/` as local temporary workspace.
+1. `<repo>/plan.md` with this full plan.
+2. `<repo>/progress.md` as append-only log.
+3. `<repo>/features.csv` with phase tracking rows.
+4. `<repo>/tmp/` as local temporary workspace.
 
 Apply these process rules:
-1. Read `/Users/haimlamper/Unciv/progress.md` before every new exploration/read pass.
+1. Read `<repo>/progress.md` before every new exploration/read pass.
 2. Append one progress line after every meaningful step using format `timestamp | area | action | result | next`.
-3. Never use ad-hoc temp paths outside `/Users/haimlamper/Unciv/tmp/` for this effort.
+3. Never use ad-hoc temp paths outside `<repo>/tmp/` for this effort.
 
 ## Step 1: Container-first development environment
 Add:
-1. `/Users/haimlamper/Unciv/.devcontainer/devcontainer.json`
-2. `/Users/haimlamper/Unciv/.devcontainer/Dockerfile`
-3. `/Users/haimlamper/Unciv/docker-compose.web.yml`
-4. `/Users/haimlamper/Unciv/scripts/web/in-container.sh`
+1. `<repo>/.devcontainer/devcontainer.json`
+2. `<repo>/.devcontainer/Dockerfile`
+3. `<repo>/docker-compose.web.yml`
+4. `<repo>/scripts/web/in-container.sh`
 
 Container image contents:
 1. JDK 21.
@@ -41,13 +41,13 @@ Required runnable commands inside container:
 
 ## Step 2: Add web module and TeaVM build pipeline
 Update:
-1. `/Users/haimlamper/Unciv/settings.gradle.kts` to include `web`.
+1. `<repo>/settings.gradle.kts` to include `web`.
 
 Create:
-1. `/Users/haimlamper/Unciv/web/build.gradle.kts`
-2. `/Users/haimlamper/Unciv/web/src/main/java/com/unciv/app/web/BuildWebWasm.java`
-3. `/Users/haimlamper/Unciv/web/src/main/java/com/unciv/app/web/BuildWebJs.java`
-4. `/Users/haimlamper/Unciv/web/src/main/java/com/unciv/app/web/WebLauncher.java`
+1. `<repo>/web/build.gradle.kts`
+2. `<repo>/web/src/main/java/com/unciv/app/web/BuildWebWasm.java`
+3. `<repo>/web/src/main/java/com/unciv/app/web/BuildWebJs.java`
+4. `<repo>/web/src/main/java/com/unciv/app/web/WebLauncher.java`
 
 Web dependencies:
 1. `project(":core")`
@@ -58,17 +58,17 @@ Web dependencies:
 TeaVM build config:
 1. WASM task uses `setWebAssembly(true)`.
 2. JS task uses `setWebAssembly(false)`.
-3. Assets source is `/Users/haimlamper/Unciv/android/assets`.
-4. Output folder is `/Users/haimlamper/Unciv/web/build/dist`.
+3. Assets source is `<repo>/android/assets`.
+4. Output folder is `<repo>/web/build/dist`.
 5. Auto-jetty disabled in CI.
 6. Add reflection patterns for Unciv packages needed by runtime serialization paths.
 
 ## Step 3: Web runtime wiring
 Create:
-1. `/Users/haimlamper/Unciv/web/src/main/kotlin/com/unciv/app/web/WebDisplay.kt`
-2. `/Users/haimlamper/Unciv/web/src/main/kotlin/com/unciv/app/web/WebFont.kt`
-3. `/Users/haimlamper/Unciv/web/src/main/kotlin/com/unciv/app/web/WebLogBackend.kt`
-4. `/Users/haimlamper/Unciv/web/src/main/kotlin/com/unciv/app/web/WebGame.kt` (if needed to centralize web overrides)
+1. `<repo>/web/src/main/kotlin/com/unciv/app/web/WebDisplay.kt`
+2. `<repo>/web/src/main/kotlin/com/unciv/app/web/WebFont.kt`
+3. `<repo>/web/src/main/kotlin/com/unciv/app/web/WebLogBackend.kt`
+4. `<repo>/web/src/main/kotlin/com/unciv/app/web/WebGame.kt` (if needed to centralize web overrides)
 
 Startup wiring in `WebLauncher`:
 1. `Display.platform = WebDisplay()`
@@ -79,16 +79,16 @@ Startup wiring in `WebLauncher`:
 
 ## Step 4: Core portability fixes required for TeaVM compile
 Edit:
-1. `/Users/haimlamper/Unciv/core/src/com/unciv/models/metadata/GameSettings.kt` to remove `java.awt.Rectangle` dependency.
-2. `/Users/haimlamper/Unciv/core/src/com/unciv/ui/screens/worldscreen/unit/UnitTable.kt` to replace `java.awt.Label.CENTER` with LibGDX alignment.
-3. `/Users/haimlamper/Unciv/core/src/com/unciv/ui/popups/options/AdvancedTab.kt` to remove `java.nio.file` and `Thread.sleep` usage from shared path.
-4. `/Users/haimlamper/Unciv/core/src/com/unciv/ui/screens/savescreens/LoadOrSaveScreen.kt` to remove `DosFileAttributes` dependency.
-5. `/Users/haimlamper/Unciv/core/src/com/unciv/ui/audio/MusicController.kt` to replace thread sleep with coroutine delay path.
-6. `/Users/haimlamper/Unciv/core/src/com/unciv/logic/files/IMediaFinder.kt` to remove reflective sound enumeration in web-reachable path by explicit static registry.
+1. `<repo>/core/src/com/unciv/models/metadata/GameSettings.kt` to remove `java.awt.Rectangle` dependency.
+2. `<repo>/core/src/com/unciv/ui/screens/worldscreen/unit/UnitTable.kt` to replace `java.awt.Label.CENTER` with LibGDX alignment.
+3. `<repo>/core/src/com/unciv/ui/popups/options/AdvancedTab.kt` to remove `java.nio.file` and `Thread.sleep` usage from shared path.
+4. `<repo>/core/src/com/unciv/ui/screens/savescreens/LoadOrSaveScreen.kt` to remove `DosFileAttributes` dependency.
+5. `<repo>/core/src/com/unciv/ui/audio/MusicController.kt` to replace thread sleep with coroutine delay path.
+6. `<repo>/core/src/com/unciv/logic/files/IMediaFinder.kt` to remove reflective sound enumeration in web-reachable path by explicit static registry.
 
 ## Step 5: Capability contract and phase-1 feature gating
 Create:
-1. `/Users/haimlamper/Unciv/core/src/com/unciv/platform/PlatformCapabilities.kt`
+1. `<repo>/core/src/com/unciv/platform/PlatformCapabilities.kt`
 
 Fields for phase 1:
 1. `onlineMultiplayer = false`
@@ -104,7 +104,7 @@ Wire capability usage in:
 
 ## Step 6: Startup/network behavior gating for web phase 1
 Adjust:
-1. `/Users/haimlamper/Unciv/core/src/com/unciv/UncivGame.kt` to skip startup multiplayer server check on web.
+1. `<repo>/core/src/com/unciv/UncivGame.kt` to skip startup multiplayer server check on web.
 2. Multiplayer/chat entry points to remain dormant when capability is disabled.
 3. Keep all single-player logic unchanged.
 
@@ -117,16 +117,16 @@ Adjust:
 
 ## Step 8: CI build and deploy artifacts
 Add:
-1. `/Users/haimlamper/Unciv/.github/workflows/web-build.yml`
+1. `<repo>/.github/workflows/web-build.yml`
 
 Workflow stages:
 1. Build in containerized Linux runner.
 2. Run `./gradlew :web:webBuildWasm`.
-3. Upload `/Users/haimlamper/Unciv/web/build/dist` artifact.
+3. Upload `<repo>/web/build/dist` artifact.
 4. Optional manual deploy job for static host preview.
 
 ## Step 9: `features.csv` initialization and lifecycle
-Create `/Users/haimlamper/Unciv/features.csv` with schema:
+Create `<repo>/features.csv` with schema:
 1. `feature,web_status,phase,blocking_issue,notes,last_verified`
 
 Initial rows:

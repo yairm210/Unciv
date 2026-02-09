@@ -322,7 +322,7 @@
 2026-02-07T18:03:20Z | patch | created tmp/repro-start-new-game-live.js for full console+screenshots on start-new-game click path | done | run against correct web/build/dist serve and capture throw site
 2026-02-07T18:04:37Z | validation | live repro on correct dist now confirms crash cause chain enters ModCheckboxTable.setBaseRuleset with blank IllegalArgumentException | failed | instrument setBaseRuleset internals to isolate exact operation
 2026-02-07T18:06:01Z | patch | instrumented ModCheckboxTable.setBaseRuleset with internal step+top-frame diagnostics for blank IllegalArgumentException | done | rebuild JS and repro start-new-game click path
-2026-02-07T18:06:16Z | build | docker daemon unavailable for in-container build (cannot connect /Users/haimlamper/.docker/run/docker.sock) | blocked | start docker daemon and rerun build
+2026-02-07T18:06:16Z | build | docker daemon unavailable for in-container build (cannot connect <home>/.docker/run/docker.sock) | blocked | start docker daemon and rerun build
 2026-02-07T18:06:38Z | build | docker daemon restored and ready | done | rerun in-container :web:webBuildJs with latest diagnostics
 2026-02-07T18:06:53Z | build | container launch failed due host port 8080 conflict from local server | blocked | stop local server and rerun build
 2026-02-07T18:08:34Z | build | rebuilt :web:webBuildJs in docker with latest ModCheckboxTable step diagnostics | success | rerun live start-new-game repro to capture precise failing sub-step
@@ -761,3 +761,4 @@
 2026-02-09T22:52:33Z | tests | add Countables CityStates coverage test to fix CI | done | rerun CI
 2026-02-09T23:02:40Z | tests | fix CityStates countable test by adding city state city | done | rerun CI
 2026-02-09T23:14:10Z | web-e2e | make validation artifacts path relative to repo tmp for CI | done | rerun web build workflow
+2026-02-09T23:19:52Z | hygiene | removed hardcoded local paths from plan/progress | done | rewrite authorship history
