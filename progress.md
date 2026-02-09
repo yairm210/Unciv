@@ -752,3 +752,5 @@
 2026-02-09T21:56:38Z | rebase | committed progress log before rebase | done | run git rebase origin/master
 2026-02-09T21:57:50Z | rebase | committed progress log after rebase error | done | retry git rebase origin/master
 2026-02-09T21:59:02Z | rebase | rebased local master onto origin/master successfully | done | commit progress log and push
+2026-02-09T22:04:01Z | request | add web e2e tests to GitHub Pages workflow | in_progress | edit web-build.yml to run Playwright validation
+2026-02-09T22:04:55Z | patch | added Playwright headed E2E steps to web-build.yml and gated pages deploy on web-e2e | done | commit and push

@@ -43,10 +43,60 @@ jobs:
           path: web/build/dist
           if-no-files-found: error
 
+  web-e2e:
+    name: Web E2E (Playwright)
+    runs-on: ubuntu-latest
+    needs: web-build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download web dist artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: unciv-web-dist
+          path: web/build/dist
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Start static server
+        run: |
+          python3 -m http.server 18080 --directory web/build/dist > /tmp/web-server.log 2>&1 &
+          echo $! > /tmp/web-server.pid
+
+      - name: Run web validation (headed via xvfb)
+        run: |
+          xvfb-run -a --server-args='-screen 0 1920x1080x24' \
+            env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 \
+            node tmp/run-web-validation.js
+
+      - name: Run browser JS test suite (headed via xvfb)
+        run: |
+          xvfb-run -a --server-args='-screen 0 1920x1080x24' \
+            env HEADLESS=false WEB_URL=http://127.0.0.1:18080/index.html?jstests=1 TIMEOUT_MS=900000 \
+            node tmp/run-js-browser-tests.js
+
+      - name: Upload web test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-e2e-artifacts
+          path: |
+            /tmp/web-server.log
+            /Users/runner/work/unciv-web/unciv-web/tmp/js-browser-tests-result.json
+            /Users/runner/work/unciv-web/unciv-web/tmp/web-validation-latest.png
+
   deploy-pages:
     name: Deploy GitHub Pages
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
-    needs: web-build
+    needs: [web-build, web-e2e]
     runs-on: ubuntu-latest
     environment:
       name: github-pages
