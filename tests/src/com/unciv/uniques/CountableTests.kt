@@ -586,7 +586,8 @@ class CountableTests {
     @CoversCountable(Countables.CityStates)
     fun testCityStatesDeprecatedCountable() {
         setupModdedGame()
-        game.addCiv(game.ruleset.nations["Lhasa"]!!)
+        val cityState = game.addCiv(game.ruleset.nations["Lhasa"]!!)
+        game.addCity(cityState, game.tileMap[-1,1])
         val context = GameContext(civ)
         assertEquals("City-States countable should return alive city-states", 1, Countables.getCountableAmount("City-States", context))
     }
