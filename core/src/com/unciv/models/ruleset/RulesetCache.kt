@@ -159,14 +159,21 @@ object RulesetCache : HashMap<String, Ruleset>() {
      */
     fun getComplexRuleset(mods: LinkedHashSet<String>, optionalBaseRuleset: String? = null): Ruleset {
         val baseRuleset =
-                if (containsKey(optionalBaseRuleset) && this[optionalBaseRuleset]!!.modOptions.isBaseRuleset)
-                    this[optionalBaseRuleset]!!
-                else getVanillaRuleset()
+            if (optionalBaseRuleset != null && containsKey(optionalBaseRuleset)) {
+                val candidate = this[optionalBaseRuleset]!!
+                if (candidate.modOptions.isBaseRuleset || BaseRuleset.entries.any { it.fullName == optionalBaseRuleset }) {
+                    candidate
+                } else {
+                    getVanillaRuleset()
+                }
+            } else {
+                getVanillaRuleset()
+            }
 
         val loadedMods = mods.asSequence()
             .filter { containsKey(it) }
             .map { this[it]!! }
-            .filter { !it.modOptions.isBaseRuleset }
+            .filter { !it.modOptions.isBaseRuleset && BaseRuleset.entries.none { base -> base.fullName == it.name } }
 
         return getComplexRuleset(baseRuleset, loadedMods.asIterable())
     }

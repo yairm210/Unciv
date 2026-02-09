@@ -1,6 +1,6 @@
 # Unciv Web Architecture Decisions (Phase-1)
 
-Last updated: 2026-02-08
+Last updated: 2026-02-09
 
 ## 1) Locked Decisions (Phase-1)
 
@@ -91,12 +91,11 @@ A deferred decision can be changed only when all are true:
 2. Browser execution mode is enabled via `index.html?jstests=1`:
    - launcher routes to `WebJsTestsGame`.
    - runner executes generated suite in Chromium and publishes JSON (`window.__uncivJsTestsResultJson`).
-3. Current measured browser JS suite result:
+3. Current measured browser JS suite result (headed Chromium):
    - classCount: 27
    - totalRun: 224
-   - totalFailures: 157
+   - totalFailures: 0
    - totalIgnored: 5
-4. Failure profile is dominated by backend-incompatible/unit-test-assumption gaps (desktop file APIs, reflection access differences, locale/number rendering differences, and tests that depend on JVM/headless runner semantics), not by startup/runtime fatal crashes.
-5. Decision for release gating:
-   - keep full browser JS suite execution available for visibility/regression tracking.
-   - keep gameplay readiness gate on browser E2E validation (`tmp/run-web-validation.js` and targeted headed world-flow repros), which currently pass.
+4. Decision for release gating:
+   - require full browser JS suite pass (headed Chromium) and browser E2E validation (`tmp/run-web-validation.js`) to pass.
+   - both are currently green in JS runtime.
