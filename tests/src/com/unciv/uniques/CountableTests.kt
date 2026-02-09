@@ -582,6 +582,16 @@ class CountableTests {
     }
 
     @Test
+    @Suppress("DEPRECATION_ERROR")
+    @CoversCountable(Countables.CityStates)
+    fun testCityStatesDeprecatedCountable() {
+        setupModdedGame()
+        game.addCiv(game.ruleset.nations["Lhasa"]!!)
+        val context = GameContext(civ)
+        assertEquals("City-States countable should return alive city-states", 1, Countables.getCountableAmount("City-States", context))
+    }
+
+    @Test
     @CoversCountable(Countables.FilteredTechnologies)
     fun testFilteredTechnologies() {
         setupModdedGame()
