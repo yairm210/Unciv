@@ -747,3 +747,5 @@
 2026-02-09T13:25:03Z | commit | committed web runtime/json/test parity fixes across core/tests/web | done | confirm clean status and summarize results
 2026-02-09T19:47:54Z | request | update github pages workflow for web deploy | in_progress | inspect existing workflows and add pages publish pipeline
 2026-02-09T19:49:17Z | patch | updated web-build.yml to publish GitHub Pages from JS bundle with pages concurrency/permissions | done | commit workflow change
+2026-02-09T21:53:37Z | request | push github pages workflow update | in_progress | check git status and remotes
+2026-02-09T21:55:45Z | rebase-prep | fetched origin and listed diverging commits | done | commit progress log then rebase onto origin/master
