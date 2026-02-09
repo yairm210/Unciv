@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -93,8 +93,8 @@ jobs:
           name: web-e2e-artifacts
           path: |
             /tmp/web-server.log
-            /Users/runner/work/unciv-web/unciv-web/tmp/js-browser-tests-result.json
-            /Users/runner/work/unciv-web/unciv-web/tmp/web-validation-latest.png
+            tmp/js-browser-tests-result.json
+            tmp/web-validation-latest.png
 
   deploy-pages:
     name: Deploy GitHub Pages
@@ -111,11 +111,11 @@ jobs:
           name: unciv-web-dist
           path: web-dist
 
-      - name: Upload pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: web-dist
-
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: web-dist
+          publish_branch: gh-pages
+          force_orphan: true

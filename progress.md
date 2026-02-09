@@ -765,3 +765,4 @@
 2026-02-09T23:22:56Z | git | force-push blocked; created codex/author-fix branch with author/path cleanup | done | open PR or ask admin to allow force-push
 2026-02-09T23:29:06Z | tmux | verified tmux session for master push | done | fast-forward master then push in tmux
 2026-02-09T23:32:51Z | git | pushed master via tmux (fast-forward) | done | monitor CI runs
+2026-02-09T23:43:54Z | ci | switch Pages deploy to gh-pages push and fix artifact paths/permissions | done | rerun pipeline
