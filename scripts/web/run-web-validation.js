@@ -6,7 +6,9 @@ async function main() {
   const baseUrl = process.env.WEB_BASE_URL || 'http://127.0.0.1:8000';
   const timeoutMs = Number(process.env.WEB_VALIDATION_TIMEOUT_MS || '430000');
   const headless = (process.env.HEADLESS || '1') !== '0';
-  const screenshotPath = path.resolve('/Users/haimlamper/Unciv/tmp/web-validation-latest.png');
+  const tmpDir = process.env.WEB_TMP_DIR || path.join(process.cwd(), 'tmp');
+  fs.mkdirSync(tmpDir, { recursive: true });
+  const screenshotPath = path.join(tmpDir, 'web-validation-latest.png');
 
   const pageErrors = [];
   const consoleErrors = [];
@@ -63,8 +65,8 @@ async function main() {
     screenshotPath,
   };
 
-  fs.writeFileSync('/Users/haimlamper/Unciv/tmp/web-validation-result.json', JSON.stringify(result, null, 2));
-  fs.writeFileSync('/Users/haimlamper/Unciv/tmp/web-validation-summary.json', JSON.stringify(summary, null, 2));
+  fs.writeFileSync(path.join(tmpDir, 'web-validation-result.json'), JSON.stringify(result, null, 2));
+  fs.writeFileSync(path.join(tmpDir, 'web-validation-summary.json'), JSON.stringify(summary, null, 2));
 
   if (state.validationError) {
     throw new Error(`Web validation error: ${state.validationError}`);

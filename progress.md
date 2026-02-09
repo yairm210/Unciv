@@ -760,3 +760,4 @@
 2026-02-09T22:43:11Z | fixes | move web e2e scripts into repo and fix CI failures (Countables visibility + detekt suppressions + workflow path) | done | rerun CI
 2026-02-09T22:52:33Z | tests | add Countables CityStates coverage test to fix CI | done | rerun CI
 2026-02-09T23:02:40Z | tests | fix CityStates countable test by adding city state city | done | rerun CI
+2026-02-09T23:14:10Z | web-e2e | make validation artifacts path relative to repo tmp for CI | done | rerun web build workflow
