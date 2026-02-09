@@ -1,4 +1,4 @@
-name: Web Build (TeaVM)
+name: Web Build + Pages (TeaVM)
 
 on:
   pull_request:
@@ -8,9 +8,18 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
 jobs:
   web-build:
-    name: Build Web WASM Artifact
+    name: Build Web JS Artifact
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -19,13 +28,13 @@ jobs:
       - name: Build web toolchain container
         run: docker build -f .devcontainer/Dockerfile -t unciv-web-builder .
 
-      - name: Build WASM bundle
+      - name: Build JS bundle
         run: |
           docker run --rm \
             -v "${{ github.workspace }}:/workspace" \
             -w /workspace \
             unciv-web-builder \
-            bash -lc "./gradlew :web:webBuildWasm"
+            bash -lc "./gradlew :web:webBuildJs"
 
       - name: Upload web dist artifact
         uses: actions/upload-artifact@v4
@@ -34,14 +43,11 @@ jobs:
           path: web/build/dist
           if-no-files-found: error
 
-  deploy-preview:
-    name: Deploy Web Preview (Manual)
-    if: github.event_name == 'workflow_dispatch'
+  deploy-pages:
+    name: Deploy GitHub Pages
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
     needs: web-build
     runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
