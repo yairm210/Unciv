@@ -757,3 +757,4 @@
 2026-02-09T22:15:54Z | gh | checking gh auth and pipeline runs | in_progress | use gh to read workflow status
 2026-02-09T22:21:07Z | workflow | fix Playwright install in web-e2e | done | rerun gh workflow and push
 2026-02-09T22:23:51Z | git | pushed workflow fix commit to origin | done | rerun gh workflow to confirm e2e
+2026-02-09T22:43:11Z | fixes | move web e2e scripts into repo and fix CI failures (Countables visibility + detekt suppressions + workflow path) | done | rerun CI

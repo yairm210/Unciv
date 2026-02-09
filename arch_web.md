@@ -69,7 +69,7 @@ A deferred decision can be changed only when all are true:
 ## 7) Runtime Validation Status (Current)
 
 1. JS target (`:web:webBuildJs`) is currently the validated gameplay path in this environment:
-   - `tmp/run-web-validation.js` passes full matrix (boot/start-game/end-turn/save-load/clipboard/audio/font/external-link and disabled-by-design gates), with explicit `Start new game` notes for Settler founding and Warrior melee combat.
+   - `scripts/web/run-web-validation.js` passes full matrix (boot/start-game/end-turn/save-load/clipboard/audio/font/external-link and disabled-by-design gates), with explicit `Start new game` notes for Settler founding and Warrior melee combat.
    - headed browser repro confirms quickstart opens world, settler action list includes `FoundCity`, and web movement success markers for warrior/settler.
 2. Web correctness fix applied at source:
    - `Ruleset.loadNamedArray()` web fallback hydration now restores full `BaseUnit` fields from raw JSON (not only name/unitType), which removes partial-unit initialization on TeaVM and unblocks settler actions + movement logic.
@@ -97,5 +97,5 @@ A deferred decision can be changed only when all are true:
    - totalFailures: 0
    - totalIgnored: 5
 4. Decision for release gating:
-   - require full browser JS suite pass (headed Chromium) and browser E2E validation (`tmp/run-web-validation.js`) to pass.
+   - require full browser JS suite pass (headed Chromium) and browser E2E validation (`scripts/web/run-web-validation.js`) to pass.
    - both are currently green in JS runtime.

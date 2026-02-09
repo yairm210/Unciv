@@ -1,3 +1,5 @@
+@file:Suppress("FunctionOnlyReturningConstant")
+
 package com.unciv.logic.github
 
 import com.badlogic.gdx.files.FileHandle

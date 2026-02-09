@@ -78,13 +78,13 @@ jobs:
         run: |
           xvfb-run -a --server-args='-screen 0 1920x1080x24' \
             env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 \
-            node tmp/run-web-validation.js
+            node scripts/web/run-web-validation.js
 
       - name: Run browser JS test suite (headed via xvfb)
         run: |
           xvfb-run -a --server-args='-screen 0 1920x1080x24' \
             env HEADLESS=false WEB_URL=http://127.0.0.1:18080/index.html?jstests=1 TIMEOUT_MS=900000 \
-            node tmp/run-js-browser-tests.js
+            node scripts/web/run-js-browser-tests.js
 
       - name: Upload web test artifacts
         if: always()

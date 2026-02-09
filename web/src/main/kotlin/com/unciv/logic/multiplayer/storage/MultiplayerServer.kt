@@ -1,3 +1,5 @@
+@file:Suppress("FunctionOnlyReturningConstant")
+
 package com.unciv.logic.multiplayer.storage
 
 import com.unciv.Constants

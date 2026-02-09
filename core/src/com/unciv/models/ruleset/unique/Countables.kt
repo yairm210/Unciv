@@ -473,7 +473,7 @@ enum class Countables(
     }
 
     @Readonly
-    private fun getDeprecationAnnotation(): Deprecated? = try {
+    fun getDeprecationAnnotation(): Deprecated? = try {
         declaringJavaClass.getField(name).getAnnotation(Deprecated::class.java)
     } catch (_: Exception) {
         null
