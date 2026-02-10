@@ -818,3 +818,7 @@
 2026-02-10T23:32:54Z | validation | second run blocked because repo has no package.json at root for npm install | blocked | install playwright into tmp workspace and run scripts with NODE_PATH override
 2026-02-10T23:35:55Z | validation | local tmp playwright bootstrap failed on browser download (SELF_SIGNED_CERT_IN_CHAIN) | blocked | execute browser validation inside web container where playwright runtime/deps are pre-provisioned
 2026-02-10T23:43:28Z | validation | local chromium validations now pass for phase1 and phase3-alpha after retry + capability-aware gate fixes | success | commit/push and rerun fork workflow to confirm deploy
+2026-02-10T23:44:32Z | git | pushed phase3 validation/capability patch commit 672b24ff8 via tmux | success | monitor workflow for web-e2e and pages deploy
+2026-02-10T23:51:20Z | process | switch to tmux for long-running container validation to avoid blocking | in_progress | launch tmux session with container playwright validation and JS suite
+2026-02-10T23:52:13Z | process | launched tmux session web-e2e running container validations; logging to /Users/haimlamper/Unciv/tmp/web-e2e-tmux.log | in_progress | monitor tmux log for completion and then commit/push if green
+2026-02-10T23:53:05Z | ci | run 21886809711 green for deploy gates: web-e2e passed and github pages deployed; phase3-alpha validation passed; firefox compat remains informational-failing | success | continue phase3 implementation loop (multiplayer/mod io) with non-regression gate
