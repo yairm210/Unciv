@@ -76,13 +76,13 @@ jobs:
 
       - name: Run web validation (headless)
         run: |
-          env HEADLESS=true WEB_BASE_URL=http://127.0.0.1:18080 \
+          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 \
           node scripts/web/run-web-validation.js
 
       - name: Run browser JS test suite (headless)
         timeout-minutes: 40
         run: |
-          env HEADLESS=true WEB_URL=http://127.0.0.1:18080/index.html?jstests=1 TIMEOUT_MS=2100000 \
+          xvfb-run -a env HEADLESS=false WEB_URL=http://127.0.0.1:18080/index.html?jstests=1 TIMEOUT_MS=2100000 \
           node scripts/web/run-js-browser-tests.js
 
       - name: Run regression diff gate
@@ -210,7 +210,7 @@ jobs:
 
       - name: Run phase3-alpha gameplay validation
         run: |
-          env HEADLESS=true WEB_BROWSER=chromium WEB_PROFILE=phase3-alpha WEB_BASE_URL=http://127.0.0.1:18080 \
+          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase3-alpha WEB_BASE_URL=http://127.0.0.1:18080 \
           node scripts/web/run-web-validation.js
 
       - name: Publish phase3-alpha summary

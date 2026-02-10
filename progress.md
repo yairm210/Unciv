@@ -801,3 +801,5 @@
 2026-02-10T22:17:05Z | git | committed phase3 profile runtime + alpha CI lane (7d5dbee93) and pushed to origin/master via tmux shell session | success | monitor workflow until pages deploy outcome
 2026-02-10T22:29:17Z | ci | workflow 21884454746 failed (web-e2e + phase3-alpha validation) and blocked pages deploy | failed | inspect failing logs/artifacts and patch validator/workflow
 2026-02-10T22:45:21Z | harness | patched web Playwright harness for CI stability (chromium swiftshader/timer args + init-script runtime flags + crash diagnostics); reproduced phase3-alpha timeout while phase1 passes locally | partial_success | commit harness fix and rerun pipeline (deploy should gate only phase1)
+2026-02-10T22:46:26Z | git | pushed harness hardening commit 81aad39de to origin/master via tmux | success | monitor web-build workflow outcome
+2026-02-10T23:03:42Z | ci | applied deploy-unblock fix: xvfb headed Chromium for gated web-e2e jobs + URL query reassertion in validators | done | run local smoke and push

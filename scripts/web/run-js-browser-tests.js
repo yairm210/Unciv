@@ -73,6 +73,10 @@ const { chromium, firefox, webkit } = require('playwright');
     const targetUrl = new URL(url);
     if (webProfile.length > 0) targetUrl.searchParams.set('webProfile', webProfile);
     await page.goto(targetUrl.toString(), { waitUntil: 'domcontentloaded', timeout: 120000 });
+    const landedUrl = page.url();
+    if (!landedUrl.includes('jstests=1')) {
+      await page.goto(targetUrl.toString(), { waitUntil: 'domcontentloaded', timeout: 120000 });
+    }
     const pollStart = Date.now();
     while (true) {
       const state = await page.evaluate(() => ({

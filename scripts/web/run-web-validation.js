@@ -65,6 +65,10 @@ async function main() {
     targetUrl.searchParams.set('webtest', '1');
     if (webProfile.length > 0) targetUrl.searchParams.set('webProfile', webProfile);
     await page.goto(targetUrl.toString(), { waitUntil: 'domcontentloaded', timeout: 120000 });
+    const landedUrl = page.url();
+    if (!landedUrl.includes('webtest=1')) {
+      await page.goto(targetUrl.toString(), { waitUntil: 'domcontentloaded', timeout: 120000 });
+    }
     const deadline = Date.now() + timeoutMs;
     while (Date.now() < deadline) {
       state = await page.evaluate(() => ({
