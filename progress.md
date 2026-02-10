@@ -783,3 +783,4 @@
 2026-02-10T09:54:49Z | patch | increased JS browser suite timeout in web-build workflow (TIMEOUT_MS=2100000, step timeout-minutes=40) | done | commit and push to trigger fork workflow
 2026-02-10T09:56:13Z | git | pushed timeout budget fix to master via tmux (c2f7801c2) | done | monitor Web Build + Pages run 21860124557 until deploy outcome
 2026-02-10T10:20:41Z | ci | run 21860124557 fully green (web validation + browser JS suite + regression gate + deploy pages) | success | close pages deploy incident
+2026-02-10T19:05:29Z | phase2-3 | added JS harness browser selection + ignored synthetic 404 console errors + web summary generator + browser matrix job in web CI | done | run static checks and push for CI validation

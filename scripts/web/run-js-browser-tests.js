@@ -1,10 +1,11 @@
 const fs = require('fs');
 const path = require('path');
-const { chromium } = require('playwright');
+const { chromium, firefox, webkit } = require('playwright');
 
 (async () => {
   const outPath = path.resolve('tmp/js-browser-tests-result.json');
   const url = process.env.WEB_URL || 'http://127.0.0.1:18080/index.html?jstests=1';
+  const browserName = String(process.env.WEB_BROWSER || 'chromium').toLowerCase();
   const headlessToken = String(process.env.HEADLESS || 'false').toLowerCase();
   const headless = headlessToken === '1' || headlessToken === 'true' || headlessToken === 'yes';
   const timeoutMs = Number(process.env.TIMEOUT_MS || 900000);
@@ -12,14 +13,34 @@ const { chromium } = require('playwright');
   const consoleErrors = [];
   const consoleWarnings = [];
   const pageErrors = [];
+  const ignoredConsoleErrors = [];
 
-  const browser = await chromium.launch({ headless, slowMo: headless ? 0 : 40 });
+  const browserTypes = { chromium, firefox, webkit };
+  const browserType = browserTypes[browserName];
+  if (!browserType) {
+    throw new Error(`Unsupported WEB_BROWSER='${browserName}'. Expected one of: ${Object.keys(browserTypes).join(', ')}`);
+  }
+
+  const ignoredConsoleErrorPatterns = [
+    /\/favicon\.ico\b/i,
+    /\/webapp\/jstests\/result\.json\b/i,
+    /\/jstests\/result\.json\b/i,
+    /\/assets\/jstests\/result\.json\b/i,
+  ];
+
+  const browser = await browserType.launch({ headless, slowMo: headless ? 0 : 40 });
   const page = await browser.newPage({ viewport: { width: 1600, height: 1000 } });
 
   page.on('console', msg => {
     const t = msg.type();
     const text = msg.text();
-    if (t === 'error') consoleErrors.push(text);
+    if (t === 'error') {
+      if (ignoredConsoleErrorPatterns.some((pattern) => pattern.test(text))) {
+        ignoredConsoleErrors.push(text);
+      } else {
+        consoleErrors.push(text);
+      }
+    }
     if (t === 'warning') consoleWarnings.push(text);
     process.stdout.write(`[console:${t}] ${text}\n`);
   });
@@ -95,12 +116,15 @@ const { chromium } = require('playwright');
   const report = {
     status,
     url,
+    browser: browserName,
     headless,
     timestamp: new Date().toISOString(),
     consoleErrorCount: consoleErrors.length,
+    ignoredConsoleErrorCount: ignoredConsoleErrors.length,
     consoleWarningCount: consoleWarnings.length,
     pageErrorCount: pageErrors.length,
     consoleErrors,
+    ignoredConsoleErrors,
     consoleWarnings,
     pageErrors,
     jsResult,
