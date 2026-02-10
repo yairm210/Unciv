@@ -787,3 +787,5 @@
 2026-02-10T19:08:02Z | phase2-3 | committed browser-matrix + summary-reporting CI hardening (81a7d444b) | done | push and monitor fork workflow run 21878677049
 2026-02-10T19:08:02Z | git | pushed 81a7d444b to master via tmux | done | track workflow outcome and fix any matrix failures
 2026-02-10T19:44:03Z | ci | changed browser matrix strategy: chromium runs full JS suite, firefox runs gameplay smoke validation to avoid long firefox suite stalls | done | rerun workflow and verify deploy remains green
+2026-02-10T19:45:44Z | git | pushed firefox smoke-lane CI adjustment to master (2c898be88) via tmux | done | monitor new web workflow run and confirm green deploy
+2026-02-10T20:07:18Z | ci | diagnosed firefox smoke failure as unsupported clipboard permission in Playwright context and patched web validator to set clipboard permissions only on chromium | done | commit/push and rerun workflow

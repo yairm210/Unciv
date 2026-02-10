@@ -21,10 +21,13 @@ async function main() {
   }
 
   const browser = await browserType.launch({ headless });
-  const context = await browser.newContext({
+  const contextOptions = {
     viewport: { width: 1280, height: 800 },
-    permissions: ['clipboard-read', 'clipboard-write'],
-  });
+  };
+  if (browserName === 'chromium') {
+    contextOptions.permissions = ['clipboard-read', 'clipboard-write'];
+  }
+  const context = await browser.newContext(contextOptions);
   const page = await context.newPage();
 
   page.on('pageerror', (err) => {
