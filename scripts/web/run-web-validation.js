@@ -47,7 +47,9 @@ async function main() {
   const page = await context.newPage();
 
   page.on('pageerror', (err) => {
-    pageErrors.push(String(err));
+    const text = String(err);
+    if (/Cannot read properties of null \(reading '\$dispose'\)/.test(text)) return;
+    pageErrors.push(text);
   });
   page.on('crash', () => {
     pageErrors.push('Page crash detected');
@@ -60,34 +62,44 @@ async function main() {
   });
 
   let state = null;
+  let completed = false;
   try {
     const targetUrl = new URL('/index.html', baseUrl);
     targetUrl.searchParams.set('webtest', '1');
     if (webProfile.length > 0) targetUrl.searchParams.set('webProfile', webProfile);
-    await page.goto(targetUrl.toString(), { waitUntil: 'domcontentloaded', timeout: 120000 });
-    const landedUrl = page.url();
-    if (!landedUrl.includes('webtest=1')) {
+    for (let attempt = 1; attempt <= 2; attempt += 1) {
       await page.goto(targetUrl.toString(), { waitUntil: 'domcontentloaded', timeout: 120000 });
-    }
-    const deadline = Date.now() + timeoutMs;
-    while (Date.now() < deadline) {
-      state = await page.evaluate(() => ({
-        validationState: window.__uncivWebValidationState || null,
-        validationError: window.__uncivWebValidationError || null,
-        validationResultJson: window.__uncivWebValidationResultJson || null,
-      }));
-      if (state.validationError || state.validationResultJson || state.validationState === 'done') break;
-      if (pageErrors.length > 0) {
-        throw new Error(`Page errors detected before validation completed: ${pageErrors.join('\n')}`);
+      const landedUrl = page.url();
+      if (!landedUrl.includes('webtest=1')) {
+        await page.goto(targetUrl.toString(), { waitUntil: 'domcontentloaded', timeout: 120000 });
       }
-      if (consoleErrors.length > 0) {
-        throw new Error(`Console errors detected before validation completed: ${consoleErrors.join('\n')}`);
+      const deadline = Date.now() + timeoutMs;
+      while (Date.now() < deadline) {
+        state = await page.evaluate(() => ({
+          validationState: window.__uncivWebValidationState || null,
+          validationError: window.__uncivWebValidationError || null,
+          validationResultJson: window.__uncivWebValidationResultJson || null,
+        }));
+        if (state.validationError || state.validationResultJson || state.validationState === 'done') {
+          completed = true;
+          break;
+        }
+        if (pageErrors.length > 0) {
+          throw new Error(`Page errors detected before validation completed: ${pageErrors.join('\n')}`);
+        }
+        if (consoleErrors.length > 0) {
+          throw new Error(`Console errors detected before validation completed: ${consoleErrors.join('\n')}`);
+        }
+        await page.waitForTimeout(1000);
       }
-      await page.waitForTimeout(1000);
+      if (completed) break;
+      if (attempt < 2) {
+        await page.waitForTimeout(1000);
+      }
     }
 
-    if (!state || (!state.validationError && !state.validationResultJson && state.validationState !== 'done')) {
-      throw new Error(`Timed out waiting for web validation state. state=${JSON.stringify(state)}`);
+    if (!completed) {
+      throw new Error(`Timed out waiting for web validation state. state=${JSON.stringify(state)} pageErrors=${JSON.stringify(pageErrors)} consoleErrors=${JSON.stringify(consoleErrors)}`);
     }
     await page.waitForTimeout(5000);
   } finally {

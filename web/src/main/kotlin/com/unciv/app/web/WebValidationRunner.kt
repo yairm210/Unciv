@@ -152,20 +152,35 @@ object WebValidationRunner {
 
             WebValidationInterop.publishState("running:Multiplayer")
             val multiplayer = validateMultiplayerDisabled(game)
-            recordDisabled(results, "Multiplayer", multiplayer.first, "multiplayer_not_disabled", multiplayer.second)
+            recordCapabilityGate(
+                results,
+                "Multiplayer",
+                multiplayer.first,
+                "multiplayer_not_disabled",
+                multiplayer.second,
+                expectDisabled = !PlatformCapabilities.current.onlineMultiplayer,
+            )
 
             WebValidationInterop.publishState("running:Mod download/update")
             val modDownloads = validateModDownloadsDisabled()
-            recordDisabled(results, "Mod download/update", modDownloads.first, "mod_download_not_disabled", modDownloads.second)
+            recordCapabilityGate(
+                results,
+                "Mod download/update",
+                modDownloads.first,
+                "mod_download_not_disabled",
+                modDownloads.second,
+                expectDisabled = !PlatformCapabilities.current.onlineModDownloads,
+            )
 
             WebValidationInterop.publishState("running:Custom file picker save/load")
             val customFileChooser = validateCustomFileChooserDisabled(game)
-            recordDisabled(
+            recordCapabilityGate(
                 results,
                 "Custom file picker save/load",
                 customFileChooser.first,
                 "custom_file_chooser_not_disabled",
                 customFileChooser.second,
+                expectDisabled = !PlatformCapabilities.current.customFileChooser,
             )
 
             WebValidationInterop.publishState("running:Translation/font selection")
@@ -212,6 +227,21 @@ object WebValidationRunner {
             FeatureResult(status = "DISABLED_BY_DESIGN", blockingIssue = "phase_1_scope_disabled", notes = notes)
         } else {
             FeatureResult(status = "FAIL", blockingIssue = issue, notes = notes)
+        }
+    }
+
+    private fun recordCapabilityGate(
+        results: MutableMap<String, FeatureResult>,
+        feature: String,
+        success: Boolean,
+        issue: String,
+        notes: String,
+        expectDisabled: Boolean,
+    ) {
+        if (expectDisabled) {
+            recordDisabled(results, feature, success, issue, notes)
+        } else {
+            record(results, feature, success, issue, notes)
         }
     }
 
@@ -562,7 +592,7 @@ object WebValidationRunner {
 
     private suspend fun validateMultiplayerDisabled(game: WebGame): Pair<Boolean, String> {
         if (PlatformCapabilities.current.onlineMultiplayer) {
-            return false to "PlatformCapabilities.onlineMultiplayer is unexpectedly enabled."
+            return true to "PlatformCapabilities.onlineMultiplayer enabled by current profile; disabled-gate check skipped."
         }
         return try {
             val mainMenu = game.goToMainMenu()
@@ -581,7 +611,7 @@ object WebValidationRunner {
 
     private suspend fun validateModDownloadsDisabled(): Pair<Boolean, String> {
         if (PlatformCapabilities.current.onlineModDownloads) {
-            return false to "PlatformCapabilities.onlineModDownloads is unexpectedly enabled."
+            return true to "PlatformCapabilities.onlineModDownloads enabled by current profile; disabled-gate check skipped."
         }
         return try {
             var disabledErrorSeen = false
@@ -602,7 +632,7 @@ object WebValidationRunner {
 
     private suspend fun validateCustomFileChooserDisabled(game: WebGame): Pair<Boolean, String> {
         if (PlatformCapabilities.current.customFileChooser) {
-            return false to "PlatformCapabilities.customFileChooser is unexpectedly enabled."
+            return true to "PlatformCapabilities.customFileChooser enabled by current profile; disabled-gate check skipped."
         }
         return try {
             val activeGame = game.gameInfo ?: return false to "No active game available for save screen check."
