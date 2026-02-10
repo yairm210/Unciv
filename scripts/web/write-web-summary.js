@@ -31,6 +31,8 @@ function main() {
     lines.push(`- fail: ${counts.fail ?? 0}`);
     lines.push(`- blocked: ${counts.blocked ?? 0}`);
     lines.push(`- disabled_by_design: ${counts.disabledByDesign ?? 0}`);
+    lines.push(`- web_profile: ${validation.webProfile || 'phase1'}`);
+    lines.push(`- browser: ${validation.browser || 'chromium'}`);
     lines.push(`- settler_validation: ${validation.hasSettlerValidation === true ? 'yes' : 'no'}`);
     lines.push(`- warrior_validation: ${validation.hasWarriorValidation === true ? 'yes' : 'no'}`);
     lines.push(`- page_errors: ${validation.pageErrorCount ?? 0}`);
@@ -47,6 +49,7 @@ function main() {
     lines.push('### Browser JS Suite');
     lines.push(`- status: ${jsSuite.status || 'UNKNOWN'}`);
     lines.push(`- browser: ${jsSuite.browser || 'chromium'}`);
+    lines.push(`- web_profile: ${jsSuite.webProfile || 'phase1'}`);
     lines.push(`- total_run: ${jsSummary.totalRun ?? 0}`);
     lines.push(`- total_failures: ${jsSummary.totalFailures ?? 0}`);
     lines.push(`- total_ignored: ${jsSummary.totalIgnored ?? 0}`);

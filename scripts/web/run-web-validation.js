@@ -4,6 +4,7 @@ const { chromium, firefox, webkit } = require('playwright');
 
 async function main() {
   const baseUrl = process.env.WEB_BASE_URL || 'http://127.0.0.1:8000';
+  const webProfile = String(process.env.WEB_PROFILE || '').trim();
   const browserName = String(process.env.WEB_BROWSER || 'chromium').toLowerCase();
   const timeoutMs = Number(process.env.WEB_VALIDATION_TIMEOUT_MS || '430000');
   const headless = (process.env.HEADLESS || '1') !== '0';
@@ -42,7 +43,10 @@ async function main() {
 
   let state = null;
   try {
-    await page.goto(`${baseUrl}/index.html?webtest=1`, { waitUntil: 'domcontentloaded', timeout: 120000 });
+    const targetUrl = new URL('/index.html', baseUrl);
+    targetUrl.searchParams.set('webtest', '1');
+    if (webProfile.length > 0) targetUrl.searchParams.set('webProfile', webProfile);
+    await page.goto(targetUrl.toString(), { waitUntil: 'domcontentloaded', timeout: 120000 });
     const deadline = Date.now() + timeoutMs;
     while (Date.now() < deadline) {
       state = await page.evaluate(() => ({
@@ -83,6 +87,7 @@ async function main() {
   const summary = {
     generatedAt: result.generatedAt,
     browser: browserName,
+    webProfile: webProfile || 'phase1',
     counts: result.summary,
     startNewGame: startGameFeature,
     hasSettlerValidation,

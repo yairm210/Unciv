@@ -5,6 +5,7 @@ const { chromium, firefox, webkit } = require('playwright');
 (async () => {
   const outPath = path.resolve('tmp/js-browser-tests-result.json');
   const url = process.env.WEB_URL || 'http://127.0.0.1:18080/index.html?jstests=1';
+  const webProfile = String(process.env.WEB_PROFILE || '').trim();
   const browserName = String(process.env.WEB_BROWSER || 'chromium').toLowerCase();
   const headlessToken = String(process.env.HEADLESS || 'false').toLowerCase();
   const headless = headlessToken === '1' || headlessToken === 'true' || headlessToken === 'yes';
@@ -53,7 +54,9 @@ const { chromium, firefox, webkit } = require('playwright');
   let status = 'UNKNOWN';
   let jsResult = null;
   try {
-    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 120000 });
+    const targetUrl = new URL(url);
+    if (webProfile.length > 0) targetUrl.searchParams.set('webProfile', webProfile);
+    await page.goto(targetUrl.toString(), { waitUntil: 'domcontentloaded', timeout: 120000 });
     const pollStart = Date.now();
     while (true) {
       const state = await page.evaluate(() => ({
@@ -115,8 +118,13 @@ const { chromium, firefox, webkit } = require('playwright');
 
   const report = {
     status,
-    url,
+    url: webProfile.length > 0 ? (() => {
+      const targetUrl = new URL(url);
+      targetUrl.searchParams.set('webProfile', webProfile);
+      return targetUrl.toString();
+    })() : url,
     browser: browserName,
+    webProfile: webProfile || 'phase1',
     headless,
     timestamp: new Date().toISOString(),
     consoleErrorCount: consoleErrors.length,

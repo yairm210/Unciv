@@ -794,3 +794,7 @@
 2026-02-10T20:42:40Z | git | pushed informational firefox compat lane update to master via tmux (16d9eea1d) | done | monitor new workflow run for green deploy
 2026-02-10T20:59:38Z | ci | run 21881673542 green (web-e2e + deploy); firefox compatibility lane runs informational with artifacts | success | document matrix status and known firefox WebGL blocker
 2026-02-10T20:59:38Z | docs | updated arch_web.md with browser compatibility matrix and firefox blocker details | done | commit tracking/docs updates
+2026-02-10T22:04:49Z | ci | verified fork workflow baseline status before new phase3 push | success (latest Web Build + Pages run 21882215971 green) | run local checks for modified files
+2026-02-10T22:08:05Z | validation | node syntax checks + container :web:classes/:web:webBuildJs for phase3/profile changes | success | run targeted web e2e smoke and then commit/push
+2026-02-10T22:08:32Z | validation | local web validator run | blocked (missing playwright module on host) | install npm deps and rerun validator
+2026-02-10T22:13:06Z | validation | local Chromium web validation with WEB_PROFILE=phase1 after phase3 changes | success (pass=8 fail=0 blocked=0, move/explore/automate/found-city/warrior-combat all validated) | commit and push via tmux to trigger CI

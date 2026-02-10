@@ -176,6 +176,59 @@ jobs:
             tmp/web-validation-summary.json
             tmp/web-validation-latest.png
 
+  web-phase3-alpha:
+    name: Web Phase3 Alpha (informational)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    needs: web-build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download web dist artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: unciv-web-dist
+          path: web/build/dist
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Playwright browser
+        run: |
+          npm config set fund false
+          npm config set audit false
+          npm install -D playwright
+          npx playwright install --with-deps chromium
+
+      - name: Start static server
+        run: |
+          python3 -m http.server 18080 --directory web/build/dist > /tmp/web-server.log 2>&1 &
+          echo $! > /tmp/web-server.pid
+
+      - name: Run phase3-alpha gameplay validation
+        run: |
+          env HEADLESS=true WEB_BROWSER=chromium WEB_PROFILE=phase3-alpha WEB_BASE_URL=http://127.0.0.1:18080 \
+          node scripts/web/run-web-validation.js
+
+      - name: Publish phase3-alpha summary
+        if: always()
+        run: |
+          node scripts/web/write-web-summary.js >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload phase3-alpha artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-phase3-alpha
+          path: |
+            /tmp/web-server.log
+            tmp/web-validation-result.json
+            tmp/web-validation-summary.json
+            tmp/web-validation-latest.png
+
   deploy-pages:
     name: Deploy GitHub Pages
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
