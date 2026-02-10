@@ -659,12 +659,37 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             builtBuildingObjects = builtBuildingObjects.withoutItem(buildingObject)
         else builtBuildingObjects.removeAll{ it.name == buildingName }
         builtBuildings.remove(buildingName)
+
+        // Clean up CreatesOneImprovement marks when the building is removed
+        val building = buildingObject ?: builtBuildingObjects.firstOrNull { it.name == buildingName }
+        if (building != null) {
+            val improvementToCreate = building.getImprovementToCreate(city.getRuleset(), city.civ)
+            if (improvementToCreate != null) {
+                val tile = city.getTiles().firstOrNull {
+                    it.isMarkedForCreatesOneImprovement(improvementToCreate.name) &&
+                    it.improvementQueue.firstOrNull()?.owningCivId == city.civ.civID
+                }
+                tile?.improvementFunctions?.removeCreatesOneImprovementMarker()
+            }
+        }
+
         updateUniques()
     }
 
     fun removeBuilding(building: Building) {
         builtBuildingObjects = builtBuildingObjects.withoutItem(building)
         builtBuildings.remove(building.name)
+
+        // Clean up CreatesOneImprovement marks when the building is removed
+        val improvementToCreate = building.getImprovementToCreate(city.getRuleset(), city.civ)
+        if (improvementToCreate != null) {
+            val tile = city.getTiles().firstOrNull {
+                it.isMarkedForCreatesOneImprovement(improvementToCreate.name) &&
+                it.improvementQueue.firstOrNull()?.owningCivId == city.civ.civID
+            }
+            tile?.improvementFunctions?.removeCreatesOneImprovementMarker()
+        }
+
         updateUniques()
     }
 
@@ -673,6 +698,19 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         builtBuildings.removeAll {
             it in buildingsToRemove
         }
+
+        // Clean up CreatesOneImprovement marks when buildings are removed
+        for (building in buildings) {
+            val improvementToCreate = building.getImprovementToCreate(city.getRuleset(), city.civ)
+            if (improvementToCreate != null) {
+                val tile = city.getTiles().firstOrNull {
+                    it.isMarkedForCreatesOneImprovement(improvementToCreate.name) &&
+                    it.improvementQueue.firstOrNull()?.owningCivId == city.civ.civID
+                }
+                tile?.improvementFunctions?.removeCreatesOneImprovementMarker()
+            }
+        }
+
         setTransients()
     }
 
@@ -1016,7 +1054,8 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     @Readonly
     fun getTileForImprovement(improvementName: String) = city.getTiles()
         .firstOrNull {
-            it.isMarkedForCreatesOneImprovement(improvementName)
+            it.isMarkedForCreatesOneImprovement(improvementName) &&
+            it.improvementQueue.firstOrNull()?.owningCivId == city.civ.civID
         }
     //endregion
 }

@@ -345,6 +345,17 @@ class CityConquestFunctions(val city: City) {
             tile.history.recordTakeOwnership(tile)
         }
 
+        // Clean up CreatesOneImprovement marks from old civ to prevent "烂尾"
+        city.getTiles().forEach { tile ->
+            if (tile.isMarkedForCreatesOneImprovement()) {
+                val entry = tile.improvementQueue.firstOrNull()
+                if (entry != null && entry.owningCivId != newCiv.civID) {
+                    // This mark belongs to the old civ, clean it up
+                    tile.improvementFunctions.removeCreatesOneImprovementMarker()
+                }
+            }
+        }
+
         newCiv.cache.updateOurTiles()
         oldCiv.cache.updateOurTiles()
     }

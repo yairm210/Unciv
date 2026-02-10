@@ -67,6 +67,9 @@ class Tile : IsPartOfGameInfoSerialization {
         private constructor() : this("", 0)
         var turnsToImprovement: Int = turnsToImprovement
             private set
+        /** Stores the civilization ID that created this improvement mark.
+         *  Used to clean up marks when a city is conquered by another civ. */
+        var owningCivId: String = ""
         override fun toString() = "$improvement: $turnsToImprovement${Fonts.turn}"
         /** @return `true` if it's still counting and not finished */
         fun countDown(): Boolean {

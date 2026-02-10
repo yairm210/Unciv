@@ -303,6 +303,8 @@ class TileImprovementFunctions(val tile: Tile) {
     fun markForCreatesOneImprovement(improvement: String) {
         tile.stopWorkingOnImprovement()
         tile.queueImprovement(improvement, -1)
+        // Store the civilization ID to clean up marks when city is conquered
+        tile.improvementQueue.firstOrNull()?.owningCivId = tile.owningCity?.civ?.civID ?: ""
     }
 
     /** Un-Marks a tile as target tile for a building with a [UniqueType.CreatesOneImprovement] unique,
