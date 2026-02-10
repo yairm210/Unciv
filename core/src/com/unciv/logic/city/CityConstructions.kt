@@ -665,11 +665,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         if (building != null) {
             val improvementToCreate = building.getImprovementToCreate(city.getRuleset(), city.civ)
             if (improvementToCreate != null) {
-                val tile = city.getTiles().firstOrNull {
-                    it.isMarkedForCreatesOneImprovement(improvementToCreate.name) &&
-                    it.improvementQueue.firstOrNull()?.owningCivId == city.civ.civID
-                }
-                tile?.improvementFunctions?.removeCreatesOneImprovementMarker()
+                getTileForImprovement(improvementToCreate.name)?.improvementFunctions?.removeCreatesOneImprovementMarker()
             }
         }
 
@@ -683,11 +679,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         // Clean up CreatesOneImprovement marks when the building is removed
         val improvementToCreate = building.getImprovementToCreate(city.getRuleset(), city.civ)
         if (improvementToCreate != null) {
-            val tile = city.getTiles().firstOrNull {
-                it.isMarkedForCreatesOneImprovement(improvementToCreate.name) &&
-                it.improvementQueue.firstOrNull()?.owningCivId == city.civ.civID
-            }
-            tile?.improvementFunctions?.removeCreatesOneImprovementMarker()
+            getTileForImprovement(improvementToCreate.name)?.improvementFunctions?.removeCreatesOneImprovementMarker()
         }
 
         updateUniques()
@@ -703,11 +695,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         for (building in buildings) {
             val improvementToCreate = building.getImprovementToCreate(city.getRuleset(), city.civ)
             if (improvementToCreate != null) {
-                val tile = city.getTiles().firstOrNull {
-                    it.isMarkedForCreatesOneImprovement(improvementToCreate.name) &&
-                    it.improvementQueue.firstOrNull()?.owningCivId == city.civ.civID
-                }
-                tile?.improvementFunctions?.removeCreatesOneImprovementMarker()
+                getTileForImprovement(improvementToCreate.name)?.improvementFunctions?.removeCreatesOneImprovementMarker()
             }
         }
 

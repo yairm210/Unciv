@@ -64,7 +64,9 @@ class Tile : IsPartOfGameInfoSerialization {
         val improvement: String, turnsToImprovement: Int
     ) : IsPartOfGameInfoSerialization {
         @Suppress("unused") // Gdx Json will find this constructor and use it
-        private constructor() : this("", 0)
+        private constructor() : this("", 0) {
+            owningCivId = ""
+        }
         var turnsToImprovement: Int = turnsToImprovement
             private set
         /** Stores the civilization ID that created this improvement mark.
@@ -292,9 +294,9 @@ class Tile : IsPartOfGameInfoSerialization {
 
     @Readonly fun hasImprovementInProgress() = improvementQueue.isNotEmpty()
 
-    @Readonly fun getTileImprovement(): TileImprovement? = if (improvement == null) null else ruleset.tileImprovements[improvement!!]
+    @Readonly fun getTileImprovement(): TileImprovement? = ruleset.tileImprovements[improvement]
     @Readonly fun isPillaged(): Boolean = improvementIsPillaged || roadIsPillaged
-    @Readonly fun getUnpillagedTileImprovement(): TileImprovement? = if (getUnpillagedImprovement() == null) null else ruleset.tileImprovements[improvement!!]
+    @Readonly fun getUnpillagedTileImprovement(): TileImprovement? = ruleset.tileImprovements[getUnpillagedImprovement()]
     @Readonly fun getTileImprovementInProgress(): TileImprovement? = improvementQueue.firstOrNull()?.let { ruleset.tileImprovements[it.improvement] }
 
     @Readonly
@@ -325,15 +327,17 @@ class Tile : IsPartOfGameInfoSerialization {
     @Readonly fun canPillageTile(): Boolean = canPillageTileImprovement() || canPillageRoad()
     @Readonly
     fun canPillageTileImprovement(): Boolean {
-        return improvement != null && !improvementIsPillaged
-                && !ruleset.tileImprovements[improvement]!!.hasUnique(UniqueType.Unpillagable)
-                && !ruleset.tileImprovements[improvement]!!.hasUnique(UniqueType.Irremovable)
+        if (improvement == null || improvementIsPillaged) return false
+        val tileImprovement = ruleset.tileImprovements[improvement] ?: return false
+        return !tileImprovement.hasUnique(UniqueType.Unpillagable)
+                && !tileImprovement.hasUnique(UniqueType.Irremovable)
     }
     @Readonly
     fun canPillageRoad(): Boolean {
-        return roadStatus != RoadStatus.None && !roadIsPillaged
-                && !ruleset.tileImprovements[roadStatus.name]!!.hasUnique(UniqueType.Unpillagable)
-                && !ruleset.tileImprovements[roadStatus.name]!!.hasUnique(UniqueType.Irremovable)
+        if (roadStatus == RoadStatus.None || roadIsPillaged) return false
+        val tileImprovement = ruleset.tileImprovements[roadStatus.name] ?: return false
+        return !tileImprovement.hasUnique(UniqueType.Unpillagable)
+                && !tileImprovement.hasUnique(UniqueType.Irremovable)
     }
     @Readonly fun getUnpillagedImprovement(): String? = if (improvementIsPillaged) null else improvement
 
