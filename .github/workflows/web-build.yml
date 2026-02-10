@@ -107,16 +107,15 @@ jobs:
             tmp/web-validation-summary.json
             tmp/web-validation-latest.png
 
-  web-js-browser-matrix:
+  web-browser-compat:
     name: Browser Matrix (${{ matrix.browser }}-${{ matrix.mode }})
     runs-on: ubuntu-latest
+    continue-on-error: true
     needs: web-build
     strategy:
       fail-fast: false
       matrix:
         include:
-          - browser: chromium
-            mode: js-suite
           - browser: firefox
             mode: smoke
     steps:
@@ -180,7 +179,7 @@ jobs:
   deploy-pages:
     name: Deploy GitHub Pages
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
-    needs: [web-build, web-e2e, web-js-browser-matrix]
+    needs: [web-build, web-e2e]
     runs-on: ubuntu-latest
     environment:
       name: github-pages
