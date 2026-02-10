@@ -692,10 +692,17 @@ object WebValidationRunner {
     private suspend fun nextFrame() {
         suspendCoroutine { continuation ->
             val app = Gdx.app
-            if (app == null) {
+            var resumed = false
+            fun resumeOnce() {
+                if (resumed) return
+                resumed = true
                 continuation.resume(Unit)
+            }
+            if (app == null) {
+                WebValidationInterop.schedule({ resumeOnce() }, 16)
             } else {
-                app.postRunnable { continuation.resume(Unit) }
+                app.postRunnable { resumeOnce() }
+                WebValidationInterop.schedule({ resumeOnce() }, 16)
             }
         }
     }

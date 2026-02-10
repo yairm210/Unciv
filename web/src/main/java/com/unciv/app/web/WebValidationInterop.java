@@ -64,4 +64,9 @@ final class WebValidationInterop {
                             + "window.__uncivOriginalOpen = undefined;"
                             + "window.__uncivOpenSpyInstalled = false;")
     static native void restoreExternalLinkSpy();
+
+    @JSBody(
+            params = {"runnable", "delayMs"},
+            script = "setTimeout(function(){ runnable.$run(); }, delayMs);")
+    static native void schedule(Runnable runnable, int delayMs);
 }

@@ -767,3 +767,4 @@
 2026-02-09T23:32:51Z | git | pushed master via tmux (fast-forward) | done | monitor CI runs
 2026-02-09T23:43:54Z | ci | switch Pages deploy to gh-pages push and fix artifact paths/permissions | done | rerun pipeline
 2026-02-10T00:01:07Z | ci | switched web-e2e workflow to headless browser mode to remove CI headed timeout flake | done | rerun workflow
+2026-02-10T00:04:21Z | web-e2e | add JS timeout fallback in WebValidationRunner to avoid render-loop stalls in CI | done | rerun pipeline
