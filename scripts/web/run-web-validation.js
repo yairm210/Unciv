@@ -30,18 +30,34 @@ async function main() {
     }
   });
 
-  await page.goto(`${baseUrl}/index.html?webtest=1`, { waitUntil: 'domcontentloaded', timeout: 120000 });
-  await page.waitForFunction(() => window.__uncivWebValidationDone === true, null, { timeout: timeoutMs });
-  await page.waitForTimeout(5000);
+  let state = null;
+  try {
+    await page.goto(`${baseUrl}/index.html?webtest=1`, { waitUntil: 'domcontentloaded', timeout: 120000 });
+    const deadline = Date.now() + timeoutMs;
+    while (Date.now() < deadline) {
+      state = await page.evaluate(() => ({
+        validationState: window.__uncivWebValidationState || null,
+        validationError: window.__uncivWebValidationError || null,
+        validationResultJson: window.__uncivWebValidationResultJson || null,
+      }));
+      if (state.validationError || state.validationResultJson || state.validationState === 'done') break;
+      if (pageErrors.length > 0) {
+        throw new Error(`Page errors detected before validation completed: ${pageErrors.join('\n')}`);
+      }
+      if (consoleErrors.length > 0) {
+        throw new Error(`Console errors detected before validation completed: ${consoleErrors.join('\n')}`);
+      }
+      await page.waitForTimeout(1000);
+    }
 
-  const state = await page.evaluate(() => ({
-    validationState: window.__uncivWebValidationState || null,
-    validationError: window.__uncivWebValidationError || null,
-    validationResultJson: window.__uncivWebValidationResultJson || null,
-  }));
-
-  await page.screenshot({ path: screenshotPath, fullPage: true });
-  await browser.close();
+    if (!state || (!state.validationError && !state.validationResultJson && state.validationState !== 'done')) {
+      throw new Error(`Timed out waiting for web validation state. state=${JSON.stringify(state)}`);
+    }
+    await page.waitForTimeout(5000);
+  } finally {
+    await page.screenshot({ path: screenshotPath, fullPage: true });
+    await browser.close();
+  }
 
   if (!state.validationResultJson) {
     throw new Error(`Missing validation result JSON. state=${JSON.stringify(state)}`);

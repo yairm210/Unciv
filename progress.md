@@ -775,3 +775,7 @@
 2026-02-10T08:50:34Z | planning | added phase-3 plan for capability expansion (multiplayer/mods/io/audio/perf) with strict no-regression gates | done | ready for phase-3 sequencing
 2026-02-10T08:55:34Z | phase2 | added CI regression-diff gate (baseline file + check-regression script + workflow enforcement) and documented in arch_web.md | done | run local gate script and push
 2026-02-10T09:00:50Z | validation | regression gate script passed locally and containerized :web:classes passed after phase2/3 scaffold changes | done | commit and push for CI verification
+2026-02-10T09:02:34Z | git | pushed phase2 regression gate + phase3 staging scaffold to master via tmux | done | monitor pipeline for green
+2026-02-10T09:22:00Z | ci | patched run-web-validation polling/fail-fast logic to avoid blind 430s timeout | done | run local web-build + validation and re-trigger workflow
+2026-02-10T09:24:31Z | validation | built :web:webBuildJs in container after validator patch | success | run local web validator script
+2026-02-10T09:24:31Z | validation | local validator script blocked by missing playwright module on host node runtime | blocked | validate in fork CI environment and monitor run
