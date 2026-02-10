@@ -1,9 +1,10 @@
 const fs = require('fs');
 const path = require('path');
-const { chromium } = require('playwright');
+const { chromium, firefox, webkit } = require('playwright');
 
 async function main() {
   const baseUrl = process.env.WEB_BASE_URL || 'http://127.0.0.1:8000';
+  const browserName = String(process.env.WEB_BROWSER || 'chromium').toLowerCase();
   const timeoutMs = Number(process.env.WEB_VALIDATION_TIMEOUT_MS || '430000');
   const headless = (process.env.HEADLESS || '1') !== '0';
   const tmpDir = process.env.WEB_TMP_DIR || path.join(process.cwd(), 'tmp');
@@ -13,7 +14,13 @@ async function main() {
   const pageErrors = [];
   const consoleErrors = [];
 
-  const browser = await chromium.launch({ headless });
+  const browserTypes = { chromium, firefox, webkit };
+  const browserType = browserTypes[browserName];
+  if (!browserType) {
+    throw new Error(`Unsupported WEB_BROWSER='${browserName}'. Expected one of: ${Object.keys(browserTypes).join(', ')}`);
+  }
+
+  const browser = await browserType.launch({ headless });
   const context = await browser.newContext({
     viewport: { width: 1280, height: 800 },
     permissions: ['clipboard-read', 'clipboard-write'],
@@ -72,6 +79,7 @@ async function main() {
 
   const summary = {
     generatedAt: result.generatedAt,
+    browser: browserName,
     counts: result.summary,
     startNewGame: startGameFeature,
     hasSettlerValidation,

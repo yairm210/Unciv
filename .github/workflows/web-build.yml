@@ -108,13 +108,17 @@ jobs:
             tmp/web-validation-latest.png
 
   web-js-browser-matrix:
-    name: Browser JS Suite (${{ matrix.browser }})
+    name: Browser Matrix (${{ matrix.browser }}-${{ matrix.mode }})
     runs-on: ubuntu-latest
     needs: web-build
     strategy:
       fail-fast: false
       matrix:
-        browser: [chromium, firefox]
+        include:
+          - browser: chromium
+            mode: js-suite
+          - browser: firefox
+            mode: smoke
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -143,10 +147,17 @@ jobs:
           echo $! > /tmp/web-server.pid
 
       - name: Run browser JS test suite (${{ matrix.browser }})
+        if: matrix.mode == 'js-suite'
         timeout-minutes: 40
         run: |
           env HEADLESS=true WEB_BROWSER=${{ matrix.browser }} WEB_URL=http://127.0.0.1:18080/index.html?jstests=1 TIMEOUT_MS=2100000 \
           node scripts/web/run-js-browser-tests.js
+
+      - name: Run gameplay smoke validation (${{ matrix.browser }})
+        if: matrix.mode == 'smoke'
+        run: |
+          env HEADLESS=true WEB_BROWSER=${{ matrix.browser }} WEB_BASE_URL=http://127.0.0.1:18080 \
+          node scripts/web/run-web-validation.js
 
       - name: Publish browser suite summary
         if: always()
@@ -157,11 +168,14 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: web-js-suite-${{ matrix.browser }}
+          name: web-browser-${{ matrix.browser }}-${{ matrix.mode }}
           path: |
             /tmp/web-server.log
             tmp/js-browser-tests-result.json
             tmp/js-browser-tests-last.png
+            tmp/web-validation-result.json
+            tmp/web-validation-summary.json
+            tmp/web-validation-latest.png
 
   deploy-pages:
     name: Deploy GitHub Pages
