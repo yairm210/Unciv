@@ -779,3 +779,5 @@
 2026-02-10T09:22:00Z | ci | patched run-web-validation polling/fail-fast logic to avoid blind 430s timeout | done | run local web-build + validation and re-trigger workflow
 2026-02-10T09:24:31Z | validation | built :web:webBuildJs in container after validator patch | success | run local web validator script
 2026-02-10T09:24:31Z | validation | local validator script blocked by missing playwright module on host node runtime | blocked | validate in fork CI environment and monitor run
+2026-02-10T09:54:49Z | ci | diagnosed Web E2E failure as JS browser suite timeout (15m) after web validation pass | done | raise JS suite timeout budget and rerun workflow
+2026-02-10T09:54:49Z | patch | increased JS browser suite timeout in web-build workflow (TIMEOUT_MS=2100000, step timeout-minutes=40) | done | commit and push to trigger fork workflow

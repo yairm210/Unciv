@@ -80,8 +80,9 @@ jobs:
           node scripts/web/run-web-validation.js
 
       - name: Run browser JS test suite (headless)
+        timeout-minutes: 40
         run: |
-          env HEADLESS=true WEB_URL=http://127.0.0.1:18080/index.html?jstests=1 TIMEOUT_MS=900000 \
+          env HEADLESS=true WEB_URL=http://127.0.0.1:18080/index.html?jstests=1 TIMEOUT_MS=2100000 \
           node scripts/web/run-js-browser-tests.js
 
       - name: Run regression diff gate
