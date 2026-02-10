@@ -29,8 +29,24 @@ const { chromium, firefox, webkit } = require('playwright');
     /\/assets\/jstests\/result\.json\b/i,
   ];
 
-  const browser = await browserType.launch({ headless, slowMo: headless ? 0 : 40 });
-  const page = await browser.newPage({ viewport: { width: 1600, height: 1000 } });
+  const launchOptions = { headless, slowMo: headless ? 0 : 40 };
+  if (browserName === 'chromium') {
+    launchOptions.args = [
+      '--use-gl=swiftshader',
+      '--disable-background-timer-throttling',
+      '--disable-backgrounding-occluded-windows',
+      '--disable-renderer-backgrounding',
+    ];
+  }
+  const browser = await browserType.launch(launchOptions);
+  const context = await browser.newContext({ viewport: { width: 1600, height: 1000 } });
+  await context.addInitScript(({ profile }) => {
+    window.__uncivEnableJsTests = true;
+    if (typeof profile === 'string' && profile.length > 0) {
+      window.__uncivWebProfile = profile;
+    }
+  }, { profile: webProfile });
+  const page = await context.newPage();
 
   page.on('console', msg => {
     const t = msg.type();
@@ -140,6 +156,7 @@ const { chromium, firefox, webkit } = require('playwright');
 
   fs.writeFileSync(outPath, JSON.stringify(report, null, 2));
   await page.screenshot({ path: path.resolve('tmp/js-browser-tests-last.png'), fullPage: true }).catch(() => {});
+  await context.close();
   await browser.close();
 
   process.stdout.write(`Wrote ${outPath}\n`);

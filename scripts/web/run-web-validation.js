@@ -21,7 +21,16 @@ async function main() {
     throw new Error(`Unsupported WEB_BROWSER='${browserName}'. Expected one of: ${Object.keys(browserTypes).join(', ')}`);
   }
 
-  const browser = await browserType.launch({ headless });
+  const launchOptions = { headless };
+  if (browserName === 'chromium') {
+    launchOptions.args = [
+      '--use-gl=swiftshader',
+      '--disable-background-timer-throttling',
+      '--disable-backgrounding-occluded-windows',
+      '--disable-renderer-backgrounding',
+    ];
+  }
+  const browser = await browserType.launch(launchOptions);
   const contextOptions = {
     viewport: { width: 1280, height: 800 },
   };
@@ -29,10 +38,19 @@ async function main() {
     contextOptions.permissions = ['clipboard-read', 'clipboard-write'];
   }
   const context = await browser.newContext(contextOptions);
+  await context.addInitScript(({ profile }) => {
+    window.__uncivEnableWebValidation = true;
+    if (typeof profile === 'string' && profile.length > 0) {
+      window.__uncivWebProfile = profile;
+    }
+  }, { profile: webProfile });
   const page = await context.newPage();
 
   page.on('pageerror', (err) => {
     pageErrors.push(String(err));
+  });
+  page.on('crash', () => {
+    pageErrors.push('Page crash detected');
   });
   page.on('console', (msg) => {
     const text = msg.text();

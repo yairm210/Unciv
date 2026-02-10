@@ -798,3 +798,6 @@
 2026-02-10T22:08:05Z | validation | node syntax checks + container :web:classes/:web:webBuildJs for phase3/profile changes | success | run targeted web e2e smoke and then commit/push
 2026-02-10T22:08:32Z | validation | local web validator run | blocked (missing playwright module on host) | install npm deps and rerun validator
 2026-02-10T22:13:06Z | validation | local Chromium web validation with WEB_PROFILE=phase1 after phase3 changes | success (pass=8 fail=0 blocked=0, move/explore/automate/found-city/warrior-combat all validated) | commit and push via tmux to trigger CI
+2026-02-10T22:17:05Z | git | committed phase3 profile runtime + alpha CI lane (7d5dbee93) and pushed to origin/master via tmux shell session | success | monitor workflow until pages deploy outcome
+2026-02-10T22:29:17Z | ci | workflow 21884454746 failed (web-e2e + phase3-alpha validation) and blocked pages deploy | failed | inspect failing logs/artifacts and patch validator/workflow
+2026-02-10T22:45:21Z | harness | patched web Playwright harness for CI stability (chromium swiftshader/timer args + init-script runtime flags + crash diagnostics); reproduced phase3-alpha timeout while phase1 passes locally | partial_success | commit harness fix and rerun pipeline (deploy should gate only phase1)
