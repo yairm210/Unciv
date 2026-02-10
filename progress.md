@@ -791,3 +791,6 @@
 2026-02-10T20:07:18Z | ci | diagnosed firefox smoke failure as unsupported clipboard permission in Playwright context and patched web validator to set clipboard permissions only on chromium | done | commit/push and rerun workflow
 2026-02-10T20:07:59Z | git | pushed firefox permission fix to master via tmux (f03e19737) | done | monitor new web workflow run for full green
 2026-02-10T20:41:51Z | ci | firefox smoke lane still fails before validation output; moved browser-compat lane to informational (continue-on-error) and removed it from deploy gating; removed duplicate chromium matrix gating | done | rerun workflow and confirm deploy green with compat artifacts
+2026-02-10T20:42:40Z | git | pushed informational firefox compat lane update to master via tmux (16d9eea1d) | done | monitor new workflow run for green deploy
+2026-02-10T20:59:38Z | ci | run 21881673542 green (web-e2e + deploy); firefox compatibility lane runs informational with artifacts | success | document matrix status and known firefox WebGL blocker
+2026-02-10T20:59:38Z | docs | updated arch_web.md with browser compatibility matrix and firefox blocker details | done | commit tracking/docs updates

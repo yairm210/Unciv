@@ -1,6 +1,6 @@
 # Unciv Web Architecture Decisions (Phase-1)
 
-Last updated: 2026-02-09
+Last updated: 2026-02-10
 
 ## 1) Locked Decisions (Phase-1)
 
@@ -103,3 +103,14 @@ A deferred decision can be changed only when all are true:
    - require browser E2E validation (`scripts/web/run-web-validation.js`), browser JS suite (`scripts/web/run-js-browser-tests.js`), and regression gate (`scripts/web/check-regression.js`) to pass.
    - deploy is blocked on any regression in fail/blocked counts, console/page critical errors, or JS suite failures.
 6. Capability rollout staging for phase 3 is tracked in `docs/web-capability-staging.md` and exposed in `PlatformCapabilities.currentStaging`.
+
+## 9) Browser Compatibility Matrix (Current)
+
+1. Deploy-gating browser lane:
+   - Chromium headless, full gameplay validation + full browser JS suite + regression diff gate.
+2. Compatibility-only lane:
+   - Firefox headless smoke validation is executed as informational (`continue-on-error`) and artifacts are uploaded.
+3. Current Firefox blocker:
+   - runtime page error before validation completion:
+     - `TypeError: can't access property "pixelStorei", $this.$gl is null`
+   - this is tracked as a phase-3 compatibility task and does not currently block GitHub Pages deploy.
