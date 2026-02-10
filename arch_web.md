@@ -91,11 +91,15 @@ A deferred decision can be changed only when all are true:
 2. Browser execution mode is enabled via `index.html?jstests=1`:
    - launcher routes to `WebJsTestsGame`.
    - runner executes generated suite in Chromium and publishes JSON (`window.__uncivJsTestsResultJson`).
-3. Current measured browser JS suite result (headed Chromium):
+3. Current measured browser JS suite result (Chromium):
    - classCount: 27
    - totalRun: 224
    - totalFailures: 0
    - totalIgnored: 5
-4. Decision for release gating:
-   - require full browser JS suite pass (headed Chromium) and browser E2E validation (`scripts/web/run-web-validation.js`) to pass.
-   - both are currently green in JS runtime.
+4. Baseline and regression gate:
+   - committed baseline file: `web/baseline/regression-baseline.json` (source commit: `77ff2c79ea33dbdeb10ade98093a3bc6f3132564`).
+   - gate script: `scripts/web/check-regression.js`, comparing candidate artifacts vs committed baseline.
+5. Decision for release gating:
+   - require browser E2E validation (`scripts/web/run-web-validation.js`), browser JS suite (`scripts/web/run-js-browser-tests.js`), and regression gate (`scripts/web/check-regression.js`) to pass.
+   - deploy is blocked on any regression in fail/blocked counts, console/page critical errors, or JS suite failures.
+6. Capability rollout staging for phase 3 is tracked in `docs/web-capability-staging.md` and exposed in `PlatformCapabilities.currentStaging`.

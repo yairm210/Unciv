@@ -84,6 +84,10 @@ jobs:
           env HEADLESS=true WEB_URL=http://127.0.0.1:18080/index.html?jstests=1 TIMEOUT_MS=900000 \
           node scripts/web/run-js-browser-tests.js
 
+      - name: Run regression diff gate
+        run: |
+          node scripts/web/check-regression.js
+
       - name: Upload web test artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -92,6 +96,9 @@ jobs:
           path: |
             /tmp/web-server.log
             tmp/js-browser-tests-result.json
+            tmp/regression-diff-summary.json
+            tmp/web-validation-result.json
+            tmp/web-validation-summary.json
             tmp/web-validation-latest.png
 
   deploy-pages:

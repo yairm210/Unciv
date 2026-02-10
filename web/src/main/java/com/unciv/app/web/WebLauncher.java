@@ -13,6 +13,7 @@ public class WebLauncher {
     public static void main(String[] args) {
         boolean jsTestsMode = WebJsTestInterop.isEnabled();
         PlatformCapabilities.setCurrent(PlatformCapabilities.webPhase1());
+        PlatformCapabilities.setCurrentStaging(PlatformCapabilities.webPhase3Staging());
         Display.INSTANCE.setPlatform(new WebDisplay());
         Fonts.INSTANCE.setFontImplementation(new WebFont());
         UncivFiles.Companion.setSaverLoader(PlatformSaverLoader.Companion.getNone());

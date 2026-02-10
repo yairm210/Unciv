@@ -770,3 +770,8 @@
 2026-02-10T00:04:21Z | web-e2e | add JS timeout fallback in WebValidationRunner to avoid render-loop stalls in CI | done | rerun pipeline
 2026-02-10T00:15:03Z | ci | all pipeline checks green (build/test/detekt/docker/web-pages) | done | report status
 2026-02-10T08:37:00Z | verify | confirmed latest Web Build + Pages run is fully green including Deploy GitHub Pages | done | no further deploy fixes needed
+2026-02-10T08:45:17Z | planning | added decision-complete phase-2 web parity hardening plan (plan_phase_2.md) | done | ready for implementation sequencing
+2026-02-10T08:48:17Z | planning | strengthened phase-2 plan with mandatory regression lock protocol, baseline freeze, and fail-on-regression gates | done | ready for execution
+2026-02-10T08:50:34Z | planning | added phase-3 plan for capability expansion (multiplayer/mods/io/audio/perf) with strict no-regression gates | done | ready for phase-3 sequencing
+2026-02-10T08:55:34Z | phase2 | added CI regression-diff gate (baseline file + check-regression script + workflow enforcement) and documented in arch_web.md | done | run local gate script and push
+2026-02-10T09:00:50Z | validation | regression gate script passed locally and containerized :web:classes passed after phase2/3 scaffold changes | done | commit and push for CI verification
