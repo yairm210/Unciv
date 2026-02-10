@@ -685,23 +685,6 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         updateUniques()
     }
 
-    fun removeBuildings(buildings: Set<Building>) {
-        val buildingsToRemove = buildings.map { it.name }.toSet()
-        builtBuildings.removeAll {
-            it in buildingsToRemove
-        }
-
-        // Clean up CreatesOneImprovement marks when buildings are removed
-        for (building in buildings) {
-            val improvementToCreate = building.getImprovementToCreate(city.getRuleset(), city.civ)
-            if (improvementToCreate != null) {
-                getTileForImprovement(improvementToCreate.name)?.improvementFunctions?.removeCreatesOneImprovementMarker()
-            }
-        }
-
-        setTransients()
-    }
-
     fun updateUniques(onLoadGame: Boolean = false) {
         builtBuildingUniqueMap.clear()
         containedBuildingFiltersCache.clear()

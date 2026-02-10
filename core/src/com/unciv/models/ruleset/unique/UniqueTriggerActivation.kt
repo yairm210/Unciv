@@ -1116,8 +1116,8 @@ object UniqueTriggerActivation {
                     for (applicableCity in applicableCities) {
                         val buildingsToRemove = applicableCity.cityConstructions.getBuiltBuildings().filter {
                             it.matchesFilter(unique.params[0], applicableCity.state)
-                        }.toSet()
-                        applicableCity.cityConstructions.removeBuildings(buildingsToRemove)
+                        }
+                        for (building in buildingsToRemove) applicableCity.cityConstructions.removeBuilding(building)
                     }
                     if (notification != null)
                         civInfo.addNotification(
