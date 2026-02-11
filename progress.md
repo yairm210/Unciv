@@ -916,3 +916,6 @@
 2026-02-11T11:47:41Z | ci | Web Build + Pages (TeaVM) run 21903757159 in progress for latest push | in_progress | monitor until completion
 2026-02-11T11:58:37Z | fix | repaired UncivServer websocket auth helper placement to restore server compile | done | run server compile and repush
 2026-02-11T11:59:53Z | build | container :server:compileKotlin passed | success | commit fix and push
+2026-02-11T12:55:57Z | ci | inspected failing Web Build + Pages jobs | mod zip 404 in phase3-beta/full and firefox WebGL error in compat job | add webtest mod artifact and rerun validations
+2026-02-11T12:56:15Z | fix | unignored webtest mod zip and added chromium args override for validation | staged .gitignore + test-mod.zip + run-web-validation.js | rebuild and validate phase3
+2026-02-11T12:56:29Z | validation | webBuildJs + phase3-beta/full web validation run (chromium, --use-gl=angle) | pass | rerun CI after commit

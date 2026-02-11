@@ -11,6 +11,7 @@ async function main() {
   const debugState = String(process.env.WEB_VALIDATION_DEBUG || '') === '1';
   const mpServer = String(process.env.WEB_MP_SERVER || '').trim();
   const modZipUrl = String(process.env.WEB_MOD_ZIP_URL || '').trim();
+  const chromiumArgs = String(process.env.WEB_CHROMIUM_ARGS || '').trim();
   const tmpDir = process.env.WEB_TMP_DIR || path.join(process.cwd(), 'tmp');
   fs.mkdirSync(tmpDir, { recursive: true });
   const screenshotPath = path.join(tmpDir, 'web-validation-latest.png');
@@ -30,12 +31,14 @@ async function main() {
 
   const launchOptions = { headless };
   if (browserName === 'chromium') {
-    launchOptions.args = [
-      '--use-gl=swiftshader',
-      '--disable-background-timer-throttling',
-      '--disable-backgrounding-occluded-windows',
-      '--disable-renderer-backgrounding',
-    ];
+    launchOptions.args = chromiumArgs.length > 0
+      ? chromiumArgs.split(/\s+/).filter(Boolean)
+      : [
+        '--use-gl=swiftshader',
+        '--disable-background-timer-throttling',
+        '--disable-backgrounding-occluded-windows',
+        '--disable-renderer-backgrounding',
+      ];
   }
   const browser = await browserType.launch(launchOptions);
   const contextOptions = {

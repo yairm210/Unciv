@@ -164,6 +164,8 @@ ModListCache.json
 fonts/
 maps/
 mods/
+!web/src/main/resources/webtest/mods/
+!web/src/main/resources/webtest/mods/**
 MultiplayerGames/
 music/
 SaveFiles/
