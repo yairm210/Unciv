@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.Constants
 import com.unciv.logic.files.IMediaFinder.LabeledSounds
 import com.unciv.logic.multiplayer.Multiplayer
+import com.unciv.logic.multiplayer.storage.AsyncAuthProvider
 import com.unciv.logic.multiplayer.storage.AuthStatus
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
@@ -176,20 +177,35 @@ internal class MultiplayerTab(
             val password = mpSettings.getCurrentServerPassword()
             if (password != null) {
                 authStatusLabel.setText("Validating your authentication status...")
-                Concurrency.run {
-                    val userId = mpSettings.getUserId()
-                    val authStatus = mpServer.fileStorage()
-                        .checkAuthStatus(userId, password)
-
-                    val newAuthStatusText = when (authStatus) {
-                        AuthStatus.UNAUTHORIZED -> "Your current password was rejected from the server"
-                        AuthStatus.UNREGISTERED -> "You userId is unregistered! Set password to secure your userId"
-                        AuthStatus.VERIFIED -> "Your current password has been succesfully verified"
-                        AuthStatus.UNKNOWN -> "Your authentication status could not be determined"
+                val userId = mpSettings.getUserId()
+                val server = mpServer
+                if (server is AsyncAuthProvider) {
+                    server.checkAuthStatusAsync(userId, password) { authStatus ->
+                        val newAuthStatusText = when (authStatus) {
+                            AuthStatus.UNAUTHORIZED -> "Your current password was rejected from the server"
+                            AuthStatus.UNREGISTERED -> "You userId is unregistered! Set password to secure your userId"
+                            AuthStatus.VERIFIED -> "Your current password has been succesfully verified"
+                            AuthStatus.UNKNOWN -> "Your authentication status could not be determined"
+                        }
+                        Concurrency.runOnGLThread {
+                            authStatusLabel.setText(newAuthStatusText)
+                        }
                     }
+                } else {
+                    Concurrency.run {
+                        val authStatus = server.fileStorage()
+                            .checkAuthStatus(userId, password)
 
-                    Concurrency.runOnGLThread {
-                        authStatusLabel.setText(newAuthStatusText)
+                        val newAuthStatusText = when (authStatus) {
+                            AuthStatus.UNAUTHORIZED -> "Your current password was rejected from the server"
+                            AuthStatus.UNREGISTERED -> "You userId is unregistered! Set password to secure your userId"
+                            AuthStatus.VERIFIED -> "Your current password has been succesfully verified"
+                            AuthStatus.UNKNOWN -> "Your authentication status could not be determined"
+                        }
+
+                        Concurrency.runOnGLThread {
+                            authStatusLabel.setText(newAuthStatusText)
+                        }
                     }
                 }
             }
@@ -233,11 +249,20 @@ internal class MultiplayerTab(
     private fun successfullyConnectedToServer(action: (Boolean, Boolean?) -> Unit) {
         Concurrency.run("TestIsAlive") {
             try {
-                val connectionSuccess = mpServer.checkServerStatus()
+                val server = mpServer
+                val connectionSuccess = server.checkServerStatus()
                 var authSuccess: Boolean? = null
                 if (connectionSuccess) {
+                    if (server is AsyncAuthProvider) {
+                        server.authenticateAsync(null) { result ->
+                            Concurrency.runOnGLThread {
+                                action(true, result.getOrNull())
+                            }
+                        }
+                        return@run
+                    }
                     try {
-                        authSuccess = mpServer.authenticate(null)
+                        authSuccess = server.authenticate(null)
                     } catch (_: MultiplayerAuthException) {
                         authSuccess = false
                     } catch (_: Throwable) {
@@ -307,9 +332,24 @@ internal class MultiplayerTab(
     private fun successfullySetPassword(password: String, action: (Boolean, Exception?) -> Unit) {
         Concurrency.run("SetPassword") {
             try {
-                val setSuccess = mpServer.setPassword(password)
-                launchOnGLThread {
-                    action(setSuccess, null)
+                val server = mpServer
+                if (server is AsyncAuthProvider) {
+                    server.setPasswordAsync(password) { result ->
+                        launchOnGLThread {
+                            val throwable = result.exceptionOrNull()
+                            val exception = when (throwable) {
+                                null -> null
+                                is Exception -> throwable
+                                else -> Exception(throwable)
+                            }
+                            action(result.getOrNull() == true, exception)
+                        }
+                    }
+                } else {
+                    val setSuccess = server.setPassword(password)
+                    launchOnGLThread {
+                        action(setSuccess, null)
+                    }
                 }
             } catch (ex: Exception) {
                 launchOnGLThread {

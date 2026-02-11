@@ -142,6 +142,10 @@ class WorldScreen(
 
     internal val undoHandler = UndoHandler(this)
 
+    fun refreshChatButtonVisibility() {
+        chatButton.refreshVisibility()
+    }
+
 
     init {
         // notifications are right-aligned, they take up only as much space as necessary.

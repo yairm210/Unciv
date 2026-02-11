@@ -115,6 +115,7 @@ final class BuildWebCommon {
     static void build(boolean wasm) {
         Path repoRoot = Paths.get("").toAbsolutePath().normalize();
         Path assetsPath = repoRoot.resolve("android/assets");
+        Path webTestAssetsPath = repoRoot.resolve("web/build/resources/main/webtest");
         Path outputPath = repoRoot.resolve("web/build/dist");
         Path webappPath = outputPath.resolve("webapp");
         Path webResourcesPath = repoRoot.resolve("web/build/resources/main");
@@ -131,6 +132,9 @@ final class BuildWebCommon {
         configuration.htmlWidth = 0;
         configuration.htmlHeight = 0;
         configuration.assetsPath.add(new AssetFileHandle(assetsPath.toString()));
+        if (Files.isDirectory(webTestAssetsPath)) {
+            configuration.assetsPath.add(new AssetFileHandle(webTestAssetsPath.toString()));
+        }
         configuration.classesToPreserve.addAll(PRESERVED_CLASSES);
         configuration.classesToPreserve.addAll(discoverSerializableClasses());
 
@@ -146,9 +150,18 @@ final class BuildWebCommon {
         }
 
         TeaBuilder.build(tool);
+        waitForWebappOutput(outputPath);
         flattenWebapp(webappPath, outputPath);
+        promoteWebappToRoot(outputPath);
+        if (!wasm) {
+            moveJsOutput(outputPath, OUTPUT_NAME + ".js");
+            moveJsOutput(outputPath, OUTPUT_NAME + ".js.map");
+            moveJsOutput(outputPath, OUTPUT_NAME + ".js.teavmdbg");
+        }
+        copyWebResources(webResourcesPath, outputPath);
         if (!wasm) {
             hardenIndexBootstrap(outputPath.resolve("index.html"));
+            hardenIndexBootstrap(outputPath.resolve("webapp/index.html"));
         }
         sanitizeAtlasFiltersForWeb(outputPath.resolve("assets"));
         ensureFavicon(outputPath);
@@ -169,7 +182,7 @@ final class BuildWebCommon {
 
     private static void flattenWebapp(Path webappPath, Path outputPath) {
         if (!Files.isDirectory(webappPath)) {
-            throw new IllegalStateException("TeaVM output directory not found: " + webappPath);
+            return;
         }
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(webappPath)) {
             for (Path child : stream) {
@@ -183,6 +196,78 @@ final class BuildWebCommon {
             throw new RuntimeException("Failed to flatten TeaVM webapp directory", e);
         }
         deleteRecursively(webappPath);
+    }
+
+    private static void waitForWebappOutput(Path outputPath) {
+        Path webappDir = outputPath.resolve("webapp");
+        Path rootIndex = outputPath.resolve("index.html");
+        Path webappIndex = webappDir.resolve("index.html");
+        Path rootJs = outputPath.resolve(OUTPUT_NAME + ".js");
+        Path webappJs = webappDir.resolve(OUTPUT_NAME + ".js");
+        long lastStamp = -1L;
+        for (int i = 0; i < 400; i++) {
+            Path index = Files.isRegularFile(rootIndex) ? rootIndex : (Files.isRegularFile(webappIndex) ? webappIndex : null);
+            Path js = Files.isRegularFile(rootJs) ? rootJs : (Files.isRegularFile(webappJs) ? webappJs : null);
+            if (index != null && js != null) {
+                try {
+                    long stamp = Files.getLastModifiedTime(index).toMillis() + Files.getLastModifiedTime(js).toMillis();
+                    if (stamp == lastStamp) return;
+                    lastStamp = stamp;
+                } catch (IOException ignored) {
+                    // Retry on transient IO errors.
+                }
+            }
+            sleepSilently(50);
+        }
+    }
+
+    private static void sleepSilently(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private static void promoteWebappToRoot(Path outputPath) {
+        Path webappPath = outputPath.resolve("webapp");
+        if (!Files.isDirectory(webappPath)) return;
+        if (Files.isRegularFile(outputPath.resolve("index.html"))) return;
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(webappPath)) {
+            for (Path child : stream) {
+                Path target = outputPath.resolve(child.getFileName());
+                if (Files.exists(target)) {
+                    deleteRecursively(target);
+                }
+                Files.move(child, target);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Failed promoting webapp to root", e);
+        }
+        deleteRecursively(webappPath);
+    }
+
+    private static void copyWebResources(Path resourcesPath, Path outputPath) {
+        if (!Files.isDirectory(resourcesPath)) return;
+        try {
+            Files.walk(resourcesPath).forEach(source -> {
+                try {
+                    Path relative = resourcesPath.relativize(source);
+                    if (relative.toString().isEmpty()) return;
+                    Path target = outputPath.resolve(relative);
+                    if (Files.isDirectory(source)) {
+                        Files.createDirectories(target);
+                    } else {
+                        Files.createDirectories(target.getParent());
+                        Files.copy(source, target, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException("Failed copying web resource " + source, e);
+                }
+            });
+        } catch (IOException e) {
+            throw new RuntimeException("Failed scanning web resources at " + resourcesPath, e);
+        }
     }
 
     private static void deleteRecursively(Path path) {
@@ -232,13 +317,20 @@ final class BuildWebCommon {
     }
 
     private static void ensureFavicon(Path outputPath) {
-        Path faviconPath = outputPath.resolve("favicon.ico");
-        if (Files.exists(faviconPath)) return;
         try {
-            Files.write(faviconPath, new byte[] {0});
+            writeFaviconIfMissing(outputPath.resolve("favicon.ico"));
+            Path webappPath = outputPath.resolve("webapp");
+            if (Files.isDirectory(webappPath)) {
+                writeFaviconIfMissing(webappPath.resolve("favicon.ico"));
+            }
         } catch (IOException e) {
-            throw new RuntimeException("Failed creating favicon at " + faviconPath, e);
+            throw new RuntimeException("Failed creating favicon under " + outputPath, e);
         }
+    }
+
+    private static void writeFaviconIfMissing(Path faviconPath) throws IOException {
+        if (Files.exists(faviconPath)) return;
+        Files.write(faviconPath, new byte[] {0});
     }
 
     /**
@@ -370,6 +462,10 @@ final class BuildWebCommon {
         if (!Files.isRegularFile(indexPath)) return;
         try {
             String content = Files.readString(indexPath);
+            String favicon = "<link rel=\"icon\" href=\"data:,\">";
+            if (!content.contains("rel=\"icon\"")) {
+                content = content.replace("<head>", "<head>\n        " + favicon);
+            }
             String legacy =
                     "<script>\n"
                             + "            async function start() {\n"
@@ -404,6 +500,21 @@ final class BuildWebCommon {
             Files.writeString(indexPath, content);
         } catch (IOException e) {
             throw new RuntimeException("Failed hardening index bootstrap at " + indexPath, e);
+        }
+    }
+
+    private static void moveJsOutput(Path outputPath, String fileName) {
+        try {
+            Path root = outputPath.resolve(fileName);
+            if (Files.exists(root)) return;
+            Path webappPath = outputPath.resolve("webapp");
+            Path src = webappPath.resolve(fileName);
+            if (!Files.exists(src)) return;
+            Path dest = outputPath.resolve(fileName);
+            Files.createDirectories(dest.getParent());
+            Files.move(src, dest);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed moving JS output " + fileName, e);
         }
     }
 }

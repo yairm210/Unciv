@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.unciv.UncivGame
 import com.unciv.logic.GameStarter
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.battle.Battle
@@ -12,8 +13,14 @@ import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.github.GithubAPI
+import com.unciv.logic.github.GithubAPI.downloadAndExtract
 import com.unciv.logic.files.PlatformSaverLoader
 import com.unciv.logic.files.UncivFiles
+import com.unciv.logic.multiplayer.chat.ChatStore
+import com.unciv.logic.multiplayer.chat.ChatWebSocket
+import com.unciv.logic.multiplayer.chat.Message as ChatMessage
+import com.unciv.logic.multiplayer.storage.MultiplayerServer
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.MapType
@@ -151,7 +158,11 @@ object WebValidationRunner {
             record(results, "Audio", audio.first, "audio_playback_failed", audio.second)
 
             WebValidationInterop.publishState("running:Multiplayer")
-            val multiplayer = validateMultiplayerDisabled(game)
+            val multiplayer = if (PlatformCapabilities.current.onlineMultiplayer) {
+                validateMultiplayerActive(game)
+            } else {
+                validateMultiplayerDisabled(game)
+            }
             recordCapabilityGate(
                 results,
                 "Multiplayer",
@@ -162,7 +173,11 @@ object WebValidationRunner {
             )
 
             WebValidationInterop.publishState("running:Mod download/update")
-            val modDownloads = validateModDownloadsDisabled()
+            val modDownloads = if (PlatformCapabilities.current.onlineModDownloads) {
+                validateModDownloadsActive()
+            } else {
+                validateModDownloadsDisabled()
+            }
             recordCapabilityGate(
                 results,
                 "Mod download/update",
@@ -173,7 +188,11 @@ object WebValidationRunner {
             )
 
             WebValidationInterop.publishState("running:Custom file picker save/load")
-            val customFileChooser = validateCustomFileChooserDisabled(game)
+            val customFileChooser = if (PlatformCapabilities.current.customFileChooser) {
+                validateCustomFileChooserActive(game)
+            } else {
+                validateCustomFileChooserDisabled(game)
+            }
             recordCapabilityGate(
                 results,
                 "Custom file picker save/load",
@@ -609,6 +628,84 @@ object WebValidationRunner {
         }
     }
 
+    private suspend fun validateMultiplayerActive(game: WebGame): Pair<Boolean, String> {
+        val settings = UncivGame.Current.settings.multiplayer
+        val previousServer = settings.getServer()
+        val previousUserId = settings.getUserId()
+        val previousPassword = settings.getCurrentServerPassword()
+
+        val serverUrl = WebValidationInterop.getTestMultiplayerServerUrl()
+            ?: return false to "Missing multiplayer test server URL (mpServer)."
+
+        val userA = "00000000-0000-0000-0000-0000000000a1"
+        val userB = "00000000-0000-0000-0000-0000000000b2"
+        val password = "webtest-pass"
+
+        try {
+            settings.setServer(serverUrl)
+            settings.setUserId(userA)
+            settings.setCurrentServerPassword(password)
+
+            val serverA = MultiplayerServer()
+            if (!serverA.checkServerStatus()) {
+                return false to "Multiplayer server isalive failed."
+            }
+
+            val setup = GameSetupInfo.fromSettings().apply {
+                gameParameters.players = arrayListOf(
+                    Player(playerType = PlayerType.Human, playerId = userA),
+                    Player(playerType = PlayerType.Human, playerId = userB),
+                )
+                gameParameters.isOnlineMultiplayer = true
+                gameParameters.randomNumberOfCityStates = false
+                gameParameters.numberOfCityStates = 0
+                gameParameters.minNumberOfCityStates = 0
+                gameParameters.maxNumberOfCityStates = 0
+                gameParameters.noBarbarians = true
+                mapParameters.shape = MapShape.rectangular
+                mapParameters.mapSize = MapSize.Tiny
+                mapParameters.type = MapType.pangaea
+            }
+
+            val gameInfo = GameStarter.startNewGame(setup)
+            gameInfo.gameParameters.multiplayerServerUrl = serverUrl
+            serverA.uploadGame(gameInfo, withPreview = true)
+
+            settings.setUserId(userB)
+            settings.setCurrentServerPassword(password)
+            val serverB = MultiplayerServer()
+            val downloaded = serverB.tryDownloadGame(gameInfo.gameId)
+            downloaded.nextTurn()
+            serverB.uploadGame(downloaded, withPreview = true)
+
+            settings.setUserId(userA)
+            settings.setCurrentServerPassword(password)
+            val updated = MultiplayerServer().tryDownloadGame(gameInfo.gameId)
+            val updatedOk = updated.turns >= downloaded.turns && updated.currentPlayer == downloaded.currentPlayer
+            if (!updatedOk) {
+                return false to "Multiplayer update did not propagate (turns=${updated.turns}, current=${updated.currentPlayer})."
+            }
+
+            val chat = ChatStore.getChatByGameId(gameInfo.gameId)
+            ChatWebSocket.restart(force = true)
+            waitFrames(60)
+            ChatWebSocket.requestMessageSend(ChatMessage.Chat("TesterA", "Hello from web", gameInfo.gameId))
+            val chatOk = waitUntilFrames(600) { chat.length > 1 }
+            ChatWebSocket.stop()
+            if (!chatOk) {
+                return false to "Chat message was not received on web websocket."
+            }
+
+            return true to "Multiplayer file storage and chat validated via test server."
+        } catch (throwable: Throwable) {
+            return false to "Exception while validating multiplayer: ${throwable::class.simpleName} ${throwable.message ?: ""}".trim()
+        } finally {
+            settings.setServer(previousServer)
+            settings.setUserId(previousUserId)
+            if (previousPassword != null) settings.setCurrentServerPassword(previousPassword)
+        }
+    }
+
     private suspend fun validateModDownloadsDisabled(): Pair<Boolean, String> {
         if (PlatformCapabilities.current.onlineModDownloads) {
             return true to "PlatformCapabilities.onlineModDownloads enabled by current profile; disabled-gate check skipped."
@@ -627,6 +724,33 @@ object WebValidationRunner {
             }
         } catch (throwable: Throwable) {
             false to "Exception while validating mod download gate: ${throwable::class.simpleName} ${throwable.message ?: ""}".trim()
+        }
+    }
+
+    private suspend fun validateModDownloadsActive(): Pair<Boolean, String> {
+        return try {
+            val baseUrl = WebValidationInterop.getBaseUrl()
+            val modZipUrl = WebValidationInterop.getTestModZipUrl()
+                ?: baseUrl?.let { "$it/webtest/mods/test-mod.zip" }
+                ?: return false to "Missing base URL for test mod zip."
+
+            val repo = GithubAPI.Repo.parseUrl(modZipUrl) ?: return false to "Failed to parse mod zip url."
+            val modFolder = repo.downloadAndExtract() ?: return false to "Mod download/extract returned null."
+            val modOptionsFile = modFolder.child("jsons/ModOptions.json")
+            if (!modOptionsFile.exists()) {
+                return false to "ModOptions.json missing after extraction."
+            }
+            val updatedFolder = repo.downloadAndExtract() ?: return false to "Mod update download failed."
+            if (!updatedFolder.exists()) {
+                return false to "Updated mod folder missing after re-download."
+            }
+            updatedFolder.deleteDirectory()
+            if (updatedFolder.exists()) {
+                return false to "Mod folder still exists after removal."
+            }
+            true to "Mod download/update/remove validated using test archive."
+        } catch (throwable: Throwable) {
+            false to "Exception while validating mod downloads: ${throwable::class.simpleName} ${throwable.message ?: ""}".trim()
         }
     }
 
@@ -656,6 +780,52 @@ object WebValidationRunner {
             }
         } catch (throwable: Throwable) {
             false to "Exception while validating custom file chooser gate: ${throwable::class.simpleName} ${throwable.message ?: ""}".trim()
+        }
+    }
+
+    private suspend fun validateCustomFileChooserActive(game: WebGame): Pair<Boolean, String> {
+        val saverLoader = UncivFiles.saverLoader
+        if (saverLoader === PlatformSaverLoader.None) {
+            return false to "PlatformSaverLoader is None while custom file chooser is enabled."
+        }
+        return try {
+            WebValidationInterop.enableTestFileStore()
+            val activeGame = game.gameInfo ?: return false to "No active game available for file chooser validation."
+            val saveData = UncivFiles.gameInfoToString(activeGame, forceZip = true, updateChecksum = true)
+
+            val saveResult = suspendCoroutine<Result<String>> { continuation ->
+                saverLoader.saveGame(
+                    saveData,
+                    "WebE2E-Phase3.json",
+                    { location -> continuation.resume(Result.success(location)) },
+                    { ex -> continuation.resume(Result.failure(ex)) }
+                )
+            }
+            if (saveResult.isFailure) {
+                val failure = saveResult.exceptionOrNull()
+                return false to "Save failed: ${failure?.message ?: "unknown"}"
+            }
+
+            val loadResult = suspendCoroutine<Result<Pair<String, String>>> { continuation ->
+                saverLoader.loadGame(
+                    { data, location -> continuation.resume(Result.success(data to location)) },
+                    { ex -> continuation.resume(Result.failure(ex)) }
+                )
+            }
+            if (loadResult.isFailure) {
+                val failure = loadResult.exceptionOrNull()
+                return false to "Load failed: ${failure?.message ?: "unknown"}"
+            }
+
+            val (loadedData, location) = loadResult.getOrNull() ?: return false to "Load returned empty result."
+            val loadedGame = UncivFiles.gameInfoFromString(loadedData)
+            val ok = loadedGame.gameId == activeGame.gameId
+            if (!ok) {
+                return false to "Loaded gameId mismatch (expected=${activeGame.gameId}, got=${loadedGame.gameId})."
+            }
+            true to "File chooser save/load validated (${location.ifBlank { "in-memory" }})."
+        } catch (throwable: Throwable) {
+            false to "Exception while validating file chooser: ${throwable::class.simpleName} ${throwable.message ?: ""}".trim()
         }
     }
 

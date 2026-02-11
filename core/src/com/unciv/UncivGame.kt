@@ -120,12 +120,14 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
         if (PlatformCapabilities.current.onlineMultiplayer) {
             onlineMultiplayer = Multiplayer()
-            Concurrency.run {
-                // Check if the server is available in case the feature set has changed
-                try {
-                    onlineMultiplayer.multiplayerServer.checkServerStatus()
-                } catch (ex: Exception) {
-                    debug("Couldn't connect to server: " + ex.message)
+            if (Gdx.app.type != Application.ApplicationType.WebGL) {
+                Concurrency.run {
+                    // Check if the server is available in case the feature set has changed
+                    try {
+                        onlineMultiplayer.multiplayerServer.checkServerStatus()
+                    } catch (ex: Exception) {
+                        debug("Couldn't connect to server: " + ex.message)
+                    }
                 }
             }
         }

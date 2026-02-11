@@ -374,6 +374,7 @@ private class UncivServerRunner : CliktCommand() {
 
                     if (chatV1Enabled) webSocket("/chat") {
                         val authInfo = call.principal<BasicAuthInfo>()
+                            ?: parseAuthFromQuery(call.request.queryParameters["auth"])
                         if (authInfo == null) {
                             sendSerialized(Response.Error("No authentication info found!"))
                             return@webSocket close()
@@ -410,8 +411,24 @@ private class UncivServerRunner : CliktCommand() {
                                             )
                                         } else {
                                             sendSerialized(Response.Error("You are not subscribed to this channel!"))
-                                        }
-                                    }
+        }
+    }
+
+    private fun parseAuthFromQuery(raw: String?): BasicAuthInfo? {
+        if (raw.isNullOrBlank()) return null
+        val token = raw.trim()
+        val match = Regex("^Basic\\s+(.+)$", RegexOption.IGNORE_CASE).find(token) ?: return null
+        return try {
+            val decoded = String(java.util.Base64.getDecoder().decode(match.groupValues[1]))
+            val index = decoded.indexOf(':')
+            if (index <= 0) return null
+            val userId = decoded.substring(0, index)
+            val password = decoded.substring(index + 1)
+            BasicAuthInfo(userId = Uuid.parse(userId), password = password)
+        } catch (_: Throwable) {
+            null
+        }
+    }
 
                                     is Message.Join -> {
                                         sendSerialized(

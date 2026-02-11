@@ -15,7 +15,7 @@ This master plan is the index and invariant set for all web phases. Detailed pla
 ### Status
 - Phase 1: completed.
 - Phase 2: completed.
-- Phase 3: in-progress with local green; CI green required for closeout.
+- Phase 3: completed locally; CI green required for closeout.
 - Phase 4: planned, not started.
 
 ### Invariants (All Phases)

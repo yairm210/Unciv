@@ -1,4 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 
 plugins {
     id("kotlin")
@@ -195,6 +197,68 @@ tasks.register<JavaExec>("webBuildWasm") {
     jvmArgs("-Xms1g", "-XX:+UseG1GC")
 }
 
+fun hardenIndexBootstrap(indexFile: File) {
+    if (!indexFile.isFile) return
+    var content = indexFile.readText()
+    if (!content.contains("rel=\"icon\"")) {
+        content = content.replace("<head>", "<head>\n        <link rel=\"icon\" href=\"data:,\">")
+    }
+    val hardened = """
+        <script>
+            (function () {
+                function boot() {
+                    if (window.__uncivBootStarted) return;
+                    if (typeof window.main !== 'function') {
+                        setTimeout(boot, 25);
+                        return;
+                    }
+                    window.__uncivBootStarted = true;
+                    window.main();
+                }
+                if (document.readyState === 'complete') {
+                    setTimeout(boot, 0);
+                } else {
+                    window.addEventListener('load', boot, { once: true });
+                }
+            })();
+        </script>
+    """.trimIndent()
+    val legacyRegex = Regex(
+        "<script>\\s*async function start\\(\\) \\{\\s*main\\(\\)\\s*}\\s*window.addEventListener\\(\\\"load\\\", start\\);\\s*</script>",
+        setOf(RegexOption.DOT_MATCHES_ALL, RegexOption.IGNORE_CASE)
+    )
+    content = if (legacyRegex.containsMatchIn(content)) {
+        content.replace(legacyRegex, hardened)
+    } else if (!content.contains("__uncivBootStarted")) {
+        content.replace("</body>", "$hardened\n    </body>")
+    } else {
+        content
+    }
+    indexFile.writeText(content)
+}
+
+fun promoteWebappToRoot(outputDir: File) {
+    val webappDir = File(outputDir, "webapp")
+    if (!webappDir.isDirectory) return
+    if (File(outputDir, "index.html").isFile) return
+    webappDir.listFiles()?.forEach { child ->
+        val target = File(outputDir, child.name)
+        if (target.exists()) {
+            target.deleteRecursively()
+        }
+        Files.move(child.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING)
+    }
+    webappDir.deleteRecursively()
+}
+
+tasks.register("webPostProcessDist") {
+    doLast {
+        val outputDir = rootProject.file("web/build/dist")
+        promoteWebappToRoot(outputDir)
+        hardenIndexBootstrap(File(outputDir, "index.html"))
+    }
+}
+
 tasks.register<JavaExec>("webBuildJs") {
     dependsOn("classes")
     group = "web"
@@ -204,6 +268,14 @@ tasks.register<JavaExec>("webBuildJs") {
     workingDir = rootProject.projectDir
     maxHeapSize = "4g"
     jvmArgs("-Xms1g", "-XX:+UseG1GC")
+}
+
+tasks.named("webBuildJs") {
+    finalizedBy("webPostProcessDist")
+}
+
+tasks.named("webBuildWasm") {
+    finalizedBy("webPostProcessDist")
 }
 
 tasks.register<Exec>("webServeDist") {

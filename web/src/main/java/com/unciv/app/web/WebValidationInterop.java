@@ -15,6 +15,42 @@ final class WebValidationInterop {
     static native boolean isValidationEnabled();
 
     @JSBody(
+            script =
+                    "if (typeof window === 'undefined') return null;"
+                            + "return window.__uncivTestMultiplayerServer || (function(){"
+                            + "  var search = (window.location && window.location.search) || '';"
+                            + "  var match = /(?:\\?|&)mpServer=([^&]+)/i.exec(search);"
+                            + "  if (!match) return null;"
+                            + "  try { return decodeURIComponent(match[1]); } catch (e) { return match[1]; }"
+                            + "})();")
+    static native String getTestMultiplayerServerUrl();
+
+    @JSBody(
+            script =
+                    "if (typeof window === 'undefined') return null;"
+                            + "return window.__uncivTestModZipUrl || (function(){"
+                            + "  var search = (window.location && window.location.search) || '';"
+                            + "  var match = /(?:\\?|&)modZip=([^&]+)/i.exec(search);"
+                            + "  if (!match) return null;"
+                            + "  try { return decodeURIComponent(match[1]); } catch (e) { return match[1]; }"
+                            + "})();")
+    static native String getTestModZipUrl();
+
+    @JSBody(
+            script =
+                    "if (typeof window === 'undefined') return null;"
+                            + "if (window.__uncivBaseUrl) return window.__uncivBaseUrl;"
+                            + "if (window.location && window.location.origin) return window.location.origin;"
+                            + "return null;")
+    static native String getBaseUrl();
+
+    @JSBody(
+            script =
+                    "if (typeof window === 'undefined') return;"
+                            + "window.__uncivTestFileStore = { enabled: true, files: {}, binary: {}, lastName: '', lastBinaryName: '' };")
+    static native void enableTestFileStore();
+
+    @JSBody(
             params = "state",
             script =
                     "if (typeof window === 'undefined') return;"

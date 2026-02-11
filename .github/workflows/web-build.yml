@@ -66,7 +66,7 @@ jobs:
         run: |
           npm config set fund false
           npm config set audit false
-          npm install -D playwright
+          npm install -D playwright ws
           npx playwright install --with-deps chromium firefox
 
       - name: Start static server
@@ -200,7 +200,7 @@ jobs:
         run: |
           npm config set fund false
           npm config set audit false
-          npm install -D playwright
+          npm install -D playwright ws
           npx playwright install --with-deps chromium
 
       - name: Start static server
@@ -229,10 +229,123 @@ jobs:
             tmp/web-validation-summary.json
             tmp/web-validation-latest.png
 
+  web-phase3-beta:
+    name: Web Phase3 Beta (mods + file I/O)
+    runs-on: ubuntu-latest
+    needs: web-build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download web dist artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: unciv-web-dist
+          path: web/build/dist
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Playwright browser
+        run: |
+          npm config set fund false
+          npm config set audit false
+          npm install -D playwright ws
+          npx playwright install --with-deps chromium
+
+      - name: Start static server
+        run: |
+          python3 -m http.server 18080 --directory web/build/dist > /tmp/web-server.log 2>&1 &
+          echo $! > /tmp/web-server.pid
+
+      - name: Run phase3-beta validation
+        run: |
+          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase3-beta WEB_BASE_URL=http://127.0.0.1:18080 WEB_VALIDATION_TIMEOUT_MS=600000 \
+          WEB_MOD_ZIP_URL=http://127.0.0.1:18080/webtest/mods/test-mod.zip \
+          node scripts/web/run-web-validation.js
+
+      - name: Publish phase3-beta summary
+        if: always()
+        run: |
+          node scripts/web/write-web-summary.js >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload phase3-beta artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-phase3-beta
+          path: |
+            /tmp/web-server.log
+            tmp/web-validation-result.json
+            tmp/web-validation-summary.json
+            tmp/web-validation-latest.png
+
+  web-phase3-full:
+    name: Web Phase3 Full (multiplayer + mods + file I/O)
+    runs-on: ubuntu-latest
+    needs: web-build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download web dist artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: unciv-web-dist
+          path: web/build/dist
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Playwright browser
+        run: |
+          npm config set fund false
+          npm config set audit false
+          npm install -D playwright ws
+          npx playwright install --with-deps chromium
+
+      - name: Start multiplayer test server
+        run: |
+          node scripts/web/multiplayer-test-server.js > /tmp/mp-server.log 2>&1 &
+          echo $! > /tmp/mp-server.pid
+
+      - name: Start static server
+        run: |
+          python3 -m http.server 18080 --directory web/build/dist > /tmp/web-server.log 2>&1 &
+          echo $! > /tmp/web-server.pid
+
+      - name: Run phase3-full validation
+        run: |
+          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase3-full WEB_BASE_URL=http://127.0.0.1:18080 WEB_VALIDATION_TIMEOUT_MS=600000 \
+          WEB_MP_SERVER=http://127.0.0.1:19090 \
+          WEB_MOD_ZIP_URL=http://127.0.0.1:18080/webtest/mods/test-mod.zip \
+          node scripts/web/run-web-validation.js
+
+      - name: Publish phase3-full summary
+        if: always()
+        run: |
+          node scripts/web/write-web-summary.js >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload phase3-full artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-phase3-full
+          path: |
+            /tmp/web-server.log
+            /tmp/mp-server.log
+            tmp/web-validation-result.json
+            tmp/web-validation-summary.json
+            tmp/web-validation-latest.png
+
   deploy-pages:
     name: Deploy GitHub Pages
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
-    needs: [web-build, web-e2e]
+    needs: [web-build, web-e2e, web-phase3-beta, web-phase3-full]
     runs-on: ubuntu-latest
     environment:
       name: github-pages

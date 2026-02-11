@@ -2,8 +2,11 @@ package com.unciv.app.web;
 
 import com.github.xpenatan.gdx.teavm.backends.web.TeaApplication;
 import com.github.xpenatan.gdx.teavm.backends.web.TeaApplicationConfiguration;
+import com.unciv.logic.files.FileChooser;
 import com.unciv.logic.files.PlatformSaverLoader;
 import com.unciv.logic.files.UncivFiles;
+import com.unciv.logic.files.WebFileChooser;
+import com.unciv.logic.files.WebPlatformSaverLoader;
 import com.unciv.platform.PlatformCapabilities;
 import com.unciv.platform.PlatformCapabilities.WebProfile;
 import com.unciv.ui.components.fonts.Fonts;
@@ -18,7 +21,14 @@ public class WebLauncher {
         PlatformCapabilities.setCurrentStaging(PlatformCapabilities.webProfileStaging(profile));
         Display.INSTANCE.setPlatform(new WebDisplay());
         Fonts.INSTANCE.setFontImplementation(new WebFont());
-        UncivFiles.Companion.setSaverLoader(PlatformSaverLoader.Companion.getNone());
+        boolean customFileChooser = PlatformCapabilities.current.getCustomFileChooser();
+        if (customFileChooser) {
+            UncivFiles.Companion.setSaverLoader(new WebPlatformSaverLoader());
+            FileChooser.platformLoadDialog = (filter, listener) -> WebFileChooser.INSTANCE.openLoadDialog(filter, listener);
+        } else {
+            UncivFiles.Companion.setSaverLoader(PlatformSaverLoader.Companion.getNone());
+            FileChooser.platformLoadDialog = null;
+        }
         UncivFiles.Companion.setPreferExternalStorage(false);
         if(!jsTestsMode) {
             Log.INSTANCE.setBackend(new WebLogBackend());

@@ -1,8 +1,8 @@
 # `<repo>` Web E2E Phase-3 Plan (Capability Expansion + Full Parity)
 
 ## Status
-- Phase 3 implementation: in-progress.
-- Latest local validation: PASS for phase1 + phase3-alpha + browser JS suite.
+- Phase 3 implementation: complete (local).
+- Latest local validation: PASS for phase1 + phase3-alpha + phase3-beta + phase3-full + browser JS suite.
 - Closeout gate: latest `Web Build + Pages (TeaVM)` run must be fully green with deploy.
 
 ## Phase-3 Closeout Checklist
