@@ -128,8 +128,10 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
-??? example  "Set [stockpile] to [amount]"
-	Example: "Set [Mana] to [3]"
+??? example  "Set [stockpile] to [countable]"
+	Sets the stockpile amount of the specified resource to the calculated value. Supports both fixed numbers and dynamic countable expressions. If the current amount is less than the target, the difference is added. If the current amount is greater than the target, the difference is removed.
+
+	Example: "Set [Mana] to [1000]"
 
 	This unique's effect can be modified with &lt;(modified by game speed)&gt;
 
