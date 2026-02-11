@@ -655,21 +655,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     fun removeBuilding(buildingName: String) {
         val buildingObject = city.getRuleset().buildings[buildingName]
-        if (buildingObject != null)
-            builtBuildingObjects = builtBuildingObjects.withoutItem(buildingObject)
-        else builtBuildingObjects.removeAll{ it.name == buildingName }
-        builtBuildings.remove(buildingName)
-
-        // Clean up CreatesOneImprovement marks when the building is removed
-        val building = buildingObject ?: builtBuildingObjects.firstOrNull { it.name == buildingName }
-        if (building != null) {
-            val improvementToCreate = building.getImprovementToCreate(city.getRuleset(), city.civ)
-            if (improvementToCreate != null) {
-                getTileForImprovement(improvementToCreate.name)?.improvementFunctions?.removeCreatesOneImprovementMarker()
-            }
-        }
-
-        updateUniques()
+        if (buildingObject != null) removeBuilding(buildingObject)
     }
 
     fun removeBuilding(building: Building) {
@@ -685,7 +671,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         updateUniques()
     }
 
-    fun updateUniques(onLoadGame: Boolean = false) {
+    private fun updateUniques(onLoadGame: Boolean = false) {
         builtBuildingUniqueMap.clear()
         containedBuildingFiltersCache.clear()
 

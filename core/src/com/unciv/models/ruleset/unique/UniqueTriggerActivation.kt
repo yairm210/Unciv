@@ -683,7 +683,7 @@ object UniqueTriggerActivation {
                 if (resource is TileResource && !resource.isStockpiled) return null
 
                 return {
-                    var amountRequired = unique.params[0].toInt()
+                    var amountRequired = unique.params[1].toInt()
                     if (unique.isModifiedByGameSpeed()) {
                         amountRequired = if (resource is Stat) (amountRequired * civInfo.gameInfo.speed.statCostModifiers[resource]!!).roundToInt()
                         else (amountRequired * civInfo.gameInfo.speed.modifier).roundToInt()
