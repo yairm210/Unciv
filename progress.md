@@ -921,3 +921,13 @@
 2026-02-11T12:56:29Z | validation | webBuildJs + phase3-beta/full web validation run (chromium, --use-gl=angle) | pass | rerun CI after commit
 2026-02-11T13:20:39Z | ci | adjusted firefox browser-compat step to not fail workflow | allow informational failure without breaking green checks | rerun CI
 2026-02-11T13:41:31Z | ci | Web Build + Pages + build/test/docker all green | phase3 alpha/beta/full + firefox compat green in CI | phase3 complete
+2026-02-11T15:01:21Z | inspect | git status | found modified scripts/web/run-js-browser-tests.js | review diff
+2026-02-11T15:02:33Z | inspect | gh auth status | active account YosefLm | check CI status
+2026-02-11T15:04:02Z | gh | set default repo to YosefLm/unciv-web | done | check CI runs
+2026-02-11T15:05:06Z | ci | inspected run 21907457788 logs | web e2e failed in JS browser suite with pageerror + 404 | investigate test runner
+2026-02-11T15:14:30Z | setup | stopped stale web server on 18080 | done | rebuild JS dist and run js-suite
+2026-02-11T15:17:07Z | build | webBuildJs in container | success | start static server + run js-suite
+2026-02-11T15:19:38Z | validation | local JS browser suite | PASSED (225 run, 0 fail) | adjust CI to avoid timeout
+2026-02-11T15:23:22Z | fix | add js test boot invoke in run-js-browser-tests | done | rerun js-suite and update CI env
+2026-02-11T15:25:14Z | validation | js-suite after boot-invoke patch | PASS (225/0) | update workflow env + commit
+2026-02-11T15:26:25Z | ci | set WEB_CHROMIUM_ARGS in web-build workflow | done | commit + push + rerun CI

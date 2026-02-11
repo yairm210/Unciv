@@ -10,6 +10,9 @@ const { chromium, firefox, webkit } = require('playwright');
   const headlessToken = String(process.env.HEADLESS || 'false').toLowerCase();
   const headless = headlessToken === '1' || headlessToken === 'true' || headlessToken === 'yes';
   const timeoutMs = Number(process.env.TIMEOUT_MS || 900000);
+  const debugState = String(process.env.WEB_JS_TESTS_DEBUG || '') === '1';
+  const chromiumArgs = String(process.env.WEB_CHROMIUM_ARGS || '').trim();
+  const jsTestsFilter = String(process.env.WEB_JS_TESTS_FILTER || '').trim();
 
   const consoleErrors = [];
   const consoleWarnings = [];
@@ -31,21 +34,26 @@ const { chromium, firefox, webkit } = require('playwright');
 
   const launchOptions = { headless, slowMo: headless ? 0 : 40 };
   if (browserName === 'chromium') {
-    launchOptions.args = [
-      '--use-gl=swiftshader',
-      '--disable-background-timer-throttling',
-      '--disable-backgrounding-occluded-windows',
-      '--disable-renderer-backgrounding',
-    ];
+    launchOptions.args = chromiumArgs.length > 0
+      ? chromiumArgs.split(/\s+/).filter(Boolean)
+      : [
+        '--use-gl=swiftshader',
+        '--disable-background-timer-throttling',
+        '--disable-backgrounding-occluded-windows',
+        '--disable-renderer-backgrounding',
+      ];
   }
   const browser = await browserType.launch(launchOptions);
   const context = await browser.newContext({ viewport: { width: 1600, height: 1000 } });
-  await context.addInitScript(({ profile }) => {
+  await context.addInitScript(({ profile, jsFilter }) => {
     window.__uncivEnableJsTests = true;
     if (typeof profile === 'string' && profile.length > 0) {
       window.__uncivWebProfile = profile;
     }
-  }, { profile: webProfile });
+    if (typeof jsFilter === 'string' && jsFilter.length > 0) {
+      window.__uncivJsTestsFilter = jsFilter;
+    }
+  }, { profile: webProfile, jsFilter: jsTestsFilter });
   const page = await context.newPage();
 
   page.on('console', msg => {
@@ -78,13 +86,27 @@ const { chromium, firefox, webkit } = require('playwright');
       await page.goto(targetUrl.toString(), { waitUntil: 'domcontentloaded', timeout: 120000 });
     }
     const pollStart = Date.now();
+    let bootInvoked = false;
     while (true) {
+      if (!bootInvoked) {
+        const bootedNow = await page.evaluate(() => {
+          if (typeof window.main !== 'function') return false;
+          if (window.__uncivBootStarted) return true;
+          window.__uncivBootStarted = true;
+          window.main();
+          return true;
+        });
+        if (bootedNow) bootInvoked = true;
+      }
       const state = await page.evaluate(() => ({
         done: window.__uncivJsTestsDone === true,
         state: window.__uncivJsTestsState || null,
         error: window.__uncivJsTestsError || null,
         json: window.__uncivJsTestsResultJson || null,
       }));
+      if (debugState && state.state) {
+        process.stdout.write(`[js-tests-state] ${state.state}\n`);
+      }
 
       if (state.error) throw new Error(`JS test runtime error: ${state.error}`);
       if (state.json) {
@@ -122,7 +144,7 @@ const { chromium, firefox, webkit } = require('playwright');
           if (!jsResult || !jsResult.summary) throw new Error('Malformed JS test result payload');
           status = (jsResult.summary.totalFailures > 0 || jsResult.passed === false) ? 'FAILED' : 'PASSED';
         } else {
-          throw new Error(`Timed out after ${timeoutMs}ms waiting for JS test completion.`);
+          throw new Error(`Timed out after ${timeoutMs}ms waiting for JS test completion. lastState=${state.state || 'unknown'}`);
         }
         break;
       }
