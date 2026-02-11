@@ -5,6 +5,7 @@ const { chromium, firefox, webkit } = require('playwright');
 async function main() {
   const baseUrl = process.env.WEB_BASE_URL || 'http://127.0.0.1:8000';
   const webProfile = String(process.env.WEB_PROFILE || '').trim();
+  const effectiveProfile = webProfile.length > 0 ? webProfile : 'phase4-full';
   const browserName = String(process.env.WEB_BROWSER || 'chromium').toLowerCase();
   const timeoutMs = Number(process.env.WEB_VALIDATION_TIMEOUT_MS || '430000');
   const headless = (process.env.HEADLESS || '1') !== '0';
@@ -19,9 +20,11 @@ async function main() {
   const pageErrors = [];
   const consoleErrors = [];
   const requestFailures = [];
+  let mainMenuReadyAt = null;
+  let worldEntryReadyAt = null;
 
   if (debugState) {
-    console.log(`validation_debug_start profile=${webProfile || 'phase1'} baseUrl=${baseUrl} browser=${browserName} headless=${headless}`);
+    console.log(`validation_debug_start profile=${effectiveProfile} baseUrl=${baseUrl} browser=${browserName} headless=${headless}`);
   }
   const browserTypes = { chromium, firefox, webkit };
   const browserType = browserTypes[browserName];
@@ -90,6 +93,7 @@ async function main() {
   let state = null;
   let completed = false;
   let lastState = null;
+  const validationStartAt = Date.now();
   try {
     const targetUrl = new URL('/index.html', baseUrl);
     targetUrl.searchParams.set('webtest', '1');
@@ -118,6 +122,27 @@ async function main() {
           validationError: window.__uncivWebValidationError || null,
           validationResultJson: window.__uncivWebValidationResultJson || null,
         }));
+        const phaseState = String(state.validationState || '');
+        if (phaseState.startsWith('running:') && mainMenuReadyAt === null) {
+          mainMenuReadyAt = Date.now();
+        }
+        if (
+          worldEntryReadyAt === null
+          && (
+            phaseState === 'running:End turn loop'
+            || phaseState === 'running:Local save/load'
+            || phaseState === 'running:Clipboard import/export'
+            || phaseState === 'running:Audio'
+            || phaseState === 'running:Multiplayer'
+            || phaseState === 'running:Mod download/update'
+            || phaseState === 'running:Custom file picker save/load'
+            || phaseState === 'running:Translation/font selection'
+            || phaseState === 'running:External links'
+            || phaseState === 'done'
+          )
+        ) {
+          worldEntryReadyAt = Date.now();
+        }
         if (debugState && state.validationState !== lastState) {
           lastState = state.validationState;
           console.log(`validation_state=${String(lastState)}`);
@@ -163,13 +188,18 @@ async function main() {
   const summary = {
     generatedAt: result.generatedAt,
     browser: browserName,
-    webProfile: webProfile || 'phase1',
+    webProfile: effectiveProfile,
     counts: result.summary,
     startNewGame: startGameFeature,
     hasSettlerValidation,
     hasWarriorValidation,
     pageErrorCount: pageErrors.length,
     consoleErrorCount: consoleErrors.length,
+    performance: {
+      validationDurationMs: Date.now() - validationStartAt,
+      mainMenuReadyMs: mainMenuReadyAt === null ? null : (mainMenuReadyAt - validationStartAt),
+      worldEntryReadyMs: worldEntryReadyAt === null ? null : (worldEntryReadyAt - validationStartAt),
+    },
     screenshotPath,
   };
 

@@ -6,6 +6,7 @@ const { chromium, firefox, webkit } = require('playwright');
   const outPath = path.resolve('tmp/js-browser-tests-result.json');
   const url = process.env.WEB_URL || 'http://127.0.0.1:18080/index.html?jstests=1';
   const webProfile = String(process.env.WEB_PROFILE || '').trim();
+  const effectiveProfile = webProfile.length > 0 ? webProfile : 'phase4-full';
   const browserName = String(process.env.WEB_BROWSER || 'chromium').toLowerCase();
   const headlessToken = String(process.env.HEADLESS || 'false').toLowerCase();
   const headless = headlessToken === '1' || headlessToken === 'true' || headlessToken === 'yes';
@@ -166,7 +167,7 @@ const { chromium, firefox, webkit } = require('playwright');
       return targetUrl.toString();
     })() : url,
     browser: browserName,
-    webProfile: webProfile || 'phase1',
+    webProfile: effectiveProfile,
     headless,
     timestamp: new Date().toISOString(),
     consoleErrorCount: consoleErrors.length,

@@ -1,4 +1,4 @@
-# Unciv Web Architecture Decisions (Phases 1–3)
+# Unciv Web Architecture Decisions (Phases 1–4)
 
 Last updated: 2026-02-11
 
@@ -97,6 +97,30 @@ A deferred decision can be changed only when all are true:
    - phase3-alpha: file import/export path
    - phase3-beta: mod download/update/remove
    - phase3-full: multiplayer file storage + chat
+
+## 11) Phase-4 Decisions (Default-On + Production Gates)
+
+1. Default web profile is now `phase4-full`:
+   - multiplayer enabled
+   - mod download/update enabled
+   - custom file chooser enabled
+2. Rollback is runtime-configurable without rebuild:
+   - `webRollback`
+   - `webDisableMultiplayer`
+   - `webDisableFileChooser`
+   - `webDisableMods` / `webDisableModDownloads`
+3. Browser JS test mode no longer forces phase1 profile; JS suite runs under phase4-full by default.
+4. Web E2E workflow now enforces:
+   - phase1 baseline validation
+   - phase4-full validation
+   - browser JS suite
+   - performance budget gate
+   - regression diff gate
+5. Informational capability lanes remain:
+   - phase4-alpha
+   - phase4-beta
+6. WebRTC remains out of scope for current multiplayer architecture:
+   - current production path is HTTP file storage + WebSocket chat.
 
 ## 9) Browser JS Test Harness Status (Current)
 

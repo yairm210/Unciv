@@ -16,7 +16,7 @@ This master plan is the index and invariant set for all web phases. Detailed pla
 - Phase 1: completed.
 - Phase 2: completed.
 - Phase 3: completed; CI green with deploy (run 21911774146).
-- Phase 4: planned, not started.
+- Phase 4: implemented in code and CI workflow; closeout validated locally (phase4 lanes + JS suite + perf + regression) and ready for final CI confirmation.
 
 ### Invariants (All Phases)
 1. Runtime is WASM-first.

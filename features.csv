@@ -1,12 +1,12 @@
 feature,web_status,phase,blocking_issue,notes,last_verified
-Boot/Main menu,PASS,phase-1,,scripts/web/run-web-validation.js and headed repro load main menu without crash or console/page errors (JS runtime path),2026-02-11T16:01:19Z
-Start new game,PASS,phase-1,,scripts/web/run-web-validation.js generated and loaded a tiny game with Settler founding + Warrior melee combat validated; unit movement/explore/automate + quickstart validated (JS runtime path),2026-02-11T16:01:19Z
-End turn loop,PASS,phase-1,,scripts/web/run-web-validation.js turn-flow checks pass and headed world repro reaches/acts in world without crash (JS runtime path),2026-02-11T16:01:19Z
-Local save/load,PASS,phase-1,,web snapshot-token save path validated by scripts/web/run-web-validation.js local save/load step,2026-02-11T16:01:19Z
-Clipboard import/export,PASS,phase-1,,web snapshot-token clipboard roundtrip validated by scripts/web/run-web-validation.js,2026-02-11T16:01:19Z
-Audio,PASS,phase-1,,scripts/web/run-web-validation.js resolved and played UncivSound.Click,2026-02-11T16:01:19Z
-Multiplayer,PASS,phase-3,,phase3-full validation passed against local multiplayer test server (file storage + chat),2026-02-11T16:01:19Z
-Mod download/update,PASS,phase-3,,phase3-beta validation passed with test mod download/update/remove flow,2026-02-11T16:01:19Z
-Custom file picker save/load,PASS,phase-3,,phase3-alpha validation passed with web file chooser test store,2026-02-11T16:01:19Z
-Translation/font selection,PASS,phase-1,,scripts/web/run-web-validation.js confirms deterministic web font path and gated system font enumeration,2026-02-11T16:01:19Z
-External links,PASS,phase-1,,scripts/web/run-web-validation.js verified browser bridge openExternalURL invocation path,2026-02-11T16:01:19Z
+Boot/Main menu,PASS,phase-4,,phase1 baseline and phase4-full browser validation booted to main menu with no fatal page/console errors,2026-02-11T22:54:16Z
+Start new game,PASS,phase-4,,phase4-full validation created a game and reached world screen with settler/warrior checks,2026-02-11T22:54:16Z
+End turn loop,PASS,phase-4,,phase4-full validation executed world actions and turn-flow checks,2026-02-11T22:54:16Z
+Local save/load,PASS,phase-4,,phase4-full validation completed local save/load roundtrip,2026-02-11T22:54:16Z
+Clipboard import/export,PASS,phase-4,,phase4-full validation completed clipboard roundtrip,2026-02-11T22:54:16Z
+Audio,PASS,phase-4,,phase4-full validation resolved and played click sound after interaction unlock,2026-02-11T22:54:16Z
+Multiplayer,PASS,phase-4,,phase4-full validation passed with local multiplayer server file storage plus chat; default-on in phase4 profile,2026-02-11T22:54:16Z
+Mod download/update,PASS,phase-4,,phase4-beta/full validation passed install update remove with webtest mod zip; default-on in phase4 profile,2026-02-11T22:54:16Z
+Custom file picker save/load,PASS,phase-4,,phase4-alpha/full validation passed via web file chooser test store; default-on in phase4 profile,2026-02-11T22:54:16Z
+Translation/font selection,PASS,phase-4,,deterministic web font path verified with system font enumeration remaining gated by design,2026-02-11T22:54:16Z
+External links,PASS,phase-4,,browser bridge openExternalURL path verified in phase4 validation harness,2026-02-11T22:54:16Z

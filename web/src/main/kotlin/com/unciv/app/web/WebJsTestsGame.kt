@@ -1,7 +1,6 @@
 package com.unciv.app.web
 
 import com.badlogic.gdx.ApplicationAdapter
-import com.unciv.platform.PlatformCapabilities
 
 /**
  * Lightweight application listener for browser JS test mode.
@@ -9,7 +8,6 @@ import com.unciv.platform.PlatformCapabilities
  */
 class WebJsTestsGame : ApplicationAdapter() {
     override fun create() {
-        PlatformCapabilities.setCurrent(PlatformCapabilities.webPhase1())
         WebJsTestRunner.maybeStart()
     }
 }

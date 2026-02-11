@@ -945,3 +945,26 @@
 2026-02-11T16:23:24Z | ci | Web Build + Pages run 21912628970 green incl deploy | done | finalize status
 2026-02-11T16:33:40Z | ci | Web Build + Pages run 21913368031 green incl deploy | done | finalize phase3 status
 2026-02-11T16:51:43Z | ci | add timeout-minutes for phase3-alpha job to avoid hung installs | done | commit+push
+2026-02-11T21:19:34Z | phase4 | reviewed phase4 plan and capability wiring (PlatformCapabilities/WebLauncher) | identified phase3 profiles still defaulting to phase1 | implement phase4 profile + default-on with rollback
+2026-02-11T21:21:21Z | phase4 | inspected validation/regression scripts and baseline | existing gates are phase3 and no performance budget checks | patch capabilities/profiles/workflow and add budget gate
+2026-02-11T21:41:40Z | phase4 | implemented capability graduation (phase4 default + rollback flags), js-test profile handling, phase4 workflow lanes, and performance budget gate | changes pending build/validation | run container webBuildJs then phase4 validations
+2026-02-11T21:43:06Z | build | container webBuildJs failed due non-static Log.debug call in WebLauncher | patched to Log.INSTANCE.debug | rerun container webBuildJs
+2026-02-11T21:45:08Z | build | container :web:webBuildJs after phase4 patches | success | run headed validations (phase4 full/beta/alpha) and js browser suite
+2026-02-11T21:45:55Z | validation | phase4 validation run failed in headless mode with TeaGL20 pixelStorei null | blocked by headless WebGL context | rerun with xvfb-run headed mode
+2026-02-11T21:46:39Z | validation | xvfb-run unavailable locally | command not found | rerun headed validations without xvfb wrapper
+2026-02-11T21:47:41Z | validation | local playwright runs blocked by WebGL context init (pixelStorei null) | moved execution to container xvfb path for deterministic browser runtime | run phase4 validations/js suite/perf gate inside container
+2026-02-11T22:22:02Z | fix | updated validation timing capture + performance budget defaults for phase4 flow | done | rerun container phase4-full validation, js suite, perf gate, regression gate
+2026-02-11T22:23:48Z | validation | container phase4-full + js suite + performance + regression gates | pass | rerun phase4-beta and phase4-alpha for full lane coverage
+2026-02-11T22:35:22Z | validation | container phase4-beta and phase4-alpha validations | pass (no fail/block/page/console errors) | update docs/feature status and run final quick sanity checks
+2026-02-11T22:36:49Z | phase4 | resumed execution, reviewed progress log and git status for pending phase4 artifacts | done | update docs/status files and rerun full phase4 gates
+2026-02-11T22:38:43Z | inspect | reviewed phase4 code/workflow diff and performance budget script | done | update phase4 docs + status files before final validation run
+2026-02-11T22:39:12Z | validation | launching full phase4 proof run in tmux (build + phase1 + phase4-full + js suite + perf + regression) | in_progress | monitor tmp/phase4-proof.log
+2026-02-11T22:41:53Z | validation | tmux proof command had host-shell expansion on SERVER_PID/trap; result unreliable past build step | blocked | rerun proof using scripted container command to preserve shell vars
+2026-02-11T22:45:59Z | docs | updated phase4 status artifacts (plan.md, plan_phase_4.md, arch_web.md, features.csv) for default-on/gate closeout | done | finish proof run and commit/push
+2026-02-11T22:46:36Z | validation | scripted phase4 proof run found real gap: phase4-full validation fails without mpServer/mod zip env in baseline lane | failed | patch web-build workflow + local proof script to supply local mp server and mod zip
+2026-02-11T22:47:22Z | ci | patched web-e2e workflow to start local multiplayer test server and pass WEB_MP_SERVER/WEB_MOD_ZIP_URL for phase4-full validation | done | rerun local phase4 proof sequence with full env
+2026-02-11T22:47:57Z | validation | launching corrected phase4 validation proof in tmux (phase1 + phase4-full with mp/mod env + js suite + perf + regression) | in_progress | monitor tmp/phase4-validate.log
+2026-02-11T22:52:00Z | validation | aborted combined phase4 proof after phase1/phase4-full PASS because js-suite stage stalled with noisy console stream | partial | rerun js-suite as focused step then run perf/regression gates
+2026-02-11T22:52:31Z | validation | launching focused phase4 JS browser suite in tmux (headed chromium) | in_progress | monitor tmp/js-suite-phase4.log
+2026-02-11T22:54:36Z | validation | focused phase4 JS suite passed (225 run/0 failures) and perf/regression gates passed with phase4-full summary | success | stage phase4 changes and commit/push
+2026-02-11T22:55:19Z | tracking | refreshed features.csv last_verified timestamps to latest phase4 gate run | done | review diff and commit
