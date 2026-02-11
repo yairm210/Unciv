@@ -944,3 +944,4 @@
 2026-02-11T16:02:49Z | docs | updated plan.md/plan_phase_3.md/arch_web.md + features.csv for CI green | done | commit + push
 2026-02-11T16:23:24Z | ci | Web Build + Pages run 21912628970 green incl deploy | done | finalize status
 2026-02-11T16:33:40Z | ci | Web Build + Pages run 21913368031 green incl deploy | done | finalize phase3 status
+2026-02-11T16:51:43Z | ci | add timeout-minutes for phase3-alpha job to avoid hung installs | done | commit+push

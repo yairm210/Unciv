@@ -179,6 +179,7 @@ jobs:
   web-phase3-alpha:
     name: Web Phase3 Alpha (informational)
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     continue-on-error: true
     needs: web-build
     steps:
