@@ -914,3 +914,5 @@
 2026-02-11T11:43:32Z | git | started push to origin/master via tmux | in_progress | monitor tmp/push.log and check CI
 2026-02-11T11:44:16Z | git | push to origin/master completed | success | check CI status and fix failures if any
 2026-02-11T11:47:41Z | ci | Web Build + Pages (TeaVM) run 21903757159 in progress for latest push | in_progress | monitor until completion
+2026-02-11T11:58:37Z | fix | repaired UncivServer websocket auth helper placement to restore server compile | done | run server compile and repush
+2026-02-11T11:59:53Z | build | container :server:compileKotlin passed | success | commit fix and push
