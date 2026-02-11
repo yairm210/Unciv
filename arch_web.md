@@ -93,7 +93,7 @@ A deferred decision can be changed only when all are true:
 6. Current operational decision:
    - keep WASM-first build support in place (`WEBASSEMBLY_GC`) and track runtime blocker separately.
    - use JS build for E2E regression validation until WASM runtime issue is resolved.
-7. Phase-3 validation lanes now pass locally:
+7. Phase-3 validation lanes pass locally and in CI (run 21911774146, deploy green):
    - phase3-alpha: file import/export path
    - phase3-beta: mod download/update/remove
    - phase3-full: multiplayer file storage + chat

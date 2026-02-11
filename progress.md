@@ -938,3 +938,7 @@
 2026-02-11T15:36:23Z | docs | reviewed plan_phase_3.md closeout gate | CI green required for phase3 closeout | focus on web-e2e
 2026-02-11T15:36:59Z | docs | reviewed plan_phase_4.md | phase4 blocked by phase3 CI green | monitor CI
 2026-02-11T15:39:57Z | ci | reverted CI WEB_CHROMIUM_ARGS to default swiftshader (angle broke WebGL) | done | rerun CI
+2026-02-11T15:42:02Z | git | pushed master after swiftshader revert | success | monitor CI
+2026-02-11T15:43:33Z | cleanup | stopped tmux webserver/web-mp sessions | done | await CI results
+2026-02-11T16:00:10Z | ci | Web Build + Pages run 21911774146 green incl deploy | done | update plan/docs and commit progress
+2026-02-11T16:02:49Z | docs | updated plan.md/plan_phase_3.md/arch_web.md + features.csv for CI green | done | commit + push

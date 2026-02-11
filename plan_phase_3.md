@@ -1,9 +1,9 @@
 # `<repo>` Web E2E Phase-3 Plan (Capability Expansion + Full Parity)
 
 ## Status
-- Phase 3 implementation: complete (local).
+- Phase 3 implementation: complete.
 - Latest local validation: PASS for phase1 + phase3-alpha + phase3-beta + phase3-full + browser JS suite.
-- Closeout gate: latest `Web Build + Pages (TeaVM)` run must be fully green with deploy.
+- Closeout gate: `Web Build + Pages (TeaVM)` run 21911774146 green with deploy (met).
 
 ## Phase-3 Closeout Checklist
 1. Local container build: `./scripts/web/in-container.sh './gradlew :web:webBuildJs'`.
