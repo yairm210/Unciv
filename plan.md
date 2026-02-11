@@ -1,13 +1,29 @@
-# `<repo>` Web E2E Phase-1 Implementation Plan (WASM-first, Docker-only)
+# `<repo>` Web E2E Master Plan (Phases 1–4)
 
 ## Summary
-Ship a static-host-ready web build of Unciv using `gdx-teavm 1.4.0` with these locked decisions:
+This master plan is the index and invariant set for all web phases. Detailed plans live in:
+- `plan_phase_2.md`
+- `plan_phase_3.md`
+- `plan_phase_4.md`
+
+### Phase Index
+1. Phase 1: Web target bring-up, Docker-only toolchain, core gameplay + local saves, CI deploy.
+2. Phase 2: Parity hardening and regression lock gates.
+3. Phase 3: Capability expansion readiness (with phase1/2 safety preserved).
+4. Phase 4: Full web parity and production rollout.
+
+### Status
+- Phase 1: completed.
+- Phase 2: completed.
+- Phase 3: in-progress with local green; CI green required for closeout.
+- Phase 4: planned, not started.
+
+### Invariants (All Phases)
 1. Runtime is WASM-first.
-2. Scope is playable core + local saves.
-3. Hosting target is static bundle for CDN/static host.
-4. No Three.js.
-5. No libKTX in phase 1.
-6. Multiplayer, custom-location file picker, and online mod update/download are disabled on web in phase 1 via explicit capability gating.
+2. Docker-only toolchain (no host Java).
+3. Browser-first validation is the deploy gate.
+4. DRY, performance-sensitive code, no web-only forks unless required.
+5. Not tested = not done; no regressions without explicit waiver.
 
 ## Step 0: Required persistence and tracking files (first execution commit)
 Create these files immediately when execution mode starts:
@@ -20,6 +36,9 @@ Apply these process rules:
 1. Read `<repo>/progress.md` before every new exploration/read pass.
 2. Append one progress line after every meaningful step using format `timestamp | area | action | result | next`.
 3. Never use ad-hoc temp paths outside `<repo>/tmp/` for this effort.
+
+## Phase 1 (Completed) – Implementation Detail
+Phase 1 details are preserved below for completeness and historical traceability. Phase 2–4 planning details are in their respective files to avoid duplication.
 
 ## Step 1: Container-first development environment
 Add:

@@ -1,5 +1,19 @@
 # `<repo>` Web E2E Phase-3 Plan (Capability Expansion + Full Parity)
 
+## Status
+- Phase 3 implementation: in-progress.
+- Latest local validation: PASS for phase1 + phase3-alpha + browser JS suite.
+- Closeout gate: latest `Web Build + Pages (TeaVM)` run must be fully green with deploy.
+
+## Phase-3 Closeout Checklist
+1. Local container build: `./scripts/web/in-container.sh './gradlew :web:webBuildJs'`.
+2. Phase1 validation: `WEB_PROFILE=phase1` validation PASS.
+3. Phase3-alpha validation: `WEB_PROFILE=phase3-alpha` validation PASS.
+4. Browser JS suite: PASS (0 failures).
+5. CI: `Web Build + Pages (TeaVM)` green with deploy and artifacts.
+6. `features.csv` updated with last verified timestamp.
+7. `arch_web.md` updated with phase-3 capability state and gate status.
+
 ## Summary
 Phase 3 moves web from "stable single-player subset" to "broad product parity" by enabling currently disabled capabilities and hardening them for real users.  
 Scope is expansion, not just stabilization: multiplayer paths, online mod flows, advanced I/O, and production runtime quality at scale.
