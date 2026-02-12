@@ -890,14 +890,10 @@ enum class UniqueType(
     OneTimeConsumeResources("Instantly consumes [positiveAmount] [stockpiledResource]", UniqueTarget.Triggerable),
     OneTimeProvideResources("Instantly provides [positiveAmount] [stockpiledResource]", UniqueTarget.Triggerable),
 
-    OneTimeSetStockpile("Set [stockpile] to [countable]", UniqueTarget.Triggerable,
-        flags = setOf(UniqueFlag.AcceptsSpeedModifier),
-        docDescription = "Sets the stockpile amount of the specified resource to the calculated value. " +
-            "Supports both fixed numbers and dynamic countable expressions. " +
-            "If the current amount is less than the target, the difference is added. " +
-            "If the current amount is greater than the target, the difference is removed."
-    ),
-    OneTimeGainResource("Instantly gain [amount] [stockpile]", UniqueTarget.Triggerable, flags = setOf(UniqueFlag.AcceptsSpeedModifier)),
+        OneTimeSetStockpile("Set [stockpile] to [countable]", UniqueTarget.Triggerable,
+            flags = setOf(UniqueFlag.AcceptsSpeedModifier),
+            docDescription = "Sets the stockpile amount of the specified resource to the calculated value."
+        ),    OneTimeGainResource("Instantly gain [amount] [stockpile]", UniqueTarget.Triggerable, flags = setOf(UniqueFlag.AcceptsSpeedModifier)),
     OneTimeGainStat("Gain [amount] [stat]", UniqueTarget.Triggerable, flags = setOf(UniqueFlag.AcceptsSpeedModifier)),
     OneTimeGainStatRange("Gain [amount]-[amount] [stat]", UniqueTarget.Triggerable, flags = setOf(UniqueFlag.AcceptsSpeedModifier)),
     OneTimeGainPantheon("Gain enough Faith for a Pantheon", UniqueTarget.Triggerable),

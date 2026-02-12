@@ -682,11 +682,10 @@ object UniqueTriggerActivation {
                 val resource = ruleset.getGameResource(resourceName) ?: return null
                 if (resource is TileResource && !resource.isStockpiled) return null
 
-                return lambda@{
-                    val gameContext = GameContext(civInfo, city)
-                    val countableResult = Countables.getCountableAmount(unique.params[1], gameContext)
-                    if (countableResult == null) return@lambda false
+                val gameContext = GameContext(civInfo, city)
+                val countableResult = Countables.getCountableAmount(unique.params[1], gameContext) ?: return null
 
+                return {
                     var amountRequired = countableResult
                     if (unique.isModifiedByGameSpeed()) {
                         amountRequired = if (resource is Stat) (amountRequired * civInfo.gameInfo.speed.statCostModifiers[resource]!!).roundToInt()
@@ -712,7 +711,6 @@ object UniqueTriggerActivation {
                     true
                 }
             }
-
             UniqueType.UnitsGainPromotion -> {
                 val filter = unique.params[0]
                 val promotionName = unique.params[1]

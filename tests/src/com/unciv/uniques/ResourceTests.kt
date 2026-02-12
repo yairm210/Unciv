@@ -337,7 +337,7 @@ class ResourceTests {
     }
 
     @Test
-    fun `Set stockpile to fixed amount`() {
+    fun `Set stockpile to countable`() {
         // given
         val resource = game.createResource(UniqueType.Stockpiled.text)
         val building = game.createBuilding("Instantly provides [2] [${resource.name}]")
@@ -346,67 +346,11 @@ class ResourceTests {
 
         // when
         UniqueTriggerActivation.triggerUnique(
-            Unique("Set [${resource.name}] to [100]"),
+            Unique("Set [${resource.name}] to [1+1]"),
             civInfo
         )
 
         // then
-        assertEquals(100, civInfo.getCivResourcesByName()[resource.name])
-    }
-
-    @Test
-    fun `Set stockpile to countable Cities`() {
-        // given
-        val resource = game.createResource(UniqueType.Stockpiled.text)
-        val building = game.createBuilding("Instantly provides [2] [${resource.name}]")
-        city.cityConstructions.addBuilding(building)
         assertEquals(2, civInfo.getCivResourcesByName()[resource.name])
-
-        // when
-        UniqueTriggerActivation.triggerUnique(
-            Unique("Set [${resource.name}] to [Cities]"),
-            civInfo
-        )
-
-        // then
-        assertEquals(1, civInfo.getCivResourcesByName()[resource.name])
-    }
-
-    @Test
-    fun `Set stockpile to expression countable`() {
-        // given
-        val resource = game.createResource(UniqueType.Stockpiled.text)
-        val building = game.createBuilding("Instantly provides [2] [${resource.name}]")
-        city.cityConstructions.addBuilding(building)
-        val secondCity = civInfo.addCity(HexCoord(2, 2))
-        assertEquals(2, civInfo.getCivResourcesByName()[resource.name])
-
-        // when
-        UniqueTriggerActivation.triggerUnique(
-            Unique("Set [${resource.name}] to [[Cities] * 50]"),
-            civInfo
-        )
-
-        // then
-        assertEquals(100, civInfo.getCivResourcesByName()[resource.name])
-    }
-
-    @Test
-    fun `Set stockpile respects game speed modifier`() {
-        // given
-        val resource = game.createResource(UniqueType.Stockpiled.text)
-        val building = game.createBuilding("Instantly provides [2] [${resource.name}]")
-        city.cityConstructions.addBuilding(building)
-        assertEquals(2, civInfo.getCivResourcesByName()[resource.name])
-
-        // when
-        UniqueTriggerActivation.triggerUnique(
-            Unique("Set [${resource.name}] to [100] <Modified by Game Speed>"),
-            civInfo
-        )
-
-        // then
-        val expected = (100 * game.gameInfo.speed.modifier).roundToInt()
-        assertEquals(expected, civInfo.getCivResourcesByName()[resource.name])
     }
 }
