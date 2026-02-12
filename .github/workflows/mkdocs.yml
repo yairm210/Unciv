@@ -4,6 +4,14 @@ on:
   push:
     branches:
       - master
+
+permissions:
+  contents: write
+
+concurrency:
+  group: "pages-docs"
+  cancel-in-progress: true
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -13,4 +21,11 @@ jobs:
         with:
           python-version: 3.x
       - run: pip install mkdocs-material mkdocs-awesome-pages-plugin
-      - run: mkdocs gh-deploy --force
+      - run: mkdocs build --site-dir site
+      - uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: site
+          destination_dir: docs
+          keep_files: true

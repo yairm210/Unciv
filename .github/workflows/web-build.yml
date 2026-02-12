@@ -443,7 +443,8 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: web-dist
           publish_branch: gh-pages
-          force_orphan: true
+          destination_dir: game
+          keep_files: true
 
   pages-smoke:
     name: GitHub Pages Smoke
@@ -459,9 +460,9 @@ jobs:
             exit 1
           fi
           echo "Using page URL: $page_url"
-          curl -fSL --retry 10 --retry-delay 5 --retry-all-errors "$page_url" -o /tmp/pages-index.html
-          grep -qi "unciv.js" /tmp/pages-index.html
-          curl -fSL --retry 10 --retry-delay 5 --retry-all-errors "${page_url%/}/unciv.js" -o /tmp/pages-unciv.js
+          curl -fSL --retry 10 --retry-delay 5 --retry-all-errors "${page_url%/}/game/index.html" -o /tmp/pages-game-index.html
+          grep -qi "unciv.js" /tmp/pages-game-index.html
+          curl -fSL --retry 10 --retry-delay 5 --retry-all-errors "${page_url%/}/game/unciv.js" -o /tmp/pages-unciv.js
           test -s /tmp/pages-unciv.js
 
       - name: Upload Pages smoke artifacts
@@ -470,5 +471,5 @@ jobs:
         with:
           name: pages-smoke
           path: |
-            /tmp/pages-index.html
+            /tmp/pages-game-index.html
             /tmp/pages-unciv.js
