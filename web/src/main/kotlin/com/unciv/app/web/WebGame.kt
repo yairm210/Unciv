@@ -8,7 +8,8 @@ class WebGame : UncivGame() {
         super.create()
         enforceWebInputDefaults()
         val startedJsTests = WebJsTestRunner.maybeStart()
-        if (!startedJsTests) {
+        val startedMpProbe = if (!startedJsTests) WebMultiplayerProbeRunner.maybeStart(this) else false
+        if (!startedJsTests && !startedMpProbe) {
             WebValidationRunner.maybeStart(this)
         }
     }
