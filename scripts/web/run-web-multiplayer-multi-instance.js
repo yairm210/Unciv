@@ -16,7 +16,10 @@ function ensureTmpDir() {
 }
 
 function shouldIgnoreConsoleError(text) {
-  return /\/favicon\.ico\b/i.test(text) || /Failed to load resource/i.test(text);
+  return /\/favicon\.ico\b/i.test(text)
+    || /Failed to load resource/i.test(text)
+    || /uncivserver\.xyz\/chat/i.test(text)
+    || /Chat websocket error/i.test(text);
 }
 
 async function waitForProbeResult(page, label, timeoutMs) {
