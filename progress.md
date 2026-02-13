@@ -1009,3 +1009,4 @@
 2026-02-13T12:24:28Z | triage | identified multiplayer short-run false negatives due EADDRINUSE on test ports; switching to unique clean ports | in_progress | run clean mp multi-instance headless
 2026-02-13T12:24:57Z | validation | clean-port multiplayer multi-instance headless run passed (host+guest done, turn sync + bidirectional chat true, no page/console errors) | success | finalize status, run quick pages smoke, stage commit
 2026-02-13T12:25:44Z | verify | pages smoke curl checks passed (200) for /unciv-web/, /unciv-web/index.html, /unciv-web/docs/; current live root serves docs content | done | keep docs/game path split follow-up in workflow/site config
+2026-02-13T12:49:22Z | fix | made multiplayer orchestrator boot call deterministic via dedicated __uncivProbeBootInvoked flag | done | rerun clean multiplayer gate

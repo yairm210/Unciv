@@ -798,6 +798,17 @@ object WebValidationRunner {
                             continue
                         }
                         if (nextTurnButton.isDisabled) {
+                            val actionLabels = collectUnitActionLabels(screen)
+                            if (nextTurnButton.isNextUnitAction() && actionLabels == "[]") {
+                                Log.debug(
+                                    "web-validation switching unit due empty action table turn=%s attempts=%s",
+                                    beforeTurn,
+                                    attempts,
+                                )
+                                screen.switchToNextUnit(resetDue = false)
+                                waitFrames(uiWaitFast)
+                                continue
+                            }
                             if (screen.hasOpenPopups()) {
                                 Log.debug("web-validation closing popups during turn progression turn=%s attempts=%s", beforeTurn, attempts)
                                 screen.closeAllPopups()
@@ -810,7 +821,7 @@ object WebValidationRunner {
                                     attempts,
                                     nextTurnButton.isNextUnitAction(),
                                     screen.isPlayersTurn,
-                                    collectUnitActionLabels(screen),
+                                    actionLabels,
                                 )
                             }
                             waitFrames(uiWaitFast)

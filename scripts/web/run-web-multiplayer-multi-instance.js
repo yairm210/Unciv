@@ -77,8 +77,8 @@ async function startMainOnce(page, label, timeoutMs) {
   while (Date.now() - startedAt <= timeoutMs) {
     const started = await page.evaluate(() => {
       if (typeof window.main !== 'function') return false;
-      if (window.__uncivBootStarted) return true;
-      window.__uncivBootStarted = true;
+      if (window.__uncivProbeBootInvoked) return true;
+      window.__uncivProbeBootInvoked = true;
       window.main();
       return true;
     });
