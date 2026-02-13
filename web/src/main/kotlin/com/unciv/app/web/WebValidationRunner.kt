@@ -299,6 +299,7 @@ object WebValidationRunner {
                 gameParameters.players = arrayListOf(
                     Player(playerType = PlayerType.Human),
                     Player(playerType = PlayerType.AI),
+                    Player(playerType = PlayerType.AI),
                 )
                 gameParameters.isOnlineMultiplayer = false
                 gameParameters.randomNumberOfCityStates = false

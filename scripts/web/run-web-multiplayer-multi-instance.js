@@ -66,6 +66,7 @@ async function waitForProbeState(page, label, timeoutMs, isSatisfied) {
     if (state.error) {
       throw new Error(`[${label}] probe error: ${state.error}`);
     }
+    if (state.json) return state;
     if (isSatisfied(state)) return state;
     await page.waitForTimeout(120);
   }

@@ -1021,3 +1021,5 @@
 2026-02-13T14:28:30Z | validation | headless phase4-full validation passed after click-loop/mp fixes (12/12 pass, mods+multiplayer+external links green) | success | run headless phase1 and multi-instance final checks
 2026-02-13T14:28:30Z | validation | headless phase1 validation passed after click-loop tuning (UI click core: found city+construction+tech+10 turns PASS) | success | commit and push
 2026-02-13T14:28:30Z | validation | headless multiplayer multi-instance passed after webtest boot guard/orchestrator fixes (host+guest turn sync + bidirectional chat PASS) | success | finalize commit and push
+2026-02-13T14:49:38Z | fix | prevented early UI click-loop victory regressions by adding a third player (extra AI) in click-flow test setup | done | rebuild and rerun headless phase1 + phase4-full + mp multi
+2026-02-13T15:06:28Z | fix | multiplayer orchestrator waitForProbeState now short-circuits when result JSON already present (prevents false timeout on early done state) | done | rerun clean headless multi-instance
