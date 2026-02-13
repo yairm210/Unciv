@@ -81,12 +81,12 @@ jobs:
 
       - name: Run web validation (phase1 baseline)
         run: |
-          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase1 WEB_BASE_URL=http://127.0.0.1:18080 \
+          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase1 WEB_BASE_URL=http://127.0.0.1:18080 WEB_VALIDATION_STARTUP_TIMEOUT_MS=45000 \
           node scripts/web/run-web-validation.js
 
       - name: Run web validation (phase4-full)
         run: |
-          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase4-full WEB_BASE_URL=http://127.0.0.1:18080 \
+          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase4-full WEB_BASE_URL=http://127.0.0.1:18080 WEB_VALIDATION_STARTUP_TIMEOUT_MS=45000 \
           WEB_MP_SERVER=http://127.0.0.1:19090 \
           WEB_MOD_ZIP_URL=http://127.0.0.1:18080/webtest/mods/test-mod.zip \
           node scripts/web/run-web-validation.js
@@ -229,7 +229,7 @@ jobs:
 
       - name: Run phase4-alpha gameplay validation
         run: |
-          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase4-alpha WEB_BASE_URL=http://127.0.0.1:18080 \
+          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase4-alpha WEB_BASE_URL=http://127.0.0.1:18080 WEB_VALIDATION_STARTUP_TIMEOUT_MS=45000 \
           node scripts/web/run-web-validation.js
 
       - name: Publish phase4-alpha summary
@@ -281,7 +281,7 @@ jobs:
 
       - name: Run phase4-beta validation
         run: |
-          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase4-beta WEB_BASE_URL=http://127.0.0.1:18080 WEB_VALIDATION_TIMEOUT_MS=600000 \
+          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase4-beta WEB_BASE_URL=http://127.0.0.1:18080 WEB_VALIDATION_TIMEOUT_MS=600000 WEB_VALIDATION_STARTUP_TIMEOUT_MS=45000 \
           WEB_MOD_ZIP_URL=http://127.0.0.1:18080/webtest/mods/test-mod.zip \
           node scripts/web/run-web-validation.js
 
@@ -339,7 +339,7 @@ jobs:
 
       - name: Run phase4-full validation
         run: |
-          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase4-full WEB_BASE_URL=http://127.0.0.1:18080 WEB_VALIDATION_TIMEOUT_MS=600000 \
+          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase4-full WEB_BASE_URL=http://127.0.0.1:18080 WEB_VALIDATION_TIMEOUT_MS=600000 WEB_VALIDATION_STARTUP_TIMEOUT_MS=45000 \
           WEB_MP_SERVER=http://127.0.0.1:19090 \
           WEB_MOD_ZIP_URL=http://127.0.0.1:18080/webtest/mods/test-mod.zip \
           node scripts/web/run-web-validation.js
@@ -399,7 +399,7 @@ jobs:
 
       - name: Run multi-instance multiplayer gate
         run: |
-          env HEADLESS=true WEB_BASE_URL=http://127.0.0.1:18080 WEB_MP_SERVER=http://127.0.0.1:19090 WEB_PROFILE=phase4-full WEB_MP_PROBE_TIMEOUT_MS=300000 \
+          env HEADLESS=true WEB_BASE_URL=http://127.0.0.1:18080 WEB_MP_SERVER=http://127.0.0.1:19090 WEB_PROFILE=phase4-full WEB_MP_PROBE_TIMEOUT_MS=180000 WEB_MP_PROBE_STARTUP_TIMEOUT_MS=30000 \
           node scripts/web/run-web-multiplayer-multi-instance.js
 
       - name: Publish multiplayer summary

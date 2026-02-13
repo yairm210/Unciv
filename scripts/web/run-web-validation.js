@@ -17,6 +17,7 @@ async function main() {
   const effectiveProfile = webProfile.length > 0 ? webProfile : 'phase4-full';
   const browserName = String(process.env.WEB_BROWSER || 'chromium').toLowerCase();
   const timeoutMs = Number(process.env.WEB_VALIDATION_TIMEOUT_MS || '430000');
+  const startupTimeoutMs = Number(process.env.WEB_VALIDATION_STARTUP_TIMEOUT_MS || '45000');
   const headless = parseBoolEnv(process.env.HEADLESS, true);
   const debugState = String(process.env.WEB_VALIDATION_DEBUG || '') === '1';
   const mpServer = String(process.env.WEB_MP_SERVER || '').trim();
@@ -114,6 +115,7 @@ async function main() {
       if (!landedUrl.includes('webtest=1')) {
         await page.goto(targetUrl.toString(), { waitUntil: 'domcontentloaded', timeout: 120000 });
       }
+      const attemptStartedAt = Date.now();
       const deadline = Date.now() + timeoutMs;
       while (Date.now() < deadline) {
         if (!state || !state.validationState) {
@@ -159,6 +161,9 @@ async function main() {
         }
         if (state.validationError || state.validationResultJson || state.validationState === 'done') {
           completed = true;
+          break;
+        }
+        if (!state.validationState && (Date.now() - attemptStartedAt) > startupTimeoutMs) {
           break;
         }
         if (pageErrors.length > 0) {

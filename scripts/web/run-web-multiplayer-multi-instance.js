@@ -96,6 +96,7 @@ async function main() {
   const mpServer = String(process.env.WEB_MP_SERVER || 'http://127.0.0.1:19090').trim();
   const webProfile = String(process.env.WEB_PROFILE || 'phase4-full').trim() || 'phase4-full';
   const timeoutMs = Number(process.env.WEB_MP_PROBE_TIMEOUT_MS || '300000');
+  const startupTimeoutMs = Number(process.env.WEB_MP_PROBE_STARTUP_TIMEOUT_MS || String(Math.max(15000, Math.min(45000, Math.floor(timeoutMs / 4)))));
   const headless = parseBool(process.env.HEADLESS, true);
   const gameId = randomUUID();
 
@@ -178,7 +179,7 @@ async function main() {
     await waitForProbeState(
       hostPage,
       'host',
-      timeoutMs,
+      startupTimeoutMs,
       (state) => String(state.state || '').startsWith('running:'),
     );
     await guestPage.goto(guestUrl.toString(), { waitUntil: 'domcontentloaded', timeout: 120000 });
@@ -186,7 +187,7 @@ async function main() {
     await waitForProbeState(
       guestPage,
       'guest',
-      timeoutMs,
+      startupTimeoutMs,
       (state) => String(state.state || '').startsWith('running:'),
     );
 
