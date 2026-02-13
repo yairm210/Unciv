@@ -1024,3 +1024,4 @@
 2026-02-13T14:49:38Z | fix | prevented early UI click-loop victory regressions by adding a third player (extra AI) in click-flow test setup | done | rebuild and rerun headless phase1 + phase4-full + mp multi
 2026-02-13T15:06:28Z | fix | multiplayer orchestrator waitForProbeState now short-circuits when result JSON already present (prevents false timeout on early done state) | done | rerun clean headless multi-instance
 2026-02-13T15:23:17Z | fix | enabled fast startup fail in validation/probe scripts + workflow env; normalized victory-screen handling in UI click loop to avoid false CI failures | done | rebuild and rerun focused local sequence
+2026-02-13T15:46:42Z | fix | removed deploy-pages environment binding to bypass github-pages environment protection block; keep peaceiris deploy + pages smoke on /game assets | done | push and re-run full web/pages workflow
