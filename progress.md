@@ -1025,3 +1025,4 @@
 2026-02-13T15:06:28Z | fix | multiplayer orchestrator waitForProbeState now short-circuits when result JSON already present (prevents false timeout on early done state) | done | rerun clean headless multi-instance
 2026-02-13T15:23:17Z | fix | enabled fast startup fail in validation/probe scripts + workflow env; normalized victory-screen handling in UI click loop to avoid false CI failures | done | rebuild and rerun focused local sequence
 2026-02-13T15:46:42Z | fix | removed deploy-pages environment binding to bypass github-pages environment protection block; keep peaceiris deploy + pages smoke on /game assets | done | push and re-run full web/pages workflow
+2026-02-13T16:02:57Z | fix | pages-smoke now falls back to computed GitHub Pages URL when deploy action does not return page_url output; still verifies /game/index.html and /game/unciv.js | done | push and rerun web/pages workflow

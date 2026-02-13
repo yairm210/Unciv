@@ -453,8 +453,9 @@ jobs:
         run: |
           page_url="${{ needs.deploy-pages.outputs.page_url }}"
           if [ -z "$page_url" ]; then
-            echo "Missing page URL output from deploy-pages job"
-            exit 1
+            owner="$(echo "${GITHUB_REPOSITORY}" | cut -d'/' -f1)"
+            repo="$(echo "${GITHUB_REPOSITORY}" | cut -d'/' -f2)"
+            page_url="https://${owner}.github.io/${repo}"
           fi
           echo "Using page URL: $page_url"
           curl -fSL --retry 10 --retry-delay 5 --retry-all-errors "${page_url%/}/game/index.html" -o /tmp/pages-game-index.html
