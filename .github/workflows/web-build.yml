@@ -399,7 +399,7 @@ jobs:
 
       - name: Run multi-instance multiplayer gate
         run: |
-          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_MP_SERVER=http://127.0.0.1:19090 WEB_PROFILE=phase4-full WEB_MP_PROBE_TIMEOUT_MS=180000 WEB_MP_PROBE_STARTUP_TIMEOUT_MS=90000 \
+          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_MP_SERVER=http://127.0.0.1:19090 WEB_PROFILE=phase4-full WEB_MP_PROBE_TIMEOUT_MS=180000 \
           node scripts/web/run-web-multiplayer-multi-instance.js
 
       - name: Publish multiplayer summary

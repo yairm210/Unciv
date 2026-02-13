@@ -55,29 +55,6 @@ async function waitForProbeResult(page, label, timeoutMs) {
   throw new Error(`[${label}] timed out after ${timeoutMs}ms waiting for probe completion`);
 }
 
-async function waitForProbeState(page, label, timeoutMs, isSatisfied) {
-  const startedAt = Date.now();
-  let lastState = null;
-  while (Date.now() - startedAt <= timeoutMs) {
-    const state = await page.evaluate(() => ({
-      state: window.__uncivMpProbeState || null,
-      error: window.__uncivMpProbeError || null,
-      json: window.__uncivMpProbeResultJson || null,
-    }));
-    if (state.state && state.state !== lastState) {
-      process.stdout.write(`[${label}] state=${state.state}\n`);
-      lastState = state.state;
-    }
-    if (state.error) {
-      throw new Error(`[${label}] probe error: ${state.error}`);
-    }
-    if (state.json) return state;
-    if (isSatisfied(state)) return state;
-    await page.waitForTimeout(120);
-  }
-  throw new Error(`[${label}] timed out after ${timeoutMs}ms waiting for probe state`);
-}
-
 async function startMainOnce(page, label, timeoutMs) {
   const startedAt = Date.now();
   while (Date.now() - startedAt <= timeoutMs) {
@@ -102,7 +79,6 @@ async function main() {
   const mpServer = String(process.env.WEB_MP_SERVER || 'http://127.0.0.1:19090').trim();
   const webProfile = String(process.env.WEB_PROFILE || 'phase4-full').trim() || 'phase4-full';
   const timeoutMs = Number(process.env.WEB_MP_PROBE_TIMEOUT_MS || '300000');
-  const startupTimeoutMs = Number(process.env.WEB_MP_PROBE_STARTUP_TIMEOUT_MS || String(Math.max(15000, Math.min(90000, Math.floor(timeoutMs / 3)))));
   const headless = parseBool(process.env.HEADLESS, true);
   const gameId = randomUUID();
 
@@ -196,12 +172,6 @@ async function main() {
 
     await hostPage.goto(hostUrl.toString(), { waitUntil: 'domcontentloaded', timeout: 120000 });
     await startMainOnce(hostPage, 'host', Math.min(20000, timeoutMs));
-    await waitForProbeState(
-      hostPage,
-      'host',
-      startupTimeoutMs,
-      (state) => String(state.state || '').startsWith('running:'),
-    );
     await guestPage.goto(guestUrl.toString(), { waitUntil: 'domcontentloaded', timeout: 120000 });
     await startMainOnce(guestPage, 'guest', Math.min(20000, timeoutMs));
 
