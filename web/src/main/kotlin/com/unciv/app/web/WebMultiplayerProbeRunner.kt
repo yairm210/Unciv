@@ -1,5 +1,6 @@
 package com.unciv.app.web
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.utils.Base64Coder
 import com.unciv.logic.GameStarter
 import com.unciv.logic.civilization.PlayerType
@@ -11,9 +12,10 @@ import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.metadata.Player
 import com.unciv.platform.PlatformCapabilities
 import com.unciv.utils.Concurrency
-import com.unciv.utils.delayMillis
 import java.time.Instant
 import java.util.UUID
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 object WebMultiplayerProbeRunner {
     private const val defaultTimeoutMs = 240000L
@@ -142,6 +144,7 @@ object WebMultiplayerProbeRunner {
             var nextPingAt = 0L
 
             WebMultiplayerProbeInterop.publishState("running:host:await-guest")
+            var nextDownloadPollAt = 0L
             while (System.currentTimeMillis() < deadlineMs) {
                 if (chat.lastError != null) {
                     error("Host chat socket error: ${chat.lastError}")
@@ -156,7 +159,7 @@ object WebMultiplayerProbeRunner {
                 ownChatEchoObserved = ownChatEchoObserved || chatContains(chat, hostPingToken)
                 peerChatObserved = peerChatObserved || chatContains(chat, guestAckToken)
 
-                if (!turnSyncObserved) {
+                if (!turnSyncObserved && now >= nextDownloadPollAt) {
                     val remote = runCatching { hostServer.tryDownloadGame(gameId) }.getOrNull()
                     if (remote != null) {
                         val changedTurn = remote.turns != localTurnBefore
@@ -167,10 +170,11 @@ object WebMultiplayerProbeRunner {
                             localPlayerAfter = remote.currentPlayer
                         }
                     }
+                    nextDownloadPollAt = now + 500
                 }
 
                 if (turnSyncObserved && peerChatObserved && ownChatEchoObserved) break
-                delayMillis(250)
+                nextFrame()
             }
 
             if (!turnSyncObserved || !peerChatObserved || !ownChatEchoObserved) {
@@ -215,15 +219,18 @@ object WebMultiplayerProbeRunner {
             WebMultiplayerProbeInterop.publishState("running:guest:await-host")
             var downloaded = runCatching { guestServer.tryDownloadGame(gameId) }.getOrNull()
             var peerChatObserved = chatContains(chat, hostPingToken)
+            var nextDownloadPollAt = 0L
             while (System.currentTimeMillis() < deadlineMs && (downloaded == null || !peerChatObserved)) {
                 if (chat.lastError != null) {
                     error("Guest chat socket error: ${chat.lastError}")
                 }
-                if (downloaded == null) {
+                val now = System.currentTimeMillis()
+                if (downloaded == null && now >= nextDownloadPollAt) {
                     downloaded = runCatching { guestServer.tryDownloadGame(gameId) }.getOrNull()
+                    nextDownloadPollAt = now + 500
                 }
                 peerChatObserved = peerChatObserved || chatContains(chat, hostPingToken)
-                delayMillis(250)
+                nextFrame()
             }
 
             if (downloaded == null) error("Guest probe failed to download host game before timeout.")
@@ -257,7 +264,7 @@ object WebMultiplayerProbeRunner {
                 }
                 ownChatEchoObserved = ownChatEchoObserved || chatContains(chat, guestAckToken)
                 if (ownChatEchoObserved) break
-                delayMillis(200)
+                nextFrame()
             }
             if (!ownChatEchoObserved) error("Guest probe did not observe its own chat ack echo.")
 
@@ -315,7 +322,7 @@ object WebMultiplayerProbeRunner {
         while (System.currentTimeMillis() < deadlineMs) {
             if (chat.open) return
             if (chat.lastError != null) error("Chat socket failed before open: ${chat.lastError}")
-            delayMillis(100)
+            nextFrame()
         }
         error("Timed out waiting for chat websocket to open.")
     }
@@ -345,9 +352,27 @@ object WebMultiplayerProbeRunner {
                 WebMultiplayerProbeSocketInterop.send(socket, payload)
                 return
             }
-            delayMillis(50)
+            nextFrame()
         }
         error("Timed out waiting for chat socket readyState=OPEN.")
+    }
+
+    private suspend fun nextFrame() {
+        suspendCoroutine { continuation ->
+            val app = Gdx.app
+            var resumed = false
+            fun resumeOnce() {
+                if (resumed) return
+                resumed = true
+                continuation.resume(Unit)
+            }
+            if (app == null) {
+                WebMultiplayerProbeInterop.schedule({ resumeOnce() }, 16)
+            } else {
+                app.postRunnable { resumeOnce() }
+                WebMultiplayerProbeInterop.schedule({ resumeOnce() }, 16)
+            }
+        }
     }
 
     private fun closeChat(chat: ProbeChatConnection) {

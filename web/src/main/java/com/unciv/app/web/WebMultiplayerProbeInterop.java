@@ -54,4 +54,9 @@ final class WebMultiplayerProbeInterop {
                             + "window.__uncivMpProbeResultJson = json;"
                             + "window.__uncivMpProbeState = 'done';")
     static native void publishResult(String json);
+
+    @JSBody(
+            params = {"runnable", "delayMs"},
+            script = "setTimeout(function(){ runnable.$run(); }, delayMs);")
+    static native void schedule(Runnable runnable, int delayMs);
 }
