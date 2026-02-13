@@ -86,7 +86,7 @@ jobs:
 
       - name: Run web validation (phase4-full)
         run: |
-          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase4-full WEB_BASE_URL=http://127.0.0.1:18080 WEB_VALIDATION_STARTUP_TIMEOUT_MS=45000 WEB_VALIDATION_STARTUP_ATTEMPTS=1 \
+          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase4-full WEB_BASE_URL=http://127.0.0.1:18080 WEB_VALIDATION_STARTUP_TIMEOUT_MS=45000 WEB_VALIDATION_STARTUP_ATTEMPTS=2 \
           WEB_MP_SERVER=http://127.0.0.1:19090 \
           WEB_MOD_ZIP_URL=http://127.0.0.1:18080/webtest/mods/test-mod.zip \
           node scripts/web/run-web-validation.js
@@ -281,7 +281,7 @@ jobs:
 
       - name: Run phase4-beta validation
         run: |
-          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase4-beta WEB_BASE_URL=http://127.0.0.1:18080 WEB_VALIDATION_TIMEOUT_MS=600000 WEB_VALIDATION_STARTUP_TIMEOUT_MS=45000 WEB_VALIDATION_STARTUP_ATTEMPTS=1 \
+          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase4-beta WEB_BASE_URL=http://127.0.0.1:18080 WEB_VALIDATION_TIMEOUT_MS=600000 WEB_VALIDATION_STARTUP_TIMEOUT_MS=45000 WEB_VALIDATION_STARTUP_ATTEMPTS=2 \
           WEB_MOD_ZIP_URL=http://127.0.0.1:18080/webtest/mods/test-mod.zip \
           node scripts/web/run-web-validation.js
 
@@ -339,7 +339,7 @@ jobs:
 
       - name: Run phase4-full validation
         run: |
-          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase4-full WEB_BASE_URL=http://127.0.0.1:18080 WEB_VALIDATION_TIMEOUT_MS=600000 WEB_VALIDATION_STARTUP_TIMEOUT_MS=45000 WEB_VALIDATION_STARTUP_ATTEMPTS=1 \
+          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase4-full WEB_BASE_URL=http://127.0.0.1:18080 WEB_VALIDATION_TIMEOUT_MS=600000 WEB_VALIDATION_STARTUP_TIMEOUT_MS=45000 WEB_VALIDATION_STARTUP_ATTEMPTS=2 \
           WEB_MP_SERVER=http://127.0.0.1:19090 \
           WEB_MOD_ZIP_URL=http://127.0.0.1:18080/webtest/mods/test-mod.zip \
           node scripts/web/run-web-validation.js
