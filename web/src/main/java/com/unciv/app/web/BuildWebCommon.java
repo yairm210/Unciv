@@ -122,6 +122,7 @@ final class BuildWebCommon {
 
         cleanupOutput(outputPath);
         ensureDirectory(outputPath);
+        ensureDirectory(webappPath);
         ensureDirectory(webResourcesPath);
 
         TeaBuildConfiguration configuration = new TeaBuildConfiguration();

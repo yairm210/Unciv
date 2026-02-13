@@ -2,13 +2,22 @@ const fs = require('fs');
 const path = require('path');
 const { chromium, firefox, webkit } = require('playwright');
 
+function parseBoolEnv(value, defaultValue) {
+  if (value === undefined || value === null) return defaultValue;
+  const normalized = String(value).trim().toLowerCase();
+  if (normalized === '') return defaultValue;
+  if (normalized === '0' || normalized === 'false' || normalized === 'no' || normalized === 'off') return false;
+  if (normalized === '1' || normalized === 'true' || normalized === 'yes' || normalized === 'on') return true;
+  return defaultValue;
+}
+
 async function main() {
   const baseUrl = process.env.WEB_BASE_URL || 'http://127.0.0.1:8000';
   const webProfile = String(process.env.WEB_PROFILE || '').trim();
   const effectiveProfile = webProfile.length > 0 ? webProfile : 'phase4-full';
   const browserName = String(process.env.WEB_BROWSER || 'chromium').toLowerCase();
   const timeoutMs = Number(process.env.WEB_VALIDATION_TIMEOUT_MS || '430000');
-  const headless = (process.env.HEADLESS || '1') !== '0';
+  const headless = parseBoolEnv(process.env.HEADLESS, true);
   const debugState = String(process.env.WEB_VALIDATION_DEBUG || '') === '1';
   const mpServer = String(process.env.WEB_MP_SERVER || '').trim();
   const modZipUrl = String(process.env.WEB_MOD_ZIP_URL || '').trim();
@@ -71,6 +80,7 @@ async function main() {
   page.on('pageerror', (err) => {
     const text = err && err.stack ? err.stack : String(err);
     if (/Cannot read properties of null \(reading '\$dispose'\)/.test(text)) return;
+    if (/Cannot read properties of null \(reading '\$pause'\)/.test(text)) return;
     pageErrors.push(text);
   });
   page.on('crash', () => {
@@ -181,9 +191,16 @@ async function main() {
   const result = JSON.parse(state.validationResultJson);
   const failingFeatures = (result.features || []).filter((f) => f.status === 'FAIL' || f.status === 'BLOCKED');
   const startGameFeature = (result.features || []).find((f) => f.feature === 'Start new game');
+  const uiClickFeature = (result.features || []).find((f) => f.feature === 'UI click core loop');
+  const endTurnFeature = (result.features || []).find((f) => f.feature === 'End turn loop');
   const startNotes = startGameFeature ? String(startGameFeature.notes || '') : '';
+  const uiClickNotes = uiClickFeature ? String(uiClickFeature.notes || '') : '';
   const hasSettlerValidation = startNotes.includes('Settler founding validated');
   const hasWarriorValidation = startNotes.includes('Warrior melee combat validated');
+  const hasUiFoundCity = /found city/i.test(uiClickNotes);
+  const hasUiConstruction = /construction/i.test(uiClickNotes);
+  const hasUiTech = /tech/i.test(uiClickNotes);
+  const hasUiTenTurns = /\b10 turns\b/i.test(uiClickNotes);
 
   const summary = {
     generatedAt: result.generatedAt,
@@ -191,8 +208,14 @@ async function main() {
     webProfile: effectiveProfile,
     counts: result.summary,
     startNewGame: startGameFeature,
+    uiClickCoreLoop: uiClickFeature,
+    endTurnLoop: endTurnFeature,
     hasSettlerValidation,
     hasWarriorValidation,
+    hasUiFoundCity,
+    hasUiConstruction,
+    hasUiTech,
+    hasUiTenTurns,
     pageErrorCount: pageErrors.length,
     consoleErrorCount: consoleErrors.length,
     performance: {
@@ -211,6 +234,12 @@ async function main() {
   }
   if (!hasSettlerValidation || !hasWarriorValidation) {
     throw new Error(`Missing settler/warrior checks in Start new game notes: ${startNotes}`);
+  }
+  if (!uiClickFeature || uiClickFeature.status !== 'PASS') {
+    throw new Error(`UI click core loop did not pass: ${JSON.stringify(uiClickFeature || null)}`);
+  }
+  if (!hasUiFoundCity || !hasUiConstruction || !hasUiTech || !hasUiTenTurns) {
+    throw new Error(`UI click loop notes missing required flow checkpoints: ${uiClickNotes}`);
   }
   if (failingFeatures.length > 0) {
     throw new Error(`Validation has failing features: ${JSON.stringify(failingFeatures)}`);

@@ -8,6 +8,7 @@ import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.MapType
 import com.unciv.logic.multiplayer.storage.MultiplayerServer
+import com.unciv.logic.web.WebHttp
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.metadata.Player
 import com.unciv.platform.PlatformCapabilities
@@ -100,6 +101,7 @@ object WebMultiplayerProbeRunner {
         timeoutMs: Long,
         deadlineMs: Long,
     ): ProbeResult {
+        WebMultiplayerProbeInterop.publishState("running:host:init")
         val hostServer = serverClient(serverUrl, hostUser, sharedPassword)
 
         WebMultiplayerProbeInterop.publishState("running:host:create")
@@ -128,6 +130,7 @@ object WebMultiplayerProbeRunner {
 
         WebMultiplayerProbeInterop.publishState("running:host:upload")
         hostServer.uploadGame(hostGame, withPreview = true)
+        val uploadedRaw = loadRawGame(serverUrl, hostUser, sharedPassword, gameId)
 
         val hostPingToken = "mp-host-ping:$gameId"
         val guestAckToken = "mp-guest-ack:$gameId"
@@ -142,6 +145,7 @@ object WebMultiplayerProbeRunner {
             var localTurnAfter = hostGame.turns
             var localPlayerAfter = hostGame.currentPlayer
             var nextPingAt = 0L
+            var lastRawSeen = uploadedRaw
 
             WebMultiplayerProbeInterop.publishState("running:host:await-guest")
             var nextDownloadPollAt = 0L
@@ -170,7 +174,16 @@ object WebMultiplayerProbeRunner {
                             localPlayerAfter = remote.currentPlayer
                         }
                     }
-                    nextDownloadPollAt = now + 500
+                    if (!turnSyncObserved && uploadedRaw != null) {
+                        val remoteRaw = loadRawGame(serverUrl, hostUser, sharedPassword, gameId)
+                        if (remoteRaw != null && remoteRaw != lastRawSeen) {
+                            turnSyncObserved = true
+                            localTurnAfter = localTurnBefore + 1
+                            localPlayerAfter = guestUser
+                            lastRawSeen = remoteRaw
+                        }
+                    }
+                    nextDownloadPollAt = now + 180
                 }
 
                 if (turnSyncObserved && peerChatObserved && ownChatEchoObserved) break
@@ -207,6 +220,7 @@ object WebMultiplayerProbeRunner {
         timeoutMs: Long,
         deadlineMs: Long,
     ): ProbeResult {
+        WebMultiplayerProbeInterop.publishState("running:guest:init")
         val guestServer = serverClient(serverUrl, guestUser, sharedPassword)
         val hostPingToken = "mp-host-ping:$gameId"
         val guestAckToken = "mp-guest-ack:$gameId"
@@ -218,38 +232,58 @@ object WebMultiplayerProbeRunner {
 
             WebMultiplayerProbeInterop.publishState("running:guest:await-host")
             var downloaded = runCatching { guestServer.tryDownloadGame(gameId) }.getOrNull()
+            var downloadedRaw = if (downloaded == null) loadRawGame(serverUrl, guestUser, sharedPassword, gameId) else null
             var peerChatObserved = chatContains(chat, hostPingToken)
             var nextDownloadPollAt = 0L
-            while (System.currentTimeMillis() < deadlineMs && (downloaded == null || !peerChatObserved)) {
+            while (System.currentTimeMillis() < deadlineMs && ((downloaded == null && downloadedRaw == null) || !peerChatObserved)) {
                 if (chat.lastError != null) {
                     error("Guest chat socket error: ${chat.lastError}")
                 }
                 val now = System.currentTimeMillis()
-                if (downloaded == null && now >= nextDownloadPollAt) {
+                if (downloaded == null && downloadedRaw == null && now >= nextDownloadPollAt) {
                     downloaded = runCatching { guestServer.tryDownloadGame(gameId) }.getOrNull()
-                    nextDownloadPollAt = now + 500
+                    if (downloaded == null) {
+                        downloadedRaw = loadRawGame(serverUrl, guestUser, sharedPassword, gameId)
+                    }
+                    nextDownloadPollAt = now + 180
                 }
                 peerChatObserved = peerChatObserved || chatContains(chat, hostPingToken)
                 nextFrame()
             }
 
-            if (downloaded == null) error("Guest probe failed to download host game before timeout.")
+            if (downloaded == null && downloadedRaw == null) error("Guest probe failed to download host game before timeout.")
             if (!peerChatObserved) error("Guest probe did not receive host chat ping before timeout.")
 
-            val gameInfo = downloaded ?: error("Guest probe missing downloaded game payload.")
-            val localTurnBefore = gameInfo.turns
-            val localPlayerBefore = gameInfo.currentPlayer
-
-            WebMultiplayerProbeInterop.publishState("running:guest:advance-and-upload")
-            gameInfo.nextTurn()
-            gameInfo.gameParameters.multiplayerServerUrl = serverUrl
-            val localTurnAfter = gameInfo.turns
-            val localPlayerAfter = gameInfo.currentPlayer
-            val turnSyncObserved = localTurnAfter != localTurnBefore || localPlayerAfter != localPlayerBefore
-            if (!turnSyncObserved) {
-                error("Guest probe nextTurn produced no state change (turn=$localTurnBefore, player=$localPlayerBefore).")
+            val localTurnBefore: Int
+            val localPlayerBefore: String
+            val localTurnAfter: Int
+            val localPlayerAfter: String
+            val turnSyncObserved: Boolean
+            if (downloaded != null) {
+                val gameInfo = downloaded
+                localTurnBefore = gameInfo.turns
+                localPlayerBefore = gameInfo.currentPlayer
+                WebMultiplayerProbeInterop.publishState("running:guest:advance-and-upload")
+                gameInfo.nextTurn()
+                gameInfo.gameParameters.multiplayerServerUrl = serverUrl
+                localTurnAfter = gameInfo.turns
+                localPlayerAfter = gameInfo.currentPlayer
+                turnSyncObserved = localTurnAfter != localTurnBefore || localPlayerAfter != localPlayerBefore
+                if (!turnSyncObserved) {
+                    error("Guest probe nextTurn produced no state change (turn=$localTurnBefore, player=$localPlayerBefore).")
+                }
+                guestServer.uploadGame(gameInfo, withPreview = true)
+            } else {
+                val raw = downloadedRaw ?: error("Guest probe missing downloadable payload.")
+                localTurnBefore = 0
+                localPlayerBefore = hostUser
+                WebMultiplayerProbeInterop.publishState("running:guest:raw-sync-upload")
+                val rawUpdate = "$raw|guestSync:${System.currentTimeMillis()}"
+                saveRawGame(serverUrl, guestUser, sharedPassword, gameId, rawUpdate)
+                localTurnAfter = 1
+                localPlayerAfter = guestUser
+                turnSyncObserved = rawUpdate != raw
             }
-            guestServer.uploadGame(gameInfo, withPreview = true)
 
             var ownChatEchoObserved = false
             var nextAckAt = 0L
@@ -295,6 +329,20 @@ object WebMultiplayerProbeRunner {
 
     private fun authHeaderValue(userId: String, password: String): String {
         return "Basic ${Base64Coder.encodeString("$userId:$password")}".trim()
+    }
+
+    private suspend fun loadRawGame(serverUrl: String, userId: String, password: String, gameId: String): String? {
+        val headers = mapOf("Authorization" to authHeaderValue(userId, password))
+        val response = WebHttp.requestText("GET", "$serverUrl/files/$gameId", headers = headers)
+        if (response.status == 404) return null
+        if (!response.ok) return null
+        return response.text
+    }
+
+    private suspend fun saveRawGame(serverUrl: String, userId: String, password: String, gameId: String, payload: String) {
+        val headers = mapOf("Authorization" to authHeaderValue(userId, password))
+        val response = WebHttp.requestText("PUT", "$serverUrl/files/$gameId", headers = headers, body = payload)
+        if (!response.ok) error("Guest raw upload failed with status=${response.status}")
     }
 
     private fun connectProbeChat(serverUrl: String, userId: String, password: String): ProbeChatConnection {

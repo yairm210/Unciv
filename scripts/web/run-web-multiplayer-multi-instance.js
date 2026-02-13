@@ -45,9 +45,47 @@ async function waitForProbeResult(page, label, timeoutMs) {
       }
       return parsed;
     }
-    await page.waitForTimeout(400);
+    await page.waitForTimeout(150);
   }
   throw new Error(`[${label}] timed out after ${timeoutMs}ms waiting for probe completion`);
+}
+
+async function waitForProbeState(page, label, timeoutMs, isSatisfied) {
+  const startedAt = Date.now();
+  let lastState = null;
+  while (Date.now() - startedAt <= timeoutMs) {
+    const state = await page.evaluate(() => ({
+      state: window.__uncivMpProbeState || null,
+      error: window.__uncivMpProbeError || null,
+      json: window.__uncivMpProbeResultJson || null,
+    }));
+    if (state.state && state.state !== lastState) {
+      process.stdout.write(`[${label}] state=${state.state}\n`);
+      lastState = state.state;
+    }
+    if (state.error) {
+      throw new Error(`[${label}] probe error: ${state.error}`);
+    }
+    if (isSatisfied(state)) return state;
+    await page.waitForTimeout(120);
+  }
+  throw new Error(`[${label}] timed out after ${timeoutMs}ms waiting for probe state`);
+}
+
+async function startMainOnce(page, label, timeoutMs) {
+  const startedAt = Date.now();
+  while (Date.now() - startedAt <= timeoutMs) {
+    const started = await page.evaluate(() => {
+      if (typeof window.main !== 'function') return false;
+      if (window.__uncivBootStarted) return true;
+      window.__uncivBootStarted = true;
+      window.main();
+      return true;
+    });
+    if (started) return;
+    await page.waitForTimeout(100);
+  }
+  throw new Error(`[${label}] window.main not available for boot within ${timeoutMs}ms`);
 }
 
 async function main() {
@@ -133,10 +171,22 @@ async function main() {
     const guestUrl = new URL(hostUrl.toString());
     guestUrl.searchParams.set('mpRole', 'guest');
 
-    await Promise.all([
-      hostPage.goto(hostUrl.toString(), { waitUntil: 'domcontentloaded', timeout: 120000 }),
-      guestPage.goto(guestUrl.toString(), { waitUntil: 'domcontentloaded', timeout: 120000 }),
-    ]);
+    await hostPage.goto(hostUrl.toString(), { waitUntil: 'domcontentloaded', timeout: 120000 });
+    await startMainOnce(hostPage, 'host', Math.min(20000, timeoutMs));
+    await waitForProbeState(
+      hostPage,
+      'host',
+      timeoutMs,
+      (state) => String(state.state || '').startsWith('running:'),
+    );
+    await guestPage.goto(guestUrl.toString(), { waitUntil: 'domcontentloaded', timeout: 120000 });
+    await startMainOnce(guestPage, 'guest', Math.min(20000, timeoutMs));
+    await waitForProbeState(
+      guestPage,
+      'guest',
+      timeoutMs,
+      (state) => String(state.state || '').startsWith('running:'),
+    );
 
     const [hostResult, guestResult] = await Promise.all([
       waitForProbeResult(hostPage, 'host', timeoutMs),

@@ -969,3 +969,43 @@
 2026-02-11T22:54:36Z | validation | focused phase4 JS suite passed (225 run/0 failures) and perf/regression gates passed with phase4-full summary | success | stage phase4 changes and commit/push
 2026-02-11T22:55:19Z | tracking | refreshed features.csv last_verified timestamps to latest phase4 gate run | done | review diff and commit
 2026-02-11T22:56:09Z | git | committed phase4 default-on profile + production gate changes (0f1e7d726) | done | push to origin/master
+2026-02-12T09:59:25Z | ci | verified latest GitHub Actions status on master after phase4 push | all required workflows green including Web Build + Pages | report residual non-blocking risks to user
+2026-02-12T10:01:55Z | triage | user reported GitHub Pages not visible; starting live deployment/settings verification | in_progress | inspect pages settings, deploy runs, and published URL
+2026-02-12T10:02:24Z | triage | Pages REST endpoint returns 404 (site not provisioned) despite green workflow | in_progress | inspect latest run jobs and deploy step behavior
+2026-02-12T10:02:59Z | triage | deploy job succeeded; extracting deploy-step logs to identify published URL/path | in_progress | inspect Deploy GitHub Pages job logs
+2026-02-12T10:03:35Z | fix | identified Pages site not provisioned (API 404) while gh-pages branch deploy succeeds | in_progress | enable repo Pages source gh-pages root and verify url
+2026-02-12T10:04:42Z | triage | read progress log before new investigation pass | done | verify repo/pages config and enable if missing
+2026-02-12T10:05:07Z | triage | verified gh auth and repo pages endpoint | active account YosefLm; pages API still 404 | enable pages source and verify URL
+2026-02-12T10:05:36Z | triage | checked remote gh-pages branch presence | branch exists on origin | provision GitHub Pages site against gh-pages root
+2026-02-12T10:06:04Z | fix | initial pages POST failed due zsh globbing on source[branch] | command error captured | rerun with quoted form fields
+2026-02-12T10:07:20Z | fix | pages poll script failed in zsh due readonly var name status | script bug captured | rerun poll with safe variable names
+2026-02-12T10:07:56Z | fix | provisioned GitHub Pages source via API and polled deploy | status built and site returns 200 at https://yoseflm.github.io/unciv-web/ | report live URL to user
+2026-02-12T10:08:21Z | verify | fetched live pages HTML root | served Unciv index.html content | close user report with live URL and refresh note
+2026-02-13T10:41:32Z | triage | user-reported black loading and stability regression after recent web validation changes | in_progress | enforce safe return-early guards and add targeted debug logging before further e2e attempts
+2026-02-13T10:42:14Z | fix | added return-early fast-fail and debug logs for UI click turn progression (button state + visible action labels) | done | rebuild and rerun container phase1 validation to capture deterministic failure or pass
+2026-02-13T10:45:11Z | validation | verified container compile after return-early/logging patch | success | run bounded phase1 web validation to avoid long hangs
+2026-02-13T10:46:54Z | validation | started full web e2e suite in tmux session web-e2e-all (build + phase1 + phase4-full + js suite + perf + regression) | in_progress | monitor tmux log and patch failures until green
+2026-02-13T10:50:22Z | fix | webBuildJs failed because TeaVM target dir web/build/dist/webapp did not exist after cleanup; now pre-created before TeaBuilder.build | done | rerun tmux full web e2e suite
+2026-02-13T11:03:12Z | fix | resolved UI click core loop infinite-spin: advanceTurnsByClicks now increments attempts on every loop iteration, including continue branches | done | rerun tmux phase1 validation and confirm fail-fast or pass
+2026-02-13T11:11:20Z | triage | quick phase1 tmux run was polluted by stale 18080 listener and corrupted /tmp/web-server.log noise; isolating quick runner on dedicated ports 18081/19091 with clean teardown/logs | done | rerun quick phase1 loop in tmux and inspect UI click core step
+2026-02-13T11:07:44Z | fix | quick-run script exited instantly because pkill pattern matched command text and killed its own shell; removed pkill preflight and kept isolated ports | done | rerun phase1 quick tmux loop and inspect click core result
+2026-02-13T11:09:40Z | fix | added popup auto-close in phase1 turn-click progression and debug trace when popups block next-turn | done | run rebuild + phase1 quick tmux validation
+2026-02-13T11:14:08Z | validation | launching tmux no-build full web gates (phase4-full + multiplayer multi-instance + js suite + perf + regression) on isolated ports 18082/19092 | in_progress | monitor for full green
+2026-02-13T11:19:45Z | validation | aborted long no-build full gate run after phase4 validation emitted no state for >5m (likely pre-state hang) | blocked | run isolated phase4-full debug loop with tighter timeout for fast signal
+2026-02-13T11:23:02Z | validation | phase4 quick run still silent due 2-attempt timeout behavior; reducing WEB_VALIDATION_TIMEOUT_MS to 60000 for faster diagnostic fail payload | in_progress | rerun phase4 quick tmux
+2026-02-13T11:27:18Z | fix | added PantheonPickerScreen click handling in UI core loop (pick belief + confirm) to prevent unexpected-screen failure during phase4 | done | rebuild web dist and rerun phase4 quick validation
+2026-02-13T11:31:40Z | validation | phase4-full quick gate passed with UI click core loop + mods + multiplayer + external links all green | success | run multiplayer multi-instance + js suite + perf/regression gates
+2026-02-13T11:36:50Z | validation | multi-instance gate failed in headed mode with TeaVM preload pageerror ( null) and host probe timeout; rerunning in CI-like headless mode | in_progress | determine if issue is headed-only or real probe regression
+2026-02-13T11:40:52Z | triage | multi-instance host probe failed (no guest ack/turn sync) in headless run; launching verbose mp-server trace to isolate download/chat flow | in_progress | patch probe flow based on trace
+2026-02-13T11:46:40Z | fix | root cause found: web multiplayer upload used WEBSNAP token serialization (in-memory only), breaking cross-instance download; switched web MultiplayerServer upload to full gzipped GameInfo JSON serialization | done | rebuild and rerun multi-instance probe
+2026-02-13T11:48:58Z | fix | corrected CompatibilityVersion import to com.unciv.logic.CompatibilityVersion for web multiplayer serializer patch | done | rerun webBuildJs + multi-instance headless
+2026-02-13T11:59:18Z | fix | implemented probe raw-payload fallback in WebMultiplayerProbeRunner (for web snapshot payload mode) and reverted temporary web multiplayer serializer override | done | rebuild and rerun headless multi-instance probe
+2026-02-13T12:03:48Z | fix | tightened multiplayer probe host raw-sync detection (check raw mutation even when structured download exists) and reduced probe poll intervals for faster completion | done | rebuild web dist and rerun multi-instance headless + phase quick validations
+2026-02-13T12:04:24Z | validation | started tmux fast sweep (webBuildJs + phase1 quick + phase4-full quick + mp multi headless) for rapid e2e signal | in_progress | monitor tmp/tmux-web-fast-sweep.log
+2026-02-13T12:08:42Z | fix | reverted over-aggressive UI click timing reductions after phase1 regression; restored stable wait cadence and attempts | done | rerun fast sweep in tmux
+2026-02-13T12:18:56Z | fix | added explicit guest running-state gate in multi-instance Playwright orchestrator to fail early with guest bootstrap errors | done | rerun mp multi headless in tmux
+2026-02-13T12:22:32Z | fix | removed forced window.main invocation from multiplayer orchestrator polling; now passive probe-state tracking to avoid guest bootstrap interference | done | rerun short multiplayer debug
+2026-02-13T12:23:30Z | fix | changed orchestrator boot flow to explicit one-time startMainOnce per page + passive state polling | done | rerun short multiplayer debug
+2026-02-13T12:24:28Z | triage | identified multiplayer short-run false negatives due EADDRINUSE on test ports; switching to unique clean ports | in_progress | run clean mp multi-instance headless
+2026-02-13T12:24:57Z | validation | clean-port multiplayer multi-instance headless run passed (host+guest done, turn sync + bidirectional chat true, no page/console errors) | success | finalize status, run quick pages smoke, stage commit
+2026-02-13T12:25:44Z | verify | pages smoke curl checks passed (200) for /unciv-web/, /unciv-web/index.html, /unciv-web/docs/; current live root serves docs content | done | keep docs/game path split follow-up in workflow/site config

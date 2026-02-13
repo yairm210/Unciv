@@ -2,12 +2,15 @@ package com.unciv.app.web
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
+import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
+import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.GameStarter
 import com.unciv.logic.UncivShowableException
@@ -40,20 +43,29 @@ import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.ui.screens.cityscreen.CityScreen
+import com.unciv.ui.screens.pickerscreens.PantheonPickerScreen
 import com.unciv.ui.screens.pickerscreens.TechPickerScreen
+import com.unciv.ui.screens.pickerscreens.TechButton
 import com.unciv.ui.screens.savescreens.LoadGameScreen
 import com.unciv.ui.screens.savescreens.LoadOrSaveScreen
 import com.unciv.ui.screens.savescreens.SaveGameScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.ui.screens.worldscreen.status.NextTurnButton
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsTable
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
+import com.unciv.ui.popups.closeAllPopups
+import com.unciv.ui.popups.hasOpenPopups
 import com.unciv.utils.Concurrency
+import com.unciv.utils.Log
 import java.time.Instant
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 object WebValidationRunner {
     private const val testSaveName = "WebE2E-Phase1"
+    private const val uiWaitFast = 8
+    private const val uiWaitMedium = 12
+    private const val uiWaitLong = 16
     private var started = false
 
     private val featureOrder = listOf(
@@ -499,7 +511,9 @@ object WebValidationRunner {
     private suspend fun validateUiClickCoreLoop(game: WebGame): Pair<Boolean, String> {
         val baselineGame = game.gameInfo ?: return false to "No baseline game available for UI click core loop."
         val baselineGameId = baselineGame.gameId
+        val previousShowTutorials = UncivGame.Current.settings.showTutorials
         return try {
+            UncivGame.Current.settings.showTutorials = false
             val setup = GameSetupInfo.fromSettings().apply {
                 gameParameters.players = arrayListOf(
                     Player(playerType = PlayerType.Human),
@@ -527,28 +541,50 @@ object WebValidationRunner {
             val settler = findUsableCityFounder(civ) ?: return false to "No settler available for UI click flow founding."
 
             waitFrames(20)
-            var foundCityClicked = clickActorByText(worldScreen.stage.root, UnitActionType.FoundCity.value, contains = true)
-            if (!foundCityClicked) {
-                var attempts = 0
-                while (!foundCityClicked && attempts < 6) {
-                    worldScreen.switchToNextUnit(resetDue = false)
-                    waitFrames(12)
-                    foundCityClicked = clickActorByText(worldScreen.stage.root, UnitActionType.FoundCity.value, contains = true)
-                    attempts += 1
+            var founded = false
+            var clickAttempted = false
+            repeat(4) {
+                val foundCityClicked = clickFoundCityAction(worldScreen, settler)
+                clickAttempted = clickAttempted || foundCityClicked
+                if (!foundCityClicked) return@repeat
+
+                founded = waitUntilFrames(600) {
+                    val settlerStillExists = civ.units.getUnitById(settler.id) != null
+                    civ.cities.size == cityCountBefore + 1 && !settlerStillExists
                 }
-            }
-            if (!foundCityClicked) return false to "Could not click Found city action button."
+                if (founded) return@repeat
 
-            val founded = waitUntilFrames(3600) {
-                val settlerStillExists = civ.units.getUnitById(settler.id) != null
-                civ.cities.size == cityCountBefore + 1 && !settlerStillExists
+                val confirmationLabels = listOf(
+                    "Break promise".tr(),
+                    "Yes".tr(),
+                    "OK".tr(),
+                    "Confirm".tr(),
+                    "Continue".tr(),
+                )
+                val confirmed = confirmationLabels.any { label ->
+                    clickActorByText(worldScreen.stage.root, label, contains = true)
+                }
+                if (confirmed) {
+                    founded = waitUntilFrames(1200) {
+                        val settlerStillExists = civ.units.getUnitById(settler.id) != null
+                        civ.cities.size == cityCountBefore + 1 && !settlerStillExists
+                    }
+                }
+                if (founded) return@repeat
+                waitFrames(20)
             }
-            if (!founded) return false to "Found city click did not result in a newly founded city."
 
-            val constructionPicked = ensureConstructionByClicks(game)
+            if (!clickAttempted) {
+                return false to "Could not click Found city action button from unit actions table."
+            }
+            if (!founded) {
+                return false to "Found city click did not result in a newly founded city."
+            }
+
+            val constructionPicked = ensureConstructionByClicks(game, requireExplicitSelection = true)
             if (!constructionPicked.first) return false to constructionPicked.second
 
-            val techPicked = ensureTechByClicks(game)
+            val techPicked = ensureTechByClicks(game, requireExplicitSelection = true)
             if (!techPicked.first) return false to techPicked.second
 
             val turnProgress = advanceTurnsByClicks(game, turns = 10)
@@ -558,14 +594,47 @@ object WebValidationRunner {
         } catch (throwable: Throwable) {
             false to "Exception during UI click flow: ${throwable::class.simpleName} ${throwable.message ?: ""}".trim()
         } finally {
+            UncivGame.Current.settings.showTutorials = previousShowTutorials
             game.loadGame(baselineGame)
             waitUntilFrames(3600) { game.worldScreen != null && game.gameInfo?.gameId == baselineGameId }
         }
     }
 
-    private suspend fun ensureConstructionByClicks(game: WebGame): Pair<Boolean, String> {
+    private suspend fun clickFoundCityAction(worldScreen: WorldScreen, settler: MapUnit): Boolean {
+        val labels = listOf(UnitActionType.FoundCity.value.tr(), UnitActionType.FoundCity.value)
+        val nextPageLabels = listOf(UnitActionType.ShowAdditionalActions.value.tr(), UnitActionType.ShowAdditionalActions.value)
+        repeat(8) {
+            GUI.getUnitTable().selectUnit(settler)
+            waitFrames(10)
+            for (pageAttempt in 0 until 4) {
+                val actionsTable = findActorByType(worldScreen.stage.root, UnitActionsTable::class.java)
+                if (actionsTable == null) break
+                for (label in labels) {
+                    val clicked = clickActorByText(actionsTable, label, contains = true)
+                    if (clicked) return true
+                }
+
+                val advancedPage = nextPageLabels.any { label ->
+                    clickActorByText(actionsTable, label, contains = true)
+                }
+                if (!advancedPage) break
+                waitFrames(8)
+            }
+            worldScreen.switchToNextUnit(resetDue = false)
+            waitFrames(10)
+        }
+        return false
+    }
+
+    private suspend fun ensureConstructionByClicks(
+        game: WebGame,
+        requireExplicitSelection: Boolean = false,
+    ): Pair<Boolean, String> {
         val civ = game.gameInfo?.getCurrentPlayerCivilization() ?: return false to "No current civ when choosing construction by click."
         if (civ.cities.any { it.cityConstructions.currentConstructionName().isNotEmpty() }) {
+            if (requireExplicitSelection) {
+                return false to "Construction already selected before click flow; explicit selection was required."
+            }
             return true to "Construction already selected."
         }
 
@@ -615,9 +684,15 @@ object WebValidationRunner {
         return false to "Timed out while selecting construction via UI clicks."
     }
 
-    private suspend fun ensureTechByClicks(game: WebGame): Pair<Boolean, String> {
+    private suspend fun ensureTechByClicks(
+        game: WebGame,
+        requireExplicitSelection: Boolean = false,
+    ): Pair<Boolean, String> {
         val civ = game.gameInfo?.getCurrentPlayerCivilization() ?: return false to "No current civ when choosing tech by click."
         if (civ.tech.currentTechnology() != null || civ.tech.techsToResearch.isNotEmpty()) {
+            if (requireExplicitSelection) {
+                return false to "Technology already selected before click flow; explicit selection was required."
+            }
             return true to "Technology already selected."
         }
 
@@ -626,11 +701,17 @@ object WebValidationRunner {
                 is TechPickerScreen -> {
                     val researchableTech = civ.gameInfo.ruleset.technologies.keys.firstOrNull { civ.tech.canBeResearched(it) }
                         ?: return false to "No researchable technology available for click flow."
-                    val techClicked = clickActorByText(screen.stage.root, researchableTech.tr(true), contains = true)
-                    if (!techClicked) return false to "Could not click technology candidate [$researchableTech]."
-                    waitFrames(12)
+                    var techClicked = clickActorByText(screen.stage.root, researchableTech.tr(true), contains = true)
+                    if (!techClicked) {
+                        val firstTechButton = findActorByType(screen.stage.root, TechButton::class.java)
+                        if (firstTechButton != null) {
+                            techClicked = clickActor(firstTechButton)
+                        }
+                    }
+                    if (techClicked) waitFrames(uiWaitMedium)
 
-                    val confirmClicked = clickActorByText(screen.stage.root, "Pick a tech".tr(), contains = true)
+                    val confirmClicked = clickActor(screen.rightSideButton)
+                        || clickActorByText(screen.stage.root, "Pick a tech".tr(), contains = true)
                         || clickActorByText(screen.stage.root, "Pick a free tech".tr(), contains = true)
                     if (!confirmClicked) return false to "Could not click technology confirm button."
 
@@ -654,7 +735,7 @@ object WebValidationRunner {
                 }
                 else -> {}
             }
-            waitFrames(16)
+            waitFrames(uiWaitLong)
             if ((civ.tech.currentTechnology() != null || civ.tech.techsToResearch.isNotEmpty()) && game.screen is WorldScreen) {
                 return true to "Technology selected."
             }
@@ -663,13 +744,38 @@ object WebValidationRunner {
         return false to "Timed out while selecting technology via UI clicks."
     }
 
+    private suspend fun ensurePantheonByClicks(game: WebGame): Pair<Boolean, String> {
+        repeat(240) {
+            when (val screen = game.screen) {
+                is PantheonPickerScreen -> {
+                    if (!screen.rightSideButton.isDisabled && clickActor(screen.rightSideButton)) {
+                        waitFrames(uiWaitMedium)
+                        val closed = waitUntilFrames(360) { game.screen is WorldScreen }
+                        if (!closed) return false to "Pantheon picker did not close after confirmation click."
+                        return true to "Pantheon selected via picker clicks."
+                    }
+                    val beliefButton = findFirstEnabledButton(screen.topTable)
+                    if (beliefButton != null) {
+                        clickActor(beliefButton)
+                    }
+                }
+                is WorldScreen -> return true to "Pantheon already selected."
+                else -> return false to "Unexpected screen while selecting pantheon: ${screen?.javaClass?.simpleName ?: "null"}"
+            }
+            waitFrames(uiWaitMedium)
+        }
+        return false to "Timed out while selecting pantheon via UI clicks."
+    }
+
     private suspend fun advanceTurnsByClicks(game: WebGame, turns: Int): Pair<Boolean, String> {
+        val maxAttemptsPerTurn = 500
         var advancedTurns = 0
         repeat(turns) {
             val beforeTurn = game.gameInfo?.turns ?: return false to "Missing gameInfo before click turn progression."
             var progressed = false
             var attempts = 0
-            while (attempts < 80) {
+            while (attempts < maxAttemptsPerTurn) {
+                attempts += 1
                 when (val screen = game.screen) {
                     is CityScreen -> {
                         val construction = ensureConstructionByClicks(game)
@@ -679,29 +785,120 @@ object WebValidationRunner {
                         val tech = ensureTechByClicks(game)
                         if (!tech.first) return false to tech.second
                     }
+                    is PantheonPickerScreen -> {
+                        val pantheon = ensurePantheonByClicks(game)
+                        if (!pantheon.first) return false to pantheon.second
+                    }
                     is WorldScreen -> {
                         val nextTurnButton = findActorByType(screen.stage.root, NextTurnButton::class.java)
                             ?: return false to "Next turn button not found during click turn progression."
-                        clickActor(nextTurnButton)
+                        val unitAdvanced = clickUnitCompletionAction(screen)
+                        if (unitAdvanced) {
+                            waitFrames(uiWaitFast)
+                            continue
+                        }
+                        if (nextTurnButton.isDisabled) {
+                            if (screen.hasOpenPopups()) {
+                                Log.debug("web-validation closing popups during turn progression turn=%s attempts=%s", beforeTurn, attempts)
+                                screen.closeAllPopups()
+                                waitFrames(uiWaitFast)
+                            }
+                            if (attempts % 40 == 0) {
+                                Log.debug(
+                                    "web-validation turn-wait turn=%s attempts=%s nextUnitAction=%s playersTurn=%s actionButtons=%s",
+                                    beforeTurn,
+                                    attempts,
+                                    nextTurnButton.isNextUnitAction(),
+                                    screen.isPlayersTurn,
+                                    collectUnitActionLabels(screen),
+                                )
+                            }
+                            waitFrames(uiWaitFast)
+                            continue
+                        }
+                        val clicked = clickActor(nextTurnButton)
+                        if (!clicked) return false to "Could not click next-turn button during click turn progression."
                     }
                     else -> {
                         val screenName = screen?.javaClass?.simpleName ?: "null"
                         return false to "Unexpected screen during click turn progression: $screenName"
                     }
                 }
-                waitFrames(16)
+                waitFrames(uiWaitLong)
                 val currentTurns = game.gameInfo?.turns ?: return false to "Missing gameInfo during click turn progression."
                 if (currentTurns > beforeTurn) {
                     progressed = true
                     advancedTurns += 1
                     break
                 }
-                attempts += 1
             }
 
-            if (!progressed) return false to "Turn progression stalled while clicking next-turn controls at turn=$beforeTurn."
+            if (!progressed) {
+                val worldScreen = game.worldScreen
+                val nextTurnButton = worldScreen?.let { findActorByType(it.stage.root, NextTurnButton::class.java) }
+                val nextUnitAction = nextTurnButton?.isNextUnitAction() ?: false
+                val enabled = nextTurnButton?.isDisabled?.not() ?: false
+                val openPopups = worldScreen?.hasOpenPopups() ?: false
+                val playersTurn = worldScreen?.isPlayersTurn ?: false
+                return false to "Turn progression stalled while clicking next-turn controls at turn=$beforeTurn (nextUnitAction=$nextUnitAction, buttonEnabled=$enabled, openPopups=$openPopups, playersTurn=$playersTurn, actionButtons=${worldScreen?.let { collectUnitActionLabels(it) } ?: "[]"})."
+            }
         }
         return true to "Advanced $advancedTurns turns via UI clicks."
+    }
+
+    private suspend fun clickUnitCompletionAction(worldScreen: WorldScreen): Boolean {
+        val actionLabels = listOf(
+            UnitActionType.Skip.value.tr(), UnitActionType.Skip.value,
+            UnitActionType.Sleep.value.tr(), UnitActionType.Sleep.value,
+            UnitActionType.SleepUntilHealed.value.tr(), UnitActionType.SleepUntilHealed.value,
+            UnitActionType.Fortify.value.tr(), UnitActionType.Fortify.value,
+            UnitActionType.FortifyUntilHealed.value.tr(), UnitActionType.FortifyUntilHealed.value,
+            UnitActionType.Explore.value.tr(), UnitActionType.Explore.value,
+            UnitActionType.Automate.value.tr(), UnitActionType.Automate.value,
+        )
+        val nextPageLabels = listOf(UnitActionType.ShowAdditionalActions.value.tr(), UnitActionType.ShowAdditionalActions.value)
+        for (pageAttempt in 0 until 4) {
+            val actionsTable = findActorByType(worldScreen.stage.root, UnitActionsTable::class.java) ?: break
+            for (label in actionLabels) {
+                val clicked = clickActorByText(actionsTable, label, contains = true)
+                if (clicked) return true
+            }
+            val advancedPage = nextPageLabels.any { label ->
+                clickActorByText(actionsTable, label, contains = true)
+            }
+            if (!advancedPage) break
+            waitFrames(uiWaitFast)
+        }
+        return false
+    }
+
+    private fun collectUnitActionLabels(worldScreen: WorldScreen): String {
+        val actionsTable = findActorByType(worldScreen.stage.root, UnitActionsTable::class.java) ?: return "[]"
+        val labels = mutableListOf<String>()
+        fun visit(actor: Actor) {
+            val text = actorText(actor)?.trim()
+            if (!text.isNullOrEmpty()) labels += text
+            if (actor is Group) {
+                for (index in 0 until actor.children.size) {
+                    visit(actor.children[index])
+                }
+            }
+        }
+        visit(actionsTable)
+        return labels.distinct().joinToString(prefix = "[", postfix = "]")
+    }
+
+    private fun findFirstEnabledButton(root: Actor): Button? {
+        if (root is Button && !root.isDisabled && root.touchable == Touchable.enabled && root.isVisible) {
+            return root
+        }
+        if (root is Group) {
+            for (index in 0 until root.children.size) {
+                val found = findFirstEnabledButton(root.children[index])
+                if (found != null) return found
+            }
+        }
+        return null
     }
 
     private fun sanitizeQuickstartPlayers(gameSetupInfo: GameSetupInfo) {
@@ -1167,7 +1364,25 @@ object WebValidationRunner {
         val y = screenPoint.y.toInt()
         val downHandled = stage.touchDown(x, y, 0, Input.Buttons.LEFT)
         stage.touchUp(x, y, 0, Input.Buttons.LEFT)
-        return downHandled
+        if (downHandled) return true
+
+        val downEvent = InputEvent().apply {
+            setType(InputEvent.Type.touchDown)
+            setStageX(center.x)
+            setStageY(center.y)
+            setPointer(0)
+            setButton(Input.Buttons.LEFT)
+        }
+        val upEvent = InputEvent().apply {
+            setType(InputEvent.Type.touchUp)
+            setStageX(center.x)
+            setStageY(center.y)
+            setPointer(0)
+            setButton(Input.Buttons.LEFT)
+        }
+        val fired = actor.fire(downEvent)
+        actor.fire(upEvent)
+        return fired
     }
 
     private fun <T : Actor> findActorByType(root: Actor, actorClass: Class<T>): T? {
