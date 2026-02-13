@@ -77,7 +77,7 @@ async function startMainOnce(page, label, timeoutMs) {
   while (Date.now() - startedAt <= timeoutMs) {
     const started = await page.evaluate(() => {
       if (typeof window.main !== 'function') return false;
-      if (window.__uncivProbeBootInvoked) return true;
+      if (window.__uncivBootStarted === true || window.__uncivProbeBootInvoked === true) return true;
       window.__uncivProbeBootInvoked = true;
       window.main();
       return true;
@@ -162,6 +162,7 @@ async function main() {
 
     const hostUrl = new URL('/index.html', `${baseUrl}/`);
     hostUrl.searchParams.set('webProfile', webProfile);
+    hostUrl.searchParams.set('webtest', '1');
     hostUrl.searchParams.set('mpProbe', '1');
     hostUrl.searchParams.set('mpRole', 'host');
     hostUrl.searchParams.set('mpGameId', gameId);

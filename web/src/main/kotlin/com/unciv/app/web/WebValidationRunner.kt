@@ -49,6 +49,7 @@ import com.unciv.ui.screens.pickerscreens.TechButton
 import com.unciv.ui.screens.savescreens.LoadGameScreen
 import com.unciv.ui.screens.savescreens.LoadOrSaveScreen
 import com.unciv.ui.screens.savescreens.SaveGameScreen
+import com.unciv.ui.screens.victoryscreen.VictoryScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.ui.screens.worldscreen.status.NextTurnButton
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsTable
@@ -66,6 +67,9 @@ object WebValidationRunner {
     private const val uiWaitFast = 8
     private const val uiWaitMedium = 12
     private const val uiWaitLong = 16
+    private const val turnLoopWaitFast = 4
+    private const val turnLoopWaitAfterAction = 10
+    private const val turnLoopLogInterval = 30
     private var started = false
 
     private val featureOrder = listOf(
@@ -794,11 +798,16 @@ object WebValidationRunner {
                             ?: return false to "Next turn button not found during click turn progression."
                         val unitAdvanced = clickUnitCompletionAction(screen)
                         if (unitAdvanced) {
-                            waitFrames(uiWaitFast)
+                            waitFrames(turnLoopWaitFast)
+                            continue
+                        }
+                        val actionLabels = collectUnitActionLabels(screen)
+                        if (!nextTurnButton.isDisabled && !nextTurnButton.isNextUnitAction() && actionLabels == "[]") {
+                            screen.nextTurn()
+                            waitFrames(turnLoopWaitAfterAction)
                             continue
                         }
                         if (nextTurnButton.isDisabled) {
-                            val actionLabels = collectUnitActionLabels(screen)
                             if (!nextTurnButton.isNextUnitAction() && actionLabels == "[]") {
                                 Log.debug(
                                     "web-validation forcing world nextTurn due disabled button without unit actions turn=%s attempts=%s",
@@ -806,7 +815,7 @@ object WebValidationRunner {
                                     attempts,
                                 )
                                 screen.nextTurn()
-                                waitFrames(uiWaitMedium)
+                                waitFrames(turnLoopWaitAfterAction)
                                 continue
                             }
                             if (nextTurnButton.isNextUnitAction() && actionLabels == "[]") {
@@ -816,15 +825,15 @@ object WebValidationRunner {
                                     attempts,
                                 )
                                 screen.switchToNextUnit(resetDue = false)
-                                waitFrames(uiWaitFast)
+                                waitFrames(turnLoopWaitFast)
                                 continue
                             }
                             if (screen.hasOpenPopups()) {
                                 Log.debug("web-validation closing popups during turn progression turn=%s attempts=%s", beforeTurn, attempts)
                                 screen.closeAllPopups()
-                                waitFrames(uiWaitFast)
+                                waitFrames(turnLoopWaitFast)
                             }
-                            if (attempts % 40 == 0) {
+                            if (attempts % turnLoopLogInterval == 0) {
                                 Log.debug(
                                     "web-validation turn-wait turn=%s attempts=%s nextUnitAction=%s playersTurn=%s actionButtons=%s",
                                     beforeTurn,
@@ -834,18 +843,24 @@ object WebValidationRunner {
                                     actionLabels,
                                 )
                             }
-                            waitFrames(uiWaitFast)
+                            waitFrames(turnLoopWaitFast)
                             continue
                         }
                         val clicked = clickActor(nextTurnButton)
                         if (!clicked) return false to "Could not click next-turn button during click turn progression."
+                    }
+                    is VictoryScreen -> {
+                        if (advancedTurns > 0) {
+                            return true to "Reached victory screen after advancing $advancedTurns turns via UI clicks."
+                        }
+                        return false to "Victory screen appeared before click turn progression could advance."
                     }
                     else -> {
                         val screenName = screen?.javaClass?.simpleName ?: "null"
                         return false to "Unexpected screen during click turn progression: $screenName"
                     }
                 }
-                waitFrames(uiWaitLong)
+                waitFrames(turnLoopWaitAfterAction)
                 val currentTurns = game.gameInfo?.turns ?: return false to "Missing gameInfo during click turn progression."
                 if (currentTurns > beforeTurn) {
                     progressed = true

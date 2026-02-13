@@ -7,7 +7,7 @@ final class WebMultiplayerProbeInterop {
     }
 
     static boolean isEnabled() {
-        String raw = WebRuntimeInterop.getRuntimeConfigValue("mpProbe");
+        String raw = getQueryValue("mpProbe");
         if (raw == null) return false;
         String normalized = raw.trim().toLowerCase();
         return normalized.equals("1")
@@ -17,15 +17,15 @@ final class WebMultiplayerProbeInterop {
     }
 
     static String getRole() {
-        return WebRuntimeInterop.getRuntimeConfigValue("mpRole");
+        return getQueryValue("mpRole");
     }
 
     static String getGameId() {
-        return WebRuntimeInterop.getRuntimeConfigValue("mpGameId");
+        return getQueryValue("mpGameId");
     }
 
     static String getTimeoutMs() {
-        return WebRuntimeInterop.getRuntimeConfigValue("mpTimeoutMs");
+        return getQueryValue("mpTimeoutMs");
     }
 
     static String getTestMultiplayerServerUrl() {
@@ -54,6 +54,18 @@ final class WebMultiplayerProbeInterop {
                             + "window.__uncivMpProbeResultJson = json;"
                             + "window.__uncivMpProbeState = 'done';")
     static native void publishResult(String json);
+
+    @JSBody(
+            params = "key",
+            script =
+                    "if (typeof window === 'undefined') return null;"
+                            + "var search = (window.location && window.location.search) || '';"
+                            + "var params = null;"
+                            + "try { params = new URLSearchParams(search); } catch (e) { params = null; }"
+                            + "if (!params) return null;"
+                            + "var value = params.get(String(key));"
+                            + "return value == null ? null : value;")
+    static native String getQueryValue(String key);
 
     @JSBody(
             params = {"runnable", "delayMs"},
