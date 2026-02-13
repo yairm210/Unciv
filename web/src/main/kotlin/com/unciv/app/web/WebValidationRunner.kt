@@ -799,6 +799,16 @@ object WebValidationRunner {
                         }
                         if (nextTurnButton.isDisabled) {
                             val actionLabels = collectUnitActionLabels(screen)
+                            if (!nextTurnButton.isNextUnitAction() && actionLabels == "[]") {
+                                Log.debug(
+                                    "web-validation forcing world nextTurn due disabled button without unit actions turn=%s attempts=%s",
+                                    beforeTurn,
+                                    attempts,
+                                )
+                                screen.nextTurn()
+                                waitFrames(uiWaitMedium)
+                                continue
+                            }
                             if (nextTurnButton.isNextUnitAction() && actionLabels == "[]") {
                                 Log.debug(
                                     "web-validation switching unit due empty action table turn=%s attempts=%s",
