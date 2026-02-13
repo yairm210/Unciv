@@ -71,7 +71,7 @@ jobs:
 
       - name: Start static server
         run: |
-          python3 -m http.server 18080 --directory web/build/dist > /tmp/web-server.log 2>&1 &
+          python3 scripts/web/static-server.py --port 18080 --dir web/build/dist > /tmp/web-server.log 2>&1 &
           echo $! > /tmp/web-server.pid
 
       - name: Start multiplayer test server
@@ -81,12 +81,12 @@ jobs:
 
       - name: Run web validation (phase1 baseline)
         run: |
-          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase1 WEB_BASE_URL=http://127.0.0.1:18080 WEB_VALIDATION_STARTUP_TIMEOUT_MS=45000 \
+          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase1 WEB_BASE_URL=http://127.0.0.1:18080 WEB_VALIDATION_STARTUP_TIMEOUT_MS=45000 WEB_VALIDATION_STARTUP_ATTEMPTS=1 \
           node scripts/web/run-web-validation.js
 
       - name: Run web validation (phase4-full)
         run: |
-          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase4-full WEB_BASE_URL=http://127.0.0.1:18080 WEB_VALIDATION_STARTUP_TIMEOUT_MS=45000 \
+          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase4-full WEB_BASE_URL=http://127.0.0.1:18080 WEB_VALIDATION_STARTUP_TIMEOUT_MS=45000 WEB_VALIDATION_STARTUP_ATTEMPTS=1 \
           WEB_MP_SERVER=http://127.0.0.1:19090 \
           WEB_MOD_ZIP_URL=http://127.0.0.1:18080/webtest/mods/test-mod.zip \
           node scripts/web/run-web-validation.js
@@ -94,7 +94,7 @@ jobs:
       - name: Run browser JS test suite (headless)
         timeout-minutes: 40
         run: |
-          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase4-full WEB_URL=http://127.0.0.1:18080/index.html?jstests=1 TIMEOUT_MS=2100000 \
+          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase4-full WEB_URL=http://127.0.0.1:18080/index.html?jstests=1 TIMEOUT_MS=2100000 WEB_JS_TESTS_STARTUP_TIMEOUT_MS=60000 \
           node scripts/web/run-js-browser-tests.js
 
       - name: Run performance budget gate
@@ -160,7 +160,7 @@ jobs:
 
       - name: Start static server
         run: |
-          python3 -m http.server 18080 --directory web/build/dist > /tmp/web-server.log 2>&1 &
+          python3 scripts/web/static-server.py --port 18080 --dir web/build/dist > /tmp/web-server.log 2>&1 &
           echo $! > /tmp/web-server.pid
 
       - name: Run browser JS test suite (${{ matrix.browser }})
@@ -173,7 +173,7 @@ jobs:
       - name: Run gameplay smoke validation (${{ matrix.browser }})
         if: matrix.mode == 'smoke'
         run: |
-          env HEADLESS=true WEB_BROWSER=${{ matrix.browser }} WEB_BASE_URL=http://127.0.0.1:18080 \
+          env HEADLESS=true WEB_BROWSER=${{ matrix.browser }} WEB_BASE_URL=http://127.0.0.1:18080 WEB_VALIDATION_STARTUP_TIMEOUT_MS=45000 WEB_VALIDATION_STARTUP_ATTEMPTS=1 \
           node scripts/web/run-web-validation.js || true
 
       - name: Publish browser suite summary
@@ -224,12 +224,12 @@ jobs:
 
       - name: Start static server
         run: |
-          python3 -m http.server 18080 --directory web/build/dist > /tmp/web-server.log 2>&1 &
+          python3 scripts/web/static-server.py --port 18080 --dir web/build/dist > /tmp/web-server.log 2>&1 &
           echo $! > /tmp/web-server.pid
 
       - name: Run phase4-alpha gameplay validation
         run: |
-          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase4-alpha WEB_BASE_URL=http://127.0.0.1:18080 WEB_VALIDATION_STARTUP_TIMEOUT_MS=45000 \
+          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase4-alpha WEB_BASE_URL=http://127.0.0.1:18080 WEB_VALIDATION_STARTUP_TIMEOUT_MS=45000 WEB_VALIDATION_STARTUP_ATTEMPTS=1 \
           node scripts/web/run-web-validation.js
 
       - name: Publish phase4-alpha summary
@@ -276,12 +276,12 @@ jobs:
 
       - name: Start static server
         run: |
-          python3 -m http.server 18080 --directory web/build/dist > /tmp/web-server.log 2>&1 &
+          python3 scripts/web/static-server.py --port 18080 --dir web/build/dist > /tmp/web-server.log 2>&1 &
           echo $! > /tmp/web-server.pid
 
       - name: Run phase4-beta validation
         run: |
-          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase4-beta WEB_BASE_URL=http://127.0.0.1:18080 WEB_VALIDATION_TIMEOUT_MS=600000 WEB_VALIDATION_STARTUP_TIMEOUT_MS=45000 \
+          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase4-beta WEB_BASE_URL=http://127.0.0.1:18080 WEB_VALIDATION_TIMEOUT_MS=600000 WEB_VALIDATION_STARTUP_TIMEOUT_MS=45000 WEB_VALIDATION_STARTUP_ATTEMPTS=1 \
           WEB_MOD_ZIP_URL=http://127.0.0.1:18080/webtest/mods/test-mod.zip \
           node scripts/web/run-web-validation.js
 
@@ -334,12 +334,12 @@ jobs:
 
       - name: Start static server
         run: |
-          python3 -m http.server 18080 --directory web/build/dist > /tmp/web-server.log 2>&1 &
+          python3 scripts/web/static-server.py --port 18080 --dir web/build/dist > /tmp/web-server.log 2>&1 &
           echo $! > /tmp/web-server.pid
 
       - name: Run phase4-full validation
         run: |
-          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase4-full WEB_BASE_URL=http://127.0.0.1:18080 WEB_VALIDATION_TIMEOUT_MS=600000 WEB_VALIDATION_STARTUP_TIMEOUT_MS=45000 \
+          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase4-full WEB_BASE_URL=http://127.0.0.1:18080 WEB_VALIDATION_TIMEOUT_MS=600000 WEB_VALIDATION_STARTUP_TIMEOUT_MS=45000 WEB_VALIDATION_STARTUP_ATTEMPTS=1 \
           WEB_MP_SERVER=http://127.0.0.1:19090 \
           WEB_MOD_ZIP_URL=http://127.0.0.1:18080/webtest/mods/test-mod.zip \
           node scripts/web/run-web-validation.js
@@ -389,7 +389,7 @@ jobs:
 
       - name: Start static server
         run: |
-          python3 -m http.server 18080 --directory web/build/dist > /tmp/web-server.log 2>&1 &
+          python3 scripts/web/static-server.py --port 18080 --dir web/build/dist > /tmp/web-server.log 2>&1 &
           echo $! > /tmp/web-server.pid
 
       - name: Start multiplayer test server
@@ -399,7 +399,7 @@ jobs:
 
       - name: Run multi-instance multiplayer gate
         run: |
-          env HEADLESS=true WEB_BASE_URL=http://127.0.0.1:18080 WEB_MP_SERVER=http://127.0.0.1:19090 WEB_PROFILE=phase4-full WEB_MP_PROBE_TIMEOUT_MS=180000 WEB_MP_PROBE_STARTUP_TIMEOUT_MS=30000 \
+          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_MP_SERVER=http://127.0.0.1:19090 WEB_PROFILE=phase4-full WEB_MP_PROBE_TIMEOUT_MS=180000 WEB_MP_PROBE_STARTUP_TIMEOUT_MS=90000 \
           node scripts/web/run-web-multiplayer-multi-instance.js
 
       - name: Publish multiplayer summary

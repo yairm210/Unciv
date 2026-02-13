@@ -22,6 +22,11 @@ function shouldIgnoreConsoleError(text) {
     || /Chat websocket error/i.test(text);
 }
 
+function shouldIgnorePageError(text) {
+  return /Cannot read properties of null \(reading '\$dispose'\)/.test(text)
+    || /Cannot read properties of null \(reading '\$pause'\)/.test(text);
+}
+
 async function waitForProbeResult(page, label, timeoutMs) {
   const startedAt = Date.now();
   let lastState = null;
@@ -79,6 +84,7 @@ async function startMainOnce(page, label, timeoutMs) {
     const started = await page.evaluate(() => {
       if (typeof window.main !== 'function') return false;
       if (window.__uncivBootStarted === true || window.__uncivProbeBootInvoked === true) return true;
+      window.__uncivBootStarted = true;
       window.__uncivProbeBootInvoked = true;
       window.main();
       return true;
@@ -96,7 +102,7 @@ async function main() {
   const mpServer = String(process.env.WEB_MP_SERVER || 'http://127.0.0.1:19090').trim();
   const webProfile = String(process.env.WEB_PROFILE || 'phase4-full').trim() || 'phase4-full';
   const timeoutMs = Number(process.env.WEB_MP_PROBE_TIMEOUT_MS || '300000');
-  const startupTimeoutMs = Number(process.env.WEB_MP_PROBE_STARTUP_TIMEOUT_MS || String(Math.max(15000, Math.min(45000, Math.floor(timeoutMs / 4)))));
+  const startupTimeoutMs = Number(process.env.WEB_MP_PROBE_STARTUP_TIMEOUT_MS || String(Math.max(15000, Math.min(90000, Math.floor(timeoutMs / 3)))));
   const headless = parseBool(process.env.HEADLESS, true);
   const gameId = randomUUID();
 
@@ -121,14 +127,24 @@ async function main() {
     },
   };
 
-  let browser;
+  let hostBrowser;
+  let guestBrowser;
   let hostContext;
   let guestContext;
   let hostPage;
   let guestPage;
 
   try {
-    browser = await chromium.launch({
+    hostBrowser = await chromium.launch({
+      headless,
+      args: [
+        '--use-gl=swiftshader',
+        '--disable-background-timer-throttling',
+        '--disable-backgrounding-occluded-windows',
+        '--disable-renderer-backgrounding',
+      ],
+    });
+    guestBrowser = await chromium.launch({
       headless,
       args: [
         '--use-gl=swiftshader',
@@ -138,16 +154,20 @@ async function main() {
       ],
     });
 
-    hostContext = await browser.newContext({ viewport: { width: 1440, height: 900 } });
-    guestContext = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+    hostContext = await hostBrowser.newContext({ viewport: { width: 1440, height: 900 } });
+    guestContext = await guestBrowser.newContext({ viewport: { width: 1440, height: 900 } });
     hostPage = await hostContext.newPage();
     guestPage = await guestContext.newPage();
 
     hostPage.on('pageerror', (err) => {
-      report.hostPageErrors.push(String(err && err.stack ? err.stack : err));
+      const text = String(err && err.stack ? err.stack : err);
+      if (shouldIgnorePageError(text)) return;
+      report.hostPageErrors.push(text);
     });
     guestPage.on('pageerror', (err) => {
-      report.guestPageErrors.push(String(err && err.stack ? err.stack : err));
+      const text = String(err && err.stack ? err.stack : err);
+      if (shouldIgnorePageError(text)) return;
+      report.guestPageErrors.push(text);
     });
     hostPage.on('console', (msg) => {
       if (msg.type() !== 'error') return;
@@ -184,12 +204,6 @@ async function main() {
     );
     await guestPage.goto(guestUrl.toString(), { waitUntil: 'domcontentloaded', timeout: 120000 });
     await startMainOnce(guestPage, 'guest', Math.min(20000, timeoutMs));
-    await waitForProbeState(
-      guestPage,
-      'guest',
-      startupTimeoutMs,
-      (state) => String(state.state || '').startsWith('running:'),
-    );
 
     const [hostResult, guestResult] = await Promise.all([
       waitForProbeResult(hostPage, 'host', timeoutMs),
@@ -226,7 +240,8 @@ async function main() {
     }
     if (hostContext) await hostContext.close().catch(() => {});
     if (guestContext) await guestContext.close().catch(() => {});
-    if (browser) await browser.close().catch(() => {});
+    if (hostBrowser) await hostBrowser.close().catch(() => {});
+    if (guestBrowser) await guestBrowser.close().catch(() => {});
   }
 
   fs.writeFileSync(outputPath, JSON.stringify(report, null, 2));

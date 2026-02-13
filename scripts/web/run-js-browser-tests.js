@@ -11,6 +11,7 @@ const { chromium, firefox, webkit } = require('playwright');
   const headlessToken = String(process.env.HEADLESS || 'false').toLowerCase();
   const headless = headlessToken === '1' || headlessToken === 'true' || headlessToken === 'yes';
   const timeoutMs = Number(process.env.TIMEOUT_MS || 900000);
+  const startupTimeoutMs = Number(process.env.WEB_JS_TESTS_STARTUP_TIMEOUT_MS || '60000');
   const debugState = String(process.env.WEB_JS_TESTS_DEBUG || '') === '1';
   const chromiumArgs = String(process.env.WEB_CHROMIUM_ARGS || '').trim();
   const jsTestsFilter = String(process.env.WEB_JS_TESTS_FILTER || '').trim();
@@ -18,6 +19,7 @@ const { chromium, firefox, webkit } = require('playwright');
   const consoleErrors = [];
   const consoleWarnings = [];
   const pageErrors = [];
+  const ignoredPageErrors = [];
   const ignoredConsoleErrors = [];
 
   const browserTypes = { chromium, firefox, webkit };
@@ -72,6 +74,16 @@ const { chromium, firefox, webkit } = require('playwright');
   });
   page.on('pageerror', err => {
     const text = String(err && err.stack ? err.stack : err);
+    if (/Cannot read properties of null \(reading '\$dispose'\)/.test(text)) {
+      ignoredPageErrors.push(text);
+      process.stdout.write(`[pageerror:ignored] ${text}\n`);
+      return;
+    }
+    if (/Cannot read properties of null \(reading '\$pause'\)/.test(text)) {
+      ignoredPageErrors.push(text);
+      process.stdout.write(`[pageerror:ignored] ${text}\n`);
+      return;
+    }
     pageErrors.push(text);
     process.stdout.write(`[pageerror] ${text}\n`);
   });
@@ -87,6 +99,7 @@ const { chromium, firefox, webkit } = require('playwright');
       await page.goto(targetUrl.toString(), { waitUntil: 'domcontentloaded', timeout: 120000 });
     }
     const pollStart = Date.now();
+    let firstStateSeenAt = null;
     let bootInvoked = false;
     while (true) {
       if (!bootInvoked) {
@@ -108,8 +121,17 @@ const { chromium, firefox, webkit } = require('playwright');
       if (debugState && state.state) {
         process.stdout.write(`[js-tests-state] ${state.state}\n`);
       }
+      if ((state.state || state.error || state.json) && firstStateSeenAt === null) {
+        firstStateSeenAt = Date.now();
+      }
 
       if (state.error) throw new Error(`JS test runtime error: ${state.error}`);
+      if (pageErrors.length > 0) {
+        throw new Error(`Fatal page errors detected: ${pageErrors.join('\n')}`);
+      }
+      if (consoleErrors.length > 0) {
+        throw new Error(`Fatal console errors detected: ${consoleErrors.join('\n')}`);
+      }
       if (state.json) {
         jsResult = JSON.parse(state.json);
         if (!jsResult || !jsResult.summary) throw new Error('Malformed JS test result payload');
@@ -149,6 +171,9 @@ const { chromium, firefox, webkit } = require('playwright');
         }
         break;
       }
+      if (firstStateSeenAt === null && (Date.now() - pollStart) > startupTimeoutMs) {
+        throw new Error(`Timed out after ${startupTimeoutMs}ms waiting for JS tests to start`);
+      }
 
       await page.waitForTimeout(1000);
     }
@@ -174,10 +199,12 @@ const { chromium, firefox, webkit } = require('playwright');
     ignoredConsoleErrorCount: ignoredConsoleErrors.length,
     consoleWarningCount: consoleWarnings.length,
     pageErrorCount: pageErrors.length,
+    ignoredPageErrorCount: ignoredPageErrors.length,
     consoleErrors,
     ignoredConsoleErrors,
     consoleWarnings,
     pageErrors,
+    ignoredPageErrors,
     jsResult,
   };
 

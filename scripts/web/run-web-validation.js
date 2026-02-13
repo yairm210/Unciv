@@ -18,6 +18,7 @@ async function main() {
   const browserName = String(process.env.WEB_BROWSER || 'chromium').toLowerCase();
   const timeoutMs = Number(process.env.WEB_VALIDATION_TIMEOUT_MS || '430000');
   const startupTimeoutMs = Number(process.env.WEB_VALIDATION_STARTUP_TIMEOUT_MS || '45000');
+  const startupAttempts = Number(process.env.WEB_VALIDATION_STARTUP_ATTEMPTS || '1');
   const headless = parseBoolEnv(process.env.HEADLESS, true);
   const debugState = String(process.env.WEB_VALIDATION_DEBUG || '') === '1';
   const mpServer = String(process.env.WEB_MP_SERVER || '').trim();
@@ -109,7 +110,7 @@ async function main() {
     const targetUrl = new URL('/index.html', baseUrl);
     targetUrl.searchParams.set('webtest', '1');
     if (webProfile.length > 0) targetUrl.searchParams.set('webProfile', webProfile);
-    for (let attempt = 1; attempt <= 2; attempt += 1) {
+    for (let attempt = 1; attempt <= startupAttempts; attempt += 1) {
       await page.goto(targetUrl.toString(), { waitUntil: 'domcontentloaded', timeout: 120000 });
       const landedUrl = page.url();
       if (!landedUrl.includes('webtest=1')) {
@@ -175,7 +176,7 @@ async function main() {
         await page.waitForTimeout(1000);
       }
       if (completed) break;
-      if (attempt < 2) {
+      if (attempt < startupAttempts) {
         await page.waitForTimeout(1000);
       }
     }
