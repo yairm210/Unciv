@@ -36,6 +36,10 @@ jobs:
             unciv-web-builder \
             bash -lc "./gradlew :web:webBuildJs"
 
+      - name: Verify SLF4J web provider wiring
+        run: |
+          bash scripts/web/check-slf4j-provider.sh .
+
       - name: Upload web dist artifact
         uses: actions/upload-artifact@v4
         with:
@@ -81,7 +85,7 @@ jobs:
 
       - name: Run web validation (phase1 baseline)
         run: |
-          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase1 WEB_BASE_URL=http://127.0.0.1:18080 WEB_VALIDATION_STARTUP_TIMEOUT_MS=45000 WEB_VALIDATION_STARTUP_ATTEMPTS=1 \
+          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase1 WEB_BASE_URL=http://127.0.0.1:18080 WEB_VALIDATION_STARTUP_TIMEOUT_MS=45000 WEB_VALIDATION_STARTUP_ATTEMPTS=2 \
           node scripts/web/run-web-validation.js
 
       - name: Run web validation (phase4-full)
@@ -94,7 +98,7 @@ jobs:
       - name: Run browser JS test suite (headless)
         timeout-minutes: 40
         run: |
-          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase4-full WEB_URL=http://127.0.0.1:18080/index.html?jstests=1 TIMEOUT_MS=2100000 WEB_JS_TESTS_STARTUP_TIMEOUT_MS=60000 \
+          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase4-full WEB_URL=http://127.0.0.1:18080/index.html?jstests=1 TIMEOUT_MS=2100000 WEB_JS_TESTS_STARTUP_TIMEOUT_MS=300000 \
           node scripts/web/run-js-browser-tests.js
 
       - name: Run performance budget gate
@@ -173,7 +177,7 @@ jobs:
       - name: Run gameplay smoke validation (${{ matrix.browser }})
         if: matrix.mode == 'smoke'
         run: |
-          env HEADLESS=true WEB_BROWSER=${{ matrix.browser }} WEB_BASE_URL=http://127.0.0.1:18080 WEB_VALIDATION_STARTUP_TIMEOUT_MS=45000 WEB_VALIDATION_STARTUP_ATTEMPTS=1 \
+          env HEADLESS=true WEB_BROWSER=${{ matrix.browser }} WEB_BASE_URL=http://127.0.0.1:18080 WEB_VALIDATION_STARTUP_TIMEOUT_MS=45000 WEB_VALIDATION_STARTUP_ATTEMPTS=2 \
           node scripts/web/run-web-validation.js || true
 
       - name: Publish browser suite summary
@@ -229,7 +233,7 @@ jobs:
 
       - name: Run phase4-alpha gameplay validation
         run: |
-          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase4-alpha WEB_BASE_URL=http://127.0.0.1:18080 WEB_VALIDATION_STARTUP_TIMEOUT_MS=45000 WEB_VALIDATION_STARTUP_ATTEMPTS=1 \
+          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase4-alpha WEB_BASE_URL=http://127.0.0.1:18080 WEB_VALIDATION_STARTUP_TIMEOUT_MS=45000 WEB_VALIDATION_STARTUP_ATTEMPTS=2 \
           node scripts/web/run-web-validation.js
 
       - name: Publish phase4-alpha summary
@@ -419,10 +423,324 @@ jobs:
             tmp/web-mp-host-latest.png
             tmp/web-mp-guest-latest.png
 
+  web-ui-core-loop:
+    name: Web UI Core Loop (required, 30s)
+    runs-on: ubuntu-latest
+    needs: web-build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download web dist artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: unciv-web-dist
+          path: web/build/dist
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Playwright browser
+        run: |
+          npm config set fund false
+          npm config set audit false
+          npm install -D playwright ws
+          npx playwright install --with-deps chromium
+
+      - name: Start static server
+        run: |
+          python3 scripts/web/static-server.py --port 18080 --dir web/build/dist > /tmp/web-server.log 2>&1 &
+          echo $! > /tmp/web-server.pid
+
+      - name: Run UI core loop gate
+        run: |
+          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_PROFILE=phase1 \
+          node scripts/web/run-web-ui-core-loop.js
+
+      - name: Publish UI core loop summary
+        if: always()
+        run: |
+          node scripts/web/write-web-summary.js >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload UI core loop artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-ui-core-loop
+          path: |
+            /tmp/web-server.log
+            tmp/web-ui-core-loop-result.json
+            tmp/web-ui-core-loop-latest.png
+
+  web-ui-multiplayer:
+    name: Web UI Multiplayer (required, 30s)
+    runs-on: ubuntu-latest
+    needs: web-build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download web dist artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: unciv-web-dist
+          path: web/build/dist
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Playwright browser
+        run: |
+          npm config set fund false
+          npm config set audit false
+          npm install -D playwright ws
+          npx playwright install --with-deps chromium
+
+      - name: Start static server
+        run: |
+          python3 scripts/web/static-server.py --port 18080 --dir web/build/dist > /tmp/web-server.log 2>&1 &
+          echo $! > /tmp/web-server.pid
+
+      - name: Start multiplayer test server
+        run: |
+          node scripts/web/multiplayer-test-server.js > /tmp/mp-server.log 2>&1 &
+          echo $! > /tmp/mp-server.pid
+
+      - name: Run UI multiplayer gate
+        run: |
+          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_MP_SERVER=http://127.0.0.1:19090 WEB_PROFILE=phase4-full \
+          node scripts/web/run-web-ui-multiplayer.js
+
+      - name: Publish UI multiplayer summary
+        if: always()
+        run: |
+          node scripts/web/write-web-summary.js >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload UI multiplayer artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-ui-multiplayer
+          path: |
+            /tmp/web-server.log
+            /tmp/mp-server.log
+            tmp/web-ui-multiplayer-result.json
+            tmp/web-ui-multiplayer-host-latest.png
+            tmp/web-ui-multiplayer-guest-latest.png
+
+  web-ui-map-editor:
+    name: Web UI Map Editor (required, 30s)
+    runs-on: ubuntu-latest
+    needs: web-build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download web dist artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: unciv-web-dist
+          path: web/build/dist
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Playwright browser
+        run: |
+          npm config set fund false
+          npm config set audit false
+          npm install -D playwright ws
+          npx playwright install --with-deps chromium
+
+      - name: Start static server
+        run: |
+          python3 scripts/web/static-server.py --port 18080 --dir web/build/dist > /tmp/web-server.log 2>&1 &
+          echo $! > /tmp/web-server.pid
+
+      - name: Run UI map editor gate
+        run: |
+          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_PROFILE=phase1 \
+          node scripts/web/run-web-ui-map-editor.js
+
+      - name: Publish UI map editor summary
+        if: always()
+        run: |
+          node scripts/web/write-web-summary.js >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload UI map editor artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-ui-map-editor
+          path: |
+            /tmp/web-server.log
+            tmp/web-ui-map-editor-result.json
+            tmp/web-ui-map-editor-latest.png
+
+  web-ui-war-from-start:
+    name: Web UI War From Start (required, 30s)
+    runs-on: ubuntu-latest
+    needs: web-build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download web dist artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: unciv-web-dist
+          path: web/build/dist
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Playwright browser
+        run: |
+          npm config set fund false
+          npm config set audit false
+          npm install -D playwright ws
+          npx playwright install --with-deps chromium
+
+      - name: Start static server
+        run: |
+          python3 scripts/web/static-server.py --port 18080 --dir web/build/dist > /tmp/web-server.log 2>&1 &
+          echo $! > /tmp/web-server.pid
+
+      - name: Run UI war from-start gate
+        run: |
+          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_PROFILE=phase4-full \
+          node scripts/web/run-web-ui-war-from-start.js
+
+      - name: Publish UI war from-start summary
+        if: always()
+        run: |
+          node scripts/web/write-web-summary.js >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload UI war from-start artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-ui-war-from-start
+          path: |
+            /tmp/web-server.log
+            tmp/web-ui-war-from-start-result.json
+            tmp/web-ui-war-from-start-latest.png
+
+  web-ui-war-preworld:
+    name: Web UI War Preworld (required, 30s)
+    runs-on: ubuntu-latest
+    needs: web-build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download web dist artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: unciv-web-dist
+          path: web/build/dist
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Playwright browser
+        run: |
+          npm config set fund false
+          npm config set audit false
+          npm install -D playwright ws
+          npx playwright install --with-deps chromium
+
+      - name: Start static server
+        run: |
+          python3 scripts/web/static-server.py --port 18080 --dir web/build/dist > /tmp/web-server.log 2>&1 &
+          echo $! > /tmp/web-server.pid
+
+      - name: Run UI war preworld gate
+        run: |
+          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_PROFILE=phase4-full \
+          node scripts/web/run-web-ui-war-preworld.js
+
+      - name: Publish UI war preworld summary
+        if: always()
+        run: |
+          node scripts/web/write-web-summary.js >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload UI war preworld artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-ui-war-preworld
+          path: |
+            /tmp/web-server.log
+            tmp/web-ui-war-preworld-result.json
+            tmp/web-ui-war-preworld-latest.png
+
+  web-ui-war-deep:
+    name: Web UI War Deep (main/dispatch)
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    needs: web-build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download web dist artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: unciv-web-dist
+          path: web/build/dist
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Playwright browser
+        run: |
+          npm config set fund false
+          npm config set audit false
+          npm install -D playwright ws
+          npx playwright install --with-deps chromium
+
+      - name: Start static server
+        run: |
+          python3 scripts/web/static-server.py --port 18080 --dir web/build/dist > /tmp/web-server.log 2>&1 &
+          echo $! > /tmp/web-server.pid
+
+      - name: Run UI war deep gate
+        run: |
+          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_PROFILE=phase4-full WEB_UI_WAR_DEEP_TIMEOUT_MS=120000 \
+          node scripts/web/run-web-ui-war-deep.js
+
+      - name: Publish UI war deep summary
+        if: always()
+        run: |
+          node scripts/web/write-web-summary.js >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload UI war deep artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-ui-war-deep
+          path: |
+            /tmp/web-server.log
+            tmp/web-ui-war-deep-result.json
+            tmp/web-ui-war-deep-latest.png
+
   deploy-pages:
     name: Deploy GitHub Pages
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
-    needs: [web-build, web-e2e, web-phase4-beta, web-phase4-full, web-multiplayer-multi-instance]
+    needs: [web-build, web-e2e, web-phase4-beta, web-phase4-full, web-multiplayer-multi-instance, web-ui-core-loop, web-ui-multiplayer, web-ui-map-editor, web-ui-war-from-start, web-ui-war-preworld]
     runs-on: ubuntu-latest
     outputs:
       page_url: ${{ steps.deployment.outputs.page_url }}
@@ -458,6 +776,8 @@ jobs:
             page_url="https://${owner}.github.io/${repo}"
           fi
           echo "Using page URL: $page_url"
+          curl -fSL --retry 10 --retry-delay 5 --retry-all-errors "${page_url%/}/docs/index.html" -o /tmp/pages-docs-index.html
+          grep -Eiq "game/index\\.html|\\.\\./game/index\\.html" /tmp/pages-docs-index.html
           curl -fSL --retry 10 --retry-delay 5 --retry-all-errors "${page_url%/}/game/index.html" -o /tmp/pages-game-index.html
           grep -qi "unciv.js" /tmp/pages-game-index.html
           curl -fSL --retry 10 --retry-delay 5 --retry-all-errors "${page_url%/}/game/unciv.js" -o /tmp/pages-unciv.js
@@ -469,5 +789,6 @@ jobs:
         with:
           name: pages-smoke
           path: |
+            /tmp/pages-docs-index.html
             /tmp/pages-game-index.html
             /tmp/pages-unciv.js

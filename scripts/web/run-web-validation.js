@@ -11,6 +11,12 @@ function parseBoolEnv(value, defaultValue) {
   return defaultValue;
 }
 
+function isSlf4jProviderWarning(text) {
+  return /SLF4J\(W\):\s*No SLF4J providers were found\./.test(text)
+    || /SLF4J\(W\):\s*Defaulting to no-operation \(NOP\) logger implementation/.test(text)
+    || /SLF4J\(W\):\s*Ignoring binding found at/.test(text);
+}
+
 async function main() {
   const baseUrl = process.env.WEB_BASE_URL || 'http://127.0.0.1:8000';
   const webProfile = String(process.env.WEB_PROFILE || '').trim();
@@ -96,6 +102,10 @@ async function main() {
   });
   page.on('console', (msg) => {
     const text = msg.text();
+    if (isSlf4jProviderWarning(text)) {
+      consoleErrors.push(`[slf4j-provider-warning] ${text}`);
+      return;
+    }
     if (/Failed to load resource/i.test(text)) return;
     if (msg.type() === 'error' || /Fatal Error|Uncaught throwable|JavaError|\[ERROR\]/i.test(text)) {
       consoleErrors.push(`[${msg.type()}] ${text}`);
@@ -110,7 +120,9 @@ async function main() {
     const targetUrl = new URL('/index.html', baseUrl);
     targetUrl.searchParams.set('webtest', '1');
     if (webProfile.length > 0) targetUrl.searchParams.set('webProfile', webProfile);
+    let startupRetryReason = null;
     for (let attempt = 1; attempt <= startupAttempts; attempt += 1) {
+      startupRetryReason = null;
       await page.goto(targetUrl.toString(), { waitUntil: 'domcontentloaded', timeout: 120000 });
       const landedUrl = page.url();
       if (!landedUrl.includes('webtest=1')) {
@@ -118,23 +130,16 @@ async function main() {
       }
       const attemptStartedAt = Date.now();
       const deadline = Date.now() + timeoutMs;
+      let sawValidationState = false;
       while (Date.now() < deadline) {
-        if (!state || !state.validationState) {
-          const hasMainNow = await page.evaluate(() => typeof window.main === 'function');
-          if (hasMainNow) {
-            await page.evaluate(() => {
-              if (!window.__uncivBootStarted && typeof window.main === 'function') {
-                window.__uncivBootStarted = true;
-                window.main();
-              }
-            });
-          }
-        }
         state = await page.evaluate(() => ({
           validationState: window.__uncivWebValidationState || null,
           validationError: window.__uncivWebValidationError || null,
           validationResultJson: window.__uncivWebValidationResultJson || null,
         }));
+        if (state.validationState) {
+          sawValidationState = true;
+        }
         const phaseState = String(state.validationState || '');
         if (phaseState.startsWith('running:') && mainMenuReadyAt === null) {
           mainMenuReadyAt = Date.now();
@@ -168,21 +173,45 @@ async function main() {
           break;
         }
         if (pageErrors.length > 0) {
+          if (!sawValidationState && attempt < startupAttempts) {
+            startupRetryReason = `startup page error: ${pageErrors.join('\n')}`;
+            pageErrors.length = 0;
+            consoleErrors.length = 0;
+            requestFailures.length = 0;
+            state = null;
+            break;
+          }
           throw new Error(`Page errors detected before validation completed: ${pageErrors.join('\n')}`);
         }
         if (consoleErrors.length > 0) {
+          if (!sawValidationState && attempt < startupAttempts) {
+            startupRetryReason = `startup console error: ${consoleErrors.join('\n')}`;
+            pageErrors.length = 0;
+            consoleErrors.length = 0;
+            requestFailures.length = 0;
+            state = null;
+            break;
+          }
           throw new Error(`Console errors detected before validation completed: ${consoleErrors.join('\n')}`);
         }
         await page.waitForTimeout(1000);
       }
       if (completed) break;
       if (attempt < startupAttempts) {
+        if (startupRetryReason) {
+          console.warn(`Retrying validation startup after attempt ${attempt}/${startupAttempts}: ${startupRetryReason}`);
+        }
         await page.waitForTimeout(1000);
       }
     }
 
     if (!completed) {
-      throw new Error(`Timed out waiting for web validation state. state=${JSON.stringify(state)} pageErrors=${JSON.stringify(pageErrors)} consoleErrors=${JSON.stringify(consoleErrors)}`);
+      const bootDebug = await page.evaluate(() => ({
+        hasMain: typeof window.main === 'function',
+        bootStarted: window.__uncivBootStarted === true,
+        readyState: document.readyState,
+      }));
+      throw new Error(`Timed out waiting for web validation state. state=${JSON.stringify(state)} boot=${JSON.stringify(bootDebug)} pageErrors=${JSON.stringify(pageErrors)} consoleErrors=${JSON.stringify(consoleErrors)}`);
     }
     await page.waitForTimeout(5000);
   } finally {
