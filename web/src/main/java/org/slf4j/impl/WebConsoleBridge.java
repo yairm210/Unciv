@@ -9,6 +9,9 @@ final class WebConsoleBridge {
     @JSBody(params = "message", script = "if (typeof console !== 'undefined') console.log(message);")
     static native void log(String message);
 
+    @JSBody(params = "message", script = "if (typeof console !== 'undefined' && console.debug) console.debug(message); else if (typeof console !== 'undefined') console.log(message);")
+    static native void debug(String message);
+
     @JSBody(params = "message", script = "if (typeof console !== 'undefined') console.warn(message);")
     static native void warn(String message);
 

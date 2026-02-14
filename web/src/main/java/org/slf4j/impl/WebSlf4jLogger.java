@@ -27,6 +27,10 @@ final class WebSlf4jLogger extends MarkerIgnoringBase {
             WebConsoleBridge.warn(output);
             return;
         }
+        if ("DEBUG".equals(level)) {
+            WebConsoleBridge.debug(output);
+            return;
+        }
         WebConsoleBridge.log(output);
     }
 
