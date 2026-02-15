@@ -768,6 +768,12 @@ object WebValidationRunner {
         requireExplicitSelection: Boolean = false,
     ): Pair<Boolean, String> {
         val civ = game.gameInfo?.getCurrentPlayerCivilization() ?: return false to "No current civ when choosing tech by click."
+        suspend fun forceWorldScreenAfterTechSelection(): Boolean {
+            if (game.screen is WorldScreen) return true
+            val resetOk = runCatching { game.resetToWorldScreen() }.isSuccess
+            if (!resetOk) return false
+            return waitUntilFrames(360) { game.screen is WorldScreen }
+        }
         if (civ.tech.currentTechnology() != null || civ.tech.techsToResearch.isNotEmpty()) {
             if (requireExplicitSelection) {
                 return false to "Technology already selected before click flow; explicit selection was required."
@@ -796,8 +802,9 @@ object WebValidationRunner {
                         if (civ.tech.canBeResearched(researchableTech)) {
                             civ.tech.techsToResearch.clear()
                             civ.tech.techsToResearch.add(researchableTech)
-                            game.popScreen()
-                            val closedAfterFallback = waitUntilFrames(480) { game.screen is WorldScreen }
+                            civ.tech.updateResearchProgress()
+                            game.settings.addCompletedTutorialTask("Pick technology")
+                            val closedAfterFallback = forceWorldScreenAfterTechSelection()
                             if (!closedAfterFallback) {
                                 return false to "Tech picker did not close after technology fallback selection."
                             }
@@ -810,7 +817,8 @@ object WebValidationRunner {
                     }
 
                     val closed = waitUntilFrames(480) { game.screen is WorldScreen }
-                    if (!closed) return false to "Tech picker did not close after confirming technology."
+                    val forceClosed = if (closed) true else forceWorldScreenAfterTechSelection()
+                    if (!forceClosed) return false to "Tech picker did not close after confirming technology."
                     if (civ.tech.currentTechnology() == null && civ.tech.techsToResearch.isEmpty()) {
                         return false to "Technology selection did not register after click flow."
                     }

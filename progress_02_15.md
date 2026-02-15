@@ -98,3 +98,8 @@
 - 2026-02-15T21:23Z | gate | `node scripts/web/run-js-browser-tests.js` (`phase4-full`, headless) | PASS (`totalRun=226 totalFailures=0`) | continue
 - 2026-02-15T21:23Z | gate | `node scripts/web/check-performance-budget.js` | PASS (`issues=[]`) | continue
 - 2026-02-15T21:23Z | gate | `node scripts/web/check-regression.js` | PASS (`regressionIssues=[]`) | commit + push + verify remote
+- 2026-02-15T21:25Z | push | pushed commit `d03bd1948` to `origin/master` | triggered remote run `22043344421` | monitor required jobs
+- 2026-02-15T21:36Z | remote-ci | run `22043344421` completed with single failure in `Web UI Core Loop (required, 30s)`; all other required web jobs passed | failure notes: `Tech picker did not close after technology fallback selection.` | patch tech picker close root cause
+- 2026-02-15T21:39Z | ui-fix | patched `WebValidationRunner.ensureTechByClicks()` to force return to world screen after fallback/confirm tech selection when picker does not auto-close | removes screen-stack edge case in tech-picker closure path | rerun build + core-loop
+- 2026-02-15T21:40Z | gate | `./gradlew :web:webBuildJs` | PASS | rerun core-loop
+- 2026-02-15T21:41Z | gate | `node scripts/web/run-web-ui-core-loop.js` (`HEADLESS=true`, timeout=60000, startup attempts=3) | PASS | commit + push follow-up

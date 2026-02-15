@@ -141,6 +141,14 @@ Compare the fork against Yair upstream behavior, identify web regressions, fix r
   - Preserve bounded retries and existing synchronous failure handling.
 - Status: done.
 
+### R14: Core-loop tech fallback selected research but left TechPicker open
+- Symptom: run `22043344421` failed `Web UI Core Loop (required, 30s)` with notes `Tech picker did not close after technology fallback selection.`
+- Root cause: fallback path in `ensureTechByClicks()` relied on `popScreen()` for picker closure, which can fail in stack-edge startup flows.
+- Fix:
+  - After fallback selection, apply research progress + tutorial task and force a deterministic return to world screen via `resetToWorldScreen()`.
+  - Add the same world-screen force-close fallback when confirm-click path selects tech but picker does not auto-close.
+- Status: done.
+
 ## Execution Results
 All local gates pass after fixes:
 1. `phase1` validation: PASS
