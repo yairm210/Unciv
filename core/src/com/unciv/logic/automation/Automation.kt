@@ -471,7 +471,7 @@ object Automation {
         var adjacentNaturalWonder = false
         var isContested = false
 
-        for (adjacentTile in tile.neighbors.filter { city.civ.hasExplored(it) && it.getOwner() == null  }) {
+        for (adjacentTile in tile.neighbors.filter { city.civ.hasExplored(it) && it.getOwner() != city.civ  }) {
             // the neighbor tile is owned by another civ
             if (adjacentTile.getOwner() != null) {
                 isContested = true
