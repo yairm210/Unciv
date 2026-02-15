@@ -52,3 +52,9 @@
 ## Outcome
 - Full local web build + e2e + regression/performance gates are green after root-cause fixes.
 - TeaVM compiler fork was evaluated as contingency and not required for this pass.
+
+## CI Follow-up (2026-02-15)
+- 2026-02-15T08:10Z | remote-ci | inspected failed run `22032164156` (`Web Build + Pages (TeaVM)`) | failure in `Build JS bundle` due JitPack snapshot metadata timeout (`Read timed out` for `com.github.xpenatan.gdx-teavm:*:-SNAPSHOT`) | harden workflow build step
+- 2026-02-15T08:23Z | ci-fix | added shared retry wrapper `scripts/web/run-web-build-js-ci.sh` with Gradle HTTP timeout flags and bounded retries | removes single-shot flake sensitivity for snapshot dependency fetches | wire workflows to wrapper
+- 2026-02-15T08:26Z | ci-fix | updated `.github/workflows/web-build.yml` and `.github/workflows/web-war-deep-nightly.yml` to use shared wrapper | DRY build invocation across web workflows | run local wrapper validation
+- 2026-02-15T08:29Z | verification | ran `WEB_BUILD_ATTEMPTS=1 scripts/web/run-web-build-js-ci.sh` locally | PASS (`:web:webBuildJs` successful) | commit and push CI hardening patch
