@@ -178,6 +178,26 @@ open class ZoomableScrollPane(
         return panGestureInProgress
     }
 
+    fun isInteractionGestureInProgress(): Boolean {
+        return isZooming() || isPanGestureInProgress()
+    }
+
+    override fun act(delta: Float) {
+        reconcileGestureState()
+        super.act(delta)
+    }
+
+    private fun reconcileGestureState() {
+        if (Gdx.input.isTouched) return
+        if (panGestureInProgress) {
+            panGestureInProgress = false
+            onPanStopListener?.invoke()
+        }
+        if (zoomListener.isPinchGestureInProgress()) {
+            zoomListener.forcePinchStop()
+        }
+    }
+
     inner class ZoomListener : ZoomGestureListener({ Vector2(stage.width, stage.height) }) {
 
         inner class ZoomAction : TemporalAction() {
@@ -208,7 +228,20 @@ open class ZoomableScrollPane(
         }
 
         private var zoomAction: ZoomAction? = null
+        private var pinchGestureInProgress = false
         var isZooming = false
+
+        fun isPinchGestureInProgress(): Boolean {
+            return pinchGestureInProgress
+        }
+
+        fun forcePinchStop() {
+            if (!pinchGestureInProgress) return
+            pinchGestureInProgress = false
+            if (!isZooming) return
+            isZooming = false
+            onZoomStopListener?.invoke()
+        }
 
         fun zoomOut(zoomMultiplier: Float = 0.82f) {
             if (scaleX <= minZoom) {
@@ -253,6 +286,7 @@ open class ZoomableScrollPane(
                 isZooming = true
                 onZoomStartListener?.invoke()
             }
+            pinchGestureInProgress = true
             scrollTo(
                 scrollX - translation.x / scaleX,
                 scrollY + translation.y / scaleY,
@@ -262,6 +296,8 @@ open class ZoomableScrollPane(
         }
 
         override fun pinchStop() {
+            pinchGestureInProgress = false
+            if (!isZooming) return
             isZooming = false
             onZoomStopListener?.invoke()
         }

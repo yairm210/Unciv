@@ -97,24 +97,18 @@ class WorldMapHolder(
 
     /**
      * Keep map interaction state in sync with current gesture state.
-     * On web, pan/zoom stop callbacks may occasionally be missed until a full screen rebuild (e.g. resize),
-     * so we reconcile each frame using touch state as the source of truth.
      */
     fun ensureInteractionState() {
         if (!::tileGroupMap.isInitialized) return
         val uncivStage = stage as? UncivStage ?: return
-        val appType = Gdx.app.type
-        val gestureActive = isZooming() || isPanGestureInProgress()
-        val staleWebGesture = appType == Application.ApplicationType.WebGL && gestureActive && !Gdx.input.isTouched
-        val interactionsEnabled = !gestureActive || staleWebGesture
+        val interactionsEnabled = !isInteractionGestureInProgress()
 
         if (uncivStage.performPointerEnterExitEvents != interactionsEnabled)
             uncivStage.performPointerEnterExitEvents = interactionsEnabled
         if (tileGroupMap.shouldAct != interactionsEnabled)
             tileGroupMap.shouldAct = interactionsEnabled
 
-        // Keep map hit-testing enabled on web to avoid losing taps when gesture stop events are missed.
-        val shouldHit = interactionsEnabled || appType == Application.ApplicationType.WebGL
+        val shouldHit = interactionsEnabled
         if (tileGroupMap.shouldHit != shouldHit)
             tileGroupMap.shouldHit = shouldHit
     }
