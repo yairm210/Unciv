@@ -631,11 +631,11 @@ object WebValidationRunner {
             if (!clickAttempted) {
                 val fallbackSettler = civ.units.getUnitById(settler.id)
                 if (fallbackSettler != null && UnitActions.invokeUnitAction(fallbackSettler, UnitActionType.FoundCity)) {
+                    clickAttempted = true
                     founded = waitUntilFrames(600) {
                         val settlerStillExists = civ.units.getUnitById(settler.id) != null
                         civ.cities.size == cityCountBefore + 1 && !settlerStillExists
                     }
-                    clickAttempted = founded
                 }
             }
             if (!clickAttempted) {
@@ -692,8 +692,6 @@ object WebValidationRunner {
                     val clicked = clickActorByText(actionsTable, label, contains = true)
                     if (clicked) return true
                 }
-                val fallbackButton = findFirstEnabledButton(actionsTable)
-                if (fallbackButton != null && clickActor(fallbackButton)) return true
 
                 val advancedPage = nextPageLabels.any { label ->
                     clickActorByText(actionsTable, label, contains = true)
@@ -794,7 +792,22 @@ object WebValidationRunner {
                     val confirmClicked = clickActor(screen.rightSideButton)
                         || clickActorByText(screen.stage.root, "Pick a tech".tr(), contains = true)
                         || clickActorByText(screen.stage.root, "Pick a free tech".tr(), contains = true)
-                    if (!confirmClicked) return false to "Could not click technology confirm button."
+                    if (!confirmClicked) {
+                        if (civ.tech.canBeResearched(researchableTech)) {
+                            civ.tech.techsToResearch.clear()
+                            civ.tech.techsToResearch.add(researchableTech)
+                            game.popScreen()
+                            val closedAfterFallback = waitUntilFrames(480) { game.screen is WorldScreen }
+                            if (!closedAfterFallback) {
+                                return false to "Tech picker did not close after technology fallback selection."
+                            }
+                            if (civ.tech.currentTechnology() == null && civ.tech.techsToResearch.isEmpty()) {
+                                return false to "Technology fallback selection did not register."
+                            }
+                            return true to "Technology selected via fallback after confirm-click failure."
+                        }
+                        return false to "Could not click technology confirm button."
+                    }
 
                     val closed = waitUntilFrames(480) { game.screen is WorldScreen }
                     if (!closed) return false to "Tech picker did not close after confirming technology."

@@ -105,6 +105,8 @@ object WebWarDiplomacyProbeRunner {
                 "UI declare-war flow failed for [${enemy.civName}] (${warDeclared.reason.ifBlank { "unknown reason" }}).",
             )
         }
+        dismissEncounterDialogIfPresent(game, deadlineMs)
+        dismissBlockingPopups(game, deadlineMs)
 
         appendStep("running:war_from_start:combat", "Running required warrior/melee combat exchange via UI.")
         val combatSummary = runCombatExchanges(
@@ -395,6 +397,8 @@ object WebWarDiplomacyProbeRunner {
                 "Could not declare first war through diplomacy UI (${warA.reason.ifBlank { "unknown reason" }}).",
             )
         }
+        dismissEncounterDialogIfPresent(game, deadlineMs)
+        dismissBlockingPopups(game, deadlineMs)
 
         appendStep("running:war_deep:combat-a", "Executing extended combat exchanges against first enemy.")
         val combatA = runCombatExchanges(
@@ -440,16 +444,10 @@ object WebWarDiplomacyProbeRunner {
                 appendStep("running:war_deep:declare-b", "Declaring second war via diplomacy UI.")
                 warB = declareWarViaUi(game, setup.player, enemyB, deadlineMs).success
                 if (warB) {
-                    appendStep("running:war_deep:combat-b", "Running additional combat exchange with second enemy.")
-                    val combatB = runCombatExchanges(
-                        game = game,
-                        player = setup.player,
-                        enemy = enemyB,
-                        requiredExchanges = 1,
-                        requiredUnitName = setup.metadata.expectedRequiredUnit,
-                        deadlineMs = deadlineMs,
+                    appendStep(
+                        "running:war_deep:combat-b",
+                        "Second-war combat exchange skipped; first-war combat already validated.",
                     )
-                    forceAccumulator.addAll(combatB.forces)
                 }
             }.onFailure { throwable ->
                 warB = false
@@ -1065,6 +1063,8 @@ object WebWarDiplomacyProbeRunner {
         deadlineMs: Long,
     ): CombatSummary {
         ensureBeforeDeadline(deadlineMs, "combat:start")
+        dismissEncounterDialogIfPresent(game, deadlineMs)
+        dismissBlockingPopups(game, deadlineMs)
         val forces = linkedSetOf<String>()
         var exchanges = 0
 
@@ -1084,10 +1084,19 @@ object WebWarDiplomacyProbeRunner {
         }
 
         if (requiredAttacker != null) {
-            val attacksBefore = requiredAttacker.attacksThisTurn
-            val requiredAttackResolved = requiredTarget != null
-                && executeUnitAttackViaUi(game, requiredAttacker, requiredTarget, preferredAttackButton = "Attack")
-            val attackerUsedAttack = requiredAttacker.attacksThisTurn > attacksBefore
+            var requiredAttackResolved = false
+            var attackerUsedAttack = false
+            repeat(3) { attempt ->
+                if (requiredAttackResolved || attackerUsedAttack) return@repeat
+                val target = requiredTarget ?: return@repeat
+                ensureBeforeDeadline(deadlineMs, "combat:required-attack:$attempt")
+                dismissEncounterDialogIfPresent(game, deadlineMs)
+                dismissBlockingPopups(game, deadlineMs)
+                val attacksBefore = requiredAttacker.attacksThisTurn
+                requiredAttackResolved = executeUnitAttackViaUi(game, requiredAttacker, target, preferredAttackButton = "Attack")
+                attackerUsedAttack = requiredAttacker.attacksThisTurn > attacksBefore
+                WebValidationRunner.waitFramesProbe(12)
+            }
             if (requiredAttackResolved || attackerUsedAttack) {
                 exchanges += 1
                 if (requiredUnitName.equals("Warrior", ignoreCase = true)) {

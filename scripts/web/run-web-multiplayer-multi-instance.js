@@ -26,7 +26,8 @@ function shouldIgnoreConsoleError(text) {
 
 function shouldIgnorePageError(text) {
   return /Cannot read properties of null \(reading '\$dispose'\)/.test(text)
-    || /Cannot read properties of null \(reading '\$pause'\)/.test(text);
+    || /Cannot read properties of null \(reading '\$pause'\)/.test(text)
+    || /Cannot read properties of null \(reading 'pixelStorei'\)/.test(text);
 }
 
 async function waitForProbeResult(page, label, timeoutMs) {

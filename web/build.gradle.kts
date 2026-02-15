@@ -206,14 +206,31 @@ fun hardenIndexBootstrap(indexFile: File) {
     val hardened = """
         <script>
             (function () {
+                var maxBootRetries = 8;
+                var baseRetryDelayMs = 50;
                 function boot() {
-                    if (window.__uncivBootStarted) return;
+                    if (window.__uncivBootStarted || window.__uncivBootInProgress) return;
                     if (typeof window.main !== 'function') {
                         setTimeout(boot, 25);
                         return;
                     }
-                    window.__uncivBootStarted = true;
-                    window.main();
+                    window.__uncivBootInProgress = true;
+                    try {
+                        window.__uncivBootStarted = true;
+                        window.main();
+                    } catch (err) {
+                        window.__uncivBootStarted = false;
+                        window.__uncivBootInProgress = false;
+                        window.__uncivBootFailures = (window.__uncivBootFailures || 0) + 1;
+                        if (window.__uncivBootFailures <= maxBootRetries) {
+                            var retryMs = baseRetryDelayMs * window.__uncivBootFailures;
+                            console.warn('Unciv web boot failed; retrying in ' + retryMs + 'ms', err);
+                            setTimeout(boot, retryMs);
+                            return;
+                        }
+                        throw err;
+                    }
+                    window.__uncivBootInProgress = false;
                 }
                 if (document.readyState === 'complete') {
                     setTimeout(boot, 0);

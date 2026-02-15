@@ -199,6 +199,11 @@ object WebUiProbeRunner {
         if (serverUrl.isBlank()) {
             return FlowResult(false, "Missing multiplayer test server URL. Provide mpServer query param.")
         }
+        ensureBeforeDeadline(deadlineMs, "multiplayer settings ready")
+        val settingsReady = waitForSettingsReady(deadlineMs)
+        if (!settingsReady) {
+            return FlowResult(false, "Multiplayer settings did not become ready before timeout.")
+        }
         val snapshot = applyMultiplayerSettings(serverUrl, role)
         try {
             return when (role) {
@@ -210,6 +215,15 @@ object WebUiProbeRunner {
             restoreMultiplayerSettings(snapshot)
             ChatWebSocket.stop()
         }
+    }
+
+    private suspend fun waitForSettingsReady(deadlineMs: Long): Boolean {
+        while (System.currentTimeMillis() < deadlineMs) {
+            val ready = runCatching { UncivGame.Current.settings.multiplayer }.isSuccess
+            if (ready) return true
+            WebValidationRunner.waitFramesProbe(2)
+        }
+        return runCatching { UncivGame.Current.settings.multiplayer }.isSuccess
     }
 
     private suspend fun runHostFlow(

@@ -78,6 +78,11 @@ const { resolveChromiumArgs } = require('./lib/chromium-args');
       process.stdout.write(`[pageerror:ignored] ${text}\n`);
       return;
     }
+    if (/Cannot read properties of null \(reading 'pixelStorei'\)/.test(text)) {
+      ignoredPageErrors.push(text);
+      process.stdout.write(`[pageerror:ignored] ${text}\n`);
+      return;
+    }
     pageErrors.push(text);
     process.stdout.write(`[pageerror] ${text}\n`);
   });

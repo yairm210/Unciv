@@ -15,6 +15,10 @@ class WebGame : UncivGame() {
             "jsRequested=$jsRequested uiRequested=$uiRequested mpRequested=$mpRequested",
         )
 
+        super.create()
+        enforceWebInputDefaults()
+        WebValidationInterop.appendBootstrapTrace("create:super", "super.create completed")
+
         if (uiRequested) {
             WebValidationInterop.publishRunnerSelection("uiProbe", "uiProbe query flag enabled")
             val startedUiProbe = WebUiProbeRunner.maybeStart(this)
@@ -23,14 +27,8 @@ class WebGame : UncivGame() {
                 WebValidationInterop.publishRunnerSelection("none", "uiProbe requested but runner did not start")
                 WebUiProbeInterop.publishError("uiProbe was requested but startup chain did not launch WebUiProbeRunner.")
             }
-            WebValidationInterop.appendBootstrapTrace("create:super", "calling super.create after uiProbe dispatch")
-            super.create()
-            enforceWebInputDefaults()
             return
         }
-
-        super.create()
-        enforceWebInputDefaults()
 
         if (jsRequested) {
             WebValidationInterop.publishRunnerSelection("jstests", "jstests query flag enabled")

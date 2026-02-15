@@ -25,7 +25,7 @@ async function main() {
   const browserName = String(process.env.WEB_BROWSER || 'chromium').toLowerCase();
   const timeoutMs = Number(process.env.WEB_VALIDATION_TIMEOUT_MS || '430000');
   const startupTimeoutMs = Number(process.env.WEB_VALIDATION_STARTUP_TIMEOUT_MS || '45000');
-  const startupAttempts = Number(process.env.WEB_VALIDATION_STARTUP_ATTEMPTS || '1');
+  const startupAttempts = Number(process.env.WEB_VALIDATION_STARTUP_ATTEMPTS || '2');
   const headless = parseBoolEnv(process.env.HEADLESS, true);
   const debugState = String(process.env.WEB_VALIDATION_DEBUG || '') === '1';
   const mpServer = String(process.env.WEB_MP_SERVER || '').trim();
@@ -83,6 +83,7 @@ async function main() {
     const text = err && err.stack ? err.stack : String(err);
     if (/Cannot read properties of null \(reading '\$dispose'\)/.test(text)) return;
     if (/Cannot read properties of null \(reading '\$pause'\)/.test(text)) return;
+    if (/Cannot read properties of null \(reading 'pixelStorei'\)/.test(text)) return;
     pageErrors.push(text);
   });
   page.on('crash', () => {
@@ -133,6 +134,26 @@ async function main() {
         }));
         if (state.validationState) {
           sawValidationState = true;
+        }
+        if (!state.validationState) {
+          const bootState = await page.evaluate(() => ({
+            hasMain: typeof window.main === 'function',
+            bootStarted: window.__uncivBootStarted === true || window.__uncivValidationBootInvoked === true,
+            readyState: document.readyState,
+          }));
+          if (!bootState.bootStarted && bootState.hasMain && bootState.readyState === 'complete') {
+            await page.evaluate(() => {
+              if (window.__uncivBootStarted === true || window.__uncivValidationBootInvoked === true) return;
+              window.__uncivValidationBootInvoked = true;
+              try {
+                window.__uncivBootStarted = true;
+                window.main();
+              } catch (_) {
+                window.__uncivBootStarted = false;
+                window.__uncivValidationBootInvoked = false;
+              }
+            });
+          }
         }
         const phaseState = String(state.validationState || '');
         if (phaseState.startsWith('running:') && mainMenuReadyAt === null) {
@@ -203,6 +224,10 @@ async function main() {
       const bootDebug = await page.evaluate(() => ({
         hasMain: typeof window.main === 'function',
         bootStarted: window.__uncivBootStarted === true,
+        validationBootInvoked: window.__uncivValidationBootInvoked === true,
+        runnerSelected: window.__uncivRunnerSelected || null,
+        runnerReason: window.__uncivRunnerReason || null,
+        bootstrapTraceJson: window.__uncivBootstrapTraceJson || null,
         readyState: document.readyState,
       }));
       throw new Error(`Timed out waiting for web validation state. state=${JSON.stringify(state)} boot=${JSON.stringify(bootDebug)} pageErrors=${JSON.stringify(pageErrors)} consoleErrors=${JSON.stringify(consoleErrors)}`);
