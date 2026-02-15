@@ -469,8 +469,15 @@ object Automation {
 
         // Check if we get access to better tiles from this tile
         var adjacentNaturalWonder = false
+        var isContested = false
 
-        for (adjacentTile in tile.neighbors.filter { city.civ.hasExplored(it) && it.getOwner() == null }) {
+        for (adjacentTile in tile.neighbors.filter { city.civ.hasExplored(it) && it.getOwner() == null  }) {
+            // the neighbor tile is owned by another civ
+            if (adjacentTile.getOwner() != null) {
+                isContested = true
+                continue
+            }
+            // the neighbor tile is not owned by anyone
             val adjacentDistance = city.getCenterTile().aerialDistanceTo(adjacentTile)
             val adjacentResource = adjacentTile.tileResource
             if (city.civ.canSeeResource(adjacentResource) &&
@@ -482,6 +489,7 @@ object Automation {
             }
         }
         if (adjacentNaturalWonder) score -= 1
+        if (isContested) score -= 1
 
         // Tiles not adjacent to owned land are very hard to acquire
         if (tile.neighbors.none { it.getCity() != null && it.getCity()!!.id == city.id })

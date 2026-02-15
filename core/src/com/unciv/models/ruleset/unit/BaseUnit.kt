@@ -187,12 +187,9 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     }
 
     override fun getBaseBuyCost(city: City, stat: Stat): Float? {
-        return sequence {
-            val baseCost = super.getBaseBuyCost(city, stat)
-            if (baseCost != null)
-                yield(baseCost)
-            yieldAll(costFunctions.getBaseBuyCosts(city, stat))
-        }.minOrNull()
+        val specificCost = costFunctions.getBaseBuyCosts(city, stat).minOrNull()
+        if (specificCost != null) return specificCost
+        return super.getBaseBuyCost(city, stat)
     }
 
     override fun getStatBuyCost(city: City, stat: Stat): Int? = costFunctions.getStatBuyCost(city, stat)
