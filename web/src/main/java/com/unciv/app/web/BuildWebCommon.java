@@ -482,6 +482,8 @@ final class BuildWebCommon {
                             + "                var bootWatchdogDelayMs = 4000;\n"
                             + "                function hasBootProgress() {\n"
                             + "                    return !!(\n"
+                            + "                        window.__uncivBootProgressMarker\n"
+                            + "                        ||\n"
                             + "                        window.__uncivRunnerSelected\n"
                             + "                        || window.__uncivWebValidationState\n"
                             + "                        || window.__uncivUiProbeState\n"

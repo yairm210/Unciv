@@ -90,6 +90,7 @@ class TechPickerScreen(
         pickerPane.bottomTable.background = skinStrings.getUiBackground("TechPickerScreen/BottomTable", tintColor = skinStrings.skinConfig.clearColor)
         
         rightSideButton.setText(if (freeTechPick) "Pick a free tech".tr() else "Pick a tech".tr())
+        rightSideButton.name = "tech-picker-confirm"
         rightSideButton.onClick(UncivSound.Paper) { tryExit() }
 
         // per default show current/recent technology,
@@ -196,6 +197,7 @@ class TechPickerScreen(
                     techTable.add(table).fill()
                 } else {
                     val techButton = TechButton(tech.name, civTech, false)
+                    techButton.name = "tech-option:${tech.name}"
                     table.add(techButton)
                     techNameToButton[tech.name] = techButton
                     techButton.onClick { selectTechnology(tech, queue = false, center = false) }

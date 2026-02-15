@@ -103,3 +103,19 @@
 - 2026-02-15T21:39Z | ui-fix | patched `WebValidationRunner.ensureTechByClicks()` to force return to world screen after fallback/confirm tech selection when picker does not auto-close | removes screen-stack edge case in tech-picker closure path | rerun build + core-loop
 - 2026-02-15T21:40Z | gate | `./gradlew :web:webBuildJs` | PASS | rerun core-loop
 - 2026-02-15T21:41Z | gate | `node scripts/web/run-web-ui-core-loop.js` (`HEADLESS=true`, timeout=60000, startup attempts=3) | PASS | commit + push follow-up
+
+## Native Root-Cause Replacement (strict click-only, no state fallback)
+- 2026-02-15T22:12Z | root-cause-analysis | traced intermittent strict tech-picker failures and black-screen/retry symptoms | startup progress marker was published too late for watchdog gating, allowing premature boot retries in edge timing windows | publish launcher-entry progress marker
+- 2026-02-15T22:14Z | root-fix | added early boot progress publication at `WebLauncher.main` entry via `WebValidationInterop.publishBootProgress()` and added `__uncivBootProgressMarker` to `BuildWebCommon.hardenIndexBootstrap()` progress predicate | removes premature duplicate/stalled boot retry path without changing runner selection contract | keep strict native tech flow
+- 2026-02-15T22:15Z | ui-fix | kept `TechPickerScreen` actor identity metadata (`tech-picker-confirm`, `tech-option:<name>`) and reworked `ensureTechByClicks()` to strict click-only behavior (no direct tech mutation, no forced screen reset) with transition-aware success handling | native-only probe path retained and stabilized | rerun full local web gates
+- 2026-02-15T22:21Z | gate | `./gradlew :web:webBuildJs` | PASS | run repeated strict core-loop
+- 2026-02-15T22:25Z | gate | `node scripts/web/run-web-ui-core-loop.js` x5 consecutive | PASS all 5 (one run required startup retry, all completed passed) | continue
+- 2026-02-15T22:26Z | gate | `node scripts/web/run-web-ui-map-editor.js` | PASS | continue
+- 2026-02-15T22:27Z | gate | `node scripts/web/run-web-ui-multiplayer.js` with local multiplayer test server | PASS (host+guest passed) | continue
+- 2026-02-15T22:28Z | gate | `node scripts/web/run-web-ui-war-deep.js` | PASS | continue
+- 2026-02-15T22:29Z | gate | `WEB_PROFILE=phase1 node scripts/web/run-web-validation.js` with local mp server | PASS (`pass=9 fail=0 blocked=0 disabled=3`) | continue
+- 2026-02-15T22:31Z | gate | `WEB_PROFILE=phase4-full node scripts/web/run-web-validation.js` with local mp server | PASS (`pass=12 fail=0 blocked=0 disabled=0`) | continue
+- 2026-02-15T22:31Z | gate | `WEB_PROFILE=phase4-full node scripts/web/run-js-browser-tests.js` | PASS (`status=PASSED`, jsResult.passed=true, no page/console errors) | continue
+- 2026-02-15T22:33Z | gate | `WEB_PROFILE=phase4-full node scripts/web/run-web-multiplayer-multi-instance.js` with local mp server | PASS | continue
+- 2026-02-15T22:33Z | gate | `node scripts/web/check-performance-budget.js` | PASS (`issues=[]`) | continue
+- 2026-02-15T22:33Z | gate | `node scripts/web/check-regression.js` | PASS (`regressionIssues=[]`) | ready to commit + push

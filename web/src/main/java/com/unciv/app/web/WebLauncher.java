@@ -15,6 +15,8 @@ import com.unciv.utils.Log;
 
 public class WebLauncher {
     public static void main(String[] args) {
+        WebValidationInterop.publishBootProgress("launcher-main-entry");
+        WebValidationInterop.appendBootstrapTrace("launcher:main", "WebLauncher.main entered");
         boolean jsTestsMode = WebJsTestInterop.isEnabled();
         WebProfile profile = resolveWebProfile();
         boolean disableAll = readBooleanOverride("webRollback");

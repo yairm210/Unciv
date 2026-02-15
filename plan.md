@@ -186,3 +186,23 @@ No TeaVM compiler fork was required for this recovery pass. Existing local depen
   - `node scripts/web/run-js-browser-tests.js` PASS (`totalRun=226`, `totalFailures=0`)
   - `node scripts/web/check-performance-budget.js` PASS
   - `node scripts/web/check-regression.js` PASS
+
+## Native Tech Picker Reliability Rework (2026-02-15 late run)
+
+### R15: Root startup race caused intermittent black-screen/runner-null and unstable UI interaction timing
+- Symptom:
+  - intermittent refresh black screen/no-progress starts,
+  - sporadic uiProbe startup retries with `runner=null state=null hasMain=true bootInvoked=true`,
+  - strict native tech-picker clicks intermittently failing with transition-to-world during selection.
+- Root cause:
+  - hardened bootstrap watchdog could schedule a retry before startup progress became observable, causing overlapping/competing runtime startup paths in timing-sensitive runs.
+  - startup progress was inferred only from late runner/probe markers, not from launcher entry.
+- Fix:
+  - publish a dedicated early boot-progress marker at `WebLauncher.main` entry (`__uncivBootProgressMarker`) without altering runner semantics.
+  - teach hardened bootstrap `hasBootProgress()` to honor that early marker, preventing premature retry loops.
+  - keep `ensureTechByClicks()` strict native click-only (actor clicks only, no direct `civ.tech` mutation, no forced world reset from probe path) with transition-aware success checks only.
+  - keep deterministic actor metadata in `TechPickerScreen` (`tech-picker-confirm`, `tech-option:<name>`).
+- Status: done.
+
+### Superseded behavior
+- Non-native tech fallback behavior from earlier recovery (direct tech-state mutation / forced screen reset) is superseded by this strict native flow.

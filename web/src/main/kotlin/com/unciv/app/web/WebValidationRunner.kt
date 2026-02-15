@@ -45,7 +45,6 @@ import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.ui.screens.cityscreen.CityScreen
 import com.unciv.ui.screens.pickerscreens.PantheonPickerScreen
 import com.unciv.ui.screens.pickerscreens.TechPickerScreen
-import com.unciv.ui.screens.pickerscreens.TechButton
 import com.unciv.ui.screens.savescreens.LoadGameScreen
 import com.unciv.ui.screens.savescreens.LoadOrSaveScreen
 import com.unciv.ui.screens.savescreens.SaveGameScreen
@@ -768,12 +767,21 @@ object WebValidationRunner {
         requireExplicitSelection: Boolean = false,
     ): Pair<Boolean, String> {
         val civ = game.gameInfo?.getCurrentPlayerCivilization() ?: return false to "No current civ when choosing tech by click."
-        suspend fun forceWorldScreenAfterTechSelection(): Boolean {
-            if (game.screen is WorldScreen) return true
-            val resetOk = runCatching { game.resetToWorldScreen() }.isSuccess
-            if (!resetOk) return false
-            return waitUntilFrames(360) { game.screen is WorldScreen }
+
+        fun techFailure(
+            reason: String,
+            screen: TechPickerScreen?,
+            lastClickedTechActor: String?,
+            selectedVisible: Boolean?,
+        ): Pair<Boolean, String> {
+            val confirmActor = screen?.let { findActorByName(it.stage.root, "tech-picker-confirm") }
+            val confirmExists = confirmActor != null
+            val confirmDisabled = if (screen != null) screen.rightSideButton.isDisabled else null
+            val screenName = game.screen?.javaClass?.simpleName ?: "null"
+            val details = "screen=$screenName lastTechActor=${lastClickedTechActor ?: "none"} confirmExists=$confirmExists confirmDisabled=${confirmDisabled ?: "n/a"} selectedVisible=${selectedVisible ?: "n/a"}"
+            return false to "$reason ($details)"
         }
+
         if (civ.tech.currentTechnology() != null || civ.tech.techsToResearch.isNotEmpty()) {
             if (requireExplicitSelection) {
                 return false to "Technology already selected before click flow; explicit selection was required."
@@ -784,41 +792,90 @@ object WebValidationRunner {
         repeat(80) {
             when (val screen = game.screen) {
                 is TechPickerScreen -> {
-                    val researchableTech = civ.gameInfo.ruleset.technologies.keys.firstOrNull { civ.tech.canBeResearched(it) }
-                        ?: return false to "No researchable technology available for click flow."
-                    var techClicked = clickActorByText(screen.stage.root, researchableTech.tr(true), contains = true)
-                    if (!techClicked) {
-                        val firstTechButton = findActorByType(screen.stage.root, TechButton::class.java)
-                        if (firstTechButton != null) {
-                            techClicked = clickActor(firstTechButton)
+                    val researchableTechs = civ.gameInfo.ruleset.technologies.values
+                        .asSequence()
+                        .map { it.name }
+                        .filter { civ.tech.canBeResearched(it) }
+                        .toList()
+                    if (researchableTechs.isEmpty()) {
+                        if (game.screen !is TechPickerScreen) {
+                            if (civ.tech.currentTechnology() != null || civ.tech.techsToResearch.isNotEmpty()) {
+                                return true to "Technology selected."
+                            }
+                            return@repeat
+                        }
+                        return techFailure(
+                            reason = "No researchable technology available for click flow.",
+                            screen = screen,
+                            lastClickedTechActor = null,
+                            selectedVisible = !screen.rightSideButton.isDisabled,
+                        )
+                    }
+
+                    var lastClickedTechActor: String? = null
+                    var selectedVisible = !screen.rightSideButton.isDisabled
+                    if (!selectedVisible) {
+                        for (researchableTech in researchableTechs) {
+                            val actorName = "tech-option:$researchableTech"
+                            val clickedByName = clickActorByName(screen.stage.root, actorName)
+                            val clickedByText = if (clickedByName) false else clickActorByText(
+                                root = screen.stage.root,
+                                text = researchableTech.tr(true),
+                                contains = true,
+                            )
+                            if (!clickedByName && !clickedByText) continue
+                            lastClickedTechActor = actorName
+                            waitFrames(uiWaitMedium)
+                            selectedVisible = waitUntilFrames(240) { !screen.rightSideButton.isDisabled }
+                            if (selectedVisible) break
                         }
                     }
-                    if (techClicked) waitFrames(uiWaitMedium)
 
-                    val confirmClicked = clickActor(screen.rightSideButton)
-                        || clickActorByText(screen.stage.root, "Pick a tech".tr(), contains = true)
-                        || clickActorByText(screen.stage.root, "Pick a free tech".tr(), contains = true)
-                    if (!confirmClicked) {
-                        if (civ.tech.canBeResearched(researchableTech)) {
-                            civ.tech.techsToResearch.clear()
-                            civ.tech.techsToResearch.add(researchableTech)
-                            civ.tech.updateResearchProgress()
-                            game.settings.addCompletedTutorialTask("Pick technology")
-                            val closedAfterFallback = forceWorldScreenAfterTechSelection()
-                            if (!closedAfterFallback) {
-                                return false to "Tech picker did not close after technology fallback selection."
+                    if (!selectedVisible) {
+                        if (game.screen !is TechPickerScreen) {
+                            if (civ.tech.currentTechnology() != null || civ.tech.techsToResearch.isNotEmpty()) {
+                                return true to "Technology selected."
                             }
-                            if (civ.tech.currentTechnology() == null && civ.tech.techsToResearch.isEmpty()) {
-                                return false to "Technology fallback selection did not register."
-                            }
-                            return true to "Technology selected via fallback after confirm-click failure."
+                            return@repeat
                         }
-                        return false to "Could not click technology confirm button."
+                        return techFailure(
+                            reason = "Could not select a researchable technology option.",
+                            screen = screen,
+                            lastClickedTechActor = lastClickedTechActor,
+                            selectedVisible = false,
+                        )
+                    }
+
+                    val confirmClicked = clickActorByName(screen.stage.root, "tech-picker-confirm")
+                        || clickActor(screen.rightSideButton)
+                    if (!confirmClicked) {
+                        if (civ.tech.currentTechnology() != null || civ.tech.techsToResearch.isNotEmpty()) {
+                            return true to "Technology selected."
+                        }
+                        if (game.screen !is TechPickerScreen) return@repeat
+                        return techFailure(
+                            reason = "Could not click technology confirm button.",
+                            screen = screen,
+                            lastClickedTechActor = lastClickedTechActor,
+                            selectedVisible = selectedVisible,
+                        )
                     }
 
                     val closed = waitUntilFrames(480) { game.screen is WorldScreen }
-                    val forceClosed = if (closed) true else forceWorldScreenAfterTechSelection()
-                    if (!forceClosed) return false to "Tech picker did not close after confirming technology."
+                    if (!closed) {
+                        if (game.screen !is TechPickerScreen) {
+                            if (civ.tech.currentTechnology() != null || civ.tech.techsToResearch.isNotEmpty()) {
+                                return true to "Technology selected."
+                            }
+                            return@repeat
+                        }
+                        return techFailure(
+                            reason = "Tech picker did not close after confirming technology.",
+                            screen = screen,
+                            lastClickedTechActor = lastClickedTechActor,
+                            selectedVisible = selectedVisible,
+                        )
+                    }
                     if (civ.tech.currentTechnology() == null && civ.tech.techsToResearch.isEmpty()) {
                         return false to "Technology selection did not register after click flow."
                     }
@@ -1620,6 +1677,23 @@ object WebValidationRunner {
         return match
     }
 
+    private fun findActorByName(root: Actor, actorName: String): Actor? {
+        if (root.name == actorName) return root
+        if (root !is Group) return null
+        val children = root.children
+        for (index in 0 until children.size) {
+            val found = findActorByName(children[index], actorName)
+            if (found != null) return found
+        }
+        return null
+    }
+
+    private fun findClickableActorByName(root: Actor, actorName: String): Actor? {
+        val actor = findActorByName(root, actorName) ?: return null
+        if (!actor.isVisible) return null
+        return findClickableAncestor(actor) ?: actor
+    }
+
     private fun clickActorByText(
         root: Actor,
         text: String,
@@ -1627,6 +1701,11 @@ object WebValidationRunner {
         preferLastMatch: Boolean = false,
     ): Boolean {
         val actor = findClickableActorByText(root, text, contains, preferLastMatch) ?: return false
+        return clickActor(actor)
+    }
+
+    private fun clickActorByName(root: Actor, actorName: String): Boolean {
+        val actor = findClickableActorByName(root, actorName) ?: return false
         return clickActor(actor)
     }
 

@@ -133,6 +133,13 @@ final class WebValidationInterop {
     static native void appendBootstrapTrace(String step, String detail);
 
     @JSBody(
+            params = "marker",
+            script =
+                    "if (typeof window === 'undefined') return;"
+                            + "window.__uncivBootProgressMarker = marker;")
+    static native void publishBootProgress(String marker);
+
+    @JSBody(
             script =
                     "if (typeof window === 'undefined') return;"
                             + "if (window.__uncivOpenSpyInstalled) return;"
