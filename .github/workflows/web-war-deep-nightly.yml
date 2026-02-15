@@ -25,7 +25,7 @@ jobs:
             -v "${{ github.workspace }}:/workspace" \
             -w /workspace \
             unciv-web-builder \
-            bash -lc "scripts/web/run-web-build-js-ci.sh"
+            bash -lc "./gradlew --configuration-cache :web:webBuildJs"
 
       - name: Upload web dist artifact
         uses: actions/upload-artifact@v4
