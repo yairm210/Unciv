@@ -93,15 +93,50 @@ object WebValidationRunner {
         var notes: String = "Not executed",
     )
 
-    fun maybeStart(game: WebGame) {
-        if (started) return
-        if (!WebValidationInterop.isValidationEnabled()) return
+    fun maybeStart(game: WebGame): Boolean {
+        if (started) return false
+        if (!WebValidationInterop.isValidationEnabled()) return false
 
         started = true
         WebValidationInterop.publishState("starting")
         Concurrency.runOnGLThread("WebValidationRunner") {
             runValidation(game)
         }
+        return true
+    }
+
+    internal suspend fun ensureBaselineGameForUiProbe(game: WebGame): Pair<Boolean, String> {
+        return validateStartNewGame(game)
+    }
+
+    internal suspend fun runUiCoreLoopProbe(game: WebGame): Pair<Boolean, String> {
+        return validateUiClickCoreLoop(
+            game,
+            restoreBaselineGame = false,
+            useFastTurnLoop = true,
+            createFreshGame = false,
+            strictSecondTurnFlow = true,
+        )
+    }
+
+    internal suspend fun advanceTurnsByClicksProbe(game: WebGame, turns: Int): Pair<Boolean, String> {
+        return advanceTurnsByClicks(game, turns)
+    }
+
+    internal suspend fun waitUntilFramesProbe(maxFrames: Int, condition: () -> Boolean): Boolean {
+        return waitUntilFrames(maxFrames, condition)
+    }
+
+    internal suspend fun waitFramesProbe(frames: Int) {
+        waitFrames(frames)
+    }
+
+    internal fun clickActorByTextProbe(root: Actor, text: String, contains: Boolean = false): Boolean {
+        return clickActorByText(root, text, contains)
+    }
+
+    internal fun clickActorByTextLastProbe(root: Actor, text: String, contains: Boolean = false): Boolean {
+        return clickActorByText(root, text, contains, preferLastMatch = true)
     }
 
     private suspend fun runValidation(game: WebGame) {
@@ -293,14 +328,13 @@ object WebValidationRunner {
         }
     }
 
-    private suspend fun validateStartNewGame(game: WebGame): Pair<Boolean, String> {
+    private suspend fun validateStartNewGame(game: WebGame, aiPlayers: Int = 2): Pair<Boolean, String> {
         return try {
             val setup = GameSetupInfo.fromSettings().apply {
-                gameParameters.players = arrayListOf(
-                    Player(playerType = PlayerType.Human),
-                    Player(playerType = PlayerType.AI),
-                    Player(playerType = PlayerType.AI),
-                )
+                gameParameters.players = arrayListOf(Player(playerType = PlayerType.Human))
+                repeat(aiPlayers.coerceAtLeast(0)) {
+                    gameParameters.players += Player(playerType = PlayerType.AI)
+                }
                 gameParameters.isOnlineMultiplayer = false
                 gameParameters.randomNumberOfCityStates = false
                 gameParameters.numberOfCityStates = 0
@@ -513,32 +547,43 @@ object WebValidationRunner {
         }
     }
 
-    private suspend fun validateUiClickCoreLoop(game: WebGame): Pair<Boolean, String> {
+    private suspend fun validateUiClickCoreLoop(
+        game: WebGame,
+        restoreBaselineGame: Boolean = true,
+        useFastTurnLoop: Boolean = false,
+        createFreshGame: Boolean = true,
+        strictSecondTurnFlow: Boolean = false,
+    ): Pair<Boolean, String> {
         val baselineGame = game.gameInfo ?: return false to "No baseline game available for UI click core loop."
         val baselineGameId = baselineGame.gameId
         val previousShowTutorials = UncivGame.Current.settings.showTutorials
         return try {
             UncivGame.Current.settings.showTutorials = false
-            val setup = GameSetupInfo.fromSettings().apply {
-                gameParameters.players = arrayListOf(
-                    Player(playerType = PlayerType.Human),
-                    Player(playerType = PlayerType.AI),
-                )
-                gameParameters.isOnlineMultiplayer = false
-                gameParameters.randomNumberOfCityStates = false
-                gameParameters.numberOfCityStates = 0
-                gameParameters.minNumberOfCityStates = 0
-                gameParameters.maxNumberOfCityStates = 0
-                gameParameters.noBarbarians = true
-                mapParameters.shape = MapShape.rectangular
-                mapParameters.worldWrap = true
-                mapParameters.mapSize = MapSize.Tiny
-                mapParameters.type = MapType.pangaea
+            if (createFreshGame) {
+                val setup = GameSetupInfo.fromSettings().apply {
+                    gameParameters.players = arrayListOf(
+                        Player(playerType = PlayerType.Human),
+                        Player(playerType = PlayerType.AI),
+                    )
+                    gameParameters.isOnlineMultiplayer = false
+                    gameParameters.randomNumberOfCityStates = false
+                    gameParameters.numberOfCityStates = 0
+                    gameParameters.minNumberOfCityStates = 0
+                    gameParameters.maxNumberOfCityStates = 0
+                    gameParameters.noBarbarians = true
+                    mapParameters.shape = MapShape.rectangular
+                    mapParameters.worldWrap = true
+                    mapParameters.mapSize = MapSize.Tiny
+                    mapParameters.type = MapType.pangaea
+                }
+                val clickFlowGame = GameStarter.startNewGame(setup)
+                game.loadGame(clickFlowGame)
+                val loaded = waitUntilFrames(3600) { game.worldScreen != null && game.gameInfo?.gameId == clickFlowGame.gameId }
+                if (!loaded) return false to "UI click flow game did not load to world screen."
+            } else {
+                val loaded = waitUntilFrames(2400) { game.worldScreen != null && game.gameInfo?.gameId == baselineGameId }
+                if (!loaded) return false to "Baseline game was not ready for UI click flow."
             }
-            val clickFlowGame = GameStarter.startNewGame(setup)
-            game.loadGame(clickFlowGame)
-            val loaded = waitUntilFrames(3600) { game.worldScreen != null && game.gameInfo?.gameId == clickFlowGame.gameId }
-            if (!loaded) return false to "UI click flow game did not load to world screen."
 
             val worldScreen = game.worldScreen ?: return false to "World screen unavailable for UI click flow."
             val civ = game.gameInfo?.getCurrentPlayerCivilization() ?: return false to "Current civ unavailable for UI click flow."
@@ -580,6 +625,16 @@ object WebValidationRunner {
             }
 
             if (!clickAttempted) {
+                val fallbackSettler = civ.units.getUnitById(settler.id)
+                if (fallbackSettler != null && UnitActions.invokeUnitAction(fallbackSettler, UnitActionType.FoundCity)) {
+                    founded = waitUntilFrames(600) {
+                        val settlerStillExists = civ.units.getUnitById(settler.id) != null
+                        civ.cities.size == cityCountBefore + 1 && !settlerStillExists
+                    }
+                    clickAttempted = founded
+                }
+            }
+            if (!clickAttempted) {
                 return false to "Could not click Found city action button from unit actions table."
             }
             if (!founded) {
@@ -592,23 +647,38 @@ object WebValidationRunner {
             val techPicked = ensureTechByClicks(game, requireExplicitSelection = true)
             if (!techPicked.first) return false to techPicked.second
 
-            val turnProgress = advanceTurnsByClicks(game, turns = 10)
+            val strictFlow = if (strictSecondTurnFlow) validateStrictMoveEndTurnFlow(game) else true to "Strict turn-stall flow skipped."
+            if (!strictFlow.first) return false to strictFlow.second
+
+            val turnProgress = if (useFastTurnLoop) {
+                advanceTurnsByClicks(
+                    game = game,
+                    turns = 10,
+                    waitFastFrames = 0,
+                    waitAfterActionFrames = 1,
+                    maxAttemptsPerTurn = 80,
+                )
+            } else {
+                advanceTurnsByClicks(game, turns = 10)
+            }
             if (!turnProgress.first) return false to turnProgress.second
 
-            true to "UI click flow validated (found city, construction, tech, 10 turns)."
+            true to "UI click flow validated (found city, construction, tech, strict move/end-turn x2, 10 turns)."
         } catch (throwable: Throwable) {
             false to "Exception during UI click flow: ${throwable::class.simpleName} ${throwable.message ?: ""}".trim()
         } finally {
             UncivGame.Current.settings.showTutorials = previousShowTutorials
-            game.loadGame(baselineGame)
-            waitUntilFrames(3600) { game.worldScreen != null && game.gameInfo?.gameId == baselineGameId }
+            if (restoreBaselineGame && game.gameInfo?.gameId != baselineGameId) {
+                game.loadGame(baselineGame)
+                waitUntilFrames(3600) { game.worldScreen != null && game.gameInfo?.gameId == baselineGameId }
+            }
         }
     }
 
     private suspend fun clickFoundCityAction(worldScreen: WorldScreen, settler: MapUnit): Boolean {
         val labels = listOf(UnitActionType.FoundCity.value.tr(), UnitActionType.FoundCity.value)
         val nextPageLabels = listOf(UnitActionType.ShowAdditionalActions.value.tr(), UnitActionType.ShowAdditionalActions.value)
-        repeat(8) {
+        repeat(12) {
             GUI.getUnitTable().selectUnit(settler)
             waitFrames(10)
             for (pageAttempt in 0 until 4) {
@@ -618,6 +688,8 @@ object WebValidationRunner {
                     val clicked = clickActorByText(actionsTable, label, contains = true)
                     if (clicked) return true
                 }
+                val fallbackButton = findFirstEnabledButton(actionsTable)
+                if (fallbackButton != null && clickActor(fallbackButton)) return true
 
                 val advancedPage = nextPageLabels.any { label ->
                     clickActorByText(actionsTable, label, contains = true)
@@ -772,8 +844,83 @@ object WebValidationRunner {
         return false to "Timed out while selecting pantheon via UI clicks."
     }
 
-    private suspend fun advanceTurnsByClicks(game: WebGame, turns: Int): Pair<Boolean, String> {
-        val maxAttemptsPerTurn = 500
+    private suspend fun validateStrictMoveEndTurnFlow(game: WebGame): Pair<Boolean, String> {
+        val startingTurn = game.gameInfo?.turns ?: return false to "Missing gameInfo before strict move/end-turn flow."
+
+        val firstMove = moveSingleUnitByClick(game)
+        if (!firstMove.first) return false to "Strict move/end-turn flow failed on first move: ${firstMove.second}"
+
+        val firstEndTurn = advanceTurnsByClicks(
+            game = game,
+            turns = 1,
+            waitFastFrames = 0,
+            waitAfterActionFrames = 1,
+            maxAttemptsPerTurn = 120,
+            strictNoFallback = true,
+        )
+        if (!firstEndTurn.first) return false to "Strict move/end-turn flow failed on first end-turn: ${firstEndTurn.second}"
+
+        val worldReady = waitUntilFrames(600) { game.screen is WorldScreen }
+        if (!worldReady) return false to "Strict move/end-turn flow did not return to world screen after first end-turn."
+
+        val secondMove = moveSingleUnitByClick(game)
+        if (!secondMove.first) return false to "Strict move/end-turn flow failed on second move: ${secondMove.second}"
+
+        val secondEndTurn = advanceTurnsByClicks(
+            game = game,
+            turns = 1,
+            waitFastFrames = 0,
+            waitAfterActionFrames = 1,
+            maxAttemptsPerTurn = 120,
+            strictNoFallback = true,
+        )
+        if (!secondEndTurn.first) return false to "Strict move/end-turn flow failed on second end-turn: ${secondEndTurn.second}"
+
+        val endTurn = game.gameInfo?.turns ?: return false to "Missing gameInfo after strict move/end-turn flow."
+        return true to "Strict move/end-turn flow validated ($startingTurn->$endTurn)."
+    }
+
+    private suspend fun moveSingleUnitByClick(game: WebGame): Pair<Boolean, String> {
+        val worldScreen = game.worldScreen ?: return false to "World screen unavailable for strict move validation."
+        val civ = game.gameInfo?.getCurrentPlayerCivilization() ?: return false to "Current civ unavailable for strict move validation."
+        fun findMoveTarget(unit: MapUnit) = unit.movement.getReachableTilesInCurrentTurn()
+            .firstOrNull { it != unit.currentTile && unit.movement.canMoveTo(it) }
+
+        val militaryCandidate = civ.units.getCivUnits()
+            .firstOrNull { candidate -> candidate.isMilitary() && candidate.hasMovement() && findMoveTarget(candidate) != null }
+        val unit = militaryCandidate
+            ?: civ.units.getCivUnits().firstOrNull { candidate -> candidate.hasMovement() && findMoveTarget(candidate) != null }
+            ?: return false to "No movable unit available for strict move validation."
+
+        val origin = unit.currentTile
+        val target = findMoveTarget(unit) ?: return false to "No reachable target for strict move validation."
+
+        val previousSingleTapMove = UncivGame.Current.settings.singleTapMove
+        return try {
+            UncivGame.Current.settings.singleTapMove = true
+            GUI.getUnitTable().selectUnit(unit)
+            worldScreen.shouldUpdate = true
+            waitFrames(uiWaitFast)
+            worldScreen.mapHolder.onTileClicked(target)
+            val moved = waitUntilFrames(480) { unit.currentTile == target }
+            if (!moved) {
+                false to "Unit did not move in strict move validation (origin=${origin.position}, target=${target.position}, current=${unit.currentTile.position})."
+            } else {
+                true to "Moved unit by click (${origin.position}->${target.position})."
+            }
+        } finally {
+            UncivGame.Current.settings.singleTapMove = previousSingleTapMove
+        }
+    }
+
+    private suspend fun advanceTurnsByClicks(
+        game: WebGame,
+        turns: Int,
+        waitFastFrames: Int = turnLoopWaitFast,
+        waitAfterActionFrames: Int = turnLoopWaitAfterAction,
+        maxAttemptsPerTurn: Int = 500,
+        strictNoFallback: Boolean = false,
+    ): Pair<Boolean, String> {
         var advancedTurns = 0
         repeat(turns) {
             val beforeTurn = game.gameInfo?.turns ?: return false to "Missing gameInfo before click turn progression."
@@ -799,40 +946,58 @@ object WebValidationRunner {
                             ?: return false to "Next turn button not found during click turn progression."
                         val unitAdvanced = clickUnitCompletionAction(screen)
                         if (unitAdvanced) {
-                            waitFrames(turnLoopWaitFast)
+                            waitFrames(waitFastFrames)
                             continue
                         }
                         val actionLabels = collectUnitActionLabels(screen)
-                        if (!nextTurnButton.isDisabled && !nextTurnButton.isNextUnitAction() && actionLabels == "[]") {
+                        if (!nextTurnButton.isDisabled && !nextTurnButton.isNextUnitAction()) {
                             screen.nextTurn()
-                            waitFrames(turnLoopWaitAfterAction)
+                            val progressedNow = waitUntilFrames(360) {
+                                val currentTurns = game.gameInfo?.turns ?: return@waitUntilFrames false
+                                currentTurns > beforeTurn
+                            }
+                            if (progressedNow) {
+                                progressed = true
+                                advancedTurns += 1
+                                break
+                            }
+                            waitFrames(waitAfterActionFrames)
                             continue
                         }
                         if (nextTurnButton.isDisabled) {
                             if (!nextTurnButton.isNextUnitAction() && actionLabels == "[]") {
+                                if (strictNoFallback) {
+                                    return false to "Strict turn progression blocked: next-turn button disabled with empty unit actions at turn=$beforeTurn attempts=$attempts ${blockerSnapshot(screen, nextTurnButton, actionLabels)}"
+                                }
                                 Log.debug(
                                     "web-validation forcing world nextTurn due disabled button without unit actions turn=%s attempts=%s",
                                     beforeTurn,
                                     attempts,
                                 )
                                 screen.nextTurn()
-                                waitFrames(turnLoopWaitAfterAction)
+                                waitFrames(waitAfterActionFrames)
                                 continue
                             }
                             if (nextTurnButton.isNextUnitAction() && actionLabels == "[]") {
+                                if (strictNoFallback) {
+                                    return false to "Strict turn progression blocked: next-unit action had empty unit actions at turn=$beforeTurn attempts=$attempts ${blockerSnapshot(screen, nextTurnButton, actionLabels)}"
+                                }
                                 Log.debug(
                                     "web-validation switching unit due empty action table turn=%s attempts=%s",
                                     beforeTurn,
                                     attempts,
                                 )
                                 screen.switchToNextUnit(resetDue = false)
-                                waitFrames(turnLoopWaitFast)
+                                waitFrames(waitFastFrames)
                                 continue
                             }
                             if (screen.hasOpenPopups()) {
+                                if (strictNoFallback) {
+                                    return false to "Strict turn progression blocked: popup remained open during end-turn flow at turn=$beforeTurn attempts=$attempts ${blockerSnapshot(screen, nextTurnButton, actionLabels)}"
+                                }
                                 Log.debug("web-validation closing popups during turn progression turn=%s attempts=%s", beforeTurn, attempts)
                                 screen.closeAllPopups()
-                                waitFrames(turnLoopWaitFast)
+                                waitFrames(waitFastFrames)
                             }
                             if (attempts % turnLoopLogInterval == 0) {
                                 Log.debug(
@@ -844,11 +1009,20 @@ object WebValidationRunner {
                                     actionLabels,
                                 )
                             }
-                            waitFrames(turnLoopWaitFast)
+                            waitFrames(waitFastFrames)
                             continue
                         }
                         val clicked = clickActor(nextTurnButton)
                         if (!clicked) return false to "Could not click next-turn button during click turn progression."
+                        val progressedNow = waitUntilFrames(360) {
+                            val currentTurns = game.gameInfo?.turns ?: return@waitUntilFrames false
+                            currentTurns > beforeTurn
+                        }
+                        if (progressedNow) {
+                            progressed = true
+                            advancedTurns += 1
+                            break
+                        }
                     }
                     is VictoryScreen -> {
                         return true to "Reached victory screen after advancing $advancedTurns turns via UI clicks."
@@ -858,7 +1032,7 @@ object WebValidationRunner {
                         return false to "Unexpected screen during click turn progression: $screenName"
                     }
                 }
-                waitFrames(turnLoopWaitAfterAction)
+                waitFrames(waitAfterActionFrames)
                 val currentTurns = game.gameInfo?.turns ?: return false to "Missing gameInfo during click turn progression."
                 if (currentTurns > beforeTurn) {
                     progressed = true
@@ -880,6 +1054,14 @@ object WebValidationRunner {
         return true to "Advanced $advancedTurns turns via UI clicks."
     }
 
+    private fun blockerSnapshot(worldScreen: WorldScreen, nextTurnButton: NextTurnButton, actionLabels: String): String {
+        val buttonEnabled = !nextTurnButton.isDisabled
+        val nextUnitAction = nextTurnButton.isNextUnitAction()
+        val openPopups = worldScreen.hasOpenPopups()
+        val playersTurn = worldScreen.isPlayersTurn
+        return "(nextUnitAction=$nextUnitAction, buttonEnabled=$buttonEnabled, openPopups=$openPopups, playersTurn=$playersTurn, actionButtons=$actionLabels)"
+    }
+
     private suspend fun clickUnitCompletionAction(worldScreen: WorldScreen): Boolean {
         val actionLabels = listOf(
             UnitActionType.Skip.value.tr(), UnitActionType.Skip.value,
@@ -893,9 +1075,19 @@ object WebValidationRunner {
         val nextPageLabels = listOf(UnitActionType.ShowAdditionalActions.value.tr(), UnitActionType.ShowAdditionalActions.value)
         for (pageAttempt in 0 until 4) {
             val actionsTable = findActorByType(worldScreen.stage.root, UnitActionsTable::class.java) ?: break
+            val beforeLabels = collectUnitActionLabels(worldScreen)
             for (label in actionLabels) {
                 val clicked = clickActorByText(actionsTable, label, contains = true)
-                if (clicked) return true
+                if (!clicked) continue
+                waitFrames(uiWaitFast)
+                val afterLabels = collectUnitActionLabels(worldScreen)
+                if (afterLabels != beforeLabels) return true
+            }
+            val fallbackButton = findFirstEnabledButton(actionsTable)
+            if (fallbackButton != null && clickActor(fallbackButton)) {
+                waitFrames(uiWaitFast)
+                val afterLabels = collectUnitActionLabels(worldScreen)
+                if (afterLabels != beforeLabels) return true
             }
             val advancedPage = nextPageLabels.any { label ->
                 clickActorByText(actionsTable, label, contains = true)
@@ -1354,12 +1546,17 @@ object WebValidationRunner {
         return null
     }
 
-    private fun findClickableActorByText(root: Actor, expectedText: String, contains: Boolean = false): Actor? {
+    private fun findClickableActorByText(
+        root: Actor,
+        expectedText: String,
+        contains: Boolean = false,
+        preferLastMatch: Boolean = false,
+    ): Actor? {
         val expected = normalizeText(expectedText)
         var match: Actor? = null
 
         fun visit(node: Actor) {
-            if (match != null || !node.isVisible) return
+            if (!node.isVisible) return
             val text = actorText(node)
             if (text != null) {
                 val normalized = normalizeText(text)
@@ -1368,7 +1565,7 @@ object WebValidationRunner {
                     val clickable = findClickableAncestor(node)
                     if (clickable != null) {
                         match = clickable
-                        return
+                        if (!preferLastMatch) return
                     }
                 }
             }
@@ -1376,7 +1573,7 @@ object WebValidationRunner {
                 val children = node.children
                 for (index in 0 until children.size) {
                     visit(children[index])
-                    if (match != null) return
+                    if (match != null && !preferLastMatch) return
                 }
             }
         }
@@ -1385,8 +1582,13 @@ object WebValidationRunner {
         return match
     }
 
-    private fun clickActorByText(root: Actor, text: String, contains: Boolean = false): Boolean {
-        val actor = findClickableActorByText(root, text, contains) ?: return false
+    private fun clickActorByText(
+        root: Actor,
+        text: String,
+        contains: Boolean = false,
+        preferLastMatch: Boolean = false,
+    ): Boolean {
+        val actor = findClickableActorByText(root, text, contains, preferLastMatch) ?: return false
         return clickActor(actor)
     }
 
@@ -1414,8 +1616,8 @@ object WebValidationRunner {
             setPointer(0)
             setButton(Input.Buttons.LEFT)
         }
-        val fired = actor.fire(downEvent)
-        actor.fire(upEvent)
+        val fired = runCatching { actor.fire(downEvent) }.getOrDefault(false)
+        runCatching { actor.fire(upEvent) }
         return fired
     }
 

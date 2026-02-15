@@ -28,7 +28,10 @@ class NextTurnButton(
     private val unitsDueCell: Cell<Label>
     init {
         pad(15f)
-        onActivation { nextTurnAction.action(worldScreen) }
+        onActivation {
+            nextTurnAction.action(worldScreen)
+            worldScreen.shouldUpdate = true
+        }
         onRightClick { NextTurnMenu(stage, this, this, worldScreen) }
         keyShortcuts.add(KeyboardBinding.NextTurn)
         keyShortcuts.add(KeyboardBinding.NextTurnAlternate)
@@ -49,12 +52,25 @@ class NextTurnButton(
             }
         }
 
-        isEnabled = nextTurnAction.getText (worldScreen) == "AutoPlay"
+        isEnabled = nextTurnAction.getText(worldScreen) == "AutoPlay"
             || (!worldScreen.hasOpenPopups() && worldScreen.isPlayersTurn
                 && !worldScreen.waitingForAutosave && !worldScreen.isNextTurnUpdateRunning())
-        if (isEnabled) addTooltip(KeyboardBinding.NextTurn) else addTooltip("")
+        if (isEnabled) addTooltip(KeyboardBinding.NextTurn) else addTooltip(getDisabledReason())
         
         worldScreen.smallUnitButton.update()
+    }
+
+    private fun getDisabledReason(): String = when {
+        worldScreen.hasOpenPopups() -> "Close open popups first"
+        !worldScreen.isPlayersTurn -> "Not your turn yet"
+        worldScreen.waitingForAutosave -> "Waiting for autosave to finish"
+        worldScreen.isNextTurnUpdateRunning() -> "Next turn is still processing"
+        nextTurnAction == NextTurnAction.NextUnit -> "Idle units need orders before ending the turn"
+        nextTurnAction == NextTurnAction.PickConstruction -> "Pick construction before ending the turn"
+        nextTurnAction == NextTurnAction.PickTech -> "Pick a tech before ending the turn"
+        nextTurnAction == NextTurnAction.PickPolicy -> "Pick a policy before ending the turn"
+        nextTurnAction == NextTurnAction.MoveSpies -> "Move spies before ending the turn"
+        else -> "Resolve pending turn actions first"
     }
 
     internal fun updateButton(nextTurnAction: NextTurnAction) {

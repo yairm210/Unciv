@@ -35,6 +35,7 @@ open class ZoomableScrollPane(
     var onZoomStopListener: (() -> Unit)? = null
     var onZoomStartListener: (() -> Unit)? = null
     private val zoomListener = ZoomListener()
+    private var panGestureInProgress = false
 
     private val horizontalPadding get() = width / 2
     private val verticalPadding get() = height / 2
@@ -173,6 +174,10 @@ open class ZoomableScrollPane(
         return zoomListener.isZooming
     }
 
+    fun isPanGestureInProgress(): Boolean {
+        return panGestureInProgress
+    }
+
     inner class ZoomListener : ZoomGestureListener({ Vector2(stage.width, stage.height) }) {
 
         inner class ZoomAction : TemporalAction() {
@@ -299,10 +304,9 @@ open class ZoomableScrollPane(
     }
 
     inner class FlickScrollListener : ActorGestureListener() {
-        private var isPanning = false
         override fun pan(event: InputEvent, x: Float, y: Float, deltaX: Float, deltaY: Float) {
-            if (!isPanning) {
-                isPanning = true
+            if (!panGestureInProgress) {
+                panGestureInProgress = true
                 onPanStartListener?.invoke()
             }
             setScrollbarsVisible(true)
@@ -316,7 +320,7 @@ open class ZoomableScrollPane(
         override fun panStop(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
             if (zoomListener.isZooming)
                 zoomListener.isZooming = false
-            isPanning = false
+            panGestureInProgress = false
             onPanStopListener?.invoke()
         }
     }

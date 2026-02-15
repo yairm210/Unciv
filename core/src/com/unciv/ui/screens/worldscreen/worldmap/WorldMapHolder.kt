@@ -87,20 +87,36 @@ class WorldMapHolder(
      * Disabling them while panning/zooming increases the frame rate by approximately 100%.
      */
     private fun setupZoomPanListeners() {
-
-        fun setActHit() {
-            val isEnabled = !isZooming() && !isPanning
-            (stage as UncivStage).performPointerEnterExitEvents = isEnabled
-            tileGroupMap.shouldAct = isEnabled
-            // TeaVM/WebGL can miss pan/zoom stop transitions, which can leave map hit-testing disabled.
-            // Keep map hit-testing enabled on web so tile taps reliably trigger unit movement.
-            tileGroupMap.shouldHit = isEnabled || Gdx.app.type == Application.ApplicationType.WebGL
-        }
+        fun setActHit() = ensureInteractionState()
 
         onPanStartListener = { setActHit() }
         onPanStopListener = { setActHit() }
         onZoomStartListener = { setActHit() }
         onZoomStopListener = { setActHit() }
+    }
+
+    /**
+     * Keep map interaction state in sync with current gesture state.
+     * On web, pan/zoom stop callbacks may occasionally be missed until a full screen rebuild (e.g. resize),
+     * so we reconcile each frame using touch state as the source of truth.
+     */
+    fun ensureInteractionState() {
+        if (!::tileGroupMap.isInitialized) return
+        val uncivStage = stage as? UncivStage ?: return
+        val appType = Gdx.app.type
+        val gestureActive = isZooming() || isPanGestureInProgress()
+        val staleWebGesture = appType == Application.ApplicationType.WebGL && gestureActive && !Gdx.input.isTouched
+        val interactionsEnabled = !gestureActive || staleWebGesture
+
+        if (uncivStage.performPointerEnterExitEvents != interactionsEnabled)
+            uncivStage.performPointerEnterExitEvents = interactionsEnabled
+        if (tileGroupMap.shouldAct != interactionsEnabled)
+            tileGroupMap.shouldAct = interactionsEnabled
+
+        // Keep map hit-testing enabled on web to avoid losing taps when gesture stop events are missed.
+        val shouldHit = interactionsEnabled || appType == Application.ApplicationType.WebGL
+        if (tileGroupMap.shouldHit != shouldHit)
+            tileGroupMap.shouldHit = shouldHit
     }
 
 

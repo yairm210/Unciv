@@ -771,6 +771,10 @@ class WorldScreen(
     }
 
     override fun render(delta: Float) {
+        if (Gdx.app.type == Application.ApplicationType.WebGL) {
+            mapHolder.ensureInteractionState()
+        }
+
         //  This is so that updates happen in the MAIN THREAD, where there is a GL Context,
         //    otherwise images will not load properly!
         if (shouldUpdate && resizeDeferTimer == null) {
@@ -839,8 +843,13 @@ class WorldScreen(
     fun autoSave() {
         waitingForAutosave = true
         shouldUpdate = true
-        UncivGame.Current.files.autosaves.requestAutoSave(gameInfo, true).invokeOnCompletion {
+        val autoSaveJob = UncivGame.Current.files.autosaves.requestAutoSave(gameInfo, true)
+        autoSaveJob.invokeOnCompletion {
             // only enable the user to next turn once we've saved the current one
+            waitingForAutosave = false
+            shouldUpdate = true
+        }
+        if (!PlatformCapabilities.current.backgroundThreadPools) {
             waitingForAutosave = false
             shouldUpdate = true
         }
