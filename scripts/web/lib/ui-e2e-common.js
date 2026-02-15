@@ -27,8 +27,7 @@ function shouldIgnoreConsoleError(text) {
 
 function shouldIgnorePageError(text) {
   return /Cannot read properties of null \(reading '\$dispose'\)/.test(text)
-    || /Cannot read properties of null \(reading '\$pause'\)/.test(text)
-    || /Cannot read properties of null \(reading 'pixelStorei'\)/.test(text);
+    || /Cannot read properties of null \(reading '\$pause'\)/.test(text);
 }
 
 function attachDiagnostics(page, report, label) {
@@ -186,20 +185,7 @@ async function startMainOnce(page, timeoutMs) {
       uiProbeState: window.__uncivUiProbeState || null,
       readyState: document.readyState,
     }));
-    if (state.bootInvoked || state.uiProbeState) return;
-    if (state.hasMain && state.readyState === 'complete') {
-      await page.evaluate(() => {
-        if (window.__uncivBootStarted === true || window.__uncivUiProbeBootInvoked === true) return;
-        window.__uncivUiProbeBootInvoked = true;
-        try {
-          window.__uncivBootStarted = true;
-          window.main();
-        } catch (_) {
-          window.__uncivBootStarted = false;
-          window.__uncivUiProbeBootInvoked = false;
-        }
-      });
-    }
+    if (state.bootInvoked || state.uiProbeState || (state.hasMain && state.readyState === 'complete')) return;
 
     await page.waitForTimeout(100);
   }
