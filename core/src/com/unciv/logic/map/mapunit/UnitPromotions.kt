@@ -54,11 +54,13 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
 
     /** @return the XP points needed to "buy" the next promotion. 10, 30, 60, 100, 150,... */
     @Readonly fun xpForNextPromotion(): Int = (baseXpForPromotionNumber(numberOfPromotions + 1) * promotionCostModifier()).toInt()
-    
+
     /** @return the XP points needed to "buy" the next [count] promotions. */
     @Readonly
-    fun xpForNextNPromotions(count: Int) = (1..count).sumOf { 
-        baseXpForPromotionNumber(numberOfPromotions+it)} * promotionCostModifier()
+    fun xpForNextNPromotions(count: Int): Int =
+        (1..count).sumOf {
+            (baseXpForPromotionNumber(numberOfPromotions + it) * promotionCostModifier()).toInt()
+        }
 
     @Pure
     private fun baseXpForPromotionNumber(numberOfPromotions: Int) = (numberOfPromotions) * 10
@@ -72,7 +74,7 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
         // base case if you don't have any the unique that reduce or higher the promotion cost
         return totalPromotionCostModifier
     }
-    
+
     /** @return Total XP including that already "spent" on promotions */
     @Readonly fun totalXpProduced() = XP + (numberOfPromotions * (numberOfPromotions + 1)) * 5
 
@@ -124,7 +126,7 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
             promotions.remove(promotionName)
             unit.updateUniques()
             unit.updateVisibleTiles()
-            
+
             for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponPromotionLoss){ it.params[0] == promotionName })
                 UniqueTriggerActivation.triggerUnique(unique, unit)
         }
