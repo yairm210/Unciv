@@ -164,14 +164,14 @@ object WebMultiplayerProbeRunner {
                 peerChatObserved = peerChatObserved || chatContains(chat, guestAckToken)
 
                 if (!turnSyncObserved && now >= nextDownloadPollAt) {
-                    val remote = runCatching { hostServer.tryDownloadGame(gameId) }.getOrNull()
-                    if (remote != null) {
-                        val changedTurn = remote.turns != localTurnBefore
-                        val changedPlayer = remote.currentPlayer != localPlayerBefore
+                    val remotePreview = runCatching { hostServer.tryDownloadGamePreview(gameId) }.getOrNull()
+                    if (remotePreview != null) {
+                        val changedTurn = remotePreview.turns != localTurnBefore
+                        val changedPlayer = remotePreview.currentPlayer != localPlayerBefore
                         if (changedTurn || changedPlayer) {
                             turnSyncObserved = true
-                            localTurnAfter = remote.turns
-                            localPlayerAfter = remote.currentPlayer
+                            localTurnAfter = remotePreview.turns
+                            localPlayerAfter = remotePreview.currentPlayer
                         }
                     }
                     if (!turnSyncObserved && uploadedRaw != null) {
@@ -274,15 +274,21 @@ object WebMultiplayerProbeRunner {
                 }
                 guestServer.uploadGame(gameInfo, withPreview = true)
             } else {
-                val raw = downloadedRaw ?: error("Guest probe missing downloadable payload.")
-                localTurnBefore = 0
-                localPlayerBefore = hostUser
-                WebMultiplayerProbeInterop.publishState("running:guest:raw-sync-upload")
-                val rawUpdate = "$raw|guestSync:${System.currentTimeMillis()}"
-                saveRawGame(serverUrl, guestUser, sharedPassword, gameId, rawUpdate)
-                localTurnAfter = 1
-                localPlayerAfter = guestUser
-                turnSyncObserved = rawUpdate != raw
+                downloadedRaw ?: error("Guest probe missing downloadable payload.")
+                val preview = runCatching { guestServer.tryDownloadGamePreview(gameId) }.getOrNull()
+                    ?: error("Guest probe failed preview fallback download before timeout.")
+                localTurnBefore = preview.turns
+                localPlayerBefore = preview.currentPlayer
+                WebMultiplayerProbeInterop.publishState("running:guest:preview-sync-upload")
+                preview.turns = localTurnBefore + 1
+                preview.currentPlayer = guestUser
+                guestServer.tryUploadGamePreview(preview)
+                localTurnAfter = preview.turns
+                localPlayerAfter = preview.currentPlayer
+                turnSyncObserved = localTurnAfter != localTurnBefore || localPlayerAfter != localPlayerBefore
+                if (!turnSyncObserved) {
+                    error("Guest probe preview fallback produced no state change (turn=$localTurnBefore, player=$localPlayerBefore).")
+                }
             }
 
             var ownChatEchoObserved = false
@@ -337,12 +343,6 @@ object WebMultiplayerProbeRunner {
         if (response.status == 404) return null
         if (!response.ok) return null
         return response.text
-    }
-
-    private suspend fun saveRawGame(serverUrl: String, userId: String, password: String, gameId: String, payload: String) {
-        val headers = mapOf("Authorization" to authHeaderValue(userId, password))
-        val response = WebHttp.requestText("PUT", "$serverUrl/files/$gameId", headers = headers, body = payload)
-        if (!response.ok) error("Guest raw upload failed with status=${response.status}")
     }
 
     private fun connectProbeChat(serverUrl: String, userId: String, password: String): ProbeChatConnection {

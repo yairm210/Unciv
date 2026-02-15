@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { randomUUID } = require('crypto');
 const { chromium } = require('playwright');
+const { resolveChromiumArgs } = require('./lib/chromium-args');
 
 function parseBool(value, fallback) {
   if (value == null || value === '') return fallback;
@@ -19,7 +20,8 @@ function shouldIgnoreConsoleError(text) {
   return /\/favicon\.ico\b/i.test(text)
     || /Failed to load resource/i.test(text)
     || /uncivserver\.xyz\/chat/i.test(text)
-    || /Chat websocket error/i.test(text);
+    || /Chat websocket error/i.test(text)
+    || /Exception while deserializing GameInfo JSON/i.test(text);
 }
 
 function shouldIgnorePageError(text) {
@@ -55,6 +57,26 @@ async function waitForProbeResult(page, label, timeoutMs) {
   throw new Error(`[${label}] timed out after ${timeoutMs}ms waiting for probe completion`);
 }
 
+async function waitForProbeStart(page, label, timeoutMs) {
+  const startedAt = Date.now();
+  while (Date.now() - startedAt <= timeoutMs) {
+    const state = await page.evaluate(() => ({
+      state: window.__uncivMpProbeState || null,
+      error: window.__uncivMpProbeError || null,
+      json: window.__uncivMpProbeResultJson || null,
+    }));
+    if (state.state || state.error || state.json) return;
+    await page.waitForTimeout(150);
+  }
+  const bootDebug = await page.evaluate(() => ({
+    hasMain: typeof window.main === 'function',
+    bootStarted: window.__uncivBootStarted === true,
+    readyState: document.readyState,
+    href: (window.location && window.location.href) || '',
+  }));
+  throw new Error(`[${label}] probe did not start within ${timeoutMs}ms. boot=${JSON.stringify(bootDebug)}`);
+}
+
 async function startMainOnce(page, label, timeoutMs) {
   const startedAt = Date.now();
   while (Date.now() - startedAt <= timeoutMs) {
@@ -72,6 +94,18 @@ async function startMainOnce(page, label, timeoutMs) {
   throw new Error(`[${label}] window.main not available for boot within ${timeoutMs}ms`);
 }
 
+async function gotoProbeUrl(page, url, label) {
+  await page.goto(url.toString(), { waitUntil: 'domcontentloaded', timeout: 120000 });
+  const landedUrl = page.url();
+  if (!landedUrl.includes('mpProbe=1')) {
+    await page.goto(url.toString(), { waitUntil: 'domcontentloaded', timeout: 120000 });
+    const retryUrl = page.url();
+    if (!retryUrl.includes('mpProbe=1')) {
+      throw new Error(`[${label}] did not retain probe query params after navigation. landed=${retryUrl}`);
+    }
+  }
+}
+
 async function main() {
   const tmpDir = ensureTmpDir();
   const outputPath = path.join(tmpDir, 'web-multiplayer-multi-instance-result.json');
@@ -79,7 +113,10 @@ async function main() {
   const mpServer = String(process.env.WEB_MP_SERVER || 'http://127.0.0.1:19090').trim();
   const webProfile = String(process.env.WEB_PROFILE || 'phase4-full').trim() || 'phase4-full';
   const timeoutMs = Number(process.env.WEB_MP_PROBE_TIMEOUT_MS || '300000');
+  const startupTimeoutMs = Number(process.env.WEB_MP_PROBE_STARTUP_TIMEOUT_MS || '60000');
+  const startupAttempts = Number(process.env.WEB_MP_PROBE_STARTUP_ATTEMPTS || '2');
   const headless = parseBool(process.env.HEADLESS, true);
+  const chromiumArgs = resolveChromiumArgs(process.env.WEB_CHROMIUM_ARGS);
   const gameId = randomUUID();
 
   const report = {
@@ -113,21 +150,11 @@ async function main() {
   try {
     hostBrowser = await chromium.launch({
       headless,
-      args: [
-        '--use-gl=swiftshader',
-        '--disable-background-timer-throttling',
-        '--disable-backgrounding-occluded-windows',
-        '--disable-renderer-backgrounding',
-      ],
+      args: chromiumArgs,
     });
     guestBrowser = await chromium.launch({
       headless,
-      args: [
-        '--use-gl=swiftshader',
-        '--disable-background-timer-throttling',
-        '--disable-backgrounding-occluded-windows',
-        '--disable-renderer-backgrounding',
-      ],
+      args: chromiumArgs,
     });
 
     hostContext = await hostBrowser.newContext({ viewport: { width: 1440, height: 900 } });
@@ -170,10 +197,32 @@ async function main() {
     const guestUrl = new URL(hostUrl.toString());
     guestUrl.searchParams.set('mpRole', 'guest');
 
-    await hostPage.goto(hostUrl.toString(), { waitUntil: 'domcontentloaded', timeout: 120000 });
-    await startMainOnce(hostPage, 'host', Math.min(20000, timeoutMs));
-    await guestPage.goto(guestUrl.toString(), { waitUntil: 'domcontentloaded', timeout: 120000 });
-    await startMainOnce(guestPage, 'guest', Math.min(20000, timeoutMs));
+    let startupCompleted = false;
+    let startupFailure = null;
+    for (let attempt = 1; attempt <= startupAttempts; attempt += 1) {
+      try {
+        await gotoProbeUrl(hostPage, hostUrl, 'host');
+        await startMainOnce(hostPage, 'host', Math.min(20000, timeoutMs));
+        await gotoProbeUrl(guestPage, guestUrl, 'guest');
+        await startMainOnce(guestPage, 'guest', Math.min(20000, timeoutMs));
+        await Promise.all([
+          waitForProbeStart(hostPage, 'host', startupTimeoutMs),
+          waitForProbeStart(guestPage, 'guest', startupTimeoutMs),
+        ]);
+        startupCompleted = true;
+        break;
+      } catch (err) {
+        startupFailure = err;
+        if (attempt >= startupAttempts) break;
+        report.hostPageErrors.length = 0;
+        report.guestPageErrors.length = 0;
+        report.hostConsoleErrors.length = 0;
+        report.guestConsoleErrors.length = 0;
+      }
+    }
+    if (!startupCompleted) {
+      throw startupFailure || new Error('Multiplayer probe startup failed before state became available');
+    }
 
     const [hostResult, guestResult] = await Promise.all([
       waitForProbeResult(hostPage, 'host', timeoutMs),

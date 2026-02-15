@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { chromium, firefox, webkit } = require('playwright');
+const { resolveChromiumArgs } = require('./lib/chromium-args');
 
 (async () => {
   const outPath = path.resolve('tmp/js-browser-tests-result.json');
@@ -13,7 +14,7 @@ const { chromium, firefox, webkit } = require('playwright');
   const timeoutMs = Number(process.env.TIMEOUT_MS || 900000);
   const startupTimeoutMs = Number(process.env.WEB_JS_TESTS_STARTUP_TIMEOUT_MS || '60000');
   const debugState = String(process.env.WEB_JS_TESTS_DEBUG || '') === '1';
-  const chromiumArgs = String(process.env.WEB_CHROMIUM_ARGS || '').trim();
+  const chromiumArgs = resolveChromiumArgs(process.env.WEB_CHROMIUM_ARGS);
   const jsTestsFilter = String(process.env.WEB_JS_TESTS_FILTER || '').trim();
 
   const consoleErrors = [];
@@ -37,14 +38,7 @@ const { chromium, firefox, webkit } = require('playwright');
 
   const launchOptions = { headless, slowMo: headless ? 0 : 40 };
   if (browserName === 'chromium') {
-    launchOptions.args = chromiumArgs.length > 0
-      ? chromiumArgs.split(/\s+/).filter(Boolean)
-      : [
-        '--use-gl=swiftshader',
-        '--disable-background-timer-throttling',
-        '--disable-backgrounding-occluded-windows',
-        '--disable-renderer-backgrounding',
-      ];
+    launchOptions.args = chromiumArgs;
   }
   const browser = await browserType.launch(launchOptions);
   const context = await browser.newContext({ viewport: { width: 1600, height: 1000 } });
