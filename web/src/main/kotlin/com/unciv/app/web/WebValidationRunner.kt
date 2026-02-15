@@ -119,8 +119,12 @@ object WebValidationRunner {
         )
     }
 
-    internal suspend fun advanceTurnsByClicksProbe(game: WebGame, turns: Int): Pair<Boolean, String> {
-        return advanceTurnsByClicks(game, turns)
+    internal suspend fun advanceTurnsByClicksProbe(
+        game: WebGame,
+        turns: Int,
+        strictNoFallback: Boolean = false,
+    ): Pair<Boolean, String> {
+        return advanceTurnsByClicks(game, turns, strictNoFallback = strictNoFallback)
     }
 
     internal suspend fun waitUntilFramesProbe(maxFrames: Int, condition: () -> Boolean): Boolean {
@@ -1025,6 +1029,9 @@ object WebValidationRunner {
                         }
                     }
                     is VictoryScreen -> {
+                        if (strictNoFallback) {
+                            return false to "Strict turn progression reached victory/defeat screen before requested turns completed."
+                        }
                         return true to "Reached victory screen after advancing $advancedTurns turns via UI clicks."
                     }
                     else -> {
@@ -1535,15 +1542,25 @@ object WebValidationRunner {
 
     private fun findClickableAncestor(actor: Actor): Actor? {
         var current: Actor? = actor
+        var listenerCandidate: Actor? = null
         while (current != null) {
+            if (
+                current is Button &&
+                current.isVisible &&
+                current.touchable == Touchable.enabled
+            ) {
+                return current
+            }
             if (
                 current.isVisible &&
                 current.touchable == Touchable.enabled &&
                 current.listeners.size > 0
-            ) return current
+            ) {
+                if (listenerCandidate == null) listenerCandidate = current
+            }
             current = current.parent
         }
-        return null
+        return listenerCandidate
     }
 
     private fun findClickableActorByText(
@@ -1595,13 +1612,6 @@ object WebValidationRunner {
     private fun clickActor(actor: Actor): Boolean {
         val stage = actor.stage ?: return false
         val center = actor.localToStageCoordinates(Vector2(actor.width / 2f, actor.height / 2f))
-        val screenPoint = stage.stageToScreenCoordinates(Vector2(center.x, center.y))
-        val x = screenPoint.x.toInt()
-        val y = screenPoint.y.toInt()
-        val downHandled = stage.touchDown(x, y, 0, Input.Buttons.LEFT)
-        stage.touchUp(x, y, 0, Input.Buttons.LEFT)
-        if (downHandled) return true
-
         val downEvent = InputEvent().apply {
             setType(InputEvent.Type.touchDown)
             setStageX(center.x)
@@ -1618,7 +1628,14 @@ object WebValidationRunner {
         }
         val fired = runCatching { actor.fire(downEvent) }.getOrDefault(false)
         runCatching { actor.fire(upEvent) }
-        return fired
+        if (fired) return true
+
+        val screenPoint = stage.stageToScreenCoordinates(Vector2(center.x, center.y))
+        val x = screenPoint.x.toInt()
+        val y = screenPoint.y.toInt()
+        val downHandled = stage.touchDown(x, y, 0, Input.Buttons.LEFT)
+        stage.touchUp(x, y, 0, Input.Buttons.LEFT)
+        return downHandled
     }
 
     private fun <T : Actor> findActorByType(root: Actor, actorClass: Class<T>): T? {

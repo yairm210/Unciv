@@ -19,19 +19,27 @@ final class WebSlf4jLogger extends MarkerIgnoringBase {
         if (throwable != null) {
             output = output + " | " + throwable;
         }
-        if ("ERROR".equals(level)) {
-            WebConsoleBridge.error(output);
-            return;
+        try {
+            if ("ERROR".equals(level)) {
+                WebConsoleBridge.error(output);
+                return;
+            }
+            if ("WARN".equals(level)) {
+                WebConsoleBridge.warn(output);
+                return;
+            }
+            if ("DEBUG".equals(level)) {
+                WebConsoleBridge.debug(output);
+                return;
+            }
+            WebConsoleBridge.log(output);
+        } catch (UnsatisfiedLinkError ignored) {
+            if ("ERROR".equals(level) || "WARN".equals(level)) {
+                System.err.println(output);
+            } else {
+                System.out.println(output);
+            }
         }
-        if ("WARN".equals(level)) {
-            WebConsoleBridge.warn(output);
-            return;
-        }
-        if ("DEBUG".equals(level)) {
-            WebConsoleBridge.debug(output);
-            return;
-        }
-        WebConsoleBridge.log(output);
     }
 
     private void emitFormatted(String level, String format, Object arg) {

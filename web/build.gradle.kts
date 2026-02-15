@@ -270,7 +270,32 @@ tasks.register<JavaExec>("webBuildJs") {
     jvmArgs("-Xms1g", "-XX:+UseG1GC")
 }
 
+tasks.register<JavaExec>("webGenerateWarPreloads") {
+    dependsOn("classes")
+    group = "web"
+    description = "Generate deterministic WAR UI preload fixtures."
+    mainClass.set("com.unciv.app.web.WebWarPreloadTool")
+    classpath = sourceSets["main"].runtimeClasspath
+    workingDir = rootProject.projectDir
+    args("generate")
+    maxHeapSize = "2g"
+    jvmArgs("-Xms512m", "-XX:+UseG1GC")
+}
+
+tasks.register<JavaExec>("webVerifyWarPreloads") {
+    dependsOn("classes")
+    group = "web"
+    description = "Verify deterministic WAR UI preload fixtures."
+    mainClass.set("com.unciv.app.web.WebWarPreloadTool")
+    classpath = sourceSets["main"].runtimeClasspath
+    workingDir = rootProject.projectDir
+    args("verify")
+    maxHeapSize = "2g"
+    jvmArgs("-Xms512m", "-XX:+UseG1GC")
+}
+
 tasks.named("webBuildJs") {
+    dependsOn("webVerifyWarPreloads")
     finalizedBy("webPostProcessDist")
 }
 

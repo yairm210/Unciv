@@ -5,12 +5,59 @@ import com.unciv.UncivGame
 
 class WebGame : UncivGame() {
     override fun create() {
+        WebValidationInterop.publishRunnerSelection("none", "bootstrap-start")
+        WebValidationInterop.appendBootstrapTrace("create:start", "WebGame.create entered")
+        val jsRequested = WebJsTestInterop.isEnabled()
+        val uiRequested = WebUiProbeInterop.isEnabled()
+        val mpRequested = WebMultiplayerProbeInterop.isEnabled()
+        WebValidationInterop.appendBootstrapTrace(
+            "create:request-flags",
+            "jsRequested=$jsRequested uiRequested=$uiRequested mpRequested=$mpRequested",
+        )
+
+        if (uiRequested) {
+            WebValidationInterop.publishRunnerSelection("uiProbe", "uiProbe query flag enabled")
+            val startedUiProbe = WebUiProbeRunner.maybeStart(this)
+            WebValidationInterop.appendBootstrapTrace("create:uiprobe", "started=$startedUiProbe")
+            if (!startedUiProbe) {
+                WebValidationInterop.publishRunnerSelection("none", "uiProbe requested but runner did not start")
+                WebUiProbeInterop.publishError("uiProbe was requested but startup chain did not launch WebUiProbeRunner.")
+            }
+            WebValidationInterop.appendBootstrapTrace("create:super", "calling super.create after uiProbe dispatch")
+            super.create()
+            enforceWebInputDefaults()
+            return
+        }
+
         super.create()
         enforceWebInputDefaults()
-        val startedJsTests = WebJsTestRunner.maybeStart()
-        val startedMpProbe = if (!startedJsTests) WebMultiplayerProbeRunner.maybeStart(this) else false
-        if (!startedJsTests && !startedMpProbe) {
-            WebValidationRunner.maybeStart(this)
+
+        if (jsRequested) {
+            WebValidationInterop.publishRunnerSelection("jstests", "jstests query flag enabled")
+            val startedJsTests = WebJsTestRunner.maybeStart()
+            WebValidationInterop.appendBootstrapTrace("create:jstests", "started=$startedJsTests")
+            if (!startedJsTests) {
+                WebValidationInterop.publishRunnerSelection("none", "jstests requested but runner did not start")
+            }
+            return
+        }
+
+        if (mpRequested) {
+            WebValidationInterop.publishRunnerSelection("mpProbe", "mpProbe query flag enabled")
+            val startedMpProbe = WebMultiplayerProbeRunner.maybeStart(this)
+            WebValidationInterop.appendBootstrapTrace("create:mpprobe", "started=$startedMpProbe")
+            if (!startedMpProbe) {
+                WebValidationInterop.publishRunnerSelection("none", "mpProbe requested but runner did not start")
+                WebMultiplayerProbeInterop.publishError("mpProbe was requested but startup chain did not launch WebMultiplayerProbeRunner.")
+            }
+            return
+        }
+
+        WebValidationInterop.publishRunnerSelection("validation", "default validation path")
+        val startedValidation = WebValidationRunner.maybeStart(this)
+        WebValidationInterop.appendBootstrapTrace("create:validation", "started=$startedValidation")
+        if (!startedValidation) {
+            WebValidationInterop.publishRunnerSelection("none", "validation path selected but runner did not start")
         }
     }
 
@@ -36,11 +83,8 @@ class WebGame : UncivGame() {
     }
 
     private fun enforceWebInputDefaults() {
-        var changed = false
         if (!settings.singleTapMove) {
             settings.singleTapMove = true
-            changed = true
         }
-        if (changed) settings.save()
     }
 }
