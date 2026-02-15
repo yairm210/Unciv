@@ -77,3 +77,24 @@
 - 2026-02-15T09:10Z | gate | `node scripts/web/run-web-multiplayer-multi-instance.js` (`phase4-full`, HEADLESS=false) | PASS | ready to commit/push
 - 2026-02-15T09:15Z | gate | `node scripts/web/check-performance-budget.js` | PASS (`issues=[]`) | continue
 - 2026-02-15T09:15Z | gate | `node scripts/web/check-regression.js` | PASS (`regressionIssues=[]`) | commit + push
+
+## CI Recovery Extension 2 (run 22033135986)
+- 2026-02-15T20:55Z | worktree | created clean recovery worktree `/Users/haimlamper/Unciv_worktrees/ci_green_0215` on `codex/ci-green-0215` from `master` (`2de3d1a4c`) | isolated patch branch for remote CI failure recovery | apply root-cause fixes
+- 2026-02-15T21:00Z | remote-ci-analysis | reviewed run `22033135986` logs | failures: multi-instance false fail on transient `WebFetch`, core-loop timeout in running state, ui/war jobs timeout with `runner=null`/`state=null` | implement shared startup recovery
+- 2026-02-15T21:06Z | script-fix | added shared uiProbe startup recovery helper in `scripts/web/lib/ui-e2e-common.js` and integrated it into core/map/mp/war runners | fixes intermittent no-state/no-runner startup hangs with retry + observability checks | tune workflow env defaults
+- 2026-02-15T21:07Z | bootstrap-fix | extended `BuildWebCommon.hardenIndexBootstrap()` with stalled-boot watchdog | recovers black-screen/no-progress starts by re-arming bounded retries | rerun local build + gates
+- 2026-02-15T21:08Z | multiplayer-fix | expanded non-fatal console filter for `WebFetch text error ... Failed to fetch` in multiplayer e2e scripts | removes false negatives when functional probe result is already passed | rerun multi-instance gate
+- 2026-02-15T21:09Z | workflow-fix | updated `.github/workflows/web-build.yml` required UI/mp jobs with explicit startup timeout/attempt env vars | CI startup handling now deterministic and aligned with shared retry helper | run local CI-equivalent commands
+- 2026-02-15T21:14Z | gate | `./gradlew :web:webBuildJs` | PASS | continue
+- 2026-02-15T21:17Z | gate | `node scripts/web/run-web-ui-core-loop.js` (`HEADLESS=true`, `WEB_UI_CORE_LOOP_TIMEOUT_MS=60000`, startup attempts=3) | PASS | continue
+- 2026-02-15T21:17Z | gate | `node scripts/web/run-web-ui-map-editor.js` (`HEADLESS=true`, `WEB_UI_MAP_EDITOR_TIMEOUT_MS=60000`, startup attempts=3) | PASS | continue
+- 2026-02-15T21:18Z | gate | `node scripts/web/run-web-ui-multiplayer.js` (`HEADLESS=true`, `WEB_UI_MULTIPLAYER_TIMEOUT_MS=60000`, startup attempts=3) | PASS | continue
+- 2026-02-15T21:18Z | gate | `node scripts/web/run-web-ui-war-from-start.js` (`HEADLESS=true`, startup attempts=3) | PASS | continue
+- 2026-02-15T21:19Z | gate | `node scripts/web/run-web-ui-war-preworld.js` (`HEADLESS=true`, startup attempts=3) | PASS | continue
+- 2026-02-15T21:20Z | gate | `node scripts/web/run-web-ui-war-deep.js` (`HEADLESS=true`, `WEB_UI_WAR_DEEP_TIMEOUT_MS=120000`, startup attempts=3) | PASS | continue
+- 2026-02-15T21:20Z | gate | `node scripts/web/run-web-multiplayer-multi-instance.js` (`HEADLESS=true`, startup attempts=3) | PASS | continue
+- 2026-02-15T21:21Z | gate | `node scripts/web/run-web-validation.js` (`phase1`) | PASS (`pass=9 fail=0 blocked=0 disabled=3`) | continue
+- 2026-02-15T21:22Z | gate | `node scripts/web/run-web-validation.js` (`phase4-full`) | PASS (`pass=12 fail=0 blocked=0 disabled=0`) | continue
+- 2026-02-15T21:23Z | gate | `node scripts/web/run-js-browser-tests.js` (`phase4-full`, headless) | PASS (`totalRun=226 totalFailures=0`) | continue
+- 2026-02-15T21:23Z | gate | `node scripts/web/check-performance-budget.js` | PASS (`issues=[]`) | continue
+- 2026-02-15T21:23Z | gate | `node scripts/web/check-regression.js` | PASS (`regressionIssues=[]`) | commit + push + verify remote

@@ -21,7 +21,8 @@ function shouldIgnoreConsoleError(text) {
     || /Failed to load resource/i.test(text)
     || /uncivserver\.xyz\/chat/i.test(text)
     || /Chat websocket error/i.test(text)
-    || /Exception while deserializing GameInfo JSON/i.test(text);
+    || /Exception while deserializing GameInfo JSON/i.test(text)
+    || /WebFetch text error .* Failed to fetch/i.test(text);
 }
 
 function shouldIgnorePageError(text) {

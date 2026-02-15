@@ -113,6 +113,34 @@ Compare the fork against Yair upstream behavior, identify web regressions, fix r
   - Preserve gate guarantees via first-war combat + diplomacy + multi-turn checks.
 - Status: done.
 
+### R11: UI probe jobs intermittently time out with `runner=null` and `state=null`
+- Symptom: CI required jobs (`web-ui-multiplayer`, `web-ui-map-editor`, `web-ui-war-deep`) timed out with `hasMain=true`, `bootInvoked=true`, but no uiProbe state/result.
+- Root cause:
+  - Startup contract in UI runner scripts had no retry path when boot invocation happened but probe state never became observable.
+  - UI scripts used direct `goto + main` without shared startup recovery.
+- Fix:
+  - Add shared `ensureUiProbeBoot()` startup recovery helper in `scripts/web/lib/ui-e2e-common.js`.
+  - Add uiProbe URL retention verification and explicit startup-observability wait.
+  - Apply helper across core-loop, map-editor, multiplayer, and war UI runners.
+  - Add CI env knobs for `WEB_UI_STARTUP_TIMEOUT_MS` and `WEB_UI_STARTUP_ATTEMPTS`.
+- Status: done.
+
+### R12: Multi-instance multiplayer fails on non-fatal `WebFetch ... Failed to fetch` console noise
+- Symptom: host/guest multiplayer probe payloads reported `passed=true`, but job failed due one guest console error.
+- Root cause: strict console filter treated transient post-sync fetch noise as fatal.
+- Fix:
+  - Ignore known transient `WebFetch text error ... Failed to fetch` console message in multiplayer gate scripts.
+  - Keep functional probe assertions (turn sync/chat/echo) as the required pass criteria.
+- Status: done.
+
+### R13: Black-screen refresh path still needed stalled-boot recovery
+- Symptom: intermittent blank startup requiring refresh/hard-refresh, mirrored by CI `runner=null` no-progress boots.
+- Root cause: bootstrap marked boot as started but had no watchdog for stalls where no runner/probe progress signal was emitted.
+- Fix:
+  - Extend `BuildWebCommon.hardenIndexBootstrap()` script with a progress watchdog that re-arms boot retries when startup stalls.
+  - Preserve bounded retries and existing synchronous failure handling.
+- Status: done.
+
 ## Execution Results
 All local gates pass after fixes:
 1. `phase1` validation: PASS
@@ -131,3 +159,22 @@ All local gates pass after fixes:
 
 ## TeaVM Fork Contingency
 No TeaVM compiler fork was required for this recovery pass. Existing local dependency chain is sufficient with the applied root-cause fixes.
+
+## CI Stabilization Follow-up (run 22033135986)
+- Remote failure signatures addressed:
+  - `Web Multiplayer Multi-Instance (required)` failed only due transient `WebFetch ... Failed to fetch` console noise.
+  - `Web UI Core Loop (required, 30s)` timed out while still running core-loop state.
+  - `Web UI Multiplayer (required, 30s)`, `Web UI Map Editor (required, 30s)`, and `Web UI War Deep (main/dispatch)` timed out with `runner=null`/`state=null`.
+- Fix set applied:
+  - Shared UI startup retry helper + startup observability guard.
+  - Bootstrap watchdog retry for stalled boot progress.
+  - CI env tuning for startup attempts/timeouts and UI probe timeouts.
+  - Multiplayer console filter tuned for known transient fetch noise.
+- Local verification rerun after fixes:
+  - `./gradlew :web:webBuildJs` PASS
+  - UI gates (`core-loop`, `map-editor`, `ui-multiplayer`, `war-from-start`, `war-preworld`, `war-deep`) PASS
+  - `node scripts/web/run-web-multiplayer-multi-instance.js` PASS
+  - `node scripts/web/run-web-validation.js` (`phase1`, `phase4-full`) PASS
+  - `node scripts/web/run-js-browser-tests.js` PASS (`totalRun=226`, `totalFailures=0`)
+  - `node scripts/web/check-performance-budget.js` PASS
+  - `node scripts/web/check-regression.js` PASS

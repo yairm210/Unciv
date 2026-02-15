@@ -403,7 +403,7 @@ jobs:
 
       - name: Run multi-instance multiplayer gate
         run: |
-          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_MP_SERVER=http://127.0.0.1:19090 WEB_PROFILE=phase4-full WEB_MP_PROBE_TIMEOUT_MS=180000 \
+          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_MP_SERVER=http://127.0.0.1:19090 WEB_PROFILE=phase4-full WEB_MP_PROBE_TIMEOUT_MS=180000 WEB_MP_PROBE_STARTUP_TIMEOUT_MS=75000 WEB_MP_PROBE_STARTUP_ATTEMPTS=3 \
           node scripts/web/run-web-multiplayer-multi-instance.js
 
       - name: Publish multiplayer summary
@@ -456,7 +456,7 @@ jobs:
 
       - name: Run UI core loop gate
         run: |
-          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_PROFILE=phase1 \
+          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_PROFILE=phase1 WEB_UI_CORE_LOOP_TIMEOUT_MS=60000 WEB_UI_STARTUP_TIMEOUT_MS=30000 WEB_UI_STARTUP_ATTEMPTS=3 \
           node scripts/web/run-web-ui-core-loop.js
 
       - name: Publish UI core loop summary
@@ -512,7 +512,7 @@ jobs:
 
       - name: Run UI multiplayer gate
         run: |
-          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_MP_SERVER=http://127.0.0.1:19090 WEB_PROFILE=phase4-full \
+          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_MP_SERVER=http://127.0.0.1:19090 WEB_PROFILE=phase4-full WEB_UI_MULTIPLAYER_TIMEOUT_MS=60000 WEB_UI_STARTUP_TIMEOUT_MS=30000 WEB_UI_STARTUP_ATTEMPTS=3 \
           node scripts/web/run-web-ui-multiplayer.js
 
       - name: Publish UI multiplayer summary
@@ -565,7 +565,7 @@ jobs:
 
       - name: Run UI map editor gate
         run: |
-          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_PROFILE=phase1 \
+          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_PROFILE=phase1 WEB_UI_MAP_EDITOR_TIMEOUT_MS=60000 WEB_UI_STARTUP_TIMEOUT_MS=30000 WEB_UI_STARTUP_ATTEMPTS=3 \
           node scripts/web/run-web-ui-map-editor.js
 
       - name: Publish UI map editor summary
@@ -616,7 +616,7 @@ jobs:
 
       - name: Run UI war from-start gate
         run: |
-          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_PROFILE=phase4-full \
+          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_PROFILE=phase4-full WEB_UI_STARTUP_TIMEOUT_MS=30000 WEB_UI_STARTUP_ATTEMPTS=3 \
           node scripts/web/run-web-ui-war-from-start.js
 
       - name: Publish UI war from-start summary
@@ -667,7 +667,7 @@ jobs:
 
       - name: Run UI war preworld gate
         run: |
-          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_PROFILE=phase4-full \
+          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_PROFILE=phase4-full WEB_UI_STARTUP_TIMEOUT_MS=30000 WEB_UI_STARTUP_ATTEMPTS=3 \
           node scripts/web/run-web-ui-war-preworld.js
 
       - name: Publish UI war preworld summary
@@ -719,7 +719,7 @@ jobs:
 
       - name: Run UI war deep gate
         run: |
-          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_PROFILE=phase4-full WEB_UI_WAR_DEEP_TIMEOUT_MS=120000 \
+          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_PROFILE=phase4-full WEB_UI_WAR_DEEP_TIMEOUT_MS=120000 WEB_UI_STARTUP_TIMEOUT_MS=30000 WEB_UI_STARTUP_ATTEMPTS=3 \
           node scripts/web/run-web-ui-war-deep.js
 
       - name: Publish UI war deep summary

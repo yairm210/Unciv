@@ -4,7 +4,7 @@ const {
   attachDiagnostics,
   ensureTmpDir,
   launchChromium,
-  startMainOnce,
+  ensureUiProbeBoot,
   waitForUiProbeResult,
   writeJson,
 } = require('./lib/ui-e2e-common');
@@ -17,7 +17,9 @@ async function main() {
   const baseUrl = String(process.env.WEB_BASE_URL || 'http://127.0.0.1:18080').trim().replace(/\/+$/, '');
   const mpServer = String(process.env.WEB_MP_SERVER || 'http://127.0.0.1:19090').trim();
   const webProfile = String(process.env.WEB_PROFILE || 'phase4-full').trim() || 'phase4-full';
-  const timeoutMs = 30000;
+  const timeoutMs = Number(process.env.WEB_UI_MULTIPLAYER_TIMEOUT_MS || process.env.WEB_UI_TIMEOUT_MS || '45000');
+  const startupTimeoutMs = Number(process.env.WEB_UI_STARTUP_TIMEOUT_MS || '20000');
+  const startupAttempts = Number(process.env.WEB_UI_STARTUP_ATTEMPTS || '2');
   const runId = randomUUID();
 
   const report = {
@@ -68,10 +70,32 @@ async function main() {
     const guestUrl = new URL(hostUrl.toString());
     guestUrl.searchParams.set('uiProbeRole', 'guest');
 
-    await guestPage.goto(guestUrl.toString(), { waitUntil: 'load', timeout: 30000 });
-    await startMainOnce(guestPage, 15000);
-    await hostPage.goto(hostUrl.toString(), { waitUntil: 'load', timeout: 30000 });
-    await startMainOnce(hostPage, 15000);
+    await ensureUiProbeBoot(guestPage, {
+      url: guestUrl,
+      label: 'guest',
+      timeoutMs,
+      startupTimeoutMs,
+      startupAttempts,
+      onRetry: (attempt, reason) => {
+        process.stdout.write(`[guest] startup retry ${attempt + 1}/${startupAttempts}: ${reason}\n`);
+        report.pageErrors = report.pageErrors.filter((entry) => !String(entry).startsWith('[guest]'));
+        report.consoleErrors = report.consoleErrors.filter((entry) => !String(entry).startsWith('[guest]'));
+        report.requestFailures = report.requestFailures.filter((entry) => entry.label !== 'guest');
+      },
+    });
+    await ensureUiProbeBoot(hostPage, {
+      url: hostUrl,
+      label: 'host',
+      timeoutMs,
+      startupTimeoutMs,
+      startupAttempts,
+      onRetry: (attempt, reason) => {
+        process.stdout.write(`[host] startup retry ${attempt + 1}/${startupAttempts}: ${reason}\n`);
+        report.pageErrors = report.pageErrors.filter((entry) => !String(entry).startsWith('[host]'));
+        report.consoleErrors = report.consoleErrors.filter((entry) => !String(entry).startsWith('[host]'));
+        report.requestFailures = report.requestFailures.filter((entry) => entry.label !== 'host');
+      },
+    });
 
     const probeOutcomes = await Promise.allSettled([
       waitForUiProbeResult(

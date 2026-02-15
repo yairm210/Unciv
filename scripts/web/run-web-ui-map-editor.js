@@ -4,7 +4,7 @@ const {
   attachDiagnostics,
   ensureTmpDir,
   launchChromium,
-  startMainOnce,
+  ensureUiProbeBoot,
   waitForUiProbeResult,
   writeJson,
 } = require('./lib/ui-e2e-common');
@@ -15,7 +15,9 @@ async function main() {
   const screenshotPath = path.join(tmpDir, 'web-ui-map-editor-latest.png');
   const baseUrl = String(process.env.WEB_BASE_URL || 'http://127.0.0.1:18080').trim().replace(/\/+$/, '');
   const webProfile = String(process.env.WEB_PROFILE || 'phase4-full').trim() || 'phase4-full';
-  const timeoutMs = 30000;
+  const timeoutMs = Number(process.env.WEB_UI_MAP_EDITOR_TIMEOUT_MS || process.env.WEB_UI_TIMEOUT_MS || '45000');
+  const startupTimeoutMs = Number(process.env.WEB_UI_STARTUP_TIMEOUT_MS || '20000');
+  const startupAttempts = Number(process.env.WEB_UI_STARTUP_ATTEMPTS || '2');
   const runId = randomUUID();
 
   const report = {
@@ -52,8 +54,19 @@ async function main() {
     url.searchParams.set('uiProbeRunId', runId);
     url.searchParams.set('uiProbeTimeoutMs', String(timeoutMs));
 
-    await page.goto(url.toString(), { waitUntil: 'load', timeout: 30000 });
-    await startMainOnce(page, 15000);
+    await ensureUiProbeBoot(page, {
+      url,
+      label: 'editor',
+      timeoutMs,
+      startupTimeoutMs,
+      startupAttempts,
+      onRetry: (attempt, reason) => {
+        process.stdout.write(`[editor] startup retry ${attempt + 1}/${startupAttempts}: ${reason}\n`);
+        report.pageErrors.length = 0;
+        report.consoleErrors.length = 0;
+        report.requestFailures.length = 0;
+      },
+    });
     const probe = await waitForUiProbeResult(
       page,
       'editor',

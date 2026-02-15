@@ -6,7 +6,7 @@ const {
   attachDiagnostics,
   ensureTmpDir,
   launchChromium,
-  startMainOnce,
+  ensureUiProbeBoot,
   waitForUiProbeResult,
   writeJson,
 } = require('./ui-e2e-common');
@@ -128,6 +128,8 @@ async function runWarProbe(options) {
   const screenshotPath = path.join(tmpDir, screenshotFilename);
   const baseUrl = String(process.env.WEB_BASE_URL || 'http://127.0.0.1:18080').trim().replace(/\/+$/, '');
   const webProfile = String(process.env.WEB_PROFILE || 'phase4-full').trim() || 'phase4-full';
+  const startupTimeoutMs = Number(process.env.WEB_UI_STARTUP_TIMEOUT_MS || '20000');
+  const startupAttempts = Number(process.env.WEB_UI_STARTUP_ATTEMPTS || '2');
   const runId = randomUUID();
   const warPreload = loadWarPreload(role);
 
@@ -177,8 +179,19 @@ async function runWarProbe(options) {
     url.searchParams.set('uiProbeRunId', runId);
     url.searchParams.set('uiProbeTimeoutMs', String(timeoutMs));
 
-    await page.goto(url.toString(), { waitUntil: 'load', timeout: 30000 });
-    await startMainOnce(page, 30000);
+    await ensureUiProbeBoot(page, {
+      url,
+      label: role,
+      timeoutMs,
+      startupTimeoutMs,
+      startupAttempts,
+      onRetry: (attempt, reason) => {
+        process.stdout.write(`[${role}] startup retry ${attempt + 1}/${startupAttempts}: ${reason}\n`);
+        report.pageErrors.length = 0;
+        report.consoleErrors.length = 0;
+        report.requestFailures.length = 0;
+      },
+    });
 
     const probe = await waitForUiProbeResult(
       page,

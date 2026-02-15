@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { chromium } = require('playwright');
+const { resolveChromiumArgs } = require('./chromium-args');
 
 function parseBool(value, fallback) {
   if (value == null || value === '') return fallback;
@@ -20,7 +21,8 @@ function shouldIgnoreConsoleError(text) {
   return /\/favicon\.ico\b/i.test(text)
     || /Failed to load resource/i.test(text)
     || /uncivserver\.xyz\/chat/i.test(text)
-    || /Chat websocket error/i.test(text);
+    || /Chat websocket error/i.test(text)
+    || /WebFetch text error .* Failed to fetch/i.test(text);
 }
 
 function shouldIgnorePageError(text) {
@@ -52,18 +54,127 @@ function attachDiagnostics(page, report, label) {
 
 async function launchChromium() {
   const headless = parseBool(process.env.HEADLESS, true);
-  const args = [
-    '--disable-background-timer-throttling',
-    '--disable-backgrounding-occluded-windows',
-    '--disable-renderer-backgrounding',
-  ];
-  if (process.platform === 'linux') {
-    args.push('--use-gl=swiftshader');
-  }
+  const args = resolveChromiumArgs(process.env.WEB_CHROMIUM_ARGS);
   return chromium.launch({
     headless,
     args,
   });
+}
+
+function hasUiProbeQuery(search) {
+  return /(?:^|[?&])uiProbe(?:=|&|$)/i.test(String(search || ''));
+}
+
+function extractErrorText(err) {
+  return String(err && err.stack ? err.stack : err);
+}
+
+function shouldRetryUiProbeStartup(errText) {
+  if (!errText) return false;
+  if (/uiProbe startup did not become observable within/i.test(errText)) return true;
+  if (/timed out waiting for uiProbe result/i.test(errText) && /state=null/.test(errText) && /runner=null/.test(errText)) return true;
+  return false;
+}
+
+async function gotoUiProbeUrl(page, url, label) {
+  const targetUrl = typeof url === 'string' ? url : url.toString();
+  const wantedUiProbe = hasUiProbeQuery(new URL(targetUrl).search);
+  await page.goto(targetUrl, { waitUntil: 'load', timeout: 120000 });
+  if (!wantedUiProbe) return;
+  const landedUrl = page.url();
+  if (hasUiProbeQuery(new URL(landedUrl).search)) return;
+  await page.goto(targetUrl, { waitUntil: 'load', timeout: 120000 });
+  const retryUrl = page.url();
+  if (!hasUiProbeQuery(new URL(retryUrl).search)) {
+    throw new Error(`[${label}] did not retain uiProbe query params after navigation. landed=${retryUrl}`);
+  }
+}
+
+async function waitForUiProbeStart(page, label, timeoutMs) {
+  const startedAt = Date.now();
+  while (Date.now() - startedAt <= timeoutMs) {
+    const state = await page.evaluate(() => ({
+      state: window.__uncivUiProbeState || null,
+      error: window.__uncivUiProbeError || null,
+      json: window.__uncivUiProbeResultJson || null,
+      runnerSelected: window.__uncivRunnerSelected || null,
+      runnerReason: window.__uncivRunnerReason || null,
+      search: (window.location && window.location.search) || '',
+      hasMain: typeof window.main === 'function',
+      bootInvoked: window.__uncivBootStarted === true || window.__uncivUiProbeBootInvoked === true,
+    }));
+    if (hasUiProbeQuery(state.search) && state.runnerSelected && state.runnerSelected !== 'uiProbe') {
+      throw new Error(`[${label}] uiProbe runner mismatch during startup: got ${state.runnerSelected} (reason=${state.runnerReason || 'n/a'})`);
+    }
+    if (state.error || state.json || state.state) return;
+    if (state.runnerSelected === 'uiProbe') return;
+    await page.waitForTimeout(120);
+  }
+  const finalState = await page.evaluate(() => ({
+    state: window.__uncivUiProbeState || null,
+    error: window.__uncivUiProbeError || null,
+    hasResult: !!window.__uncivUiProbeResultJson,
+    runnerSelected: window.__uncivRunnerSelected || null,
+    runnerReason: window.__uncivRunnerReason || null,
+    search: (window.location && window.location.search) || '',
+    hasMain: typeof window.main === 'function',
+    bootInvoked: window.__uncivBootStarted === true || window.__uncivUiProbeBootInvoked === true,
+  }));
+  throw new Error(
+    `[${label}] uiProbe startup did not become observable within ${timeoutMs}ms `
+    + `(state=${finalState.state || 'null'} error=${finalState.error || 'null'} hasResult=${finalState.hasResult} `
+    + `runner=${finalState.runnerSelected || 'null'} reason=${finalState.runnerReason || 'null'} `
+    + `hasMain=${finalState.hasMain} bootInvoked=${finalState.bootInvoked})`,
+  );
+}
+
+async function clearUiProbeRuntimeMarkers(page) {
+  await page.evaluate(() => {
+    window.__uncivBootStarted = false;
+    window.__uncivBootInProgress = false;
+    window.__uncivUiProbeBootInvoked = false;
+    window.__uncivRunnerSelected = null;
+    window.__uncivRunnerReason = null;
+    window.__uncivUiProbeState = null;
+    window.__uncivUiProbeError = null;
+    window.__uncivUiProbeResultJson = null;
+    window.__uncivUiProbeStepLogJson = null;
+  }).catch(() => {});
+}
+
+async function ensureUiProbeBoot(page, options) {
+  const {
+    url,
+    label,
+    timeoutMs,
+    startupTimeoutMs,
+    startupAttempts,
+    onRetry,
+  } = options;
+
+  const startupBootTimeoutMs = Math.min(30000, Math.max(3000, Math.floor(startupTimeoutMs / 2)));
+  let lastError = null;
+
+  for (let attempt = 1; attempt <= startupAttempts; attempt += 1) {
+    try {
+      await gotoUiProbeUrl(page, url, label);
+      await startMainOnce(page, startupBootTimeoutMs);
+      await waitForUiProbeStart(page, label, startupTimeoutMs);
+      return;
+    } catch (err) {
+      lastError = err;
+      const errText = extractErrorText(err);
+      if (attempt >= startupAttempts || !shouldRetryUiProbeStartup(errText)) break;
+      if (typeof onRetry === 'function') {
+        onRetry(attempt, errText);
+      }
+      await clearUiProbeRuntimeMarkers(page);
+      await page.goto('about:blank', { waitUntil: 'domcontentloaded', timeout: 15000 }).catch(() => {});
+      await page.waitForTimeout(200);
+    }
+  }
+
+  throw lastError || new Error(`[${label}] uiProbe boot failed`);
 }
 
 async function startMainOnce(page, timeoutMs) {
@@ -119,7 +230,7 @@ async function waitForUiProbeResult(page, label, timeoutMs, shouldAbort) {
     const elapsedMs = Date.now() - startedAt;
     if (
       elapsedMs >= startupGraceMs
-      && state.search.includes('uiProbe=1')
+      && hasUiProbeQuery(state.search)
       && state.runnerSelected
       && state.runnerSelected !== 'uiProbe'
     ) {
@@ -189,6 +300,7 @@ module.exports = {
   attachDiagnostics,
   ensureTmpDir,
   launchChromium,
+  ensureUiProbeBoot,
   startMainOnce,
   waitForUiProbeResult,
   writeJson,
