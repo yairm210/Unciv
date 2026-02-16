@@ -484,7 +484,7 @@ open class TabbedPager(
         if (disabled == contentScroll.isScrollingDisabledY) return
         contentScroll.setScrollingDisabled(disabled, disabled)
         if (disabled) {
-            savedScrollListener = contentScroll.captureListeners.first()
+            savedScrollListener = contentScroll.captureListeners.firstOrNull()
             contentScroll.captureListeners.clear()
         } else {
             if (savedScrollListener != null)
