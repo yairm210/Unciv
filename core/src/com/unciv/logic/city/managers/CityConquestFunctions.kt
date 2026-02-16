@@ -201,10 +201,21 @@ class CityConquestFunctions(val city: City) {
         }
 
         val foundingCiv = city.foundingCivObject!!
-        if (foundingCiv.isDefeated()) // resurrected civ
-            for (diploManager in foundingCiv.diplomacy.values)
+        if (foundingCiv.isDefeated()) { // resurrected civ
+            for (diploManager in foundingCiv.diplomacy.values) {
                 if (diploManager.diplomaticStatus == DiplomaticStatus.War)
                     diploManager.makePeace()
+
+                // Clear all diplomatic flags and modifiers to prevent asymmetry after resurrection
+                // The defeated civ's flags were frozen while other civs' flags continued to expire
+                // Perhaps some of this needs more dedicated treatment but it's a pretty rare case anyway
+                //   so I think starting from scratch is a good way to go 
+                diploManager.flagsCountdown.clear()
+                diploManager.otherCivDiplomacy().flagsCountdown.clear()
+                diploManager.diplomaticModifiers.clear()
+                diploManager.otherCivDiplomacy().diplomaticModifiers.clear()
+            }
+        }
 
         val oldCiv = city.civ
 

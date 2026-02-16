@@ -283,6 +283,11 @@ object BattleDamage {
         val defenceModifier = modifiersToFinalBonus(getDefenceModifiers(attacker, defender, tileToAttackFrom))
         return max(1f, defender.getDefendingStrength(attacker) * defenceModifier)
     }
+    
+    @Readonly
+    fun getRandomness(combatant: ICombatant): Float = 
+        Random(combatant.getCivInfo().gameInfo.turns
+                * combatant.getTile().position.toVector2().hashCode().toLong()).nextFloat()
 
     @Readonly
     fun calculateDamageToAttacker(
@@ -290,7 +295,7 @@ object BattleDamage {
         defender: ICombatant,
         tileToAttackFrom: Tile = defender.getTile(),
         /** Between 0 and 1. */
-        randomnessFactor: Float = Random(attacker.getCivInfo().gameInfo.turns * attacker.getTile().position.toVector2().hashCode().toLong()).nextFloat()
+        randomnessFactor: Float = getRandomness(attacker)
     ): Int {
         if (attacker.isRanged() && !attacker.isAirUnit()) return 0
         if (defender.isCivilian()) return 0
@@ -305,7 +310,7 @@ object BattleDamage {
         defender: ICombatant,
         tileToAttackFrom: Tile = defender.getTile(),
         /** Between 0 and 1.  Defaults to turn and location-based random to avoid save scumming */
-        randomnessFactor: Float = Random(defender.getCivInfo().gameInfo.turns * defender.getTile().position.toVector2().hashCode().toLong()).nextFloat()
+        randomnessFactor: Float = getRandomness(defender)
         ,
     ): Int {
         if (defender.isCivilian()) return BattleConstants.DAMAGE_TO_CIVILIAN_UNIT

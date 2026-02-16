@@ -187,13 +187,10 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         )
     }
 
-    override fun getBaseBuyCost(city: City, stat: Stat): Float? {
+    @Readonly
+    private fun getSpecificBuyCost(city: City, stat: Stat): Float? {
         val conditionalState = city.state
-
         return sequence {
-            val baseCost = super.getBaseBuyCost(city, stat)
-            if (baseCost != null)
-                yield(baseCost)
             yieldAll(city.getMatchingUniques(UniqueType.BuyBuildingsIncreasingCost, conditionalState)
                 .filter {
                     it.params[2] == stat.name
@@ -228,6 +225,13 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 }.map { it.params[1].toInt() * city.civ.gameInfo.speed.statCostModifiers[stat]!! }
             )
         }.minOrNull()
+    }
+
+    override fun getBaseBuyCost(city: City, stat: Stat): Float? {
+        // Specific 
+        val specificCost = getSpecificBuyCost(city, stat)
+        if (specificCost != null) return specificCost
+        return super.getBaseBuyCost(city, stat)
     }
 
     override fun getStatBuyCost(city: City, stat: Stat): Int? {
