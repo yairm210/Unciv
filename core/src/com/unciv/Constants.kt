@@ -1,5 +1,8 @@
 package com.unciv
 
+import com.unciv.utils.JsonSerialized
+
+@JsonSerialized
 object Constants {
     const val settler = "Settler"
     const val eraSpecificUnit = "Era Starting Unit"

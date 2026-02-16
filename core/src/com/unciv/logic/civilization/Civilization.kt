@@ -36,6 +36,7 @@ import com.unciv.models.stats.SubStat
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.victoryscreen.RankingType
+import com.unciv.utils.JsonSerialized
 import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.Readonly
@@ -1205,6 +1206,7 @@ class Civilization : IsPartOfGameInfoSerialization {
 /**
  * Reduced variant of CivilizationInfo used for load preview.
  */
+@JsonSerialized
 class CivilizationInfoPreview() {
     var civName = ""
     var civID = ""

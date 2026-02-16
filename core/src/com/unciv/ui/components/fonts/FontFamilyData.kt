@@ -1,10 +1,12 @@
 package com.unciv.ui.components.fonts
 
 import com.unciv.models.translations.tr
+import com.unciv.utils.JsonSerialized
 
 // If save in `GameSettings` need use invariantFamily.
 // If show to user need use localName.
 // If save localName in `GameSettings` may generate garbled characters by encoding.
+@JsonSerialized
 class FontFamilyData(
     val localName: String,
     val invariantName: String = localName,

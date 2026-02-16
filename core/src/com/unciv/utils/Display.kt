@@ -3,6 +3,7 @@ package com.unciv.utils
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.translations.tr
 
+@JsonSerialized
 enum class ScreenOrientation(val description: String)  {
     Landscape("Landscape (fixed)"),
     Portrait("Portrait (fixed)"),

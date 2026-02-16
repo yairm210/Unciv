@@ -2,12 +2,14 @@ package com.unciv.ui.screens.pickerscreens
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.ui.images.ImageGetter
+import com.unciv.utils.JsonSerialized
 
 
 /** Colours used on the [PromotionPickerScreen]
  *
  *  These are backed by Skin.json
  */
+@JsonSerialized
 class PromotionScreenColors {
     val default: Color = ImageGetter.CHARCOAL
     val selected: Color = Color(0.2824f, 0.5765f, 0.6863f, 1f)          // colorFromRGB(72, 147, 175)

@@ -5,7 +5,9 @@ import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTarget
+import com.unciv.utils.JsonSerialized
 
+@JsonSerialized
 class ModOptions : IHasUniques {
     //region Modder choices
     var isBaseRuleset = false

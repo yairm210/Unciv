@@ -3,6 +3,7 @@ package com.unciv.ui.components.input
 import com.badlogic.gdx.Input
 import com.unciv.Constants
 import com.unciv.models.stats.Stat
+import com.unciv.utils.JsonSerialized
 
 
 private val unCamelCaseRegex = Regex("([A-Z])([A-Z])([a-z])|([a-z])([A-Z])")
@@ -16,6 +17,7 @@ private fun unCamelCase(name: String) = unCamelCaseRegex.replace(name, """$1$4 $
  *
  *  [label] entries containing a placeholder need special treatment - see [getTranslationEntries] and update it when adding more.
  */
+@JsonSerialized
 enum class KeyboardBinding(
     val category: Category,
     label: String? = null,
@@ -220,6 +222,7 @@ enum class KeyboardBinding(
     ;
     //endregion
 
+    @JsonSerialized
     enum class Category {
         None,
         MainMenu,

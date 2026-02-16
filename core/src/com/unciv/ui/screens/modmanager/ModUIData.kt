@@ -5,6 +5,7 @@ import com.unciv.models.metadata.ModCategories
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.fonts.Fonts
+import com.unciv.utils.JsonSerialized
 
 /** Helper class holds combined mod info for ModManagementScreen, used for both installed and online lists.
  *
@@ -12,6 +13,7 @@ import com.unciv.ui.components.fonts.Fonts
  *  (This is important on resize - ModUIData are passed to the new screen)
  *  Note it is guaranteed either ruleset or repo are non-null, never both.
  */
+@JsonSerialized
 class ModUIData private constructor(
     val name: String,
     val description: String,

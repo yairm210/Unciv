@@ -1,5 +1,8 @@
 package com.unciv.logic.map.mapgenerator
 
+import com.unciv.utils.JsonSerialized
+
+@JsonSerialized
 enum class MapResourceSetting(
     val label: String,
     val randomLuxuriesPercent: Int = 100,

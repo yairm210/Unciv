@@ -11,6 +11,7 @@ import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.MultiplayerServer
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.extensions.isLargerThan
+import com.unciv.utils.Log
 import com.unciv.utils.debug
 import com.unciv.utils.launchOnGLThread
 import com.unciv.utils.withGLContext
@@ -49,6 +50,7 @@ class MultiplayerGamePreview(
             try {
                 loadPreviewFromFile()
             } catch (e: Throwable) {
+                Log.error("Error loading MultiplayerGamePreview", e)
                 error = e
             }
         }

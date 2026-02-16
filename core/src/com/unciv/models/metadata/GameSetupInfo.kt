@@ -5,7 +5,9 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapShape
+import com.unciv.utils.JsonSerialized
 
+@JsonSerialized
 class GameSetupInfo(
     val gameParameters: GameParameters = GameParameters(),
     val mapParameters: MapParameters = MapParameters()

@@ -115,7 +115,7 @@ private class GameDisplay(
         return container
     }
 
-    fun isPlayersTurn() = preview?.isUsersTurn() == true
+    fun isPlayersTurn() = try { preview?.isUsersTurn() == true } catch (e: Exception) { false } // DO_NOT_SUBMIT
 
     override fun compareTo(other: GameDisplay): Int =
             if (isPlayersTurn() != other.isPlayersTurn()) // games where it's the player's turn are displayed first, thus must get the lower number

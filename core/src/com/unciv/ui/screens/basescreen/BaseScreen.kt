@@ -56,6 +56,7 @@ abstract class BaseScreen : Screen {
     val globalShortcuts = KeyShortcutDispatcher()
 
     init {
+        print("DO_NOT_SUBMIT BaseScreen#init gameId=${game.gameInfo?.gameId}\n")
         val screenSize = game.settings.screenSize
         val height = screenSize.virtualHeight
 

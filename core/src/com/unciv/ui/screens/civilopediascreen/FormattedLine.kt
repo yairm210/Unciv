@@ -23,6 +23,7 @@ import com.unciv.ui.components.widgets.ColorMarkupLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Log
+import com.unciv.utils.JsonSerialized
 import kotlin.math.max
 
 /* Ideas:
@@ -45,6 +46,7 @@ import kotlin.math.max
  *  - A separator line ([separator])
  *  - Automatic external links ([link] begins with a URL protocol)
  */
+@JsonSerialized
 class FormattedLine (
     /** Text to display. */
     val text: String = "",

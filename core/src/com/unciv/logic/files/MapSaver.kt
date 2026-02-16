@@ -25,6 +25,7 @@ object MapSaver {
     fun mapToSavedString(tileMap: TileMap): String {
         tileMap.assignContinents(TileMap.AssignContinentsMode.Reassign)
         val mapJson = json().toJson(tileMap)
+        print("DO_NOT_SUBMIT MapSaver#mapToSavedString $mapJson\n")
         return if (saveZipped) Gzip.zip(mapJson) else mapJson
     }
 

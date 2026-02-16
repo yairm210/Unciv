@@ -17,16 +17,16 @@ import com.unciv.ui.components.input.KeyboardBindings
 import com.unciv.ui.screens.worldscreen.NotificationsScroll
 import com.unciv.utils.Display
 import com.unciv.utils.ScreenOrientation
+import com.unciv.utils.JsonSerialized
 import java.awt.Rectangle
 import yairm210.purity.annotations.Readonly
 import java.text.Collator
 import java.text.NumberFormat
 import java.time.Duration
 import java.util.Locale
-import kotlin.reflect.KClass
-import kotlin.reflect.KMutableProperty0
 
 /** Settings that apply across all games, stored in GameSettings.json */
+@JsonSerialized
 class GameSettings {
 
     /** Allows panning the map by moving the pointer to the screen edges */
@@ -220,6 +220,7 @@ class GameSettings {
      *  Open to future enhancement - but:
      *  retrieving a valid position from our upstream libraries while the window is maximized or iconified has proven tricky so far.
      */
+    @JsonSerialized
     data class WindowState(val width: Int = 900, val height: Int = 600) {
         constructor(bounds: Rectangle) : this(bounds.width, bounds.height)
 
@@ -257,6 +258,7 @@ class GameSettings {
             coerceIn(maximumWindowBounds.width, maximumWindowBounds.height)
     }
 
+    @JsonSerialized
     enum class ScreenSize(
         @Suppress("unused")  // Actual width determined by screen aspect ratio, this as comment only
         val virtualWidth: Float,
@@ -273,11 +275,13 @@ class GameSettings {
         override fun toString() = name.tr() // Allow direct use in a SelectBox
     }
 
+    @JsonSerialized
     enum class NationPickerListMode { Icons, List }
 
     //endregion
     //region Multiplayer-specific
 
+    @JsonSerialized
     class GameSettingsMultiplayer {
         private var userId = ""
         fun getUserId() = userId
@@ -335,6 +339,7 @@ class GameSettings {
         }
     }
 
+    @JsonSerialized
     class GameSettingsAutoPlay {
         var showAutoPlayButton: Boolean = false
         var autoPlayUntilEnd: Boolean = false

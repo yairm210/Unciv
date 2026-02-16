@@ -7,6 +7,7 @@ import com.unciv.json.json
 import com.unciv.logic.UncivKtor
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.github.Github.repoNameToFolderName
+import com.unciv.utils.JsonSerialized
 import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -179,6 +180,7 @@ object GithubAPI {
     }
 
     /** Part of [RepoSearch] in Github API response - one repository entry in [items][RepoSearch.items] */
+    @JsonSerialized
     class Repo {
 
         /** Unlike the rest of this class, this is not part of the API but added by us locally
@@ -226,6 +228,7 @@ object GithubAPI {
     }
 
     /** Part of [Repo] in Github API response */
+    @JsonSerialized
     class RepoOwner {
         var login = ""
         var avatar_url: String? = null

@@ -5,7 +5,9 @@ import com.badlogic.gdx.utils.JsonValue
 import com.badlogic.gdx.utils.SerializationException
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewTab
+import com.unciv.utils.JsonSerialized
 
+@JsonSerialized
 class OverviewPersistableData(
     private val map: LinkedHashMap<EmpireOverviewCategories, EmpireOverviewTab.EmpireOverviewTabPersistableData> = linkedMapOf()
 ) : Json.Serializable,

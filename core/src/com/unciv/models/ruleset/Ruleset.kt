@@ -35,6 +35,7 @@ import com.unciv.models.stats.SubStat
 import com.unciv.models.translations.tr
 import com.unciv.ui.screens.civilopediascreen.ICivilopediaText
 import com.unciv.utils.Log
+import com.unciv.utils.JsonSerialized
 import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Readonly
 import kotlin.collections.set
@@ -73,6 +74,7 @@ enum class RulesetFile(
     Ruins("Ruins.json", { ruinRewards.values.asSequence() });
 }
 
+@JsonSerialized
 class Ruleset {
 
     /** If (and only if) this Ruleset is a mod, this will be the source folder.

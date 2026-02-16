@@ -12,19 +12,15 @@
 
 # Add any project specific keep options here:
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
-
 -verbose
 
 -dontwarn android.support.**
 -dontwarn com.badlogic.gdx.backends.android.AndroidFragmentApplication
 -dontwarn com.badlogic.gdx.utils.GdxBuild
 -dontwarn com.badlogic.gdx.jnigen.BuildTarget*
+-dontwarn java.lang.management.ManagementFactory
+-dontwarn java.lang.management.RuntimeMXBean
+-dontwarn java.awt.Rectangle
 
 -keepclassmembers class com.badlogic.gdx.backends.android.AndroidInput* {
    <init>(com.badlogic.gdx.Application, android.content.Context, java.lang.Object, com.badlogic.gdx.backends.android.AndroidApplicationConfiguration);
@@ -37,7 +33,33 @@
 -keep public class com.badlogic.gdx.graphics.g2d.BitmapFont { *; }
 # You will probably need this line in most cases:
 -keep public class com.badlogic.gdx.graphics.Color { *; }
+-keep class * implements com.badlogic.gdx.utils.Json$Serializable { *; }
+
+# These are for Kotlin serialization
+-keep class * implements kotlinx.serialization.KSerializer { *; }
+-keep @kotlinx.serialization.Serializable class * { *; }
+
+# keep annotations
+-keepattributes RuntimeVisibleAnnotations
+
+# Keep classes, fields, or methods, annotated with @UsedByReflection
+-keep @com.unciv.utils.UsedByReflection class * { *; }
+-keep class * {
+  @com.unciv.utils.UsedByReflection *;
+}
+
+# Keep  @JsonSerialized classes and all members
+-keep @com.unciv.utils.JsonSerialized class * { *; }
+
+# Keep unciv Ruleset and game serialization
+-keep class * implements com.unciv.models.ruleset.IRulesetObject { *; }
+-keep class * implements com.unciv.models.stats.INamed { *; }
+-keep class * implements com.unciv.logic.IsPartOfGameInfoSerialization { *; }
 
 # These two lines are used with mapping files; see https://developer.android.com/build/shrink-code#retracing
 -keepattributes LineNumberTable,SourceFile
 -renamesourcefileattribute SourceFile
+
+-dontobfuscate #This hides potential bugs, but also makes deobfuscation unnecessary
+
+

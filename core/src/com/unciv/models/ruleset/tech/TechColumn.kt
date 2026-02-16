@@ -1,5 +1,8 @@
 package com.unciv.models.ruleset.tech
 
+import com.unciv.utils.JsonSerialized
+
+@JsonSerialized
 class TechColumn {
     var columnNumber: Int = 0
     lateinit var era: String

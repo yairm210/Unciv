@@ -84,12 +84,14 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     private val screenStack = ArrayDeque<BaseScreen>()
 
     override fun create() {
+        print("DO_NOT_SUBMIT UncivGame#create enter gameId=${gameInfo?.gameId}\n")
         isInitialized = false // this could be on reload, therefore we need to keep setting this to false
         Gdx.input.setCatchKey(Input.Keys.BACK, true)
         if (Gdx.app.type != Application.ApplicationType.Desktop) {
             DebugUtils.VISIBLE_MAP = false
         }
         Current = this
+        print("DO_NOT_SUBMIT UncivGame#create prepare files gameId=${gameInfo?.gameId}\n")
         files = UncivFiles(Gdx.files, customDataDirectory)
         Concurrency.run {
             // Delete temporary files created when downloading mods
@@ -109,6 +111,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
          * - Skin (hence BaseScreen.setSkin())
          * - Font (hence Fonts.resetFont() inside setSkin())
          */
+        print("DO_NOT_SUBMIT UncivGame#create getGeneralSettings\n")
         settings = files.getGeneralSettings() // needed for the screen
         Display.setScreenMode(settings.screenMode, settings)
         setAsRootScreen(GameStartScreen())  // NOT dependent on any atlas or skin
@@ -145,6 +148,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
             val vanillaRuleset = RulesetCache.getVanillaRuleset()
 
+            print("DO_NOT_SUBMIT UncivGame#create userId=${settings.multiplayer.getUserId()} gameId=${gameInfo?.gameId}\n")
             if (settings.multiplayer.getUserId().isEmpty()) { // assign permanent user id
                 settings.multiplayer.setUserId(UUID.randomUUID().toString())
                 settings.save()

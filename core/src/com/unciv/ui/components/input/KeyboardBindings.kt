@@ -3,6 +3,7 @@ package com.unciv.ui.components.input
 import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
 import com.unciv.GUI
+import com.unciv.utils.JsonSerialized
 
 /**
  *  Manage user-configurable keyboard bindings
@@ -10,6 +11,7 @@ import com.unciv.GUI
  *  A primary instance lives in [UncivGame.Current.settings][com.unciv.models.metadata.GameSettings]
  *  and is read/write accessible through the `KeyboardBindings[]` syntax.
  **/
+@JsonSerialized
 class KeyboardBindings : HashMap<KeyboardBinding, KeyCharAndCode>(), Json.Serializable {
 
     /** this [put] overload helps the Json [Serializer] read method */

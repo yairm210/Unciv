@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
 import com.unciv.ui.components.extensions.GdxKeyCodeFixes
+import com.unciv.utils.JsonSerialized
 
 
 /*
@@ -26,6 +27,7 @@ import com.unciv.ui.components.extensions.GdxKeyCodeFixes
  * @see KeyboardBinding
  * @see KeyShortcutListener
  */
+@JsonSerialized
 data class KeyCharAndCode(val char: Char, val code: Int) {
     /** helper 'cloning constructor' to allow feeding both fields from a factory function */
     private constructor(from: KeyCharAndCode): this(from.char, from.code)
