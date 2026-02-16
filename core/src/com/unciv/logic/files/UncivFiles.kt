@@ -184,19 +184,29 @@ class UncivFiles(
         if (ex != null) throw ex
     }
 
-    fun saveGame(game: GameInfo, gameName: String, saveCompletionCallback: (Exception?) -> Unit = ::rethrowIfNotNull): FileHandle {
+    fun saveGame(
+        game: GameInfo,
+        gameName: String,
+        portable: Boolean = false,
+        saveCompletionCallback: (Exception?) -> Unit = ::rethrowIfNotNull
+    ): FileHandle {
         val file = getSave(gameName)
-        saveGame(game, file, saveCompletionCallback)
+        saveGame(game, file, portable, saveCompletionCallback)
         return file
     }
 
     /**
      * Only use this with a [FileHandle] obtained by one of the methods of this class!
      */
-    fun saveGame(game: GameInfo, file: FileHandle, saveCompletionCallback: (Exception?) -> Unit = ::rethrowIfNotNull) {
+    fun saveGame(
+        game: GameInfo,
+        file: FileHandle,
+        portable: Boolean = false,
+        saveCompletionCallback: (Exception?) -> Unit = ::rethrowIfNotNull
+    ) {
         try {
             debug("Saving GameInfo %s to %s", game.gameId, file.path())
-            val string = gameInfoToString(game)
+            val string = gameInfoToString(game, portable = portable)
             file.writeString(string, false, Charsets.UTF_8.name())
             saveCompletionCallback(null)
         } catch (ex: Exception) {
@@ -637,9 +647,11 @@ class Autosaves(val files: UncivFiles) {
     fun autoSave(gameInfo: GameInfo, nextTurn: Boolean = false) {
         // get GameSettings to check the maxAutosavesStored in the autoSave function
         val settings = files.getGeneralSettings()
+        // Web turn autosaves can stay fast/ephemeral, but lifecycle/menu autosaves must survive reloads.
+        val usePortableAutosave = !nextTurn && !PlatformCapabilities.current.backgroundThreadPools
 
         try {
-            files.saveGame(gameInfo, AUTOSAVE_FILE_NAME)
+            files.saveGame(gameInfo, AUTOSAVE_FILE_NAME, portable = usePortableAutosave)
         } catch (oom: OutOfMemoryError) {
             Log.error("Ran out of memory during autosave", oom)
             return  // not much we can do here

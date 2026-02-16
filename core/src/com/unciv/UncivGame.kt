@@ -349,7 +349,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     fun popScreen(silentQuit: Boolean = false): BaseScreen? {
         if (screenStack.size == 1) {
             if (silentQuit) {
-                Gdx.app.exit()
+                requestExit()
                 return null
             }
             musicController.pause()
@@ -359,7 +359,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
                 question = "Do you want to exit the game?",
                 confirmText = "Exit",
                 restoreDefault = { musicController.resumeFromShutdown() },
-                action = { Gdx.app.exit() }
+                action = { requestExit() }
             ).open(force = true)
             return null
         }
@@ -509,6 +509,22 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     @Readonly
     fun getWorldScreenIfActive(): WorldScreen? {
         return if (screen == worldScreen) worldScreen else null
+    }
+
+    fun requestExit() {
+        if (Gdx.app.type != Application.ApplicationType.WebGL) {
+            Gdx.app.exit()
+            return
+        }
+
+        val currentScreen = getScreen() ?: return
+        if (currentScreen is MainMenuScreen) return
+
+        if (screenStack.any { it is WorldScreen }) {
+            goToMainMenu()
+            return
+        }
+        replaceCurrentScreen(MainMenuScreen())
     }
 
     fun goToMainMenu(): MainMenuScreen {

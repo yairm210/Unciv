@@ -1,6 +1,5 @@
 package com.unciv.ui.screens.worldscreen.mainmenu
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle
@@ -88,7 +87,7 @@ class WorldScreenMenuPopup(
         
         addButton("Exit") {
             close()
-            Gdx.app.exit()
+            worldScreen.game.requestExit()
         }.apply { actor.style = BaseScreen.skin.get("negative", TextButtonStyle::class.java) }
             .nextColumn()
 

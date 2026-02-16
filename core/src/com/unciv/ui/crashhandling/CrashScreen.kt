@@ -1,5 +1,6 @@
 package com.unciv.ui.crashhandling
 
+import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -201,8 +202,9 @@ class CrashScreen(val exception: Throwable) : BaseScreen() {
                     )
                 }
             }
-        val closeButton = IconTextButton("Close Unciv", fontSize = Constants.headingFontSize)
-            .onClick { Gdx.app.exit() }
+        val closeActionText = if (Gdx.app.type == Application.ApplicationType.WebGL) "Main menu" else "Close Unciv"
+        val closeButton = IconTextButton(closeActionText, fontSize = Constants.headingFontSize)
+            .onClick { UncivGame.Current.requestExit() }
 
         val buttonsTable = Table()
         buttonsTable.add(copyButton)
