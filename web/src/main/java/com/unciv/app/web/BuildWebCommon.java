@@ -125,6 +125,7 @@ final class BuildWebCommon {
             "com.unciv.logic.civilization.PopupAlert",
             "com.unciv.logic.civilization.CivConstructions",
             "com.unciv.logic.civilization.diplomacy.DiplomacyManager",
+            "com.unciv.models.Religion",
             "com.unciv.models.metadata.GameParameters");
 
     private BuildWebCommon() {
