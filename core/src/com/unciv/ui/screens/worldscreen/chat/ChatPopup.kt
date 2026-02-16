@@ -39,7 +39,7 @@ class ChatPopup(
 
     private val chatTable = Table(skin)
     private val scrollPane = ScrollPane(chatTable, skin)
-    private val messageField = UncivTextField(hint = "Type something...")
+    private val messageField = UncivTextField(hint = "Type something...").apply { name = "chat.input" }
 
     init {
         ChatStore.chatPopup = this
@@ -80,6 +80,7 @@ class ChatPopup(
         // Input: | MessageField | SendButton |
         add(messageField).expandX().fillX()
         val sendButton = Button(skin)
+        sendButton.name = "chat.send"
         sendButton.add(ImageGetter.getImage("OtherIcons/Send"))
         add(sendButton).size(messageField.height * 1.2f, messageField.height).padLeft(1f).row()
 

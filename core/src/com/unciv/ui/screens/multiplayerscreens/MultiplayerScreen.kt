@@ -75,6 +75,7 @@ class MultiplayerScreen : PickerScreen() {
 
     private fun setupRightSideButton() {
         rightSideButton.setText("Join game".tr())
+        rightSideButton.name = "mp.join_game"
         rightSideButton.onClick {
             val missingMods = selectedGame!!.preview!!.gameParameters.getModsAndBaseRuleset()
                 .filter { !RulesetCache.containsKey(it) }
@@ -120,6 +121,7 @@ class MultiplayerScreen : PickerScreen() {
 
     private fun createRefreshButton(): TextButton {
         val btn = "Refresh list".toTextButton()
+        btn.name = "mp.refresh_list"
         btn.onClick {
             Concurrency.run("Update all multiplayer games") {
                 game.onlineMultiplayer.requestUpdate()
@@ -130,6 +132,7 @@ class MultiplayerScreen : PickerScreen() {
 
     private fun createAddGameButton(): TextButton {
         val btn = "Add multiplayer game".toTextButton()
+        btn.name = "mp.add_game"
         btn.onClick {
             game.pushScreen(AddMultiplayerGameScreen(this))
         }

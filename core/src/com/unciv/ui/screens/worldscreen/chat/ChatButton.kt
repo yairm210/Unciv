@@ -64,6 +64,7 @@ class ChatButton(val worldScreen: WorldScreen) : IconTextButton(
     }
 
     init {
+        name = "world.chat_open"
         width = 95f
         iconCell.pad(3f).center()
         addActor(badge)

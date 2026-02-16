@@ -3,6 +3,7 @@ package com.unciv.app.web;
 import com.github.xpenatan.gdx.teavm.backends.shared.config.AssetFileHandle;
 import com.github.xpenatan.gdx.teavm.backends.web.config.TeaBuildConfiguration;
 import com.github.xpenatan.gdx.teavm.backends.web.config.TeaBuilder;
+import com.github.xpenatan.gdx.teavm.backends.web.config.plugins.TeaReflectionSupplier;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
@@ -136,8 +137,10 @@ final class BuildWebCommon {
         if (Files.isDirectory(webTestAssetsPath)) {
             configuration.assetsPath.add(new AssetFileHandle(webTestAssetsPath.toString()));
         }
+        Set<String> serializableClasses = discoverSerializableClasses();
         configuration.classesToPreserve.addAll(PRESERVED_CLASSES);
-        configuration.classesToPreserve.addAll(discoverSerializableClasses());
+        configuration.classesToPreserve.addAll(serializableClasses);
+        registerReflectionClasses(serializableClasses);
 
         TeaBuilder.config(configuration);
 
@@ -166,6 +169,21 @@ final class BuildWebCommon {
         }
         sanitizeAtlasFiltersForWeb(outputPath.resolve("assets"));
         ensureFavicon(outputPath);
+    }
+
+    /**
+     * Register classes for TeaVM reflection supplier so LibGDX Json can access
+     * Kotlin backing fields (private + setAccessible) in web builds.
+     */
+    private static void registerReflectionClasses(Set<String> serializableClasses) {
+        Set<String> reflectionClasses = new LinkedHashSet<>();
+        reflectionClasses.addAll(PRESERVED_CLASSES);
+        reflectionClasses.addAll(serializableClasses);
+        for (String className : reflectionClasses) {
+            if (className == null || className.isBlank()) continue;
+            if (TeaReflectionSupplier.containsReflection(className)) continue;
+            TeaReflectionSupplier.addReflectionClass(className);
+        }
     }
 
     private static void ensureDirectory(Path path) {

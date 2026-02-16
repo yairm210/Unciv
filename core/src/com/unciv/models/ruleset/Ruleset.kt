@@ -184,7 +184,7 @@ class Ruleset {
         for (item in items) {
             val itemName = try { item.name }
             catch (_: Exception) {
-                throw Exception("${T::class.simpleName} is missing a name!")
+                throw Exception("${T::class.java.simpleName} is missing a name!")
             }
 
             hashMap[itemName] = item

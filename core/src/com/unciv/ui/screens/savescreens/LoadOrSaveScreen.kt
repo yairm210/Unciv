@@ -205,7 +205,7 @@ abstract class LoadOrSaveScreen(
                     isPermissionDenied
                 }
                 else -> {
-                    errorText.append("Unhandled problem, [${ex::class.simpleName} ${ex.stackTraceToString()}]".tr())
+                    errorText.append("Unhandled problem, [${ex.javaClass.simpleName} ${ex.stackTraceToString()}]".tr())
                     false
                 }
             }

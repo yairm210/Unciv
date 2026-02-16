@@ -26,6 +26,7 @@ class MultiplayerStatusPopup(
         val gameList = GameList(::gameSelected)
         pickerPane.topTable.add(gameList)
         pickerPane.rightSideButton.setText("Load game".tr())
+        pickerPane.rightSideButton.name = "world.load_latest_multiplayer"
         pickerPane.closeButton.onClick(::close)
         pickerCell.setActor<PickerPane>(pickerPane)
         pickerPane.rightSideButton.onClick {

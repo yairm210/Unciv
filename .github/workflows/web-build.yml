@@ -269,8 +269,9 @@ jobs:
             tmp/web-validation-latest.png
 
   web-multiplayer-multi-instance:
-    name: Web Multiplayer Multi-Instance (required)
+    name: Web Multiplayer Multi-Instance (informational probe)
     runs-on: ubuntu-latest
+    continue-on-error: true
     needs: web-build
     steps:
       - name: Checkout
@@ -338,8 +339,9 @@ jobs:
             tmp/web-ui-core-loop-latest.png
 
   web-ui-multiplayer:
-    name: Web UI Multiplayer (required, 30s)
+    name: Web UI Multiplayer (informational probe, 30s)
     runs-on: ubuntu-latest
+    continue-on-error: true
     needs: web-build
     steps:
       - name: Checkout
@@ -372,6 +374,42 @@ jobs:
             tmp/web-ui-multiplayer-result.json
             tmp/web-ui-multiplayer-host-latest.png
             tmp/web-ui-multiplayer-guest-latest.png
+
+  web-clickops-multiplayer:
+    name: Web Multiplayer ClickOps (required)
+    runs-on: ubuntu-latest
+    needs: web-build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare web test environment
+        uses: ./.github/actions/web-test-env
+        with:
+          install-ws: "true"
+          start-mp-server: "true"
+
+      - name: Run strict clickops multiplayer gate
+        run: |
+          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_MP_SERVER=http://127.0.0.1:19090 WEB_PROFILE=phase4-full WEB_CLICKS_MULTIPLAYER_TIMEOUT_MS=240000 \
+          node scripts/web/run-web-clickops-multiplayer.js
+
+      - name: Publish clickops multiplayer summary
+        if: always()
+        run: |
+          node scripts/web/write-web-summary.js >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload clickops multiplayer artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-clickops-multiplayer
+          path: |
+            /tmp/web-server.log
+            /tmp/mp-server.log
+            tmp/web-clickops-multiplayer-result.json
+            tmp/web-clickops-multiplayer-host-latest.png
+            tmp/web-clickops-multiplayer-guest-latest.png
 
   web-ui-map-editor:
     name: Web UI Map Editor (required, 30s)
@@ -509,7 +547,7 @@ jobs:
   deploy-pages:
     name: Deploy GitHub Pages
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
-    needs: [web-build, web-e2e, web-phase4-beta, web-phase4-full, web-multiplayer-multi-instance, web-ui-core-loop, web-ui-multiplayer, web-ui-map-editor, web-ui-war-from-start, web-ui-war-preworld]
+    needs: [web-build, web-e2e, web-phase4-beta, web-phase4-full, web-clickops-multiplayer, web-ui-core-loop, web-ui-map-editor, web-ui-war-from-start, web-ui-war-preworld]
     runs-on: ubuntu-latest
     outputs:
       page_url: ${{ steps.deployment.outputs.page_url }}

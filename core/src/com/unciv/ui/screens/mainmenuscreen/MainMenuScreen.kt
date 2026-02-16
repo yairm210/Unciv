@@ -206,6 +206,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         val startNewGameBinding = if (enableKeyboardBindings) KeyboardBinding.StartNewGame else null
         val newGameButton = getMenuButton("Start new game", "OtherIcons/New", startNewGameBinding)
             { game.pushScreen(NewGameScreen()) }
+        newGameButton.name = "main.start_new_game"
         column1.add(newGameButton).row()
 
         initStep = "load game button"
@@ -219,6 +220,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             val multiplayerBinding = if (enableKeyboardBindings) KeyboardBinding.Multiplayer else null
             val multiplayerTable = getMenuButton("Multiplayer", "OtherIcons/Multiplayer", multiplayerBinding)
                 { game.pushScreen(MultiplayerScreen()) }
+            multiplayerTable.name = "menu.multiplayer"
             column2.add(multiplayerTable).row()
         }
 

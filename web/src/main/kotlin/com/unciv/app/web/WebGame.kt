@@ -10,14 +10,26 @@ class WebGame : UncivGame() {
         val jsRequested = WebJsTestInterop.isEnabled()
         val uiRequested = WebUiProbeInterop.isEnabled()
         val mpRequested = WebMultiplayerProbeInterop.isEnabled()
+        val clickOpsRequested = WebClickOpsInterop.isEnabled()
         WebValidationInterop.appendBootstrapTrace(
             "create:request-flags",
-            "jsRequested=$jsRequested uiRequested=$uiRequested mpRequested=$mpRequested",
+            "jsRequested=$jsRequested uiRequested=$uiRequested mpRequested=$mpRequested clickOpsRequested=$clickOpsRequested",
         )
 
         super.create()
         enforceWebInputDefaults()
         WebValidationInterop.appendBootstrapTrace("create:super", "super.create completed")
+
+        if (clickOpsRequested) {
+            WebValidationInterop.publishRunnerSelection("clickOps", "clickOps query flag enabled")
+            val startedClickOps = WebClickOpsCollector.maybeStart(this)
+            WebValidationInterop.appendBootstrapTrace("create:clickops", "started=$startedClickOps")
+            if (!startedClickOps) {
+                WebValidationInterop.publishRunnerSelection("none", "clickOps requested but collector did not start")
+                WebClickOpsInterop.publishError("clickOps was requested but startup chain did not launch WebClickOpsCollector.")
+            }
+            return
+        }
 
         if (uiRequested) {
             WebValidationInterop.publishRunnerSelection("uiProbe", "uiProbe query flag enabled")
@@ -57,6 +69,11 @@ class WebGame : UncivGame() {
         if (!startedValidation) {
             WebValidationInterop.publishRunnerSelection("none", "validation path selected but runner did not start")
         }
+    }
+
+    override fun render() {
+        super.render()
+        WebClickOpsCollector.captureFrame(this)
     }
 
     override fun installAudioHooks() {

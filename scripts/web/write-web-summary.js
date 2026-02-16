@@ -17,6 +17,7 @@ function main() {
   const regressionPath = path.join(tmpDir, 'regression-diff-summary.json');
   const performancePath = path.join(tmpDir, 'performance-budget-summary.json');
   const multiplayerPath = path.join(tmpDir, 'web-multiplayer-multi-instance-result.json');
+  const clickopsMultiplayerPath = path.join(tmpDir, 'web-clickops-multiplayer-result.json');
   const uiCorePath = path.join(tmpDir, 'web-ui-core-loop-result.json');
   const uiMultiplayerPath = path.join(tmpDir, 'web-ui-multiplayer-result.json');
   const uiMapEditorPath = path.join(tmpDir, 'web-ui-map-editor-result.json');
@@ -29,6 +30,7 @@ function main() {
   const regression = optionalJson(regressionPath);
   const performance = optionalJson(performancePath);
   const multiplayer = optionalJson(multiplayerPath);
+  const clickopsMultiplayer = optionalJson(clickopsMultiplayerPath);
   const uiCore = optionalJson(uiCorePath);
   const uiMultiplayer = optionalJson(uiMultiplayerPath);
   const uiMapEditor = optionalJson(uiMapEditorPath);
@@ -108,8 +110,27 @@ function main() {
     lines.push('');
   }
 
+  if (clickopsMultiplayer) {
+    lines.push('### Multiplayer ClickOps (required)');
+    lines.push(`- status: ${clickopsMultiplayer.status || 'UNKNOWN'}`);
+    lines.push(`- run_id: ${clickopsMultiplayer.runId || 'unknown'}`);
+    lines.push(`- game_id: ${clickopsMultiplayer.gameId || 'unknown'}`);
+    lines.push(`- host_turn: ${clickopsMultiplayer.hostState?.turn ?? 'unknown'}`);
+    lines.push(`- guest_turn: ${clickopsMultiplayer.guestState?.turn ?? 'unknown'}`);
+    lines.push(`- host_actions: ${Array.isArray(clickopsMultiplayer.hostActions) ? clickopsMultiplayer.hostActions.length : 0}`);
+    lines.push(`- guest_actions: ${Array.isArray(clickopsMultiplayer.guestActions) ? clickopsMultiplayer.guestActions.length : 0}`);
+    lines.push(`- page_errors: ${Array.isArray(clickopsMultiplayer.pageErrors) ? clickopsMultiplayer.pageErrors.length : 0}`);
+    lines.push(`- console_errors: ${Array.isArray(clickopsMultiplayer.consoleErrors) ? clickopsMultiplayer.consoleErrors.length : 0}`);
+    if (Array.isArray(clickopsMultiplayer.failures) && clickopsMultiplayer.failures.length > 0) {
+      for (const failure of clickopsMultiplayer.failures) {
+        lines.push(`- failure: ${failure}`);
+      }
+    }
+    lines.push('');
+  }
+
   if (multiplayer) {
-    lines.push('### Multiplayer Multi-Instance');
+    lines.push('### Multiplayer Multi-Instance (informational probe)');
     lines.push(`- status: ${multiplayer.status || 'UNKNOWN'}`);
     lines.push(`- game_id: ${multiplayer.gameId || 'unknown'}`);
     lines.push(`- browser: ${multiplayer.browser || 'chromium'}`);
@@ -147,7 +168,7 @@ function main() {
   }
 
   if (uiMultiplayer) {
-    lines.push('### UI Multiplayer (30s)');
+    lines.push('### UI Multiplayer (30s, informational probe)');
     lines.push(`- status: ${uiMultiplayer.status || 'UNKNOWN'}`);
     lines.push(`- run_id: ${uiMultiplayer.runId || 'unknown'}`);
     lines.push(`- host_passed: ${uiMultiplayer.host?.passed === true ? 'yes' : 'no'}`);

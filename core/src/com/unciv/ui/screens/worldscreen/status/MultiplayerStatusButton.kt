@@ -45,6 +45,7 @@ class MultiplayerStatusButton(
     private val events = EventBus.EventReceiver()
 
     init {
+        name = "world.multiplayer_status_open"
         turnIndicatorCell = add().padTop(10f).padBottom(10f)
         add(loadingImage).pad(5f)
 

@@ -127,7 +127,12 @@ class MultiplayerServer(
      * @throws MultiplayerAuthException if the authentication failed
      */
     suspend fun uploadGame(gameInfo: GameInfo, withPreview: Boolean) {
-        val zippedGameInfo = UncivFiles.gameInfoToString(gameInfo, forceZip = true, updateChecksum = true)
+        val zippedGameInfo = UncivFiles.gameInfoToString(
+            gameInfo,
+            forceZip = true,
+            updateChecksum = true,
+            portable = true,
+        )
         fileStorage().saveFileData(gameInfo.gameId, zippedGameInfo)
 
         // We upload the preview after the game because otherwise the following race condition will happen:
