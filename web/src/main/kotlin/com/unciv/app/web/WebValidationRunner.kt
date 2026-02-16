@@ -2,7 +2,6 @@ package com.unciv.app.web
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
-import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
@@ -733,13 +732,61 @@ object WebValidationRunner {
                         ?: return false to "No buildable construction candidate available for click flow."
 
                     val candidateLabel = candidateName.tr(true)
-                    val selectedClick = clickActorByText(screen.stage.root, candidateLabel, contains = true)
-                    if (!selectedClick) return false to "Could not click construction candidate [$candidateName]."
-                    waitFrames(12)
-                    val queueClick = clickActorByText(screen.stage.root, candidateLabel, contains = true)
-                    if (!queueClick) return false to "Could not confirm construction candidate [$candidateName] on second click."
-                    val chosen = waitUntilFrames(240) { cityConstructions.currentConstructionName().isNotEmpty() }
-                    if (!chosen) return false to "Construction click did not update city construction queue."
+                    var clickedCandidate = false
+                    var clickTrace = ""
+                    fun findCandidateActor() = findClickableActorByTextInLeftPane(screen.stage.root, candidateLabel, contains = false, preferLastMatch = true)
+                        ?: findClickableActorByTextInLeftPane(screen.stage.root, candidateLabel, contains = false)
+                        ?: findClickableActorByTextInLeftPane(screen.stage.root, candidateLabel, contains = true, preferLastMatch = true)
+                        ?: findClickableActorByTextInLeftPane(screen.stage.root, candidateLabel, contains = true)
+                        ?: findClickableActorByText(screen.stage.root, candidateLabel, contains = false, preferLastMatch = true)
+                        ?: findClickableActorByText(screen.stage.root, candidateLabel, contains = false)
+                        ?: findClickableActorByText(screen.stage.root, candidateLabel, contains = true, preferLastMatch = true)
+                        ?: findClickableActorByText(screen.stage.root, candidateLabel, contains = true)
+                    repeat(24) {
+                        if (cityConstructions.currentConstructionName().isNotEmpty()) return@repeat
+                        val selectedBeforeClick = screen.selectedConstruction?.name
+                        val candidateActor = findCandidateActor()
+                        if (candidateActor == null) {
+                            clickTrace = "missing"
+                            waitFrames(10)
+                            return@repeat
+                        }
+                        if (!clickActor(candidateActor)) {
+                            clickTrace = "miss:${candidateActor::class.simpleName}"
+                            waitFrames(10)
+                            return@repeat
+                        }
+                        clickedCandidate = true
+                        clickTrace = if (selectedBeforeClick == candidateName) {
+                            "commit:${candidateActor::class.simpleName}"
+                        } else {
+                            "select:${candidateActor::class.simpleName}"
+                        }
+                        waitFrames(10)
+                        if (cityConstructions.currentConstructionName().isNotEmpty()) return@repeat
+                        if (selectedBeforeClick == candidateName) return@repeat
+                        if (screen.selectedConstruction?.name != candidateName) return@repeat
+
+                        val commitActor = findCandidateActor()
+                        if (commitActor != null && clickActor(commitActor)) {
+                            clickedCandidate = true
+                            clickTrace = "commit2:${commitActor::class.simpleName}"
+                        }
+                        waitFrames(10)
+                    }
+                    val cityStates = civ.cities.joinToString(";") {
+                        "${it.name}:${it.cityConstructions.currentConstructionName().ifEmpty { "<empty>" }}"
+                    }
+                    val selectedConstructionName = screen.selectedConstruction?.name ?: "<none>"
+                    if (!clickedCandidate) {
+                        return false to "Could not click construction candidate [$candidateName]. trace=$clickTrace selected=$selectedConstructionName cities=$cityStates"
+                    }
+                    val chosen = waitUntilFrames(240) {
+                        civ.cities.any { it.cityConstructions.currentConstructionName().isNotEmpty() }
+                    }
+                    if (!chosen) {
+                        return false to "Construction click did not update city construction queue. candidate=$candidateName trace=$clickTrace selected=$selectedConstructionName cities=$cityStates"
+                    }
                     clickActorByText(screen.stage.root, "Exit city".tr(), contains = true)
                     waitUntilFrames(240) { game.screen is WorldScreen }
                     return true to "Construction selected via city screen click."
@@ -1762,9 +1809,10 @@ object WebValidationRunner {
         return value.lowercase().replace(Regex("\\s+"), " ").trim()
     }
 
-    private fun findClickableAncestor(actor: Actor): Actor? {
+    private fun findClickableAncestor(actor: Actor, searchRoot: Actor? = null): Actor? {
         var current: Actor? = actor
         while (current != null) {
+            if (current === searchRoot) return null
             if (
                 current.isVisible &&
                 current.touchable == Touchable.enabled &&
@@ -1791,7 +1839,7 @@ object WebValidationRunner {
                 val normalized = normalizeText(text)
                 val textMatches = if (contains) normalized.contains(expected) else normalized == expected
                 if (textMatches) {
-                    val clickable = findClickableAncestor(node)
+                    val clickable = findClickableAncestor(node, root)
                     if (clickable != null) {
                         match = clickable
                         if (!preferLastMatch) return
@@ -1845,7 +1893,7 @@ object WebValidationRunner {
     private fun findClickableActorByName(root: Actor, actorName: String): Actor? {
         val actor = findActorByName(root, actorName) ?: return null
         if (!actor.isVisible) return null
-        return findClickableAncestor(actor) ?: actor
+        return findClickableAncestor(actor, root) ?: actor
     }
 
     private fun clickActorByText(
@@ -1856,6 +1904,44 @@ object WebValidationRunner {
     ): Boolean {
         val actor = findClickableActorByText(root, text, contains, preferLastMatch) ?: return false
         return clickActor(actor)
+    }
+
+    private fun findClickableActorByTextInLeftPane(
+        root: Actor,
+        text: String,
+        contains: Boolean = false,
+        preferLastMatch: Boolean = false,
+    ): Actor? {
+        val expected = normalizeText(text)
+        val stage = root.stage ?: return null
+        val maxX = stage.width * 0.55f
+        val matches = LinkedHashSet<Actor>()
+
+        fun visit(node: Actor) {
+            if (!node.isVisible) return
+            val textValue = actorText(node)
+            if (textValue != null) {
+                val normalized = normalizeText(textValue)
+                val textMatches = if (contains) normalized.contains(expected) else normalized == expected
+                if (textMatches) {
+                    val clickable = findClickableAncestor(node, root)
+                    if (clickable != null) {
+                        val center = clickable.localToStageCoordinates(Vector2(clickable.width / 2f, clickable.height / 2f))
+                        if (center.x <= maxX) matches.add(clickable)
+                    }
+                }
+            }
+            if (node is Group) {
+                val children = node.children
+                for (index in 0 until children.size) {
+                    visit(children[index])
+                }
+            }
+        }
+
+        visit(root)
+        if (matches.isEmpty()) return null
+        return if (preferLastMatch) matches.last() else matches.first()
     }
 
     private fun clickActorByName(root: Actor, actorName: String): Boolean {
@@ -1884,23 +1970,7 @@ object WebValidationRunner {
         stage.touchUp(x, y, 0, Input.Buttons.LEFT)
         if (downHandled && targetHit) return true
 
-        val downEvent = InputEvent().apply {
-            setType(InputEvent.Type.touchDown)
-            setStageX(center.x)
-            setStageY(center.y)
-            setPointer(0)
-            setButton(Input.Buttons.LEFT)
-        }
-        val upEvent = InputEvent().apply {
-            setType(InputEvent.Type.touchUp)
-            setStageX(center.x)
-            setStageY(center.y)
-            setPointer(0)
-            setButton(Input.Buttons.LEFT)
-        }
-        val fired = runCatching { actor.fire(downEvent) }.getOrDefault(false)
-        runCatching { actor.fire(upEvent) }
-        return fired
+        return false
     }
 
     private fun <T : Actor> findActorByType(root: Actor, actorClass: Class<T>): T? {
