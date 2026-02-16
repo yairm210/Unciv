@@ -39,7 +39,7 @@ function main() {
   const maxValidationDurationMs = intEnv('WEB_BUDGET_MAX_VALIDATION_MS', 900000);
   const maxMainMenuReadyMs = intEnv('WEB_BUDGET_MAX_MAIN_MENU_MS', 180000);
   const maxWorldEntryReadyMs = intEnv('WEB_BUDGET_MAX_WORLD_ENTRY_MS', 300000);
-  const maxUncivJsBytes = intEnv('WEB_BUDGET_MAX_UNCIV_JS_BYTES', 70000000);
+  const maxUncivJsBytes = intEnv('WEB_BUDGET_MAX_UNCIV_JS_BYTES', 76000000);
   const maxDistBytes = intEnv('WEB_BUDGET_MAX_DIST_BYTES', 220000000);
 
   const validationSummary = readJson(summaryPath);

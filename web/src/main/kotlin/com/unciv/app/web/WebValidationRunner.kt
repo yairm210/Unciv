@@ -1869,9 +1869,20 @@ object WebValidationRunner {
         val screenPoint = stage.stageToScreenCoordinates(Vector2(center.x, center.y))
         val x = screenPoint.x.toInt()
         val y = screenPoint.y.toInt()
+
+        var hitActor: Actor? = stage.hit(center.x, center.y, true)
+        var targetHit = false
+        while (hitActor != null) {
+            if (hitActor === actor) {
+                targetHit = true
+                break
+            }
+            hitActor = hitActor.parent
+        }
+
         val downHandled = stage.touchDown(x, y, 0, Input.Buttons.LEFT)
         stage.touchUp(x, y, 0, Input.Buttons.LEFT)
-        if (downHandled) return true
+        if (downHandled && targetHit) return true
 
         val downEvent = InputEvent().apply {
             setType(InputEvent.Type.touchDown)

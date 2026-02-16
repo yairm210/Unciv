@@ -109,6 +109,23 @@ final class BuildWebCommon {
             "com.unciv.models.ruleset.unique.TemporaryUnique",
             "com.unciv.models.metadata.GameParameters",
             "com.unciv.logic.map.MapParameters");
+    private static final Set<String> WEB_JSON_REFLECTION_CLASSES = Set.of(
+            "com.unciv.logic.GameInfo",
+            "com.unciv.logic.map.TileMap",
+            "com.unciv.logic.map.tile.Tile",
+            "com.unciv.logic.map.mapunit.MapUnit",
+            "com.unciv.logic.map.mapunit.MapUnit$UnitMovementMemory",
+            "com.unciv.logic.map.mapunit.UnitPromotions",
+            "com.unciv.logic.city.City",
+            "com.unciv.logic.city.CityConstructions",
+            "com.unciv.logic.civilization.Civilization",
+            "com.unciv.logic.civilization.Civilization$NotificationsLog",
+            "com.unciv.logic.civilization.Civilization$HistoricalAttackMemory",
+            "com.unciv.logic.civilization.Notification",
+            "com.unciv.logic.civilization.PopupAlert",
+            "com.unciv.logic.civilization.CivConstructions",
+            "com.unciv.logic.civilization.diplomacy.DiplomacyManager",
+            "com.unciv.models.metadata.GameParameters");
 
     private BuildWebCommon() {
     }
@@ -140,7 +157,7 @@ final class BuildWebCommon {
         Set<String> serializableClasses = discoverSerializableClasses();
         configuration.classesToPreserve.addAll(PRESERVED_CLASSES);
         configuration.classesToPreserve.addAll(serializableClasses);
-        registerReflectionClasses(serializableClasses);
+        registerReflectionClasses();
 
         TeaBuilder.config(configuration);
 
@@ -169,21 +186,6 @@ final class BuildWebCommon {
         }
         sanitizeAtlasFiltersForWeb(outputPath.resolve("assets"));
         ensureFavicon(outputPath);
-    }
-
-    /**
-     * Register classes for TeaVM reflection supplier so LibGDX Json can access
-     * Kotlin backing fields (private + setAccessible) in web builds.
-     */
-    private static void registerReflectionClasses(Set<String> serializableClasses) {
-        Set<String> reflectionClasses = new LinkedHashSet<>();
-        reflectionClasses.addAll(PRESERVED_CLASSES);
-        reflectionClasses.addAll(serializableClasses);
-        for (String className : reflectionClasses) {
-            if (className == null || className.isBlank()) continue;
-            if (TeaReflectionSupplier.containsReflection(className)) continue;
-            TeaReflectionSupplier.addReflectionClass(className);
-        }
     }
 
     private static void ensureDirectory(Path path) {
@@ -586,5 +588,23 @@ final class BuildWebCommon {
         } catch (IOException e) {
             throw new RuntimeException("Failed moving JS output " + fileName, e);
         }
+    }
+
+    /**
+     * Keep reflection metadata narrowly scoped to core preserved model classes.
+     * This restores JSON field access needed by web multiplayer serialization
+     * without preserving reflection metadata for every discovered serializable type.
+     */
+    private static void registerReflectionClasses() {
+        for (String className : PRESERVED_CLASSES) {
+            if (className == null || className.isBlank()) continue;
+            if (!needsWebJsonReflection(className)) continue;
+            if (TeaReflectionSupplier.containsReflection(className)) continue;
+            TeaReflectionSupplier.addReflectionClass(className);
+        }
+    }
+
+    private static boolean needsWebJsonReflection(String className) {
+        return WEB_JSON_REFLECTION_CLASSES.contains(className);
     }
 }
