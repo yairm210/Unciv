@@ -178,7 +178,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         constructor() : this(HexCoord.Zero, UnitMovementMemoryType.UnitMoved)
 
         @Readonly fun clone() = UnitMovementMemory(position, type)
-        override fun toString() = "${this::class.simpleName}($position, $type)"
+        override fun toString() = "${javaClass.simpleName}($position, $type)"
     }
 
     //region pure functions

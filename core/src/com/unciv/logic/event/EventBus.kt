@@ -50,8 +50,14 @@ object EventBus {
     }
 
     private fun getSuperClasses(kClass: KClass<*>): List<KClass<*>> {
-        if (kClass.supertypes.size == 1 && kClass.supertypes[0] == Any::class) return emptyList()
-        return kClass.supertypes
+        val supertypes = try {
+            kClass.supertypes
+        } catch (_: Throwable) {
+            // Some runtimes (notably TeaVM web) do not provide full Kotlin reflection.
+            return emptyList()
+        }
+        if (supertypes.size == 1 && supertypes[0] == Any::class) return emptyList()
+        return supertypes
             .map { it.classifier as KClass<*> }
             .flatMap { getSuperClasses(it) + it }
             .filter { it != Any::class }

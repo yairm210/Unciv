@@ -216,16 +216,18 @@ class GameOptionsTable(
             addCheckbox("Enable Nuclear Weapons", gameParameters.nuclearWeaponsEnabled)
             { gameParameters.nuclearWeaponsEnabled = it }
 
-    private fun Table.addIsOnlineMultiplayerCheckbox() =
-            addCheckbox("Online Multiplayer", gameParameters.isOnlineMultiplayer, lockable = false)
-            { shouldUseMultiplayer ->
-                gameParameters.isOnlineMultiplayer = shouldUseMultiplayer
-                updatePlayerPickerTable("")
-                if (shouldUseMultiplayer) {
-                    MultiplayerHelpers.showDropboxWarning(previousScreen as BaseScreen)
-                }
-                update()
+    private fun Table.addIsOnlineMultiplayerCheckbox() {
+        val checkbox = addCheckbox("Online Multiplayer", gameParameters.isOnlineMultiplayer, lockable = false)
+        { shouldUseMultiplayer ->
+            gameParameters.isOnlineMultiplayer = shouldUseMultiplayer
+            updatePlayerPickerTable("")
+            if (shouldUseMultiplayer) {
+                MultiplayerHelpers.showDropboxWarning(previousScreen as BaseScreen)
             }
+            update()
+        }
+        checkbox.name = "newgame.online_multiplayer"
+    }
 
     private fun Table.addAnyoneCanSpectateCheckbox() =
             addCheckbox("Allow anyone to spectate", gameParameters.anyoneCanSpectate)

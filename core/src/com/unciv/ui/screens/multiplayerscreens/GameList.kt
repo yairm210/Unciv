@@ -74,6 +74,7 @@ private class GameDisplay(
 
         updateTurnIndicator()
         updateErrorIndicator(error != null)
+        updateTargetNames()
         add(statusIndicators)
         add(gameButton)
         onClick { onSelected(gameName) }
@@ -88,6 +89,7 @@ private class GameDisplay(
         events.receive(MultiplayerGameUpdated::class, isOurGame) {
             preview = it.preview
             updateTurnIndicator()
+            updateTargetNames()
         }
         events.receive(MultiplayerGameUpdateSucceeded::class, isOurGame) {
             updateErrorIndicator(false)
@@ -95,6 +97,11 @@ private class GameDisplay(
         events.receive(MultiplayerGameUpdateFailed::class, isOurGame) {
             updateErrorIndicator(true)
         }
+    }
+
+    private fun updateTargetNames() {
+        val gameId = preview?.gameId?.takeIf { it.isNotBlank() }
+        gameButton.name = if (gameId == null) null else "mp.game_row.$gameId"
     }
 
     private fun updateTurnIndicator() {
