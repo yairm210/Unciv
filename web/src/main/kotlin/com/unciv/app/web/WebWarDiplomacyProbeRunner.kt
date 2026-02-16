@@ -910,22 +910,56 @@ object WebWarDiplomacyProbeRunner {
             )
         }
 
-        val peaceClicked = WebValidationRunner.clickActorByTextProbe(screen.stage.root, "Negotiate Peace".tr(), contains = true)
+        val peaceClicked = fireActorTap(peaceButtonState)
+            || WebValidationRunner.clickActorByTextProbe(screen.stage.root, "Negotiate Peace".tr(), contains = true)
             || WebValidationRunner.clickActorByTextProbe(screen.stage.root, "Negotiate Peace", contains = true)
+            || tapFirstButtonByTextContains(screen.stage.root, "Negotiate Peace".tr())
+            || tapFirstButtonByTextContains(screen.stage.root, "Negotiate Peace")
         if (!peaceClicked) {
             closeDiplomacyScreenIfOpen(game)
             return UiFlowResult(false, "negotiate-peace-button-click-failed buttons=${summarizeVisibleTextButtons(screen.stage.root)}")
         }
 
+        fun hasPendingOfferButton(root: Actor): Boolean {
+            return findTextButtonByTextContains(root, "Retract offer".tr()) != null
+                || findTextButtonByTextContains(root, "Retract offer") != null
+        }
+
+        val tradeTableReady = WebValidationRunner.waitUntilFramesProbe(360) {
+            val activeScreen = game.screen as? DiplomacyScreen ?: return@waitUntilFramesProbe false
+            val activeRoot = activeScreen.stage.root
+            hasPendingOfferButton(activeRoot)
+                || findTextButtonByTextContains(activeRoot, "Offer trade".tr()) != null
+                || findTextButtonByTextContains(activeRoot, "Offer trade") != null
+        }
+        val activeScreen = game.screen as? DiplomacyScreen
+            ?: return UiFlowResult(false, "diplomacy-screen-lost-before-peace-offer")
+        val activeRoot = activeScreen.stage.root
+        if (!tradeTableReady) {
+            closeDiplomacyScreenIfOpen(game)
+            return UiFlowResult(false, "peace-trade-table-not-ready buttons=${summarizeVisibleTextButtons(activeRoot)}")
+        }
+
+        val hadPendingOffer = hasPendingOfferButton(activeRoot)
+        val offerButtonState = findTextButtonByTextContains(activeRoot, "Offer trade".tr())
+            ?: findTextButtonByTextContains(activeRoot, "Offer trade")
+        val offerClicked = if (hadPendingOffer) {
+            false
+        } else {
+            (offerButtonState?.let { fireActorTap(it) } == true)
+                || WebValidationRunner.clickActorByTextProbe(activeRoot, "Offer trade".tr(), contains = true)
+                || WebValidationRunner.clickActorByTextProbe(activeRoot, "Offer trade", contains = true)
+                || tapFirstButtonByTextContains(activeRoot, "Offer trade".tr())
+                || tapFirstButtonByTextContains(activeRoot, "Offer trade")
+        }
         WebValidationRunner.waitFramesProbe(12)
-        val offerClicked = WebValidationRunner.clickActorByTextProbe(screen.stage.root, "Offer trade".tr(), contains = true)
-            || WebValidationRunner.clickActorByTextProbe(screen.stage.root, "Offer trade", contains = true)
-        val hasPendingOfferButton = findTextButtonByTextContains(screen.stage.root, "Retract offer".tr()) != null
-            || findTextButtonByTextContains(screen.stage.root, "Retract offer") != null
-        val offerSubmitted = offerClicked || hasPendingOfferButton
+        val refreshedScreen = game.screen as? DiplomacyScreen
+            ?: return UiFlowResult(false, "diplomacy-screen-lost-after-peace-offer-click")
+        val refreshedRoot = refreshedScreen.stage.root
+        val offerSubmitted = hadPendingOffer || offerClicked || hasPendingOfferButton(refreshedRoot)
         if (!offerSubmitted) {
             closeDiplomacyScreenIfOpen(game)
-            return UiFlowResult(false, "peace-offer-button-missing buttons=${summarizeVisibleTextButtons(screen.stage.root)}")
+            return UiFlowResult(false, "peace-offer-button-missing buttons=${summarizeVisibleTextButtons(refreshedRoot)}")
         }
 
         val pendingOutgoingRequest = WebValidationRunner.waitUntilFramesProbe(360) {
