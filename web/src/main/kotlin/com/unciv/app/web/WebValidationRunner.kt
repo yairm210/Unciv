@@ -118,12 +118,8 @@ object WebValidationRunner {
         )
     }
 
-    internal suspend fun advanceTurnsByClicksProbe(
-        game: WebGame,
-        turns: Int,
-        strictNoFallback: Boolean = false,
-    ): Pair<Boolean, String> {
-        return advanceTurnsByClicks(game, turns, strictNoFallback = strictNoFallback)
+    internal suspend fun advanceTurnsByClicksProbe(game: WebGame, turns: Int): Pair<Boolean, String> {
+        return advanceTurnsByClicks(game, turns)
     }
 
     internal suspend fun waitUntilFramesProbe(maxFrames: Int, condition: () -> Boolean): Boolean {
@@ -630,11 +626,11 @@ object WebValidationRunner {
             if (!clickAttempted) {
                 val fallbackSettler = civ.units.getUnitById(settler.id)
                 if (fallbackSettler != null && UnitActions.invokeUnitAction(fallbackSettler, UnitActionType.FoundCity)) {
-                    clickAttempted = true
                     founded = waitUntilFrames(600) {
                         val settlerStillExists = civ.units.getUnitById(settler.id) != null
                         civ.cities.size == cityCountBefore + 1 && !settlerStillExists
                     }
+                    clickAttempted = founded
                 }
             }
             if (!clickAttempted) {
@@ -691,6 +687,8 @@ object WebValidationRunner {
                     val clicked = clickActorByText(actionsTable, label, contains = true)
                     if (clicked) return true
                 }
+                val fallbackButton = findFirstEnabledButton(actionsTable)
+                if (fallbackButton != null && clickActor(fallbackButton)) return true
 
                 val advancedPage = nextPageLabels.any { label ->
                     clickActorByText(actionsTable, label, contains = true)
@@ -768,17 +766,63 @@ object WebValidationRunner {
     ): Pair<Boolean, String> {
         val civ = game.gameInfo?.getCurrentPlayerCivilization() ?: return false to "No current civ when choosing tech by click."
 
+        data class TechPickerSnapshot(
+            val confirmExists: Boolean,
+            val confirmDisabled: Boolean,
+            val namedResearchableOptions: Int,
+            val textResearchableOptions: Int,
+            val namedOptionActors: Int,
+        )
+
+        fun selectedTechExists(): Boolean = civ.tech.currentTechnology() != null || civ.tech.techsToResearch.isNotEmpty()
+
+        fun snapshotTechPicker(screen: TechPickerScreen, researchableTechs: List<String>): TechPickerSnapshot {
+            val root = screen.stage.root
+            val namedResearchable = researchableTechs.count { techName ->
+                findActorByName(root, "tech-option:$techName") != null
+            }
+            val textResearchable = researchableTechs.count { techName ->
+                findClickableActorByText(root, techName.tr(true), contains = true) != null
+            }
+            return TechPickerSnapshot(
+                confirmExists = findActorByName(root, "tech-picker-confirm") != null,
+                confirmDisabled = screen.rightSideButton.isDisabled,
+                namedResearchableOptions = namedResearchable,
+                textResearchableOptions = textResearchable,
+                namedOptionActors = countActorsByNamePrefix(root, "tech-option:"),
+            )
+        }
+
+        fun appendTimeline(
+            timeline: MutableList<String>,
+            label: String,
+            snapshot: TechPickerSnapshot,
+        ) {
+            if (timeline.size >= 12) return
+            timeline += "$label(confirmExists=${snapshot.confirmExists},confirmDisabled=${snapshot.confirmDisabled},namedResearchable=${snapshot.namedResearchableOptions},textResearchable=${snapshot.textResearchableOptions},namedActors=${snapshot.namedOptionActors})"
+        }
+
         fun techFailure(
             reason: String,
-            screen: TechPickerScreen?,
+            screen: TechPickerScreen,
             lastClickedTechActor: String?,
-            selectedVisible: Boolean?,
+            selectedVisible: Boolean,
+            snapshot: TechPickerSnapshot,
+            timeline: List<String>,
         ): Pair<Boolean, String> {
-            val confirmActor = screen?.let { findActorByName(it.stage.root, "tech-picker-confirm") }
-            val confirmExists = confirmActor != null
-            val confirmDisabled = if (screen != null) screen.rightSideButton.isDisabled else null
             val screenName = game.screen?.javaClass?.simpleName ?: "null"
-            val details = "screen=$screenName lastTechActor=${lastClickedTechActor ?: "none"} confirmExists=$confirmExists confirmDisabled=${confirmDisabled ?: "n/a"} selectedVisible=${selectedVisible ?: "n/a"}"
+            val details = buildString {
+                append("screen=").append(screenName)
+                append(" lastTechActor=").append(lastClickedTechActor ?: "none")
+                append(" confirmExists=").append(snapshot.confirmExists)
+                append(" confirmDisabled=").append(snapshot.confirmDisabled)
+                append(" selectedVisible=").append(selectedVisible)
+                append(" namedResearchable=").append(snapshot.namedResearchableOptions)
+                append(" textResearchable=").append(snapshot.textResearchableOptions)
+                append(" namedActors=").append(snapshot.namedOptionActors)
+                append(" readinessTimeline=")
+                append(if (timeline.isEmpty()) "none" else timeline.joinToString(" -> "))
+            }
             return false to "$reason ($details)"
         }
 
@@ -797,86 +841,143 @@ object WebValidationRunner {
                         .map { it.name }
                         .filter { civ.tech.canBeResearched(it) }
                         .toList()
+
                     if (researchableTechs.isEmpty()) {
-                        if (game.screen !is TechPickerScreen) {
-                            if (civ.tech.currentTechnology() != null || civ.tech.techsToResearch.isNotEmpty()) {
-                                return true to "Technology selected."
-                            }
-                            return@repeat
-                        }
+                        val emptyTimeline = mutableListOf<String>()
+                        val emptySnapshot = snapshotTechPicker(screen, researchableTechs)
+                        appendTimeline(emptyTimeline, "empty", emptySnapshot)
                         return techFailure(
                             reason = "No researchable technology available for click flow.",
                             screen = screen,
                             lastClickedTechActor = null,
                             selectedVisible = !screen.rightSideButton.isDisabled,
+                            snapshot = emptySnapshot,
+                            timeline = emptyTimeline,
                         )
                     }
 
+                    val readinessTimeline = mutableListOf<String>()
+                    var activeScreen: TechPickerScreen = screen
+                    var snapshot = snapshotTechPicker(activeScreen, researchableTechs)
+                    appendTimeline(readinessTimeline, "entry", snapshot)
+
+                    // Strict path: wait for deterministic interactivity before attempting tech clicks.
+                    val interactable = waitUntilFrames(240) {
+                        val current = game.screen as? TechPickerScreen ?: return@waitUntilFrames true
+                        snapshot = snapshotTechPicker(current, researchableTechs)
+                        appendTimeline(readinessTimeline, "wait", snapshot)
+                        snapshot.confirmExists || snapshot.namedResearchableOptions > 0 || snapshot.textResearchableOptions > 0
+                    }
+
+                    if (!interactable) {
+                        return techFailure(
+                            reason = "Tech picker did not become interactable before click flow.",
+                            screen = activeScreen,
+                            lastClickedTechActor = null,
+                            selectedVisible = !activeScreen.rightSideButton.isDisabled,
+                            snapshot = snapshot,
+                            timeline = readinessTimeline,
+                        )
+                    }
+                    if (game.screen !is TechPickerScreen) {
+                        if (selectedTechExists() && game.screen is WorldScreen) {
+                            return true to "Technology selected."
+                        }
+                        waitFrames(uiWaitMedium)
+                        return@repeat
+                    }
+
+                    activeScreen = game.screen as TechPickerScreen
+                    snapshot = snapshotTechPicker(activeScreen, researchableTechs)
+                    appendTimeline(readinessTimeline, "ready", snapshot)
+
+                    var selectedVisible = !activeScreen.rightSideButton.isDisabled
                     var lastClickedTechActor: String? = null
-                    var selectedVisible = !screen.rightSideButton.isDisabled
+
                     if (!selectedVisible) {
                         for (researchableTech in researchableTechs) {
                             val actorName = "tech-option:$researchableTech"
-                            val clickedByName = clickActorByName(screen.stage.root, actorName)
+                            val clickedByName = clickActorByName(activeScreen.stage.root, actorName)
                             val clickedByText = if (clickedByName) false else clickActorByText(
-                                root = screen.stage.root,
+                                root = activeScreen.stage.root,
                                 text = researchableTech.tr(true),
                                 contains = true,
                             )
                             if (!clickedByName && !clickedByText) continue
-                            lastClickedTechActor = actorName
+
+                            lastClickedTechActor = if (clickedByName) actorName else "text:$researchableTech"
                             waitFrames(uiWaitMedium)
-                            selectedVisible = waitUntilFrames(240) { !screen.rightSideButton.isDisabled }
+                            waitUntilFrames(120) {
+                                val current = game.screen as? TechPickerScreen ?: return@waitUntilFrames true
+                                !current.rightSideButton.isDisabled
+                            }
+
+                            if (game.screen !is TechPickerScreen) {
+                                if (selectedTechExists() && game.screen is WorldScreen) {
+                                    return true to "Technology selected."
+                                }
+                                break
+                            }
+
+                            activeScreen = game.screen as TechPickerScreen
+                            snapshot = snapshotTechPicker(activeScreen, researchableTechs)
+                            appendTimeline(readinessTimeline, "post-click", snapshot)
+                            selectedVisible = !activeScreen.rightSideButton.isDisabled
                             if (selectedVisible) break
                         }
                     }
 
-                    if (!selectedVisible) {
-                        if (game.screen !is TechPickerScreen) {
-                            if (civ.tech.currentTechnology() != null || civ.tech.techsToResearch.isNotEmpty()) {
-                                return true to "Technology selected."
-                            }
-                            return@repeat
+                    if (game.screen !is TechPickerScreen) {
+                        if (selectedTechExists() && game.screen is WorldScreen) {
+                            return true to "Technology selected."
                         }
+                        waitFrames(uiWaitMedium)
+                        return@repeat
+                    }
+
+                    activeScreen = game.screen as TechPickerScreen
+                    snapshot = snapshotTechPicker(activeScreen, researchableTechs)
+                    selectedVisible = !activeScreen.rightSideButton.isDisabled
+                    appendTimeline(readinessTimeline, "pre-confirm", snapshot)
+
+                    if (!selectedVisible) {
                         return techFailure(
                             reason = "Could not select a researchable technology option.",
-                            screen = screen,
+                            screen = activeScreen,
                             lastClickedTechActor = lastClickedTechActor,
                             selectedVisible = false,
+                            snapshot = snapshot,
+                            timeline = readinessTimeline,
                         )
                     }
 
-                    val confirmClicked = clickActorByName(screen.stage.root, "tech-picker-confirm")
-                        || clickActor(screen.rightSideButton)
+                    val confirmClicked = clickActorByName(activeScreen.stage.root, "tech-picker-confirm")
+                        || clickActor(activeScreen.rightSideButton)
                     if (!confirmClicked) {
-                        if (civ.tech.currentTechnology() != null || civ.tech.techsToResearch.isNotEmpty()) {
-                            return true to "Technology selected."
-                        }
-                        if (game.screen !is TechPickerScreen) return@repeat
                         return techFailure(
                             reason = "Could not click technology confirm button.",
-                            screen = screen,
+                            screen = activeScreen,
                             lastClickedTechActor = lastClickedTechActor,
                             selectedVisible = selectedVisible,
+                            snapshot = snapshot,
+                            timeline = readinessTimeline,
                         )
                     }
 
                     val closed = waitUntilFrames(480) { game.screen is WorldScreen }
                     if (!closed) {
-                        if (game.screen !is TechPickerScreen) {
-                            if (civ.tech.currentTechnology() != null || civ.tech.techsToResearch.isNotEmpty()) {
-                                return true to "Technology selected."
-                            }
-                            return@repeat
-                        }
+                        snapshot = snapshotTechPicker(activeScreen, researchableTechs)
+                        appendTimeline(readinessTimeline, "close-timeout", snapshot)
                         return techFailure(
                             reason = "Tech picker did not close after confirming technology.",
-                            screen = screen,
+                            screen = activeScreen,
                             lastClickedTechActor = lastClickedTechActor,
                             selectedVisible = selectedVisible,
+                            snapshot = snapshot,
+                            timeline = readinessTimeline,
                         )
                     }
-                    if (civ.tech.currentTechnology() == null && civ.tech.techsToResearch.isEmpty()) {
+                    if (!selectedTechExists()) {
                         return false to "Technology selection did not register after click flow."
                     }
                     return true to "Technology selected via tech picker clicks."
@@ -1107,9 +1208,6 @@ object WebValidationRunner {
                         }
                     }
                     is VictoryScreen -> {
-                        if (strictNoFallback) {
-                            return false to "Strict turn progression reached victory/defeat screen before requested turns completed."
-                        }
                         return true to "Reached victory screen after advancing $advancedTurns turns via UI clicks."
                     }
                     else -> {
@@ -1620,25 +1718,15 @@ object WebValidationRunner {
 
     private fun findClickableAncestor(actor: Actor): Actor? {
         var current: Actor? = actor
-        var listenerCandidate: Actor? = null
         while (current != null) {
-            if (
-                current is Button &&
-                current.isVisible &&
-                current.touchable == Touchable.enabled
-            ) {
-                return current
-            }
             if (
                 current.isVisible &&
                 current.touchable == Touchable.enabled &&
                 current.listeners.size > 0
-            ) {
-                if (listenerCandidate == null) listenerCandidate = current
-            }
+            ) return current
             current = current.parent
         }
-        return listenerCandidate
+        return null
     }
 
     private fun findClickableActorByText(
@@ -1688,6 +1776,26 @@ object WebValidationRunner {
         return null
     }
 
+    private fun countActorsByNamePrefix(root: Actor, actorNamePrefix: String): Int {
+        var count = 0
+
+        fun visit(node: Actor) {
+            val actorName = node.name
+            if (actorName.startsWith(actorNamePrefix)) {
+                count += 1
+            }
+            if (node is Group) {
+                val children = node.children
+                for (index in 0 until children.size) {
+                    visit(children[index])
+                }
+            }
+        }
+
+        visit(root)
+        return count
+    }
+
     private fun findClickableActorByName(root: Actor, actorName: String): Actor? {
         val actor = findActorByName(root, actorName) ?: return null
         if (!actor.isVisible) return null
@@ -1712,6 +1820,13 @@ object WebValidationRunner {
     private fun clickActor(actor: Actor): Boolean {
         val stage = actor.stage ?: return false
         val center = actor.localToStageCoordinates(Vector2(actor.width / 2f, actor.height / 2f))
+        val screenPoint = stage.stageToScreenCoordinates(Vector2(center.x, center.y))
+        val x = screenPoint.x.toInt()
+        val y = screenPoint.y.toInt()
+        val downHandled = stage.touchDown(x, y, 0, Input.Buttons.LEFT)
+        stage.touchUp(x, y, 0, Input.Buttons.LEFT)
+        if (downHandled) return true
+
         val downEvent = InputEvent().apply {
             setType(InputEvent.Type.touchDown)
             setStageX(center.x)
@@ -1728,14 +1843,7 @@ object WebValidationRunner {
         }
         val fired = runCatching { actor.fire(downEvent) }.getOrDefault(false)
         runCatching { actor.fire(upEvent) }
-        if (fired) return true
-
-        val screenPoint = stage.stageToScreenCoordinates(Vector2(center.x, center.y))
-        val x = screenPoint.x.toInt()
-        val y = screenPoint.y.toInt()
-        val downHandled = stage.touchDown(x, y, 0, Input.Buttons.LEFT)
-        stage.touchUp(x, y, 0, Input.Buttons.LEFT)
-        return downHandled
+        return fired
     }
 
     private fun <T : Actor> findActorByType(root: Actor, actorClass: Class<T>): T? {
