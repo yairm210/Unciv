@@ -55,33 +55,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download web dist artifact
-        uses: actions/download-artifact@v4
+      - name: Prepare web test environment
+        uses: ./.github/actions/web-test-env
         with:
-          name: unciv-web-dist
-          path: web/build/dist
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install Playwright browsers
-        run: |
-          npm config set fund false
-          npm config set audit false
-          npm install -D playwright ws
-          npx playwright install --with-deps chromium firefox
-
-      - name: Start static server
-        run: |
-          python3 scripts/web/static-server.py --port 18080 --dir web/build/dist > /tmp/web-server.log 2>&1 &
-          echo $! > /tmp/web-server.pid
-
-      - name: Start multiplayer test server
-        run: |
-          node scripts/web/multiplayer-test-server.js > /tmp/mp-server.log 2>&1 &
-          echo $! > /tmp/mp-server.pid
+          browsers: chromium firefox
+          install-ws: "true"
+          start-mp-server: "true"
 
       - name: Run web validation (phase1 baseline)
         run: |
@@ -144,28 +123,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download web dist artifact
-        uses: actions/download-artifact@v4
+      - name: Prepare web test environment
+        uses: ./.github/actions/web-test-env
         with:
-          name: unciv-web-dist
-          path: web/build/dist
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install Playwright browser
-        run: |
-          npm config set fund false
-          npm config set audit false
-          npm install -D playwright
-          npx playwright install --with-deps ${{ matrix.browser }}
-
-      - name: Start static server
-        run: |
-          python3 scripts/web/static-server.py --port 18080 --dir web/build/dist > /tmp/web-server.log 2>&1 &
-          echo $! > /tmp/web-server.pid
+          browsers: ${{ matrix.browser }}
 
       - name: Run browser JS test suite (${{ matrix.browser }})
         if: matrix.mode == 'js-suite'
@@ -208,28 +169,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download web dist artifact
-        uses: actions/download-artifact@v4
+      - name: Prepare web test environment
+        uses: ./.github/actions/web-test-env
         with:
-          name: unciv-web-dist
-          path: web/build/dist
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install Playwright browser
-        run: |
-          npm config set fund false
-          npm config set audit false
-          npm install -D playwright ws
-          npx playwright install --with-deps chromium
-
-      - name: Start static server
-        run: |
-          python3 scripts/web/static-server.py --port 18080 --dir web/build/dist > /tmp/web-server.log 2>&1 &
-          echo $! > /tmp/web-server.pid
+          install-ws: "true"
 
       - name: Run phase4-alpha gameplay validation
         run: |
@@ -260,28 +203,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download web dist artifact
-        uses: actions/download-artifact@v4
+      - name: Prepare web test environment
+        uses: ./.github/actions/web-test-env
         with:
-          name: unciv-web-dist
-          path: web/build/dist
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install Playwright browser
-        run: |
-          npm config set fund false
-          npm config set audit false
-          npm install -D playwright ws
-          npx playwright install --with-deps chromium
-
-      - name: Start static server
-        run: |
-          python3 scripts/web/static-server.py --port 18080 --dir web/build/dist > /tmp/web-server.log 2>&1 &
-          echo $! > /tmp/web-server.pid
+          install-ws: "true"
 
       - name: Run phase4-beta validation
         run: |
@@ -313,33 +238,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download web dist artifact
-        uses: actions/download-artifact@v4
+      - name: Prepare web test environment
+        uses: ./.github/actions/web-test-env
         with:
-          name: unciv-web-dist
-          path: web/build/dist
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install Playwright browser
-        run: |
-          npm config set fund false
-          npm config set audit false
-          npm install -D playwright ws
-          npx playwright install --with-deps chromium
-
-      - name: Start multiplayer test server
-        run: |
-          node scripts/web/multiplayer-test-server.js > /tmp/mp-server.log 2>&1 &
-          echo $! > /tmp/mp-server.pid
-
-      - name: Start static server
-        run: |
-          python3 scripts/web/static-server.py --port 18080 --dir web/build/dist > /tmp/web-server.log 2>&1 &
-          echo $! > /tmp/web-server.pid
+          install-ws: "true"
+          start-mp-server: "true"
 
       - name: Run phase4-full validation
         run: |
@@ -373,33 +276,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download web dist artifact
-        uses: actions/download-artifact@v4
+      - name: Prepare web test environment
+        uses: ./.github/actions/web-test-env
         with:
-          name: unciv-web-dist
-          path: web/build/dist
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install Playwright browser
-        run: |
-          npm config set fund false
-          npm config set audit false
-          npm install -D playwright ws
-          npx playwright install --with-deps chromium
-
-      - name: Start static server
-        run: |
-          python3 scripts/web/static-server.py --port 18080 --dir web/build/dist > /tmp/web-server.log 2>&1 &
-          echo $! > /tmp/web-server.pid
-
-      - name: Start multiplayer test server
-        run: |
-          node scripts/web/multiplayer-test-server.js > /tmp/mp-server.log 2>&1 &
-          echo $! > /tmp/mp-server.pid
+          install-ws: "true"
+          start-mp-server: "true"
 
       - name: Run multi-instance multiplayer gate
         run: |
@@ -431,28 +312,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download web dist artifact
-        uses: actions/download-artifact@v4
+      - name: Prepare web test environment
+        uses: ./.github/actions/web-test-env
         with:
-          name: unciv-web-dist
-          path: web/build/dist
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install Playwright browser
-        run: |
-          npm config set fund false
-          npm config set audit false
-          npm install -D playwright ws
-          npx playwright install --with-deps chromium
-
-      - name: Start static server
-        run: |
-          python3 scripts/web/static-server.py --port 18080 --dir web/build/dist > /tmp/web-server.log 2>&1 &
-          echo $! > /tmp/web-server.pid
+          install-ws: "true"
 
       - name: Run UI core loop gate
         run: |
@@ -482,33 +345,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download web dist artifact
-        uses: actions/download-artifact@v4
+      - name: Prepare web test environment
+        uses: ./.github/actions/web-test-env
         with:
-          name: unciv-web-dist
-          path: web/build/dist
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install Playwright browser
-        run: |
-          npm config set fund false
-          npm config set audit false
-          npm install -D playwright ws
-          npx playwright install --with-deps chromium
-
-      - name: Start static server
-        run: |
-          python3 scripts/web/static-server.py --port 18080 --dir web/build/dist > /tmp/web-server.log 2>&1 &
-          echo $! > /tmp/web-server.pid
-
-      - name: Start multiplayer test server
-        run: |
-          node scripts/web/multiplayer-test-server.js > /tmp/mp-server.log 2>&1 &
-          echo $! > /tmp/mp-server.pid
+          install-ws: "true"
+          start-mp-server: "true"
 
       - name: Run UI multiplayer gate
         run: |
@@ -540,28 +381,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download web dist artifact
-        uses: actions/download-artifact@v4
+      - name: Prepare web test environment
+        uses: ./.github/actions/web-test-env
         with:
-          name: unciv-web-dist
-          path: web/build/dist
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install Playwright browser
-        run: |
-          npm config set fund false
-          npm config set audit false
-          npm install -D playwright ws
-          npx playwright install --with-deps chromium
-
-      - name: Start static server
-        run: |
-          python3 scripts/web/static-server.py --port 18080 --dir web/build/dist > /tmp/web-server.log 2>&1 &
-          echo $! > /tmp/web-server.pid
+          install-ws: "true"
 
       - name: Run UI map editor gate
         run: |
@@ -591,28 +414,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download web dist artifact
-        uses: actions/download-artifact@v4
+      - name: Prepare web test environment
+        uses: ./.github/actions/web-test-env
         with:
-          name: unciv-web-dist
-          path: web/build/dist
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install Playwright browser
-        run: |
-          npm config set fund false
-          npm config set audit false
-          npm install -D playwright ws
-          npx playwright install --with-deps chromium
-
-      - name: Start static server
-        run: |
-          python3 scripts/web/static-server.py --port 18080 --dir web/build/dist > /tmp/web-server.log 2>&1 &
-          echo $! > /tmp/web-server.pid
+          install-ws: "true"
 
       - name: Run UI war from-start gate
         run: |
@@ -642,28 +447,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download web dist artifact
-        uses: actions/download-artifact@v4
+      - name: Prepare web test environment
+        uses: ./.github/actions/web-test-env
         with:
-          name: unciv-web-dist
-          path: web/build/dist
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install Playwright browser
-        run: |
-          npm config set fund false
-          npm config set audit false
-          npm install -D playwright ws
-          npx playwright install --with-deps chromium
-
-      - name: Start static server
-        run: |
-          python3 scripts/web/static-server.py --port 18080 --dir web/build/dist > /tmp/web-server.log 2>&1 &
-          echo $! > /tmp/web-server.pid
+          install-ws: "true"
 
       - name: Run UI war preworld gate
         run: |
@@ -694,28 +481,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download web dist artifact
-        uses: actions/download-artifact@v4
+      - name: Prepare web test environment
+        uses: ./.github/actions/web-test-env
         with:
-          name: unciv-web-dist
-          path: web/build/dist
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install Playwright browser
-        run: |
-          npm config set fund false
-          npm config set audit false
-          npm install -D playwright ws
-          npx playwright install --with-deps chromium
-
-      - name: Start static server
-        run: |
-          python3 scripts/web/static-server.py --port 18080 --dir web/build/dist > /tmp/web-server.log 2>&1 &
-          echo $! > /tmp/web-server.pid
+          install-ws: "true"
 
       - name: Run UI war deep gate
         run: |

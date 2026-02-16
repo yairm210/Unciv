@@ -1,0 +1,71 @@
+name: Prepare Web Test Environment
+description: Download web dist artifact, install browser deps, and start local test servers.
+
+inputs:
+  artifact-name:
+    description: Name of the uploaded web dist artifact.
+    required: false
+    default: unciv-web-dist
+  artifact-path:
+    description: Destination path for downloaded web dist artifact.
+    required: false
+    default: web/build/dist
+  node-version:
+    description: Node.js version for Playwright scripts.
+    required: false
+    default: "20"
+  browsers:
+    description: Playwright browsers to install.
+    required: false
+    default: chromium
+  install-ws:
+    description: Install ws package alongside Playwright.
+    required: false
+    default: "false"
+  start-mp-server:
+    description: Start the multiplayer test server.
+    required: false
+    default: "false"
+  static-server-port:
+    description: Port for the static web dist server.
+    required: false
+    default: "18080"
+
+runs:
+  using: composite
+  steps:
+    - name: Download web dist artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{ inputs.artifact-name }}
+        path: ${{ inputs.artifact-path }}
+
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: Install Playwright browser(s)
+      shell: bash
+      run: |
+        npm config set fund false
+        npm config set audit false
+        if [[ "${{ inputs.install-ws }}" == "true" ]]; then
+          npm install -D playwright ws
+        else
+          npm install -D playwright
+        fi
+        npx playwright install --with-deps ${{ inputs.browsers }}
+
+    - name: Start static server
+      shell: bash
+      run: |
+        python3 scripts/web/static-server.py --port ${{ inputs.static-server-port }} --dir ${{ inputs.artifact-path }} > /tmp/web-server.log 2>&1 &
+        echo $! > /tmp/web-server.pid
+
+    - name: Start multiplayer test server
+      if: ${{ inputs.start-mp-server == 'true' }}
+      shell: bash
+      run: |
+        node scripts/web/multiplayer-test-server.js > /tmp/mp-server.log 2>&1 &
+        echo $! > /tmp/mp-server.pid

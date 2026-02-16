@@ -42,28 +42,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download web dist artifact
-        uses: actions/download-artifact@v4
+      - name: Prepare web test environment
+        uses: ./.github/actions/web-test-env
         with:
-          name: unciv-web-dist
-          path: web/build/dist
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install Playwright browser
-        run: |
-          npm config set fund false
-          npm config set audit false
-          npm install -D playwright ws
-          npx playwright install --with-deps chromium
-
-      - name: Start static server
-        run: |
-          python3 scripts/web/static-server.py --port 18080 --dir web/build/dist > /tmp/web-server.log 2>&1 &
-          echo $! > /tmp/web-server.pid
+          install-ws: "true"
 
       - name: Run UI war deep suite
         run: |
