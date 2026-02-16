@@ -130,7 +130,10 @@ class NewGameScreen(
         }
 
         initStep = "create start game button"
-        val startGameButton = "Start game!".toTextButton().apply { color = Color.GREEN }        
+        val startGameButton = "Start game!".toTextButton().apply {
+            color = Color.GREEN
+            name = "newgame.start_game"
+        }
         startGameButton.onClick(this::startGameAvoidANRs)
         horizontalGroup.addActor(startGameButton)
         pickerPane.rightSideButton.remove()

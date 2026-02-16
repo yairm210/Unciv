@@ -7,6 +7,7 @@ import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.multiplayer.storage.MultiplayerFileNotFoundException
 import com.unciv.logic.multiplayer.storage.MultiplayerServer
 import com.unciv.ui.components.extensions.isLargerThan
+import com.unciv.utils.Log
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
 import java.time.Duration
@@ -60,10 +61,18 @@ class Multiplayer {
 
     suspend fun addGame(gameId: String, gameName: String? = null) {
         val saveFileName = if (gameName.isNullOrBlank()) gameId else gameName
-        val gamePreview: GameInfoPreview = try {
+        var gamePreview: GameInfoPreview = try {
             multiplayerServer.tryDownloadGamePreview(gameId)
         } catch (_: MultiplayerFileNotFoundException) {
+            Log.debug("Multiplayer preview missing for game $gameId, downloading full game")
             multiplayerServer.tryDownloadGame(gameId).asPreview()
+        } catch (ex: Exception) {
+            Log.error("Failed downloading multiplayer preview for game $gameId, falling back to full game payload", ex)
+            multiplayerServer.tryDownloadGame(gameId).asPreview()
+        }
+        if (gamePreview.gameId.isBlank()) {
+            Log.debug("Multiplayer preview for game $gameId had blank gameId, falling back to full payload")
+            gamePreview = multiplayerServer.tryDownloadGame(gameId).asPreview()
         }
         multiplayerFiles.addGame(gamePreview, saveFileName)
     }

@@ -11,6 +11,7 @@ import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.ServerFeatureSet
 import com.unciv.logic.web.WebHttp
 import com.unciv.logic.web.WebHttpResponse
+import com.unciv.ui.screens.savescreens.Gzip
 import com.unciv.utils.Concurrency
 import java.util.Date
 
@@ -129,7 +130,12 @@ class MultiplayerServer(
     }
 
     suspend fun uploadGame(gameInfo: GameInfo, withPreview: Boolean) {
-        val zippedGameInfo = UncivFiles.gameInfoToString(gameInfo, forceZip = true, updateChecksum = true)
+        val zippedGameInfo = UncivFiles.gameInfoToString(
+            gameInfo,
+            forceZip = true,
+            updateChecksum = true,
+            portable = true,
+        )
         saveFile(gameInfo.gameId, zippedGameInfo)
         if (withPreview) {
             tryUploadGamePreview(gameInfo.asPreview())
@@ -138,6 +144,8 @@ class MultiplayerServer(
 
     suspend fun tryUploadGamePreview(gameInfo: GameInfoPreview) {
         val zippedGameInfo = UncivFiles.gameInfoToString(gameInfo)
+        val plainPreview = runCatching { Gzip.unzip(zippedGameInfo).trim() }.getOrDefault("")
+        if (plainPreview == "{}") return
         saveFile("${gameInfo.gameId}_Preview", zippedGameInfo)
     }
 

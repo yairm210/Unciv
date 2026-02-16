@@ -578,7 +578,8 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
             var current: Throwable? = this
             var depth = 0
             while (current != null && depth < 6) {
-                val header = "[$depth] ${current::class.qualifiedName}: ${current.message.orEmpty()}"
+                val type = current.javaClass.name.ifBlank { "java.lang.Throwable" }
+                val header = "[$depth] $type: ${current.message.orEmpty()}"
                 val frames = current.stackTrace
                     .take(maxFramesPerThrowable)
                     .joinToString(separator = " <- ") { "${it.className}.${it.methodName}:${it.lineNumber}" }

@@ -27,6 +27,7 @@ class NextTurnButton(
     private val unitsDueLabel = Label("", BaseScreen.skin)
     private val unitsDueCell: Cell<Label>
     init {
+        name = "world.next_turn"
         pad(15f)
         onActivation {
             nextTurnAction.action(worldScreen)

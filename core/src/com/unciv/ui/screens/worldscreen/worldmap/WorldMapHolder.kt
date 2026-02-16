@@ -315,7 +315,7 @@ class WorldMapHolder(
                         selectedUnit.currentMovement.toString(),
                         canMoveTo.toString(),
                         canReach.toString(),
-                        ex::class.simpleName ?: "Exception",
+                        ex.javaClass.simpleName.ifBlank { "Exception" },
                         ex.message ?: ""
                     )
                 }
