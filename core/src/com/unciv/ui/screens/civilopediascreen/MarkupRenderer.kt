@@ -8,6 +8,7 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.civilopediascreen.MarkupRenderer.render
+import com.unciv.utils.AppClipboard
 
 
 /** Makes [renderer][render] available outside [ICivilopediaText] */
@@ -58,7 +59,7 @@ object MarkupRenderer {
                     Gdx.net.openURI(line.link)
                 }
                 actor.onRightClick {
-                    Gdx.app.clipboard.contents = line.link
+                    AppClipboard.writeText(line.link)
                 }
             }
             if (labelWidth == 0f)

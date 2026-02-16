@@ -49,6 +49,7 @@ import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.ui.screens.modmanager.ModManagementOptions.SortType
 import com.unciv.ui.screens.pickerscreens.PickerScreen
+import com.unciv.utils.AppClipboard
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import com.unciv.utils.launchOnGLThread
@@ -409,7 +410,7 @@ class ModManagementScreen private constructor(
             popup.add(textField).width(stage.width / 2).row()
             val pasteLinkButton = "Paste from clipboard".toTextButton()
             pasteLinkButton.onClick {
-                textField.text = Gdx.app.clipboard.contents
+                AppClipboard.readTextPreferCached(onText = { textField.text = it.trim() })
             }
             popup.add(pasteLinkButton).row()
             val actualDownloadButton = "Download".toTextButton()

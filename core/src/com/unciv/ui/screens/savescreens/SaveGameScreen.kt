@@ -1,6 +1,5 @@
 package com.unciv.ui.screens.savescreens
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
@@ -22,6 +21,7 @@ import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.ToastPopup
+import com.unciv.utils.AppClipboard
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import com.unciv.utils.launchOnGLThread
@@ -93,7 +93,7 @@ class SaveGameScreen(private val gameInfo: GameInfo) : LoadOrSaveScreen("Current
         Concurrency.run("Copy game to clipboard") {
             // the Gzip rarely leads to ANRs
             try {
-                Gdx.app.clipboard.contents = UncivFiles.gameInfoToString(gameInfo, forceZip = true)
+                AppClipboard.writeText(UncivFiles.gameInfoToString(gameInfo, forceZip = true))
                 launchOnGLThread {
                     ToastPopup("Current game copied to clipboard!", this@SaveGameScreen)
                 }
