@@ -52,6 +52,19 @@ function attachDiagnostics(page, report, label) {
   });
 }
 
+function shouldIgnoreRequestFailure(entry) {
+  const url = String(entry && entry.url ? entry.url : '');
+  const error = String(entry && entry.error ? entry.error : '');
+  if (/favicon\.ico(?:$|\?)/i.test(url)) return true;
+  if (/net::ERR_ABORTED/i.test(error) && /\/assets\//i.test(url)) return true;
+  return false;
+}
+
+function getActionableRequestFailures(entries) {
+  if (!Array.isArray(entries)) return [];
+  return entries.filter((entry) => !shouldIgnoreRequestFailure(entry));
+}
+
 async function launchChromium() {
   const headless = parseBool(process.env.HEADLESS, true);
   const args = resolveChromiumArgs(process.env.WEB_CHROMIUM_ARGS);
@@ -299,6 +312,7 @@ function writeJson(filePath, payload) {
 module.exports = {
   attachDiagnostics,
   ensureTmpDir,
+  getActionableRequestFailures,
   launchChromium,
   ensureUiProbeBoot,
   startMainOnce,

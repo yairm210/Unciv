@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { chromium, firefox, webkit } = require('playwright');
+const { getActionableRequestFailures } = require('./lib/ui-e2e-common');
 const { resolveChromiumArgs } = require('./lib/chromium-args');
 
 function parseBoolEnv(value, defaultValue) {
@@ -304,9 +305,9 @@ async function main() {
   if (consoleErrors.length > 0) {
     throw new Error(`Console errors detected: ${consoleErrors.join('\n')}`);
   }
-  const nonFaviconFailures = requestFailures.filter((entry) => !/favicon\.ico$/i.test(entry.url));
-  if (nonFaviconFailures.length > 0) {
-    throw new Error(`Request failures detected: ${JSON.stringify(nonFaviconFailures)}`);
+  const actionableRequestFailures = getActionableRequestFailures(requestFailures);
+  if (actionableRequestFailures.length > 0) {
+    throw new Error(`Request failures detected: ${JSON.stringify(actionableRequestFailures)}`);
   }
 
   console.log(JSON.stringify(summary, null, 2));

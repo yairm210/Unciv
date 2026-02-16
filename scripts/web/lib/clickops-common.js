@@ -1,6 +1,7 @@
 const {
   attachDiagnostics,
   ensureTmpDir,
+  getActionableRequestFailures,
   launchChromium,
   writeJson,
 } = require('./ui-e2e-common');
@@ -337,6 +338,7 @@ async function dismissPopups(page, options) {
 module.exports = {
   attachDiagnostics,
   ensureTmpDir,
+  getActionableRequestFailures,
   launchChromium,
   writeJson,
   ensureClickOpsBoot,

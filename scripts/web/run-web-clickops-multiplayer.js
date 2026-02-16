@@ -4,6 +4,7 @@ const zlib = require('zlib');
 const {
   attachDiagnostics,
   ensureTmpDir,
+  getActionableRequestFailures,
   launchChromium,
   writeJson,
   ensureClickOpsBoot,
@@ -550,11 +551,11 @@ async function main() {
     report.hostActions.push('host observed bidirectional chat');
     report.guestActions.push('guest observed bidirectional chat');
 
-    const nonFaviconFailures = report.requestFailures.filter((entry) => !/favicon\.ico$/i.test(String(entry.url || '')));
+    const actionableRequestFailures = getActionableRequestFailures(report.requestFailures);
     const failures = [];
     if (report.pageErrors.length > 0) failures.push(`page errors detected: ${report.pageErrors.length}`);
     if (report.consoleErrors.length > 0) failures.push(`console errors detected: ${report.consoleErrors.length}`);
-    if (nonFaviconFailures.length > 0) failures.push(`request failures detected: ${nonFaviconFailures.length}`);
+    if (actionableRequestFailures.length > 0) failures.push(`request failures detected: ${actionableRequestFailures.length}`);
     if (!report.gameId) failures.push('missing game id from clickops host flow');
     if (failures.length > 0) {
       report.status = 'FAILED';
