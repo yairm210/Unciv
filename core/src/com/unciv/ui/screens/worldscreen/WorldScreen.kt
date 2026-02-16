@@ -422,12 +422,43 @@ class WorldScreen(
 
         mapHolder.resetArrows()
         if (UncivGame.Current.settings.showUnitMovements) {
-            val allUnits = gameInfo.civilizations.asSequence().flatMap { it.units.getCivUnits() }
-            val allAttacks = allUnits.map { unit -> unit.attacksSinceTurnStart.asSequence().map { attacked -> Triple(unit.civ, unit.getTile().position, attacked.toHexCoord()) } }.flatten() +
-                gameInfo.civilizations.asSequence().flatMap { civInfo -> civInfo.attacksSinceTurnStart.asSequence().map { Triple(civInfo, it.source, it.target) } }
+            val allUnits = gameInfo.civilizations.asSequence().flatMap { it.units.getCivUnits() }.toList()
+            val allAttacks = sequence {
+                for (unit in allUnits) {
+                    try {
+                        val source = unit.getTile().position
+                        val unitCiv = unit.civ
+                        for (attacked in unit.attacksSinceTurnStart)
+                            yield(Triple(unitCiv, source, attacked.toHexCoord()))
+                    } catch (_: Exception) {
+                        // Movement overlays are non-critical; skip malformed unit attack history entries.
+                    }
+                }
+                for (civInfo in gameInfo.civilizations) {
+                    for (attack in civInfo.attacksSinceTurnStart) {
+                        try {
+                            yield(Triple(civInfo, attack.source, attack.target))
+                        } catch (_: Exception) {
+                            // Movement overlays are non-critical; skip malformed civilization attack history entries.
+                        }
+                    }
+                }
+            }
             mapHolder.updateMovementOverlay(
-                allUnits.filter(mapVisualization::isUnitPastVisible),
-                allUnits.filter(mapVisualization::isUnitFutureVisible),
+                allUnits.asSequence().filter {
+                    try {
+                        mapVisualization.isUnitPastVisible(it)
+                    } catch (_: Exception) {
+                        false
+                    }
+                },
+                allUnits.asSequence().filter {
+                    try {
+                        mapVisualization.isUnitFutureVisible(it)
+                    } catch (_: Exception) {
+                        false
+                    }
+                },
                 allAttacks.filter { (attacker, source, target) -> mapVisualization.isAttackVisible(attacker, source, target) }
                         .map { (_, source, target) -> source to target }
             )
