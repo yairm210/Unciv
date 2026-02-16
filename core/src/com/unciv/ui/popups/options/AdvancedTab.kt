@@ -34,6 +34,7 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.Popup
+import com.unciv.utils.AppClipboard
 import com.unciv.utils.Concurrency
 import com.unciv.utils.delayMillis
 import com.unciv.utils.Display
@@ -314,21 +315,23 @@ internal class AdvancedTab(
     private fun addSetUserId() {
         val idSetLabel = "".toLabel()
         val takeUserIdFromClipboardButton = "Take user ID from clipboard".toTextButton().onClick {
-            val clipboardContents = Gdx.app.clipboard.contents.trim()
-            if (clipboardContents.isUUID()) {
-                ConfirmPopup(
-                    stage,
-                    "Doing this will reset your current user ID to the clipboard contents - are you sure?",
-                    "Take user ID from clipboard"
-                ) {
-                    settings.multiplayer.setUserId(clipboardContents)
-                    idSetLabel.setFontColor(Color.WHITE).setText("ID successfully set!".tr())
-                }.open(true)
-                idSetLabel.isVisible = true
-            } else {
-                idSetLabel.isVisible = true
-                idSetLabel.setFontColor(Color.RED).setText("Invalid ID!".tr())
-            }
+            AppClipboard.readText(onText = { clipboardText ->
+                val clipboardContents = clipboardText.trim()
+                if (clipboardContents.isUUID()) {
+                    ConfirmPopup(
+                        stage,
+                        "Doing this will reset your current user ID to the clipboard contents - are you sure?",
+                        "Take user ID from clipboard"
+                    ) {
+                        settings.multiplayer.setUserId(clipboardContents)
+                        idSetLabel.setFontColor(Color.WHITE).setText("ID successfully set!".tr())
+                    }.open(true)
+                    idSetLabel.isVisible = true
+                } else {
+                    idSetLabel.isVisible = true
+                    idSetLabel.setFontColor(Color.RED).setText("Invalid ID!".tr())
+                }
+            })
         }
         add(takeUserIdFromClipboardButton).pad(5f).colspan(2).row()
         add(idSetLabel).colspan(2).row()

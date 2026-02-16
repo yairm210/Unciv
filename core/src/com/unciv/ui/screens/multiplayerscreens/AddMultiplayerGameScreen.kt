@@ -1,6 +1,5 @@
 package com.unciv.ui.screens.multiplayerscreens
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.logic.IdChecker
@@ -19,6 +18,7 @@ import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.screens.savescreens.LoadGameScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
+import com.unciv.utils.AppClipboard
 import com.unciv.utils.isUUID
 import com.unciv.utils.launchOnGLThread
 
@@ -29,7 +29,7 @@ class AddMultiplayerGameScreen(multiplayerScreen: MultiplayerScreen) : PickerScr
         gameIDTextField.name = "mp.game_id_input"
         val pasteGameIDButton = "Paste gameID from clipboard".toTextButton()
         pasteGameIDButton.onClick {
-            gameIDTextField.text = Gdx.app.clipboard.contents
+            AppClipboard.readTextPreferCached(onText = { gameIDTextField.text = it.trim() })
         }
 
         topTable.add("GameID".toLabel()).row()

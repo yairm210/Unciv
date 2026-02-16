@@ -1,6 +1,5 @@
 package com.unciv.ui.screens.savescreens
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
@@ -26,6 +25,7 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.popups.LoadingPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
+import com.unciv.utils.AppClipboard
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import com.unciv.utils.launchOnGLThread
@@ -112,23 +112,33 @@ class LoadGameScreen : LoadOrSaveScreen() {
     private fun getLoadFromClipboardButton(): TextButton {
         val pasteButton = loadFromClipboard.toTextButton()
         pasteButton.onActivation {
-            if (!Gdx.app.clipboard.hasContents()) return@onActivation
             pasteButton.setText(Constants.working.tr())
             pasteButton.disable()
-            Concurrency.run(loadFromClipboard) {
-                try {
-                    val clipboardContentsString = Gdx.app.clipboard.contents.trim()
-                    val loadedGame = UncivFiles.gameInfoFromString(clipboardContentsString)
-                    game.loadGame(loadedGame, callFromLoadScreen = true)
-                } catch (ex: Exception) {
-                    launchOnGLThread { handleLoadGameException(ex, "Could not load game from clipboard!") }
-                } finally {
-                    launchOnGLThread {
+            AppClipboard.readText(
+                onText = { clipboardText ->
+                    Concurrency.run(loadFromClipboard) {
+                        try {
+                            val clipboardContentsString = clipboardText.trim()
+                            val loadedGame = UncivFiles.gameInfoFromString(clipboardContentsString)
+                            game.loadGame(loadedGame, callFromLoadScreen = true)
+                        } catch (ex: Exception) {
+                            launchOnGLThread { handleLoadGameException(ex, "Could not load game from clipboard!") }
+                        } finally {
+                            launchOnGLThread {
+                                pasteButton.setText(loadFromClipboard.tr())
+                                pasteButton.enable()
+                            }
+                        }
+                    }
+                },
+                onError = {
+                    Concurrency.runOnGLThread {
+                        ToastPopup("Could not read clipboard!", this@LoadGameScreen)
                         pasteButton.setText(loadFromClipboard.tr())
                         pasteButton.enable()
                     }
-                }
-            }
+                },
+            )
         }
         val ctrlV = KeyCharAndCode.ctrl('v')
         pasteButton.keyShortcuts.add(ctrlV)
@@ -187,7 +197,7 @@ class LoadGameScreen : LoadOrSaveScreen() {
             return
         }
         try {
-            Gdx.app.clipboard.contents = if (gameText[0] == '{') Gzip.zip(gameText) else gameText
+            AppClipboard.writeText(if (gameText[0] == '{') Gzip.zip(gameText) else gameText)
             launchOnGLThread {
                 ToastPopup("'[${file.name()}]' copied to clipboard!", this@LoadGameScreen)
             }

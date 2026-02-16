@@ -20,6 +20,7 @@ import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.utils.AppClipboard
 import com.unciv.utils.Log
 import java.io.PrintWriter
 import java.io.StringWriter
@@ -175,7 +176,7 @@ class CrashScreen(val exception: Throwable) : BaseScreen() {
         val copyButton = IconTextButton("Copy", fontSize = Constants.headingFontSize)
             .onClick {
                 try {
-                    Gdx.app.clipboard.contents = text
+                    AppClipboard.writeText(text)
                     copied = true
                     ToastPopup(
                         "Error report copied.",

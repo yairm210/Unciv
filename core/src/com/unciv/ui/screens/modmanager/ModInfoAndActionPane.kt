@@ -22,6 +22,7 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.modmanager.ModManagementScreen.Companion.cleanModName
+import com.unciv.utils.AppClipboard
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import java.io.IOException
@@ -105,7 +106,7 @@ internal class ModInfoAndActionPane : Table() {
                 Gdx.net.openURI(repoUrl)
             }
             githubButton.onRightClick {
-                Gdx.app.clipboard.contents = repoUrl
+                AppClipboard.writeText(repoUrl)
                 ToastPopup("Link copied to clipboard", stage)
             }
             add(githubButton).row()

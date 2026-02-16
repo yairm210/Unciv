@@ -1,6 +1,5 @@
 package com.unciv.ui.screens.newgamescreen
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -38,6 +37,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.multiplayerscreens.FriendPickerList
 import com.unciv.ui.screens.pickerscreens.PickerPane
 import com.unciv.ui.screens.pickerscreens.PickerScreen
+import com.unciv.utils.AppClipboard
 import com.unciv.utils.isUUID
 import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
 
@@ -277,8 +277,10 @@ class PlayerPickerTable(
         val copyFromClipboardButton = "Player ID from clipboard".toTextButton()
         copyFromClipboardButton.name = if (slotIndex == 0) "newgame.player_id_from_clipboard" else "newgame.player_id_from_clipboard.$slotIndex"
         copyFromClipboardButton.onClick {
-            playerIdTextField.text = Gdx.app.clipboard.contents
-            onPlayerIdTextUpdated()
+            AppClipboard.readTextPreferCached(onText = {
+                playerIdTextField.text = it.trim()
+                onPlayerIdTextUpdated()
+            })
         }
         add(copyFromClipboardButton).right().colspan(3).fillX().pad(5f).row()
 

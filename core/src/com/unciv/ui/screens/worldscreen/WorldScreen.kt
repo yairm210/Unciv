@@ -68,6 +68,7 @@ import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsTable
 import com.unciv.ui.screens.worldscreen.worldmap.WorldMapHolder
 import com.unciv.ui.screens.worldscreen.worldmap.WorldMapTileUpdater.updateTiles
 import com.unciv.utils.Concurrency
+import com.unciv.utils.AppClipboard
 import com.unciv.utils.debug
 import com.unciv.utils.launchOnGLThread
 import com.unciv.utils.launchOnThreadPool
@@ -686,7 +687,7 @@ class WorldScreen(
                                 val cantUploadNewGamePopup = Popup(this@WorldScreen)
                                 cantUploadNewGamePopup.addGoodSizedLabel(message).row()
                                 cantUploadNewGamePopup.addButton("Copy to clipboard") {
-                                    Gdx.app.clipboard.contents = ex.stackTraceToString()
+                                    AppClipboard.writeText(ex.stackTraceToString())
                                 }
                                 cantUploadNewGamePopup.addCloseButton()
                                 cantUploadNewGamePopup.open()
