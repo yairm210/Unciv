@@ -22,9 +22,6 @@ object RulesetCache : HashMap<String, Ruleset>() {
     /** Similarity below which an untyped unique can be considered a potential misspelling.
      * Roughly corresponds to the fraction of the Unique placeholder text that can be different/misspelled, but with some extra room for [getRelativeTextDistance] idiosyncrasies. */
     var uniqueMisspellingThreshold = 0.15 // Tweak as needed. Simple misspellings seem to be around 0.025, so would mostly be caught by 0.05. IMO 0.1 would be good, but raising to 0.15 also seemed to catch what may be an outdated Unique.
-    private val builtinBaseRulesetNames = BaseRuleset.entries.mapTo(HashSet()) { it.fullName }
-
-
     /** Returns error lines from loading the rulesets, so we can display the errors to users */
     fun loadRulesets(consoleMode: Boolean = false, noMods: Boolean = false): List<String> {
         val parallel = PlatformCapabilities.current.backgroundThreadPools
@@ -42,8 +39,6 @@ object RulesetCache : HashMap<String, Ruleset>() {
             newRulesets[ruleset.fullName] = Ruleset().apply {
                 name = ruleset.fullName
                 load(fileHandle)
-                // Built-ins are always base rulesets; keep this true even if ModOptions deserialization misses the flag.
-                modOptions.isBaseRuleset = true
             }
         }
 
@@ -128,7 +123,7 @@ object RulesetCache : HashMap<String, Ruleset>() {
 
     fun getSortedBaseRulesets(): List<String> {
         val baseRulesets = values
-            .filter { it.modOptions.isBaseRuleset || it.name in builtinBaseRulesetNames }
+            .filter { it.modOptions.isBaseRuleset }
             .map { it.name }
             .distinct()
         if (baseRulesets.size < 2) return baseRulesets

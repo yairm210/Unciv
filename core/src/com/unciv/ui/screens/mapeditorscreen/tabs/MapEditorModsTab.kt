@@ -37,7 +37,7 @@ class MapEditorModsTab(
         // so this will be replaced and can now be minimal
         modsTable = ModCheckboxTable(linkedSetOf(), rulesetName, editorScreen, false) {}
 
-        val baseRulesets = RulesetCache.getSortedBaseRulesets().ifEmpty { listOf(rulesetName) }
+        val baseRulesets = RulesetCache.getSortedBaseRulesets()
         baseRulesetSelectBox = TranslatedSelectBox(baseRulesets, rulesetName)
         baseRulesetSelectBox.onChange {
             val newBaseRuleset = baseRulesetSelectBox.selected.value

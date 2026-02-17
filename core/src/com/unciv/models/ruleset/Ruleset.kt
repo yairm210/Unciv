@@ -552,6 +552,10 @@ class Ruleset {
                 }
             }
             if (item is PolicyBranch) {
+                if (item.era.isBlank()) {
+                    val fallbackEra = raw.getString("era", "")
+                    if (fallbackEra.isNotBlank()) item.era = fallbackEra
+                }
                 if (item.priorities.isEmpty()) {
                     var priority = raw.get("priorities")?.child
                     while (priority != null) {
@@ -560,7 +564,10 @@ class Ruleset {
                         priority = priority.next
                     }
                 }
-                if (item.policies.isEmpty()) {
+                val needsPolicyFallback =
+                    item.policies.isEmpty() || item.policies.any { it.name.isBlank() }
+                if (needsPolicyFallback) {
+                    item.policies.clear()
                     var policyRaw = raw.get("policies")?.child
                     while (policyRaw != null) {
                         val policyName = policyRaw.getString("name", "")
@@ -804,6 +811,21 @@ class Ruleset {
         if (modOptionsFile.exists()) {
             try {
                 modOptions = json().fromJsonFile(ModOptions::class.java, modOptionsFile)
+                if (!PlatformCapabilities.current.backgroundThreadPools) {
+                    val rawModOptions = JsonReader().parse(modOptionsFile)
+                    if (!modOptions.isBaseRuleset && rawModOptions.getBoolean("isBaseRuleset", false))
+                        modOptions.isBaseRuleset = true
+                    if (modOptions.uniques.isEmpty()) {
+                        val rawUniques = ArrayList<String>()
+                        var unique = rawModOptions.get("uniques")?.child
+                        while (unique != null) {
+                            val uniqueText = unique.asString()
+                            if (uniqueText.isNotBlank()) rawUniques += uniqueText
+                            unique = unique.next
+                        }
+                        if (rawUniques.isNotEmpty()) modOptions.uniques = rawUniques
+                    }
+                }
                 modOptions.updateDeprecations()
             } catch (ex: Exception) {
                 Log.error("Failed to get modOptions from json file", ex)

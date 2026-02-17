@@ -126,7 +126,12 @@ final class BuildWebCommon {
             "com.unciv.logic.civilization.CivConstructions",
             "com.unciv.logic.civilization.diplomacy.DiplomacyManager",
             "com.unciv.models.Religion",
-            "com.unciv.models.metadata.GameParameters");
+            "com.unciv.models.metadata.GameParameters",
+            "com.unciv.models.ruleset.RulesetObject",
+            "com.unciv.models.ruleset.RulesetStatsObject",
+            "com.unciv.models.ruleset.ModOptions",
+            "com.unciv.models.ruleset.Policy",
+            "com.unciv.models.ruleset.PolicyBranch");
 
     private BuildWebCommon() {
     }
