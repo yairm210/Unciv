@@ -538,10 +538,17 @@ object WebUiProbeRunner {
         failure: String?,
         steps: List<StepLogEntry>,
     ): String {
+        val settingsSnapshot = runCatching { UncivGame.Current.settings }.getOrNull()
+        val webRuntimeMobile = settingsSnapshot?.webRuntimeMobile ?: false
+        val screenSize = settingsSnapshot?.screenSize?.name ?: ""
+        val singleTapMove = settingsSnapshot?.singleTapMove ?: false
         val builder = StringBuilder(640)
         builder.append('{')
         builder.append("\"generatedAt\":\"").append(escapeJson(Instant.now().toString())).append("\",")
         builder.append("\"passed\":").append(flowResult.passed).append(',')
+        builder.append("\"webRuntimeMobile\":").append(webRuntimeMobile).append(',')
+        builder.append("\"screenSize\":\"").append(escapeJson(screenSize)).append("\",")
+        builder.append("\"singleTapMove\":").append(singleTapMove).append(',')
         builder.append("\"role\":\"").append(role.name.lowercase()).append("\",")
         builder.append("\"runId\":\"").append(escapeJson(runId)).append("\",")
         builder.append("\"timeoutMs\":").append(timeoutMs).append(',')

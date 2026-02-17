@@ -1,7 +1,11 @@
 const fs = require('fs');
 const path = require('path');
 const { chromium, firefox, webkit } = require('playwright');
-const { getActionableRequestFailures } = require('./lib/ui-e2e-common');
+const {
+  applyUiDeviceModeToUrl,
+  buildUiDeviceConfig,
+  getActionableRequestFailures,
+} = require('./lib/ui-e2e-common');
 const { resolveChromiumArgs } = require('./lib/chromium-args');
 
 function parseBoolEnv(value, defaultValue) {
@@ -33,6 +37,7 @@ async function main() {
   const modZipUrl = String(process.env.WEB_MOD_ZIP_URL || '').trim();
   const chromiumArgs = resolveChromiumArgs(process.env.WEB_CHROMIUM_ARGS);
   const tmpDir = process.env.WEB_TMP_DIR || path.join(process.cwd(), 'tmp');
+  const uiDeviceConfig = buildUiDeviceConfig({ width: 1280, height: 800 });
   fs.mkdirSync(tmpDir, { recursive: true });
   const screenshotPath = path.join(tmpDir, 'web-validation-latest.png');
 
@@ -57,13 +62,18 @@ async function main() {
   }
   const browser = await browserType.launch(launchOptions);
   const contextOptions = {
-    viewport: { width: 1280, height: 800 },
+    viewport: uiDeviceConfig.viewport,
   };
   if (browserName === 'chromium') {
     contextOptions.permissions = ['clipboard-read', 'clipboard-write'];
+    if (uiDeviceConfig.mode === 'mobile') {
+      contextOptions.hasTouch = true;
+      contextOptions.isMobile = true;
+      contextOptions.deviceScaleFactor = uiDeviceConfig.contextOptions.deviceScaleFactor;
+    }
   }
   const context = await browser.newContext(contextOptions);
-  await context.addInitScript(({ profile, baseUrl, mpServerUrl, modZip }) => {
+  await context.addInitScript(({ profile, baseUrl, mpServerUrl, modZip, webMobileOverride }) => {
     window.__uncivEnableWebValidation = true;
     if (typeof baseUrl === 'string' && baseUrl.length > 0) {
       window.__uncivBaseUrl = baseUrl;
@@ -77,7 +87,20 @@ async function main() {
     if (typeof profile === 'string' && profile.length > 0) {
       window.__uncivWebProfile = profile;
     }
-  }, { profile: webProfile, baseUrl, mpServerUrl: mpServer, modZip: modZipUrl });
+    if (webMobileOverride === true || webMobileOverride === false) {
+      if (typeof window.__uncivRuntimeConfig !== 'object' || window.__uncivRuntimeConfig === null) {
+        window.__uncivRuntimeConfig = {};
+      }
+      window.__uncivRuntimeConfig.webMobile = webMobileOverride;
+      window.webMobile = webMobileOverride;
+    }
+  }, {
+    profile: webProfile,
+    baseUrl,
+    mpServerUrl: mpServer,
+    modZip: modZipUrl,
+    webMobileOverride: uiDeviceConfig.webMobileOverride,
+  });
   const page = await context.newPage();
 
   page.on('pageerror', (err) => {
@@ -116,13 +139,14 @@ async function main() {
     const targetUrl = new URL('/index.html', baseUrl);
     targetUrl.searchParams.set('webtest', '1');
     if (webProfile.length > 0) targetUrl.searchParams.set('webProfile', webProfile);
+    const runtimeTargetUrl = applyUiDeviceModeToUrl(targetUrl, uiDeviceConfig);
     let startupRetryReason = null;
     for (let attempt = 1; attempt <= startupAttempts; attempt += 1) {
       startupRetryReason = null;
-      await page.goto(targetUrl.toString(), { waitUntil: 'domcontentloaded', timeout: 120000 });
+      await page.goto(runtimeTargetUrl.toString(), { waitUntil: 'domcontentloaded', timeout: 120000 });
       const landedUrl = page.url();
       if (!landedUrl.includes('webtest=1')) {
-        await page.goto(targetUrl.toString(), { waitUntil: 'domcontentloaded', timeout: 120000 });
+        await page.goto(runtimeTargetUrl.toString(), { waitUntil: 'domcontentloaded', timeout: 120000 });
       }
       const attemptStartedAt = Date.now();
       const deadline = Date.now() + timeoutMs;
@@ -256,11 +280,23 @@ async function main() {
   const hasUiConstruction = /construction/i.test(uiClickNotes);
   const hasUiTech = /tech/i.test(uiClickNotes);
   const hasUiTenTurns = /\b10 turns\b/i.test(uiClickNotes);
+  const runtimeMobile = result.webRuntimeMobile === true;
+  const runtimeSingleTap = result.singleTapMove === true;
+  const enforceDesktopExpectations = uiDeviceConfig.mode === 'desktop';
+  const enforceMobileExpectations = uiDeviceConfig.mode === 'mobile';
 
   const summary = {
     generatedAt: result.generatedAt,
     browser: browserName,
     webProfile: effectiveProfile,
+    uiDeviceMode: uiDeviceConfig.mode,
+    uiViewport: uiDeviceConfig.viewport,
+    webMobileOverride: uiDeviceConfig.webMobileOverride,
+    runtimeFormFactor: {
+      webRuntimeMobile: runtimeMobile,
+      screenSize: result.screenSize || null,
+      singleTapMove: runtimeSingleTap,
+    },
     counts: result.summary,
     startNewGame: startGameFeature,
     uiClickCoreLoop: uiClickFeature,
@@ -295,6 +331,14 @@ async function main() {
   }
   if (!hasUiFoundCity || !hasUiConstruction || !hasUiTech || !hasUiTenTurns) {
     throw new Error(`UI click loop notes missing required flow checkpoints: ${uiClickNotes}`);
+  }
+  if (enforceDesktopExpectations) {
+    if (runtimeMobile) throw new Error(`Desktop mode expected webRuntimeMobile=false but got true. payload=${JSON.stringify(result)}`);
+    if (runtimeSingleTap) throw new Error(`Desktop mode expected singleTapMove=false but got true. payload=${JSON.stringify(result)}`);
+  }
+  if (enforceMobileExpectations) {
+    if (!runtimeMobile) throw new Error(`Mobile mode expected webRuntimeMobile=true but got false. payload=${JSON.stringify(result)}`);
+    if (!runtimeSingleTap) throw new Error(`Mobile mode expected singleTapMove=true but got false. payload=${JSON.stringify(result)}`);
   }
   if (failingFeatures.length > 0) {
     throw new Error(`Validation has failing features: ${JSON.stringify(failingFeatures)}`);

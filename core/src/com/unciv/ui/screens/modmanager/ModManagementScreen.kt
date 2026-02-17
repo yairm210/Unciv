@@ -165,7 +165,7 @@ class ModManagementScreen private constructor(
         labelWrapper.add(modDescriptionLabel).row()
         descriptionScroll.actor = labelWrapper
 
-        isPortrait = isNarrowerThan4to3()
+        isPortrait = useResponsiveNarrowLayout()
         if (isPortrait) initPortrait()
         else initLandscape()
         showLoadingImage()

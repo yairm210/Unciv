@@ -89,6 +89,11 @@ class GameSettings {
     var confirmNextTurn = false
     var windowState = WindowState()
     var isFreshlyCreated = false
+    /** One-time migration marker for web UX defaults by detected form factor */
+    var webUxProfileVersion = 0
+    /** Runtime-only web form-factor marker. Updated at startup, never persisted. */
+    @Transient
+    var webRuntimeMobile: Boolean = false
     var visualMods = HashSet<String>()
     var useDemographics: Boolean = false
     var showZoomButtons: Boolean = false

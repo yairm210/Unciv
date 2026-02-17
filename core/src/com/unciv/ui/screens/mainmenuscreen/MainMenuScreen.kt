@@ -74,7 +74,7 @@ import kotlin.math.ceil
 
 class MainMenuScreen: BaseScreen(), RecreateOnResize {
     private val backgroundStack = Stack()
-    private val singleColumn = isCrampedPortrait()
+    private val singleColumn = useResponsiveCompactLayout()
 
     private val backgroundMapRuleset: Ruleset
     private var easterEggRuleset: Ruleset? = null  // Cache it so the next 'egg' can be found in Civilopedia
@@ -184,7 +184,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         initStep = "build main menu columns"
         val column1 = Table().apply { defaults().pad(10f).fillX() }
         val column2 = if (singleColumn) column1 else Table().apply { defaults().pad(10f).fillX() }
-        val enableKeyboardBindings = Gdx.app.type != Application.ApplicationType.WebGL
+        val enableKeyboardBindings = Gdx.app.type != Application.ApplicationType.WebGL || !isWebRuntimeMobile()
 
         initStep = "autosave resume button check"
         if (game.files.autosaves.autosaveExists()) {

@@ -62,14 +62,21 @@ jobs:
           install-ws: "true"
           start-mp-server: "true"
 
-      - name: Run web validation (phase1 baseline)
+      - name: Run web validation (phase1 baseline desktop)
         run: |
-          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase1 WEB_BASE_URL=http://127.0.0.1:18080 WEB_VALIDATION_STARTUP_TIMEOUT_MS=45000 WEB_VALIDATION_STARTUP_ATTEMPTS=2 \
+          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase1 WEB_BASE_URL=http://127.0.0.1:18080 WEB_UI_DEVICE_MODE=desktop WEB_VALIDATION_STARTUP_TIMEOUT_MS=45000 WEB_VALIDATION_STARTUP_ATTEMPTS=2 \
           node scripts/web/run-web-validation.js
 
-      - name: Run web validation (phase4-full)
+      - name: Run web validation (phase4-full desktop)
         run: |
-          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase4-full WEB_BASE_URL=http://127.0.0.1:18080 WEB_VALIDATION_STARTUP_TIMEOUT_MS=45000 WEB_VALIDATION_STARTUP_ATTEMPTS=2 \
+          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase4-full WEB_BASE_URL=http://127.0.0.1:18080 WEB_UI_DEVICE_MODE=desktop WEB_VALIDATION_STARTUP_TIMEOUT_MS=45000 WEB_VALIDATION_STARTUP_ATTEMPTS=2 \
+          WEB_MP_SERVER=http://127.0.0.1:19090 \
+          WEB_MOD_ZIP_URL=http://127.0.0.1:18080/webtest/mods/test-mod.zip \
+          node scripts/web/run-web-validation.js
+
+      - name: Run web validation (phase4-full mobile)
+        run: |
+          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase4-full WEB_BASE_URL=http://127.0.0.1:18080 WEB_UI_DEVICE_MODE=mobile WEB_VALIDATION_STARTUP_TIMEOUT_MS=45000 WEB_VALIDATION_STARTUP_ATTEMPTS=2 \
           WEB_MP_SERVER=http://127.0.0.1:19090 \
           WEB_MOD_ZIP_URL=http://127.0.0.1:18080/webtest/mods/test-mod.zip \
           node scripts/web/run-web-validation.js
@@ -320,7 +327,12 @@ jobs:
 
       - name: Run UI core loop gate
         run: |
-          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_PROFILE=phase1 WEB_UI_CORE_LOOP_TIMEOUT_MS=60000 WEB_UI_STARTUP_TIMEOUT_MS=30000 WEB_UI_STARTUP_ATTEMPTS=3 \
+          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_PROFILE=phase1 WEB_UI_DEVICE_MODE=desktop WEB_UI_CORE_LOOP_TIMEOUT_MS=60000 WEB_UI_STARTUP_TIMEOUT_MS=30000 WEB_UI_STARTUP_ATTEMPTS=3 \
+          node scripts/web/run-web-ui-core-loop.js
+
+      - name: Run UI core loop gate (mobile)
+        run: |
+          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_PROFILE=phase1 WEB_UI_DEVICE_MODE=mobile WEB_UI_CORE_LOOP_TIMEOUT_MS=90000 WEB_UI_STARTUP_TIMEOUT_MS=30000 WEB_UI_STARTUP_ATTEMPTS=3 \
           node scripts/web/run-web-ui-core-loop.js
 
       - name: Publish UI core loop summary
@@ -426,7 +438,12 @@ jobs:
 
       - name: Run UI map editor gate
         run: |
-          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_PROFILE=phase1 WEB_UI_MAP_EDITOR_TIMEOUT_MS=60000 WEB_UI_STARTUP_TIMEOUT_MS=30000 WEB_UI_STARTUP_ATTEMPTS=3 \
+          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_PROFILE=phase1 WEB_UI_DEVICE_MODE=desktop WEB_UI_MAP_EDITOR_TIMEOUT_MS=60000 WEB_UI_STARTUP_TIMEOUT_MS=30000 WEB_UI_STARTUP_ATTEMPTS=3 \
+          node scripts/web/run-web-ui-map-editor.js
+
+      - name: Run UI map editor gate (mobile)
+        run: |
+          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_PROFILE=phase1 WEB_UI_DEVICE_MODE=mobile WEB_UI_MAP_EDITOR_TIMEOUT_MS=90000 WEB_UI_STARTUP_TIMEOUT_MS=30000 WEB_UI_STARTUP_ATTEMPTS=3 \
           node scripts/web/run-web-ui-map-editor.js
 
       - name: Publish UI map editor summary

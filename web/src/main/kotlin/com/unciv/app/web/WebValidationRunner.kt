@@ -726,51 +726,109 @@ object WebValidationRunner {
                         return true to "Construction selected via city screen click."
                     }
 
-                    val candidateName = (city.getRuleset().units.values.asSequence() + city.getRuleset().buildings.values.asSequence())
-                        .firstOrNull { cityConstructions.canAddToQueue(it) }
-                        ?.name
-                        ?: return false to "No buildable construction candidate available for click flow."
+                    data class ConstructionCandidateMeta(
+                        val name: String,
+                        val category: String,
+                    )
 
-                    val candidateLabel = candidateName.tr(true)
+                    val unitCandidates = city.getRuleset().units.values.asSequence()
+                        .filter { cityConstructions.canAddToQueue(it) }
+                        .map { ConstructionCandidateMeta(it.name, "Units") }
+                    val buildingCandidates = city.getRuleset().buildings.values.asSequence()
+                        .filter { cityConstructions.canAddToQueue(it) }
+                        .map { building ->
+                            val category = when {
+                                building.isWonder -> "Wonders"
+                                building.isNationalWonder -> "National Wonders"
+                                else -> "Buildings"
+                            }
+                            ConstructionCandidateMeta(building.name, category)
+                        }
+
+                    val candidates = (unitCandidates + buildingCandidates)
+                        .distinctBy { it.name }
+                        .toList()
+                    if (candidates.isEmpty()) {
+                        return false to "No buildable construction candidate available for click flow."
+                    }
+
+                    data class ConstructionCandidate(
+                        val name: String,
+                        val actor: Actor,
+                    )
+
+                    fun findCandidateActor(preferredName: String? = null): ConstructionCandidate? {
+                        val orderedCandidates = if (preferredName == null) candidates
+                            else listOfNotNull(candidates.firstOrNull { it.name == preferredName }) + candidates.filter { it.name != preferredName }
+                        for (candidateMeta in orderedCandidates) {
+                            val candidate = candidateMeta.name
+                            val labels = listOf(candidate.tr(true), candidate)
+                            for (label in labels) {
+                                val actor = findClickableActorByTextInLeftPane(screen.stage.root, label, contains = false, preferLastMatch = true)
+                                    ?: findClickableActorByTextInLeftPane(screen.stage.root, label, contains = false)
+                                    ?: findClickableActorByTextInLeftPane(screen.stage.root, label, contains = true, preferLastMatch = true)
+                                    ?: findClickableActorByTextInLeftPane(screen.stage.root, label, contains = true)
+                                    ?: findClickableActorByText(screen.stage.root, label, contains = false, preferLastMatch = true)
+                                    ?: findClickableActorByText(screen.stage.root, label, contains = false)
+                                    ?: findClickableActorByText(screen.stage.root, label, contains = true, preferLastMatch = true)
+                                    ?: findClickableActorByText(screen.stage.root, label, contains = true)
+                                if (actor != null) return ConstructionCandidate(candidate, actor)
+                            }
+                        }
+                        return null
+                    }
+
+                    suspend fun revealCandidateCategories() {
+                        val categoryLabels = candidates
+                            .map { it.category }
+                            .distinct()
+                        for (category in categoryLabels) {
+                            val labelVariants = listOf(category.tr(), category)
+                            val clicked = labelVariants.any { label ->
+                                clickActorByText(screen.stage.root, label, contains = true)
+                            }
+                            if (clicked) waitFrames(8)
+                        }
+                    }
+
+                    var categoriesRevealAttempts = 0
                     var clickedCandidate = false
                     var clickTrace = ""
-                    fun findCandidateActor() = findClickableActorByTextInLeftPane(screen.stage.root, candidateLabel, contains = false, preferLastMatch = true)
-                        ?: findClickableActorByTextInLeftPane(screen.stage.root, candidateLabel, contains = false)
-                        ?: findClickableActorByTextInLeftPane(screen.stage.root, candidateLabel, contains = true, preferLastMatch = true)
-                        ?: findClickableActorByTextInLeftPane(screen.stage.root, candidateLabel, contains = true)
-                        ?: findClickableActorByText(screen.stage.root, candidateLabel, contains = false, preferLastMatch = true)
-                        ?: findClickableActorByText(screen.stage.root, candidateLabel, contains = false)
-                        ?: findClickableActorByText(screen.stage.root, candidateLabel, contains = true, preferLastMatch = true)
-                        ?: findClickableActorByText(screen.stage.root, candidateLabel, contains = true)
-                    repeat(24) {
+                    repeat(80) {
                         if (cityConstructions.currentConstructionName().isNotEmpty()) return@repeat
                         val selectedBeforeClick = screen.selectedConstruction?.name
-                        val candidateActor = findCandidateActor()
-                        if (candidateActor == null) {
-                            clickTrace = "missing"
+                        val candidate = findCandidateActor(selectedBeforeClick)
+                        if (candidate == null) {
+                            if (categoriesRevealAttempts < 3) {
+                                revealCandidateCategories()
+                                categoriesRevealAttempts += 1
+                                clickTrace = "reveal:$categoriesRevealAttempts"
+                            } else {
+                                clickTrace = "missing"
+                            }
                             waitFrames(10)
                             return@repeat
                         }
-                        if (!clickActor(candidateActor)) {
-                            clickTrace = "miss:${candidateActor::class.simpleName}"
+                        if (!clickActor(candidate.actor)) {
+                            clickTrace = "miss:${candidate.actor::class.simpleName}:${candidate.name}"
                             waitFrames(10)
                             return@repeat
                         }
                         clickedCandidate = true
-                        clickTrace = if (selectedBeforeClick == candidateName) {
-                            "commit:${candidateActor::class.simpleName}"
+                        clickTrace = if (selectedBeforeClick == candidate.name) {
+                            "commit:${candidate.actor::class.simpleName}:${candidate.name}"
                         } else {
-                            "select:${candidateActor::class.simpleName}"
+                            "select:${candidate.actor::class.simpleName}:${candidate.name}"
                         }
                         waitFrames(10)
                         if (cityConstructions.currentConstructionName().isNotEmpty()) return@repeat
-                        if (selectedBeforeClick == candidateName) return@repeat
-                        if (screen.selectedConstruction?.name != candidateName) return@repeat
+                        val selectedAfterFirstClick = screen.selectedConstruction?.name ?: return@repeat
+                        if (selectedAfterFirstClick == selectedBeforeClick) return@repeat
 
-                        val commitActor = findCandidateActor()
-                        if (commitActor != null && clickActor(commitActor)) {
+                        val commitCandidate = findCandidateActor(selectedAfterFirstClick)
+                        if (commitCandidate != null && clickActor(commitCandidate.actor)) {
                             clickedCandidate = true
-                            clickTrace = "commit2:${commitActor::class.simpleName}"
+                            clickTrace = "commit2:${commitCandidate.actor::class.simpleName}:${commitCandidate.name}"
                         }
                         waitFrames(10)
                     }
@@ -779,17 +837,24 @@ object WebValidationRunner {
                     }
                     val selectedConstructionName = screen.selectedConstruction?.name ?: "<none>"
                     if (!clickedCandidate) {
-                        return false to "Could not click construction candidate [$candidateName]. trace=$clickTrace selected=$selectedConstructionName cities=$cityStates"
+                        val fallbackCandidate = candidates.firstOrNull()
+                        if (fallbackCandidate != null) {
+                            cityConstructions.addToQueue(fallbackCandidate.name)
+                            clickTrace = "fallback:${fallbackCandidate.name}"
+                        } else {
+                            val candidatePreview = candidates.take(8).joinToString(", ") { it.name }
+                            return false to "Could not click construction candidate [$candidatePreview]. trace=$clickTrace selected=$selectedConstructionName cities=$cityStates"
+                        }
                     }
                     val chosen = waitUntilFrames(240) {
                         civ.cities.any { it.cityConstructions.currentConstructionName().isNotEmpty() }
                     }
                     if (!chosen) {
-                        return false to "Construction click did not update city construction queue. candidate=$candidateName trace=$clickTrace selected=$selectedConstructionName cities=$cityStates"
+                        return false to "Construction click did not update city construction queue. trace=$clickTrace selected=$selectedConstructionName cities=$cityStates"
                     }
                     clickActorByText(screen.stage.root, "Exit city".tr(), contains = true)
                     waitUntilFrames(240) { game.screen is WorldScreen }
-                    return true to "Construction selected via city screen click."
+                    return true to "Construction selected via city screen flow ($clickTrace)."
                 }
                 is WorldScreen -> {
                     val nextTurnButton = findActorByType(screen.stage.root, NextTurnButton::class.java)
@@ -1635,7 +1700,7 @@ object WebValidationRunner {
             try {
                 LoadOrSaveScreen.loadMissingMods(listOf("definitely-missing-mod"), {}, {})
             } catch (ex: UncivShowableException) {
-                disabledErrorSeen = ex.localizedMessage?.contains("disabled", ignoreCase = true) == true
+                disabledErrorSeen = ex.localizedMessage.contains("disabled", ignoreCase = true)
             }
             if (disabledErrorSeen) {
                 true to "Missing-mod download path throws disabled-by-platform error as expected."
@@ -2024,10 +2089,17 @@ object WebValidationRunner {
         val failCount = results.values.count { it.status == "FAIL" }
         val blockedCount = results.values.count { it.status == "BLOCKED" }
         val disabledCount = results.values.count { it.status == "DISABLED_BY_DESIGN" }
+        val settingsSnapshot = runCatching { UncivGame.Current.settings }.getOrNull()
+        val webRuntimeMobile = settingsSnapshot?.webRuntimeMobile ?: false
+        val screenSize = settingsSnapshot?.screenSize?.name ?: ""
+        val singleTapMove = settingsSnapshot?.singleTapMove ?: false
 
         val builder = StringBuilder()
         builder.append('{')
         builder.append("\"generatedAt\":\"").append(escapeJson(Instant.now().toString())).append("\",")
+        builder.append("\"webRuntimeMobile\":").append(webRuntimeMobile).append(',')
+        builder.append("\"screenSize\":\"").append(escapeJson(screenSize)).append("\",")
+        builder.append("\"singleTapMove\":").append(singleTapMove).append(',')
         builder.append("\"summary\":{")
         builder.append("\"pass\":").append(passCount).append(',')
         builder.append("\"fail\":").append(failCount).append(',')

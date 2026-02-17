@@ -772,7 +772,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         list: ArrayList<Table>,
         prefWidth: Float,
         toggleKey: KeyboardBinding,
-        startsOutOpened: Boolean = !cityScreen.isCrampedPortrait()
+        startsOutOpened: Boolean = !cityScreen.useResponsiveCompactLayout()
     ) {
         if (list.isEmpty()) return
 

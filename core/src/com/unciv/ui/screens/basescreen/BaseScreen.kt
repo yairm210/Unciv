@@ -1,5 +1,6 @@
 package com.unciv.ui.screens.basescreen
 
+import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.Color
@@ -172,11 +173,18 @@ abstract class BaseScreen : Screen {
 
     /** @return `true` if the screen is higher than it is wide */
     fun isPortrait() = stage.viewport.screenHeight > stage.viewport.screenWidth
+    /** @return `true` if current runtime is WebGL and startup detection marked it as mobile form-factor */
+    fun isWebRuntimeMobile() =
+            Gdx.app.type == Application.ApplicationType.WebGL && game.settings.webRuntimeMobile
+    /** @return `true` if responsive layout should prefer narrow/portrait structures */
+    fun useResponsiveNarrowLayout() = stage.isNarrowerThan4to3()
+    /** @return `true` if responsive layout should prefer compact spacing */
+    fun useResponsiveCompactLayout() =
+            isPortrait() && game.settings.screenSize.virtualHeight <= 700
     /** @return `true` if the screen is higher than it is wide _and_ resolution is at most 1050x700 */
-    fun isCrampedPortrait() = isPortrait() &&
-            game.settings.screenSize.virtualHeight <= 700
+    fun isCrampedPortrait() = useResponsiveCompactLayout()
     /** @return `true` if the screen is narrower than 4:3 landscape */
-    fun isNarrowerThan4to3() = stage.isNarrowerThan4to3()
+    fun isNarrowerThan4to3() = useResponsiveNarrowLayout()
 
     open fun openOptionsPopup(startingPage: Int = OptionsPopup.defaultPage, withDebug: Boolean = false, onClose: () -> Unit = {}) {
         OptionsPopup(this, startingPage, withDebug, onClose).open(force = true)

@@ -193,6 +193,7 @@ class WorldMapHolder(
                     Log.debug("web-move click accepted target=%s selected=%d", tile.position.toString(), previousSelectedUnits.size)
                 if (
                     Gdx.app.type == Application.ApplicationType.WebGL
+                    && UncivGame.Current.settings.webRuntimeMobile
                     && UncivGame.Current.settings.singleTapMove
                     && !previousSelectedUnitIsSwapping
                     && !previousSelectedUnitIsConnectingRoad
@@ -495,9 +496,10 @@ class WorldMapHolder(
                 }
 
                 val turnsToGetThere = unitsWhoCanMoveThere.values.maxOrNull()!!
-                val oneTapMoveOnWeb = Gdx.app.type == Application.ApplicationType.WebGL
+                val oneTapMoveOnWebMobile =
+                    Gdx.app.type == Application.ApplicationType.WebGL && UncivGame.Current.settings.webRuntimeMobile
 
-                if (UncivGame.Current.settings.singleTapMove && (turnsToGetThere == 1 || oneTapMoveOnWeb)) {
+                if (UncivGame.Current.settings.singleTapMove && (turnsToGetThere == 1 || oneTapMoveOnWebMobile)) {
                     // single turn instant move
                     val selectedUnit = unitsWhoCanMoveThere.keys.first()
                     for (unit in unitsWhoCanMoveThere.keys) {

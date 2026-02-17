@@ -37,7 +37,7 @@ class VictoryScreenReplay(
         // yearLabel should be OK with 80f, Label("4000 BC").prefWidth is nearly 78f.
         // The 190f is twice (that plus space=15f). The minimum 120f should never happen, just in case.
         val firstTurn = gameInfo.historyStartTurn
-        val maxSliderPercent = if (worldScreen.isPortrait()) 0.75f else 0.5f
+        val maxSliderPercent = if (worldScreen.useResponsiveNarrowLayout()) 0.75f else 0.5f
         val sliderWidth = ((finalTurn - firstTurn) * 15f + 60f)
             .coerceAtMost(worldScreen.stage.width * maxSliderPercent)
             .coerceAtMost(worldScreen.stage.width - 190f)

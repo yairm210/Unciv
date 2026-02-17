@@ -2,6 +2,7 @@ package com.unciv.app.web
 
 import com.badlogic.gdx.Gdx
 import com.unciv.UncivGame
+import com.unciv.models.metadata.GameSettings.ScreenSize
 
 class WebGame : UncivGame() {
     override fun create() {
@@ -17,7 +18,7 @@ class WebGame : UncivGame() {
         )
 
         super.create()
-        enforceWebInputDefaults()
+        applyWebUxDefaults()
         WebValidationInterop.appendBootstrapTrace("create:super", "super.create completed")
 
         if (clickOpsRequested) {
@@ -97,9 +98,38 @@ class WebGame : UncivGame() {
         }
     }
 
-    private fun enforceWebInputDefaults() {
-        if (!settings.singleTapMove) {
-            settings.singleTapMove = true
+    private fun applyWebUxDefaults() {
+        val isMobile = WebRuntimeInterop.isLikelyMobileDevice()
+        settings.webRuntimeMobile = isMobile
+        WebRuntimeInterop.applyDeviceClass(isMobile)
+
+        val targetVersion = 2
+        if (settings.webUxProfileVersion >= targetVersion) return
+
+        var changed = false
+
+        if (isMobile) {
+            if (!settings.singleTapMove) {
+                settings.singleTapMove = true
+                changed = true
+            }
+        } else {
+            if (settings.screenSize == ScreenSize.Small) {
+                settings.screenSize = ScreenSize.Medium
+                changed = true
+            }
+            if (settings.singleTapMove) {
+                settings.singleTapMove = false
+                changed = true
+            }
+        }
+
+        if (settings.webUxProfileVersion != targetVersion) {
+            settings.webUxProfileVersion = targetVersion
+            changed = true
+        }
+        if (changed) {
+            settings.save()
         }
     }
 }

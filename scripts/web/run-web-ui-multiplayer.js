@@ -1,7 +1,9 @@
 const path = require('path');
 const { randomUUID } = require('crypto');
 const {
+  applyUiDeviceModeToUrl,
   attachDiagnostics,
+  buildUiDeviceConfig,
   ensureTmpDir,
   launchChromium,
   ensureUiProbeBoot,
@@ -21,6 +23,7 @@ async function main() {
   const startupTimeoutMs = Number(process.env.WEB_UI_STARTUP_TIMEOUT_MS || '20000');
   const startupAttempts = Number(process.env.WEB_UI_STARTUP_ATTEMPTS || '2');
   const runId = randomUUID();
+  const uiDeviceConfig = buildUiDeviceConfig({ width: 1440, height: 900 });
 
   const report = {
     status: 'UNKNOWN',
@@ -28,6 +31,9 @@ async function main() {
     runId,
     browser: 'chromium',
     webProfile,
+    uiDeviceMode: uiDeviceConfig.mode,
+    uiViewport: uiDeviceConfig.viewport,
+    webMobileOverride: uiDeviceConfig.webMobileOverride,
     timeoutMs,
     baseUrl,
     mpServer,
@@ -50,8 +56,8 @@ async function main() {
 
   try {
     browser = await launchChromium();
-    hostContext = await browser.newContext({ viewport: { width: 1440, height: 900 } });
-    guestContext = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+    hostContext = await browser.newContext(uiDeviceConfig.contextOptions);
+    guestContext = await browser.newContext(uiDeviceConfig.contextOptions);
     hostPage = await hostContext.newPage();
     guestPage = await guestContext.newPage();
 
@@ -69,9 +75,11 @@ async function main() {
 
     const guestUrl = new URL(hostUrl.toString());
     guestUrl.searchParams.set('uiProbeRole', 'guest');
+    const hostTargetUrl = applyUiDeviceModeToUrl(hostUrl, uiDeviceConfig);
+    const guestTargetUrl = applyUiDeviceModeToUrl(guestUrl, uiDeviceConfig);
 
     await ensureUiProbeBoot(guestPage, {
-      url: guestUrl,
+      url: guestTargetUrl,
       label: 'guest',
       timeoutMs,
       startupTimeoutMs,
@@ -84,7 +92,7 @@ async function main() {
       },
     });
     await ensureUiProbeBoot(hostPage, {
-      url: hostUrl,
+      url: hostTargetUrl,
       label: 'host',
       timeoutMs,
       startupTimeoutMs,
@@ -127,6 +135,16 @@ async function main() {
       report.host = hostOutcome.value.result;
       report.hostStepLog = hostOutcome.value.stepLog;
       if (hostOutcome.value.result.passed !== true) failures.push(`host failed: ${hostOutcome.value.result.notes || ''}`);
+      const hostRuntimeMobile = hostOutcome.value.result.webRuntimeMobile === true;
+      const hostSingleTap = hostOutcome.value.result.singleTapMove === true;
+      if (uiDeviceConfig.mode === 'desktop') {
+        if (hostRuntimeMobile) failures.push('host desktop mode expected webRuntimeMobile=false');
+        if (hostSingleTap) failures.push('host desktop mode expected singleTapMove=false');
+      }
+      if (uiDeviceConfig.mode === 'mobile') {
+        if (!hostRuntimeMobile) failures.push('host mobile mode expected webRuntimeMobile=true');
+        if (!hostSingleTap) failures.push('host mobile mode expected singleTapMove=true');
+      }
     } else {
       failures.push(`host probe failed: ${String(hostOutcome.reason)}`);
       const hostState = await hostPage.evaluate(() => ({
@@ -148,6 +166,16 @@ async function main() {
       report.guest = guestOutcome.value.result;
       report.guestStepLog = guestOutcome.value.stepLog;
       if (guestOutcome.value.result.passed !== true) failures.push(`guest failed: ${guestOutcome.value.result.notes || ''}`);
+      const guestRuntimeMobile = guestOutcome.value.result.webRuntimeMobile === true;
+      const guestSingleTap = guestOutcome.value.result.singleTapMove === true;
+      if (uiDeviceConfig.mode === 'desktop') {
+        if (guestRuntimeMobile) failures.push('guest desktop mode expected webRuntimeMobile=false');
+        if (guestSingleTap) failures.push('guest desktop mode expected singleTapMove=false');
+      }
+      if (uiDeviceConfig.mode === 'mobile') {
+        if (!guestRuntimeMobile) failures.push('guest mobile mode expected webRuntimeMobile=true');
+        if (!guestSingleTap) failures.push('guest mobile mode expected singleTapMove=true');
+      }
     } else {
       failures.push(`guest probe failed: ${String(guestOutcome.reason)}`);
       const guestState = await guestPage.evaluate(() => ({

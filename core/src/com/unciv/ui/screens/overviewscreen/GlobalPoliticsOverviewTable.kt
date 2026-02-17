@@ -292,7 +292,7 @@ class GlobalPoliticsOverviewTable(
         updateCivTable(2)
         portraitMode = !showDiplomacyGroup ||
                 civTable.minWidth > overviewScreen.stage.width / 2 ||
-                overviewScreen.isPortrait()
+                overviewScreen.useResponsiveNarrowLayout()
         val table = if (portraitMode) this else fixedContent
 
         if (showDiplomacyGroup) {

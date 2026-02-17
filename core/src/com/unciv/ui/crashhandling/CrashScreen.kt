@@ -213,7 +213,7 @@ class CrashScreen(val exception: Throwable) : BaseScreen() {
         buttonsTable.add(reportButton)
             .pad(10f)
             .also {
-                if (isCrampedPortrait()) {
+                if (useResponsiveCompactLayout()) {
                     it.row()
                     buttonsTable.add()
                 }

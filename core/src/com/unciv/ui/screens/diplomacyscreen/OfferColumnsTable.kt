@@ -59,7 +59,7 @@ class OfferColumnsTable(
     init {
         defaults().pad(5f)
 
-        val isPortraitMode = screen.isNarrowerThan4to3()
+        val isPortraitMode = screen.useResponsiveNarrowLayout()
 
         val columnWidth = screen.getTradeColumnsWidth() - 20f // Subtract padding: ours and OffersListScroll's
 

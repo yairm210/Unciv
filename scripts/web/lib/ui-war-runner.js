@@ -3,7 +3,9 @@ const fs = require('fs');
 const zlib = require('zlib');
 const { randomUUID } = require('crypto');
 const {
+  applyUiDeviceModeToUrl,
   attachDiagnostics,
+  buildUiDeviceConfig,
   ensureTmpDir,
   launchChromium,
   ensureUiProbeBoot,
@@ -132,6 +134,7 @@ async function runWarProbe(options) {
   const startupAttempts = Number(process.env.WEB_UI_STARTUP_ATTEMPTS || '2');
   const runId = randomUUID();
   const warPreload = loadWarPreload(role);
+  const uiDeviceConfig = buildUiDeviceConfig({ width: 1440, height: 900 });
 
   const report = {
     status: 'UNKNOWN',
@@ -140,6 +143,9 @@ async function runWarProbe(options) {
     role,
     browser: 'chromium',
     webProfile,
+    uiDeviceMode: uiDeviceConfig.mode,
+    uiViewport: uiDeviceConfig.viewport,
+    webMobileOverride: uiDeviceConfig.webMobileOverride,
     timeoutMs,
     baseUrl,
     result: null,
@@ -159,7 +165,7 @@ async function runWarProbe(options) {
   let page;
   try {
     browser = await launchChromium();
-    context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+    context = await browser.newContext(uiDeviceConfig.contextOptions);
     await context.addInitScript(({ payload, metadataJson }) => {
       window.__uncivWarPreloadPayload = payload;
       window.__uncivWarPreloadMetaJson = metadataJson;
@@ -178,9 +184,10 @@ async function runWarProbe(options) {
     url.searchParams.set('uiProbeRole', role);
     url.searchParams.set('uiProbeRunId', runId);
     url.searchParams.set('uiProbeTimeoutMs', String(timeoutMs));
+    const targetUrl = applyUiDeviceModeToUrl(url, uiDeviceConfig);
 
     await ensureUiProbeBoot(page, {
-      url,
+      url: targetUrl,
       label: role,
       timeoutMs,
       startupTimeoutMs,

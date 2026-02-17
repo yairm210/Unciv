@@ -1,7 +1,9 @@
 const path = require('path');
 const { randomUUID } = require('crypto');
 const {
+  applyUiDeviceModeToUrl,
   attachDiagnostics,
+  buildUiDeviceConfig,
   ensureTmpDir,
   launchChromium,
   ensureUiProbeBoot,
@@ -19,6 +21,7 @@ async function main() {
   const startupTimeoutMs = Number(process.env.WEB_UI_STARTUP_TIMEOUT_MS || '20000');
   const startupAttempts = Number(process.env.WEB_UI_STARTUP_ATTEMPTS || '2');
   const runId = randomUUID();
+  const uiDeviceConfig = buildUiDeviceConfig({ width: 1440, height: 900 });
 
   const report = {
     status: 'UNKNOWN',
@@ -27,6 +30,9 @@ async function main() {
     role: 'editor',
     browser: 'chromium',
     webProfile,
+    uiDeviceMode: uiDeviceConfig.mode,
+    uiViewport: uiDeviceConfig.viewport,
+    webMobileOverride: uiDeviceConfig.webMobileOverride,
     timeoutMs,
     baseUrl,
     result: null,
@@ -42,7 +48,7 @@ async function main() {
   let page;
   try {
     browser = await launchChromium();
-    context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+    context = await browser.newContext(uiDeviceConfig.contextOptions);
     page = await context.newPage();
     attachDiagnostics(page, report, 'editor');
 
@@ -54,8 +60,10 @@ async function main() {
     url.searchParams.set('uiProbeRunId', runId);
     url.searchParams.set('uiProbeTimeoutMs', String(timeoutMs));
 
+    const targetUrl = applyUiDeviceModeToUrl(url, uiDeviceConfig);
+
     await ensureUiProbeBoot(page, {
-      url,
+      url: targetUrl,
       label: 'editor',
       timeoutMs,
       startupTimeoutMs,
@@ -81,6 +89,16 @@ async function main() {
     report.stepLog = probe.stepLog;
 
     const failures = [];
+    const runtimeMobile = probe.result.webRuntimeMobile === true;
+    const runtimeSingleTap = probe.result.singleTapMove === true;
+    if (uiDeviceConfig.mode === 'desktop') {
+      if (runtimeMobile) failures.push('desktop mode expected webRuntimeMobile=false');
+      if (runtimeSingleTap) failures.push('desktop mode expected singleTapMove=false');
+    }
+    if (uiDeviceConfig.mode === 'mobile') {
+      if (!runtimeMobile) failures.push('mobile mode expected webRuntimeMobile=true');
+      if (!runtimeSingleTap) failures.push('mobile mode expected singleTapMove=true');
+    }
     if (probe.result.passed !== true) failures.push(`editor result passed=false notes=${probe.result.notes || ''}`);
     if (!/map editor/i.test(String(probe.result.notes || ''))) failures.push('editor notes missing map editor confirmation');
     if (report.pageErrors.length > 0) failures.push(`page errors detected: ${report.pageErrors.length}`);

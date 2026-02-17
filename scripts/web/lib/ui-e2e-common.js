@@ -16,6 +16,52 @@ function parseNumber(value, fallback) {
 
 const evaluateTimeoutMs = parseNumber(process.env.WEB_UI_EVAL_TIMEOUT_MS, 12000);
 const runningEvaluateTimeoutMs = parseNumber(process.env.WEB_UI_RUNNING_EVAL_TIMEOUT_MS, 8000);
+const defaultDesktopViewport = { width: 1440, height: 900 };
+const defaultMobileViewport = { width: 390, height: 844 };
+
+function parseViewportSpec(raw) {
+  if (!raw) return null;
+  const normalized = String(raw).trim().toLowerCase();
+  const match = /^(\d{2,5})\s*[x,]\s*(\d{2,5})$/.exec(normalized);
+  if (!match) return null;
+  const width = Number(match[1]);
+  const height = Number(match[2]);
+  if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) return null;
+  return { width, height };
+}
+
+function resolveUiDeviceMode(raw) {
+  const normalized = String(raw || 'auto').trim().toLowerCase();
+  if (normalized === 'mobile') return 'mobile';
+  if (normalized === 'desktop') return 'desktop';
+  return 'auto';
+}
+
+function buildUiDeviceConfig(defaultViewport = defaultDesktopViewport) {
+  const mode = resolveUiDeviceMode(process.env.WEB_UI_DEVICE_MODE);
+  const viewportOverride = parseViewportSpec(process.env.WEB_UI_VIEWPORT);
+  const viewport = viewportOverride
+    || (mode === 'mobile' ? defaultMobileViewport : defaultViewport);
+  const contextOptions = { viewport };
+  if (mode === 'mobile') {
+    contextOptions.hasTouch = true;
+    contextOptions.isMobile = true;
+    contextOptions.deviceScaleFactor = parseNumber(process.env.WEB_UI_DEVICE_SCALE_FACTOR, 2);
+  }
+  const webMobileOverride = mode === 'mobile' ? true : (mode === 'desktop' ? false : null);
+  return { mode, viewport, contextOptions, webMobileOverride };
+}
+
+function applyUiDeviceModeToUrl(urlInput, uiDeviceConfig) {
+  const url = typeof urlInput === 'string' ? new URL(urlInput) : new URL(urlInput.toString());
+  const override = uiDeviceConfig && Object.prototype.hasOwnProperty.call(uiDeviceConfig, 'webMobileOverride')
+    ? uiDeviceConfig.webMobileOverride
+    : null;
+  if (override === true) url.searchParams.set('webMobile', '1');
+  else if (override === false) url.searchParams.set('webMobile', '0');
+  else url.searchParams.delete('webMobile');
+  return url;
+}
 
 async function evaluateWithTimeout(page, fn, arg, label, timeoutMs = evaluateTimeoutMs) {
   let timer = null;
@@ -348,10 +394,13 @@ function writeJson(filePath, payload) {
 }
 
 module.exports = {
+  applyUiDeviceModeToUrl,
   attachDiagnostics,
+  buildUiDeviceConfig,
   ensureTmpDir,
   getActionableRequestFailures,
   launchChromium,
+  resolveUiDeviceMode,
   ensureUiProbeBoot,
   startMainOnce,
   waitForUiProbeResult,
