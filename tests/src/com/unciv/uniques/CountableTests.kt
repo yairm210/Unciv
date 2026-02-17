@@ -510,9 +510,36 @@ class CountableTests {
     }
 
     @Test
-    @CoversCountable(Countables.RemainingCivs, Countables.FilteredUnits)
-    fun testFilteredUnitsCountable() {
+    @CoversCountable(Countables.FilteredCitiesByCivs)
+    fun testFilteredCitiesByCivs() {
         setupModdedGame()
+        val civ2 = game.addCiv()
+        val city2 = game.addCity(civ2, game.tileMap[-2, 0])
+        city2.isPuppet = true
+        val context = GameContext(civ)
+
+        runTestParcours("Filtered cities by civs countable", { test: String ->
+            Countables.getCountableAmount(test, context)
+        },
+            "[Capital] Cities of [All] Civilizations", 2,
+            "[Puppeted] Cities of [All] Civilizations", 1,
+            "[All] Cities of [All] Civilizations", 2,
+            "[Capital] Cities of [${civ.civName}] Civilizations", 1,
+            "[Puppeted] Cities of [${civ.civName}] Civilizations", 0,
+            "[Puppeted] Cities of [${civ2.civName}] Civilizations", 1,
+            "[All] Cities of [${civ2.civName}] Civilizations", 1,
+            "[Capital] Cities of [City-State] Civilizations", 0,
+        )
+    }
+
+    @Test
+    @CoversCountable(Countables.RemainingCivs, Countables.FilteredUnits, Countables.Carried)
+    fun testFilteredUnitsCountable() {
+        val ruleset = setupModdedGame()
+        val wetTile = game.tileMap[3,1]
+        wetTile.setBaseTerrain(ruleset.terrains[Constants.coast]!!)
+        val carrier = game.addUnit("Carrier", civ, wetTile)
+        val carried = game.addUnit("Fighter", civ, wetTile)
         game.addUnit("Warrior", civ, city.getCenterTile())
         game.addUnit("Scout", civ, game.tileMap.values.first())
         game.addUnit("Scout", civ, game.tileMap.values.last())
@@ -521,12 +548,13 @@ class CountableTests {
         val deSela = game.addCiv(game.ruleset.nations["Lhasa"]!!)
         val city2 = game.addCity(deSela, game.tileMap[-2,1])
         game.addUnit("Scout", deSela, city2.getCenterTile())
-        val actual = Countables.getCountableAmount("[Remaining [all] Civilizations] + 10 * [[Military] Units]", GameContext(civ))
-        assertEquals("There should be three military units and 2 civilizations", 32, actual)
+        val context = GameContext(civ, unit = carrier) // The carried countable runs on a unit scope
+        val actual = Countables.getCountableAmount("[Remaining [all] Civilizations] + 100 * [[Military] Units] + 10 * [Carried [Fighter] units]", context)
+        assertEquals("There should be five military units with 1 being carried and 2 civilizations", 512, actual)
     }
 
     @Test
-    @CoversCountable(Countables.TileFilterTiles, Countables.TileResources)
+    @CoversCountable(Countables.TileFilterTiles, Countables.TileResources, Countables.TileResourcesByCivs)
     fun testTileFilterTilesCountable() {
         val ruleset = setupModdedGame("Provides [40] [Horses]")
         val wetTile = game.tileMap[0,0]
@@ -545,6 +573,11 @@ class CountableTests {
             "[City center] Tiles", 1,
             "[Nation-0] Tiles", 7,
             "[Vegetation] Tiles", 18,
+            // TileResourcesByCivs
+            "[Horses] resource of [${civ.civName}] Civilizations", 42,
+            "[Strategic] resource of [${civ.civName}] Civilizations", 42,
+            "[Horses] resource of [all] Civilizations", 42,
+            "[Horses] resource of [City-State] Civilizations", 0
         )
     }
 

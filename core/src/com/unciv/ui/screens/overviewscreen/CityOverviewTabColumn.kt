@@ -20,6 +20,10 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.SortableGrid
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.cityscreen.CityScreen
+import com.unciv.models.ruleset.tile.TileResource
+import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.city.CityResources
+import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.math.roundToInt
 
 
@@ -181,6 +185,18 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
 
     //endregion
 
+    companion object {
+        /**
+         * Gets a list of all the available city overview screen columns.
+         *
+         * @param viewingPlayer The Civilization that is viewing the Overview screen.
+         */
+        fun getColumns(viewingPlayer: Civilization): Iterable<ISortableGridContentProvider<City, EmpireOverviewScreen>> =
+            CityOverviewTabColumn.entries.asSequence()
+                .plus(CityWideResourceColumn.getColumns(viewingPlayer))
+                .asIterable()
+    }
+
     /** The Stat constant if this is a Stat column - helps the default getter methods */
     private val stat = Stat.safeValueOf(name)
 
@@ -212,4 +228,44 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
             item.cityStats.currentCityStats[stat!!].roundToInt()
 
     //endregion
+
+    //region Dynamic Columns
+
+    /**
+     * City-Wide Resource Column, representing an individual resource.
+     */
+    class CityWideResourceColumn(
+        val resource: TileResource
+    ) : ISortableGridContentProvider<City, EmpireOverviewScreen> {
+        override val headerTip = resource.name.tr()
+        override val align = Align.center
+        override val fillX = false
+        override val expandX = false
+        override val equalizeHeight = false
+        override val defaultSort get() = SortableGrid.SortDirection.Descending
+        override fun getHeaderActor(iconSize: Float) = ImageGetter.getResourcePortrait(resource.name, iconSize)
+        override fun getEntryValue(item: City) =
+            // Resource Supply
+            CityResources.getCityResourcesAvailableToCity(item)
+                .filter { it.resource == resource }
+                .sumOf { it.amount } +
+            // Resource Stockpile
+            (item.resourceStockpiles[resource.name] ?: 0)
+
+        companion object {
+            /**
+             * Retrieve all the available city-wide resource columns.
+             *
+             * @param viewingPlayer The Civilization that has opened the City Overview screen.
+             */
+            fun getColumns(viewingPlayer: Civilization) = viewingPlayer.gameInfo.ruleset.tileResources.values
+                .filter {
+                    it.isCityWide &&
+                    it.getMatchingUniques(UniqueType.NotShownOnWorldScreen, viewingPlayer.state).none()
+                }
+                .map { CityWideResourceColumn(it) }
+        }
+    }
+
+    // endregion
 }

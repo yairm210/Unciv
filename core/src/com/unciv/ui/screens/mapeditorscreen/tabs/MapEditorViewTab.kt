@@ -177,7 +177,7 @@ class MapEditorViewTab(
 
         val lines = ArrayList<FormattedLine>()
 
-        lines += FormattedLine("Position: [${tile.position.toString().replace(".0","")}]")
+        lines += FormattedLine("Position: [${tile.position.toPrettyString()}]")
         lines += FormattedLine()
 
         lines.addAll(TileDescription.toMarkup(tile, null))
@@ -222,7 +222,7 @@ class MapEditorViewTab(
             }
         }
 
-        if (tile.resource != null && (tile.resourceAmount > 0 || tile.tileResource.resourceType == ResourceType.Strategic)) {
+        if (tile.tileResource != null && (tile.resourceAmount > 0 || tile.tileResource?.resourceType == ResourceType.Strategic)) {
             renderedInfo.addSeparator(Color.GRAY)
             renderedInfo.add(Table().apply {
                 add("Resource abundance".toLabel(alignment = Align.left)).left().growX()

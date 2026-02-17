@@ -7,6 +7,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.*
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
+import com.unciv.logic.civilization.managers.PolicyManager
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapgenerator.NaturalWonderGenerator
@@ -107,7 +108,7 @@ object UniqueTriggerActivation {
             civInfo.cities.firstOrNull { it.isCapital() }
 
         val tileBasedRandom =
-            if (tile != null) Random(tile.position.toString().hashCode())
+            if (tile != null) Random(tile.position.hashCode())
             else Random(-550) // Very random indeed
         val ruleset = civInfo.gameInfo.ruleset
 
@@ -253,6 +254,90 @@ object UniqueTriggerActivation {
                 }
                 return { placeUnits() }
             }
+            UniqueType.OneTimeRebel -> {
+                val barbarians = civInfo.gameInfo.getBarbarianCivilization()
+                val unitName = unique.params[0]
+                val baseUnit = ruleset.units[unitName] ?: return null
+                val civUnit = civInfo.getEquivalentUnit(baseUnit)
+                if (civUnit.isCityFounder() && civInfo.isOneCityChallenger())
+                    return null
+                fun placeUnit(): Boolean {
+                    val placedUnit = when {
+                        // Else set the unit at the given tile
+                        tile != null -> civInfo.gameInfo.tileMap.placeUnitNearTile(tile.position,baseUnit,barbarians) ?: return false
+                        // Else set unit unit near other units if we have no cities
+                        civInfo.units.getCivUnits().any() ->
+                            civInfo.gameInfo.tileMap.placeUnitNearTile(civInfo.units.getCivUnits().first().currentTile.position,baseUnit,barbarians) ?: return false
+
+                        else -> return false
+                    }
+                    val notificationText = getNotificationText(
+                        notification, triggerNotificationText,
+                        "[1] [${civUnit.name}] has rebelled against us!"
+                    )
+                    if (notificationText != null)
+                        civInfo.addNotification(
+                            notificationText,
+                            MapUnitAction(placedUnit),
+                            NotificationCategory.Units,
+                            placedUnit.name
+                        )
+                    return true
+                }
+                return { placeUnit() }
+            }
+
+            UniqueType.OneTimeAmountRebels -> {
+                val barbarians = civInfo.gameInfo.getBarbarianCivilization()
+                val unitName = unique.params[1]
+                val baseUnit = ruleset.units[unitName] ?: return null
+                val civUnit = civInfo.getEquivalentUnit(baseUnit)
+                if (civUnit.isCityFounder() && civInfo.isOneCityChallenger())
+                    return null
+                val limit = civUnit.getMatchingUniques(UniqueType.MaxNumberBuildable)
+                    .map { it.params[0].toInt() }.minOrNull()
+                val unitCount = civInfo.units.getCivUnits().count { it.name == civUnit.name }
+                val amountFromTriggerable = unique.params[0].toInt()
+                val actualAmount = when {
+                    limit == null -> amountFromTriggerable
+                    amountFromTriggerable + unitCount > limit -> limit - unitCount
+                    else -> amountFromTriggerable
+                }
+
+                if (actualAmount <= 0) return null
+
+                fun placeUnits(): Boolean {
+                    val placedUnits: MutableList<MapUnit> = mutableListOf()
+                    repeat(actualAmount) {
+                        val placedUnit = when {
+                            // Else set the unit at the given tile
+                            tile != null -> civInfo.gameInfo.tileMap.placeUnitNearTile(tile.position,baseUnit,barbarians) ?: return false
+                            // Else set unit unit near other units if we have no cities
+                            civInfo.units.getCivUnits().any() ->
+                                civInfo.gameInfo.tileMap.placeUnitNearTile(civInfo.units.getCivUnits().first().currentTile.position,baseUnit,barbarians) ?: return false
+
+                            else -> null
+                        }
+                        if (placedUnit != null) placedUnits += placedUnit
+                    }
+                    if (placedUnits.isEmpty()) return false
+
+                    val notificationText = getNotificationText(
+                        notification, triggerNotificationText,
+                        "[${placedUnits.size}] [${civUnit.name}] unit(s) have rebelled against us!"
+                    )
+
+                    if (notificationText != null)
+                        civInfo.addNotification(
+                            notificationText,
+                            MapUnitAction(placedUnits),
+                            NotificationCategory.Units,
+                            civUnit.name
+                        )
+                    return true
+                }
+                return { placeUnits() }
+            }
             UniqueType.OneTimeFreeUnitRuins -> {
                 val unitName = unique.params[0]
                 val baseUnit = ruleset.units[unitName] ?: return null
@@ -345,10 +430,12 @@ object UniqueTriggerActivation {
                     else -> return null
                 }
             }
+
             UniqueType.OneTimeRemovePolicy -> {
                 val policyFilter = unique.params[0]
-                val policiesToRemove = civInfo.policies.getAdoptedPoliciesMatching(policyFilter, gameContext)
-                if (policiesToRemove.isEmpty()) return null
+                val policiesToRemove = civInfo.policies
+                    .getAdoptedPoliciesMatching(policyFilter, gameContext, forRemoval = true)
+                if (policiesToRemove.none()) return null
 
                 return {
                     for (policy in policiesToRemove) {
@@ -364,24 +451,28 @@ object UniqueTriggerActivation {
                     true
                 }
             }
-
             UniqueType.OneTimeRemovePolicyRefund -> {
                 val policyFilter = unique.params[0]
-                val refundPercentage = unique.params[1].toInt()
-                val policiesToRemove = civInfo.policies.getAdoptedPoliciesMatching(policyFilter, gameContext)
-                if (policiesToRemove.isEmpty()) return null
+                val policiesToRemove = civInfo.policies
+                    .getAdoptedPoliciesMatching(policyFilter, gameContext, forRemoval = true)
+                if (policiesToRemove.none()) return null
 
+                val refundPercentage = unique.params[1].toInt()
                 val policiesToRemoveMap = civInfo.policies.getCultureRefundMap(policiesToRemove, refundPercentage)
 
                 return {
-                    for (policy in policiesToRemoveMap){
-                        civInfo.policies.removePolicy(policy.key)
-                        civInfo.policies.addCulture(policy.value)
-
-                        val notificationText = getNotificationText(
-                            notification, triggerNotificationText,
+                    for (policy in policiesToRemoveMap) {
+                        val effectNotificationText = if (policy.value == PolicyManager.FREE_POLICY_MARKER) {
+                            civInfo.policies.removePolicy(policy.key, assumeWasFree = true)
+                            civInfo.policies.freePolicies++
+                            "You lose the [${policy.key.name}] Policy. A free policy has been refunded"
+                        } else {
+                            civInfo.policies.removePolicy(policy.key)
+                            civInfo.policies.addCulture(policy.value)
                             "You lose the [${policy.key.name}] Policy. [${policy.value}] Culture has been refunded"
-                        )
+                        }
+                        val notificationText =
+                            getNotificationText(notification, triggerNotificationText, effectNotificationText)
                         if (notificationText != null)
                             civInfo.addNotification(notificationText, PolicyAction(policy.key.name), NotificationCategory.General, NotificationIcon.Culture)
                     }
@@ -579,6 +670,38 @@ object UniqueTriggerActivation {
                     val notificationText = getNotificationText(
                         notification, triggerNotificationText,
                         "You have gained [$amount] [$resourceName]"
+                    )
+                    if (notificationText != null)
+                        civInfo.addNotification(notificationText, NotificationCategory.General, resourceName)
+                    true
+                }
+            }
+
+            UniqueType.OneTimeSetStockpile -> {
+                val resourceName = unique.params[0]
+                val resource = ruleset.getGameResource(resourceName) ?: return null
+                if (resource is TileResource && !resource.isStockpiled) return null
+
+                return {
+                    var amountRequired = unique.params[1].toInt()
+                    if (unique.isModifiedByGameSpeed()) {
+                        amountRequired = if (resource is Stat) (amountRequired * civInfo.gameInfo.speed.statCostModifiers[resource]!!).roundToInt()
+                        else (amountRequired * civInfo.gameInfo.speed.modifier).roundToInt()
+                    }
+                    if (city != null){
+                        val currentAmount = city.getGameResource(resource)
+                        val missingAmount = amountRequired - currentAmount
+                        city.addGameResource(resource, missingAmount)
+                    }
+                    else {
+                        val currentAmount = civInfo.getGameResource(resource)
+                        val missingAmount = amountRequired - currentAmount
+                        civInfo.addGameResource(resource, missingAmount)
+                    }
+                    
+                    val notificationText = getNotificationText(
+                        notification, triggerNotificationText,
+                        "[$resourceName] has been set to [$amountRequired]"
                     )
                     if (notificationText != null)
                         civInfo.addNotification(notificationText, NotificationCategory.General, resourceName)
@@ -993,8 +1116,8 @@ object UniqueTriggerActivation {
                     for (applicableCity in applicableCities) {
                         val buildingsToRemove = applicableCity.cityConstructions.getBuiltBuildings().filter {
                             it.matchesFilter(unique.params[0], applicableCity.state)
-                        }.toSet()
-                        applicableCity.cityConstructions.removeBuildings(buildingsToRemove)
+                        }
+                        for (building in buildingsToRemove) applicableCity.cityConstructions.removeBuilding(building)
                     }
                     if (notification != null)
                         civInfo.addNotification(
@@ -1141,11 +1264,11 @@ object UniqueTriggerActivation {
 
             UniqueType.OneTimeRemoveResourcesFromTile -> {
                 if (tile == null) return null
-                if (tile.resource == null) return null
+                val resource = tile.tileResource ?: return null
                 val resourceFilter = unique.params[0]
-                if (!tile.tileResource.matchesFilter(resourceFilter)) return null
+                if (!resource.matchesFilter(resourceFilter)) return null
                 return {
-                    tile.resource = null
+                    tile.tileResource = null
                     tile.resourceAmount = 0
                     true
                 }
@@ -1175,11 +1298,11 @@ object UniqueTriggerActivation {
                 val terrain = ruleset.terrains[unique.params[0]] ?: return null
                 if (terrain.name == Constants.river)
                     return getOneTimeChangeRiverTriggerFunction(tile)
+                if (terrain.type.isBaseTerrain && tile.baseTerrain == terrain.name) return null
+                if (tile.isCityCenter() && terrain.type != TerrainType.Land) return null
+                if (tile.terrainFeatures.contains(terrain.name)) return null
                 if (terrain.type == TerrainType.TerrainFeature && !terrain.occursOn.contains(tile.lastTerrain.name))
                     return null
-                if (tile.terrainFeatures.contains(terrain.name)) return null
-                if (tile.isCityCenter() && terrain.type != TerrainType.Land) return null
-                if (terrain.type.isBaseTerrain && tile.baseTerrain == terrain.name) return null
 
                 return {
                     when (terrain.type) {

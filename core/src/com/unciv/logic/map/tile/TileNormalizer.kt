@@ -17,7 +17,7 @@ object TileNormalizer {
             } else {
                 tile.setTerrainFeatures(tile.terrainFeatures.filter { it in wonderTerrain.occursOn })
             }
-            tile.resource = null
+            tile.tileResource = null
             tile.clearImprovement()
         }
 
@@ -35,15 +35,16 @@ object TileNormalizer {
         if (newFeatures.size != tile.terrainFeatures.size)
             tile.setTerrainFeatures(newFeatures)
 
-        if (tile.resource != null && !ruleset.tileResources.containsKey(tile.resource)) tile.resource = null
-        if (tile.resource != null) {
-            val resourceObject = ruleset.tileResources[tile.resource]!!
+        if (tile.resource != null && !ruleset.tileResources.containsKey(tile.resource)) tile.tileResource = null
+        val resourceObject = tile.tileResource
+        if (resourceObject != null) {
             if (resourceObject.terrainsCanBeFoundOn.none { it == tile.baseTerrain || tile.terrainFeatures.contains(it) })
-                tile.resource = null
+                tile.tileResource = null
         }
 
         // If we're checking this at gameInfo.setTransients, we can't check the top terrain
         if (tile.improvement != null) normalizeTileImprovement(tile, ruleset)
+        if (tile.improvementInProgress != null) normalizeImprovementQueue(tile, ruleset)
         if (tile.isWater || tile.isImpassible())
             tile.removeRoad()
     }
@@ -54,6 +55,18 @@ object TileNormalizer {
         if (tile.improvementFunctions.canImprovementBeBuiltHere(improvementObject, gameContext = GameContext.IgnoreConditionals, isNormalizeCheck = true))
             return
         tile.clearImprovement()
+    }
+    
+    private fun normalizeImprovementQueue(tile: Tile, ruleset: Ruleset) {
+        val oldImprovementQueue = tile.improvementQueue.toList()
+        tile.improvementQueue.clear()
+        
+        // only readd them if they're still buildable
+        for (improvementQueueEntry in oldImprovementQueue){
+            val improvementObject = ruleset.tileImprovements[improvementQueueEntry.improvement] ?: continue
+            if (tile.improvementFunctions.canImprovementBeBuiltHere(improvementObject, gameContext = GameContext.IgnoreConditionals, isNormalizeCheck = true))
+                tile.improvementQueue.add(improvementQueueEntry)
+        }
     }
 
     private fun Tile.clearImprovement() {

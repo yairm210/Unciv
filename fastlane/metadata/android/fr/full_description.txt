@@ -6,7 +6,7 @@ Des suggestions? Des bugs? Envie de contribuer? La liste des sujets ouverts se t
 
 Des questions? Des commentaires? Rejoignez-nous sur le Discord d'Unciv https://discord.gg/bjrB4Xw ;)
 
-Vous souhaitez participer à la traduction du jeu dans votre langue? Suivez les instructions sur https://yairm210.github.io/Unciv/Other/Translating/ .
+Vous souhaitez participer à la traduction du jeu dans votre langue? Suivez les instructions sur https://yairm210.github.io/Unciv/Translating/Translating/ .
 
 Le monde n'attend plus que vous! Bâtirez-vous une civilisation capable de résister au passage du temps?
 

@@ -207,7 +207,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             tile.setBaseTerrain(mirrorTile.getBaseTerrain())
             tile.naturalWonder = mirrorTile.naturalWonder
             tile.setTerrainFeatures(mirrorTile.terrainFeatures)
-            tile.resource = mirrorTile.resource
+            tile.tileResource = mirrorTile.tileResource
             tile.improvement = mirrorTile.improvement
             
             for (neighbor in tile.neighbors){
@@ -374,7 +374,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
     private fun spreadResources(tileMap: TileMap) {
         val mapRadius = tileMap.mapParameters.mapSize.radius
         for (tile in tileMap.values)
-            tile.resource = null
+            tile.tileResource = null
 
         spreadStrategicResources(tileMap, mapRadius)
         spreadResources(tileMap, mapRadius, ResourceType.Luxury)

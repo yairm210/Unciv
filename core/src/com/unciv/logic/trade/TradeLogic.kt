@@ -182,9 +182,19 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
                     val warType = if (currentTrade.theirOffers.any { it.type == TradeOfferType.WarDeclaration && it.name == nameOfCivToDeclareWarOn }
                             && currentTrade.ourOffers.any {it.type == TradeOfferType.WarDeclaration && it.name == nameOfCivToDeclareWarOn})
                         WarType.TeamWar
-                    else WarType.JoinWar
-
-                    from.getDiplomacyManager(nameOfCivToDeclareWarOn)!!.declareWar(DeclareWarReason(warType, to))
+                    else if (currentTrade.theirOffers.any { it.type == TradeOfferType.WarDeclaration && it.name == nameOfCivToDeclareWarOn && ourCivilization.isAtWarWith(to.gameInfo.getCivilization(it.name))}
+                        || currentTrade.ourOffers.any {it.type == TradeOfferType.WarDeclaration && it.name == nameOfCivToDeclareWarOn && otherCivilization.isAtWarWith(to.gameInfo.getCivilization(it.name))})
+                        WarType.JoinWar
+                    else WarType.DirectWar
+                    when(warType) {
+                        WarType.TeamWar, WarType.JoinWar -> from.getDiplomacyManager(nameOfCivToDeclareWarOn)!!.declareWar(DeclareWarReason(warType, to))
+                        WarType.DirectWar -> {
+                            // from will always be the declaring Civ
+                            from.getDiplomacyManager(nameOfCivToDeclareWarOn)!!
+                                .declareWar(DeclareWarReason(warType))
+                        }
+                        else -> {throw IllegalStateException("Unhandled WarType: $warType found within TradeOfferType.WarDeclaration")}
+                    }
                 }
                 TradeOfferType.PeaceProposal -> {
                     // Convert PeaceProposal to peaceTreaty and apply to warring civs

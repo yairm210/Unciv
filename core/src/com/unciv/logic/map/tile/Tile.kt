@@ -54,10 +54,7 @@ class Tile : IsPartOfGameInfoSerialization {
 
     var naturalWonder: String? = null
     var resource: String? = null
-        set(value) {
-            tileResourceCache = null
-            field = value
-        }
+        private set
     var resourceAmount: Int = 0
 
     var improvement: String? = null
@@ -77,7 +74,7 @@ class Tile : IsPartOfGameInfoSerialization {
             return turnsToImprovement > 0
         }
     }
-    private val improvementQueue = ArrayList<ImprovementQueueEntry>(1)
+    internal val improvementQueue = ArrayList<ImprovementQueueEntry>(1)
 
     var roadStatus = RoadStatus.None
 
@@ -177,16 +174,25 @@ class Tile : IsPartOfGameInfoSerialization {
     val longitude: Int
         get() = HexMath.getLongitude(position)
 
-    @Transient
+    @Transient @Cache
     private var tileResourceCache: TileResource? = null
-    val tileResource: TileResource
+    @get:Readonly
+    var tileResource: TileResource?
         get() {
-            if (tileResourceCache == null) {
-                if (resource == null) throw Exception("No resource exists for this tile!")
-                if (!ruleset.tileResources.containsKey(resource!!)) throw Exception("Resource $resource does not exist in this ruleset!")
-                tileResourceCache = ruleset.tileResources[resource!!]!!
+            if (tileResourceCache == null && resource != null) {
+                tileResourceCache = ruleset.tileResources[resource]
             }
-            return tileResourceCache!!
+            return tileResourceCache
+        }
+        set(value) {
+            if (value == null) {
+                resource = null
+                tileResourceCache = null
+            }
+            else {
+                resource = value.name
+                tileResourceCache = value
+            }
         }
 
 
@@ -287,7 +293,6 @@ class Tile : IsPartOfGameInfoSerialization {
     @Readonly fun isPillaged(): Boolean = improvementIsPillaged || roadIsPillaged
     @Readonly fun getUnpillagedTileImprovement(): TileImprovement? = if (getUnpillagedImprovement() == null) null else ruleset.tileImprovements[improvement!!]
     @Readonly fun getTileImprovementInProgress(): TileImprovement? = improvementQueue.firstOrNull()?.let { ruleset.tileImprovements[it.improvement] }
-    @Readonly fun containsGreatImprovement() = getTileImprovement()?.isGreatImprovement() == true
 
     @Readonly
     fun getImprovementToPillage(): TileImprovement? {
@@ -406,8 +411,8 @@ class Tile : IsPartOfGameInfoSerialization {
                 uniques += tileImprovement.getMatchingUniques(uniqueType, gameContext)
             }
         }
-        if (resource != null)
-            uniques += tileResource.getMatchingUniques(uniqueType, gameContext)
+        if (tileResource != null)
+            uniques += tileResource!!.getMatchingUniques(uniqueType, gameContext)
         return uniques
     }
 
@@ -464,9 +469,10 @@ class Tile : IsPartOfGameInfoSerialization {
 
     @Readonly
     fun providesResources(civInfo: Civilization): Boolean {
-        if (!hasViewableResource(civInfo)) return false
+        val resource = tileResource // To avoid additional checks later
+        if (!civInfo.canSeeResource(resource)) return false
         if (isCityCenter()) {
-            val possibleImprovements = tileResource.getImprovements()
+            val possibleImprovements = resource.getImprovements()
             if (possibleImprovements.isEmpty()) return true
             // Per Civ V, resources under city tiles require the *possibility of extraction* -
             //  that is, there needs to be a tile improvement you have the tech for.
@@ -479,11 +485,11 @@ class Tile : IsPartOfGameInfoSerialization {
             }
         }
         val improvement = getUnpillagedTileImprovement()
-        if (improvement != null && improvement.name in tileResource.getImprovements()
+        if (improvement != null && improvement.name in resource.getImprovements()
                 && (improvement.techRequired == null || civInfo.tech.isResearched(improvement.techRequired!!))
             ) return true
         // TODO: Generic-ify to unique
-        return (tileResource.resourceType == ResourceType.Strategic
+        return (resource.resourceType == ResourceType.Strategic
             && improvement != null
             && improvement.isGreatImprovement())
     }
@@ -537,8 +543,8 @@ class Tile : IsPartOfGameInfoSerialization {
             "Foreign Land", "Foreign" -> return observingCiv != null && !isFriendlyTerritory(observingCiv)
             "Friendly Land", "Friendly" -> return observingCiv != null && isFriendlyTerritory(observingCiv)
             "Enemy Land", "Enemy" -> return observingCiv != null && isEnemyTerritory(observingCiv)
-            "resource" -> return observingCiv != null && hasViewableResource(observingCiv)
-            "Water resource" -> return isWater && observingCiv != null && hasViewableResource(observingCiv)
+            "resource" -> return observingCiv != null && observingCiv.canSeeResource(tileResource)
+            "Water resource" -> return isWater && observingCiv != null && observingCiv.canSeeResource(tileResource)
             "Featureless" -> return terrainFeatures.isEmpty()
             "Open terrain" -> return allTerrains.all { !it.isRough() } // special case - if *one* terrain is open, we don't care, we need *all*
             Constants.freshWaterFilter ->
@@ -547,40 +553,34 @@ class Tile : IsPartOfGameInfoSerialization {
 
         return when (filter) {
             baseTerrain -> true
-            resource -> observingCiv == null || hasViewableResource(observingCiv)
+            resource -> observingCiv == null || observingCiv.canSeeResource(tileResource)
 
             else -> {
                 val owner = getOwner()
                 if (allTerrains.any { it.matchesFilter(filter, stateThisTile, false) }) return true
                 if (owner != null && owner.matchesFilter(filter, stateThisTile, false)) return true
 
-                // Resource type check is last - cannot succeed if no resource here
-                if (resource == null) return false
 
                 // Checks 'luxury resource', 'strategic resource' and 'bonus resource' - only those that are visible of course
-                // not using hasViewableResource as observingCiv is often not passed in,
+                // not using canSeeResource as observingCiv is often not passed in,
                 // and we want to be able to at least test for non-strategic in that case.
-                val resourceObject = tileResource
+                // Resource type check is last - cannot succeed if no resource here
+                val resourceObject = tileResource ?: return false
                 val hasResourceWithFilter =
-                        tileResource.name == filter
-                                || tileResource.hasTagUnique(filter, stateThisTile)
-                                || filter.removeSuffix(" resource") == tileResource.resourceType.name
+                        resourceObject.name == filter ||
+                            resourceObject.hasTagUnique(filter, stateThisTile) ||
+                            filter.removeSuffix(" resource") == resourceObject.resourceType.name
                 if (!hasResourceWithFilter) return false
 
                 // Now that we know that this resource matches the filter - can the observer see that there's a resource here?
                 if (resourceObject.revealedBy == null) return true  // no need for tech
                 if (observingCiv == null) return false  // can't check tech
-                return observingCiv.tech.isResearched(resourceObject.revealedBy!!)
+                return observingCiv.canSeeResource(resourceObject)
             }
         }
     }
 
     @Readonly fun isCoastalTile() = _isCoastalTile
-
-    @Readonly
-    fun hasViewableResource(civInfo: Civilization): Boolean =
-            resource != null && civInfo.tech.isRevealed(tileResource)
-
 
     @Readonly fun getViewableTilesList(distance: Int): List<Tile> = tileMap.getViewableTiles(position, distance)
     @Readonly fun getTilesInDistance(distance: Int): Sequence<Tile> = tileMap.getTilesInDistance(position, distance)
@@ -798,9 +798,9 @@ class Tile : IsPartOfGameInfoSerialization {
         isOcean = baseTerrain == Constants.ocean
 
         // Resource amounts missing - Old save or bad mapgen?
-        if (isTilemapInitialized() && resource != null && tileResource.resourceType == ResourceType.Strategic && resourceAmount == 0) {
+        if (isTilemapInitialized() && tileResource?.resourceType == ResourceType.Strategic && resourceAmount == 0) {
             // Let's assume it's a small deposit
-            setTileResource(tileResource, majorDeposit = false)
+            setTileResource(tileResource!!, majorDeposit = false)
         }
     }
 
@@ -847,6 +847,18 @@ class Tile : IsPartOfGameInfoSerialization {
     }
 
     /**
+     * Sets this tile's [resource] field but not its [resourceAmount] fields. If [updateCache] is ``true``
+     * it will also set the [tileResource] transient field
+     */
+    fun setTileResource(newResource: String?, updateCache: Boolean = true) {
+        if (updateCache) {
+            val resource = ruleset.tileResources[newResource]
+            tileResource = resource
+            return
+        } else resource = newResource
+    }
+
+    /**
      * Sets this tile's [resource] and, if [newResource] is a Strategic resource, [resourceAmount] fields.
      *
      * [resourceAmount] is determined by [MapParameters.mapResources] and [majorDeposit], and
@@ -855,7 +867,7 @@ class Tile : IsPartOfGameInfoSerialization {
      * A randomness source ([rng]) can optionally be provided for that step (not used otherwise).
      */
     fun setTileResource(newResource: TileResource, majorDeposit: Boolean? = null, rng: Random = Random.Default) {
-        resource = newResource.name
+        tileResource = newResource
 
         if (newResource.resourceType != ResourceType.Strategic) {
             resourceAmount = 0
@@ -942,7 +954,7 @@ class Tile : IsPartOfGameInfoSerialization {
     fun removeMissingTerrainModReferences(ruleset: Ruleset) {
         terrainFeatures = terrainFeatures.filter { it in ruleset.terrains }
         if (resource != null && resource !in ruleset.tileResources)
-            resource = null
+            tileResource = null
         if (improvement != null && improvement !in ruleset.tileImprovements)
             improvement = null
         if (improvementQueue.any { it.improvement !in ruleset.tileImprovements })
@@ -1154,8 +1166,8 @@ class Tile : IsPartOfGameInfoSerialization {
         if (isCityCenter()) lineList += getCity()!!.name
         lineList += baseTerrain
         for (terrainFeature in terrainFeatures) lineList += terrainFeature
-        if (resource != null) {
-            lineList += if (tileResource.resourceType == ResourceType.Strategic)
+        if (tileResource != null) {
+            lineList += if (tileResource!!.resourceType == ResourceType.Strategic)
                 "{$resourceAmount} {$resource}"
             else
                 resource!!

@@ -1,0 +1,52 @@
+{
+  "$id": "https://raw.githubusercontent.com/yairm210/Unciv/refs/heads/master/docs/Modders/schemas/Ruins.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Ruins",
+  "description": "Possible rewards that ancient ruins give.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["name", "notification"],
+    "properties": {
+      "name": {
+        "title": "Name",
+        "type": "string",
+        "description": "Name of the ruins. Must be distinct."
+      },
+      "notification": {
+        "title": "Notification",
+        "type": "string",
+        "description": "Notification added to the user when this reward is chosen. If omitted, an empty notification is shown. Some notifications may have parameters.",
+        "examples": [
+          "A [Worker] has joined us!",
+          "We have found survivors in the ruins! Population added to [cityName].",
+          "We have discovered the lost technology of [techName] in the ruins!",
+          "Our unit finds advanced weaponry hidden in the ruins!",
+          "We have found a crudely-drawn map in the ruins!"
+        ]
+      },
+      "weight": {
+        "title": "Weight",
+        "type": "integer",
+        "minimum": 0,
+        "default": 1,
+        "description": "Relative weight this reward is chosen next."
+      },
+      "color": {
+        "title": "Color",
+        "type": "string",
+        "description": "The color used for the reward in the Civilopedia (e.g. #FFA040)",
+        "default": "#FFEB7F"
+      },
+      "uniques": { "$ref": "refs/Uniques.schema.json" },
+      "excludedDifficulties": {
+        "title": "Excluded Difficulties",
+        "type": "array",
+        "items": { "type": "string" },
+        "default": [],
+        "description": "A list of all difficulties on which this reward may not be awarded."
+      }
+    },
+    "additionalProperties": false
+  }
+}

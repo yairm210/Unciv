@@ -34,6 +34,8 @@ import java.io.PrintStream
 
 class GdxTestRunner(klass: Class<*>?) : BlockJUnit4ClassRunner(klass), ApplicationListener {
     private val invokeInRender: MutableMap<FrameworkMethod, RunNotifier> = HashMap()
+    private val measureDuration = klass?.getAnnotation(MeasureDuration::class.java) != null
+    private val classPrefix = klass?.simpleName?.plus(".") ?: ""
 
     init {
         val conf = HeadlessApplicationConfiguration()
@@ -51,6 +53,8 @@ class GdxTestRunner(klass: Class<*>?) : BlockJUnit4ClassRunner(klass), Applicati
     override fun render() {
         synchronized(invokeInRender) {
             for ((method, notifier) in invokeInRender) {
+                val measure = measureDuration || method.getAnnotation(MeasureDuration::class.java) != null
+                val startTime = System.currentTimeMillis()
                 val redirect = method.getAnnotation(RedirectOutput::class.java)
                     ?.policy
                     ?: RedirectPolicy.ShowOnFailure
@@ -62,6 +66,8 @@ class GdxTestRunner(klass: Class<*>?) : BlockJUnit4ClassRunner(klass), Applicati
                     else ->
                         super.runChild(method, notifier)
                 }
+                if (!measure) continue
+                println("Test $classPrefix${method.name} took ${System.currentTimeMillis() - startTime}ms.")
             }
             invokeInRender.clear()
         }

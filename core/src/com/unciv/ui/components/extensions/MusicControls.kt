@@ -16,11 +16,11 @@ import kotlin.math.floor
 /**
  *  Library of extensions adding sound controls to a Table.
  *
- *  Used in [OptionsPopup][com.unciv.ui.popups.options.OptionsPopup].[SoundTab][com.unciv.ui.popups.options.soundTab] and [WorldScreenMusicPopup][com.unciv.ui.screens.worldscreen.mainmenu.WorldScreenMusicPopup].
+ *  Used in [OptionsPopup][com.unciv.ui.popups.options.OptionsPopup].[SoundTab][com.unciv.ui.popups.options.SoundTab] and [WorldScreenMusicPopup][com.unciv.ui.screens.worldscreen.mainmenu.WorldScreenMusicPopup].
  *
  *  @see [addMusicControls]
  */
-object MusicControls {
+interface MusicControls {
     fun Table.addVolumeSlider(text: String, initial: Float, silent: Boolean = false, onChange: (Float) -> Unit) {
         add(text.tr()).left().fillX()
 

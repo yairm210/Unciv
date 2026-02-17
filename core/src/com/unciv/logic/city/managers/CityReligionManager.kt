@@ -64,6 +64,11 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
         return majorityReligion.followerBeliefUniqueMap.getUniques(uniqueType)
     }
 
+    @Readonly
+    fun getAllUniques(): Sequence<Unique> {
+        val majorityReligion = getMajorityReligion() ?: return emptySequence()
+        return majorityReligion.followerBeliefUniqueMap.getAllUniques()
+    }
 
     @Readonly fun getPressures(): Counter<String> = pressures.clone()
 

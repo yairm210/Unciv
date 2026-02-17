@@ -46,6 +46,7 @@ import com.unciv.utils.debug
 import java.io.File
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
+import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 
@@ -165,9 +166,9 @@ object TranslationFileWriter {
                     fileNameToGeneratedStrings[entry.key + " from " + baseRuleset.fullName] = entry.value
             }
 
-            // Tutorials reside one level above the base rulesets - if they were per-ruleset the following lines would be unnecessary
+            // Global Tutorials reside one level above the base rulesets - if we had only per-ruleset tutorials the following lines would be unnecessary
             val tutorialStrings = GenerateStringsFromJSONs(UncivGame.Current.files.getLocalFile("jsons")) { it.name == "Tutorials.json" }
-            fileNameToGeneratedStrings["Tutorials"] = tutorialStrings.values.first()
+            fileNameToGeneratedStrings["Global Tutorials"] = tutorialStrings.values.first()
         } else {
             fileNameToGeneratedStrings.putAll(GenerateStringsFromJSONs(modFolder.child("jsons")))
         }
@@ -290,7 +291,7 @@ object TranslationFileWriter {
             .writeString(output, false)
     }
 
-    // used for unit test only
+    @VisibleForTesting
     fun getGeneratedStringsSize(): Int {
         return GenerateStringsFromJSONs(Gdx.files.local("jsons/Civ V - Vanilla")).values.sumOf {
             // exclude empty lines

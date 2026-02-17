@@ -6,7 +6,7 @@
 
 질문, 후기 또는 그냥 심심하다면 커뮤니티로 오세요. https://discord.gg/bjrB4Xw
 
-번역에 참여하시려면 게임 위키의 번역 페이지를 참고하세요. https://yairm210.github.io/Unciv/Other/Translating
+번역에 참여하시려면 게임 위키의 번역 페이지를 참고하세요. https://yairm210.github.io/Unciv/Translating/Translating
 
 자바나 코틀린에 능숙하시다면 개발에 참여해보세요. https://github.com/yairm210/Unciv
 

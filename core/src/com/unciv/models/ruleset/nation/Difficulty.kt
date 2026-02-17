@@ -8,7 +8,7 @@ import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 
-class Difficulty: RulesetObject() {
+class Difficulty : RulesetObject() {
     override lateinit var name: String
     var baseHappiness: Int = 0
     var extraHappinessPerLuxury: Float = 0f
@@ -45,6 +45,8 @@ class Difficulty: RulesetObject() {
     override fun getUniqueTarget(): UniqueTarget = UniqueTarget.Difficulty
 
     override fun makeLink() = "Difficulty/$name"
+
+    override fun getSortGroup(ruleset: Ruleset) = ruleset.difficulties.keys.indexOf(name)
 
     private fun Float.toPercent() = (this * 100).toInt()
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {

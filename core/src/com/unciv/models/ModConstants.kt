@@ -102,7 +102,7 @@ class ModConstants {
     var pantheonGrowth = 5
 
     // AI behaviour
-    var workboatAutomationSearchMaxTiles = 20
+    var workboatAutomationSearchMaxTiles = 37
     var minimumCityLocationTileValue = 53f
 
     // Civilization

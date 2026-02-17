@@ -94,7 +94,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     }
 
     @Readonly
-    private fun getUniqueMultiplier(gameContext: GameContext): Int {
+    fun getUniqueMultiplier(gameContext: GameContext): Int {
         if (gameContext == GameContext.IgnoreMultiplicationForCaching)
             return 1
         

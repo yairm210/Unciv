@@ -1,3 +1,190 @@
+## 4.19.13
+
+Clear diplomatic modifiers and countdowns to resurrected civs
+
+Puppeted cities remove "marked for improvement by building" markers correctly
+
+Modding:
+- Specific uniques for gold purchase cost always override default cost
+- Global uniques can accept unit trigger conditions when placed on units
+
+By unciv-loof:
+- Border expansion logic 
+   - considers neighboring bonus resources at the edge of work range
+   - does not consider unexplored tiles  
+   - slightly prioritizes contested tiles 
+
+## 4.19.12
+
+Policies from overridden policy branches no longer "stick around" to affect the UI
+
+Added stockpiled resource stockpiles to resource overview
+
+Added "Set [stockpile] to [amount]" triggered unique
+
+Don't copy mod list download error to clipboard without human approval
+
+Download all possible mods when loading a game with missing mods, before notifying of problems
+
+Don't crash when finding civ-equivalent unit if the replacement unit doesn't exist in the ruleset
+
+## 4.19.11
+
+"Unit can be promoted" notification shows correct unit name
+
+Fixed DOF diplomacy changes for 3rd party civs
+
+Added limit to diplomatic modifiers that accumulate, specifically to negative protected-city-state modifiers
+
+City state quests are "consistent random"
+
+Fixed great people not creating improvements
+
+Sending a unit where it can't move any closer, no longer makes the unit image disappear
+
+"Must not be on [amount] largest landmasses" compatible with resource - By chenxing61
+
+## 4.19.10
+
+Add `[cityFilter] Cities of [civFilter] Civilizations` countable - By RobLoach
+
+Food consumption by population unique - By PLynx01
+
+Fix VictoryScreen Charts Visibility for Spectator and Layout - By SomeTroglodyte
+
+Customizable game duration during online games - By AubertJocelyn (new contributor!)
+
+## 4.19.9
+
+Fixed mp server change on options, crashing the game
+
+Modding: Resolved "divide by zero" errors in expressions by defaulting to zero
+
+Add city context to stat and resource countables - By SeventhM 
+
+## 4.19.8
+
+Fixed map generation on world wrap and 3 continents
+
+Use default tileset if the configured one exists but cannot be loaded
+
+Adjust turn-end diplomatic modifier accumulation and reversion by game speed - By unciv-loof
+
+## 4.19.7
+
+modchecker: Improvements can grant sight on tiles
+
+Handle case of viewing charts before any turn has happened
+
+modding: Rebel unit unique - By chenxing61
+
+Traded Declarations of War can affect single Civ instead of both trading Civs - By itanasi
+
+Fixed notifications log - By SomeTroglodyte
+
+Fix bug with "Unit can be promoted" notification - By Nicholas-py
+
+## 4.19.6
+
+Units unset sleep/automation on manual repair commands
+
+Fixed crash on unit wander
+
+By SomeTroglodyte:
+- Options reworked - faster opening 
+- Redo Notification log page in empire overview 
+- Fix links to Translation wiki 
+
+By RobLoach:
+- Add Remaining Civilopedia Sub-Categories 
+- Fix notification of perpetual stat conversion 
+- Fix Resource Production Modifier Calculations 
+
+Carrying conditional and countable - By PhiRite
+
+## 4.19.5
+
+Add `[resource] of [civ] Civilizations` Countable - By RobLoach
+
+By SomeTroglodyte:
+- Civilopedia Subcategories 
+- Improve "unit can be promoted" notifications 
+- Fix dev console crashable from autocomplete code 
+
+By SeventhM:
+- Fix Civi-based triggers ignoring changes from prior triggers 
+- Fix triggerables not multiplying correctly under some circumstances 
+
+Reload multiplayer text on connection success - By touhidurrr
+
+Prevent wandering if unit has no movement - By EmperorPinguin
+
+## 4.19.4
+
+minor perf(cpu): better order for "ignore terrain change" operations
+
+By RobLoach:
+- Correct MP games' first turn time 
+- Restore Civilopedia Event-based Tutorials 
+
+By EmperorPinguin:
+- AI: don't send workers to other civ's territory 
+- AI: keep wandering if inadvertently ended up in foreign territory 
+
+MP server: Display URL errors & optimize redirects - By touhidurrr
+
+Change mounted attack sounds - By SomeTroglodyte
+
+Gain city-only stockpiles from provides/consumes uniques - By SeventhM
+
+## 4.19.3
+
+Remove incompatible improvements in progress upon changing terrain
+
+By EmperorPinguin:
+- AI: choose favoredReligion more often 
+- AI: build settlers also when at war 
+
+Modding: Add city context to turn start & end uniques from buildings - By SeventhM
+
+By RobLoach:
+- Fix removed favored Religions 
+- Minor Civilopedia UX Improvements 
+- Flip Defensive Pact opinion comparision 
+
+Console: 'unit activatetrigger'  - By SomeTroglodyte
+
+## 4.19.2
+
+AI improvements - By EmperorPinguin
+
+By SomeTroglodyte:
+- Fix City button problems
+- Miscellaneous fixes and small changes 
+- Distance-based unit cycle order (opt-in)  
+- Fix battle modifier not being translated 
+- Fix OneTimeRemovePolicy triggered Unique
+- Prevent crashes from mod preview files
+
+Added a command to spawn barbarian encampments - By GameCobra
+
+By RobLoach:
+- options: Add Micro, FullHD, and QuadHD screen sizes
+- city: Display City-Wide Resources
+
+## 4.19.1
+
+By RobLoach:
+- options: Add Micro, FullHD, and QuadHD screen sizes 
+- Display City-Wide stockpiled resources in city
+
+By SomeTroglodyte:
+- Add diplomacy actions to game console 
+- Harden mod manager against invalid local preview files 
+- Improve unit tests speed by reducing Translation tests overhead 
+
+Fix crash on reloading/cloning victory data - By SeventhM
+
 ## 4.19.0
 
 By EmperorPinguin:

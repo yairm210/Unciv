@@ -298,8 +298,8 @@ class WorldScreen(
 
     @Readonly
     fun openDeveloperConsole() {
-        // No cheating unless you're by yourself
-        if (gameInfo.civilizations.count { it.isHuman() } > 1) return
+        // No cheating unless you're by yourself, ignoring a possible spectator
+        if (gameInfo.civilizations.count { it.isHuman() && !it.isSpectator() } > 1) return
         DevConsolePopup(this)
     }
 
@@ -591,7 +591,7 @@ class WorldScreen(
 
             progressBar.increment()
 
-            gameInfoClone.nextTurn(progressBar)
+            gameInfoClone.nextTurn(progressBar, true)
 
             if (originalGameInfo.gameParameters.isOnlineMultiplayer) {
                 // outer try-catch for non-auth exceptions

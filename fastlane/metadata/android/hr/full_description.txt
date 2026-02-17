@@ -6,7 +6,7 @@ Zahtjevi? greške? Želite li pomoći razvoju? Popis obaveza za aplikaciju je na
 
 Pitanja? Komentari? Pridružite nam se na Diskordu na <a href="https://discord.gg/bjrB4Xw">Discord</a> ;)
 
-Želite li pomoći u prevođenju igre na svoj jezik? Pogledajte <a href="https://yairm210.github.io/Unciv/Other/Translating">Wiki</a>
+Želite li pomoći u prevođenju igre na svoj jezik? Pogledajte <a href="https://yairm210.github.io/Unciv/Translating/Translating">Wiki</a>
 
 Svijet čeka! Hoćete li izgraditi svoju civilizaciju u carstvo koje će izdržati test vremena?
 

@@ -60,9 +60,7 @@ object UnitActionsFromUniques {
         ) == true }
         val foundAction = {
             if (unit.civ.playerType != PlayerType.AI)
-                // Now takes on the text of the unique.
-                UncivGame.Current.settings.addCompletedTutorialTask(
-                    unique.text)
+                UncivGame.Current.settings.addCompletedTutorialTask("Found city")
             // Get the city to be able to change it into puppet, for modding.
             val city = unit.civ.addCity(tile.position, unit)
 
@@ -262,7 +260,9 @@ object UnitActionsFromUniques {
                 val triggerFunction = UniqueTriggerActivation.getTriggerFunction(unique, unit.civ, unit = unit, tile = unit.currentTile)
                     ?: return null
                 return { // This is the *action* that will be triggered!
-                    triggerFunction.invoke()
+                    repeat(unique.getUniqueMultiplier(unit.cache.state)) {
+                        triggerFunction.invoke()
+                    }
                     UnitActionModifiers.activateSideEffects(unit, unique)
                 }
             }()
@@ -301,9 +301,9 @@ object UnitActionsFromUniques {
     }
 
     private fun getWaterImprovementAction(unit: MapUnit, tile: Tile): UnitAction? {
-        if (!tile.isWater || !unit.hasUnique(UniqueType.CreateWaterImprovements) || tile.resource == null) return null
+        if (!tile.isWater || !unit.hasUnique(UniqueType.CreateWaterImprovements)) return null
 
-        val improvementName = tile.tileResource.getImprovingImprovement(tile, unit.cache.state) ?: return null
+        val improvementName = tile.tileResource?.getImprovingImprovement(tile, unit.cache.state) ?: return null
         val improvement = tile.ruleset.tileImprovements[improvementName] ?: return null
         if (!tile.improvementFunctions.canBuildImprovement(improvement, unit.cache.state)) return null
 
@@ -518,6 +518,7 @@ object UnitActionsFromUniques {
             title = "${UnitActionType.Repair} [${unit.currentTile.getImprovementToRepair()!!.name}] - [${turnsToBuild}${Fonts.turn}]",
             action = {
                 tile.queueImprovement(Constants.repair, turnsToBuild)
+                unit.action = null
             }.takeIf { couldConstruct }
         )
     }

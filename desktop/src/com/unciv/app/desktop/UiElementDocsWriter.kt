@@ -39,7 +39,7 @@ class UiElementDocsWriter {
             "(?<path>[^"]*)"\s*         # captures "path", anything between double-quotes, not allowing for embedded quotes
             (?:,\s*                     # group for optional default parameter
                 (?:default\s*=\s*)?     # allow for named parameter
-                (?:Color\s*\(|colorFromRGB\s*\(|Color\.)   # recognize only Color constructor, colorFromRGB helper, or Color.* constants as argument
+                (?:Color\s*\(|colorFromRGB\s*\(|Color\.valueOf\(|Color\.)   # recognize only Color constructor, Color.valueOf, colorFromRGB helper, or Color.* constants as argument
                 (?<default>[^)]*)       # capture "default" up until a closing round bracket
             \s*)?\)                     # ends default parameter group and checks closing round bracket of the getUIColor call
             """, RegexOption.COMMENTS)

@@ -1067,7 +1067,7 @@
 		"requiredResource": "Horses",
 		"upgradesTo": "Landship",
 		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities> <when attacking>", "Never appears as a Barbarian unit"],
-		"attackSound": "horse"
+		"attackSound": "cavalry"
 	},
 	{
 		"name": "Cossack",
@@ -1083,7 +1083,7 @@
 		"upgradesTo": "Landship",
 		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities> <when attacking>"],
 		"promotions": ["[Cossack] ability"],
-		"attackSound": "horse"
+		"attackSound": "cavalry"
 	},
 	{
 		"name": "Hussar",
@@ -1100,7 +1100,7 @@
 		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities> <when attacking>",
 			"[+1] Sight"],
 		"promotions": ["[Hussar] ability"],
-		"attackSound": "horse"
+		"attackSound": "cavalry"
 	},
 	{
 		"name": "Ironclad",

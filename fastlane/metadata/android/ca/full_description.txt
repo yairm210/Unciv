@@ -6,7 +6,7 @@ Si teniu suggeriments o trobeu algun error, ho podeu comunicar a la <a href="htt
 
 Uniu-vos al <a href="https://discord.gg/bjrB4Xw">canal del Discord</a> si teniu preguntes, comentaris o esteu avorrits.
 
-Si voleu ajudar en la traducció del joc, seguiu les instruccions a l’<a href="https://yairm210.github.io/Unciv/Other/Translating">article d’instruccions de traducció de l’Unciv</a>.
+Si voleu ajudar en la traducció del joc, seguiu les instruccions a l’<a href="https://yairm210.github.io/Unciv/Translating/Translating">article d’instruccions de traducció de l’Unciv</a>.
 
 Sabeu programar amb Grok Java o Kotlin? Podeu col·laborar amb el desenvolupament del joc a la <a href="https://github.com/yairm210/Unciv">pàgina de GitHub</a>.
 

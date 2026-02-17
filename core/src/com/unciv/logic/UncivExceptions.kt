@@ -31,3 +31,5 @@ class MissingModsException(
         @Readonly private fun shorten(missingMods: Iterable<String>) = missingMods.joinToString(limit = 5) { it }
     }
 }
+
+class MissingNationException(errorText:String, val modNames: LinkedHashSet<String>): UncivShowableException(errorText)

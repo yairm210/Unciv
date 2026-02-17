@@ -29,13 +29,14 @@ object TileDescription {
         lineList += FormattedLine(tile.baseTerrain, link="Terrain/${tile.baseTerrain}")
         for (terrainFeature in tile.terrainFeatures)
             lineList += FormattedLine(terrainFeature, link="Terrain/$terrainFeature")
-        if (tile.resource != null && (viewingCiv == null || tile.hasViewableResource(viewingCiv)))
-            lineList += if (tile.tileResource.resourceType == ResourceType.Strategic)
+        val resource = tile.tileResource
+        if (resource != null && (viewingCiv == null || viewingCiv.canSeeResource(resource)))
+            lineList += if (resource.resourceType == ResourceType.Strategic)
                 FormattedLine("{${tile.resource}} (${tile.resourceAmount})", link="Resource/${tile.resource}")
             else
-                FormattedLine(tile.resource!!, link="Resource/${tile.resource}")
-        if (tile.resource != null && viewingCiv != null && tile.hasViewableResource(viewingCiv)) {
-            val resourceImprovement = tile.tileResource.getImprovements().firstOrNull { tile.improvementFunctions.canBuildImprovement(tile.ruleset.tileImprovements[it]!!, viewingCiv.state) }
+                FormattedLine(resource.name, link="Resource/${resource.name}")
+        if (viewingCiv != null && viewingCiv.canSeeResource(resource)) {
+            val resourceImprovement = resource.getImprovements().firstOrNull { tile.improvementFunctions.canBuildImprovement(tile.ruleset.tileImprovements[it]!!, viewingCiv.state) }
             val tileImprovement = tile.ruleset.tileImprovements[resourceImprovement]
             if (tileImprovement?.techRequired != null
                     && !viewingCiv.tech.isResearched(tileImprovement.techRequired!!)) {

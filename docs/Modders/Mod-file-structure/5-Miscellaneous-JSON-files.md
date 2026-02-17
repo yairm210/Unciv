@@ -336,6 +336,7 @@ Each tutorial has the following structure:
 | Attribute       | Type            | Default  | Notes                                            |
 |-----------------|-----------------|----------|--------------------------------------------------|
 | name            | String          | Required | Entry name                                       |
+| category        | String          | Optional | The category where this tutorial will be displayed. "Tutorials" is the default. |
 | civilopediaText | List            | Optional | See [civilopediaText chapter](#civilopedia-text) |
 | steps           | List of Strings | Optional | Plain text                                       |
 

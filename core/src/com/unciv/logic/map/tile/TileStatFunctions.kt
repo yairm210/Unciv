@@ -110,7 +110,8 @@ class TileStatFunctions(val tile: Tile) {
         var minimumStats = if (tile.isCityCenter()) Stats.DefaultCityCenterMinimum else Stats.ZERO
         if (observingCiv != null) {
             // resource base
-            if (tile.hasViewableResource(observingCiv)) listOfStats.add(tile.tileResource.name to tile.tileResource)
+            val resource = tile.tileResource
+            if (observingCiv.canSeeResource(resource)) listOfStats.add(resource.name to resource)
 
             if (improvement != null)
                 improvementStats.add(getExtraImprovementStats(improvement, observingCiv, city))
@@ -279,7 +280,7 @@ class TileStatFunctions(val tile: Tile) {
 
     private fun getTileStartYield(minimumStats: Stats) =
         getTerrainStatsBreakdown().toStats().run {
-            if (tile.resource != null) add(tile.tileResource)
+            if (tile.tileResource != null) add(tile.tileResource!!)
             add(missingFromMinimum(this, minimumStats))
             food + production + gold
         }
@@ -316,10 +317,11 @@ class TileStatFunctions(val tile: Tile) {
     ): Stats {
         val stats = Stats()
 
-        if (tile.hasViewableResource(observingCiv) && tile.tileResource.isImprovedBy(improvement.name)
-                && tile.tileResource.improvementStats != null
+        val resource = tile.tileResource
+        if (observingCiv.canSeeResource(resource) && resource.isImprovedBy(improvement.name)
+                && resource.improvementStats != null
         )
-            stats.add(tile.tileResource.improvementStats!!) // resource-specific improvement
+            stats.add(resource.improvementStats!!) // resource-specific improvement
 
         val conditionalState = GameContext(civInfo = observingCiv, city = city, tile = tile)
         for (unique in improvement.getMatchingUniques(UniqueType.Stats, conditionalState)) {

@@ -267,6 +267,7 @@ internal class CliInput(
             val showMethod = lastWord.method or matchingOptions.first().method
             val message = matchingOptions.asSequence()
                 .map { it.toMethod(showMethod) }
+                .sortedBy { it.content }
                 .asIterable()
                 .joinToStringLimited(prefix = "Matching completions: ")
             console.showResponse(message, Color.LIME.lerp(Color.OLIVE.cpy(), 0.5f))

@@ -21,6 +21,7 @@ import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.components.widgets.ExpanderTab
+import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import kotlin.math.ceil
@@ -162,16 +163,34 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
         }
 
         val resourceTable = Table()
-
         val resourceCounter = Counter<TileResource>()
+
+        // Supply
         for (resourceSupply in CityResources.getCityResourcesAvailableToCity(city))
-            resourceCounter.add(resourceSupply.resource, resourceSupply.amount)
-        for ((resource, amount) in resourceCounter)
+            if (resourceSupply.resource.getMatchingUniques(UniqueType.NotShownOnWorldScreen, city.state).none())
+                resourceCounter.add(resourceSupply.resource, resourceSupply.amount)
+
+        // Stockpiles
+        for ((resourceName, amount) in city.resourceStockpiles) {
+            val resourceObj = city.getRuleset().tileResources[resourceName] ?: continue
+            if (resourceObj.getMatchingUniques(UniqueType.NotShownOnWorldScreen, city.state).none())
+                resourceCounter.add(resourceObj, amount)
+        }
+
+        for ((resource, amount) in resourceCounter) {
             if (resource.isCityWide) {
-                resourceTable.add(amount.toLabel())
-                resourceTable.add(ImageGetter.getResourcePortrait(resource.name, 20f))
-                    .padRight(5f)
+                var resourceIcon = Table()
+                resourceIcon.addTooltip(resource.name, targetAlign = Align.bottom)
+                resourceIcon.onClick { cityScreen.openCivilopedia(resource.makeLink()) }
+                resourceIcon.add(ImageGetter.getResourcePortrait(resource.name, 20f)).padRight(5f)
+                resourceIcon.add(amount.toLabel())
+                resourceTable.add(resourceIcon).apply {
+                    // Only add right padding if it's not the last one in the list
+                    if (resourceCounter.keys.last() != resource) padRight(10f)
                 }
+            }
+        }
+
         if (resourceTable.cells.notEmpty())
             tableWithIcons.add(resourceTable)
 

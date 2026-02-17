@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization.managers
 
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
@@ -109,11 +110,16 @@ class UnitManager(val civInfo: Civilization) {
         copiedFrom?.copyStatisticsTo(unit)
 
         val triggerNotificationText = "due to gaining a [${unit.name}]"
-        for (unique in unit.getUniques())
+        for (unique in unit.getUniques().toList()) {
             // Promotion triggerables are ALREADY handled in placeUnitNearTile -> addPromotion, where they were added
-            if (!unique.hasTriggerConditional() && unique.sourceObjectType != UniqueTarget.Promotion
-                && unique.conditionalsApply(unit.cache.state))
+            if (unique.hasTriggerConditional() ||
+                unique.sourceObjectType == UniqueTarget.Promotion ||
+                !unique.conditionalsApply(unit.cache.state)
+            ) continue
+            repeat(unique.getUniqueMultiplier(unit.cache.state)) {
                 UniqueTriggerActivation.triggerUnique(unique, unit, triggerNotificationText = triggerNotificationText)
+            }
+        }
 
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponGainingUnit, unit.cache.state) 
                 { unit.matchesFilter(it.params[0]) })
@@ -191,6 +197,8 @@ class UnitManager(val civInfo: Civilization) {
     fun cycleThroughDueUnits(unitToSkip: MapUnit? = null): MapUnit? {
         if (unitList.none()) return null
 
+        if (GUI.getSettings().alternateUnitCycleOrder)
+            return alternateCycleThroughDueUnits(unitToSkip)
         var returnAt = nextPotentiallyDueAt
         var fallbackAt = -1
 
@@ -210,7 +218,18 @@ class UnitManager(val civInfo: Civilization) {
             nextPotentiallyDueAt = (fallbackAt + 1) % unitList.size
             return unitList[fallbackAt]
         }
-        else return null
+        return null
     }
 
+    private fun alternateCycleThroughDueUnits(unitToSkip: MapUnit? = null): MapUnit? {
+        val center = unitToSkip?.currentTile
+            ?: civInfo.getCapital(true)?.getCenterTile()
+            ?: civInfo.gameInfo.tileMap[0, 0]
+        val nextUnitEntry = unitList.withIndex()
+            .filter { it.value.due && it.value != unitToSkip && it.value.isIdle() }
+            .minByOrNull { it.value.currentTile.aerialDistanceTo(center) }
+            ?: return null
+        nextPotentiallyDueAt = (nextUnitEntry.index + 1) % unitList.size
+        return nextUnitEntry.value
+    }
 }

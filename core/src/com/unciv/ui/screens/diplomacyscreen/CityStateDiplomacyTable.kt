@@ -289,7 +289,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
 
         for (improvableTile in improvableResourceTiles)
             for (tileImprovement in improvements.values)
-                if (improvableTile.tileResource.isImprovedBy(tileImprovement.name)
+                if (improvableTile.tileResource!!.isImprovedBy(tileImprovement.name)
                     && improvableTile.improvementFunctions.canBuildImprovement(tileImprovement, otherCiv.state)
                 )
                     needsImprovements = true
@@ -354,9 +354,10 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
     }
 
     private fun getImprovableResourceTiles(otherCiv:Civilization) = otherCiv.cities.flatMap { it.getTiles() }.filter {
-        it.hasViewableResource(otherCiv)
-            && it.tileResource.resourceType != ResourceType.Bonus
-            && (it.improvement == null || !it.tileResource.isImprovedBy(it.improvement!!))
+        val resource = it.tileResource
+        otherCiv.canSeeResource(resource) &&
+            resource.resourceType != ResourceType.Bonus &&
+            (it.improvement == null || !resource.isImprovedBy(it.improvement!!))
     }
 
     private fun getImprovementGiftTable(otherCiv: Civilization): Table {
@@ -369,7 +370,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
 
         for (improvableTile in improvableResourceTiles) {
             for (tileImprovement in tileImprovements.values) {
-                if (improvableTile.tileResource.isImprovedBy(tileImprovement.name)
+                if (improvableTile.tileResource!!.isImprovedBy(tileImprovement.name)
                     && improvableTile.improvementFunctions.canBuildImprovement(tileImprovement, otherCiv.state)
                 ) {
                     val improveTileButton =

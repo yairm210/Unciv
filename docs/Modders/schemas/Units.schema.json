@@ -1,0 +1,185 @@
+{
+  "$id": "https://raw.githubusercontent.com/yairm210/Unciv/refs/heads/master/docs/Modders/schemas/Units.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Units",
+  "description": "A list of units, including their stats, type, and abilities.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "title": "Name",
+        "description": "The name of the unit.",
+        "examples": [
+          "Warrior",
+          "Scout",
+          "Crossbowman",
+          "Cavalry",
+          "Artillery",
+          "Battleship"
+        ]
+      },
+      "unitType": {
+        "type": "string",
+        "title": "Unit Type",
+        "description": "The type of the unit. Must be in UnitTypes.json.",
+        "examples": [
+          "Civilian",
+          "Archery",
+          "Sword",
+          "Gunpowder",
+          "Ranged Gunpowder",
+          "Mounted",
+          "Armored",
+          "Siege",
+          "Civilian Water",
+          "Melee Water",
+          "Ranged Water",
+          "Fighter",
+          "Bomber",
+          "Missle"
+        ]
+      },
+      "movement": {
+        "type": "integer",
+        "title": "Movement",
+        "description": "The amount of movement points the unit has.",
+        "default": 0
+      },
+      "strength": {
+        "type": "integer",
+        "title": "Strength",
+        "description": "The melee attack and defensive strength of the unit. If this and rangedStrength are omitted or 0, the unit will be a civilian."
+      },
+      "rangedStrength": {
+        "type": "integer",
+        "title": "Ranged Strength",
+        "description": "The ranged attack and defensive strength of the unit. If omitted, the unit cannot ranged attack. If used, strength must be set too."
+      },
+      "religiousStrength": {
+        "type": "number",
+        "title": "Religious Strength",
+        "description": "The religious attack and defensive strength of the unit."
+      },
+      "range": {
+        "type": "integer",
+        "title": "Range",
+        "description": "The range from which ranged attacks can be performed.",
+        "default": 2
+      },
+      "interceptRange": {
+        "type": "integer",
+        "title": "Intercept Range",
+        "description": "Air units attacking within this range will be intercepted."
+      },
+      "cost": {
+        "type": "integer",
+        "default": 0,
+        "title": "Cost",
+        "description": "The amount of production required to build this unit. The production needed is always positive."
+      },
+      "hurryCostModifier": {
+        "type": "integer",
+        "title": "Hurry Cost Modifier",
+        "description": "If this unit is bought for gold, its price is increased by so much percent."
+      },
+      "requiredResource": {
+        "type": "string",
+        "title": "Required Resource",
+        "description": "Resource that is consumed by building this unit. Must be in TileResources.json."
+      },
+      "requiredTech": {
+        "type": "string",
+        "title": "Required Tech",
+        "description": "The tech required to build this unit. Must be in Techs.json."
+      },
+      "obsoleteTech": {
+        "type": "string",
+        "title": "Obsolete Tech",
+        "description": "After researching this tech, the unit can no longer be built. Must be in Techs.json."
+      },
+      "upgradesTo": {
+        "type": "string",
+        "title": "Upgrades To",
+        "description": "Unit that this unit can upgrade to when it is available. Must be in Units.json."
+      },
+      "uniqueTo": {
+        "type": "string",
+        "title": "Unique To",
+        "description": "Designates that only this nation can build this unit. Must be exact name of existing nation in Nations.json."
+      },
+      "replaces": {
+        "type": "string",
+        "title": "Replaces",
+        "description": "For unique units: the name of the original unit that this unit replaces for the uniqueTo nation."
+      },
+      "uniques": {
+        "$ref": "refs/Uniques.schema.json",
+        "description": "Unique properties for this unit."
+      },
+      "promotions": {
+        "title": "Promotions",
+        "description": "Promotions that the unit gets on creation. Must be exact names of existing promotions.",
+        "type": "array",
+        "items": {
+          "type": "string",
+          "title": "Promotion",
+          "description": "Promotion that the unit gets on creation. Must be exact name of existing promotion in UnitPromotions.json."
+        },
+        "uniqueItems": true
+      },
+      "attackSound": {
+        "type": "string",
+        "title": "Attack Sound",
+        "description": "The sound that is played when the unit attacks.",
+        "examples": [
+          "arrow",
+          "artillery",
+          "bombard",
+          "bombing",
+          "cannon",
+          "chimes",
+          "choir",
+          "click",
+          "coin",
+          "construction",
+          "elephant",
+          "fortify",
+          "gdrAttack",
+          "horse",
+          "jetgun",
+          "machinegun",
+          "metalhit",
+          "missile",
+          "nonmetalhit",
+          "nuke",
+          "paper",
+          "policy",
+          "promote",
+          "setup",
+          "shipguns",
+          "shot",
+          "slider",
+          "swap",
+          "tankshot",
+          "throw",
+          "torpedo",
+          "upgrade",
+          "whoosh"
+        ]
+      },
+      "replacementTextForUniques": {
+        "type": "string",
+        "title": "Replacement Text For Uniques",
+        "description": "Freeform text that will be shown to users, overriding the list of uniques."
+      },
+      "civilopediaText": {
+        "$ref": "refs/CivilopediaText.schema.json",
+        "description": "Civilopedia entry describing this unit."
+      }
+    },
+    "required": ["name", "unitType"],
+    "additionalProperties": false
+  }
+}

@@ -391,10 +391,15 @@ Allowed values:
     - Example: `Only available <when number of [[in all cities] Cities] is more than [0]>`
 -   `[mapUnitFilter] Units`
     - Example: `Only available <when number of [[Wounded] Units] is more than [0]>`
+-   `Carried [mapUnitFilter] units` - The number of units being carried by this unit
+    - Example: `Only available <when number of [Carried [Air] units] is more than [0]>`
+    - Only counts transported units matching the filter. For use with 'when number of' conditionals.
 -   `[buildingFilter] Buildings`
     - Example: `Only available <when number of [[Culture] Buildings] is more than [0]>`
 -   `[buildingFilter] Buildings by [civFilter] Civilizations`
     - Example: `Only available <when number of [[Culture] Buildings by [City-States] Civilizations] is more than [0]>`
+-   `[cityFilter] Cities of [civFilter] Civilizations`
+    - Example: `Only available <when number of [[in all cities] Cities of [City-States] Civilizations] is more than [0]>`
 -   `Adopted [policyFilter] Policies`
     - Example: `Only available <when number of [Adopted [Oligarchy] Policies] is more than [0]>`
 -   `Adopted [policyFilter] Policies by [civFilter] Civilizations`
@@ -414,6 +419,8 @@ Allowed values:
     - Can be city stats or civilization stats, depending on where the unique is used
     - For example: If a unique is placed on a building, then the retrieved resources will be of the city. If placed on a policy, they will be of the civilization.
     - This can make a difference for e.g. local resources, which are counted per city.
+-   `[resourceFilter] resource of [civFilter] Civilizations`
+    - Example: `Only available <when number of [[Strategic] resource of [City-States] Civilizations] is more than [0]>`
 -   `Era number` - Number of the era the current player is in
     - Example: `Only available <when number of [Era number] is more than [0]>`
     - Zero-based index of the Era in Eras.json.

@@ -43,9 +43,12 @@ class UnitType() : RulesetObject() {
     }
 
     override fun getCivilopediaTextLines(ruleset: Ruleset) = getUnitTypeCivilopediaTextLines(ruleset)
-    override fun getSortGroup(ruleset: Ruleset): Int {
-        return if (name.startsWith("Domain: ")) 1 else 2
-    }
+
+    /**
+     * Sort by the Domain, while keeping the Domain at the top of the sub-category.
+     */
+    override fun getSortGroup(ruleset: Ruleset): Int = (unitMovementType?.ordinal ?: 100) * 2 + (if (name.startsWith("Domain: ")) 0 else 1)
+    override fun getSubCategory(ruleset: Ruleset): String? = unitMovementType?.name ?: "Other"
 
     @Readonly fun isUsed(ruleset: Ruleset) = ruleset.units.values.any { it.unitType == name }
 

@@ -16,6 +16,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.*
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.toHexCoord
 import com.unciv.models.ruleset.unique.UniqueType
@@ -339,7 +340,7 @@ class AlertPopup(
 
     /** @return false to skip opening this Popup, as we're running in the initialization phase before the Popup is open */
     private fun addRecapturedCivilian(): Boolean {
-        val position = Vector2().fromString(popupAlert.value).toHexCoord()
+        val position = HexCoord.fromString(popupAlert.value)
         val tile = gameInfo.tileMap[position]
         val capturedUnit = tile.civilianUnit  // This has got to be it
             ?: return false // the unit disappeared somehow? maybe a modded action?

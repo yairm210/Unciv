@@ -692,14 +692,15 @@ HexaRealm tileset images by legacymtgsalvationuser69544 [here](https://github.co
 -   [Hinduism](https://thenounproject.com/icon/hinduism-20383) by Mugda Damle for Hinduism
 -   [Confucianism](https://thenounproject.com/icon/Confucianism-200406) by Dabid J. Pascual for Confucianism
 -   [Judaism](https://thenounproject.com/icon/Judaism-200418) by Dabid J. Pascual for Judaism
--   [Shinto](https://thenounproject.com/dabid/uploads/?i=238069) by Dabid J. Pascual for Shinto
--   [Sikhism](https://thenounproject.com/dabid/uploads/?i=238064) by Dabid J. Pascual for Sikhism
+-   [Shinto](https://thenounproject.com/icon/shinto-238069/) by Dabid J. Pascual for Shinto
+-   [Sikhism](https://thenounproject.com/icon/sikhism-238064/) by Dabid J. Pascual for Sikhism
 -   [Tengrism](https://thenounproject.com/icon/Tengrism-238067) by Dabid J. Pascual for Tengriism
 -   [Zoroastrianism](https://thenounproject.com/icon/Zoroastrianism-238059) by Dabid J. Pascual for Zoroastrianism
--   [praying](https://thenounproject.com/term/praying/740809/) by parkjisun for Religion (Civilopedia concept entry)
--   [praying](https://thenounproject.com/term/praying/886367/) by Gan Khoon Lay for Follower
--   [Hero](https://thenounproject.com/term/preacher/195465/) by Andrew J. Young for Founder
--   [yell](https://thenounproject.com/term/yell/4159889/) by Adrien Coquet for Enhancer
+-   [praying](https://thenounproject.com/icon/praying/740809/) by parkjisun for Religion (Civilopedia concept entry)
+-   [spirituality](https://thenounproject.com/icon/spirituality-2363/) by Renee Ramsey-Passmore for Beliefs (Civilopedia concept entry)
+-   [praying](https://thenounproject.com/icon/praying/886367/) by Gan Khoon Lay for Follower
+-   [Hero](https://thenounproject.com/icon/preacher/195465/) by Andrew J. Young for Founder
+-   [yell](https://thenounproject.com/icon/yell/4159889/) by Adrien Coquet for Enhancer
 
 ### Others
 
@@ -827,7 +828,8 @@ Sounds are from FreeSound.org unless otherwise noted and are either Creative Com
 - [Crossbow Firing](https://pixabay.com/sound-effects/crossbow-firing-95020/) by GameWithBepis on Pixabay as 'crossbow' for crossbow attacks (Pixabay License)
 - [Metal hit slide](https://freesound.org/people/orginaljun/sounds/149102/) by orginaljun as 'nonmetalhit' for pre-metal melee sounds
 - [wpn 1 generic](https://pixabay.com/sound-effects/wpn-1-generic-100027/) By SlavicMagic on Pixabay as 'metalhit' for metal melee sounds (Pixabay License)
-- [Horse's whinny](https://freesound.org/people/Kubuzz/sounds/347036/) By Kubuzz as 'horse' for cavalry attack sounds
+- [snorting horse](https://freesound.org/people/soundslikewillem/sounds/418427/) By soundslikewillem as part of 'horse' for mounted unit attack sounds
+- [Horse's whinny](https://freesound.org/people/Kubuzz/sounds/347036/) By Kubuzz as part of 'horse' for mounted unit attack sounds
 - [machine gun 001 - loop](https://freesound.org/people/pgi/sounds/212602/) By pgi as 'machinegun' for machine gun attack sound
 - [uzzi_full_single](https://freesound.org/people/Deganoth/sounds/348685/) By Deganoth as 'shot' for bullet attacks
 - [Grenade Launcher 2](https://soundbible.com/2140-Grenade-Launcher-2.html) By Daniel Simon as city bombard sound (CC Attribution 3.0 license)
@@ -837,7 +839,7 @@ Sounds are from FreeSound.org unless otherwise noted and are either Creative Com
 - [Explosion-Ultra-Bass](https://soundbible.com/1807-Explosion-Ultra-Bass.html) by Mark DiAngelo as part of 'nuke' sound (CC Attribution 3.0 license)
 - [Short Choir](https://freesound.org/people/Breviceps/sounds/444491/) by Breviceps as 'choir' for free great person pick
 - [Death Robot! Robotic scream](https://freesound.org/people/vultraz168/sounds/334660/) by vultraz168 for Giant Death Robot Attack (CC0 1.0 Universal license)
-- [ceremonial cannon fire](https://freesound.org/people/DylanSmithSound/sounds/274826/) by DylanSmithSound for cannon and shipCannonVolley
+- [ceremonial cannon fire](https://freesound.org/people/DylanSmithSound/sounds/274826/) by DylanSmithSound for cannon, shipCannonVolley and cavalry
 - [artillery fire](https://freesound.org/people/Tomashevsky/sounds/476664/) by Tomashevsky for artillery
 - [20mm cannons](https://freesound.org/people/Piotr123/sounds/551534/) by Piotr123 for ship guns
 - "bombing" is made by the Unciv team using Audacity from

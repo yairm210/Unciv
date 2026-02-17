@@ -117,7 +117,7 @@ class TileLayerResource(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
         val effectiveVisible = when {
             tileGroup.isForceVisible -> show
             show && viewingCiv == null -> true
-            show && tile.hasViewableResource(viewingCiv!!) -> true
+            show && viewingCiv?.canSeeResource(tile.tileResource) == true -> true
             else -> false
         }
 

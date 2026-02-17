@@ -1,0 +1,97 @@
+{
+  "$id": "https://raw.githubusercontent.com/yairm210/Unciv/refs/heads/master/docs/Modders/schemas/UnitPromotions.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Unit Promotions",
+  "description": "A list of unit promotions, including prerequisites and effects.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "title": "Name",
+        "description": "The name of the promotion. Use I, II, or III suffixes for progressions.",
+        "examples": [
+          "Heal Instantly",
+          "Accuracy I",
+          "Accuracy II",
+          "Accuracy III",
+          "Medic"
+        ]
+      },
+      "prerequisites": {
+        "title": "Prerequisites",
+        "description": "Prerequisite promotions that are required prior to being able to get the active one.",
+        "type": "array",
+        "items": {
+          "type": "string",
+          "examples": [
+            "Heal Instantly",
+            "Accuracy I",
+            "Accuracy II",
+            "Accuracy III",
+            "Medic"
+          ]
+        },
+        "uniqueItems": true
+      },
+      "unitTypes": {
+        "type": "array",
+        "title": "Unit Types",
+        "description": "The unit types for which this promotion applies as specified in UnitTypes.json.",
+        "items": {
+          "type": "string",
+          "examples": [
+            "Civilian",
+            "Archery",
+            "Sword",
+            "Gunpowder",
+            "Ranged Gunpowder",
+            "Mounted",
+            "Armored",
+            "Siege",
+            "Civilian Water",
+            "Melee Water",
+            "Ranged Water",
+            "Fighter",
+            "Bomber",
+            "Missle"
+          ]
+        },
+        "uniqueItems": true
+      },
+      "row": {
+        "title": "Row",
+        "type": "integer",
+        "minimum": 0,
+        "description": "Used as **row** hint in the promotion picker screen.",
+        "default": 0
+      },
+      "column": {
+        "title": "Column",
+        "type": "integer",
+        "minimum": 0,
+        "description": "Used as **column** hint in the promotion picker screen.",
+        "default": 0
+      },
+      "uniques": {
+        "$ref": "refs/Uniques.schema.json"
+      },
+      "civilopediaText": {
+        "$ref": "refs/CivilopediaText.schema.json"
+      },
+      "outerColor": {
+        "$ref": "refs/Color.schema.json",
+        "title": "Outer Color: Background",
+        "description": "Color of the background."
+      },
+      "innerColor": {
+        "$ref": "refs/Color.schema.json",
+        "title": "Inner Color: Icon",
+        "description": "Color of the icon."
+      }
+    },
+    "required": ["name"],
+    "additionalProperties": false
+  }
+}

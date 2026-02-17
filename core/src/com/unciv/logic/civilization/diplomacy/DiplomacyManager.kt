@@ -100,7 +100,7 @@ enum class DiplomaticModifiers(val text: String) {
     CapturedOurCities("You have captured our cities!"),
     DeclaredFriendshipWithOurEnemies("You have declared friendship with our enemies!"),
     BetrayedDeclarationOfFriendship("Your so-called 'friendship' is worth nothing."),
-    SignedDefensivePactWithOurEnemies("You have declared a defensive pact with our enemies!"),
+    SignedDefensivePactWithOurEnemies("You have signed a defensive pact with our enemy!"),
     BetrayedDefensivePact("Your so-called 'defensive pact' is worth nothing."),
     Denunciation("You have publicly denounced us!"),
     DenouncedOurAllies("You have denounced our allies"),
@@ -132,7 +132,7 @@ enum class DiplomaticModifiers(val text: String) {
     DeclarationOfFriendship("We have signed a public declaration of friendship"),
     DeclaredFriendshipWithOurAllies("You have declared friendship with our allies"),
     DefensivePact("We have signed a promise to protect each other."),
-    SignedDefensivePactWithOurAllies("You have declared a defensive pact with our allies"),
+    SignedDefensivePactWithOurAllies("You have signed a defensive pact with our ally"),
     DenouncedOurEnemies("You have denounced our enemies"),
     OpenBorders("Our open borders have brought us closer together."),
     FulfilledPromiseToNotSettleCitiesNearUs("You fulfilled your promise to stop settling cities near us!"),
@@ -571,10 +571,15 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         flagsCountdown.remove(flag.name)
     }
 
-    fun addModifier(modifier: DiplomaticModifiers, amount: Float) {
+    fun addModifier(modifier: DiplomaticModifiers, amount: Float, limit: Float? = null) {
         val modifierString = modifier.name
         if (!hasModifier(modifier)) setModifier(modifier, 0f)
-        diplomaticModifiers[modifierString] = diplomaticModifiers[modifierString]!! + amount
+        var newValue = diplomaticModifiers[modifierString]!! + amount
+        if (limit != null) {
+            if (limit < 0) newValue = newValue.coerceAtLeast(limit)
+            else newValue = newValue.coerceAtMost(limit)
+        }
+        diplomaticModifiers[modifierString] = newValue
         if (diplomaticModifiers[modifierString] == 0f) diplomaticModifiers.remove(modifierString)
     }
 
@@ -606,9 +611,9 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         for (thirdCiv in getCommonKnownCivsWithSpectators()) {
             thirdCiv.addNotification("[${civInfo.civName}] and [${otherCiv.civName}] have signed a Declaration of Friendship!",
                 NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCiv.civName)
+            if (thirdCiv.isSpectator()) continue
             thirdCiv.getDiplomacyManager(civInfo)!!.setFriendshipBasedModifier()
-            if (thirdCiv.isSpectator()) return
-            thirdCiv.getDiplomacyManager(civInfo)!!.setFriendshipBasedModifier()
+            thirdCiv.getDiplomacyManager(otherCiv)!!.setFriendshipBasedModifier()
         }
 
         // Ignore contitionals as triggerUnique will check again, and that would break

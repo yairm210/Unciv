@@ -231,8 +231,28 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     @Readonly fun getRuleset() = civ.gameInfo.ruleset
 
-    @Readonly fun getResourcesGeneratedByCity(civResourceModifiers: Map<String, Float>) = CityResources.getResourcesGeneratedByCity(this, civResourceModifiers)
+    @Readonly fun getResourcesGeneratedByCity(resourceModifier: (TileResource) -> Float = ::getResourceModifier) = CityResources.getResourcesGeneratedByCity(this, resourceModifier)
     @Readonly fun getAvailableResourceAmount(resourceName: String) = CityResources.getAvailableResourceAmount(this, resourceName)
+    @Readonly fun getAvailableResourceAmount(resource: TileResource) = CityResources.getAvailableResourceAmount(this, resource)
+
+    /**
+     * Returns the resource production modifier as a multiplier.
+     *
+     * For example: 1.0f means no change, 2.0f results in double production.
+     *
+     * @param resource The resource for which to calculate the modifier.
+     * @return The production modifier as a multiplier.
+     */
+    @Readonly
+    fun getResourceModifier(resource: TileResource): Float {
+        var finalModifier = 1f
+
+        for (unique in getMatchingUniques(UniqueType.PercentResourceProduction))
+            if (resource.matchesFilter(unique.params[1], state))
+                finalModifier += unique.params[0].toFloat() / 100f
+
+        return finalModifier
+    }
 
     @Readonly fun isGrowing() = foodForNextTurn() > 0
     @Readonly fun isStarving() = foodForNextTurn() < 0
@@ -246,17 +266,22 @@ class City : IsPartOfGameInfoSerialization, INamed {
     @Readonly fun getGreatPersonPercentageBonus() = GreatPersonPointsBreakdown.getGreatPersonPercentageBonus(this)
     @Readonly fun getGreatPersonPoints() = GreatPersonPointsBreakdown(this).sum()
 
-    fun gainStockpiledResource(resource: TileResource, amount: Int) {
+    fun gainStockpiledResource(resource: TileResource, amount: Int) =
         if (resource.isCityWide) resourceStockpiles.add(resource.name, amount)
         else civ.resourceStockpiles.add(resource.name, amount)
-    }
 
-    fun addStat(stat: Stat, amount: Int) {
-        when (stat) {
-            Stat.Production -> cityConstructions.addProductionPoints(amount)
-            Stat.Food -> population.foodStored += amount
-            else -> civ.addStat(stat, amount)
-        }
+    fun addStat(stat: Stat, amount: Int) = when (stat) {
+        Stat.Production -> cityConstructions.addProductionPoints(amount)
+        Stat.Food -> population.foodStored += amount
+        else -> civ.addStat(stat, amount)
+    }
+    
+    @Readonly
+    fun getGameResource(gameResource: GameResource): Int = when (gameResource){
+        is TileResource -> getAvailableResourceAmount(gameResource)
+        is Stat -> getStatReserve(gameResource)
+        SubStat.StoredFood -> population.foodStored
+        else -> civ.getGameResource(gameResource) // assume it's a global substat - as of now only golden age points
     }
 
     fun addGameResource(stat: GameResource, amount: Int) {
@@ -273,21 +298,17 @@ class City : IsPartOfGameInfoSerialization, INamed {
     }
     
     @Readonly
-    fun getStatReserve(stat: Stat): Int {
-        return when (stat) {
-            Stat.Production -> cityConstructions.getWorkDone(cityConstructions.getCurrentConstruction().name)
-            Stat.Food -> population.foodStored
-            else -> civ.getStatReserve(stat)
-        }
+    fun getStatReserve(stat: Stat): Int = when (stat) {
+        Stat.Production -> cityConstructions.getWorkDone(cityConstructions.getCurrentConstruction().name)
+        Stat.Food -> population.foodStored
+        else -> civ.getStatReserve(stat)
     }
 
     @Readonly
-    fun hasStatToBuy(stat: Stat, price: Int): Boolean {
-        return when {
-            civ.gameInfo.gameParameters.godMode -> true
-            price == 0 -> true
-            else -> getStatReserve(stat) >= price
-        }
+    fun hasStatToBuy(stat: Stat, price: Int): Boolean = when {
+        civ.gameInfo.gameParameters.godMode -> true
+        price == 0 -> true
+        else -> getStatReserve(stat) >= price
     }
 
     @Readonly internal fun getMaxHealth() = 200 + cityConstructions.getBuiltBuildings().sumOf { it.cityHealth }
@@ -572,6 +593,35 @@ class City : IsPartOfGameInfoSerialization, INamed {
         return if (uniques.any()) uniques.filter { !it.isLocalEffect && !it.isTimedTriggerable
             && it.conditionalsApply(gameContext) }.flatMap { it.getMultiplied(gameContext) }
         else uniques
+    }
+
+    @Readonly
+    fun getTriggeredUniques(
+        trigger: UniqueType,
+        gameContext: GameContext = state,
+        triggerFilter: (Unique) -> Boolean = { true },
+        includeCivUniques: Boolean = true): Sequence<Unique> {
+        if (includeCivUniques) {
+            return civ.getTriggeredUniques(trigger, gameContext, triggerFilter).asSequence() +
+                getLocalTriggeredUniques(trigger, gameContext, triggerFilter)
+        }
+        else {
+            val uniques =
+                cityConstructions.builtBuildingUniqueMap.getAllUniques() + religion.getAllUniques()
+            return uniques.filter {
+                it.getModifiers(trigger).any(triggerFilter) && it.conditionalsApply(gameContext)
+            }.flatMap { it.getMultiplied(gameContext) }
+        }
+    }
+
+    @Readonly
+    fun getLocalTriggeredUniques(trigger: UniqueType, gameContext: GameContext = state,
+        triggerFilter: (Unique) -> Boolean = { true }): Sequence<Unique> {
+        val uniques =
+            cityConstructions.builtBuildingUniqueMap.getAllUniques().filter { it.isLocalEffect } + religion.getAllUniques()
+        return uniques.filter {
+            it.getModifiers(trigger).any(triggerFilter) && it.conditionalsApply(gameContext)
+        }.flatMap { it.getMultiplied(gameContext) }
     }
 
     //endregion

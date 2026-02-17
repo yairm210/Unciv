@@ -1,0 +1,52 @@
+{
+  "$id": "https://raw.githubusercontent.com/yairm210/Unciv/refs/heads/master/docs/Modders/schemas/refs/Stats.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Stats",
+  "description": "Object representing the main stats for a game entity, such as production, food, gold, science, culture, happiness, and faith.",
+  "type": "object",
+  "properties": {
+    "production": {
+      "type": "number",
+      "title": "Production",
+      "description": "Amount of production generated per turn.",
+      "default": 0
+    },
+    "food": {
+      "type": "number",
+      "title": "Food",
+      "description": "Amount of food generated per turn.",
+      "default": 0
+    },
+    "gold": {
+      "type": "number",
+      "title": "Gold",
+      "description": "Amount of gold generated per turn.",
+      "default": 0
+    },
+    "science": {
+      "type": "number",
+      "title": "Science",
+      "description": "Amount of science generated per turn.",
+      "default": 0
+    },
+    "culture": {
+      "type": "number",
+      "title": "Culture",
+      "description": "Amount of culture generated per turn.",
+      "default": 0
+    },
+    "happiness": {
+      "type": "number",
+      "title": "Happiness",
+      "description": "Amount of happiness generated per turn.",
+      "default": 0
+    },
+    "faith": {
+      "type": "number",
+      "title": "Faith",
+      "description": "Amount of faith generated per turn.",
+      "default": 0
+    }
+  },
+  "additionalProperties": false
+}

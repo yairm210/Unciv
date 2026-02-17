@@ -149,7 +149,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         if (noNotification) return
 
         civInfo.addNotification(
-            "[${city.name}] has started working on [$chosenConstruction]",
+            "[${city.name}] has started working on [${chosenConstruction.name}]",
             CityAction.withLocation(city),
             NotificationCategory.Production,
             NotificationIcon.Construction

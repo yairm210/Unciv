@@ -637,43 +637,41 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         val stateForConditionals = city.state
         val triggerNotificationText ="due to constructing [${building.name}]"
 
-        for (unique in building.uniqueObjects)
-            if (!unique.hasTriggerConditional() && unique.conditionalsApply(stateForConditionals))
+        for (unique in building.uniqueObjects) {
+            if (unique.hasTriggerConditional() || !unique.conditionalsApply(stateForConditionals)) continue
+            repeat(unique.getUniqueMultiplier(city.state)) {
                 UniqueTriggerActivation.triggerUnique(unique, city, triggerNotificationText = triggerNotificationText)
+            }
+        }
 
-        for (unique in city.civ.getTriggeredUniques(UniqueType.TriggerUponConstructingBuilding, stateForConditionals)
-                { building.matchesFilter(it.params[0], stateForConditionals) })
+        for (unique in city.getTriggeredUniques(UniqueType.TriggerUponConstructingBuilding, stateForConditionals,
+                { building.matchesFilter(it.params[0], stateForConditionals) }))
             UniqueTriggerActivation.triggerUnique(unique, city, triggerNotificationText = triggerNotificationText)
 
-        for (unique in city.civ.getTriggeredUniques(UniqueType.TriggerUponConstructingBuildingCityFilter, stateForConditionals)
-                { building.matchesFilter(it.params[0], stateForConditionals) && city.matchesFilter(it.params[1]) })
+        for (unique in city.getTriggeredUniques(UniqueType.TriggerUponConstructingBuildingCityFilter, stateForConditionals,
+                { building.matchesFilter(it.params[0], stateForConditionals) && city.matchesFilter(it.params[1]) }))
             UniqueTriggerActivation.triggerUnique(unique, city, triggerNotificationText = triggerNotificationText)
     }
 
     fun removeBuilding(buildingName: String) {
         val buildingObject = city.getRuleset().buildings[buildingName]
-        if (buildingObject != null)
-            builtBuildingObjects = builtBuildingObjects.withoutItem(buildingObject)
-        else builtBuildingObjects.removeAll{ it.name == buildingName }
-        builtBuildings.remove(buildingName)
-        updateUniques()
+        if (buildingObject != null) removeBuilding(buildingObject)
     }
 
     fun removeBuilding(building: Building) {
         builtBuildingObjects = builtBuildingObjects.withoutItem(building)
         builtBuildings.remove(building.name)
+        
+        if (building.hasCreateOneImprovementUnique()){
+            val improvement = building.getImprovementToCreate(city.getRuleset(), city.civ)!!
+            val tileWithImprovementToRemove = city.getTiles().first { it.improvement == improvement.name }
+            tileWithImprovementToRemove.removeImprovement()
+        }
+        
         updateUniques()
     }
 
-    fun removeBuildings(buildings: Set<Building>) {
-        val buildingsToRemove = buildings.map { it.name }.toSet()
-        builtBuildings.removeAll {
-            it in buildingsToRemove
-        }
-        setTransients()
-    }
-
-    fun updateUniques(onLoadGame: Boolean = false) {
+    private fun updateUniques(onLoadGame: Boolean = false) {
         builtBuildingUniqueMap.clear()
         containedBuildingFiltersCache.clear()
 
@@ -834,9 +832,11 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         /** Support for [UniqueType.CreatesOneImprovement] - if an Improvement-creating Building was auto-queued, auto-choose a tile: */
         val building = getCurrentConstruction() as? Building ?: return
         val improvement = building.getImprovementToCreate(city.getRuleset(), city.civ) ?: return
-        if (getTileForImprovement(improvement.name) != null) return
-        val newTile = Automation.getTileForConstructionImprovement(city, improvement) ?: return
-        newTile.improvementFunctions.markForCreatesOneImprovement(improvement.name)
+        
+        if (getTileForImprovement(improvement.name) == null) {
+            val newTile = Automation.getTileForConstructionImprovement(city, improvement) ?: return
+            newTile.improvementFunctions.markForCreatesOneImprovement(improvement.name)
+        }
     }
 
     @Readonly
@@ -919,6 +919,14 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             if (index < 0) return
             removeFromQueue(index, false)
         }
+    }
+    
+    fun removeAll(){
+        while (!isQueueEmptyOrIdle())
+            // automatic=false so once the queue is empties the "idle" construction is set, ending the loop
+            removeFromQueue(0, false)
+        chooseNextConstruction()
+        currentConstructionIsUserSet = false
     }
 
     /** Moves an entry to the queue top by index.
@@ -1012,8 +1020,6 @@ class CityConstructions : IsPartOfGameInfoSerialization {
      */
     @Readonly
     fun getTileForImprovement(improvementName: String) = city.getTiles()
-        .firstOrNull {
-            it.isMarkedForCreatesOneImprovement(improvementName)
-        }
+        .firstOrNull { it.isMarkedForCreatesOneImprovement(improvementName) }
     //endregion
 }

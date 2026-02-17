@@ -27,6 +27,7 @@ import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.basescreen.BaseScreen.Companion.skinStrings
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
 import yairm210.purity.annotations.Pure
 import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
@@ -81,7 +82,8 @@ class NotificationsScroll(
         /** The x/y coords of the center of the number+circle within the restore button */
         const val restoreButtonNumbersCenter = restoreButtonSize - restoreButtonNumbersSize / 2
         /** Background tint for [oneTimeNotification] */
-        private val oneTimeNotificationColor = Color.valueOf("fceea8")
+        private val oneTimeNotificationColor get() =
+            skinStrings.getUIColor("NotificationScroll/OneTimeNotificationColor", Color.valueOf("#fceea8"))
     }
 
     //region private fields

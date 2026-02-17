@@ -40,8 +40,13 @@ object BackwardCompatibility {
         updateMissingStartingEra()
         migrateCivID()
     }
-    
+
     fun GameInfo.migrateCivID() {
+        for (civ in civilizations) {
+            if (civ.civID == "") civ.civID = civ.civName
+        }
+    }
+    fun GameInfoPreview.migrateCivID() {
         for (civ in civilizations) {
             if (civ.civID == "") civ.civID = civ.civName
         }
