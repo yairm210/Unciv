@@ -16,7 +16,8 @@ class TranslatedSelectBox(values: Collection<String>, default: String) : SelectB
 
     init {
         setItems(values.map { TranslatedString(it) })
-        selected = items.firstOrNull { it.value == default } ?: items.first()
+        if (items.size > 0)
+            selected = items.firstOrNull { it.value == default } ?: items.first()
     }
 
     fun setSelected(newValue: String) {
