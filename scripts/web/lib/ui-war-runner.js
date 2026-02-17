@@ -6,6 +6,7 @@ const {
   applyUiDeviceModeToUrl,
   attachDiagnostics,
   buildUiDeviceConfig,
+  captureUiScreenshot,
   ensureTmpDir,
   launchChromium,
   ensureUiProbeBoot,
@@ -229,7 +230,7 @@ async function runWarProbe(options) {
     report.status = 'FAILED';
     report.failures = [String(err && err.stack ? err.stack : err)];
   } finally {
-    if (page) await withTimeout(page.screenshot({ path: screenshotPath, fullPage: true }).catch(() => {}), 5000).catch(() => {});
+    if (page) await withTimeout(captureUiScreenshot(page, screenshotPath, { fullPage: true }).catch(() => {}), 8000).catch(() => {});
     if (context) await withTimeout(context.close().catch(() => {}), 5000).catch(() => {});
     if (browser) await withTimeout(browser.close().catch(() => {}), 5000).catch(() => {});
   }

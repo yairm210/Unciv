@@ -4,6 +4,7 @@ const {
   applyUiDeviceModeToUrl,
   attachDiagnostics,
   buildUiDeviceConfig,
+  captureUiScreenshot,
   ensureTmpDir,
   launchChromium,
   ensureUiProbeBoot,
@@ -113,7 +114,7 @@ async function main() {
     report.status = 'FAILED';
     report.failures = [String(err && err.stack ? err.stack : err)];
   } finally {
-    if (page) await page.screenshot({ path: screenshotPath, fullPage: true }).catch(() => {});
+    if (page) await captureUiScreenshot(page, screenshotPath, { fullPage: true }).catch(() => {});
     if (context) await context.close().catch(() => {});
     if (browser) await browser.close().catch(() => {});
   }

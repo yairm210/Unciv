@@ -4,6 +4,7 @@ const { chromium, firefox, webkit } = require('playwright');
 const {
   applyUiDeviceModeToUrl,
   buildUiDeviceConfig,
+  captureUiScreenshot,
   getActionableRequestFailures,
 } = require('./lib/ui-e2e-common');
 const { resolveChromiumArgs } = require('./lib/chromium-args');
@@ -259,7 +260,7 @@ async function main() {
     }
     await page.waitForTimeout(5000);
   } finally {
-    await page.screenshot({ path: screenshotPath, fullPage: true });
+    await captureUiScreenshot(page, screenshotPath, { fullPage: true }).catch(() => {});
     await browser.close();
   }
 

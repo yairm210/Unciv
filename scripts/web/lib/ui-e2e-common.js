@@ -393,10 +393,38 @@ function writeJson(filePath, payload) {
   fs.writeFileSync(filePath, JSON.stringify(payload, null, 2));
 }
 
+async function captureUiScreenshot(page, screenshotPath, options = {}) {
+  const attempts = parseNumber(options.attempts, parseNumber(process.env.WEB_UI_SCREENSHOT_ATTEMPTS, 6));
+  const retryDelayMs = parseNumber(options.retryDelayMs, parseNumber(process.env.WEB_UI_SCREENSHOT_RETRY_DELAY_MS, 250));
+  const settleDelayMs = parseNumber(options.settleDelayMs, parseNumber(process.env.WEB_UI_SCREENSHOT_SETTLE_DELAY_MS, 300));
+  const minBytes = parseNumber(options.minBytes, parseNumber(process.env.WEB_UI_SCREENSHOT_MIN_BYTES, 12000));
+  const fullPage = options.fullPage !== false;
+  let lastError = null;
+
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    if (settleDelayMs > 0) await page.waitForTimeout(settleDelayMs).catch(() => {});
+    try {
+      await page.screenshot({ path: screenshotPath, fullPage });
+      const screenshotSize = fs.statSync(screenshotPath).size;
+      if (screenshotSize >= minBytes || attempt === attempts) {
+        return { screenshotSize, attempt, likelyBlackFrame: screenshotSize < minBytes };
+      }
+    } catch (err) {
+      lastError = err;
+      if (attempt === attempts) throw err;
+    }
+    if (retryDelayMs > 0) await page.waitForTimeout(retryDelayMs).catch(() => {});
+  }
+
+  if (lastError) throw lastError;
+  return { screenshotSize: 0, attempt: attempts, likelyBlackFrame: true };
+}
+
 module.exports = {
   applyUiDeviceModeToUrl,
   attachDiagnostics,
   buildUiDeviceConfig,
+  captureUiScreenshot,
   ensureTmpDir,
   getActionableRequestFailures,
   launchChromium,
