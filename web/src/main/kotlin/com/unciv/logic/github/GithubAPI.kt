@@ -1,6 +1,8 @@
 package com.unciv.logic.github
 
 import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.utils.JsonReader
+import com.badlogic.gdx.utils.JsonValue
 import com.unciv.UncivGame
 import com.unciv.json.json
 import com.unciv.logic.UncivShowableException
@@ -32,6 +34,7 @@ object GithubAPI {
     const val bearerToken = ""
 
     private const val githubApiVersion = "2022-11-28"
+    private val jsonReader = JsonReader()
 
     private fun defaultHeaders(): Map<String, String> {
         val headers = LinkedHashMap<String, String>()
@@ -119,8 +122,73 @@ object GithubAPI {
             .replace("https://github.com/", "https://raw.githubusercontent.com/")
             .replace("http://github.com/", "https://raw.githubusercontent.com/")
         val url = "$rawBase/$branch/preview.$ext"
-        val resp = WebHttp.requestBytes("GET", url, headers = defaultHeaders())
+        val resp = WebHttp.requestBytes("GET", url)
         return if (resp.ok) resp else null
+    }
+
+    private fun parseJsonObject(text: String): JsonValue? {
+        val parsed = try {
+            jsonReader.parse(text)
+        } catch (_: Throwable) {
+            return null
+        }
+        if (!parsed.isObject) return null
+        return parsed
+    }
+
+    private fun parseRepoFromApiJson(text: String): Repo? {
+        val root = parseJsonObject(text) ?: return null
+        val parsedRepo = Repo()
+        parsedRepo.name = root.getString("name", "")
+        parsedRepo.full_name = root.getString("full_name", "")
+        parsedRepo.description = root.getString("description", null)
+        parsedRepo.default_branch = root.getString("default_branch", "")
+        parsedRepo.html_url = root.getString("html_url", "")
+        parsedRepo.pushed_at = root.getString("pushed_at", "")
+        parsedRepo.size = root.getInt("size", 0)
+
+        val ownerNode = root.get("owner")
+        if (ownerNode != null && ownerNode.isObject) {
+            parsedRepo.owner.login = ownerNode.getString("login", "")
+            parsedRepo.owner.avatar_url = ownerNode.getString("avatar_url", null)
+        }
+
+        val topicsNode = root.get("topics")
+        if (topicsNode != null && topicsNode.isArray) {
+            var child = topicsNode.child
+            while (child != null) {
+                parsedRepo.topics += child.asString()
+                child = child.next
+            }
+        }
+        return parsedRepo
+    }
+
+    private fun parseRepoOwnerFromApiJson(text: String): RepoOwner? {
+        val root = parseJsonObject(text) ?: return null
+        val parsedOwner = RepoOwner()
+        parsedOwner.login = root.getString("login", "")
+        parsedOwner.avatar_url = root.getString("avatar_url", null)
+        return parsedOwner
+    }
+
+    private fun parseTreeFromApiJson(text: String): Tree? {
+        val root = parseJsonObject(text) ?: return null
+        val parsedTree = Tree()
+        parsedTree.truncated = root.getBoolean("truncated", false)
+        val treeNode = root.get("tree")
+        if (treeNode != null && treeNode.isArray) {
+            var child = treeNode.child
+            while (child != null) {
+                val treeFile = Tree.TreeFile()
+                treeFile.path = child.getString("path", "")
+                treeFile.type = child.getString("type", "")
+                treeFile.size = child.getLong("size", 0L)
+                parsedTree.tree += treeFile
+                child = child.next
+            }
+        }
+        return parsedTree
     }
 
     class RepoSearch {
@@ -152,7 +220,7 @@ object GithubAPI {
             suspend fun query(owner: String, repoName: String): Repo? {
                 val resp = fetchSingleRepo(owner, repoName)
                 if (!resp.ok || resp.text.isNullOrBlank()) return null
-                return json().fromJson(Repo::class.java, resp.text)
+                return parseRepoFromApiJson(resp.text) ?: json().fromJson(Repo::class.java, resp.text)
             }
         }
     }
@@ -165,7 +233,7 @@ object GithubAPI {
             suspend fun query(owner: String): RepoOwner? {
                 val resp = fetchSingleRepoOwner(owner)
                 if (!resp.ok || resp.text.isNullOrBlank()) return null
-                return json().fromJson(RepoOwner::class.java, resp.text)
+                return parseRepoOwnerFromApiJson(resp.text) ?: json().fromJson(RepoOwner::class.java, resp.text)
             }
         }
     }
@@ -182,6 +250,8 @@ object GithubAPI {
 
     internal class Tree {
         class TreeFile {
+            var path = ""
+            var type = ""
             var size: Long = 0L
         }
 
@@ -195,6 +265,7 @@ object GithubAPI {
             owner.login = matchResult.groups[2]!!.value
             name = matchResult.groups[3]!!.value
             default_branch = matchResult.groups[4]!!.value
+            full_name = "${owner.login}/$name"
             return this
         }
 
@@ -261,40 +332,49 @@ object GithubAPI {
     ): FileHandle? {
         val modsFolder = UncivGame.Current.files.getModsFolder()
         var modNameFromFileName = name
-
         val defaultBranch = default_branch
-        val zipUrl: String
-        val tempName: String
-        if (direct_zip_url.isEmpty()) {
-            val gitRepoUrl = html_url
-            zipUrl = getUrlForBranchZip(gitRepoUrl, defaultBranch)
-            tempName = "temp-" + gitRepoUrl.hashCode().toString(16)
+        val githubTreeSource = resolveGithubTreeSource()
+
+        val downloadKey = when {
+            githubTreeSource != null -> githubTreeSource.fullName + ":" + githubTreeSource.ref
+            direct_zip_url.isEmpty() -> html_url
+            else -> direct_zip_url
+        }
+        val unpackDestination = modsFolder.child("temp-" + downloadKey.hashCode().toString(16))
+        deleteRecursively(unpackDestination)
+
+        if (githubTreeSource != null) {
+            unpackDestination.mkdirs()
+            downloadGithubTree(githubTreeSource, unpackDestination, updateProgressPercent)
         } else {
-            zipUrl = direct_zip_url
-            tempName = "temp-" + toString().hashCode().toString(16)
+            val zipUrl = if (direct_zip_url.isEmpty()) {
+                getUrlForBranchZip(html_url, defaultBranch)
+            } else {
+                direct_zip_url
+            }
+            updateProgressPercent?.invoke(DownloadAndExtractState.Downloading, 0)
+            val resp = WebHttp.requestBytes("GET", zipUrl, timeoutMs = 120000)
+            if (resp.ok && resp.bytes != null) {
+                modNameFromFileName = parseNameFromDisposition(resp.headers["content-disposition"], modNameFromFileName)
+                unpackDestination.mkdirs()
+                unzipToFolder(resp.bytes, unpackDestination, updateProgressPercent)
+            } else {
+                val zipFallbackSource = resolveGithubTreeSource(zipUrl)
+                if (zipFallbackSource != null) {
+                    unpackDestination.mkdirs()
+                    downloadGithubTree(zipFallbackSource, unpackDestination, updateProgressPercent)
+                } else {
+                    throw UncivShowableException("Failed to download mod archive: ${resp.status} ${resp.statusText}")
+                }
+            }
         }
 
-        val unzipDestination = modsFolder.child(tempName)
-        if (unzipDestination.exists()) {
-            if (unzipDestination.isDirectory) unzipDestination.deleteDirectory() else unzipDestination.delete()
-        }
-
-        updateProgressPercent?.invoke(DownloadAndExtractState.Downloading, 0)
-        val resp = WebHttp.requestBytes("GET", zipUrl, headers = defaultHeaders(), timeoutMs = 120000)
-        if (!resp.ok || resp.bytes == null) {
-            throw UncivShowableException("Failed to download mod archive: ${resp.status} ${resp.statusText}")
-        }
-        modNameFromFileName = parseNameFromDisposition(resp.headers["content-disposition"], modNameFromFileName)
-
-        unzipDestination.mkdirs()
-        unzipToFolder(resp.bytes, unzipDestination, updateProgressPercent)
-
-        if (!unzipDestination.exists() || unzipDestination.list().isEmpty()) {
-            if (unzipDestination.exists()) unzipDestination.deleteDirectory()
+        if (!unpackDestination.exists() || unpackDestination.list().isEmpty()) {
+            if (unpackDestination.exists()) deleteRecursively(unpackDestination)
             return null
         }
 
-        val (innerFolder, modName) = resolveZipStructure(unzipDestination, modNameFromFileName)
+        val (innerFolder, modName) = resolveZipStructure(unpackDestination, modNameFromFileName)
         val finalDestinationName = modName.replace("-$defaultBranch", "").repoNameToFolderName()
         val finalDestination = modsFolder.child(finalDestinationName)
 
@@ -312,7 +392,7 @@ object GithubAPI {
             copyRecursively(innerFileOrFolder, dest)
         }
 
-        deleteRecursively(unzipDestination)
+        deleteRecursively(unpackDestination)
         if (tempBackup != null) {
             deleteRecursively(tempBackup)
         }
@@ -321,6 +401,178 @@ object GithubAPI {
         updateProgressPercent?.invoke(DownloadAndExtractState.Finishing, 100)
         return finalDestination
     }
+
+    private fun Repo.resolveGithubTreeSource(candidateUrl: String? = null): GithubTreeSource? {
+        val ref = default_branch.ifBlank { release_tag }
+
+        val ownerAndRepoFromHtml = parseGithubOwnerRepo(html_url)
+        if (ref.isNotBlank() && owner.login.isNotBlank() && owner.login != "-unknown-" && name.isNotBlank()) {
+            val urlToCheck = when {
+                candidateUrl != null -> candidateUrl
+                direct_zip_url.isNotBlank() -> direct_zip_url
+                html_url.isNotBlank() -> html_url
+                else -> null
+            }
+            if (urlToCheck == null || isGithubUrl(urlToCheck)) {
+                val repoFullName = full_name.ifBlank { "${owner.login}/${name}" }
+                return GithubTreeSource(owner.login, name, ref, repoFullName)
+            }
+        }
+        if (ref.isNotBlank() && ownerAndRepoFromHtml != null) {
+            val (parsedOwner, parsedRepo) = ownerAndRepoFromHtml
+            return GithubTreeSource(parsedOwner, parsedRepo, ref, "$parsedOwner/$parsedRepo")
+        }
+
+        val sourcesToParse = listOfNotNull(candidateUrl, direct_zip_url, html_url)
+        for (url in sourcesToParse) {
+            val parsed = parseGithubTreeSourceFromUrl(url)
+            if (parsed != null) return parsed
+        }
+        return null
+    }
+
+    private data class GithubTreeSource(
+        val owner: String,
+        val repo: String,
+        val ref: String,
+        val fullName: String,
+    )
+
+    private fun isGithubUrl(url: String): Boolean {
+        val normalizedUrl = url.lowercase(Locale.ROOT)
+        return normalizedUrl.startsWith("https://github.com/")
+            || normalizedUrl.startsWith("http://github.com/")
+            || normalizedUrl.startsWith("https://codeload.github.com/")
+            || normalizedUrl.startsWith("http://codeload.github.com/")
+    }
+
+    private fun parseGithubOwnerRepo(url: String): Pair<String, String>? {
+        if (!url.startsWith("http://") && !url.startsWith("https://")) return null
+        val match = Regex("""^https?://(?:www\.)?github\.com/([^/]+)/([^/]+?)(?:\.git)?/?(?:\?.*)?$""", RegexOption.IGNORE_CASE)
+            .matchEntire(url)
+            ?: return null
+        return match.groupValues[1] to match.groupValues[2]
+    }
+
+    private fun parseGithubTreeSourceFromUrl(url: String): GithubTreeSource? {
+        val githubTree = Regex("""^https?://(?:www\.)?github\.com/([^/]+)/([^/]+)/tree/(.+?)/?$""", RegexOption.IGNORE_CASE)
+            .matchEntire(url)
+        if (githubTree != null) {
+            val owner = githubTree.groupValues[1]
+            val repo = githubTree.groupValues[2]
+            val ref = githubTree.groupValues[3]
+            return GithubTreeSource(owner, repo, ref, "$owner/$repo")
+        }
+
+        val githubArchiveHeads = Regex("""^https?://(?:www\.)?github\.com/([^/]+)/([^/]+)/archive/(?:refs/)?heads/([^.]+)\.zip$""", RegexOption.IGNORE_CASE)
+            .matchEntire(url)
+        if (githubArchiveHeads != null) {
+            val owner = githubArchiveHeads.groupValues[1]
+            val repo = githubArchiveHeads.groupValues[2]
+            val ref = githubArchiveHeads.groupValues[3]
+            return GithubTreeSource(owner, repo, ref, "$owner/$repo")
+        }
+
+        val githubArchiveTags = Regex("""^https?://(?:www\.)?github\.com/([^/]+)/([^/]+)/archive/(?:refs/)?tags/(.+)\.zip$""", RegexOption.IGNORE_CASE)
+            .matchEntire(url)
+        if (githubArchiveTags != null) {
+            val owner = githubArchiveTags.groupValues[1]
+            val repo = githubArchiveTags.groupValues[2]
+            val ref = githubArchiveTags.groupValues[3]
+            return GithubTreeSource(owner, repo, ref, "$owner/$repo")
+        }
+
+        val githubArchiveCommit = Regex("""^https?://(?:www\.)?github\.com/([^/]+)/([^/]+)/archive/([0-9a-z]{40})\.zip$""", RegexOption.IGNORE_CASE)
+            .matchEntire(url)
+        if (githubArchiveCommit != null) {
+            val owner = githubArchiveCommit.groupValues[1]
+            val repo = githubArchiveCommit.groupValues[2]
+            val ref = githubArchiveCommit.groupValues[3]
+            return GithubTreeSource(owner, repo, ref, "$owner/$repo")
+        }
+
+        val codeloadArchive = Regex("""^https?://codeload\.github\.com/([^/]+)/([^/]+)/(?:zip|legacy\.zip)/refs/(?:heads|tags)/([^/?#]+).*$""", RegexOption.IGNORE_CASE)
+            .matchEntire(url)
+        if (codeloadArchive != null) {
+            val owner = codeloadArchive.groupValues[1]
+            val repo = codeloadArchive.groupValues[2]
+            val ref = codeloadArchive.groupValues[3]
+            return GithubTreeSource(owner, repo, ref, "$owner/$repo")
+        }
+        return null
+    }
+
+    private suspend fun Repo.downloadGithubTree(
+        source: GithubTreeSource,
+        destination: FileHandle,
+        updateProgressPercent: ((DownloadAndExtractState, Int?) -> Unit)?,
+    ) {
+        val encodedRef = encodePathSegment(source.ref)
+        val treeResponse = request {
+            path = "/repos/${source.fullName}/git/trees/$encodedRef"
+            query["recursive"] = "true"
+        }
+        if (!treeResponse.ok || treeResponse.text.isNullOrBlank()) {
+            throw UncivShowableException("Failed to fetch mod repository tree: ${treeResponse.status} ${treeResponse.statusText}")
+        }
+        val tree = parseTreeFromApiJson(treeResponse.text) ?: json().fromJson(Tree::class.java, treeResponse.text)
+        if (tree.truncated) {
+            throw UncivShowableException("Mod repository tree is too large for browser download.")
+        }
+
+        val files = tree.tree
+            .asSequence()
+            .filter { it.type.equals("blob", ignoreCase = true) && it.path.isNotBlank() }
+            .map {
+                val safePath = sanitizeEntryName(it.path)
+                TreeDownloadFile(safePath, it.size.coerceAtLeast(0L))
+            }
+            .filter { it.path.isNotBlank() }
+            .toList()
+        if (files.isEmpty()) {
+            throw UncivShowableException("Invalid Mod archive structure")
+        }
+
+        updateProgressPercent?.invoke(DownloadAndExtractState.Downloading, 0)
+        val totalBytes = files.sumOf { it.size.coerceAtLeast(0L) }
+        var downloadedBytes = 0L
+        for ((index, file) in files.withIndex()) {
+            val rawUrl = buildRawGithubFileUrl(source.owner, source.repo, source.ref, file.path)
+            val fileResponse = WebHttp.requestBytes("GET", rawUrl, timeoutMs = 120000)
+            if (!fileResponse.ok || fileResponse.bytes == null) {
+                throw UncivShowableException("Failed to download mod file [${file.path}]: ${fileResponse.status} ${fileResponse.statusText}")
+            }
+            val destinationFile = destination.child(file.path)
+            destinationFile.parent().mkdirs()
+            destinationFile.writeBytes(fileResponse.bytes, false)
+
+            downloadedBytes += if (file.size > 0L) file.size else fileResponse.bytes.size.toLong()
+            val percent = if (totalBytes > 0L) {
+                ((downloadedBytes * 100L) / totalBytes).toInt().coerceIn(0, 100)
+            } else {
+                (((index + 1) * 100) / files.size).coerceIn(0, 100)
+            }
+            updateProgressPercent?.invoke(DownloadAndExtractState.Downloading, percent)
+        }
+    }
+
+    private data class TreeDownloadFile(
+        val path: String,
+        val size: Long,
+    )
+
+    private fun buildRawGithubFileUrl(owner: String, repo: String, ref: String, filePath: String): String {
+        val encodedRef = encodePathSegment(ref)
+        val encodedPath = filePath
+            .split('/')
+            .filter { it.isNotBlank() }
+            .joinToString("/") { encodePathSegment(it) }
+        return "https://raw.githubusercontent.com/$owner/$repo/$encodedRef/$encodedPath"
+    }
+
+    private fun encodePathSegment(value: String): String =
+        java.net.URLEncoder.encode(value, "UTF-8")
+            .replace("+", "%20")
 
     private suspend fun unzipToFolder(
         bytes: ByteArray,
