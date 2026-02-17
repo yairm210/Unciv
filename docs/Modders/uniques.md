@@ -3258,7 +3258,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: ModOptions
 
-??? example  "Hidden statistic"
+??? example  "Hide statistics"
 	This unique does not support conditionals.
 
 	Applicable to: ModOptions

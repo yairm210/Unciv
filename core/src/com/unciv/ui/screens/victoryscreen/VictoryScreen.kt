@@ -60,14 +60,14 @@ class VictoryScreen(
         },
         Demographics('D', allowAsSecret = true) {
             override fun getContent(parent: VictoryScreen) = VictoryScreenDemographics(parent.worldScreen)
-            override fun isHidden(playerCiv: Civilization) = !UncivGame.Current.settings.useDemographics && !playerCiv.gameInfo.ruleset.modOptions.hasUnique(UniqueType.HiddenStatistic) 
+            override fun isHidden(playerCiv: Civilization) = !UncivGame.Current.settings.useDemographics && !playerCiv.gameInfo.ruleset.modOptions.hasUnique(UniqueType.HideStatistics) 
         },
         Rankings('R', allowAsSecret = true) {
             override fun getContent(parent: VictoryScreen) = VictoryScreenCivRankings(parent.worldScreen)
             override fun isHidden(playerCiv: Civilization) =
                 playerCiv.gameInfo.victoryData == null
                     && (UncivGame.Current.settings.useDemographics
-                    || playerCiv.gameInfo.ruleset.modOptions.hasUnique(UniqueType.HiddenStatistic) && !playerCiv.isSpectator())
+                    || playerCiv.gameInfo.ruleset.modOptions.hasUnique(UniqueType.HideStatistics) && !playerCiv.isSpectator())
         },
         Charts('C') {
             override fun getContent(parent: VictoryScreen) = VictoryScreenCharts(parent.worldScreen)
@@ -77,7 +77,7 @@ class VictoryScreen(
                 else
                     playerCiv.statsHistory.size < 2
                         || playerCiv.gameInfo.victoryData == null
-                        && playerCiv.gameInfo.ruleset.modOptions.hasUnique(UniqueType.HiddenStatistic)
+                        && playerCiv.gameInfo.ruleset.modOptions.hasUnique(UniqueType.HideStatistics)
         },
         Replay('P', allowAsSecret = true) {
             override fun getContent(parent: VictoryScreen) = VictoryScreenReplay(parent.worldScreen)
