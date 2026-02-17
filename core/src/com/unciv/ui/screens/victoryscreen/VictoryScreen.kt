@@ -64,20 +64,20 @@ class VictoryScreen(
         },
         Rankings('R', allowAsSecret = true) {
             override fun getContent(parent: VictoryScreen) = VictoryScreenCivRankings(parent.worldScreen)
-            override fun isHidden(playerCiv: Civilization) =
-                playerCiv.gameInfo.victoryData == null
-                    && (UncivGame.Current.settings.useDemographics
-                    || playerCiv.gameInfo.ruleset.modOptions.hasUnique(UniqueType.HideStatistics) && !playerCiv.isSpectator())
+            override fun isHidden(playerCiv: Civilization): Boolean {
+                if (playerCiv.gameInfo.victoryData != null) return false
+                return UncivGame.Current.settings.useDemographics
+                    || playerCiv.gameInfo.ruleset.modOptions.hasUnique(UniqueType.HideStatistics) && !playerCiv.isSpectator()
+            }
         },
         Charts('C') {
             override fun getContent(parent: VictoryScreen) = VictoryScreenCharts(parent.worldScreen)
-            override fun isHidden(playerCiv: Civilization) =
-                if (playerCiv.isSpectator())
-                    playerCiv.gameInfo.civilizations.all { it.statsHistory.size < 2 }
-                else
-                    playerCiv.statsHistory.size < 2
-                        || playerCiv.gameInfo.victoryData == null
-                        && playerCiv.gameInfo.ruleset.modOptions.hasUnique(UniqueType.HideStatistics)
+            override fun isHidden(playerCiv: Civilization): Boolean {
+                if (playerCiv.isSpectator()) return playerCiv.gameInfo.civilizations.all { it.statsHistory.size < 2 }
+                if (playerCiv.statsHistory.size < 2) return true
+                if (playerCiv.gameInfo.victoryData != null) return false
+                return playerCiv.gameInfo.ruleset.modOptions.hasUnique(UniqueType.HideStatistics)
+            }
         },
         Replay('P', allowAsSecret = true) {
             override fun getContent(parent: VictoryScreen) = VictoryScreenReplay(parent.worldScreen)
