@@ -9,6 +9,29 @@ function parseBool(value, fallback) {
   return normalized === '1' || normalized === 'true' || normalized === 'yes' || normalized === 'on';
 }
 
+function parseNumber(value, fallback) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+const evaluateTimeoutMs = parseNumber(process.env.WEB_UI_EVAL_TIMEOUT_MS, 12000);
+const runningEvaluateTimeoutMs = parseNumber(process.env.WEB_UI_RUNNING_EVAL_TIMEOUT_MS, 8000);
+
+async function evaluateWithTimeout(page, fn, arg, label, timeoutMs = evaluateTimeoutMs) {
+  let timer = null;
+  const evaluatePromise = arg === undefined ? page.evaluate(fn) : page.evaluate(fn, arg);
+  const timeoutPromise = new Promise((_, reject) => {
+    timer = setTimeout(() => {
+      reject(new Error(`[${label}] page evaluate timed out after ${timeoutMs}ms`));
+    }, timeoutMs);
+  });
+  try {
+    return await Promise.race([evaluatePromise, timeoutPromise]);
+  } finally {
+    if (timer !== null) clearTimeout(timer);
+  }
+}
+
 function ensureTmpDir() {
   const tmpDir = path.resolve('tmp');
   fs.mkdirSync(tmpDir, { recursive: true });
@@ -106,7 +129,7 @@ async function gotoUiProbeUrl(page, url, label) {
 async function waitForUiProbeStart(page, label, timeoutMs) {
   const startedAt = Date.now();
   while (Date.now() - startedAt <= timeoutMs) {
-    const state = await page.evaluate(() => ({
+    const state = await evaluateWithTimeout(page, () => ({
       state: window.__uncivUiProbeState || null,
       error: window.__uncivUiProbeError || null,
       json: window.__uncivUiProbeResultJson || null,
@@ -115,7 +138,7 @@ async function waitForUiProbeStart(page, label, timeoutMs) {
       search: (window.location && window.location.search) || '',
       hasMain: typeof window.main === 'function',
       bootInvoked: window.__uncivBootStarted === true || window.__uncivUiProbeBootInvoked === true,
-    }));
+    }), undefined, `${label} startup-state`);
     if (hasUiProbeQuery(state.search) && state.runnerSelected && state.runnerSelected !== 'uiProbe') {
       throw new Error(`[${label}] uiProbe runner mismatch during startup: got ${state.runnerSelected} (reason=${state.runnerReason || 'n/a'})`);
     }
@@ -123,7 +146,7 @@ async function waitForUiProbeStart(page, label, timeoutMs) {
     if (state.runnerSelected === 'uiProbe') return;
     await page.waitForTimeout(120);
   }
-  const finalState = await page.evaluate(() => ({
+  const finalState = await evaluateWithTimeout(page, () => ({
     state: window.__uncivUiProbeState || null,
     error: window.__uncivUiProbeError || null,
     hasResult: !!window.__uncivUiProbeResultJson,
@@ -132,7 +155,7 @@ async function waitForUiProbeStart(page, label, timeoutMs) {
     search: (window.location && window.location.search) || '',
     hasMain: typeof window.main === 'function',
     bootInvoked: window.__uncivBootStarted === true || window.__uncivUiProbeBootInvoked === true,
-  }));
+  }), undefined, `${label} startup-final-state`);
   throw new Error(
     `[${label}] uiProbe startup did not become observable within ${timeoutMs}ms `
     + `(state=${finalState.state || 'null'} error=${finalState.error || 'null'} hasResult=${finalState.hasResult} `
@@ -142,7 +165,7 @@ async function waitForUiProbeStart(page, label, timeoutMs) {
 }
 
 async function clearUiProbeRuntimeMarkers(page) {
-  await page.evaluate(() => {
+  await evaluateWithTimeout(page, () => {
     window.__uncivBootStarted = false;
     window.__uncivBootInProgress = false;
     window.__uncivUiProbeBootInvoked = false;
@@ -152,7 +175,7 @@ async function clearUiProbeRuntimeMarkers(page) {
     window.__uncivUiProbeError = null;
     window.__uncivUiProbeResultJson = null;
     window.__uncivUiProbeStepLogJson = null;
-  }).catch(() => {});
+  }, undefined, 'clear-ui-probe-runtime-markers').catch(() => {});
 }
 
 async function ensureUiProbeBoot(page, options) {
@@ -193,15 +216,15 @@ async function ensureUiProbeBoot(page, options) {
 async function startMainOnce(page, timeoutMs) {
   const startedAt = Date.now();
   while (Date.now() - startedAt <= timeoutMs) {
-    const state = await page.evaluate(() => ({
+    const state = await evaluateWithTimeout(page, () => ({
       hasMain: typeof window.main === 'function',
       bootInvoked: window.__uncivBootStarted === true || window.__uncivUiProbeBootInvoked === true,
       uiProbeState: window.__uncivUiProbeState || null,
       readyState: document.readyState,
-    }));
+    }), undefined, 'start-main-state');
     if (state.bootInvoked || state.uiProbeState) return;
     if (state.hasMain && state.readyState === 'complete') {
-      await page.evaluate(() => {
+      await evaluateWithTimeout(page, () => {
         if (window.__uncivBootStarted === true || window.__uncivUiProbeBootInvoked === true) return;
         window.__uncivUiProbeBootInvoked = true;
         try {
@@ -211,7 +234,7 @@ async function startMainOnce(page, timeoutMs) {
           window.__uncivBootStarted = false;
           window.__uncivUiProbeBootInvoked = false;
         }
-      });
+      }, undefined, 'start-main-invoke');
     }
 
     await page.waitForTimeout(100);
@@ -223,12 +246,13 @@ async function waitForUiProbeResult(page, label, timeoutMs, shouldAbort) {
   const startupGraceMs = Number(process.env.WEB_UI_RUNNER_STARTUP_GRACE_MS || '3500');
   const startedAt = Date.now();
   let lastState = null;
+  let pollTimeoutMs = evaluateTimeoutMs;
   while (Date.now() - startedAt <= timeoutMs) {
     if (typeof shouldAbort === 'function') {
       const abortReason = shouldAbort();
       if (abortReason) throw new Error(`[${label}] ${abortReason}`);
     }
-    const state = await page.evaluate(() => ({
+    const state = await evaluateWithTimeout(page, () => ({
       state: window.__uncivUiProbeState || null,
       error: window.__uncivUiProbeError || null,
       json: window.__uncivUiProbeResultJson || null,
@@ -239,7 +263,7 @@ async function waitForUiProbeResult(page, label, timeoutMs, shouldAbort) {
       search: (window.location && window.location.search) || '',
       hasMain: typeof window.main === 'function',
       bootInvoked: window.__uncivBootStarted === true || window.__uncivUiProbeBootInvoked === true,
-    }));
+    }), undefined, `${label} poll-state`, pollTimeoutMs);
     const elapsedMs = Date.now() - startedAt;
     if (
       elapsedMs >= startupGraceMs
@@ -260,6 +284,9 @@ async function waitForUiProbeResult(page, label, timeoutMs, shouldAbort) {
     if (state.state && state.state !== lastState) {
       process.stdout.write(`[${label}] state=${state.state}\n`);
       lastState = state.state;
+    }
+    if (state.state && /^running:/i.test(state.state)) {
+      pollTimeoutMs = runningEvaluateTimeoutMs;
     }
     if (state.error && !state.json) {
       const bootstrapDebug = {
@@ -282,7 +309,7 @@ async function waitForUiProbeResult(page, label, timeoutMs, shouldAbort) {
     }
     await page.waitForTimeout(120);
   }
-  const finalState = await page.evaluate(() => ({
+  const finalState = await evaluateWithTimeout(page, () => ({
     state: window.__uncivUiProbeState || null,
     error: window.__uncivUiProbeError || null,
     hasResult: !!window.__uncivUiProbeResultJson,
@@ -293,6 +320,17 @@ async function waitForUiProbeResult(page, label, timeoutMs, shouldAbort) {
     search: (window.location && window.location.search) || '',
     hasMain: typeof window.main === 'function',
     bootInvoked: window.__uncivBootStarted === true || window.__uncivUiProbeBootInvoked === true,
+  }), undefined, `${label} timeout-final-state`).catch(() => ({
+    state: null,
+    error: null,
+    hasResult: false,
+    hasStepLog: false,
+    runnerSelected: null,
+    runnerReason: null,
+    bootstrapTraceJson: null,
+    search: '',
+    hasMain: false,
+    bootInvoked: false,
   }));
   const bootstrapDebug = {
     generatedAt: new Date().toISOString(),

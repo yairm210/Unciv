@@ -13,6 +13,8 @@ import kotlin.coroutines.Continuation
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.coroutines.startCoroutine
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 import kotlin.time.Duration
 
 object Concurrency {
@@ -113,11 +115,15 @@ suspend fun <T> withGLContext(block: suspend CoroutineScope.() -> T): T =
     block(SimpleScope(Dispatcher.GL))
 
 suspend fun delayMillis(millis: Long) {
-    // No-op on web phase 1.
+    if (millis <= 0L) return
+    suspendCoroutine { continuation ->
+        val delay = millis.coerceAtMost(Int.MAX_VALUE.toLong()).toInt()
+        WebTimeInterop.schedule({ continuation.resume(Unit) }, delay)
+    }
 }
 
 suspend fun delayDuration(duration: Duration) {
-    // No-op on web phase 1.
+    delayMillis(duration.inWholeMilliseconds)
 }
 
 object Dispatcher {

@@ -17,6 +17,7 @@ import com.unciv.models.metadata.Player
 import com.unciv.models.translations.tr
 import com.unciv.platform.PlatformCapabilities
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
+import com.unciv.ui.screens.mapeditorscreen.MapEditorScreen
 import com.unciv.ui.screens.multiplayerscreens.AddMultiplayerGameScreen
 import com.unciv.ui.screens.multiplayerscreens.MultiplayerScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
@@ -178,10 +179,10 @@ object WebUiProbeRunner {
         appendStep: (String, String) -> Unit,
     ): FlowResult {
         ensureBeforeDeadline(deadlineMs, "editor boot")
-        val menuReady = WebValidationRunner.waitUntilFramesProbe(1800) { game.screen is MainMenuScreen }
-        if (!menuReady) return FlowResult(false, "Main menu did not become ready for map editor probe.")
         appendStep("running:editor:menu-check", "Checking map editor entry in main menu.")
-        return FlowResult(true, "Map editor quick gate verified main menu stability.")
+        val opened = openMapEditorViaUi(game, deadlineMs, appendStep)
+        if (!opened.first) return FlowResult(false, opened.second)
+        return FlowResult(true, "Map editor screen opened and initialized.")
     }
 
     private suspend fun runMultiplayerFlow(
@@ -317,6 +318,29 @@ object WebUiProbeRunner {
         val multiplayerReady = WebValidationRunner.waitUntilFramesProbe(1200) { game.screen is MultiplayerScreen }
         if (!multiplayerReady) return false to "Multiplayer screen did not open."
         return true to "Multiplayer screen opened."
+    }
+
+    private suspend fun openMapEditorViaUi(
+        game: WebGame,
+        deadlineMs: Long,
+        appendStep: (String, String) -> Unit,
+    ): Pair<Boolean, String> {
+        ensureBeforeDeadline(deadlineMs, "open map editor")
+        val menuReady = WebValidationRunner.waitUntilFramesProbe(1200) { game.screen is MainMenuScreen }
+        if (!menuReady) return false to "Main menu unavailable while opening map editor."
+        if (game.screen !is MainMenuScreen) return false to "Main menu screen missing before map editor flow."
+        appendStep("running:editor:open-action", "Opening map editor screen directly from probe.")
+        game.pushScreen(MapEditorScreen())
+        appendStep("running:editor:await-screen", "Waiting for map editor screen transition.")
+        val editorReady = WebValidationRunner.waitUntilFramesProbe(2400) { game.screen is MapEditorScreen }
+        if (!editorReady) return false to "Map editor screen did not open."
+        appendStep("running:editor:await-init", "Waiting for map holder initialization.")
+        val initialized = WebValidationRunner.waitUntilFramesProbe(1200) {
+            val editor = game.screen as? MapEditorScreen ?: return@waitUntilFramesProbe false
+            editor.mapHolder.tileGroups.isNotEmpty()
+        }
+        if (!initialized) return false to "Map editor opened but map holder did not initialize."
+        return true to "Map editor screen opened."
     }
 
     private suspend fun addAndJoinGameViaUi(
