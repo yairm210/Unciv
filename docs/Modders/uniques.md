@@ -1814,6 +1814,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Example: "Creates a [Trading Post] improvement on a specific tile"
 
+	This unique does not support conditionals.
+
 	Applicable to: Building
 
 ??? example  "Can carry [amount] extra [mapUnitFilter] units"
@@ -2905,8 +2907,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Can only be built to improve a resource"
 	Applicable to: Improvement
 
-??? example  "Does not need removal of [tileFilter]"
-	Example: "Does not need removal of [Farm]"
+??? example  "Does not need removal of [terrainFeature]"
+	Example: "Does not need removal of [Hill]"
 
 	Applicable to: Improvement
 

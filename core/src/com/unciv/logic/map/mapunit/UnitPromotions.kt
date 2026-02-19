@@ -7,7 +7,6 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.ui.components.extensions.toPercent
 import yairm210.purity.annotations.LocalState
-import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 
 class UnitPromotions : IsPartOfGameInfoSerialization {
@@ -53,15 +52,20 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
     }
 
     /** @return the XP points needed to "buy" the next promotion. 10, 30, 60, 100, 150,... */
-    @Readonly fun xpForNextPromotion(): Int = (baseXpForPromotionNumber(numberOfPromotions + 1) * promotionCostModifier()).toInt()
-    
+    @Readonly fun xpForNextPromotion(): Int = xpCostForPromotionNumber(numberOfPromotions + 1)
+
     /** @return the XP points needed to "buy" the next [count] promotions. */
     @Readonly
-    fun xpForNextNPromotions(count: Int) = (1..count).sumOf { 
-        baseXpForPromotionNumber(numberOfPromotions+it)} * promotionCostModifier()
+    fun xpForNextNPromotions(count: Int) = (1..count).sumOf {
+        xpCostForPromotionNumber(numberOfPromotions + it)
+    }
 
-    @Pure
-    private fun baseXpForPromotionNumber(numberOfPromotions: Int) = (numberOfPromotions) * 10
+    /** @return the final XP cost for a specific promotion number, including modifiers and rounding */
+    @Readonly
+    private fun xpCostForPromotionNumber(promotionNumber: Int): Int {
+        val baseXpForPromotion = promotionNumber * 10
+        return (baseXpForPromotion * promotionCostModifier()).toInt()
+    }
 
     @Readonly
     private fun promotionCostModifier(): Float {

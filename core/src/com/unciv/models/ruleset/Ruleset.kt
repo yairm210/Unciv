@@ -504,9 +504,12 @@ class Ruleset {
 
         // Tutorials exist per builtin ruleset or mod, but there's also a global file that's always loaded
         // Note we can't rely on UncivGame.Current here, so we do the same thing getBuiltinRulesetFileHandle in RulesetCache does
-        val globalTutorialsFile = Gdx.files.internal("jsons").child(RulesetFile.Tutorials.filename)
-        if (globalTutorialsFile.exists())
-            tutorials += createHashmap(json().fromJsonFile(Array<Tutorial>::class.java, globalTutorialsFile))
+        if (Gdx.files != null) { // we're not running console mode
+            val globalTutorialsFile = Gdx.files.internal("jsons").child(RulesetFile.Tutorials.filename)
+            if (globalTutorialsFile.exists())
+                tutorials += createHashmap(json().fromJsonFile(Array<Tutorial>::class.java, globalTutorialsFile))
+        }
+        
         val tutorialsFile = RulesetFile.Tutorials.file()
         if (tutorialsFile.exists())
             tutorials += createHashmap(json().fromJsonFile(Array<Tutorial>::class.java, tutorialsFile))

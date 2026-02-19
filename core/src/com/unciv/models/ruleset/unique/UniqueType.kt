@@ -384,7 +384,9 @@ enum class UniqueType(
     CreatesOneImprovement("Creates a [improvementName] improvement on a specific tile", UniqueTarget.Building,
         docDescription = "When choosing to construct this building, the player must select a tile where the improvement can be built." +
                 " Upon building completion, the tile will gain this improvement." + 
-                " Limited to one per building."),
+                " Limited to one per building.",
+        flags = UniqueFlag.setOfNoConditionals
+        ),
     //endregion
 
     ///////////////////////////////////////// region 04 UNIT UNIQUES /////////////////////////////////////////
@@ -686,7 +688,7 @@ enum class UniqueType(
     CanOnlyBeBuiltOnTile("Can only be built on [tileFilter] tiles", UniqueTarget.Improvement),
     CannotBuildOnTile("Cannot be built on [tileFilter] tiles", UniqueTarget.Improvement),
     CanOnlyImproveResource("Can only be built to improve a resource", UniqueTarget.Improvement),
-    NoFeatureRemovalNeeded("Does not need removal of [tileFilter]", UniqueTarget.Improvement),
+    NoFeatureRemovalNeeded("Does not need removal of [terrainFeature]", UniqueTarget.Improvement),
     RemovesFeaturesIfBuilt("Removes removable features when built", UniqueTarget.Improvement),
 
     DefensiveBonus("Gives a defensive bonus of [relativeAmount]%", UniqueTarget.Improvement, 

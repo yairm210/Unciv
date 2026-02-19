@@ -661,6 +661,13 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     fun removeBuilding(building: Building) {
         builtBuildingObjects = builtBuildingObjects.withoutItem(building)
         builtBuildings.remove(building.name)
+        
+        if (building.hasCreateOneImprovementUnique()){
+            val improvement = building.getImprovementToCreate(city.getRuleset(), city.civ)!!
+            val tileWithImprovementToRemove = city.getTiles().first { it.improvement == improvement.name }
+            tileWithImprovementToRemove.removeImprovement()
+        }
+        
         updateUniques()
     }
 
@@ -825,9 +832,11 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         /** Support for [UniqueType.CreatesOneImprovement] - if an Improvement-creating Building was auto-queued, auto-choose a tile: */
         val building = getCurrentConstruction() as? Building ?: return
         val improvement = building.getImprovementToCreate(city.getRuleset(), city.civ) ?: return
-        if (getTileForImprovement(improvement.name) != null) return
-        val newTile = Automation.getTileForConstructionImprovement(city, improvement) ?: return
-        newTile.improvementFunctions.markForCreatesOneImprovement(improvement.name)
+        
+        if (getTileForImprovement(improvement.name) == null) {
+            val newTile = Automation.getTileForConstructionImprovement(city, improvement) ?: return
+            newTile.improvementFunctions.markForCreatesOneImprovement(improvement.name)
+        }
     }
 
     @Readonly
@@ -910,6 +919,14 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             if (index < 0) return
             removeFromQueue(index, false)
         }
+    }
+    
+    fun removeAll(){
+        while (!isQueueEmptyOrIdle())
+            // automatic=false so once the queue is empties the "idle" construction is set, ending the loop
+            removeFromQueue(0, false)
+        chooseNextConstruction()
+        currentConstructionIsUserSet = false
     }
 
     /** Moves an entry to the queue top by index.
@@ -1003,8 +1020,6 @@ class CityConstructions : IsPartOfGameInfoSerialization {
      */
     @Readonly
     fun getTileForImprovement(improvementName: String) = city.getTiles()
-        .firstOrNull {
-            it.isMarkedForCreatesOneImprovement(improvementName)
-        }
+        .firstOrNull { it.isMarkedForCreatesOneImprovement(improvementName) }
     //endregion
 }
