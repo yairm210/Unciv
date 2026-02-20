@@ -169,6 +169,10 @@ class Tile : IsPartOfGameInfoSerialization {
     /** Between -1.0 and 1.0 - For map generation use only */
     var temperature: Double? = null
 
+    @Transient
+        /** For map generation use only */
+    var hasVegetation: Boolean = false
+
     val latitude: Int
         get() = HexMath.getLatitude(position)
     val longitude: Int
