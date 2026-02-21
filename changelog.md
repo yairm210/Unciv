@@ -1,3 +1,27 @@
+## 4.19.14
+
+Revert "Templating in tileset rulevariants"
+
+Templating in tileset rulevariants
+
+chore: Mark DamagesContainingUnits as "no conditionals" (cached on Terrain)
+
+Add star icon to resources on map that are currently provided
+
+chore: updated purity
+
+chore: unified randomness for attacking and defending units
+
+Resolved  - Consistent XP cost for next N promotions vs single promotion
+
+AI denounce automation - By unciv-loof
+
+By AutumnPizazz:
+- Add option to hide victory screen statistics 
+- Change 'Set [stockpile] to [amount]' to 'Set [stockpile] to [countable]' 
+
+MapGeneration supports multiple Mountains, Hills, Ice, Snow, Lakes, and Vegetation. - By Ambeco
+
 ## 4.19.13
 
 Clear diplomatic modifiers and countdowns to resurrected civs
