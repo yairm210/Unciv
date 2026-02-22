@@ -22,9 +22,9 @@ internal class MapElevationGenerator(
         private const val lowering = "~Lowering~"
     }
 
-    private val flats = terrains.filter {!it.terrain.impassable && it.terrain.type == TerrainType.Land && !it.terrain.hasUnique(UniqueType.RoughTerrain) }
-    private val hills = terrains.filter {(it.terrain.type == TerrainType.Land || it.terrain.type == TerrainType.TerrainFeature) && it.occursInGroups}
-    private val mountains = terrains.filter {(it.terrain.type == TerrainType.Land || it.terrain.type == TerrainType.TerrainFeature) && it.occursInChains}
+    private val flats = terrains.filter {!it.terrain.impassable && it.terrain.type == TerrainType.Land && !it.rareFeature && !it.terrain.hasUnique(UniqueType.RoughTerrain)  }
+    private val hills = terrains.filter {(it.terrain.type == TerrainType.Land || it.terrain.type == TerrainType.TerrainFeature) && it.occursInGroups && !it.rareFeature}
+    private val mountains = terrains.filter {(it.terrain.type == TerrainType.Land || it.terrain.type == TerrainType.TerrainFeature) && it.occursInChains && !it.rareFeature}
 
     /**
      * [MapParameters.elevationExponent] favors high elevation
