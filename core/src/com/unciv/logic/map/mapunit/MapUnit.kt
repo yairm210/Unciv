@@ -978,16 +978,35 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun putInTile(tile: Tile) {
         when {
-            !movement.canMoveTo(tile) ->
+            // Allow transported units to be placed even if they couldn't 'move' there normally
+            !isTransported && !movement.canMoveTo(tile) ->
                 throw IllegalStateException("Unit $name of ${civ.civID} at $currentTile can't be put in tile $tile," +
                         " reason: ${movement.getCannotMoveToReason(tile)}")
 
-            baseUnit.movesLikeAirUnits || isTransported -> tile.airUnits.add(this)
-            isCivilian() -> tile.civilianUnit = this
-            else -> tile.militaryUnit = this
+            baseUnit.movesLikeAirUnits || isTransported -> {
+                tile.airUnits.add(this)
+            }
+            isCivilian() -> {
+                if (tile.civilianUnit != null && tile.civilianUnit !== this) {
+                    // Fallback: avoid overwriting existing unit - keep us as transported in airUnits
+                    if (!tile.airUnits.contains(this)) {
+                        isTransported = true
+                        tile.airUnits.add(this)
+                    }
+                } else tile.civilianUnit = this
+            }
+            else -> {
+                if (tile.militaryUnit != null && tile.militaryUnit !== this) {
+                    // Fallback: avoid overwriting existing unit - keep us as transported in airUnits
+                    if (!tile.airUnits.contains(this)) {
+                        isTransported = true
+                        tile.airUnits.add(this)
+                    }
+                } else tile.militaryUnit = this
+            }
         }
         // this check is here in order to not load the fresh built unit into carrier right after the build
-        if (baseUnit.movesLikeAirUnits){
+        if (baseUnit.movesLikeAirUnits) {
             if (!tile.isCityCenter()) isTransported = true
             else {
                 val currentUntransportedUnits = tile.getUnits().count { it.type.isAirUnit() && !it.isTransported }

@@ -601,7 +601,15 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         val currentTile = get(position)
         unit.currentTile = currentTile  // temporary
         unit.cache.state = GameContext(unit)
-        if (unit.movement.canMoveTo(currentTile)) unitToPlaceTile = currentTile
+        if (unit.movement.canMoveTo(currentTile)) {
+            // Ensure we don't select a tile that would cause an overwrite of an existing unit slot.
+            val slotFree = when {
+                unit.baseUnit.movesLikeAirUnits || unit.isTransported -> true
+                unit.isCivilian() -> currentTile.civilianUnit == null
+                else -> currentTile.militaryUnit == null
+            }
+            if (slotFree) unitToPlaceTile = currentTile
+        }
 
         // if it's not suitable, try to find another tile nearby
         if (unitToPlaceTile == null) {
