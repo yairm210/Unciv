@@ -50,9 +50,10 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         .toList()
         .sortedBy { it.isConstrained }
     private val baseTerrainPicker = terrainConditions
-        .filter{ it.terrain.type == TerrainType.Land || it.terrain.type == TerrainType.Water }
+        .filter{ (it.terrain.type == TerrainType.Land || it.terrain.type == TerrainType.Water)
+            && it.terrain.occursOn.isEmpty() }
     private val terrainFeaturePicker = terrainConditions
-        .filter{ it.terrain.type == TerrainType.TerrainFeature }
+        .filter{ it.terrain.type == TerrainType.TerrainFeature}
 
     /** Associates [terrain] with a range of temperatures and a range of humidities (both open to closed) */
     internal class TerrainOccursRange(
