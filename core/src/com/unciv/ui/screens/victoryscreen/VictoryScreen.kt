@@ -18,9 +18,11 @@ import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.components.extensions.areSecretKeysPressed
 import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.newgamescreen.NewGameScreen
@@ -112,6 +114,18 @@ class VictoryScreen(
             )
         }
         tabs.selectPage(pageNumber)
+
+        //**************** Add export data button ****************
+        val shouldShowExportButton = playerCiv.gameInfo.gameParameters.showVictoryStats || playerCiv.isSpectator()
+        if (shouldShowExportButton) {
+            val exportButton = "Export data".tr().toTextButton()
+            exportButton.onClick {
+                ExportDataPopup(this, gameInfo, worldScreen) { message ->
+                    ToastPopup(message, this)
+                }.open()
+            }
+            bottomTable.add(exportButton).padLeft(10f)
+        }
 
         //**************** Set up bottom area - buttons and description label ****************
         when {
