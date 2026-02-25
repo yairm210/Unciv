@@ -159,7 +159,8 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
                     if (!unique.conditionalsApply(state)) continue
                     val convertTo = unique.params[0]
                     if (tile.baseTerrain == convertTo || convertTo in tile.terrainFeatures) continue
-                    if (convertTo == Constants.lakes && tile.isCoastalTile()) continue
+                    val convertToTerrain = location.ruleset.terrains[convertTo]!!
+                    if (convertToTerrain.hasUnique(UniqueType.FreshWater) && tile.isCoastalTile()) continue
                     val terrainObject = location.ruleset.terrains[convertTo] ?: continue
                     if (terrainObject.type == TerrainType.TerrainFeature && tile.baseTerrain !in terrainObject.occursOn) continue
                     if (convertTo == Constants.coast)
@@ -232,7 +233,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
             for (neighbor in tile.neighbors) {
                 // This is so we don't have this tile turn into Coast, and then it's touching a Lake tile.
                 // We just turn the lake tiles into this kind of tile.
-                if (neighbor.baseTerrain == Constants.lakes) {
+                if (neighbor.getBaseTerrain().hasUnique(UniqueType.FreshWater)) {
                     clearTile(neighbor)
                     neighbor.baseTerrain = tile.baseTerrain
                     neighbor.setTerrainTransients()
@@ -243,7 +244,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
 
         /** Implements [UniqueParameterType.SimpleTerrain][com.unciv.models.ruleset.unique.UniqueParameterType.SimpleTerrain] */
         private fun Tile.matchesWonderFilter(filter: String) = when (filter) {
-            "Elevated" -> baseTerrain == Constants.mountain || isHill()
+            "Elevated" -> getBaseTerrain().isMountain || isHill()
             "Water" -> isWater
             "Land" -> isLand
             Constants.hill -> isHill()

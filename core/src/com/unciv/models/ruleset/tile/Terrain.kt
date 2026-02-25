@@ -48,9 +48,11 @@ class Terrain : RulesetStatsObject() {
     @Transient
     var damagePerTurn = 0
 
-    // Shouldn't this just be a lazy property so it's automatically cached?
-    @Readonly
-    fun isRough(): Boolean = hasUnique(UniqueType.RoughTerrain)
+    val isRough by lazy { hasUnique(UniqueType.RoughTerrain) }
+    val isMountain by lazy { hasUnique(UniqueType.OccursInChains) }
+    val isHill by lazy { hasUnique(UniqueType.OccursInGroups) }
+    val isVegetation by lazy { hasUnique(UniqueType.Vegetation) }
+    val isIce by lazy { type == TerrainType.TerrainFeature && impassable && occursOn.contains(Constants.ocean) }
 
     /** Tests base terrains, features and natural wonders whether they should be treated as Land/Water.
      *  Currently only used for civilopedia display, as other code can test the tile itself.
@@ -134,7 +136,7 @@ class Terrain : RulesetStatsObject() {
 
         textList += FormattedLine()
         // For now, natural wonders show no "open terrain" - may change later
-        if (turnsInto == null && displayAs(TerrainType.Land, ruleset) && !isRough())
+        if (turnsInto == null && displayAs(TerrainType.Land, ruleset) && !isRough)
             textList += FormattedLine("Open terrain")   // Rough is in uniques
         uniquesToCivilopediaTextLines(textList, leadingSeparator = null)
 
@@ -190,8 +192,8 @@ class Terrain : RulesetStatsObject() {
         return when (filter) {
             "all", "All" -> true
             "Terrain" -> true
-            "Open terrain" -> !isRough()
-            "Rough terrain" -> isRough()
+            "Open terrain" -> !isRough
+            "Rough terrain" -> isRough
             "Natural Wonder" -> type == TerrainType.NaturalWonder
             "Terrain Feature" -> type == TerrainType.TerrainFeature
             else -> when(filter){ // non-constants

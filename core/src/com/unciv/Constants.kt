@@ -22,10 +22,10 @@ object Constants {
     const val mountain = "Mountain"
     const val hill = "Hill"
     const val plains = "Plains"
-    const val lakes = "Lakes"
     const val desert = "Desert"
     const val grassland = "Grassland"
-    const val tundra = "Tundra"
+    // TODO: GameStarter places "Tundra" startBias first. Can we make it generic by checking count by terrain?
+    const val tundra = "Tundra" 
     const val snow = "Snow"
 
     const val forest = "Forest"

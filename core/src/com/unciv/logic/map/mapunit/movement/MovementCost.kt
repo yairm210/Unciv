@@ -108,8 +108,8 @@ object MovementCost {
 
         if (hasDoubleMovement(unit, to.baseTerrain, MapUnitCache.DoubleMovementTerrainTarget.Base, gameContext))
             return terrainCost * 0.5f + extraCost
-        if (hasDoubleMovement(unit, Constants.hill, MapUnitCache.DoubleMovementTerrainTarget.Hill, gameContext)
-            && to.isHill())
+        val hillTerrain = to.getHillTerrain()
+        if (hillTerrain != null && hasDoubleMovement(unit, hillTerrain.name, MapUnitCache.DoubleMovementTerrainTarget.Hill, gameContext))
             return terrainCost * 0.5f + extraCost
 
         if (unit.cache.noFilteredDoubleMovementUniques)

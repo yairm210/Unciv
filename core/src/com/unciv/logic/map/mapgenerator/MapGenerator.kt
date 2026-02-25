@@ -103,7 +103,10 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
                 humidFrom < (tile.humidity ?: 0.0) && (tile.humidity?:0.0) <= humidTo &&
                 matchesBaseTerrain(tile)
 
-        fun matchesIce() = terrain.type == TerrainType.TerrainFeature && terrain.impassable && terrain.occursOn.contains(Constants.ocean) && !rareFeature
+        fun maybeSnow() = terrain.type == TerrainType.Land 
+            && tempFrom <= -1 && tempTo <= -.5 
+            && humidFrom >= 0.2 && humidTo >= 1 
+            && !rareFeature
 
         override fun toString(): String {
             return name
@@ -344,8 +347,8 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
     }
 
     private fun spawnLakesAndCoasts(map: TileMap) {
-        if (ruleset.terrains.containsKey(Constants.lakes)) {
-            val lakeTerrains = terrainConditions.filter { it.freshWater && !it.rareFeature && it.terrain.type == TerrainType.Water }
+        val lakeTerrains = terrainConditions.filter { it.freshWater && !it.rareFeature && it.terrain.type == TerrainType.Water }
+        if (lakeTerrains.isNotEmpty()) {
             //define lakes
             val waterTiles = map.values.filter { it.isWater }.toMutableList()
 
@@ -414,13 +417,14 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         for (tile in tileMap.values)
             tile.tileResource = null
 
-        spreadStrategicResources(tileMap, mapRadius)
-        spreadResources(tileMap, mapRadius, ResourceType.Luxury)
-        spreadResources(tileMap, mapRadius, ResourceType.Bonus)
+        val snowTerrains = terrainConditions.filter { it.maybeSnow()}
+        spreadStrategicResources(tileMap, mapRadius, snowTerrains)
+        spreadResources(tileMap, mapRadius, ResourceType.Luxury, snowTerrains)
+        spreadResources(tileMap, mapRadius, ResourceType.Bonus, snowTerrains)
     }
 
     // Here, we need each specific resource to be spread over the map - it matters less if specific resources are near each other
-    private fun spreadStrategicResources(tileMap: TileMap, mapRadius: Int) {
+    private fun spreadStrategicResources(tileMap: TileMap, mapRadius: Int, snowTerrains: List<TerrainOccursRange>) {
         val strategicResources = ruleset.tileResources.values.filter { it.resourceType == ResourceType.Strategic }
         // passable land tiles (no mountains, no wonders) without resources yet
         // can't be next to NW
@@ -431,7 +435,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         for (resource in strategicResources) {
             // remove the tiles where previous resources have been placed
             val suitableTiles = candidateTiles
-                    .filterNot { it.baseTerrain == Constants.snow && it.isHill() }
+                    .filterNot { snowTerrains.any {terrain -> it.baseTerrain == terrain.name } && it.isHill() }
                     .filter { it.resource == null && resource.generatesNaturallyOn(it) }
 
             val locations = randomness.chooseSpreadOutLocations(resourcesPerType, suitableTiles, mapRadius)
@@ -445,11 +449,11 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
      * which is determined from [mapRadius] and then tuned down until the desired number fits.
      * [MapParameters.resourceRichness] used to control how many resources to spawn.
      */
-    private fun spreadResources(tileMap: TileMap, mapRadius: Int, resourceType: ResourceType) {
+    private fun spreadResources(tileMap: TileMap, mapRadius: Int, resourceType: ResourceType, snowTerrains: List<TerrainOccursRange>) {
         val resourcesOfType = ruleset.tileResources.values.filter { it.resourceType == resourceType }
 
         val suitableTiles = tileMap.values
-                .filterNot { it.baseTerrain == Constants.snow && it.isHill() }
+                .filterNot { snowTerrains.any {terrain -> it.baseTerrain == terrain.name } && it.isHill() }
                 .filter { it.resource == null
                     && it.neighbors.none { neighbor -> neighbor.isNaturalWonder() }
                     && resourcesOfType.any { r -> r.generatesNaturallyOn(it) }
@@ -638,8 +642,9 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         val rareFeatures = terrainFeaturePicker.filter { it.rareFeature }
         for (tile in tileMap.values.asSequence().filter { it.terrainFeatures.isEmpty() }) {
             if (randomness.RNG.nextDouble() <= tileMap.mapParameters.rareFeaturesRichness) {
+                val hillFeature = tile.getHillTerrain()
                 val possibleFeatures = rareFeatures.filter { it.matches(tile) 
-                    && (!tile.isHill() || it.terrain.occursOn.contains(Constants.hill))
+                    && (hillFeature == null || it.terrain.occursOn.contains(hillFeature.name))
                     && NaturalWonderGenerator.fitsTerrainUniques(it.terrain, tile)
                 }
                 if (possibleFeatures.any())
@@ -656,7 +661,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             ruleset.terrains.values.asSequence()
             .filter { it.type == TerrainType.Water }
             .map { it.name }.toSet()
-        val iceTerrains: List<TerrainOccursRange> = terrainFeaturePicker.filter { it.matchesIce() }
+        val iceTerrains: List<TerrainOccursRange> = terrainFeaturePicker.filter { it.terrain.isIce }
 
         if (tileMap.mapParameters.shape == MapShape.flatEarth) {
             spawnFlatEarthIceWalls(tileMap, iceTerrains)
@@ -688,7 +693,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
     }
 
     private fun spawnFlatEarthIceWalls(tileMap: TileMap, iceTerrains: List<TerrainOccursRange>) {
-        val snowTerrains = listOf(baseTerrainPicker.first { it.terrain.type == TerrainType.Land && it.tempFrom <= -1 && it.humidTo >= 1 && !it.rareFeature })
+        val snowTerrains = listOf(baseTerrainPicker.first { it.maybeSnow() })
         val mountainTerrains = baseTerrainPicker.filter { it.terrain.impassable && it.occursInChains && !it.rareFeature }
         val allArcticTerrains = iceTerrains + snowTerrains + mountainTerrains
 

@@ -31,7 +31,7 @@ class RiverGenerator(
         val numberOfRivers = (tileMap.values.count { it.isLand } * riverCountMultiplier).roundToInt()
 
         var optionalTiles = tileMap.values.asSequence()
-            .filter { it.baseTerrain == Constants.mountain && it.isFarEnoughFromWater() }
+            .filter { it.getBaseTerrain().isMountain && it.isFarEnoughFromWater() }
             .toMutableList()
         if (optionalTiles.size < numberOfRivers)
             optionalTiles.addAll(tileMap.values.filter { it.isHill() && it.isFarEnoughFromWater() })
