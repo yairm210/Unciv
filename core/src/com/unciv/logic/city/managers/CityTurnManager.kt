@@ -18,6 +18,8 @@ class CityTurnManager(val city: City) {
 
 
     fun startTurn() {
+        city.clearCaches()
+        
         for (resource in city.getResourcesGeneratedByCity()) {
             if (resource.resource.isStockpiled && resource.resource.isCityWide)
                 city.gainStockpiledResource(resource.resource, resource.amount)
@@ -161,6 +163,8 @@ class CityTurnManager(val city: City) {
             city.health = (city.health + 20).coerceAtMost(city.getMaxHealth())
             city.population.unassignExtraPopulation()
         }
+        
+        city.clearCaches()
     }
 
 }

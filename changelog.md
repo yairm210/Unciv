@@ -1,3 +1,34 @@
+## 4.19.15
+
+More explicit warning about large maps causing memory crashes 
+
+Catch base terrains with occursOn in ruleset validation
+
+Removing improvement-creating buildings where the no city tile has the improvement, no longer crashes
+
+Cities can attack revealed invisible units
+
+By Ambeco:
+- Adding alternate pathing algorithm 
+- Jungles again no longer spawn on hills 
+- MapGeneration ignores rareFeatures when placing normal tiles 
+
+Add max(), min() functions to countable expressions - By AutumnPizazz
+
+## 4.19.14
+
+Add star icon to resources on map that are currently provided
+
+Consistent XP cost for next N promotions vs single promotion
+
+AI denounce automation - By unciv-loof
+
+By AutumnPizazz:
+- Add game option to hide victory screen statistics 
+- Change 'Set [stockpile] to [amount]' to 'Set [stockpile] to [countable]' 
+
+MapGeneration supports multiple Mountains, Hills, Ice, Snow, Lakes, and Vegetation. - By Ambeco
+
 ## 4.19.13
 
 Clear diplomatic modifiers and countdowns to resurrected civs

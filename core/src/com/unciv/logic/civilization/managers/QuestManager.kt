@@ -334,8 +334,8 @@ class QuestManager : IsPartOfGameInfoSerialization {
             when (quest.questNameInstance) {
                 QuestName.ClearBarbarianCamp -> {
                     val camp = getBarbarianEncampmentForQuest()!!
-                    data1 = camp.position.x.toInt().toString()
-                    data2 = camp.position.y.toInt().toString()
+                    data1 = camp.position.x.toString()
+                    data2 = camp.position.y.toString()
                     notificationActions = listOf(LocationAction(camp.position), notificationActions.first())
                 }
                 QuestName.ConnectResource -> data1 = getResourceForQuest(assignee)!!.name

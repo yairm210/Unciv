@@ -79,7 +79,7 @@ object CityResources {
         for (tileInfo in city.getTiles()) {
             val resource = tileInfo.tileResource ?: continue
             val amount = getTileResourceAmount(city, tileInfo)
-            if (amount > 0) resourceSupplyList.add(resource, "Tiles", amount.toInt())
+            if (amount > 0) resourceSupplyList.add(resource, "Tiles", amount)
         }
         // Apply the modifiers after adding the totals.
         resourceSupplyList.applyModifiers(resourceModifer)

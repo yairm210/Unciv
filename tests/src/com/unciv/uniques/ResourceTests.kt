@@ -3,6 +3,8 @@ package com.unciv.uniques
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.HexCoord
 import com.unciv.models.ruleset.BeliefType
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
@@ -10,6 +12,7 @@ import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
+import kotlin.math.roundToInt
 
 
 @RunWith(GdxTestRunner::class)
@@ -331,5 +334,23 @@ class ResourceTests {
         val building = game.createBuilding("Instantly provides [2] [${resource.name}]")
         city.cityConstructions.addBuilding(building)
         assert(consumingBuilding.isBuildable(city.cityConstructions))
+    }
+
+    @Test
+    fun `Set stockpile to countable`() {
+        // given
+        val resource = game.createResource(UniqueType.Stockpiled.text)
+        val building = game.createBuilding("Instantly provides [2] [${resource.name}]")
+        city.cityConstructions.addBuilding(building)
+        assertEquals(2, civInfo.getCivResourcesByName()[resource.name])
+
+        // when
+        UniqueTriggerActivation.triggerUnique(
+            Unique("Set [${resource.name}] to [1+1]"),
+            civInfo
+        )
+
+        // then
+        assertEquals(2, civInfo.getCivResourcesByName()[resource.name])
     }
 }

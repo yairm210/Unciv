@@ -11,9 +11,10 @@ import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.sign
 
-class MapElevationGenerator(
+internal class MapElevationGenerator(
     private val tileMap: TileMap,
     private val ruleset: Ruleset,
+    terrains: List<MapGenerator.TerrainOccursRange>,
     private val randomness: MapGenerationRandomness
 ) {
     companion object {
@@ -21,32 +22,15 @@ class MapElevationGenerator(
         private const val lowering = "~Lowering~"
     }
 
-    private val flat = ruleset.terrains.values.firstOrNull {
-            !it.impassable && it.type == TerrainType.Land && !it.hasUnique(UniqueType.RoughTerrain)
-        }?.name
-    private val hillMutator: ITileMutator
-    private val mountainMutator: ITileMutator
-    private val dummyMutator by lazy { TileDummyMutator() }
-
-    init {
-        mountainMutator = getTileMutator(UniqueType.OccursInChains, flat)
-        hillMutator = getTileMutator(UniqueType.OccursInGroups, flat)
-    }
-
-    private fun getTileMutator(type: UniqueType, flat: String?): ITileMutator {
-        if (flat == null) return dummyMutator
-        val terrain = ruleset.terrains.values.firstOrNull { it.hasUnique(type) }
-            ?: return dummyMutator
-        return if (terrain.type == TerrainType.TerrainFeature)
-            TileFeatureMutator(terrain.name)
-        else TileBaseMutator(flat, terrain.name)
-    }
+    private val flats = terrains.filter {!it.terrain.impassable && it.terrain.type == TerrainType.Land && !it.rareFeature && !it.terrain.hasUnique(UniqueType.RoughTerrain)  }
+    private val hills = terrains.filter {(it.terrain.type == TerrainType.Land || it.terrain.type == TerrainType.TerrainFeature) && it.occursInGroups && !it.rareFeature}
+    private val mountains = terrains.filter {(it.terrain.type == TerrainType.Land || it.terrain.type == TerrainType.TerrainFeature) && it.occursInChains && !it.rareFeature}
 
     /**
      * [MapParameters.elevationExponent] favors high elevation
      */
     fun raiseMountainsAndHills() {
-        if (flat == null) {
+        if (flats.isEmpty()) {
             Log.debug("Ruleset seems to contain no flat terrain - can't generate heightmap")
             return
         }
@@ -60,41 +44,49 @@ class MapElevationGenerator(
         for (tile in tileMap.values) {
             if (tile.isWater) continue
             val elevation = randomness.getPerlinNoise(tile, elevationSeed, scale = 2.0).powSigned(exponent)
-            tile.baseTerrain = flat // in case both mutators are TileFeatureMutator
-            hillMutator.setElevated(tile, elevation > 0.5 && elevation <= 0.7)
-            mountainMutator.setElevated(tile, elevation > 0.7)
-            tile.setTerrainTransients()
+            if (elevation > 0.7 && mountains.isNotEmpty()) {
+                applyTerrain(tile, mountains)
+            } else if (elevation > 0.5 && hills.isNotEmpty()) {
+                applyTerrain(tile, hills)
+            } else {
+                applyTerrain(tile, flats)
+            }
         }
 
         cellularMountainRanges()
         cellularHills()
+
+        for (tile in tileMap.values) {
+            tile.setTerrainTransients()
+        }
     }
 
     private fun cellularMountainRanges() {
-        if (mountainMutator is TileDummyMutator) return
-        Log.debug("Mountain-like generation for %s", mountainMutator.name)
+        if (mountains.isEmpty()) return
+        Log.debug("Mountain-like generation")
 
-        val targetMountains = mountainMutator.count(tileMap.values) * 2
+        val targetMountains = tileMap.values.count { it.isMountainTerrain()}  * 2
         val impassableTerrains = ruleset.terrains.values.filter { it.impassable }.map { it.name }.toSet()
 
         for (i in 1..5) {
-            var totalMountains = mountainMutator.count(tileMap.values)
+            var totalMountains = tileMap.values.count { it.isMountainTerrain()}  * 2
 
             for (tile in tileMap.values) {
                 if (tile.isWater) continue
-                val adjacentMountains = mountainMutator.count(tile.neighbors)
+                val isMountain = tile.isMountainTerrain()
+                val adjacentMountains = tile.neighbors.count { it.isMountainTerrain()}
                 val adjacentImpassible = tile.neighbors.count { it.baseTerrain in impassableTerrains }
 
-                if (adjacentMountains == 0 && mountainMutator.isElevated(tile)) {
-                    if (randomness.RNG.nextInt(until = 4) == 0)
+                if (adjacentMountains == 0) {
+                    if (isMountain && randomness.RNG.nextInt(until = 4) == 0)
                         tile.addTerrainFeature(lowering)
                 } else if (adjacentMountains == 1) {
-                    if (randomness.RNG.nextInt(until = 10) == 0)
+                    if (!isMountain && randomness.RNG.nextInt(until = 10) == 0)
                         tile.addTerrainFeature(rising)
                 } else if (adjacentImpassible == 3) {
-                    if (randomness.RNG.nextInt(until = 2) == 0)
+                    if (isMountain && randomness.RNG.nextInt(until = 2) == 0)
                         tile.addTerrainFeature(lowering)
-                } else if (adjacentImpassible > 3) {
+                } else if (isMountain && adjacentImpassible > 3) {
                     tile.addTerrainFeature(lowering)
                 }
             }
@@ -104,109 +96,122 @@ class MapElevationGenerator(
                 if (tile.terrainFeatures.contains(rising)) {
                     tile.removeTerrainFeature(rising)
                     if (totalMountains >= targetMountains) continue
-                    if (!mountainMutator.isElevated(tile)) totalMountains++
-                    hillMutator.lower(tile)
-                    mountainMutator.raise(tile)
+                    totalMountains++
+                    applyTerrain(tile, mountains)
                 }
                 if (tile.terrainFeatures.contains(lowering)) {
                     tile.removeTerrainFeature(lowering)
                     if (totalMountains * 2 <= targetMountains) continue
-                    if (mountainMutator.isElevated(tile)) totalMountains--
-                    mountainMutator.lower(tile)
-                    hillMutator.raise(tile)
+                    totalMountains--
+                    applyTerrain(tile, flats)
                 }
             }
         }
     }
 
     private fun cellularHills() {
-        if (hillMutator is TileDummyMutator) return
-        Log.debug("Hill-like generation for %s", hillMutator.name)
+        if (hills.isEmpty()) return
+        Log.debug("Hill-like generation")
 
-        val targetHills = hillMutator.count(tileMap.values)
+        val targetHills = tileMap.values.count { it.isHillTerrain()}
 
         for (i in 1..5) {
-            var totalHills = hillMutator.count(tileMap.values)
+            var totalHills = tileMap.values.count { it.isHillTerrain()}
 
             for (tile in tileMap.values) {
-                if (tile.isWater || mountainMutator.isElevated(tile)) continue
-                val adjacentMountains = mountainMutator.count(tile.neighbors)
-                val adjacentHills = hillMutator.count(tile.neighbors)
+                val isMountain = tile.hasTerrain(mountains)
+                if (tile.isWater || isMountain) continue
+                val isHill = tile.isHillTerrain()
+                val adjacentMountains = tile.neighbors.count { it.isMountainTerrain() }
+                val adjacentHills = tile.neighbors.count { it.isHillTerrain() }
 
-                if (adjacentHills <= 1 && adjacentMountains == 0 && randomness.RNG.nextInt(until = 2) == 0) {
+                if (adjacentHills <= 1 && adjacentMountains == 0 && isHill && randomness.RNG.nextInt(until = 2) == 0) {
                     tile.addTerrainFeature(lowering)
-                } else if (adjacentHills > 3 && adjacentMountains == 0 && randomness.RNG.nextInt(until = 2) == 0) {
+                } else if (adjacentHills > 3 && adjacentMountains == 0 && isHill && randomness.RNG.nextInt(until = 2) == 0) {
                     tile.addTerrainFeature(lowering)
-                } else if (adjacentHills + adjacentMountains in 2..3 && randomness.RNG.nextInt(until = 2) == 0) {
+                } else if (adjacentHills + adjacentMountains in 2..3 && !isHill && randomness.RNG.nextInt(until = 2) == 0) {
                     tile.addTerrainFeature(rising)
                 }
 
             }
 
             for (tile in tileMap.values) {
-                if (tile.isWater || mountainMutator.isElevated(tile)) continue
                 if (tile.terrainFeatures.contains(rising)) {
                     tile.removeTerrainFeature(rising)
                     if (totalHills > targetHills && i != 1) continue
-                    if (!hillMutator.isElevated(tile)) {
-                        hillMutator.raise(tile)
-                        totalHills++
-                    }
+                    totalHills++
+                    applyTerrain(tile, hills)
                 }
                 if (tile.terrainFeatures.contains(lowering)) {
                     tile.removeTerrainFeature(lowering)
                     if (totalHills >= targetHills * 0.9f || i == 1) {
-                        if (hillMutator.isElevated(tile)) {
-                            hillMutator.lower(tile)
-                            totalHills--
-                        }
+                        totalHills--
+                        applyTerrain(tile, flats)
                     }
                 }
             }
         }
     }
-
-    private interface ITileMutator {
-        val name: String // logging only
-        fun lower(tile: Tile)
-        fun raise(tile: Tile)
-        fun isElevated(tile: Tile): Boolean
-        fun setElevated(tile: Tile, value: Boolean) = if (value) raise(tile) else lower(tile)
-        fun count(tiles: Iterable<Tile>) = tiles.count { isElevated(it) }
-        fun count(tiles: Sequence<Tile>) = tiles.count { isElevated(it) }
+    
+    private fun Tile.isMountainTerrain(): Boolean {
+        val terrainObj = ruleset.terrains[baseTerrain] ?: return false
+        if (terrainObj.hasUnique(UniqueType.OccursInChains)) return true
+        for (feature in terrainFeatures) {
+            val featureObj = ruleset.terrains[feature] ?: continue
+            if (featureObj.hasUnique(UniqueType.OccursInChains)) return true
+        }
+        return false
     }
 
-    private class TileDummyMutator : ITileMutator {
-        override val name get() = ""
-        override fun lower(tile: Tile) {}
-        override fun raise(tile: Tile) {}
-        override fun isElevated(tile: Tile) = false
+    private fun Tile.isHillTerrain(): Boolean {
+        val terrainObj = ruleset.terrains[baseTerrain] ?: return false
+        if (terrainObj.hasUnique(UniqueType.OccursInGroups)) return true
+        for (feature in terrainFeatures) {
+            val featureObj = ruleset.terrains[feature] ?: continue
+            if (featureObj.hasUnique(UniqueType.OccursInGroups)) return true
+        }
+        return false
     }
 
-    private class TileBaseMutator(
-        private val flat: String,
-        private val elevated: String
-    ) : ITileMutator {
-        override val name get() = elevated
-        override fun lower(tile: Tile) {
-            tile.baseTerrain = flat
+    private fun Tile.dropElevatedFeatures() {
+        for (feature in terrainFeatures) {
+            val featureObj = ruleset.terrains[feature] ?: continue
+            if (featureObj.hasUnique(UniqueType.OccursInChains)
+                || featureObj.hasUnique(UniqueType.OccursInGroups)) {
+                removeTerrainFeature(feature)
+                return
+            }
         }
-        override fun raise(tile: Tile) {
-            tile.baseTerrain = elevated
+    }
+        
+    private fun Tile.hasTerrain(terrains: List<MapGenerator.TerrainOccursRange>): Boolean {
+        for (terrain in terrains) {
+            if (terrain.terrain.type == TerrainType.Land) {
+                if (baseTerrain == terrain.name)
+                    return true
+            } else { // must be TerrainType.TerrainFeature
+                if (terrainFeatures.contains(terrain.name))
+                    return true
+            }
         }
-        override fun isElevated(tile: Tile) = tile.baseTerrain == elevated
+        return false
     }
 
-    private class TileFeatureMutator(
-        val elevated: String
-    ) : ITileMutator {
-        override val name get() = elevated
-        override fun lower(tile: Tile) {
-            tile.removeTerrainFeature(elevated)
+    private fun applyTerrain(tile: Tile, terrains: List<MapGenerator.TerrainOccursRange>) {
+        val desiredTerrain = (terrains.filter {it.matches(tile) }.ifEmpty { terrains }).random(randomness.RNG)
+        tile.dropElevatedFeatures()
+        if (desiredTerrain.terrain.type == TerrainType.Land) {
+            tile.baseTerrain = desiredTerrain.name
+        } else { // must be TerrainType.TerrainFeature
+            val baseTerrains = flats.filter { desiredTerrain.terrain.occursOn.contains(it.name) && it.matches(tile) }
+                .ifEmpty { flats.filter { desiredTerrain.terrain.occursOn.contains(it.name) } }
+            if (baseTerrains.isEmpty()) {
+                Log.debug("Ruleset seems to contain no flat terrain that ${desiredTerrain.name} can apply to. Failing feature.")
+                return
+            }
+            val baseTerrain = baseTerrains.random(randomness.RNG)
+            tile.baseTerrain = baseTerrain.name
+            tile.addTerrainFeature(desiredTerrain.name)
         }
-        override fun raise(tile: Tile) {
-            tile.addTerrainFeature(elevated)
-        }
-        override fun isElevated(tile: Tile) = elevated in tile.terrainFeatures
     }
 }

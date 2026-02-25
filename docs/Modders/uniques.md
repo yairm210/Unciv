@@ -128,8 +128,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
-??? example  "Set [stockpile] to [amount]"
-	Example: "Set [Mana] to [3]"
+??? example  "Set [stockpile] to [countable]"
+	Example: "Set [Mana] to [1000]"
 
 	This unique's effect can be modified with &lt;(modified by game speed)&gt;
 
@@ -2619,6 +2619,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Example: "Units ending their turn on this terrain take [3] damage"
 
 	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
+
+	This unique does not support conditionals.
 
 	Applicable to: Terrain
 

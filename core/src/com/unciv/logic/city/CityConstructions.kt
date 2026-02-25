@@ -664,8 +664,8 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         
         if (building.hasCreateOneImprovementUnique()){
             val improvement = building.getImprovementToCreate(city.getRuleset(), city.civ)!!
-            val tileWithImprovementToRemove = city.getTiles().first { it.improvement == improvement.name }
-            tileWithImprovementToRemove.removeImprovement()
+            val tileWithImprovementToRemove = city.getTiles().firstOrNull { it.improvement == improvement.name }
+            tileWithImprovementToRemove?.removeImprovement()
         }
         
         updateUniques()

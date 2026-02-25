@@ -137,6 +137,7 @@ class GameOptionsTable(
             if (gameParameters.enableRandomNationsPool) {
                 it.addNationsSelectTextButton()
             }
+            it.addShowVictoryStatsCheckbox()
         }
         add(expander).pad(10f).row()
 
@@ -209,6 +210,10 @@ class GameOptionsTable(
             update()  // To show the button opening the chooser popup
         }
     }
+
+    private fun Table.addShowVictoryStatsCheckbox() =
+        addCheckbox("Show victory stats", gameParameters.showVictoryStats)
+        { gameParameters.showVictoryStats = it }
 
     private fun Table.addNationsSelectTextButton() {
         val button = "Select nations".toTextButton()

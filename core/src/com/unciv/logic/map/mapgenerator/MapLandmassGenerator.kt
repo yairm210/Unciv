@@ -37,11 +37,12 @@ class MapLandmassGenerator(
     fun generateLand() {
         // This is to accommodate land-only mods
         if (landOnlyMod) {
-            for (tile in tileMap.values)
+            for (tile in tileMap.values) {
                 tile.baseTerrain = landTerrainName
+            }
             return
         }
-
+        
         waterThreshold = tileMap.mapParameters.waterThreshold.toDouble()
 
         when (tileMap.mapParameters.type) {

@@ -13,6 +13,7 @@ import com.unciv.logic.city.managers.SpyFleeReason
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.transients.CapitalConnectionsFinder.CapitalConnectionMedium
 import com.unciv.logic.map.HexCoord
+import com.unciv.logic.map.PathingMap
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.UnitPromotions
@@ -30,9 +31,13 @@ import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.SubStat
 import com.unciv.utils.withoutItem
+import yairm210.purity.annotations.Cache
+import yairm210.purity.annotations.InternalState
+import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 import java.util.EnumSet
 import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.roundToInt
 
 enum class CityFlags {
@@ -144,6 +149,11 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     internal var flagsCountdown = HashMap<String, Int>()
 
+    @Transient @Cache private val landAttackPathing = ConcurrentHashMap<Civilization, PathingMap>()
+    @Transient @Cache private val amphibiousAttackPathing = ConcurrentHashMap<Civilization, PathingMap>()
+    @Transient @Cache private lateinit var potentialRoadPathing: PathingMap
+    
+
     /** Persisted connected-to-capital (by any medium) to allow "disconnected" notifications after loading */
     var connectedToCapitalStatus = false
 
@@ -206,6 +216,26 @@ class City : IsPartOfGameInfoSerialization, INamed {
     ): Boolean {
         val mediumTypes = civ.cache.citiesConnectedToCapitalToMediums[this] ?: return false
         return connectionTypePredicate(mediumTypes)
+    }
+    
+    @Readonly
+    fun getLandAttackPath(destination: City, maxTurns: Int = PathingMap.MAX_VALID_TURNS): List<Tile>? {
+        @LocalState val pathingCache = landAttackPathing.getOrPut(destination.civ, {PathingMap.createLandAttackPathingMap(civ, centerTile, destination.civ)})
+        return pathingCache.getShortestPath(destination.getCenterTile(), maxTurns)
+
+    }
+    @Readonly
+    fun getAmphibiousAttackPath(destination: City, maxTurns: Int = PathingMap.MAX_VALID_TURNS): List<Tile>? {
+        @LocalState val pathingCache = amphibiousAttackPathing.getOrPut(destination.civ, { PathingMap.createAmphibiousAttackPathingMap(civ, centerTile, destination.civ) })
+        return pathingCache.getShortestPath(destination.getCenterTile(), maxTurns)
+    }
+
+    @Readonly
+    fun getRoadPath(destination: City, maxTurns: Int = PathingMap.MAX_VALID_TURNS): List<Tile>? {
+        if (!::potentialRoadPathing.isInitialized)
+            potentialRoadPathing = PathingMap.createRoadPathingMap(civ, centerTile)
+        return if (id < destination.id) potentialRoadPathing.getShortestPath( destination.centerTile, maxTurns)
+        else destination.getRoadPath(this, maxTurns)
     }
 
     @Readonly fun isGarrisoned() = getGarrison() != null
@@ -593,6 +623,13 @@ class City : IsPartOfGameInfoSerialization, INamed {
         return if (uniques.any()) uniques.filter { !it.isLocalEffect && !it.isTimedTriggerable
             && it.conditionalsApply(gameContext) }.flatMap { it.getMultiplied(gameContext) }
         else uniques
+    }
+    
+    fun clearCaches() {
+        landAttackPathing.clear()
+        amphibiousAttackPathing.clear()
+        if (::potentialRoadPathing.isInitialized)
+            potentialRoadPathing.clear()
     }
 
     @Readonly

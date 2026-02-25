@@ -36,8 +36,8 @@ enum class MapGeneratorSteps(
     None(""),
     All("All"), // Special case - applying params done elsewhere
     Landmass("Generate landmass", MapGeneratorStepsHelpers.applyLandmass),
-    Elevation("Raise mountains and hills", MapGeneratorStepsHelpers.applyElevation),
     HumidityAndTemperature("Humidity and temperature", MapGeneratorStepsHelpers.applyHumidityAndTemperature),
+    Elevation("Raise mountains and hills", MapGeneratorStepsHelpers.applyElevation),
     LakesAndCoast("Lakes and coastline", MapGeneratorStepsHelpers.applyLakesAndCoast),
     Vegetation("Sprout vegetation", MapGeneratorStepsHelpers.applyVegetation),
     RareFeatures("Spawn rare features", MapGeneratorStepsHelpers.applyRareFeatures),

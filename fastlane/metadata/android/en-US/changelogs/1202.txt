@@ -1,0 +1,11 @@
+Add star icon to resources on map that are currently provided
+
+Consistent XP cost for next N promotions vs single promotion
+
+AI denounce automation - By unciv-loof
+
+By AutumnPizazz:
+- Add game option to hide victory screen statistics 
+- Change 'Set [stockpile] to [amount]' to 'Set [stockpile] to [countable]' 
+
+MapGeneration supports multiple Mountains, Hills, Ice, Snow, Lakes, and Vegetation. - By Ambeco

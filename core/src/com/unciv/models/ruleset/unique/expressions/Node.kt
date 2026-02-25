@@ -66,4 +66,19 @@ internal sealed interface Node {
 
         override fun toString() = "[Countable: $parameterText]"
     }
+
+    class FunctionCall(private val function: Operator.Function, private val arguments: List<Node>): Node {
+        @Suppress("purity") // cannot mark class val as @Read
+        override fun eval(context: GameContext): Double {
+            val evaluatedArgs = arguments.map { it.eval(context) }
+            return function.implementation(evaluatedArgs)
+        }
+
+        @Readonly
+        override fun getErrors(ruleset: Ruleset): List<String> {
+            return arguments.flatMap { it.getErrors(ruleset) }
+        }
+
+        override fun toString() = "[FunctionCall: ${function.symbol}(${arguments.joinToString(", ")})]"
+    }
 }

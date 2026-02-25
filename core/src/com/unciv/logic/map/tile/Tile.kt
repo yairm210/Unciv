@@ -169,6 +169,10 @@ class Tile : IsPartOfGameInfoSerialization {
     /** Between -1.0 and 1.0 - For map generation use only */
     var temperature: Double? = null
 
+    @Transient
+        /** For map generation use only */
+    var hasVegetation: Boolean = false
+
     val latitude: Int
         get() = HexMath.getLatitude(position)
     val longitude: Int
@@ -728,7 +732,17 @@ class Tile : IsPartOfGameInfoSerialization {
             getUnpillagedRoad() == RoadStatus.Railroad
         else
             roadStatus == RoadStatus.Railroad
-
+    
+    @Readonly
+    fun getConnectionStatus(civInfo: Civilization): RoadStatus {
+        val roadType = getUnpillagedRoad()
+        if (roadType != RoadStatus.None)
+            return roadType
+        if (forestOrJungleAreRoads(civInfo))
+            return RoadStatus.Road
+        return RoadStatus.None
+    }
+    
     @Readonly
     private fun forestOrJungleAreRoads(civInfo: Civilization) =
             civInfo.nation.forestsAndJunglesAreRoads

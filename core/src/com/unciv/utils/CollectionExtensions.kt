@@ -3,6 +3,7 @@ package com.unciv.utils
 import com.badlogic.gdx.utils.Array
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
+import java.util.BitSet
 import kotlin.random.Random
 
 /** Get one random element of a given List.
@@ -131,3 +132,20 @@ fun <T> ArrayList<T?>.getOrPut(index: Int, getValue: () -> T): T {
     this[index] = value // Now we can safely set the value
     return value
 }
+
+inline fun BitSet.forEachSetBit(action: (Int) -> Unit) {
+    var bit = nextSetBit(0)
+    while (bit >= 0) {
+        action(bit)
+        bit = nextSetBit(bit + 1)
+    }
+}
+
+inline fun BitSet.forEachClearBit(action: (Int) -> Unit) {
+    var bit = nextClearBit(0)
+    while (bit >= 0) {
+        action(bit)
+        bit = nextClearBit(bit + 1)
+    }
+}
+
