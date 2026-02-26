@@ -412,7 +412,9 @@ enum class Countables(
                     "${it.arityRange.first} argument${if (it.arityRange.first != 1) "s" else ""}"
                 else 
                     "${it.arityRange.first} to ${it.arityRange.last} arguments"
-                "  - `${it.symbol}()` - $arityText"
+                var functionParameters = List(it.arityRange.first){"expression"}.joinToString(",")
+                if (it.arityRange.first != it.arityRange.last) functionParameters += ",..."
+                " - `${it.symbol}($functionParameters)`"
             }.toTypedArray(),
         )
     }
