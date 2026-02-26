@@ -345,7 +345,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
 
     private fun spawnLakesAndCoasts(map: TileMap) {
         if (ruleset.terrains.containsKey(Constants.lakes)) {
-            val lakeTerrains = terrainConditions.filter { it.freshWater && !it.rareFeature }
+            val lakeTerrains = terrainConditions.filter { it.freshWater && !it.rareFeature && it.terrain.type == TerrainType.Water }
             //define lakes
             val waterTiles = map.values.filter { it.isWater }.toMutableList()
 
