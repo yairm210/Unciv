@@ -116,11 +116,11 @@ class WorkerAutomation(
     ): Boolean {
         // Note, however, that the closest city to a tile isn't necessarily the owning city
         val closestUndevelopedCity = unit.civ.cities
-            .filter { it != unit.currentTile.owningCity && it.getTiles().any { tile -> tile.isLand
-                    && tile.getUnits().none { unit -> unit.cache.hasUniqueToBuildImprovements }
-                    && (tile.isPillaged() || tileHasWorkToDo(tile, unit, localUniqueCache)) } }
             .sortedBy { it.getCenterTile().aerialDistanceTo(currentTile) }
-            .firstOrNull { unit.movement.canReach(it.getCenterTile()) } //goto closest undeveloped city
+            .firstOrNull { it != unit.currentTile.owningCity && it.getTiles().any { tile -> tile.isLand
+                    && tile.getUnits().none { unit -> unit.cache.hasUniqueToBuildImprovements }
+                    && (tile.isPillaged() || tileHasWorkToDo(tile, unit, localUniqueCache)) }
+                && unit.movement.canReach(it.getCenterTile()) } //goto closest undeveloped city
 
         if (closestUndevelopedCity != null) {
             debug("WorkerAutomation: %s -> head towards undeveloped city %s", unit, closestUndevelopedCity.name)
