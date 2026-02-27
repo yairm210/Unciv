@@ -45,9 +45,14 @@ class CityScreenTileTable(private val cityScreen: CityScreen) : Table() {
         val stats = selectedTile.stats.getTileStats(city, city.civ)
         innerTable.pad(5f)
 
-        innerTable.add(MarkupRenderer.render(TileDescription.toMarkup(selectedTile, city.civ, hideUnits = cityScreen.isSpying), iconDisplay = IconDisplay.None) {
+        innerTable.add(MarkupRenderer.render(TileDescription.toMarkup(
+            selectedTile,
+            city.civ,
+            hideUnits = cityScreen.isSpying,
+            spyCity = if (cityScreen.isSpying) cityScreen.city else null
+        ), iconDisplay = IconDisplay.None) {
             cityScreen.openCivilopedia(it)
-        } )
+        })
         innerTable.row()
         innerTable.add(getTileStatsTable(stats)).row()
 
