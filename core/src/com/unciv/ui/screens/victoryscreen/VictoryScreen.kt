@@ -60,8 +60,7 @@ class VictoryScreen(
         Demographics('D', allowAsSecret = true) {
             override fun getContent(parent: VictoryScreen) = VictoryScreenDemographics(parent.worldScreen)
             override fun isHidden(playerCiv: Civilization) =
-                !UncivGame.Current.settings.useDemographics ||
-                (!playerCiv.isSpectator() && !playerCiv.gameInfo.gameParameters.showVictoryStats)
+                !UncivGame.Current.settings.useDemographics && !playerCiv.gameInfo.gameParameters.showDemographics
         },
         Rankings('R', allowAsSecret = true) {
             override fun getContent(parent: VictoryScreen) = VictoryScreenCivRankings(parent.worldScreen)
