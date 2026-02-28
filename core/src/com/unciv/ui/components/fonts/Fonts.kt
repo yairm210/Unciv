@@ -128,6 +128,7 @@ object Fonts {
     const val culture = '♪'             // U+266A 'eighth note' (🎵 U+1F3B5 'musical note')
     const val happiness = '⌣'           // U+2323 'smile' (😀 U+1F600 'grinning face')
     const val faith = '☮'               // U+262E 'peace symbol' (🕊 U+1F54A 'dove of peace')
+    const val tourism = '✈'             // U+2708 'airplane' (💼 U+1F4BC 'suitcase')
     @Suppress("MemberVisibilityCanBePrivate") // offer for mods
     const val greatArtist = '♬'         // U+266C 'sixteenth note'
     @Suppress("MemberVisibilityCanBePrivate") // offer for mods
