@@ -19,7 +19,8 @@ open class Stats(
     var science: Float = 0f,
     var culture: Float = 0f,
     var happiness: Float = 0f,
-    var faith: Float = 0f
+    var faith: Float = 0f,
+    var tourism: Float = 0f
 ): Iterable<Stats.StatValuePair> {
 
     /** Indexed read of a value for a given [Stat], e.g. `this.gold == this[Stat.Gold]` */
@@ -33,6 +34,7 @@ open class Stats(
             Stat.Culture -> culture
             Stat.Happiness -> happiness
             Stat.Faith -> faith
+            Stat.Tourism -> tourism
         }
     }
     /** Indexed write of a value for a given [Stat], e.g. `this.gold += 1f` is equivalent to `this[Stat.Gold] += 1f` */
@@ -45,6 +47,7 @@ open class Stats(
             Stat.Culture -> culture = value
             Stat.Happiness -> happiness = value
             Stat.Faith -> faith = value
+            Stat.Tourism -> tourism = value
         }
     }
 
@@ -61,6 +64,7 @@ open class Stats(
                 && culture == otherStats.culture
                 && happiness == otherStats.happiness
                 && faith == otherStats.faith
+                && tourism == otherStats.tourism
     }
 
     /** **Non-Mutating function**
@@ -76,7 +80,8 @@ open class Stats(
             && science == 0f
             && culture == 0f
             && happiness == 0f
-            && faith == 0f )
+            && faith == 0f 
+            && tourism == 0f)
 
     /** Reset all values to zero (in place) */
     fun clear() {
@@ -87,6 +92,7 @@ open class Stats(
         culture = 0f
         happiness = 0f
         faith = 0f
+        tourism = 0f
     }
 
     /** **Mutating function** (but does **not** mutate [other])
@@ -100,6 +106,7 @@ open class Stats(
         culture += other.culture
         happiness += other.happiness
         faith += other.faith
+        tourism += other.tourism
         return this
     }
 
@@ -133,7 +140,8 @@ open class Stats(
         science * number,
         culture * number,
         happiness * number,
-        faith * number
+        faith * number,
+        tourism * number
     )
 
     /** **Mutating function**
@@ -146,6 +154,7 @@ open class Stats(
         culture *= number
         happiness *= number
         faith *= number
+        tourism *= number
     }
 
     /** **Non-Mutating function**
@@ -162,6 +171,7 @@ open class Stats(
         culture *= 8
         happiness *= 10 // base
         faith *= 7
+        tourism *= 8 //TODO: Chose ranking weight
     }
 
     /** ***Not*** only a debug helper. It returns a string representing the content, already _translated_.
@@ -219,6 +229,7 @@ open class Stats(
         if (culture != 0f) yield(StatValuePair(Stat.Culture, culture))
         if (happiness != 0f) yield(StatValuePair(Stat.Happiness, happiness))
         if (faith != 0f) yield(StatValuePair(Stat.Faith, faith))
+        if (tourism != 0f) yield (StatValuePair(Stat.Tourism, tourism))
     }
 
     /** Enables aggregates over the values, never empty */
@@ -233,6 +244,7 @@ open class Stats(
             yield(culture)
             yield(happiness)
             yield(faith)
+            yield(tourism)
         }
 
     /** Returns an iterator over the elements of this object, wrapped as [StatValuePair]s */
