@@ -303,8 +303,8 @@ class CityStateFunctions(val civInfo: Civilization) {
             )
             newAlly.cache.updateViewableTiles()
             newAlly.cache.updateCivResources()
-            for (unique in newAlly.getMatchingUniques(UniqueType.CityStateCanBeBoughtForGold))
-                newAlly.getDiplomacyManager(civInfo)!!.setFlag(DiplomacyFlags.MarriageCooldown, unique.params[0].toInt())
+            for (unique in newAlly.getMatchingUniques(UniqueType.CityStateCanBeBoughtForStat))
+                newAlly.getDiplomacyManager(civInfo)!!.setFlag(DiplomacyFlags.MarriageCooldown, unique.params[2].toInt())
 
             // Join the wars of our new ally - loop through all civs they are at war with
             for (newEnemy in civInfo.gameInfo.civilizations.filter { it.isAtWarWith(newAlly) && it.isAlive() } ) {
@@ -363,23 +363,58 @@ class CityStateFunctions(val civInfo: Civilization) {
         return cost
     }
 
-    @Readonly
-    fun canBeMarriedBy(otherCiv: Civilization): Boolean {
-        return (!civInfo.isDefeated()
-                && civInfo.isCityState
-                && civInfo.cities.any()
-                && civInfo.getDiplomacyManager(otherCiv)!!.isRelationshipLevelEQ(RelationshipLevel.Ally)
-                && !otherCiv.getDiplomacyManager(civInfo)!!.hasFlag(DiplomacyFlags.MarriageCooldown)
-                && otherCiv.getMatchingUniques(UniqueType.CityStateCanBeBoughtForGold).any()
-                && otherCiv.gold >= getDiplomaticMarriageCost())
-
+    fun enoughToGetMarried(otherCiv: Civilization, stat:Stat): Boolean{
+        for (unique in otherCiv.getMatchingUniques(UniqueType.CityStateCanBeBoughtForStat)){
+            
+        }
+        return false;
     }
 
-    fun diplomaticMarriage(otherCiv: Civilization) {
-        if (!canBeMarriedBy(otherCiv))  // Just in case
+    fun enoughToGetMarriedAny(otherCiv: Civilization): Boolean{
+        return (
+            (enoughToGetMarried(otherCiv, Stat.Culture)) ||
+            (enoughToGetMarried(otherCiv, Stat.Science)) ||
+            (enoughToGetMarried(otherCiv, Stat.Gold)) ||
+            (enoughToGetMarried(otherCiv, Stat.Faith)) ||
+            (enoughToGetMarried(otherCiv, Stat.Happiness)) || 
+            (enoughToGetMarried(otherCiv, Stat.Tourism))
+            )
+    }
+    @Readonly
+    fun canBeMarriedBy(otherCiv: Civilization): Boolean {
+        return (
+            (canBeMarriedByStat(otherCiv, Stat.Culture)) ||
+            (canBeMarriedByStat(otherCiv, Stat.Science)) ||
+            (canBeMarriedByStat(otherCiv, Stat.Gold)) ||
+            (canBeMarriedByStat(otherCiv, Stat.Faith)) ||
+            (canBeMarriedByStat(otherCiv, Stat.Happiness)) ||
+            (canBeMarriedByStat(otherCiv, Stat.Tourism))
+        )
+    }
+
+    @Readonly
+    fun canBeMarriedByStat(otherCiv: Civilization, stat:Stat): Boolean {
+        if (!civInfo.isDefeated()
+            && civInfo.isCityState
+            && civInfo.cities.any()
+            && civInfo.getDiplomacyManager(otherCiv)!!.isRelationshipLevelEQ(RelationshipLevel.Ally)
+            && !otherCiv.getDiplomacyManager(civInfo)!!.hasFlag(DiplomacyFlags.MarriageCooldown)
+            ){
+            for(unique in otherCiv.getMatchingUniques(UniqueType.CityStateCanBeBoughtForStat)){
+                if(Stat.isStat(unique.params[0])){
+                    val uniqueStat = Stat.safeValueOf(unique.params[0])
+                    return (uniqueStat == stat && otherCiv.getStatReserve(stat) >= getDiplomaticMarriageCost())
+                }
+            }
+        }
+        return false;
+    }
+
+    fun diplomaticMarriage(otherCiv: Civilization, stat:Stat) {
+        if (!canBeMarriedByStat(otherCiv,stat))  // Just in case
             return
 
-        otherCiv.addGold(-getDiplomaticMarriageCost())
+        otherCiv.addStat(stat,-getDiplomaticMarriageCost())
         
         val notificationLocation = civInfo.getCapital()!!.location
         otherCiv.addNotification("We have married into the ruling family of [${civInfo.civName}], bringing them under our control.",
