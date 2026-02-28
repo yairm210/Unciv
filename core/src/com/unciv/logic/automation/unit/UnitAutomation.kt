@@ -17,10 +17,12 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.UnitAction
 import com.unciv.models.UpgradeUnitAction
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 import yairm210.purity.annotations.Readonly
@@ -114,8 +116,7 @@ object UnitAutomation {
         if (unit.civ.isCityState)
             wander(unit, stayInTerritory = true)
     }
-
-
+    
     @Readonly
     private fun isGoodTileToExplore(unit: MapUnit, tile: Tile, unitVisibilityRange: Int): Boolean {
         // These should be ordered by increasing computational cost

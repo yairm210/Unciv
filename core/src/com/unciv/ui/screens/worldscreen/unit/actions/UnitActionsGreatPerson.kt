@@ -10,6 +10,7 @@ import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toPercent
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionModifiers.getUseFrequency
 import kotlin.math.min
 
 @Suppress("UNUSED_PARAMETER") // references need to have the signature expected by UnitActions.actionTypeToFunctions
@@ -17,8 +18,9 @@ object UnitActionsGreatPerson {
 
     internal fun getHurryResearchActions(unit: MapUnit, tile: Tile) = sequence {
         for (unique in unit.getMatchingUniques(UniqueType.CanHurryResearch)){
+            val useFrequency = getUseFrequency(unit, unique, 76f)
             yield(UnitAction(
-                UnitActionType.HurryResearch, 76f,
+                UnitActionType.HurryResearch, useFrequency,
                 action = {
                     unit.civ.tech.addScience(unit.civ.tech.getScienceFromGreatScientist())
                     unit.consume()
@@ -33,8 +35,9 @@ object UnitActionsGreatPerson {
 
     internal fun getHurryPolicyActions(unit: MapUnit, tile: Tile) = sequence {
         for (unique in unit.getMatchingUniques(UniqueType.CanHurryPolicy)){
+            val useFrequency = getUseFrequency(unit, unique, 76f)
             yield(UnitAction(
-                UnitActionType.HurryPolicy, 76f,
+                UnitActionType.HurryPolicy, useFrequency,
                 action = {
                     unit.civ.policies.addCulture(unit.civ.policies.getCultureFromGreatWriter())
                     unit.consume()
@@ -49,9 +52,10 @@ object UnitActionsGreatPerson {
                 if (!tile.isCityCenter()) false
                 else tile.getCity()!!.cityConstructions.isBuildingWonder()
                     && tile.getCity()!!.cityConstructions.canBeHurried()
+            val useFrequency = getUseFrequency(unit, unique, 75f)
 
             yield(UnitAction(
-                UnitActionType.HurryWonder, 75f,
+                UnitActionType.HurryWonder, useFrequency,
                 action = {
                     tile.getCity()!!.cityConstructions.apply {
                         //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
@@ -67,8 +71,9 @@ object UnitActionsGreatPerson {
 
     internal fun getHurryBuildingActions(unit: MapUnit, tile: Tile) = sequence {
         for (unique in unit.getMatchingUniques(UniqueType.CanSpeedupConstruction)) {
+            val useFrequency = getUseFrequency(unit, unique, 75f)
             if (!tile.isCityCenter()) {
-                yield(UnitAction(UnitActionType.HurryBuilding, 75f, action = null))
+                yield(UnitAction(UnitActionType.HurryBuilding, useFrequency, action = null))
                 continue
             }
 
@@ -84,7 +89,7 @@ object UnitActionsGreatPerson {
             if (productionPointsToAdd <= 0) continue
 
             yield(UnitAction(
-                UnitActionType.HurryBuilding, 75f,
+                UnitActionType.HurryBuilding, useFrequency,
                 title = "Hurry Construction (+[$productionPointsToAdd]⚙)",
                 action = {
                     cityConstructions.apply {
@@ -104,9 +109,10 @@ object UnitActionsGreatPerson {
             && tile.owningCity?.civ?.isAtWarWith(unit.civ) == false
         for (unique in unit.getMatchingUniques(UniqueType.CanTradeWithCityStateForGoldAndInfluence)) {
             val influenceEarned = unique.params[0].toFloat()
+            val useFrequency = getUseFrequency(unit, unique, 70f)
 
             yield(UnitAction(
-                UnitActionType.ConductTradeMission, 70f,
+                UnitActionType.ConductTradeMission, useFrequency,
                 action = {
                     // http://civilization.wikia.com/wiki/Great_Merchant_(Civ5)
                     var goldEarned = (350 + 50 * unit.civ.getEraNumber()) * unit.civ.gameInfo.speed.goldCostModifier
