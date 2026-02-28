@@ -15,6 +15,7 @@ data class UncivSound(
         val Bombard = UncivSound("bombard")
         val Chimes = UncivSound("chimes")
         val Choir = UncivSound("choir")
+        val Flight = UncivSound("flight")
         val Click = UncivSound("click")
         val Coin = UncivSound("coin")
         val Construction = UncivSound("construction")
