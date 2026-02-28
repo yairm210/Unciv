@@ -19,6 +19,7 @@ import com.unciv.models.ruleset.Quest
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addSeparator
@@ -75,8 +76,10 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         if (otherCiv.getCapital() != null && viewingCiv.hasExplored(otherCiv.getCapital()!!.getCenterTile()))
             diplomacyTable.add(diplomacyScreen.getGoToOnMapButton(otherCiv)).row()
 
-        val diplomaticMarriageButton = getDiplomaticMarriageButton(otherCiv)
-        if (diplomaticMarriageButton != null) diplomacyTable.add(diplomaticMarriageButton).row()
+        val diplomaticMarriageButtons = getDiplomaticMarriageButtons(otherCiv) ?: arrayOf()
+        for(diplomaticMarriageButton in diplomaticMarriageButtons){
+            diplomacyTable.add(diplomaticMarriageButton).row()
+        }
 
         for (assignedQuest in otherCiv.questManager.getAssignedQuestsFor(viewingCiv)) {
             diplomacyTable.addSeparator()
@@ -309,22 +312,40 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         return improveTileButton
     }
 
-    private fun getDiplomaticMarriageButton(otherCiv: Civilization): TextButton? {
-        if (!viewingCiv.hasUnique(UniqueType.CityStateCanBeBoughtForGold))
-            return null
-
-        val diplomaticMarriageButton =
-            "Diplomatic Marriage ([${otherCiv.cityStateFunctions.getDiplomaticMarriageCost()}] Gold)".toTextButton()
-        diplomaticMarriageButton.onClick {
-            val newCities = otherCiv.cities
-            otherCiv.cityStateFunctions.diplomaticMarriage(viewingCiv)
-            UncivGame.Current.popScreen() // The other civ will no longer exist
-            for (city in newCities)
-                viewingCiv.popupAlerts.add(PopupAlert(AlertType.DiplomaticMarriage, city.id))   // Player gets to choose between annex and puppet
+    private fun getDiplomaticMarriageButtons(otherCiv: Civilization): Array<TextButton>? {
+        if (!viewingCiv.hasUnique(UniqueType.CityStateCanBeBoughtForStat))
+            return arrayOf()
+        var diplomaticMarriageButtons: Array<TextButton> = arrayOf()
+        //listing all stats which the civilization can marry by
+        for (unique in viewingCiv.getMatchingUniques(UniqueType.CityStateCanBeBoughtForStat)){
+            if(Stat.isStat(unique.params[0])) {
+                val stat = Stat.safeValueOf(unique.params[0]) ?: return null
+                val diplomaticMarriageButton =
+                    "Diplomatic Marriage ([${otherCiv.cityStateFunctions.getDiplomaticMarriageCost()}] ${unique.params[0]})".toTextButton()
+                diplomaticMarriageButton.onClick {
+                    val newCities = otherCiv.cities
+                    otherCiv.cityStateFunctions.diplomaticMarriage(viewingCiv, stat)
+                    UncivGame.Current.popScreen() // The other civ will no longer exist
+                    for (city in newCities)
+                        viewingCiv.popupAlerts.add(
+                            PopupAlert(
+                                AlertType.DiplomaticMarriage,
+                                city.id
+                            )
+                        )   // Player gets to choose between annex and puppet
+                }
+                if (diplomacyScreen.isNotPlayersTurn() || !otherCiv.cityStateFunctions.canBeMarriedByStat(
+                        viewingCiv,
+                        stat
+                    )
+                )
+                    diplomaticMarriageButton.disable()
+                diplomaticMarriageButtons += diplomaticMarriageButton
+            }
         }
-        if (diplomacyScreen.isNotPlayersTurn() || !otherCiv.cityStateFunctions.canBeMarriedBy(viewingCiv))
-            diplomaticMarriageButton.disable()
-        return diplomaticMarriageButton
+        
+        
+        return diplomaticMarriageButtons
     }
 
     private fun getGoldGiftTable(otherCiv: Civilization): Table {
