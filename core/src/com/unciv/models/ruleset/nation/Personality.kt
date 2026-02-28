@@ -41,6 +41,7 @@ enum class PersonalityValue {
                 Stat.Culture -> Culture
                 Stat.Happiness -> Happiness
                 Stat.Faith -> Faith
+                Stat.Tourism -> Culture //TODO: Create Tourism personality or something
             }
         }
     }
