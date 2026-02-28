@@ -1,3 +1,17 @@
+## 4.19.16
+
+docs: Clearer min-max number of parameters for functions
+
+docs: clearer expression function call documentation
+
+Resolved  - changed default max RAM from 1GB to 4GB, it's 2026, let people go crazy if they want
+
+Feature/spy city view restrictions - By ICanSeeForever
+
+FreshWater NaturalWonders no longer appear as lakes - By Ambeco
+
+Scale demands and WLTK duration with game speed - By unciv-loof
+
 ## 4.19.15
 
 More explicit warning about large maps causing memory crashes 
