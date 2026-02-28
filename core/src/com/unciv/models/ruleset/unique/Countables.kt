@@ -341,7 +341,7 @@ enum class Countables(
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
     },
 
-    /** Please leave this one in, it is tested against in [com.unciv.uniques.CountableTests.testRulesetValidation] */
+    /** Please leave this one in, it is tested against in [ com.unciv.uniques.CountableTests.testRulesetValidation] */
     @Deprecated("because it was never actually supported", ReplaceWith("Remaining [City-State] Civilizations"), DeprecationLevel.ERROR)
     CityStates("City-States", shortDocumentation = "counts all undefeated city-states") {
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
@@ -375,6 +375,7 @@ enum class Countables(
                 Stat.Culture -> speed.cultureCostModifier
                 Stat.Happiness -> speed.modifier
                 Stat.Faith -> speed.faithCostModifier
+                Stat.Tourism -> speed.cultureCostModifier //TODO: Check if this is right
             }
             return modifier.times(100).toInt()
         }
@@ -406,16 +407,6 @@ enum class Countables(
             "Since on translation, the brackets are removed, the expression will be displayed as `(Melee units + 1) / Cities`",
             "Supported operations between 2 values are: "+ Operator.BinaryOperators.entries.joinToString { it.symbol },
             "Supported operations on 1 value are: " + Operator.UnaryOperators.entries.joinToString { "${it.symbol} (${it.description})" },
-            "Supported functions:",
-            *Operator.Functions.entries.map { 
-                val arityText = if (it.arityRange.first == it.arityRange.last) 
-                    "${it.arityRange.first} argument${if (it.arityRange.first != 1) "s" else ""}"
-                else 
-                    "${it.arityRange.first} to ${it.arityRange.last} arguments"
-                var functionParameters = List(it.arityRange.first){"expression"}.joinToString(",")
-                if (it.arityRange.first != it.arityRange.last) functionParameters += ",..."
-                " - `${it.symbol}($functionParameters)`"
-            }.toTypedArray(),
         )
     }
     ;
@@ -434,7 +425,7 @@ enum class Countables(
     @Readonly open fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf(text)
 
     /** This indicates whether a parameter *is of this countable type*, not *whether its parameters are correct*
-     * E.g. "[fakeBuilding] Buildings" is obviously a countable of type "[buildingFilter] Buildings", therefore matches will return true.
+     * E.g. "[ fakeBuilding] Buildings" is obviously a countable of type "[ buildingFilter] Buildings", therefore matches will return true.
      * But it has another problem, which is that the building filter is bad, so its getErrorSeverity will return "ruleset specific" */
     @Readonly open fun matches(parameterText: String, ruleset: Ruleset): Boolean = false
     @Readonly abstract fun eval(parameterText: String, gameContext: GameContext): Int?

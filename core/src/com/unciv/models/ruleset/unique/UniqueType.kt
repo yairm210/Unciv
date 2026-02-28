@@ -80,14 +80,13 @@ enum class UniqueType(
     CityStateMilitaryUnits("Provides military units every ≈[positiveAmount] turns", UniqueTarget.CityState),
     CityStateUniqueLuxury("Provides a unique luxury", UniqueTarget.CityState), // No conditional support as of yet
 
-    // Todo: Lowercase the 'U' of 'Units' in this unique
-    CityStateGiftedUnitsStartWithXp("Military Units gifted from City-States start with [positiveAmount] XP", UniqueTarget.Global),
+    CityStateGiftedUnitsStartWithXp("Military units gifted from City-States start with [positiveAmount] XP", UniqueTarget.Global),
+    
     CityStateMoreGiftedUnits("Militaristic City-States grant units [positiveAmount] times as fast when you are at war with a common nation", UniqueTarget.Global),
 
     CityStateGoldGiftsProvideMoreInfluence("Gifts of Gold to City-States generate [relativeAmount]% more Influence", UniqueTarget.Global),
-    
-    
-    CityStateCanBeBoughtForGold("Can spend Gold to annex or puppet a City-State that has been your Ally for [nonNegativeAmount] turns", UniqueTarget.Global),
+
+    CityStateCanBeBoughtForStat("Can spend [stat] to annex or puppet a City-State that has been your [comment] for [nonNegativeAmount] turns", UniqueTarget.Global),
     CityStateTerritoryAlwaysFriendly("City-State territory always counts as friendly territory", UniqueTarget.Global),
 
     CityStateCanGiftGreatPeople("Allied City-States will occasionally gift Great People", UniqueTarget.Global),  // used in Policy
@@ -1069,9 +1068,15 @@ enum class UniqueType(
     ConditionalModEnabled("if [modFilter] is enabled", UniqueTarget.Conditional),
     ConditionalModNotEnabled("if [modFilter] is not enabled", UniqueTarget.Conditional),
 
+    //lab
+
     // endregion
 
     ///////////////////////////////////////////// region 99 DEPRECATED AND REMOVED /////////////////////////////////////////////
+    //
+    @Deprecated("As of 4.20.1", ReplaceWith("Military units gifted from City-States start with [positiveAmount] XP"), DeprecationLevel.ERROR)
+    CityStateGiftedUnitsStartWithXpOld("Military Units gifted from City-States start with [positiveAmount] XP",  UniqueTarget.Global),
+
     @Deprecated("As of 4.18.15", ReplaceWith("Receive [+200]% Gold from Barbarian encampments and pillaging Cities"), DeprecationLevel.ERROR)
     TripleGoldFromEncampmentsAndCities("Receive triple Gold from Barbarian encampments and pillaging Cities", UniqueTarget.Global),
     @Deprecated("As of 4.18.15", ReplaceWith("[+100]% Gold given to enemy if city is captured <in this city>"), DeprecationLevel.ERROR)
@@ -1101,8 +1106,10 @@ enum class UniqueType(
     HiddenBeforeAmountPolicies("Hidden until [amount] social policy branches have been completed", UniqueTarget.Building, UniqueTarget.Unit),
     @Deprecated("As of 4.15.11", ReplaceWith("New [baseUnitFilter] units start with [amount] XP [cityFilter]"), DeprecationLevel.ERROR)
     UnitStartingExperienceOld("New [baseUnitFilter] units start with [amount] Experience [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    @Deprecated("As of 4.15.2", ReplaceWith("Can spend Gold to annex or puppet a City-State that has been your Ally for [amount] turns"), DeprecationLevel.ERROR)
+    @Deprecated("As of 4.15.2", ReplaceWith("Can spend [Gold] to annex or puppet a City-State that has been your [Ally] for [amount] turns"), DeprecationLevel.ERROR)
     CityStateCanBeBoughtForGoldOld("Can spend Gold to annex or puppet a City-State that has been your ally for [amount] turns.", UniqueTarget.Global),
+    @Deprecated("As of 4.20.0", ReplaceWith("Can spend [Gold] to annex or puppet a City-State that has been your [Ally] for [nonNegativeAmount] turns"), DeprecationLevel.Global)
+    CityStateCanBeBoughtForGold("Can spend Gold to annex or puppet a City-State that has been your Ally for [nonNegativeAmount] turns", UniqueTarget.Global),
     @Deprecated("As of 4.14.6", ReplaceWith("[+100]% Strength <when defending> <when [Embarked]>"), DeprecationLevel.ERROR)
     DefenceBonusWhenEmbarked("Defense bonus when embarked", UniqueTarget.Unit, UniqueTarget.Global),
     @Deprecated("As of 4.13.18", ReplaceWith("Only available <when [victoryType] Victory is enabled>"), DeprecationLevel.ERROR)
