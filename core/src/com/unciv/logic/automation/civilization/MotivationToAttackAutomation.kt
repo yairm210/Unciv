@@ -1,6 +1,5 @@
 package com.unciv.logic.automation.civilization
 
-import com.unciv.UncivGame
 import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.battle.MapUnitCombatant
@@ -342,9 +341,7 @@ object MotivationToAttackAutomation {
             // We only want to calculate the best attack path and use it's value
             // Land routes are clearly better than sea routes
             for ((_, cityToAttack) in attacksGroupedByCity.value) {
-                val landAttackPath = 
-                    if (UncivGame.Current.settings.useAStarPathfinding) cityToAttackFrom.getLandAttackPath(cityToAttack, maxTurns = 17)
-                    else MapPathing.getConnection(civInfo, cityToAttackFrom.getCenterTile(), cityToAttack.getCenterTile(), ::isLandTileCanMoveThrough)
+                val landAttackPath = MapPathing.getConnection(civInfo, cityToAttackFrom.getCenterTile(), cityToAttack.getCenterTile(), ::isLandTileCanMoveThrough)
                 if (landAttackPath != null && landAttackPath.size < 16) {
                     attackPaths.add(landAttackPath)
                     cityAttackValue = 3f
@@ -353,9 +350,7 @@ object MotivationToAttackAutomation {
 
                 if (cityAttackValue > 0) continue
 
-                val landAndSeaAttackPath =
-                    if (UncivGame.Current.settings.useAStarPathfinding) cityToAttackFrom.getAmphibiousAttackPath(cityToAttack, maxTurns = 17)
-                    else MapPathing.getConnection(civInfo, cityToAttackFrom.getCenterTile(), cityToAttack.getCenterTile(), ::isTileCanMoveThrough)
+                val landAndSeaAttackPath = MapPathing.getConnection(civInfo, cityToAttackFrom.getCenterTile(), cityToAttack.getCenterTile(), ::isTileCanMoveThrough)
                 if (landAndSeaAttackPath != null  && landAndSeaAttackPath.size < 16) {
                     attackPaths.add(landAndSeaAttackPath)
                     cityAttackValue += 1

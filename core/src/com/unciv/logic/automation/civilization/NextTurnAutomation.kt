@@ -28,7 +28,6 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.ui.screens.victoryscreen.RankingType
 import com.unciv.utils.randomWeighted
-import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Readonly
 import kotlin.random.Random
 
@@ -495,9 +494,7 @@ object NextTurnAutomation {
             Battle.moveAndAttack(MapUnitCombatant(unit), mostSurroundedEnemy)
         }
     }
-    
-    @VisibleForTesting
-    fun automateSettlerEscorting(civInfo: Civilization){
+    private fun automateSettlerEscorting(civInfo: Civilization){
         val capitalTile = civInfo.getCapital()!!.getCenterTile()
         @Readonly fun bestUnitInRange(tile: Tile, range: Int) = tile.getTilesInDistance(range)
             .mapNotNull { it.militaryUnit }.filter {
