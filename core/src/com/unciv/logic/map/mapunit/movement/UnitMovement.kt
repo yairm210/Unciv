@@ -476,6 +476,7 @@ class UnitMovement(val unit: MapUnit) {
             unit.putInTile(destination)
             unit.currentMovement = 0f
             unit.mostRecentMoveType = UnitMovementMemoryType.UnitTeleported
+            clearPathfindingCache()
             return
         }
 
@@ -494,6 +495,7 @@ class UnitMovement(val unit: MapUnit) {
                 && (unit.getTile().isCityCenter() || destination.isCityCenter())
                 && unit.civ.hasUnique(UniqueType.UnitsInCitiesNoMaintenance)
             ) unit.civ.updateStatsForNextTurn()
+            clearPathfindingCache()
             return
         }
 
@@ -591,6 +593,10 @@ class UnitMovement(val unit: MapUnit) {
             moveToTile(destination, considerZoneOfControl)
         }
 
+        if (unit.currentTile != origin) {
+            clearPathfindingCache()
+            unit.getOtherEscortUnit()?.movement?.clearPathfindingCache()
+        }
         unit.updateUniques()
     }
 
@@ -643,6 +649,8 @@ class UnitMovement(val unit: MapUnit) {
         // Step 6: Update states
         otherUnit.mostRecentMoveType = UnitMovementMemoryType.UnitMoved
         unit.mostRecentMoveType = UnitMovementMemoryType.UnitMoved
+        clearPathfindingCache()
+        unit.getOtherEscortUnit()?.movement?.clearPathfindingCache()
     }
 
     private fun swapMoveEscortPair(destination: Tile) {
