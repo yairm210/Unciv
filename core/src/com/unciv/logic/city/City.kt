@@ -238,6 +238,17 @@ class City : IsPartOfGameInfoSerialization, INamed {
         else destination.getRoadPath(this, maxTurns)
     }
 
+    @Readonly
+    fun getRoadPathToAny(destinations: Set<Tile>, maxBfsReachPadding: Int): List<Tile>? {
+        // TODO: replace with multi-target AStar
+        val maxTurns = maxBfsReachPadding + destinations.minOf { it.aerialDistanceTo(centerTile) }
+        if (!::potentialRoadPathing.isInitialized)
+            potentialRoadPathing = PathingMap.createRoadPathingMap(civ, centerTile)
+        val otherCity = potentialRoadPathing.bfsUntilMatchingTile(maxTurns) { tile,_ -> destinations.contains(tile) }
+        if (otherCity == null) return null
+        return potentialRoadPathing.getShortestPath(otherCity) // this just reads from cached results
+    }
+
     @Readonly fun isGarrisoned() = getGarrison() != null
     @Readonly
     fun getGarrison(): MapUnit? =

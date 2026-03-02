@@ -246,6 +246,14 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedF
 
         val isCandidateTilePredicate: (Tile) -> Boolean = { it.isLand && MapPathing.isValidRoadPathTile(city.civ, it) }
         val toConnectTile = city.getCenterTile()
+        val cityTilesToSeek = HashSet(tilesOfConnectedCities)
+        if (UncivGame.Current.settings.useAStarPathfinding) {
+            val pathToCity =
+                city.getRoadPathToAny(cityTilesToSeek, WorkerAutomationConst.maxBfsReachPadding)
+                    ?: return null
+            val cityTile = pathToCity.last()
+            return Pair(cityTile.getCity()!!, pathToCity)
+        }
         @LocalState val bfs: BFS = bfsCache[toConnectTile.position.toVector2()] ?: run {
             val bfs = BFS(toConnectTile, isCandidateTilePredicate)
             bfs.maxSize = HexMath.getNumberOfTilesInHexagon(
@@ -255,7 +263,6 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedF
             bfsCache[toConnectTile.position.toVector2()] = bfs
             bfs
         }
-        val cityTilesToSeek = HashSet(tilesOfConnectedCities)
 
         var nextTile = bfs.nextStep()
         while (nextTile != null) {
