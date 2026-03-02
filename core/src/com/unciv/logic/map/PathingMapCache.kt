@@ -72,6 +72,7 @@ import java.util.Locale
  *   use 14 to represent "no parent tile" (such as for the root node). Since the values are always
  *   even, we do not store the last bit, so this only takes 3 bits. This is never zero, which 
  *   guarantees that an initialized RouteNode is never zero.
+ * - canMoveTo: True if the unit can end turn on the tile, or it's multiple turns away.
  * - padding: In a RouteNode, the other remaining 12 bits of underestimatedTotal just hold zeroes, 
  *   for now.
  * - damagingTiles: How many tiles that cause end-turn damage have been crossed to reach this tile.
@@ -247,12 +248,12 @@ value class RouteNode(val bits: Long=0L) {
             = (MAX_RELATIONSHIP_LEVEL - relationshipLevel.ordinal).toLong() shl RELATIONSHIP_LEVEL_OFFSET
 
         @Pure
-        fun noPathingNode(tile: Tile) = RouteNode(
+        fun noPathingNode(tile: Tile, turn: Int) = RouteNode(
             tile,
             RelationshipLevel.Unforgivable,
             MAX_MOVE_THIS_TURN,
             MAX_MOVE_THIS_TURN,
-            MAX_TURNS,
+            turn,
             tile,
             false,
             MAX_DAMAGING_TILES,
@@ -274,13 +275,19 @@ value class RouteNode(val bits: Long=0L) {
 @JvmInline
 value class FixedPointMovement private constructor(val bits: Int) {
     @Pure operator fun plus(other: FixedPointMovement) = FixedPointMovement(bits + other.bits)
+    @Pure operator fun plus(value: Int) = FixedPointMovement(bits + value * MOVE_SPEED_BASE)
+    @Pure operator fun plus(value: Float) = FixedPointMovement(bits + fpmFromMovement(value).bits)
     @Pure operator fun minus(other: FixedPointMovement) = FixedPointMovement(bits - other.bits)
-    @Pure operator fun times(other: Int) = FixedPointMovement(bits * other)
+    @Pure operator fun minus(value: Int) = FixedPointMovement(bits - value * MOVE_SPEED_BASE)
+    @Pure operator fun minus(value: Float) = FixedPointMovement(bits - fpmFromMovement(value).bits)
+    @Pure operator fun times(multiplier: Int) = FixedPointMovement(bits * multiplier)
+    @Pure operator fun times(multiplier: Float) = fpmFromMovement(bits * multiplier)
     // #times(FixedPointMovement) is currently unused, but implemented here because I'm afraid
     // someone will implement it later, and forget the division.
     @Pure operator fun times(other: FixedPointMovement) = FixedPointMovement((bits.toLong() * other.bits / MOVE_SPEED_BASE).toInt())
-    @Pure operator fun plus(other: Float) = FixedPointMovement(bits + (other * MOVE_SPEED_BASE).toInt())
-    @Pure operator fun minus(other: Float) = FixedPointMovement(bits - (other * MOVE_SPEED_BASE).toInt())
+    @Pure operator fun div(other: FixedPointMovement) = FixedPointMovement((bits.toLong() * other.bits * MOVE_SPEED_BASE).toInt())
+    @Pure operator fun div(multiplier: Int) = FixedPointMovement(bits / multiplier)
+    @Pure operator fun div(multiplier: Float) = fpmFromMovement(bits / multiplier)
     @Pure operator fun compareTo(other: FixedPointMovement) = bits.compareTo(other.bits)
     @Pure operator fun compareTo(other: Int) = bits.compareTo((other * MOVE_SPEED_BASE))
 
