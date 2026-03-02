@@ -72,6 +72,8 @@ import java.util.Locale
  *   use 14 to represent "no parent tile" (such as for the root node). Since the values are always
  *   even, we do not store the last bit, so this only takes 3 bits. This is never zero, which 
  *   guarantees that an initialized RouteNode is never zero.
+ * - tilesBeyondTurn: The number of tiles *past* where we can move this turn. This is one higher
+ *   than the unit's attack range, since attacking requires some movement. This takes 5 bits.
  * - padding: In a RouteNode, the other remaining 12 bits of underestimatedTotal just hold zeroes, 
  *   for now.
  * - damagingTiles: How many tiles that cause end-turn damage have been crossed to reach this tile.
@@ -96,6 +98,7 @@ value class RouteNode(val bits: Long=0L) {
         moveThisTurn: FixedPointMovement,
         turns: Int,
         parentTile: Tile,
+        tilesBeyondTurn: Int,
         damagingTiles: Int,
     ):
         this(
@@ -105,6 +108,7 @@ value class RouteNode(val bits: Long=0L) {
                 toMoveThisTurnBits(moveThisTurn) or
                 toTurnsBits(turns) or
                 toParentClockDirBits(tile, parentTile) or
+                toTilesBeyondTurnBits(tilesBeyondTurn) or 
                 toDamagingTilesBits(damagingTiles)
         ) {
         require(tile.zeroBasedIndex < tile.tileMap.tileList.size) { "tileList ${tile.zeroBasedIndex} exceeds max ${tile.tileMap.tileList.size}" }
@@ -116,6 +120,8 @@ value class RouteNode(val bits: Long=0L) {
         require(turns >= 0) { "turns $turns must be positive" }
         require(turns <= MAX_TURNS) { "turns $turns exceeds max $MAX_TURNS" }
         require(toParentClockDirBits(tile, parentTile) > 0) {"parentClockDir $parentClockDir must be positive"}
+        require(tilesBeyondTurn >= 0) { "tilesBeyondTurn $tilesBeyondTurn must be positive" }
+        require(tilesBeyondTurn <= MAX_TILES_BEYOND_TURN_RANGE) { "tilesBeyondTurn $tilesBeyondTurn exceeds max $MAX_TILES_BEYOND_TURN_RANGE" }
         require(damagingTiles >= 0) { "damagingTiles $damagingTiles must be positive" }
         require(damagingTiles <= DAMAGE_TILES_LO_MASK) { "damagingTiles $moveThisTurn exceeds max $DAMAGE_TILES_LO_MASK" }
     }
@@ -149,6 +155,8 @@ value class RouteNode(val bits: Long=0L) {
         if (idx == NO_PARENT_TILE_VALUE) return tile(tileMap)
         return tileMap.getClockPositionNeighborTile(tile(tileMap), idx)!!
     }
+    
+    val tilesBeyondTurn: Int get() { require(initialized); return ((bits shr TILES_BEYOND_TURN_OFFSET) and TILES_BEYOND_TURN_LO_MASK).toInt() }
 
     val damagingTiles: Int get() { require(initialized); return ((bits shr DAMAGE_TILES_OFFSET) and DAMAGE_TILES_LO_MASK).toInt() }
 
@@ -158,9 +166,9 @@ value class RouteNode(val bits: Long=0L) {
     val isNoPathingNode: Boolean get() = pbmMoveThisTurn.bits == PBM_MOVE_THIS_TURN_LO_MASK.toInt()
 
     @Readonly
-    override fun toString() = "RouteNode[tile=$tileIdx, turns=$turns, moveUsedThisTurn=$moveUsedThisTurn]"
+    override fun toString() = "RouteNode[tile=$tileIdx, turns=$turns, moveUsedThisTurn=$moveUsedThisTurn, tilesBeyondTurn=$tilesBeyondTurn]"
     @Readonly
-    fun toString(tileMap: TileMap) = "RouteNode[tile=${tile(tileMap)} turns=$turns, moveThisTurn=$moveUsedThisTurn]"
+    fun toString(tileMap: TileMap) = "RouteNode[tile=${tile(tileMap).position} turns=$turns, moveThisTurn=$moveUsedThisTurn, tilesBeyondTurn=$tilesBeyondTurn]"
 
     companion object {
         // bits 0-19 (20b = 1048576tiles) are the zeroBasedIndex of this tile (radius 500, or approx 1170x896) 
@@ -203,7 +211,13 @@ value class RouteNode(val bits: Long=0L) {
         private const val PARENT_TILE_LO_MASK = (0x1L shl PARENT_TILE_BIT_COUNT) - 1L
         private const val NO_PARENT_TILE_BITS = 7L
         private const val NO_PARENT_TILE_VALUE = 14
-        // [RouteNode] bits 50-60 (11b) are padding bits, only used by PrioritizedNode's underestimatedTotal field
+        // [RouteNode] bits 50-54 (5b = 31tiles) are the number of tiles further than can move right now. Used for attack ranges. Tiles can be moved to hold 0.
+        private const val TILES_BEYOND_TURN_OFFSET = PARENT_TILE_OFFSET + PARENT_TILE_BIT_COUNT
+        private const val TILES_BEYOND_TURN_BIT_COUNT = 5
+        private const val TILES_BEYOND_TURN_LO_MASK = (0x1L shl TILES_BEYOND_TURN_BIT_COUNT) - 1L
+        internal const val MAX_TILES_BEYOND_TURN_RANGE = TILES_BEYOND_TURN_LO_MASK.toInt()
+        // [RouteNode] bits 55-60 (6b) are padding bits, only used by PrioritizedNode's underestimatedTotal field
+        // no constsants for [RouteNode] padding bits 55-60
         // bits 61-62 (2b = 4turns) are the number of turns ended in damaging tiles.
         private const val DAMAGE_TILES_OFFSET = UNDERESTIMATED_TOTAL_OFFSET + UNDERESTIMATED_TOTAL_BIT_COUNT
         private const val DAMAGE_TILES_BIT_COUNT = 2
@@ -214,6 +228,9 @@ value class RouteNode(val bits: Long=0L) {
         @Readonly
         private fun toParentClockDirBits(tile: Tile, parentTile: Tile): Long
             = (if (tile == parentTile) NO_PARENT_TILE_BITS else tile.tileMap.getNeighborTileClockPosition(tile, parentTile)/2L) shl PARENT_TILE_OFFSET
+        @Readonly
+        private fun toTilesBeyondTurnBits(tilesBeyondTurn: Int): Long
+            = tilesBeyondTurn.toLong() shl TILES_BEYOND_TURN_OFFSET
         @Pure
         private fun toMoveThisTurnBits(moveThisTurn: FixedPointMovement): Long
             = moveThisTurn.bits.toLong() shl MOVE_THIS_TURN_OFFSET
@@ -241,6 +258,7 @@ value class RouteNode(val bits: Long=0L) {
             MAX_MOVE_THIS_TURN,
             MAX_TURNS,
             tile,
+            0,
             MAX_DAMAGING_TILES,
         )
         @Pure
@@ -250,8 +268,8 @@ value class RouteNode(val bits: Long=0L) {
             FPM_ZERO,
             moveThisTurn,
             0,
-
             tile,
+            0,
             0,
         )
     }
@@ -260,9 +278,16 @@ value class RouteNode(val bits: Long=0L) {
 @JvmInline
 value class FixedPointMovement private constructor(val bits: Int) {
     @Pure operator fun plus(other: FixedPointMovement) = FixedPointMovement(bits + other.bits)
+    @Pure operator fun plus(value: Int) = FixedPointMovement(bits + value * MOVE_SPEED_BASE)
+    @Pure operator fun plus(value: Float) = FixedPointMovement(bits + fpmFromMovement(value).bits)
     @Pure operator fun minus(other: FixedPointMovement) = FixedPointMovement(bits - other.bits)
-    @Pure operator fun plus(other: Float) = FixedPointMovement(bits + (other * MOVE_SPEED_BASE).toInt())
-    @Pure operator fun minus(other: Float) = FixedPointMovement(bits - (other * MOVE_SPEED_BASE).toInt())
+    @Pure operator fun minus(value: Int) = FixedPointMovement(bits - value * MOVE_SPEED_BASE)
+    @Pure operator fun minus(value: Float) = FixedPointMovement(bits - fpmFromMovement(value).bits)
+    @Pure operator fun times(multiplier: Int) = FixedPointMovement(bits * multiplier)
+    @Pure operator fun times(multiplier: Float) = fpmFromMovement(bits * multiplier)
+    @Pure operator fun div(multiplier: Int) = FixedPointMovement(bits / multiplier)
+    @Pure operator fun div(multiplier: Float) = fpmFromMovement(bits / multiplier)
+    
     @Pure operator fun compareTo(other: FixedPointMovement) = bits.compareTo(other.bits)
     @Pure operator fun compareTo(other: Int) = bits.compareTo((other * MOVE_SPEED_BASE))
 
@@ -346,7 +371,7 @@ internal class PathingMapCache private constructor(
      * 
      * This uses the same routeNodes, but copies of the frontier bitsets. It does not set tilesSameTurn.
      */
-    fun forkForPathfinding(): PathingMapCache {
+    fun forkForAStarPathfinding(): PathingMapCache {
         synchronized(addedNeighborNodes) {
             val codesNeedingNeighborsCopy: BitSet = nodesNeedingNeighbors.clone() as BitSet
             val addedNeighborNodesCopy: BitSet = addedNeighborNodes.clone() as BitSet
@@ -372,6 +397,16 @@ internal class PathingMapCache private constructor(
             update.nodesNeedingNeighbors.andNot(update.addedNeighborNodes)
             nodesNeedingNeighbors.or(update.nodesNeedingNeighbors)
         }
+    }
+    
+    fun forkForBfsPathfinding(tileMap: TileMap): PathingMapCache {
+        // BFS searches always start at the root note and work out, they can't start at search frontier.
+        // They do take movementCost into consideration, and so take advantage of the cached
+        // movementCost, relationshipLevel, and damage values for each RouteNode.
+        val forkedNodesNeedingNeighbors = BitSet(nodesNeedingNeighbors.size())
+        forkedNodesNeedingNeighbors.set(tileMap[key.startingPoint].zeroBasedIndex)
+        val forkedAddedNeighborNodes = BitSet(nodesNeedingNeighbors.size())
+        return PathingMapCache(key, forkedNodesNeedingNeighbors, forkedAddedNeighborNodes, routeNodes)
     }
 
     fun clear() {

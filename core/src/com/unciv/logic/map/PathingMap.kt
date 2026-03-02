@@ -9,21 +9,18 @@ import com.unciv.logic.map.FixedPointMovement.Companion.fpmFromMovement
 import com.unciv.logic.map.MapPathing.roadPreferredMovementCost
 import com.unciv.logic.map.RouteNode.Companion.MAX_MOVE_THIS_TURN
 import com.unciv.logic.map.RouteNode.Companion.MAX_TURNS
+import com.unciv.logic.map.RouteNode.Companion.MAX_TILES_BEYOND_TURN_RANGE
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.movement.MovementCost
 import com.unciv.logic.map.mapunit.movement.PathsToTilesWithinTurn
 import com.unciv.logic.map.mapunit.movement.UnitMovement.ParentTileAndTotalMovement
 import com.unciv.logic.map.tile.Tile
 import com.unciv.utils.Log
-import com.unciv.utils.LongPriorityQueue
 import com.unciv.utils.forEachSetBit
 import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.InternalState
 import yairm210.purity.annotations.Readonly
-import java.util.BitSet
-import java.util.Formatter
-import java.util.Locale
 import java.util.concurrent.atomic.AtomicReference
 
 /**
@@ -151,7 +148,7 @@ class PathingMap(
         if (!targetNode.initialized  && !cache.nodesNeedingNeighbors.isEmpty) {
             if (VERBOSE_PATHFINDING_LOGS == cache.key.startingPoint || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
                 Log.debug("#getShortestPath(${destination.position}) calculcating for $debugMapType $debugId")
-            stepUntilDestination(cache, destination, maxTurns)
+            aStarStepUntilDestination(cache, destination, maxTurns)
         }
         val bestTarget =  RouteNode(cache.routeNodes[destination.zeroBasedIndex])
         // if the target is not reachable within maxTurns, return nothing
@@ -183,8 +180,7 @@ class PathingMap(
         }
         return result.asReversed()
     }
-
-
+    
     /**
      * Gets the tiles the unit could move to with remaining movement this turn.
      * Does not consider if tiles can actually be entered, use canMoveTo for that.
@@ -205,10 +201,107 @@ class PathingMap(
         if (!cache.nodesNeedingNeighbors.isEmpty) {
             if (VERBOSE_PATHFINDING_LOGS == cache.key.startingPoint || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
                 Log.debug("#getMovementToTilesAtPosition calculcating for $debugMapType $debugId")
-            stepUntilDestination(cache, null, 1)
+            bfsStepUntilDestination(cache, { _,attackRange -> attackRange == 1 }, 1)
         }
         getTilesSameTurn(cache)
         return tilesSameTurn
+    }
+
+    /**
+     * finds the closest tile that match a predicate.
+     * 
+     * If there are multiple matches with the same movement cost, then this uses 
+     * tile-owner-relationship as a tiebreaker, followed by zeroBasedIndex (roughly, distance from
+     * center of map).
+     *
+     * The results of the method, and the per-tile-predicate-results are NOT cached, and so this has
+     * to check all tiles starting from the origin every call, even if the tiles' nodes have already
+     * been cached from prior pathfinding. However, this uses/generates the same cached nodes as the
+     * other pathfinding (movement cost, relationship level, shortest route, damage numbers, etc),
+     * and so if the nodes were already cached, then this is fast, and if the nodes were not already
+     * cached, then this makes subsequent pathfinding fast.
+     *
+     * IMPORTANT NOTE: This does NOT consider obstacles (hills/mountains) in the attack range.
+     * Callers have to check for obstacles along the path themselves.
+     **/
+    // @IgnorableReturnValue
+    fun bfsForTurns(timeLimitTurns: Int = MAX_VALID_TURNS, endSearchPredicate: EndSearchPredicate): Tile?
+        = bfsStepUntilDestination(fetchCache(), endSearchPredicate, timeLimitTurns)
+
+    /**
+     * finds the closest tile that match a predicate.
+     *
+     * If there are multiple matches with the same movement cost, then this uses
+     * tile-owner-relationship as a tiebreaker, followed by zeroBasedIndex (roughly, distance from
+     * center of map).
+     *
+     * The results of the method, and the per-tile-predicate-results are NOT cached, and so this has
+     * to check all tiles starting from the origin every call, even if the tiles' nodes have already
+     * been cached from prior pathfinding. However, this uses/generates the same cached nodes as the
+     * other pathfinding (movement cost, relationship level, shortest route, damage numbers, etc),
+     * and so if the nodes were already cached, then this is fast, and if the nodes were not already
+     * cached, then this makes subsequent pathfinding fast.
+     *
+     * IMPORTANT NOTE: This does NOT consider obstacles (hills/mountains) in the attack range.
+     * Callers have to check for obstacles along the path themselves.
+     **/
+    // @IgnorableReturnValue
+    fun bfsInAttackRange(attackRange: Int, endSearchPredicate: EndSearchPredicate): Tile? {
+        require(attackRange < MAX_TILES_BEYOND_TURN_RANGE)
+        val searchPredicate = EndSearchPredicate { tile:Tile, tilesBeyondTurn: Int ->
+                tilesBeyondTurn < attackRange && endSearchPredicate(tile, tilesBeyondTurn) 
+            }
+        return bfsStepUntilDestination(fetchCache(), searchPredicate, MAX_VALID_TURNS)
+    }
+
+    /**
+     * finds all tiles in attack range that match a predicate.
+     *
+     * This does not cache the results of the predicate matching, and so has to check all tiles
+     * starting from the origin, even if the tiles' nodes have already been cached from prior
+     * pathfinding. However, this uses/generates the same cached nodes as the other pathfinding
+     * (movement cost, relationship level, shortest route, damage numbers, etc), so if any other 
+     * pathing also occurs before or after, then these checks are effectively free.
+     * 
+     * If you do not care about movement cost, then the BFS class is probably faster.
+     *
+     * IMPORTANT NOTE: This does NOT consider sight obstacles (hills/mountains) in the attack range.
+     *
+     * IMPORTANT NOTE: The results of this method are not cached.  The *nodes* are cached , but the list of tiles
+     **/
+    // @IgnorableReturnValue
+    fun bfsAllTilesInTurns(timeLimitTurns: Int = MAX_VALID_TURNS, tilePredicate: EndSearchPredicate): List<Tile> {
+        val results = ArrayList<Tile>()
+        val searchPredicate = EndSearchPredicate { tile:Tile, tilesBeyondTurn: Int ->
+            if (tilePredicate(tile, tilesBeyondTurn)) results.add(tile)
+            false
+        }
+        bfsStepUntilDestination(fetchCache(), searchPredicate, timeLimitTurns)
+        return results
+    }
+
+    /**
+     * finds all tiles in attack range that match a predicate.
+     * 
+     * This does not cache the results of the predicate matching, and so has to check all tiles
+     * starting from the origin, even if the tiles' nodes have already been cached from prior
+     * pathfinding. However, this uses/generates the same cached nodes as the other pathfinding (movement cost, relationship
+     * level, shortest route, damage numbers, etc), but 
+     * 
+     * IMPORTANT NOTE: This does NOT consider obstacles (hills/mountains) in the attack range.
+     * 
+     * IMPORTANT NOTE: The results of this method are not cached.  The *nodes* are cached , but the list of tiles
+     **/
+    // @IgnorableReturnValue
+    fun bfsAllTilesInAttackRange(attackRange: Int, tilePredicate: EndSearchPredicate): List<Tile> {
+        require(attackRange < MAX_TILES_BEYOND_TURN_RANGE)
+        val results = ArrayList<Tile>()
+        val searchPredicate = EndSearchPredicate { tile:Tile, tilesBeyondTurn: Int -> 
+                if (tilesBeyondTurn < attackRange && tilePredicate(tile, tilesBeyondTurn)) results.add(tile)
+                /*return*/ tilesBeyondTurn >= attackRange // >= because unit needs SOME movement left to attack, so can't use ALL movement
+            }
+        bfsStepUntilDestination(fetchCache(), searchPredicate, MAX_VALID_TURNS)
+        return results
     }
 
     private fun getTilesSameTurn(cache: PathingMapCache) {
@@ -250,9 +343,9 @@ class PathingMap(
     }
 
     /**
-     * Use a AStarPathfinder instance to calculate the route, with thread-safe way
+     * Use AStar algorithm to calculate the route to the destination, in thread-safe way
      **/
-    private fun stepUntilDestination(cache: PathingMapCache, destination: Tile?, timeLimitTurns: Int) {
+    private fun aStarStepUntilDestination(cache: PathingMapCache, destination: Tile?, timeLimitTurns: Int) {
         val finder = AStarPathfinder(
             debugId,
             debugMapType,
@@ -262,7 +355,8 @@ class PathingMap(
             cost,
             tileRoadCost,
             relationshipLevel,
-            cache.forkForPathfinding(),
+            {_,_ -> false},
+            cache.forkForAStarPathfinding(),
             timeLimitTurns.coerceAtMost(MAX_VALID_TURNS),
             tileMap,
         )
@@ -271,6 +365,34 @@ class PathingMap(
         // now merge the pathfinder's tilesChecked and tilesToCheck back into the shared PathingData
         // again using a synchronized block not just for thread-safety, but also to ensure atomicity
         cache.mergePathfindingFork(finder.cache)
+    }
+
+    /**
+     * Use Breadth-First Search algorithm to find a target tile, in a thread safe way
+     **/
+    // @IgnorableReturnValue
+    private fun bfsStepUntilDestination(cache: PathingMapCache, endSearchPredicate: EndSearchPredicate, timeLimitTurns: Int): Tile? {
+        val finder = AStarPathfinder(
+            debugId,
+            debugMapType,
+            null,
+            moveThroughPredicate,
+            endTurnDamage,
+            cost,
+            tileRoadCost,
+            relationshipLevel,
+            endSearchPredicate,
+            cache.forkForBfsPathfinding(tileMap),
+            timeLimitTurns.coerceAtMost(MAX_VALID_TURNS),
+            tileMap,
+        )
+        val result = finder.stepUntilDestination()
+        
+        // now merge the pathfinder's tilesChecked and tilesToCheck back into the shared PathingData
+        // again using a synchronized block not just for thread-safety, but also to ensure atomicity
+        cache.mergePathfindingFork(finder.cache)
+        
+        return result
     }
     
     override fun toString(): String {
@@ -303,6 +425,11 @@ class PathingMap(
         fun interface TileRoadCost {
             @Readonly
             operator fun invoke(it: Tile): FixedPointMovement
+        }
+        @FunctionalInterface
+        fun interface EndSearchPredicate {
+            @Readonly
+            operator fun invoke(tile: Tile, tilesBeyondTurn: Int): Boolean
         }
 
         @Suppress("unused")
