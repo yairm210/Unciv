@@ -261,6 +261,10 @@ value class RouteNode(val bits: Long=0L) {
 value class FixedPointMovement private constructor(val bits: Int) {
     @Pure operator fun plus(other: FixedPointMovement) = FixedPointMovement(bits + other.bits)
     @Pure operator fun minus(other: FixedPointMovement) = FixedPointMovement(bits - other.bits)
+    @Pure operator fun times(other: Int) = FixedPointMovement(bits * other)
+    // #times(FixedPointMovement) is currently unused, but implemented here because I'm afraid
+    // someone will implement it later, and forget the division.
+    @Pure operator fun times(other: FixedPointMovement) = FixedPointMovement((bits.toLong() * other.bits / MOVE_SPEED_BASE).toInt())
     @Pure operator fun plus(other: Float) = FixedPointMovement(bits + (other * MOVE_SPEED_BASE).toInt())
     @Pure operator fun minus(other: Float) = FixedPointMovement(bits - (other * MOVE_SPEED_BASE).toInt())
     @Pure operator fun compareTo(other: FixedPointMovement) = bits.compareTo(other.bits)
@@ -294,7 +298,7 @@ value class FixedPointMovement private constructor(val bits: Int) {
 data class PathingMapCacheKey(
     val startingPoint: HexCoord,
     val moveRemaining: FixedPointMovement,
-    val fullMove: Int,
+    val fullMove: FixedPointMovement,
 )
 
 @InternalState

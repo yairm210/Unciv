@@ -8,22 +8,17 @@ import com.unciv.logic.map.FixedPointMovement.Companion.FPM_ZERO
 import com.unciv.logic.map.FixedPointMovement.Companion.fpmFromMovement
 import com.unciv.logic.map.MapPathing.roadPreferredMovementCost
 import com.unciv.logic.map.RouteNode.Companion.MAX_MOVE_THIS_TURN
-import com.unciv.logic.map.RouteNode.Companion.MAX_TURNS
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.movement.MovementCost
 import com.unciv.logic.map.mapunit.movement.PathsToTilesWithinTurn
 import com.unciv.logic.map.mapunit.movement.UnitMovement.ParentTileAndTotalMovement
 import com.unciv.logic.map.tile.Tile
 import com.unciv.utils.Log
-import com.unciv.utils.LongPriorityQueue
 import com.unciv.utils.forEachSetBit
 import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.InternalState
 import yairm210.purity.annotations.Readonly
-import java.util.BitSet
-import java.util.Formatter
-import java.util.Locale
 import java.util.concurrent.atomic.AtomicReference
 
 /**
@@ -76,7 +71,7 @@ class PathingMap(
     private val relationshipLevel: (Tile) -> RelationshipLevel,
 ) {
     @Cache
-    private val cacheRef: AtomicReference<PathingMapCache?> = AtomicReference<PathingMapCache?>(null)
+    private val cacheRef = AtomicReference<PathingMapCache?>(null)
 
     /**
      * This is the only method that is NOT thread-safe.
@@ -147,7 +142,7 @@ class PathingMap(
             
         }
         // if we don't already know the shortest path, and might yet find it, search
-        var targetNode = RouteNode(cache.routeNodes[destination.zeroBasedIndex])
+        val targetNode = RouteNode(cache.routeNodes[destination.zeroBasedIndex])
         if (!targetNode.initialized  && !cache.nodesNeedingNeighbors.isEmpty) {
             if (VERBOSE_PATHFINDING_LOGS == cache.key.startingPoint || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
                 Log.debug("#getShortestPath(${destination.position}) calculcating for $debugMapType $debugId")
@@ -321,13 +316,13 @@ class PathingMap(
                 else "createUnitPathingMap"
             // These two precalculated because for some reason they're rediculously slow
             val selfFullMove = unit.getMaxMovement()
-            val otherUntilFullMove = if (includeEscortUnit) unit.getOtherEscortUnit()?.getMaxMovement() ?: MAX_TURNS else MAX_TURNS
+            val otherUntilFullMove = if (includeEscortUnit) unit.getOtherEscortUnit()?.getMaxMovement() ?: MAX_VALID_TURNS else MAX_VALID_TURNS
             val getCurrentCacheKey = {
                 val escort = if (includeEscortUnit && unit.isEscorting()) unit.getOtherEscortUnit() else null
                 PathingMapCacheKey(
                     unit.currentTile.position, 
                     fpmFromMovement(unit.currentMovement).coerceAtMost(escort?.currentMovement?.toFixedPointMove() ?: MAX_MOVE_THIS_TURN),
-                    selfFullMove.coerceAtMost(if (escort != null) otherUntilFullMove else MAX_VALID_TURNS),
+                    fpmFromMovement(selfFullMove.coerceAtMost(if (escort != null) otherUntilFullMove else MAX_VALID_TURNS)),
                     )
             }
             return PathingMap(
@@ -349,7 +344,7 @@ class PathingMap(
                 civ.gameInfo.tileMap,
                 civ,
                 "createLandAttackPathingMap",
-                { civPathingCacheKey(startingPoint.position)},
+                { civPathExistCacheKey(startingPoint.position)},
                 { isLandTileCanAttackThrough(civ, it, targetCiv) },
                 { 0 },
                 { from, to -> fpmFromMovement(roadPreferredMovementCost(civ, from, to)) },
@@ -364,7 +359,7 @@ class PathingMap(
                 civ.gameInfo.tileMap,
                 civ,
                 "createAmphibiousAttackPathingMap",
-                { civPathingCacheKey(startingPoint.position)},
+                { civPathExistCacheKey(startingPoint.position)},
                 { isTileCanAttackThrough(civ, it, targetCiv) },
                 { 0 },
                 { from, to -> fpmFromMovement(roadPreferredMovementCost(civ, from, to)) },
@@ -375,11 +370,15 @@ class PathingMap(
 
         @Readonly
         fun createRoadPathingMap(civ: Civilization, startingPoint: Tile): PathingMap {
+            // Use a max movement speed equal to improved (non-rail) road speed, to ensure that the
+            // path "ends its turn" on every non-rail tile along the route. Right now, the costs
+            // are weird, so this is a full movement of 0.5.  If we used the correct move costs
+            // here, then this would be 1/3f.
             return PathingMap(
                 civ.gameInfo.tileMap,
                 civ,
                 "createRoadPathingMap",
-                { civPathingCacheKey(startingPoint.position)},
+                { PathingMapCacheKey(startingPoint.position,  FPM_POINT_FIVE, FPM_POINT_FIVE) },
                 {MapPathing.isValidRoadPathTile(civ, it) },
                 { 0 },
                 { _, to -> if ((to.hasRoadConnection(civ, false) || to.hasRailroadConnection(false))) FPM_POINT_FIVE else FPM_ONE },
@@ -389,7 +388,7 @@ class PathingMap(
         }
         
         @Readonly
-        private fun civPathingCacheKey(startingPoint: HexCoord) = PathingMapCacheKey(startingPoint, MAX_MOVE_THIS_TURN, MAX_VALID_TURNS)
+        private fun civPathExistCacheKey(startingPoint: HexCoord) = PathingMapCacheKey(startingPoint, MAX_MOVE_THIS_TURN, MAX_MOVE_THIS_TURN)
 
         @Readonly
         private fun isTileCanAttackThrough(civInfo: Civilization, tile: Tile, targetCiv: Civilization): Boolean {

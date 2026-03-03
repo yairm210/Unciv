@@ -19,6 +19,7 @@ import com.unciv.logic.map.RouteNode.Companion.TILE_IDX_OFFSET
 import com.unciv.logic.map.RouteNode.Companion.UNDERESTIMATED_TOTAL_HI_MASK
 import com.unciv.logic.map.RouteNode.Companion.UNDERESTIMATED_TOTAL_LO_MASK
 import com.unciv.logic.map.RouteNode.Companion.UNDERESTIMATED_TOTAL_OFFSET
+import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.utils.Log
 import com.unciv.utils.LongPriorityQueue
@@ -27,7 +28,6 @@ import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.InternalState
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
-import java.util.PriorityQueue
 
 // This crams all the information we need about prioritizing a node into a single Long, avoiding allocations
 @JvmInline
@@ -45,7 +45,7 @@ value class PrioritizedNode(val bits: Long) {
     val tileIdx: Int get() { require(initialized); return ((bits shr TILE_IDX_OFFSET) and TILE_IDX_LO_MASK).toInt() }
 
     val underestimatedTotal: FixedPointMovement get() {
-        val b = ((bits shr UNDERESTIMATED_TOTAL_OFFSET) and UNDERESTIMATED_TOTAL_LO_MASK);
+        val b = ((bits shr UNDERESTIMATED_TOTAL_OFFSET) and UNDERESTIMATED_TOTAL_LO_MASK)
         return FixedPointMovement.fpmFromFixedPointBits(b.toInt())
     }
 
@@ -58,8 +58,6 @@ value class PrioritizedNode(val bits: Long) {
         @Pure
         private fun toUnderestimatedTotalbits(priority: FixedPointMovement): Long
             = priority.bits.toLong() shl UNDERESTIMATED_TOTAL_OFFSET
-
-        val COMPARATOR: Comparator<PrioritizedNode> = Comparator<PrioritizedNode>{ a, b -> a.bits.compareTo(b.bits) }
     }
 }
 
@@ -107,7 +105,7 @@ internal class AStarPathfinder(
     @Readonly
     private fun calculateUnderestimatedMovement(node: RouteNode): FixedPointMovement {
         val tile = node.tile(tileMap)
-        val movementSoFar = FixedPointMovement.fpmFromMovement(node.turns * cache.key.fullMove) + node.moveUsedThisTurn
+        val movementSoFar = cache.key.fullMove * node.turns + node.moveUsedThisTurn
         val minRemainingTiles = destination?.let { tile.aerialDistanceTo(it) } ?: 1
         val minRemainingCost = tileRoadCost(tile) + (minRemainingTiles - 1) * (FASTEST_ROAD_COST)
         val underestimatedTotal = movementSoFar + minRemainingCost
@@ -167,7 +165,6 @@ internal class AStarPathfinder(
         val canEndTurnOrProbablyMoveAway = endTurnThereDamage == 0 || (newUsedMovement < fullMovement)
         val relationship = relationshipLevel(neighborTile)
         
-        val newNode: RouteNode
         // This can use more than the remaining movement, but that's correct behavior.
         // https://yairm210.medium.com/multi-turn-pathfinding-7136bd0bdaf0
         if (currentNode.moveUsedThisTurn < fullMovement  && canEndTurnOrProbablyMoveAway) {
@@ -235,5 +232,9 @@ internal class AStarPathfinder(
         // towards the earlier pathfinding, potentially causing it to miss even obvious railroads
         // for later paths.  If we eliminate the caching, then it would be safe to set this higher.
         const val FASTEST_ROAD_COST = 0.1f
+        
+        init {
+            require(FASTEST_ROAD_COST == RoadStatus.Railroad.movementImproved)
+        }
     }
 }
