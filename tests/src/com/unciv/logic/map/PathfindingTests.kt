@@ -646,11 +646,11 @@ class PathfindingTests(
     @Test
     fun whenPathingCostIs100ThenUseAllMovement() {
         val baseUnit = testGame.createBaseUnit()
-        baseUnit.movement = 6
+        baseUnit.movement = 3
         val unit = testGame.addUnit(baseUnit.name, civInfo, originTile)
-        // River between x==1 and x==2
+        // River between x==1 and x==2, except for the top tile
         for (tile in testGame.tileMap.tileList) {
-            if (tile.position.x == 1) {
+            if (tile.position.x == 1 && tile.position.y<7) {
                 val upRight = testGame.tileMap.getClockPositionNeighborTile(tile, 10)
                 if (upRight != null)
                     tile.setConnectedByRiver(upRight, true, true)
@@ -664,9 +664,7 @@ class PathfindingTests(
         val path = unit.movement.getShortestPath(target)
 
         // Crossing the river ends the turn, then the rest of the route is one turn
-        assertEquals(path.toString(), 2, path.size)
-        assertEquals(path.toString(), HexCoord(2,0), path[0].position)
-        assertEquals(path.toString(), HexCoord(5,0), path[1].position)
+        assertEquals(listOf(HexCoord(2,0),HexCoord(5,0)), path.map{it.position})
     }
 
     @Test
