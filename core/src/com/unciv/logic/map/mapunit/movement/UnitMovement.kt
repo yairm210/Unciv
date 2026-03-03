@@ -675,7 +675,11 @@ class UnitMovement(val unit: MapUnit) {
         getCannotMoveToReason(tile, assumeCanPassThrough, allowSwap, includeOtherEscortUnit) == null
     
     enum class CannotMoveToReason{
-        CannotPassThrough,
+        TerrainImpassable,
+        BoatCannotGoOnLand,
+        CannotEmbark,
+        CannotEnterOcean,
+        CannotEnterForeignLand,
         CannotEnterCityCenter,
         EscortCannotMove,
         TileIsNotEmpty,
@@ -687,8 +691,8 @@ class UnitMovement(val unit: MapUnit) {
         if (unit.baseUnit.movesLikeAirUnits)
             return getAirUnitCannotMoveToReason(tile, unit)
 
-        if (!assumeCanPassThrough && !canPassThrough(tile))
-            return CannotMoveToReason.CannotPassThrough
+        val canPassThroughReason = if (assumeCanPassThrough) null else cannotPassThroughReason(tile)
+        if (canPassThroughReason != null) return canPassThroughReason
 
         // even if they'll let us pass through, we can't enter their city - unless we just captured it
         if (isCityCenterCannotEnter(tile))
@@ -755,19 +759,23 @@ class UnitMovement(val unit: MapUnit) {
      * Leave it as default unless you know what [canPassThrough] does.
      */
     @Readonly
-    fun canPassThrough(tile: Tile, includeOtherEscortUnit: Boolean = true): Boolean {
+    fun canPassThrough(tile: Tile, includeOtherEscortUnit: Boolean = true): Boolean 
+        = cannotPassThroughReason(tile, includeOtherEscortUnit) == null
+    
+    @Readonly
+    fun cannotPassThroughReason(tile: Tile, includeOtherEscortUnit: Boolean = true): CannotMoveToReason? {
         if (tile.isImpassible()) {
             // special exception - ice tiles are technically impassible, but some units can move through them anyway
             // helicopters can pass through impassable tiles like mountains
             if (!unit.cache.canPassThroughImpassableTiles && !(unit.cache.canEnterIceTiles && tile.terrainFeatures.contains(Constants.ice))
                 // carthage-like uniques sometimes allow passage through impassible tiles
                 && !(unit.civ.passThroughImpassableUnlocked && unit.civ.passableImpassables.contains(tile.lastTerrain.name)))
-                return false
+                return CannotMoveToReason.TerrainImpassable
         }
         if (tile.isLand
             && unit.baseUnit.isWaterUnit
             && !tile.isCityCenter())
-            return false
+            return CannotMoveToReason.BoatCannotGoOnLand
 
         val unitSpecificAllowOcean: Boolean by lazy {
             unit.civ.tech.specificUnitsCanEnterOcean &&
@@ -775,18 +783,18 @@ class UnitMovement(val unit: MapUnit) {
                     .any { unit.matchesFilter(it.params[0]) }
         }
         if (tile.isWater && unit.baseUnit.isLandUnit && !unit.cache.canMoveOnWater) {
-            if (!unit.civ.tech.unitsCanEmbark) return false
-            if (unit.cache.cannotEmbark) return false
+            if (!unit.civ.tech.unitsCanEmbark) return CannotMoveToReason.CannotEmbark
+            if (unit.cache.cannotEmbark) return CannotMoveToReason.CannotEmbark
             if (tile.isOcean && !unit.civ.tech.embarkedUnitsCanEnterOcean && !unitSpecificAllowOcean)
-                return false
+                return CannotMoveToReason.CannotEnterOcean
         }
         if (tile.isOcean && !unit.civ.tech.allUnitsCanEnterOcean) { // Apparently all Polynesian naval units can enter oceans
-            if (!unitSpecificAllowOcean && unit.cache.cannotEnterOceanTiles) return false
+            if (!unitSpecificAllowOcean && unit.cache.cannotEnterOceanTiles) return CannotMoveToReason.CannotEnterOcean
         }
 
         if (unit.cache.canEnterCityStates && tile.getOwner()?.isCityState == true)
-            return true
-        if (!unit.cache.canEnterForeignTerrain && !tile.canCivPassThrough(unit.civ)) return false
+            return null
+        if (!unit.cache.canEnterForeignTerrain && !tile.canCivPassThrough(unit.civ)) return CannotMoveToReason.CannotEnterForeignLand
 
         // The first unit is:
         //   1. Either military unit
@@ -799,14 +807,16 @@ class UnitMovement(val unit: MapUnit) {
             // But not for Embarked Units capturing on Water
             if (!(unit.baseUnit.isLandUnit && tile.isWater && !unit.cache.canMoveOnWater)
                 && firstUnit.isCivilian() && unit.civ.isAtWarWith(firstUnit.civ))
-                return true
+                return null
             // Cannot enter hostile tile with any unit in there
             if (unit.civ.isAtWarWith(firstUnit.civ))
-                return false
+                return CannotMoveToReason.TileIsNotEmpty
         }
-        if (includeOtherEscortUnit && unit.isEscorting() && !unit.getOtherEscortUnit()!!.movement.canPassThrough(tile,false))
-            return false
-        return true
+        if (includeOtherEscortUnit && unit.isEscorting()) {
+            val escortReason = unit.getOtherEscortUnit()!!.movement.cannotPassThroughReason(tile,false)
+            if (escortReason != null) return escortReason
+        }
+        return null
     }
 
 

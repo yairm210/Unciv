@@ -120,14 +120,14 @@ internal class AStarPathfinder(
         val alreadyCalculatedNode = RouteNode(routeNodes[neighborTile.zeroBasedIndex])
         if (cache.addedNeighborNodes.get(neighborTile.zeroBasedIndex) && alreadyCalculatedNode.damagingTiles <= currentNode.damagingTiles) {
             // Note this only checks if THIS thread calculated it
-            if (VERBOSE_PATHFINDING_LOGS == startingPoint || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
-                Log.debug("#calculateAndQueue ${currentTile.position} ignoring ${alreadyCalculatedNode.tile(tileMap).position} because we already calculated it, for $debugMapType $debugId")
+            //if (VERBOSE_PATHFINDING_LOGS == startingPoint || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
+            //    Log.debug("#calculateAndQueue ${currentTile.position} ignoring ${alreadyCalculatedNode.tile(tileMap).position} because we already calculated it, for $debugMapType $debugId")
             return false
         }
         val todoWithDamage = tilesInTodo.get(neighborTile.zeroBasedIndex, Integer.MAX_VALUE)
         if (todoWithDamage <= currentNode.damagingTiles) {
-            if (VERBOSE_PATHFINDING_LOGS == startingPoint || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
-                Log.debug("#calculateAndQueue ${currentTile.position} ignoring ${neighborTile.position} because it's already queued, for $debugMapType $debugId")
+            //if (VERBOSE_PATHFINDING_LOGS == startingPoint || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
+            //    Log.debug("#calculateAndQueue ${currentTile.position} ignoring ${neighborTile.position} because it's already queued, for $debugMapType $debugId")
             return false// another tile already queued a route to that neighbor. skip it.
         }
         // If another thread already calculated the best route, then we can queue it and move on

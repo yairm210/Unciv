@@ -12,18 +12,15 @@ import com.unciv.logic.map.RouteNode.Companion.MAX_TURNS
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.movement.MovementCost
 import com.unciv.logic.map.mapunit.movement.PathsToTilesWithinTurn
+import com.unciv.logic.map.mapunit.movement.UnitMovement.CannotMoveToReason
 import com.unciv.logic.map.mapunit.movement.UnitMovement.ParentTileAndTotalMovement
 import com.unciv.logic.map.tile.Tile
 import com.unciv.utils.Log
-import com.unciv.utils.LongPriorityQueue
 import com.unciv.utils.forEachSetBit
 import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.InternalState
 import yairm210.purity.annotations.Readonly
-import java.util.BitSet
-import java.util.Formatter
-import java.util.Locale
 import java.util.concurrent.atomic.AtomicReference
 
 /**
@@ -330,12 +327,16 @@ class PathingMap(
                     selfFullMove.coerceAtMost(if (escort != null) otherUntilFullMove else MAX_VALID_TURNS),
                     )
             }
+            val moveThroughPredicate = MoveThroughPredicate {
+                val cannotMoveThroughReason = unit.movement.cannotPassThroughReason(it, includeEscortUnit)
+                cannotMoveThroughReason == null || cannotMoveThroughReason == CannotMoveToReason.TileIsNotEmpty
+            }
             return PathingMap(
                 unit.currentTile.tileMap,
                 unit,
                 name,
                 getCurrentCacheKey,
-                { unit.movement.canPassThrough(it)  },
+                moveThroughPredicate,
                 { unit.getDamageFromTerrain(it) },
                 { from, to -> fpmFromMovement(MovementCost.getMovementCostBetweenAdjacentTilesEscort(unit, from, to, considerZoneOfControl, includeEscortUnit)) },
                 { fpmFromMovement(it.getConnectionStatus(unit.civ).movement) },

@@ -1,5 +1,6 @@
 package com.unciv.logic.map
 
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
@@ -8,12 +9,14 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.metadata.GameSettings.PathfindingAlgorithm
 import com.unciv.models.metadata.GameSettings.PathfindingAlgorithm.AStarPathfinding
 import com.unciv.models.metadata.GameSettings.PathfindingAlgorithm.ClassicPathfinding
+import com.unciv.models.ruleset.nation.Nation
 import com.unciv.testing.GdxTestRunnerFactory
 import com.unciv.testing.TestGame
 import org.hamcrest.CoreMatchers.equalTo
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Assume.assumeThat
 import org.junit.Before
@@ -23,7 +26,7 @@ import org.junit.runners.Parameterized
 import org.junit.runners.Parameterized.Parameters
 import org.junit.runners.Parameterized.UseParametersRunnerFactory
 
-
+//TODO
 @RunWith(Parameterized::class)
 @UseParametersRunnerFactory(GdxTestRunnerFactory::class)
 class PathfindingTests(
@@ -193,16 +196,66 @@ class PathfindingTests(
 
     @Test
     fun getMovementToTilesAtPosition_returnsRightTiles() {
-        testGame.setTileTerrain(HexCoord(0, 1), "Hill")
+        // first, we encircle the moving unit with weird conditions to check which it can move through
+        val barbNation = Nation().apply { name = Constants.barbarians } // they are always enemies
+        val neutrNation = Nation().apply { name = "Huns" }
+        val barbCiv = Civilization(barbNation)
+        val neutrCiv = Civilization(neutrNation)
+        testGame.addCiv(barbNation)
+        testGame.addCiv(neutrNation)
+        barbCiv.gameInfo = testGame.gameInfo
+        neutrCiv.gameInfo = testGame.gameInfo
+        barbCiv.cache.updateState()
+        neutrCiv.cache.updateState()
+        barbCiv.setTransients()
+        neutrCiv.setTransients()
+        val barbCity = barbCiv.addCity(HexCoord(-4,4))
+        val neutrCity = barbCiv.addCity(HexCoord(-4,-4))
+        testGame.gameInfo.civilizations.add(barbCiv)
+        testGame.gameInfo.civilizations.add(neutrCiv)
+                
+        // If a pathing goes to -1,3, then it's going through enemy warriors when it shouldn't
+        testGame.addUnit("Warrior", barbCiv, testGame.tileMap[HexCoord(-2,2)])
+        testGame.addUnit("Warrior", barbCiv, testGame.tileMap[HexCoord(-1,2)])
+        // If a pathing goes to 0,3, then it's going through hills when it shouldn't
+        testGame.setTileFeatures(HexCoord(0, 2), "Hill")
+        testGame.setTileFeatures(HexCoord(1, 2), "Hill")
+        // If a pathing goes to 3,2, then it's going through mountains when it shouldn't
+        testGame.setTileTerrain(HexCoord(2, 2), "Mountain")
+        testGame.setTileTerrain(HexCoord(2, 1), "Mountain")
+        // Classic pathing pathed to 3,0, so apparently AStar should as well
+        testGame.setTileTerrain(HexCoord(2, 0), "Ocean")
+        testGame.setTileTerrain(HexCoord(2, -1), "Ocean")
+        // Classic pathing pathed to -3,0, so apparently AStar should as well
+        testGame.tileMap[HexCoord(-2, 1)].setOwningCity(barbCity)
+        testGame.tileMap[HexCoord(-2, 0)].setOwningCity(barbCity)
+        // If a pathing goes to -3,-2, then it's going through neutral tiles when it shouldn't
+        testGame.tileMap[HexCoord(-2, -1)].setOwningCity(neutrCity)
+        testGame.tileMap[HexCoord(-2, -2)].setOwningCity(neutrCity)
+        // If a pathing goes to -1,-3, then it's going through neutral warriors when it shouldn't
+        testGame.addUnit("Warrior", neutrCiv, testGame.tileMap[HexCoord(-1,-2)])
+        testGame.addUnit("Warrior", neutrCiv, testGame.tileMap[HexCoord(0,-2)])
+        
         val baseUnit = testGame.createBaseUnit()
-        baseUnit.movement = 2
+        baseUnit.movement = 3
         val unit = testGame.addUnit(baseUnit.name, civInfo, originTile)
-        unit.currentMovement = 2f
+        unit.currentMovement = 3f
 
-        val path = unit.movement.getMovementToTilesAtPosition(originTile.position, 2f)
-
-        assertEquals(path.toString(), 18, path.size)
-//        assertNotEquals(path.toString(), path.firstEntry(), path.lastEntry())
+        val paths = unit.movement.getMovementToTilesAtPosition(originTile.position, 3f)
+        assertTrue("Classic getMovementToTilesAtPosition includes enemy warriors", paths.containsKey(testGame.tileMap[-1,2]))
+        assertFalse("getMovementToTilesAtPosition should not path beyond enemy warriors", paths.containsKey(testGame.tileMap[-1,3]))
+        if (pathfindingAlgorithm == ClassicPathfinding) // This is a known and accepted difference between classic and AStar pathfinding
+            assertTrue("Classic getMovementToTilesAtPosition includes mountains", paths.containsKey(testGame.tileMap[2,2]))
+        assertFalse("getMovementToTilesAtPosition should not pass beyond mountains", paths.containsKey(testGame.tileMap[3,2]))
+        assertFalse("getMovementToTilesAtPosition should not ignore hill move cost", paths.containsKey(testGame.tileMap[0,3]))
+        assertTrue("Classic getMovementToTilesAtPosition includes Ocean tiles", paths.containsKey(testGame.tileMap[2,0]))
+        assertTrue("Classic getMovementToTilesAtPosition paths beyond Ocean tiles", paths.containsKey(testGame.tileMap[3,0]))
+        assertTrue("Classic getMovementToTilesAtPosition includes Enemy cities", paths.containsKey(testGame.tileMap[-2,0]))
+        assertTrue("Classic getMovementToTilesAtPosition paths beyond Enemy cities", paths.containsKey(testGame.tileMap[-3,0]))
+        assertTrue("Classic getMovementToTilesAtPosition includes Neutral cities", paths.containsKey(testGame.tileMap[-3,-2]))
+        assertTrue("Classic getMovementToTilesAtPosition paths beyond Neutral cities", paths.containsKey(testGame.tileMap[-2,-2]))
+        assertTrue("Classic getMovementToTilesAtPosition includes Neutral warriors", paths.containsKey(testGame.tileMap[-1,-2]))
+        assertTrue("Classic getMovementToTilesAtPosition paths beyond Neutral warriors", paths.containsKey(testGame.tileMap[-1,-3]))
     }
 
     @Test
