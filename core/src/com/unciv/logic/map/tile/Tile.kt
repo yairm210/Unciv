@@ -136,7 +136,7 @@ class Tile : IsPartOfGameInfoSerialization {
     var isOcean = false
 
     @delegate:Transient
-    private val _isCoastalTile: Boolean by lazy { neighbors.any { it.baseTerrain == Constants.coast } }
+    private val _isAdjacentToCoast: Boolean by lazy { neighbors.any { it.getBaseTerrain().isCoast } }
 
     @Transient
     var unitHeight = 0
@@ -397,7 +397,7 @@ class Tile : IsPartOfGameInfoSerialization {
         return civInfo.isAtWarWith(tileOwner)
     }
 
-    @Readonly fun isRoughTerrain() = allTerrains.any { it.isRough }
+    @Readonly fun isRoughTerrain() = allTerrains.any { it.isRough}
 
     @Transient
     internal var stateThisTile: GameContext = GameContext.EmptyState
@@ -546,7 +546,7 @@ class Tile : IsPartOfGameInfoSerialization {
             "All", "all" -> return true
             "Water" -> return isWater
             "Land" -> return isLand
-            Constants.coastal -> return isCoastalTile()
+            Constants.coastal -> return _isAdjacentToCoast
             Constants.river -> return isAdjacentToRiver()
             "Unowned" -> return getOwner() == null
             "your" -> return observingCiv != null && getOwner() == observingCiv
@@ -556,7 +556,7 @@ class Tile : IsPartOfGameInfoSerialization {
             "resource" -> return observingCiv != null && observingCiv.canSeeResource(tileResource)
             "Water resource" -> return isWater && observingCiv != null && observingCiv.canSeeResource(tileResource)
             "Featureless" -> return terrainFeatures.isEmpty()
-            "Open terrain" -> return allTerrains.all { !it.isRough } // special case - if *one* terrain is open, we don't care, we need *all*
+            "Open terrain" -> return allTerrains.all { !it.isRough} // special case - if *one* terrain is open, we don't care, we need *all*
             Constants.freshWaterFilter ->
                 return isAdjacentTo(Constants.freshWater, observingCiv)
         }
@@ -590,7 +590,7 @@ class Tile : IsPartOfGameInfoSerialization {
         }
     }
 
-    @Readonly fun isCoastalTile() = _isCoastalTile
+    @Readonly fun isAdjacentToCoast() = _isAdjacentToCoast
 
     @Readonly fun getViewableTilesList(distance: Int): List<Tile> = tileMap.getViewableTiles(position, distance)
     @Readonly fun getTilesInDistance(distance: Int): Sequence<Tile> = tileMap.getTilesInDistance(position, distance)
@@ -815,7 +815,7 @@ class Tile : IsPartOfGameInfoSerialization {
         setTerrainFeatures(terrainFeatures)
         isWater = getBaseTerrain().type == TerrainType.Water
         isLand = getBaseTerrain().type == TerrainType.Land
-        isOcean = baseTerrain == Constants.ocean
+        isOcean = getBaseTerrain().isOcean
 
         // Resource amounts missing - Old save or bad mapgen?
         if (isTilemapInitialized() && tileResource?.resourceType == ResourceType.Strategic && resourceAmount == 0) {

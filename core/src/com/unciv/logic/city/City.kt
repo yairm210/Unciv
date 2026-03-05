@@ -32,7 +32,6 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.SubStat
 import com.unciv.utils.withoutItem
 import yairm210.purity.annotations.Cache
-import yairm210.purity.annotations.InternalState
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 import java.util.EnumSet
@@ -201,7 +200,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     @Readonly fun isWorked(tile: Tile) = workedTiles.contains(tile.position)
 
     @Readonly fun isCapital(): Boolean = cityConstructions.builtBuildingUniqueMap.hasUnique(UniqueType.IndicatesCapital, state)
-    @Readonly fun isCoastal(): Boolean = centerTile.isCoastalTile()
+    @Readonly fun isCoastal(): Boolean = centerTile.isAdjacentToCoast()
     @Readonly fun isNaval(): Boolean = centerTile.isWater || isCoastal()
     
     @Readonly fun getBombardRange(): Int = civ.gameInfo.ruleset.modOptions.constants.baseCityBombardRange
