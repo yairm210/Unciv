@@ -470,7 +470,7 @@ class AlertPopup(
 
     private fun addLeaderName(civInfo: Civilization) {
         add(LeaderIntroTable(civInfo))
-        addSeparator()
+        addSeparator().padBottom(25f)
     }
 
     private fun addQuestionAboutTheCity(cityName: String) {
