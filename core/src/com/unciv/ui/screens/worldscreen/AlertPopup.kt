@@ -332,7 +332,7 @@ class AlertPopup(
 
     private fun addGoldenAge() {
         addGoodSizedLabel("GOLDEN AGE")
-        addSeparator()
+        addSeparator().padBottom(25f)
         addGoodSizedLabel("Your citizens have been happy with your rule for so long that the empire enters a Golden Age!").row()
         addCloseButton()
         music.chooseTrack(viewingCiv.civName, MusicMood.Golden, MusicTrackChooserFlags.setSpecific)
@@ -349,7 +349,7 @@ class AlertPopup(
         val captor = viewingCiv
 
         addGoodSizedLabel("Return [${capturedUnit.name}] to [${originalOwner.civName}]?")
-        addSeparator()
+        addSeparator().padBottom(25f)
         addGoodSizedLabel("The [${capturedUnit.name}] we liberated originally belonged to [${originalOwner.civName}]. They will be grateful if we return it to them.").row()
 
         bottomTable.defaults().pad(0f, 30f) // Small buttons, plenty of pad so we don't fat-finger it
@@ -404,7 +404,7 @@ class AlertPopup(
     private fun addTechResearched() {
         val tech = gameInfo.ruleset.technologies[popupAlert.value]!!
         addGoodSizedLabel(tech.name)
-        addSeparator()
+        addSeparator().padBottom(25f)
         val centerTable = Table()
         centerTable.add(tech.quote.toLabel().apply { wrap = true }).width(stageWidth / 3)
         centerTable.add(ImageGetter.getTechIconPortrait(tech.name, 100f)).pad(20f)
@@ -432,7 +432,7 @@ class AlertPopup(
     private fun addWonderBuilt() {
         val wonder = gameInfo.ruleset.buildings[popupAlert.value]!!
         addGoodSizedLabel(wonder.name)
-        addSeparator()
+        addSeparator().padBottom(10f)
         if(ImageGetter.wonderImageExists(wonder.name)) {    // Wonder Graphic exists
             if(stageHeight * 3 > stageWidth * 4) {    // Portrait
                 add(ImageGetter.getWonderImage(wonder.name))
