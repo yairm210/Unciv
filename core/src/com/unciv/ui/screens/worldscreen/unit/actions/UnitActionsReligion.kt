@@ -11,6 +11,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.ui.components.extensions.toPercent
 import yairm210.purity.annotations.Readonly
+import kotlin.math.roundToInt
 
 object UnitActionsReligion {
 
@@ -111,8 +112,11 @@ object UnitActionsReligion {
 
                 UnitActionModifiers.activateSideEffects(unit, newStyleUnique)
 
-                if (city.civ != unit.civ) city.civ.getDiplomacyManager(unit.civ)!!
-                    .setFlag(DiplomacyFlags.SpreadReligionInOurCities, 30)
+                if (city.civ != unit.civ) {
+                    val flagDuration = (30 * unit.civ.gameInfo.speed.modifier).roundToInt()
+                    city.civ.getDiplomacyManager(unit.civ)!!
+                        .setFlag(DiplomacyFlags.SpreadReligionInOurCities, flagDuration)
+                }
 
             }.takeIf { unit.civ.religionManager.maySpreadReligionNow(unit)
                 && UnitActionModifiers.canActivateSideEffects(unit, newStyleUnique)}

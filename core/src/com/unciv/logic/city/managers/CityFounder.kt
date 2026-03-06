@@ -14,6 +14,7 @@ import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.utils.withItem
 import yairm210.purity.annotations.Readonly
+import kotlin.math.roundToInt
 
 class CityFounder {
     fun foundCity(civInfo: Civilization, cityLocation: HexCoord, unit: MapUnit? = null): City {
@@ -245,7 +246,10 @@ class CityFounder {
                     .map { it.civ }
                     .distinct()
                     .filter { it.knows(city.civ) && it.hasExplored(city.getCenterTile()) }
-        for (otherCiv in civsWithCloseCities)
-            otherCiv.getDiplomacyManager(city.civ)!!.setFlag(DiplomacyFlags.SettledCitiesNearUs, 30)
+        for (otherCiv in civsWithCloseCities) {
+            val flagDuration = (30 * city.civ.gameInfo.speed.modifier).roundToInt()
+            otherCiv.getDiplomacyManager(city.civ)!!.setFlag(DiplomacyFlags.SettledCitiesNearUs, flagDuration)
+        }
+            
     }
 }

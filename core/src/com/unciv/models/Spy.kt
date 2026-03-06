@@ -12,6 +12,7 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import yairm210.purity.annotations.Readonly
 import kotlin.math.ceil
+import kotlin.math.roundToInt
 import kotlin.random.Random
 
 
@@ -258,7 +259,8 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
     private fun demandToNotBeSpiedOn(otherCiv: Civilization) {
         val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(civInfo)!!
         otherCivDiplomacyManager.addModifier(DiplomaticModifiers.SpiedOnUs, -15f)
-        otherCivDiplomacyManager.setFlag(DiplomacyFlags.DiscoveredSpiesInOurCities, 30)
+        val flagDuration = (30 * civInfo.gameInfo.speed.modifier).roundToInt()
+        otherCivDiplomacyManager.setFlag(DiplomacyFlags.DiscoveredSpiesInOurCities, flagDuration)
     }
 
     @Readonly fun canDoCoup(): Boolean = getCityOrNull() != null && getCity().civ.isCityState && isSetUp()
