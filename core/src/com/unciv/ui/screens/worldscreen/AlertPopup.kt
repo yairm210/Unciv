@@ -1,6 +1,6 @@
 package com.unciv.ui.screens.worldscreen
 
-import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
@@ -18,7 +18,6 @@ import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.*
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.toHexCoord
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
@@ -63,6 +62,11 @@ class AlertPopup(
     private val worldScreen: WorldScreen,
     private val popupAlert: PopupAlert
 ): Popup(worldScreen) {
+    
+    companion object {
+        private val LIGHTER_RED_COLOR = Color(1f, 1/3f, 1/3f, 1f)
+        private val LIGHTER_GREEN_COLOR = Color(1/3f, 1f, 1/3f, 1f)
+    }
 
     //region convenience getters
     private val music get() = UncivGame.Current.musicController
@@ -246,6 +250,7 @@ class AlertPopup(
         if (otherciv.isDefeated()) return false
         val playerDiploManager = viewingCiv.getDiplomacyManager(otherciv)!!
         addLeaderName(otherciv)
+        addTopicHeader("DECLARATION OF FRIENDSHIP", LIGHTER_GREEN_COLOR)
         addGoodSizedLabel(
                 if (otherciv.nation.declaringFriendship.isNotEmpty()) otherciv.nation.declaringFriendship else "My friend, shall we declare our friendship to the world?"
         ).row()
@@ -420,6 +425,7 @@ class AlertPopup(
         // technically they already declared war, but if they're dead it'll be strange that they talk to us
         if (civInfo.isDefeated()) return false
         addLeaderName(civInfo)
+        addTopicHeader("DECLARATION OF WAR", LIGHTER_RED_COLOR)
         addGoodSizedLabel(civInfo.nation.declaringWar).row()
         bottomTable.defaults().pad(0f, 5f)
         addCloseButton("You'll pay for this!")
@@ -427,6 +433,11 @@ class AlertPopup(
         music.chooseTrack(civInfo.civName, MusicMood.War, MusicTrackChooserFlags.setSpecific)
         music.playVoice("${civInfo.civName}.declaringWar")
         return true
+    }
+
+    private fun addTopicHeader(text: String, color: Color) {
+        addGoodSizedLabel(text, color=color, size=Constants.smallerHeadingFontSize)
+            .padBottom(20f).row()
     }
 
     private fun addWonderBuilt() {
