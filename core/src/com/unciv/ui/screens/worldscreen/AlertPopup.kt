@@ -1,6 +1,6 @@
 package com.unciv.ui.screens.worldscreen
 
-import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
@@ -65,6 +65,8 @@ class AlertPopup(
     
     companion object {
         private const val SEPARATOR_LINE_TO_TEXT_PADDING = 25f
+        private val LIGHTER_RED_COLOR = Color(1f, 1/3f, 1/3f, 1f)
+        private val LIGHTER_GREEN_COLOR = Color(1/3f, 1f, 1/3f, 1f)
     }
 
     //region convenience getters
@@ -246,9 +248,10 @@ class AlertPopup(
 
     private fun addDeclarationOfFriendship(): Boolean {
         val otherciv = getCiv(popupAlert.value)
-        if (otherciv.isDefeated()) return false
+        if (otherciv.isDefeated() || otherciv.getDiplomacyManager(viewingCiv)!!.diplomaticStatus == DiplomaticStatus.War) return false
         val playerDiploManager = viewingCiv.getDiplomacyManager(otherciv)!!
         addLeaderName(otherciv)
+        addTopicHeader("DECLARATION OF FRIENDSHIP", LIGHTER_GREEN_COLOR)
         addGoodSizedLabel(
                 if (otherciv.nation.declaringFriendship.isNotEmpty()) otherciv.nation.declaringFriendship else "My friend, shall we declare our friendship to the world?"
         ).row()
@@ -423,13 +426,19 @@ class AlertPopup(
         // technically they already declared war, but if they're dead it'll be strange that they talk to us
         if (civInfo.isDefeated()) return false
         addLeaderName(civInfo)
+        addTopicHeader("DECLARATION OF WAR", LIGHTER_RED_COLOR)
         addGoodSizedLabel(civInfo.nation.declaringWar).row()
-        bottomTable.defaults().pad(0f, 5f)
         addCloseButton("You'll pay for this!")
         addCloseButton("Very well.")
+        equalizeLastTwoButtonWidths()
         music.chooseTrack(civInfo.civName, MusicMood.War, MusicTrackChooserFlags.setSpecific)
         music.playVoice("${civInfo.civName}.declaringWar")
         return true
+    }
+
+    private fun addTopicHeader(text: String, color: Color) {
+        addGoodSizedLabel(text, color=color, size=Constants.smallerHeadingFontSize)
+            .padBottom(20f).row()
     }
 
     private fun addWonderBuilt() {

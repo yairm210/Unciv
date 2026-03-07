@@ -248,7 +248,13 @@ class Tile : IsPartOfGameInfoSerialization {
 
     //region pure functions
 
-    @Readonly fun isHill() = baseTerrain == Constants.hill || terrainFeatures.contains(Constants.hill)
+    @Readonly fun getHillTerrain(): Terrain? {
+        val base = getBaseTerrain()
+        if (base.isHill)
+            return base
+        return terrainFeatureObjects.firstOrNull {it.isHill }
+    }
+    @Readonly fun isHill() = getHillTerrain() != null
 
     /** Returns military, civilian and air units in tile */
     @Readonly
@@ -391,7 +397,7 @@ class Tile : IsPartOfGameInfoSerialization {
         return civInfo.isAtWarWith(tileOwner)
     }
 
-    @Readonly fun isRoughTerrain() = allTerrains.any { it.isRough() }
+    @Readonly fun isRoughTerrain() = allTerrains.any { it.isRough }
 
     @Transient
     internal var stateThisTile: GameContext = GameContext.EmptyState
@@ -550,7 +556,7 @@ class Tile : IsPartOfGameInfoSerialization {
             "resource" -> return observingCiv != null && observingCiv.canSeeResource(tileResource)
             "Water resource" -> return isWater && observingCiv != null && observingCiv.canSeeResource(tileResource)
             "Featureless" -> return terrainFeatures.isEmpty()
-            "Open terrain" -> return allTerrains.all { !it.isRough() } // special case - if *one* terrain is open, we don't care, we need *all*
+            "Open terrain" -> return allTerrains.all { !it.isRough } // special case - if *one* terrain is open, we don't care, we need *all*
             Constants.freshWaterFilter ->
                 return isAdjacentTo(Constants.freshWater, observingCiv)
         }

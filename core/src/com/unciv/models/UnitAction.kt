@@ -111,8 +111,9 @@ class UpgradeUnitAction(
     val unitToUpgradeTo: BaseUnit,
     val goldCostOfUpgrade: Int,
     val newResourceRequirements: Counter<String>,
-    action: (() -> Unit)?
-) : UnitAction(UnitActionType.Upgrade, 120f, title, action = action)
+    action: (() -> Unit)?,
+    useFrequency: Float = 120f,
+) : UnitAction(UnitActionType.Upgrade, useFrequency, title, action = action)
 
 /**
  * Unit Actions - generic enum with static properties

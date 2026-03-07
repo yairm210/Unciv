@@ -1018,6 +1018,15 @@ enum class UniqueType(
         UniqueTarget.Promotion,
         UniqueTarget.Tech,
         flags = UniqueFlag.setOfHiddenToUsers),
+    
+    UnitActionPriority("with [amount] priority",
+        UniqueTarget.UnitActionModifier,
+        UniqueTarget.MetaModifier, // Can also be applied to UniqueTarget.Triggerable
+        flags = UniqueFlag.setOfHiddenToUsers,
+        docDescription = "How often this action is used, a higher value means more often and that it should be on an earlier page. " +
+        "100 is very frequent, 50 is somewhat frequent, less than 25 is press one time for multi-turn movement. " +
+        "A Rare case is > 100 if a button is something like add in capital, promote or something, " +
+        "we need to inform the player that taking the action is an option."),
 
     HiddenFromCivilopedia("Will not be displayed in Civilopedia", *UniqueTarget.Displayable, flags = UniqueFlag.setOfHiddenToUsers),
     ShowsWhenUnbuilable("Shown while unbuilable", UniqueTarget.Building, UniqueTarget.Unit, flags = UniqueFlag.setOfHiddenToUsers),

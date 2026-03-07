@@ -50,7 +50,7 @@ class UpgradeTests {
         UniqueTriggerActivation.triggerUnique(triggerUnique, unit1)
         unit1 = testGame.getTile(HexCoord.Zero).getFirstUnit()!!
 
-        Assert.assertTrue("Unit should upgrade to Warrior without unique", unit1.baseUnit.name == "Warrior")
+        Assert.assertEquals("Unit should upgrade to Warrior without unique", "Warrior", unit1.baseUnit.name)
     }
 
     @Test
@@ -63,7 +63,7 @@ class UpgradeTests {
         var unit1 = testGame.addUnit(testUnit.name, civ, testGame.getTile(HexCoord.Zero))
         val upgradeActions = UnitActionsUpgrade.getFreeUpgradeAction(unit1)
 
-        Assert.assertTrue(upgradeActions.count() == 1)
+        Assert.assertEquals(1, upgradeActions.count())
         Assert.assertFalse("Unit should not be able to upgrade to special unit",
             upgradeActions.any { (it as UpgradeUnitAction).unitToUpgradeTo == unitToUpgradeTo })
 
@@ -113,7 +113,7 @@ class UpgradeTests {
 
         upgradeActions = UnitActionsUpgrade.getUpgradeActionAnywhere(unit1)
 
-        Assert.assertTrue(upgradeActions.count() == 1)
+        Assert.assertEquals(1, upgradeActions.count())
         Assert.assertTrue(upgradeActions.none { it.action == null })
     }
 }

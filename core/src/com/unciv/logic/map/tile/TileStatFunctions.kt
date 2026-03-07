@@ -268,7 +268,7 @@ class TileStatFunctions(val tile: Tile) {
             sum -= 2f
         if (tile.isAdjacentToRiver())
             sum += 2f
-        if (tile.neighbors.any { it.baseTerrain == Constants.mountain })
+        if (tile.neighbors.any { it.getBaseTerrain().isMountain })
             sum += 2f
         if (tile.isCoastalTile())
             sum += 3f
