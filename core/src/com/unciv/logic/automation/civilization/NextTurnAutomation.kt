@@ -649,8 +649,7 @@ object NextTurnAutomation {
             diplomacyManager.hasFlag(demand.willIgnoreViolation) -> {}
             diplomacyManager.hasFlag(demand.agreedToDemand) -> {
                 otherCiv.popupAlerts.add(PopupAlert(demand.violationDiscoveredAlert, civInfo.civID))
-                val duration = (100 * civInfo.gameInfo.speed.modifier).roundToInt()
-                diplomacyManager.setFlag(demand.willIgnoreViolation, duration)
+                diplomacyManager.setFlag(demand.willIgnoreViolation, 100, true)
                 diplomacyManager.setModifier(demand.betrayedPromiseDiplomacyMpodifier, -20f)
                 diplomacyManager.removeFlag(demand.agreedToDemand)
             }

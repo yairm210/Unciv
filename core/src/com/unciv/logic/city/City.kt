@@ -388,8 +388,10 @@ class City : IsPartOfGameInfoSerialization, INamed {
         espionage.setTransients(this)
     }
 
-    fun setFlag(flag: CityFlags, amount: Int) {
-        flagsCountdown[flag.name] = amount
+    fun setFlag(flag: CityFlags, amount: Int, adjustWithGameSpeed: Boolean = false) {
+        flagsCountdown[flag.name] = 
+            if (adjustWithGameSpeed) (amount * civ.gameInfo.speed.modifier).roundToInt()
+            else amount
     }
 
     fun removeFlag(flag: CityFlags) {

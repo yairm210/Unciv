@@ -112,7 +112,7 @@ object UnitActionsReligion {
                 UnitActionModifiers.activateSideEffects(unit, newStyleUnique)
 
                 if (city.civ != unit.civ) city.civ.getDiplomacyManager(unit.civ)!!
-                    .setFlag(DiplomacyFlags.SpreadReligionInOurCities, 30)
+                    .setFlag(DiplomacyFlags.SpreadReligionInOurCities, 30, true)
 
             }.takeIf { unit.civ.religionManager.maySpreadReligionNow(unit)
                 && UnitActionModifiers.canActivateSideEffects(unit, newStyleUnique)}

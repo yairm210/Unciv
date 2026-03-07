@@ -61,13 +61,13 @@ class CityTurnManager(val city: City) {
         var duration = 15 + Random.Default.nextInt(10)
         if (isNewCity && city.isCapital())
             duration += 10
-        duration = (duration * city.civ.gameInfo.speed.modifier).roundToInt()
-        city.setFlag(CityFlags.ResourceDemand, duration)
+        city.setFlag(CityFlags.ResourceDemand, duration, true)
     }
 
     private fun tryWeLoveTheKing() {
         if (city.demandedResource == "") return
         if (city.getAvailableResourceAmount(city.demandedResource) > 0) {
+            // manually adjust with game speed because of the +1 at the end
             val duration = (20 * city.civ.gameInfo.speed.modifier).roundToInt() + 1 // +1 because it will be decremented by 1 in the same startTurn()
             city.setFlag(CityFlags.WeLoveTheKing, duration) 
             city.civ.addNotification(
