@@ -228,7 +228,7 @@ class Multiplayer {
             val responsibleCiv: Civilization = gameInfo.getCivilization(responsible)
             "[$playerCivName]'s turn was skipped by [$responsibleCiv]"
         } catch (_: NoSuchElementException) {
-            "[$playerCivName]' turn was skipped by [$responsible]"
+            "[$playerCivName]'s turn was skipped by [$responsible]"
         }
 
         for (civ in gameInfo.civilizations)
