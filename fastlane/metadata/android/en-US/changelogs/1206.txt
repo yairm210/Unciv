@@ -1,0 +1,21 @@
+
+
+Resolved  - Ruleset switching in new game screen no longer allows zero victory types
+
+Resolved  - Users cannot offer negative gold with "-50" buttons
+
+By unciv-loof:
+- Notification shows who is responsible for skipping or resigning a player 
+- Ensure newly fetched mod list entries respect the currently applied filter 
+- Fix misaligned buttons in DoW popup 
+- Do not show DoF popup if other civ additionally declared war 
+- Colored topic headers for DoF and DoW popups 
+
+By Ambeco:
+- PathingMap now includes tiles with warriors when at war 
+- Unitactions and UnitTriggers have moddable priority 
+- Workers no longer forget road automation 
+- Eliminated most Hardcoded Terrains 
+- Unit Moving clears movement caches 
+
+schema: Fix Difficulties, UnitPromotions, and Units - By RobLoach
