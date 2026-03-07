@@ -171,7 +171,7 @@ class MapParameters : IsPartOfGameInfoSerialization {
         yield(", {Vegetation richness}=" + vegetationRichness.niceToString(2))
         yield(", {Rare features richness}=" + rareFeaturesRichness.niceToString(3))
         yield(", {Max Coast extension}=$maxCoastExtension")
-        yield(", {Biome areas extension}=$tilesPerBiomeArea")
+        yield(", {Biome size}=$tilesPerBiomeArea")
         yield(", {Water level}=" + waterThreshold.niceToString(2))
     }.joinToString("")
 
