@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
-import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.MultiplayerGamePreview
 import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
@@ -198,9 +197,9 @@ class MultiplayerScreen : PickerScreen() {
     /**
      * Permanently turns the current playerCiv into an AI civ and uploads the game afterwards.
      * 
-     * @param responsible Who caused the player to resign? Can be the name of a civ, or for example a player id
+     * @param responsibleCivNameOrPlayerId Who caused the player to resign? Can be the name of a civ, or for example a player id
      */
-    private fun resignPlayer(multiplayerGamePreview: MultiplayerGamePreview, playerCiv: String, responsible: String) {
+    private fun resignPlayer(multiplayerGamePreview: MultiplayerGamePreview, playerCiv: String, responsibleCivNameOrPlayerId: String) {
         //Create a popup
         val popup = Popup(this)
         popup.addGoodSizedLabel(Constants.working).row()
@@ -211,7 +210,7 @@ class MultiplayerScreen : PickerScreen() {
                 val errorMessage = game.onlineMultiplayer.resignPlayer(
                     multiplayerGamePreview,
                     playerCiv,
-                    responsible
+                    responsibleCivNameOrPlayerId
                 )
 
                 launchOnGLThread {
@@ -227,7 +226,7 @@ class MultiplayerScreen : PickerScreen() {
                 if (ex is MultiplayerAuthException) {
                     launchOnGLThread {
                         AuthPopup(this@MultiplayerScreen) { success ->
-                            if (success) resignPlayer(multiplayerGamePreview, playerCiv, responsible)
+                            if (success) resignPlayer(multiplayerGamePreview, playerCiv, responsibleCivNameOrPlayerId)
                         }.open(true)
                     }
                     return@runOnNonDaemonThreadPool
@@ -243,9 +242,9 @@ class MultiplayerScreen : PickerScreen() {
     /**
      * Temporarily turns the current playerCiv into an AI civ and uploads the game afterwards.
      *
-     * @param responsible Who skipped the player's turn? Can be the name of a civ, or for example a player id
+     * @param responsibleCivNameOrPlayerId Who skipped the player's turn? Can be the name of a civ, or for example a player id
      */
-    private fun skipCurrentPlayerTurn(multiplayerGamePreview: MultiplayerGamePreview, playerToSkip: String, responsible: String) {
+    private fun skipCurrentPlayerTurn(multiplayerGamePreview: MultiplayerGamePreview, playerToSkip: String, responsibleCivNameOrPlayerId: String) {
         //Create a popup
         val popup = Popup(this)
         popup.addGoodSizedLabel(Constants.working).row()
@@ -256,7 +255,7 @@ class MultiplayerScreen : PickerScreen() {
                 val skipTurnErrorMessage = game.onlineMultiplayer.skipCurrentPlayerTurn(
                     multiplayerGamePreview,
                     playerToSkip,
-                    responsible
+                    responsibleCivNameOrPlayerId
                 )
 
                 launchOnGLThread {
@@ -273,7 +272,7 @@ class MultiplayerScreen : PickerScreen() {
                 if (ex is MultiplayerAuthException) {
                     launchOnGLThread {
                         AuthPopup(this@MultiplayerScreen) { success ->
-                            if (success) skipCurrentPlayerTurn(multiplayerGamePreview, playerToSkip, responsible)
+                            if (success) skipCurrentPlayerTurn(multiplayerGamePreview, playerToSkip, responsibleCivNameOrPlayerId)
                         }.open(true)
                     }
                     return@runOnNonDaemonThreadPool

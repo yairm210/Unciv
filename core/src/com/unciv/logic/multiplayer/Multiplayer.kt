@@ -142,14 +142,14 @@ class Multiplayer {
      *
      * Fires [MultiplayerGameUpdated]
      * 
-     * @param responsible Who caused the player to resign? Can be the name of a civ, or for example a player id
+     * @param responsibleCivNameOrPlayerId Who caused the player to resign? Can be the name of a civ, or for example a player id
      *
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
      * @throws MultiplayerFileNotFoundException if the file can't be found
      * @throws MultiplayerAuthException if the authentication failed
      * @return false if it's not the user's turn and thus resigning did not happen
      */
-    suspend fun resignPlayer(game: MultiplayerGamePreview, playerCivName: String, responsible: String): String {
+    suspend fun resignPlayer(game: MultiplayerGamePreview, playerCivName: String, responsibleCivNameOrPlayerId: String): String {
         val preview = game.preview ?: throw game.error!!
         // download to work with the latest game state
         val gameInfo = multiplayerServer.tryDownloadGame(preview.gameId)
@@ -171,13 +171,13 @@ class Multiplayer {
         //Add notification so everyone knows what happened
         //call for every civ cause AI players are skipped anyway
 
-        val notificationText = if (responsible == playerCivName || responsible.isEmpty()) {
+        val notificationText = if (responsibleCivNameOrPlayerId == playerCivName || responsibleCivNameOrPlayerId.isEmpty()) {
             "[$playerCivName] resigned and is now controlled by AI"
         } else try {
-            val responsibleCivName = gameInfo.getCivilization(responsible).civName
+            val responsibleCivName = gameInfo.getCivilization(responsibleCivNameOrPlayerId).civName
             "[$playerCivName] was forcibly resigned by [$responsibleCivName] and is now controlled by AI"
         } catch (_: NoSuchElementException) {
-            "[$playerCivName] was forcibly resigned by [$responsible] and is now controlled by AI"
+            "[$playerCivName] was forcibly resigned by [$responsibleCivNameOrPlayerId] and is now controlled by AI"
         }
         
         for (civ in gameInfo.civilizations)
@@ -193,9 +193,9 @@ class Multiplayer {
      * Returned value indicates an error string - will be null if successful
      * We always pass in the player name to ensure if the button was clicked twice we don't skip 2 turns 
      *
-     * @param responsible Who skipped the player's turn? Can be the name of a civ, or for example a player id
+     * @param responsibleCivNameOrPlayerId Who skipped the player's turn? Can be the name of a civ, or for example a player id
      */
-    suspend fun skipCurrentPlayerTurn(game: MultiplayerGamePreview, playerCivName: String, responsible: String): String? {
+    suspend fun skipCurrentPlayerTurn(game: MultiplayerGamePreview, playerCivName: String, responsibleCivNameOrPlayerId: String): String? {
         val preview = game.preview ?: return game.error!!.message
         // download to work with the latest game state
         val gameInfo: GameInfo
@@ -222,13 +222,13 @@ class Multiplayer {
         //Add notification so everyone knows what happened
         //call for every civ cause AI players are skipped anyway
 
-        val notificationText = if (responsible == playerCivName || responsible.isEmpty()) {
+        val notificationText = if (responsibleCivNameOrPlayerId == playerCivName || responsibleCivNameOrPlayerId.isEmpty()) {
             "[$playerCivName] skipped their own turn"
         } else try {
-            val responsibleCiv: Civilization = gameInfo.getCivilization(responsible)
+            val responsibleCiv: Civilization = gameInfo.getCivilization(responsibleCivNameOrPlayerId)
             "[$playerCivName]'s turn was skipped by [$responsibleCiv]"
         } catch (_: NoSuchElementException) {
-            "[$playerCivName]'s turn was skipped by [$responsible]"
+            "[$playerCivName]'s turn was skipped by [$responsibleCivNameOrPlayerId]"
         }
 
         for (civ in gameInfo.civilizations)
