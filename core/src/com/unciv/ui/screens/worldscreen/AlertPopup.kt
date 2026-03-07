@@ -421,8 +421,9 @@ class AlertPopup(
         if (civInfo.isDefeated()) return false
         addLeaderName(civInfo)
         addGoodSizedLabel(civInfo.nation.declaringWar).row()
-        addCloseButton("You'll pay for this!").row()
-        addCloseButton("Very well.").row()
+        addCloseButton("You'll pay for this!")
+        addCloseButton("Very well.")
+        equalizeLastTwoButtonWidths()
         music.chooseTrack(civInfo.civName, MusicMood.War, MusicTrackChooserFlags.setSpecific)
         music.playVoice("${civInfo.civName}.declaringWar")
         return true
