@@ -27,6 +27,7 @@ import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.ClipboardUuidHelper
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
@@ -34,6 +35,7 @@ import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
+import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.multiplayerscreens.FriendPickerList
 import com.unciv.ui.screens.pickerscreens.PickerPane
@@ -272,8 +274,15 @@ class PlayerPickerTable(
 
         val copyFromClipboardButton = "Player ID from clipboard".toTextButton()
         copyFromClipboardButton.onClick {
-            playerIdTextField.text = Gdx.app.clipboard.contents
-            onPlayerIdTextUpdated()
+            ClipboardUuidHelper.chooseUuidFromClipboard(
+                stage = previousScreen.stage,
+                clipboardText = Gdx.app.clipboard.contents,
+                onUuidSelected = {
+                    playerIdTextField.text = it
+                    onPlayerIdTextUpdated()
+                },
+                onNoUuidFound = { ToastPopup("No valid player ID found in clipboard".tr(), previousScreen.stage) }
+            )
         }
         add(copyFromClipboardButton).right().colspan(3).fillX().pad(5f).row()
 

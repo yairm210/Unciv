@@ -2,6 +2,7 @@ package com.unciv.logic
 
 import yairm210.purity.annotations.Pure
 import java.util.Locale
+import java.util.UUID
 import kotlin.math.abs
 
 /**
@@ -23,6 +24,9 @@ import kotlin.math.abs
  * G-2ddb3a34-0699-4126-b7a5-38603e665928-5
  */
 object IdChecker {
+    private val uuidRegex = Regex(
+        "(?i)(?<![0-9a-f])[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![0-9a-f])"
+    )
 
     @Pure
     fun checkAndReturnPlayerUuid(playerId: String): String? {
@@ -32,6 +36,23 @@ object IdChecker {
     @Pure
     fun checkAndReturnGameUuid(gameId: String): String? {
         return checkAndReturnUuiId(gameId, "G")
+    }
+
+    /**
+     * Extracts UUID candidates from possibly mixed text.
+     * Results are normalized to canonical UUID format and returned in encounter order.
+     */
+    fun extractUuidCandidates(text: String): List<String> {
+        val distinctCandidates = LinkedHashSet<String>()
+        for (match in uuidRegex.findAll(text)) {
+            val normalized = try {
+                UUID.fromString(match.value).toString()
+            } catch (_: Throwable) {
+                null
+            }
+            if (normalized != null) distinctCandidates.add(normalized)
+        }
+        return distinctCandidates.toList()
     }
 
     @Pure

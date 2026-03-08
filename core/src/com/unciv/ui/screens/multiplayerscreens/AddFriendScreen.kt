@@ -9,6 +9,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.ClipboardUuidHelper
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.popups.ToastPopup
@@ -26,7 +27,12 @@ class AddFriendScreen : PickerScreen() {
         topTable.add(friendNameTextField).pad(10f).padBottom(30f).width(stage.width/2).row()
 
         pastePlayerIDButton.onClick {
-            playerIDTextField.text = Gdx.app.clipboard.contents
+            ClipboardUuidHelper.chooseUuidFromClipboard(
+                stage = stage,
+                clipboardText = Gdx.app.clipboard.contents,
+                onUuidSelected = { playerIDTextField.text = it },
+                onNoUuidFound = { ToastPopup("No valid player ID found in clipboard".tr(), this) }
+            )
         }
 
         topTable.add("Player ID".toLabel()).row()
