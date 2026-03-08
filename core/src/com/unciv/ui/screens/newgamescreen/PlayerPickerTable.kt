@@ -273,12 +273,10 @@ class PlayerPickerTable(
 
         val copyFromClipboardButton = "Player ID from clipboard".toTextButton()
         copyFromClipboardButton.onClick {
-            ClipboardUuidHelper.chooseUuidFromClipboard(
+            ClipboardUuidHelper.pasteUuidIntoTextField(
                 stage = previousScreen.stage,
-                onUuidSelected = {
-                    playerIdTextField.text = it
-                    onPlayerIdTextUpdated()
-                },
+                targetTextField = playerIdTextField,
+                onAfterPaste = ::onPlayerIdTextUpdated,
                 onNoUuidFound = { ToastPopup("No valid player ID found in clipboard".tr(), previousScreen.stage) }
             )
         }

@@ -27,9 +27,9 @@ class AddMultiplayerGameScreen(multiplayerScreen: MultiplayerScreen) : PickerScr
         val gameIDTextField = UncivTextField("GameID")
         val pasteGameIDButton = "Paste gameID from clipboard".toTextButton()
         pasteGameIDButton.onClick {
-            ClipboardUuidHelper.chooseUuidFromClipboard(
+            ClipboardUuidHelper.pasteUuidIntoTextField(
                 stage = stage,
-                onUuidSelected = { gameIDTextField.text = it },
+                targetTextField = gameIDTextField,
                 onNoUuidFound = { ToastPopup("No valid game ID found in clipboard".tr(), this) }
             )
         }

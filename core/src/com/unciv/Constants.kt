@@ -121,6 +121,8 @@ object Constants {
      */
     const val minimumMovementEpsilon = 0.05f  // 0.1f was used previously, too - here for global searches
     const val aiPreferInquisitorOverMissionaryPressureDifference = 3000f
+    /** Maximum number of clipboard characters scanned when extracting IDs to avoid UI stalls on huge clipboard payloads. */
+    const val clipboardScanLengthLimit = 200_000
 
     const val defaultFontSize = 18
     const val headingFontSize = 24

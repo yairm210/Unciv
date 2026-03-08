@@ -29,9 +29,9 @@ class EditFriendScreen(selectedFriend: FriendList.Friend) : PickerScreen() {
         topTable.add(friendNameTextField).pad(10f).padBottom(30f).width(stage.width/2).row()
 
         pastePlayerIDButton.onClick {
-            ClipboardUuidHelper.chooseUuidFromClipboard(
+            ClipboardUuidHelper.pasteUuidIntoTextField(
                 stage = stage,
-                onUuidSelected = { playerIDTextField.text = it },
+                targetTextField = playerIDTextField,
                 onNoUuidFound = { ToastPopup("No valid player ID found in clipboard".tr(), this) }
             )
         }

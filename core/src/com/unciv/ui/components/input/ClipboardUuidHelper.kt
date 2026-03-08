@@ -2,13 +2,29 @@ package com.unciv.ui.components.input
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.Stage
+import com.unciv.Constants
 import com.unciv.logic.IdChecker
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.popups.Popup
 
 object ClipboardUuidHelper {
-    private const val maxScanLength = 200_000
+    fun pasteUuidIntoTextField(
+        stage: Stage,
+        targetTextField: UncivTextField,
+        onNoUuidFound: () -> Unit = {},
+        onAfterPaste: (() -> Unit)? = null
+    ) {
+        chooseUuidFromClipboard(
+            stage = stage,
+            onUuidSelected = {
+                targetTextField.text = it
+                onAfterPaste?.invoke()
+            },
+            onNoUuidFound = onNoUuidFound
+        )
+    }
 
     fun chooseUuidFromClipboard(
         stage: Stage,
@@ -23,7 +39,7 @@ object ClipboardUuidHelper {
             return
         }
 
-        val candidates = IdChecker.extractUuidCandidates(clipboardText.take(maxScanLength))
+        val candidates = IdChecker.extractUuidCandidates(clipboardText.take(Constants.clipboardScanLengthLimit))
         when (candidates.size) {
             0 -> onNoUuidFound()
             1 -> onUuidSelected(candidates.first())
