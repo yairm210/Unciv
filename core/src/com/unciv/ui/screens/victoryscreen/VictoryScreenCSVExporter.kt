@@ -2,13 +2,11 @@ package com.unciv.ui.screens.victoryscreen
 
 import com.badlogic.gdx.Gdx
 import com.unciv.logic.civilization.Civilization
-import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
 /**
  * Handles CSV export functionality for victory screen statistics.
- * Provides flexible export options for any set of turns.
  */
 object VictoryScreenCSVExporter {
 
@@ -16,7 +14,7 @@ object VictoryScreenCSVExporter {
      * Exports statistics for the specified turns to CSV format and copies to clipboard.
      *
      * @param worldScreen The world screen containing the game data
-     * @param turns List of turn numbers to export (must be sorted)
+     * @param turns List of turn numbers to export
      * @param onComplete Callback with success/error message
      */
     fun exportTurns(
@@ -27,13 +25,8 @@ object VictoryScreenCSVExporter {
         val gameInfo = worldScreen.gameInfo
         val majorCivs = gameInfo.civilizations.filter { it.isMajorCiv() }.sortedBy { it.civName }
 
-        if (turns.isEmpty()) {
-            onComplete("No turns to export".tr())
-            return
-        }
-
         val csv = buildCSV(majorCivs, turns, gameInfo)
-        copyToClipboard(csv, onComplete, turns.size)
+        copyToClipboard(csv, onComplete)
     }
 
     /**
@@ -94,21 +87,14 @@ object VictoryScreenCSVExporter {
      *
      * @param text Text to copy
      * @param onComplete Callback with success/error message
-     * @param turnCount Number of turns exported (for message formatting)
      */
     private fun copyToClipboard(
         text: String,
-        onComplete: (message: String) -> Unit,
-        turnCount: Int
+        onComplete: (message: String) -> Unit
     ) {
         try {
             Gdx.app.clipboard.contents = text
-            val message = if (turnCount == 1) {
-                "Current turn statistics exported to clipboard!".tr()
-            } else {
-                "Last [count] turns exported to clipboard!".fillPlaceholders(turnCount.toString()).tr()
-            }
-            onComplete(message)
+            onComplete("Statistics exported to clipboard!".tr())
         } catch (ex: Exception) {
             onComplete("Could not export statistics to clipboard!".tr())
         }
