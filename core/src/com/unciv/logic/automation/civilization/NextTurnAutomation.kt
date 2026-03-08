@@ -28,7 +28,9 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.ui.screens.victoryscreen.RankingType
 import com.unciv.utils.randomWeighted
+import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Readonly
+import kotlin.math.roundToInt
 import kotlin.random.Random
 
 object NextTurnAutomation {
@@ -494,7 +496,9 @@ object NextTurnAutomation {
             Battle.moveAndAttack(MapUnitCombatant(unit), mostSurroundedEnemy)
         }
     }
-    private fun automateSettlerEscorting(civInfo: Civilization){
+    
+    @VisibleForTesting
+    fun automateSettlerEscorting(civInfo: Civilization){
         val capitalTile = civInfo.getCapital()!!.getCenterTile()
         @Readonly fun bestUnitInRange(tile: Tile, range: Int) = tile.getTilesInDistance(range)
             .mapNotNull { it.militaryUnit }.filter {
@@ -645,7 +649,7 @@ object NextTurnAutomation {
             diplomacyManager.hasFlag(demand.willIgnoreViolation) -> {}
             diplomacyManager.hasFlag(demand.agreedToDemand) -> {
                 otherCiv.popupAlerts.add(PopupAlert(demand.violationDiscoveredAlert, civInfo.civID))
-                diplomacyManager.setFlag(demand.willIgnoreViolation, 100)
+                diplomacyManager.setFlag(demand.willIgnoreViolation, 100, true)
                 diplomacyManager.setModifier(demand.betrayedPromiseDiplomacyMpodifier, -20f)
                 diplomacyManager.removeFlag(demand.agreedToDemand)
             }

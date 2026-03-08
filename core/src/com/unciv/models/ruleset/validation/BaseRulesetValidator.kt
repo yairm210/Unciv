@@ -332,6 +332,8 @@ internal class BaseRulesetValidator(
             lines.add("No passable land terrains exist!", sourceObject = null)
 
         for (terrain in ruleset.terrains.values) {
+            if ((terrain.type == TerrainType.Land || terrain.type == TerrainType.Water) && terrain.occursOn.isNotEmpty())
+                lines.add("${terrain.name} is a base terrain but has occursOn set - this is unsupported.", RulesetErrorSeverity.WarningOptionsOnly, terrain)
             for (baseTerrainName in terrain.occursOn) {
                 val baseTerrain = ruleset.terrains[baseTerrainName]
                 if (baseTerrain == null)

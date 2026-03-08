@@ -1,11 +1,16 @@
 package com.unciv.logic.battle
 
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.models.metadata.GameSettings.PathfindingAlgorithm
+import com.unciv.models.metadata.GameSettings.PathfindingAlgorithm.AStarPathfinding
+import com.unciv.models.metadata.GameSettings.PathfindingAlgorithm.ClassicPathfinding
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.GdxTestRunnerFactory
 import com.unciv.testing.TestGame
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
@@ -13,9 +18,16 @@ import org.junit.Assert.assertFalse
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.junit.runners.Parameterized
+import org.junit.runners.Parameterized.Parameters
+import org.junit.runners.Parameterized.UseParametersRunnerFactory
 
-@RunWith(GdxTestRunner::class)
-class BattleTest {
+@RunWith(Parameterized::class)
+@UseParametersRunnerFactory(GdxTestRunnerFactory::class)
+class BattleTest(
+    // parameters come from the Compantion#parameters method
+     private val pathfindingAlgorithm: PathfindingAlgorithm,
+) {
     private lateinit var attackerCiv: Civilization
     private lateinit var defenderCiv: Civilization
 
@@ -26,6 +38,7 @@ class BattleTest {
 
     @Before
     fun setUp() {
+        UncivGame.Current.settings.useAStarPathfinding = (pathfindingAlgorithm == AStarPathfinding)
         testGame.makeHexagonalMap(4)
         attackerCiv = testGame.addCiv()
         defenderCiv = testGame.addCiv()
@@ -533,5 +546,18 @@ class BattleTest {
         // then
         assertEquals(95, attackerUnit.health)
         assertTrue(defaultDefenderUnit.isDestroyed)
+    }
+
+    companion object {
+        @Suppress("unused")
+        @Parameters
+        @JvmStatic
+        fun parameters(): Collection<Array<Any?>?> {
+            return listOf(
+                /* First execute the test with these parametrers */
+                arrayOf(ClassicPathfinding),
+                /* and then execute the test with these parametrers */
+                arrayOf(AStarPathfinding))
+        }
     }
 }

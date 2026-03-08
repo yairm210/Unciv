@@ -1,6 +1,7 @@
 package com.unciv.logic.automation.unit
 
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.TurnManager
@@ -24,6 +25,7 @@ internal class WorkerAutomationTest {
 
     @Before
     fun setUp() {
+        UncivGame.Current.settings.useAStarPathfinding = true
         testGame.makeHexagonalMap(7)
         civInfo = testGame.addCiv()
         workerAutomation = WorkerAutomation(civInfo, 3)
@@ -271,6 +273,12 @@ internal class WorkerAutomationTest {
 
         val city1 = testGame.addCity(civInfo, testGame.tileMap[3,3])
         val city2 = testGame.addCity(civInfo, testGame.tileMap[-3,-3])
+        // preexisting road along half, just to complicate things
+        testGame.tileMap[3,3].setRoadStatus(RoadStatus.Railroad, civInfo)
+        testGame.tileMap[2,2].setRoadStatus(RoadStatus.Railroad, civInfo)
+        testGame.tileMap[1,1].setRoadStatus(RoadStatus.Railroad, civInfo)
+        testGame.tileMap[0,0].setRoadStatus(RoadStatus.Railroad, civInfo)
+        //testGame.tileMap[1,1].setRoadStatus(RoadStatus.Railroad, civInfo)
         val cities = listOf(city1, city2)
         civInfo.addGold(100000000)
         for (city in cities) {

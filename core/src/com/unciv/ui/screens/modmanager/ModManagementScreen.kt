@@ -337,7 +337,9 @@ class ModManagementScreen private constructor(
             val mod = ModUIData(repo, isUpdatedVersionOfInstalledMod)
             onlineModInfo[repo.name] = mod
             modButtons.remove(mod) // Remove *cached* mod button since we have NEW DATA
-            onlineModsTable.add(getCachedModButton(mod)).row()
+            if (mod.matchesFilter(optionsManager.getFilter())) {
+                onlineModsTable.add(getCachedModButton(mod)).row()
+            }
         }
 
         Concurrency.run("Cache mod list"){

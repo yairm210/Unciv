@@ -348,7 +348,7 @@ class MapEditorEditRiversTab(
 ): Table(BaseScreen.skin), IMapEditorEditSubTabs, TabbedPager.IPageExtensions {
     private val iconSize = 50f
     private val showOnTerrain = ruleset.terrains.values.asSequence()
-        .filter { it.type.isBaseTerrain && !it.isRough() }
+        .filter { it.type.isBaseTerrain && !it.isRough }
         .sortedByDescending { it.production * 2 + it.food }
         .firstOrNull()
         ?: ruleset.terrains[Constants.plains]
