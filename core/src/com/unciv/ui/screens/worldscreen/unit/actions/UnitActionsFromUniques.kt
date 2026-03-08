@@ -150,7 +150,7 @@ object UnitActionsFromUniques {
 
         // Retrieve all parardrop uniques, considering the state of the unit
         val paradropUniques = unit.getMatchingUniques(UniqueType.MayParadrop, unit.cache.state)
-        val useFrequency = 0f
+        var useFrequency = 0f
 
         // Construct the list of possible destination tile filters, keeping the largest distance
         for (unique in paradropUniques) {
