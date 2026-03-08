@@ -1,6 +1,5 @@
 package com.unciv.ui.screens.newgamescreen
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -276,7 +275,6 @@ class PlayerPickerTable(
         copyFromClipboardButton.onClick {
             ClipboardUuidHelper.chooseUuidFromClipboard(
                 stage = previousScreen.stage,
-                clipboardText = Gdx.app.clipboard.contents,
                 onUuidSelected = {
                     playerIdTextField.text = it
                     onPlayerIdTextUpdated()

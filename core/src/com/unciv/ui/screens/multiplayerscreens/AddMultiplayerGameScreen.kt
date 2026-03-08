@@ -1,6 +1,5 @@
 package com.unciv.ui.screens.multiplayerscreens
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.logic.IdChecker
@@ -30,7 +29,6 @@ class AddMultiplayerGameScreen(multiplayerScreen: MultiplayerScreen) : PickerScr
         pasteGameIDButton.onClick {
             ClipboardUuidHelper.chooseUuidFromClipboard(
                 stage = stage,
-                clipboardText = Gdx.app.clipboard.contents,
                 onUuidSelected = { gameIDTextField.text = it },
                 onNoUuidFound = { ToastPopup("No valid game ID found in clipboard".tr(), this) }
             )

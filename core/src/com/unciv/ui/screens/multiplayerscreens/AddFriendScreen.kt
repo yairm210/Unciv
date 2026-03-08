@@ -1,6 +1,5 @@
 package com.unciv.ui.screens.multiplayerscreens
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.IdChecker
@@ -29,7 +28,6 @@ class AddFriendScreen : PickerScreen() {
         pastePlayerIDButton.onClick {
             ClipboardUuidHelper.chooseUuidFromClipboard(
                 stage = stage,
-                clipboardText = Gdx.app.clipboard.contents,
                 onUuidSelected = { playerIDTextField.text = it },
                 onNoUuidFound = { ToastPopup("No valid player ID found in clipboard".tr(), this) }
             )

@@ -333,7 +333,6 @@ internal class AdvancedTab(
         val takeUserIdFromClipboardButton = "Take user ID from clipboard".toTextButton().onClick {
             ClipboardUuidHelper.chooseUuidFromClipboard(
                 stage = stage,
-                clipboardText = Gdx.app.clipboard.contents,
                 onUuidSelected = { selectedUuid ->
                     ConfirmPopup(
                         stage,

@@ -1,5 +1,6 @@
 package com.unciv.ui.components.input
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.unciv.logic.IdChecker
 import com.unciv.models.translations.tr
@@ -7,13 +8,22 @@ import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.popups.Popup
 
 object ClipboardUuidHelper {
+    private const val maxScanLength = 200_000
+
     fun chooseUuidFromClipboard(
         stage: Stage,
-        clipboardText: String,
         onUuidSelected: (String) -> Unit,
-        onNoUuidFound: () -> Unit
+        onNoUuidFound: () -> Unit,
+        onClipboardReadFailed: (() -> Unit)? = null
     ) {
-        val candidates = IdChecker.extractUuidCandidates(clipboardText)
+        val clipboardText = try {
+            Gdx.app.clipboard.contents ?: ""
+        } catch (_: Throwable) {
+            (onClipboardReadFailed ?: onNoUuidFound).invoke()
+            return
+        }
+
+        val candidates = IdChecker.extractUuidCandidates(clipboardText.take(maxScanLength))
         when (candidates.size) {
             0 -> onNoUuidFound()
             1 -> onUuidSelected(candidates.first())
