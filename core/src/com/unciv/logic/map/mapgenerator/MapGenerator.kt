@@ -706,7 +706,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
     }
 
     private fun spawnFlatEarthIceWalls(tileMap: TileMap, iceTerrains: List<TerrainOccursRange>, oceanTerrains: List<TerrainOccursRange>) {
-        val snowTerrains = listOf(baseTerrainPicker.first { it.maybeSnow() })
+        val snowTerrains = baseTerrainPicker.filter { it.maybeSnow() }
         val mountainTerrains = baseTerrainPicker.filter { it.terrain.impassable && it.occursInChains && !it.rareFeature }
         val allArcticTerrains = iceTerrains + snowTerrains + mountainTerrains
 
