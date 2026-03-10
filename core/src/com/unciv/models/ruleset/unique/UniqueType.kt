@@ -817,6 +817,8 @@ enum class UniqueType(
     ConditionalVsCity("vs cities", UniqueTarget.Conditional),
     ConditionalVsUnits("vs [mapUnitFilter] units", UniqueTarget.Conditional),
     ConditionalVsCombatant("vs [combatantFilter]", UniqueTarget.Conditional),
+    ConditionalVsUnitsWithPromotion("vs units with [promotion]", UniqueTarget.Conditional),
+    ConditionalVsUnitsWithoutPromotion("vs units without [promotion]", UniqueTarget.Conditional),
     ConditionalVsLargerCiv("when fighting units from a Civilization with more Cities than you", UniqueTarget.Conditional),
     ConditionalAttacking("when attacking", UniqueTarget.Conditional),
     ConditionalDefending("when defending", UniqueTarget.Conditional),

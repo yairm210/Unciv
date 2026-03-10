@@ -555,6 +555,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                                 || it.type == UniqueType.ConditionalAttacking // Attack - half the bonus
                                 || it.type == UniqueType.ConditionalDefending // Defense - half the bonus
                                 || it.type == UniqueType.ConditionalFightingInTiles
+                                || it.type == UniqueType.ConditionalVsUnitsWithPromotion
+                                || it.type == UniqueType.ConditionalVsUnitsWithoutPromotion
                         } // Bonus in terrain or feature - half the bonus
                     ) {
                         highestConditionalPowerBonus = (unique.params[0].toInt() / 2f).toPercent()
