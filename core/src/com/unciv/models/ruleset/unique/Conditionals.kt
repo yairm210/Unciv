@@ -257,7 +257,7 @@ object Conditionals {
             UniqueType.ConditionalVsUnits,  UniqueType.ConditionalVsCombatant -> state.theirCombatant?.matchesFilter(conditional.params[0]) == true
             UniqueType.ConditionalVsUnitsWithPromotion ->
                 state.theirCombatant?.getTile().militaryUnit?.promotions?.promotions?.contains(conditional.params[0]) == true 
-            UniqueType.ConditionalVsUnitsWithoutPromotion ->        
+            UniqueType.ConditionalVsUnitsWithoutPromotion ->
                 state.theirCombatant?.getTile().militaryUnit?.promotions?.promotions?.contains(conditional.params[0]) == false 
             UniqueType.ConditionalOurUnit, UniqueType.ConditionalOurUnitOnUnit ->
                 state.relevantUnit?.matchesFilter(conditional.params[0]) == true
