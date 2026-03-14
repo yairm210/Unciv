@@ -1,5 +1,6 @@
 package com.unciv.logic.battle
 
+import com.unciv.logic.battle.Battle
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.*
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
@@ -60,6 +61,8 @@ object Nuke {
         val attackingCiv = attacker.getCivInfo()
         val nukeStrength = attacker.unit.getMatchingUniques(UniqueType.NuclearWeapon)
             .firstOrNull()?.params?.get(0)?.toInt() ?: return
+
+        val nukeStrengthNot = attacker.unit.getMatchingUniques(UniqueType.NuclearWeaponNot)
 
         val blastRadius = attacker.unit.getMatchingUniques(UniqueType.BlastRadius)
             .firstOrNull()?.params?.get(0)?.toInt() ?: 2
@@ -224,11 +227,16 @@ object Nuke {
         // Damage and/or destroy units on the tile
         for (unit in tile.getUnits().toList()) { // toList so if it's destroyed there's no concurrent modification
             val damage = (when {
-                isGroundZero || nukeStrength >= 2 -> 100
-                // The following constants are NUKE_UNIT_DAMAGE_BASE / NUKE_UNIT_DAMAGE_RAND_1 / NUKE_UNIT_DAMAGE_RAND_2 in Civ5
-                nukeStrength == 1 -> 30 + Random.Default.nextInt(40) + Random.Default.nextInt(40)
-                // Level 0 does not exist in Civ5 (it treats units same as level 2)
-                else -> 20 + Random.Default.nextInt(30)
+                if nukeStrengthNot {
+                Battle.attack()
+                }
+                else {
+                    isGroundZero || nukeStrength >= 2 -> 100
+                    // The following constants are NUKE_UNIT_DAMAGE_BASE / NUKE_UNIT_DAMAGE_RAND_1 / NUKE_UNIT_DAMAGE_RAND_2 in Civ5
+                    nukeStrength == 1 -> 30 + Random.Default.nextInt(40) + Random.Default.nextInt(40)
+                    // Level 0 does not exist in Civ5 (it treats units same as level 2)
+                    else -> 20 + Random.Default.nextInt(30)
+                }
             } * buildingModifier * damageModifierFromMissingResource + 1f.ulp).toInt()
             val defender = MapUnitCombatant(unit)
             if (unit.isCivilian()) {
