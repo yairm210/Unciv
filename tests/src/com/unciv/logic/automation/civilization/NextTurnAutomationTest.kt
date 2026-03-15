@@ -2,8 +2,10 @@ package com.unciv.logic.automation.civilization
 
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.automation.civilization.NextTurnAutomationTest.Companion.PathfindingAlgorithm.Classic
-import com.unciv.logic.automation.civilization.NextTurnAutomationTest.Companion.PathfindingAlgorithm.AStar
+import com.unciv.logic.map.AStar
+import com.unciv.models.metadata.GameSettings.PathfindingAlgorithm
+import com.unciv.models.metadata.GameSettings.PathfindingAlgorithm.ClassicPathfinding
+import com.unciv.models.metadata.GameSettings.PathfindingAlgorithm.AStarPathfinding
 import com.unciv.testing.GdxTestRunnerFactory
 import com.unciv.testing.TestGame
 import org.junit.Assert.assertEquals
@@ -25,7 +27,7 @@ class NextTurnAutomationTest(private val algorithm: PathfindingAlgorithm) {
 
     @Before
     fun setUp() {
-        UncivGame.Current.settings.useAStarPathfinding = (algorithm == AStar)
+        UncivGame.Current.settings.useAStarPathfinding = (algorithm == AStarPathfinding)
         testGame.makeHexagonalMap(7)
         civInfo = testGame.addCiv()
         val capital = testGame.addCity(civInfo, testGame.tileMap[0,0])
@@ -84,16 +86,11 @@ class NextTurnAutomationTest(private val algorithm: PathfindingAlgorithm) {
     }
 
     companion object {
-        enum class PathfindingAlgorithm {
-            Classic,
-            AStar
-        }
-
         @Suppress("unused")
         @Parameters
         @JvmStatic
         fun parameters(): Collection<Array<Any?>?> {
-            return listOf( arrayOf(Classic), arrayOf(AStar))
+            return listOf( arrayOf(ClassicPathfinding), arrayOf(AStarPathfinding))
         }
     }
 }

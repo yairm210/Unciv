@@ -51,7 +51,7 @@ class PathingMapTest {
         val parentTile = testGame.tileMap.getClockPositionNeighborTile(tile, 12)!!
         val damagingTiles = 3
         val underestimatedTotal = fpmFromFixedPointBits((1 shl 13) or 1) //15 bits. value is 8193 aka 409.65move
-        
+        val canMoveTo = true       
 
         val node = RouteNode(
             tile,
@@ -60,6 +60,7 @@ class PathingMapTest {
             moveThisTurn,
             turns,
             parentTile,
+            canMoveTo,
             damagingTiles
         )
 
@@ -67,6 +68,7 @@ class PathingMapTest {
         assertEquals(tile, node.tile(testGame.tileMap))
         assertEquals(12, node.parentClockDir)
         assertEquals(parentTile, node.parentTile(testGame.tileMap))
+        assertEquals(true, node.canMoveTo)
         assertEquals(moveThisTurn, node.moveUsedThisTurn)
         assertEquals(pbmMoveThisTurn, node.pbmMoveThisTurn)
         assertEquals(turns, node.turns)
