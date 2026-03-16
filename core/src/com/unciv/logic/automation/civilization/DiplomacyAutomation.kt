@@ -498,7 +498,7 @@ object DiplomacyAutomation {
         ): Float {
             val personality = diplomacy.civInfo.getPersonality()
             if (personality.denounceWillingness == 0f)
-                return Float.POSITIVE_INFINITY
+                return Float.NEGATIVE_INFINITY
             val willingnessModifier = 1f / personality.scaledFocus(PersonalityValue.DenounceWillingness)
             val opinionModifier = DENOUNCE_REQUIRED_OPINION_CHANGE_BASE.pow(diplomacy.opinionOfOtherCiv())
             return DENOUNCE_REQUIRED_OPINION_CHANGE_INITIAL * willingnessModifier * opinionModifier
