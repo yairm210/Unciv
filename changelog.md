@@ -1,3 +1,28 @@
+## 4.19.18
+
+When checking if we can purchase a promotion path, don't consider the cost of free promotions
+
+Allow promoting units to free promotions even before getting enough XP for non-free promotions
+
+4.19.17-patch2
+
+perf(render): "Pillaged improvement" image packed with improvement icons to allow mods to override it
+
+4.19.17-patch1
+
+By Ambeco:
+- Mods can have multiple Ocean and Coast Terrains 
+- AStar moves through same tiles as Classic 
+- spawnFlatEarthIceWalls doesnt crash if no snow terrain 
+
+Add showDemographics option hidden behind showVictoryStats - By ICanSeeForever
+
+Forced unit disbandment considers refundability and promotions - By unciv-loof
+
+AI: only get mad at spreading religion while they can found their own - By EmperorPinguin
+
+Fix crashing on Game Start due to `useFrequency` uniques - By RobLoach
+
 ## 4.19.17
 
 Ruleset switching in new game screen no longer allows zero victory types
