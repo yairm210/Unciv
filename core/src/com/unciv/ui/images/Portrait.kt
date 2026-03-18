@@ -216,7 +216,7 @@ class PortraitImprovement(name: String, size: Float, dim: Boolean = false, isPil
             background.color.a = 0.7f
         }
         if (isPillaged) {
-            val pillagedIcon = ImageGetter.getImage("OtherIcons/Fire")
+            val pillagedIcon = ImageGetter.getImage("ImprovementIcons/Pillaged")
             pillagedIcon.setSize(width/2, height/2)
             pillagedIcon.setPosition(width, 0f, Align.bottomRight)
             addActor(pillagedIcon)
@@ -238,7 +238,8 @@ class PortraitImprovement(name: String, size: Float, dim: Boolean = false, isPil
         return Color.WHITE
     }
 
-    override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
+    override fun draw(batch: Batch?, parentAlpha: Float) = 
+        super.draw(batch, parentAlpha)
 }
 
 class PortraitNation(name: String, size: Float) : Portrait(Type.Nation, name, size, size*0.1f) {

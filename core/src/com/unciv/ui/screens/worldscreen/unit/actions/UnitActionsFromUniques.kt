@@ -150,6 +150,7 @@ object UnitActionsFromUniques {
 
         // Retrieve all parardrop uniques, considering the state of the unit
         val paradropUniques = unit.getMatchingUniques(UniqueType.MayParadrop, unit.cache.state)
+        var useFrequency = 0f
 
         // Construct the list of possible destination tile filters, keeping the largest distance
         for (unique in paradropUniques) {
@@ -158,10 +159,9 @@ object UnitActionsFromUniques {
             val existingDistance = unit.cache.paradropDestinationTileFilters[tileFilter]
             if (existingDistance == null || distance > existingDistance) {
                 unit.cache.paradropDestinationTileFilters[tileFilter] = distance
+                useFrequency = getUseFrequency(unit, unique, 60f)
             }
         }
-        val useFrequency = getUseFrequency(unit, paradropUniques.first(), 60f)
-
         if (unit.cache.paradropDestinationTileFilters.isEmpty()) return emptySequence()
 
         return sequenceOf(UnitAction(UnitActionType.Paradrop,
@@ -283,8 +283,7 @@ object UnitActionsFromUniques {
     }
 
     internal fun getAddInCapitalActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
-        if (!unit.hasUnique(UniqueType.AddInCapital)) return emptySequence()
-        val unique = unit.getMatchingUniques(UniqueType.AddInCapital).first()
+        val unique = unit.getMatchingUniques(UniqueType.AddInCapital).firstOrNull() ?: return emptySequence()
         val useFrequency = getUseFrequency(unit, unique, 80f)
         return sequenceOf(UnitAction(UnitActionType.AddInCapital,
             title = "Add to [${unique.params[0]}]",
