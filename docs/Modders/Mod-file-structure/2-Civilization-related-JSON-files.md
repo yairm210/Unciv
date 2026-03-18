@@ -151,6 +151,7 @@ There are 7 defining behaviours that influence an AI Civilization's behaviour. A
 - Diplomacy: Determines how likely the civilization is to declare friendship, a defensive pact, peace treaty, or other diplomatic actions.
 - Loyal: Determines how much the civilization values a long-lasting alliance, how willing they are to join wars with them, and how much they despise other unreliable civilizations.
 - Expansion: Determines how focused the civilization is on founding or capturing new cities. A lower value means they might focus on culture more.
+- DenounceWillingness: Determines how eager the civilization is to denounce other civs.
 
 
 ## CityStateTypes.json

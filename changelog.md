@@ -1,3 +1,20 @@
+## 4.19.18
+
+Ignore free promotions for promotion path costs
+
+Allow gaining free promotions before gaining XP
+
+By Ambeco:
+- Mods can have multiple Ocean and Coast Terrains 
+- AStar moves through same tiles as Classic  
+
+Add showDemographics option - By ICanSeeForever
+
+Forced unit disbandment considers refundability and promotions - By unciv-loof
+DenounceWillingness personality trait - by unciv-loof
+
+AI: only get mad at spreading religion while they can found their own - By EmperorPinguin
+
 ## 4.19.17
 
 Ruleset switching in new game screen no longer allows zero victory types

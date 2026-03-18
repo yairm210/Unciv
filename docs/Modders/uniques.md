@@ -2776,6 +2776,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Rough terrain"
 	Applicable to: Terrain
 
+??? example  "Coastal Water"
+	Applicable to: Terrain
+
 ??? example  "Excluded from map editor"
 	This unique is automatically hidden from users.
 
