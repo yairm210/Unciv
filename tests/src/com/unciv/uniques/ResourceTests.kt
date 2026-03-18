@@ -150,7 +150,7 @@ class ResourceTests {
         val tile = game.getTile(1,1)
         tile.setTileResource("Iron")
         tile.resourceAmount = 4
-        tile.improvement = "Mine"
+        tile.setImprovementBasic("Mine")
 
         // when
         val cityResources = city.getResourcesGeneratedByCity()
@@ -297,10 +297,10 @@ class ResourceTests {
         game.getTile(1,1).addTerrainFeature("Oasis")
 
         // when
-        game.getTile(1,1).setImprovement(resourceImprovement.name)
+        game.getTile(1,1).setImprovement(resourceImprovement)
 
         // then
-        val resourceAmountInCapital = city.getAvailableResourceAmount(resource.name)
+        val resourceAmountInCapital = city.getAvailableResourceAmount(resource)
         assert(resourceAmountInCapital == 0)
     }
 

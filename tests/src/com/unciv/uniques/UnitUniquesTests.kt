@@ -87,7 +87,7 @@ class UnitUniquesTests {
         val ironTile = game.getTile(HexCoord(0,1))
         ironTile.setTileResource("Iron")
         ironTile.resourceAmount = 3
-        ironTile.improvement = "Mine"
+        ironTile.setImprovementBasic("Mine")
         civ.tech.addTechnology("Mining")
         civ.tech.addTechnology("Iron Working")
         // capital already owns tile, but this relinquishes first - shouldn't require manual setTerrainTransients, updateCivResources called automatically
