@@ -112,7 +112,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
 
         fun maybeSnow() = terrain.type == TerrainType.Land 
             && tempFrom <= -1 && tempTo <= -.5 
-            && humidFrom >= 0.2 && humidTo >= 1 
+            && humidFrom >= -.1 && humidTo >= 1 
             && !rareFeature
 
         override fun toString(): String {
@@ -741,8 +741,9 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             if (!ice.matchesTempAndTerrain(tile, -1.0)) {
                 val fallbackBase = oceanTerrains.filter { ice.terrain.occursOn.contains (it.name) }
                     .ifEmpty { oceanTerrains.filter {it.isOcean} }
-                    .random(randomness.RNG)
-                tile.baseTerrain = fallbackBase.name          
+                    .randomOrNull(randomness.RNG)
+                if (fallbackBase != null)
+                    tile.baseTerrain = fallbackBase.name          
             }
             tile.removeTerrainFeatures()
             tile.addTerrainFeature(ice.terrain.name)
