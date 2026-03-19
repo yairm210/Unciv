@@ -103,7 +103,7 @@ class AlertPopup(
             AlertType.WarDeclaration -> shouldOpen = addWarDeclaration()
             AlertType.BorderConflict -> shouldOpen = addBorderConflict()
             AlertType.TilesStolen -> shouldOpen = addTilesStolen()
-            AlertType.Denounced -> addDenouncement()
+            AlertType.Denounced -> shouldOpen = addDenouncement()
             
             // demands
             AlertType.DemandToStopSettlingCitiesNear -> shouldOpen = addDemand(Demand.DoNotSettleNearUs)
@@ -268,8 +268,10 @@ class AlertPopup(
         return true
     }
 
-    private fun addDenouncement() {
+    private fun addDenouncement(): Boolean {
         val denouncer = getCiv(popupAlert.value)
+        if (denouncer.isDefeated())
+            return false
         addLeaderName(denouncer)
         addTopicHeader("DENOUNCEMENT", LIGHTER_ORANGE_COLOR)
         // normal message unless we are enemies
@@ -288,6 +290,7 @@ class AlertPopup(
             }.row()
         }
         addCloseButton("Very well.", KeyboardBinding.Cancel).row()
+        return true
     }
     
     private fun addDefeated() {
