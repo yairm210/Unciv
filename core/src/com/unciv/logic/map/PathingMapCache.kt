@@ -184,16 +184,18 @@ value class RouteNode(val bits: Long=0L) {
         private const val PBM_MOVE_THIS_TURN_OFFSET = RELATIONSHIP_LEVEL_OFFSET + RELATIONSHIP_LEVEL_BIT_COUNT
         private const val PBM_MOVE_THIS_TURN_BIT_COUNT = 9
         private const val PBM_MOVE_THIS_TURN_LO_MASK = (0x1L shl PBM_MOVE_THIS_TURN_BIT_COUNT) - 1L
-        private const val PBM_MOVE_THIS_TURN_HI_MASK = PBM_MOVE_THIS_TURN_LO_MASK shl PBM_MOVE_THIS_TURN_OFFSET
+        internal const val PBM_MOVE_THIS_TURN_HI_MASK = PBM_MOVE_THIS_TURN_LO_MASK shl PBM_MOVE_THIS_TURN_OFFSET
         // bits 32-40 (9b = 512values = 25.55move) are the base-30 movement used on this turn.
         private const val MOVE_THIS_TURN_OFFSET = PBM_MOVE_THIS_TURN_OFFSET + PBM_MOVE_THIS_TURN_BIT_COUNT
         private const val MOVE_THIS_TURN_BIT_COUNT = 9
         private const val MOVE_THIS_TURN_LO_MASK = (0x1L shl MOVE_THIS_TURN_BIT_COUNT) - 1L
+        internal const val MOVE_THIS_TURN_HI_MASK = MOVE_THIS_TURN_LO_MASK shl MOVE_THIS_TURN_OFFSET
         val MAX_MOVE_THIS_TURN = FixedPointMovement.fpmFromFixedPointBits(MOVE_THIS_TURN_LO_MASK.toInt())
         // bits 41-46 (6b = 63turns) are the number of turns to get to this tile. 0=This turn.
         private const val TURNS_OFFSET = MOVE_THIS_TURN_OFFSET + MOVE_THIS_TURN_BIT_COUNT
         private const val TURNS_BIT_COUNT = 6
         private const val TURNS_LO_MASK = (0x1L shl TURNS_BIT_COUNT) - 1L
+        internal const val TURNS_HI_MASK = TURNS_LO_MASK shl TURNS_OFFSET
         const val MAX_TURNS = TURNS_LO_MASK.toInt()
         const val MAX_VALID_TURNS = MAX_TURNS - 1
         // [PrioritizedNode] bits 47-60 (14b) are the underestimated total movement from the initial tile toward the target. 
@@ -208,7 +210,7 @@ value class RouteNode(val bits: Long=0L) {
         private const val PARENT_TILE_LO_MASK = (0x1L shl PARENT_TILE_BIT_COUNT) - 1L
         private const val NO_PARENT_TILE_BITS = 7L
         private const val NO_PARENT_TILE_VALUE = 14
-        // [RouteNode] bit 50 (1b = 2values) tracks if we can we can "move to" a tile.
+        // [RouteNode] bit 50 (1b = 2values) tracks if we can "move to" a tile.
         // Aka either we can path through it, or it contains an enemy.
         private const val MOVE_TO_OFFSET = PARENT_TILE_OFFSET + PARENT_TILE_BIT_COUNT
         private const val MOVE_TO_BIT_COUNT = 1

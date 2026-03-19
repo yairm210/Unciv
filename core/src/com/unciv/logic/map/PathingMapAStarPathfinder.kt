@@ -17,6 +17,9 @@ import com.unciv.logic.map.RouteNode.Companion.MAX_UNDERESTIMATED_TOTAL
 import com.unciv.logic.map.RouteNode.Companion.TILE_IDX_LO_MASK
 import com.unciv.logic.map.RouteNode.Companion.TILE_IDX_OFFSET
 import com.unciv.logic.map.RouteNode.Companion.UNDERESTIMATED_TOTAL_HI_MASK
+import com.unciv.logic.map.RouteNode.Companion.PBM_MOVE_THIS_TURN_HI_MASK
+import com.unciv.logic.map.RouteNode.Companion.MOVE_THIS_TURN_HI_MASK
+import com.unciv.logic.map.RouteNode.Companion.TURNS_HI_MASK
 import com.unciv.logic.map.RouteNode.Companion.UNDERESTIMATED_TOTAL_LO_MASK
 import com.unciv.logic.map.RouteNode.Companion.UNDERESTIMATED_TOTAL_OFFSET
 import com.unciv.logic.map.tile.RoadStatus
@@ -35,7 +38,8 @@ import yairm210.purity.annotations.Readonly
 value class PrioritizedNode(val bits: Long) {
     constructor(node: RouteNode, underestimatedTotal: FixedPointMovement)
         : this(
-        (node.bits and UNDERESTIMATED_TOTAL_HI_MASK.inv()) or
+        (node.bits and SAME_BITS) or
+            (node.bits.inv() and NEGATED_BITS) or
             toUnderestimatedTotalbits(underestimatedTotal)
     ) {
         require(underestimatedTotal > 0) { "underestimatedTotal $underestimatedTotal must be positive" }
@@ -55,6 +59,10 @@ value class PrioritizedNode(val bits: Long) {
     override fun toString(): String = "PrioritizedNode[underestimatedTotal=$underestimatedTotal ${RouteNode(bits)}]"
 
     companion object {
+        private const val OVERLOADED_BITS = UNDERESTIMATED_TOTAL_HI_MASK
+        private val NEGATED_BITS = PBM_MOVE_THIS_TURN_HI_MASK or MOVE_THIS_TURN_HI_MASK or TURNS_HI_MASK
+        private val SAME_BITS = (OVERLOADED_BITS or NEGATED_BITS).inv()
+
         @Pure
         private fun toUnderestimatedTotalbits(priority: FixedPointMovement): Long
             = priority.bits.toLong() shl UNDERESTIMATED_TOTAL_OFFSET

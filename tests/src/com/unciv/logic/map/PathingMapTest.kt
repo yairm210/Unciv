@@ -82,12 +82,13 @@ class PathingMapTest {
         assertEquals(underestimatedTotal, prioritized.underestimatedTotal)
         
         val reRouteNode = RouteNode(prioritized.bits)
+        val invertedReRouteNode = RouteNode(prioritized.bits.inv())
         assertEquals(tile.zeroBasedIndex, reRouteNode.tileIdx)
         assertEquals(tile, reRouteNode.tile(testGame.tileMap))
         // PrioritizedNode drops parentTile
-        assertEquals(moveThisTurn, reRouteNode.moveUsedThisTurn)
-        assertEquals(pbmMoveThisTurn, reRouteNode.pbmMoveThisTurn)
-        assertEquals(turns, reRouteNode.turns)
+        assertEquals(moveThisTurn, invertedReRouteNode.moveUsedThisTurn)
+        assertEquals(pbmMoveThisTurn, invertedReRouteNode.pbmMoveThisTurn)
+        assertEquals(turns, invertedReRouteNode.turns)
         assertEquals(damagingTiles, reRouteNode.damagingTiles)
         assertEquals(relationship, reRouteNode.relationshipLevel)
         assertEquals(true, reRouteNode.initialized)
@@ -212,7 +213,6 @@ class PathingMapTest {
         val path = pathing.getMovementToTilesAtPosition()
 
         assertEquals(path.toString(), 18, path.size)
-//        assertNotEquals(path.toString(), path.firstEntry(), path.lastEntry())
         assertEquals("""
         -2     -1     +0     +1     +2    
   +2     /      /     1/1.0  0/2.0  0/2.0 
@@ -344,5 +344,50 @@ class PathingMapTest {
         assertEquals(expected, attackableTiles.map {it.position})
         // And affirm full recalculation using cached tiles has same result.
         assertEquals(expected, pathing.bfsAllMatchingTilesThisTurn { tile, _ -> tile.civilianUnit?.civ == civInfo}.map {it.position})
+    }
+
+    @Test
+    fun getShortestPath_multipleRoutes_choosesShortest() {
+        val baseUnit = testGame.createBaseUnit()
+        baseUnit.movement = 2
+        testGame.setTileTerrain(HexCoord(1,1), "Hill")
+        testGame.setTileTerrain(HexCoord(2,1), "Hill")
+        testGame.setTileTerrain(HexCoord(1,2), "Hill")
+        testGame.setTileTerrain(HexCoord(2,2), "Hill")
+        val targetTile = testGame.getTile(HexCoord(8, 8))
+        val unit = testGame.addUnit(baseUnit.name, civInfo, originTile)
+
+        val pathing = PathingMap.createUnitPathingMap(unit)
+        val path = pathing.getShortestPath(targetTile)
+
+        /*
+        assertEquals(listOf(
+            HexCoord(1, 2),
+            HexCoord(3, 3),
+            HexCoord(5, 5),
+            HexCoord(7, 7),
+            HexCoord(8, 8),
+        ), path?.map { it.position })*/
+        assertEquals("""
+        -7     -6     -5     -4     -3     -2     -1     +0     +1     +2     +3     +4     +5     +6     +7     +8    
+  +8                                                     3/2.0  3/2.0  3/2.0  3/2.0  3/2.0  3/2.0  3/2.0  3/2.0  4/1.0D
+  +7                                              3/2.0  3/1.0  3/1.0  3/1.0  3/1.0  3/1.0  3/1.0  3/1.0  3/2.0  3/2.0 
+  +6                                       3/2.0  3/1.0  2/2.0  2/2.0  2/2.0  2/2.0  2/2.0  2/2.0  3/1.0  3/1.0  3/2.0 
+  +5                                3/2.0  3/1.0  2/2.0  2/1.0  2/1.0  2/1.0  2/1.0  2/1.0  2/2.0  2/2.0  3/1.0  3/2.0 
+  +4                          /     3/1.0  2/2.0  2/1.0  1/2.0  1/2.0  1/2.0  1/2.0  2/1.0  2/1.0  2/2.0  3/1.0  3/2.0 
+  +3                   /     3/1.0  2/2.0  2/1.0  1/2.0  1/1.0  1/1.0  1/1.0  1/2.0  1/2.0  2/1.0  2/2.0  3/1.0  3/2.0 
+  +2            /     3/1.0  2/2.0  2/1.0  1/2.0  1/1.0  0/2.0  0/3.0  1/2.0  1/1.0  1/2.0  2/1.0  2/2.0  3/1.0  3/2.0 
+  +1     /     3/1.0  2/2.0  2/1.0  1/2.0  1/1.0  0/2.0  0/1.0  0/2.0  0/3.0  1/1.0  1/2.0  2/1.0  2/2.0  3/1.0  3/2.0 
+  +0    3/1.0  2/2.0  2/1.0  1/2.0  1/1.0  0/2.0  0/1.0  0/0.0S 0/1.0  0/2.0  1/1.0  1/2.0  2/1.0  2/2.0  3/1.0  3/2.0 
+  -1    3/1.0  2/2.0  2/1.0  1/2.0  1/1.0  0/2.0  0/1.0  0/1.0  0/2.0  1/1.0  1/2.0  2/1.0  2/2.0  3/1.0  3/2.0        
+  -2    3/1.0  2/2.0  2/1.0  1/2.0  1/1.0  0/2.0  0/2.0  0/2.0  1/1.0  1/2.0  2/1.0  2/2.0  3/1.0  3/2.0               
+  -3    3/1.0  2/2.0  2/1.0  1/2.0  1/1.0  1/1.0  1/1.0  1/1.0  1/2.0  2/1.0  2/2.0  3/1.0  3/2.0                      
+  -4    3/1.0  2/2.0  2/1.0  1/2.0  1/2.0  1/2.0  1/2.0  1/2.0  2/1.0  2/2.0  3/1.0   /                                
+  -5    3/1.0  2/2.0  2/1.0  2/1.0  2/1.0  2/1.0  2/1.0  2/1.0  2/2.0  3/1.0   /                                       
+  -6    3/1.0  2/2.0  2/2.0  2/2.0  2/2.0  2/2.0  2/2.0  2/2.0  3/1.0   /                                              
+  -7    3/1.0  3/1.0  3/1.0  3/1.0  3/1.0  3/1.0  3/1.0  3/1.0   /                                                     
+""", pathing.toDebugString(testGame.tileMap[8,8]))
+        // And affirm cache
+        assertEquals(path?.map { it.position }, pathing.getShortestPath(targetTile)!!.map {it.position })
     }
 }
