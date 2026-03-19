@@ -616,7 +616,15 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
                     NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCiv.civName
             )
         }
-    }
+        
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponSigningPeace)
+                { otherCiv.matchesFilter(it.params[0])} ) 
+            UniqueTriggerActivation.triggerUnique(unique, civInfo)
+        
+        for (unique in otherCiv.getTriggeredUniques(UniqueType.TriggerUponSigningPeace)
+                { civInfo.matchesFilter(it.params[0])} ) 
+            UniqueTriggerActivation.triggerUnique(unique, otherCiv)
+            
 
     @Readonly fun hasFlag(flag: DiplomacyFlags) = flagsCountdown.containsKey(flag.name)
     

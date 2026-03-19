@@ -3883,6 +3883,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: TriggerCondition
 
+??? example  "&lt;upon signing a peace treaty with [civFilter] Civilizations&gt;"
+	Example: "&lt;upon signing a peace treaty with [City-States] Civilizations&gt;"
+
+	Applicable to: TriggerCondition
+
 ??? example  "&lt;upon declaring friendship&gt;"
 	Applicable to: TriggerCondition
 
