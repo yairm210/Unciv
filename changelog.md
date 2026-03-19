@@ -1,3 +1,19 @@
+## 4.19.19
+
+Activated map generation tests since the problem was solved in 
+
+chore: Added MapGenerationTests, deactivated since it's currently failing - see 
+
+AIs ignore demands/declarations of friendship from dead civs
+
+By Ambeco:
+- AStar pathing no longer treats rivers as multi-turn obstacles 
+- flat earth hexigonal no longer crashes 
+
+Bugfix: don't try to buy missionaries in cities with a civilian unit - By EmperorPinguin
+
+[Refactor] Add caching for tileImprovement - By SeventhM
+
 ## 4.19.18
 
 Ignore free promotions for promotion path costs
