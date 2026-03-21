@@ -249,10 +249,12 @@ class MapParametersTable(
         customMapWidth.onChange {
             mapParameters.mapSize = MapSize(customMapWidth.intValue ?: 0, customMapHeight.intValue ?: 0)
             updateRectangularWarnings()
+            if (previousScreen is NewGameScreen) previousScreen.updateTables()
         }
         customMapHeight.onChange {
             mapParameters.mapSize = MapSize(customMapWidth.intValue ?: 0, customMapHeight.intValue ?: 0)
             updateRectangularWarnings()
+            if (previousScreen is NewGameScreen) previousScreen.updateTables()
         }
 
         rectWarningLabel = "".toLabel(Color.RED).apply { wrap = true }
@@ -283,6 +285,7 @@ class MapParametersTable(
         else
             mapParameters.mapSize = MapSize(worldSizeSelectBox.selected.value)
 
+        if (previousScreen is NewGameScreen) previousScreen.updateTables()
         sizeChangedCallback?.invoke()
     }
 
@@ -456,7 +459,10 @@ class MapParametersTable(
         { mapParameters.tilesPerBiomeArea = it.toInt() }.apply { stepSize = 1f }
 
         addSlider("Water level", {mapParameters.waterThreshold}, -0.1f, 0.1f)
-        { mapParameters.waterThreshold = it }
+        { 
+            mapParameters.waterThreshold = it
+            if (previousScreen is NewGameScreen) previousScreen.updateTables()
+        }
 
         addTextButton("Reset to defaults", true) {
             mapParameters.resetAdvancedSettings()

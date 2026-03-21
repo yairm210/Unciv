@@ -4,6 +4,8 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.map.HexMath.getNumberOfTilesInHexagon
 import com.unciv.logic.map.mapgenerator.MapResourceSetting
 import com.unciv.models.metadata.BaseRuleset
+import com.unciv.utils.Log
+import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 
 
@@ -13,6 +15,21 @@ object MapShape {
     const val flatEarth = "Flat Earth Hexagonal"
     
     val allValues = listOf(rectangular, hexagonal, flatEarth)
+
+    @Readonly
+    fun estimatedTileCount(params: MapParameters) = when (params.shape) {
+        rectangular -> params.mapSize.width * params.mapSize.height
+        hexagonal,
+        flatEarth    -> {
+            val sixth = params.mapSize.radius * (params.mapSize.radius - 1) / 2
+            sixth * 6 + 1
+        }
+        else -> {
+            Log.error("Unknown map shape ${params.shape} when estimating passable tile count")
+            val sixth = params.mapSize.radius * (params.mapSize.radius - 1) / 2
+            sixth * 6 + 1
+        }
+    }
 }
 
 object MapGeneratedMainType {
@@ -42,6 +59,26 @@ object MapType {
 
     // All ocean tiles
     const val empty = "Empty"
+
+    @Readonly
+    fun estimatedLandTileRatio(params: MapParameters) = when (params.type) {
+        perlin -> .52f
+        pangaea -> .55f
+        continentAndIslands -> if (params.worldWrap) .28f else .38f
+        twoContinents -> if (params.worldWrap) .53f else .61f
+        threeContinents -> if (params.worldWrap) .42f else .39f
+        fourCorners -> if (params.worldWrap) .51f else .48f
+        archipelago -> if (params.worldWrap) .38f else .36f
+        fractal -> if (params.worldWrap) .46f else .76f
+        innerSea -> .84f
+        lakes -> .87f
+        smallContinents -> if (params.worldWrap) .36f else .39f
+        empty -> 1.00f
+        else -> {
+            Log.error("Unknown map type ${params.type} when estimating passable tile count")
+            .55f
+        }
+    }
 }
 
 object MirroringType {
@@ -186,4 +223,12 @@ class MapParameters : IsPartOfGameInfoSerialization {
         } else {
             mapSize.width * mapSize.height
         }
+    
+    @Readonly
+    fun estimatePassableTileCount(): Float {
+        val estaimtedTileCount =  MapShape.estimatedTileCount(this)
+        val mapTypeLandRatio = MapType.estimatedLandTileRatio(this)
+        val finalLandRatio = (mapTypeLandRatio - waterThreshold).coerceIn(0f..1f)
+        return estaimtedTileCount * finalLandRatio
+    }
 }

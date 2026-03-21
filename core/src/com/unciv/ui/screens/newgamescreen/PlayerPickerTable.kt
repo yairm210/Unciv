@@ -12,7 +12,6 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.PlayerType.AI
 import com.unciv.logic.civilization.PlayerType.Human
 import com.unciv.logic.multiplayer.FriendList
-import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Ruleset
@@ -39,6 +38,7 @@ import com.unciv.ui.screens.multiplayerscreens.FriendPickerList
 import com.unciv.ui.screens.pickerscreens.PickerPane
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.utils.isUUID
+import kotlin.math.sqrt
 import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
 
 /**
@@ -52,12 +52,14 @@ import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
  */
 class PlayerPickerTable(
     val previousScreen: IPreviousScreen,
-    var gameParameters: GameParameters,
     blockWidth: Float = 0f
 ): Table() {
+    var gameParameters = previousScreen.gameSetupInfo.gameParameters
+    val mapParameters = previousScreen.gameSetupInfo.mapParameters
     val playerListTable = Table()
     val civBlocksWidth = if (blockWidth <= 10f) previousScreen.stage.width / 3 - 5f else blockWidth
     private var randomNumberLabel: WrappableLabel? = null
+    val densityLabel = "Civ Density: Default".toLabel()
 
     /** Locks player table for editing, currently unused, was previously used for scenarios and could be useful in the future. */
     var locked = false
@@ -74,6 +76,7 @@ class PlayerPickerTable(
         top()
         gameParameters.shufflePlayerOrder = false
         add("Shuffle Civ Order at Start".toCheckBox(false) { gameParameters.shufflePlayerOrder = it }).padTop(5f).padBottom(5f).row()
+        add(densityLabel).padTop(5f).padBottom(5f).row()
         add(ScrollPane(playerListTable).apply { setOverscroll(false, false) }).width(civBlocksWidth)
         update()
         background = BaseScreen.skinStrings.getUiBackground("NewGameScreen/PlayerPickerTable", tintColor = BaseScreen.skinStrings.skinConfig.clearColor)
@@ -105,6 +108,7 @@ class PlayerPickerTable(
             playerListTable.add(randomNumberLabel).fillX().pad(0f, 10f, 20f, 10f).row()
             updateRandomNumberLabel()
         }
+        updateDensityLabel()
 
         if (!locked && gameParameters.players.size < gameBasics.nations.values.count { it.isMajorCiv }) {
             val addPlayerButton = "+".toLabel(ImageGetter.CHARCOAL, 30)
@@ -128,6 +132,38 @@ class PlayerPickerTable(
         val humanPlayerCount = gameParameters.players.count { it.playerType == PlayerType.Human }
         val isValid = humanPlayerCount >= 1 && (isRandomNumberOfPlayers || gameParameters.players.size >= 2)
         (previousScreen as? PickerScreen)?.setRightSideButtonEnabled(isValid)
+    }
+    
+    fun estimatedNumberOfPlayers(): Int {
+        val isRandomNumberOfPlayers = gameParameters.randomNumberOfPlayers
+        val estimatedNumberOfPlayers: Int
+        if (isRandomNumberOfPlayers) {
+            randomNumberLabel = WrappableLabel("", civBlocksWidth - 20f, Color.GOLD)
+            playerListTable.add(randomNumberLabel).fillX().pad(0f, 10f, 20f, 10f).row()
+            updateRandomNumberLabel()
+            estimatedNumberOfPlayers = (gameParameters.maxNumberOfPlayers - gameParameters.minNumberOfPlayers) / 2 + gameParameters.minNumberOfPlayers
+        } else {
+            estimatedNumberOfPlayers = gameParameters.players.size
+        }
+        return estimatedNumberOfPlayers.coerceAtLeast(1)
+    }
+    
+    fun estimatedCountOfCityStates() =
+        if (gameParameters.randomNumberOfCityStates) (gameParameters.maxNumberOfCityStates - gameParameters.minNumberOfCityStates) / 2 + gameParameters.minNumberOfPlayers
+        else gameParameters.numberOfCityStates
+    
+    fun updateDensityLabel() {        
+        val estimatedTiles = mapParameters.estimatePassableTileCount()
+        val estimatedPlayers = estimatedNumberOfPlayers()
+        val estimatedCityStates = estimatedCountOfCityStates()
+        // Assume each city "wants" radius 3 (37 tiles) on average.
+        // There's also lots of tiles between cities, but cities often take lots of water tiles too.
+        val estimatedCities = estimatedTiles / 37f 
+        val tilesPerPlayer = 
+            if (estimatedCities <= estimatedPlayers + estimatedCityStates) estimatedTiles / (estimatedPlayers + estimatedCityStates) // ultra-crammed
+            else (estimatedTiles - estimatedCityStates * 37f) / estimatedPlayers // subtract space for city states, then divide rest amongst players.
+        val densityEnum = CivDensity.of(tilesPerPlayer)
+        densityLabel.setText("[${tilesPerPlayer.toInt()}] tiles per Civ: [${densityEnum.displayName.tr()}]".tr())
     }
 
     fun updateRandomNumberLabel() {
@@ -402,4 +438,31 @@ class FriendSelectionPopup(
         pickerPane.rightSideButton.setText("Select [$friendName]".tr())
     }
 
+}
+
+enum class CivDensity(val minTilesPerPlayer: Int, val displayName: String) {
+    // After "Reset to defaults" (Hex Pangaea, Medium, 4Players, 6CityStates), there are ~627.55 tiles.
+    // Giving us an estimated room for 16.96 cities. Reserve 6 for CityStates, leaving 405.55 tiles.
+    // So the default density is 101.3875 tiles (~2.74 cities) per player.
+    // 5 players has 81.11 tiles (~2.19 cities) per, and 3 players has 135.18 tiles (~3.65 cities) per player.
+    // Cities must be at least 3 tiles apart, and a 3-radius circle is 37 tiles. It's tempting to just
+    // make multiples of 37 the boundaries of the ranges, but this would place the default density in 
+    // the third bucket. So either we'd need fewer "Dense" buckets, or some other measurement.
+    // We'll start with multiples of 18.5, centered on 101.38 as "Default".
+    // But What matters most is how these ranges "feel" to players.
+    // The math is unimportant, and values *should* be adjusted based on player feedback.
+    DENSITY_ERROR(-1, "Error"),
+    DENSITY_EXTREMELY_HIGH(55, "Extremely Dense"),
+    DENSITY_VERY_HIGH(74, "Very Dense"),
+    DENSITY_HIGH(92, "Dense"),
+    DENSITY_DEFAULT(111, "Default"),
+    DENSITY_LOW(129, "Spread Out"),
+    DENSITY_VERY_LOW(148, "Very Spread Out"),
+    DENSITY_EXTREMELY_LOW(166, "Extremely Spread Out"),
+    DENSITY_DISTANT(Int.MAX_VALUE, "Distant"),
+    ;
+    
+    companion object {
+        fun of(tilesPerPlayer: Float) = entries.first { tilesPerPlayer <= it.minTilesPerPlayer }
+    }
 }
