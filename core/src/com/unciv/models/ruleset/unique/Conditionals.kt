@@ -269,6 +269,8 @@ object Conditionals {
                     || state.ourCombatant != null && state.ourCombatant.getHealth() > conditional.params[0].toInt()
             UniqueType.ConditionalBelowHP -> state.relevantUnit != null && state.relevantUnit!!.health < conditional.params[0].toInt()
                     ||state.ourCombatant != null && state.ourCombatant.getHealth() < conditional.params[0].toInt()
+            UniqueType.ConditionalAboveMovement -> state.relevantUnit != null && state.relevantUnit!!.currentMovement > conditional.params[0].toInt()
+            UniqueType.ConditionalBelowMovement -> state.relevantUnit != null && state.relevantUnit!!.currentMovement < conditional.params[0].toInt()
             UniqueType.ConditionalHasNotUsedOtherActions ->
                 state.unit == null || // So we get the action as a valid action in BaseUnit.hasUnique()
                     state.unit.abilityToTimesUsed.isEmpty()
