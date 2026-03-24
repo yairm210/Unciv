@@ -149,8 +149,8 @@ class MapEditorWesnothImporter(private val editorScreen: MapEditorScreen) : Disp
             translateTerrainWML(base) + translateTerrainWML(layer) + fallback
         // Map to RulesetObjects and ensure Hills are always under other features
         val allObjects = allStrings
-            .sortedBy { it != Constants.hill }
             .mapNotNull { ruleset.tileImprovements[it] ?: ruleset.terrains[it] }
+            .sortedBy { if (it is Terrain) !it.isHill else true }
             .toList()
         // BaseTerrain is simply the first candidate, the fallback above makes first() not crash (unless the json breaks it)
         baseTerrain = allObjects.first { it is Terrain && it.type.isBaseTerrain }.name

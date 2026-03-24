@@ -326,7 +326,7 @@ class MapEditorEditTab(
         baseTerrain = other.baseTerrain
         setTerrainFeatures(other.terrainFeatures)
         tileResource = other.tileResource
-        improvement = other.improvement
+        setImprovementBasic(other.tileImprovement)
         naturalWonder = other.naturalWonder
         roadStatus = other.roadStatus
         hasBottomLeftRiver = other.hasBottomLeftRiver

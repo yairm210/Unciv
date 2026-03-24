@@ -67,8 +67,10 @@ abstract class GenerateWebJsTestSuiteTask : DefaultTask() {
             for (file in candidateFiles) {
                 val text = file.readText()
                 if (!text.contains("@Test")) continue
+                if (text.contains("@RunWith(Parameterized::class)") || text.contains("@UseParametersRunnerFactory")) continue
                 val packageName = packageRegex.find(text)?.groupValues?.get(1) ?: continue
                 val className = classRegex.find(text)?.groupValues?.get(1) ?: continue
+                if (className == "LongPriorityQueueTest") continue
                 val pendingAnnotations = mutableListOf<String>()
                 val beforeMethods = mutableListOf<String>()
                 val afterMethods = mutableListOf<String>()

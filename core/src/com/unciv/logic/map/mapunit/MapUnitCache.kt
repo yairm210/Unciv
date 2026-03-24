@@ -90,7 +90,7 @@ class MapUnitCache(private val mapUnit: MapUnit) {
             doubleMovementInTerrain[param] = DoubleMovement(unique = unique,
                 terrainTarget =  when {
                     terrain == null -> DoubleMovementTerrainTarget.Filter
-                    terrain.name == Constants.hill -> DoubleMovementTerrainTarget.Hill
+                    terrain.isHill -> DoubleMovementTerrainTarget.Hill
                     terrain.type == TerrainType.TerrainFeature -> DoubleMovementTerrainTarget.Feature
                     terrain.type.isBaseTerrain -> DoubleMovementTerrainTarget.Base
                     else -> DoubleMovementTerrainTarget.Filter

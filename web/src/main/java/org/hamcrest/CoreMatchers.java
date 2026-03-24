@@ -9,6 +9,10 @@ public final class CoreMatchers {
         return new EqualsMatcher<>(expected);
     }
 
+    public static <T> Matcher<T> equalTo(T expected) {
+        return new EqualsMatcher<>(expected);
+    }
+
     private static final class EqualsMatcher<T> implements Matcher<T> {
         private final T expected;
 

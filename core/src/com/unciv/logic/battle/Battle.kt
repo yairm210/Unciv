@@ -785,16 +785,14 @@ object Battle {
     }
 
     private fun doDestroyImprovementsAbility(attacker: MapUnitCombatant, attackedTile: Tile, defender: ICombatant) {
-        if (attackedTile.improvement == null) return
+        val currentTileImprovement = attackedTile.tileImprovement ?: return
 
         val conditionalState = GameContext(attacker.getCivInfo(), ourCombatant = attacker, theirCombatant = defender, combatAction = CombatAction.Attack, attackedTile = attackedTile)
-        if (!attackedTile.getTileImprovement()!!.hasUnique(UniqueType.Unpillagable)
-            && attacker.hasUnique(UniqueType.DestroysImprovementUponAttack, conditionalState)
+        if (!currentTileImprovement.hasUnique(UniqueType.Unpillagable) && attacker.hasUnique(UniqueType.DestroysImprovementUponAttack, conditionalState)
         ) {
-            val currentTileImprovement = attackedTile.improvement
             attackedTile.removeImprovement()
             defender.getCivInfo().addNotification(
-                "An enemy [${attacker.unit.baseUnit.name}] has destroyed our tile improvement [${currentTileImprovement}]",
+                "An enemy [${attacker.unit.baseUnit.name}] has destroyed our tile improvement [${currentTileImprovement.name}]",
                 LocationAction(attackedTile.position, attacker.getTile().position),
                 NotificationCategory.War, attacker.unit.baseUnit.name,
                 NotificationIcon.War)

@@ -36,6 +36,9 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
     var victoryTypes: ArrayList<String> = arrayListOf()
     var startingEra = "Ancient era"
 
+    var showVictoryStats = true
+    var showDemographics = false
+
     // Multiplayer parameters
     var isOnlineMultiplayer = false
     var multiplayerServerUrl: String? = null
@@ -82,6 +85,8 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
         parameters.shufflePlayerOrder = shufflePlayerOrder
         parameters.victoryTypes = ArrayList(victoryTypes)
         parameters.startingEra = startingEra
+        parameters.showVictoryStats = showVictoryStats
+        parameters.showDemographics = showDemographics
         parameters.isOnlineMultiplayer = isOnlineMultiplayer
         parameters.multiplayerServerUrl = multiplayerServerUrl
         parameters.anyoneCanSpectate = anyoneCanSpectate

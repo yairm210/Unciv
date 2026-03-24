@@ -55,7 +55,7 @@ object RegionStartFinder {
                 evaluateTileForStart(tile, tileData)
                 if (tile.isAdjacentToRiver())
                     riverTiles.add(tile.position)
-                else if (tile.isCoastalTile() || tile.isAdjacentTo(Constants.freshWater))
+                else if (tile.isAdjacentToCoast() || tile.isAdjacentTo(Constants.freshWater))
                     wetTiles.add(tile.position)
                 else
                     dryTiles.add(tile.position)
@@ -168,7 +168,7 @@ object RegionStartFinder {
         var totalRivers = 0
         var totalScore = 0
 
-        if (tile.isCoastalTile()) totalScore += 40
+        if (tile.isAdjacentToCoast()) totalScore += 40
 
         // Go through all rings
         for (ring in 1..3) {

@@ -154,6 +154,10 @@ class GameOptionsTable(
             if (gameParameters.enableRandomNationsPool) {
                 it.addNationsSelectTextButton()
             }
+            it.addShowVictoryStatsCheckbox()
+            if (!gameParameters.showVictoryStats) {
+                it.addShowDemographicsCheckbox()
+            }
         }
         if (PlatformCapabilities.current.backgroundThreadPools) {
             val expander = ExpanderTab(
@@ -248,6 +252,18 @@ class GameOptionsTable(
             update()  // To show the button opening the chooser popup
         }
     }
+
+    private fun Table.addShowVictoryStatsCheckbox() =
+        addCheckbox("Show victory stats", gameParameters.showVictoryStats)
+        {
+            gameParameters.showVictoryStats = it
+            if (it) gameParameters.showDemographics = false
+            update()  // To show/hide showDemographics checkbox
+        }
+
+    private fun Table.addShowDemographicsCheckbox() =
+        addCheckbox("Show demographics", gameParameters.showDemographics)
+        { gameParameters.showDemographics = it }
 
     private fun Table.addNationsSelectTextButton() {
         val button = "Select nations".toTextButton()
@@ -576,6 +592,11 @@ class GameOptionsTable(
 
         ImageGetter.setNewRuleset(ruleset)
         UncivGame.Current.musicController.setModList(gameParameters.getModsAndBaseRuleset())
+
+        // Remove victory types which are not in the new ruleset, then default to all if none remain
+        gameParameters.victoryTypes.removeAll { it !in ruleset.victories.keys }
+        if (gameParameters.victoryTypes.isEmpty())
+            gameParameters.victoryTypes.addAll(ruleset.victories.keys)
     }
 
     private fun getModCheckboxes(isPortrait: Boolean = false): ModCheckboxTable {

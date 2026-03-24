@@ -664,8 +664,8 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         
         if (building.hasCreateOneImprovementUnique()){
             val improvement = building.getImprovementToCreate(city.getRuleset(), city.civ)!!
-            val tileWithImprovementToRemove = city.getTiles().first { it.improvement == improvement.name }
-            tileWithImprovementToRemove.removeImprovement()
+            val tileWithImprovementToRemove = city.getTiles().firstOrNull { it.tileImprovement == improvement }
+            tileWithImprovementToRemove?.removeImprovement()
         }
         
         updateUniques()
@@ -988,7 +988,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         val tileForImprovement = getTileForImprovement(improvement.name) ?: return
         tileForImprovement.stopWorkingOnImprovement()  // clears mark
         if (removeOnly) return
-        tileForImprovement.setImprovement(improvement.name, city.civ)
+        tileForImprovement.setImprovement(improvement, city.civ)
         // If bought the worldscreen will not have been marked to update, and the new improvement won't show until later...
         GUI.setUpdateWorldOnNextRender()
     }

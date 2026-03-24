@@ -185,7 +185,7 @@ class TileImprovementConstructionTests {
     @Test
     fun buildingRoadBuildsARoad() {
         val tile = tileMap[1,1]
-        tile.improvementFunctions.setImprovement("Road")
+        tile.setImprovement("Road")
         assert(tile.roadStatus == RoadStatus.Road)
     }
 
@@ -193,7 +193,7 @@ class TileImprovementConstructionTests {
     fun removingRoadRemovesRoad() {
         val tile = tileMap[1,1]
         tile.roadStatus = RoadStatus.Road
-        tile.improvementFunctions.setImprovement("Remove Road")
+        tile.setImprovement("Remove Road")
         assert(tile.roadStatus == RoadStatus.None)
     }
 
@@ -201,9 +201,9 @@ class TileImprovementConstructionTests {
     fun removingForestRemovesForestAndLumbermill() {
         val tile = tileMap[1,1]
         tile.addTerrainFeature("Forest")
-        tile.improvementFunctions.setImprovement("Lumber mill")
-        assert(tile.getTileImprovement()!!.name == "Lumber mill")
-        tile.improvementFunctions.setImprovement("Remove Forest")
+        tile.setImprovement("Lumber mill")
+        assert(tile.tileImprovement!!.name == "Lumber mill")
+        tile.setImprovement("Remove Forest")
         assert(tile.terrainFeatures.isEmpty())
         assert(tile.improvement == null) // Lumber mill can ONLY be on Forest, and is therefore removed
     }
@@ -214,9 +214,9 @@ class TileImprovementConstructionTests {
         tile.addTerrainFeature("Forest")
         tile.setTileResource("Deer")
         tile.baseTerrain = "Plains"
-        tile.improvementFunctions.setImprovement("Camp")
-        assert(tile.getTileImprovement()!!.name == "Camp")
-        tile.improvementFunctions.setImprovement("Remove Forest")
+        tile.setImprovement("Camp")
+        assert(tile.tileImprovement!!.name == "Camp")
+        tile.setImprovement("Remove Forest")
         assert(tile.terrainFeatures.isEmpty())
         assert(tile.improvement == "Camp") // Camp can be both on Forest AND on Plains, so not removed
     }
@@ -236,8 +236,8 @@ class TileImprovementConstructionTests {
         allowedImprovement.terrainsCanBeBuiltOn += "Forest"
         Assert.assertTrue("Forest should allow building when allowed",
             tile.improvementFunctions.canBuildImprovement(allowedImprovement, civInfo.state))
-        tile.setImprovement(allowedImprovement.name)
-        Assert.assertTrue(tile.improvement == allowedImprovement.name)
+        tile.setImprovement(allowedImprovement)
+        Assert.assertTrue(tile.tileImprovement == allowedImprovement)
         Assert.assertTrue("Forest should not be removed with this improvement", tile.terrainFeatures.contains("Forest"))
     }
 
@@ -249,8 +249,8 @@ class TileImprovementConstructionTests {
 
         val improvement = testGame.createTileImprovement("Does not need removal of [Forest]")
         Assert.assertTrue(tile.improvementFunctions.canBuildImprovement(improvement, civInfo.state))
-        tile.setImprovement(improvement.name)
-        Assert.assertTrue(tile.improvement == improvement.name)
+        tile.setImprovement(improvement)
+        Assert.assertTrue(tile.tileImprovement == improvement)
         Assert.assertTrue("Forest should not be removed with this improvement", tile.terrainFeatures.contains("Forest"))
     }
 
@@ -261,8 +261,8 @@ class TileImprovementConstructionTests {
         tile.addTerrainFeature("Forest")
 
         val lumberMill = testGame.ruleset.tileImprovements["Lumber mill"]!!
-        tile.improvementFunctions.setImprovement(lumberMill.name)
-        assert(tile.getTileImprovement() == lumberMill)
+        tile.setImprovement(lumberMill)
+        assert(tile.tileImprovement == lumberMill)
 
         // 1f 1p from forest, 2p from lumber mill since all techs are researched
         val tileStats = tile.stats.getTileStats(civInfo)

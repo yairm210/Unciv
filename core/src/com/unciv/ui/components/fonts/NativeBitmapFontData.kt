@@ -87,8 +87,8 @@ class NativeBitmapFontData(
         val rect = packer.pack(charPixmap)
         charPixmap.dispose()
         glyph.page = packer.pages.size - 1 // Glyph is always packed into the last page for now.
-        glyph.srcX = rect.x.toInt()
-        glyph.srcY = rect.y.toInt()
+        glyph.srcX = rect.x
+        glyph.srcY = rect.y
 
         if (isFontRulesetIcon)
             glyph.setRulesetIconGeometry(assumeRoundIcon)

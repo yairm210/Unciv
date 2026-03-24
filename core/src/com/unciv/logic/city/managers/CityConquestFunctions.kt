@@ -35,14 +35,13 @@ class CityConquestFunctions(val city: City) {
     private fun getGoldForCapturingCity(conqueringCiv: Civilization): Int {
         val baseGold = 20 + 10 * city.population.population + tileBasedRandom.nextInt(40)
         val turnModifier = max(0, min(50, city.civ.gameInfo.turns - city.turnAcquired)) / 50f
-        var cityModifier = if (city.containsBuildingUnique(UniqueType.DoublesGoldFromCapturingCity)) 2f else 1f
-
+        
+        var cityModifier = 1f
         for (unique in city.getMatchingUniques(UniqueType.GoldFromCapturingCity, city.state)) {
             cityModifier *= unique.params[0].toPercent()
         }
 
-        var conqueringCivModifier = if (conqueringCiv.hasUnique(UniqueType.TripleGoldFromEncampmentsAndCities)) 3f else 1f
-
+        var conqueringCivModifier = 1f
         for (unique in conqueringCiv.getMatchingUniques(UniqueType.GoldFromEncampmentsAndCities, conqueringCiv.state)) {
             conqueringCivModifier *= unique.params[0].toPercent()
         }

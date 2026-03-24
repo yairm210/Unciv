@@ -92,6 +92,19 @@ public final class Assert {
         }
     }
 
+    public static void assertArrayEquals(long[] expected, long[] actual) {
+        if (!Arrays.equals(expected, actual)) {
+            fail("expected:<" + Arrays.toString(expected) + "> but was:<" + Arrays.toString(actual) + ">");
+        }
+    }
+
+    public static void assertArrayEquals(String message, long[] expected, long[] actual) {
+        if (!Arrays.equals(expected, actual)) {
+            fail((message != null ? message + " " : "") +
+                    "expected:<" + Arrays.toString(expected) + "> but was:<" + Arrays.toString(actual) + ">");
+        }
+    }
+
     public static void fail() {
         throw new AssertionError();
     }

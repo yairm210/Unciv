@@ -4,6 +4,10 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
+import com.unciv.logic.automation.civilization.NextTurnAutomation
+import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.NotificationCategory
+import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.multiplayer.storage.MultiplayerFileNotFoundException
 import com.unciv.logic.multiplayer.storage.MultiplayerServer
 import com.unciv.ui.components.extensions.isLargerThan
@@ -77,7 +81,7 @@ class Multiplayer {
         multiplayerFiles.addGame(gamePreview, saveFileName)
     }
 
-    suspend fun resignPlayer(game: MultiplayerGamePreview, playerCivName: String): String {
+    suspend fun resignPlayer(game: MultiplayerGamePreview, playerCivName: String, responsibleCivNameOrPlayerId: String): String {
         val preview = game.preview ?: throw game.error!!
         val gameInfo = multiplayerServer.tryDownloadGame(preview.gameId)
         if (gameInfo.currentPlayer != preview.currentPlayer) {
@@ -86,14 +90,23 @@ class Multiplayer {
         }
 
         val playerCiv = gameInfo.getCivilization(playerCivName)
-        playerCiv.playerType = com.unciv.logic.civilization.PlayerType.AI
+        playerCiv.playerType = PlayerType.AI
         playerCiv.playerId = ""
         if (gameInfo.currentPlayer == playerCivName) gameInfo.nextTurn()
 
+        val notificationText = if (responsibleCivNameOrPlayerId == playerCivName || responsibleCivNameOrPlayerId.isEmpty()) {
+            "[$playerCivName] resigned and is now controlled by AI"
+        } else try {
+            val responsibleCivName = gameInfo.getCivilization(responsibleCivNameOrPlayerId).civName
+            "[$playerCivName] was forcibly resigned by [$responsibleCivName] and is now controlled by AI"
+        } catch (_: NoSuchElementException) {
+            "[$playerCivName] was forcibly resigned by [$responsibleCivNameOrPlayerId] and is now controlled by AI"
+        }
+
         for (civ in gameInfo.civilizations) {
             civ.addNotification(
-                "[${playerCiv.civName}] resigned and is now controlled by AI",
-                com.unciv.logic.civilization.NotificationCategory.General,
+                notificationText,
+                NotificationCategory.General,
                 playerCiv.civName
             )
         }
@@ -103,7 +116,7 @@ class Multiplayer {
         return ""
     }
 
-    suspend fun skipCurrentPlayerTurn(game: MultiplayerGamePreview, player: String): String? {
+    suspend fun skipCurrentPlayerTurn(game: MultiplayerGamePreview, playerCivName: String, responsibleCivNameOrPlayerId: String): String? {
         val preview = game.preview ?: return game.error?.message
         val gameInfo = try {
             multiplayerServer.tryDownloadGame(preview.gameId)
@@ -113,16 +126,29 @@ class Multiplayer {
 
         if (gameInfo.currentPlayer != preview.currentPlayer) {
             game.updatePreview(gameInfo.asPreview())
-            return "Game was out of sync with server - updated"
+            return "The game was out of sync with the server"
         }
 
-        if (gameInfo.currentPlayer != player) {
-            return "Could not pass turn - current player is ${gameInfo.currentPlayer}, not $player"
+        if (gameInfo.currentPlayer != playerCivName) {
+            return "Could not skip turn - current player is [${gameInfo.currentPlayer}], not [$playerCivName]"
         }
 
         val playerCiv = gameInfo.getCurrentPlayerCivilization()
-        com.unciv.logic.automation.civilization.NextTurnAutomation.automateCivMoves(playerCiv, false)
+        NextTurnAutomation.automateCivMoves(playerCiv, false)
         gameInfo.nextTurn()
+
+        val notificationText = if (responsibleCivNameOrPlayerId == playerCivName || responsibleCivNameOrPlayerId.isEmpty()) {
+            "[$playerCivName] skipped their own turn"
+        } else try {
+            val responsibleCiv: Civilization = gameInfo.getCivilization(responsibleCivNameOrPlayerId)
+            "[$playerCivName]'s turn was skipped by [$responsibleCiv]"
+        } catch (_: NoSuchElementException) {
+            "[$playerCivName]'s turn was skipped by [$responsibleCivNameOrPlayerId]"
+        }
+
+        for (civ in gameInfo.civilizations) {
+            civ.addNotification(notificationText, NotificationCategory.General, playerCiv.civName)
+        }
 
         multiplayerServer.uploadGame(gameInfo, withPreview = true)
         game.updatePreview(gameInfo.asPreview())

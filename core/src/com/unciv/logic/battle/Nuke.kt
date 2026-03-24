@@ -260,13 +260,10 @@ object Nuke {
     }
 
     private fun applyPillageAndFallout(tile: Tile) {
-        if (tile.getUnpillagedImprovement() != null && !tile.getTileImprovement()!!.hasUnique(
-                UniqueType.Irremovable)) {
-            if (tile.getTileImprovement()!!.hasUnique(UniqueType.Unpillagable)) {
-                tile.removeImprovement()
-            } else {
-                tile.setPillaged()
-            }
+        val improvement = tile.getUnpillagedTileImprovement()
+        if (improvement != null && !improvement.hasUnique(UniqueType.Irremovable)) {
+            if (improvement.hasUnique(UniqueType.Unpillagable)) tile.removeImprovement()
+            else tile.setPillaged()
         }
         if (tile.getUnpillagedRoad() != RoadStatus.None)
             tile.setPillaged()

@@ -5,7 +5,6 @@ import com.unciv.models.ruleset.unique.Countables.Stats
 import com.unciv.models.ruleset.unique.Countables.TileResources
 import com.unciv.models.ruleset.unique.expressions.Expressions
 import com.unciv.models.ruleset.unique.expressions.Operator
-import com.unciv.models.stats.GameResource
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.fillPlaceholders
@@ -95,18 +94,17 @@ enum class Countables(
             val civ = gameContext.civInfo ?: return null
             val city = gameContext.city
 
-            var resource: GameResource? = Stat.safeValueOf(param)
-            if (resource is Stat) { // Type check instead of null check for smart cast
-                if (city != null && resource.isCityWide) {
-                    return city.cityStats.currentCityStats[resource].toInt()
+            val stat = Stat.safeValueOf(param)
+            if (stat != null) {
+                if (city != null && stat.isCityWide) {
+                    return city.cityStats.currentCityStats[stat].toInt()
                 }
-                return civ.stats.getStatMapForNextTurn().values.map { it[resource] }.sum().toInt()
+                return civ.stats.getStatMapForNextTurn().values.map { it[stat] }.sum().toInt()
             }
 
-            resource = gameContext.gameInfo!!.ruleset.tileResources[param] ?: return null
-            if (city != null) {
+            val resource = gameContext.gameInfo!!.ruleset.tileResources[param] ?: return null
+            if (city != null) 
                 return city.getResourcesGeneratedByCity().sumBy(resource)
-            }
             return civ.getCivResourceSupply().sumBy(resource)
         }
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
@@ -324,7 +322,7 @@ enum class Countables(
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val (resouceFilter, civFilter) = parameterText.getPlaceholderParameters()
             val civilizations = gameContext.gameInfo?.civilizations ?: return null
-            val ruleset = gameContext.gameInfo?.ruleset ?: return null
+            val ruleset = gameContext.gameInfo.ruleset
             val relevantCivs = civilizations.asSequence().filter {
                 it.isAlive() && it.matchesFilter(civFilter, gameContext)
             }.toList()
@@ -409,6 +407,16 @@ enum class Countables(
             "Since on translation, the brackets are removed, the expression will be displayed as `(Melee units + 1) / Cities`",
             "Supported operations between 2 values are: "+ Operator.BinaryOperators.entries.joinToString { it.symbol },
             "Supported operations on 1 value are: " + Operator.UnaryOperators.entries.joinToString { "${it.symbol} (${it.description})" },
+            "Supported functions:",
+            *Operator.Functions.entries.map { 
+                val arityText = if (it.arityRange.first == it.arityRange.last) 
+                    "${it.arityRange.first} argument${if (it.arityRange.first != 1) "s" else ""}"
+                else 
+                    "${it.arityRange.first} to ${it.arityRange.last} arguments"
+                var functionParameters = List(it.arityRange.first){"expression"}.joinToString(",")
+                if (it.arityRange.first != it.arityRange.last) functionParameters += ",..."
+                " - `${it.symbol}($functionParameters)`"
+            }.toTypedArray(),
         )
     }
     ;

@@ -108,16 +108,19 @@ class TileResource : RulesetStatsObject(), GameResource {
         return getImprovements().contains(improvementName)
     }
 
+    @Readonly
+    fun isImprovedBy(improvement: TileImprovement): Boolean {
+        return getImprovements().contains(improvement.name)
+    }
+
     /** @return Of all the potential improvements in [getImprovements], the first this civ can actually build, if any. */
     @Readonly
-    fun getImprovingImprovement(tile: Tile, gameContext: GameContext): String? {
-        if (gameContext.civInfo != null) {
-            val civ: Civilization = gameContext.civInfo
-            return getImprovements().firstOrNull {
-                tile.improvementFunctions.canBuildImprovement(civ.gameInfo.ruleset.tileImprovements[it]!!, gameContext)
-            }
-        }
-        return null
+    fun getImprovingImprovement(tile: Tile, gameContext: GameContext): TileImprovement? {
+        if (gameContext.civInfo == null) return null
+        val civ: Civilization = gameContext.civInfo
+        return getImprovements().asSequence()
+            .map { civ.gameInfo.ruleset.tileImprovements[it]!! }
+            .firstOrNull { tile.improvementFunctions.canBuildImprovement(it, gameContext) }
     }
 
     @Readonly

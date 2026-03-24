@@ -26,7 +26,7 @@ object Log {
      */
     @Immutable val disableLogsFrom = (
             System.getProperty("noLog")
-            ?: "Battle,Music,Sounds,Translations,WorkerAutomation,assignRegions,RoadBetweenCitiesAutomation,StageMouseOverDebug"
+            ?: "Battle,Music,Sounds,Translations,WorkerAutomation,assignRegions,RoadBetweenCitiesAutomation,StageMouseOverDebug,DiplomacyAutomation"
         ).split(',').filterNot { it.isEmpty() }.toSet()
 
     /**
