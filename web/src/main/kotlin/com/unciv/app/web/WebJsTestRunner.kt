@@ -3,6 +3,7 @@ package com.unciv.app.web
 import com.unciv.UncivGame
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
+import org.junit.AssumptionViolatedException
 
 object WebJsTestRunner {
     private const val maxFailureDetails = 200
@@ -104,6 +105,9 @@ object WebJsTestRunner {
             try {
                 for (before in testClass.beforeMethods) before(classInstance)
                 testMethod.execute(classInstance)
+            } catch (throwable: AssumptionViolatedException) {
+                runCount--
+                ignoreCount++
             } catch (throwable: Throwable) {
                 failureCount++
                 testFailed = true

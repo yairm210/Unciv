@@ -5,11 +5,13 @@ import org.hamcrest.Matcher
 object Assume {
     @JvmStatic
     fun assumeTrue(condition: Boolean) {
-        if (!condition) return
+        if (!condition) throw AssumptionViolatedException("assumeTrue failed")
     }
 
     @JvmStatic
-    fun assumeThat(actual: Any?, matcher: Matcher<Any?>) {
-        if (!matcher.matches(actual)) return
+    fun <T> assumeThat(actual: T, matcher: Matcher<in T>) {
+        if (!matcher.matches(actual)) {
+            throw AssumptionViolatedException("assumeThat failed: expected ${matcher.describe()} but was $actual")
+        }
     }
 }

@@ -14,6 +14,15 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 
+private val importRegex = Regex("^\\s*import\\s+([A-Za-z0-9_.]+)", setOf(RegexOption.MULTILINE))
+private val blockCommentRegex = Regex("/\\*.*?\\*/", setOf(RegexOption.DOT_MATCHES_ALL))
+private val lineCommentRegex = Regex("//.*$")
+private val builtinTypeNames = setOf(
+    "Any", "Array", "Boolean", "Byte", "Char", "Collection", "Double", "Float", "Int", "Iterable",
+    "List", "Long", "Map", "MutableCollection", "MutableIterable", "MutableList", "MutableMap",
+    "MutableSet", "Nothing", "Pair", "Sequence", "Set", "Short", "String", "Throwable", "Triple", "Unit"
+)
+
 @CacheableTask
 abstract class GenerateWebJsTestSuiteTask : DefaultTask() {
     @get:InputDirectory
@@ -61,20 +70,25 @@ abstract class GenerateWebJsTestSuiteTask : DefaultTask() {
             appendLine(")")
             appendLine()
             appendLine("object WebJsTestSuite {")
-            appendLine("    val classes: List<WebJsGeneratedTestClass> = listOf(")
+            appendLine("    val classes: List<WebJsGeneratedTestClass> = buildList {")
 
             var classCount = 0
             for (file in candidateFiles) {
                 val text = file.readText()
                 if (!text.contains("@Test")) continue
-                if (text.contains("@RunWith(Parameterized::class)") || text.contains("@UseParametersRunnerFactory")) continue
                 val packageName = packageRegex.find(text)?.groupValues?.get(1) ?: continue
                 val className = classRegex.find(text)?.groupValues?.get(1) ?: continue
-                if (className == "LongPriorityQueueTest") continue
+                val imports = importRegex.findAll(text).associate { match ->
+                    val qualifiedName = match.groupValues[1]
+                    qualifiedName.substringAfterLast('.') to qualifiedName
+                }
+                val isParameterized = text.contains("@RunWith(Parameterized::class)")
+                    || text.contains("@UseParametersRunnerFactory")
                 val pendingAnnotations = mutableListOf<String>()
                 val beforeMethods = mutableListOf<String>()
                 val afterMethods = mutableListOf<String>()
                 val testMethods = mutableListOf<Pair<String, String?>>()
+                var parametersMethodName: String? = null
 
                 for (rawLine in text.lineSequence()) {
                     val line = rawLine.trim()
@@ -82,11 +96,13 @@ abstract class GenerateWebJsTestSuiteTask : DefaultTask() {
                     if (line.contains("@After")) pendingAnnotations += "@After"
                     if (line.contains("@Test")) pendingAnnotations += "@Test"
                     if (line.contains("@Ignore")) pendingAnnotations += "@Ignore"
+                    if (line.contains("@Parameters")) pendingAnnotations += "@Parameters"
 
                     val methodName = methodRegex.find(line)?.groupValues?.get(1)
                     if (methodName != null) {
                         if (pendingAnnotations.any { it == "@Before" }) beforeMethods += methodName
                         if (pendingAnnotations.any { it == "@After" }) afterMethods += methodName
+                        if (pendingAnnotations.any { it == "@Parameters" }) parametersMethodName = methodName
                         if (pendingAnnotations.any { it == "@Test" }) {
                             val ignored = pendingAnnotations.any { it == "@Ignore" }
                             testMethods += methodName to if (ignored) "ignored" else null
@@ -106,39 +122,42 @@ abstract class GenerateWebJsTestSuiteTask : DefaultTask() {
                 if (testMethods.isEmpty()) continue
                 classCount++
                 val fqn = "$packageName.$className"
-                appendLine("        WebJsGeneratedTestClass(")
-                appendLine("            className = \"$fqn\",")
-                appendLine("            createInstance = { $fqn() },")
+                val constructorParamTypes = if (isParameterized) {
+                    parsePrimaryConstructorTypes(text, className)
+                        .map { qualifyTypeReference(it, imports, packageName) }
+                } else emptyList()
 
-                if (beforeMethods.isEmpty()) {
-                    appendLine("            beforeMethods = emptyList(),")
-                } else {
-                    appendLine("            beforeMethods = listOf(")
-                    beforeMethods.forEach { method ->
-                        appendLine("                { instance -> (instance as $fqn).$method() },")
+                if (isParameterized) {
+                    val parameterMethod = parametersMethodName ?: "parameters"
+                    appendLine("        addAll(run {")
+                    appendLine("            val parameterSets = $fqn.$parameterMethod()")
+                    appendLine("            parameterSets.mapIndexed { parameterIndex, parameterValues ->")
+                    appendLine("                val args = parameterValues ?: emptyArray()")
+                    appendLine("                WebJsGeneratedTestClass(")
+                    appendLine("                    className = \"$fqn[${'$'}parameterIndex]\",")
+                    appendLine("                    createInstance = {")
+                    appendLine("                        require(args.size == ${constructorParamTypes.size}) { \"Expected ${constructorParamTypes.size} constructor arguments for $fqn but received ${'$'}{args.size}\" }")
+                    appendLine("                        $fqn(")
+                    constructorParamTypes.forEachIndexed { index, type ->
+                        appendLine("                            args[$index] as $type,")
                     }
-                    appendLine("            ),")
-                }
-
-                if (afterMethods.isEmpty()) {
-                    appendLine("            afterMethods = emptyList(),")
+                    appendLine("                        )")
+                    appendLine("                    },")
+                    appendGeneratedMethodLists(beforeMethods, afterMethods, testMethods, fqn)
+                    appendLine("                )")
+                    appendLine("            }")
+                    appendLine("        })")
                 } else {
-                    appendLine("            afterMethods = listOf(")
-                    afterMethods.forEach { method ->
-                        appendLine("                { instance -> (instance as $fqn).$method() },")
-                    }
-                    appendLine("            ),")
+                    appendLine("        add(")
+                    appendLine("            WebJsGeneratedTestClass(")
+                    appendLine("                className = \"$fqn\",")
+                    appendLine("                createInstance = { $fqn() },")
+                    appendGeneratedMethodLists(beforeMethods, afterMethods, testMethods, fqn, "                ")
+                    appendLine("            )")
+                    appendLine("        )")
                 }
-
-                appendLine("            testMethods = listOf(")
-                testMethods.forEach { (method, ignoredReason) ->
-                    val ignoredValue = ignoredReason?.let { "\"$it\"" } ?: "null"
-                    appendLine("                WebJsGeneratedTestMethod(\"$method\", $ignoredValue, { instance -> (instance as $fqn).$method() }),")
-                }
-                appendLine("            ),")
-                appendLine("        ),")
             }
-            appendLine("    )")
+            appendLine("    }")
             appendLine("}")
             logger.lifecycle("Generated WebJsTestSuite with $classCount classes at ${outputFile.invariantSeparatorsPath}")
         }
@@ -211,4 +230,102 @@ private fun promoteWebappToRoot(outputDir: File) {
         Files.move(child.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING)
     }
     webappDir.deleteRecursively()
+}
+
+private fun StringBuilder.appendGeneratedMethodLists(
+    beforeMethods: List<String>,
+    afterMethods: List<String>,
+    testMethods: List<Pair<String, String?>>,
+    fqn: String,
+    indent: String = "                    ",
+) {
+    if (beforeMethods.isEmpty()) {
+        appendLine("${indent}beforeMethods = emptyList(),")
+    } else {
+        appendLine("${indent}beforeMethods = listOf(")
+        beforeMethods.forEach { method ->
+            appendLine("${indent}    { instance -> (instance as $fqn).$method() },")
+        }
+        appendLine("${indent}),")
+    }
+
+    if (afterMethods.isEmpty()) {
+        appendLine("${indent}afterMethods = emptyList(),")
+    } else {
+        appendLine("${indent}afterMethods = listOf(")
+        afterMethods.forEach { method ->
+            appendLine("${indent}    { instance -> (instance as $fqn).$method() },")
+        }
+        appendLine("${indent}),")
+    }
+
+    appendLine("${indent}testMethods = listOf(")
+    testMethods.forEach { (method, ignoredReason) ->
+        val ignoredValue = ignoredReason?.let { "\"$it\"" } ?: "null"
+        appendLine("${indent}    WebJsGeneratedTestMethod(\"$method\", $ignoredValue, { instance -> (instance as $fqn).$method() }),")
+    }
+    appendLine("${indent}),")
+}
+
+private fun parsePrimaryConstructorTypes(text: String, className: String): List<String> {
+    val classRegex = Regex(
+        "class\\s+${Regex.escape(className)}\\s*\\((.*?)\\)\\s*\\{",
+        setOf(RegexOption.DOT_MATCHES_ALL)
+    )
+    val constructorContent = classRegex.find(text)?.groupValues?.get(1)?.let(::stripComments) ?: return emptyList()
+    if (constructorContent.isBlank()) return emptyList()
+    return splitTopLevel(constructorContent, ',')
+        .map { it.trim() }
+        .filter { it.isNotBlank() }
+        .mapNotNull(::extractConstructorParameterType)
+}
+
+private fun stripComments(text: String): String {
+    return blockCommentRegex.replace(text, "")
+        .lineSequence()
+        .map { lineCommentRegex.replace(it, "") }
+        .joinToString("\n")
+}
+
+private fun splitTopLevel(text: String, delimiter: Char): List<String> {
+    val parts = mutableListOf<String>()
+    val current = StringBuilder()
+    var depth = 0
+    for (ch in text) {
+        when (ch) {
+            '<', '(', '[', '{' -> depth++
+            '>', ')', ']', '}' -> depth--
+        }
+        if (ch == delimiter && depth == 0) {
+            parts += current.toString()
+            current.clear()
+            continue
+        }
+        current.append(ch)
+    }
+    if (current.isNotEmpty()) parts += current.toString()
+    return parts
+}
+
+private fun extractConstructorParameterType(parameter: String): String? {
+    val withoutAnnotations = parameter
+        .replace(Regex("@[A-Za-z0-9_.]+(?:\\([^)]*\\))?\\s*"), "")
+        .trim()
+    val colonIndex = withoutAnnotations.indexOf(':')
+    if (colonIndex < 0) return null
+    return withoutAnnotations.substring(colonIndex + 1)
+        .substringBefore("=")
+        .trim()
+        .takeIf { it.isNotEmpty() }
+}
+
+private fun qualifyTypeReference(type: String, imports: Map<String, String>, packageName: String): String {
+    return Regex("\\b[A-Z][A-Za-z0-9_]*\\b").replace(type) { match ->
+        val simpleName = match.value
+        when {
+            simpleName in builtinTypeNames -> simpleName
+            imports.containsKey(simpleName) -> imports.getValue(simpleName)
+            else -> "$packageName.$simpleName"
+        }
+    }
 }

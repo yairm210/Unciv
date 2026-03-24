@@ -12,7 +12,6 @@ import java.util.Spliterator.SIZED
 import java.util.Spliterator.SUBSIZED
 import java.util.function.LongConsumer
 import java.util.stream.LongStream
-import java.util.stream.StreamSupport
 
 // A PriorityQueue<Long>, except that it minimizes memory allocations
 // 
@@ -391,7 +390,7 @@ class LongPriorityQueue(
     }
 
     @Readonly
-    fun stream() : LongStream = StreamSupport.longStream(spliterator(), false)
+    fun stream() : LongStream = LongStream.of(*toArray(LongArray(size)))
 
     @Readonly
     fun parallelStream() : LongStream = stream().parallel()
