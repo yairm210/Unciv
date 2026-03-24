@@ -44,8 +44,17 @@ interface IHasUniques : INamed {
     @Readonly fun getUniqueTarget(): UniqueTarget
 
     @Readonly
+    @Deprecated(message = "forEachMatchingUnique is faster. If not viable, then this can still be used",
+        replaceWith = ReplaceWith("forEachMatchingUnique"))
     fun getMatchingUniques(uniqueType: UniqueType, state: GameContext = GameContext.EmptyState) =
         uniqueMap.getMatchingUniques(uniqueType, state)
+
+    @Readonly
+    fun forEachMatchingUnique(uniqueType: UniqueType, gameContext: GameContext, filter:(Unique)->Boolean, op: (unique: Unique)->Unit)
+        = uniqueMap.forEachMatchingUnique(uniqueType, gameContext, filter, op)
+    @Readonly
+    fun forEachMatchingUnique(uniqueType: UniqueType, gameContext: GameContext, op: (unique: Unique)->Unit)
+        = uniqueMap.forEachMatchingUnique(uniqueType, gameContext, op)
 
     @Readonly
     fun getMatchingTagUniques(uniqueTag: String, state: GameContext = GameContext.EmptyState) =

@@ -40,3 +40,12 @@ fun ArrayList<TemporaryUnique>.getMatchingTagUniques(uniqueType: UniqueType, gam
         .filter { it.type == uniqueType && it.conditionalsApply(gameContext) }
         .flatMap { it.getMultiplied(gameContext) }
 }
+
+@Readonly
+fun ArrayList<TemporaryUnique>.forEachMatchingUnique(uniqueType: UniqueType, gameContext: GameContext, op: (unique: Unique)->Unit) {
+    for (i in 0..<size) {
+        val unique = get(i).uniqueObject
+        if (unique.type == uniqueType && unique.conditionalsApply(gameContext))
+            unique.forEachMultiplied(gameContext, op)
+    }
+}

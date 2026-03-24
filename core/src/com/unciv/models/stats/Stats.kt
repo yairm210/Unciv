@@ -224,6 +224,8 @@ open class Stats(
     /** Enables aggregates over the values, never empty */
     // Property syntax to emulate Map.values pattern
     // Doesn't skip zero values as it's meant for sum() or max() where the overhead would be higher than any gain
+    @Deprecated(message = "forEachValue is faster. If not viable, then this can still be used",
+        replaceWith = ReplaceWith("forEachValue"))
     val values
         get() = sequence {
             yield(production)

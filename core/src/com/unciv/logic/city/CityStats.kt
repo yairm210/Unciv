@@ -6,7 +6,6 @@ import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IConstruction
 import com.unciv.models.ruleset.INonPerpetualConstruction
-import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
@@ -157,11 +156,11 @@ class CityStats(val city: City) {
     }
 
     @Readonly
-    fun getGrowthBonus(totalFood: Float, localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): StatMap {
+    fun getGrowthBonus(totalFood: Float): StatMap {
         val growthSources = StatMap()
         // "[amount]% growth [cityFilter]"
-        for (unique in localUniqueCache.forCityGetMatchingUniques(city, UniqueType.GrowthPercentBonus)) {
-            if (!city.matchesFilter(unique.params[1])) continue
+        city.forEachMatchingUnique(UniqueType.GrowthPercentBonus, city.state) { unique: Unique ->
+            if (!city.matchesFilter(unique.params[1])) return@forEachMatchingUnique
 
             growthSources.add(
                 unique.getSourceNameForUser(),
@@ -178,25 +177,26 @@ class CityStats(val city: City) {
     }
 
     @Readonly
-    fun getStatsOfSpecialist(specialistName: String, localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): Stats {
+    fun getStatsOfSpecialist(specialistName: String): Stats {
         val specialist = city.getRuleset().specialists[specialistName]
             ?: return Stats()
         @LocalState val stats = specialist.cloneStats()
-        for (unique in localUniqueCache.forCityGetMatchingUniques(city, UniqueType.StatsFromSpecialist))
+        city.forEachMatchingUnique(UniqueType.StatsFromSpecialist, city.state) { unique: Unique ->
             if (city.matchesFilter(unique.params[1]))
                 stats.add(unique.stats)
-        for (unique in localUniqueCache.forCityGetMatchingUniques(city, UniqueType.StatsFromObject))
+        }
+        city.forEachMatchingUnique(UniqueType.StatsFromObject, city.state) { unique: Unique ->
             if (unique.params[1] == specialistName)
                 stats.add(unique.stats)
+        }
         return stats
     }
 
     @Readonly
     private fun getStatsFromSpecialists(specialists: Counter<String>): Stats {
         val stats = Stats()
-        val localUniqueCache = LocalUniqueCache()
         for ((key, value) in specialists.filter { it.value > 0 }.toList()) // avoid concurrent modification when calculating construction costs
-            stats.add(getStatsOfSpecialist(key, localUniqueCache) * value)
+            stats.add(getStatsOfSpecialist(key) * value)
         return stats
     }
 
@@ -346,7 +346,7 @@ class CityStats(val city: City) {
     //endregion
     //region State-Changing Methods
 
-    fun updateTileStats(localUniqueCache: LocalUniqueCache = LocalUniqueCache()):Unit = timeThis("updateTileStats") {
+    fun updateTileStats():Unit = timeThis("updateTileStats") {
         val stats = Stats()
         val workedTiles = city.tilesInRange.asSequence()
             .filter {
@@ -363,7 +363,7 @@ class CityStats(val city: City) {
                 city.shouldReassignPopulation = true
                 continue
             }
-            val tileStats = tile.stats.getTileStats(city, city.civ, localUniqueCache)
+            val tileStats = tile.stats.getTileStats(city, city.civ)
             stats.add(tileStats)
         }
         statsFromTiles = stats
@@ -466,9 +466,8 @@ class CityStats(val city: City) {
         newStatsBonusTree.addStats(getStatPercentBonusesFromUnitSupply(), "Unit Supply")
         newStatsBonusTree.add(getStatsPercentBonusesFromUniquesBySource(currentConstruction))
         
-        val localUniqueCache = LocalUniqueCache()
         for (building in city.cityConstructions.getBuiltBuildings())
-            newStatsBonusTree.addStats(building.getStatPercentageBonuses(city, localUniqueCache),
+            newStatsBonusTree.addStats(building.getStatPercentageBonuses(city),
                 "Buildings", building.name)
 
 
@@ -487,14 +486,13 @@ class CityStats(val city: City) {
     fun update(currentConstruction: IConstruction = city.cityConstructions.getCurrentConstruction(),
                updateTileStats:Boolean = true,
                updateCivStats:Boolean = true,
-               localUniqueCache:LocalUniqueCache = LocalUniqueCache(),
                calculateGrowthModifiers:Boolean = true): Unit = timeThis<Unit>("CityStats.update") {
 
-        if (updateTileStats) updateTileStats(localUniqueCache)
+        if (updateTileStats) updateTileStats()
 
         // We need to compute Tile yields before happiness
 
-        val statsFromBuildings = city.cityConstructions.getStats(localUniqueCache) // this is performance heavy, so calculate once
+        val statsFromBuildings = city.cityConstructions.getStats() // this is performance heavy, so calculate once
         updateBaseStatList(statsFromBuildings)
         updateCityHappiness(statsFromBuildings)
         updateStatPercentBonusList(currentConstruction)

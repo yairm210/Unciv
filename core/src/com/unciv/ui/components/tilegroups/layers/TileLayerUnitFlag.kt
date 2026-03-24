@@ -7,7 +7,6 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.toLabel
@@ -146,7 +145,7 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
         noIcons = civilianUnitIcon == null && militaryUnitIcon == null
     }
 
-    override fun doUpdate(viewingCiv: Civilization?, localUniqueCache: LocalUniqueCache) {
+    override fun doUpdate(viewingCiv: Civilization?) {
         clearSlots()
         fillSlots(viewingCiv)
 

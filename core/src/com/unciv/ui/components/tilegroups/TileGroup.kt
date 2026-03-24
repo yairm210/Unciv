@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
-import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.ui.components.tilegroups.layers.*
 import com.unciv.utils.DebugUtils
 import kotlin.math.pow
@@ -79,13 +78,13 @@ open class TileGroup(
             || viewingCiv.viewableTiles.contains(tile)
             || viewingCiv.isSpectator()
 
-    private fun reset(localUniqueCache: LocalUniqueCache) {
+    private fun reset() {
         layerTerrain.reset()
         layerBorders.reset()
         layerMisc.reset()
         layerResource.reset()
         layerImprovement.reset()
-        layerYield.reset(localUniqueCache)
+        layerYield.reset()
         layerOverlay.reset()
         layerUnitArt.reset()
         layerUnitFlag.reset()
@@ -95,9 +94,7 @@ open class TileGroup(
         for (layer in allLayers) layer.isVisible = isVisible
     }
 
-    open fun update(
-            viewingCiv: Civilization? = null,
-            localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)) {
+    open fun update(viewingCiv: Civilization? = null) {
         layerMisc.removeHexOutline()
         layerMisc.hideTerrainOverlay()
         layerOverlay.hideHighlight()
@@ -111,7 +108,7 @@ open class TileGroup(
 
         // Do not update layers if tile is not explored by viewing player
         if (viewingCiv != null && !(isForceVisible || viewingCiv.hasExplored(tile))) {
-            reset(localUniqueCache)
+            reset()
             // If tile has explored neighbors - reveal layers partially
             if (tile.neighbors.none { viewingCiv.hasExplored(it) })
                 // Else - hide all layers
@@ -122,7 +119,7 @@ open class TileGroup(
 
         removeMissingModReferences()
         
-        for (layer in allLayers) layer.update(viewingCiv, localUniqueCache)
+        for (layer in allLayers) layer.update(viewingCiv)
         
         if (!wasPreviouslyVisible){ // newly revealed tile!
             layerTerrain.parent.addAction( 

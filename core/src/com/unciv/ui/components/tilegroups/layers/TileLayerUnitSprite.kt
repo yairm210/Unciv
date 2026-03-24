@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.ui.components.NonTransformGroup
 import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.images.ImageGetter
@@ -76,7 +75,7 @@ class TileLayerUnitSprite(tileGroup: TileGroup, size: Float) : TileLayer(tileGro
         color.a = 0.5f
     }
 
-    override fun doUpdate(viewingCiv: Civilization?, localUniqueCache: LocalUniqueCache) {
+    override fun doUpdate(viewingCiv: Civilization?) {
 
         val isPixelUnitsEnabled = UncivGame.Current.settings.showPixelUnits
         val isViewable = viewingCiv == null || isViewable(viewingCiv)

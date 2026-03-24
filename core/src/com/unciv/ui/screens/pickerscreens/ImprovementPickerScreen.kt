@@ -12,7 +12,6 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.ImprovementBuildingProblem
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.tile.TileImprovement
-import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -96,8 +95,6 @@ class ImprovementPickerScreen(
             tileWithoutLastTerrain.removeTerrainFeature(tileWithoutLastTerrain.lastTerrain.name)
         }
 
-        val cityUniqueCache = LocalUniqueCache()
-
         for (improvement in ruleset.tileImprovements.values) {
             // canBuildImprovement() would allow e.g. great improvements thus we need to exclude them - except cancel
             if (improvement.turnsToBuild == -1 && improvement.name != Constants.cancelImprovementOrder) continue
@@ -105,7 +102,7 @@ class ImprovementPickerScreen(
             if (!unit.canBuildImprovement(improvement)) continue
             val problemReport = getProblemReport(improvement) ?: continue
 
-            regularImprovements.addImprovementRow(improvement, problemReport, cityUniqueCache)
+            regularImprovements.addImprovementRow(improvement, problemReport)
         }
 
         val ownerTable = Table()
@@ -132,7 +129,7 @@ class ImprovementPickerScreen(
         topTable.add(regularImprovements)
     }
 
-    private fun Table.addImprovementRow(improvement: TileImprovement, problemReport: ProblemReport, cityUniqueCache: LocalUniqueCache) {
+    private fun Table.addImprovementRow(improvement: TileImprovement, problemReport: ProblemReport) {
         val image = ImageGetter.getImprovementPortrait(improvement.name, 30f)
 
         // allow multiple key mappings to technologically supersede each other
@@ -171,7 +168,6 @@ class ImprovementPickerScreen(
             improvement,
             currentPlayerCiv,
             tile.getCity(),
-            cityUniqueCache
         )
         
         // Add per-turn maintenance costs as negative stats

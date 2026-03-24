@@ -7,7 +7,9 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.models.Counter
 import com.unciv.models.Religion
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueMap.Companion.NO_UNIQUE_FILTER
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
 import yairm210.purity.annotations.Readonly
@@ -59,15 +61,32 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
     }
 
     @Readonly
+    @Deprecated(message = "forEachUnique is faster. If not viable, then this can still be used",
+        replaceWith = ReplaceWith("forEachUnique"))
     fun getUniques(uniqueType: UniqueType): Sequence<Unique> {
         val majorityReligion = getMajorityReligion() ?: return emptySequence()
         return majorityReligion.followerBeliefUniqueMap.getUniques(uniqueType)
     }
 
     @Readonly
+    fun forEachMatchingUnique(uniqueType: UniqueType, gameContext: GameContext=city.state, op: (unique: Unique)->Unit)
+        = forEachMatchingUnique(uniqueType, gameContext, NO_UNIQUE_FILTER, op)
+    @Readonly
+    fun forEachMatchingUnique(uniqueType: UniqueType, gameContext: GameContext=city.state, filter:(Unique)->Boolean, op: (unique: Unique)->Unit) {
+        val majorityReligion = getMajorityReligion() ?: return
+        majorityReligion.followerBeliefUniqueMap.forEachMatchingUnique(uniqueType, gameContext, filter, op)
+    }
+
+    @Readonly
     fun getAllUniques(): Sequence<Unique> {
         val majorityReligion = getMajorityReligion() ?: return emptySequence()
         return majorityReligion.followerBeliefUniqueMap.getAllUniques()
+    }
+
+    @Readonly
+    fun forEachUnique(filter:(Unique)->Boolean, op: (unique: Unique)->Unit) {
+        val majorityReligion = getMajorityReligion() ?: return
+        majorityReligion.followerBeliefUniqueMap.forEachUnique(filter, op)
     }
 
     @Readonly fun getPressures(): Counter<String> = pressures.clone()

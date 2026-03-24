@@ -71,12 +71,14 @@ allprojects {
 
             "java.util.stream.StreamSupport.longStream",
             "java.util.stream.LongStream.parallel",
-            "kotlin.sequences.shuffled",
 
             "kotlin.LongArray.get",
             "kotlin.LongArray.iterator",
-            "kotlin.collections.copyInto",
+
             "kotlin.collections.List.get",
+            "kotlin.collections.firstNotNullOfOrNull",
+            "kotlin.collections.copyInto",
+            "kotlin.sequences.shuffled",
 
             "io.ktor.http.Url.segments",
             "io.ktor.http.Url.parameters",

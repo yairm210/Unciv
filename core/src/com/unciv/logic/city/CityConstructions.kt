@@ -23,7 +23,6 @@ import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.RejectionReasonType
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
@@ -117,10 +116,10 @@ class CityConstructions : IsPartOfGameInfoSerialization {
      * @return [Stats] provided by all built buildings in city
      */
     @Readonly
-    fun getStats(localUniqueCache: LocalUniqueCache): StatTreeNode = timeThis("CityConstructions.getStats") {
+    fun getStats(): StatTreeNode = timeThis("CityConstructions.getStats") {
         @LocalState val stats = StatTreeNode()
         for (building in getBuiltBuildings())
-            stats.addStats(building.getStats(city, localUniqueCache), building.name)
+            stats.addStats(building.getStats(city), building.name)
         return stats
     }
 

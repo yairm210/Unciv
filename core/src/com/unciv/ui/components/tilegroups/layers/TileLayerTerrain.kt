@@ -8,7 +8,6 @@ import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.NeighborDirection
 import com.unciv.logic.map.tile.Tile
-import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -284,7 +283,7 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         }
     }
 
-    override fun doUpdate(viewingCiv: Civilization?, localUniqueCache: LocalUniqueCache) {
+    override fun doUpdate(viewingCiv: Civilization?) {
         updateTileImage(viewingCiv)
         updateRivers(tileGroup.tile.hasBottomRightRiver, tileGroup.tile.hasBottomRiver, tileGroup.tile.hasBottomLeftRiver)
         updateTileColor(viewingCiv)

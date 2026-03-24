@@ -6,15 +6,19 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Countables
 import com.unciv.models.ruleset.unique.GameContext
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueParameterType
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.validation.RulesetValidator
 import com.unciv.models.ruleset.validation.UniqueValidator
+import com.unciv.models.stats.Stat
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.RedirectOutput
 import com.unciv.testing.RedirectPolicy
 import com.unciv.testing.TestGame
+import com.unciv.testing.runTestParcours
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Test
@@ -246,6 +250,254 @@ class CountableTests {
         assertEquals("Testing Happiness", 6, happiness)
     }
     //endregion
+
+    //region Coverage for specific Countables
+    @Test
+    @CoversCountable(Countables.TileResources) // Just barely
+    fun testPerCountableForGlobalAndLocalResources() {
+        setupModdedGame()
+        // one coal provided locally
+        val providesCoal = game.createBuilding("Provides [1] [Coal]")
+        city.cityConstructions.addBuilding(providesCoal)
+        // one globally
+        UniqueTriggerActivation.triggerUnique(Unique("Provides [1] [Coal] <for [2] turns>"), civ)
+        val providesFaithPerCoal = game.createBuilding("[+1 Faith] [in this city] <for every [Coal]>")
+        city.cityConstructions.addBuilding(providesFaithPerCoal)
+        assertEquals(2f, city.cityStats.currentCityStats.faith)
+    }
+
+    @Test
+    @CoversCountable(Countables.StatOrResourcePerTurn)
+    fun testStatOrResourcePerTurn() {
+        setupModdedGame()
+        city.cityConstructions.addBuilding(game.createBuilding(
+            "Provides [5] [Coal]",
+            "[+1 Gold, +3 Culture] [in this city]"
+        ))
+        val context = GameContext(civ)
+
+        runTestParcours("Stat or resource per turn countable", { test: String ->
+            Countables.getCountableAmount(test, context)
+        },
+            "[Gold] Per Turn", 4, // Palace provides 3
+            "[Culture] Per Turn", 4, // Palace provides 1
+            "[Coal] Per Turn", 5,
+            "[Iron] Per Turn", 0,
+            "[Null] Per Turn", null,
+        )
+    }
+
+    @Test
+    @CoversCountable(Countables.Stats)
+    fun testStatsCountables() {
+        setupModdedGame()
+        fun verifyStats(context: GameContext) {
+            for (stat in Stat.entries) {
+                val countableResult = Countables.Stats.eval(stat.name, context)
+                val expected = if (stat == Stat.Happiness) civ.getHappiness()
+                else context.getStatAmount(stat)
+                assertEquals("Testing $stat countable:", countableResult, expected)
+            }
+        }
+
+        val providesStats =
+            game.createBuilding("[+1 Gold, +2 Food, +3 Production, +4 Happiness, +3 Science, +2 Culture, +1 Faith] [in this city] <when number of [Cities] is equal to [1]>")
+        city.cityConstructions.addBuilding(providesStats)
+        verifyStats(GameContext(civ, city))
+
+        val city2 = game.addCity(civ, game.tileMap[-2,0])
+        val providesStats2 =
+            game.createBuilding("[+3 Gold, +2 Food, +1 Production, -4 Happiness, +1 Science, +2 Culture, +3 Faith] [in this city] <when number of [Cities] is more than [1]>")
+        city2.cityConstructions.addBuilding(providesStats2)
+        verifyStats(GameContext(civ, city2))
+    }
+
+    @Test
+    @CoversCountable(Countables.OwnedTiles)
+    fun testOwnedTilesCountable() {
+        setupModdedGame()
+        UniqueTriggerActivation.triggerUnique(Unique("Turn this tile into a [Coast] tile"), civ, tile = game.tileMap[-3,0])
+        UniqueTriggerActivation.triggerUnique(Unique("Turn this tile into a [Coast] tile"), civ, tile = game.tileMap[3,0])
+
+        game.addCity(civ, game.tileMap[-2,0], initialPopulation = 9)
+        val context = GameContext(civ)
+
+        runTestParcours("Owned tiles countable", { test: String ->
+            Countables.getCountableAmount(test, context)
+        },
+            "Owned [All] Tiles", 14,
+            "Owned [worked] Tiles", 8,
+            "Owned [Coastal] Tiles", 6,
+            "Owned [Coast] Tiles", 2,
+            "Owned [Land] Tiles", 12,
+            "Owned [Farm] Tiles", 0,
+        )
+    }
+
+    @Test
+    @CoversCountable(Countables.FilteredCities)
+    fun testFilteredCitiesCountable() {
+        setupModdedGame()
+        UniqueTriggerActivation.triggerUnique(Unique("Turn this tile into a [Coast] tile"), civ, tile = game.tileMap[-3,0])
+
+        val city2 = game.addCity(civ, game.tileMap[-2,0], initialPopulation = 9)
+        city2.isPuppet = true
+        val context = GameContext(civ)
+
+        runTestParcours("Filtered cities countable", { test: String ->
+            Countables.getCountableAmount(test, context)
+        },
+            "[Capital] Cities", 1,
+            "[Puppeted] Cities", 1,
+            "[Coastal] Cities", 1,
+            "[Your] Cities", 2,
+        )
+    }
+
+    @Test
+    @CoversCountable(Countables.FilteredBuildings, Countables.FilteredBuildingsByCivs)
+    fun testFilteredBuildingsCountable () {
+        setupModdedGame(withCiv = false)
+        val building = game.createBuilding("Ancestor Tree") // That's a filtering Unique, not the building name 
+        building[Stat.Culture] = 1f
+
+        civ = game.addCiv(
+            "[+1 Culture] from all [Ancestor Tree] buildings <for every [1] [[Ancestor Tree] Buildings]> <when number of [[Ancestor Tree] Buildings] is more than [1]>",
+            "[+50]% [Culture] from every [Ancestor Tree] <when number of [[Ancestor Tree] Buildings] is more than [0]>",
+        )
+        city = game.addCity(civ, game.tileMap[2,0])
+        city.cityConstructions.addBuilding(building)
+        val city2 = game.addCity(civ, game.tileMap[-2,0])
+        city2.cityConstructions.addBuilding(building)
+
+        // updateStatsForNextTurn won't run the city part because no happiness change across a boundary
+        for (city3 in civ.cities)
+            city3.cityStats.update(updateCivStats = false)
+        civ.updateStatsForNextTurn()
+
+        // Expect: (1 Palace + 1 Base Ancestor Tree + 2 for-every) * 1.5 = 6
+        val capitalCulture = city.cityStats.currentCityStats.culture
+        // Expect: (1 Base Ancestor Tree + 2 for-every) * 1.5 = 4.5
+        val city2Culture = city2.cityStats.currentCityStats.culture
+        // Expect: capitalCulture + city2Culture = 10.5
+        val civCulture = civ.stats.statsForNextTurn.culture
+
+        assertEquals(6f, capitalCulture, 0.005f)
+        assertEquals(4.5f, city2Culture, 0.005f)
+        assertEquals(10.5f, civCulture, 0.005f)
+
+        // FilteredBuildingsByCivs
+        val civ2 = game.addCiv()
+        val civ2city = game.addCity(civ2, game.tileMap[-2, -2])
+        game.addCity(civ2, game.tileMap[2, 2])
+        civ2city.cityConstructions.addBuilding(building)
+        val tests = listOf(
+            "[Ancestor Tree] Buildings" to 2,
+            "[Ancestor Tree] Buildings by [All] Civilizations" to 3,
+            "[Ancestor Tree] Buildings by [${civ.civName}] Civilizations" to 2,
+            "[Ancestor Tree] Buildings by [${civ2.civName}] Civilizations" to 1,
+            "[Ancestor Tree] Buildings by [City-State] Civilizations" to 0
+        )
+        for ((test, expected) in tests) {
+            val actual = Countables.getCountableAmount(test, GameContext(civ))
+            assertEquals("Testing `$test` countable:", expected, actual)
+        }
+    }
+
+    @Test
+    @CoversCountable(Countables.PolicyBranches, Countables.FilteredPolicies, Countables.FilteredPoliciesByCivs)
+    fun testPoliciesCountables() {
+        setupModdedGame()
+        civ.policies.run {
+            for (name in listOf(
+                "Tradition", "Aristocracy", "Legalism", "Oligarchy", "Landed Elite", "Monarchy",
+                "Liberty", "Citizenship", "Honor", "Piety"
+            )) {
+                freePolicies++
+                val policy = getPolicyByName(name)
+                adopt(policy)
+            }
+            // Don't use a fake Policy without a branch, the policyFilter would stumble over a lateinit.
+            val taggedPolicyBranch = game.createPolicyBranch("Some marker")
+            freePolicies++
+            adopt(taggedPolicyBranch) // Will be completed as it has no member policies
+        }
+
+        // Add a second Civilization
+        val civ2 = game.addCiv()
+        game.addCity(civ2, game.tileMap[2,2])
+        civ2.policies.run {
+            freePolicies += 2
+            adopt(getPolicyByName("Tradition"))
+            adopt(getPolicyByName("Oligarchy"))
+        }
+        val context = GameContext(civ)
+
+        runTestParcours("Filtered policies by filtered civs countable", { test: String ->
+            Countables.getCountableAmount(test, context)
+        },
+            "Completed Policy branches", 2,               // Tradition and taggedPolicyBranch
+            "Adopted [Tradition Complete] Policies", 1,
+            "Adopted [[Tradition] branch] Policies", 7,   // Branch start and completion plus 5 members
+            "Adopted [Liberty Complete] Policies", 0,
+            "Adopted [[Liberty] branch] Policies", 2,     // Liberty has only 1 member adopted
+            "Adopted [Some marker] Policies", 1,
+            "Adopted [Military Tradition] Policies by [All] Civilizations", 0,
+            "Adopted [Some marker] Policies by [All] Civilizations", 1,
+            "Adopted [Oligarchy] Policies by [All] Civilizations", 2,
+            "Adopted [Oligarchy] Policies by [City-State] Civilizations", 0,
+        )
+    }
+
+    @Test
+    @CoversCountable(Countables.EraNumber)
+    fun testEraNumberCountable() {
+        setupModdedGame()
+        val context = GameContext(civ)
+
+        runTestParcours("Era number countable", { tech: String ->
+            civ.tech.addTechnology(tech, false)
+            Countables.getCountableAmount("Era number", context)
+        },
+            "Agriculture", 0,
+            "Optics", 1,
+            "Archery", 1,
+            "Navigation", 3,
+        )
+    }
+
+    @Test
+    @CoversCountable(Countables.Integer, Countables.Turns, Countables.Year, Countables.Expression)
+    fun testTimeCountables() {
+        setupModdedGame()
+        val context = GameContext(civ)
+
+        runTestParcours("Year and turns countables", { input: Pair<Int, String> ->
+            game.gameInfo.turns = input.first
+            Countables.getCountableAmount(input.second, context)
+        },
+            7 to "[year] - ([-4000] + [40] * [turns])", 0,
+            42 to "[year] - (-4000 + 40 * [turns])", 0,
+            124 to "[year]", 225,
+        )
+    }
+
+    @Test
+    @CoversCountable(Countables.GameSpeedModifier)
+    fun testSpeedModifierCountable() {
+        setupModdedGame()
+        val context = GameContext(civ)
+
+        runTestParcours("Game speed modifier countable", { input: Pair<String, String> ->
+            game.gameInfo.gameParameters.speed = input.first
+            game.gameInfo.setGlobalTransients()
+            Countables.getCountableAmount("Speed modifier for [${input.second}]", context)
+        },
+            "Quick" to "Production", 67,
+            "Standard" to "Gold", 100,
+            "Marathon" to "Faith", 300,
+        )
+    }
 
     @Test
     fun countableCanUseContext() {

@@ -11,7 +11,6 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.MapPathing
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.Spy
-import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.colorFromRGB
 
@@ -27,9 +26,8 @@ object WorldMapTileUpdater {
         }
 
         // General update of all tiles
-        val uniqueCache = LocalUniqueCache(true)
         for (tileGroup in tileGroups.values)
-            tileGroup.update(viewingCiv, uniqueCache)
+            tileGroup.update(viewingCiv)
 
         // Update tiles according to selected unit/city
         val unitTable = worldScreen.bottomUnitTable

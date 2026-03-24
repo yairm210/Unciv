@@ -15,7 +15,6 @@ import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IConstruction
 import com.unciv.models.ruleset.tile.TileImprovement
-import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
@@ -244,7 +243,6 @@ class CityScreen(
     }
 
     private fun updateTileGroups() {
-        val cityUniqueCache = LocalUniqueCache()
         fun isExistingImprovementValuable(tile: Tile): Boolean {
             val improvement = tile.tileImprovement ?: return false
             val civInfo = city.civ
@@ -253,7 +251,6 @@ class CityScreen(
                 improvement,
                 civInfo,
                 city,
-                cityUniqueCache
             )
 
             // If stat diff for new improvement is negative/zero utility, current improvement is valuable

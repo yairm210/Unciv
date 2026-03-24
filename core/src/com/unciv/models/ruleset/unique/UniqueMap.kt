@@ -58,16 +58,29 @@ open class UniqueMap() {
 
     // 160ms vs 1000-1250ms/30s
     @Readonly
+    @Deprecated(message = "forEachUnique is faster. If not viable, then this can still be used",
+        replaceWith = ReplaceWith("forEachUnique"))
     fun getUniques(uniqueType: UniqueType) = typedUniqueMap[uniqueType]
         ?.asSequence()
         ?: emptySequence()
 
     @Readonly
+    fun forEachUnique(uniqueType: UniqueType, op: (Unique)->Unit) {
+        val uniques = typedUniqueMap[uniqueType] ?: return
+        for (i in 0..< uniques.size)
+            op(uniques[i])
+    }
+
+    @Readonly
+    @Deprecated(message = "forEachTagUnique is faster. If not viable, then this can still be used",
+        replaceWith = ReplaceWith("forEachTagUnique"))
     fun getTagUniques(uniqueTag: String) = tagUniqueMap[uniqueTag]
         ?.asSequence()
         ?: emptySequence()
 
     @Readonly
+    @Deprecated(message = "forEachMatchingUnique is faster. If not viable, then this can still be used",
+        replaceWith = ReplaceWith("forEachMatchingUnique"))
     fun getMatchingUniques(uniqueType: UniqueType, state: GameContext = GameContext.EmptyState) = 
         getUniques(uniqueType)
             // Same as .filter | .flatMap, but more cpu/mem performant (7.7 GB vs ?? for test)
@@ -80,6 +93,17 @@ open class UniqueMap() {
             }
 
     @Readonly
+    fun forEachMatchingUnique(uniqueType: UniqueType, gameContext: GameContext, op: (Unique)->Unit)
+        = forEachMatchingUnique(uniqueType, gameContext, NO_UNIQUE_FILTER, op)
+    @Readonly
+    fun forEachMatchingUnique(uniqueType: UniqueType, gameContext: GameContext, filter:(Unique)->Boolean, op: (Unique)->Unit) {
+        val list = typedUniqueMap[uniqueType] ?: return
+        forEachMatchingUnique(list, gameContext, filter, op)
+    }
+
+    @Readonly
+    @Deprecated(message = "forEachMatchingTagUnique is faster. If not viable, then this can still be used",
+        replaceWith = ReplaceWith("forEachMatchingTagUnique"))
     fun getMatchingTagUniques(uniqueTag: String, state: GameContext = GameContext.EmptyState) =
         getTagUniques(uniqueTag)
             // Same as .filter | .flatMap, but more cpu/mem performant (7.7 GB vs ?? for test)
@@ -92,6 +116,22 @@ open class UniqueMap() {
             }
 
     @Readonly
+    fun forEachMatchingTagUnique(uniqueTag: String, gameContext: GameContext, filter:(Unique)->Boolean, op: (Unique)->Unit) {
+        val list = tagUniqueMap[uniqueTag] ?: return
+        forEachMatchingUnique(list, gameContext, filter, op)
+    }
+
+    @Readonly
+    fun forEachMatchingUnique(list: List<Unique>, gameContext: GameContext, filter:(Unique)->Boolean, op: (Unique)->Unit) {
+        for (i in 0..<list.size) {
+            val unique = list[i]
+            if (unique.isTimedTriggerable || !filter(unique) || !unique.conditionalsApply(gameContext))
+                continue
+            unique.forEachMultiplied(gameContext, op)
+        }
+    }
+    
+    @Readonly
     fun hasMatchingUnique(uniqueType: UniqueType, state: GameContext = GameContext.EmptyState) = 
         getUniques(uniqueType).any { it.conditionalsApply(state) }
 
@@ -102,6 +142,12 @@ open class UniqueMap() {
 
     @Readonly
     fun getAllUniques() = tagUniqueMap.values.asSequence().flatten()
+    
+    @Readonly
+    // UniqueMap lacks a way to iterate over all Uniques without allocations, so this is not *dramatically* faster than getLocalTriggeredUniques
+    fun forEachUnique(op: (Unique)->Unit) = getAllUniques().forEach(op)
+    @Readonly
+    fun forEachUnique(filter: (Unique)->Boolean, op: (Unique)->Unit) = getAllUniques().filter(filter).forEach(op)
 
     @Readonly
     fun getTriggeredUniques(trigger: UniqueType, gameContext: GameContext,
@@ -113,5 +159,6 @@ open class UniqueMap() {
     
     companion object{
         val EMPTY = UniqueMap()
+        val NO_UNIQUE_FILTER = { _: Unique -> true }
     }
 }

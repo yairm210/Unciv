@@ -13,8 +13,8 @@ import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileImprovement
-import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.GameContext
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
@@ -28,15 +28,15 @@ import kotlin.math.min
 object Automation {
 
     @Readonly
-    fun rankTileForCityWork(tile: Tile, city: City, localUniqueCache: LocalUniqueCache): Float {
-        val stats = tile.stats.getTileStats(city, city.civ, localUniqueCache)
-        return rankStatsForCityWork(stats, city, false, localUniqueCache)
+    fun rankTileForCityWork(tile: Tile, city: City): Float {
+        val stats = tile.stats.getTileStats(city, city.civ)
+        return rankStatsForCityWork(stats, city, false)
     }
 
     @Readonly
-    fun rankSpecialist(specialist: String, city: City, localUniqueCache: LocalUniqueCache): Float {
-        val stats = city.cityStats.getStatsOfSpecialist(specialist, localUniqueCache)
-        var rank = rankStatsForCityWork(stats, city, true, localUniqueCache)
+    fun rankSpecialist(specialist: String, city: City): Float {
+        val stats = city.cityStats.getStatsOfSpecialist(specialist)
+        var rank = rankStatsForCityWork(stats, city, true)
         // derive GPP score
         var gpp = 0f
         if (city.getRuleset().specialists.containsKey(specialist)) { // To solve problems in total remake mods
@@ -72,7 +72,7 @@ object Automation {
     }
 
     @Readonly
-    fun rankStatsForCityWork(stats: Stats, city: City, areWeRankingSpecialist: Boolean, localUniqueCache: LocalUniqueCache): Float
+    fun rankStatsForCityWork(stats: Stats, city: City, areWeRankingSpecialist: Boolean): Float
         = timeThis("Automation.rankStatsForCityWork") {
         val cityAIFocus = city.getCityFocus()
         @LocalState val yieldStats = stats.clone()
@@ -82,13 +82,15 @@ object Automation {
 
         if (areWeRankingSpecialist) {
             // If you have the Food Bonus, count as 1 extra food production (base is 2food)
-            for (unique in localUniqueCache.forCityGetMatchingUniques(city, UniqueType.FoodConsumptionBySpecialists))
+            city.forEachMatchingUnique(UniqueType.FoodConsumptionBySpecialists, city.state) { unique: Unique ->
                 if (city.matchesFilter(unique.params[1]))
                     yieldStats.food -= (unique.params[0].toFloat() / 100f) * 2f // base 2 food per Pop
+            }
             // Specialist Happiness Percentage Change 0f-1f
-            for (unique in localUniqueCache.forCityGetMatchingUniques(city, UniqueType.UnhappinessFromPopulationTypePercentageChange))
+            city.forEachMatchingUnique(UniqueType.UnhappinessFromPopulationTypePercentageChange, city.state) { unique: Unique ->
                 if (unique.params[1] == "Specialists" && city.matchesFilter(unique.params[2]))
                     yieldStats.happiness -= (unique.params[0].toFloat() / 100f)  // relative val is negative, make positive
+            }
             if (yieldStats.science == 3f || yieldStats.science >= 5f )
                 yieldStats.science *= 1.3f
         }
@@ -130,12 +132,14 @@ object Automation {
         // Growth is penalized when Unhappy, see GlobalUniques.json
         // No Growth if <-10, 1/4 if <0
         // Reusing food growth code from CityStats.updateFinalStatList()
-        val growthNullifyingUnique =
-            localUniqueCache.forCityGetMatchingUniques(city, UniqueType.NullifiesGrowth).firstOrNull()
-        if (growthNullifyingUnique == null) { // if not nullified
+        var growthNullifyingUnique = false
+        city.forEachMatchingUnique(UniqueType.NullifiesGrowth, city.state) { _: Unique ->
+            growthNullifyingUnique = true
+        }
+        if (!growthNullifyingUnique) {
             var newGrowthFood = growthFood  // running count of growthFood
             val cityStats = CityStats(city)
-            val growthBonuses = cityStats.getGrowthBonus(growthFood, localUniqueCache)
+            val growthBonuses = cityStats.getGrowthBonus(growthFood)
             for (growthBonus in growthBonuses) {
                 newGrowthFood += growthBonus.value.food
             }
@@ -406,14 +410,13 @@ object Automation {
     /** Support [UniqueType.CreatesOneImprovement] unique - find best tile for placement automation */
     @Readonly
     fun getTileForConstructionImprovement(city: City, improvement: TileImprovement): Tile? {
-        val localUniqueCache = LocalUniqueCache()
         val civ = city.civ
         return city.getTiles().filter {
             (it.tileImprovement == null || improvementIsRemovable(city, it))
                 && it.improvementFunctions.canBuildImprovement(improvement, city.state)
         }.maxByOrNull { 
             // Needs to take into account future improvement layouts, and better placement of citadel-like improvements
-            rankStatsValue(it.stats.getStatDiffForImprovement(improvement, civ, city, localUniqueCache, it.stats.getTileStats(city, civ, localUniqueCache)), civ) + (
+            rankStatsValue(it.stats.getStatDiffForImprovement(improvement, civ, city, it.stats.getTileStats(city, civ)), civ) + (
                 if (improvement.hasUnique(UniqueType.DefensiveBonus)) { 
                     it.aerialDistanceTo(city.getCenterTile()) + it.getDefensiveBonus(false) } 
                 else 0).toFloat()
@@ -422,12 +425,11 @@ object Automation {
 
     // Ranks a tile for any purpose except the expansion algorithm of cities
     @Readonly
-    internal fun rankTile(tile: Tile?, civInfo: Civilization,
-                          localUniqueCache: LocalUniqueCache): Float {
+    internal fun rankTile(tile: Tile?, civInfo: Civilization): Float {
         if (tile == null) return 0f
         val tileOwner = tile.getOwner()
         if (tileOwner != null && tileOwner != civInfo) return 0f // Already belongs to another civilization, useless to us
-        val stats = tile.stats.getTileStats(null, civInfo, localUniqueCache)
+        val stats = tile.stats.getTileStats(null, civInfo)
         var rank = rankStatsValue(stats, civInfo)
         if (tile.improvement == null) rank += 0.5f // improvement potential!
         if (tile.isPillaged()) rank += 0.6f
@@ -442,8 +444,7 @@ object Automation {
 
     // Ranks a tile for the expansion algorithm of cities
     @Readonly
-    internal fun rankTileForExpansion(tile: Tile, city: City,
-                                      localUniqueCache: LocalUniqueCache): Int {
+    internal fun rankTileForExpansion(tile: Tile, city: City): Int {
         // https://github.com/Gedemon/Civ5-DLL/blob/aa29e80751f541ae04858b6d2a2c7dcca454201e/CvGameCoreDLL_Expansion1/CvCity.cpp#L10301
         // Apparently this is not the full calculation. The exact tiles are also
         // dependent on which tiles are between the chosen tile and the city center
@@ -470,7 +471,7 @@ object Automation {
         if (tile.naturalWonder != null) score -= 105
 
         // Straight up take the sum of all yields
-        score -= tile.stats.getTileStats(city, city.civ, localUniqueCache).values.sum().toInt()
+        score -= tile.stats.getTileStats(city, city.civ).values.sum().toInt()
 
         // Check if we get access to better tiles from this tile
         var adjacentNaturalWonder = false

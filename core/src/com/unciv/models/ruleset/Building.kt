@@ -79,17 +79,14 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     }
 
     @Readonly
-    fun getStats(city: City,
-                 /* By default, do not cache - if we're getting stats for only one building this isn't efficient.
-                 * Only use a cache if it was sent to us from outside, which means we can use the results for other buildings.  */
-                 localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): Stats = timeThis("Building.getStats") {
+    fun getStats(city: City): Stats = timeThis("Building.getStats") {
         // Calls the clone function of the NamedStats this class is derived from, not a clone function of this class
         @LocalState val stats = cloneStats()
         
         val conditionalState = city.state
 
-        for (unique in localUniqueCache.forCityGetMatchingUniques(city, UniqueType.StatsFromObject)) {
-            if (!matchesFilter(unique.params[1], conditionalState)) continue
+        city.forEachMatchingUnique(UniqueType.StatsFromObject) { unique->
+            if (!matchesFilter(unique.params[1], conditionalState)) return@forEachMatchingUnique
             stats.add(unique.stats)
         }
 
@@ -97,7 +94,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             stats.add(unique.stats)
 
         if (!isWonder)
-            for (unique in localUniqueCache.forCityGetMatchingUniques(city, UniqueType.StatsFromBuildings)) {
+            city.forEachMatchingUnique(UniqueType.StatsFromBuildings, city.state, ) { unique: Unique ->
                 if (matchesFilter(unique.params[1], conditionalState))
                     stats.add(unique.stats)
             }
@@ -105,19 +102,19 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     }
 
     @Readonly
-    fun getStatPercentageBonuses(city: City?, localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): Stats {
+    fun getStatPercentageBonuses(city: City?): Stats {
         @LocalState val stats = percentStatBonus?.clone() ?: Stats()
         if (city == null) return stats  // initial stats
 
         val conditionalState = city.state
 
-        for (unique in localUniqueCache.forCityGetMatchingUniques(city, UniqueType.StatPercentFromObject)) {
+        city.forEachMatchingUnique(UniqueType.StatPercentFromObject, conditionalState) { unique: Unique ->
             if (matchesFilter(unique.params[2], conditionalState))
                 stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
         }
 
-        for (unique in localUniqueCache.forCityGetMatchingUniques(city, UniqueType.AllStatsPercentFromObject)) {
-            if (!matchesFilter(unique.params[1], conditionalState)) continue
+        city.forEachMatchingUnique(UniqueType.AllStatsPercentFromObject, conditionalState) { unique: Unique ->
+            if (!matchesFilter(unique.params[1], conditionalState)) return@forEachMatchingUnique
             for (stat in Stat.entries) {
                 stats.add(stat, unique.params[0].toFloat())
             }

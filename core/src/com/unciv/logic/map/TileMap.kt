@@ -232,18 +232,24 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     /** @return All tiles in a hexagon of radius [distance], including the tile at [origin] and all up to [distance] steps away.
      *  Respects map edges and world wrap. */
     @Readonly
+    @Deprecated(message = "forEachTileInDistance is faster. If not viable, then this can still be used",
+        replaceWith = ReplaceWith("forEachTileInDistance"))
     fun getTilesInDistance(origin: HexCoord, distance: Int): Sequence<Tile> =
             getTilesInDistanceRange(origin, 0..distance)
 
     /** @return All tiles in a hexagonal ring around [origin] with the distances in [range]. Excludes the [origin] tile unless [range] starts at 0.
      *  Respects map edges and world wrap. */
     @Readonly
+    @Deprecated(message = "forEachTileInDistanceRange is faster. If not viable, then this can still be used",
+        replaceWith = ReplaceWith("forEachTileInDistanceRange"))
     fun getTilesInDistanceRange(origin: HexCoord, range: IntRange): Sequence<Tile> =
             range.asSequence().flatMap { getTilesAtDistance(origin, it) }
 
     /** @return All tiles in a hexagonal ring 1 tile wide around [origin] with the [distance]. Contains the [origin] if and only if [distance] is <= 0.
      *  Respects map edges and world wrap. */
     @Readonly
+    @Deprecated(message = "forEachTileAtDistance is faster. If not viable, then this can still be used",
+        replaceWith = ReplaceWith("forEachTileAtDistance"))
     fun getTilesAtDistance(origin: HexCoord, distance: Int): Sequence<Tile> =
             if (distance <= 0) // silently take negatives.
                 sequenceOf(get(origin))
@@ -276,6 +282,80 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
                         currentY += 1 // we're going up the top left side of the hexagon so we're heading "up and to the right"
                     }
                 }.filterNotNull()
+
+    /** @return All tiles in a hexagon of radius [distance], including the tile at [origin] and all up to [distance] steps away.
+     *  Respects map edges and world wrap. */
+    @Readonly
+    fun forEachTileInDistance(origin: HexCoord, distance: Int, op: (Tile)->Unit)
+        = forEachTileInDistance(origin, distance, {true}, op)
+    @Readonly
+    fun forEachTileInDistance(origin: HexCoord, distance: Int, filter: (Tile)->Boolean, op: (Tile)->Unit) {
+        for (i in 0 until distance)
+            forEachTileAtDistance(origin, i, filter, op)
+    }
+
+    /** @return All tiles in a hexagonal ring around [origin] with the distances in [range]. Excludes the [origin] tile unless [range] starts at 0.
+     *  Respects map edges and world wrap. */
+    @Readonly
+    fun forEachTileInDistanceRange(origin: HexCoord, range: IntRange, op: (Tile)->Unit)
+        = forEachTileInDistanceRange(origin, range, {true}, op)
+    @Readonly
+    fun forEachTileInDistanceRange(origin: HexCoord, range: IntRange, filter: (Tile)->Boolean, op: (Tile)->Unit) {
+        for (i in range)
+            forEachTileAtDistance(origin, i, filter, op)
+    }
+
+    /** @return All tiles in a hexagonal ring 1 tile wide around [origin] with the [distance]. Contains the [origin] if and only if [distance] is <= 0.
+     *  Respects map edges and world wrap. */
+    @Readonly
+    fun forEachTileAtDistance(origin: HexCoord, distance: Int, op: (Tile)->Unit)
+        = forEachTileAtDistance(origin, distance, {true}, op)
+    @Readonly
+    fun forEachTileAtDistance(origin: HexCoord, distance: Int, filter: (Tile)->Boolean, op: (Tile)->Unit) {
+        if (distance <= 0) {
+            val tile = get(origin)
+            if (filter(tile)) op(tile)
+        } else if (distance == 1) {
+            for (tile in get(origin).neighbors) {
+                if (filter(tile)) 
+                    op(tile)
+            }
+        } else {
+            val centerX = origin.x
+            val centerY = origin.y
+
+            // Start from 6 O'clock point which means (-distance, -distance) away from the center point
+            var currentX = centerX - distance
+            var currentY = centerY - distance
+
+            var tile: Tile? = null
+            for (i in 0 until distance) { // From 6 to 8
+                tile = getIfTileExistsOrNull(currentX, currentY)
+                if (tile != null && filter(tile)) op(tile)
+                // We want to get the tile on the other side of the clock,
+                // so if we're at current = origin-delta we want to get to origin+delta.
+                // The simplest way to do this is 2*origin - current = 2*origin- (origin - delta) = origin+delta
+                tile = getIfTileExistsOrNull(2 * centerX - currentX, 2 * centerY - currentY)
+                if (tile != null && filter(tile)) op(tile)
+                currentX += 1 // we're going upwards to the left, towards 8 o'clock
+            }
+            for (i in 0 until distance) { // 8 to 10
+                tile = getIfTileExistsOrNull(currentX, currentY)
+                if (tile != null && filter(tile)) op(tile)
+                tile = getIfTileExistsOrNull(2 * centerX - currentX, 2 * centerY - currentY)
+                if (tile != null && filter(tile)) op(tile)
+                currentX += 1
+                currentY += 1 // we're going up the left side of the hexagon so we're going "up" - +1,+1
+            }
+            for (i in 0 until distance) { // 10 to 12
+                tile = getIfTileExistsOrNull(currentX, currentY)
+                if (tile != null && filter(tile)) op(tile)
+                tile = getIfTileExistsOrNull(2 * centerX - currentX, 2 * centerY - currentY)
+                if (tile != null && filter(tile)) op(tile)
+                currentY += 1 // we're going up the top left side of the hexagon so we're heading "up and to the right"
+            }
+        }
+    }
 
     /** @return all tiles within [rectangle], respecting world edges and wrap.
      *  The rectangle will be "straight" ie parallel with rectangular map edges. */

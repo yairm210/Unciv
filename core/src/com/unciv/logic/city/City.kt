@@ -607,6 +607,8 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     // Finds matching uniques provided from both local and non-local sources.
     @Readonly
+    @Deprecated(message = "forEachMatchingUnique is faster. If not viable, then this can still be used",
+        replaceWith = ReplaceWith("forEachMatchingUnique"))
     fun getMatchingUniques(
         uniqueType: UniqueType,
         gameContext: GameContext = state,
@@ -623,8 +625,32 @@ class City : IsPartOfGameInfoSerialization, INamed {
             }.flatMap { it.getMultiplied(gameContext) }
     }
 
+    @Readonly
+    fun forEachMatchingUnique(uniqueType: UniqueType, op: (unique: Unique)->Unit)
+        = forEachMatchingUnique(uniqueType, state, true, op)
+    @Readonly
+    fun forEachMatchingUnique(uniqueType: UniqueType, gameContext: GameContext, op: (unique: Unique)->Unit)
+        = forEachMatchingUnique(uniqueType, gameContext, true, op)
+    @Readonly
+    fun forEachMatchingUnique(
+        uniqueType: UniqueType,
+        gameContext: GameContext = state,
+        includeCivUniques: Boolean,
+        op: (unique: Unique)->Unit,
+    ) {
+        if (includeCivUniques) {
+            civ.forEachMatchingUnique(uniqueType, gameContext, op)
+            forEachLocalMatchingUnique(uniqueType, gameContext, op)
+        } else {
+            cityConstructions.builtBuildingUniqueMap.forEachMatchingUnique(uniqueType, state, isTimedUniqueFilter, op)
+            religion.forEachMatchingUnique(uniqueType, state, isTimedUniqueFilter, op)
+        }
+    }
+
     // Uniques special to this city
     @Readonly
+    @Deprecated(message = "forEachLocalMatchingUnique is faster. If not viable, then this can still be used",
+        replaceWith = ReplaceWith("forEachLocalMatchingUnique"))
     fun getLocalMatchingUniques(uniqueType: UniqueType, gameContext: GameContext = state): Sequence<Unique> {
         val uniques = cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType).filter { it.isLocalEffect } +
             religion.getUniques(uniqueType)
@@ -632,14 +658,36 @@ class City : IsPartOfGameInfoSerialization, INamed {
                 .flatMap { it.getMultiplied(gameContext) }
     }
 
+    // Uniques special to this city
+    @Readonly
+    fun forEachLocalMatchingUnique(uniqueType: UniqueType, gameContext: GameContext = state, op: (unique: Unique)->Unit) {
+        cityConstructions.builtBuildingUniqueMap.forEachMatchingUnique(uniqueType, gameContext, isLocalUniqueFilter, op)
+        religion.forEachMatchingUnique(uniqueType, gameContext, op)
+    }
+
     // Uniques coming from this city, but that should be provided globally
     @Readonly
+    @Deprecated(message = "forEachMatchingUniqueWithNonLocalEffects is faster. If not viable, then this can still be used",
+        replaceWith = ReplaceWith("forEachMatchingUniqueWithNonLocalEffects"))
     fun getMatchingUniquesWithNonLocalEffects(uniqueType: UniqueType, gameContext: GameContext = state): Sequence<Unique> {
         val uniques = cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType)
         // Memory performance showed that this function was very memory intensive, thus we only create the filter if needed
         return if (uniques.any()) uniques.filter { !it.isLocalEffect && !it.isTimedTriggerable
             && it.conditionalsApply(gameContext) }.flatMap { it.getMultiplied(gameContext) }
         else uniques
+    }
+
+    // Uniques coming from this city, but that should be provided globally
+    @Readonly
+    fun forEachMatchingUniqueWithNonLocalEffects(uniqueType: UniqueType, gameContext: GameContext, op: (unique: Unique)->Unit)
+        = cityConstructions.builtBuildingUniqueMap.forEachMatchingUnique(uniqueType, gameContext, nonLocalUniqueFilter, op)
+
+    // All uniques affecting this city: both local uniques and civ uniques.
+    // This replaces LocalUniqueCache#forCityGetMatchingUniques
+    @Readonly
+    fun forEachAffectingMatchingUnique(uniqueType: UniqueType, gameContext: GameContext = state, op: (unique: Unique)->Unit) {
+        forEachLocalMatchingUnique(uniqueType, gameContext, op)
+        civ.forEachMatchingUnique(uniqueType, gameContext, op)
     }
     
     fun clearCaches() {
@@ -650,6 +698,8 @@ class City : IsPartOfGameInfoSerialization, INamed {
     }
 
     @Readonly
+    @Deprecated(message = "forEachTriggeredUnique is faster. If not viable, then this can still be used",
+        replaceWith = ReplaceWith("forEachTriggeredUnique"))
     fun getTriggeredUniques(
         trigger: UniqueType,
         gameContext: GameContext = state,
@@ -669,6 +719,26 @@ class City : IsPartOfGameInfoSerialization, INamed {
     }
 
     @Readonly
+    fun forEachTriggeredUnique(
+        trigger: UniqueType,
+        gameContext: GameContext = state,
+        triggerFilter: (Unique) -> Boolean = { true },
+        includeCivUniques: Boolean = true,
+        op: (Unique) -> Unit) {
+        if (includeCivUniques) {
+            civ.forEachTriggeredUnique(trigger, gameContext, triggerFilter, op)
+            forEachLocalTriggeredUnique(trigger, gameContext, triggerFilter, op)
+        }
+        else {
+            fun filter(unique: Unique): Boolean  =
+                unique.getModifiers(trigger).any(triggerFilter) && unique.conditionalsApply(gameContext)
+            fun multipliedOp(unique: Unique) = unique.forEachMultiplied(gameContext, op)
+            cityConstructions.builtBuildingUniqueMap.forEachUnique(::filter, ::multipliedOp)
+            religion.forEachUnique(::filter, ::multipliedOp)
+        }
+    }
+
+    @Readonly
     fun getLocalTriggeredUniques(trigger: UniqueType, gameContext: GameContext = state,
         triggerFilter: (Unique) -> Boolean = { true }): Sequence<Unique> {
         val uniques =
@@ -678,10 +748,29 @@ class City : IsPartOfGameInfoSerialization, INamed {
         }.flatMap { it.getMultiplied(gameContext) }
     }
 
+    @Readonly
+    fun forEachLocalTriggeredUnique(trigger: UniqueType, gameContext: GameContext = state, op: (Unique)->Unit)
+        = forEachLocalTriggeredUnique(trigger, gameContext, {true}, op)
+    @Readonly
+    // UniqueMap lacks a way to iterate over all Uniques without allocations, so this is not *dramatically* faster than getLocalTriggeredUniques
+    fun forEachLocalTriggeredUnique(trigger: UniqueType, gameContext: GameContext = state,
+                                 triggerFilter: (Unique) -> Boolean, op: (Unique)->Unit) {
+        fun uniqueFilter(unique: Unique): Boolean
+            = unique.getModifiers(trigger).any(triggerFilter) && unique.conditionalsApply(gameContext)
+        fun buildingFilter(unique: Unique): Boolean
+            = unique.isLocalEffect && uniqueFilter(unique)
+        cityConstructions.builtBuildingUniqueMap.forEachUnique(::buildingFilter, op)
+        religion.forEachUnique(::uniqueFilter, op)
+    }
+
     //endregion
     
     companion object {
         const val NO_ID = "00000000-0000-0000-0000-000000000000"
         fun pseudoRandomId(civ: Civilization) = pseudoRandomUuid(GameContext(civ).stateBasedRandom("City.Id", civ.cities.size)).toString()
+
+        val isLocalUniqueFilter: (unique: Unique)->Boolean = {unique -> unique.isLocalEffect && !unique.isTimedTriggerable }
+        val nonLocalUniqueFilter: (unique: Unique)->Boolean = {unique -> !unique.isLocalEffect }
+        val isTimedUniqueFilter: (unique: Unique)->Boolean = {unique -> !unique.isTimedTriggerable }
     }
 }

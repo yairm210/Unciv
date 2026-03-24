@@ -134,6 +134,13 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         val multiplier = getUniqueMultiplier(gameContext)
         return EndlessSequenceOf(this).take(multiplier)
     }
+    
+    @Readonly
+    fun forEachMultiplied(gameContext: GameContext, op:(Unique)->Unit) {
+        val multiplier = getUniqueMultiplier(gameContext)
+        for (j in 0..<multiplier)
+            op(this)
+    }
 
     private class EndlessSequenceOf<T>(private val value: T) : Sequence<T> {
         override fun iterator(): Iterator<T> = object : Iterator<T> {
