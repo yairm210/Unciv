@@ -121,6 +121,95 @@ function attachDiagnostics(page, report, label) {
   });
 }
 
+async function installBlobDiagnostics(page, label) {
+  await page.addInitScript((pageLabel) => {
+    if (typeof window === 'undefined') return;
+    if (window.__uncivBlobDiagnosticsInstalled === true) return;
+    window.__uncivBlobDiagnosticsInstalled = true;
+    window.__uncivBlobDiagnostics = {
+      label: pageLabel,
+      events: [],
+    };
+    const maxEvents = 500;
+    const record = (event) => {
+      try {
+        const store = window.__uncivBlobDiagnostics;
+        if (!store || !Array.isArray(store.events)) return;
+        store.events.push({
+          atMs: Date.now(),
+          ...event,
+        });
+        if (store.events.length > maxEvents) {
+          store.events = store.events.slice(store.events.length - maxEvents);
+        }
+      } catch (_) {
+        // Best-effort diagnostics only.
+      }
+    };
+
+    if (typeof URL === 'object' && URL && typeof URL.createObjectURL === 'function') {
+      const originalCreate = URL.createObjectURL.bind(URL);
+      URL.createObjectURL = (obj) => {
+        const url = originalCreate(obj);
+        record({
+          kind: 'createObjectURL',
+          url,
+          objectType: obj && obj.constructor && obj.constructor.name ? obj.constructor.name : typeof obj,
+          blobType: obj && typeof obj.type === 'string' ? obj.type : '',
+          blobSize: obj && Number.isFinite(obj.size) ? obj.size : null,
+          stack: String(new Error().stack || ''),
+        });
+        return url;
+      };
+    }
+
+    if (typeof URL === 'object' && URL && typeof URL.revokeObjectURL === 'function') {
+      const originalRevoke = URL.revokeObjectURL.bind(URL);
+      URL.revokeObjectURL = (url) => {
+        record({
+          kind: 'revokeObjectURL',
+          url: String(url || ''),
+          stack: String(new Error().stack || ''),
+        });
+        return originalRevoke(url);
+      };
+    }
+
+    if (typeof HTMLAnchorElement === 'function' && HTMLAnchorElement.prototype && typeof HTMLAnchorElement.prototype.click === 'function') {
+      const originalAnchorClick = HTMLAnchorElement.prototype.click;
+      HTMLAnchorElement.prototype.click = function clickWithBlobDiagnostics(...args) {
+        const href = String(this.href || '');
+        if (href.startsWith('blob:')) {
+          record({
+            kind: 'anchorBlobClick',
+            url: href,
+            download: String(this.download || ''),
+            text: String(this.textContent || '').trim(),
+            stack: String(new Error().stack || ''),
+          });
+        }
+        return originalAnchorClick.apply(this, args);
+      };
+    }
+  }, label);
+}
+
+async function readBlobDiagnostics(page, label) {
+  try {
+    return await page.evaluate(() => {
+      const store = window.__uncivBlobDiagnostics || null;
+      if (!store) return { events: [] };
+      return JSON.parse(JSON.stringify(store));
+    });
+  } catch (err) {
+    return {
+      label,
+      readError: String(err && err.stack ? err.stack : err),
+      events: [],
+    };
+  }
+}
+
 function shouldIgnoreRequestFailure(entry) {
   const url = String(entry && entry.url ? entry.url : '');
   const error = String(entry && entry.error ? entry.error : '');
@@ -427,7 +516,9 @@ module.exports = {
   captureUiScreenshot,
   ensureTmpDir,
   getActionableRequestFailures,
+  installBlobDiagnostics,
   launchChromium,
+  readBlobDiagnostics,
   resolveUiDeviceMode,
   ensureUiProbeBoot,
   startMainOnce,

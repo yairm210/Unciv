@@ -2,7 +2,9 @@ const {
   attachDiagnostics,
   ensureTmpDir,
   getActionableRequestFailures,
+  installBlobDiagnostics,
   launchChromium,
+  readBlobDiagnostics,
   writeJson,
 } = require('./ui-e2e-common');
 
@@ -339,7 +341,9 @@ module.exports = {
   attachDiagnostics,
   ensureTmpDir,
   getActionableRequestFailures,
+  installBlobDiagnostics,
   launchChromium,
+  readBlobDiagnostics,
   writeJson,
   ensureClickOpsBoot,
   ensureNoProbeFlags,

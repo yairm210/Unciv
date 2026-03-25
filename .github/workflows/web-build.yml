@@ -420,6 +420,8 @@ jobs:
             /tmp/web-server.log
             /tmp/mp-server.log
             tmp/web-clickops-multiplayer-result.json
+            tmp/web-clickops-multiplayer-host-blob-diagnostics.json
+            tmp/web-clickops-multiplayer-guest-blob-diagnostics.json
             tmp/web-clickops-multiplayer-host-latest.png
             tmp/web-clickops-multiplayer-guest-latest.png
 

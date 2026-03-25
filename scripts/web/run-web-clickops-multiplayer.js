@@ -5,7 +5,9 @@ const {
   attachDiagnostics,
   ensureTmpDir,
   getActionableRequestFailures,
+  installBlobDiagnostics,
   launchChromium,
+  readBlobDiagnostics,
   writeJson,
   ensureClickOpsBoot,
   ensureNoProbeFlags,
@@ -321,6 +323,8 @@ async function main() {
   const outputPath = path.join(tmpDir, 'web-clickops-multiplayer-result.json');
   const hostScreenshotPath = path.join(tmpDir, 'web-clickops-multiplayer-host-latest.png');
   const guestScreenshotPath = path.join(tmpDir, 'web-clickops-multiplayer-guest-latest.png');
+  const hostBlobDiagnosticsPath = path.join(tmpDir, 'web-clickops-multiplayer-host-blob-diagnostics.json');
+  const guestBlobDiagnosticsPath = path.join(tmpDir, 'web-clickops-multiplayer-guest-blob-diagnostics.json');
   const baseUrl = String(process.env.WEB_BASE_URL || 'http://127.0.0.1:18080').trim().replace(/\/+$/, '');
   const mpServer = String(process.env.WEB_MP_SERVER || 'http://127.0.0.1:19090').trim();
   const webProfile = String(process.env.WEB_PROFILE || 'phase4-full').trim() || 'phase4-full';
@@ -348,6 +352,8 @@ async function main() {
     requestFailures: [],
     hostScreenshotPath,
     guestScreenshotPath,
+    hostBlobDiagnosticsPath,
+    guestBlobDiagnosticsPath,
   };
 
   let browser;
@@ -367,6 +373,8 @@ async function main() {
     });
     hostPage = await hostContext.newPage();
     guestPage = await guestContext.newPage();
+    await installBlobDiagnostics(hostPage, 'host');
+    await installBlobDiagnostics(guestPage, 'guest');
     attachDiagnostics(hostPage, report, 'host');
     attachDiagnostics(guestPage, report, 'guest');
 
@@ -567,6 +575,14 @@ async function main() {
     report.status = 'FAILED';
     report.failures = [String(err && err.stack ? err.stack : err)];
   } finally {
+    if (hostPage) {
+      const hostBlobDiagnostics = await readBlobDiagnostics(hostPage, 'host');
+      writeJson(hostBlobDiagnosticsPath, hostBlobDiagnostics);
+    }
+    if (guestPage) {
+      const guestBlobDiagnostics = await readBlobDiagnostics(guestPage, 'guest');
+      writeJson(guestBlobDiagnosticsPath, guestBlobDiagnostics);
+    }
     if (hostPage) await hostPage.screenshot({ path: hostScreenshotPath, fullPage: true }).catch(() => {});
     if (guestPage) await guestPage.screenshot({ path: guestScreenshotPath, fullPage: true }).catch(() => {});
     if (hostContext) await hostContext.close().catch(() => {});
