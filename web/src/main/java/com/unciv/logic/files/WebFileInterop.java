@@ -12,7 +12,8 @@ public final class WebFileInterop {
             script =
                     "if (typeof window === 'undefined') return false;"
                             + "if (window.__uncivTestFileStore && window.__uncivTestFileStore.enabled) return true;"
-                            + "if (window.__uncivEnableWebValidation === true) {"
+                            + "var search = (window.location && window.location.search) || '';"
+                            + "if (window.__uncivEnableWebValidation === true || search.indexOf('webtest=1') !== -1) {"
                             + "  window.__uncivTestFileStore = { enabled: true, files: {}, binary: {}, lastName: '', lastBinaryName: '' };"
                             + "  return true;"
                             + "}"
