@@ -250,7 +250,7 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
                 .filter { it.resource == resource }
                 .sumOf { it.amount } +
             // Resource Stockpile
-            (item.resourceStockpiles[resource.name] ?: 0)
+                    item.resourceStockpiles[resource.name]
 
         companion object {
             /**

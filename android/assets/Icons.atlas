@@ -767,6 +767,13 @@ OtherIcons/Fire
   orig: 115, 115
   offset: 0, 0
   index: -1
+ImprovementIcons/Pillaged
+  rotate: false
+  xy: 4, 865
+  size: 115, 115
+  orig: 115, 115
+  offset: 0, 0
+  index: -1
 OtherIcons/ForwardArrow
   rotate: false
   xy: 1280, 1100

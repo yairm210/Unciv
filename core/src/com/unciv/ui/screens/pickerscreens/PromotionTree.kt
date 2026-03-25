@@ -181,7 +181,9 @@ class PromotionTree(val unit: MapUnit) {
     fun canBuyUpTo(promotion: Promotion): Boolean = unit.promotions.run {
         val node = getReachableNode(promotion) ?: return false
         if (node.isAdopted) return false
-        return XP >= xpForNextNPromotions(node.distanceToAdopted)
+        // Free promotions don't consume XP; only count non-free promotions in the path
+        val nonFreeCount = getPathTo(promotion).count { !it.hasUnique(UniqueType.FreePromotion) }
+        return XP >= xpForNextNPromotions(nonFreeCount)
     }
 
     fun getPathTo(promotion: Promotion): List<Promotion> {

@@ -398,6 +398,8 @@ Allowed values:
     - Example: `Only available <when number of [[Culture] Buildings] is more than [0]>`
 -   `[buildingFilter] Buildings by [civFilter] Civilizations`
     - Example: `Only available <when number of [[Culture] Buildings by [City-States] Civilizations] is more than [0]>`
+-   `[cityFilter] Cities of [civFilter] Civilizations`
+    - Example: `Only available <when number of [[in all cities] Cities of [City-States] Civilizations] is more than [0]>`
 -   `Adopted [policyFilter] Policies`
     - Example: `Only available <when number of [Adopted [Oligarchy] Policies] is more than [0]>`
 -   `Adopted [policyFilter] Policies by [civFilter] Civilizations`
@@ -435,5 +437,8 @@ Allowed values:
     - Since on translation, the brackets are removed, the expression will be displayed as `(Melee units + 1) / Cities`
     - Supported operations between 2 values are: +, -, *, /, %, ^
     - Supported operations on 1 value are: - (negation), √ (square root), abs (absolute value - turns negative into positive), sqrt (square root), floor (round down), ceil (round up)
+    - Supported functions:
+    -  - `max(expression,expression,...)`
+    -  - `min(expression,expression,...)`
 
 [//]: # (Countables automatically generated END)

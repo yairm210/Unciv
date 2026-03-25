@@ -301,6 +301,13 @@ class WorldMapHolder(
                     // but it's so rare and edge-case-y that ignoring its failure is actually acceptable, hence the empty catch
                     val previousTile = selectedUnit.currentTile
                     selectedUnit.movement.moveToTile(tileToMoveTo)
+                    
+                    // If you try to send a unit to a tile that it can't even get nearer to, then this is actualy a dud
+                    if (previousTile == selectedUnit.currentTile){
+                        removeUnitActionOverlay() // so the user knows the action 'has been performed'
+                        return@launchOnGLThread
+                    }
+                    
                     if (selectedUnit.isExploring() || selectedUnit.isMoving())
                         selectedUnit.action = null // remove explore on manual move
                     SoundPlayer.play(UncivSound.Whoosh)
@@ -469,7 +476,9 @@ class WorldMapHolder(
                 selectedUnit.civ.hasExplored(tile)
 
             if (validTile) {
-                val roadPath: List<Tile>? = MapPathing.getRoadPath(selectedUnit.civ, selectedUnit.getTile(), tile)
+                val roadPath: List<Tile>? =
+                    if (UncivGame.Current.settings.useAStarPathfinding) selectedUnit.movement.getRoadPath(selectedUnit.getTile())
+                    else MapPathing.getRoadPath(selectedUnit.civ, selectedUnit.getTile(), tile)
                 launchOnGLThread {
                     if (roadPath == null) { // give the regular tile overlays with no road connection
                         addTileOverlays(tile)

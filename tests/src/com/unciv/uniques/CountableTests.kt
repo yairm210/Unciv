@@ -510,6 +510,29 @@ class CountableTests {
     }
 
     @Test
+    @CoversCountable(Countables.FilteredCitiesByCivs)
+    fun testFilteredCitiesByCivs() {
+        setupModdedGame()
+        val civ2 = game.addCiv()
+        val city2 = game.addCity(civ2, game.tileMap[-2, 0])
+        city2.isPuppet = true
+        val context = GameContext(civ)
+
+        runTestParcours("Filtered cities by civs countable", { test: String ->
+            Countables.getCountableAmount(test, context)
+        },
+            "[Capital] Cities of [All] Civilizations", 2,
+            "[Puppeted] Cities of [All] Civilizations", 1,
+            "[All] Cities of [All] Civilizations", 2,
+            "[Capital] Cities of [${civ.civName}] Civilizations", 1,
+            "[Puppeted] Cities of [${civ.civName}] Civilizations", 0,
+            "[Puppeted] Cities of [${civ2.civName}] Civilizations", 1,
+            "[All] Cities of [${civ2.civName}] Civilizations", 1,
+            "[Capital] Cities of [City-State] Civilizations", 0,
+        )
+    }
+
+    @Test
     @CoversCountable(Countables.RemainingCivs, Countables.FilteredUnits, Countables.Carried)
     fun testFilteredUnitsCountable() {
         val ruleset = setupModdedGame()

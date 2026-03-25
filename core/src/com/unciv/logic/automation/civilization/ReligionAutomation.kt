@@ -109,10 +109,11 @@ object ReligionAutomation {
         val hasUniqueToTakeCivReligion = missionaryConstruction.hasUnique(UniqueType.TakeReligionOverBirthCity)
 
         val validCitiesToBuy = civInfo.cities.filter {
-            (hasUniqueToTakeCivReligion || it.religion.getMajorityReligion() == civInfo.religionManager.religion)
-            && (missionaryConstruction.getStatBuyCost(it, Stat.Faith) ?: return@filter false) <= civInfo.religionManager.storedFaith
-            && missionaryConstruction.isPurchasable(it.cityConstructions)
-            && missionaryConstruction.canBePurchasedWithStat(it, Stat.Faith)
+            it.getCenterTile().civilianUnit == null // can't purchase them here
+                && (hasUniqueToTakeCivReligion || it.religion.getMajorityReligion() == civInfo.religionManager.religion)
+                && (missionaryConstruction.getStatBuyCost(it, Stat.Faith) ?: return@filter false) <= civInfo.religionManager.storedFaith
+                && missionaryConstruction.isPurchasable(it.cityConstructions)
+                && missionaryConstruction.canBePurchasedWithStat(it, Stat.Faith)
         }
         if (validCitiesToBuy.isEmpty()) return
 
@@ -240,15 +241,25 @@ object ReligionAutomation {
         var bonusYield = 0f
         for (unique in belief.uniqueObjects) {
             when (unique.type) {
-                UniqueType.StatsFromObject -> if ((tile.matchesFilter(unique.params[1])
-                    && !(tile.lastTerrain.hasUnique(UniqueType.ProductionBonusWhenRemoved) && tile.lastTerrain.matchesFilter(unique.params[1])) //forest pantheons are bad, as we want to remove the forests
-                    || (tile.resource != null && (tile.tileResource.matchesFilter(unique.params[1]) || tile.tileResource.isImprovedBy(unique.params[1]))))) //resource pantheons are good, as we want to work the tile anyways
-                    bonusYield += unique.stats.values.sum()
-                UniqueType.StatsFromTilesWithout ->
-                    if (city.matchesFilter(unique.params[3])
-                        && tile.matchesFilter(unique.params[1])
-                        && !tile.matchesFilter(unique.params[2])
+                UniqueType.StatsFromObject -> {
+                    val resource = tile.tileResource
+                    if (tile.matchesFilter(unique.params[1])) {
+                        if (!tile.lastTerrain.hasUnique(UniqueType.ProductionBonusWhenRemoved) ||
+                            !tile.lastTerrain.matchesFilter(unique.params[1]) //forest pantheons are bad, as we want to remove the forests
+                        ) bonusYield += unique.stats.values.sum()
+                        else if (resource != null && (resource.matchesFilter(unique.params[1]) ||
+                                resource.isImprovedBy(unique.params[1]))
+                        ) bonusYield += unique.stats.values.sum() //resource pantheons are good, as we want to work the tile anyways
+                    } else if (resource != null && (resource.matchesFilter(unique.params[1]) ||
+                            resource.isImprovedBy(unique.params[1]))
+                    ) bonusYield += unique.stats.values.sum() //resource pantheons are good, as we want to work the tile anyways
+                }
+                UniqueType.StatsFromTilesWithout -> {
+                    if (city.matchesFilter(unique.params[3]) &&
+                        tile.matchesFilter(unique.params[1]) &&
+                        !tile.matchesFilter(unique.params[2])
                     ) bonusYield += unique.stats.values.sum()
+                }
                 else -> {}
             }
         }

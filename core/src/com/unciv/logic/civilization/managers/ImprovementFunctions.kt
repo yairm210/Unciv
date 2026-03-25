@@ -63,7 +63,7 @@ object ImprovementFunctions {
                         rulesetImprovement.techRequired == null || civInfo.tech.isResearched(rulesetImprovement.techRequired!!)
                     }
         
-                if (!tile.improvementFunctions.canImprovementBeBuiltHere(improvement, tile.hasViewableResource(civInfo), knownFeatureRemovals, gameContext))
+                if (!tile.improvementFunctions.canImprovementBeBuiltHere(improvement, civInfo.canSeeResource(tile.tileResource), knownFeatureRemovals, gameContext))
                 // There are way too many conditions in that functions, besides, they are not interesting
                 // at least for the current usecases. Improve if really needed.
                     yield(ImprovementBuildingProblem.Other)

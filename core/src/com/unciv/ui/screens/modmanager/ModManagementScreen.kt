@@ -287,14 +287,6 @@ class ModManagementScreen private constructor(
                 repoSearch = Github.tryGetGithubReposWithTopic(pageNum, amountPerPage)
             } catch (ex: Exception) {
                 Log.error("Could not download mod list", ex)
-                launchOnGLThread {
-                    ToastPopup("Could not download mod list", this@ModManagementScreen)
-                }
-                try {
-                    // If it's too large Android won't let you copy, hence the guardrails
-                    Gdx.app.clipboard.contents = ex.stackTraceToString()
-                } catch (_:Exception) {}
-
                 runningSearchJob = null
                 return@run
             }
@@ -345,7 +337,9 @@ class ModManagementScreen private constructor(
             val mod = ModUIData(repo, isUpdatedVersionOfInstalledMod)
             onlineModInfo[repo.name] = mod
             modButtons.remove(mod) // Remove *cached* mod button since we have NEW DATA
-            onlineModsTable.add(getCachedModButton(mod)).row()
+            if (mod.matchesFilter(optionsManager.getFilter())) {
+                onlineModsTable.add(getCachedModButton(mod)).row()
+            }
         }
 
         Concurrency.run("Cache mod list"){

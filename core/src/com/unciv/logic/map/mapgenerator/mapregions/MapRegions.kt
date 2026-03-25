@@ -279,7 +279,7 @@ class MapRegions (val ruleset: Ruleset) {
         // First assign coast bias civs
         for (civ in coastBiasCivs) {
             // Try to find a coastal start, preferably a really coastal one
-            var startRegion = unpickedRegions.filter { tileMap[it.startPosition!!].isCoastalTile() }
+            var startRegion = unpickedRegions.filter { tileMap[it.startPosition!!].isAdjacentToCoast() }
                     .maxByOrNull { it.terrainCounts["Coastal"] ?: 0 }
             if (startRegion != null) {
                 logAssignRegion(true, BiasTypes.Coastal, civ, startRegion)
@@ -480,7 +480,7 @@ fun Tile.getTileFertility(checkCoasts: Boolean): Int {
     }
     if (isAdjacentToRiver()) fertility += 1
     if (isAdjacentTo(Constants.freshWater)) fertility += 1 // meaning total +2 for river
-    if (checkCoasts && isCoastalTile()) fertility += 2
+    if (checkCoasts && isAdjacentToCoast()) fertility += 2
     return fertility
 }
 

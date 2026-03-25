@@ -1,6 +1,7 @@
 package com.unciv.logic.map.tile
 
 import com.unciv.Constants
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.translations.tr
@@ -12,8 +13,7 @@ import com.unciv.utils.DebugUtils
 object TileDescription {
 
     /** Get info on a selected tile, used on WorldScreen (right side above minimap), CityScreen or MapEditorViewTab. */
-    fun toMarkup(tile: Tile, viewingCiv: Civilization?): ArrayList<FormattedLine> {
-        val lineList = ArrayList<FormattedLine>()
+    fun toMarkup(tile: Tile, viewingCiv: Civilization?, hideUnits: Boolean = false, spyCity: City? = null): ArrayList<FormattedLine> {        val lineList = ArrayList<FormattedLine>()
         val isViewableToPlayer = viewingCiv == null || DebugUtils.VISIBLE_MAP
                 || viewingCiv.viewableTiles.contains(tile)
 
@@ -22,20 +22,21 @@ object TileDescription {
             var cityString = city.name.tr()
             if (isViewableToPlayer) cityString += " (${city.health})"
             lineList += FormattedLine(cityString)
-            if (DebugUtils.VISIBLE_MAP || city.civ == viewingCiv)
+            if (DebugUtils.VISIBLE_MAP || city.civ == viewingCiv && (spyCity == null || city == spyCity))
                 lineList += city.cityConstructions.getProductionMarkup(tile.ruleset)
         }
 
         lineList += FormattedLine(tile.baseTerrain, link="Terrain/${tile.baseTerrain}")
         for (terrainFeature in tile.terrainFeatures)
             lineList += FormattedLine(terrainFeature, link="Terrain/$terrainFeature")
-        if (tile.resource != null && (viewingCiv == null || tile.hasViewableResource(viewingCiv)))
-            lineList += if (tile.tileResource.resourceType == ResourceType.Strategic)
+        val resource = tile.tileResource
+        if (resource != null && (viewingCiv == null || viewingCiv.canSeeResource(resource)))
+            lineList += if (resource.resourceType == ResourceType.Strategic)
                 FormattedLine("{${tile.resource}} (${tile.resourceAmount})", link="Resource/${tile.resource}")
             else
-                FormattedLine(tile.resource!!, link="Resource/${tile.resource}")
-        if (tile.resource != null && viewingCiv != null && tile.hasViewableResource(viewingCiv)) {
-            val resourceImprovement = tile.tileResource.getImprovements().firstOrNull { tile.improvementFunctions.canBuildImprovement(tile.ruleset.tileImprovements[it]!!, viewingCiv.state) }
+                FormattedLine(resource.name, link="Resource/${resource.name}")
+        if (viewingCiv != null && viewingCiv.canSeeResource(resource)) {
+            val resourceImprovement = resource.getImprovements().firstOrNull { tile.improvementFunctions.canBuildImprovement(tile.ruleset.tileImprovements[it]!!, viewingCiv.state) }
             val tileImprovement = tile.ruleset.tileImprovements[resourceImprovement]
             if (tileImprovement?.techRequired != null
                     && !viewingCiv.tech.isResearched(tileImprovement.techRequired!!)) {
@@ -65,10 +66,10 @@ object TileDescription {
             lineList += FormattedLine(line, link="Improvement/${tile.improvementInProgress}")
         }
 
-        if (tile.civilianUnit != null && isViewableToPlayer)
+        if (tile.civilianUnit != null && isViewableToPlayer && !hideUnits)
             lineList += FormattedLine(tile.civilianUnit!!.name.tr() + " - " + tile.civilianUnit!!.civ.civName.tr(),
                 link="Unit/${tile.civilianUnit!!.name}")
-        if (tile.militaryUnit != null && isViewableToPlayer && (viewingCiv == null || !tile.militaryUnit!!.isInvisible(viewingCiv))) {
+        if (tile.militaryUnit != null && isViewableToPlayer && !hideUnits && (viewingCiv == null || !tile.militaryUnit!!.isInvisible(viewingCiv))) {
             val milUnitString = tile.militaryUnit!!.name.tr() +
                     (if (tile.militaryUnit!!.health < 100) "(" + tile.militaryUnit!!.health + ")" else "") +
                     " - " + tile.militaryUnit!!.civ.civName.tr()

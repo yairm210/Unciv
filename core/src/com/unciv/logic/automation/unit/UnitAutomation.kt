@@ -115,7 +115,6 @@ object UnitAutomation {
             wander(unit, stayInTerritory = true)
     }
 
-
     @Readonly
     private fun isGoodTileToExplore(unit: MapUnit, tile: Tile, unitVisibilityRange: Int): Boolean {
         // These should be ordered by increasing computational cost
@@ -158,7 +157,7 @@ object UnitAutomation {
 
         val tileWithRuin = unit.viewableTiles
             .firstOrNull {
-                (it.getTileImprovement()?.isAncientRuinsEquivalent(unit.cache.state) == true)
+                (it.tileImprovement?.isAncientRuinsEquivalent(unit.cache.state) == true)
                         && unit.movement.canMoveTo(it) && unit.movement.canReach(it)
             } ?: return false
         unit.movement.headTowards(tileWithRuin)

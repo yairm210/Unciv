@@ -22,10 +22,10 @@ object Constants {
     const val mountain = "Mountain"
     const val hill = "Hill"
     const val plains = "Plains"
-    const val lakes = "Lakes"
     const val desert = "Desert"
     const val grassland = "Grassland"
-    const val tundra = "Tundra"
+    // TODO: GameStarter places "Tundra" startBias first. Can we make it generic by checking count by terrain?
+    const val tundra = "Tundra" 
     const val snow = "Snow"
 
     const val forest = "Forest"
@@ -124,6 +124,7 @@ object Constants {
 
     const val defaultFontSize = 18
     const val headingFontSize = 24
+    const val smallerHeadingFontSize = 21
 
     /** URL to the root of the Unciv repository, including trailing slash */
     // Note: Should the project move, this covers external links, but not comments e.g. mentioning issues

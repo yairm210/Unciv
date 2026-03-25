@@ -25,7 +25,7 @@ enum class CityTileState {
     BLOCKADED
 }
 
-class CityTileGroup(val city: City, tile: Tile, tileSetStrings: TileSetStrings, private val nightMode: Boolean) : TileGroup(tile,tileSetStrings) {
+class CityTileGroup(val city: City, tile: Tile, tileSetStrings: TileSetStrings, private val nightMode: Boolean, private val isSpying: Boolean = false) : TileGroup(tile, tileSetStrings) {
 
     var tileState = CityTileState.NONE
 
@@ -154,7 +154,8 @@ class CityTileGroup(val city: City, tile: Tile, tileSetStrings: TileSetStrings, 
         layerCityButton.isVisible = false
 
         // Pixel art, roads, improvements are dimmed inside CityScreen
-        layerUnitArt.dim()
+        if (isSpying) layerUnitArt.isVisible = false
+        else layerUnitArt.dim()
         layerFeatures.dim()
         layerImprovement.dimImprovement(true)
 

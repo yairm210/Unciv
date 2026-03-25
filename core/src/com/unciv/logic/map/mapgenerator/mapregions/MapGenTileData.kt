@@ -42,7 +42,7 @@ class MapGenTileData(val tile: Tile, val region: Region?, ruleset: Ruleset) {
     /** Populates all private-set fields */
     private fun evaluate(ruleset: Ruleset) {
         // Check if we are two tiles from coast (a bad starting site)
-        if (!tile.isCoastalTile() && tile.neighbors.any { it.isCoastalTile() })
+        if (!tile.isAdjacentToCoast() && tile.neighbors.any { it.isAdjacentToCoast() })
             isTwoFromCoast = true
 
         // Check first available out of unbuildable features, then other features, then base terrain
