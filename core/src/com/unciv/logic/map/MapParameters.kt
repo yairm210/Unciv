@@ -11,6 +11,8 @@ object MapShape {
     const val rectangular = "Rectangular"
     const val hexagonal = "Hexagonal"
     const val flatEarth = "Flat Earth Hexagonal"
+    
+    val allValues = listOf(rectangular, hexagonal, flatEarth)
 }
 
 object MapGeneratedMainType {
@@ -35,6 +37,8 @@ object MapType {
     const val innerSea = "Inner Sea"
     const val lakes = "Lakes"
     const val smallContinents = "Small Continents"
+    
+    val allValues = listOf(perlin, pangaea, continentAndIslands, twoContinents, threeContinents, fourCorners, archipelago, fractal, innerSea, lakes, smallContinents)
 
     // All ocean tiles
     const val empty = "Empty"

@@ -2,6 +2,7 @@ package com.unciv.ui.screens.worldscreen.unit.actions
 
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitAction
@@ -115,8 +116,9 @@ object UnitActionsReligion {
 
                 UnitActionModifiers.activateSideEffects(unit, newStyleUnique)
 
-                if (city.civ != unit.civ) city.civ.getDiplomacyManager(unit.civ)!!
-                    .setFlag(DiplomacyFlags.SpreadReligionInOurCities, 30, true)
+                if (city.civ != unit.civ // Set flag only if they don't want our religion, which is when they can get their own
+                    && (city.civ.religionManager.remainingFoundableReligions() != 0 || city.civ.religionManager.religionState > ReligionState.Pantheon))
+                    city.civ.getDiplomacyManager(unit.civ)!!.setFlag(DiplomacyFlags.SpreadReligionInOurCities, 30, true)
 
             }.takeIf { unit.civ.religionManager.maySpreadReligionNow(unit)
                 && UnitActionModifiers.canActivateSideEffects(unit, newStyleUnique)}

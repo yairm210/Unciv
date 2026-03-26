@@ -110,11 +110,7 @@ class MapParametersTable(
     }
 
     private fun addMapShapeSelectBox() {
-        val mapShapes = listOfNotNull(
-            MapShape.hexagonal,
-            MapShape.flatEarth,
-            MapShape.rectangular
-        )
+        val mapShapes = MapShape.allValues
 
         if (mapGeneratedMainType == MapGeneratedMainType.randomGenerated) {
             mapShapesOptionsValues = mapShapes.toHashSet()
@@ -162,20 +158,8 @@ class MapParametersTable(
 
     private fun addMapTypeSelectBox() {
         // MapType is not an enum so we can't simply enumerate. //todo: make it so!
-        val mapTypes = listOfNotNull(
-            MapType.pangaea,
-            MapType.continentAndIslands,
-            MapType.twoContinents,
-            MapType.threeContinents,
-            MapType.fourCorners,
-            MapType.archipelago,
-            MapType.innerSea,
-            MapType.perlin,
-            MapType.fractal,
-            MapType.lakes,
-            MapType.smallContinents,
-            if (forMapEditor && mapGeneratedMainType != MapGeneratedMainType.randomGenerated) MapType.empty else null
-        )
+        var mapTypes = MapType.allValues
+        if (forMapEditor && mapGeneratedMainType != MapGeneratedMainType.randomGenerated) mapTypes = mapTypes + MapType.empty
 
         if (mapGeneratedMainType == MapGeneratedMainType.randomGenerated) {
             mapTypesOptionsValues = mapTypes.toHashSet()

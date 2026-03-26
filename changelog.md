@@ -1,3 +1,32 @@
+## 4.19.19
+
+Reset tileset settings when deleting the mod that contained the tileset
+
+AIs ignore demands/declarations of friendship from dead civs
+
+By Ambeco:
+- AStar pathing no longer treats rivers as multi-turn obstacles 
+- flat earth hexigonal no longer crashes 
+
+Bugfix: don't try to buy missionaries in cities with a civilian unit - By EmperorPinguin
+
+## 4.19.18
+
+Ignore free promotions for promotion path costs
+
+Allow gaining free promotions before gaining XP
+
+By Ambeco:
+- Mods can have multiple Ocean and Coast Terrains 
+- AStar moves through same tiles as Classic  
+
+Add showDemographics option - By ICanSeeForever
+
+Forced unit disbandment considers refundability and promotions - By unciv-loof
+DenounceWillingness personality trait - by unciv-loof
+
+AI: only get mad at spreading religion while they can found their own - By EmperorPinguin
+
 ## 4.19.17
 
 Ruleset switching in new game screen no longer allows zero victory types

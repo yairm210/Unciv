@@ -138,6 +138,9 @@ class GameOptionsTable(
                 it.addNationsSelectTextButton()
             }
             it.addShowVictoryStatsCheckbox()
+            if (!gameParameters.showVictoryStats) {
+                it.addShowDemographicsCheckbox()
+            }
         }
         add(expander).pad(10f).row()
 
@@ -213,7 +216,15 @@ class GameOptionsTable(
 
     private fun Table.addShowVictoryStatsCheckbox() =
         addCheckbox("Show victory stats", gameParameters.showVictoryStats)
-        { gameParameters.showVictoryStats = it }
+        {
+            gameParameters.showVictoryStats = it
+            if (it) gameParameters.showDemographics = false
+            update()  // To show/hide showDemographics checkbox
+        }
+
+    private fun Table.addShowDemographicsCheckbox() =
+        addCheckbox("Show demographics", gameParameters.showDemographics)
+        { gameParameters.showDemographics = it }
 
     private fun Table.addNationsSelectTextButton() {
         val button = "Select nations".toTextButton()

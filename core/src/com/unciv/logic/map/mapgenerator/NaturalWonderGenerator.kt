@@ -160,7 +160,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
                     val convertTo = unique.params[0]
                     if (tile.baseTerrain == convertTo || convertTo in tile.terrainFeatures) continue
                     val convertToTerrain = location.ruleset.terrains[convertTo]!!
-                    if (convertToTerrain.hasUnique(UniqueType.FreshWater) && tile.isCoastalTile()) continue
+                    if (convertToTerrain.hasUnique(UniqueType.FreshWater) && tile.isAdjacentToCoast()) continue
                     val terrainObject = location.ruleset.terrains[convertTo] ?: continue
                     if (terrainObject.type == TerrainType.TerrainFeature && tile.baseTerrain !in terrainObject.occursOn) continue
                     if (convertTo == Constants.coast)

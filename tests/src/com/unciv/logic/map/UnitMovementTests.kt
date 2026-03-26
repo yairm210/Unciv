@@ -352,8 +352,18 @@ class UnitMovementTests(
         assertEquals(warrior2, settler2.getOtherEscortUnit())
         settler1.currentMovement = 0f
 
+        assertFalse(warrior1.movement.canReachInCurrentTurn(testGame.tileMap[2,2]))
+        assertTrue(warrior2.movement.canReachInCurrentTurn(testGame.tileMap[1,1]))
+        assertFalse(settler1.movement.canReachInCurrentTurn(testGame.tileMap[2,2]))
+        assertTrue(settler2.movement.canReachInCurrentTurn(testGame.tileMap[1,1]))
+        assertTrue(warrior1.movement.canMoveTo(testGame.tileMap[2,2], allowSwap = true))
+        assertTrue(warrior2.movement.canMoveTo(testGame.tileMap[1,1], allowSwap = true))
+        assertTrue(settler1.movement.canMoveTo(testGame.tileMap[2,2], allowSwap = true))
+        assertTrue(settler2.movement.canMoveTo(testGame.tileMap[1,1], allowSwap = true))
         assertFalse(warrior1.movement.canUnitSwapTo(testGame.tileMap[2,2]))
         assertFalse(warrior2.movement.canUnitSwapTo(testGame.tileMap[1,1]))
+        assertFalse(settler1.movement.canUnitSwapTo(testGame.tileMap[2,2]))
+        assertFalse(settler2.movement.canUnitSwapTo(testGame.tileMap[1,1]))
 
         warrior1.movement.swapMoveToTile(testGame.tileMap[2,2])
 

@@ -308,14 +308,13 @@ object UnitActionsFromUniques {
         val unique = unit.getMatchingUniques(UniqueType.CreateWaterImprovements).firstOrNull()
         if (!tile.isWater || unique == null) return null
 
-        val improvementName = tile.tileResource?.getImprovingImprovement(tile, unit.cache.state) ?: return null
-        val improvement = tile.ruleset.tileImprovements[improvementName] ?: return null
+        val improvement = tile.tileResource?.getImprovingImprovement(tile, unit.cache.state) ?: return null
         if (!tile.improvementFunctions.canBuildImprovement(improvement, unit.cache.state)) return null
         val useFrequency = getUseFrequency(unit, unique, 82f)
 
-        return UnitAction(UnitActionType.CreateImprovement, useFrequency, "Create [$improvementName]",
+        return UnitAction(UnitActionType.CreateImprovement, useFrequency, "Create [${improvement.name}]",
             action = {
-                tile.setImprovement(improvementName, unit.civ, unit)
+                tile.setImprovement(improvement, unit.civ, unit)
                 unit.destroy()  // Modders may wish for a nondestructive way, but that should be another Unique
             }.takeIf { unit.hasMovement() })
     }
@@ -351,7 +350,7 @@ object UnitActionsFromUniques {
                     associatedUnique = unique,
                     action = {
                         val unitTile = unit.getTile()
-                        unitTile.setImprovement(improvement.name, unit.civ, unit)
+                        unitTile.setImprovement(improvement, unit.civ, unit)
 
                         unit.civ.cache.updateViewableTiles() // to update 'last seen improvement'
 

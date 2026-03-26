@@ -28,7 +28,8 @@ enum class PersonalityValue {
     Commerce, // Trading frequency, open borders and liberating city-states, less negative diplomacy impact
     Diplomacy, // Likelyhood of signing friendship, defensive pact, peace treaty and other diplomatic actions
     Loyal, // Likelyhood to make a long lasting aliance with another civ and join wars with them
-    Expansion; // Founding/capturing new cities, oposite of a cultural victory
+    Expansion, // Founding/capturing new cities, opposite of a cultural victory
+    DenounceWillingness; // Eagerness to denounce other civs
 
     companion object  {
         @Pure
@@ -62,6 +63,7 @@ class Personality: RulesetObject() {
     var diplomacy: Float = 5f
     var loyal: Float = 5f
     var expansion: Float = 5f
+    var denounceWillingness: Float = 5f
 
     var priorities = LinkedHashMap<String, Int>()
     var preferredVictoryType: String = Constants.neutralVictoryType
@@ -84,6 +86,7 @@ class Personality: RulesetObject() {
             PersonalityValue.Diplomacy -> ::diplomacy
             PersonalityValue.Loyal -> ::loyal
             PersonalityValue.Expansion -> ::expansion
+            PersonalityValue.DenounceWillingness -> ::denounceWillingness
         }
     }
 

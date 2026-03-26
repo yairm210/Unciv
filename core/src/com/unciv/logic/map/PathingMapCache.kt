@@ -96,6 +96,7 @@ value class RouteNode(val bits: Long=0L) {
         moveThisTurn: FixedPointMovement,
         turns: Int,
         parentTile: Tile,
+        moveTo: Boolean,
         damagingTiles: Int,
     ):
         this(
@@ -105,6 +106,7 @@ value class RouteNode(val bits: Long=0L) {
                 toMoveThisTurnBits(moveThisTurn) or
                 toTurnsBits(turns) or
                 toParentClockDirBits(tile, parentTile) or
+                toMoveToBits(moveTo) or
                 toDamagingTilesBits(damagingTiles)
         ) {
         require(tile.zeroBasedIndex < tile.tileMap.tileList.size) { "tileList ${tile.zeroBasedIndex} exceeds max ${tile.tileMap.tileList.size}" }
@@ -149,6 +151,8 @@ value class RouteNode(val bits: Long=0L) {
         if (idx == NO_PARENT_TILE_VALUE) return tile(tileMap)
         return tileMap.getClockPositionNeighborTile(tile(tileMap), idx)!!
     }
+    
+    val canMoveTo: Boolean get() { require(initialized); return (bits and MOVE_TO_HI_MASK) == MOVE_TO_HI_MASK}
 
     val damagingTiles: Int get() { require(initialized); return ((bits shr DAMAGE_TILES_OFFSET) and DAMAGE_TILES_LO_MASK).toInt() }
 
@@ -203,7 +207,13 @@ value class RouteNode(val bits: Long=0L) {
         private const val PARENT_TILE_LO_MASK = (0x1L shl PARENT_TILE_BIT_COUNT) - 1L
         private const val NO_PARENT_TILE_BITS = 7L
         private const val NO_PARENT_TILE_VALUE = 14
-        // [RouteNode] bits 50-60 (11b) are padding bits, only used by PrioritizedNode's underestimatedTotal field
+        // [RouteNode] bit 50 (1b = 2values) tracks if we can we can "move to" a tile.
+        // Aka either we can path through it, or it contains an enemy.
+        private const val MOVE_TO_OFFSET = PARENT_TILE_OFFSET + PARENT_TILE_BIT_COUNT
+        private const val MOVE_TO_BIT_COUNT = 1
+        private const val MOVE_TO_LO_MASK = (0x1L shl MOVE_TO_BIT_COUNT) - 1L
+        private const val MOVE_TO_HI_MASK = MOVE_TO_LO_MASK shl MOVE_TO_OFFSET
+        // [RouteNode] bits 52-60 (10b) are padding bits, only used by PrioritizedNode's underestimatedTotal field
         // bits 61-62 (2b = 4turns) are the number of turns ended in damaging tiles.
         private const val DAMAGE_TILES_OFFSET = UNDERESTIMATED_TOTAL_OFFSET + UNDERESTIMATED_TOTAL_BIT_COUNT
         private const val DAMAGE_TILES_BIT_COUNT = 2
@@ -214,6 +224,9 @@ value class RouteNode(val bits: Long=0L) {
         @Readonly
         private fun toParentClockDirBits(tile: Tile, parentTile: Tile): Long
             = (if (tile == parentTile) NO_PARENT_TILE_BITS else tile.tileMap.getNeighborTileClockPosition(tile, parentTile)/2L) shl PARENT_TILE_OFFSET
+        @Pure
+        private fun toMoveToBits(canMoveTo: Boolean): Long
+            = if (canMoveTo) MOVE_TO_HI_MASK else 0L
         @Pure
         private fun toMoveThisTurnBits(moveThisTurn: FixedPointMovement): Long
             = moveThisTurn.bits.toLong() shl MOVE_THIS_TURN_OFFSET
@@ -241,6 +254,7 @@ value class RouteNode(val bits: Long=0L) {
             MAX_MOVE_THIS_TURN,
             MAX_TURNS,
             tile,
+            false,
             MAX_DAMAGING_TILES,
         )
         @Pure
@@ -250,8 +264,8 @@ value class RouteNode(val bits: Long=0L) {
             FPM_ZERO,
             moveThisTurn,
             0,
-
             tile,
+            true,
             0,
         )
     }

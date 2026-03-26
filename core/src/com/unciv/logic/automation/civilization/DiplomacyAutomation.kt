@@ -25,7 +25,6 @@ import yairm210.purity.annotations.Readonly
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.pow
-import kotlin.math.roundToInt
 import kotlin.math.sqrt
 import kotlin.random.Random
 
@@ -471,7 +470,7 @@ object DiplomacyAutomation {
     /**
      * If opinion of the other civ drops by this amount or more
      */
-    const val DENOUNCE_REQUIRED_OPINION_CHANGE_INITIAL = -65f
+    const val DENOUNCE_REQUIRED_OPINION_CHANGE_INITIAL = -68f
     const val DENOUNCE_REQUIRED_OPINION_CHANGE_BASE = 1.005f
 
     /**
@@ -495,9 +494,15 @@ object DiplomacyAutomation {
          * Adjust with [DiplomacyManager.EMA_PERIOD], [DENOUNCE_REQUIRED_OPINION_CHANGE_INITIAL] and [DENOUNCE_REQUIRED_OPINION_CHANGE_BASE]
          */
         fun requiredOpinionChange(
-            diplomacyManager: DiplomacyManager,
-            denounceWillingnessModifier: Float = 1f
-        ): Float = DENOUNCE_REQUIRED_OPINION_CHANGE_INITIAL * denounceWillingnessModifier * DENOUNCE_REQUIRED_OPINION_CHANGE_BASE.pow(diplomacyManager.opinionOfOtherCiv())
+            diplomacy: DiplomacyManager
+        ): Float {
+            val personality = diplomacy.civInfo.getPersonality()
+            if (personality.denounceWillingness == 0f)
+                return Float.NEGATIVE_INFINITY
+            val willingnessModifier = 1f / personality.scaledFocus(PersonalityValue.DenounceWillingness)
+            val opinionModifier = DENOUNCE_REQUIRED_OPINION_CHANGE_BASE.pow(diplomacy.opinionOfOtherCiv())
+            return DENOUNCE_REQUIRED_OPINION_CHANGE_INITIAL * willingnessModifier * opinionModifier
+        }
 
         // debugging: records every civ's opinion of every other civ
         Log.debug(civInfo.civName)
@@ -533,8 +538,7 @@ object DiplomacyAutomation {
             // compare our current opinion with the smoothed opinion
             val opinionChange = relationship.smoothedOpinionDelta()
             // denounce if opinion dropped too quickly
-            // TODO: apply denounceWillingness personality trait
-            if (opinionChange <= requiredOpinionChange(relationship, 1f)) {
+            if (opinionChange <= requiredOpinionChange(relationship)) {
                 relationship.denounce()
                 activeDenunciations++
             }

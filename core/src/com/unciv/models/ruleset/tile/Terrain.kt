@@ -48,9 +48,12 @@ class Terrain : RulesetStatsObject() {
     @Transient
     var damagePerTurn = 0
 
-    val isRough by lazy { hasUnique(UniqueType.RoughTerrain) }
+    val isRough: Boolean by lazy { hasUnique(UniqueType.RoughTerrain) }
     val isMountain by lazy { hasUnique(UniqueType.OccursInChains) }
     val isHill by lazy { hasUnique(UniqueType.OccursInGroups) }
+    val isFreshwater: Boolean by lazy { hasUnique(UniqueType.FreshWater) }
+    val isCoast: Boolean by lazy { type == TerrainType.Water && !isFreshwater && (hasUnique(UniqueType.CoastalWater) || name == Constants.coast) }
+    val isOcean: Boolean by lazy { type == TerrainType.Water && !isFreshwater && !isCoast }
     val isVegetation by lazy { hasUnique(UniqueType.Vegetation) }
     val isIce by lazy { type == TerrainType.TerrainFeature && impassable && occursOn.contains(Constants.ocean) }
 

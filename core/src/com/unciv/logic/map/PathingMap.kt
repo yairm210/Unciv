@@ -11,7 +11,6 @@ import com.unciv.logic.map.RouteNode.Companion.MAX_MOVE_THIS_TURN
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.movement.MovementCost
 import com.unciv.logic.map.mapunit.movement.PathsToTilesWithinTurn
-import com.unciv.logic.map.mapunit.movement.UnitMovement.CannotMoveToReason
 import com.unciv.logic.map.mapunit.movement.UnitMovement.ParentTileAndTotalMovement
 import com.unciv.logic.map.tile.Tile
 import com.unciv.utils.Log
@@ -65,7 +64,8 @@ class PathingMap(
     private val debugId: Any,
     private val debugMapType: String,
     private val getCurrentCacheKey: () -> PathingMapCacheKey,
-    private val moveThroughPredicate: MoveThroughPredicate,
+    private val passThroughPredicate: TilePredicate,
+    private val moveToPredicate: TilePredicate,
     private val endTurnDamage: EndTurnDamageLookup,
     private val cost: TileMovementCost,
     private val tileRoadCost: TileRoadCost,
@@ -171,7 +171,7 @@ class PathingMap(
             val parentTile = currentNode.parentTile(tileMap)
             val parentNode = RouteNode(cache.routeNodes[parentTile.zeroBasedIndex])
             if (parentTile.position == cache.key.startingPoint) break
-            if (parentNode.turns < turns && parentNode.endTurnWithoutMoreDamage) {
+            if (parentNode.turns < turns && parentNode.endTurnWithoutMoreDamage && parentNode.canMoveTo) {
                 result.add(parentTile)
                 turns = parentNode.turns
             }
@@ -211,14 +211,15 @@ class PathingMap(
         val tilesSameTurn = cache.tilesSameTurn
         // accumulate all the results
         synchronized(tilesSameTurn) {
-            if (tilesSameTurn.isNotEmpty()) {
+            if (tilesSameTurn.isNotEmpty()) { // if we've already calculated the results, return that
                 if (VERBOSE_PATHFINDING_LOGS == cache.key.startingPoint || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
                     Log.debug("#getMovementToTilesAtPosition returning cached tilesSameTurn[len=${tilesSameTurn.size}] which was calculated by another thread for $debugMapType $debugId")
                 return
-            } // if we've already calculated the results, return that
+            }
+            // otherwise, add the tiles in turn 0, (or would be if unoccupied, and we can swap/attack in)
             cache.addedNeighborNodes.forEachSetBit {
                 val node = RouteNode(cache.routeNodes[it])
-                if (node.initialized && node.turns == 0) {
+                if (node.initialized && (node.turns == 0 || !node.canMoveTo)) {
                     val tile = node.tile(tileMap)
                     tilesSameTurn[tile] =
                         ParentTileAndTotalMovement(
@@ -228,7 +229,7 @@ class PathingMap(
             }
             cache.nodesNeedingNeighbors.forEachSetBit {
                 val node = RouteNode(cache.routeNodes[it])
-                if (node.initialized && node.turns == 0) {
+                if (node.initialized && (node.turns == 0 || !node.canMoveTo)) {
                     val tile = node.tile(tileMap)
                     tilesSameTurn[tile] =
                         ParentTileAndTotalMovement(tile, node.parentTile(tileMap), node.moveUsedThisTurn.toFloat())
@@ -253,7 +254,8 @@ class PathingMap(
             debugId,
             debugMapType,
             destination,
-            moveThroughPredicate,
+            passThroughPredicate,
+            moveToPredicate,
             endTurnDamage,
             cost,
             tileRoadCost,
@@ -281,7 +283,7 @@ class PathingMap(
         
         // Functional interfaces used here to prevent Kotlin from Boxing the return values
         @FunctionalInterface
-        fun interface MoveThroughPredicate {
+        fun interface TilePredicate {
             @Readonly
             operator fun invoke(it: Tile): Boolean
         }
@@ -326,16 +328,13 @@ class PathingMap(
                     fpmFromMovement(selfFullMove.coerceAtMost(if (escort != null) otherUntilFullMove else MAX_VALID_TURNS)),
                     )
             }
-            val moveThroughPredicate = MoveThroughPredicate {
-                val cannotMoveThroughReason = unit.movement.cannotPassThroughReason(it, includeEscortUnit)
-                cannotMoveThroughReason == null || cannotMoveThroughReason == CannotMoveToReason.TileIsNotEmpty
-            }
             return PathingMap(
                 unit.currentTile.tileMap,
                 unit,
                 name,
                 getCurrentCacheKey,
-                moveThroughPredicate,
+                { unit.movement.cannotPassThroughReason(it, includeEscortUnit) == null },
+                { unit.movement.canMoveTo(it, assumeCanPassThrough = true, allowSwap = false, includeOtherEscortUnit = includeEscortUnit) },
                 { unit.getDamageFromTerrain(it) },
                 { from, to -> fpmFromMovement(MovementCost.getMovementCostBetweenAdjacentTilesEscort(unit, from, to, considerZoneOfControl, includeEscortUnit)) },
                 { fpmFromMovement(it.getConnectionStatus(unit.civ).movement) },
@@ -351,6 +350,7 @@ class PathingMap(
                 "createLandAttackPathingMap",
                 { civPathExistCacheKey(startingPoint.position)},
                 { isLandTileCanAttackThrough(civ, it, targetCiv) },
+                { true },
                 { 0 },
                 { from, to -> fpmFromMovement(roadPreferredMovementCost(civ, from, to)) },
                 { fpmFromMovement(it.getConnectionStatus(civ).movement) },
@@ -366,6 +366,7 @@ class PathingMap(
                 "createAmphibiousAttackPathingMap",
                 { civPathExistCacheKey(startingPoint.position)},
                 { isTileCanAttackThrough(civ, it, targetCiv) },
+                { true },
                 { 0 },
                 { from, to -> fpmFromMovement(roadPreferredMovementCost(civ, from, to)) },
                 { fpmFromMovement(it.getConnectionStatus(civ).movement) },
@@ -385,6 +386,7 @@ class PathingMap(
                 "createRoadPathingMap",
                 { PathingMapCacheKey(startingPoint.position,  FPM_POINT_FIVE, FPM_POINT_FIVE) },
                 {MapPathing.isValidRoadPathTile(civ, it) },
+                { true },
                 { 0 },
                 { _, to -> if ((to.hasRoadConnection(civ, false) || to.hasRailroadConnection(false))) FPM_POINT_FIVE else FPM_ONE },
                 { FPM_ONE },

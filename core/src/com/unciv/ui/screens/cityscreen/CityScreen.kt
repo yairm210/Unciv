@@ -246,11 +246,11 @@ class CityScreen(
     private fun updateTileGroups() {
         val cityUniqueCache = LocalUniqueCache()
         fun isExistingImprovementValuable(tile: Tile): Boolean {
-            if (tile.improvement == null) return false
+            val improvement = tile.tileImprovement ?: return false
             val civInfo = city.civ
 
             val statDiffForNewImprovement = tile.stats.getStatDiffForImprovement(
-                tile.getTileImprovement()!!,
+                improvement,
                 civInfo,
                 city,
                 cityUniqueCache

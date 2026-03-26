@@ -421,14 +421,13 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (requiredNearbyImprovedResources != null) {
             val containsResourceWithImprovement = cityConstructions.city.getWorkableTiles()
                 .any {
-                    val tileResource = it.tileResource
-                    tileResource != null &&
-                        requiredNearbyImprovedResources!!.contains(tileResource.name) &&
+                    val tileResource = it.tileResource ?: return@any false
+                    val improvement = it.getUnpillagedTileImprovement() ?: return@any false
+                    requiredNearbyImprovedResources!!.contains(tileResource.name) &&
                         it.getOwner() == civ &&
-                        ((it.getUnpillagedImprovement() != null && tileResource.isImprovedBy(it.improvement!!)) ||
+                        (tileResource.isImprovedBy(improvement) ||
                             it.isCityCenter() ||
-                            (it.getUnpillagedTileImprovement()?.isGreatImprovement() == true && tileResource.resourceType == ResourceType.Strategic)
-                    )
+                            (improvement.isGreatImprovement() && tileResource.resourceType == ResourceType.Strategic))
                 }
             if (!containsResourceWithImprovement)
                 yield(RejectionReasonType.RequiresNearbyResource.toInstance("Nearby $requiredNearbyImprovedResources required"))
