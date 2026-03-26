@@ -8,14 +8,125 @@ on:
   pull_request_target:
     types: [synchronize]
 
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
 jobs:
   main:
     runs-on: ubuntu-latest
     steps:
       - name: check conflicting PRs
-        uses: eps1lon/actions-label-merge-conflict@releases/2.x
+        uses: actions/github-script@v8
         with:
-          dirtyLabel: "Conflicts"
-          repoToken: "${{ secrets.GITHUB_TOKEN }}"
-          commentOnDirty: "This pull request has conflicts, please resolve those before we can evaluate the pull request."
-          commentOnClean: "Conflicts have been resolved."
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          script: |
+            const dirtyLabel = "Conflicts";
+            const commentOnDirty = "This pull request has conflicts, please resolve those before we can evaluate the pull request.";
+            const commentOnClean = "Conflicts have been resolved.";
+            const retryAfterMs = 120000;
+            const retryMax = 5;
+
+            const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+            async function listTargetPulls() {
+              if (context.eventName === "pull_request_target") {
+                return [context.payload.pull_request.number];
+              }
+
+              const pulls = await github.paginate(github.rest.pulls.list, {
+                ...context.repo,
+                state: "open",
+                per_page: 100,
+              });
+              return pulls.map((pull) => pull.number);
+            }
+
+            async function getPullWithMergeState(pullNumber) {
+              for (let attempt = 1; attempt <= retryMax; attempt += 1) {
+                const { data: pull } = await github.rest.pulls.get({
+                  ...context.repo,
+                  pull_number: pullNumber,
+                });
+                const mergeableState = pull.mergeable_state ?? "null";
+                core.info(
+                  `PR #${pullNumber}: mergeable=${pull.mergeable} mergeable_state=${mergeableState} attempt ${attempt}/${retryMax}`
+                );
+                if (pull.mergeable !== null && mergeableState !== "unknown") {
+                  return pull;
+                }
+                if (attempt < retryMax) {
+                  await sleep(retryAfterMs);
+                }
+              }
+
+              const { data: pull } = await github.rest.pulls.get({
+                ...context.repo,
+                pull_number: pullNumber,
+              });
+              core.warning(
+                `PR #${pullNumber}: mergeable state remained ${pull.mergeable_state ?? "null"} after retries`
+              );
+              return pull;
+            }
+
+            async function addDirtyLabel(pullNumber) {
+              await github.rest.issues.addLabels({
+                ...context.repo,
+                issue_number: pullNumber,
+                labels: [dirtyLabel],
+              });
+            }
+
+            async function removeDirtyLabel(pullNumber) {
+              try {
+                await github.rest.issues.removeLabel({
+                  ...context.repo,
+                  issue_number: pullNumber,
+                  name: dirtyLabel,
+                });
+              } catch (error) {
+                if (error.status === 404) {
+                  return;
+                }
+                throw error;
+              }
+            }
+
+            async function addComment(pullNumber, body) {
+              if (!body) {
+                return;
+              }
+
+              await github.rest.issues.createComment({
+                ...context.repo,
+                issue_number: pullNumber,
+                body,
+              });
+            }
+
+            const pullNumbers = await listTargetPulls();
+            core.info(`Checking ${pullNumbers.length} pull request(s)`);
+
+            for (const pullNumber of pullNumbers) {
+              const pull = await getPullWithMergeState(pullNumber);
+              const isDirty = pull.mergeable_state === "dirty";
+              const hasDirtyLabel = pull.labels.some((label) => label.name === dirtyLabel);
+
+              if (isDirty && !hasDirtyLabel) {
+                core.info(`PR #${pullNumber}: adding "${dirtyLabel}" label`);
+                await addDirtyLabel(pullNumber);
+                await addComment(pullNumber, commentOnDirty);
+                continue;
+              }
+
+              if (!isDirty && hasDirtyLabel) {
+                core.info(`PR #${pullNumber}: removing "${dirtyLabel}" label`);
+                await removeDirtyLabel(pullNumber);
+                await addComment(pullNumber, commentOnClean);
+                continue;
+              }
+
+              core.info(`PR #${pullNumber}: no label change needed`);
+            }
