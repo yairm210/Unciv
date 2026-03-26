@@ -412,6 +412,10 @@ object UnitActionsFromUniques {
                 ).any { !it.conditionalsApply(stateForConditionals) }
             ) continue
 
+            // Respect Unavailable criteria
+            if (unitToTransformTo.getMatchingUniques(UniqueType.Unavailable, stateForConditionals).any())
+                continue
+
             // Check _new_ resource requirements
             // Using Counter to aggregate is a bit exaggerated, but - respect the mad modder.
             val resourceRequirementsDelta = Counter<String>()

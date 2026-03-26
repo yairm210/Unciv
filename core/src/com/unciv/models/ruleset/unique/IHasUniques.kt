@@ -207,6 +207,10 @@ interface IHasUniques : INamed {
             if (unique.hasModifier(enabler)) return !hasFeature
             if (unique.hasModifier(disabler)) return hasFeature
         }
+        for (unique in getMatchingUniques(UniqueType.Unavailable, GameContext.IgnoreConditionals)) {
+            if (unique.hasModifier(enabler)) return hasFeature
+            if (unique.hasModifier(disabler)) return !hasFeature
+        }
         return false
     }
 }
