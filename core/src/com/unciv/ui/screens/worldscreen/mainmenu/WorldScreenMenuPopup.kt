@@ -51,11 +51,11 @@ class WorldScreenMenuPopup(
             addButton("Save game", KeyboardBinding.SaveGame) {
                 close()
                 worldScreen.openSaveGameScreen()
-            }.nextColumn()
+            }.also { it.actor.name = "world.menu.save_game" }.nextColumn()
         addButton("Load game", KeyboardBinding.LoadGame) {
             close()
             worldScreen.game.pushScreen(LoadGameScreen())
-        }.nextColumn()
+        }.also { it.actor.name = "world.menu.load_game" }.nextColumn()
         addButton("Start new game", KeyboardBinding.NewGame) {
             close()
             worldScreen.openNewGameScreen()

@@ -253,7 +253,7 @@ class UncivFiles(
         val saveLocation = game.customSaveLocation ?: UncivGame.Current.files.getLocalFile(gameName).path()
 
         try {
-            val data = gameInfoToString(game)
+            val data = gameInfoToString(game, portable = true)
             debug("Initiating UI to save GameInfo %s to custom location %s", game.gameId, saveLocation)
             saverLoader.saveGame(data, saveLocation,
                 { location ->

@@ -24,6 +24,7 @@ function main() {
   const uiWarFromStartPath = path.join(tmpDir, 'web-ui-war-from-start-result.json');
   const uiWarPreworldPath = path.join(tmpDir, 'web-ui-war-preworld-result.json');
   const uiWarDeepPath = path.join(tmpDir, 'web-ui-war-deep-result.json');
+  const fileIoSmokePath = path.join(tmpDir, 'web-file-io-smoke-result.json');
 
   const validation = optionalJson(validationPath);
   const jsSuite = optionalJson(jsSuitePath);
@@ -37,6 +38,7 @@ function main() {
   const uiWarFromStart = optionalJson(uiWarFromStartPath);
   const uiWarPreworld = optionalJson(uiWarPreworldPath);
   const uiWarDeep = optionalJson(uiWarDeepPath);
+  const fileIoSmoke = optionalJson(fileIoSmokePath);
 
   const lines = [];
   lines.push('## Web E2E Summary');
@@ -121,6 +123,8 @@ function main() {
     lines.push(`- guest_actions: ${Array.isArray(clickopsMultiplayer.guestActions) ? clickopsMultiplayer.guestActions.length : 0}`);
     lines.push(`- page_errors: ${Array.isArray(clickopsMultiplayer.pageErrors) ? clickopsMultiplayer.pageErrors.length : 0}`);
     lines.push(`- console_errors: ${Array.isArray(clickopsMultiplayer.consoleErrors) ? clickopsMultiplayer.consoleErrors.length : 0}`);
+    lines.push(`- host_blob_events: ${clickopsMultiplayer.blobDiagnostics?.host?.eventCount ?? 0}`);
+    lines.push(`- guest_blob_events: ${clickopsMultiplayer.blobDiagnostics?.guest?.eventCount ?? 0}`);
     if (Array.isArray(clickopsMultiplayer.failures) && clickopsMultiplayer.failures.length > 0) {
       for (const failure of clickopsMultiplayer.failures) {
         lines.push(`- failure: ${failure}`);
@@ -200,6 +204,23 @@ function main() {
     lines.push(`- console_errors: ${Array.isArray(uiMapEditor.consoleErrors) ? uiMapEditor.consoleErrors.length : 0}`);
     if (Array.isArray(uiMapEditor.failures) && uiMapEditor.failures.length > 0) {
       for (const failure of uiMapEditor.failures) {
+        lines.push(`- failure: ${failure}`);
+      }
+    }
+    lines.push('');
+  }
+
+  if (fileIoSmoke) {
+    lines.push('### Browser File I/O Smoke');
+    lines.push(`- status: ${fileIoSmoke.status || 'UNKNOWN'}`);
+    lines.push(`- run_id: ${fileIoSmoke.runId || 'unknown'}`);
+    lines.push(`- download_name: ${fileIoSmoke.downloadName || 'unknown'}`);
+    lines.push(`- download_bytes: ${fileIoSmoke.downloadBytes ?? 0}`);
+    lines.push(`- blob_events: ${fileIoSmoke.blobDiagnostics?.eventCount ?? 0}`);
+    lines.push(`- page_errors: ${Array.isArray(fileIoSmoke.pageErrors) ? fileIoSmoke.pageErrors.length : 0}`);
+    lines.push(`- console_errors: ${Array.isArray(fileIoSmoke.consoleErrors) ? fileIoSmoke.consoleErrors.length : 0}`);
+    if (Array.isArray(fileIoSmoke.failures) && fileIoSmoke.failures.length > 0) {
+      for (const failure of fileIoSmoke.failures) {
         lines.push(`- failure: ${failure}`);
       }
     }

@@ -147,7 +147,7 @@ async function installBlobDiagnostics(page, label) {
       }
     };
 
-    if (typeof URL === 'object' && URL && typeof URL.createObjectURL === 'function') {
+    if ((typeof URL === 'object' || typeof URL === 'function') && URL && typeof URL.createObjectURL === 'function') {
       const originalCreate = URL.createObjectURL.bind(URL);
       URL.createObjectURL = (obj) => {
         const url = originalCreate(obj);
@@ -163,7 +163,7 @@ async function installBlobDiagnostics(page, label) {
       };
     }
 
-    if (typeof URL === 'object' && URL && typeof URL.revokeObjectURL === 'function') {
+    if ((typeof URL === 'object' || typeof URL === 'function') && URL && typeof URL.revokeObjectURL === 'function') {
       const originalRevoke = URL.revokeObjectURL.bind(URL);
       URL.revokeObjectURL = (url) => {
         record({
@@ -177,7 +177,7 @@ async function installBlobDiagnostics(page, label) {
 
     if (typeof HTMLAnchorElement === 'function' && HTMLAnchorElement.prototype && typeof HTMLAnchorElement.prototype.click === 'function') {
       const originalAnchorClick = HTMLAnchorElement.prototype.click;
-      HTMLAnchorElement.prototype.click = function clickWithBlobDiagnostics(...args) {
+      HTMLAnchorElement.prototype.click = function clickWithBlobDiagnostics() {
         const href = String(this.href || '');
         if (href.startsWith('blob:')) {
           record({
@@ -188,7 +188,7 @@ async function installBlobDiagnostics(page, label) {
             stack: String(new Error().stack || ''),
           });
         }
-        return originalAnchorClick.apply(this, args);
+        return originalAnchorClick.call(this);
       };
     }
   }, label);

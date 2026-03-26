@@ -25,15 +25,37 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Restore Gradle build cache
+        uses: actions/cache@v4
+        with:
+          path: .gradle-gh
+          key: ${{ runner.os }}-web-build-gradle-${{ hashFiles('**/*.gradle*', 'gradle.properties', 'settings.gradle.kts', 'gradle/libs.versions.toml', 'buildSrc/**/*.kt', 'buildSrc/**/*.kts') }}
+          restore-keys: |
+            ${{ runner.os }}-web-build-gradle-
+
       - name: Build web toolchain container
-        run: docker build -f .devcontainer/Dockerfile -t unciv-web-builder .
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: .devcontainer/Dockerfile
+          load: true
+          tags: unciv-web-builder:ci
+          cache-from: type=gha,scope=unciv-web-builder
+          cache-to: type=gha,mode=max,scope=unciv-web-builder
 
       - name: Build JS bundle
         run: |
+          mkdir -p "${{ github.workspace }}/.gradle-gh"
           docker run --rm \
+            --user "$(id -u):$(id -g)" \
             -v "${{ github.workspace }}:/workspace" \
+            -v "${{ github.workspace }}/.gradle-gh:/gradle-home" \
+            -e GRADLE_USER_HOME=/gradle-home \
             -w /workspace \
-            unciv-web-builder \
+            unciv-web-builder:ci \
             bash -lc "./gradlew --configuration-cache :web:webBuildJs"
 
       - name: Verify SLF4J web provider wiring
@@ -424,6 +446,42 @@ jobs:
             tmp/web-clickops-multiplayer-guest-blob-diagnostics.json
             tmp/web-clickops-multiplayer-host-latest.png
             tmp/web-clickops-multiplayer-guest-latest.png
+
+  web-browser-file-io:
+    name: Browser File I/O Smoke (informational)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    needs: web-build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare web test environment
+        uses: ./.github/actions/web-test-env
+        with:
+          browsers: chromium
+
+      - name: Run browser file I/O smoke gate
+        run: |
+          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_PROFILE=phase4-beta WEB_FILE_IO_TIMEOUT_MS=180000 WEB_FILE_IO_FORCE_BROWSER_FALLBACK=1 \
+          node scripts/web/run-web-file-io-smoke.js
+
+      - name: Publish file I/O summary
+        if: always()
+        run: |
+          node scripts/web/write-web-summary.js >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload file I/O artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-browser-file-io
+          path: |
+            /tmp/web-server.log
+            tmp/web-file-io-smoke-result.json
+            tmp/web-file-io-smoke-blob-diagnostics.json
+            tmp/web-file-io-smoke-download.unciv
+            tmp/web-file-io-smoke-latest.png
 
   web-ui-map-editor:
     name: Web UI Map Editor (required, 30s)

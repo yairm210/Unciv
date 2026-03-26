@@ -28,6 +28,19 @@ function hasMessage(state, token) {
   return state.chatMessages.some((message) => String(message || '').includes(token));
 }
 
+function summarizeBlobDiagnostics(diagnostics) {
+  const events = diagnostics && Array.isArray(diagnostics.events) ? diagnostics.events : [];
+  const countsByKind = {};
+  for (const event of events) {
+    const kind = String(event && event.kind ? event.kind : 'unknown');
+    countsByKind[kind] = (countsByKind[kind] || 0) + 1;
+  }
+  return {
+    eventCount: events.length,
+    countsByKind,
+  };
+}
+
 async function clickCheckbox(page, label, targetId, timeoutMs) {
   const { target } = await waitForTarget(page, {
     label,
@@ -354,6 +367,10 @@ async function main() {
     guestScreenshotPath,
     hostBlobDiagnosticsPath,
     guestBlobDiagnosticsPath,
+    blobDiagnostics: {
+      host: { eventCount: 0, countsByKind: {} },
+      guest: { eventCount: 0, countsByKind: {} },
+    },
   };
 
   let browser;
@@ -578,10 +595,12 @@ async function main() {
     if (hostPage) {
       const hostBlobDiagnostics = await readBlobDiagnostics(hostPage, 'host');
       writeJson(hostBlobDiagnosticsPath, hostBlobDiagnostics);
+      report.blobDiagnostics.host = summarizeBlobDiagnostics(hostBlobDiagnostics);
     }
     if (guestPage) {
       const guestBlobDiagnostics = await readBlobDiagnostics(guestPage, 'guest');
       writeJson(guestBlobDiagnosticsPath, guestBlobDiagnostics);
+      report.blobDiagnostics.guest = summarizeBlobDiagnostics(guestBlobDiagnostics);
     }
     if (hostPage) await hostPage.screenshot({ path: hostScreenshotPath, fullPage: true }).catch(() => {});
     if (guestPage) await guestPage.screenshot({ path: guestScreenshotPath, fullPage: true }).catch(() => {});

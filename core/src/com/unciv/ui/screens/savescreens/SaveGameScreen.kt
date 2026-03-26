@@ -108,6 +108,7 @@ class SaveGameScreen(private val gameInfo: GameInfo) : LoadOrSaveScreen("Current
 
     private fun Table.addSaveToCustomLocation() {
         val saveToCustomLocation = saveToCustomText.toTextButton()
+        saveToCustomLocation.name = "save.custom_location"
         saveToCustomLocation.onClick {
             saveToCustomLocation.setText(savingText.tr())
             saveToCustomLocation.disable()

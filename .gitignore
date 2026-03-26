@@ -114,6 +114,7 @@ nb-configuration.xml
 
 /local.properties
 .gradle/
+.gradle-gh/
 gradle-app.setting
 
 ## OS Specific

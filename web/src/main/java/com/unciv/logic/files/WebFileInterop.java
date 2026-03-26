@@ -2,6 +2,7 @@ package com.unciv.logic.files;
 
 import org.teavm.jso.JSBody;
 import org.teavm.jso.JSFunctor;
+import org.teavm.jso.JSObject;
 import org.teavm.jso.typedarrays.ArrayBuffer;
 
 public final class WebFileInterop {
@@ -51,22 +52,22 @@ public final class WebFileInterop {
     public static native String readTestStoreText(String name);
 
     @JSFunctor
-    public interface LoadTextCallback {
+    public interface LoadTextCallback extends JSObject {
         void handle(String data, String name);
     }
 
     @JSFunctor
-    public interface LoadBinaryCallback {
+    public interface LoadBinaryCallback extends JSObject {
         void handle(ArrayBuffer data, String name);
     }
 
     @JSFunctor
-    public interface SaveCallback {
+    public interface SaveCallback extends JSObject {
         void handle(String location);
     }
 
     @JSFunctor
-    public interface ErrorCallback {
+    public interface ErrorCallback extends JSObject {
         void handle(String message);
     }
 
@@ -134,7 +135,9 @@ public final class WebFileInterop {
                             + "  document.body.appendChild(a);\n"
                             + "  a.click();\n"
                             + "  document.body.removeChild(a);\n"
-                            + "  setTimeout(function(){ URL.revokeObjectURL(url); }, 0);\n"
+                            + "  setTimeout(function(){\n"
+                            + "    try { URL.revokeObjectURL(url); } catch (_) {}\n"
+                            + "  }, 5000);\n"
                             + "  callSuccess(name);\n"
                             + "} catch (err) {\n"
                             + "  cancelOrFail(err);\n"

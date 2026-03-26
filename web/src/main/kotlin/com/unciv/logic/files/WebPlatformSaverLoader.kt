@@ -19,16 +19,8 @@ class WebPlatformSaverLoader : PlatformSaverLoader {
             data,
             suggestedName,
             arrayOf("json", "txt", "unciv"),
-            object : WebFileInterop.SaveCallback {
-                override fun handle(location: String) {
-                    onSaved(location)
-                }
-            },
-            object : WebFileInterop.ErrorCallback {
-                override fun handle(message: String) {
-                    onError(mapError(message))
-                }
-            }
+            WebFileInterop.SaveCallback { location -> onSaved(location) },
+            WebFileInterop.ErrorCallback { message -> onError(mapError(message)) }
         )
     }
 
@@ -52,16 +44,8 @@ class WebPlatformSaverLoader : PlatformSaverLoader {
         }
         WebFileInterop.loadText(
             arrayOf("json", "txt", "unciv"),
-            object : WebFileInterop.LoadTextCallback {
-                override fun handle(data: String, name: String) {
-                    onLoaded(data, name)
-                }
-            },
-            object : WebFileInterop.ErrorCallback {
-                override fun handle(message: String) {
-                    onError(mapError(message))
-                }
-            }
+            WebFileInterop.LoadTextCallback { data, name -> onLoaded(data, name) },
+            WebFileInterop.ErrorCallback { message -> onError(mapError(message)) }
         )
     }
 
