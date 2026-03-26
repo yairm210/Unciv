@@ -331,6 +331,24 @@ class BasicTests {
         Assert.assertTrue(stats.equals(expectedStats))
     }
 
+    @Test
+    fun webCollatorFallbackIsNullSafeAndCaseInsensitive() {
+        val previousCapabilities = com.unciv.platform.PlatformCapabilities.current
+        try {
+            com.unciv.platform.PlatformCapabilities.setCurrent(com.unciv.platform.PlatformCapabilities.webPhase4Full())
+            val settings = GameSettings().apply {
+                language = Constants.english
+                updateLocaleFromLanguage()
+            }
+            val collator = settings.getCollatorFromLocale()
+            Assert.assertEquals(0, collator.compare("Alpha", "alpha"))
+            Assert.assertTrue(collator.compare(null, "alpha") < 0)
+            Assert.assertTrue(collator.compare("alpha", null) > 0)
+        } finally {
+            com.unciv.platform.PlatformCapabilities.setCurrent(previousCapabilities)
+        }
+    }
+
     private fun statMathRunner(iterations: Int): Stats {
         val random = Random(42)
         val statCount = Stat.entries.size

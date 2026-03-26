@@ -206,6 +206,9 @@ class GameSettings {
 
     fun getCollatorFromLocale(): Comparator<String?> {
         val locale = getCurrentLocale()
+        if (PlatformCapabilities.current.backgroundThreadPools) {
+            createJvmCollatorComparator(locale)?.let { return it }
+        }
         return Comparator { first, second ->
             when {
                 first == null && second == null -> 0
@@ -215,6 +218,21 @@ class GameSettings {
             }
         }
     }
+
+    private fun createJvmCollatorComparator(locale: Locale): Comparator<String?>? = runCatching {
+        val collatorClass = Class.forName("java.text.Collator")
+        val getInstance = collatorClass.getMethod("getInstance", Locale::class.java)
+        val collator = getInstance.invoke(null, locale)
+        val compare = collatorClass.getMethod("compare", Any::class.java, Any::class.java)
+        Comparator<String?> { first, second ->
+            when {
+                first == null && second == null -> 0
+                first == null -> -1
+                second == null -> 1
+                else -> compare.invoke(collator, first, second) as Int
+            }
+        }
+    }.getOrNull()
 
     @Readonly
     fun getCurrentNumberFormat(): NumberFormat {

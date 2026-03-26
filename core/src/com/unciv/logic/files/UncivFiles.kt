@@ -480,8 +480,12 @@ class UncivFiles(
          */
         fun gameInfoPreviewFromString(gameData: String): GameInfoPreview {
             val unzipped = Gzip.unzip(gameData)
-            val preview = runCatching { parseGameInfoPreviewWithoutReflection(unzipped) }
-                .getOrElse { json().fromJson(GameInfoPreview::class.java, unzipped) }
+            val preview = if (PlatformCapabilities.current.backgroundThreadPools) {
+                json().fromJson(GameInfoPreview::class.java, unzipped)
+            } else {
+                runCatching { parseGameInfoPreviewWithoutReflection(unzipped) }
+                    .getOrElse { json().fromJson(GameInfoPreview::class.java, unzipped) }
+            }
             preview.migrateCivID()
             return preview
         }
