@@ -56,6 +56,10 @@ class Nation : RulesetObject() {
     var denounced = ""
     /** Shown for Declaration of Friendship */
     var declaringFriendship = ""
+    /** Shown after we accpet reject a demand */
+    var acceptingDemand = ""
+    var neutralRejectingDemand = ""
+    var hateRejectingDemand = ""
     /** Shown for AlertType.FirstContact */
     var introduction = ""
     /** Shown in TradePopup when other Civs initiate trade with a player */
