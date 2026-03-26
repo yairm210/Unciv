@@ -41,6 +41,7 @@ import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.utils.DebugUtils
 import com.unciv.utils.debug
 import yairm210.purity.annotations.Readonly
+import java.security.MessageDigest
 import java.time.Duration
 import java.time.Instant
 import java.util.UUID
@@ -323,13 +324,17 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         val oldChecksum = checksum
         checksum = "" // Checksum calculation cannot include old checksum, obvs
         val bytes = json().toJson(this).toByteArray(Charsets.UTF_8)
-        var hash = 0xcbf29ce484222325uL
-        for (byte in bytes) {
-            hash = hash xor (byte.toInt() and 0xff).toULong()
-            hash *= 0x100000001b3uL
-        }
         checksum = oldChecksum
-        return hash.toString(16).padStart(16, '0')
+        return runCatching {
+            Gzip.encode(MessageDigest.getInstance("SHA-1").digest(bytes))
+        }.getOrElse {
+            var hash = 0xcbf29ce484222325uL
+            for (byte in bytes) {
+                hash = hash xor (byte.toInt() and 0xff).toULong()
+                hash *= 0x100000001b3uL
+            }
+            hash.toString(16).padStart(16, '0')
+        }
     }
 
     //endregion
@@ -701,24 +706,12 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             gameParameters.baseRuleset = gameParameters.baseRuleset.replace("-", " ")
         }
 
-        WebJsonFallback.ensureBaseRulesetForCivilizations(this)
-
         for (mod in gameParameters.mods) {
             if (mod !in RulesetCache && mod.replace("-", " ") in RulesetCache) {
                 gameParameters.mods.remove(mod)
                 gameParameters.mods.add(mod.replace("-", " "))
             }
         }
-
-        // If the saved base ruleset or extension mods are not present in the cache, normalize to available values.
-        val selectedBaseRuleset = RulesetCache[gameParameters.baseRuleset]
-        if (selectedBaseRuleset == null || !selectedBaseRuleset.modOptions.isBaseRuleset) {
-            gameParameters.baseRuleset = RulesetCache.getVanillaRuleset().name
-        }
-        gameParameters.mods = LinkedHashSet(gameParameters.mods.filter {
-            val mod = RulesetCache[it] ?: return@filter false
-            !mod.modOptions.isBaseRuleset
-        })
         
         ruleset = RulesetCache.getComplexRuleset(gameParameters)
 

@@ -881,10 +881,6 @@ class WorldScreen(
             waitingForAutosave = false
             shouldUpdate = true
         }
-        if (!PlatformCapabilities.current.backgroundThreadPools) {
-            waitingForAutosave = false
-            shouldUpdate = true
-        }
     }
 }
 

@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.Timer
 import com.unciv.UncivGame
 import com.unciv.models.UncivSound
 import com.unciv.utils.Concurrency
+import com.unciv.utils.delayMillis
 import com.unciv.utils.debug
 import java.io.File
 import kotlinx.coroutines.Job
@@ -210,16 +211,21 @@ object SoundPlayer {
         CCodecConfig            com.unciv.app                        D  read media type: audio/vorbis
  */
         if (!isFresh && resource.play(volume) != -1L) return // If it's already cached we should be able to play immediately
-        var repeatCount = 0
-        while (resource.play(volume) == -1L && ++repeatCount < 12) {
-            // no-op
+        Concurrency.run("DelayedSound") {
+            delayMillis(40L)
+            var repeatCount = 0
+            while (resource.play(volume) == -1L && ++repeatCount < 12)
+                delayMillis(20L)
         }
     }
 
     // Let's do just one silent retry on Desktop. In turn, OpenALSound.play is not thread-safe.
     private fun playDesktop(resource: Sound, volume: Float) {
         if (resource.play(volume) != -1L) return
-        Gdx.app.postRunnable { resource.play(volume) }
+        Concurrency.runOnGLThread("SoundRetry") {
+            delayMillis(20L)
+            resource.play(volume)
+        }
     }
 
     /** Play a sound repeatedly - e.g. to express that an action was applied multiple times or to multiple targets.
@@ -248,8 +254,9 @@ object SoundPlayer {
             invokeOnCompletion { preloader = null }
         }
 
-        private fun preload() {
+        private suspend fun preload() {
             for (sound in UncivSound.getPreloadList()) {
+                delayMillis(10L)
                 // This way skips minor things as compared to get(sound) - the cache stale check and result instantiation on cache hit
                 if (sound in soundMap) continue
                 debug("Preload $sound")

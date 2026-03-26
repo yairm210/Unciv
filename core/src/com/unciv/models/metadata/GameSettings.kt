@@ -10,6 +10,7 @@ import com.unciv.logic.multiplayer.chat.ChatWebSocket
 import com.unciv.models.UncivSound
 import com.unciv.models.metadata.GameSettings.WindowState.Companion.minimumHeight
 import com.unciv.models.metadata.GameSettings.WindowState.Companion.minimumWidth
+import com.unciv.platform.PlatformCapabilities
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.Fonts
@@ -18,6 +19,7 @@ import com.unciv.ui.screens.worldscreen.NotificationsScroll
 import com.unciv.utils.Display
 import com.unciv.utils.ScreenOrientation
 import yairm210.purity.annotations.Readonly
+import java.text.Collator
 import java.text.NumberFormat
 import java.time.Duration
 import java.util.Locale
@@ -205,6 +207,10 @@ class GameSettings {
 
     fun getCollatorFromLocale(): Comparator<String?> {
         val locale = getCurrentLocale()
+        if (PlatformCapabilities.current.backgroundThreadPools) {
+            @Suppress("UNCHECKED_CAST")
+            return Collator.getInstance(locale) as Comparator<String?>
+        }
         return Comparator { first, second ->
             when {
                 first == null && second == null -> 0
