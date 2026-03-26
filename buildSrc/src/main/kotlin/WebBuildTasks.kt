@@ -174,6 +174,7 @@ abstract class WebPostProcessDistTask : DefaultTask() {
         val outputDirFile = outputDir.get().asFile
         promoteWebappToRoot(outputDirFile)
         hardenIndexBootstrap(File(outputDirFile, "index.html"))
+        hardenTeaVisibilityLifecycle(File(outputDirFile, "unciv.js"))
     }
 }
 
@@ -216,6 +217,36 @@ private fun hardenIndexBootstrap(indexFile: File) {
         content
     }
     indexFile.writeText(content)
+}
+
+private fun hardenTeaVisibilityLifecycle(jsFile: File) {
+    if (!jsFile.isFile) return
+    val content = jsFile.readText()
+    val startRegex = Regex("""[A-Za-z0-9_]+_TeaApplication\${'$'}2_handleEvent = \(\${'$'}this, \${'$'}evt\) => \{""")
+    val endRegex = Regex("""[A-Za-z0-9_]+_TeaApplication\${'$'}2_handleEvent\${'$'}exported\${'$'}0 =""")
+    val start = startRegex.find(content)?.range?.first ?: return
+    val end = endRegex.find(content, start + 1)?.range?.first ?: return
+    val originalBlock = content.substring(start, end)
+    val pauseRegex = Regex("""case 11:(\r?\n)(\s+)([A-Za-z0-9${'$'}]+)\.\${'$'}pause\(\);""")
+    val resumeRegex = Regex("""case 12:(\r?\n)(\s+)([A-Za-z0-9${'$'}]+)\.\${'$'}resume0\(\);""")
+    val pauseMatch = pauseRegex.find(originalBlock) ?: return
+    val pauseReplacement = pauseMatch.run {
+        val newline = groupValues[1]
+        val indent = groupValues[2]
+        val variable = groupValues[3]
+        "case 11:$newline${indent}if ($variable === null)$newline${indent}    return;$newline${indent}$variable.${'$'}pause();"
+    }
+    val pausePatchedBlock = originalBlock.replaceRange(pauseMatch.range, pauseReplacement)
+    val resumeMatch = resumeRegex.find(pausePatchedBlock) ?: return
+    val resumeReplacement = resumeMatch.run {
+        val newline = groupValues[1]
+        val indent = groupValues[2]
+        val variable = groupValues[3]
+        "case 12:$newline${indent}if ($variable === null)$newline${indent}    return;$newline${indent}$variable.${'$'}resume0();"
+    }
+    val patchedBlock = pausePatchedBlock.replaceRange(resumeMatch.range, resumeReplacement)
+    if (patchedBlock == originalBlock) return
+    jsFile.writeText(content.replaceRange(start, end, patchedBlock))
 }
 
 private fun promoteWebappToRoot(outputDir: File) {
