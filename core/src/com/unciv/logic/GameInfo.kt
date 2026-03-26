@@ -36,12 +36,10 @@ import com.unciv.models.translations.tr
 import com.unciv.platform.PlatformCapabilities
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
-import com.unciv.ui.screens.savescreens.Gzip
 import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.utils.DebugUtils
 import com.unciv.utils.debug
 import yairm210.purity.annotations.Readonly
-import java.security.MessageDigest
 import java.time.Duration
 import java.time.Instant
 import java.util.UUID
@@ -325,16 +323,12 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         checksum = "" // Checksum calculation cannot include old checksum, obvs
         val bytes = json().toJson(this).toByteArray(Charsets.UTF_8)
         checksum = oldChecksum
-        return runCatching {
-            Gzip.encode(MessageDigest.getInstance("SHA-1").digest(bytes))
-        }.getOrElse {
-            var hash = 0xcbf29ce484222325uL
-            for (byte in bytes) {
-                hash = hash xor (byte.toInt() and 0xff).toULong()
-                hash *= 0x100000001b3uL
-            }
-            hash.toString(16).padStart(16, '0')
+        var hash = 0xcbf29ce484222325uL
+        for (byte in bytes) {
+            hash = hash xor (byte.toInt() and 0xff).toULong()
+            hash *= 0x100000001b3uL
         }
+        return hash.toString(16).padStart(16, '0')
     }
 
     //endregion
