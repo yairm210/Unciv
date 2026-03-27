@@ -60,7 +60,7 @@ jobs:
         uses: android-actions/setup-android@v4
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v6
 
       - name: Compile kotlin and build classes
         run: ./gradlew classes
@@ -121,7 +121,7 @@ jobs:
         uses: android-actions/setup-android@v4
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v6
 
       - name: Prepare .aab (for Google Play) and .apk (for Github) files
         shell: bash
@@ -187,7 +187,7 @@ jobs:
           java-version: 21
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v6
 
       - name: Download JAR
         uses: actions/download-artifact@v4
