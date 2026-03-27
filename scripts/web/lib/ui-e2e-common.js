@@ -1,7 +1,14 @@
 const fs = require('fs');
 const path = require('path');
-const { chromium } = require('playwright');
 const { resolveChromiumArgs } = require('./chromium-args');
+
+let chromiumLauncher = null;
+
+function getChromiumLauncher() {
+  if (chromiumLauncher) return chromiumLauncher;
+  ({ chromium: chromiumLauncher } = require('playwright'));
+  return chromiumLauncher;
+}
 
 function parseBool(value, fallback) {
   if (value == null || value === '') return fallback;
@@ -226,7 +233,7 @@ function getActionableRequestFailures(entries) {
 async function launchChromium() {
   const headless = parseBool(process.env.HEADLESS, true);
   const args = resolveChromiumArgs(process.env.WEB_CHROMIUM_ARGS);
-  return chromium.launch({
+  return getChromiumLauncher().launch({
     headless,
     args,
   });
@@ -377,6 +384,13 @@ async function startMainOnce(page, timeoutMs) {
   throw new Error(`runtime boot markers not visible within ${timeoutMs}ms`);
 }
 
+function parseUiProbePayload(state) {
+  if (!state || !state.json) return null;
+  const result = JSON.parse(state.json);
+  const stepLog = state.steps ? JSON.parse(state.steps) : null;
+  return { result, stepLog };
+}
+
 async function waitForUiProbeResult(page, label, timeoutMs, shouldAbort) {
   const startupGraceMs = Number(process.env.WEB_UI_RUNNER_STARTUP_GRACE_MS || '3500');
   const startedAt = Date.now();
@@ -434,19 +448,15 @@ async function waitForUiProbeResult(page, label, timeoutMs, shouldAbort) {
       writeJson(bootstrapDebugPath, bootstrapDebug);
       throw new Error(`[${label}] uiProbe error: ${state.error}`);
     }
-    if (state.json) {
-      const parsed = JSON.parse(state.json);
-      let stepLog = null;
-      if (state.steps) {
-        stepLog = JSON.parse(state.steps);
-      }
-      return { result: parsed, stepLog };
-    }
+    const payload = parseUiProbePayload(state);
+    if (payload) return payload;
     await page.waitForTimeout(120);
   }
   const finalState = await evaluateWithTimeout(page, () => ({
     state: window.__uncivUiProbeState || null,
     error: window.__uncivUiProbeError || null,
+    json: window.__uncivUiProbeResultJson || null,
+    steps: window.__uncivUiProbeStepLogJson || null,
     hasResult: !!window.__uncivUiProbeResultJson,
     hasStepLog: !!window.__uncivUiProbeStepLogJson,
     runnerSelected: window.__uncivRunnerSelected || null,
@@ -467,6 +477,11 @@ async function waitForUiProbeResult(page, label, timeoutMs, shouldAbort) {
     hasMain: false,
     bootInvoked: false,
   }));
+  const timeoutPayload = parseUiProbePayload(finalState);
+  if (timeoutPayload) {
+    process.stdout.write(`[${label}] accepted uiProbe result published at timeout boundary\n`);
+    return timeoutPayload;
+  }
   const bootstrapDebug = {
     generatedAt: new Date().toISOString(),
     label,
