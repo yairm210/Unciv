@@ -8,6 +8,9 @@ on:
       - main
   workflow_dispatch:
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 permissions:
   contents: write
   pages: write
@@ -23,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -75,7 +78,7 @@ jobs:
     needs: web-build
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Prepare web test environment
         uses: ./.github/actions/web-test-env
@@ -150,7 +153,7 @@ jobs:
             mode: smoke
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Prepare web test environment
         uses: ./.github/actions/web-test-env
@@ -196,7 +199,7 @@ jobs:
     needs: web-build
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Prepare web test environment
         uses: ./.github/actions/web-test-env
@@ -230,7 +233,7 @@ jobs:
     needs: web-build
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Prepare web test environment
         uses: ./.github/actions/web-test-env
@@ -265,7 +268,7 @@ jobs:
     needs: web-build
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Prepare web test environment
         uses: ./.github/actions/web-test-env
@@ -304,7 +307,7 @@ jobs:
     needs: web-build
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Prepare web test environment
         uses: ./.github/actions/web-test-env
@@ -340,7 +343,7 @@ jobs:
     needs: web-build
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Prepare web test environment
         uses: ./.github/actions/web-test-env
@@ -379,7 +382,7 @@ jobs:
     needs: web-build
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Prepare web test environment
         uses: ./.github/actions/web-test-env
@@ -415,7 +418,7 @@ jobs:
     needs: web-build
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Prepare web test environment
         uses: ./.github/actions/web-test-env
@@ -454,7 +457,7 @@ jobs:
     needs: web-build
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Prepare web test environment
         uses: ./.github/actions/web-test-env
@@ -489,7 +492,7 @@ jobs:
     needs: web-build
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Prepare web test environment
         uses: ./.github/actions/web-test-env
@@ -527,7 +530,7 @@ jobs:
     needs: web-build
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Prepare web test environment
         uses: ./.github/actions/web-test-env
@@ -560,7 +563,7 @@ jobs:
     needs: web-build
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Prepare web test environment
         uses: ./.github/actions/web-test-env
@@ -594,7 +597,7 @@ jobs:
     needs: web-build
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Prepare web test environment
         uses: ./.github/actions/web-test-env

@@ -5,6 +5,9 @@ on:
     - cron: '20 3 * * *'
   workflow_dispatch:
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 permissions:
   contents: read
 
@@ -14,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Build web toolchain container
         run: docker build -f .devcontainer/Dockerfile -t unciv-web-builder .
@@ -40,7 +43,7 @@ jobs:
     needs: web-build
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Prepare web test environment
         uses: ./.github/actions/web-test-env
