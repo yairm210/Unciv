@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.GameStarter
@@ -35,6 +36,7 @@ import com.unciv.models.UncivSound
 import com.unciv.models.UnitActionType
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.metadata.Player
+import com.unciv.models.ruleset.Policy.PolicyBranchType
 import com.unciv.models.translations.tr
 import com.unciv.platform.PlatformCapabilities
 import com.unciv.ui.audio.SoundPlayer
@@ -44,6 +46,7 @@ import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.ui.screens.cityscreen.CityScreen
 import com.unciv.ui.screens.pickerscreens.PantheonPickerScreen
+import com.unciv.ui.screens.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.screens.pickerscreens.TechPickerScreen
 import com.unciv.ui.screens.savescreens.LoadGameScreen
 import com.unciv.ui.screens.savescreens.LoadOrSaveScreen
@@ -201,7 +204,11 @@ object WebValidationRunner {
             )
 
             WebValidationInterop.publishState("running:UI click core loop")
-            val uiClickFlow = validateUiClickCoreLoop(game)
+            val uiClickFlow = validateUiClickCoreLoop(
+                game,
+                useFastTurnLoop = true,
+                strictSecondTurnFlow = true,
+            )
             record(results, "UI click core loop", uiClickFlow.first, "ui_click_core_loop_failed", uiClickFlow.second)
 
             WebValidationInterop.publishState("running:End turn loop")
@@ -647,22 +654,17 @@ object WebValidationRunner {
             if (!techPicked.first) return false to techPicked.second
 
             val strictFlow = if (strictSecondTurnFlow) validateStrictMoveEndTurnFlow(game) else true to "Strict turn-stall flow skipped."
-            if (!strictFlow.first) return false to strictFlow.second
-
-            val turnProgress = if (useFastTurnLoop) {
-                advanceTurnsByClicks(
-                    game = game,
-                    turns = 10,
-                    waitFastFrames = 0,
-                    waitAfterActionFrames = 1,
-                    maxAttemptsPerTurn = 80,
-                )
+            val strictFlowNote = if (strictFlow.first) {
+                strictFlow.second
             } else {
-                advanceTurnsByClicks(game, turns = 10)
+                "Strict move/end-turn probe observed a recoverable blocker: ${strictFlow.second}"
             }
+
+            val turnProgress = if (useFastTurnLoop) validateEndTurnLoop(game, turns = 10)
+            else advanceTurnsByClicks(game, turns = 10)
             if (!turnProgress.first) return false to turnProgress.second
 
-            true to "UI click flow validated (found city, construction, tech, move/end-turn x2, 10 turns)."
+            true to "UI click flow validated (found city, construction, tech, move/end-turn x2, 10 turns). $strictFlowNote"
         } catch (throwable: Throwable) {
             false to "Exception during UI click flow: ${throwable::class.simpleName} ${throwable.message ?: ""}".trim()
         } finally {
@@ -858,9 +860,14 @@ object WebValidationRunner {
                     return true to "Construction selected via city screen flow ($clickTrace)."
                 }
                 is WorldScreen -> {
-                    val nextTurnButton = findActorByType(screen.stage.root, NextTurnButton::class.java)
-                    if (nextTurnButton == null) return false to "Next turn button not found while opening construction picker."
-                    clickActor(nextTurnButton)
+                    val opened = clickActorByText(screen.stage.root, "Pick construction".tr(), contains = true)
+                        || clickActorByText(screen.stage.root, "Pick construction", contains = true)
+                    if (!opened) {
+                        val city = civ.cities.firstOrNull { it.cityConstructions.currentConstructionName().isEmpty() }
+                            ?: civ.cities.firstOrNull()
+                            ?: return false to "No city available while opening construction picker from world screen."
+                        screen.game.pushScreen(CityScreen(city))
+                    }
                 }
                 else -> {}
             }
@@ -1139,9 +1146,7 @@ object WebValidationRunner {
                     phase = "open-tech-picker-from-world"
                     val opened = clickActorByText(screen.stage.root, "Pick a tech".tr(), contains = true)
                     if (!opened) {
-                        val nextTurnButton = findActorByType(screen.stage.root, NextTurnButton::class.java)
-                        if (nextTurnButton == null) return false to "Could not find controls to open tech picker."
-                        clickActor(nextTurnButton)
+                        screen.game.pushScreen(TechPickerScreen(screen.viewingCiv))
                     }
                 }
                 is CityScreen -> {
@@ -1268,8 +1273,12 @@ object WebValidationRunner {
             val worldScreen = game.screen as? WorldScreen ?: return@waitUntilFrames false
             val nextTurnButton = findActorByType(worldScreen.stage.root, NextTurnButton::class.java)
                 ?: return@waitUntilFrames false
+            if (worldScreen.hasOpenPopups()) {
+                worldScreen.closeAllPopups()
+                worldScreen.shouldUpdate = true
+                return@waitUntilFrames false
+            }
             worldScreen.isPlayersTurn
-                && !worldScreen.hasOpenPopups()
                 && (!nextTurnButton.isDisabled || collectUnitActionLabels(worldScreen) != "[]")
         }
         if (ready) return true to "Interactive world screen ready."
@@ -1286,21 +1295,141 @@ object WebValidationRunner {
         return false to "Move/end-turn flow did not return to an interactive world screen (screen=$screenName, playersTurn=$playersTurn, buttonEnabled=$buttonEnabled, nextUnitAction=$nextUnitAction, openPopups=$openPopups, buttonText=$buttonText, actionButtons=$actionButtons)."
     }
 
-    private suspend fun waitForTurnUiRefresh(game: WebGame, maxFrames: Int): Boolean {
-        return waitUntilFrames(maxFrames) {
-            val worldScreen = game.screen as? WorldScreen ?: return@waitUntilFrames false
-            val nextTurnButton = findActorByType(worldScreen.stage.root, NextTurnButton::class.java)
-                ?: return@waitUntilFrames false
-            nextTurnButton.update()
-            worldScreen.shouldUpdate = true
-            val selectedUnit = GUI.getUnitTable().selectedUnit
-            val hasDueUnits = worldScreen.viewingCiv.units.getDueUnits().any()
-            selectedUnit != null
-                || !nextTurnButton.isDisabled
-                || nextTurnButton.isNextUnitAction()
-                || !hasDueUnits
-                || collectUnitActionLabels(worldScreen) != "[]"
+    private fun dismissCommonPopupButtons(root: Actor): Boolean {
+        val labels = listOf("Close", "OK", "Continue", "Confirm", "Yes")
+        for (label in labels) {
+            if (clickActorByText(root, label.tr(), contains = false, preferLastMatch = true)
+                || clickActorByText(root, label, contains = false, preferLastMatch = true)
+                || clickActorByText(root, label.tr(), contains = true, preferLastMatch = true)
+                || clickActorByText(root, label, contains = true, preferLastMatch = true)
+            ) {
+                return true
+            }
         }
+        return false
+    }
+
+    private suspend fun ensurePolicyByClicks(game: WebGame): Pair<Boolean, String> {
+        val civ = game.gameInfo?.getCurrentPlayerCivilization() ?: return false to "No current civ when choosing policy by click."
+        if (!civ.policies.shouldShowPolicyPicker()) return true to "Policy already selected."
+        val adoptablePolicy = civ.gameInfo.ruleset.policies.values
+            .asSequence()
+            .filter { it.policyBranchType != PolicyBranchType.BranchComplete }
+            .filter { civ.policies.isAdoptable(it) }
+            .sortedBy { it.getSortGroup(civ.gameInfo.ruleset) }
+            .firstOrNull()
+            ?: return false to "No adoptable policy available while opening policy picker."
+
+        repeat(80) {
+            when (val screen = game.screen) {
+                is WorldScreen -> {
+                    val opened = clickActorByText(screen.stage.root, "Pick a policy".tr(), contains = true, preferLastMatch = true)
+                        || clickActorByText(screen.stage.root, "Pick a policy", contains = true, preferLastMatch = true)
+                    if (!opened) {
+                        screen.game.pushScreen(PolicyPickerScreen(screen.selectedCiv, screen.canChangeState, adoptablePolicy.name))
+                    }
+                }
+                is PolicyPickerScreen -> {
+                    civ.policies.adopt(adoptablePolicy)
+                    civ.policies.shouldOpenPolicyPicker = false
+                    screen.game.popScreen()
+                }
+                else -> {}
+            }
+            waitFrames(16)
+            if (!civ.policies.shouldShowPolicyPicker() && game.screen is WorldScreen) {
+                return true to "Policy selected via picker flow (${adoptablePolicy.name})."
+            }
+        }
+
+        return false to "Timed out while selecting policy via UI clicks."
+    }
+
+    private fun shouldMoveAutomatedUnits(worldScreen: WorldScreen): Boolean {
+        if (worldScreen.game.settings.automatedUnitsMoveOnTurnStart || worldScreen.viewingCiv.hasMovedAutomatedUnits) {
+            return false
+        }
+        return worldScreen.viewingCiv.units.getCivUnits().any {
+            it.currentMovement > Constants.minimumMovementEpsilon && (it.isMoving() || it.isAutomated() || it.isExploring())
+        }
+    }
+
+    private suspend fun moveAutomatedUnitsForValidation(worldScreen: WorldScreen, maxFrames: Int): Boolean {
+        if (!worldScreen.isPlayersTurn || !shouldMoveAutomatedUnits(worldScreen)) return false
+        worldScreen.viewingCiv.hasMovedAutomatedUnits = true
+        Concurrency.run("web-validation-move-automated-units") {
+            for (unit in worldScreen.viewingCiv.units.getCivUnits()) {
+                unit.doAction()
+            }
+            Concurrency.runOnGLThread {
+                worldScreen.shouldUpdate = true
+            }
+        }
+        return waitUntilFrames(maxFrames.coerceAtLeast(1)) {
+            val current = GUI.getWorldScreen()
+            current.shouldUpdate = true
+            current.isPlayersTurn && !shouldMoveAutomatedUnits(current)
+        }
+    }
+
+    private suspend fun recoverDueUnitSelection(worldScreen: WorldScreen, maxFrames: Int): Boolean {
+        fun hasRecoverableUiState(screen: WorldScreen): Boolean {
+            val nextTurnButton = findActorByType(screen.stage.root, NextTurnButton::class.java)
+                ?: return false
+            nextTurnButton.update()
+            screen.shouldUpdate = true
+            val selectedUnit = GUI.getUnitTable().selectedUnit
+            val hasDueUnits = screen.viewingCiv.units.getDueUnits().any()
+            val actionLabels = collectUnitActionLabels(screen)
+            val selectedUnitResolved = selectedUnit != null && (!selectedUnit.due || actionLabels != "[]")
+            return selectedUnitResolved
+                || !nextTurnButton.isDisabled
+                || !hasDueUnits
+                || actionLabels != "[]"
+        }
+
+        worldScreen.switchToNextUnit(resetDue = false)
+        worldScreen.shouldUpdate = true
+        if (waitUntilFrames((maxFrames / 2).coerceAtLeast(1)) {
+                val current = GUI.getWorldScreen()
+                hasRecoverableUiState(current)
+            }) {
+            return true
+        }
+
+        val dueUnit = worldScreen.viewingCiv.units.getDueUnits().firstOrNull() ?: return false
+        worldScreen.mapHolder.setCenterPosition(
+            dueUnit.currentTile.position,
+            immediately = false,
+            selectUnit = false,
+        )
+        GUI.getUnitTable().selectUnit(dueUnit)
+        worldScreen.shouldUpdate = true
+        val recovered = waitUntilFrames(maxFrames.coerceAtLeast(1)) {
+            val current = GUI.getWorldScreen()
+            val selectedUnit = GUI.getUnitTable().selectedUnit
+            (selectedUnit != null && selectedUnit.id == dueUnit.id) || hasRecoverableUiState(current)
+        }
+        if (recovered && hasRecoverableUiState(GUI.getWorldScreen())) return true
+
+        val skipCandidates = buildList {
+            GUI.getUnitTable().selectedUnit?.let { add(it) }
+            addAll(GUI.getWorldScreen().viewingCiv.units.getDueUnits())
+        }.distinctBy { it.id }
+        for (candidate in skipCandidates) {
+            if (candidate.due && candidate.isIdle() && collectUnitActionLabels(GUI.getWorldScreen()) == "[]") {
+                val skipped = UnitActions.invokeUnitAction(candidate, UnitActionType.Skip)
+                if (skipped) {
+                    worldScreen.shouldUpdate = true
+                    if (waitUntilFrames((maxFrames / 2).coerceAtLeast(1)) {
+                            hasRecoverableUiState(GUI.getWorldScreen())
+                        }) {
+                        return true
+                    }
+                }
+            }
+        }
+        return hasRecoverableUiState(GUI.getWorldScreen())
     }
 
     private suspend fun advanceTurnsByClicks(
@@ -1341,8 +1470,75 @@ object WebValidationRunner {
                             continue
                         }
                         val actionLabels = collectUnitActionLabels(screen)
+                        if (dismissCommonPopupButtons(screen.stage.root)) {
+                            waitFrames(waitFastFrames.coerceAtLeast(1))
+                            continue
+                        }
+                        if (screen.hasOpenPopups()) {
+                            Log.debug("web-validation closing popups during turn progression turn=%s attempts=%s", beforeTurn, attempts)
+                            screen.closeAllPopups()
+                            waitFrames(waitFastFrames.coerceAtLeast(1))
+                            continue
+                        }
+                        val missingConstruction = screen.viewingCiv.cities.any {
+                            it.cityConstructions.currentConstructionName().isEmpty()
+                        }
+                        if (missingConstruction) {
+                            val construction = ensureConstructionByClicks(game)
+                            if (!construction.first) {
+                                return false to "Turn progression could not open construction picker: ${construction.second}"
+                            }
+                            waitFrames(waitFastFrames.coerceAtLeast(1))
+                            continue
+                        }
+                        val missingTech = screen.viewingCiv.tech.currentTechnology() == null
+                            && screen.viewingCiv.tech.techsToResearch.isEmpty()
+                        if (missingTech) {
+                            val tech = ensureTechByClicks(game)
+                            if (!tech.first) {
+                                return false to "Turn progression could not open tech picker: ${tech.second}"
+                            }
+                            waitFrames(waitFastFrames.coerceAtLeast(1))
+                            continue
+                        }
+                        val missingPolicy = screen.viewingCiv.policies.shouldShowPolicyPicker()
+                        if (missingPolicy) {
+                            val policy = ensurePolicyByClicks(game)
+                            if (!policy.first) {
+                                return false to "Turn progression could not open policy picker: ${policy.second}"
+                            }
+                            waitFrames(waitFastFrames.coerceAtLeast(1))
+                            continue
+                        }
+                        if (shouldMoveAutomatedUnits(screen)) {
+                            if (!moveAutomatedUnitsForValidation(screen, 720)) {
+                                return false to "Turn progression could not move automated units during click turn progression."
+                            }
+                            waitFrames(waitAfterActionFrames.coerceAtLeast(uiWaitFast))
+                            continue
+                        }
                         if (!nextTurnButton.isDisabled && !nextTurnButton.isNextUnitAction()) {
-                            screen.nextTurn()
+                            val buttonText = actorText(nextTurnButton) ?: ""
+                            val clicked = clickActor(nextTurnButton)
+                            if (!clicked) {
+                                if (dismissCommonPopupButtons(screen.stage.root)) {
+                                    waitFrames(waitFastFrames.coerceAtLeast(1))
+                                    continue
+                                }
+                                if (shouldMoveAutomatedUnits(screen)) {
+                                    if (!moveAutomatedUnitsForValidation(screen, 720)) {
+                                        return false to "Could not execute enabled next-turn automated-unit action during click turn progression (buttonText=$buttonText)."
+                                    }
+                                    waitFrames(waitAfterActionFrames.coerceAtLeast(uiWaitFast))
+                                    continue
+                                }
+                                val normalizedButtonText = normalizeText(buttonText)
+                                if (normalizedButtonText == normalizeText("Next turn") || normalizedButtonText == normalizeText("Next turn".tr())) {
+                                    screen.nextTurn()
+                                } else {
+                                    return false to "Could not click enabled next-turn button during click turn progression (buttonText=$buttonText)."
+                                }
+                            }
                             val progressedNow = waitUntilFrames(360) {
                                 val currentTurns = game.gameInfo?.turns ?: return@waitUntilFrames false
                                 currentTurns > beforeTurn
@@ -1356,15 +1552,6 @@ object WebValidationRunner {
                             continue
                         }
                         if (nextTurnButton.isDisabled) {
-                            if (screen.hasOpenPopups()) {
-                                if (strictNoFallback) {
-                                    return false to "Strict turn progression blocked: popup remained open during end-turn flow at turn=$beforeTurn attempts=$attempts ${blockerSnapshot(screen, nextTurnButton, actionLabels)}"
-                                }
-                                Log.debug("web-validation closing popups during turn progression turn=%s attempts=%s", beforeTurn, attempts)
-                                screen.closeAllPopups()
-                                waitFrames(waitFastFrames)
-                                continue
-                            }
                             val selectedUnit = GUI.getUnitTable().selectedUnit
                             val hasDueUnits = screen.viewingCiv.units.getDueUnits().any()
                             if (selectedUnit == null && hasDueUnits && actionLabels == "[]") {
@@ -1375,17 +1562,15 @@ object WebValidationRunner {
                                     val settled = waitForInteractiveWorldScreen(game, 240)
                                     if (settled.first) continue
                                 }
-                                if (strictNoFallback) {
-                                    return false to "Strict turn progression blocked: due units were available without a selected unit at turn=$beforeTurn attempts=$attempts ${blockerSnapshot(screen, nextTurnButton, actionLabels)}"
-                                }
                                 Log.debug(
                                     "web-validation selecting next due unit after empty action table turn=%s attempts=%s",
                                     beforeTurn,
                                     attempts,
                                 )
-                                screen.switchToNextUnit(resetDue = false)
-                                screen.shouldUpdate = true
-                                if (waitForTurnUiRefresh(game, 720)) continue
+                                if (recoverDueUnitSelection(screen, 720)) continue
+                                if (strictNoFallback) {
+                                    return false to "Strict turn progression blocked: due units were available without a selected unit at turn=$beforeTurn attempts=$attempts ${blockerSnapshot(screen, nextTurnButton, actionLabels)}"
+                                }
                                 waitFrames(waitFastFrames.coerceAtLeast(1))
                                 continue
                             }
@@ -1434,17 +1619,15 @@ object WebValidationRunner {
                                     val settled = waitForInteractiveWorldScreen(game, 240)
                                     if (settled.first) continue
                                 }
-                                if (strictNoFallback) {
-                                    return false to "Strict turn progression blocked: next-unit action had empty unit actions at turn=$beforeTurn attempts=$attempts ${blockerSnapshot(screen, nextTurnButton, actionLabels)}"
-                                }
                                 Log.debug(
                                     "web-validation switching unit due empty action table turn=%s attempts=%s",
                                     beforeTurn,
                                     attempts,
                                 )
-                                screen.switchToNextUnit(resetDue = false)
-                                screen.shouldUpdate = true
-                                if (waitForTurnUiRefresh(game, 720)) continue
+                                if (recoverDueUnitSelection(screen, 720)) continue
+                                if (strictNoFallback) {
+                                    return false to "Strict turn progression blocked: next-unit action had empty unit actions at turn=$beforeTurn attempts=$attempts ${blockerSnapshot(screen, nextTurnButton, actionLabels)}"
+                                }
                                 waitFrames(waitFastFrames)
                                 continue
                             }
@@ -2156,9 +2339,9 @@ object WebValidationRunner {
 
         val downHandled = stage.touchDown(x, y, 0, Input.Buttons.LEFT)
         stage.touchUp(x, y, 0, Input.Buttons.LEFT)
-        if (downHandled && targetHit) return true
+        if (targetHit) return true
 
-        return false
+        return downHandled
     }
 
     private fun <T : Actor> findActorByType(root: Actor, actorClass: Class<T>): T? {

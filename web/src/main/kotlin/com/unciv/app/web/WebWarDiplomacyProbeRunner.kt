@@ -421,11 +421,11 @@ object WebWarDiplomacyProbeRunner {
 
         appendStep("running:war_deep:turns-a", "Advancing six turns during first war.")
         val beforeTurnsA = game.gameInfo?.turns ?: setup.world.gameInfo.turns
-        val turnsA = WebValidationRunner.advanceTurnsByClicksProbe(game, 6)
-        if (!turnsA.first) {
+        val turnsA = advanceTurnsFastForWarProbe(game, turns = 6, deadlineMs = deadlineMs)
+        if (!turnsA.success) {
             return WebUiProbeRunner.FlowResult(
                 passed = false,
-                notes = "First deep turn block failed: ${turnsA.second}",
+                notes = "First deep turn block failed: ${turnsA.reason}",
                 warDeclaredObserved = true,
                 combatExchangesObserved = true,
                 forcesObserved = combatA.forces.joinToString(","),
@@ -460,11 +460,11 @@ object WebWarDiplomacyProbeRunner {
 
         appendStep("running:war_deep:turns-b", "Advancing final six turns for deep flow.")
         val beforeTurnsB = game.gameInfo?.turns ?: setup.world.gameInfo.turns
-        val turnsB = WebValidationRunner.advanceTurnsByClicksProbe(game, 6)
-        if (!turnsB.first) {
+        val turnsB = advanceTurnsFastForWarProbe(game, turns = 6, deadlineMs = deadlineMs)
+        if (!turnsB.success) {
             return WebUiProbeRunner.FlowResult(
                 passed = false,
-                notes = "Second deep turn block failed: ${turnsB.second}",
+                notes = "Second deep turn block failed: ${turnsB.reason}",
                 warDeclaredObserved = true,
                 combatExchangesObserved = true,
                 peaceObserved = peaceObserved,
