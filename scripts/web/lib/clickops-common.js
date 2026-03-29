@@ -273,6 +273,19 @@ async function waitForTarget(page, options) {
   );
 }
 
+async function clickPoint(page, x, y, options = {}) {
+  const {
+    moveSteps = 6,
+    delayMs = 40,
+  } = options;
+  await page.mouse.move(x, y, { steps: moveSteps }).catch(() => {});
+  await page.mouse.click(x, y, { delay: delayMs }).catch(async () => {
+    await page.mouse.down().catch(() => {});
+    if (delayMs > 0) await page.waitForTimeout(delayMs).catch(() => {});
+    await page.mouse.up().catch(() => {});
+  });
+}
+
 async function clickTarget(page, options) {
   const {
     label,
@@ -289,7 +302,7 @@ async function clickTarget(page, options) {
   });
   const clickX = Math.floor(Number(target.x || 0) + Number(target.width || 0) / 2);
   const clickY = Math.floor(Number(target.y || 0) + Number(target.height || 0) / 2);
-  await page.mouse.click(clickX, clickY);
+  await clickPoint(page, clickX, clickY);
   return target;
 }
 
@@ -301,11 +314,29 @@ async function fillTargetWithText(page, options) {
     timeoutMs,
     allowScroll = false,
   } = options;
-  await clickTarget(page, { label, targetId, timeoutMs, allowScroll });
-  await page.keyboard.press('Control+A').catch(() => {});
-  await page.keyboard.press('Meta+A').catch(() => {});
-  await page.keyboard.press('Backspace').catch(() => {});
-  await page.keyboard.type(String(text || ''));
+  const expectedText = String(text || '');
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    await clickTarget(page, { label, targetId, timeoutMs, allowScroll });
+    await page.keyboard.press('Control+A').catch(() => {});
+    await page.keyboard.press('Meta+A').catch(() => {});
+    await page.keyboard.press('Backspace').catch(() => {});
+    await page.keyboard.type(expectedText, { delay: 20 }).catch(async () => {
+      await page.keyboard.type(expectedText).catch(() => {});
+    });
+    await page.keyboard.press('Tab').catch(() => {});
+    const matched = await waitForState(page, {
+      label,
+      timeoutMs: Math.min(timeoutMs, 5000),
+      description: `text field [${targetId}] matched expected text`,
+      predicate: (_, snapshot) => {
+        const target = snapshot.targets.find((item) => item && item.id === targetId);
+        return !!target && String(target.text || '').trim() === expectedText.trim();
+      },
+    }).catch(() => null);
+    if (matched) return;
+    await page.waitForTimeout(120).catch(() => {});
+  }
+  throw new Error(`[${label}] failed to fill target [${targetId}] with expected text "${expectedText}"`);
 }
 
 async function dismissPopups(page, options) {
@@ -321,6 +352,10 @@ async function dismissPopups(page, options) {
     if (!snapshot.state || snapshot.state.hasPopup !== true) return;
     const dismiss = snapshot.targets.find((item) => item && item.id === 'popup.dismiss' && item.visible === true && item.enabled === true);
     if (!dismiss) {
+      if (snapshot.state && snapshot.state.screen === 'WorldScreen') {
+        await page.waitForTimeout(150);
+        continue;
+      }
       await page.keyboard.press('Escape').catch(() => {});
       await page.keyboard.press('Enter').catch(() => {});
       await page.waitForTimeout(150);
@@ -328,8 +363,8 @@ async function dismissPopups(page, options) {
     }
     const x = Math.floor(Number(dismiss.x || 0) + Number(dismiss.width || 0) / 2);
     const y = Math.floor(Number(dismiss.y || 0) + Number(dismiss.height || 0) / 2);
-    await page.mouse.click(x, y);
-    await page.waitForTimeout(120);
+    await clickPoint(page, x, y);
+    await page.waitForTimeout(180);
   }
   const available = (lastSnapshot && Array.isArray(lastSnapshot.targets))
     ? lastSnapshot.targets.map((item) => item.id).slice(0, 40).join(', ')
@@ -350,6 +385,7 @@ module.exports = {
   getSnapshot,
   waitForState,
   waitForTarget,
+  clickPoint,
   clickTarget,
   fillTargetWithText,
   dismissPopups,

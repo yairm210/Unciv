@@ -27,7 +27,7 @@ object WebClickOpsCollector {
     private const val guestUserId = "00000000-0000-0000-0000-0000000000b2"
     private const val sharedPassword = "webtest-pass"
     private const val publishIntervalMs = 120L
-    private val dismissLabels = setOf("close", "back", "ok", "yes", "done")
+    private val dismissLabels = setOf("close", "back", "ok", "yes", "done", "continue", "confirm", "let's begin!")
 
     private data class TargetSnapshot(
         val id: String,
@@ -91,6 +91,7 @@ object WebClickOpsCollector {
         }
         val multiplayer = game.settings.multiplayer
         game.settings.autoAssignCityProduction = true
+        game.settings.showTutorials = false
         multiplayer.setServer(serverUrl)
         multiplayer.hideDropboxWarning = true
         game.onlineMultiplayer.multiplayerServer.setFeatureSet(ServerFeatureSet(chatVersion = 1))
@@ -123,11 +124,15 @@ object WebClickOpsCollector {
 
     private fun collectPopupDismissTarget(actor: Actor, stage: Stage, screenName: String, out: MutableList<TargetSnapshot>) {
         if (out.any { it.id == "popup.dismiss" }) return
-        if (actor is TextButton && actor.isVisible && actor.touchable == Touchable.enabled && isInsidePopup(actor)) {
-            val text = actor.text?.toString()?.trim().orEmpty().lowercase()
-            if (text in dismissLabels) {
-                val target = buildTarget(actor, stage, "popup.dismiss", screenName)
-                if (target != null) out += target
+        val popupButtons = mutableListOf<TextButton>()
+        collectPopupButtons(actor, popupButtons)
+        val dismissButton = popupButtons.firstOrNull {
+            it.text?.toString()?.trim().orEmpty().lowercase() in dismissLabels
+        } ?: popupButtons.singleOrNull()
+        if (dismissButton != null) {
+            val target = buildTarget(dismissButton, stage, "popup.dismiss", screenName)
+            if (target != null) {
+                out += target
                 return
             }
         }
@@ -136,6 +141,18 @@ object WebClickOpsCollector {
             for (index in 0 until children.size) {
                 collectPopupDismissTarget(children[index], stage, screenName, out)
                 if (out.any { it.id == "popup.dismiss" }) return
+            }
+        }
+    }
+
+    private fun collectPopupButtons(actor: Actor, out: MutableList<TextButton>) {
+        if (actor is TextButton && actor.isVisible && actor.touchable == Touchable.enabled && isInsidePopup(actor)) {
+            out += actor
+        }
+        if (actor is Group) {
+            val children = actor.children
+            for (index in 0 until children.size) {
+                collectPopupButtons(children[index], out)
             }
         }
     }

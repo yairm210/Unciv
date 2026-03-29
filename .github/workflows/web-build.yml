@@ -352,12 +352,12 @@ jobs:
 
       - name: Run UI core loop gate
         run: |
-          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_PROFILE=phase1 WEB_UI_DEVICE_MODE=desktop WEB_UI_CORE_LOOP_TIMEOUT_MS=60000 WEB_UI_STARTUP_TIMEOUT_MS=30000 WEB_UI_STARTUP_ATTEMPTS=3 \
+          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_PROFILE=phase1 WEB_UI_DEVICE_MODE=desktop WEB_UI_CORE_LOOP_TIMEOUT_MS=90000 WEB_UI_STARTUP_TIMEOUT_MS=30000 WEB_UI_STARTUP_ATTEMPTS=3 \
           node scripts/web/run-web-ui-core-loop.js
 
       - name: Run UI core loop gate (mobile)
         run: |
-          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_PROFILE=phase1 WEB_UI_DEVICE_MODE=mobile WEB_UI_CORE_LOOP_TIMEOUT_MS=90000 WEB_UI_STARTUP_TIMEOUT_MS=30000 WEB_UI_STARTUP_ATTEMPTS=3 \
+          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_PROFILE=phase1 WEB_UI_DEVICE_MODE=mobile WEB_UI_CORE_LOOP_TIMEOUT_MS=120000 WEB_UI_STARTUP_TIMEOUT_MS=30000 WEB_UI_STARTUP_ATTEMPTS=3 \
           node scripts/web/run-web-ui-core-loop.js
 
       - name: Publish UI core loop summary

@@ -14,6 +14,7 @@ const {
   getSnapshot,
   waitForState,
   waitForTarget,
+  clickPoint,
   clickTarget,
   fillTargetWithText,
   dismissPopups,
@@ -50,7 +51,7 @@ async function clickCheckbox(page, label, targetId, timeoutMs) {
   });
   const clickX = Math.floor(Number(target.x || 0) + Math.min(18, Number(target.width || 0) / 3));
   const clickY = Math.floor(Number(target.y || 0) + Number(target.height || 0) / 2);
-  await page.mouse.click(clickX, clickY);
+  await clickPoint(page, clickX, clickY);
 }
 
 async function configureMultiplayerPlayerIds(hostPage, report, timeoutMs) {
@@ -214,6 +215,10 @@ async function commitGuestTurn(page, report, beforeState, timeoutMs) {
     await dismissPopups(page, { label: 'guest', timeoutMs: 8000 }).catch(() => {});
     const snapshot = await getSnapshot(page, 'guest');
     const state = snapshot.state || null;
+    if (state && state.hasPopup === true) {
+      await page.waitForTimeout(250);
+      continue;
+    }
     if (state && state.screen === 'TechPickerScreen') {
       await selectFirstAvailableTech(page, 'guest', Math.min(30000, timeoutMs));
       continue;
