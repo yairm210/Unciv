@@ -1,3 +1,75 @@
+## 4.19.19
+
+Reset tileset settings when deleting the mod that contained the tileset
+
+AIs ignore demands/declarations of friendship from dead civs
+
+By Ambeco:
+- AStar pathing no longer treats rivers as multi-turn obstacles 
+- flat earth hexigonal no longer crashes 
+
+Bugfix: don't try to buy missionaries in cities with a civilian unit - By EmperorPinguin
+
+## 4.19.18
+
+Ignore free promotions for promotion path costs
+
+Allow gaining free promotions before gaining XP
+
+By Ambeco:
+- Mods can have multiple Ocean and Coast Terrains 
+- AStar moves through same tiles as Classic  
+
+Add showDemographics option - By ICanSeeForever
+
+Forced unit disbandment considers refundability and promotions - By unciv-loof
+DenounceWillingness personality trait - by unciv-loof
+
+AI: only get mad at spreading religion while they can found their own - By EmperorPinguin
+
+## 4.19.17
+
+Ruleset switching in new game screen no longer allows zero victory types
+
+Users cannot offer negative gold with "-50" buttons
+
+By unciv-loof:
+- Notification shows who is responsible for skipping or resigning a player 
+- Newly fetched mod entries respect current filter 
+- Declaation of War + Declaration of Friendship UI improvements
+
+By Ambeco:
+- Fixed alternate pathfinding bugs 
+- Unitactions and UnitTriggers have moddable priority
+- Eliminated most Hardcoded Terrains 
+
+## 4.19.16
+
+Changed default max RAM from 1GB to 4GB, it's 2026, let people go crazy if they want
+
+Feature/spy city view restrictions - By ICanSeeForever
+
+FreshWater NaturalWonders no longer appear as lakes - By Ambeco
+
+Scale demands and WLTK duration with game speed - By unciv-loof
+
+## 4.19.15
+
+More explicit warning about large maps causing memory crashes 
+
+Catch base terrains with occursOn in ruleset validation
+
+Removing improvement-creating buildings where the no city tile has the improvement, no longer crashes
+
+Cities can attack revealed invisible units
+
+By Ambeco:
+- Adding alternate pathing algorithm 
+- Jungles again no longer spawn on hills 
+- MapGeneration ignores rareFeatures when placing normal tiles 
+
+Add max(), min() functions to countable expressions - By AutumnPizazz
+
 ## 4.19.14
 
 Add star icon to resources on map that are currently provided

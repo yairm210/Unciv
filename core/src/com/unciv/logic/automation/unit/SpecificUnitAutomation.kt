@@ -199,7 +199,7 @@ object SpecificUnitAutomation {
                 it.isLand && (it.tileResource?.isImprovedBy(improvementName) != false) && !it.isCityCenter()
                     && (unit.currentTile == it || unit.movement.canMoveTo(it))
                     // okay if we replace regular improvements by great improvements, but not the other way around
-                    && (it.improvement == null || !it.getTileImprovement()!!.hasUnique(UniqueType.GreatImprovement))
+                    && (it.tileImprovement == null || !it.tileImprovement!!.hasUnique(UniqueType.GreatImprovement))
                     && it.improvementFunctions.canBuildImprovement(improvement, unit.cache.state)
                     && (!improvement.hasUnique(UniqueType.GreatImprovement) || Automation.rankStatsValue(it.getBaseTerrain().cloneStats(), unit.civ) > averageTerrainStatsValue)
             }

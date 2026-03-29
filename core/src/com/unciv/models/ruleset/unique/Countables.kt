@@ -406,6 +406,16 @@ enum class Countables(
             "Since on translation, the brackets are removed, the expression will be displayed as `(Melee units + 1) / Cities`",
             "Supported operations between 2 values are: "+ Operator.BinaryOperators.entries.joinToString { it.symbol },
             "Supported operations on 1 value are: " + Operator.UnaryOperators.entries.joinToString { "${it.symbol} (${it.description})" },
+            "Supported functions:",
+            *Operator.Functions.entries.map { 
+                val arityText = if (it.arityRange.first == it.arityRange.last) 
+                    "${it.arityRange.first} argument${if (it.arityRange.first != 1) "s" else ""}"
+                else 
+                    "${it.arityRange.first} to ${it.arityRange.last} arguments"
+                var functionParameters = List(it.arityRange.first){"expression"}.joinToString(",")
+                if (it.arityRange.first != it.arityRange.last) functionParameters += ",..."
+                " - `${it.symbol}($functionParameters)`"
+            }.toTypedArray(),
         )
     }
     ;

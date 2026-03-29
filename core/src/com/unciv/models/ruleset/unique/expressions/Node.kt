@@ -23,7 +23,6 @@ internal sealed interface Node {
     }
 
     class UnaryOperation(private val operator: Operator.Unary, private val operand: Node): Node {
-        @Suppress("purity") // cannot mark class val as @Read
         override fun eval(context: GameContext): Double = operator.implementation(operand.eval(context))
         override fun toString() = "($operator $operand)"
         override fun getErrors(ruleset: Ruleset) = operand.getErrors(ruleset)
@@ -57,7 +56,6 @@ internal sealed interface Node {
                 ?: Countables.getMatching(parameterText, ruleset)
         }
 
-        @Readonly
         override fun getErrors(ruleset: Ruleset): List<String> {
             if (getCountable(ruleset) == null)
                 return listOf("Unknown countable: $parameterText")
@@ -65,5 +63,18 @@ internal sealed interface Node {
         }
 
         override fun toString() = "[Countable: $parameterText]"
+    }
+
+    class FunctionCall(private val function: Operator.Function, private val arguments: List<Node>): Node {
+        override fun eval(context: GameContext): Double {
+            val evaluatedArgs = arguments.map { it.eval(context) }
+            return function.implementation(evaluatedArgs)
+        }
+
+        override fun getErrors(ruleset: Ruleset): List<String> {
+            return arguments.flatMap { it.getErrors(ruleset) }
+        }
+
+        override fun toString() = "[FunctionCall: ${function.symbol}(${arguments.joinToString(", ")})]"
     }
 }

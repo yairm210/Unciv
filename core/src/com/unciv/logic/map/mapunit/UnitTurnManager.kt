@@ -76,11 +76,11 @@ class UnitTurnManager(val unit: MapUnit) {
         // Check for Citadel damage - note: 'Damage does not stack with other Citadels'
         val (citadelTile, damage) = unit.currentTile.neighbors
             .filter {
-                it.getOwner() != null
-                        && it.getUnpillagedImprovement() != null
-                        && unit.civ.isAtWarWith(it.getOwner()!!)
+                it.getOwner() != null &&
+                    it.getUnpillagedImprovement() != null &&
+                    unit.civ.isAtWarWith(it.getOwner()!!)
             }.map { tile ->
-                tile to tile.getTileImprovement()!!.getMatchingUniques(UniqueType.DamagesAdjacentEnemyUnits, tile.stateThisTile)
+                tile to tile.tileImprovement!!.getMatchingUniques(UniqueType.DamagesAdjacentEnemyUnits, tile.stateThisTile)
                     .sumOf { it.params[0].toInt() }
             }.maxByOrNull { it.second }
             ?: return

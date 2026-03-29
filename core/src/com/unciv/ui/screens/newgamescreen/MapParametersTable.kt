@@ -2,6 +2,7 @@ package com.unciv.ui.screens.newgamescreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
@@ -64,6 +65,16 @@ class MapParametersTable(
     // overrides nor is a Widget a data class. Seems to work anyway.
     private val advancedSliders = HashMap<UncivSlider, ()->Float>()
 
+    private lateinit var hexWarningLabel: Label
+    private lateinit var rectWarningLabel: Label
+
+    companion object {
+        private const val LARGE_MAP_WARNING = "This is a large map - may cause latency issues"
+        private const val VERY_LARGE_MAP_WARNING = "This is a very large map - may cause Out Of Memory crashes"
+        private const val LARGE_MAP_TILES = 4000
+        private const val VERY_LARGE_MAP_TILES = 16000
+    }
+
     // used only in map editor (forMapEditor == true)
     var randomizeSeed = true
 
@@ -99,11 +110,7 @@ class MapParametersTable(
     }
 
     private fun addMapShapeSelectBox() {
-        val mapShapes = listOfNotNull(
-            MapShape.hexagonal,
-            MapShape.flatEarth,
-            MapShape.rectangular
-        )
+        val mapShapes = MapShape.allValues
 
         if (mapGeneratedMainType == MapGeneratedMainType.randomGenerated) {
             mapShapesOptionsValues = mapShapes.toHashSet()
@@ -151,20 +158,8 @@ class MapParametersTable(
 
     private fun addMapTypeSelectBox() {
         // MapType is not an enum so we can't simply enumerate. //todo: make it so!
-        val mapTypes = listOfNotNull(
-            MapType.pangaea,
-            MapType.continentAndIslands,
-            MapType.twoContinents,
-            MapType.threeContinents,
-            MapType.fourCorners,
-            MapType.archipelago,
-            MapType.innerSea,
-            MapType.perlin,
-            MapType.fractal,
-            MapType.lakes,
-            MapType.smallContinents,
-            if (forMapEditor && mapGeneratedMainType != MapGeneratedMainType.randomGenerated) MapType.empty else null
-        )
+        var mapTypes = MapType.allValues
+        if (forMapEditor && mapGeneratedMainType != MapGeneratedMainType.randomGenerated) mapTypes = mapTypes + MapType.empty
 
         if (mapGeneratedMainType == MapGeneratedMainType.randomGenerated) {
             mapTypesOptionsValues = mapTypes.toHashSet()
@@ -228,12 +223,21 @@ class MapParametersTable(
         val defaultRadius = mapParameters.mapSize.radius
         customMapSizeRadius = UncivTextField.Integer("Radius", defaultRadius)
         customMapSizeRadius.onChange {
-            mapParameters.mapSize = MapSize(customMapSizeRadius.intValue ?: 0 )
+            mapParameters.mapSize = MapSize(customMapSizeRadius.intValue ?: 0)
+            updateHexagonalWarnings()
         }
+        hexWarningLabel = "".toLabel(Color.RED).apply { wrap = true }
         hexagonalSizeTable.add("{Radius}:".toLabel()).grow().left()
         hexagonalSizeTable.add(customMapSizeRadius).right().row()
-        hexagonalSizeTable.add("Anything above 40 may work very slowly on Android!".toLabel(Color.RED)
-            .apply { wrap=true }).width(prefWidth).colspan(hexagonalSizeTable.columns)
+        hexagonalSizeTable.add(hexWarningLabel).fillX().colspan(hexagonalSizeTable.columns).row()
+        updateHexagonalWarnings()
+    }
+
+    private fun updateHexagonalWarnings() {
+        val tiles = HexMath.getNumberOfTilesInHexagon(customMapSizeRadius.intValue ?: 0)
+        hexWarningLabel.isVisible = tiles >= LARGE_MAP_TILES
+        if (tiles >= VERY_LARGE_MAP_TILES) hexWarningLabel.setText(VERY_LARGE_MAP_WARNING)
+        else hexWarningLabel.setText(LARGE_MAP_WARNING)
     }
 
     private fun addRectangularSizeTable() {
@@ -244,18 +248,29 @@ class MapParametersTable(
 
         customMapWidth.onChange {
             mapParameters.mapSize = MapSize(customMapWidth.intValue ?: 0, customMapHeight.intValue ?: 0)
+            updateRectangularWarnings()
         }
         customMapHeight.onChange {
             mapParameters.mapSize = MapSize(customMapWidth.intValue ?: 0, customMapHeight.intValue ?: 0)
+            updateRectangularWarnings()
         }
+
+        rectWarningLabel = "".toLabel(Color.RED).apply { wrap = true }
 
         rectangularSizeTable.defaults().pad(5f)
         rectangularSizeTable.add("{Width}:".toLabel()).grow().left()
         rectangularSizeTable.add(customMapWidth).right().row()
         rectangularSizeTable.add("{Height}:".toLabel()).grow().left()
         rectangularSizeTable.add(customMapHeight).right().row()
-        rectangularSizeTable.add("Anything above 80 by 50 may work very slowly on Android!".toLabel(Color.RED)
-            .apply { wrap = true }).width(prefWidth).colspan(hexagonalSizeTable.columns)
+        rectangularSizeTable.add(rectWarningLabel).fillX().colspan(hexagonalSizeTable.columns).row()
+        updateRectangularWarnings()
+    }
+
+    private fun updateRectangularWarnings() {
+        val tiles = (customMapWidth.intValue ?: 0) * (customMapHeight.intValue ?: 0)
+        rectWarningLabel.isVisible = tiles >= LARGE_MAP_TILES
+        if (tiles >= VERY_LARGE_MAP_TILES) rectWarningLabel.setText(VERY_LARGE_MAP_WARNING)
+        else rectWarningLabel.setText(LARGE_MAP_WARNING)
     }
 
     private fun updateWorldSizeTable() {
@@ -437,7 +452,7 @@ class MapParametersTable(
         addSlider("Max Coast extension", {mapParameters.maxCoastExtension.toFloat()}, 1f, 5f)
         { mapParameters.maxCoastExtension = it.toInt() }.apply { stepSize = 1f }
 
-        addSlider("Biome areas extension", {mapParameters.tilesPerBiomeArea.toFloat()}, 1f, 15f)
+        addSlider("Biome size", {mapParameters.tilesPerBiomeArea.toFloat()}, 1f, 15f)
         { mapParameters.tilesPerBiomeArea = it.toInt() }.apply { stepSize = 1f }
 
         addSlider("Water level", {mapParameters.waterThreshold}, -0.1f, 0.1f)

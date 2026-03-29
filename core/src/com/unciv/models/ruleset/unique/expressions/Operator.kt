@@ -27,6 +27,12 @@ internal sealed interface Operator : Tokenizer.Token {
         val binary: Binary
     }
 
+    interface Function : Operator {
+        /** Number of arguments the function accepts - can be a range for variadic functions */
+        val arityRange: IntRange
+        val implementation: (List<Double>) -> Double
+    }
+
     enum class UnaryOperators(
         override val symbol: String,
         override val implementation: (Double) -> Double,
@@ -68,6 +74,17 @@ internal sealed interface Operator : Tokenizer.Token {
         override fun toString() = symbol
     }
 
+    enum class Functions(
+        override val symbol: String,
+        override val arityRange: IntRange,
+        override val implementation: (List<Double>) -> Double
+    ) : Function {
+        Max("max", 2..Int.MAX_VALUE, { args -> args.maxOrNull() ?: 0.0 }),
+        Min("min", 2..Int.MAX_VALUE, { args -> args.minOrNull() ?: 0.0 }),
+        ;
+        override fun toString() = symbol
+    }
+
     enum class NamedConstants(override val symbol: String, override val value: Double) : Node.Constant, Operator {
         Pi("pi", PI),
         Pi2("π", PI),
@@ -87,6 +104,7 @@ internal sealed interface Operator : Tokenizer.Token {
             UnaryOperators.entries.asSequence() +
             BinaryOperators.entries +
             UnaryOrBinaryOperators.entries + // Will overwrite the previous entries in the map
+            Functions.entries +
             NamedConstants.entries +
             Parentheses.entries
         @Immutable private val cache = allEntries().associateBy { it.symbol }

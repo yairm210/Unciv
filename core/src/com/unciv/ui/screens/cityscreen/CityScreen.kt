@@ -73,7 +73,7 @@ class CityScreen(
 
     private val selectedCiv: Civilization = GUI.getWorldScreen().selectedCiv
 
-    private val isSpying = selectedCiv.gameInfo.isEspionageEnabled() && selectedCiv != city.civ
+    internal val isSpying = selectedCiv.gameInfo.isEspionageEnabled() && selectedCiv != city.civ
 
     /**
      * This is the regular civ city list if we are not spying, if we are spying then it is every foreign city that our spies are in
@@ -254,11 +254,11 @@ class CityScreen(
     private fun updateTileGroups() {
         val cityUniqueCache = LocalUniqueCache()
         fun isExistingImprovementValuable(tile: Tile): Boolean {
-            if (tile.improvement == null) return false
+            val improvement = tile.tileImprovement ?: return false
             val civInfo = city.civ
 
             val statDiffForNewImprovement = tile.stats.getStatDiffForImprovement(
-                tile.getTileImprovement()!!,
+                improvement,
                 civInfo,
                 city,
                 cityUniqueCache
@@ -378,7 +378,7 @@ class CityScreen(
         val tileSetStrings = TileSetStrings(city.civ.gameInfo.ruleset, game.settings)
         val cityTileGroups = city.getCenterTile().getTilesInDistance(viewRange)
                 .filter { selectedCiv.hasExplored(it) }
-                .map { CityTileGroup(city, it, tileSetStrings, false) }
+                .map { CityTileGroup(city, it, tileSetStrings, false, isSpying) }
 
         for (tileGroup in cityTileGroups) {
             tileGroup.onClick { tileGroupOnClick(tileGroup, city) }

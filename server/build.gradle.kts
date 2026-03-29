@@ -144,7 +144,7 @@ for (platform in Platform.values()) {
                     " --executable UncivServer" +
                     " --classpath $jarFile" +
                     " --mainclass $mainClassName" +
-                    " --vmargs Xmx1G " +
+                    " --vmargs Xmx4G " +
                     (if (platform == Platform.MacOS) jvmArgsForMac.joinToString(" ") {
                         it.removePrefix("-")
                     }
