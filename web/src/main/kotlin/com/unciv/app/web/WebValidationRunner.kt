@@ -1348,6 +1348,26 @@ object WebValidationRunner {
                                 waitFrames(waitFastFrames)
                                 continue
                             }
+                            val selectedUnit = GUI.getUnitTable().selectedUnit
+                            val hasDueUnits = screen.viewingCiv.units.getDueUnits().any()
+                            if (selectedUnit == null && hasDueUnits && actionLabels == "[]") {
+                                if (!waitedForNextUnitRecovery) {
+                                    waitedForNextUnitRecovery = true
+                                    val settled = waitForInteractiveWorldScreen(game, 240)
+                                    if (settled.first) continue
+                                }
+                                if (strictNoFallback) {
+                                    return false to "Strict turn progression blocked: due units were available without a selected unit at turn=$beforeTurn attempts=$attempts ${blockerSnapshot(screen, nextTurnButton, actionLabels)}"
+                                }
+                                Log.debug(
+                                    "web-validation selecting next due unit after empty action table turn=%s attempts=%s",
+                                    beforeTurn,
+                                    attempts,
+                                )
+                                screen.switchToNextUnit(resetDue = !screen.game.settings.checkForDueUnitsCycles)
+                                waitFrames(waitFastFrames.coerceAtLeast(1))
+                                continue
+                            }
                             if (!nextTurnButton.isNextUnitAction() && actionLabels == "[]") {
                                 if (strictNoFallback) {
                                     return false to "Strict turn progression blocked: next-turn button disabled with empty unit actions at turn=$beforeTurn attempts=$attempts ${blockerSnapshot(screen, nextTurnButton, actionLabels)}"
@@ -1362,8 +1382,6 @@ object WebValidationRunner {
                                 continue
                             }
                             if (nextTurnButton.isNextUnitAction() && actionLabels == "[]") {
-                                val selectedUnit = GUI.getUnitTable().selectedUnit
-                                val hasDueUnits = screen.viewingCiv.units.getDueUnits().any()
                                 if (selectedUnit == null && !hasDueUnits) {
                                     nextTurnButton.update()
                                     screen.shouldUpdate = true
