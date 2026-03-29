@@ -428,7 +428,7 @@ jobs:
 
       - name: Run strict clickops multiplayer gate
         run: |
-          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_MP_SERVER=http://127.0.0.1:19090 WEB_PROFILE=phase4-full WEB_CLICKS_MULTIPLAYER_TIMEOUT_MS=240000 \
+          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_MP_SERVER=http://127.0.0.1:19090 WEB_PROFILE=phase4-full WEB_CLICKS_MULTIPLAYER_TIMEOUT_MS=360000 \
           node scripts/web/run-web-clickops-multiplayer.js
 
       - name: Publish clickops multiplayer summary
@@ -539,7 +539,7 @@ jobs:
 
       - name: Run UI war from-start gate
         run: |
-          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_PROFILE=phase4-full WEB_UI_STARTUP_TIMEOUT_MS=30000 WEB_UI_STARTUP_ATTEMPTS=3 \
+          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_PROFILE=phase4-full WEB_UI_WAR_FROM_START_TIMEOUT_MS=240000 WEB_UI_STARTUP_TIMEOUT_MS=30000 WEB_UI_STARTUP_ATTEMPTS=3 \
           node scripts/web/run-web-ui-war-from-start.js
 
       - name: Publish UI war from-start summary

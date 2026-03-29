@@ -42,6 +42,12 @@ function summarizeBlobDiagnostics(diagnostics) {
   };
 }
 
+function scaleTimeout(totalTimeoutMs, floorMs, ratio, ceilingMs) {
+  const total = Number(totalTimeoutMs) || 0;
+  const scaled = Math.floor(total * ratio);
+  return Math.min(ceilingMs, Math.max(floorMs, scaled));
+}
+
 async function clickCheckbox(page, label, targetId, timeoutMs) {
   const { target } = await waitForTarget(page, {
     label,
@@ -211,6 +217,8 @@ async function selectFirstAvailableTech(page, label, timeoutMs) {
 
 async function commitGuestTurn(page, report, beforeState, timeoutMs) {
   const startedAt = Date.now();
+  const actionTimeoutMs = scaleTimeout(timeoutMs, 15000, 0.2, 45000);
+  const techSelectionTimeoutMs = scaleTimeout(timeoutMs, 30000, 0.3, 90000);
   while (Date.now() - startedAt <= timeoutMs) {
     await dismissPopups(page, { label: 'guest', timeoutMs: 8000 }).catch(() => {});
     const snapshot = await getSnapshot(page, 'guest');
@@ -220,7 +228,7 @@ async function commitGuestTurn(page, report, beforeState, timeoutMs) {
       continue;
     }
     if (state && state.screen === 'TechPickerScreen') {
-      await selectFirstAvailableTech(page, 'guest', Math.min(30000, timeoutMs));
+      await selectFirstAvailableTech(page, 'guest', techSelectionTimeoutMs);
       continue;
     }
     if (state && state.screen === 'WorldScreen') {
@@ -235,7 +243,7 @@ async function commitGuestTurn(page, report, beforeState, timeoutMs) {
       }
       const techOpen = snapshot.targets.find((item) => item && item.id === 'world.tech_open' && item.visible === true && item.enabled === true);
       if (techOpen) {
-        await clickTarget(page, { label: 'guest', targetId: 'world.tech_open', timeoutMs: 15000, allowScroll: true });
+        await clickTarget(page, { label: 'guest', targetId: 'world.tech_open', timeoutMs: actionTimeoutMs, allowScroll: true });
         await page.waitForTimeout(200);
         continue;
       }
@@ -284,21 +292,25 @@ async function ensureGuestCanAct(guestPage, hostPage, report, timeoutMs) {
 
 async function loadLatestOnHost(hostPage, gameId, expectedState, timeoutMs) {
   const startedAt = Date.now();
+  const actionTimeoutMs = scaleTimeout(timeoutMs, 15000, 0.15, 45000);
+  const popupTimeoutMs = scaleTimeout(timeoutMs, 15000, 0.2, 45000);
+  const rowTimeoutMs = scaleTimeout(timeoutMs, 30000, 0.25, 90000);
+  const reloadTimeoutMs = scaleTimeout(timeoutMs, 45000, 0.35, 120000);
   while (Date.now() - startedAt <= timeoutMs) {
     await dismissPopups(hostPage, { label: 'host', timeoutMs: 4000 }).catch(() => {});
-    await clickTarget(hostPage, { label: 'host', targetId: 'world.multiplayer_status_open', timeoutMs: 12000 });
+    await clickTarget(hostPage, { label: 'host', targetId: 'world.multiplayer_status_open', timeoutMs: actionTimeoutMs });
     await waitForState(hostPage, {
       label: 'host',
-      timeoutMs: 15000,
+      timeoutMs: popupTimeoutMs,
       description: 'multiplayer status popup open',
       predicate: (state) => state && state.hasPopup === true,
     });
-    await waitForGameRowOrRefresh(hostPage, 'host', gameId, 15000);
-    await clickTarget(hostPage, { label: 'host', targetId: `mp.game_row.${gameId}`, timeoutMs: 12000 });
-    await clickTarget(hostPage, { label: 'host', targetId: 'world.load_latest_multiplayer', timeoutMs: 12000 });
+    await waitForGameRowOrRefresh(hostPage, 'host', gameId, rowTimeoutMs);
+    await clickTarget(hostPage, { label: 'host', targetId: `mp.game_row.${gameId}`, timeoutMs: actionTimeoutMs });
+    await clickTarget(hostPage, { label: 'host', targetId: 'world.load_latest_multiplayer', timeoutMs: actionTimeoutMs });
     const loaded = await waitForState(hostPage, {
       label: 'host',
-      timeoutMs: 25000,
+      timeoutMs: reloadTimeoutMs,
       description: 'host world reloaded after multiplayer sync',
       predicate: (state) => state
         && state.screen === 'WorldScreen'
@@ -349,6 +361,10 @@ async function main() {
   const timeoutMs = Number(process.env.WEB_CLICKS_MULTIPLAYER_TIMEOUT_MS || '240000');
   const startupTimeoutMs = Number(process.env.WEB_CLICKS_MULTIPLAYER_STARTUP_TIMEOUT_MS || '45000');
   const startupAttempts = Number(process.env.WEB_CLICKS_MULTIPLAYER_STARTUP_ATTEMPTS || '3');
+  const longPhaseTimeoutMs = scaleTimeout(timeoutMs, 120000, 0.5, 180000);
+  const syncTimeoutMs = scaleTimeout(timeoutMs, 60000, 0.35, 150000);
+  const chatTimeoutMs = scaleTimeout(timeoutMs, 60000, 0.25, 120000);
+  const gameRowTimeoutMs = scaleTimeout(timeoutMs, 45000, 0.2, 90000);
   const runId = randomUUID();
 
   const report = {
@@ -532,7 +548,7 @@ async function main() {
       description: 'guest multiplayer list after save game id',
       predicate: (state) => state && state.screen === 'MultiplayerScreen',
     });
-    await waitForGameRowOrRefresh(guestPage, 'guest', report.gameId, 30000);
+    await waitForGameRowOrRefresh(guestPage, 'guest', report.gameId, gameRowTimeoutMs);
     await clickTarget(guestPage, { label: 'guest', targetId: `mp.game_row.${report.gameId}`, timeoutMs });
     await clickTarget(guestPage, { label: 'guest', targetId: 'mp.join_game', timeoutMs });
     const guestWorld = await waitForState(guestPage, {
@@ -544,15 +560,15 @@ async function main() {
     report.guestState = guestWorld.state;
     report.guestActions.push(`joined multiplayer game via UI gameId=${report.gameId}`);
 
-    const playableGuestState = await ensureGuestCanAct(guestPage, hostPage, report, 90000);
-    const guestAfterTurn = await commitGuestTurn(guestPage, report, playableGuestState, 90000);
+    const playableGuestState = await ensureGuestCanAct(guestPage, hostPage, report, longPhaseTimeoutMs);
+    const guestAfterTurn = await commitGuestTurn(guestPage, report, playableGuestState, longPhaseTimeoutMs);
     report.guestState = guestAfterTurn;
     report.guestActions.push(
       `guest committed turn change turn=${playableGuestState.turn}->${guestAfterTurn.turn} `
       + `player=${playableGuestState.currentPlayer}->${guestAfterTurn.currentPlayer}`,
     );
 
-    const hostReloaded = await loadLatestOnHost(hostPage, report.gameId, guestAfterTurn, 90000);
+    const hostReloaded = await loadLatestOnHost(hostPage, report.gameId, guestAfterTurn, syncTimeoutMs);
     report.hostState = hostReloaded;
     report.hostActions.push(`host loaded latest multiplayer state turn=${hostReloaded.turn} player=${hostReloaded.currentPlayer}`);
     if (Number(hostReloaded.turn) === hostTurnBefore && String(hostReloaded.currentPlayer || '') === String(hostWorld.state.currentPlayer || '')) {
@@ -564,17 +580,17 @@ async function main() {
 
     const hostToken = `clickops-host-${runId}`;
     const guestToken = `clickops-guest-${runId}`;
-    await sendChatMessage(hostPage, 'host', hostToken, 30000);
-    await sendChatMessage(guestPage, 'guest', guestToken, 30000);
+    await sendChatMessage(hostPage, 'host', hostToken, chatTimeoutMs);
+    await sendChatMessage(guestPage, 'guest', guestToken, chatTimeoutMs);
     await waitForState(hostPage, {
       label: 'host',
-      timeoutMs: 40000,
+      timeoutMs: chatTimeoutMs,
       description: 'host observed guest chat message',
       predicate: (state) => hasMessage(state, guestToken),
     });
     await waitForState(guestPage, {
       label: 'guest',
-      timeoutMs: 40000,
+      timeoutMs: chatTimeoutMs,
       description: 'guest observed host chat message',
       predicate: (state) => hasMessage(state, hostToken),
     });

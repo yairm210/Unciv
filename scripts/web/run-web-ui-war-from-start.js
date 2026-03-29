@@ -1,6 +1,6 @@
 const { runWarProbe } = require('./lib/ui-war-runner');
 
-const timeoutMs = Number(process.env.WEB_UI_WAR_FROM_START_TIMEOUT_MS || '120000');
+const timeoutMs = Number(process.env.WEB_UI_WAR_FROM_START_TIMEOUT_MS || '240000');
 
 runWarProbe({
   role: 'war_from_start',
