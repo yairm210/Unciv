@@ -1286,6 +1286,23 @@ object WebValidationRunner {
         return false to "Move/end-turn flow did not return to an interactive world screen (screen=$screenName, playersTurn=$playersTurn, buttonEnabled=$buttonEnabled, nextUnitAction=$nextUnitAction, openPopups=$openPopups, buttonText=$buttonText, actionButtons=$actionButtons)."
     }
 
+    private suspend fun waitForTurnUiRefresh(game: WebGame, maxFrames: Int): Boolean {
+        return waitUntilFrames(maxFrames) {
+            val worldScreen = game.screen as? WorldScreen ?: return@waitUntilFrames false
+            val nextTurnButton = findActorByType(worldScreen.stage.root, NextTurnButton::class.java)
+                ?: return@waitUntilFrames false
+            nextTurnButton.update()
+            worldScreen.shouldUpdate = true
+            val selectedUnit = GUI.getUnitTable().selectedUnit
+            val hasDueUnits = worldScreen.viewingCiv.units.getDueUnits().any()
+            selectedUnit != null
+                || !nextTurnButton.isDisabled
+                || nextTurnButton.isNextUnitAction()
+                || !hasDueUnits
+                || collectUnitActionLabels(worldScreen) != "[]"
+        }
+    }
+
     private suspend fun advanceTurnsByClicks(
         game: WebGame,
         turns: Int,
@@ -1351,6 +1368,8 @@ object WebValidationRunner {
                             val selectedUnit = GUI.getUnitTable().selectedUnit
                             val hasDueUnits = screen.viewingCiv.units.getDueUnits().any()
                             if (selectedUnit == null && hasDueUnits && actionLabels == "[]") {
+                                nextTurnButton.update()
+                                screen.shouldUpdate = true
                                 if (!waitedForNextUnitRecovery) {
                                     waitedForNextUnitRecovery = true
                                     val settled = waitForInteractiveWorldScreen(game, 240)
@@ -1364,7 +1383,9 @@ object WebValidationRunner {
                                     beforeTurn,
                                     attempts,
                                 )
-                                screen.switchToNextUnit(resetDue = !screen.game.settings.checkForDueUnitsCycles)
+                                screen.switchToNextUnit(resetDue = false)
+                                screen.shouldUpdate = true
+                                if (waitForTurnUiRefresh(game, 720)) continue
                                 waitFrames(waitFastFrames.coerceAtLeast(1))
                                 continue
                             }
@@ -1421,7 +1442,9 @@ object WebValidationRunner {
                                     beforeTurn,
                                     attempts,
                                 )
-                                screen.switchToNextUnit(resetDue = !screen.game.settings.checkForDueUnitsCycles)
+                                screen.switchToNextUnit(resetDue = false)
+                                screen.shouldUpdate = true
+                                if (waitForTurnUiRefresh(game, 720)) continue
                                 waitFrames(waitFastFrames)
                                 continue
                             }
