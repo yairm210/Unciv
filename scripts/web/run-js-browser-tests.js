@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { chromium, firefox, webkit } = require('playwright');
+const { startMainOnce } = require('./lib/ui-e2e-common');
 const { resolveChromiumArgs } = require('./lib/chromium-args');
 
 (async () => {
@@ -99,18 +100,8 @@ const { resolveChromiumArgs } = require('./lib/chromium-args');
     }
     const pollStart = Date.now();
     let firstStateSeenAt = null;
-    let bootInvoked = false;
+    await startMainOnce(page, startupTimeoutMs, '__uncivJsTestsBootInvoked');
     while (true) {
-      if (!bootInvoked) {
-        const bootedNow = await page.evaluate(() => {
-          if (typeof window.main !== 'function') return false;
-          if (window.__uncivBootStarted) return true;
-          window.__uncivBootStarted = true;
-          window.main();
-          return true;
-        });
-        if (bootedNow) bootInvoked = true;
-      }
       const state = await page.evaluate(() => ({
         done: window.__uncivJsTestsDone === true,
         state: window.__uncivJsTestsState || null,

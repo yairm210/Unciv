@@ -2,9 +2,11 @@ const {
   attachDiagnostics,
   ensureTmpDir,
   getActionableRequestFailures,
+  isTransientBootstrapRunnerSelection,
   installBlobDiagnostics,
   launchChromium,
   readBlobDiagnostics,
+  startMainOnce,
   writeJson,
 } = require('./ui-e2e-common');
 
@@ -48,33 +50,6 @@ async function gotoClickOpsUrl(page, url, label) {
   }
 }
 
-async function startMainOnce(page, timeoutMs) {
-  const startedAt = Date.now();
-  while (Date.now() - startedAt <= timeoutMs) {
-    const state = await page.evaluate(() => ({
-      hasMain: typeof window.main === 'function',
-      readyState: document.readyState,
-      bootInvoked: window.__uncivBootStarted === true || window.__uncivClickOpsBootInvoked === true,
-    }));
-    if (state.bootInvoked) return;
-    if (state.hasMain && state.readyState === 'complete') {
-      await page.evaluate(() => {
-        if (window.__uncivBootStarted === true || window.__uncivClickOpsBootInvoked === true) return;
-        window.__uncivClickOpsBootInvoked = true;
-        try {
-          window.__uncivBootStarted = true;
-          window.main();
-        } catch (_) {
-          window.__uncivBootStarted = false;
-          window.__uncivClickOpsBootInvoked = false;
-        }
-      });
-    }
-    await page.waitForTimeout(100);
-  }
-  throw new Error(`runtime boot markers not visible within ${timeoutMs}ms`);
-}
-
 async function waitForClickOpsStart(page, label, timeoutMs) {
   const startedAt = Date.now();
   while (Date.now() - startedAt <= timeoutMs) {
@@ -88,7 +63,12 @@ async function waitForClickOpsStart(page, label, timeoutMs) {
       hasMain: typeof window.main === 'function',
       bootInvoked: window.__uncivBootStarted === true || window.__uncivClickOpsBootInvoked === true,
     }));
-    if (hasClickOpsQuery(state.search) && state.runnerSelected && state.runnerSelected !== 'clickOps') {
+    if (
+      hasClickOpsQuery(state.search)
+      && state.runnerSelected
+      && state.runnerSelected !== 'clickOps'
+      && !isTransientBootstrapRunnerSelection(state.runnerSelected, state.runnerReason)
+    ) {
       throw new Error(
         `[${label}] clickOps runner mismatch during startup: got ${state.runnerSelected}`
         + ` (reason=${state.runnerReason || 'n/a'})`,
@@ -150,7 +130,7 @@ async function ensureClickOpsBoot(page, options) {
   for (let attempt = 1; attempt <= startupAttempts; attempt += 1) {
     try {
       await gotoClickOpsUrl(page, url, label);
-      await startMainOnce(page, startupBootTimeoutMs);
+      await startMainOnce(page, startupBootTimeoutMs, '__uncivClickOpsBootInvoked');
       await waitForClickOpsStart(page, label, startupTimeoutMs);
       return;
     } catch (err) {
@@ -181,7 +161,12 @@ async function readClickOpsSnapshot(page) {
 async function getSnapshot(page, label) {
   const raw = await readClickOpsSnapshot(page);
   ensureNoProbeFlags(raw.url, label);
-  if (String(raw.url || '').includes('clickOps=1') && raw.runnerSelected && raw.runnerSelected !== 'clickOps') {
+  if (
+    String(raw.url || '').includes('clickOps=1')
+    && raw.runnerSelected
+    && raw.runnerSelected !== 'clickOps'
+    && !isTransientBootstrapRunnerSelection(raw.runnerSelected, raw.runnerReason)
+  ) {
     throw new Error(
       `[${label}] clickOps runner mismatch: expected clickOps got ${raw.runnerSelected}`
       + `${raw.runnerReason ? ` (reason=${raw.runnerReason})` : ''}`,
@@ -383,6 +368,7 @@ module.exports = {
   ensureClickOpsBoot,
   ensureNoProbeFlags,
   getSnapshot,
+  waitForClickOpsStart,
   waitForState,
   waitForTarget,
   clickPoint,

@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { randomUUID } = require('crypto');
 const { chromium } = require('playwright');
+const { startMainOnce } = require('./lib/ui-e2e-common');
 const { resolveChromiumArgs } = require('./lib/chromium-args');
 
 function parseBool(value, fallback) {
@@ -77,23 +78,6 @@ async function waitForProbeStart(page, label, timeoutMs) {
     href: (window.location && window.location.href) || '',
   }));
   throw new Error(`[${label}] probe did not start within ${timeoutMs}ms. boot=${JSON.stringify(bootDebug)}`);
-}
-
-async function startMainOnce(page, label, timeoutMs) {
-  const startedAt = Date.now();
-  while (Date.now() - startedAt <= timeoutMs) {
-    const started = await page.evaluate(() => {
-      if (typeof window.main !== 'function') return false;
-      if (window.__uncivBootStarted === true || window.__uncivProbeBootInvoked === true) return true;
-      window.__uncivBootStarted = true;
-      window.__uncivProbeBootInvoked = true;
-      window.main();
-      return true;
-    });
-    if (started) return;
-    await page.waitForTimeout(100);
-  }
-  throw new Error(`[${label}] window.main not available for boot within ${timeoutMs}ms`);
 }
 
 async function gotoProbeUrl(page, url, label) {
@@ -204,9 +188,9 @@ async function main() {
     for (let attempt = 1; attempt <= startupAttempts; attempt += 1) {
       try {
         await gotoProbeUrl(hostPage, hostUrl, 'host');
-        await startMainOnce(hostPage, 'host', Math.min(20000, timeoutMs));
+        await startMainOnce(hostPage, Math.min(20000, timeoutMs), '__uncivProbeBootInvoked');
         await gotoProbeUrl(guestPage, guestUrl, 'guest');
-        await startMainOnce(guestPage, 'guest', Math.min(20000, timeoutMs));
+        await startMainOnce(guestPage, Math.min(20000, timeoutMs), '__uncivProbeBootInvoked');
         await Promise.all([
           waitForProbeStart(hostPage, 'host', startupTimeoutMs),
           waitForProbeStart(guestPage, 'guest', startupTimeoutMs),

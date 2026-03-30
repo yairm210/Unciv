@@ -1,13 +1,14 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
-const { getActionableRequestFailures, waitForUiProbeResult } = require('./ui-e2e-common');
+const { getActionableRequestFailures, startMainOnce, waitForUiProbeResult, waitForUiProbeStart } = require('./ui-e2e-common');
 
 class FakePage {
   constructor(states, tick) {
     this.states = states;
     this.tick = tick;
     this.evaluateCalls = 0;
+    this.mainCalls = 0;
   }
 
   async evaluate(fn, arg) {
@@ -25,9 +26,14 @@ class FakePage {
       __uncivRunnerReason: state.runnerReason || null,
       __uncivBootstrapTraceJson: state.bootstrapTraceJson || null,
       __uncivBootStarted: state.bootInvoked === true,
+      __uncivBootInProgress: state.bootInProgress === true,
+      __uncivBootToken: state.bootToken || null,
+      __uncivBootFailures: Number(state.bootFailures || 0),
       __uncivUiProbeBootInvoked: state.bootInvoked === true,
       location: { search: state.search || '' },
-      main: () => {},
+      main: () => {
+        this.mainCalls += 1;
+      },
     };
     global.document = {
       readyState: state.readyState || 'complete',
@@ -77,6 +83,42 @@ test('waitForUiProbeResult returns the normal in-loop result payload', async () 
     assert.equal(probe.result.passed, true);
     assert.equal(probe.result.notes, 'ready');
     assert.equal(probe.stepLog.steps[0].state, 'done');
+  });
+});
+
+test('startMainOnce respects the generated auto-bootstrap markers before falling back to manual main()', async () => {
+  await withFakeClock(async (tick) => {
+    const page = new FakePage([
+      {
+        runnerSelected: 'none',
+        runnerReason: 'bootstrap-start',
+        search: '?uiProbe=1',
+      },
+    ], tick);
+
+    await startMainOnce(page, 1000, '__uncivUiProbeBootInvoked');
+    assert.equal(page.mainCalls, 0);
+  });
+});
+
+test('waitForUiProbeStart tolerates the bootstrap-start placeholder before uiProbe selection', async () => {
+  await withFakeClock(async (tick) => {
+    const page = new FakePage([
+      {
+        runnerSelected: 'none',
+        runnerReason: 'bootstrap-start',
+        search: '?uiProbe=1',
+        bootInvoked: true,
+      },
+      {
+        runnerSelected: 'uiProbe',
+        runnerReason: 'uiProbe query flag enabled',
+        search: '?uiProbe=1',
+        bootInvoked: true,
+      },
+    ], tick);
+
+    await waitForUiProbeStart(page, 'unit', 1000);
   });
 });
 

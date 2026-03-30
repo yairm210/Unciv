@@ -6,6 +6,7 @@ const {
   buildUiDeviceConfig,
   captureUiScreenshot,
   getActionableRequestFailures,
+  startMainOnce,
 } = require('./lib/ui-e2e-common');
 const { resolveChromiumArgs } = require('./lib/chromium-args');
 
@@ -162,24 +163,7 @@ async function main() {
           sawValidationState = true;
         }
         if (!state.validationState) {
-          const bootState = await page.evaluate(() => ({
-            hasMain: typeof window.main === 'function',
-            bootStarted: window.__uncivBootStarted === true || window.__uncivValidationBootInvoked === true,
-            readyState: document.readyState,
-          }));
-          if (!bootState.bootStarted && bootState.hasMain && bootState.readyState === 'complete') {
-            await page.evaluate(() => {
-              if (window.__uncivBootStarted === true || window.__uncivValidationBootInvoked === true) return;
-              window.__uncivValidationBootInvoked = true;
-              try {
-                window.__uncivBootStarted = true;
-                window.main();
-              } catch (_) {
-                window.__uncivBootStarted = false;
-                window.__uncivValidationBootInvoked = false;
-              }
-            });
-          }
+          await startMainOnce(page, startupTimeoutMs, '__uncivValidationBootInvoked');
         }
         const phaseState = String(state.validationState || '');
         if (phaseState.startsWith('running:') && mainMenuReadyAt === null) {

@@ -244,6 +244,10 @@ function hasUiProbeQuery(search) {
   return /(?:^|[?&])uiProbe(?:=|&|$)/i.test(String(search || ''));
 }
 
+function isTransientBootstrapRunnerSelection(runnerSelected, runnerReason) {
+  return String(runnerSelected || '') === 'none' && /^bootstrap(?:-|$)/i.test(String(runnerReason || ''));
+}
+
 function extractErrorText(err) {
   return String(err && err.stack ? err.stack : err);
 }
@@ -282,7 +286,12 @@ async function waitForUiProbeStart(page, label, timeoutMs) {
       hasMain: typeof window.main === 'function',
       bootInvoked: window.__uncivBootStarted === true || window.__uncivUiProbeBootInvoked === true,
     }), undefined, `${label} startup-state`);
-    if (hasUiProbeQuery(state.search) && state.runnerSelected && state.runnerSelected !== 'uiProbe') {
+    if (
+      hasUiProbeQuery(state.search)
+      && state.runnerSelected
+      && state.runnerSelected !== 'uiProbe'
+      && !isTransientBootstrapRunnerSelection(state.runnerSelected, state.runnerReason)
+    ) {
       throw new Error(`[${label}] uiProbe runner mismatch during startup: got ${state.runnerSelected} (reason=${state.runnerReason || 'n/a'})`);
     }
     if (state.error || state.json || state.state) return;
@@ -356,28 +365,48 @@ async function ensureUiProbeBoot(page, options) {
   throw lastError || new Error(`[${label}] uiProbe boot failed`);
 }
 
-async function startMainOnce(page, timeoutMs) {
+async function startMainOnce(page, timeoutMs, bootInvokedFlag = '__uncivUiProbeBootInvoked') {
   const startedAt = Date.now();
+  const manualFallbackDelayMs = Math.min(2000, Math.max(500, Math.floor(timeoutMs / 6)));
   while (Date.now() - startedAt <= timeoutMs) {
-    const state = await evaluateWithTimeout(page, () => ({
+    const state = await evaluateWithTimeout(page, (flag) => ({
       hasMain: typeof window.main === 'function',
-      bootInvoked: window.__uncivBootStarted === true || window.__uncivUiProbeBootInvoked === true,
-      uiProbeState: window.__uncivUiProbeState || null,
+      bootInvoked: window.__uncivBootStarted === true || window[flag] === true,
+      bootInProgress: window.__uncivBootInProgress === true,
+      bootToken: window.__uncivBootToken || null,
+      bootFailures: Number(window.__uncivBootFailures || 0),
+      runnerSelected: window.__uncivRunnerSelected || null,
+      runnerReason: window.__uncivRunnerReason || null,
+      runnerState: window.__uncivUiProbeState
+        || window.__uncivClickOpsStateJson
+        || window.__uncivMpProbeState
+        || window.__uncivWebValidationState
+        || window.__uncivJsTestsState
+        || null,
       readyState: document.readyState,
-    }), undefined, 'start-main-state');
-    if (state.bootInvoked || state.uiProbeState) return;
-    if (state.hasMain && state.readyState === 'complete') {
-      await evaluateWithTimeout(page, () => {
-        if (window.__uncivBootStarted === true || window.__uncivUiProbeBootInvoked === true) return;
-        window.__uncivUiProbeBootInvoked = true;
+    }), bootInvokedFlag, 'start-main-state');
+    if (
+      state.bootInvoked
+      || state.bootInProgress
+      || state.bootToken
+      || state.bootFailures > 0
+      || state.runnerSelected
+      || state.runnerState
+    ) {
+      return;
+    }
+    if (state.hasMain && state.readyState === 'complete' && (Date.now() - startedAt) >= manualFallbackDelayMs) {
+      await evaluateWithTimeout(page, (flag) => {
+        if (window.__uncivBootStarted === true || window.__uncivBootInProgress === true || window[flag] === true) return;
+        window[flag] = true;
         try {
           window.__uncivBootStarted = true;
           window.main();
         } catch (_) {
           window.__uncivBootStarted = false;
-          window.__uncivUiProbeBootInvoked = false;
+          window[flag] = false;
         }
-      }, undefined, 'start-main-invoke');
+      }, bootInvokedFlag, 'start-main-invoke');
     }
 
     await page.waitForTimeout(100);
@@ -420,6 +449,7 @@ async function waitForUiProbeResult(page, label, timeoutMs, shouldAbort) {
       && hasUiProbeQuery(state.search)
       && state.runnerSelected
       && state.runnerSelected !== 'uiProbe'
+      && !isTransientBootstrapRunnerSelection(state.runnerSelected, state.runnerReason)
     ) {
       const bootstrapDebug = {
         generatedAt: new Date().toISOString(),
@@ -537,7 +567,9 @@ module.exports = {
   readBlobDiagnostics,
   resolveUiDeviceMode,
   ensureUiProbeBoot,
+  isTransientBootstrapRunnerSelection,
   startMainOnce,
+  waitForUiProbeStart,
   waitForUiProbeResult,
   writeJson,
 };
