@@ -209,6 +209,8 @@ class GameSettings {
         if (PlatformCapabilities.current.backgroundThreadPools) {
             createJvmCollatorComparator(locale)?.let { return it }
         }
+        val languageTag = LocaleCode.find(language)?.languageTag ?: locale.toLanguageTag()
+        createWebCollatorComparator(languageTag)?.let { return it }
         return Comparator { first, second ->
             when {
                 first == null && second == null -> 0
@@ -231,6 +233,14 @@ class GameSettings {
                 second == null -> 1
                 else -> compare.invoke(collator, first, second) as Int
             }
+        }
+    }.getOrNull()
+
+    private fun createWebCollatorComparator(languageTag: String): Comparator<String?>? = runCatching {
+        val bridgeClass = Class.forName("com.unciv.models.metadata.WebLocaleBridge")
+        val compare = bridgeClass.getMethod("compare", String::class.java, String::class.java, String::class.java)
+        Comparator<String?> { first, second ->
+            compare.invoke(null, languageTag, first, second) as Int
         }
     }.getOrNull()
 

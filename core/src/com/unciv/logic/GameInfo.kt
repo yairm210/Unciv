@@ -39,6 +39,7 @@ import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.screens.savescreens.Gzip
 import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.utils.DebugUtils
+import com.unciv.utils.Sha1
 import com.unciv.utils.debug
 import yairm210.purity.annotations.Readonly
 import java.time.Duration
@@ -324,24 +325,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         checksum = "" // Checksum calculation cannot include old checksum, obvs
         val bytes = json().toJson(this).toByteArray(Charsets.UTF_8)
         checksum = oldChecksum
-        if (PlatformCapabilities.current.backgroundThreadPools)
-            calculateJvmSha1Checksum(bytes)?.let { return it }
-        var hash = 0xcbf29ce484222325uL
-        for (byte in bytes) {
-            hash = hash xor (byte.toInt() and 0xff).toULong()
-            hash *= 0x100000001b3uL
-        }
-        return hash.toString(16).padStart(16, '0')
+        return Gzip.encode(Sha1.digest(bytes))
     }
-
-    private fun calculateJvmSha1Checksum(bytes: ByteArray): String? = runCatching {
-        val digestClass = Class.forName("java.security.MessageDigest")
-        val getInstance = digestClass.getMethod("getInstance", String::class.java)
-        val messageDigest = getInstance.invoke(null, "SHA-1")
-        val digest = digestClass.getMethod("digest", ByteArray::class.java)
-            .invoke(messageDigest, bytes) as ByteArray
-        Gzip.encode(digest)
-    }.getOrNull()
 
     //endregion
     //region State changing functions

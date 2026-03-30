@@ -38,8 +38,11 @@ final class BuildWebCommon {
             "com.badlogic.gdx.utils.Json$Serializable");
     private static final List<String> PRESERVED_CLASSES = List.of(
             "com.badlogic.gdx.scenes.scene2d.ui.Skin",
+            "com.unciv.models.stats.Stats",
             "com.unciv.models.stats.NamedStats",
             "com.unciv.models.ruleset.ModOptions",
+            "com.unciv.models.ruleset.RulesetObject",
+            "com.unciv.models.ruleset.RulesetStatsObject",
             "com.unciv.models.ruleset.TechColumn",
             "com.unciv.models.ruleset.tech.Technology",
             "com.unciv.models.ruleset.Building",
@@ -108,30 +111,10 @@ final class BuildWebCommon {
             "com.unciv.models.Spy",
             "com.unciv.models.ruleset.unique.TemporaryUnique",
             "com.unciv.models.metadata.GameParameters",
-            "com.unciv.logic.map.MapParameters");
-    private static final Set<String> WEB_JSON_REFLECTION_CLASSES = Set.of(
-            "com.unciv.logic.GameInfo",
-            "com.unciv.logic.map.TileMap",
-            "com.unciv.logic.map.tile.Tile",
-            "com.unciv.logic.map.mapunit.MapUnit",
-            "com.unciv.logic.map.mapunit.MapUnit$UnitMovementMemory",
-            "com.unciv.logic.map.mapunit.UnitPromotions",
-            "com.unciv.logic.city.City",
-            "com.unciv.logic.city.CityConstructions",
-            "com.unciv.logic.civilization.Civilization",
-            "com.unciv.logic.civilization.Civilization$NotificationsLog",
-            "com.unciv.logic.civilization.Civilization$HistoricalAttackMemory",
-            "com.unciv.logic.civilization.Notification",
-            "com.unciv.logic.civilization.PopupAlert",
-            "com.unciv.logic.civilization.CivConstructions",
-            "com.unciv.logic.civilization.diplomacy.DiplomacyManager",
-            "com.unciv.models.Religion",
-            "com.unciv.models.metadata.GameParameters",
-            "com.unciv.models.ruleset.RulesetObject",
-            "com.unciv.models.ruleset.RulesetStatsObject",
-            "com.unciv.models.ruleset.ModOptions",
-            "com.unciv.models.ruleset.Policy",
-            "com.unciv.models.ruleset.PolicyBranch");
+            "com.unciv.logic.map.MapParameters",
+            "com.unciv.logic.GameInfoPreview",
+            "com.unciv.logic.civilization.CivilizationInfoPreview",
+            "com.unciv.logic.map.TileMap$Preview");
 
     private BuildWebCommon() {
     }
@@ -161,9 +144,11 @@ final class BuildWebCommon {
             configuration.assetsPath.add(new AssetFileHandle(webTestAssetsPath.toString()));
         }
         Set<String> serializableClasses = discoverSerializableClasses();
+        Set<String> reflectionClasses = new LinkedHashSet<>(PRESERVED_CLASSES);
+        reflectionClasses.addAll(serializableClasses);
         configuration.classesToPreserve.addAll(PRESERVED_CLASSES);
         configuration.classesToPreserve.addAll(serializableClasses);
-        registerReflectionClasses();
+        registerReflectionClasses(reflectionClasses);
 
         TeaBuilder.config(configuration);
 
@@ -607,20 +592,15 @@ final class BuildWebCommon {
     }
 
     /**
-     * Keep reflection metadata narrowly scoped to core preserved model classes.
-     * This restores JSON field access needed by web multiplayer serialization
-     * without preserving reflection metadata for every discovered serializable type.
+     * Register reflection metadata for the actual preserved serialized model set so web can
+     * use the shared JSON contract without keeping parallel hand-written rehydration paths.
      */
-    private static void registerReflectionClasses() {
-        for (String className : PRESERVED_CLASSES) {
+    private static void registerReflectionClasses(Set<String> reflectionClasses) {
+        for (String className : reflectionClasses) {
             if (className == null || className.isBlank()) continue;
-            if (!needsWebJsonReflection(className)) continue;
+            if (isExcludedPreserveClass(className)) continue;
             if (TeaReflectionSupplier.containsReflection(className)) continue;
             TeaReflectionSupplier.addReflectionClass(className);
         }
-    }
-
-    private static boolean needsWebJsonReflection(String className) {
-        return WEB_JSON_REFLECTION_CLASSES.contains(className);
     }
 }

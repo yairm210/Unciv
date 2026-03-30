@@ -19,6 +19,7 @@ import com.unciv.platform.PlatformCapabilities
 import com.unciv.ui.screens.savescreens.Gzip
 import com.unciv.testing.GdxTestRunner
 import com.unciv.utils.Log
+import com.unciv.utils.Sha1
 import com.unciv.utils.debug
 import org.junit.After
 import org.junit.Assert
@@ -144,13 +145,11 @@ class GameSerializationTests {
     }
 
     @Test
-    fun checksumUsesTeavmSafeFallbackWithoutBackgroundPools() {
+    fun checksumMatchesUpstreamAlgorithmWithoutBackgroundPools() {
         val previousCapabilities = PlatformCapabilities.current
         try {
             PlatformCapabilities.setCurrent(PlatformCapabilities.webPhase4Full())
-            val expected = serializedBytesWithoutChecksum().fold(0xcbf29ce484222325uL) { hash, byte ->
-                (hash xor (byte.toInt() and 0xff).toULong()) * 0x100000001b3uL
-            }.toString(16).padStart(16, '0')
+            val expected = calculateJvmSha1Checksum(serializedBytesWithoutChecksum())
             Assert.assertEquals(expected, game.calculateChecksum())
         } finally {
             PlatformCapabilities.setCurrent(previousCapabilities)
@@ -166,11 +165,15 @@ class GameSerializationTests {
     }
 
     private fun calculateJvmSha1Checksum(bytes: ByteArray): String {
-        val digestClass = Class.forName("java.security.MessageDigest")
-        val getInstance = digestClass.getMethod("getInstance", String::class.java)
-        val messageDigest = getInstance.invoke(null, "SHA-1")
-        val digest = digestClass.getMethod("digest", ByteArray::class.java)
-            .invoke(messageDigest, bytes) as ByteArray
+        val digest = runCatching {
+            val digestClass = Class.forName("java.security.MessageDigest")
+            val getInstance = digestClass.getMethod("getInstance", String::class.java)
+            val messageDigest = getInstance.invoke(null, "SHA-1")
+            digestClass.getMethod("digest", ByteArray::class.java)
+                .invoke(messageDigest, bytes) as ByteArray
+        }.getOrElse {
+            Sha1.digest(bytes)
+        }
         return Gzip.encode(digest)
     }
 

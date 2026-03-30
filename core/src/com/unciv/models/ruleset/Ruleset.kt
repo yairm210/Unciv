@@ -2,14 +2,12 @@ package com.unciv.models.ruleset
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
-import com.badlogic.gdx.utils.JsonReader
 import com.unciv.Constants
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.logic.BackwardCompatibility.updateDeprecations
 import com.unciv.logic.GameInfo
 import com.unciv.logic.map.tile.RoadStatus
-import com.unciv.models.Counter
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.nation.CityStateType
 import com.unciv.models.ruleset.nation.Difficulty
@@ -18,9 +16,7 @@ import com.unciv.models.ruleset.nation.Personality
 import com.unciv.models.ruleset.tech.Era
 import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tech.Technology
-import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.Terrain
-import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.GameContext
@@ -35,11 +31,8 @@ import com.unciv.models.ruleset.validation.UniqueValidator
 import com.unciv.models.stats.GameResource
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stat
-import com.unciv.models.stats.Stats
 import com.unciv.models.stats.SubStat
-import com.unciv.platform.PlatformCapabilities
 import com.unciv.models.translations.tr
-import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.civilopediascreen.ICivilopediaText
 import com.unciv.utils.Log
 import org.jetbrains.annotations.VisibleForTesting
@@ -184,476 +177,13 @@ class Ruleset {
         for (item in items) {
             val itemName = try { item.name }
             catch (_: Exception) {
-                throw Exception("${T::class.java.simpleName} is missing a name!")
+                throw Exception("${T::class.simpleName} is missing a name!")
             }
 
             hashMap[itemName] = item
             (item as? IRulesetObject)?.originRuleset = name // RULESET name
         }
         return hashMap
-    }
-
-    private fun <T : INamed> loadNamedArray(arrayClass: Class<Array<T>>, fileHandle: FileHandle): Array<T> {
-        val items = json().fromJsonFile(arrayClass, fileHandle)
-        if (PlatformCapabilities.current.backgroundThreadPools) return items
-
-        fun com.badlogic.gdx.utils.JsonValue.readStringOrNull(name: String): String? {
-            val value = getString(name, "")
-            return value.takeIf { it.isNotBlank() }
-        }
-
-        fun com.badlogic.gdx.utils.JsonValue.readStringArray(name: String): ArrayList<String> {
-            val values = ArrayList<String>()
-            var cursor = get(name)?.child
-            while (cursor != null) {
-                val item = cursor.asString()
-                if (item.isNotBlank()) values += item
-                cursor = cursor.next
-            }
-            return values
-        }
-
-        fun com.badlogic.gdx.utils.JsonValue.readIntArray(name: String): ArrayList<Int> {
-            val values = ArrayList<Int>()
-            var cursor = get(name)?.child
-            while (cursor != null) {
-                values += cursor.asInt()
-                cursor = cursor.next
-            }
-            return values
-        }
-
-        fun com.badlogic.gdx.utils.JsonValue.readStats(defaultStats: Stats? = null): Stats {
-            val stats = defaultStats?.clone() ?: Stats()
-            stats.production = getFloat("production", stats.production)
-            stats.food = getFloat("food", stats.food)
-            stats.gold = getFloat("gold", stats.gold)
-            stats.science = getFloat("science", stats.science)
-            stats.culture = getFloat("culture", stats.culture)
-            stats.happiness = getFloat("happiness", stats.happiness)
-            stats.faith = getFloat("faith", stats.faith)
-            return stats
-        }
-
-        fun com.badlogic.gdx.utils.JsonValue.readCounter(name: String): Counter<String>? {
-            val rawCounter = get(name) ?: return null
-            val values = Counter<String>()
-            var cursor = rawCounter.child
-            while (cursor != null) {
-                val key = cursor.name ?: ""
-                if (key.isNotBlank()) {
-                    values[key] = if (cursor.isValue) cursor.asInt() else cursor.getInt("value", 0)
-                }
-                cursor = cursor.next
-            }
-            return values
-        }
-
-        fun com.badlogic.gdx.utils.JsonValue.readDepositAmount(name: String): TileResource.DepositAmount? {
-            val rawAmount = get(name) ?: return null
-            return TileResource.DepositAmount().apply {
-                sparse = rawAmount.getInt("sparse", sparse)
-                default = rawAmount.getInt("default", default)
-                abundant = rawAmount.getInt("abundant", abundant)
-            }
-        }
-
-        val rawArray = JsonReader().parse(fileHandle)
-        val rawEntries = ArrayList<com.badlogic.gdx.utils.JsonValue>()
-        val rawByName = LinkedHashMap<String, com.badlogic.gdx.utils.JsonValue>()
-        var rawCursor = rawArray.child
-        while (rawCursor != null) {
-            rawEntries.add(rawCursor)
-            val rawName = rawCursor.getString("name", "")
-            if (rawName.isNotBlank()) rawByName[rawName] = rawCursor
-            rawCursor = rawCursor.next
-        }
-
-        for (index in items.indices) {
-            val item = items[index]
-            val rawByIndex = rawEntries.getOrNull(index)
-            val rawName = rawByIndex?.getString("name", "") ?: ""
-            if (rawName.isNotBlank()) {
-                // On TeaVM some entries can deserialize with missing/incorrect names.
-                // Always trust the source JSON "name" field for deterministic map keys.
-                item.name = rawName
-            } else {
-                val currentName = try { item.name } catch (_: Exception) { "" }
-                if (currentName.isBlank()) {
-                    val fallbackName = rawEntries.getOrNull(index)?.getString("name", "") ?: ""
-                    if (fallbackName.isNotBlank()) item.name = fallbackName
-                }
-            }
-            val effectiveName = try { item.name } catch (_: Exception) { "" }
-            val raw = when {
-                effectiveName.isNotBlank() && rawByName.containsKey(effectiveName) -> rawByName[effectiveName]!!
-                rawEntries.getOrNull(index) != null -> rawEntries[index]
-                else -> continue
-            }
-
-            if (item is RulesetObject && item.uniques.isEmpty()) {
-                val rawUniques = raw.readStringArray("uniques")
-                if (rawUniques.isNotEmpty()) item.uniques = rawUniques
-            }
-
-            if (item is RulesetStatsObject) {
-                item.production = raw.getFloat("production", item.production)
-                item.food = raw.getFloat("food", item.food)
-                item.gold = raw.getFloat("gold", item.gold)
-                item.science = raw.getFloat("science", item.science)
-                item.culture = raw.getFloat("culture", item.culture)
-                item.happiness = raw.getFloat("happiness", item.happiness)
-                item.faith = raw.getFloat("faith", item.faith)
-                if (item.uniques.isEmpty()) {
-                    val rawUniques = raw.readStringArray("uniques")
-                    if (rawUniques.isNotEmpty()) item.uniques = rawUniques
-                }
-            }
-
-            if (item is UnitType) {
-                val fallbackMovementType = raw.readStringOrNull("movementType")
-                if (fallbackMovementType != null) item.movementType = fallbackMovementType
-            }
-
-            if (item is BaseUnit) {
-                val fallbackUnitType = raw.readStringOrNull("unitType")
-                if (fallbackUnitType != null) item.unitType = fallbackUnitType
-
-                item.cost = raw.getInt("cost", item.cost)
-                item.hurryCostModifier = raw.getInt("hurryCostModifier", item.hurryCostModifier)
-                item.movement = raw.getInt("movement", item.movement)
-                item.strength = raw.getInt("strength", item.strength)
-                item.rangedStrength = raw.getInt("rangedStrength", item.rangedStrength)
-                item.religiousStrength = raw.getInt("religiousStrength", item.religiousStrength)
-                item.range = raw.getInt("range", item.range)
-                item.interceptRange = raw.getInt("interceptRange", item.interceptRange)
-
-                item.requiredTech = raw.readStringOrNull("requiredTech")
-                item.requiredResource = raw.readStringOrNull("requiredResource")
-                item.obsoleteTech = raw.readStringOrNull("obsoleteTech")
-                item.upgradesTo = raw.readStringOrNull("upgradesTo")
-                item.replaces = raw.readStringOrNull("replaces")
-                item.uniqueTo = raw.readStringOrNull("uniqueTo")
-                item.attackSound = raw.readStringOrNull("attackSound")
-
-                val replacementText = raw.getString("replacementTextForUniques", item.replacementTextForUniques)
-                if (replacementText.isNotBlank()) item.replacementTextForUniques = replacementText
-
-                val rawPromotions = raw.readStringArray("promotions")
-                if (rawPromotions.isNotEmpty()) item.promotions = rawPromotions.toHashSet()
-
-                val rawUniques = raw.readStringArray("uniques")
-                if (rawUniques.isNotEmpty()) item.uniques = rawUniques
-            }
-            if (item is Terrain) {
-                val hasType = try {
-                    item.type
-                    true
-                } catch (_: Exception) {
-                    false
-                }
-                if (!hasType) {
-                    val fallbackType = raw.getString("type", "")
-                    if (fallbackType.isNotBlank()) {
-                        runCatching { TerrainType.valueOf(fallbackType) }
-                            .onSuccess { item.type = it }
-                    }
-                }
-
-                item.overrideStats = raw.getBoolean("overrideStats", item.overrideStats)
-                item.unbuildable = raw.getBoolean("unbuildable", item.unbuildable)
-                item.turnsInto = raw.readStringOrNull("turnsInto")
-                item.weight = raw.getInt("weight", item.weight)
-                item.movementCost = raw.getInt("movementCost", item.movementCost)
-                item.defenceBonus = raw.getFloat("defenceBonus", item.defenceBonus)
-                item.impassable = raw.getBoolean("impassable", item.impassable)
-
-                if (raw.get("occursOn") != null) {
-                    item.occursOn.clear()
-                    item.occursOn.addAll(raw.readStringArray("occursOn"))
-                }
-                if (raw.get("RGB") != null) {
-                    item.RGB = raw.readIntArray("RGB")
-                }
-            }
-
-            if (item is TileResource) {
-                raw.readStringOrNull("resourceType")
-                    ?.let { runCatching { ResourceType.valueOf(it) }.onSuccess { kind -> item.resourceType = kind } }
-                if (raw.get("terrainsCanBeFoundOn") != null) {
-                    item.terrainsCanBeFoundOn = raw.readStringArray("terrainsCanBeFoundOn")
-                }
-                item.revealedBy = raw.readStringOrNull("revealedBy")
-                item.improvement = raw.readStringOrNull("improvement")
-                if (raw.get("improvedBy") != null) {
-                    item.improvedBy = raw.readStringArray("improvedBy")
-                }
-                raw.readDepositAmount("majorDepositAmount")?.let { item.majorDepositAmount = it }
-                raw.readDepositAmount("minorDepositAmount")?.let { item.minorDepositAmount = it }
-                raw.get("improvementStats")?.let {
-                    item.improvementStats = it.readStats(item.improvementStats)
-                }
-            }
-
-            if (item is TileImprovement) {
-                item.replaces = raw.readStringOrNull("replaces")
-                if (raw.get("terrainsCanBeBuiltOn") != null) {
-                    item.terrainsCanBeBuiltOn = raw.readStringArray("terrainsCanBeBuiltOn")
-                }
-                item.techRequired = raw.readStringOrNull("techRequired")
-                item.uniqueTo = raw.readStringOrNull("uniqueTo")
-                item.turnsToBuild = raw.getInt("turnsToBuild", item.turnsToBuild)
-            }
-
-            if (item is Building) {
-                item.requiredTech = raw.readStringOrNull("requiredTech")
-                item.cost = raw.getInt("cost", item.cost)
-                item.maintenance = raw.getInt("maintenance", item.maintenance)
-                item.hurryCostModifier = raw.getInt("hurryCostModifier", item.hurryCostModifier)
-                item.isWonder = raw.getBoolean("isWonder", item.isWonder)
-                item.isNationalWonder = raw.getBoolean("isNationalWonder", item.isNationalWonder)
-                item.requiredBuilding = raw.readStringOrNull("requiredBuilding")
-                item.requiredResource = raw.readStringOrNull("requiredResource")
-                if (raw.get("requiredNearbyImprovedResources") != null) {
-                    item.requiredNearbyImprovedResources = raw.readStringArray("requiredNearbyImprovedResources")
-                }
-                item.cityStrength = raw.getFloat("cityStrength", item.cityStrength.toFloat()).toDouble()
-                item.cityHealth = raw.getInt("cityHealth", item.cityHealth)
-                item.replaces = raw.readStringOrNull("replaces")
-                item.uniqueTo = raw.readStringOrNull("uniqueTo")
-                item.quote = raw.getString("quote", item.quote)
-                item.replacementTextForUniques =
-                    raw.getString("replacementTextForUniques", item.replacementTextForUniques)
-                raw.readCounter("specialistSlots")?.let { item.specialistSlots = it }
-                raw.readCounter("greatPersonPoints")?.let { item.greatPersonPoints = it }
-            }
-
-            if (item is Promotion) {
-                if (raw.get("prerequisites") != null) item.prerequisites = raw.readStringArray("prerequisites")
-                if (raw.get("unitTypes") != null) item.unitTypes = raw.readStringArray("unitTypes")
-                item.row = raw.getInt("row", item.row)
-                item.column = raw.getInt("column", item.column)
-                if (raw.get("innerColor") != null) item.innerColor = raw.readIntArray("innerColor")
-                if (raw.get("outerColor") != null) item.outerColor = raw.readIntArray("outerColor")
-            }
-
-            if (item is Belief) {
-                val fallbackType = raw.getString("type", "")
-                if (fallbackType.isNotBlank()) {
-                    runCatching { BeliefType.valueOf(fallbackType) }
-                        .onSuccess { item.type = it }
-                }
-            }
-
-            if (item is Nation) {
-                item.leaderName = raw.getString("leaderName", item.leaderName)
-                item.cityStateType = raw.readStringOrNull("cityStateType")
-                item.preferredVictoryType = raw.getString("preferredVictoryType", item.preferredVictoryType)
-                item.uniqueName = raw.getString("uniqueName", item.uniqueName)
-                item.uniqueText = raw.getString("uniqueText", item.uniqueText)
-                item.declaringWar = raw.getString("declaringWar", item.declaringWar)
-                item.attacked = raw.getString("attacked", item.attacked)
-                item.defeated = raw.getString("defeated", item.defeated)
-                item.denounced = raw.getString("denounced", item.denounced)
-                item.declaringFriendship = raw.getString("declaringFriendship", item.declaringFriendship)
-                item.introduction = raw.getString("introduction", item.introduction)
-                item.tradeRequest = raw.getString("tradeRequest", item.tradeRequest)
-                item.neutralHello = raw.getString("neutralHello", item.neutralHello)
-                item.hateHello = raw.getString("hateHello", item.hateHello)
-                if (raw.get("outerColor") != null) item.outerColor = raw.readIntArray("outerColor")
-                if (raw.get("innerColor") != null) item.innerColor = raw.readIntArray("innerColor")
-                if (raw.get("startBias") != null) item.startBias = raw.readStringArray("startBias")
-                item.personality = raw.readStringOrNull("personality")
-                item.startIntroPart1 = raw.getString("startIntroPart1", item.startIntroPart1)
-                item.startIntroPart2 = raw.getString("startIntroPart2", item.startIntroPart2)
-                item.favoredReligion = raw.readStringOrNull("favoredReligion")
-                if (raw.get("spyNames") != null) item.spyNames = raw.readStringArray("spyNames")
-                if (raw.get("cities") != null) item.cities = raw.readStringArray("cities")
-            }
-
-            if (item is CityStateType) {
-                if (raw.get("friendBonusUniques") != null) item.friendBonusUniques = raw.readStringArray("friendBonusUniques")
-                if (raw.get("allyBonusUniques") != null) item.allyBonusUniques = raw.readStringArray("allyBonusUniques")
-                if (raw.get("color") != null) item.color = raw.readIntArray("color")
-            }
-
-            if (item is UnitNameGroup && raw.get("unitNames") != null) {
-                item.unitNames = raw.readStringArray("unitNames")
-            }
-
-            if (item is Tutorial) {
-                item.category = raw.readStringOrNull("category")
-                if (raw.get("steps") != null) item.steps = raw.readStringArray("steps")
-                if (item.civilopediaText.isEmpty() && raw.get("civilopediaText") != null) {
-                    val lines = ArrayList<FormattedLine>()
-                    var lineRaw = raw.get("civilopediaText")?.child
-                    while (lineRaw != null) {
-                        val text = lineRaw.getString("text", "")
-                        val separator = lineRaw.getBoolean("separator", false)
-                        if (separator) lines += FormattedLine(separator = true)
-                        else if (text.isNotBlank()) lines += FormattedLine(text = text)
-                        lineRaw = lineRaw.next
-                    }
-                    if (lines.isNotEmpty()) item.civilopediaText = lines
-                }
-            }
-
-            if (item is Speed && item.turns.isEmpty()) {
-                var turnRow = raw.get("turns")?.child
-                while (turnRow != null) {
-                    val yearsPerTurn = turnRow.getFloat("yearsPerTurn", Float.NaN)
-                    val untilTurn = turnRow.getFloat("untilTurn", Float.NaN)
-                    if (!yearsPerTurn.isNaN() && !untilTurn.isNaN()) {
-                        item.turns += hashMapOf(
-                            "yearsPerTurn" to yearsPerTurn,
-                            "untilTurn" to untilTurn
-                        )
-                    }
-                    turnRow = turnRow.next
-                }
-            }
-            if (item is Speed) {
-                item.modifier = raw.getFloat("modifier", item.modifier)
-                item.goldCostModifier = raw.getFloat("goldCostModifier", item.goldCostModifier)
-                item.productionCostModifier = raw.getFloat("productionCostModifier", item.productionCostModifier)
-                item.scienceCostModifier = raw.getFloat("scienceCostModifier", item.scienceCostModifier)
-                item.cultureCostModifier = raw.getFloat("cultureCostModifier", item.cultureCostModifier)
-                item.faithCostModifier = raw.getFloat("faithCostModifier", item.faithCostModifier)
-                item.goldGiftModifier = raw.getFloat("goldGiftModifier", item.goldGiftModifier)
-                item.cityStateTributeScalingInterval =
-                    raw.getFloat("cityStateTributeScalingInterval", item.cityStateTributeScalingInterval)
-                item.barbarianModifier = raw.getFloat("barbarianModifier", item.barbarianModifier)
-                item.improvementBuildLengthModifier =
-                    raw.getFloat("improvementBuildLengthModifier", item.improvementBuildLengthModifier)
-                item.goldenAgeLengthModifier =
-                    raw.getFloat("goldenAgeLengthModifier", item.goldenAgeLengthModifier)
-                item.religiousPressureAdjacentCity =
-                    raw.getInt("religiousPressureAdjacentCity", item.religiousPressureAdjacentCity)
-                item.peaceDealDuration = raw.getInt("peaceDealDuration", item.peaceDealDuration)
-                item.dealDuration = raw.getInt("dealDuration", item.dealDuration)
-                item.startYear = raw.getFloat("startYear", item.startYear)
-            }
-            if (item is Victory) {
-                if (item.milestones.isEmpty()) {
-                    var milestone = raw.get("milestones")?.child
-                    while (milestone != null) {
-                        val milestoneText = milestone.asString()
-                        if (milestoneText.isNotBlank()) item.milestones += milestoneText
-                        milestone = milestone.next
-                    }
-                }
-                if (item.requiredSpaceshipParts.isEmpty()) {
-                    var spaceshipPart = raw.get("requiredSpaceshipParts")?.child
-                    while (spaceshipPart != null) {
-                        val partName = spaceshipPart.asString()
-                        if (partName.isNotBlank()) item.requiredSpaceshipParts += partName
-                        spaceshipPart = spaceshipPart.next
-                    }
-                }
-            }
-            if (item is PolicyBranch) {
-                if (item.era.isBlank()) {
-                    val fallbackEra = raw.getString("era", "")
-                    if (fallbackEra.isNotBlank()) item.era = fallbackEra
-                }
-                if (item.priorities.isEmpty()) {
-                    var priority = raw.get("priorities")?.child
-                    while (priority != null) {
-                        val key = priority.name ?: ""
-                        if (key.isNotBlank()) item.priorities[key] = priority.asInt()
-                        priority = priority.next
-                    }
-                }
-                val needsPolicyFallback =
-                    item.policies.isEmpty() || item.policies.any { it.name.isBlank() }
-                if (needsPolicyFallback) {
-                    item.policies.clear()
-                    var policyRaw = raw.get("policies")?.child
-                    while (policyRaw != null) {
-                        val policyName = policyRaw.getString("name", "")
-                        if (policyName.isNotBlank()) {
-                            val policy = Policy().apply {
-                                name = policyName
-                                row = policyRaw.getInt("row", 0)
-                                column = policyRaw.getInt("column", 0)
-                                var unique = policyRaw.get("uniques")?.child
-                                while (unique != null) {
-                                    val uniqueText = unique.asString()
-                                    if (uniqueText.isNotBlank()) uniques += uniqueText
-                                    unique = unique.next
-                                }
-                                val requires = ArrayList<String>()
-                                var requirement = policyRaw.get("requires")?.child
-                                while (requirement != null) {
-                                    val requirementText = requirement.asString()
-                                    if (requirementText.isNotBlank()) requires += requirementText
-                                    requirement = requirement.next
-                                }
-                                this.requires = if (requires.isEmpty()) null else requires
-                            }
-                            item.policies += policy
-                        }
-                        policyRaw = policyRaw.next
-                    }
-                }
-            }
-        }
-        return items
-    }
-
-    private fun loadTechColumns(fileHandle: FileHandle): Array<TechColumn> {
-        val parsed = json().fromJsonFile(Array<TechColumn>::class.java, fileHandle)
-        if (PlatformCapabilities.current.backgroundThreadPools) return parsed
-
-        fun com.badlogic.gdx.utils.JsonValue.readStringArray(name: String): ArrayList<String> {
-            val values = ArrayList<String>()
-            var cursor = get(name)?.child
-            while (cursor != null) {
-                val value = cursor.asString()
-                if (value.isNotBlank()) values += value
-                cursor = cursor.next
-            }
-            return values
-        }
-
-        val rawRoot = JsonReader().parse(fileHandle)
-        if (!rawRoot.isArray) return parsed
-
-        val columns = ArrayList<TechColumn>()
-        var rawColumn = rawRoot.child
-        while (rawColumn != null) {
-            val column = TechColumn().apply {
-                columnNumber = rawColumn.getInt("columnNumber", 0)
-                techCost = rawColumn.getInt("techCost", 0)
-                buildingCost = rawColumn.getInt("buildingCost", -1)
-                wonderCost = rawColumn.getInt("wonderCost", -1)
-                val eraValue = rawColumn.getString("era", "")
-                era = if (eraValue.isNotBlank()) eraValue else "Ancient era"
-            }
-
-            val technologies = ArrayList<Technology>()
-            var rawTech = rawColumn.get("techs")?.child
-            while (rawTech != null) {
-                val nameValue = rawTech.getString("name", "")
-                if (nameValue.isNotBlank()) {
-                    val tech = Technology().apply {
-                        name = nameValue
-                        cost = rawTech.getInt("cost", 0)
-                        row = rawTech.getInt("row", 0)
-                        quote = rawTech.getString("quote", "")
-                        uniques = rawTech.readStringArray("uniques")
-                        prerequisites = rawTech.readStringArray("prerequisites").toHashSet()
-                    }
-                    technologies += tech
-                }
-                rawTech = rawTech.next
-            }
-            column.techs = technologies
-            columns += column
-            rawColumn = rawColumn.next
-        }
-
-        return if (columns.isEmpty()) parsed else columns.toTypedArray()
     }
 
     fun add(ruleset: Ruleset) {
@@ -811,21 +341,6 @@ class Ruleset {
         if (modOptionsFile.exists()) {
             try {
                 modOptions = json().fromJsonFile(ModOptions::class.java, modOptionsFile)
-                if (!PlatformCapabilities.current.backgroundThreadPools) {
-                    val rawModOptions = JsonReader().parse(modOptionsFile)
-                    if (!modOptions.isBaseRuleset && rawModOptions.getBoolean("isBaseRuleset", false))
-                        modOptions.isBaseRuleset = true
-                    if (modOptions.uniques.isEmpty()) {
-                        val rawUniques = ArrayList<String>()
-                        var unique = rawModOptions.get("uniques")?.child
-                        while (unique != null) {
-                            val uniqueText = unique.asString()
-                            if (uniqueText.isNotBlank()) rawUniques += uniqueText
-                            unique = unique.next
-                        }
-                        if (rawUniques.isNotEmpty()) modOptions.uniques = rawUniques
-                    }
-                }
                 modOptions.updateDeprecations()
             } catch (ex: Exception) {
                 Log.error("Failed to get modOptions from json file", ex)
@@ -834,7 +349,7 @@ class Ruleset {
 
         val techFile = RulesetFile.Techs.file()
         if (techFile.exists()) {
-            val techColumns = loadTechColumns(techFile)
+            val techColumns = json().fromJsonFile(Array<TechColumn>::class.java, techFile)
             for (techColumn in techColumns) {
                 this.techColumns.add(techColumn)
                 for (tech in techColumn.techs) {
@@ -847,11 +362,11 @@ class Ruleset {
         }
 
         val buildingsFile = RulesetFile.Buildings.file()
-        if (buildingsFile.exists()) buildings += createHashmap(loadNamedArray(Array<Building>::class.java, buildingsFile))
+        if (buildingsFile.exists()) buildings += createHashmap(json().fromJsonFile(Array<Building>::class.java, buildingsFile))
 
         val terrainsFile = RulesetFile.Terrains.file()
         if (terrainsFile.exists()) {
-            terrains += createHashmap(loadNamedArray(Array<Terrain>::class.java, terrainsFile))
+            terrains += createHashmap(json().fromJsonFile(Array<Terrain>::class.java, terrainsFile))
             for (terrain in terrains.values) {
                 terrain.originRuleset = name
                 terrain.setTransients()
@@ -859,13 +374,13 @@ class Ruleset {
         }
 
         val resourcesFile = RulesetFile.TileResources.file()
-        if (resourcesFile.exists()) tileResources += createHashmap(loadNamedArray(Array<TileResource>::class.java, resourcesFile))
+        if (resourcesFile.exists()) tileResources += createHashmap(json().fromJsonFile(Array<TileResource>::class.java, resourcesFile))
 
         val improvementsFile = RulesetFile.TileImprovements.file()
-        if (improvementsFile.exists()) tileImprovements += createHashmap(loadNamedArray(Array<TileImprovement>::class.java, improvementsFile))
+        if (improvementsFile.exists()) tileImprovements += createHashmap(json().fromJsonFile(Array<TileImprovement>::class.java, improvementsFile))
 
         val erasFile = RulesetFile.Eras.file()
-        if (erasFile.exists()) eras += createHashmap(loadNamedArray(Array<Era>::class.java, erasFile))
+        if (erasFile.exists()) eras += createHashmap(json().fromJsonFile(Array<Era>::class.java, erasFile))
         // While `eras.values.toList()` might seem more logical, eras.values is a MutableCollection and
         // therefore does not guarantee keeping the order of elements like a LinkedHashMap does.
         // Using map{} sidesteps this problem
@@ -873,31 +388,31 @@ class Ruleset {
 
         val speedsFile = RulesetFile.Speeds.file()
         if (speedsFile.exists()) {
-            speeds += createHashmap(loadNamedArray(Array<Speed>::class.java, speedsFile))
+            speeds += createHashmap(json().fromJsonFile(Array<Speed>::class.java, speedsFile))
         }
 
         val unitTypesFile = RulesetFile.UnitTypes.file()
-        if (unitTypesFile.exists()) unitTypes += createHashmap(loadNamedArray(Array<UnitType>::class.java, unitTypesFile))
+        if (unitTypesFile.exists()) unitTypes += createHashmap(json().fromJsonFile(Array<UnitType>::class.java, unitTypesFile))
 
         val unitsFile = RulesetFile.Units.file()
-        if (unitsFile.exists()) units += createHashmap(loadNamedArray(Array<BaseUnit>::class.java, unitsFile))
+        if (unitsFile.exists()) units += createHashmap(json().fromJsonFile(Array<BaseUnit>::class.java, unitsFile))
 
         val promotionsFile = RulesetFile.UnitPromotions.file()
-        if (promotionsFile.exists()) unitPromotions += createHashmap(loadNamedArray(Array<Promotion>::class.java, promotionsFile))
+        if (promotionsFile.exists()) unitPromotions += createHashmap(json().fromJsonFile(Array<Promotion>::class.java, promotionsFile))
 
         val unitNameGroupsFile = RulesetFile.UnitNameGroup.file()
-        if (unitNameGroupsFile.exists()) unitNameGroups += createHashmap(loadNamedArray(Array<UnitNameGroup>::class.java, unitNameGroupsFile))
+        if (unitNameGroupsFile.exists()) unitNameGroups += createHashmap(json().fromJsonFile(Array<UnitNameGroup>::class.java, unitNameGroupsFile))
 
         val questsFile = RulesetFile.Quests.file()
-        if (questsFile.exists()) quests += createHashmap(loadNamedArray(Array<Quest>::class.java, questsFile))
+        if (questsFile.exists()) quests += createHashmap(json().fromJsonFile(Array<Quest>::class.java, questsFile))
 
         val specialistsFile = RulesetFile.Specialists.file()
-        if (specialistsFile.exists()) specialists += createHashmap(loadNamedArray(Array<Specialist>::class.java, specialistsFile))
+        if (specialistsFile.exists()) specialists += createHashmap(json().fromJsonFile(Array<Specialist>::class.java, specialistsFile))
 
         val policiesFile = RulesetFile.Policies.file()
         if (policiesFile.exists()) {
             policyBranches += createHashmap(
-                loadNamedArray(Array<PolicyBranch>::class.java, policiesFile)
+                json().fromJsonFile(Array<PolicyBranch>::class.java, policiesFile)
             )
             for (branch in policyBranches.values) {
                 // Setup this branch
@@ -934,18 +449,14 @@ class Ruleset {
                 }
 
                 // Add a finisher
-                if (branch.policies.isNotEmpty()) {
-                    branch.policies.last().name =
-                        branch.name + Policy.branchCompleteSuffix
-                } else {
-                    Log.error("PolicyBranch '${branch.name}' has no policies after load (ruleset=$name)")
-                }
+                branch.policies.last().name =
+                    branch.name + Policy.branchCompleteSuffix
             }
         }
 
         val beliefsFile = RulesetFile.Beliefs.file()
         if (beliefsFile.exists())
-            beliefs += createHashmap(loadNamedArray(Array<Belief>::class.java, beliefsFile))
+            beliefs += createHashmap(json().fromJsonFile(Array<Belief>::class.java, beliefsFile))
 
         val religionsFile = RulesetFile.Religions.file()
         if (religionsFile.exists())
@@ -953,17 +464,17 @@ class Ruleset {
 
         val ruinRewardsFile = RulesetFile.Ruins.file()
         if (ruinRewardsFile.exists())
-            ruinRewards += createHashmap(loadNamedArray(Array<RuinReward>::class.java, ruinRewardsFile))
+            ruinRewards += createHashmap(json().fromJsonFile(Array<RuinReward>::class.java, ruinRewardsFile))
 
         val nationsFile = RulesetFile.Nations.file()
         if (nationsFile.exists()) {
-            nations += createHashmap(loadNamedArray(Array<Nation>::class.java, nationsFile))
+            nations += createHashmap(json().fromJsonFile(Array<Nation>::class.java, nationsFile))
             for (nation in nations.values) nation.setTransients()
         }
 
         val difficultiesFile = RulesetFile.Difficulties.file()
         if (difficultiesFile.exists())
-            difficulties += createHashmap(loadNamedArray(Array<Difficulty>::class.java, difficultiesFile))
+            difficulties += createHashmap(json().fromJsonFile(Array<Difficulty>::class.java, difficultiesFile))
 
         val globalUniquesFile = RulesetFile.GlobalUniques.file()
         if (globalUniquesFile.exists()) {
@@ -973,22 +484,22 @@ class Ruleset {
 
         val victoryTypesFile = RulesetFile.VictoryTypes.file()
         if (victoryTypesFile.exists()) {
-            victories += createHashmap(loadNamedArray(Array<Victory>::class.java, victoryTypesFile))
+            victories += createHashmap(json().fromJsonFile(Array<Victory>::class.java, victoryTypesFile))
         }
 
         val cityStateTypesFile = RulesetFile.CityStateTypes.file()
         if (cityStateTypesFile.exists()) {
-            cityStateTypes += createHashmap(loadNamedArray(Array<CityStateType>::class.java, cityStateTypesFile))
+            cityStateTypes += createHashmap(json().fromJsonFile(Array<CityStateType>::class.java, cityStateTypesFile))
         }
 
         val personalitiesFile = RulesetFile.Personalities.file()
         if (personalitiesFile.exists()) {
-            personalities += createHashmap(loadNamedArray(Array<Personality>::class.java, personalitiesFile))
+            personalities += createHashmap(json().fromJsonFile(Array<Personality>::class.java, personalitiesFile))
         }
 
         val eventsFile = RulesetFile.Events.file()
         if (eventsFile.exists()) {
-            events += createHashmap(loadNamedArray(Array<Event>::class.java, eventsFile))
+            events += createHashmap(json().fromJsonFile(Array<Event>::class.java, eventsFile))
         }
 
         // Tutorials exist per builtin ruleset or mod, but there's also a global file that's always loaded
@@ -996,11 +507,12 @@ class Ruleset {
         if (Gdx.files != null) { // we're not running console mode
             val globalTutorialsFile = Gdx.files.internal("jsons").child(RulesetFile.Tutorials.filename)
             if (globalTutorialsFile.exists())
-                tutorials += createHashmap(loadNamedArray(Array<Tutorial>::class.java, globalTutorialsFile))
+                tutorials += createHashmap(json().fromJsonFile(Array<Tutorial>::class.java, globalTutorialsFile))
         }
+
         val tutorialsFile = RulesetFile.Tutorials.file()
         if (tutorialsFile.exists())
-            tutorials += createHashmap(loadNamedArray(Array<Tutorial>::class.java, tutorialsFile))
+            tutorials += createHashmap(json().fromJsonFile(Array<Tutorial>::class.java, tutorialsFile))
 
         // Add objects that might not be present in base ruleset mods, but are required
         if (modOptions.isBaseRuleset) {
@@ -1046,8 +558,8 @@ class Ruleset {
                         })
                     }
 
+            updateResourceTransients()
         }
-        updateResourceTransients()
     }
 
     /** Building costs are unique in that they are dependant on info in the technology part.
