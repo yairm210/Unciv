@@ -221,6 +221,7 @@ function shouldIgnoreRequestFailure(entry) {
   const url = String(entry && entry.url ? entry.url : '');
   const error = String(entry && entry.error ? entry.error : '');
   if (/favicon\.ico(?:$|\?)/i.test(url)) return true;
+  if (/net::ERR_ABORTED/i.test(error) && /^blob:/i.test(url)) return true;
   if (/net::ERR_ABORTED/i.test(error) && /\/assets\//i.test(url)) return true;
   return false;
 }

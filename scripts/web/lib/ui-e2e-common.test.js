@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
-const { waitForUiProbeResult } = require('./ui-e2e-common');
+const { getActionableRequestFailures, waitForUiProbeResult } = require('./ui-e2e-common');
 
 class FakePage {
   constructor(states, tick) {
@@ -112,4 +112,50 @@ test('waitForUiProbeResult accepts a result published at the timeout boundary', 
   } finally {
     process.stdout.write = originalStdoutWrite;
   }
+});
+
+test('getActionableRequestFailures ignores aborted blob URLs', () => {
+  const failures = getActionableRequestFailures([
+    {
+      label: 'host',
+      url: 'blob:http://127.0.0.1:18080/example',
+      error: 'net::ERR_ABORTED',
+    },
+    {
+      label: 'host',
+      url: 'http://127.0.0.1:18080/assets/Icons.png',
+      error: 'net::ERR_ABORTED',
+    },
+    {
+      label: 'host',
+      url: 'http://127.0.0.1:18080/api/save',
+      error: 'net::ERR_CONNECTION_REFUSED',
+    },
+  ]);
+
+  assert.deepEqual(failures, [
+    {
+      label: 'host',
+      url: 'http://127.0.0.1:18080/api/save',
+      error: 'net::ERR_CONNECTION_REFUSED',
+    },
+  ]);
+});
+
+test('getActionableRequestFailures keeps non-aborted blob failures', () => {
+  const failures = getActionableRequestFailures([
+    {
+      label: 'host',
+      url: 'blob:http://127.0.0.1:18080/example',
+      error: 'net::ERR_FAILED',
+    },
+  ]);
+
+  assert.deepEqual(failures, [
+    {
+      label: 'host',
+      url: 'blob:http://127.0.0.1:18080/example',
+      error: 'net::ERR_FAILED',
+    },
+  ]);
 });
