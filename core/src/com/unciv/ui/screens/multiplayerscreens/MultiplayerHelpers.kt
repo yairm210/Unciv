@@ -59,15 +59,15 @@ object MultiplayerHelpers {
             val playerText = "{${preview.currentPlayer}}{ }({$playerDescriptor})"
 
             descriptionText.appendLine("Current Turn: [$playerText] since [${Duration.between(currentTurnStartTime, Instant.now()).formatShort()}] ago".tr())
-            descriptionText.appendLine("Time to play the turn: [${Duration.ofMinutes(currentPlayer.playerMinutesBeforeForceResign.toLong()).formatShort()}]")
+            descriptionText.appendLine("Time to play the turn: [${Duration.ofMinutes(currentPlayer.playerMinutesBeforeForceResign.toLong()).formatShort()}]".tr())
 
             val playerCivName = preview.civilizations
                 .firstOrNull{ it.playerId == UncivGame.Current.settings.multiplayer.getUserId() }?.civName ?: "Unknown"
 
-            descriptionText.appendLine("{$playerCivName}, ${preview.difficulty.tr()}, ${Fonts.turn}${preview.turns}")
-            descriptionText.appendLine("{Base ruleset:} ${preview.gameParameters.baseRuleset}")
+            descriptionText.appendLine("{$playerCivName}, ${preview.difficulty.tr()}, ${Fonts.turn}${preview.turns}".tr())
+            descriptionText.appendLine("{Base ruleset:} ${preview.gameParameters.baseRuleset}".tr())
             if (preview.gameParameters.mods.isNotEmpty())
-                descriptionText.appendLine("{Mods:} " + preview.gameParameters.mods.joinToString())
+                descriptionText.appendLine(("{Mods:} " + preview.gameParameters.mods.joinToString()).tr())
 
         }
         return descriptionText.toString().tr()
