@@ -359,7 +359,10 @@ async function main() {
   const mpServer = String(process.env.WEB_MP_SERVER || 'http://127.0.0.1:19090').trim();
   const webProfile = String(process.env.WEB_PROFILE || 'phase4-full').trim() || 'phase4-full';
   const timeoutMs = Number(process.env.WEB_CLICKS_MULTIPLAYER_TIMEOUT_MS || '240000');
-  const startupTimeoutMs = Number(process.env.WEB_CLICKS_MULTIPLAYER_STARTUP_TIMEOUT_MS || '45000');
+  const startupTimeoutMs = Number(
+    process.env.WEB_CLICKS_MULTIPLAYER_STARTUP_TIMEOUT_MS
+      || String(scaleTimeout(timeoutMs, 45000, 0.2, 90000)),
+  );
   const startupAttempts = Number(process.env.WEB_CLICKS_MULTIPLAYER_STARTUP_ATTEMPTS || '3');
   const longPhaseTimeoutMs = scaleTimeout(timeoutMs, 120000, 0.5, 180000);
   const syncTimeoutMs = scaleTimeout(timeoutMs, 60000, 0.35, 150000);
