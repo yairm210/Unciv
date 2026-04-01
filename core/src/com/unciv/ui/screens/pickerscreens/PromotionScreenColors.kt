@@ -1,14 +1,12 @@
 package com.unciv.ui.screens.pickerscreens
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.Skin
-import com.unciv.platform.PlatformCapabilities
 import com.unciv.ui.images.ImageGetter
 
-/** Colours used on the [PromotionPickerScreen].
+
+/** Colours used on the [PromotionPickerScreen]
  *
- *  These are backed by Skin.json on runtimes with full reflection support.
- *  Web/TeaVM falls back to the same hard-coded values to avoid skin reflection drift.
+ *  These are backed by Skin.json
  */
 class PromotionScreenColors {
     val default: Color = ImageGetter.CHARCOAL
@@ -20,10 +18,4 @@ class PromotionScreenColors {
     val prerequisite: Color = Color(0.4f, 0.5f, 0.8f, 1f)               // HSV(225,50,80): muted Royal
     val groupLines: Color = Color.WHITE
     val otherLines: Color = Color.CLEAR
-
-    companion object {
-        fun resolve(skin: Skin): PromotionScreenColors =
-            if (PlatformCapabilities.current.backgroundThreadPools) skin[PromotionScreenColors::class.java]
-            else PromotionScreenColors()
-    }
 }

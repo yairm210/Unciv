@@ -173,21 +173,8 @@ abstract class WebPostProcessDistTask : DefaultTask() {
     fun postProcess() {
         val outputDirFile = outputDir.get().asFile
         promoteWebappToRoot(outputDirFile)
-        stripWebIncompatibleSkinObjects(File(outputDirFile, "assets/Skin.json"))
         hardenIndexBootstrap(File(outputDirFile, "index.html"))
         hardenTeaVisibilityLifecycle(File(outputDirFile, "unciv.js"))
-    }
-}
-
-private fun stripWebIncompatibleSkinObjects(skinFile: File) {
-    if (!skinFile.isFile) return
-    val promotionColorsBlock = Regex(
-        """(?ms),\s*"com\.unciv\.ui\.screens\.pickerscreens\.PromotionScreenColors"\s*:\s*\{\s*"default"\s*:\s*\{[^{}]*}\s*}"""
-    )
-    val content = skinFile.readText()
-    val updated = content.replace(promotionColorsBlock, "")
-    if (updated != content) {
-        skinFile.writeText(updated)
     }
 }
 

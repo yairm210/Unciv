@@ -71,6 +71,7 @@ final class BuildWebCommon {
             "com.unciv.models.ruleset.Event",
             "com.unciv.models.ruleset.EventChoice",
             "com.unciv.models.ruleset.Tutorial",
+            "com.unciv.ui.screens.pickerscreens.PromotionScreenColors",
             "com.unciv.logic.GameInfo",
             "com.unciv.logic.VictoryData",
             "com.unciv.logic.map.TileMap",

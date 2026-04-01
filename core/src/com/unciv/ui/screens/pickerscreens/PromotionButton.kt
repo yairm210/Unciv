@@ -21,7 +21,7 @@ internal class PromotionButton(
 ) {
     private val label = node.promotion.name.toLabel(hideIcons = true)
     private val defaultLabelStyle = label.style
-    private val colors = PromotionScreenColors.resolve(BaseScreen.skin)
+    private val colors = BaseScreen.skin[PromotionScreenColors::class.java]
 
     init {
 
