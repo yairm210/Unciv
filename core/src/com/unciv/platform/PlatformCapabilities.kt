@@ -1,6 +1,10 @@
 package com.unciv.platform
 
 object PlatformCapabilities {
+    fun interface LocaleComparatorBridge {
+        fun compare(languageTag: String, first: String?, second: String?): Int
+    }
+
     enum class WebProfile {
         PHASE1,
         PHASE3_ALPHA,
@@ -37,6 +41,9 @@ object PlatformCapabilities {
     @JvmField
     var currentStaging: Staging = Staging()
 
+    @JvmField
+    var localeComparatorBridge: LocaleComparatorBridge? = null
+
     @JvmStatic
     fun setCurrent(features: Features) {
         current = features
@@ -45,6 +52,11 @@ object PlatformCapabilities {
     @JvmStatic
     fun setCurrentStaging(staging: Staging) {
         currentStaging = staging
+    }
+
+    @JvmStatic
+    fun setLocaleComparatorBridge(bridge: LocaleComparatorBridge?) {
+        localeComparatorBridge = bridge
     }
 
     @JvmStatic

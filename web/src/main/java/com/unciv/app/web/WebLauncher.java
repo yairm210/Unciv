@@ -7,6 +7,7 @@ import com.unciv.logic.files.PlatformSaverLoader;
 import com.unciv.logic.files.UncivFiles;
 import com.unciv.logic.files.WebFileChooser;
 import com.unciv.logic.files.WebPlatformSaverLoader;
+import com.unciv.models.metadata.WebLocaleBridge;
 import com.unciv.platform.PlatformCapabilities;
 import com.unciv.platform.PlatformCapabilities.WebProfile;
 import com.unciv.ui.components.fonts.Fonts;
@@ -32,6 +33,7 @@ public class WebLauncher {
                 baseStaging, disableAll, disableMultiplayer, disableFileChooser, disableMods);
         PlatformCapabilities.setCurrent(features);
         PlatformCapabilities.setCurrentStaging(staging);
+        PlatformCapabilities.setLocaleComparatorBridge(WebLocaleBridge::compare);
         Display.INSTANCE.setPlatform(new WebDisplay());
         Fonts.INSTANCE.setFontImplementation(new WebFont());
         boolean customFileChooser = PlatformCapabilities.current.getCustomFileChooser();

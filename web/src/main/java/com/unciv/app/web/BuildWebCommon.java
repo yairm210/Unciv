@@ -43,6 +43,7 @@ final class BuildWebCommon {
             "com.unciv.models.ruleset.ModOptions",
             "com.unciv.models.ruleset.RulesetObject",
             "com.unciv.models.ruleset.RulesetStatsObject",
+            "com.unciv.models.metadata.WebLocaleBridge",
             "com.unciv.models.ruleset.TechColumn",
             "com.unciv.models.ruleset.tech.Technology",
             "com.unciv.models.ruleset.Building",
