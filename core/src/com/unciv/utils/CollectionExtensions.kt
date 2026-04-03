@@ -1,6 +1,8 @@
 package com.unciv.utils
 
 import com.badlogic.gdx.utils.Array
+import com.badlogic.gdx.utils.IntArray as GdxIntArray
+import com.badlogic.gdx.utils.LongArray as GdxLongArray
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 import java.util.BitSet
@@ -149,3 +151,27 @@ inline fun BitSet.forEachClearBit(action: (Int) -> Unit) {
     }
 }
 
+inline fun GdxIntArray.forEach(op: (Int) -> Unit) {
+    for (i in 0 until size) {
+        op(items[i])
+    }
+}
+inline fun <T> GdxIntArray.fold(initial: T, op: (T, Int) -> T): T {
+    var r = initial
+    for (i in 0 until size) {
+        r = op(r, items[i])
+    }
+    return r
+}
+inline fun GdxLongArray.forEach(op: (Long) -> Unit) {
+    for (i in 0 until size) {
+        op(items[i])
+    }
+}
+inline fun <T> GdxLongArray.fold(initial: T, op: (T, Long) -> T): T {
+    var r = initial
+    for (i in 0 until size) {
+        r = op(r, items[i])
+    }
+    return r
+}

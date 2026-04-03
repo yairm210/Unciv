@@ -29,6 +29,7 @@ import yairm210.purity.annotations.Readonly
 import java.text.DecimalFormat
 import kotlin.math.pow
 import kotlin.math.ulp
+import com.unciv.logic.automation.Timers.Companion.timeThis
 
 
 /**
@@ -764,7 +765,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     /**
      * Update this unit's cache of viewable tiles and its civ's as well.
      */
-    fun updateVisibleTiles(updateCivViewableTiles: Boolean = true, explorerPosition: HexCoord? = null) {
+    fun updateVisibleTiles(updateCivViewableTiles: Boolean = true, explorerPosition: HexCoord? = null) = timeThis("MapUnit.updateVisibleTiles") {
         val oldViewableTiles = viewableTiles
 
         viewableTiles = when {

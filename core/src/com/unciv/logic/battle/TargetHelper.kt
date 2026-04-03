@@ -1,6 +1,7 @@
 package com.unciv.logic.battle
 
 import com.unciv.Constants
+import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.city.City
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.movement.PathsToTilesWithinTurn
@@ -16,7 +17,7 @@ object TargetHelper {
         unitDistanceToTiles: PathsToTilesWithinTurn,
         tilesToCheck: List<Tile>? = null,
         stayOnTile: Boolean = false
-    ): ArrayList<AttackableTile> {
+    ): ArrayList<AttackableTile> = timeThis("getAttackableEnemies") {
         val rangeOfAttack = unit.getRange()
         val attackableTiles = ArrayList<AttackableTile>()
 

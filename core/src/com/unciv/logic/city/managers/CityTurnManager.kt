@@ -1,5 +1,6 @@
 package com.unciv.logic.city.managers
 
+import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityFlags
 import com.unciv.logic.city.CityFocus
@@ -18,7 +19,7 @@ import kotlin.random.Random
 class CityTurnManager(val city: City) {
 
 
-    fun startTurn() {
+    fun startTurn() = timeThis("CityTurnManager.startTurn") {
         city.clearCaches()
         
         for (resource in city.getResourcesGeneratedByCity()) {
@@ -134,7 +135,7 @@ class CityTurnManager(val city: City) {
     }
 
 
-    fun endTurn() {
+    fun endTurn() = timeThis("CityTurnManager.endTurn") {
         for (unique in city.getTriggeredUniques(UniqueType.TriggerUponTurnEnd, includeCivUniques = false).toList()) {
             UniqueTriggerActivation.triggerUnique(unique, city)
         }

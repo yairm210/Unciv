@@ -37,6 +37,7 @@ import com.unciv.utils.*
 import kotlinx.coroutines.CancellationException
 import yairm210.purity.annotations.Readonly
 import java.io.PrintWriter
+import java.lang.management.ManagementFactory
 import java.util.*
 import kotlin.collections.ArrayDeque
 import kotlin.collections.asSequence
@@ -463,6 +464,8 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         pushScreen(mainMenuScreen)
         return mainMenuScreen
     }
+
+    override fun getGcCount(): Int = ManagementFactory.getGarbageCollectorMXBeans().sumOf { it.collectionCount }.toInt()
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT

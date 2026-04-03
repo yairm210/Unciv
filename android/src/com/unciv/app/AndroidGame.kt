@@ -4,6 +4,8 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Rect
 import android.net.Uri
+import android.os.Build
+import android.os.Debug
 import android.view.View
 import android.view.ViewTreeObserver
 import com.badlogic.gdx.Gdx
@@ -79,4 +81,7 @@ class AndroidGame(private val activity: Activity) : UncivGame() {
     }
 
     fun isInitializedProxy() = super.isInitialized
+
+    override fun getGcCount(): Int = 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) Debug.getRuntimeStat("art.gc.gc-count").toInt() else 0
 }

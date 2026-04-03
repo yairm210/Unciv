@@ -2,6 +2,7 @@ package com.unciv.models.ruleset.unique
 
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
+import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.battle.CombatAction
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
@@ -28,7 +29,7 @@ object Conditionals {
         unique: Unique?,
         conditional: Unique,
         state: GameContext
-    ): Boolean {
+    ): Boolean = timeThis("Conditionals.conditionalApplies") {
 
         if (conditional.isOtherModifierType)
             return true // not a filtering condition, includes e.g. ModifierHiddenFromUsers

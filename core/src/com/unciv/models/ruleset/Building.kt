@@ -2,6 +2,7 @@ package com.unciv.models.ruleset
 
 import com.unciv.logic.GameInfo
 import com.unciv.logic.MultiFilter
+import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.civilization.Civilization
@@ -81,7 +82,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     fun getStats(city: City,
                  /* By default, do not cache - if we're getting stats for only one building this isn't efficient.
                  * Only use a cache if it was sent to us from outside, which means we can use the results for other buildings.  */
-                 localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): Stats {
+                 localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): Stats = timeThis("Building.getStats") {
         // Calls the clone function of the NamedStats this class is derived from, not a clone function of this class
         @LocalState val stats = cloneStats()
         

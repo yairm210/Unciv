@@ -24,6 +24,7 @@ import com.unciv.utils.debug
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
+import com.unciv.logic.automation.Timers.Companion.timeThis
 
 /**
  * Contains the logic for worker automation.
@@ -71,7 +72,8 @@ class WorkerAutomation(
     /**
      * Automate one Worker - decide what to do and where, move, start or continue work.
      */
-    fun automateWorkerAction(unit: MapUnit, dangerousTiles: HashSet<Tile>, localUniqueCache: LocalUniqueCache = LocalUniqueCache()) {
+    fun automateWorkerAction(unit: MapUnit, dangerousTiles: HashSet<Tile>, localUniqueCache: LocalUniqueCache = LocalUniqueCache())
+        = timeThis<Unit>("automateWorkerAction") {
         val currentTile = unit.getTile()
         // Must be called before any getPriority checks to guarantee the local road cache is processed
         val citiesToConnect = roadBetweenCitiesAutomation.getNearbyCitiesToConnect(unit)
@@ -113,7 +115,7 @@ class WorkerAutomation(
         unit: MapUnit,
         localUniqueCache: LocalUniqueCache,
         currentTile: Tile
-    ): Boolean {
+    ): Boolean = timeThis("WorkerAutomation.tryHeadTowardsUndevelopedCity") {
         // Note, however, that the closest city to a tile isn't necessarily the owning city
         val closestUndevelopedCity = unit.civ.cities
             .sortedBy { it.getCenterTile().aerialDistanceTo(currentTile) }
@@ -193,7 +195,7 @@ class WorkerAutomation(
      * @return Null if no tile to work was found
      */
     @Readonly
-    private fun findTileToWork(unit: MapUnit, tilesToAvoid: Set<Tile>, localUniqueCache: LocalUniqueCache): Tile? {
+    private fun findTileToWork(unit: MapUnit, tilesToAvoid: Set<Tile>, localUniqueCache: LocalUniqueCache): Tile? = timeThis("findTileToWork") {
         val currentTile = unit.getTile()
         
         if (isAutomationWorkableTile(currentTile, tilesToAvoid, currentTile, unit)
@@ -291,7 +293,7 @@ class WorkerAutomation(
      * Calculates the priority building the improvement on the tile
      */
     @Readonly
-    private fun getImprovementPriority(tile: Tile, unit: MapUnit, localUniqueCache: LocalUniqueCache): Float {
+    private fun getImprovementPriority(tile: Tile, unit: MapUnit, localUniqueCache: LocalUniqueCache): Float = timeThis("getImprovementPriority") {
         getBasePriority(tile, unit)
         @LocalState val rank = tileRankings[tile]
         if (rank!!.improvementPriority == null) {
@@ -341,7 +343,7 @@ class WorkerAutomation(
      * Returns the best improvement
      */
     @Readonly
-    private fun tileHasWorkToDo(tile: Tile, unit: MapUnit, localUniqueCache: LocalUniqueCache): Boolean {
+    private fun tileHasWorkToDo(tile: Tile, unit: MapUnit, localUniqueCache: LocalUniqueCache): Boolean = timeThis("tileHasWorkToDo") {
         if (getImprovementPriority(tile, unit, localUniqueCache) <= 0) return false
         if (!(tileRankings[tile]!!.bestImprovement != null || tileRankings[tile]!!.repairImprovment!!))
             throw IllegalStateException("There was an improvementPriority > 0 and nothing to do")
@@ -353,7 +355,11 @@ class WorkerAutomation(
      * Returns null if none is worth it
      * */
     @Readonly
-    private fun chooseImprovement(unit: MapUnit, tile: Tile, localUniqueCache: LocalUniqueCache, ignoreImprovements: Sequence<TileImprovement> = NO_IGNORED_IMPROVEMENTS): TileImprovement? {
+    private fun chooseImprovement(unit: MapUnit, 
+          tile: Tile, 
+          localUniqueCache: LocalUniqueCache, 
+          ignoreImprovements: Sequence<TileImprovement> = NO_IGNORED_IMPROVEMENTS
+    ): TileImprovement? = timeThis("chooseImprovement") {
         // You can keep working on half-built improvements, even if they're unique to another civ
         if (tile.improvementInProgress != null) return ruleSet.tileImprovements[tile.improvementInProgress]
 
@@ -539,7 +545,7 @@ class WorkerAutomation(
         improvementName: String,
         localUniqueCache: LocalUniqueCache,
         /** Provide for performance */ currentTileStats: Stats? = null
-    ): Float {
+    ): Float = timeThis("getImprovementRanking") {
         val improvement = ruleSet.tileImprovements[improvementName]!!
         return getImprovementRanking(tile, unit, improvement, localUniqueCache, currentTileStats)
     }
