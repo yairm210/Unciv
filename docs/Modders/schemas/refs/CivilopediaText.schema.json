@@ -1,0 +1,91 @@
+{
+  "$id": "https://raw.githubusercontent.com/yairm210/Unciv/refs/heads/master/docs/Modders/schemas/refs/CivilopediaText.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CivilopediaText",
+  "description": "A list of civilopedia text entries, including formatting and metadata for display.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "text": {
+        "title": "Text",
+        "type": "string",
+        "description": "Displays some text within the Civilopedia."
+      },
+      "link": {
+        "type": "string",
+        "title": "Link",
+        "description": "Create link and icon, format: Category/Name or external link.",
+        "examples": ["Building/Mosque", "Terrain/River"]
+      },
+      "icon": {
+        "type": "string",
+        "title": "Icon",
+        "description": "Show icon without linking, format: Category/Name"
+      },
+      "extraImage": {
+        "title": "Extra Image",
+        "type": "string",
+        "description": "Display an Image instead of text. Can be a path found in a texture atlas or the name of a png or jpg in the ExtraImages folder"
+      },
+      "imageSize": {
+        "title": "Image Size",
+        "type": "number",
+        "description": "Size in world units of the [extraImage], the smaller coordinate is calculated preserving aspect ratio. available width"
+      },
+      "size": {
+        "title": "Size",
+        "type": "integer",
+        "description": "Text size, is 18. Use size or header but not both",
+        "default": 18
+      },
+      "header": {
+        "title": "Header",
+        "type": "integer",
+        "description": "Header level. 1 means double text size and decreases from there",
+        "default": 2
+      },
+      "indent": {
+        "title": "Indent",
+        "type": "integer",
+        "description": "Indent level. 0 means text will follow icons, 1 aligns to the right of all icons, each further step is 30 units"
+      },
+      "padding": {
+        "title": "Padding",
+        "type": "number",
+        "description": "Vertical padding between rows, 5 units",
+        "default": 5
+      },
+      "color": {
+        "title": "Color",
+        "type": "string",
+        "description": "Sets text color, accepts names or 6/3-digit web colors (e.g. #FFA040)",
+        "default": "#FFA040"
+      },
+      "separator": {
+        "title": "Separator",
+        "type": "boolean",
+        "description": "Renders a separator line instead of text. Can be combined only with color and size (line width, default 2)",
+        "default": true
+      },
+      "starred": {
+        "title": "Starred",
+        "type": "boolean",
+        "description": "Decorates text with a star icon - if set, it receives the color instead of the text",
+        "default": true
+      },
+      "centered": {
+        "title": "Centered",
+        "type": "boolean",
+        "description": "Centers the line (and turns off automatic wrap). For an extraImage, turns on crop-to-content to equalize transparent borders",
+        "default": true
+      },
+      "iconCrossed": {
+        "title": "Icon Crossed",
+        "type": "boolean",
+        "description": "Paint a red X over the icon or link image",
+        "default": true
+      }
+    }
+  }
+}

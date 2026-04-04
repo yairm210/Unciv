@@ -1,0 +1,86 @@
+{
+  "$id": "https://raw.githubusercontent.com/yairm210/Unciv/refs/heads/master/docs/Modders/schemas/Policies.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Policies",
+  "description": "A list of policies and policy trees available in the game.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "title": "Name",
+        "description": "The name of the Policy."
+      },
+      "era": {
+        "title": "Era",
+        "type": "string",
+        "description": "Unlocking era as defined in Eras.json",
+        "examples": [
+          "Ancient era",
+          "Classical era",
+          "Medieval era",
+          "Renaissance era",
+          "Industrial era",
+          "Modern era",
+          "Atomic era",
+          "Information era",
+          "Future era"
+        ]
+      },
+      "priorities": {
+        "$ref": "refs/Priorities.schema.json",
+        "description": "Priorities for each victory type."
+      },
+      "uniques": {
+        "$ref": "refs/Uniques.schema.json"
+      },
+      "civilopediaText": {
+        "$ref": "refs/CivilopediaText.schema.json"
+      },
+      "policies": {
+        "title": "Policies",
+        "description": "List of member policies and branch 'finisher'.",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "description": "Member policy.",
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "row": {
+              "title": "Row",
+              "type": "integer",
+              "description": "Placement in UI, each unit approximately half the icon size"
+            },
+            "column": {
+              "title": "Column",
+              "type": "integer",
+              "description": "Placement in UI, each unit approximately half the icon size"
+            },
+            "requires": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "List of prerequisite policy names",
+              "uniqueItems": true
+            },
+            "uniques": {
+              "$ref": "refs/Uniques.schema.json"
+            },
+            "civilopediaText": {
+              "$ref": "refs/CivilopediaText.schema.json"
+            }
+          },
+          "required": ["name"]
+        },
+        "uniqueItems": true
+      }
+    },
+    "required": ["name", "era"],
+    "additionalProperties": false
+  }
+}
