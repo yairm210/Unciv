@@ -1,3 +1,19 @@
+## 4.19.20
+
+By SeventhM:
+- Add conditionals for current unit movement 
+- Fix unavailable unique being ignored in unexpected places 
+
+By unciv-loof:
+- Popup after other civ responds to a demand 
+- Fix embassy trade logic bug 
+
+Theoretical improvements to workerAutomation performance - By Ambeco
+
+Fix missing .tr() calls in multiplayer game preview description - By evanofficial
+
+Upon signing a peace treaty unique - By PLynx01
+
 ## 4.19.19
 
 Reset tileset settings when deleting the mod that contained the tileset
