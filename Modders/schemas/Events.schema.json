@@ -1,0 +1,63 @@
+{
+  "$id": "https://raw.githubusercontent.com/yairm210/Unciv/refs/heads/master/docs/Modders/schemas/Events.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Events",
+  "description": "A list of game events, including triggers, choices, and presentation details.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "title": "Name",
+        "description": "Used for triggering via 'Triggers a [event] event' unique."
+      },
+      "text": {
+        "type": "string",
+        "description": "Flavor text displayed to user."
+      },
+      "presentation": {
+        "enum": ["None", "Alert", "Floating"],
+        "description": "Alert indicates a regular popup, None means the choice is made randomly, Floating is for tutorial-style indicators.",
+        "default": "None"
+      },
+      "uniques": {
+        "$ref": "refs/Uniques.schema.json"
+      },
+      "civilopediaText": {
+        "$ref": "refs/CivilopediaText.schema.json"
+      },
+      "choices": {
+        "type": "array",
+        "title": "Choices",
+        "description": "User can choose to trigger one of the viable choices.",
+        "items": {
+          "type": "object",
+          "properties": {
+            "text": {
+              "type": "string",
+              "title": "Text",
+              "description": "The text that is displayed to the user for the choice."
+            },
+            "uniques": {
+              "$ref": "refs/Uniques.schema.json"
+            },
+            "civilopediaText": {
+              "$ref": "refs/CivilopediaText.schema.json"
+            },
+            "keyShortcut": {
+              "type": "string",
+              "title": "Keyboard Shortcut",
+              "description": "The key that would invoke the given choice. See https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/Input.java",
+              "examples": ["A", "B", "C"]
+            }
+          },
+          "required": ["text"],
+          "additionalProperties": false
+        }
+      }
+    },
+    "required": ["name"],
+    "additionalProperties": false
+  }
+}

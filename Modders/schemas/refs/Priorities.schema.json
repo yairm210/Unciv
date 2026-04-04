@@ -1,0 +1,17 @@
+{
+  "$id": "https://raw.githubusercontent.com/yairm210/Unciv/refs/heads/master/docs/Modders/schemas/refs/Priorities.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Priorities",
+  "description": "A list of priorities for the object. Used in Personalities and Policies.",
+  "type": "object",
+  "additionalProperties": {
+    "type": "number",
+    "title": "Priority Value",
+    "default": 5,
+    "minimum": 0
+  },
+  "propertyNames": {
+    "type": "string",
+    "title": "Policy Branch"
+  }
+}

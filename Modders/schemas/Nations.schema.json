@@ -1,0 +1,180 @@
+{
+  "$id": "https://raw.githubusercontent.com/yairm210/Unciv/refs/heads/master/docs/Modders/schemas/Nations.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Nations",
+  "description": "A list of nations, including their leaders, colors, and other attributes.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "title": "Nation Name",
+        "description": "The official name of the nation."
+      },
+      "leaderName": {
+        "type": "string",
+        "title": "Leader Name",
+        "description": "The name of the leader representing the nation. Omit for city states."
+      },
+      "adjective": {
+        "title": "Leader Adjectives",
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "uniqueItems": true,
+        "description": "The adjectives for the leader. Currently not in use."
+      },
+      "personality": {
+        "type": "string",
+        "title": "Leader Personality",
+        "description": "Defines the personality type of the nation's leader. See Personalities.json."
+      },
+      "style": {
+        "type": "string",
+        "title": "Visual Style",
+        "description": "Modifier appended to image names for visual differentiation."
+      },
+      "cityStateType": {
+        "type": "string",
+        "title": "City State Type",
+        "description": "Type of city state, if applicable. See CityStateTypes.json",
+        "examples": [
+          "Cultured",
+          "Maritime",
+          "Mercantile",
+          "Religious",
+          "Militaristic"
+        ]
+      },
+      "outerColor": {
+        "$ref": "refs/Color.schema.json",
+        "title": "Outer Color",
+        "description": "The primary color representing the nation."
+      },
+      "innerColor": {
+        "$ref": "refs/Color.schema.json",
+        "title": "Inner Color",
+        "description": "The secondary color representing the nation."
+      },
+      "preferredVictoryType": {
+        "type": "string",
+        "title": "Preferred Victory Type",
+        "description": "The victory type most favored by this nation. See VictoryTypes.json.",
+        "examples": ["Domination", "Science", "Cultural"]
+      },
+      "startBias": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "examples": ["Avoid [Tundra]", "Avoid [Desert]", "Coast", "Grassland"]
+        },
+        "uniqueItems": true,
+        "title": "Start Bias",
+        "description": "Types of tiles where the nation is more likely to start."
+      },
+      "uniques": {
+        "$ref": "refs/Uniques.schema.json",
+        "title": "Unique Abilities",
+        "description": "Special abilities or traits unique to this nation."
+      },
+      "introduction": {
+        "type": "string",
+        "title": "Introduction",
+        "description": "Text introducing the nation to the player."
+      },
+      "tradeRequest": {
+        "type": "string",
+        "title": "Trade Request",
+        "description": "Text shown when the nation requests a trade."
+      },
+      "neutralHello": {
+        "type": "string",
+        "title": "Neutral Greeting",
+        "description": "Greeting text when relations are neutral."
+      },
+      "hateHello": {
+        "type": "string",
+        "title": "Hostile Greeting",
+        "description": "Greeting text when relations are hostile."
+      },
+      "declaringWar": {
+        "type": "string",
+        "title": "Declaring War",
+        "description": "Text shown when the nation declares war."
+      },
+      "attacked": {
+        "type": "string",
+        "title": "Attacked",
+        "description": "Text shown when the nation is attacked."
+      },
+      "defeated": {
+        "type": "string",
+        "title": "Defeated",
+        "description": "Text shown when the nation is defeated."
+      },
+      "denounced": {
+        "type": "string",
+        "title": "Denounced",
+        "description": "Text shown when the nation is denounced."
+      },
+      "declaringFriendship": {
+        "type": "string",
+        "title": "Declaring Friendship",
+        "description": "Text shown when the nation declares friendship."
+      },
+      "startIntroPart1": {
+        "type": "string",
+        "title": "Start Introduction Part 1",
+        "description": "First part of the introduction at the start of the game."
+      },
+      "startIntroPart2": {
+        "type": "string",
+        "title": "Start Introduction Part 2",
+        "description": "Second part of the introduction at the start of the game."
+      },
+      "cities": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "uniqueItems": true,
+        "title": "City Names",
+        "description": "Ordered list of city names unique to the nation, starting with the capital."
+      },
+      "spyNames": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "uniqueItems": true,
+        "title": "Spy Names",
+        "description": "List of names for spies belonging to the nation."
+      },
+      "favoredReligion": {
+        "type": "string",
+        "title": "Favored Religion",
+        "description": "The religion most favored by this nation.",
+        "default": "",
+        "examples": ["Islam", "Buddhism", "Taoism"]
+      },
+      "uniqueName": {
+        "type": "string",
+        "title": "Unique Name",
+        "description": "Decorative name for the special characteristic of this nation."
+      },
+      "uniqueText": {
+        "type": "string",
+        "title": "Unique Description",
+        "description": "Freeform text shown to users, overriding the list of uniques."
+      },
+      "civilopediaText": {
+        "$ref": "refs/CivilopediaText.schema.json",
+        "description": "Additional descriptive text for the nation in the Civilopedia."
+      }
+    },
+    "required": ["name", "outerColor"],
+    "additionalProperties": false
+  }
+}
