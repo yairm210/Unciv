@@ -1,4 +1,4 @@
-package com.unciv.logic.filters
+package com.unciv.logic.filter
 
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.Ruleset
@@ -9,7 +9,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/** Tests [Policy][com.unciv.models.ruleset.Policy] */
+/** Tests [Policy][com.unciv.models.ruleset.Policy] filters*/
 @RunWith(GdxTestRunner::class)
 class PolicyFilterTests {
     private lateinit var game: TestGame
@@ -21,7 +21,6 @@ class PolicyFilterTests {
     }
     
     @Test
-    @CoversCountable(Countables.PolicyBranches, Countables.FilteredPolicies)
     fun testPolicyMatchesFilter() {
         // Don't use a fake Policy without a branch, the policyFilter would stumble over a lateinit.
         val taggedPolicyBranch = game.createPolicyBranch("Some marker")
@@ -53,7 +52,8 @@ class PolicyFilterTests {
                 Assert.assertTrue(filtered.size == test.second.second)
             }
             catch (_: AssertionError) {
-                failures.add("filter: $filtered\ntest: ${test.second.first}")
+                failures.add("Filter: ${test.first}\nExpected result: ${test.second.first}, expected size: ${test.second.second}\n" +
+                    "Result: $filtered, size: ${filtered.size}\n")
             }
         }
         if (failures.any()) {

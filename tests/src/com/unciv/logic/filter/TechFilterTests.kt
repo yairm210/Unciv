@@ -1,20 +1,19 @@
-package com.unciv.logic.filters
+package com.unciv.logic.filter
 
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tech.Technology
-import com.unciv.models.ruleset.unique.Countables
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
-import com.unciv.uniques.CoversCountable
 import org.junit.Assert
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import kotlin.collections.iterator
 
-/** Tests [Technology][com.unciv.models.ruleset.tech.Technology] and [Era][com.unciv.models.ruleset.tech.Era] */
+/** Tests [Technology][Technology] and [Era][com.unciv.models.ruleset.tech.Era] filters*/
 @RunWith(GdxTestRunner::class)
 class TechFilterTests {
     private lateinit var game: TestGame
@@ -56,24 +55,27 @@ class TechFilterTests {
         )
 
         val state = GameContext(civ)
+        val failures = ArrayList<String?>()
         for ((eraName, tests) in eraTests) {
-            val era = game.ruleset.eras[eraName]
-            Assert.assertNotNull(era)
-            if (era != null) {
+            try {
+                val era = game.ruleset.eras[eraName]
+                assertNotNull(era)
                 for ((filter, expected) in tests) {
-                    val actual = era.matchesFilter(filter, state)
-                    Assert.assertEquals(
-                        "Testing that `$era` matchesFilter `$filter`:",
-                        expected,
-                        actual
-                    )
+                    val actual = era!!.matchesFilter(filter, state)
+                    assertEquals("Testing that `$era` matchesFilter `$filter`:", expected, actual)
                 }
             }
+            catch (error: AssertionError) {
+                failures.add(error.message)
+            }
+        }
+        if (failures.any()) {
+            println(failures.joinToString("\n"))
+            throw AssertionError()
         }
     }
     
     @Test
-    @CoversCountable(Countables.FilteredTechnologies)
     fun testTechMatchesFilter() {
         val testTechs = listOf(
             "Agriculture",
