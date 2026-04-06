@@ -276,6 +276,9 @@ class CivInfoTransientCache(val civInfo: Civilization) {
                 GameContext(civInfo, tile = tile)
             ))
                 UniqueTriggerActivation.triggerUnique(unique, civInfo, tile=tile, triggerNotificationText = "due to discovering a Natural Wonder")
+
+            // G&K in particular; update the happiness counter in the top bar in the world screen
+            civInfo.updateStatsForNextTurn()
         }
     }
 
