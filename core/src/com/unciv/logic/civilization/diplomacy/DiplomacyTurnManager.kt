@@ -269,6 +269,7 @@ object DiplomacyTurnManager {
     }
 
     private fun DiplomacyManager.nextTurnDiplomaticModifiers() {
+        val rng = state.stateBasedRandom("DiplomacyManager.nextTurnDiplomaticModifiers")
         if (diplomaticStatus == DiplomaticStatus.Peace)
             accumulateToAtMost(DiplomaticModifiers.YearsOfPeace, 0.5f, 30f)
         else
@@ -344,7 +345,7 @@ object DiplomacyTurnManager {
             return
         }
 
-        val variance = listOf(-1, 0, 1).random()
+        val variance = listOf(-1, 0, 1).random(rng)
 
         val provideMilitaryUnitUniques = CityStateFunctions
             .getCityStateBonuses(otherCiv.cityStateType, relationshipIgnoreAfraid(), UniqueType.CityStateMilitaryUnits)

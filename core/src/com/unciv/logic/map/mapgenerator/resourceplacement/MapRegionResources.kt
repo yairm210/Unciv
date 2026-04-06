@@ -34,7 +34,7 @@ object MapRegionResources {
             ResourceType.Bonus -> ImpactType.Bonus
             ResourceType.Luxury -> ImpactType.Luxury
         }
-        val conditionalTerrain = GameContext(attackedTile = tileList.firstOrNull())
+        val conditionalTerrain = GameContext(attackedTile = tileList.firstOrNull(), gameInfo = null)
         val weightings = resourceOptions.associateWith {
             val unique = it.getMatchingUniques(UniqueType.ResourceWeighting, conditionalTerrain).firstOrNull()
             val weight = if (unique != null) unique.params[0].toFloat() else 1f

@@ -37,6 +37,7 @@ object DiplomacyAutomation {
             }
             .sortedByDescending { it.getDiplomacyManager(civInfo)!!.relationshipLevel() }.toList()
         for (otherCiv in civsThatWeCanDeclareFriendshipWith) {
+            val rng = civInfo.getDiplomacyManager(otherCiv)!!.state.stateBasedRandom("DiplomacyAutomation.offerDeclarationOfFriendship")
             // Default setting is 2, this will be changed according to different civ.
             if ((1..10).random(getRandom(civInfo, otherCiv, "declaration of friendship"))
                 <= 2 * civInfo.getPersonality().scaledFocus(PersonalityValue.Diplomacy) 
@@ -135,6 +136,7 @@ object DiplomacyAutomation {
         }.sortedByDescending { it.getDiplomacyManager(civInfo)!!.relationshipLevel() }
 
         for (otherCiv in civsThatWeCanEstablishEmbassyWith) {
+            val rng = civInfo.getDiplomacyManager(otherCiv)!!.state.stateBasedRandom("DiplomacyAutomation.offerToEstablishEmbassy")
             // Default setting is 3
             if ((1..10).random(getRandom(civInfo, otherCiv, "embassy")) < 7) continue
             if (wantsToAcceptEmbassy(civInfo, otherCiv)) {
@@ -182,6 +184,7 @@ object DiplomacyAutomation {
         }.sortedByDescending { it.getDiplomacyManager(civInfo)!!.relationshipLevel() }
 
         for (otherCiv in civsThatWeCanOpenBordersWith) {
+            val rng = civInfo.getDiplomacyManager(otherCiv)!!.state.stateBasedRandom("DiplomacyAutomation.offerOpenBorders")
             // Default setting is 3
             if ((1..10).random(getRandom(civInfo, otherCiv, "open borders")) < 7) continue
             if (wantsToOpenBorders(civInfo, otherCiv)) {
@@ -252,6 +255,7 @@ object DiplomacyAutomation {
         }.sortedByDescending { it.stats.statsForNextTurn.science }
 
         for (otherCiv in civsThatWeCanSignResearchAgreementWith) {
+            val rng = civInfo.getDiplomacyManager(otherCiv)!!.state.stateBasedRandom("DiplomacyAutomation.offerResearchAgreement")
             // Default setting is 5, this will be changed according to different civ.
             if ((1..10).random(getRandom(civInfo, otherCiv, "research agreement"))
                 <= 5 * civInfo.getPersonality().scaledFocus(PersonalityValue.Science)) continue
@@ -277,6 +281,7 @@ object DiplomacyAutomation {
         }
 
         for (otherCiv in civsThatWeCanSignDefensivePactWith) {
+            val rng = civInfo.getDiplomacyManager(otherCiv)!!.state.stateBasedRandom("DiplomacyAutomation.offerDefensivePact")
             // Default setting is 3, this will be changed according to different civ.
             if ((1..10).random(getRandom(civInfo, otherCiv, "defensive pact"))
                 <= 7 * civInfo.getPersonality().inverseScaledFocus(PersonalityValue.Loyal)) continue

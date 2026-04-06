@@ -269,7 +269,7 @@ object StartNormalizer {
             candidatePlots.remove(plot) // remove the plot as it has now been tried, whether successfully or not
             if (plot.getBaseTerrain().hasUnique(
                     UniqueType.BlocksResources,
-                    GameContext(attackedTile = plot)
+                    GameContext(attackedTile = plot, gameInfo = null)
                 )
             )
                 continue // Don't put bonuses on snow hills

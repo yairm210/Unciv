@@ -351,10 +351,11 @@ object UniqueTriggerActivation {
                     civUnit = civInfo.getEquivalentUnit(replacementUnit.name)
                 }
 
-                val placingTile =
-                    tile ?: civInfo.cities.random().getCenterTile()
 
                 fun placeUnit(): Boolean {
+                    val rng = (unit?.cache?.state ?: civInfo.state).stateBasedRandom("UniqueTriggerActivation.getTriggerFunction") 
+                    val placingTile =
+                        tile ?: civInfo.cities.random(rng).getCenterTile()
                     val placedUnit = civInfo.units.placeUnitNearTile(placingTile.position, civUnit.name)
                     if (notification != null && placedUnit != null) {
                         val notificationText =

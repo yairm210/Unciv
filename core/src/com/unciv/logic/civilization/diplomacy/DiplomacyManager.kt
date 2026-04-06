@@ -183,6 +183,15 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             _otherCiv = civInfo.gameInfo.getCivilization(otherCivName)
         return _otherCiv
     }
+    
+    @Cache
+    @Transient
+    private lateinit var _context: GameContext
+    @get:Readonly val state: GameContext get() {
+        if (!::_context.isInitialized)
+            _context = GameContext(civInfo, otherCiv)
+        return _context
+    }
 
     // since this needs to be checked a lot during travel, putting it in a transient is a good performance booster
     @Transient

@@ -31,8 +31,6 @@ import com.unciv.ui.screens.victoryscreen.RankingType
 import com.unciv.utils.randomWeighted
 import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Readonly
-import kotlin.math.roundToInt
-import kotlin.random.Random
 
 object NextTurnAutomation {
 
@@ -282,6 +280,7 @@ object NextTurnAutomation {
     }
 
     private fun adoptPolicy(civInfo: Civilization) {
+        val rng = civInfo.state.stateBasedRandom("NextTurnAutomation.adoptPolicy")
         /*
         # Branch-based policy-to-adopt decision
         Basically the AI prioritizes finishing incomplete branches before moving on, \
@@ -333,7 +332,7 @@ object NextTurnAutomation {
             // Choose the branch with the LEAST REMAINING policies, not the MOST ADOPTED ones
             val targetBranch = candidateCompletionMap.asIterable()
                 .groupBy { it.key.policies.size - it.value }
-                .minByOrNull { it.key }!!.value.random().key
+                .minByOrNull { it.key }!!.value.random(rng).key
 
             val policyToAdopt: Policy =
                 if (civInfo.policies.isAdoptable(targetBranch)) targetBranch
@@ -346,6 +345,7 @@ object NextTurnAutomation {
 
     fun chooseGreatPerson(civInfo: Civilization) {
         if (civInfo.greatPeople.freeGreatPeople == 0) return
+        val rng = civInfo.state.stateBasedRandom("NextTurnAutomation.chooseGreatPerson")
         val mayanGreatPerson = civInfo.greatPeople.mayaLimitedFreeGP > 0
         val greatPeople =
             if (mayanGreatPerson)
@@ -353,7 +353,7 @@ object NextTurnAutomation {
             else civInfo.greatPeople.getGreatPeople()
 
         if (greatPeople.isEmpty()) return
-        var greatPerson = greatPeople.random()
+        var greatPerson = greatPeople.random(rng)
         val scienceGP = greatPeople.firstOrNull { it.uniques.contains("Great Person - [Science]") }
         if (scienceGP != null)  greatPerson = scienceGP
         // Humans would pick a prophet or engineer, but it'd require more sophistication on part of the AI - a scientist is the safest option for now
@@ -387,12 +387,13 @@ object NextTurnAutomation {
             for (city in civInfo.cities) {
                 if (city.hasSoldBuildingThisTurn)
                     continue
+                val rng = city.state.stateBasedRandom("NextTurnAutomation.freeUpSpaceResources")
                 val buildingToSell = civInfo.gameInfo.ruleset.buildings.values.filter {
                         city.cityConstructions.isBuilt(it.name)
                         && it.requiredResources(city.state).contains(resource)
                         && it.isSellable()
                         && !civInfo.civConstructions.hasFreeBuilding(city, it) }
-                    .randomOrNull()
+                    .randomOrNull(rng)
                 if (buildingToSell != null) {
                     city.sellBuilding(buildingToSell)
                     break
@@ -614,6 +615,7 @@ object NextTurnAutomation {
     // However, that can be added in another update, this PR is large enough as it is.
     private fun tryVoteForDiplomaticVictory(civ: Civilization) {
         if (!civ.mayVoteForDiplomaticVictory()) return
+        val rng = civ.state.stateBasedRandom("NextTurnAutomation.tryVoteForDiplomaticVictory")
 
         val chosenCiv: Civilization? = if (civ.isMajorCiv()) {
             val knownMajorCivs = civ.getKnownCivs().filter { it.isMajorCiv() }
@@ -623,11 +625,11 @@ object NextTurnAutomation {
                 }
 
             if (highestOpinion == null) null  // Abstain if we know nobody
-            else if (highestOpinion < -80 || highestOpinion < -40 && highestOpinion + Random.Default.nextInt(40) < -40)
+            else if (highestOpinion < -80 || highestOpinion < -40 && highestOpinion + rng.nextInt(40) < -40)
                 null // Abstain if we hate everybody (proportional chance in the RelationshipLevel.Enemy range - lesser evil)
             else knownMajorCivs
                 .filter { civ.getDiplomacyManager(it)!!.opinionOfOtherCiv() == highestOpinion }
-                .toList().random()
+                .toList().random(rng)
 
         } else {
             civ.allyCiv
