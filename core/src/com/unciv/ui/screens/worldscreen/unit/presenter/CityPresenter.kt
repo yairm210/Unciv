@@ -35,18 +35,20 @@ class CityPresenter(private val unitTable: UnitTable, private val unitPresenter:
         val city = selectedCity!!
         var nameLabelText = city.name.tr()
         if (city.health < city.getMaxHealth()) nameLabelText += " (${city.health.tr()})"
-        unitNameLabel.setText(nameLabelText)
 
-        unitNameLabel.clearListeners()
-        unitNameLabel.onClick {
-            if (!worldScreen.canChangeState) return@onClick
-            CityRenamePopup(
-                screen = worldScreen,
-                city = city,
-                actionOnClose = {
-                    unitNameLabel.setText(city.name.tr())
-                    worldScreen.shouldUpdate = true
-                })
+        if (!unitNameLabel.text.equalsString(nameLabelText)) {
+            unitNameLabel.setText(nameLabelText)
+            unitNameLabel.clearListeners()
+            unitNameLabel.onClick {
+                if (!worldScreen.canChangeState) return@onClick
+                CityRenamePopup(
+                    screen = worldScreen,
+                    city = city,
+                    actionOnClose = {
+                        unitNameLabel.setText(city.name.tr())
+                        worldScreen.shouldUpdate = true
+                    })
+            }
         }
 
         descriptionTable.clear()

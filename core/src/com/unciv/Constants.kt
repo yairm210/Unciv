@@ -124,7 +124,7 @@ object Constants {
 
     const val defaultFontSize = 18
     const val headingFontSize = 24
-    const val smallerHeadingFontSize = 21
+    const val smallerHeadingFontSize = 20
 
     /** URL to the root of the Unciv repository, including trailing slash */
     // Note: Should the project move, this covers external links, but not comments e.g. mentioning issues

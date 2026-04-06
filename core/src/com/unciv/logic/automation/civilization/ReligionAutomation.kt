@@ -491,7 +491,8 @@ object ReligionAutomation {
                     && !additionalBeliefsToExclude.contains(it)
                     && civInfo.religionManager.getReligionWithBelief(it) == null
                     && it.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)
-                    .none { unique -> !unique.conditionalsApply(civInfo.state) }
+                        .none { unique -> !unique.conditionalsApply(civInfo.state) }
+                    && it.getMatchingUniques(UniqueType.Unavailable, civInfo.state).none()
             }
             .maxByOrNull { rateBelief(civInfo, it) }
     }

@@ -3,9 +3,11 @@ package com.unciv.logic.civilization.diplomacy
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeLogic
@@ -616,6 +618,18 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
                     NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCiv.civName
             )
         }
+        
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponSigningPeace)) {
+            if (otherCiv.matchesFilter(unique.params[0])) {
+                UniqueTriggerActivation.triggerUnique(unique, civInfo)
+            }
+        }
+
+        for (unique in otherCiv.getTriggeredUniques(UniqueType.TriggerUponSigningPeace)) {
+            if (civInfo.matchesFilter(unique.params[0])) {
+                UniqueTriggerActivation.triggerUnique(unique, otherCiv)
+            }
+        }
     }
 
     @Readonly fun hasFlag(flag: DiplomacyFlags) = flagsCountdown.containsKey(flag.name)
@@ -801,7 +815,11 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         // before adjusting with game speed - consider possible side effects of this
         setFlag(DiplomacyFlags.Denunciation, 30)
         
-        // TODO: make denouncement more impactful with a popup
+        // the denounced civ will get a popup
+        otherCiv.popupAlerts.add(
+            PopupAlert(AlertType.Denounced, civInfo.civID)
+        )
+        // ...and a notification as a reminder for the rest of the turn
         otherCiv.addNotification(
             "[${civInfo.civName}] has denounced us!",
             NotificationCategory.Diplomacy,
@@ -836,11 +854,21 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         }
     }
 
+    /**
+     * Queues a PopupAlert to be displayed on [otherCiv]'s turn
+     * If a popup of the same type is already queued, do nothing.
+     */
+    private fun queueOtherCivPopupIfUnique(popup: PopupAlert) {
+        if (otherCiv.popupAlerts.none { it.type == popup.type && it.value == popup.value })
+            otherCiv.popupAlerts.add(popup)
+    }
+
     fun agreeToDemand(demand: Demand){
         otherCivDiplomacy().setFlag(demand.agreedToDemand, 100, true)
         addModifier(DiplomaticModifiers.UnacceptableDemands, -10f)
         val text = demand.agreedToDemandText.fillPlaceholders(civInfo.civName)
         otherCiv.addNotification(text, NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
+        queueOtherCivPopupIfUnique(PopupAlert(AlertType.AcceptingDemand, civInfo.civID))
     }
     
     fun refuseDemand(demand: Demand) {
@@ -849,6 +877,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         otherCivDiplomacy().addModifier(demand.refusedDiplomaticModifier, -15f)
         val text = demand.refusedDemandText.fillPlaceholders(civInfo.civName)
         otherCiv.addNotification(text, NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
+        queueOtherCivPopupIfUnique(PopupAlert(AlertType.RejectingDemand, civInfo.civID))
     }
 
     fun sideWithCityState() {

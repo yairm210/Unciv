@@ -268,10 +268,16 @@ class Tile : IsPartOfGameInfoSerialization {
 
     /** Returns military, civilian and air units in tile */
     @Readonly
-    fun getUnits() = sequence {
-        if (militaryUnit != null) yield(militaryUnit!!)
-        if (civilianUnit != null) yield(civilianUnit!!)
-        if (airUnits.isNotEmpty()) yieldAll(airUnits)
+    fun getUnits(): Sequence<MapUnit> {
+        // common case - do not allocate memory for a new sequence
+        if (militaryUnit == null && civilianUnit == null && airUnits.isEmpty())
+            return emptySequence()
+        
+        return sequence {
+            if (militaryUnit != null) yield(militaryUnit!!)
+            if (civilianUnit != null) yield(civilianUnit!!)
+            if (airUnits.isNotEmpty()) yieldAll(airUnits)
+        }
     }
 
     /** This is for performance reasons of canPassThrough() - faster than getUnits().firstOrNull() */

@@ -55,10 +55,6 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         if (viewingCiv == null && !isForceVisible)
             return strings.hexagonList
 
-        val baseHexagon: ArrayList<String> = if (strings.tileSetConfig.useColorAsBaseTerrain)
-            ArrayList<String>().apply { add(strings.hexagon) }
-        else ArrayList()
-
         val tile = tileGroup.tile
 
         val shownImprovement = tile.getShownImprovement(viewingCiv)
@@ -67,7 +63,9 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         val shouldShowResource = UncivGame.Current.settings.showPixelImprovements && tile.resource != null &&
                 (isForceVisible || viewingCiv == null || viewingCiv.canSeeResource(tile.tileResource))
 
-        val resourceAndImprovementSequence = sequence {
+        val resourceAndImprovementSequence = if (!shouldShowResource && !shouldShowImprovement)
+            emptySequence()
+        else sequence {
             if (shouldShowResource)  yield(tile.resource!!)
             if (shouldShowImprovement) {
                 if (usePillagedImprovementImage(tile, viewingCiv))
@@ -76,13 +74,26 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
             }
         }
 
-        val terrainImages = if (tile.naturalWonder != null)
-            sequenceOf(tile.baseTerrain, tile.naturalWonder!!)
-        else  sequenceOf(tile.baseTerrain) + tile.terrainFeatures.asSequence()
+        val terrainImages = when {
+            tile.naturalWonder != null -> sequenceOf(tile.baseTerrain, tile.naturalWonder!!)
+            // very common case, most oceans have nothing else going on
+            tile.terrainFeatures.isEmpty() -> sequenceOf(tile.baseTerrain) 
+            else -> sequenceOf(tile.baseTerrain) + tile.terrainFeatures.asSequence()
+        }
+        
         val edgeImages = getEdgeTileLocations()
-        val allTogether = (terrainImages + resourceAndImprovementSequence).joinToString("+")
+        
+        val allTogether = when {
+            resourceAndImprovementSequence.any() -> (terrainImages + resourceAndImprovementSequence).joinToString("+")
+            tile.naturalWonder == null && tile.terrainFeatures.isEmpty() -> tile.baseTerrain // single string
+            else -> terrainImages.joinToString("+")
+        } 
         val allTogetherLocation = strings.getTile(allTogether)
 
+
+        val baseHexagon: ArrayList<String> = if (strings.tileSetConfig.useColorAsBaseTerrain)
+            ArrayList<String>().apply { add(strings.hexagon) }
+        else ArrayList()
         // If the tilesetconfig *explicitly* lists the terrains+improvements etc, we can't know where in that list to place the edges
         //   So we default to placing them over everything else.
         // If there is no explicit list, then we can know to place them between the terrain and the improvement
@@ -91,7 +102,10 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
                 addAll(strings.tileSetConfig.ruleVariants[allTogether]!!.map { strings.getTile(it) })
                 addAll(edgeImages)
             } 
-            ImageGetter.imageExists(allTogetherLocation) -> baseHexagon.apply { add(allTogetherLocation); addAll(edgeImages) }
+            ImageGetter.imageExists(allTogetherLocation) -> baseHexagon.apply { 
+                add(allTogetherLocation)
+                addAll(edgeImages)
+            }
             tile.naturalWonder != null -> getNaturalWonderBackupImage(baseHexagon) + edgeImages
             else -> baseHexagon.apply { 
                 addAll(getTerrainImageLocations(terrainImages))

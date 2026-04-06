@@ -422,6 +422,8 @@ class NewGameScreen(
 
             step = "load game into world screen"
             val worldScreen = Concurrency.runBlocking { game.loadGame(newGame) } ?: return
+            worldScreen.autoSave()
+
 
             step = "post load multiplayer clipboard toast"
             if (newGame.gameParameters.isOnlineMultiplayer) {

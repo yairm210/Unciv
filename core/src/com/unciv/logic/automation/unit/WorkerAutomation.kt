@@ -116,11 +116,11 @@ class WorkerAutomation(
     ): Boolean {
         // Note, however, that the closest city to a tile isn't necessarily the owning city
         val closestUndevelopedCity = unit.civ.cities
-            .filter { it != unit.currentTile.owningCity && it.getTiles().any { tile -> tile.isLand
-                    && tile.getUnits().none { unit -> unit.cache.hasUniqueToBuildImprovements }
-                    && (tile.isPillaged() || tileHasWorkToDo(tile, unit, localUniqueCache)) } }
             .sortedBy { it.getCenterTile().aerialDistanceTo(currentTile) }
-            .firstOrNull { unit.movement.canReach(it.getCenterTile()) } //goto closest undeveloped city
+            .firstOrNull { it != unit.currentTile.owningCity && it.getTiles().any { tile -> tile.isLand
+                    && tile.getUnits().none { unit -> unit.cache.hasUniqueToBuildImprovements }
+                    && (tile.isPillaged() || tileHasWorkToDo(tile, unit, localUniqueCache)) }
+                && unit.movement.canReach(it.getCenterTile()) } //goto closest undeveloped city
 
         if (closestUndevelopedCity != null) {
             debug("WorkerAutomation: %s -> head towards undeveloped city %s", unit, closestUndevelopedCity.name)
@@ -353,22 +353,24 @@ class WorkerAutomation(
      * Returns null if none is worth it
      * */
     @Readonly
-    private fun chooseImprovement(unit: MapUnit, tile: Tile, localUniqueCache: LocalUniqueCache): TileImprovement? {
+    private fun chooseImprovement(unit: MapUnit, tile: Tile, localUniqueCache: LocalUniqueCache, ignoreImprovements: Sequence<TileImprovement> = NO_IGNORED_IMPROVEMENTS): TileImprovement? {
         // You can keep working on half-built improvements, even if they're unique to another civ
         if (tile.improvementInProgress != null) return ruleSet.tileImprovements[tile.improvementInProgress]
 
         val gameContext = GameContext(civInfo = unit.civ, unit = unit, tile = tile)
         val currentImprovement = tile.tileImprovement
         val potentialTileImprovements = ruleSet.tileImprovements.filter {
-            (it.value.uniqueTo == null || unit.civ.matchesFilter(it.value.uniqueTo!!, gameContext))
+            !ignoreImprovements.contains(it.value)
+                    && (it.value.uniqueTo == null || unit.civ.matchesFilter(it.value.uniqueTo!!, gameContext))
                     && unit.canBuildImprovement(it.value, tile)
                     && tile.improvementFunctions.canBuildImprovement(it.value, gameContext)
         }
         if (potentialTileImprovements.isEmpty()) return null
 
         val currentTileStats = tile.stats.getTileStats(tile.getCity(), civInfo, localUniqueCache)
-        var bestBuildableImprovement = potentialTileImprovements.values.asSequence()
-            .map { Pair(it, getImprovementRanking(tile, unit, it, localUniqueCache, currentTileStats)) }
+        val allBuildableImprovements = potentialTileImprovements.values.asSequence()
+            .map { Pair(it, getImprovementRanking(tile, unit, it, localUniqueCache, currentTileStats, ignoreImprovements + potentialTileImprovements.values)) }
+        var bestBuildableImprovement = allBuildableImprovements
             .filter { it.second > 0f }
             .maxByOrNull { it.second }?.first
 
@@ -397,7 +399,7 @@ class WorkerAutomation(
             else -> resource.getImprovements().asSequence()
                 .mapNotNull { potentialTileImprovements[it] }
                 .filter { it.name in potentialTileImprovements || it == currentImprovement }
-                .maxByOrNull { getImprovementRanking(tile, unit, it, localUniqueCache) }
+                .maxByOrNull { getImprovementRanking(tile, unit, it, localUniqueCache, null, ignoreImprovements + potentialTileImprovements.values) }
         }
 
         // After gathering all the data, we conduct the hierarchy in one place
@@ -417,8 +419,9 @@ class WorkerAutomation(
             
             bestBuildableImprovement == null -> null
 
-            currentImprovement != null &&
-                    getImprovementRanking(tile, unit, currentImprovement, localUniqueCache) > getImprovementRanking(tile, unit, bestBuildableImprovement, localUniqueCache)
+            tile.improvement != null &&
+                    getImprovementRanking(tile, unit, tile.tileImprovement!!, localUniqueCache, null, ignoreImprovements + potentialTileImprovements.values)
+                    > getImprovementRanking(tile, unit, bestBuildableImprovement, localUniqueCache, null, ignoreImprovements + potentialTileImprovements.values)
                 -> null // What we have is better, even if it's pillaged we should repair it
 
             lastTerrain.let {
@@ -437,7 +440,8 @@ class WorkerAutomation(
         unit: MapUnit,
         improvement: TileImprovement,
         localUniqueCache: LocalUniqueCache,
-        /** Provide for performance */ currentTileStats: Stats? = null
+        /** Provide for performance */ currentTileStats: Stats? = null,
+        ignoreImprovements: Sequence<TileImprovement> = NO_IGNORED_IMPROVEMENTS
     ): Float {
 
         // Add the value of roads if we want to build it here
@@ -476,7 +480,7 @@ class WorkerAutomation(
                     newTile.removeTerrainFeature(removedFeature)
                 if (removalImprovement != null)
                     newTile.removeImprovement()
-                val wantedFinalImprovement = chooseImprovement(unit, newTile, localUniqueCache)
+                val wantedFinalImprovement = chooseImprovement(unit, newTile, localUniqueCache, ignoreImprovements = ignoreImprovements)
                 if (wantedFinalImprovement != null){
                     val statDiff = newTile.stats.getStatDiffForImprovement(wantedFinalImprovement, civInfo, newTile.getCity(), localUniqueCache)
                     stats.add(statDiff)
@@ -584,6 +588,8 @@ class WorkerAutomation(
     }
 
     companion object {
+        val NO_IGNORED_IMPROVEMENTS: Sequence<TileImprovement> = sequenceOf()
+        
         // Static methods so they can be reused in ConstructionAutomation
         /** Checks whether [tile] is water and has a resource [civInfo] can improve
          *
