@@ -249,8 +249,12 @@ object UnitAutomation {
                 return true
             if (unit.civ.isBarbarian && baseUnit.hasUnique(UniqueType.CannotBeBarbarian))
                 return true
-            return baseUnit.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)
-                .any { !it.conditionalsApply(unit.cache.state) }
+            if (baseUnit.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)
+                    .any { !it.conditionalsApply(unit.cache.state) })
+                return true
+            if (baseUnit.getMatchingUniques(UniqueType.Unavailable, unit.cache.state).any())
+                return true
+            return false
         }
 
         return unit.baseUnit.getRulesetUpgradeUnits(unit.cache.state)

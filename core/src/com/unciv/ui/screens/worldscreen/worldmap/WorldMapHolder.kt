@@ -5,14 +5,13 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.scenes.scene2d.Action
-import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.Group
-import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.math.Interpolation
+import com.badlogic.gdx.scenes.scene2d.*
+import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.unciv.UncivGame
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
@@ -31,14 +30,12 @@ import com.unciv.ui.components.MiscArrowTypes
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.isShiftKeyPressed
 import com.unciv.ui.components.extensions.surroundWithCircle
-import com.unciv.ui.components.input.ActivationTypes
-import com.unciv.ui.components.input.ClickableCircle
-import com.unciv.ui.components.input.onActivation
-import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.input.*
 import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.components.tilegroups.TileGroupMap
 import com.unciv.ui.components.tilegroups.TileSetStrings
 import com.unciv.ui.components.tilegroups.WorldTileGroup
+import com.unciv.ui.components.tilegroups.citybutton.CityButton
 import com.unciv.ui.components.widgets.UnitIconGroup
 import com.unciv.ui.components.widgets.ZoomableScrollPane
 import com.unciv.ui.screens.basescreen.UncivStage
@@ -107,31 +104,59 @@ class WorldMapHolder(
         val tileGroupsNew = tileMap.values.map { WorldTileGroup(it, tileSetStrings) }
         tileGroupMap = TileGroupMap(this, tileGroupsNew, continuousScrollingX)
 
-        for (tileGroup in tileGroupsNew) {
-            tileGroups[tileGroup.tile] = tileGroup
-            tileGroup.layerCityButton.onClick(UncivSound.Silent) {
-                onTileClicked(tileGroup.tile)
-            }
-            tileGroup.onClick { onTileClicked(tileGroup.tile) }
+        for (tileGroup in tileGroupsNew) tileGroups[tileGroup.tile] = tileGroup
 
-            // Right mouse click on desktop / Longpress on Android, and no equivalence mapping between those two,
-            // because on 'droid two-finger tap is mapped to right click and dissent has been expressed
-            tileGroup.onActivation(
-                type = if (Gdx.app.type == Application.ApplicationType.Android)
-                    ActivationTypes.Longpress else ActivationTypes.RightClick,
-                noEquivalence = true
-            ) {
-                if (!UncivGame.Current.settings.longTapMove) return@onActivation
-                val unit = worldScreen.bottomUnitTable.selectedUnit
-                    ?: return@onActivation
-                Concurrency.run("WorldScreenClick") {
-                    onTileRightClicked(unit, tileGroup.tile)
-                }
-            }
-        }
+        addClickListener()
+
         actor = tileGroupMap
         setSize(worldScreen.stage.width, worldScreen.stage.height)
         layout() // Fit the scroll pane to the contents - otherwise, setScroll won't work!
+    }
+
+    private fun addClickListener() {
+        // ActivationListener-like listener to allow us to create only one listener for the entire worldmapholder instead of one per tile
+        val listener = object : ActorGestureListener(20f, 0.25f, 1.1f, Int.MAX_VALUE.toFloat()) {
+            override fun tap(event: InputEvent?, x: Float, y: Float, count: Int, button: Int) {
+                val child = tileGroupMap.hit(x, y, true) ?: return
+
+                if (child is CityButton) { // the city button can be below the tilegroup, since it moves down when first clicked
+                    onTileClicked(child.city.getCenterTile())
+                    return
+                }
+                if (child is WorldTileGroup) {
+                    Concurrency.runOnGLThread("Sound") { SoundPlayer.play(UncivSound.Click) }
+
+                    if (button == 0) onTileClicked(child.tile) // Regular click
+                    else if (button == 1) { // Right button click = move unit to tile
+                        if (!UncivGame.Current.settings.longTapMove) return
+                        val unit = worldScreen.bottomUnitTable.selectedUnit
+                            ?: return
+                        onTileRightClicked(unit, child.tile)
+                    }
+                }
+            }
+
+            override fun longPress(actor: Actor?, x: Float, y: Float): Boolean {
+                if (actor == null) return false
+                // See #10050 - when a tap discards its actor or ascendants, Gdx can't cancel the longpress timer
+                if (actor.stage == null) return false
+
+                if (!UncivGame.Current.settings.longTapMove) return false
+                val unit = worldScreen.bottomUnitTable.selectedUnit
+                    ?: return false
+                if (Gdx.app.type != Application.ApplicationType.Android) return false
+
+                val child = tileGroupMap.hit(x, y, true) ?: return false
+                if (child !is WorldTileGroup) return false
+
+                Concurrency.run("WorldScreenClick") {
+                    onTileRightClicked(unit, child.tile)
+                }
+                return true
+            }
+        }
+
+        tileGroupMap.addListener(listener)
     }
 
     fun onTileClicked(tile: Tile) {

@@ -224,6 +224,9 @@ class ReligiousBeliefsPickerScreen (
                     .any { !it.conditionalsApply(choosingCiv.state) } ->
                     // The Belief is blocked
                     beliefButton.disable(redDisableColor)
+                belief.getMatchingUniques(UniqueType.Unavailable, choosingCiv.state).any() ->
+                    // The Belief is blocked
+                    beliefButton.disable(redDisableColor)
 
                 else ->
                     beliefButton.onClickSelect(rightSelection, belief) {

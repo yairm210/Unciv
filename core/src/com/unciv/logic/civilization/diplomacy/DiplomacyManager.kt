@@ -618,6 +618,18 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
                     NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCiv.civName
             )
         }
+        
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponSigningPeace)) {
+            if (otherCiv.matchesFilter(unique.params[0])) {
+                UniqueTriggerActivation.triggerUnique(unique, civInfo)
+            }
+        }
+
+        for (unique in otherCiv.getTriggeredUniques(UniqueType.TriggerUponSigningPeace)) {
+            if (civInfo.matchesFilter(unique.params[0])) {
+                UniqueTriggerActivation.triggerUnique(unique, otherCiv)
+            }
+        }
     }
 
     @Readonly fun hasFlag(flag: DiplomacyFlags) = flagsCountdown.containsKey(flag.name)
@@ -842,11 +854,21 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         }
     }
 
+    /**
+     * Queues a PopupAlert to be displayed on [otherCiv]'s turn
+     * If a popup of the same type is already queued, do nothing.
+     */
+    private fun queueOtherCivPopupIfUnique(popup: PopupAlert) {
+        if (otherCiv.popupAlerts.none { it.type == popup.type && it.value == popup.value })
+            otherCiv.popupAlerts.add(popup)
+    }
+
     fun agreeToDemand(demand: Demand){
         otherCivDiplomacy().setFlag(demand.agreedToDemand, 100, true)
         addModifier(DiplomaticModifiers.UnacceptableDemands, -10f)
         val text = demand.agreedToDemandText.fillPlaceholders(civInfo.civName)
         otherCiv.addNotification(text, NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
+        queueOtherCivPopupIfUnique(PopupAlert(AlertType.AcceptingDemand, civInfo.civID))
     }
     
     fun refuseDemand(demand: Demand) {
@@ -855,6 +877,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         otherCivDiplomacy().addModifier(demand.refusedDiplomaticModifier, -15f)
         val text = demand.refusedDemandText.fillPlaceholders(civInfo.civName)
         otherCiv.addNotification(text, NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
+        queueOtherCivPopupIfUnique(PopupAlert(AlertType.RejectingDemand, civInfo.civID))
     }
 
     fun sideWithCityState() {

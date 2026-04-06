@@ -11,6 +11,7 @@ import com.unciv.logic.map.mapgenerator.mapregions.Region
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.stats.Stat
+import com.unciv.utils.hashOf
 import yairm210.purity.annotations.Readonly
 
 data class GameContext(
@@ -114,17 +115,19 @@ data class GameContext(
         fun CombatAction?.hash() = this?.name?.hashCode() ?: 0
         fun Region?.hash() = this?.rect?.hashCode() ?: 0
 
-        var result = relevantCiv.hash()
-        result = 31 * result + relevantCity.hash()
-        result = 31 * result + relevantUnit.hash()
-        result = 31 * result + relevantTile.hash()
-        result = 31 * result + ourCombatant.hash()
-        result = 31 * result + theirCombatant.hash()
-        result = 31 * result + attackedTile.hash()
-        result = 31 * result + combatAction.hash()
-        result = 31 * result + region.hash()
-        result = 31 * result + ignoreConditionals.hashCode()
-        return result
+        val hash = hashOf(
+            relevantCiv.hash(),
+            relevantCity.hash(),
+            relevantUnit.hash(),
+            relevantTile.hash(),
+            ourCombatant.hash(),
+            theirCombatant.hash(),
+            attackedTile.hash(),
+            combatAction.hash(),
+            region.hash(),
+            ignoreConditionals.hashCode()
+        )
+        return hash
     }
 
 

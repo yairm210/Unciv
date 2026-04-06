@@ -36,6 +36,7 @@ import com.unciv.ui.screens.diplomacyscreen.LeaderIntroTable
 import com.unciv.ui.screens.victoryscreen.VictoryScreen
 import yairm210.purity.annotations.Readonly
 import java.util.EnumSet
+import kotlin.text.ifEmpty
 
 /**
  * [Popup] communicating events other than trade offers to the player.
@@ -112,6 +113,8 @@ class AlertPopup(
             AlertType.ReligionSpreadDespiteOurPromise -> shouldOpen = addDemandViolationNoticed(Demand.DoNotSpreadReligion)
             AlertType.DemandToStopSpyingOnUs -> shouldOpen = addDemand(Demand.DontSpyOnUs)
             AlertType.SpyingOnUsDespiteOurPromise -> shouldOpen = addDemand(Demand.DontSpyOnUs)
+            AlertType.AcceptingDemand -> shouldOpen = addAcceptingDemand()
+            AlertType.RejectingDemand -> shouldOpen = addRejectingDemand()
             
             
             AlertType.DeclarationOfFriendship -> shouldOpen = addDeclarationOfFriendship()
@@ -318,6 +321,45 @@ class AlertPopup(
         return true
     }
 
+    private fun addAcceptingDemand(): Boolean {
+        val otherCiv = getCiv(popupAlert.value)
+        if (otherCiv.isDefeated())
+            return false
+        addLeaderName(otherCiv)
+        addTopicHeader("ACCEPTING DEMAND", Color.YELLOW)
+        val leaderMessage = otherCiv.nation.acceptingDemand.ifEmpty {
+            "We will comply, but our consent is given grudgingly."
+        }
+        addGoodSizedLabel(leaderMessage).row()
+        music.playVoice("${otherCiv.civName}.acceptingDemand")
+        addCloseButton("Very well.", KeyboardBinding.Cancel)
+        return true
+    }
+    
+    private fun addRejectingDemand(): Boolean {
+        val otherCiv = getCiv(popupAlert.value)
+        if (otherCiv.isDefeated())
+            return false
+        addLeaderName(otherCiv)
+        addTopicHeader("REJECTING DEMAND", LIGHTER_ORANGE_COLOR)
+        val theirDiplomacy = otherCiv.getDiplomacyManager(viewingCiv)!!
+        val leaderMessage = if (theirDiplomacy.isRelationshipLevelGE(RelationshipLevel.Competitor)) {
+            music.playVoice("${otherCiv.nation.name}.neutralRejectingDemand")
+            otherCiv.nation.neutralRejectingDemand.ifEmpty {
+                "Your demands are in poor taste. We shall decide this matter on our own."
+            }
+        } else {
+            music.playVoice("${otherCiv.nation.name}.hateRejectingDemand")
+            otherCiv.nation.hateRejectingDemand.ifEmpty {
+                "Did you really expect us to bend to such brazen demands?"
+            }
+        }
+        addGoodSizedLabel(leaderMessage).row()
+        addCloseButton("You'll pay for this!")
+        addCloseButton("Very well.", KeyboardBinding.Cancel)
+        equalizeLastTwoButtonWidths()
+        return true
+    }
 
     private fun addDiplomaticMarriage() {
         val city = getCity(popupAlert.value)
