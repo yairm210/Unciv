@@ -55,13 +55,13 @@ class Nation : RulesetObject() {
     /** Shown for MajorCivDiplomacyTable.getDenounceButton */
     var denounced = ""
 
-    /** Shown in the popup when a civ denounces another civ. */
-    var denouncing = ""
-    /** Shown in the popup when an AI denounces ane of its enemies. */
+    /** Popup message from the leader that issued a denouncement. */
+    var neutralDenouncing = ""
+    /** Popup message from the leader that issued a denouncement, when the relationship is poor. */
     var hateDenouncing = ""
     /** Shown for Declaration of Friendship */
     var declaringFriendship = ""
-    /** Shown after we accpet reject a demand */
+    /** Popup message from the leader that accepted or rejected a demand */
     var acceptingDemand = ""
     var neutralRejectingDemand = ""
     var hateRejectingDemand = ""

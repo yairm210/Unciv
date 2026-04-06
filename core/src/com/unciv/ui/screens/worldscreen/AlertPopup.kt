@@ -279,8 +279,8 @@ class AlertPopup(
         addTopicHeader("DENOUNCEMENT", LIGHTER_ORANGE_COLOR)
         // normal message unless we are enemies
         val leaderMessage = if (denouncer.getDiplomacyManager(viewingCiv)!!.isRelationshipLevelGE(RelationshipLevel.Competitor)) {
-            music.playVoice("${denouncer.nation.name}.denouncing")
-            denouncer.nation.denouncing.ifEmpty { "You have violated our bond of trust. This is intolerable!" }
+            music.playVoice("${denouncer.nation.name}.neutralDenouncing")
+            denouncer.nation.neutralDenouncing.ifEmpty { "You have violated our bond of trust. This is intolerable!" }
         } else {
             music.playVoice("${denouncer.nation.name}.hateDenouncing")
             denouncer.nation.hateDenouncing.ifEmpty { "You are a scourge upon this earth. I denounce you!" }
