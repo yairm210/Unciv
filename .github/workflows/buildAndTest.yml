@@ -4,7 +4,7 @@ name: Build and test
 on:
   # Triggers the workflow on any push or pull request
   push:
-  pull_request:
+  pull_request_target:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
