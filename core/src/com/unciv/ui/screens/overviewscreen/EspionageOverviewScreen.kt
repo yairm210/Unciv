@@ -232,7 +232,6 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
                     update()
                 }
                 if (city != null
-                    && civInfo.isHuman()
                     && city.civ.civName != civInfo.civName
                     && city.civ.isMajorCiv()
                     && city.civ.getDiplomacyManager(civInfo)!!.hasFlag(DiplomacyFlags.AgreedToNotSendSpies)) {
