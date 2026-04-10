@@ -52,6 +52,7 @@ allprojects {
     apply(plugin = "io.github.yairm210.purity-plugin")
     configure<yairm210.purity.PurityConfiguration> {
         wellKnownPureFunctions = setOf(
+            "io.ktor.http.Url", //constructor
         )
         wellKnownReadonlyFunctions = setOf(
             "com.badlogic.gdx.math.Vector2.len",
@@ -73,9 +74,15 @@ allprojects {
             "java.util.stream.StreamSupport.longStream",
             "java.util.stream.LongStream.parallel",
             "kotlin.sequences.shuffled",
+            
             "kotlin.LongArray.get",
             "kotlin.LongArray.iterator",
             "kotlin.collections.copyInto",
+            "kotlin.collections.List.get",
+            
+            "io.ktor.http.Url.segments",
+            "io.ktor.http.Url.parameters",
+            "io.ktor.http.Parameters.get",
         )
         wellKnownPureClasses = setOf(
         )

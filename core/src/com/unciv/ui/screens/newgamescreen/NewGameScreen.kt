@@ -161,7 +161,7 @@ class NewGameScreen(
                     else "Couldn't connect to Dropbox!"
 
             for (player in gameSetupInfo.gameParameters.players.filter { it.playerType == PlayerType.Human }) {
-                if (!(IdChecker.checkAndReturnPlayerUuid(player.playerId)?.isUUID() ?: false)) {
+                if (!(IdChecker.checkAndReturnPlayerUuid(player.playerId)?.playerID?.isUUID() ?: false)) {
                     return "Invalid player ID!"
                 }
             }

@@ -12,10 +12,12 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.backends.android.AndroidGraphics
 import com.badlogic.gdx.math.Rectangle
 import com.unciv.UncivGame
+import com.unciv.logic.IdChecker
 import com.unciv.logic.event.EventBus
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.UncivStage
 import com.unciv.utils.Concurrency
+import com.unciv.utils.isUUID
 
 class AndroidGame(private val activity: Activity) : UncivGame() {
 
@@ -74,10 +76,15 @@ class AndroidGame(private val activity: Activity) : UncivGame() {
     /** This is needed in onCreate _and_ onNewIntent to open links and notifications
      *  correctly even if the app was not running */
     fun setDeepLinkedGame(intent: Intent) {
-        deepLinkedMultiplayerGame = if (intent.action != Intent.ACTION_VIEW) null else {
-            val uri: Uri? = intent.data
-            uri?.getQueryParameter("id")
+        if (intent.action != Intent.ACTION_VIEW) {
+            deepLinkedMultiplayerGame = null
         }
+        val uri: Uri? = intent.data
+        val idParam = uri?.getQueryParameter("id") //legacy game url
+        deepLinkedMultiplayerGame = 
+            if (idParam != null && idParam.isUUID()) idParam
+            else if (IdChecker.isGameDeepLink(uri.toString())) IdChecker.checkAndReturnUuiId(uri.toString())
+            else null
     }
 
     fun isInitializedProxy() = super.isInitialized
