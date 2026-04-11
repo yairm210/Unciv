@@ -5,7 +5,6 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.automation.civilization.NextTurnAutomation
-import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.event.EventBus
@@ -14,7 +13,6 @@ import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.logic.multiplayer.storage.MultiplayerFileNotFoundException
 import com.unciv.logic.multiplayer.storage.MultiplayerServer
 import com.unciv.models.metadata.GameSettings
-import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.isLargerThan
 import com.unciv.utils.Dispatcher
 import com.unciv.utils.debug
