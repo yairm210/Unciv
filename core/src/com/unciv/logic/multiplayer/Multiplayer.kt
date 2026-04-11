@@ -14,6 +14,7 @@ import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.logic.multiplayer.storage.MultiplayerFileNotFoundException
 import com.unciv.logic.multiplayer.storage.MultiplayerServer
 import com.unciv.models.metadata.GameSettings
+import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.isLargerThan
 import com.unciv.utils.Dispatcher
 import com.unciv.utils.debug
@@ -173,10 +174,7 @@ class Multiplayer {
 
         val notificationText = if (responsibleCivNameOrPlayerId == playerCivName || responsibleCivNameOrPlayerId.isEmpty()) {
             "[$playerCivName] resigned and is now controlled by AI"
-        } else try {
-            val responsibleCivName = gameInfo.getCivilization(responsibleCivNameOrPlayerId).civName
-            "[$playerCivName] was forcibly resigned by [$responsibleCivName] and is now controlled by AI"
-        } catch (_: NoSuchElementException) {
+        } else {
             "[$playerCivName] was forcibly resigned by [$responsibleCivNameOrPlayerId] and is now controlled by AI"
         }
         
@@ -224,10 +222,7 @@ class Multiplayer {
 
         val notificationText = if (responsibleCivNameOrPlayerId == playerCivName || responsibleCivNameOrPlayerId.isEmpty()) {
             "[$playerCivName] skipped their own turn"
-        } else try {
-            val responsibleCiv: Civilization = gameInfo.getCivilization(responsibleCivNameOrPlayerId)
-            "[$playerCivName]'s turn was skipped by [$responsibleCiv]"
-        } catch (_: NoSuchElementException) {
+        } else {
             "[$playerCivName]'s turn was skipped by [$responsibleCivNameOrPlayerId]"
         }
 
