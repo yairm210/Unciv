@@ -476,6 +476,76 @@ object DiplomacyAutomation {
             .any { trade -> trade.trade.ourOffers.any { offer -> offer.name == offerName }
                     || trade.trade.theirOffers.any { offer -> offer.name == offerName } }
     }
+    
+    /**
+     * Checks if any civ have positioned large portions of their troops along our borders.
+     * Usually indicates an imminent attack.
+     */
+    internal fun checkMilitaryPresenceNearBorder(
+        civInfo: Civilization
+    ) {
+        val nearbyTiles = civInfo.cities.asSequence()
+            .flatMap { it.getTiles() }
+            .flatMap { it.getTilesInDistance(2) }
+            .filter { it.getOwner() != civInfo } // skip open borders
+            .filter { it.isVisible(civInfo) }
+            .toSet()
+
+        // only counts what is visible to us
+        val nearbyUnitCountByCiv = mutableMapOf<Civilization, Int>()
+        val nearbyForceByCiv = mutableMapOf<Civilization, Int>()
+        civInfo.getKnownCivs().forEach {
+            nearbyUnitCountByCiv[it] = 0
+            nearbyForceByCiv[it] = 0
+        }
+
+        for (tile in nearbyTiles) {
+            if (tile.militaryUnit == null)
+                continue
+            val unit = tile.militaryUnit!!
+            if (! unit.civ.isMajorCiv() || unit.civ == civInfo)
+                continue
+            nearbyUnitCountByCiv[unit.civ] = nearbyUnitCountByCiv[unit.civ]!! + 1
+            nearbyForceByCiv[unit.civ] = nearbyForceByCiv[unit.civ]!! + unit.getForceEvaluation()
+        }
+
+        for (otherCiv in civInfo.getKnownCivs()) {
+            // this ultimatum can currently only be made by AI to human players, to avoid abuse
+            if (! otherCiv.isHuman())
+                continue
+            val ourDiplomacy = civInfo.getDiplomacyManager(otherCiv)!!
+            // don't check violation if we are at war
+            if (ourDiplomacy.diplomaticStatus == DiplomaticStatus.War)
+                continue
+            // ignore if they promised they would not attack us
+            if (ourDiplomacy.hasFlag(DiplomacyFlags.AgreedToNotAttackUs))
+                continue
+            val theirDiplomacy = otherCiv.getDiplomacyManager(civInfo)!!
+            // let's not doubt our allies
+            if (ourDiplomacy.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
+                || ourDiplomacy.hasFlag(DiplomacyFlags.DefensivePact)
+                || theirDiplomacy.hasOpenBorders)
+                continue
+            // ignore if they only have a few units near our borders (relevant in early game)
+            if (nearbyUnitCountByCiv[otherCiv]!! < 5)
+                continue
+            val threatAssessment = Automation.threatAssessment(civInfo, otherCiv)
+            // ignore if they are weak, stay silent if they are too strong
+            if (threatAssessment == ThreatLevel.VeryLow || threatAssessment == ThreatLevel.VeryHigh)
+                continue
+            val nearbyForce = nearbyForceByCiv[otherCiv]!!
+            val totalForce = otherCiv.getStatForRanking(RankingType.Force)
+            // ignore if most of their force is elsewhere
+            if (nearbyForce.toFloat() / totalForce < 0.5f)
+                continue
+            // let's ask what's up
+            ourDiplomacy.setFlag(
+                DiplomacyFlags.MilitaryPresenceNearBorderOrAttackedUsDespitePromise,
+                30,
+                true
+            )
+        }
+    }
 
     /**
      * If opinion of the other civ drops by this amount or more

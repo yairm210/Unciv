@@ -77,6 +77,10 @@ enum class DiplomacyFlags {
     DiscoveredSpiesInOurCities,
     AgreedToNotSendSpies,
     IgnoreThemSendingSpies,
+    
+    AgreedToNotAttackUs,
+    MilitaryPresenceNearBorderOrAttackedUsDespitePromise,
+    IgnoreMilitaryPresenceNearBorder,
 
     ProvideMilitaryUnit,
     MarriageCooldown,
@@ -111,9 +115,12 @@ enum class DiplomaticModifiers(val text: String) {
     RefusedToNotSettleCitiesNearUs("You refused to stop settling cities near us"),
     RefusedToNotSpreadReligionToUs("You refused to stop spreading religion to us"),
     RefusedToNotSendingSpiesToUs("You refused to stop spying on us"),
+    RefusedToPromiseNotToAttackUs("You refused to withdraw your troops from our borders"),
     BetrayedPromiseToNotSettleCitiesNearUs("You betrayed your promise to not settle cities near us"),
     BetrayedPromiseToNotSpreadReligionToUs("You betrayed your promise to not spread your religion to us"),
     BetrayedPromiseToNotSendingSpiesToUs("You betrayed your promise to stop spying on us"),
+    BetrayedPromiseToNotAttackUs("You betrayed your promise to not attack us!"),
+    BetrayedPromiseToNotAttackOtherCiv("You were observed betraying your promise to not declare war!"),
     
     UnacceptableDemands("Your arrogant demands are in bad taste"),
     UsedNuclearWeapons("Your use of nuclear weapons is disgusting!"),
@@ -142,6 +149,7 @@ enum class DiplomaticModifiers(val text: String) {
     FulfilledPromiseToNotSettleCitiesNearUs("You fulfilled your promise to stop settling cities near us!"),
     FulfilledPromiseToNotSpreadReligion("You fulfilled your promise to stop spreading religion to us!"),
     FulfilledPromiseToNotSpy("You fulfilled your promise to stop spying on us!"),
+    FulfilledPromiseToNotAttackUs("You fulfilled your promise to not attack us!"),
     GaveUsUnits("You gave us units!"),
     GaveUsGifts("We appreciate your gifts"),
     ReturnedCapturedUnits("You returned captured units to us"),
@@ -874,10 +882,14 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     fun refuseDemand(demand: Demand) {
         addModifier(DiplomaticModifiers.UnacceptableDemands, -20f)
         otherCivDiplomacy().setFlag(demand.willIgnoreViolation, 100, true)
-        otherCivDiplomacy().addModifier(demand.refusedDiplomaticModifier, -15f)
         val text = demand.refusedDemandText.fillPlaceholders(civInfo.civName)
         otherCiv.addNotification(text, NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
         queueOtherCivPopupIfUnique(PopupAlert(AlertType.RejectingDemand, civInfo.civID))
+        if (demand == Demand.DoNotAttackUs)
+            // no modifier penalty for refusal, they respect our honesty
+            declareWar()
+        else
+            otherCivDiplomacy().addModifier(demand.refusedDiplomaticModifier, -15f)
     }
 
     fun sideWithCityState() {

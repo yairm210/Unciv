@@ -290,8 +290,9 @@ object DiplomacyTurnManager {
         revertToZero(DiplomaticModifiers.AttackedProtectedMinor, 1 / 2f) // Decays at same rate as warmongering
         revertToZero(DiplomaticModifiers.DestroyedProtectedMinor, 1 / 4f) // Decays slower, similar to capturing cities
         for (demand in Demand.entries) {
-            revertToZero(demand.betrayedPromiseDiplomacyMpodifier, 1 / 8f)
+            revertToZero(demand.betrayedPromiseDiplomacyModifier, 1 / 8f)
         }
+        revertToZero(DiplomaticModifiers.BetrayedPromiseToNotAttackOtherCiv, 1 / 8f) // betrayals are remembered for a long time
         revertToZero(DiplomaticModifiers.UnacceptableDemands, 1 / 4f)
         revertToZero(DiplomaticModifiers.StealingTerritory, 1 / 4f)
         revertToZero(DiplomaticModifiers.DenouncedOurAllies, 1 / 4f)
