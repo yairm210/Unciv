@@ -528,15 +528,6 @@ class GameOptionsTable(
         modCheckboxes.setBaseRuleset(gameParameters.baseRuleset)
     }
 
-    fun resetRuleset() {
-        val rulesetName = BaseRuleset.Civ_V_GnK.fullName
-        gameParameters.baseRuleset = rulesetName
-        modCheckboxes.setBaseRuleset(rulesetName)
-        modCheckboxes.disableAllCheckboxes()
-        baseRulesetSelectBox?.setSelected(rulesetName)
-        reloadRuleset()
-    }
-
     private fun reloadRuleset() {
         ruleset.clear()
         val newRuleset = RulesetCache.getComplexRuleset(gameParameters)

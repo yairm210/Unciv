@@ -140,7 +140,7 @@ class NewGameScreen(
                 Concurrency.runOnGLThread {
                     AcceptModErrorsPopup(
                         this@NewGameScreen, modCheckResult,
-                        restoreDefault = { newGameOptionsTable.resetRuleset() },
+                        restoreDefault = { }, 
                         action = {
                             gameSetupInfo.gameParameters.acceptedModCheckErrors = modCheckResult
                             startGameAvoidANRs()
