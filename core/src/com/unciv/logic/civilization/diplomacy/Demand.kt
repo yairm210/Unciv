@@ -95,7 +95,7 @@ enum class Demand(
         fulfilledPromiseDiplomacyModifier = DiplomaticModifiers.FulfilledPromiseToNotAttackUs,
         demandAlert = AlertType.DemandToNotAttackUs,
         violationDiscoveredAlert = AlertType.AttackedUsDespitePromise,
-        demandText = "We have noticed substantial military activity near our borders. What is the meaning of this?",
+        demandText = "We have noticed substantial military activity near our borders. How should we interpret this?",
         acceptDemandText = "Do not worry. Our soldiers are merely passing by.",
         refuseDemandText = "Our military stands ready to finish what diplomacy could not! (DECLARE WAR)",
         agreedToDemandText = "[civName] has promised not to attack us!",
