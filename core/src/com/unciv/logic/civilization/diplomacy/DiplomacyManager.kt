@@ -115,7 +115,7 @@ enum class DiplomaticModifiers(val text: String) {
     RefusedToNotSettleCitiesNearUs("You refused to stop settling cities near us"),
     RefusedToNotSpreadReligionToUs("You refused to stop spreading religion to us"),
     RefusedToNotSendingSpiesToUs("You refused to stop spying on us"),
-    RefusedToPromiseNotToAttackUs("You refused to withdraw your troops from our borders"),
+    RefusedToPromiseNotToAttackUs("You declared war on us after we questioned the positioning of your military."),
     BetrayedPromiseToNotSettleCitiesNearUs("You betrayed your promise to not settle cities near us"),
     BetrayedPromiseToNotSpreadReligionToUs("You betrayed your promise to not spread your religion to us"),
     BetrayedPromiseToNotSendingSpiesToUs("You betrayed your promise to stop spying on us"),

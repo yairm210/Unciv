@@ -645,25 +645,23 @@ object NextTurnAutomation {
         }
     }
     
-    private fun onDemandViolation(demand: Demand, civInfo: Civilization, civThatBetrayedPromise: Civilization) {
+    private fun onDemandViolation(demand: Demand, civInfo: Civilization, offendingCiv: Civilization) {
         // most demand violations are not checked during war
-        if (civInfo.isAtWarWith(civThatBetrayedPromise) && demand != Demand.DoNotAttackUs)
+        if (civInfo.isAtWarWith(offendingCiv) && demand != Demand.DoNotAttackUs)
             return
-        val diplomacyManager = civInfo.getDiplomacyManager(civThatBetrayedPromise)!!
+        val diplomacyManager = civInfo.getDiplomacyManager(offendingCiv)!!
         when {
             diplomacyManager.hasFlag(demand.willIgnoreViolation) -> {}
             // violation after promise (broke promise)
             diplomacyManager.hasFlag(demand.agreedToDemand) -> {
-                civThatBetrayedPromise.popupAlerts.add(PopupAlert(demand.violationDiscoveredAlert, civInfo.civID))
+                offendingCiv.popupAlerts.add(PopupAlert(demand.violationDiscoveredAlert, civInfo.civID))
                 diplomacyManager.setFlag(demand.willIgnoreViolation, 100, true)
                 diplomacyManager.setModifier(demand.betrayedPromiseDiplomacyModifier, -20f)
                 if (demand == Demand.DoNotAttackUs)
                     // relationship penalty with all common known civs, similar to DoF backstabbing
                     // TODO: apply WarmongerHatred personality trait here?
-                    println("ping")
                     for (thirdPartyCiv in diplomacyManager.getCommonKnownCivs()) {
-                        println(thirdPartyCiv.civName)
-                        thirdPartyCiv.getDiplomacyManager(civThatBetrayedPromise)!!
+                        thirdPartyCiv.getDiplomacyManager(offendingCiv)!!
                             .setModifier(
                                 DiplomaticModifiers.BetrayedPromiseToNotAttackOtherCiv,
                                 -10f
@@ -673,10 +671,10 @@ object NextTurnAutomation {
             }
             // violation before promise
             else -> {
-                val threatLevel = Automation.threatAssessment(civInfo, civThatBetrayedPromise)
+                val threatLevel = Automation.threatAssessment(civInfo, offendingCiv)
                 if (threatLevel < ThreatLevel.High // don't piss them off for no reason please.
                     || demand == Demand.DoNotAttackUs) 
-                    civThatBetrayedPromise.popupAlerts.add(PopupAlert(demand.demandAlert, civInfo.civID))
+                    offendingCiv.popupAlerts.add(PopupAlert(demand.demandAlert, civInfo.civID))
             }
         }
         diplomacyManager.removeFlag(demand.violationOccurred)

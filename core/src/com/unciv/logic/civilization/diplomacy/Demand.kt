@@ -96,10 +96,10 @@ enum class Demand(
         demandAlert = AlertType.DemandToNotAttackUs,
         violationDiscoveredAlert = AlertType.AttackedUsDespitePromise,
         demandText = "We have noticed substantial military activity near our borders. What is the meaning of this?",
-        acceptDemandText = "Do not worry. They are merely passing by.",
-        refuseDemandText = "Our military stands ready to finish what talks could not! (DECLARE WAR)",
+        acceptDemandText = "Do not worry. Our soldiers are merely passing by.",
+        refuseDemandText = "Our military stands ready to finish what diplomacy could not! (DECLARE WAR)",
         agreedToDemandText = "[civName] has promised not to attack us!",
-        refusedDemandText = "[civName] declared war on us after we questioned the presence of their troops!",
+        refusedDemandText = "[civName] declared war on us after we questioned the positioning of their military!",
         violationNoticedText = "You have exposed yourself as a treacherous warmonger.",
         wePromisedText = "We promised not to attack them ([turns] turns remaining)",
         theyPromisedText = "They promised not to attack us ([turns] turns remaining)"
