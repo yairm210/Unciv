@@ -22,7 +22,10 @@ object CivilianUnitAutomation {
         && !unit.hasUnique(UniqueType.AddInCapital)
         && unit.civ.units.getCivUnits().any { unit.hasUnique(UniqueType.AddInCapital) }
 
-    fun automateCivilianUnit(unit: MapUnit, dangerousTiles: HashSet<Tile>) = timeThis<Unit>("automateCivilianUnit") {
+    fun automateCivilianUnit(unit: MapUnit, uniqueActionQueue: UniqueActionQueue, dangerousTiles: HashSet<Tile>) 
+        = timeThis<Unit>("automateCivilianUnit") {
+        // UnitAutomation calls this after useFrequency 120f.
+        
         // To allow "found city" actions that can only trigger a limited number of times
         
         // Slightly modified getUsableUnitActionUniques() to allow for settlers with *conditional* settling uniques
@@ -33,11 +36,17 @@ object CivilianUnitAutomation {
                 .any { canUse(unit, it) }
         
         val hasSettlerUnique = hasSettlerAction(UniqueType.FoundCity) || hasSettlerAction(UniqueType.FoundPuppetCity)
-        
+
+        // UnitActionType.FoundCity is useFrequency 80f
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(80f)
         if (hasSettlerUnique && !(unit.civ.isCityState && unit.isMilitary()))
             return SpecificUnitAutomation.automateSettlerActions(unit, dangerousTiles)
-
+        
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(78f)
+        
         if (tryRunAwayIfNeccessary(unit)) return
+
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(76f)
 
         if (shouldClearTileForAddInCapitalUnits(unit, unit.currentTile)) {
             // First off get out of the way, then decide if you actually want to do something else
@@ -47,18 +56,40 @@ object CivilianUnitAutomation {
                 unit.movement.moveToTile(tilesCanMoveTo.minByOrNull { it.value.totalMovement }!!.key)
         }
 
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(74f)
+
         if (unit.isAutomatingRoadConnection())
             return unit.civ.getWorkerAutomation().roadToAutomation.automateConnectRoad(unit, dangerousTiles)
 
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(72f)
+        
         if (unit.cache.hasUniqueToBuildImprovements)
-            return unit.civ.getWorkerAutomation().automateWorkerAction(unit, dangerousTiles)
+            return unit.civ.getWorkerAutomation().automateWorkerAction(unit, uniqueActionQueue, dangerousTiles)
 
+
+        // UnitActionType.RemoveHeresy is useFrequency 69f
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(69f)
+        if (unit.civ.religionManager.maySpreadReligionAtAll(unit))
+            return ReligiousUnitAutomation.automateMissionary(unit)
+        
+        // The Actions below this line sacrifice the unit for something big
+        // so they have a high useFrequency, but a low automation priority.
+        // So we'll treat the automation priority as ~10x less than the useFrequency.
+        
+        // UnitActionType.Create(Water)Improvement is useFrequency 82f
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(8.2f)
         if (unit.cache.hasUniqueToCreateWaterImprovements) {
-            if (!unit.civ.getWorkerAutomation().automateWorkBoats(unit))
+            if (!unit.civ.getWorkerAutomation().automateWorkBoats(unit)) {
+                // UnitActionType.Explore is useFrequency 5f
+                uniqueActionQueue.automateUniqueActionsUntilUseFrequency(5f)
+                
                 UnitAutomation.tryExplore(unit)
+                }
             return
         }
 
+        // UnitActionType.FoundReligion is useFrequency 80f
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(8.0f)
         if (unit.hasUnique(UniqueType.MayFoundReligion)
             && unit.civ.religionManager.religionState < ReligionState.Religion
             && unit.civ.religionManager.mayFoundReligionAtAll()
@@ -72,43 +103,52 @@ object CivilianUnitAutomation {
         }
             
 
+        // UnitActionType.EnhanceReligion is useFrequency 79f 
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(7.9f)            
         if (unit.hasUnique(UniqueType.MayEnhanceReligion)
             && unit.civ.religionManager.religionState < ReligionState.EnhancedReligion
             && unit.civ.religionManager.mayEnhanceReligionAtAll()
         )
             return ReligiousUnitAutomation.enhanceReligion(unit)
 
+        // UnitActionType.AddInCapital is useFrequency 80f
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(7.88f)
         // We try to add any unit in the capital we can, though that might not always be desirable
         // For now its a simple option to allow AI to win a science victory again
         if (unit.hasUnique(UniqueType.AddInCapital))
             return SpecificUnitAutomation.automateAddInCapital(unit)
+
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(7.86f)
 
         //todo this now supports "Great General"-like mod units not combining 'aura' and citadel
         // abilities, but not additional capabilities if automation finds no use for those two
         if (unit.cache.hasStrengthBonusInRadiusUnique
             && SpecificUnitAutomation.automateGreatGeneral(unit))
             return
+        
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(7.86f)
+        
         if (unit.cache.hasCitadelPlacementUnique && SpecificUnitAutomation.automateCitadelPlacer(unit))
             return
-
-        if (unit.civ.religionManager.maySpreadReligionAtAll(unit))
-            return ReligiousUnitAutomation.automateMissionary(unit)
-
-        if (unit.hasUnique(UniqueType.PreventSpreadingReligion) || unit.hasUnique(UniqueType.CanRemoveHeresy))
-            return ReligiousUnitAutomation.automateInquisitor(unit)
 
         val isLateGame = isLateGame(unit.civ)
         // Great scientist -> Hurry research if late game
         // Great writer -> Hurry policy  if late game
         if (isLateGame) {
+            // UnitActionType.HurryResearch is useFrequency 76f
+            uniqueActionQueue.automateUniqueActionsUntilUseFrequency(7.6f)
             val hurriedResearch = UnitActions.invokeUnitAction(unit, UnitActionType.HurryResearch)
             if (hurriedResearch) return
-
+            
+            // UnitActionType.HurryPolicy is useFrequency 76f :(
+            uniqueActionQueue.automateUniqueActionsUntilUseFrequency(7.4f)
             val hurriedPolicy = UnitActions.invokeUnitAction(unit, UnitActionType.HurryPolicy)
             if (hurriedPolicy) return
             //TODO: save up great scientists/writers for late game (8 turns after research labs/broadcast towers resp.)
         }
 
+        // UnitActionType.ConductTradeMission is useFrequency 70f
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(7.0f)
         // Great merchant -> Conduct trade mission if late game and if not at war.
         // TODO: This could be more complex to walk to the city state that is most beneficial to
         //  also have more influence.
@@ -124,6 +164,8 @@ object CivilianUnitAutomation {
                 return
         }
 
+        // UnitActionType.HurryWonder is useFrequency 75f
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(7.5f)
         // Great engineer -> Try to speed up wonder construction
         if (unit.hasUnique(UniqueType.CanSpeedupConstruction)
                 || unit.hasUnique(UniqueType.CanSpeedupWonderConstruction)) {
@@ -131,7 +173,14 @@ object CivilianUnitAutomation {
             if (wonderCanBeSpedUpEventually)
                 return
         }
+        
+        // UnitActionType.RemoveHeresy is useFrequency 69f 
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(6.9f)
+        if (unit.hasUnique(UniqueType.PreventSpreadingReligion) || unit.hasUnique(UniqueType.CanRemoveHeresy))
+            return ReligiousUnitAutomation.automateInquisitor(unit)
 
+        // UnitActionType.TriggerUnique(GainFreeBuildings) is useFrequency 80f :(
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(6.6f)
         if (unit.hasUnique(UniqueType.GainFreeBuildings)) {
             val unique = unit.getMatchingUniques(UniqueType.GainFreeBuildings).first()
             val buildingName = unique.params[0]
@@ -161,8 +210,12 @@ object CivilianUnitAutomation {
         //  (depending on number of cities) and after that they should just be used to start golden
         //  ages?
 
+        // UnitActionType.ConstructImprovement is useFrequency 85f :(
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(6.4f)
         if (SpecificUnitAutomation.automateImprovementPlacer(unit)) return
-        
+
+        // UnitActionType.TriggerUnique(OneTimeEnterGoldenAgeTurns) is useFrequency 80f :(
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(6.2f)
         val goldenAgeAction = UnitActions.getUnitActions(unit, UnitActionType.TriggerUnique)
             .filter { it.action != null && it.associatedUnique?.type in listOf(UniqueType.OneTimeEnterGoldenAge,
                 UniqueType.OneTimeEnterGoldenAgeTurns) }.firstOrNull()
@@ -171,7 +224,7 @@ object CivilianUnitAutomation {
             return
         }
 
-        return // The AI doesn't know how to handle unknown civilian units
+        return
     }
 
     @Readonly

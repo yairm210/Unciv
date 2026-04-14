@@ -2,6 +2,7 @@ package com.unciv.models.ruleset.unique
 
 import com.unciv.Constants
 import com.unciv.logic.automation.Timers.Companion.timeThis
+import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.GlobalUniques
@@ -93,6 +94,9 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         }
         return true
     }
+
+    @Readonly
+    fun unitActionModifiersAreTileSpecific(gameInfo: GameInfo): Boolean = modifiers.any { Conditionals.unitActionModifiersAreTileSpecific(gameInfo, it) }
 
     @Readonly
     fun getUniqueMultiplier(gameContext: GameContext): Int {

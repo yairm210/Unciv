@@ -5,12 +5,16 @@ import com.unciv.UncivGame
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.TurnManager
+import com.unciv.logic.map.HexCoord
+import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.stats.Stat
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -25,9 +29,17 @@ internal class WorkerAutomationTest {
 
     @Before
     fun setUp() {
+        testGame.ruleset.units["Worker"]!!.uniques.remove("Can transform to [Warrior] <in [Desert] tiles> <with [71] priority>")
+        testGame.ruleset.units["Worker"]!!.uniques.remove("Can transform to [Warrior] <in [Desert] tiles> <with [70] priority>")
+        testGame.ruleset.units["Worker"]!!.uniques.remove("Can transform to [Warrior] <in [Desert] tiles> <with [51] priority>")
+        testGame.ruleset.units["Worker"]!!.uniques.remove("Can transform to [Warrior] <in [Desert] tiles> <with [50] priority>")
+        testGame.ruleset.units["Worker"]!!.uniques.remove("Can transform to [Warrior] <in [Desert] tiles> <with [26] priority>")
+        testGame.ruleset.units["Worker"]!!.uniques.remove("Can transform to [Warrior] <in [Desert] tiles> <with [25] priority>")
         UncivGame.Current.settings.useAStarPathfinding = true
         testGame.makeHexagonalMap(7)
         civInfo = testGame.addCiv()
+        civInfo.tech.addTechnology("The Wheel")
+        civInfo.tech.addTechnology("Railroads")
         workerAutomation = WorkerAutomation(civInfo, 3)
     }
 
@@ -48,7 +60,7 @@ internal class WorkerAutomationTest {
         val mapUnit = testGame.addUnit("Worker", civInfo, currentTile)
 
         // Act
-        workerAutomation.automateWorkerAction(mapUnit, hashSetOf())
+        workerAutomation.automateWorkerAction(mapUnit, UniqueActionQueue(mapUnit), hashSetOf())
 
         // Assert
         assertEquals("Worker should have replaced already existing improvement 'Farm' with 'Mine' to enable 'Iron' resource",
@@ -74,7 +86,7 @@ internal class WorkerAutomationTest {
 
         val mapUnit = testGame.addUnit("Worker", civInfo, currentTile)
 
-        workerAutomation.automateWorkerAction(mapUnit, hashSetOf())
+        workerAutomation.automateWorkerAction(mapUnit, UniqueActionQueue(mapUnit), hashSetOf())
 
         assertEquals("Worker should begun removing the forest to clear a luxury resource but didn't",
             "Remove Forest", currentTile.improvementInProgress
@@ -101,7 +113,7 @@ internal class WorkerAutomationTest {
         val mapUnit = testGame.addUnit("Worker", civInfo, currentTile)
 
         // Act
-        workerAutomation.automateWorkerAction(mapUnit, hashSetOf())
+        workerAutomation.automateWorkerAction(mapUnit, UniqueActionQueue(mapUnit),  hashSetOf())
 
         // Assert
         assertEquals("Worker should be buliding a farm under 'Iron' resource because it can't see it and has nothing else to do",
@@ -129,7 +141,7 @@ internal class WorkerAutomationTest {
 
         val mapUnit = testGame.addUnit("Worker", civInfo, currentTile)
 
-        workerAutomation.automateWorkerAction(mapUnit, hashSetOf())
+        workerAutomation.automateWorkerAction(mapUnit, UniqueActionQueue(mapUnit), hashSetOf())
 
         assertEquals("Worker should be buliding a mine on the Gold Ore luxury resource",
             "Mine", currentTile.improvementInProgress
@@ -351,7 +363,7 @@ internal class WorkerAutomationTest {
         val mapUnit = testGame.addUnit("Worker", civInfo, currentTile)
 
         // Act
-        workerAutomation.automateWorkerAction(mapUnit, hashSetOf())
+        workerAutomation.automateWorkerAction(mapUnit, UniqueActionQueue(mapUnit), hashSetOf())
 
         // Assert
         assertEquals("Worker should try to repair the mine",
@@ -359,6 +371,112 @@ internal class WorkerAutomationTest {
         )
         assertTrue(currentTile.turnsToImprovement > 0)
     }
+    
 
+    @Test
+    fun automateWorkerAction_nearPotentialImprovement_withModdedUnitAction_At71Priority_usesAction() {
+        civInfo.tech.techsResearched.addAll(testGame.ruleset.technologies.keys)
+        testGame.addCity(civInfo, testGame.tileMap[0,0])
+        testGame.setTileTerrain(HexCoord(0,1), "Desert")
 
+        testGame.ruleset.units["Worker"]!!.uniques.add("Can transform to [Warrior] <in [Desert] tiles> <with [71] priority>")
+        val unit: MapUnit = testGame.addUnit("Worker", civInfo, testGame.tileMap[0,0])
+
+        workerAutomation.automateWorkerAction(unit, UniqueActionQueue(unit), hashSetOf())
+        
+        assertTrue(unit.isDestroyed)
+        assertEquals("Warrior", testGame.tileMap[0,1].militaryUnit!!.baseUnit.name)
+        assertNull(testGame.tileMap[0,0].improvementInProgress)
+    }
+
+    @Test
+    fun automateWorkerAction_nearPotentialImprovement_withModdedUnitAction_At70Priority_findsTileToWork() {
+        civInfo.tech.techsResearched.addAll(testGame.ruleset.technologies.keys)
+        testGame.addCity(civInfo, testGame.tileMap[0,0])
+        testGame.setTileTerrain(HexCoord(0,1), "Desert")
+
+        testGame.ruleset.units["Worker"]!!.uniques.add("Can transform to [Warrior] <in [Desert] tiles> <with [70] priority>")
+        val unit = testGame.addUnit("Worker", civInfo, testGame.tileMap[0,0])
+
+        workerAutomation.automateWorkerAction(unit, UniqueActionQueue(unit), hashSetOf())
+
+        assertFalse(unit.isDestroyed)
+        assertEquals("Farm", testGame.tileMap[1,0].improvementInProgress)
+        assertEquals("Worker", unit.baseUnit.name)
+        assertEquals(HexCoord(1, 0), unit.currentTile.position)
+    }
+
+    @Test
+    fun automateWorkerAction_nearUndevelopedCity_withModdedUnitAction_At51Priority_usesAction() {
+        civInfo.tech.techsResearched.addAll(testGame.ruleset.technologies.keys)
+        val city1 = testGame.addCity(civInfo, testGame.tileMap[-6,-6])
+        testGame.addCity(civInfo, testGame.tileMap[6,6])
+        testGame.setTileTerrain(HexCoord(-5,-4), "Desert")
+        for (tile in city1.tilesInRange) tile.setImprovement("Farm", civInfo)
+
+        testGame.ruleset.units["Worker"]!!.uniques.add("Can transform to [Warrior] <in [Desert] tiles> <with [51] priority>")
+        val unit = testGame.addUnit("Worker", civInfo, testGame.tileMap[-5,-5])
+
+        workerAutomation.automateWorkerAction(unit, UniqueActionQueue(unit), hashSetOf())
+
+        assertTrue(unit.isDestroyed)
+        assertEquals("Warrior", testGame.tileMap[-5,-4].militaryUnit!!.baseUnit.name)
+    }
+
+    @Test
+    fun automateWorkerAction_nearUndevelopedCity_withModdedUnitAction_At50Priority_seeksCity() {
+        civInfo.tech.techsResearched.addAll(testGame.ruleset.technologies.keys)
+        val city1 = testGame.addCity(civInfo, testGame.tileMap[-6,-6])
+        testGame.addCity(civInfo, testGame.tileMap[6,6])
+        testGame.setTileTerrain(HexCoord(-5,-4), "Desert")
+        for (tile in city1.tilesInRange) tile.setImprovement("Farm", civInfo)
+
+        testGame.ruleset.units["Worker"]!!.uniques.add("Can transform to [Warrior] <in [Desert] tiles> <with [50] priority>")
+        val unit = testGame.addUnit("Worker", civInfo, testGame.tileMap[-5,-5])
+
+        workerAutomation.automateWorkerAction(unit, UniqueActionQueue(unit), hashSetOf())
+
+        assertFalse(unit.isDestroyed)
+        assertEquals(HexCoord(-3, -3), unit.currentTile.position)
+        assertEquals("Worker", unit.baseUnit.name)
+    }
+
+    @Test
+    fun automateWorkerAction_nearUnconnectedCity_withModdedUnitAction_At26Priority_usesAction() {
+        civInfo.tech.techsResearched.addAll(testGame.ruleset.technologies.keys)
+        val city1 = testGame.addCity(civInfo, testGame.tileMap[0,0])
+        val city2 = testGame.addCity(civInfo, testGame.tileMap[4,4])
+        testGame.setTileTerrain(HexCoord(0,1), "Desert")
+        for (tile in city1.tilesInRange) tile.setImprovement("Farm", civInfo)
+        for (tile in city2.tilesInRange) tile.setImprovement("Farm", civInfo)
+
+        testGame.ruleset.units["Worker"]!!.uniques.add("Can transform to [Warrior] <in [Desert] tiles> <with [26] priority>")
+        val unit = testGame.addUnit("Worker", civInfo, testGame.tileMap[0,0])
+
+        workerAutomation.automateWorkerAction(unit, UniqueActionQueue(unit), hashSetOf())
+
+        assertTrue(unit.isDestroyed)
+        assertEquals("Warrior", testGame.tileMap[0,1].militaryUnit!!.baseUnit.name)
+        assertNull(testGame.tileMap[-1,-1].improvementInProgress)
+    }
+
+    @Test
+    fun automateWorkerAction_nearUnconnectedCity_withModdedUnitAction_At25Priority_connectsCities() {
+        civInfo.tech.techsResearched.addAll(testGame.ruleset.technologies.keys)
+        val city1 = testGame.addCity(civInfo, testGame.tileMap[0,0])
+        val city2 = testGame.addCity(civInfo, testGame.tileMap[4,4])
+        testGame.setTileTerrain(HexCoord(0,1), "Desert")
+        for (tile in city1.tilesInRange) tile.setImprovement("Farm", civInfo)
+        for (tile in city2.tilesInRange) tile.setImprovement("Farm", civInfo)
+        
+        testGame.ruleset.units["Worker"]!!.uniques.add("Can transform to [Warrior] <in [Desert] tiles> <with [25] priority>")
+        val unit = testGame.addUnit("Worker", civInfo, testGame.tileMap[0,0])
+
+        workerAutomation.automateWorkerAction(unit, UniqueActionQueue(unit), hashSetOf())
+        
+        assertFalse(unit.isDestroyed)
+        assertEquals(HexCoord(1, 1), unit.currentTile.position)
+        assertEquals("Worker", unit.baseUnit.name)
+        assertEquals("Railroad", testGame.tileMap[1,1].improvementInProgress)
+    }
 }

@@ -35,7 +35,7 @@ data class GameContext(
         (ourCombatant?.getCivInfo()?.gameInfo) ?: (theirCombatant?.getCivInfo()?.gameInfo) ?: (attackedTile?.tileMap?.gameInfo) ?:
         (otherCiv?.gameInfo),
 
-    val ignoreConditionals: Boolean = false,
+    val ignoreFieldsBits: Int = CONSIDER_ALL_FIELDS_MASK,
 ) {
     constructor(city: City) : this(city.civ, city, tile = city.getCenterTileOrNull(), gameInfo = city.civ.gameInfo)
     constructor(unit: MapUnit) : this(unit.civ, unit = unit, tile = if (unit.hasTile()) unit.getTile() else null, gameInfo = unit.civ.gameInfo)
@@ -53,7 +53,18 @@ data class GameContext(
         theirCombatant?.getCivInfo(),
         gameInfo = ourCombatant.getCivInfo().gameInfo
     )
-
+    
+    val considerCiv get() = ignoreFieldsBits and IGNORE_CIVILIZATION_BIT == 0
+    val considerCity get() = ignoreFieldsBits and IGNORE_CITY_BIT == 0
+    val considerUnit get() = ignoreFieldsBits and IGNORE_UNIT_BIT == 0
+    val considerTile get() = ignoreFieldsBits and IGNORE_TILE_BIT == 0
+    val considerOurCombatant get() = ignoreFieldsBits and IGNORE_OUR_COMBATANT_BIT == 0
+    val considerTheirCombatant get() = ignoreFieldsBits and IGNORE_THEIR_COMBATANT_BIT == 0
+    val considerAttackedTile get() = ignoreFieldsBits and IGNORE_ATTACKED_TILE_BIT == 0
+    val considerAction get() = ignoreFieldsBits and IGNORE_ACTION_BIT == 0
+    val considerRegion get() = ignoreFieldsBits and IGNORE_REGION_BIT == 0
+    val considerGameInfo get() = ignoreFieldsBits and IGNORE_GAME_INFO_BIT == 0
+    val ignoreConditionals get() = ignoreFieldsBits == IGNORE_ALL_CONDITIONALS_MASK
 
     val relevantUnit by lazy {
         if (ourCombatant != null && ourCombatant is MapUnitCombatant) ourCombatant.unit
@@ -109,11 +120,25 @@ data class GameContext(
     }
 
     companion object {
-        val IgnoreConditionals = GameContext(ignoreConditionals = true)
+        const val IGNORE_CIVILIZATION_BIT       = 1 shl 0
+        const val IGNORE_CITY_BIT               = 1 shl 1
+        const val IGNORE_UNIT_BIT               = 1 shl 2
+        const val IGNORE_TILE_BIT               = 1 shl 3
+        const val IGNORE_OUR_COMBATANT_BIT      = 1 shl 4
+        const val IGNORE_THEIR_COMBATANT_BIT    = 1 shl 5
+        const val IGNORE_ATTACKED_TILE_BIT      = 1 shl 6
+        const val IGNORE_ACTION_BIT             = 1 shl 7
+        const val IGNORE_REGION_BIT             = 1 shl 8
+        const val IGNORE_GAME_INFO_BIT          = 1 shl 9
+        const val IGNORE_ALL_CONDITIONALS_MASK  = (1 shl 10) -1
+        const val CONSIDER_ALL_FIELDS_MASK      = 0
+        const val CONSIDER_ONLY_TILES_MASK      = IGNORE_TILE_BIT.inv()
+
+        val IgnoreConditionals = GameContext(ignoreFieldsBits = IGNORE_ALL_CONDITIONALS_MASK)
         val EmptyState = GameContext()
         /** When caching uniques, we need to cache them unmultiplied, and apply multiplication only on retrieval from cache
          * This state lets the multiplication function know that it's always 1:1 */
-        val IgnoreMultiplicationForCaching = GameContext(ignoreConditionals = true)
+        val IgnoreMultiplicationForCaching = GameContext(ignoreFieldsBits = IGNORE_ALL_CONDITIONALS_MASK)
     }
 
     /**  Used ONLY for stateBasedRandom in [Conditionals.conditionalApplies] to prevent save scumming on [UniqueType.ConditionalChance] */
@@ -144,7 +169,7 @@ data class GameContext(
             combatAction.hash(),
             otherCiv.hash(),
             region.hash(),
-            ignoreConditionals.hashCode()
+            ignoreFieldsBits.hashCode()
         )
         return hash
     }

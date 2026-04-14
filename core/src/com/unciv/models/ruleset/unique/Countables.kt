@@ -35,7 +35,8 @@ import yairm210.purity.annotations.Readonly
 enum class Countables(
     val text: String = "",
     private val shortDocumentation: String = "",
-    open val documentationStrings: List<String> = emptyList()
+    open val documentationStrings: List<String> = emptyList(),
+    open val isTileSpecificForUnitAction: Boolean = false,
 ) {
     Integer {
         override val documentationHeader = "Integer constant - any positive or negative integer number"

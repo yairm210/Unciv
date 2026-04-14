@@ -10,6 +10,9 @@ import com.unciv.logic.map.BFS
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.PathingMap
+import com.unciv.logic.map.PathingMap.Companion.EndSearchPredicate
+import com.unciv.logic.map.PathingMap.Companion.MAX_VALID_TURNS
+import com.unciv.logic.map.RouteNode
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
@@ -267,6 +270,57 @@ class UnitMovement(val unit: MapUnit) {
     }
 
     class UnreachableDestinationException(msg: String) : Exception(msg)
+
+
+    /**
+     * finds the closest tile that match a predicate.
+     * 
+     * timeLimitTurns=0 is tiles the unit can reach this turn. timeLimitTurns=1 is tiles the unit can
+     * reach this turn or next turn. Etc.
+     * 
+     * If there are multiple matches with the same movement cost, then this uses 
+     * tile-owner-relationship as a tiebreaker, followed by zeroBasedIndex (roughly, distance from
+     * center of map).
+     *
+     * The results of the method, and the per-tile-predicate-results are NOT cached, and so this has
+     * to check all tiles starting from the origin every call, even if the tiles' nodes have already
+     * been cached from prior pathfinding. However, this uses/generates the same cached nodes as the
+     * other pathfinding (movement cost, relationship level, shortest route, damage numbers, etc),
+     * and so if the nodes were already cached, then this is fast, and if the nodes were not already
+     * cached, then this makes subsequent pathfinding fast.
+     *
+     * IMPORTANT NOTE: This does NOT consider obstacles (hills/mountains) in the attack range.
+     * Callers have to check for obstacles along the path themselves.
+     **/
+    fun bfsUntilMatchingTile(timeLimitTurns: Int, endSearchPredicate: EndSearchPredicate): Tile?
+        = aStarPathing.bfsUntilMatchingTile( timeLimitTurns, endSearchPredicate)
+    fun bfsUntilMatchingTileThisTurn(endSearchPredicate: EndSearchPredicate): Tile?
+        = aStarPathing.bfsUntilMatchingTileThisTurn(endSearchPredicate)
+
+    /**
+     * finds all tiles in attack range that match a predicate.
+     *
+     * This does not cache the results of the predicate matching, and so has to check all tiles
+     * starting from the origin, even if the tiles' nodes have already been cached from prior
+     * pathfinding. However, this uses/generates the same cached nodes as the other pathfinding
+     * (movement cost, relationship level, shortest route, damage numbers, etc), so if any other 
+     * pathing also occurs before or after, then these checks are effectively free.
+     * 
+     * timeLimitTurns=0 is tiles the unit can reach this turn. timeLimitTurns=1 is tiles the unit can
+     * reach this turn or next turn. Etc.
+     * 
+     * If you do not care about movement cost, then the BFS class is probably faster.
+     *
+     * IMPORTANT NOTE: This does NOT consider sight obstacles (hills/mountains) in the attack range.
+     *
+     * IMPORTANT NOTE: The results of this method are not cached.  The *nodes* are cached , but the list of tiles
+     **/
+    // @IgnorableReturnValue
+    fun bfsAllMatchingTiles(timeLimitTurns: Int, tilePredicate: EndSearchPredicate): List<Tile>
+        = aStarPathing.bfsAllMatchingTiles(timeLimitTurns, tilePredicate)
+    // @IgnorableReturnValue
+    fun bfsAllMatchingTilesThisTurn(tilePredicate: EndSearchPredicate): List<Tile>
+        = aStarPathing.bfsAllMatchingTilesThisTurn(tilePredicate)
 
     @Readonly @Suppress("purity")
     fun getTileToMoveToThisTurn(finalDestination: Tile): Tile {

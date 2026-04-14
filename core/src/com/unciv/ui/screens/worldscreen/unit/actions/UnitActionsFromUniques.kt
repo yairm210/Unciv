@@ -12,6 +12,7 @@ import com.unciv.logic.map.tile.ImprovementBuildingProblem
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
+import com.unciv.models.TransformTargetableAction
 import com.unciv.models.UncivSound
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
@@ -437,29 +438,8 @@ object UnitActionsFromUniques {
                 title = title,
                 associatedUnique = unique,
                 action = {
-                    val oldMovement = unit.currentMovement
-                    unit.destroy()
-                    val newUnit =
-                        civInfo.units.placeUnitNearTile(unitTile.position, unitToTransformTo, unit.id, copiedFrom = unit)
-
-                    /** We were UNABLE to place the new unit, which means that the unit failed to upgrade!
-                     * The only known cause of this currently is "land units upgrading to water units" which fail to be placed.
-                     */
-                    if (newUnit == null) {
-                        val resurrectedUnit =
-                            civInfo.units.placeUnitNearTile(unitTile.position, unit.baseUnit, unit.id, copiedFrom = unit)!!
-                        
-                    } else { // Managed to upgrade
-                        // have to handle movement manually because we killed the old unit
-                        // a .destroy() unit has 0 movement
-                        // and a new one may have less Max Movement
-                        newUnit.currentMovement = oldMovement
-                        // adjust if newUnit has lower Max Movement
-                        if (newUnit.currentMovement.toInt() > newUnit.getMaxMovement())
-                            newUnit.currentMovement = newUnit.getMaxMovement().toFloat()
-                        // execute any side effects, Stat and Movement adjustments
-                        UnitActionModifiers.activateSideEffects(newUnit, unique, true)
-                    }
+                    TransformTargetableAction(unit, unique).invokeAction()
+                    Unit
                 }.takeIf {
                     !unit.isEmbarked() && UnitActionModifiers.canActivateSideEffects(unit, unique)
                 }

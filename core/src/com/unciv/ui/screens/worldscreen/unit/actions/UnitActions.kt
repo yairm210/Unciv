@@ -375,6 +375,7 @@ object UnitActions {
             action = {
                 unit.automated = true
                 UnitAutomation.automateUnitMoves(unit)
+                Unit
             }.takeIf { unit.hasMovement() }
         ))
     }
