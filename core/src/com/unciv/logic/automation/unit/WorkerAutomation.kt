@@ -478,11 +478,12 @@ class WorkerAutomation(
                 newTile.setTerrainTransients()
                 if (removedFeature != null) {
                     val allowedRemoveVegetation = (
-                                tile.terrainHasUnique(UniqueType.Vegetation) && 
-                                !UncivGame.Current.settings.stopAutomatedWorkersRemoveVegetation && 
-                                civInfo.isCurrentPlayer()) // Make sure to only apply this to player automated works.
-                    
-                    if (allowedRemoveVegetation)
+                                tile.terrainHasUnique(UniqueType.Vegetation) &&
+                                    !UncivGame.Current.settings.stopAutomatedWorkersRemoveVegetation &&
+                                    civInfo.isCurrentPlayer()) // Make sure to only apply this to player automated works.
+
+                    // The Ai should not be affected by the player automated workers settings.
+                    if (allowedRemoveVegetation || civInfo.isAI()) 
                         newTile.removeTerrainFeature(removedFeature)
                 }
                 if (removalImprovement != null)
