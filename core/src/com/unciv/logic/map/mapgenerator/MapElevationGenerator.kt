@@ -37,9 +37,10 @@ internal class MapElevationGenerator(
         }
 
         val elevationSeed = randomness.RNG.nextInt().toDouble()
-        // from the perspective of the elevation slider in advanced map settings
+        
+        // some map types are more mountainous than others
         val mapSpecificElevationOffset = when (tileMap.mapParameters.type) {
-            MapType.boreal -> +0.05
+            MapType.boreal -> +0.03
             else -> 0.0
         }
         val exponent = 1.0 - tileMap.mapParameters.elevationExponent.toDouble() - mapSpecificElevationOffset
