@@ -476,8 +476,15 @@ class WorkerAutomation(
             if (removedFeature != null || removalImprovement != null) {
                 @LocalState val newTile = tile.clone(addUnits = false)
                 newTile.setTerrainTransients()
-                if (removedFeature != null)
-                    newTile.removeTerrainFeature(removedFeature)
+                if (removedFeature != null) {
+                    val allowedRemoveVegetation = (
+                                tile.terrainHasUnique(UniqueType.Vegetation) && 
+                                !UncivGame.Current.settings.stopAutomatedWorkersRemoveVegetation && 
+                                civInfo.isCurrentPlayer()) // Make sure to only apply this to player automated works.
+                    
+                    if (allowedRemoveVegetation)
+                        newTile.removeTerrainFeature(removedFeature)
+                }
                 if (removalImprovement != null)
                     newTile.removeImprovement()
                 val wantedFinalImprovement = chooseImprovement(unit, newTile, localUniqueCache, ignoreImprovements = ignoreImprovements)
