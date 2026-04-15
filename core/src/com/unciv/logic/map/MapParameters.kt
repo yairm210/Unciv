@@ -37,8 +37,22 @@ object MapType {
     const val innerSea = "Inner Sea"
     const val lakes = "Lakes"
     const val smallContinents = "Small Continents"
+    const val boreal = "Boreal"
     
-    val allValues = listOf(perlin, pangaea, continentAndIslands, twoContinents, threeContinents, fourCorners, archipelago, fractal, innerSea, lakes, smallContinents)
+    val allValues = listOf(
+        perlin,
+        pangaea,
+        continentAndIslands,
+        twoContinents,
+        threeContinents,
+        fourCorners,
+        archipelago,
+        fractal,
+        innerSea,
+        lakes,
+        smallContinents,
+        boreal
+    )
 
     // All ocean tiles
     const val empty = "Empty"

@@ -507,6 +507,9 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         val oceanTerrains = baseTerrainPicker.filter { it.terrain.isOcean && !it.rareFeature }
         val noTerrainUniques = landTerrains.none { it.isConstrained}
         val elevationTerrains = baseTerrainPicker.filter {  it.occursInChains }.mapTo(mutableSetOf()) { it.name }
+        
+        /** Temperature is -0.4 across most (bottom ~80%) of the map, but declines to -1.0 near the top so ice can spawn */
+        fun getBorealTemperature(tile: Tile) = -0.4 - 0.6 * Math.E.pow(10.0 * tile.latitude / tileMap.maxLatitude - 10.0)
 
         for (tile in tileMap.values.asSequence()) {
             if (tile.baseTerrain in elevationTerrains)
@@ -516,15 +519,19 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             val humidity = ((humidityRandom + 1.0) / 2.0 + humidityShift).coerceIn(0.0..1.0)
             tile.humidity = humidity
 
-            val expectedTemperature = if (tileMap.mapParameters.shape == MapShape.flatEarth) {
-                // Flat Earth uses radius because North is center of map
-                val radius = getTileRadius(tile, tileMap)
-                val radiusTemperature = getTemperatureAtRadius(radius)
-                radiusTemperature
-            } else {
-                // Globe Earth uses latitude because North is top of map
-                val latitudeTemperature = 1.0 - 2.0 * abs(tile.latitude) / tileMap.maxLatitude
-                latitudeTemperature
+            val expectedTemperature = when {
+                tileMap.mapParameters.type == MapType.boreal -> getBorealTemperature(tile)
+                tileMap.mapParameters.shape == MapShape.flatEarth -> {
+                    // Flat Earth uses radius because North is center of map
+                    val radius = getTileRadius(tile, tileMap)
+                    val radiusTemperature = getTemperatureAtRadius(radius)
+                    radiusTemperature
+                }
+                else -> {
+                    // Globe Earth uses latitude because North is top of map
+                    val latitudeTemperature = 1.0 - 2.0 * abs(tile.latitude) / tileMap.maxLatitude
+                    latitudeTemperature
+                }
             }
 
             val randomTemperature = randomness.getPerlinNoise(tile, temperatureSeed, scale = scale, nOctaves = 1)
@@ -634,13 +641,18 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         val vegetationTerrains = terrainFeaturePicker.filter { it.hasVegitation && !it.rareFeature }
             .ifEmpty {terrainFeaturePicker.filter { Constants.vegetation.contains(it.name)}}
         val candidateTerrains = vegetationTerrains.flatMap{ it.terrain.occursOn }
+        // some map types are more forested than others
+        val vegetationRichness = tileMap.mapParameters.vegetationRichness + when (tileMap.mapParameters.type) {
+            MapType.boreal -> +0.10
+            else -> 0.0
+        }
         // Checking it.baseTerrain in candidateTerrains to make sure forest does not spawn on desert hill
         for (tile in tileMap.values.asSequence().filter { it.baseTerrain in candidateTerrains
                 && it.lastTerrain.name in candidateTerrains }) {
 
             val vegetation = (randomness.getPerlinNoise(tile, vegetationSeed, scale = 3.0, nOctaves = 1) + 1.0) / 2.0
 
-            if (vegetation <= tileMap.mapParameters.vegetationRichness) {
+            if (vegetation <= vegetationRichness) {
                 val possibleVegetation = vegetationTerrains.filter { it.matchesTempAndTerrain(tile)
                     && NaturalWonderGenerator.fitsTerrainUniques(it.terrain, tile)
                 }

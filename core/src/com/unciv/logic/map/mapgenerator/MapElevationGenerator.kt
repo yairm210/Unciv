@@ -1,6 +1,7 @@
 package com.unciv.logic.map.mapgenerator
 
 import com.unciv.logic.map.MapParameters
+import com.unciv.logic.map.MapType
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
@@ -36,7 +37,12 @@ internal class MapElevationGenerator(
         }
 
         val elevationSeed = randomness.RNG.nextInt().toDouble()
-        val exponent = 1.0 - tileMap.mapParameters.elevationExponent.toDouble()
+        // from the perspective of the elevation slider in advanced map settings
+        val mapSpecificElevationOffset = when (tileMap.mapParameters.type) {
+            MapType.boreal -> +0.05
+            else -> 0.0
+        }
+        val exponent = 1.0 - tileMap.mapParameters.elevationExponent.toDouble() - mapSpecificElevationOffset
         fun Double.powSigned(exponent: Double) = abs(this).pow(exponent) * sign(this)
 
         tileMap.setTransients(ruleset)

@@ -56,6 +56,7 @@ class MapLandmassGenerator(
             MapType.perlin -> createPerlin()
             MapType.fractal -> createFractal()
             MapType.lakes -> createLakes()
+            MapType.boreal -> createBoreal()
             MapType.smallContinents -> createSmallContinents()
         }
 
@@ -138,6 +139,31 @@ class MapLandmassGenerator(
 
                 spawnLandOrWater(tile, elevation)
             }
+        }
+    }
+
+    /**
+     * A large region that is all tundra and well forested.
+     * 
+     * Screenshot from Civ V: https://i.imgur.com/L63zfv6.jpeg
+     * 
+     * Implementation notes:
+     * - The bottom 80% is fairly homogenous, with a mix of snow, tundra, plains (when river converts tundra), and a few lakes/small oceans.
+     * - There is a band of ocean with ice at the very top.
+     * - There is more vegetation and mountains than default.
+     */
+    private fun createBoreal() {
+        val elevationSeed = randomness.RNG.nextInt().toDouble()
+        for (tile in tileMap.values) {
+            val latitude: Double = tile.latitude.toDouble() / tileMap.maxLatitude
+            // size of lakes/oceans, scales with map size
+            val perlinScale = 0.3 * max(tileMap.maxLatitude, tileMap.maxLongitude)
+            /** Elevation averages +0.25 across most (bottom ~80%) of the map.
+             * It declines to -1.0 near the top to ensure a band of ocean.
+             */
+            var elevation = 0.25 - 1.2 * Math.E.pow(10.0 * latitude - 10.0)
+            elevation += randomness.getPerlinNoise(tile, elevationSeed, scale=perlinScale)
+            spawnLandOrWater(tile, elevation)
         }
     }
 
