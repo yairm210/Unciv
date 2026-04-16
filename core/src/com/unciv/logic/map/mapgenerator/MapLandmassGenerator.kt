@@ -5,6 +5,7 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.UniqueType
+import kotlin.math.E
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -155,13 +156,18 @@ class MapLandmassGenerator(
     private fun createBoreal() {
         val elevationSeed = randomness.RNG.nextInt().toDouble()
         for (tile in tileMap.values) {
-            val latitude: Double = tile.latitude.toDouble() / tileMap.maxLatitude
             // size of lakes/oceans, scales with map size
             val perlinScale = 0.3 * max(tileMap.maxLatitude, tileMap.maxLongitude)
+            val latitude =
+                if (tileMap.mapParameters.shape == MapShape.flatEarth)
+                    // inverse so the north becomes center of the map
+                    2 * (1 - MapGenerator.getTileRadius(tile, tileMap)) - 1 
+                else
+                    tile.latitude.toDouble() / tileMap.maxLatitude
             /** Elevation averages +0.25 across most (bottom ~80%) of the map.
              * It declines to -1.0 near the top to ensure a band of ocean.
              */
-            var elevation = 0.25 - 1.2 * Math.E.pow(5.0 * latitude - 5.0)
+            var elevation = 0.25 - 1.25 * E.pow(4.0 * latitude - 4.0)
             elevation += randomness.getPerlinNoise(tile, elevationSeed, scale=perlinScale)
             spawnLandOrWater(tile, elevation)
         }

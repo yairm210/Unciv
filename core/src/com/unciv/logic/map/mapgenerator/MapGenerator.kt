@@ -42,6 +42,16 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
 
     companion object {
         private const val consoleTimings = false
+
+        /**
+         * @return Radius in range 0.0 (center of map) to 1.0 (edge of map).
+         */
+        internal fun getTileRadius(tile: Tile, tileMap: TileMap): Double {
+            // Numbers betwee 0.0-1.0
+            val latitudeRatio = abs(tile.latitude) / tileMap.maxLatitude.toDouble()
+            val longitudeRatio = abs(tile.longitude) / tileMap.maxLongitude.toDouble()
+            return sqrt(latitudeRatio.pow(2) + longitudeRatio.pow(2))
+        }
     }
 
     private var randomness = MapGenerationRandomness()
@@ -528,7 +538,11 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             /** This part translates from latitude to temperature. */
             return when (tileMap.mapParameters.type) {
                 // temperature is -0.4 across most (south ~80%) of the map, but declines to -1.0 near the north so ice can spawn
-                MapType.boreal -> -0.4 - 0.6 * Math.E.pow(10.0 * adjustedLatitude - 10.0)
+                MapType.boreal -> {
+                    // flat earth should have the ocean band / ice in the center, so we flip the latitude
+                    val lat = adjustedLatitude * if (tileMap.mapParameters.shape == MapShape.flatEarth) -1 else +1
+                    -0.4 - 0.6 * Math.E.pow(5.0 * lat - 5.0)
+                }
                 // cold poles, warm equator
                 else -> 1.0 - 2.0 * abs(adjustedLatitude)
             }
@@ -581,16 +595,6 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
                 debug("applyHumidityAndTemperature: No terrain found for temperature: %s, humidity: %s", temperature, humidity)
             }
         }
-    }
-
-    /**
-     * @return Radius in range 0.0 (center of map) to 1.0 (edge of map).
-     */
-    private fun getTileRadius(tile: Tile, tileMap: TileMap): Double {
-        // Numbers betwee 0.0-1.0
-        val latitudeRatio = abs(tile.latitude) / tileMap.maxLatitude.toDouble()
-        val longitudeRatio = abs(tile.longitude) / tileMap.maxLongitude.toDouble()
-        return sqrt(latitudeRatio.pow(2) + longitudeRatio.pow(2))
     }
 
     /**
