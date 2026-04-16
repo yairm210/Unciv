@@ -508,8 +508,31 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         val noTerrainUniques = landTerrains.none { it.isConstrained}
         val elevationTerrains = baseTerrainPicker.filter {  it.occursInChains }.mapTo(mutableSetOf()) { it.name }
         
-        /** Temperature is -0.4 across most (bottom ~80%) of the map, but declines to -1.0 near the top so ice can spawn */
-        fun getBorealTemperature(tile: Tile) = -0.4 - 0.6 * Math.E.pow(10.0 * tile.latitude / tileMap.maxLatitude - 10.0)
+        /**
+         * @return Temperature at the provided tile before adding noise.
+         * May be outside of range -1.0 to 1.0, so make sure to coerce it at some point. 
+         */
+        fun getExpectedTemperature(tile: Tile): Double {
+            /** Latitude in range -1.0 (south pole equivalent) to +1.0 (north pole equivalent). */
+            val normalizedLatitude =
+                if (tileMap.mapParameters.shape == MapShape.flatEarth) 2 * getTileRadius(tile, tileMap) - 1
+                else tile.latitude.toDouble() / tileMap.maxLatitude
+            /**
+             * Flat earth temperature should be -1.0 at latitudes ±0.9, and -1.111 at latitudes ±1.0.
+             * Instead of adjusting the temperature later, we can adjust the latitude here.
+             * This way, custom map types don't have to worry about flat earth logic.
+             */
+            val adjustedLatitude = 
+                if (tileMap.mapParameters.shape == MapShape.flatEarth) normalizedLatitude * 10.0 / 9.0
+                else normalizedLatitude
+            /** This part translates from latitude to temperature. */
+            return when (tileMap.mapParameters.type) {
+                // temperature is -0.4 across most (south ~80%) of the map, but declines to -1.0 near the north so ice can spawn
+                MapType.boreal -> -0.4 - 0.6 * Math.E.pow(10.0 * adjustedLatitude - 10.0)
+                // cold poles, warm equator
+                else -> 1.0 - 2.0 * abs(adjustedLatitude)
+            }
+        }
 
         for (tile in tileMap.values.asSequence()) {
             if (tile.baseTerrain in elevationTerrains)
@@ -519,20 +542,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             val humidity = ((humidityRandom + 1.0) / 2.0 + humidityShift).coerceIn(0.0..1.0)
             tile.humidity = humidity
 
-            val expectedTemperature = when {
-                tileMap.mapParameters.type == MapType.boreal -> getBorealTemperature(tile)
-                tileMap.mapParameters.shape == MapShape.flatEarth -> {
-                    // Flat Earth uses radius because North is center of map
-                    val radius = getTileRadius(tile, tileMap)
-                    val radiusTemperature = getTemperatureAtRadius(radius)
-                    radiusTemperature
-                }
-                else -> {
-                    // Globe Earth uses latitude because North is top of map
-                    val latitudeTemperature = 1.0 - 2.0 * abs(tile.latitude) / tileMap.maxLatitude
-                    latitudeTemperature
-                }
-            }
+            val expectedTemperature = getExpectedTemperature(tile)
 
             val randomTemperature = randomness.getPerlinNoise(tile, temperatureSeed, scale = scale, nOctaves = 1)
             var temperature = (5.0 * expectedTemperature + randomTemperature) / 6.0
@@ -573,64 +583,14 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         }
     }
 
-    private fun getTileRadius(tile: Tile, tileMap: TileMap): Float {
-        // Numbers betwee 0.0-1.0
-        val latitudeRatio = abs(tile.latitude) / tileMap.maxLatitude.toFloat()
-        val longitudeRatio = abs(tile.longitude) / tileMap.maxLongitude.toFloat()
-        return sqrt(latitudeRatio.pow(2) + longitudeRatio.pow(2))
-    }
-
-    private fun getTemperatureAtRadius(radius: Float): Double {
-        /*
-        Radius is in the range of 0.0 to 1.0
-        Temperature is in the range of -1.0 to 1.0
-
-        Radius of 0.0 (arctic) is -1.0 (cold)
-        Radius of 0.25 (mid North) is 0.0 (temperate)
-        Radius of 0.5 (equator) is 1.0 (hot)
-        Radius of 0.75 (mid South) is 0.0 (temperate)
-        Radius of 1.0 (antarctic) is -1.0 (cold)
-
-        Scale the radius range to the temperature range
-        */
-        return when {
-            /*
-            North Zone
-            Starts cold at arctic and gets hotter as it goes South to equator
-            x1 is set to 0.05 instead of 0.0 to offset the ice in the center of the map
-            */
-            radius < 0.5 -> scaleToRange(0.05, 0.5, -1.0, 1.0, radius)
-
-            /*
-            South Zone
-            Starts hot at equator and gets colder as it goes South to antarctic
-            x2 is set to 0.95 instead of 1.0 to offset the ice on the edges of the map
-            */
-            radius > 0.5 -> scaleToRange(0.5, 0.95, 1.0, -1.0, radius)
-
-            /*
-            Equator
-            Always hot
-            radius == 0.5
-            */
-            else -> 1.0
-        }
-    }
-
     /**
-     * @x1 start of the original range
-     * @x2 end of the original range
-     * @y1 start of the new range
-     * @y2 end of the new range
-     * @value value to be scaled from the original range to the new range
-     *
-     * @returns value in new scale
-     * special thanks to @letstalkaboutdune for the math
+     * @return Radius in range 0.0 (center of map) to 1.0 (edge of map).
      */
-    private fun scaleToRange(x1: Double, x2: Double, y1: Double, y2: Double, value: Float): Double {
-        val gain = (y2 - y1) / (x2 - x1)
-        val offset = y2 - (gain * x2)
-        return (gain * value) + offset
+    private fun getTileRadius(tile: Tile, tileMap: TileMap): Double {
+        // Numbers betwee 0.0-1.0
+        val latitudeRatio = abs(tile.latitude) / tileMap.maxLatitude.toDouble()
+        val longitudeRatio = abs(tile.longitude) / tileMap.maxLongitude.toDouble()
+        return sqrt(latitudeRatio.pow(2) + longitudeRatio.pow(2))
     }
 
     /**
