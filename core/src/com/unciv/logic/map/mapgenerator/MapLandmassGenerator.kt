@@ -161,7 +161,7 @@ class MapLandmassGenerator(
             /** Elevation averages +0.25 across most (bottom ~80%) of the map.
              * It declines to -1.0 near the top to ensure a band of ocean.
              */
-            var elevation = 0.25 - 1.2 * Math.E.pow(7.0 * latitude - 7.0)
+            var elevation = 0.25 - 1.2 * Math.E.pow(5.0 * latitude - 5.0)
             elevation += randomness.getPerlinNoise(tile, elevationSeed, scale=perlinScale)
             spawnLandOrWater(tile, elevation)
         }
