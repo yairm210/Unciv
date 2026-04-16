@@ -674,7 +674,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
      * [MapParameters.temperatureintensity] as in [applyHumidityAndTemperature]
      */
     private fun spawnIce(tileMap: TileMap) {
-        val oceanTerrains: List<TerrainOccursRange> = terrainFeaturePicker.filter { it.terrain.isOcean && it.tempFrom<= -1 }
+        val oceanTerrains: List<TerrainOccursRange> = baseTerrainPicker.filter { it.terrain.isOcean && it.tempFrom<= -1 }
             .ifEmpty { terrainFeaturePicker.filter { it.terrain.isOcean} }
         val iceTerrains: List<TerrainOccursRange> = terrainFeaturePicker.filter { it.terrain.isIce }
 
