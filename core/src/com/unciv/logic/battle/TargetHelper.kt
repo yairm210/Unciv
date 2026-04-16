@@ -74,6 +74,7 @@ object TargetHelper {
     @Readonly
     private fun getTilesToAttackFromWhenUnitMoves(unitDistanceToTiles: PathsToTilesWithinTurn, unitMustBeSetUp: Boolean, unit: MapUnit) =
         unitDistanceToTiles.asSequence()
+            .sortedWith {a,b -> a.value.totalMovement.compareTo(b.value.totalMovement) }
             .map { (tile, distance) ->
                 val movementPointsToExpendAfterMovement = if (unitMustBeSetUp) 1 else 0
                 val movementPointsToExpendHere =
