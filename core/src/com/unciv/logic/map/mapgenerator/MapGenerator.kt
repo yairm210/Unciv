@@ -22,6 +22,7 @@ import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.utils.debug
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.isActive
+import kotlin.math.E
 import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -519,8 +520,8 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         val elevationTerrains = baseTerrainPicker.filter {  it.occursInChains }.mapTo(mutableSetOf()) { it.name }
         
         /**
-         * @return Temperature at the provided tile before adding noise.
-         * May be outside of range -1.0 to 1.0, so make sure to coerce it at some point. 
+         * @return Temperature at the provided tile before adding noise etc..
+         * May be outside of range -1.0 to 1.0, so make sure to coerce it at some point.
          */
         fun getExpectedTemperature(tile: Tile): Double {
             /** Latitude in range -1.0 (south pole equivalent) to +1.0 (north pole equivalent). */
@@ -530,20 +531,23 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             /**
              * Flat earth temperature should be -1.0 at latitudes ±0.9, and -1.111 at latitudes ±1.0.
              * Instead of adjusting the temperature later, we can adjust the latitude here.
-             * This way, custom map types don't have to worry about flat earth logic.
+             * This way, custom map types don't have to worry as much about flat earth logic.
              */
             val adjustedLatitude = 
                 if (tileMap.mapParameters.shape == MapShape.flatEarth) normalizedLatitude * 10.0 / 9.0
                 else normalizedLatitude
             /** This part translates from latitude to temperature. */
             return when (tileMap.mapParameters.type) {
-                // temperature is -0.4 across most (south ~80%) of the map, but declines to -1.0 near the north so ice can spawn
+                /** temperature is -0.4 across most (southern ~75%) of the map, but declines to -1.0 near the north so ice can spawn */
                 MapType.boreal -> {
-                    // flat earth should have the ocean band / ice in the center, so we flip the latitude
+                    // boreal flat earth should have the ocean band / ice in the center, so we flip the latitude
                     val lat = adjustedLatitude * if (tileMap.mapParameters.shape == MapShape.flatEarth) -1 else +1
-                    -0.4 - 0.6 * Math.E.pow(5.0 * lat - 5.0)
+                    -0.4 - 0.6 * E.pow(5.0 * lat - 5.0)
                 }
-                // cold poles, warm equator
+                /**
+                 * Cold poles, warm equator.
+                 * Most map types use this function.
+                 */
                 else -> 1.0 - 2.0 * abs(adjustedLatitude)
             }
         }

@@ -164,7 +164,7 @@ class MapLandmassGenerator(
                     2 * (1 - MapGenerator.getTileRadius(tile, tileMap)) - 1 
                 else
                     tile.latitude.toDouble() / tileMap.maxLatitude
-            /** Elevation averages +0.25 across most (bottom ~80%) of the map.
+            /** Elevation averages +0.25 across most (southern ~75%) of the map.
              * It declines to -1.0 near the top to ensure a band of ocean.
              */
             var elevation = 0.25 - 1.25 * E.pow(4.0 * latitude - 4.0)
