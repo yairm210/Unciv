@@ -24,6 +24,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.isActive
 import kotlin.math.E
 import kotlin.math.abs
+import kotlin.math.exp
 import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlin.math.sign
@@ -538,16 +539,9 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
                 else normalizedLatitude
             /** This part translates from latitude to temperature. */
             return when (tileMap.mapParameters.type) {
-                /** temperature is -0.4 across most (southern ~75%) of the map, but declines to -1.0 near the north so ice can spawn */
-                MapType.boreal -> {
-                    // boreal flat earth should have the ocean band / ice in the center, so we flip the latitude
-                    val lat = adjustedLatitude * if (tileMap.mapParameters.shape == MapShape.flatEarth) -1 else +1
-                    -0.4 - 0.6 * E.pow(5.0 * lat - 5.0)
-                }
-                /**
-                 * Cold poles, warm equator.
-                 * Most map types use this function.
-                 */
+                // Starting temperature is -0.4 across most (southern ~75%) of the map, but declines to -1.0 in the north so ice can spawn
+                MapType.boreal -> -0.4 - 0.6 * E.pow(5 * adjustedLatitude - 5)
+                /** Cold poles, warm equator. Most map types use this function. */
                 else -> 1.0 - 2.0 * abs(adjustedLatitude)
             }
         }
