@@ -325,7 +325,7 @@ enum class UniqueType(
         docDescription = "Meant to be used together with conditionals, like \"Only available <after adopting [policy]> <while the empire is happy>\". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen"),
     Unavailable("Unavailable", UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Improvement,
         UniqueTarget.Policy, UniqueTarget.Tech, UniqueTarget.Promotion, UniqueTarget.Ruins,
-        UniqueTarget.Event, UniqueTarget.EventChoice,
+        UniqueTarget.FollowerBelief, UniqueTarget.FounderBelief, UniqueTarget.Event, UniqueTarget.EventChoice,
         docDescription = "Meant to be used together with conditionals, like \"Unavailable <after generating a Great Prophet>\"."),
 
     ConvertFoodToProductionWhenConstructed("Excess Food converted to Production when under construction", UniqueTarget.Building, UniqueTarget.Unit),
@@ -644,6 +644,7 @@ enum class UniqueType(
 
     FreshWater(Constants.freshWater, UniqueTarget.Terrain),
     RoughTerrain("Rough terrain", UniqueTarget.Terrain),
+    CoastalWater("Coastal Water", UniqueTarget.Terrain),
 
     ExcludedFromMapEditor("Excluded from map editor", UniqueTarget.Terrain, UniqueTarget.Improvement, UniqueTarget.Resource, UniqueTarget.Nation, flags = UniqueFlag.setOfHiddenToUsers),
 
@@ -825,6 +826,8 @@ enum class UniqueType(
     ConditionalAdjacentUnit("when adjacent to a [mapUnitFilter] unit", UniqueTarget.Conditional),
     ConditionalAboveHP("when above [positiveAmount] HP", UniqueTarget.Conditional),
     ConditionalBelowHP("when below [positiveAmount] HP", UniqueTarget.Conditional),
+    ConditionalBelowMovement("when below [positiveAmount] movement", UniqueTarget.Conditional),
+    ConditionalAboveMovement("when above [positiveAmount] movement", UniqueTarget.Conditional),
     ConditionalHasNotUsedOtherActions("if it hasn't used other actions yet", UniqueTarget.Conditional),
     ConditionalStackedWithUnit("when stacked with a [mapUnitFilter] unit", UniqueTarget.Conditional),
     ConditionalNotStackedWithUnit("when not stacked with a [mapUnitFilter] unit", UniqueTarget.Conditional),
@@ -960,6 +963,7 @@ enum class UniqueType(
     TriggerUponDeclaringWarFiltered("upon declaring war on [civFilter] Civilizations", UniqueTarget.TriggerCondition),
     TriggerUponBeingDeclaredWarUpon("upon being declared war on by [civFilter] Civilizations", UniqueTarget.TriggerCondition),
     TriggerUponEnteringWar("upon entering a war with [civFilter] Civilizations", UniqueTarget.TriggerCondition),
+    TriggerUponSigningPeace("upon signing a peace treaty with [civFilter] Civilizations", UniqueTarget.TriggerCondition),
     TriggerUponDeclaringFriendship("upon declaring friendship", UniqueTarget.TriggerCondition),
     TriggerUponSigningDefensivePact("upon declaring a defensive pact", UniqueTarget.TriggerCondition),
     TriggerUponEnteringGoldenAge("upon entering a Golden Age", UniqueTarget.TriggerCondition),
@@ -1018,6 +1022,15 @@ enum class UniqueType(
         UniqueTarget.Promotion,
         UniqueTarget.Tech,
         flags = UniqueFlag.setOfHiddenToUsers),
+    
+    UnitActionPriority("with [amount] priority",
+        UniqueTarget.UnitActionModifier,
+        UniqueTarget.MetaModifier, // Can also be applied to UniqueTarget.Triggerable
+        flags = UniqueFlag.setOfHiddenToUsers,
+        docDescription = "How often this action is used, a higher value means more often and that it should be on an earlier page. " +
+        "100 is very frequent, 50 is somewhat frequent, less than 25 is press one time for multi-turn movement. " +
+        "A Rare case is > 100 if a button is something like add in capital, promote or something, " +
+        "we need to inform the player that taking the action is an option."),
 
     HiddenFromCivilopedia("Will not be displayed in Civilopedia", *UniqueTarget.Displayable, flags = UniqueFlag.setOfHiddenToUsers),
     ShowsWhenUnbuilable("Shown while unbuilable", UniqueTarget.Building, UniqueTarget.Unit, flags = UniqueFlag.setOfHiddenToUsers),

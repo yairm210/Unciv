@@ -77,6 +77,9 @@ internal class AdvancedTab(
         addCheckbox("Enable Easter Eggs", settings::enableEasterEggs)
 
         addCheckbox("Enlarge selected notifications", settings::enlargeSelectedNotification)
+
+        addCheckbox("Enable experimental A* pathing", settings::useAStarPathfinding)
+
         addSeparator()
 
         addSetUserId()

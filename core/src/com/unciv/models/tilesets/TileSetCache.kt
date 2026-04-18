@@ -2,6 +2,7 @@ package com.unciv.models.tilesets
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
@@ -74,6 +75,11 @@ object TileSetCache : HashMap<String, TileSet>() {
         }
 
         values.forEach { it.fallback = get(it.config.fallbackTileSet) }
+
+        // The tileset in settings was removed
+        // This can be either by deleting the folder or deleting the mod in-game
+        if (!containsKey(UncivGame.Current.settings.tileSet))
+            UncivGame.Current.settings.tileSet = Constants.defaultTileset
 
         assembleTileSetConfigs(hashSetOf()) // no game is loaded, this is just the initial game setup
     }

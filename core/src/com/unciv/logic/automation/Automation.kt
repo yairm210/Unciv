@@ -395,7 +395,9 @@ object Automation {
     @Readonly
     private fun improvementIsRemovable(city: City, tile: Tile): Boolean {
         val gameContext = GameContext(city.civ, city, tile = tile)
-        return (tile.getTileImprovement()?.hasUnique(UniqueType.AutomatedUnitsWillNotReplace, gameContext) == false  && tile.getTileImprovement()?.hasUnique(UniqueType.Irremovable, gameContext) == false)
+        val improvement = tile.tileImprovement ?: return false
+        return !improvement.hasUnique(UniqueType.AutomatedUnitsWillNotReplace, gameContext) &&
+            !improvement.hasUnique(UniqueType.Irremovable, gameContext)
     }
 
     /** Support [UniqueType.CreatesOneImprovement] unique - find best tile for placement automation */
@@ -404,7 +406,7 @@ object Automation {
         val localUniqueCache = LocalUniqueCache()
         val civ = city.civ
         return city.getTiles().filter {
-            (it.getTileImprovement() == null || improvementIsRemovable(city, it))
+            (it.tileImprovement == null || improvementIsRemovable(city, it))
                 && it.improvementFunctions.canBuildImprovement(improvement, city.state)
         }.maxByOrNull { 
             // Needs to take into account future improvement layouts, and better placement of citadel-like improvements

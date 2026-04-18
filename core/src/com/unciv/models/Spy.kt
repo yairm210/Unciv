@@ -258,7 +258,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
     private fun demandToNotBeSpiedOn(otherCiv: Civilization) {
         val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(civInfo)!!
         otherCivDiplomacyManager.addModifier(DiplomaticModifiers.SpiedOnUs, -15f)
-        otherCivDiplomacyManager.setFlag(DiplomacyFlags.DiscoveredSpiesInOurCities, 30)
+        otherCivDiplomacyManager.setFlag(DiplomacyFlags.DiscoveredSpiesInOurCities, 30, true)
     }
 
     @Readonly fun canDoCoup(): Boolean = getCityOrNull() != null && getCity().civ.isCityState && isSetUp()

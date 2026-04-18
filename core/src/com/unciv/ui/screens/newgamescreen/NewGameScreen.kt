@@ -350,6 +350,8 @@ class NewGameScreen(
         }
 
         val worldScreen = game.loadGame(newGame)
+        
+        worldScreen.autoSave()
 
         if (newGame.gameParameters.isOnlineMultiplayer) {
             launchOnGLThread {

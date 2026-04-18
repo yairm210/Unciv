@@ -70,7 +70,7 @@ class AskNumberPopup(
                 ).apply {
                     onClick {
                         val value = nameField.intValue ?: return@onClick
-                        nameField.intValue = value + delta
+                        nameField.intValue = clampInBounds(value + delta)
                     }
                 }
             ).pad(5f)

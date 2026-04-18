@@ -109,10 +109,11 @@ object ReligionAutomation {
         val hasUniqueToTakeCivReligion = missionaryConstruction.hasUnique(UniqueType.TakeReligionOverBirthCity)
 
         val validCitiesToBuy = civInfo.cities.filter {
-            (hasUniqueToTakeCivReligion || it.religion.getMajorityReligion() == civInfo.religionManager.religion)
-            && (missionaryConstruction.getStatBuyCost(it, Stat.Faith) ?: return@filter false) <= civInfo.religionManager.storedFaith
-            && missionaryConstruction.isPurchasable(it.cityConstructions)
-            && missionaryConstruction.canBePurchasedWithStat(it, Stat.Faith)
+            it.getCenterTile().civilianUnit == null // can't purchase them here
+                && (hasUniqueToTakeCivReligion || it.religion.getMajorityReligion() == civInfo.religionManager.religion)
+                && (missionaryConstruction.getStatBuyCost(it, Stat.Faith) ?: return@filter false) <= civInfo.religionManager.storedFaith
+                && missionaryConstruction.isPurchasable(it.cityConstructions)
+                && missionaryConstruction.canBePurchasedWithStat(it, Stat.Faith)
         }
         if (validCitiesToBuy.isEmpty()) return
 
@@ -490,7 +491,8 @@ object ReligionAutomation {
                     && !additionalBeliefsToExclude.contains(it)
                     && civInfo.religionManager.getReligionWithBelief(it) == null
                     && it.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)
-                    .none { unique -> !unique.conditionalsApply(civInfo.state) }
+                        .none { unique -> !unique.conditionalsApply(civInfo.state) }
+                    && it.getMatchingUniques(UniqueType.Unavailable, civInfo.state).none()
             }
             .maxByOrNull { rateBelief(civInfo, it) }
     }

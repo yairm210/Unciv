@@ -1278,7 +1278,7 @@ object UniqueTriggerActivation {
 
             UniqueType.OneTimeRemoveImprovementsFromTile -> {
                 if (tile == null) return null
-                val tileImprovement = tile.getTileImprovement() ?: return null
+                val tileImprovement = tile.tileImprovement ?: return null
                 val improvementFilter = unique.params[0]
                 if (!tileImprovement.matchesFilter(improvementFilter)) return null
                 return {

@@ -1,6 +1,7 @@
 package com.unciv.logic
 
 import com.unciv.ui.screens.mainmenuscreen.EasterEggFloatingArt
+import com.unciv.utils.hashOf
 import yairm210.purity.annotations.Pure
 import java.time.DayOfWeek
 import java.time.Instant
@@ -138,7 +139,7 @@ object HolidayDates {
             if (other !is DateRange) return false
             return start == other.start && endInclusive == other.endInclusive
         }
-        override fun hashCode() = 31 * start.hashCode() + endInclusive.hashCode()
+        override fun hashCode() = hashOf(start.hashCode(), endInclusive.hashCode())
 
         companion object {
             fun of(date: LocalDate) = DateRange(date, date)

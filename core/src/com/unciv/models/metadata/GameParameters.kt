@@ -37,6 +37,7 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
     var startingEra = "Ancient era"
 
     var showVictoryStats = true
+    var showDemographics = false
 
     // Multiplayer parameters
     var isOnlineMultiplayer = false
@@ -82,6 +83,7 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
         parameters.victoryTypes = ArrayList(victoryTypes)
         parameters.startingEra = startingEra
         parameters.showVictoryStats = showVictoryStats
+        parameters.showDemographics = showDemographics
         parameters.isOnlineMultiplayer = isOnlineMultiplayer
         parameters.multiplayerServerUrl = multiplayerServerUrl
         parameters.anyoneCanSpectate = anyoneCanSpectate
