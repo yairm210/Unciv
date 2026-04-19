@@ -246,4 +246,29 @@ class CountableTests {
         assertEquals("Testing Happiness", 6, happiness)
     }
     //endregion
+
+    @Test
+    fun countableCanUseContext() {
+        setupModdedGame()
+        val cityCount = Countables.getCountableAmount("Cities", civ.state)
+        assertEquals("City count should match the civ's city count", cityCount, 1)
+
+        val unit = game.createBaseUnit()
+        val fakeUnit = game.createBaseUnit(uniques = arrayOf("[This Unit] is destroyed", "Free [${unit.name}] appears <for every [[Cities] + [3]]>"))
+        civ.units.placeUnitNearTile(city.location, fakeUnit)
+        val unitCount = Countables.getCountableAmount("Units", civ.state)
+        assertEquals("Units should get a context implictly with a countable", unitCount, 4)
+
+        setupModdedGame() // reset
+        val resource = game.createResource("Stockpiled")
+        val localResource = game.createResource("Stockpiled", "City-level resource")
+        val building1 = game.createBuilding("Instantly provides [5] [${resource.name}]")
+        val building2 = game.createBuilding("Instantly provides [1] [${localResource.name}] <for every [[${resource.name}] - [3]]>")
+        city.cityConstructions.addBuilding(building1)
+        city.cityConstructions.addBuilding(building2)
+        var resourceAmount = Countables.getCountableAmount(localResource.name, civ.state)
+        assertEquals("Civ state alone shouldn't see citywide resources", resourceAmount, 0)
+        resourceAmount = Countables.getCountableAmount(localResource.name, city.state)
+        assertEquals("City state should see city resources", resourceAmount, 2)
+    }
 }
