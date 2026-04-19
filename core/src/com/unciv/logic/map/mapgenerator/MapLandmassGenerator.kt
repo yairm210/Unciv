@@ -148,8 +148,8 @@ class MapLandmassGenerator(
      * 
      * Screenshot from Civ V: https://i.imgur.com/L63zfv6.jpeg
      * 
-     * Implementation notes:
-     * - The bottom 80% is fairly homogenous, with a mix of snow, tundra, plains (when river converts tundra), and a few lakes/small oceans.
+     * Implementation notes (see relevant files - search for MapType.boreal):
+     * - The bottom ~75% is fairly homogenous, with a mix of snow, tundra, plains (when river converts tundra), and a few lakes/small oceans.
      * - There is a band of ocean with ice at the very top.
      * - There is more vegetation and mountains than default.
      */
