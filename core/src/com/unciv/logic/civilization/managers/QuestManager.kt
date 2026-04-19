@@ -1006,6 +1006,18 @@ class AssignedQuest : IsPartOfGameInfoSerialization {
                 GUI.resetToWorldScreen()
                 GUI.getMap().setCenterPosition(assignerCiv.getCapital()!!.location.toHexCoord(), selectUnit = false)
             }
+            QuestName.BullyCityState, QuestName.ConquerCityState -> {
+                // In case they were destroyed after issuing the quest
+                val targetCs = gameInfo.getAliveCityStates().firstOrNull { it.civID == data1 }
+                if (targetCs != null) {
+                    // Did they even settle their first city?
+                    val capital = targetCs.getCapital()
+                    if (capital != null) {
+                        GUI.resetToWorldScreen()
+                        GUI.getMap().setCenterPosition(capital.location.toHexCoord(), selectUnit = false)
+                    }
+                }
+            }
             else -> Unit
         }
     }
