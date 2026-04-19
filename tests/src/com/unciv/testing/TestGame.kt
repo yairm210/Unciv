@@ -260,9 +260,8 @@ class TestGame(vararg addGlobalUniques: String, forUITesting: Boolean = false) {
         createRulesetObject(ruleset.units, *uniques) {
             val baseUnit = BaseUnit()
             baseUnit.unitType = unitType
-            baseUnit.setRuleset(gameInfo.ruleset)
             baseUnit
-        }
+        }.apply { setRuleset(gameInfo.ruleset) }
     fun createBelief(type: BeliefType = BeliefType.Any, vararg uniques: String) =
         createRulesetObject(ruleset.beliefs, *uniques) { Belief(type) }
     fun createBuilding(vararg uniques: String) =
