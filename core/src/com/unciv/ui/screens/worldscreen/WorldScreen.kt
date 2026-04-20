@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.GameStarter
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.civilization.Civilization
@@ -246,6 +247,23 @@ class WorldScreen(
         newGameSetupInfo.mapParameters.reseed()
         val newGameScreen = NewGameScreen(newGameSetupInfo)
         game.pushScreen(newGameScreen)
+    }
+
+    fun restartGameWithCurrentSettings() {
+        autoPlay.stopAutoPlay()
+        Concurrency.run("Restart game with current settings") {
+            val newGame = try {
+                val setupInfo = GameSetupInfo(gameInfo)
+                setupInfo.mapParameters.reseed()
+                GameStarter.startNewGame(setupInfo)
+            } catch (_: Exception) {
+                launchOnGLThread {
+                    ToastPopup(message = "Could not restart game!", screen = this@WorldScreen)
+                }
+                return@run
+            }
+            startNewScreenJob(newGame, AutoPlay(game.settings.autoPlay))
+        }
     }
 
     fun openSaveGameScreen() {
