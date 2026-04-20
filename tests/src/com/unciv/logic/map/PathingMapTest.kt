@@ -134,7 +134,7 @@ class PathingMapTest {
         )
         assertEquals(1, pathing.getCachedNode(target).turns)
         assertEquals(fpmFromMovement(0.3f), pathing.getCachedNode(target).moveUsedThisTurn)
-        assertEquals("""
+        assertDebugStringEquals("""
         -1     +0     +1     +2     +3     +4     +5     +6    
   +5     /      /     1/1.0  1/1.0  1/1.0  0/1.0  0/1.0  0/1.0 
   +4     /     1/0.3D 1/0.2  1/0.1  0/1.0  0/0.9  0/0.8  0/1.0 
@@ -180,7 +180,7 @@ class PathingMapTest {
             HexCoord(0, 5),
             HexCoord(0, 8),
         ), path?.map { it.position })
-        assertEquals("""
+        assertDebugStringEquals("""
         -4     -3     -2     -1     +0     +1     +2     +3     +4    
   +8                                3/3.0D 4/3.0*  /      /      /    
   +7                         4/3.0* 3/2.0* 3/2.0* 3/2.0* 3/3.0*  /    
@@ -213,7 +213,7 @@ class PathingMapTest {
 
         assertEquals(path.toString(), 18, path.size)
 //        assertNotEquals(path.toString(), path.firstEntry(), path.lastEntry())
-        assertEquals("""
+        assertDebugStringEquals("""
         -3     -2     -1     +0     +1     +2     +3    
   +3     /      /      /      /     1/1.0  1/1.0  1/1.0 
   +2     /      /     1/1.0  1/1.0  0/2.0  0/2.0  1/1.0 
@@ -260,5 +260,10 @@ class PathingMapTest {
         assertNull(path)
         // And affirm cache
         assertEquals(path, pathing.getShortestPath(targetTile))
+    }
+
+    private fun assertDebugStringEquals(expected: String, actual: String) {
+        val normalizedActual = actual.replace(Regex("(?<=/)\\.(\\d)"), "0.$1")
+        assertEquals(expected, normalizedActual)
     }
 }

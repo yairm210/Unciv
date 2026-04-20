@@ -198,7 +198,7 @@ class MapEditorEditTab(
 
     private fun tileClickHandler(tile: Tile) {
         if (brushSize < -1 || brushSize > 5 || brushHandlerType == BrushHandlerType.None) return
-        if (editorScreen.mapHolder.isPanning || editorScreen.mapHolder.isZooming()) return
+        if (editorScreen.mapHolder.isInteractionGestureInProgress()) return
         editorScreen.hideSelection()
 
         when (brushHandlerType) {

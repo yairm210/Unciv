@@ -31,7 +31,7 @@ class Tutorial : RulesetObject() {
     /** These lines will be displayed (when the Tutorial is _triggered_) one after another,
      *  and the Tutorial is marked as completed only once the last line is dismissed with "OK" */
     //todo migrate to civilopediaText then remove or deprecate?
-    val steps: ArrayList<String>? = null
+    var steps: ArrayList<String>? = null
 
     override fun getUniqueTarget() = UniqueTarget.Tutorial
     override fun makeLink() = "Tutorial/$name"

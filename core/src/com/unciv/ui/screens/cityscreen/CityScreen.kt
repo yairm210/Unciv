@@ -169,7 +169,7 @@ class CityScreen(
         globalShortcuts.add(KeyboardBinding.PreviousCity) { page(-1) }
         globalShortcuts.add(KeyboardBinding.NextCity) { page(1) }
 
-        if (isPortrait()) mapScrollPane.apply {
+        if (useResponsiveNarrowLayout()) mapScrollPane.apply {
             // center scrolling so city center sits more to the bottom right
             scrollX = (maxX - constructionsTable.getLowerWidth() - posFromEdge) / 2
             scrollY = (maxY - cityStatsTable.packIfNeeded().height - posFromEdge + cityPickerTable.top) / 2
@@ -201,13 +201,13 @@ class CityScreen(
 
         // In portrait mode only: calculate already occupied horizontal space
         val rightMargin = when {
-            !isPortrait() || isCrampedPortrait() -> 0f
+            !useResponsiveNarrowLayout() || useResponsiveCompactLayout() -> 0f
             selectedTile != null -> tileTable.packIfNeeded().width
             selectedConstruction != null -> selectedConstructionTable.packIfNeeded().width
             else -> posFromEdge
         }
         val leftMargin = when {
-            !isPortrait() -> 0f
+            !useResponsiveNarrowLayout() -> 0f
             else -> constructionsTable.getLowerWidth()
         }
 
@@ -344,7 +344,7 @@ class CityScreen(
         }
 
         razeCityButtonHolder.pack()
-        if(isCrampedPortrait()) {
+        if (useResponsiveCompactLayout()) {
             // cramped portrait: move raze button down to city picker
             val centerX = cityPickerTable.x + cityPickerTable.width / 2 - razeCityButtonHolder.width / 2
             razeCityButtonHolder.setPosition(centerX, cityPickerTable.y + cityPickerTable.height + 10)
@@ -353,7 +353,7 @@ class CityScreen(
             selectedConstructionTable.setPosition(stage.width - posFromEdge, razeCityButtonHolder.top + 10f, Align.bottomRight)
             updateCityStats() // limit city stats height according to the tooltips
         } else {
-            val centerX = if (isPortrait())
+            val centerX = if (useResponsiveNarrowLayout())
                 constructionsTable.getUpperWidth().let { it + (stage.width - cityStatsTable.width - it) / 2 }
             else
                 stage.width / 2

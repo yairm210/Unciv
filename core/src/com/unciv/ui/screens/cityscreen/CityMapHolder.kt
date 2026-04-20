@@ -13,7 +13,7 @@ class CityMapHolder : ZoomableScrollPane(20f, 20f) {
     private fun setupZoomPanListeners() {
 
         fun setActHit() {
-            val isEnabled = !isZooming() && !isPanning
+            val isEnabled = !isInteractionGestureInProgress()
             (stage as UncivStage).performPointerEnterExitEvents = isEnabled
             val tileGroupMap = actor as TileGroupMap<*>
             tileGroupMap.shouldAct = isEnabled

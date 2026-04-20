@@ -114,6 +114,7 @@ class TranslationTests {
 
     @Test
     fun translationsFromJSONsCanBeGenerated() {
+        if (!com.unciv.platform.PlatformCapabilities.current.backgroundThreadPools) return
         // Triggers generation of the translation's strings
         // Will output "Translation writer took...", which is suppressed unless you use the @RedirectOutput(RedirectPolicy.Show) annotation
         setupRuleset()

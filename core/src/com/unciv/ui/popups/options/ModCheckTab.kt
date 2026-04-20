@@ -1,6 +1,5 @@
 package com.unciv.ui.popups.options
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -32,6 +31,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.UniqueBuilderScreen
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.utils.AppClipboard
 import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread
 import kotlinx.coroutines.Job
@@ -282,8 +282,9 @@ internal class ModCheckTab(
             }
             if (severity != RulesetErrorSeverity.OK)
                 it.add("Copy to clipboard".toTextButton().onClick {
-                    Gdx.app.clipboard.contents = modLinks
+                    AppClipboard.writeText(modLinks
                         .joinToString("\n") { line -> line.text }
+                    )
                 }).row()
         }
         expanderTab.header.left()

@@ -1,0 +1,13 @@
+{
+"schemaVersion": 1,
+"preloadId": "war-from-start",
+"ruleset": "Civ V - Gods & Kings",
+"mapSeed": 2026021501,
+"expectedPlayerCiv": "America",
+"expectedMajorEnemies": [
+	"England",
+	"France"
+],
+"expectedPeaceTarget": "England",
+"expectedRequiredUnit": "Warrior"
+}

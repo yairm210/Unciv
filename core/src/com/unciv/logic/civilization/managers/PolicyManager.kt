@@ -107,7 +107,10 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     @Readonly private fun getRulesetPolicies() = civInfo.gameInfo.ruleset.policies
 
     @Suppress("MemberVisibilityCanBePrivate")
-    @Readonly fun getPolicyByName(name: String): Policy = getRulesetPolicies()[name]!!
+    @Readonly fun getPolicyByName(name: String): Policy =
+        getRulesetPolicies()[name]
+            ?: getRulesetPolicies().values.firstOrNull { it.name == name }
+            ?: throw IllegalStateException("Policy $name is not found in ruleset")
 
     fun setTransients(civInfo: Civilization) {
         this.civInfo = civInfo
@@ -137,6 +140,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     }
 
     fun endTurn(culture: Int) {
+        ensureCultureHistoryInitialized()
         addCulture(culture)
         addCurrentCultureToCultureOfLast8Turns(culture)
     }
@@ -221,8 +225,13 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     fun isAdoptable(policy: Policy, checkEra: Boolean = true): Boolean {
         if (isAdopted(policy.name)) return false
         if (policy.policyBranchType == PolicyBranchType.BranchComplete) return false
-        if (!getAdoptedPolicies().containsAll(policy.requires!!)) return false
-        if (checkEra && civInfo.gameInfo.ruleset.eras[policy.branch.era]!!.eraNumber > civInfo.getEraNumber()) return false
+        val requiredPolicies = policy.requires ?: emptyList()
+        if (!getAdoptedPolicies().containsAll(requiredPolicies)) return false
+        if (checkEra) {
+            val requiredEraNumber = civInfo.gameInfo.ruleset.eras[policy.branch.era]?.eraNumber
+                ?: return true
+            if (requiredEraNumber > civInfo.getEraNumber()) return false
+        }
         if (policy.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)
                 .any { !it.conditionalsApply(civInfo.state) }) return false
         if (policy.hasUnique(UniqueType.Unavailable, civInfo.state)) return false
@@ -336,7 +345,12 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     }
 
     private fun addCurrentCultureToCultureOfLast8Turns(culture: Int) {
+        ensureCultureHistoryInitialized()
         cultureOfLast8Turns[civInfo.gameInfo.turns % 8] = culture
+    }
+
+    private fun ensureCultureHistoryInitialized() {
+        if (cultureOfLast8Turns.size != 8) cultureOfLast8Turns = IntArray(8)
     }
 
     @Readonly

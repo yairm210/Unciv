@@ -57,7 +57,7 @@ class EditorMapHolder(
     private fun setupZoomPanListeners() {
 
         fun setActHit() {
-            val isEnabled = !isZooming() && !isPanning
+            val isEnabled = !isInteractionGestureInProgress()
             (stage as UncivStage).performPointerEnterExitEvents = isEnabled
             tileGroupMap.shouldAct = isEnabled
             tileGroupMap.shouldHit = isEnabled
@@ -193,7 +193,7 @@ class EditorMapHolder(
             }
 
             override fun touchDragged(event: InputEvent?, x: Float, y: Float, pointer: Int) {
-                if (!isDragging && !isPanning) {
+                if (!isDragging && !isPanGestureInProgress()) {
                     isDragging = true
                     val deltaTime = System.currentTimeMillis() - touchDownTime
                     if (deltaTime > 400) {

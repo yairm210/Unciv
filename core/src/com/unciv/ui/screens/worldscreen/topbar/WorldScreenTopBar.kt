@@ -209,6 +209,7 @@ class WorldScreenTopBar(internal val worldScreen: WorldScreen) : Table() {
             pad(10f)
 
             menuButton.color = Color.WHITE
+            menuButton.name = "world.menu_open"
             menuButton.onActivation(binding = KeyboardBinding.Menu) { WorldScreenMenuPopup(worldScreen) }
             menuButton.onRightClick { WorldScreenMenuPopup(worldScreen, true) }
 

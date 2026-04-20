@@ -1,12 +1,12 @@
 package com.unciv.ui.screens.savescreens
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.files.PlatformSaverLoader
 import com.unciv.logic.files.UncivFiles
+import com.unciv.platform.PlatformCapabilities
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
@@ -21,6 +21,7 @@ import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.ToastPopup
+import com.unciv.utils.AppClipboard
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import com.unciv.utils.launchOnGLThread
@@ -65,7 +66,8 @@ class SaveGameScreen(private val gameInfo: GameInfo) : LoadOrSaveScreen("Current
         copyJsonButton.addTooltip(ctrlC)
         add(copyJsonButton).row()
 
-        addSaveToCustomLocation()
+        if (PlatformCapabilities.current.customFileChooser)
+            addSaveToCustomLocation()
         add(errorLabel).width(stage.width / 2).center().row()
         row() // For uniformity with LoadScreen which has a load missing mods button here
         add(deleteSaveButton).row()
@@ -91,7 +93,7 @@ class SaveGameScreen(private val gameInfo: GameInfo) : LoadOrSaveScreen("Current
         Concurrency.run("Copy game to clipboard") {
             // the Gzip rarely leads to ANRs
             try {
-                Gdx.app.clipboard.contents = UncivFiles.gameInfoToString(gameInfo, forceZip = true)
+                AppClipboard.writeText(UncivFiles.gameInfoToString(gameInfo, forceZip = true))
                 launchOnGLThread {
                     ToastPopup("Current game copied to clipboard!", this@SaveGameScreen)
                 }
@@ -106,6 +108,7 @@ class SaveGameScreen(private val gameInfo: GameInfo) : LoadOrSaveScreen("Current
 
     private fun Table.addSaveToCustomLocation() {
         val saveToCustomLocation = saveToCustomText.toTextButton()
+        saveToCustomLocation.name = "save.custom_location"
         saveToCustomLocation.onClick {
             saveToCustomLocation.setText(savingText.tr())
             saveToCustomLocation.disable()

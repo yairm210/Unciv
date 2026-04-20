@@ -1,0 +1,62 @@
+package com.unciv.app.web;
+
+import org.teavm.jso.JSBody;
+
+final class WebMultiplayerProbeInterop {
+    private WebMultiplayerProbeInterop() {
+    }
+
+    static boolean isEnabled() {
+        String raw = WebValidationInterop.getQueryValue("mpProbe");
+        if (raw == null) return false;
+        String normalized = raw.trim().toLowerCase();
+        return normalized.equals("1")
+                || normalized.equals("true")
+                || normalized.equals("yes")
+                || normalized.equals("on");
+    }
+
+    static String getRole() {
+        return WebValidationInterop.getQueryValue("mpRole");
+    }
+
+    static String getGameId() {
+        return WebValidationInterop.getQueryValue("mpGameId");
+    }
+
+    static String getTimeoutMs() {
+        return WebValidationInterop.getQueryValue("mpTimeoutMs");
+    }
+
+    static String getTestMultiplayerServerUrl() {
+        return WebValidationInterop.getTestMultiplayerServerUrl();
+    }
+
+    @JSBody(
+            params = "state",
+            script =
+                    "if (typeof window === 'undefined') return;"
+                            + "window.__uncivMpProbeState = state;")
+    static native void publishState(String state);
+
+    @JSBody(
+            params = "message",
+            script =
+                    "if (typeof window === 'undefined') return;"
+                            + "window.__uncivMpProbeError = message;"
+                            + "window.__uncivMpProbeState = 'failed';")
+    static native void publishError(String message);
+
+    @JSBody(
+            params = "json",
+            script =
+                    "if (typeof window === 'undefined') return;"
+                            + "window.__uncivMpProbeResultJson = json;"
+                            + "window.__uncivMpProbeState = 'done';")
+    static native void publishResult(String json);
+
+    @JSBody(
+            params = {"runnable", "delayMs"},
+            script = "setTimeout(function(){ runnable.$run(); }, delayMs);")
+    static native void schedule(Runnable runnable, int delayMs);
+}

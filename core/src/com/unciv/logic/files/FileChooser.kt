@@ -20,6 +20,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.UncivSound
 import com.unciv.models.translations.tr
+import com.unciv.platform.PlatformCapabilities
 import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.isEnabled
@@ -35,6 +36,10 @@ import java.io.FileFilter
 import com.badlogic.gdx.utils.Array as GdxArray
 
 typealias ResultListener = (success: Boolean, file: FileHandle) -> Unit
+
+interface ExtensionFileFilter : FileFilter {
+    val extensions: Set<String>
+}
 
 /**
  *  A file picker written in Gdx as using java.awt.JFileChooser or java.awt.FileDialog crashes on X11 desktops
@@ -291,6 +296,13 @@ open class FileChooser(
     }
 
     companion object {
+        fun interface PlatformLoadDialog {
+            fun open(filter: FileFilter, resultListener: ResultListener?)
+        }
+
+        @JvmField
+        var platformLoadDialog: PlatformLoadDialog? = null
+
         private val dirListComparator: Comparator<FileListItem> =
             Comparator { file1, file2 ->
                 when {
@@ -306,14 +318,27 @@ open class FileChooser(
                 setOkButtonText("Save")
             }
 
-        fun createLoadDialog(stage: Stage, title: String?, path: FileHandle? = null, resultListener: ResultListener? = null) =
-            FileChooser(stage, title, path, resultListener).apply {
+        fun createLoadDialog(stage: Stage, title: String?, path: FileHandle? = null, resultListener: ResultListener? = null): FileChooser {
+            val chooser = FileChooser(stage, title, path, resultListener).apply {
                 fileNameEnabled = false
                 setOkButtonText("Load")
             }
+            val platformDialog = platformLoadDialog
+            if (platformDialog != null && PlatformCapabilities.current.customFileChooser && Gdx.app.type == com.badlogic.gdx.Application.ApplicationType.WebGL) {
+                chooser.showListeners.add {
+                    platformDialog.open(chooser.filter, resultListener)
+                    chooser.close()
+                }
+            }
+            return chooser
+        }
 
-        fun createExtensionFilter(vararg extensions: String) = FileFilter {
-            it.extension.lowercase() in extensions
+        fun createExtensionFilter(vararg extensions: String): ExtensionFileFilter {
+            val normalized = extensions.map { it.trimStart('.').lowercase() }.toSet()
+            return object : ExtensionFileFilter {
+                override val extensions: Set<String> = normalized
+                override fun accept(file: File): Boolean = file.extension.lowercase() in normalized
+            }
         }
     }
 }

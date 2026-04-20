@@ -85,9 +85,10 @@ object StartNormalizer {
             val lastEraNumber = ruleset.eras.values.maxOf { it.eraNumber }
             val earlyEras = ruleset.eras.filterValues { it.eraNumber <= lastEraNumber / 3 }
             val validResources = ruleset.tileResources.values.filter {
-                it.resourceType == ResourceType.Strategic &&
-                        (it.revealedBy == null ||
-                            ruleset.technologies[it.revealedBy]!!.era() in earlyEras)
+                if (it.resourceType != ResourceType.Strategic) return@filter false
+                val revealedBy = it.revealedBy ?: return@filter true
+                val revealedEra = ruleset.technologies[revealedBy]?.era() ?: return@filter true
+                revealedEra in earlyEras
             }.shuffled()
             val candidateTiles = startTile.getTilesAtDistance(2).shuffled()
             for (resource in validResources) {

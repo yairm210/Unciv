@@ -6,6 +6,11 @@ val gdxVersion: String by project
 val coroutinesVersion: String by project
 val ktorVersion: String by project
 val jnaVersion: String by project
+val usePurityFork = (findProperty("usePurityFork") as String?)?.toBooleanStrictOrNull()
+    ?: (kotlinVersion.startsWith("2.3.") && file("Purity").exists())
+val enablePurityPlugin = (findProperty("enablePurityPlugin") as String?)?.toBooleanStrictOrNull()
+    ?: usePurityFork
+val purityAnnotationsVersion = if (usePurityFork) "1.3.3" else "1.3.4"
 
 buildscript {
     repositories {
@@ -45,42 +50,46 @@ plugins {
 }
 
 allprojects {
-//    repositories{ // for local purity
-//        mavenLocal()
-//    }
+    if (usePurityFork) {
+        repositories {
+            mavenLocal()
+        }
+    }
 
-    apply(plugin = "io.github.yairm210.purity-plugin")
-    configure<yairm210.purity.PurityConfiguration> {
-        wellKnownPureFunctions = setOf(
-        )
-        wellKnownReadonlyFunctions = setOf(
-            "com.badlogic.gdx.math.Vector2.len",
-            "com.badlogic.gdx.math.Vector2.cpy",
-            "com.badlogic.gdx.math.Vector2.hashCode",
+    if (enablePurityPlugin) {
+        apply(plugin = "io.github.yairm210.purity-plugin")
+        configure<yairm210.purity.PurityConfiguration> {
+            wellKnownPureFunctions = setOf(
+            )
+            wellKnownReadonlyFunctions = setOf(
+                "com.badlogic.gdx.math.Vector2.len",
+                "com.badlogic.gdx.math.Vector2.cpy",
+                "com.badlogic.gdx.math.Vector2.hashCode",
 
-            "com.badlogic.gdx.graphics.Color.cpy",
-            "com.badlogic.gdx.graphics.Color.toString",
+                "com.badlogic.gdx.graphics.Color.cpy",
+                "com.badlogic.gdx.graphics.Color.toString",
 
-            "com.badlogic.gdx.files.FileHandle.child",
-            "com.badlogic.gdx.files.FileHandle.list",
-            "com.badlogic.gdx.files.FileHandle.exists",
-            "com.badlogic.gdx.files.FileHandle.isDirectory",
-            "com.badlogic.gdx.files.FileHandle.isFile",
-            "com.badlogic.gdx.files.FileHandle.name",
+                "com.badlogic.gdx.files.FileHandle.child",
+                "com.badlogic.gdx.files.FileHandle.list",
+                "com.badlogic.gdx.files.FileHandle.exists",
+                "com.badlogic.gdx.files.FileHandle.isDirectory",
+                "com.badlogic.gdx.files.FileHandle.isFile",
+                "com.badlogic.gdx.files.FileHandle.name",
 
-            "java.util.stream.StreamSupport.longStream",
-            "java.util.stream.LongStream.parallel",
-            "kotlin.sequences.shuffled",
-            "kotlin.LongArray.get",
-            "kotlin.LongArray.iterator",
-            "kotlin.collections.copyInto",
-        )
-        wellKnownPureClasses = setOf(
-        )
-        wellKnownInternalStateClasses = setOf(
-            "com.badlogic.gdx.math.Vector2",
-        )
-        warnOnPossibleAnnotations = false
+                "java.util.stream.StreamSupport.longStream",
+                "java.util.stream.LongStream.parallel",
+                "kotlin.sequences.shuffled",
+                "kotlin.LongArray.get",
+                "kotlin.LongArray.iterator",
+                "kotlin.collections.copyInto",
+            )
+            wellKnownPureClasses = setOf(
+            )
+            wellKnownInternalStateClasses = setOf(
+                "com.badlogic.gdx.math.Vector2",
+            )
+            warnOnPossibleAnnotations = false
+        }
     }
 
     apply(plugin = "eclipse")
@@ -188,7 +197,7 @@ project(":core") {
         "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
         "implementation"("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
 
-        "implementation"("io.github.yairm210:purity-annotations:1.3.4")
+        "implementation"("io.github.yairm210:purity-annotations:$purityAnnotationsVersion")
 
         "implementation"("io.ktor:ktor-client-core:$ktorVersion")
         "implementation"("io.ktor:ktor-client-cio:$ktorVersion")

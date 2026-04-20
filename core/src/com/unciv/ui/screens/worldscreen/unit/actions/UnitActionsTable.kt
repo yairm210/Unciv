@@ -1,5 +1,7 @@
 package com.unciv.ui.screens.worldscreen.unit.actions
 
+import com.badlogic.gdx.Application
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.scenes.scene2d.Touchable
@@ -19,6 +21,7 @@ import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.popups.UnitUpgradeMenu
 import com.unciv.ui.screens.worldscreen.WorldScreen
+import com.unciv.utils.Log
 import yairm210.purity.annotations.Readonly
 
 class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
@@ -84,6 +87,17 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         updateButtonsPerPage(nextPageButton)
 
         val sortedUnitActions = UnitActions.getUnitActions(unit).sortedByDescending { it.useFrequency }
+        if (unitChanged && Gdx.app.type == Application.ApplicationType.WebGL) {
+            val types = sortedUnitActions.joinToString(",") { it.type.name }
+            Log.debug(
+                "web-actions unit=%s civ=%s major=%s cityState=%s actions=%s",
+                unit.name,
+                unit.civ.civName,
+                unit.civ.isMajorCiv().toString(),
+                unit.civ.isCityState.toString(),
+                types
+            )
+        }
         // Distribute sequentially into the buckets
         for (unitAction in sortedUnitActions) {
             var actionPage = UnitActions.getActionDefaultPage(unit, unitAction.type)
@@ -194,6 +208,14 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
     }
 
     private fun activateAction(unitAction: UnitAction, unit: MapUnit) {
+        if (Gdx.app.type == Application.ApplicationType.WebGL) {
+            Log.debug(
+                "web-action invoke type=%s unit=%s civ=%s",
+                unitAction.type.name,
+                unit.name,
+                unit.civ.civName
+            )
+        }
         unitAction.action!!.invoke()
         worldScreen.shouldUpdate = true
         // We keep the unit action/selection overlay from the previous unit open even when already selecting another unit

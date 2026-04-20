@@ -1,6 +1,5 @@
 package com.unciv.ui.screens.multiplayerscreens
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
@@ -15,6 +14,7 @@ import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.pickerscreens.PickerScreen
+import com.unciv.utils.AppClipboard
 import com.unciv.utils.isUUID
 
 class EditFriendScreen(selectedFriend: FriendList.Friend) : PickerScreen() {
@@ -29,7 +29,7 @@ class EditFriendScreen(selectedFriend: FriendList.Friend) : PickerScreen() {
         topTable.add(friendNameTextField).pad(10f).padBottom(30f).width(stage.width/2).row()
 
         pastePlayerIDButton.onClick {
-            playerIDTextField.text = Gdx.app.clipboard.contents
+            AppClipboard.readTextPreferCached(onText = { playerIDTextField.text = it.trim() })
         }
 
         topTable.add("Player ID".toLabel()).row()

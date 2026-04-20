@@ -10,6 +10,7 @@ import com.unciv.logic.multiplayer.chat.ChatWebSocket
 import com.unciv.models.UncivSound
 import com.unciv.models.metadata.GameSettings.WindowState.Companion.minimumHeight
 import com.unciv.models.metadata.GameSettings.WindowState.Companion.minimumWidth
+import com.unciv.platform.PlatformCapabilities
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.Fonts
@@ -17,9 +18,7 @@ import com.unciv.ui.components.input.KeyboardBindings
 import com.unciv.ui.screens.worldscreen.NotificationsScroll
 import com.unciv.utils.Display
 import com.unciv.utils.ScreenOrientation
-import java.awt.Rectangle
 import yairm210.purity.annotations.Readonly
-import java.text.Collator
 import java.text.NumberFormat
 import java.time.Duration
 import java.util.Locale
@@ -95,6 +94,11 @@ class GameSettings {
     var confirmNextTurn = false
     var windowState = WindowState()
     var isFreshlyCreated = false
+    /** One-time migration marker for web UX defaults by detected form factor */
+    var webUxProfileVersion = 0
+    /** Runtime-only web form-factor marker. Updated at startup, never persisted. */
+    @Transient
+    var webRuntimeMobile: Boolean = false
     var visualMods = HashSet<String>()
     var useDemographics: Boolean = false
     var showZoomButtons: Boolean = false
@@ -200,9 +204,41 @@ class GameSettings {
         return locale!!
     }
 
-    fun getCollatorFromLocale(): Collator {
-        return Collator.getInstance(getCurrentLocale())
+    fun getCollatorFromLocale(): Comparator<String?> {
+        val locale = getCurrentLocale()
+        if (PlatformCapabilities.current.backgroundThreadPools) {
+            createJvmCollatorComparator(locale)?.let { return it }
+        }
+        val languageTag = LocaleCode.find(language)?.languageTag ?: locale.toLanguageTag()
+        PlatformCapabilities.localeComparatorBridge?.let { bridge ->
+            return Comparator<String?> { first, second ->
+                bridge.compare(languageTag, first, second)
+            }
+        }
+        return Comparator { first, second ->
+            when {
+                first == null && second == null -> 0
+                first == null -> -1
+                second == null -> 1
+                else -> first.lowercase(locale).compareTo(second.lowercase(locale))
+            }
+        }
     }
+
+    private fun createJvmCollatorComparator(locale: Locale): Comparator<String?>? = runCatching {
+        val collatorClass = Class.forName("java.text.Collator")
+        val getInstance = collatorClass.getMethod("getInstance", Locale::class.java)
+        val collator = getInstance.invoke(null, locale)
+        val compare = collatorClass.getMethod("compare", Any::class.java, Any::class.java)
+        Comparator<String?> { first, second ->
+            when {
+                first == null && second == null -> 0
+                first == null -> -1
+                second == null -> 1
+                else -> (compare.invoke(collator, first, second) as Number).toInt()
+            }
+        }
+    }.getOrNull()
 
     @Readonly
     fun getCurrentNumberFormat(): NumberFormat {
@@ -225,8 +261,6 @@ class GameSettings {
      *  retrieving a valid position from our upstream libraries while the window is maximized or iconified has proven tricky so far.
      */
     data class WindowState(val width: Int = 900, val height: Int = 600) {
-        constructor(bounds: Rectangle) : this(bounds.width, bounds.height)
-
         companion object {
             /** Our choice of minimum window width */
             const val minimumWidth = 120
@@ -251,14 +285,6 @@ class GameSettings {
             )
         }
 
-        /**
-         *  Constrains the dimensions of `this` [WindowState] to be within [minimumWidth] x [minimumHeight] to `maximumWidth` x `maximumHeight`.
-         *  @param maximumWindowBounds provides maximum sizes
-         *  @return `this` unchanged if it is within valid limits, otherwise a new WindowState that is.
-         *  @see coerceIn
-         */
-        fun coerceIn(maximumWindowBounds: Rectangle) =
-            coerceIn(maximumWindowBounds.width, maximumWindowBounds.height)
     }
 
     enum class ScreenSize(

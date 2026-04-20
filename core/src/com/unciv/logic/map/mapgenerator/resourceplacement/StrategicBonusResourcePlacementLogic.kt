@@ -262,13 +262,16 @@ object StrategicBonusResourcePlacementLogic {
     ) {
         val lastEra = ruleset.eras.values.maxOf { it.eraNumber }
         val modernOptions = strategicResources.filter {
-            it.revealedBy != null &&
-                    ruleset.eras[ruleset.technologies[it.revealedBy]!!.era()]!!.eraNumber >= lastEra / 2
+            val revealedBy = it.revealedBy ?: return@filter false
+            val revealedEra = ruleset.technologies[revealedBy]?.era() ?: return@filter false
+            (ruleset.eras[revealedEra]?.eraNumber ?: 0) >= lastEra / 2
         }
 
         if (modernOptions.any())
             for (cityStateLocation in tileMap.startingLocationsByNation
-                .filterKeys { ruleset.nations[it]!!.isCityState }.values.map { it.first() }) {
+                .filterKeys { nationName -> ruleset.nations[nationName]?.isCityState == true }
+                .values
+                .mapNotNull { locations -> locations.firstOrNull() }) {
                 val resourceToPlace = modernOptions.random()
                 totalPlaced[resourceToPlace] =
                     totalPlaced[resourceToPlace]!! + MapRegionResources.tryAddingResourceToTiles(

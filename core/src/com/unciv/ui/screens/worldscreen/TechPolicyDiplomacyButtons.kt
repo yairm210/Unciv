@@ -68,6 +68,7 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
         }
 
         pickTechButton.background = BaseScreen.skinStrings.getUiBackground("WorldScreen/PickTechButton", BaseScreen.skinStrings.roundedEdgeRectangleShape, colorFromRGB(7, 46, 43))
+        techButtonHolder.name = "world.tech_open"
         pickTechButton.defaults().pad(20f)
         pickTechButton.add(pickTechLabel)
         techButtonHolder.onActivation(UncivSound.Paper, KeyboardBinding.TechnologyTree) {

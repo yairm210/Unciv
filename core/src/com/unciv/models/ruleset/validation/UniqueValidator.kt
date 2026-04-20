@@ -342,9 +342,9 @@ class UniqueValidator(val ruleset: Ruleset) {
             .map { unique.params[it.index] }
             .mapNotNull { Countables.getMatching(it, ruleset) }
         for (countable in countables) {
-            val deprecation = countable.getDeprecationAnnotation() ?: continue
+            val deprecation = countable.getDeprecationInfo() ?: continue
             // This is less flexible than unique.getReplacementText(ruleset)
-            val replaceExpression = deprecation.replaceWith.expression
+            val replaceExpression = deprecation.replaceWith
             val text = "Countable `${countable.name}` is deprecated ${deprecation.message}" +
                 if (replaceExpression.isEmpty()) "" else ", replace with \"$replaceExpression\""
             val severity = if (deprecation.level == DeprecationLevel.WARNING)

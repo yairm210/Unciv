@@ -13,9 +13,9 @@ import java.util.*
 /** Files that are stored locally */
 class MultiplayerFiles {
     internal val files = UncivGame.Current.files
-    internal val savedGames: MutableMap<FileHandle, MultiplayerGamePreview> = Collections.synchronizedMap(mutableMapOf())
+    val savedGames: MutableMap<FileHandle, MultiplayerGamePreview> = Collections.synchronizedMap(mutableMapOf())
 
-    internal fun updateSavesFromFiles() {
+    fun updateSavesFromFiles() {
         val saves = files.getMultiplayerSaves()
 
         val removedSaves = savedGames.keys - saves.toSet()
@@ -45,12 +45,12 @@ class MultiplayerFiles {
         savedGames.remove(game.fileHandle)
     }
 
-    internal fun addGame(newGame: GameInfo) {
+    fun addGame(newGame: GameInfo) {
         val newGamePreview = newGame.asPreview()
         addGame(newGamePreview, newGamePreview.gameId)
     }
 
-    internal fun addGame(preview: GameInfoPreview, saveFileName: String) {
+    fun addGame(preview: GameInfoPreview, saveFileName: String) {
         val fileHandle = files.saveMultiplayerGamePreview(preview, saveFileName)
         return addGame(fileHandle, preview)
     }

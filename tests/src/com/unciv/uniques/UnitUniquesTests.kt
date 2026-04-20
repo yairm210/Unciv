@@ -1,6 +1,5 @@
 package com.unciv.uniques
 
-import com.unciv.json.json
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.UnitTurnManager
 import com.unciv.models.UnitActionType
@@ -57,7 +56,24 @@ class UnitUniquesTests {
         val requireUnique = UniqueType.ConsumesResources.text.fillPlaceholders("3", "Iron")
         // Get a clone with lazies un-tripped
         val oldImprovement = game.ruleset.tileImprovements["Manufactory"]!!
-        val improvement = json().run { fromJson(TileImprovement::class.java, toJson(oldImprovement)) }
+        val improvement = TileImprovement().apply {
+            name = oldImprovement.name
+            originRuleset = oldImprovement.originRuleset
+            uniques = ArrayList(oldImprovement.uniques)
+            production = oldImprovement.production
+            food = oldImprovement.food
+            gold = oldImprovement.gold
+            science = oldImprovement.science
+            culture = oldImprovement.culture
+            happiness = oldImprovement.happiness
+            faith = oldImprovement.faith
+            civilopediaText = oldImprovement.civilopediaText
+            replaces = oldImprovement.replaces
+            terrainsCanBeBuiltOn = ArrayList(oldImprovement.terrainsCanBeBuiltOn)
+            techRequired = oldImprovement.techRequired
+            uniqueTo = oldImprovement.uniqueTo
+            turnsToBuild = oldImprovement.turnsToBuild
+        }
         improvement.uniques.add(requireUnique)
         Assert.assertFalse("Test preparation failed to add ConsumesResources to Manufactory",
             improvement.uniqueObjects.none { it.type == UniqueType.ConsumesResources })

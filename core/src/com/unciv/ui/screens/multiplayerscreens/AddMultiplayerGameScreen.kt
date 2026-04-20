@@ -1,6 +1,5 @@
 package com.unciv.ui.screens.multiplayerscreens
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.logic.IdChecker
@@ -18,6 +17,8 @@ import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.screens.savescreens.LoadGameScreen
 import com.unciv.utils.Concurrency
+import com.unciv.utils.Log
+import com.unciv.utils.AppClipboard
 import com.unciv.utils.isUUID
 import com.unciv.utils.launchOnGLThread
 
@@ -25,9 +26,10 @@ class AddMultiplayerGameScreen(multiplayerScreen: MultiplayerScreen) : PickerScr
     init {
         val gameNameTextField = UncivTextField("Game name")
         val gameIDTextField = UncivTextField("GameID")
+        gameIDTextField.name = "mp.game_id_input"
         val pasteGameIDButton = "Paste gameID from clipboard".toTextButton()
         pasteGameIDButton.onClick {
-            gameIDTextField.text = Gdx.app.clipboard.contents
+            AppClipboard.readTextPreferCached(onText = { gameIDTextField.text = it.trim() })
         }
 
         topTable.add("GameID".toLabel()).row()
@@ -45,6 +47,7 @@ class AddMultiplayerGameScreen(multiplayerScreen: MultiplayerScreen) : PickerScr
 
         //RightSideButton Setup
         rightSideButton.setText("Save game".tr())
+        rightSideButton.name = "mp.save_game"
         rightSideButton.enable()
         rightSideButton.keyShortcuts.add(KeyCharAndCode.RETURN)
         rightSideButton.onActivation {
@@ -66,6 +69,9 @@ class AddMultiplayerGameScreen(multiplayerScreen: MultiplayerScreen) : PickerScr
                         multiplayerScreen.gameList.update()
                     }
                 } catch (ex: Exception) {
+                    Log.error("Failed to add multiplayer game ${gameIDTextField.text.trim()}", ex)
+                    Log.error(ex.stackTraceToString())
+                    ex.printStackTrace()
                     val (message) = LoadGameScreen.getLoadExceptionMessage(ex)
                     launchOnGLThread {
                         popup.reuseWith(message, true)

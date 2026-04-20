@@ -1,6 +1,5 @@
 package com.unciv.ui.screens.newgamescreen
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -38,6 +37,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.multiplayerscreens.FriendPickerList
 import com.unciv.ui.screens.pickerscreens.PickerPane
 import com.unciv.ui.screens.pickerscreens.PickerScreen
+import com.unciv.utils.AppClipboard
 import com.unciv.utils.isUUID
 import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
 
@@ -95,8 +95,8 @@ class PlayerPickerTable(
             gameParameters.players = ArrayList(gameParameters.players.subList(0, newRulesetPlayableCivs))
         if (desiredCiv.isNotEmpty()) assignDesiredCiv(desiredCiv)
 
-        for (player in gameParameters.players) {
-            playerListTable.add(getPlayerTable(player)).width(civBlocksWidth).padBottom(20f).row()
+        for ((index, player) in gameParameters.players.withIndex()) {
+            playerListTable.add(getPlayerTable(player, index)).width(civBlocksWidth).padBottom(20f).row()
         }
 
         val isRandomNumberOfPlayers = gameParameters.randomNumberOfPlayers
@@ -182,8 +182,9 @@ class PlayerPickerTable(
      * @param player for which [Table] is generated
      * @return [Table] containing the all the elements
      */
-    private fun getPlayerTable(player: Player): Table {
+    private fun getPlayerTable(player: Player, slotIndex: Int): Table {
         val playerTable = Table()
+        playerTable.name = "newgame.player_row.$slotIndex"
         playerTable.pad(5f)
         playerTable.background = BaseScreen.skinStrings.getUiBackground(
             "NewGameScreen/PlayerPickerTable/PlayerTable",
@@ -194,6 +195,7 @@ class PlayerPickerTable(
         playerTable.add(nationTable).left()
 
         val playerTypeTextButton = player.playerType.name.toTextButton()
+        playerTypeTextButton.name = "newgame.player_type.$slotIndex"
         playerTable.add(playerTypeTextButton).width(100f).pad(5f).right()
         fun updatePlayerTypeButtonEnabled() {
             // This could be written much shorter with logical operators - I think this is readable
@@ -232,15 +234,16 @@ class PlayerPickerTable(
         }
 
         if (gameParameters.isOnlineMultiplayer && player.playerType == PlayerType.Human)
-            playerTable.addPlayerTableMultiplayerControls(player)
+            playerTable.addPlayerTableMultiplayerControls(player, slotIndex)
 
         return playerTable
     }
 
-    private fun Table.addPlayerTableMultiplayerControls(player: Player) {
+    private fun Table.addPlayerTableMultiplayerControls(player: Player, slotIndex: Int) {
         row()
 
         val playerIdTextField = UncivTextField("Please input Player ID!", player.playerId)
+        playerIdTextField.name = if (slotIndex == 0) "newgame.player_id_input" else "newgame.player_id_input.$slotIndex"
         add(playerIdTextField).colspan(2).fillX().pad(5f)
         val errorLabel = "✘".toLabel(Color.RED)
         add(errorLabel).pad(5f).row()
@@ -264,6 +267,7 @@ class PlayerPickerTable(
 
         val currentUserId = UncivGame.Current.settings.multiplayer.getUserId()
         val setCurrentUserButton = "Set current user".toTextButton()
+        setCurrentUserButton.name = if (slotIndex == 0) "newgame.set_current_user" else "newgame.set_current_user.$slotIndex"
         setCurrentUserButton.onClick {
             playerIdTextField.text = currentUserId
             onPlayerIdTextUpdated()
@@ -271,9 +275,12 @@ class PlayerPickerTable(
         add(setCurrentUserButton).colspan(3).fillX().pad(5f).row()
 
         val copyFromClipboardButton = "Player ID from clipboard".toTextButton()
+        copyFromClipboardButton.name = if (slotIndex == 0) "newgame.player_id_from_clipboard" else "newgame.player_id_from_clipboard.$slotIndex"
         copyFromClipboardButton.onClick {
-            playerIdTextField.text = Gdx.app.clipboard.contents
-            onPlayerIdTextUpdated()
+            AppClipboard.readTextPreferCached(onText = {
+                playerIdTextField.text = it.trim()
+                onPlayerIdTextUpdated()
+            })
         }
         add(copyFromClipboardButton).right().colspan(3).fillX().pad(5f).row()
 

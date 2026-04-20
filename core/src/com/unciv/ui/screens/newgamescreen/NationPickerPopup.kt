@@ -19,7 +19,6 @@ import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.getCloseButton
-import com.unciv.ui.components.extensions.isNarrowerThan4to3
 import com.unciv.ui.components.extensions.toImageButton
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.keyShortcuts
@@ -57,12 +56,13 @@ internal class NationPickerPopup(
     }
 
     private val previousScreen = playerPicker.previousScreen
+    private val previousBaseScreen = playerPicker.previousScreen as BaseScreen
     private val ruleset = previousScreen.ruleset
     private val settings = GUI.getSettings()
 
     // This Popup's body has two halves of same size, either side by side or arranged vertically
     // depending on screen proportions - determine height for one of those
-    private val partHeight = stageToShowOn.height * (if (stageToShowOn.isNarrowerThan4to3()) 0.45f else 0.8f)
+    private val partHeight = stageToShowOn.height * (if (previousBaseScreen.useResponsiveNarrowLayout()) 0.45f else 0.8f)
     private val civBlocksWidth = playerPicker.civBlocksWidth
 
     private val nationListTable = Table()
@@ -85,7 +85,7 @@ internal class NationPickerPopup(
         nationListScroll.setOverscroll(false, false)
         add(nationListScroll).size( civBlocksWidth + 10f, partHeight )
         // +10, because the nation table has a 5f pad, for a total of +10f
-        if (stageToShowOn.isNarrowerThan4to3()) row()
+        if (previousBaseScreen.useResponsiveNarrowLayout()) row()
         nationDetailsScroll.setOverscroll(false, false)
         add(nationDetailsScroll).size(civBlocksWidth + 10f, partHeight) // Same here, see above
 

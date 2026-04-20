@@ -1,0 +1,681 @@
+name: Web Build + Pages (TeaVM)
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - main
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  web-build:
+    name: Build Web JS Artifact
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Restore Gradle build cache
+        uses: actions/cache@v4
+        with:
+          path: .gradle-gh
+          key: ${{ runner.os }}-web-build-gradle-${{ hashFiles('**/*.gradle*', 'gradle.properties', 'settings.gradle.kts', 'gradle/libs.versions.toml', 'buildSrc/**/*.kt', 'buildSrc/**/*.kts') }}
+          restore-keys: |
+            ${{ runner.os }}-web-build-gradle-
+
+      - name: Build web toolchain container
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: .devcontainer/Dockerfile
+          load: true
+          tags: unciv-web-builder:ci
+          cache-from: type=gha,scope=unciv-web-builder
+          cache-to: type=gha,mode=max,scope=unciv-web-builder
+
+      - name: Build JS bundle
+        run: |
+          mkdir -p "${{ github.workspace }}/.gradle-gh"
+          docker run --rm \
+            --user "$(id -u):$(id -g)" \
+            -v "${{ github.workspace }}:/workspace" \
+            -v "${{ github.workspace }}/.gradle-gh:/gradle-home" \
+            -e GRADLE_USER_HOME=/gradle-home \
+            -w /workspace \
+            unciv-web-builder:ci \
+            bash -lc "./gradlew --configuration-cache :web:webBuildJs"
+
+      - name: Verify SLF4J web provider wiring
+        run: |
+          bash scripts/web/check-slf4j-provider.sh .
+
+      - name: Upload web dist artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: unciv-web-dist
+          path: web/build/dist
+          if-no-files-found: error
+
+  web-e2e:
+    name: Web E2E (Playwright)
+    runs-on: ubuntu-latest
+    needs: web-build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Prepare web test environment
+        uses: ./.github/actions/web-test-env
+        with:
+          browsers: chromium firefox
+          install-ws: "true"
+          start-mp-server: "true"
+
+      - name: Run web validation (phase1 baseline desktop)
+        run: |
+          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase1 WEB_BASE_URL=http://127.0.0.1:18080 WEB_UI_DEVICE_MODE=desktop WEB_VALIDATION_STARTUP_TIMEOUT_MS=45000 WEB_VALIDATION_STARTUP_ATTEMPTS=2 \
+          node scripts/web/run-web-validation.js
+
+      - name: Run web validation (phase4-full desktop)
+        run: |
+          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase4-full WEB_BASE_URL=http://127.0.0.1:18080 WEB_UI_DEVICE_MODE=desktop WEB_VALIDATION_STARTUP_TIMEOUT_MS=45000 WEB_VALIDATION_STARTUP_ATTEMPTS=2 \
+          WEB_MP_SERVER=http://127.0.0.1:19090 \
+          WEB_MOD_ZIP_URL=http://127.0.0.1:18080/webtest/mods/test-mod.zip \
+          node scripts/web/run-web-validation.js
+
+      - name: Run web validation (phase4-full mobile)
+        run: |
+          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase4-full WEB_BASE_URL=http://127.0.0.1:18080 WEB_UI_DEVICE_MODE=mobile WEB_VALIDATION_STARTUP_TIMEOUT_MS=45000 WEB_VALIDATION_STARTUP_ATTEMPTS=2 \
+          WEB_MP_SERVER=http://127.0.0.1:19090 \
+          WEB_MOD_ZIP_URL=http://127.0.0.1:18080/webtest/mods/test-mod.zip \
+          node scripts/web/run-web-validation.js
+
+      - name: Run browser JS test suite (headless)
+        timeout-minutes: 40
+        run: |
+          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase4-full WEB_URL=http://127.0.0.1:18080/index.html?jstests=1 TIMEOUT_MS=2100000 WEB_JS_TESTS_STARTUP_TIMEOUT_MS=300000 \
+          node scripts/web/run-js-browser-tests.js
+
+      - name: Run performance budget gate
+        run: |
+          node scripts/web/check-performance-budget.js
+
+      - name: Run regression diff gate
+        run: |
+          node scripts/web/check-regression.js
+
+      - name: Publish web summary
+        if: always()
+        run: |
+          node scripts/web/write-web-summary.js >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload web test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-e2e-artifacts
+          path: |
+            /tmp/web-server.log
+            /tmp/mp-server.log
+            tmp/js-browser-tests-result.json
+            tmp/performance-budget-summary.json
+            tmp/regression-diff-summary.json
+            tmp/web-validation-result.json
+            tmp/web-validation-summary.json
+            tmp/web-validation-latest.png
+
+  web-browser-compat:
+    name: Browser Matrix (${{ matrix.browser }}-${{ matrix.mode }})
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    needs: web-build
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - browser: firefox
+            mode: smoke
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Prepare web test environment
+        uses: ./.github/actions/web-test-env
+        with:
+          browsers: ${{ matrix.browser }}
+
+      - name: Run browser JS test suite (${{ matrix.browser }})
+        if: matrix.mode == 'js-suite'
+        timeout-minutes: 40
+        run: |
+          env HEADLESS=true WEB_BROWSER=${{ matrix.browser }} WEB_URL=http://127.0.0.1:18080/index.html?jstests=1 TIMEOUT_MS=2100000 \
+          node scripts/web/run-js-browser-tests.js
+
+      - name: Run gameplay smoke validation (${{ matrix.browser }})
+        if: matrix.mode == 'smoke'
+        run: |
+          env HEADLESS=true WEB_BROWSER=${{ matrix.browser }} WEB_BASE_URL=http://127.0.0.1:18080 WEB_VALIDATION_STARTUP_TIMEOUT_MS=45000 WEB_VALIDATION_STARTUP_ATTEMPTS=2 \
+          node scripts/web/run-web-validation.js || true
+
+      - name: Publish browser suite summary
+        if: always()
+        run: |
+          node scripts/web/write-web-summary.js >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload browser suite artifacts (${{ matrix.browser }})
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-browser-${{ matrix.browser }}-${{ matrix.mode }}
+          path: |
+            /tmp/web-server.log
+            tmp/js-browser-tests-result.json
+            tmp/js-browser-tests-last.png
+            tmp/web-validation-result.json
+            tmp/web-validation-summary.json
+            tmp/web-validation-latest.png
+
+  web-phase4-alpha:
+    name: Web Phase4 Alpha (informational)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    continue-on-error: true
+    needs: web-build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Prepare web test environment
+        uses: ./.github/actions/web-test-env
+        with:
+          install-ws: "true"
+
+      - name: Run phase4-alpha gameplay validation
+        run: |
+          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase4-alpha WEB_BASE_URL=http://127.0.0.1:18080 WEB_VALIDATION_STARTUP_TIMEOUT_MS=45000 WEB_VALIDATION_STARTUP_ATTEMPTS=2 \
+          node scripts/web/run-web-validation.js
+
+      - name: Publish phase4-alpha summary
+        if: always()
+        run: |
+          node scripts/web/write-web-summary.js >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload phase4-alpha artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-phase4-alpha
+          path: |
+            /tmp/web-server.log
+            tmp/web-validation-result.json
+            tmp/web-validation-summary.json
+            tmp/web-validation-latest.png
+
+  web-phase4-beta:
+    name: Web Phase4 Beta (mods + file I/O)
+    runs-on: ubuntu-latest
+    needs: web-build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Prepare web test environment
+        uses: ./.github/actions/web-test-env
+        with:
+          install-ws: "true"
+
+      - name: Run phase4-beta validation
+        run: |
+          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase4-beta WEB_BASE_URL=http://127.0.0.1:18080 WEB_VALIDATION_TIMEOUT_MS=600000 WEB_VALIDATION_STARTUP_TIMEOUT_MS=45000 WEB_VALIDATION_STARTUP_ATTEMPTS=2 \
+          WEB_MOD_ZIP_URL=http://127.0.0.1:18080/webtest/mods/test-mod.zip \
+          node scripts/web/run-web-validation.js
+
+      - name: Publish phase4-beta summary
+        if: always()
+        run: |
+          node scripts/web/write-web-summary.js >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload phase4-beta artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-phase4-beta
+          path: |
+            /tmp/web-server.log
+            tmp/web-validation-result.json
+            tmp/web-validation-summary.json
+            tmp/web-validation-latest.png
+
+  web-phase4-full:
+    name: Web Phase4 Full (multiplayer + mods + file I/O)
+    runs-on: ubuntu-latest
+    needs: web-build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Prepare web test environment
+        uses: ./.github/actions/web-test-env
+        with:
+          install-ws: "true"
+          start-mp-server: "true"
+
+      - name: Run phase4-full validation
+        run: |
+          xvfb-run -a env HEADLESS=false WEB_BROWSER=chromium WEB_PROFILE=phase4-full WEB_BASE_URL=http://127.0.0.1:18080 WEB_VALIDATION_TIMEOUT_MS=600000 WEB_VALIDATION_STARTUP_TIMEOUT_MS=45000 WEB_VALIDATION_STARTUP_ATTEMPTS=2 \
+          WEB_MP_SERVER=http://127.0.0.1:19090 \
+          WEB_MOD_ZIP_URL=http://127.0.0.1:18080/webtest/mods/test-mod.zip \
+          node scripts/web/run-web-validation.js
+
+      - name: Publish phase4-full summary
+        if: always()
+        run: |
+          node scripts/web/write-web-summary.js >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload phase4-full artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-phase4-full
+          path: |
+            /tmp/web-server.log
+            /tmp/mp-server.log
+            tmp/web-validation-result.json
+            tmp/web-validation-summary.json
+            tmp/web-validation-latest.png
+
+  web-multiplayer-multi-instance:
+    name: Web Multiplayer Multi-Instance (informational probe)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    needs: web-build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Prepare web test environment
+        uses: ./.github/actions/web-test-env
+        with:
+          install-ws: "true"
+          start-mp-server: "true"
+
+      - name: Run multi-instance multiplayer gate
+        run: |
+          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_MP_SERVER=http://127.0.0.1:19090 WEB_PROFILE=phase4-full WEB_MP_PROBE_TIMEOUT_MS=180000 WEB_MP_PROBE_STARTUP_TIMEOUT_MS=75000 WEB_MP_PROBE_STARTUP_ATTEMPTS=3 \
+          node scripts/web/run-web-multiplayer-multi-instance.js
+
+      - name: Publish multiplayer summary
+        if: always()
+        run: |
+          node scripts/web/write-web-summary.js >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload multiplayer gate artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-multiplayer-multi-instance
+          path: |
+            /tmp/web-server.log
+            /tmp/mp-server.log
+            tmp/web-multiplayer-multi-instance-result.json
+            tmp/web-mp-host-latest.png
+            tmp/web-mp-guest-latest.png
+
+  web-ui-core-loop:
+    name: Web UI Core Loop (required, 30s)
+    runs-on: ubuntu-latest
+    needs: web-build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Prepare web test environment
+        uses: ./.github/actions/web-test-env
+        with:
+          install-ws: "true"
+
+      - name: Run UI core loop gate
+        run: |
+          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_PROFILE=phase1 WEB_UI_DEVICE_MODE=desktop WEB_UI_CORE_LOOP_TIMEOUT_MS=150000 WEB_UI_STARTUP_TIMEOUT_MS=30000 WEB_UI_STARTUP_ATTEMPTS=3 \
+          node scripts/web/run-web-ui-core-loop.js
+
+      - name: Run UI core loop gate (mobile)
+        run: |
+          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_PROFILE=phase1 WEB_UI_DEVICE_MODE=mobile WEB_UI_CORE_LOOP_TIMEOUT_MS=180000 WEB_UI_STARTUP_TIMEOUT_MS=30000 WEB_UI_STARTUP_ATTEMPTS=3 \
+          node scripts/web/run-web-ui-core-loop.js
+
+      - name: Publish UI core loop summary
+        if: always()
+        run: |
+          node scripts/web/write-web-summary.js >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload UI core loop artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-ui-core-loop
+          path: |
+            /tmp/web-server.log
+            tmp/web-ui-core-loop-result.json
+            tmp/web-ui-core-loop-latest.png
+
+  web-ui-multiplayer:
+    name: Web UI Multiplayer (informational probe, 30s)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    needs: web-build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Prepare web test environment
+        uses: ./.github/actions/web-test-env
+        with:
+          install-ws: "true"
+          start-mp-server: "true"
+
+      - name: Run UI multiplayer gate
+        run: |
+          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_MP_SERVER=http://127.0.0.1:19090 WEB_PROFILE=phase4-full WEB_UI_MULTIPLAYER_TIMEOUT_MS=60000 WEB_UI_STARTUP_TIMEOUT_MS=30000 WEB_UI_STARTUP_ATTEMPTS=3 \
+          node scripts/web/run-web-ui-multiplayer.js
+
+      - name: Publish UI multiplayer summary
+        if: always()
+        run: |
+          node scripts/web/write-web-summary.js >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload UI multiplayer artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-ui-multiplayer
+          path: |
+            /tmp/web-server.log
+            /tmp/mp-server.log
+            tmp/web-ui-multiplayer-result.json
+            tmp/web-ui-multiplayer-host-latest.png
+            tmp/web-ui-multiplayer-guest-latest.png
+
+  web-clickops-multiplayer:
+    name: Web Multiplayer ClickOps (required)
+    runs-on: ubuntu-latest
+    needs: web-build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Prepare web test environment
+        uses: ./.github/actions/web-test-env
+        with:
+          install-ws: "true"
+          start-mp-server: "true"
+
+      - name: Run strict clickops multiplayer gate
+        run: |
+          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_MP_SERVER=http://127.0.0.1:19090 WEB_PROFILE=phase4-full WEB_CLICKS_MULTIPLAYER_TIMEOUT_MS=360000 \
+          node scripts/web/run-web-clickops-multiplayer.js
+
+      - name: Publish clickops multiplayer summary
+        if: always()
+        run: |
+          node scripts/web/write-web-summary.js >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload clickops multiplayer artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-clickops-multiplayer
+          path: |
+            /tmp/web-server.log
+            /tmp/mp-server.log
+            tmp/web-clickops-multiplayer-result.json
+            tmp/web-clickops-multiplayer-host-blob-diagnostics.json
+            tmp/web-clickops-multiplayer-guest-blob-diagnostics.json
+            tmp/web-clickops-multiplayer-host-latest.png
+            tmp/web-clickops-multiplayer-guest-latest.png
+
+  web-browser-file-io:
+    name: Browser File I/O Smoke (informational)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    needs: web-build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Prepare web test environment
+        uses: ./.github/actions/web-test-env
+        with:
+          browsers: chromium
+
+      - name: Run browser file I/O smoke gate
+        run: |
+          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_PROFILE=phase4-beta WEB_FILE_IO_TIMEOUT_MS=180000 WEB_FILE_IO_FORCE_BROWSER_FALLBACK=1 \
+          node scripts/web/run-web-file-io-smoke.js
+
+      - name: Publish file I/O summary
+        if: always()
+        run: |
+          node scripts/web/write-web-summary.js >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload file I/O artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-browser-file-io
+          path: |
+            /tmp/web-server.log
+            tmp/web-file-io-smoke-result.json
+            tmp/web-file-io-smoke-blob-diagnostics.json
+            tmp/web-file-io-smoke-download.unciv
+            tmp/web-file-io-smoke-latest.png
+
+  web-ui-map-editor:
+    name: Web UI Map Editor (required, 30s)
+    runs-on: ubuntu-latest
+    needs: web-build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Prepare web test environment
+        uses: ./.github/actions/web-test-env
+        with:
+          install-ws: "true"
+
+      - name: Run UI map editor gate
+        run: |
+          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_PROFILE=phase1 WEB_UI_DEVICE_MODE=desktop WEB_UI_MAP_EDITOR_TIMEOUT_MS=60000 WEB_UI_STARTUP_TIMEOUT_MS=30000 WEB_UI_STARTUP_ATTEMPTS=3 \
+          node scripts/web/run-web-ui-map-editor.js
+
+      - name: Run UI map editor gate (mobile)
+        run: |
+          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_PROFILE=phase1 WEB_UI_DEVICE_MODE=mobile WEB_UI_MAP_EDITOR_TIMEOUT_MS=90000 WEB_UI_STARTUP_TIMEOUT_MS=30000 WEB_UI_STARTUP_ATTEMPTS=3 \
+          node scripts/web/run-web-ui-map-editor.js
+
+      - name: Publish UI map editor summary
+        if: always()
+        run: |
+          node scripts/web/write-web-summary.js >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload UI map editor artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-ui-map-editor
+          path: |
+            /tmp/web-server.log
+            tmp/web-ui-map-editor-result.json
+            tmp/web-ui-map-editor-latest.png
+
+  web-ui-war-from-start:
+    name: Web UI War From Start (required, 30s)
+    runs-on: ubuntu-latest
+    needs: web-build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Prepare web test environment
+        uses: ./.github/actions/web-test-env
+        with:
+          install-ws: "true"
+
+      - name: Run UI war from-start gate
+        run: |
+          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_PROFILE=phase4-full WEB_UI_WAR_FROM_START_TIMEOUT_MS=240000 WEB_UI_STARTUP_TIMEOUT_MS=30000 WEB_UI_STARTUP_ATTEMPTS=3 \
+          node scripts/web/run-web-ui-war-from-start.js
+
+      - name: Publish UI war from-start summary
+        if: always()
+        run: |
+          node scripts/web/write-web-summary.js >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload UI war from-start artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-ui-war-from-start
+          path: |
+            /tmp/web-server.log
+            tmp/web-ui-war-from-start-result.json
+            tmp/web-ui-war-from-start-latest.png
+
+  web-ui-war-preworld:
+    name: Web UI War Preworld (required, 30s)
+    runs-on: ubuntu-latest
+    needs: web-build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Prepare web test environment
+        uses: ./.github/actions/web-test-env
+        with:
+          install-ws: "true"
+
+      - name: Run UI war preworld gate
+        run: |
+          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_PROFILE=phase4-full WEB_UI_STARTUP_TIMEOUT_MS=30000 WEB_UI_STARTUP_ATTEMPTS=3 \
+          node scripts/web/run-web-ui-war-preworld.js
+
+      - name: Publish UI war preworld summary
+        if: always()
+        run: |
+          node scripts/web/write-web-summary.js >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload UI war preworld artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-ui-war-preworld
+          path: |
+            /tmp/web-server.log
+            tmp/web-ui-war-preworld-result.json
+            tmp/web-ui-war-preworld-latest.png
+
+  web-ui-war-deep:
+    name: Web UI War Deep (main/dispatch)
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    needs: web-build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Prepare web test environment
+        uses: ./.github/actions/web-test-env
+        with:
+          install-ws: "true"
+
+      - name: Run UI war deep gate
+        run: |
+          xvfb-run -a env HEADLESS=false WEB_BASE_URL=http://127.0.0.1:18080 WEB_PROFILE=phase4-full WEB_UI_WAR_DEEP_TIMEOUT_MS=120000 WEB_UI_STARTUP_TIMEOUT_MS=30000 WEB_UI_STARTUP_ATTEMPTS=3 \
+          node scripts/web/run-web-ui-war-deep.js
+
+      - name: Publish UI war deep summary
+        if: always()
+        run: |
+          node scripts/web/write-web-summary.js >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload UI war deep artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-ui-war-deep
+          path: |
+            /tmp/web-server.log
+            tmp/web-ui-war-deep-result.json
+            tmp/web-ui-war-deep-latest.png
+
+  deploy-pages:
+    name: Deploy GitHub Pages
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    needs: [web-build, web-e2e, web-phase4-beta, web-phase4-full, web-clickops-multiplayer, web-ui-core-loop, web-ui-map-editor, web-ui-war-from-start, web-ui-war-preworld]
+    runs-on: ubuntu-latest
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Download web dist artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: unciv-web-dist
+          path: web-dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: web-dist
+          publish_branch: gh-pages
+          destination_dir: game
+          keep_files: true
+
+  pages-smoke:
+    name: GitHub Pages Smoke
+    runs-on: ubuntu-latest
+    needs: deploy-pages
+    if: needs.deploy-pages.result == 'success'
+    steps:
+      - name: Verify deployed Pages URL
+        run: |
+          page_url="${{ needs.deploy-pages.outputs.page_url }}"
+          if [ -z "$page_url" ]; then
+            owner="$(echo "${GITHUB_REPOSITORY}" | cut -d'/' -f1)"
+            repo="$(echo "${GITHUB_REPOSITORY}" | cut -d'/' -f2)"
+            page_url="https://${owner}.github.io/${repo}"
+          fi
+          echo "Using page URL: $page_url"
+          curl -fSL --retry 10 --retry-delay 5 --retry-all-errors "${page_url%/}/docs/index.html" -o /tmp/pages-docs-index.html
+          grep -Eiq "game/index\\.html|\\.\\./game/index\\.html" /tmp/pages-docs-index.html
+          curl -fSL --retry 10 --retry-delay 5 --retry-all-errors "${page_url%/}/game/index.html" -o /tmp/pages-game-index.html
+          grep -qi "unciv.js" /tmp/pages-game-index.html
+          curl -fSL --retry 10 --retry-delay 5 --retry-all-errors "${page_url%/}/game/unciv.js" -o /tmp/pages-unciv.js
+          test -s /tmp/pages-unciv.js
+
+      - name: Upload Pages smoke artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pages-smoke
+          path: |
+            /tmp/pages-docs-index.html
+            /tmp/pages-game-index.html
+            /tmp/pages-unciv.js

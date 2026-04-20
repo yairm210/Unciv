@@ -1,6 +1,5 @@
 package com.unciv.ui.screens
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
@@ -22,6 +21,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.options.OptionsPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.pickerscreens.PickerScreen
+import com.unciv.utils.AppClipboard
 
 /** A [PickerScreen] to select a language, used once on the initial run after a fresh install.
  *  After that, [OptionsPopup] provides the functionality.
@@ -37,7 +37,7 @@ class UniqueBuilderScreen(ruleset: Ruleset) : PickerScreen() {
         setDefaultCloseAction()
         rightSideButton.isVisible = false
         rightSideButton.setText("Copy to clipboard")
-        rightSideButton.onClick { Gdx.app.clipboard.contents = currentUniqueText }
+        rightSideButton.onClick { AppClipboard.writeText(currentUniqueText) }
         topTable.defaults().pad(5f)
 
         mainUniqueTable.initialize()

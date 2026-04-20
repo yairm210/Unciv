@@ -9,9 +9,9 @@ import com.unciv.ui.components.widgets.ColorMarkupLabel
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Concurrency
+import com.unciv.utils.delayMillis
 import com.unciv.utils.launchOnGLThread
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 
 /**
  * This is an unobtrusive popup which will close itself after a given amount of time.
@@ -46,7 +46,7 @@ class ToastPopup (message: String, stageToShowOn: Stage, val time: Long = 2000) 
 
     private fun startTimer() {
         timerJob = Concurrency.run("ResponsePopup") {
-            delay(time)
+            delayMillis(time)
             timerJob = null
             launchOnGLThread { this@ToastPopup.close() }
         }

@@ -1,6 +1,5 @@
 package com.unciv.ui.screens.mapeditorscreen.tabs
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup
@@ -28,6 +27,7 @@ import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.mapeditorscreen.MapEditorScreen
 import com.unciv.ui.screens.mapeditorscreen.MapEditorWesnothImporter
+import com.unciv.utils.AppClipboard
 import com.unciv.utils.Log
 
 class MapEditorOptionsTab(
@@ -69,7 +69,7 @@ class MapEditorOptionsTab(
         add(seedLabel).row()
         add(copySeedButton).row()
         copySeedButton.onClick {
-            Gdx.app.clipboard.contents = seedToCopy
+            AppClipboard.writeText(seedToCopy)
         }
         addSeparator(Color.GRAY)
 
@@ -124,18 +124,20 @@ class MapEditorOptionsTab(
     }
 
     private fun copyHandler() {
-        Gdx.app.clipboard.contents = MapSaver.mapToSavedString(editorScreen.getMapCloneForSave())
+        AppClipboard.writeText(MapSaver.mapToSavedString(editorScreen.getMapCloneForSave()))
     }
 
     private fun pasteHandler() {
-        try {
-            val clipboardContentsString = Gdx.app.clipboard.contents.trim()
-            val loadedMap = MapSaver.mapFromSavedString(clipboardContentsString)
-            editorScreen.loadMap(loadedMap)
-        } catch (ex: Exception) {
-            Log.error("Could not load map", ex)
-            ToastPopup("Could not load map!", editorScreen)
-        }
+        AppClipboard.readText(onText = { clipboardText ->
+            try {
+                val clipboardContentsString = clipboardText.trim()
+                val loadedMap = MapSaver.mapFromSavedString(clipboardContentsString)
+                editorScreen.loadMap(loadedMap)
+            } catch (ex: Exception) {
+                Log.error("Could not load map", ex)
+                ToastPopup("Could not load map!", editorScreen)
+            }
+        })
     }
 
     private fun showOverlayFileName() = overlayFileButton.run {
@@ -163,7 +165,7 @@ class MapEditorOptionsTab(
     }
 
     fun update() {
-        pasteMapButton.isEnabled = Gdx.app.clipboard.hasContents()
+        pasteMapButton.isEnabled = AppClipboard.hasText()
         worldWrapCheckBox.isChecked = editorScreen.tileMap.mapParameters.worldWrap
         worldWrapCheckBox.isDisabled = !canChangeWorldWrap()
         showOverlayFileName()

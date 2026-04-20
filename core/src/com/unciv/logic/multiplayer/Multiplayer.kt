@@ -16,6 +16,8 @@ import com.unciv.logic.multiplayer.storage.MultiplayerServer
 import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.components.extensions.isLargerThan
 import com.unciv.utils.Dispatcher
+import com.unciv.utils.Log
+import com.unciv.utils.delayMillis
 import com.unciv.utils.debug
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.flow
@@ -61,7 +63,7 @@ class Multiplayer {
          */
         multiplayerGameUpdater = flow<Unit> {
             while (true) {
-                delay(500)
+                delayMillis(500)
                 if (!currentCoroutineContext().isActive) return@flow
                 val multiplayerSettings: GameSettings.GameSettingsMultiplayer
                 try { // Fails in unknown cases - cannot debug :/ This is just so it doesn't appear in GP analytics
@@ -126,11 +128,21 @@ class Multiplayer {
      */
     suspend fun addGame(gameId: String, gameName: String? = null) {
         val saveFileName = if (gameName.isNullOrBlank()) gameId else gameName
-        val gamePreview: GameInfoPreview = try {
+        var gamePreview: GameInfoPreview = try {
             multiplayerServer.tryDownloadGamePreview(gameId)
         } catch (_: MultiplayerFileNotFoundException) {
-            // Game is so old that a preview could not be found on dropbox lets try the real gameInfo instead
+            // Preview missing on server, try downloading the full game and derive the preview from it.
             multiplayerServer.tryDownloadGame(gameId).asPreview()
+        } catch (ex: Exception) {
+            // Corrupted preview payloads can happen in constrained runtimes; fallback to full game data.
+            Log.error("Failed downloading multiplayer preview for game $gameId, falling back to full game payload", ex)
+            Log.error(ex.stackTraceToString())
+            ex.printStackTrace()
+            multiplayerServer.tryDownloadGame(gameId).asPreview()
+        }
+        if (gamePreview.gameId.isBlank()) {
+            Log.debug("Multiplayer preview for game $gameId had blank gameId, falling back to full payload")
+            gamePreview = multiplayerServer.tryDownloadGame(gameId).asPreview()
         }
         multiplayerFiles.addGame(gamePreview, saveFileName)
     }
@@ -252,7 +264,7 @@ class Multiplayer {
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
      * @throws MultiplayerFileNotFoundException if the file can't be found
      */
-    suspend fun downloadGame(gameId: String) = coroutineScope {
+    suspend fun downloadGame(gameId: String) {
         val gameInfo = multiplayerServer.downloadGame(gameId)
         val preview = gameInfo.asPreview()
         val onlineGame = multiplayerFiles.getGameByGameId(gameId)
@@ -268,7 +280,7 @@ class Multiplayer {
     /**
      * Checks if the given game is current and loads it, otherwise loads the game from the server
      */
-    suspend fun downloadGame(gameInfo: GameInfo) = coroutineScope {
+    suspend fun downloadGame(gameInfo: GameInfo) {
         val gameId = gameInfo.gameId
         val preview = multiplayerServer.tryDownloadGamePreview(gameId)
         if (hasLatestGameState(gameInfo, preview)) {

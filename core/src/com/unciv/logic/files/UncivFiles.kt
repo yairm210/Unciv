@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.SerializationException
 import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
+import com.unciv.json.WebJsonFallback
 import com.unciv.logic.BackwardCompatibility.migrateCivID
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
@@ -24,16 +25,21 @@ import com.unciv.logic.CompatibilityVersion
 import com.unciv.utils.Concurrency
 import com.unciv.logic.GameInfoSerializationVersion
 import com.unciv.logic.HasGameInfoSerializationVersion
+import com.unciv.platform.PlatformCapabilities
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import kotlinx.coroutines.Job
 import java.io.Writer
+import java.util.LinkedHashMap
+import java.util.UUID
 
 private const val SAVE_FILES_FOLDER = "SaveFiles"
 private const val MULTIPLAYER_FILES_FOLDER = "MultiplayerGames"
 private const val AUTOSAVE_FILE_NAME = "Autosave"
 const val SETTINGS_FILE_NAME = "GameSettings.json"
 const val MOD_LIST_CACHE_FILE_NAME = "ModListCache.json"
+private const val WEB_SNAPSHOT_PREFIX = "WEBSNAP:"
+private const val WEB_SNAPSHOT_CACHE_MAX = 12
 
 class UncivFiles(
     /**
@@ -45,6 +51,16 @@ class UncivFiles(
     /** If not null, this is the path to the directory in which to store the local files - mods, saves, maps, etc */
     val customDataDirectory: String? = null
 ) {
+    private val supportsExternalStorage: Boolean by lazy {
+        if (!files.isExternalStorageAvailable) return@lazy false
+        runCatching {
+            val probe = files.external("")
+            probe.path()
+            probe.exists()
+            true
+        }.getOrElse { false }
+    }
+
     init {
         debug("Creating UncivFiles, localStoragePath: %s, externalStoragePath: %s",
             files.localStoragePath, files.externalStoragePath)
@@ -77,9 +93,9 @@ class UncivFiles(
             gameName, saveFolder, preferExternalStorage, files.externalStoragePath)
         val location = "${saveFolder}/$gameName"
         val localFile = getLocalFile(location)
-        val externalFile = files.external(location)
+        val externalFile = if (supportsExternalStorage) files.external(location) else null
 
-        val toReturn = if (files.isExternalStorageAvailable && (
+        val toReturn = if (externalFile != null && (
                 externalFile.exists() && !localFile.exists() || // external file is only valid choice
                 preferExternalStorage && (externalFile.exists() || !localFile.exists()) // unless local file is only valid choice, choose external
                 ) ) {
@@ -90,7 +106,7 @@ class UncivFiles(
             localFile
         }
 
-        debug("Save found: %s", toReturn.file().absolutePath)
+        debug("Save found: %s", toReturn.path())
         return toReturn
     }
 
@@ -103,7 +119,7 @@ class UncivFiles(
     }
 
     fun pathToFileHandle(path: String): FileHandle {
-        return if (preferExternalStorage && files.isExternalStorageAvailable) files.external(path)
+        return if (preferExternalStorage && supportsExternalStorage) files.external(path)
         else getLocalFile(path)
     }
 
@@ -126,14 +142,14 @@ class UncivFiles(
         val localFiles = Sequence { getLocalFile(saveFolder).list().iterator() }
 
         val externalFiles = when {
-            !files.isExternalStorageAvailable -> emptySequence()
-            getDataFolder().file().absolutePath == files.external("").file().absolutePath -> emptySequence()
+            !supportsExternalStorage -> emptySequence()
+            getDataFolder().path() == files.external("").path() -> emptySequence()
             else -> Sequence { files.external(saveFolder).list().iterator() }
         }
 
         debug("Local files: %s, external files: %s",
-            { localFiles.joinToString(prefix = "[", postfix = "]", transform = { it.file().absolutePath }) },
-            { externalFiles.joinToString(prefix = "[", postfix = "]", transform = { it.file().absolutePath }) })
+            { localFiles.joinToString(prefix = "[", postfix = "]", transform = { it.path() }) },
+            { externalFiles.joinToString(prefix = "[", postfix = "]", transform = { it.path() }) })
         return localFiles + externalFiles
     }
 
@@ -164,19 +180,29 @@ class UncivFiles(
         if (ex != null) throw ex
     }
 
-    fun saveGame(game: GameInfo, gameName: String, saveCompletionCallback: (Exception?) -> Unit = ::rethrowIfNotNull): FileHandle {
+    fun saveGame(
+        game: GameInfo,
+        gameName: String,
+        portable: Boolean = false,
+        saveCompletionCallback: (Exception?) -> Unit = ::rethrowIfNotNull
+    ): FileHandle {
         val file = getSave(gameName)
-        saveGame(game, file, saveCompletionCallback)
+        saveGame(game, file, portable, saveCompletionCallback)
         return file
     }
 
     /**
      * Only use this with a [FileHandle] obtained by one of the methods of this class!
      */
-    fun saveGame(game: GameInfo, file: FileHandle, saveCompletionCallback: (Exception?) -> Unit = ::rethrowIfNotNull) {
+    fun saveGame(
+        game: GameInfo,
+        file: FileHandle,
+        portable: Boolean = false,
+        saveCompletionCallback: (Exception?) -> Unit = ::rethrowIfNotNull
+    ) {
         try {
             debug("Saving GameInfo %s to %s", game.gameId, file.path())
-            val string = gameInfoToString(game)
+            val string = gameInfoToString(game, portable = portable)
             file.writeString(string, false, Charsets.UTF_8.name())
             saveCompletionCallback(null)
         } catch (ex: Exception) {
@@ -202,6 +228,7 @@ class UncivFiles(
             json().toJson(game, file)
             saveCompletionCallback(null)
         } catch (ex: Exception) {
+            Log.error("Failed to save GameInfoPreview ${game.gameId} to ${file.path()}", ex)
             saveCompletionCallback(ex)
         }
     }
@@ -222,7 +249,7 @@ class UncivFiles(
         val saveLocation = game.customSaveLocation ?: UncivGame.Current.files.getLocalFile(gameName).path()
 
         try {
-            val data = gameInfoToString(game)
+            val data = gameInfoToString(game, portable = true)
             debug("Initiating UI to save GameInfo %s to custom location %s", game.gameId, saveLocation)
             saverLoader.saveGame(data, saveLocation,
                 { location ->
@@ -372,6 +399,12 @@ class UncivFiles(
 
     companion object {
 
+        private val webSnapshotCache = object : LinkedHashMap<String, GameInfo>(WEB_SNAPSHOT_CACHE_MAX + 1, 0.75f, true) {
+            override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, GameInfo>?): Boolean {
+                return size > WEB_SNAPSHOT_CACHE_MAX
+            }
+        }
+
         var saveZipped = false
 
         /**
@@ -411,6 +444,12 @@ class UncivFiles(
             } catch (ex: Exception) {
                 fixedData
             }
+            if (!PlatformCapabilities.current.backgroundThreadPools && unzippedJson.startsWith(WEB_SNAPSHOT_PREFIX)) {
+                val snapshotId = unzippedJson.removePrefix(WEB_SNAPSHOT_PREFIX)
+                val snapshot = webSnapshotCache[snapshotId]
+                    ?: throw UncivShowableException("Saved web snapshot expired. Please save again.")
+                return snapshot.clone().apply { setTransients() }
+            }
             val gameInfo = try {
                 json().fromJson(GameInfo::class.java, unzippedJson)
             } catch (ex: Exception) {
@@ -419,10 +458,14 @@ class UncivFiles(
                 throw IncompatibleGameInfoVersionException(onlyVersion.version, ex)
             } ?: throw UncivShowableException("The file data seems to be corrupted.")
 
+            WebJsonFallback.hydrateGameParameters(gameInfo, unzippedJson)
+            WebJsonFallback.hydrateGameInfoIfMissingCivilizations(gameInfo, unzippedJson)
+
             if (gameInfo.version > CompatibilityVersion.CURRENT_COMPATIBILITY_VERSION) {
                 // this means there wasn't an immediate error while serializing, but this version will cause other errors later down the line
                 throw IncompatibleGameInfoVersionException(gameInfo.version)
             }
+            WebJsonFallback.hydrateTileMapIfMissingTiles(gameInfo.tileMap, unzippedJson)
             gameInfo.setTransients()
             return gameInfo
         }
@@ -438,18 +481,36 @@ class UncivFiles(
         }
 
         /** Returns gzipped serialization of [game], optionally gzipped ([forceZip] overrides [saveZipped]) */
-        fun gameInfoToString(game: GameInfo, forceZip: Boolean? = null, updateChecksum: Boolean = false): String {
-            game.version = CompatibilityVersion.CURRENT_COMPATIBILITY_VERSION
+        fun gameInfoToString(
+            game: GameInfo,
+            forceZip: Boolean? = null,
+            updateChecksum: Boolean = false,
+            portable: Boolean = false,
+        ): String {
+            val platformHasBackgroundPools = PlatformCapabilities.current.backgroundThreadPools
+            val gameToSerialize = if (portable && !platformHasBackgroundPools) game.clone() else game
+            gameToSerialize.version = CompatibilityVersion.CURRENT_COMPATIBILITY_VERSION
 
-            if (updateChecksum) game.checksum = game.calculateChecksum()
-            val plainJson = json().toJson(game)
+            if (!platformHasBackgroundPools && !portable) {
+                val snapshotId = UUID.randomUUID().toString()
+                webSnapshotCache[snapshotId] = game.clone()
+                val snapshotToken = "$WEB_SNAPSHOT_PREFIX$snapshotId"
+                return if (forceZip ?: saveZipped) Gzip.zip(snapshotToken) else snapshotToken
+            }
+
+            if (updateChecksum) {
+                val checksum = game.calculateChecksum()
+                game.checksum = checksum
+                gameToSerialize.checksum = checksum
+            }
+            val plainJson = json().toJson(gameToSerialize)
 
             return if (forceZip ?: saveZipped) Gzip.zip(plainJson) else plainJson
         }
 
         /** Returns gzipped serialization of preview [game] */
         fun gameInfoToString(game: GameInfoPreview): String {
-            return Gzip.zip(json().toJson(game))
+            return Gzip.zip(json().toJson(game, GameInfoPreview::class.java))
         }
 
         private val charsForbiddenInFileNames = setOf('\\', '/', ':')
@@ -502,9 +563,11 @@ class Autosaves(val files: UncivFiles) {
     fun autoSave(gameInfo: GameInfo, nextTurn: Boolean = false) {
         // get GameSettings to check the maxAutosavesStored in the autoSave function
         val settings = files.getGeneralSettings()
+        // Web turn autosaves can stay fast/ephemeral, but lifecycle/menu autosaves must survive reloads.
+        val usePortableAutosave = !nextTurn && !PlatformCapabilities.current.backgroundThreadPools
 
         try {
-            files.saveGame(gameInfo, AUTOSAVE_FILE_NAME)
+            files.saveGame(gameInfo, AUTOSAVE_FILE_NAME, portable = usePortableAutosave)
         } catch (oom: OutOfMemoryError) {
             Log.error("Ran out of memory during autosave", oom)
             return  // not much we can do here

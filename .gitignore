@@ -16,6 +16,9 @@ hs_err_pid*
 gwt-unitCache/
 www-test/
 .gwt-tmp/
+tmp/*
+!tmp/.gitkeep
+web/build/
 
 ## Android Studio and Intellij and Android in general
 /android/libs/armeabi/
@@ -111,6 +114,7 @@ nb-configuration.xml
 
 /local.properties
 .gradle/
+.gradle-gh/
 gradle-app.setting
 
 ## OS Specific
@@ -161,6 +165,8 @@ ModListCache.json
 fonts/
 maps/
 mods/
+!web/src/main/resources/webtest/mods/
+!web/src/main/resources/webtest/mods/**
 MultiplayerGames/
 music/
 SaveFiles/

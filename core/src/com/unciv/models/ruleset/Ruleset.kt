@@ -509,7 +509,7 @@ class Ruleset {
             if (globalTutorialsFile.exists())
                 tutorials += createHashmap(json().fromJsonFile(Array<Tutorial>::class.java, globalTutorialsFile))
         }
-        
+
         val tutorialsFile = RulesetFile.Tutorials.file()
         if (tutorialsFile.exists())
             tutorials += createHashmap(json().fromJsonFile(Array<Tutorial>::class.java, tutorialsFile))

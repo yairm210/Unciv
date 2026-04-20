@@ -1,6 +1,5 @@
 package com.unciv.ui.screens.multiplayerscreens
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
@@ -24,6 +23,7 @@ import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.screens.savescreens.LoadGameScreen
+import com.unciv.utils.AppClipboard
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import com.unciv.utils.launchOnGLThread
@@ -75,6 +75,7 @@ class MultiplayerScreen : PickerScreen() {
 
     private fun setupRightSideButton() {
         rightSideButton.setText("Join game".tr())
+        rightSideButton.name = "mp.join_game"
         rightSideButton.onClick {
             val missingMods = selectedGame!!.preview!!.gameParameters.getModsAndBaseRuleset()
                 .filter { !RulesetCache.containsKey(it) }
@@ -120,6 +121,7 @@ class MultiplayerScreen : PickerScreen() {
 
     private fun createRefreshButton(): TextButton {
         val btn = "Refresh list".toTextButton()
+        btn.name = "mp.refresh_list"
         btn.onClick {
             Concurrency.run("Update all multiplayer games") {
                 game.onlineMultiplayer.requestUpdate()
@@ -130,6 +132,7 @@ class MultiplayerScreen : PickerScreen() {
 
     private fun createAddGameButton(): TextButton {
         val btn = "Add multiplayer game".toTextButton()
+        btn.name = "mp.add_game"
         btn.onClick {
             game.pushScreen(AddMultiplayerGameScreen(this))
         }
@@ -343,7 +346,7 @@ class MultiplayerScreen : PickerScreen() {
         btn.onClick {
             val gameInfo = selectedGame?.preview
             if (gameInfo != null) {
-                Gdx.app.clipboard.contents = gameInfo.gameId
+                AppClipboard.writeText(gameInfo.gameId)
                 ToastPopup("Game ID copied to clipboard!", this)
             }
         }
@@ -361,7 +364,7 @@ class MultiplayerScreen : PickerScreen() {
     private fun createCopyUserIdButton(): TextButton {
         val btn = "Copy user ID".toTextButton()
         btn.onClick {
-            Gdx.app.clipboard.contents = game.settings.multiplayer.getUserId()
+            AppClipboard.writeText(game.settings.multiplayer.getUserId())
             ToastPopup("UserID copied to clipboard", this)
         }
         return btn

@@ -9,9 +9,10 @@ import com.unciv.logic.multiplayer.storage.DropBox
 import com.unciv.models.metadata.GameSettings
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
+import com.unciv.utils.delayMillis
+import com.unciv.utils.launchOnGLThread
 import java.util.EnumSet
 import java.util.Timer
-import kotlin.concurrent.thread
 import kotlin.concurrent.timer
 import kotlin.math.roundToInt
 
@@ -43,6 +44,8 @@ class MusicController {
         private const val ticksPerSecondOwn = 20f
         /** Default fade duration in seconds used to calculate the step per tick */
         private const val defaultFadeDuration = 0.9f
+        /** Allow delayed backend startup before considering a newly started track as failed */
+        private const val startupGraceSeconds = 2.5f
         private const val defaultFadingStepGdx = 1f / (defaultFadeDuration * ticksPerSecondGdx)
         private const val defaultFadingStepOwn = 1f / (defaultFadeDuration * ticksPerSecondOwn)
         /** Number of names to keep, to avoid playing the same in short succession */
@@ -142,6 +145,10 @@ class MusicController {
     /** Simple two-entry only queue, for smooth fade-overs from one track to another */
     private var current: MusicTrackController? = null
     private var next: MusicTrackController? = null
+    /** True while waiting for the current track to begin actual playback after [Music.play] */
+    private var currentAwaitingStartup = false
+    /** Tick counter for [currentAwaitingStartup] */
+    private var currentStartupTicks = 0
 
     /** One entry only for 'overlay' tracks in addition to and independent of normal music */
     private var overlay: MusicTrackController? = null
@@ -215,6 +222,8 @@ class MusicController {
     private fun clearCurrent() {
         current?.clear()
         current = null
+        currentAwaitingStartup = false
+        currentStartupTicks = 0
     }
     private fun clearNext() {
         next?.clear()
@@ -262,15 +271,26 @@ class MusicController {
                             // Retry another track if playback start fails, after an extended pause
                             ticksOfSilence = -silenceLengthInTicks - 1000
                             state = ControllerState.Silence
+                            currentAwaitingStartup = false
+                            currentStartupTicks = 0
                         } else {
+                            currentAwaitingStartup = true
+                            currentStartupTicks = 0
                             fireOnChange()
                         }
                     } // else wait for the thread of next.load() to finish
                 } else if (!current!!.isPlaying()) {
+                    if (currentAwaitingStartup) {
+                        val startupGraceTicks = (ticksPerSecond * startupGraceSeconds).roundToInt().coerceAtLeast(1)
+                        currentStartupTicks += 1
+                        if (currentStartupTicks <= startupGraceTicks) return
+                    }
                     // normal end of track - or the OS stopped the playback (Android pause)
                     clearCurrent()
                     // rest handled next tick
                 } else {
+                    currentAwaitingStartup = false
+                    currentStartupTicks = 0
                     if (current?.timerTick() == MusicTrackController.State.Idle)
                         clearCurrent()
                     next?.timerTick()
@@ -320,10 +340,10 @@ class MusicController {
         Log.error("Error playing music", ex)
 
         // Since this is a rare emergency, go a simple way to reboot music later
-        thread(isDaemon = true) {
-            Thread.sleep(2000)
-            Gdx.app.postRunnable {
-                this.chooseTrack()
+        Concurrency.run("MusicRetryAfterError") {
+            delayMillis(2000)
+            launchOnGLThread {
+                this@MusicController.chooseTrack()
             }
         }
     }
@@ -560,6 +580,8 @@ class MusicController {
             // currently only the main menu resumes, and then it's perfect:
             state = ControllerState.Playing
             current!!.play()
+            currentAwaitingStartup = true
+            currentStartupTicks = 0
         } else if (state == ControllerState.Cleanup || state == ControllerState.Pause) {
             chooseTrack()
         }
@@ -592,9 +614,9 @@ class MusicController {
     }
 
     /** Download Thatched Villagers */
-    fun downloadDefaultFile() {
-        val file = DropBox.downloadFile(musicFallbackLocation)
-        getFile(musicFallbackLocalName).write(file, false)
+    suspend fun downloadDefaultFile() {
+        val file = DropBox.downloadFileBytesAsync(musicFallbackLocation)
+        getFile(musicFallbackLocalName).writeBytes(file, false)
     }
 
     /** @return `true` if Thatched Villagers is present */

@@ -456,7 +456,11 @@ object GdxKeyCodeFixes {
         "Del" -> DEL
         "Backspace" -> BACKSPACE
         else -> {
-            val code = Input.Keys.valueOf(name)
+            val code = try {
+                Input.Keys.valueOf(name)
+            } catch (_: IllegalArgumentException) {
+                UNKNOWN
+            }
             if (code == -1) UNKNOWN else code
         }
     }
@@ -513,9 +517,14 @@ fun TextureData.getReadonlyPixmap(): Pixmap {
     if (!isPrepared) prepare()
     if (this is PixmapTextureData) return consumePixmap()
     if (this !is FileTextureData) throw TypeCastException("getReadonlyPixmap only works on file or pixmap based textures")
-    val field = FileTextureData::class.java.getDeclaredField("pixmap")
-    field.isAccessible = true
-    return field.get(this) as Pixmap
+    return try {
+        val field = FileTextureData::class.java.getDeclaredField("pixmap")
+        field.isAccessible = true
+        field.get(this) as Pixmap
+    } catch (_: Exception) {
+        // TeaVM/libGDX internals may not expose this backing field; fallback to public API.
+        consumePixmap()
+    }
 }
 
 fun <T: Actor>Stack.addInTable(actor: T): Cell<T> {

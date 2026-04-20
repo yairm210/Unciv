@@ -1,5 +1,6 @@
 package com.unciv.ui.crashhandling
 
+import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -19,6 +20,7 @@ import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.utils.AppClipboard
 import com.unciv.utils.Log
 import java.io.PrintWriter
 import java.io.StringWriter
@@ -38,7 +40,7 @@ class CrashScreen(val exception: Throwable) : BaseScreen() {
 
     /** Qualified class name of the game screen that was active at the construction of this instance, or an error note. */
     private val lastScreenType = try {
-        UncivGame.Current.screen!!::class.qualifiedName.toString()
+        UncivGame.Current.screen!!.javaClass.name
     } catch (e: Throwable) {
         "Could not get screen type: $e"
     }
@@ -175,7 +177,7 @@ class CrashScreen(val exception: Throwable) : BaseScreen() {
         val copyButton = IconTextButton("Copy", fontSize = Constants.headingFontSize)
             .onClick {
                 try {
-                    Gdx.app.clipboard.contents = text
+                    AppClipboard.writeText(text)
                     copied = true
                     ToastPopup(
                         "Error report copied.",
@@ -202,8 +204,9 @@ class CrashScreen(val exception: Throwable) : BaseScreen() {
                     )
                 }
             }
-        val closeButton = IconTextButton("Close Unciv", fontSize = Constants.headingFontSize)
-            .onClick { Gdx.app.exit() }
+        val closeActionText = if (Gdx.app.type == Application.ApplicationType.WebGL) "Main menu" else "Close Unciv"
+        val closeButton = IconTextButton(closeActionText, fontSize = Constants.headingFontSize)
+            .onClick { UncivGame.Current.requestExit() }
 
         val buttonsTable = Table()
         buttonsTable.add(copyButton)
@@ -211,7 +214,7 @@ class CrashScreen(val exception: Throwable) : BaseScreen() {
         buttonsTable.add(reportButton)
             .pad(10f)
             .also {
-                if (isCrampedPortrait()) {
+                if (useResponsiveCompactLayout()) {
                     it.row()
                     buttonsTable.add()
                 }

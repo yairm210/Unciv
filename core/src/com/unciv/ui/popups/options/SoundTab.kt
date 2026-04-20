@@ -8,8 +8,10 @@ import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.onClick
+import com.unciv.platform.PlatformCapabilities
 import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread
+import kotlinx.coroutines.CoroutineScope
 
 internal class SoundTab(
     optionsPopup: OptionsPopup
@@ -43,8 +45,7 @@ internal class SoundTab(
             errorTable.clear()
             errorTable.add("Downloading...".toLabel())
 
-            // So the whole game doesn't get stuck while downloading the file
-            Concurrency.run("MusicDownload") {
+            val downloadBlock: suspend CoroutineScope.() -> Unit = {
                 try {
                     game.musicController.downloadDefaultFile()
                     launchOnGLThread {
@@ -57,6 +58,13 @@ internal class SoundTab(
                         errorTable.add("Could not download music!".toLabel(Color.RED))
                     }
                 }
+            }
+
+            // Web runs without background thread pools; dispatch from GL loop to avoid native callback suspension failures.
+            if (PlatformCapabilities.current.backgroundThreadPools) {
+                Concurrency.run("MusicDownload", block = downloadBlock)
+            } else {
+                Concurrency.runOnGLThread("MusicDownload", block = downloadBlock)
             }
         }
     }

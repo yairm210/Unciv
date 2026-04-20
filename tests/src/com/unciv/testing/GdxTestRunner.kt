@@ -21,6 +21,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.backends.headless.HeadlessApplication
 import com.badlogic.gdx.backends.headless.HeadlessApplicationConfiguration
 import com.badlogic.gdx.graphics.GL20
+import org.junit.runner.RunWith
 import org.junit.runner.notification.Failure
 import org.junit.runner.notification.RunListener
 import org.junit.runner.notification.RunNotifier
@@ -161,8 +162,19 @@ class GdxTestRunner(
         return createTest()
     }
 
+    protected override fun getName(): String {
+        return if (testConfig == null) super.getName() else testConfig.name
+    }
+
     protected override fun testName(method: FrameworkMethod): String {
-        return super.testName(method) + if (testConfig == null) "" else testConfig.parameters.toString()
+        return if (testConfig == null) super.testName(method) else super.testName(method) + getName()
+    }
+
+    protected override fun getRunnerAnnotations(): Array<Annotation> {
+        if (testConfig == null) return super.getRunnerAnnotations()
+        return super.getRunnerAnnotations()
+            .filterNot { it.annotationClass.java == RunWith::class.java }
+            .toTypedArray()
     }
     
 }

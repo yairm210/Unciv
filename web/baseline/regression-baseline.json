@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "sourceCommit": "77ff2c79ea33dbdeb10ade98093a3bc6f3132564",
+  "webValidation": {
+    "pass": 8,
+    "fail": 0,
+    "blocked": 0,
+    "disabledByDesign": 3,
+    "hasSettlerValidation": true,
+    "hasWarriorValidation": true,
+    "maxPageErrors": 0,
+    "maxConsoleErrors": 0
+  },
+  "browserJsSuite": {
+    "maxFailures": 0,
+    "minTotalRun": 224,
+    "maxPageErrors": 0,
+    "maxConsoleErrors": 0
+  }
+}

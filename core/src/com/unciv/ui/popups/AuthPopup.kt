@@ -3,10 +3,12 @@ package com.unciv.ui.popups
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UncivGame
+import com.unciv.logic.multiplayer.storage.AsyncAuthProvider
 import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.utils.Concurrency
 
 class AuthPopup(stage: Stage, private val authSuccessful: ((Boolean) -> Unit)? = null)
     : Popup(stage) {
@@ -20,8 +22,25 @@ class AuthPopup(stage: Stage, private val authSuccessful: ((Boolean) -> Unit)? =
 
     init {
         button.onClick {
+            val server = UncivGame.Current.onlineMultiplayer.multiplayerServer
+            if (server is AsyncAuthProvider) {
+                button.isDisabled = true
+                server.authenticateAsync(passwordField.text) { result ->
+                    Concurrency.runOnGLThread {
+                        button.isDisabled = false
+                        if (result.getOrNull() == true) {
+                            authSuccessful?.invoke(true)
+                            close()
+                        } else {
+                            clear()
+                            addComponents("Authentication failed")
+                        }
+                    }
+                }
+                return@onClick
+            }
             try {
-                UncivGame.Current.onlineMultiplayer.multiplayerServer.authenticate(passwordField.text)
+                server.authenticate(passwordField.text)
                 authSuccessful?.invoke(true)
                 close()
             } catch (_: Exception) {

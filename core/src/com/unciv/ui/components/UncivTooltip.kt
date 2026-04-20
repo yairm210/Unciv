@@ -201,8 +201,12 @@ class UncivTooltip <T: Actor>(
         // the actor which just got removed, where it should either be null or better set to the
         // actor behind it. I filed a bug report to libGDX https://github.com/libgdx/libgdx/issues/7577
         // This is a hack to work around the bug:
-        val field = Stage::class.java.getDeclaredField("mouseOverActor").apply { isAccessible = true }
-        val mouseOverActor = field.get(event.stage)
+        val mouseOverActor = try {
+            val field = Stage::class.java.getDeclaredField("mouseOverActor").apply { isAccessible = true }
+            field.get(event.stage)
+        } catch (_: Exception) {
+            null
+        }
         if (!touchDownSeen && toActor != null && toActor.isDescendantOf(target) && mouseOverActor!=null)
             return
         touchDownSeen = false

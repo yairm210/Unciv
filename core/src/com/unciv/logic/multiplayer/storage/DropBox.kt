@@ -18,6 +18,8 @@ import kotlin.concurrent.timer
 object DropBox: FileStorage {
     private var remainingRateLimitSeconds = 0
     private var rateLimitTimer: Timer? = null
+    private const val bearerToken = "LTdBbopPUQ0AAAAAAAACxh4_Qd1eVMM7IBK3ULV3BgxzWZDMfhmgFbuUNF_rXQWb"
+    private const val downloadUrl = "https://content.dropboxapi.com/2/files/download"
 
     private fun dropboxApi(url: String, data: String = "", contentType: String = "", dropboxApiArg: String = ""): InputStream? {
 
@@ -29,7 +31,7 @@ object DropBox: FileStorage {
             requestMethod = "POST"  // default is GET
 
             @Suppress("SpellCheckingInspection")
-            setRequestProperty("Authorization", "Bearer LTdBbopPUQ0AAAAAAAACxh4_Qd1eVMM7IBK3ULV3BgxzWZDMfhmgFbuUNF_rXQWb")
+            setRequestProperty("Authorization", "Bearer $bearerToken")
 
             if (dropboxApiArg != "") setRequestProperty("Dropbox-API-Arg", dropboxApiArg)
             if (contentType != "") setRequestProperty("Content-Type", contentType)
@@ -116,10 +118,12 @@ object DropBox: FileStorage {
     }
 
     fun downloadFile(fileName: String): InputStream {
-        val response = dropboxApi("https://content.dropboxapi.com/2/files/download",
-                contentType = "text/plain", dropboxApiArg = "{\"path\":\"$fileName\"}")
+        val response = dropboxApi(downloadUrl, contentType = "text/plain", dropboxApiArg = "{\"path\":\"$fileName\"}")
         return response!!
     }
+
+    suspend fun downloadFileBytesAsync(fileName: String): ByteArray =
+        downloadFile(fileName).use { it.readBytes() }
 
     /**
      * If the dropbox rate limit is reached for this bearer token we strictly have to wait for the

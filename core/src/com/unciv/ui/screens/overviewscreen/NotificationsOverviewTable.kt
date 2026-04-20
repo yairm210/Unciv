@@ -23,9 +23,9 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.BaseScreen.Companion.skinStrings
 import com.unciv.utils.Concurrency
+import com.unciv.utils.delayMillis
 import com.unciv.utils.launchOnGLThread
 import com.unciv.utils.toGdxArray
-import kotlinx.coroutines.delay
 
 class NotificationsOverviewTable(
     viewingPlayer: Civilization,
@@ -90,7 +90,7 @@ class NotificationsOverviewTable(
         overviewScreen.stage.addActor(selectBox)
         // `activated` can be called too soon, and `selectBox` ends up at the bottom of z-order
         Concurrency.run {
-            delay(10)
+            delayMillis(10)
             launchOnGLThread {
                 selectBox.zIndex = Int.MAX_VALUE
                 selectBox.addAction(Actions.fadeIn(0.2f))

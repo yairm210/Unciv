@@ -1,6 +1,5 @@
 package com.unciv.ui.popups.options
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle
 import com.unciv.GUI
 import com.unciv.logic.GameInfo
@@ -18,6 +17,7 @@ import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.SceneDebugMode
 import com.unciv.ui.screens.basescreen.UncivStage
+import com.unciv.utils.AppClipboard
 import com.unciv.utils.Concurrency
 import com.unciv.utils.DebugUtils
 
@@ -116,16 +116,18 @@ internal class DebugTab(
 
     private fun loadAsHotseatFromClipboard() {
         // Code duplication : LoadGameScreen.getLoadFromClipboardButton
-        Concurrency.run {
-            try {
-                val clipboardContentsString = Gdx.app.clipboard.contents.trim()
-                val loadedGame = UncivFiles.gameInfoFromString(clipboardContentsString)
-                loadedGame.gameParameters.isOnlineMultiplayer = false
-                game.loadGame(loadedGame, callFromLoadScreen = true)
-                optionsPopup.close()
-            } catch (ex: Exception) {
-                ToastPopup(ex.message ?: ex::class.java.simpleName, optionsPopup.stageToShowOn)
+        AppClipboard.readText(onText = { clipboardContents ->
+            Concurrency.run {
+                try {
+                    val clipboardContentsString = clipboardContents.trim()
+                    val loadedGame = UncivFiles.gameInfoFromString(clipboardContentsString)
+                    loadedGame.gameParameters.isOnlineMultiplayer = false
+                    game.loadGame(loadedGame, callFromLoadScreen = true)
+                    optionsPopup.close()
+                } catch (ex: Exception) {
+                    ToastPopup(ex.message ?: ex::class.java.simpleName, optionsPopup.stageToShowOn)
+                }
             }
-        }
+        })
     }
 }

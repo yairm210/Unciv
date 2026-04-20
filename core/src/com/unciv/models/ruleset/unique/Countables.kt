@@ -70,6 +70,7 @@ enum class Countables(
         override fun matches(parameterText: String) = Stat.isStat(parameterText)
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val relevantStat = Stat.safeValueOf(parameterText) ?: return null
+            if (relevantStat == Stat.Happiness) return gameContext.civInfo?.getHappiness()
             val city = gameContext.city
             return city?.getStatReserve(relevantStat)
                 ?: gameContext.civInfo?.getStatReserve(relevantStat)
@@ -461,7 +462,30 @@ enum class Countables(
     /** Leave this only for Countables without any parameters - they can rely on [matches] having validated enough */
     open fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? = null
 
-    @Readonly fun getDeprecationAnnotation(): Deprecated? = declaringJavaClass.getField(name).getAnnotation(Deprecated::class.java)
+    data class DeprecationInfo(val message: String, val replaceWith: String, val level: DeprecationLevel)
+
+    @Readonly
+    fun getDeprecationInfo(): DeprecationInfo? {
+        if (!com.unciv.platform.PlatformCapabilities.current.backgroundThreadPools) {
+            if (name == "CityStates") {
+                return DeprecationInfo(
+                    "because it was never actually supported",
+                    "Remaining [City-State] Civilizations",
+                    DeprecationLevel.ERROR
+                )
+            }
+            return null
+        }
+        val deprecation = getDeprecationAnnotation() ?: return null
+        return DeprecationInfo(deprecation.message, deprecation.replaceWith.expression, deprecation.level)
+    }
+
+    @Readonly
+    fun getDeprecationAnnotation(): Deprecated? = try {
+        declaringJavaClass.getField(name).getAnnotation(Deprecated::class.java)
+    } catch (_: Exception) {
+        null
+    }
 
     @Readonly protected fun UniqueParameterType.getTranslatedErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
         getErrorSeverity(parameterText.getPlaceholderParameters().first(), ruleset)

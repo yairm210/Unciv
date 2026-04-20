@@ -2,8 +2,8 @@ package com.unciv.logic
 
 import com.badlogic.gdx.Gdx
 import com.unciv.utils.Concurrency
+import com.unciv.utils.delayDuration
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
@@ -30,7 +30,7 @@ class AlternatingStateManager(
                     Gdx.app.postRunnable(onOriginalState)
                     isAlternateState = true
                 }
-                delay(interval)
+                delayDuration(interval)
             }
 
             // revert to original state before exiting if it isn't currently

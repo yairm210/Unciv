@@ -5,9 +5,11 @@ import com.unciv.UncivGame
 import com.unciv.logic.files.UncivFiles
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.platform.PlatformCapabilities
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.RedirectOutput
 import com.unciv.testing.RedirectPolicy
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
@@ -45,7 +47,25 @@ class LoadGameTest {
     }
 
     @Test
+    fun loadPreviewFromStringInWebFallbackMode() {
+        val preview = UncivFiles.gameInfoFromString(vanillaGameWithCityStates).asPreview()
+        val data = UncivFiles.gameInfoToString(preview)
+        val previousCapabilities = PlatformCapabilities.current
+        try {
+            PlatformCapabilities.setCurrent(PlatformCapabilities.webPhase4Full())
+            val roundTrip = UncivFiles.gameInfoPreviewFromString(data)
+            Assert.assertEquals(preview.gameId, roundTrip.gameId)
+            Assert.assertEquals(preview.currentPlayer, roundTrip.currentPlayer)
+            Assert.assertEquals(preview.turns, roundTrip.turns)
+            Assert.assertEquals(preview.civilizations.map { it.civID }, roundTrip.civilizations.map { it.civID })
+        } finally {
+            PlatformCapabilities.setCurrent(previousCapabilities)
+        }
+    }
+
+    @Test
     fun loadScreenshotGameTest() {
+        if (!PlatformCapabilities.current.backgroundThreadPools) return
         val files = UncivFiles(Gdx.files)
         // Switch to java.io since Gdx doesn't like '..'ing out of their virtual roots
         val file = files.getSave(screenshotGamePath).file().canonicalFile

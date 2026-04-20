@@ -11,6 +11,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.civilization.managers.TurnManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.map.HexCoord
@@ -24,6 +25,7 @@ import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Event
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.platform.PlatformCapabilities
 import com.unciv.ui.components.extensions.centerX
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
@@ -66,16 +68,17 @@ import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsTable
 import com.unciv.ui.screens.worldscreen.worldmap.WorldMapHolder
 import com.unciv.ui.screens.worldscreen.worldmap.WorldMapTileUpdater.updateTiles
 import com.unciv.utils.Concurrency
+import com.unciv.utils.AppClipboard
 import com.unciv.utils.debug
 import com.unciv.utils.launchOnGLThread
 import com.unciv.utils.launchOnThreadPool
 import com.unciv.utils.withGLContext
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.coroutineScope
 import yairm210.purity.annotations.Readonly
 import java.util.Timer
 import kotlin.concurrent.timer
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 /**
  * Do not create this screen without seriously thinking about the implications: this is the single most memory-intensive class in the application.
@@ -140,6 +143,10 @@ class WorldScreen(
 
     internal val undoHandler = UndoHandler(this)
 
+    fun refreshChatButtonVisibility() {
+        chatButton.refreshVisibility()
+    }
+
 
     init {
         // notifications are right-aligned, they take up only as much space as necessary.
@@ -187,16 +194,30 @@ class WorldScreen(
         // Don't select unit and change selectedCiv when centering as spectator
         mapHolder.setCenterPosition(tileToCenterOn, immediately = true, selectUnit = !viewingCiv.isSpectator())
 
+        if (Gdx.app.type == Application.ApplicationType.WebGL && gameInfo.turns == 0 && viewingCiv.isHuman()) {
+            val units = viewingCiv.units.getCivUnits().toList()
+            if (units.isNotEmpty() && units.all { it.currentMovement <= Constants.minimumMovementEpsilon }) {
+                for (unit in units) {
+                    unit.currentMovement = unit.getMaxMovement().toFloat()
+                    unit.attacksThisTurn = 0
+                    unit.due = true
+                }
+            }
+        }
+
         tutorialController.allTutorialsShowedCallback = { shouldUpdate = true }
 
         addKeyboardListener() // for map panning by W,S,A,D
         addKeyboardPresses()  // shortcut keys like F1
 
 
-        if (gameInfo.gameParameters.isOnlineMultiplayer && !gameInfo.isUpToDate)
+        if (gameInfo.gameParameters.isOnlineMultiplayer
+            && PlatformCapabilities.current.onlineMultiplayer
+            && !gameInfo.isUpToDate
+        )
             isPlayersTurn = false // until we're up to date, don't let the player do anything
 
-        if (gameInfo.gameParameters.isOnlineMultiplayer) {
+        if (gameInfo.gameParameters.isOnlineMultiplayer && PlatformCapabilities.current.onlineMultiplayer) {
             val gameId = gameInfo.gameId
             events.receive(MultiplayerGameUpdated::class, { it.preview.gameId == gameId }) {
                 if (isNextTurnUpdateRunning() || game.onlineMultiplayer.hasLatestGameState(gameInfo, it.preview)) {
@@ -324,11 +345,11 @@ class WorldScreen(
     // We contain a map...
     override fun getShortcutDispatcherVetoer() = KeyShortcutDispatcherVeto.createTileGroupMapDispatcherVetoer()
 
-    private suspend fun loadLatestMultiplayerState(): Unit = coroutineScope {
-        if (game.screen != this@WorldScreen) return@coroutineScope // User already went somewhere else
+    private suspend fun loadLatestMultiplayerState() {
+        if (game.screen != this@WorldScreen) return // User already went somewhere else
 
         val loadingGamePopup = Popup(this@WorldScreen)
-        launchOnGLThread {
+        Concurrency.runOnGLThread {
             loadingGamePopup.addGoodSizedLabel("Loading latest game state...")
             loadingGamePopup.open()
         }
@@ -342,12 +363,12 @@ class WorldScreen(
             if (viewingCiv.civID == latestGame.currentPlayer || viewingCiv.civID == Constants.spectator) {
                 game.notifyTurnStarted()
             }
-            launchOnGLThread {
+            Concurrency.runOnGLThread {
                 loadingGamePopup.close()
             }
             startNewScreenJob(latestGame, autoPlay)
         } catch (ex: Throwable) {
-            launchOnGLThread {
+            Concurrency.runOnGLThread {
                 val (message) = LoadGameScreen.getLoadExceptionMessage(ex, "Couldn't download the latest game state!")
                 loadingGamePopup.clear()
                 loadingGamePopup.addGoodSizedLabel(message).colspan(2).row()
@@ -359,6 +380,17 @@ class WorldScreen(
                 loadingGamePopup.addButton("Main menu") {
                     game.pushScreen(MainMenuScreen())
                 }.left()
+            }
+        }
+    }
+
+    private suspend fun awaitAuthPopupResult(): Boolean = suspendCoroutine { continuation ->
+        Concurrency.runOnGLThread("Multiplayer auth popup") {
+            try {
+                AuthPopup(this@WorldScreen, continuation::resume).open(true)
+            } catch (ex: Exception) {
+                continuation.resume(false)
+                throw ex
             }
         }
     }
@@ -391,12 +423,43 @@ class WorldScreen(
 
         mapHolder.resetArrows()
         if (UncivGame.Current.settings.showUnitMovements) {
-            val allUnits = gameInfo.civilizations.asSequence().flatMap { it.units.getCivUnits() }
-            val allAttacks = allUnits.map { unit -> unit.attacksSinceTurnStart.asSequence().map { attacked -> Triple(unit.civ, unit.getTile().position, attacked.toHexCoord()) } }.flatten() +
-                gameInfo.civilizations.asSequence().flatMap { civInfo -> civInfo.attacksSinceTurnStart.asSequence().map { Triple(civInfo, it.source, it.target) } }
+            val allUnits = gameInfo.civilizations.asSequence().flatMap { it.units.getCivUnits() }.toList()
+            val allAttacks = sequence {
+                for (unit in allUnits) {
+                    try {
+                        val source = unit.getTile().position
+                        val unitCiv = unit.civ
+                        for (attacked in unit.attacksSinceTurnStart)
+                            yield(Triple(unitCiv, source, attacked.toHexCoord()))
+                    } catch (_: Exception) {
+                        // Movement overlays are non-critical; skip malformed unit attack history entries.
+                    }
+                }
+                for (civInfo in gameInfo.civilizations) {
+                    for (attack in civInfo.attacksSinceTurnStart) {
+                        try {
+                            yield(Triple(civInfo, attack.source, attack.target))
+                        } catch (_: Exception) {
+                            // Movement overlays are non-critical; skip malformed civilization attack history entries.
+                        }
+                    }
+                }
+            }
             mapHolder.updateMovementOverlay(
-                allUnits.filter(mapVisualization::isUnitPastVisible),
-                allUnits.filter(mapVisualization::isUnitFutureVisible),
+                allUnits.asSequence().filter {
+                    try {
+                        mapVisualization.isUnitPastVisible(it)
+                    } catch (_: Exception) {
+                        false
+                    }
+                },
+                allUnits.asSequence().filter {
+                    try {
+                        mapVisualization.isUnitFutureVisible(it)
+                    } catch (_: Exception) {
+                        false
+                    }
+                },
                 allAttacks.filter { (attacker, source, target) -> mapVisualization.isAttackVisible(attacker, source, target) }
                         .map { (_, source, target) -> source to target }
             )
@@ -593,7 +656,7 @@ class WorldScreen(
 
             gameInfoClone.nextTurn(progressBar, true)
 
-            if (originalGameInfo.gameParameters.isOnlineMultiplayer) {
+            if (originalGameInfo.gameParameters.isOnlineMultiplayer && PlatformCapabilities.current.onlineMultiplayer) {
                 // outer try-catch for non-auth exceptions
                 try {
                     // keep retrying if upload fails AND reauthentication succeeds
@@ -604,20 +667,7 @@ class WorldScreen(
                             // upload succeeded
                             retryUpload = false
                         } catch (_: MultiplayerAuthException) {
-                            // true only if authentication succeeds (the popup permits retries)
-                            // false only if user closes the auth popup or the popup init crashes
-                            val authResult = CompletableDeferred<Boolean>()
-                            launchOnGLThread {
-                                try {
-                                    AuthPopup(this@WorldScreen, authResult::complete).open(true)
-                                } catch (ex: Exception) {
-                                    // GL thread crashed during AuthPopup init, let's wrap up
-                                    authResult.complete(false)
-                                    // ensure exception is passed to crash handler
-                                    throw ex
-                                }
-                            }
-                            retryUpload = authResult.await()
+                            retryUpload = awaitAuthPopupResult()
                         }
                     } while (retryUpload)
                 } catch (ex: Exception) { // non-auth exceptions
@@ -637,7 +687,7 @@ class WorldScreen(
                                 val cantUploadNewGamePopup = Popup(this@WorldScreen)
                                 cantUploadNewGamePopup.addGoodSizedLabel(message).row()
                                 cantUploadNewGamePopup.addButton("Copy to clipboard") {
-                                    Gdx.app.clipboard.contents = ex.stackTraceToString()
+                                    AppClipboard.writeText(ex.stackTraceToString())
                                 }
                                 cantUploadNewGamePopup.addCloseButton()
                                 cantUploadNewGamePopup.open()
@@ -658,6 +708,7 @@ class WorldScreen(
 
             // Special case: when you are the only alive human player, the game will always be up to date
             if (gameInfo.gameParameters.isOnlineMultiplayer
+                    && PlatformCapabilities.current.onlineMultiplayer
                     && gameInfoClone.civilizations.count { it.isAlive() && it.playerType == PlayerType.Human } == 1) {
                 gameInfoClone.isUpToDate = true
             }
@@ -724,6 +775,10 @@ class WorldScreen(
     }
 
     private fun updateMultiplayerStatusButton() {
+        if (!PlatformCapabilities.current.onlineMultiplayer) {
+            statusButtons.multiplayerStatusButton = null
+            return
+        }
         if (gameInfo.gameParameters.isOnlineMultiplayer || game.settings.multiplayer.statusButtonInSinglePlayer) {
             if (statusButtons.multiplayerStatusButton != null) return
             statusButtons.multiplayerStatusButton = MultiplayerStatusButton(this,
@@ -748,6 +803,10 @@ class WorldScreen(
     }
 
     override fun render(delta: Float) {
+        if (Gdx.app.type == Application.ApplicationType.WebGL) {
+            mapHolder.ensureInteractionState()
+        }
+
         //  This is so that updates happen in the MAIN THREAD, where there is a GL Context,
         //    otherwise images will not load properly!
         if (shouldUpdate && resizeDeferTimer == null) {
@@ -816,7 +875,8 @@ class WorldScreen(
     fun autoSave() {
         waitingForAutosave = true
         shouldUpdate = true
-        UncivGame.Current.files.autosaves.requestAutoSave(gameInfo, true).invokeOnCompletion {
+        val autoSaveJob = UncivGame.Current.files.autosaves.requestAutoSave(gameInfo, true)
+        autoSaveJob.invokeOnCompletion {
             // only enable the user to next turn once we've saved the current one
             waitingForAutosave = false
             shouldUpdate = true

@@ -19,6 +19,7 @@ import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
+import com.unciv.platform.PlatformCapabilities
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.addSeparatorVertical
 import com.unciv.ui.components.extensions.disable
@@ -40,9 +41,8 @@ import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
+import com.unciv.utils.AppClipboard
 import com.unciv.utils.isUUID
-import com.unciv.utils.launchOnGLThread
-import kotlinx.coroutines.coroutineScope
 import java.net.URI
 import kotlin.math.floor
 import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
@@ -58,42 +58,62 @@ class NewGameScreen(
     private val mapOptionsTable: MapOptionsTable
 
     init {
-        val isPortrait = isNarrowerThan4to3()
+        var initStep = "start"
+        try {
+        initStep = "layout mode"
+        val isPortrait = useResponsiveNarrowLayout()
 
+        initStep = "tryUpdateRuleset"
         tryUpdateRuleset(updateUI = false)  // must come before playerPickerTable so mod nations from fromSettings
 
         // remove the victory types which are not in the rule set (e.g. were in the recently disabled mod)
+        initStep = "cleanup victory types"
         gameSetupInfo.gameParameters.victoryTypes.removeAll { it !in ruleset.victories.keys }
 
         if (gameSetupInfo.gameParameters.victoryTypes.isEmpty())
             gameSetupInfo.gameParameters.victoryTypes.addAll(ruleset.victories.keys)
 
+        initStep = "create player picker"
         rightSideButton.enable()  // now because PlayerPickerTable init might disable it again
         playerPickerTable = PlayerPickerTable(
             this, gameSetupInfo.gameParameters,
             if (isPortrait) stage.width - 20f else 0f
         )
+        initStep = "create game options table"
         newGameOptionsTable = GameOptionsTable(
             this, isPortrait,
             updatePlayerPickerTable = { desiredCiv -> playerPickerTable.update(desiredCiv) },
             updatePlayerPickerRandomLabel = { playerPickerTable.updateRandomNumberLabel() }
         )
+        initStep = "create map options table"
         mapOptionsTable = MapOptionsTable(this)
-        closeButton.onActivation {
-            mapOptionsTable.cancelBackgroundJobs()
-            game.popScreen()
+        initStep = "wire close button"
+        if (PlatformCapabilities.current.backgroundThreadPools) {
+            closeButton.onActivation {
+                mapOptionsTable.cancelBackgroundJobs()
+                game.popScreen()
+            }
+            closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
+        } else {
+            closeButton.onClick {
+                mapOptionsTable.cancelBackgroundJobs()
+                game.popScreen()
+            }
         }
-        closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
 
+        initStep = "init orientation layout"
         if (isPortrait) initPortrait()
         else initLandscape()
+        initStep = "set table backgrounds"
         bottomTable.background = skinStrings.getUiBackground("NewGameScreen/BottomTable", tintColor = skinStrings.skinConfig.clearColor)
         topTable.background = skinStrings.getUiBackground("NewGameScreen/TopTable", tintColor = skinStrings.skinConfig.clearColor)
 
+        initStep = "create bottom controls"
         val horizontalGroup = HorizontalGroup().padBottom(5f).space(10f)
         rightSideGroup.addActorAt(0, horizontalGroup)
 
         if (UncivGame.Current.settings.lastGameSetup != null) {
+            initStep = "create reset defaults button"
             val resetToDefaultsButton = "Reset to defaults".toTextButton()
             resetToDefaultsButton.onClick {
                 ConfirmPopup(
@@ -110,47 +130,80 @@ class NewGameScreen(
             horizontalGroup.addActor(resetToDefaultsButton)
         }
 
-        val startGameButton = "Start game!".toTextButton().apply { color = Color.GREEN }        
+        initStep = "create start game button"
+        val startGameButton = "Start game!".toTextButton().apply {
+            color = Color.GREEN
+            name = "newgame.start_game"
+        }
         startGameButton.onClick(this::startGameAvoidANRs)
         horizontalGroup.addActor(startGameButton)
         pickerPane.rightSideButton.remove()
+        } catch (ex: Exception) {
+            Log.error("NewGameScreen init failed at step: %s", initStep)
+            throw IllegalStateException("NewGameScreen init failed at step: $initStep", ex)
+        }
     }
 
     private fun startGameAvoidANRs(){
-        // Don't allow players to click the game while we're checking if it's ok
-        Gdx.input.inputProcessor = null
-        mapOptionsTable.cancelBackgroundJobs()
-        Concurrency.run {  // even just *checking* can take time
-            val errorMessage = getErrorMessage()
-            if (errorMessage != null){
-                Concurrency.runOnGLThread {
-                    val errorPopup = Popup(this@NewGameScreen)
-                    errorPopup.addGoodSizedLabel(errorMessage).row()
-                    errorPopup.addCloseButton()
-                    errorPopup.open()
-                    Gdx.input.inputProcessor = stage
-                }
-                return@run
-            }
-
-            // Requires a custom popup so can't be folded into getErrorMessage
-            val modCheckResult = newGameOptionsTable.modCheckboxes.savedModcheckResult
-            newGameOptionsTable.modCheckboxes.savedModcheckResult = null
-            if (modCheckResult != null) {
-                Concurrency.runOnGLThread {
-                    AcceptModErrorsPopup(
-                        this@NewGameScreen, modCheckResult,
-                        restoreDefault = { newGameOptionsTable.resetRuleset() },
-                        action = {
-                            gameSetupInfo.gameParameters.acceptedModCheckErrors = modCheckResult
-                            startGameAvoidANRs()
+        var step = "disable input"
+        try {
+            Log.debug("startGameAvoidANRs invoked")
+            // Don't allow players to click the game while we're checking if it's ok
+            Gdx.input.inputProcessor = null
+            step = "cancel map options background jobs"
+            mapOptionsTable.cancelBackgroundJobs()
+            val runValidationAndStart: () -> Unit = runValidationAndStart@{
+                var asyncStep = "getErrorMessage"
+                try {
+                    val errorMessage = getErrorMessage()
+                    if (errorMessage != null){
+                        Concurrency.runOnGLThread {
+                            val errorPopup = Popup(this@NewGameScreen)
+                            errorPopup.addGoodSizedLabel(errorMessage).row()
+                            errorPopup.addCloseButton()
+                            errorPopup.open()
+                            Gdx.input.inputProcessor = stage
                         }
-                    )
-                    Gdx.input.inputProcessor = stage
+                        return@runValidationAndStart
+                    }
+
+                    // Requires a custom popup so can't be folded into getErrorMessage
+                    asyncStep = "check saved mod validation result"
+                    val modCheckResult = newGameOptionsTable.modCheckboxes.savedModcheckResult
+                    newGameOptionsTable.modCheckboxes.savedModcheckResult = null
+                    if (modCheckResult != null) {
+                        Concurrency.runOnGLThread {
+                            AcceptModErrorsPopup(
+                                this@NewGameScreen, modCheckResult,
+                                restoreDefault = { newGameOptionsTable.resetRuleset() },
+                                action = {
+                                    gameSetupInfo.gameParameters.acceptedModCheckErrors = modCheckResult
+                                    startGameAvoidANRs()
+                                }
+                            )
+                            Gdx.input.inputProcessor = stage
+                        }
+                        return@runValidationAndStart
+                    }
+                    asyncStep = "startGame"
+                    startGame()
+                } catch (ex: Throwable) {
+                    Log.error("startGameAvoidANRs async failed at step: %s", asyncStep)
+                    throw IllegalStateException("startGameAvoidANRs async failed at step: $asyncStep", ex)
                 }
-                return@run
             }
-            startGame()
+            step = "launch validation"
+            if (PlatformCapabilities.current.backgroundThreadPools) {
+                Concurrency.run {  // even just *checking* can take time
+                    runValidationAndStart()
+                }
+            } else {
+                // Web phase: avoid coroutine launcher edge-cases, run deterministically.
+                runValidationAndStart()
+            }
+        } catch (ex: Throwable) {
+            Log.error("startGameAvoidANRs failed at step: %s", step)
+            throw IllegalStateException("startGameAvoidANRs failed at step: $step", ex)
         }
     }
     
@@ -208,22 +261,35 @@ class NewGameScreen(
     }
     
     private fun startGame() {
-
-        Concurrency.runOnGLThread {
-            rightSideButton.disable()
-            rightSideButton.setText(Constants.working.tr())
-            setSkin()
-            
-            // Creating a new game can take a while and we don't want ANRs
-            Concurrency.runOnNonDaemonThreadPool("NewGame") {
-                startNewGame()
+        var step = "runOnGLThread dispatch"
+        try {
+            Concurrency.runOnGLThread {
+                var glStep = "disable rightSideButton"
+                try {
+                    rightSideButton.disable()
+                    glStep = "set rightSideButton text"
+                    rightSideButton.setText(Constants.working.tr())
+                    glStep = "setSkin"
+                    setSkin()
+                    glStep = "dispatch NewGame worker"
+                    // Creating a new game can take a while and we don't want ANRs
+                    Concurrency.runOnNonDaemonThreadPool("NewGame") {
+                        startNewGame()
+                    }
+                } catch (ex: Throwable) {
+                    Log.error("startGame GL-thread failed at step: %s", glStep)
+                    throw IllegalStateException("startGame GL-thread failed at step: $glStep", ex)
+                }
             }
+        } catch (ex: Throwable) {
+            Log.error("startGame failed at step: %s", step)
+            throw IllegalStateException("startGame failed at step: $step", ex)
         }
     }
 
     /** Subtables may need an upper limit to their width - they can ask this function. */
     // In sync with isPortrait in init, here so UI details need not know about 3-column vs 1-column layout
-    internal fun getColumnWidth() = floor(stage.width / (if (isNarrowerThan4to3()) 1 else 3))
+    internal fun getColumnWidth() = floor(stage.width / (if (useResponsiveNarrowLayout()) 1 else 3))
 
     private fun initLandscape() {
         scrollPane.setScrollingDisabled(true,true)
@@ -283,83 +349,94 @@ class NewGameScreen(
         }
     }
 
-    private suspend fun startNewGame() = coroutineScope {
+    private fun startNewGame() {
+        var step = "open working popup"
         val popup = Popup(this@NewGameScreen)
-        launchOnGLThread {
-            popup.addGoodSizedLabel(Constants.working).row()
-            popup.open()
-            ImageGetter.setNewRuleset(ruleset) // To build the temp atlases
-        }
-
-        val newGame:GameInfo
         try {
-            val selectedScenario = mapOptionsTable.getSelectedScenario()
-            newGame = if (selectedScenario == null)
-                GameStarter.startNewGame(gameSetupInfo)
-            else {
-                val gameInfo = game.files.loadGameFromFile(selectedScenario.file)
-                // Instead of removing spectator we AI-ify it, so we don't get problems in e.g. diplomacy
-                gameInfo.civilizations.firstOrNull { it.civName == Constants.spectator }?.playerType = PlayerType.AI
-                for (playerInfo in gameSetupInfo.gameParameters.players){
-                    gameInfo.civilizations.firstOrNull { it.civName == playerInfo.chosenCiv }?.playerType = playerInfo.playerType
-                }
-                gameInfo
+            Concurrency.runOnGLThread {
+                popup.addGoodSizedLabel(Constants.working).row()
+                popup.open()
+                ImageGetter.setNewRuleset(ruleset) // To build the temp atlases
             }
-        } catch (exception: Exception) {
-            exception.printStackTrace()
-            launchOnGLThread {
-                popup.apply {
-                    reuseWith("It looks like we can't make a map with the parameters you requested!")
-                    row()
-                    addGoodSizedLabel("Maybe you put too many players into too small a map?").row()
-                    addButton("Copy to clipboard"){
-                        Gdx.app.clipboard.contents = exception.stackTraceToString()
+
+            step = "build or load game"
+            val newGame:GameInfo = try {
+                val selectedScenario = mapOptionsTable.getSelectedScenario()
+                if (selectedScenario == null)
+                    GameStarter.startNewGame(gameSetupInfo)
+                else {
+                    val gameInfo = game.files.loadGameFromFile(selectedScenario.file)
+                    // Instead of removing spectator we AI-ify it, so we don't get problems in e.g. diplomacy
+                    gameInfo.civilizations.firstOrNull { it.civName == Constants.spectator }?.playerType = PlayerType.AI
+                    for (playerInfo in gameSetupInfo.gameParameters.players){
+                        gameInfo.civilizations.firstOrNull { it.civName == playerInfo.chosenCiv }?.playerType = playerInfo.playerType
                     }
-                    addCloseButton()
+                    gameInfo
                 }
-                Gdx.input.inputProcessor = stage
-                rightSideButton.enable()
-                rightSideButton.setText("Start game!".tr())
-            }
-            return@coroutineScope
-        }
-
-        if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
-            newGame.isUpToDate = true // So we don't try to download it from dropbox the second after we upload it - the file is not yet ready for loading!
-            try {
-                game.onlineMultiplayer.createGame(newGame)
-                game.files.autosaves.requestAutoSave(newGame)
-            } catch (ex: FileStorageRateLimitReached) {
-                launchOnGLThread {
-                    popup.reuseWith("Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds", true)
+            } catch (exception: Exception) {
+                exception.printStackTrace()
+                Concurrency.runOnGLThread {
+                    popup.apply {
+                        reuseWith("It looks like we can't make a map with the parameters you requested!")
+                        row()
+                        addGoodSizedLabel("Maybe you put too many players into too small a map?").row()
+                        addButton("Copy to clipboard"){
+                            AppClipboard.writeText(exception.stackTraceToString())
+                        }
+                        addCloseButton()
+                    }
+                    Gdx.input.inputProcessor = stage
                     rightSideButton.enable()
                     rightSideButton.setText("Start game!".tr())
                 }
-                Gdx.input.inputProcessor = stage
-                return@coroutineScope
-            } catch (ex: Exception) {
-                Log.error("Error while creating game", ex)
-                launchOnGLThread {
-                    popup.reuseWith("Could not upload game!", true)
-                    rightSideButton.enable()
-                    rightSideButton.setText("Start game!".tr())
+                return
+            }
+
+            step = "create multiplayer game"
+            if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
+                newGame.isUpToDate = true // So we don't try to download it from dropbox the second after we upload it - the file is not yet ready for loading!
+                try {
+                    Concurrency.runBlocking {
+                        game.onlineMultiplayer.createGame(newGame)
+                    }
+                    game.files.autosaves.requestAutoSave(newGame)
+                } catch (ex: FileStorageRateLimitReached) {
+                    Concurrency.runOnGLThread {
+                        popup.reuseWith("Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds", true)
+                        rightSideButton.enable()
+                        rightSideButton.setText("Start game!".tr())
+                    }
+                    Gdx.input.inputProcessor = stage
+                    return
+                } catch (ex: Exception) {
+                    Log.error("Error while creating game", ex)
+                    Concurrency.runOnGLThread {
+                        popup.reuseWith("Could not upload game!", true)
+                        rightSideButton.enable()
+                        rightSideButton.setText("Start game!".tr())
+                    }
+                    Gdx.input.inputProcessor = stage
+                    return
                 }
-                Gdx.input.inputProcessor = stage
-                return@coroutineScope
             }
-        }
 
-        val worldScreen = game.loadGame(newGame)
-        
-        worldScreen.autoSave()
+            step = "load game into world screen"
+            val worldScreen = Concurrency.runBlocking { game.loadGame(newGame) } ?: return
+            worldScreen.autoSave()
 
-        if (newGame.gameParameters.isOnlineMultiplayer) {
-            launchOnGLThread {
-                    // Save gameId to clipboard because you have to do it anyway.
-                    Gdx.app.clipboard.contents = newGame.gameId
-                    // Popup to notify the User that the gameID got copied to the clipboard
-                    ToastPopup("Game ID copied to clipboard!".tr(), worldScreen, 2500)
+
+            step = "post load multiplayer clipboard toast"
+            if (newGame.gameParameters.isOnlineMultiplayer) {
+                Concurrency.runOnGLThread {
+                        // Save gameId to clipboard because you have to do it anyway.
+                        AppClipboard.writeText(newGame.gameId)
+                        // Popup to notify the User that the gameID got copied to the clipboard
+                        ToastPopup("Game ID copied to clipboard!".tr(), worldScreen, 2500)
+                }
             }
+        } catch (ex: Throwable) {
+            Log.error("startNewGame failed at step: %s", step)
+            throw IllegalStateException("startNewGame failed at step: $step", ex)
         }
     }
 

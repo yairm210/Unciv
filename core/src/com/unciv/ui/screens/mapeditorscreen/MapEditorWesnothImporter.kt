@@ -45,9 +45,9 @@ class MapEditorWesnothImporter(private val editorScreen: MapEditorScreen) : Disp
     private val parseTerrain by lazy {
         Regex(
             """^
-                (((?<start>\d+)|[A-Za-z\d_]+)\ )*         # Space-separated prefixes allowed, if numeric it's a starting location, others are scenario-specific (we ignore)
-                (?<base>[A-Z_][a-z\\|/]{1,3})             # mandatory layer
-                (\^(?<layer>[A-Z_][a-z\\|/]{1,3}))?       # optional layer separated by `^`
+                (((\d+)|[A-Za-z\d_]+)\ )*                 # Space-separated prefixes allowed, if numeric it's a starting location, others are scenario-specific (we ignore)
+                ([A-Z_][a-z\\|/]{1,3})                    # mandatory layer
+                (\^([A-Z_][a-z\\|/]{1,3}))?               # optional layer separated by `^`
             $""".trimIndent(), RegexOption.COMMENTS)
     }
 
@@ -141,9 +141,9 @@ class MapEditorWesnothImporter(private val editorScreen: MapEditorScreen) : Disp
         // First do a pattern match that validates and splits off player start indices, base and layer codes, and ignores other scenario prefixes
         val matches = parseTerrain.matchEntire(cellCode)
             ?: throw UncivShowableException("{That map is invalid!}\n{(\"[$cellCode]\" does not conform to TerrainCodesWML)}")
-        val start = matches.groups["start"]?.value
-        val base = matches.groups["base"]!!.value  // This capture is not optional in the pattern
-        val layer = matches.groups["layer"]?.value
+        val start = matches.groups[3]?.value
+        val base = matches.groups[4]!!.value  // This capture is not optional in the pattern
+        val layer = matches.groups[6]?.value
         // Now build a loose collection of candidate elements
         val allStrings: Sequence<String> =
             translateTerrainWML(base) + translateTerrainWML(layer) + fallback

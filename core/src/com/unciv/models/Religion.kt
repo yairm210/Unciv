@@ -89,7 +89,10 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
     }
 
     fun addBelief(belief: Belief) = addBeliefs(listOf(belief))
-    fun addBelief(beliefName: String) = gameInfo.ruleset.beliefs[beliefName]?.let { addBelief(it) }
+    fun addBelief(beliefName: String) =
+        (gameInfo.ruleset.beliefs[beliefName]
+            ?: gameInfo.ruleset.beliefs.values.firstOrNull { it.name == beliefName })
+            ?.let { addBelief(it) }
 
     @Readonly
     fun getIconName() =

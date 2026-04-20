@@ -7,12 +7,12 @@ import com.unciv.json.json
 import com.unciv.logic.UncivKtor
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.github.Github.repoNameToFolderName
+import com.unciv.utils.delayDuration
 import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.utils.io.jvm.javaio.*
-import kotlinx.coroutines.delay
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 import java.util.zip.ZipException
@@ -126,7 +126,7 @@ object GithubAPI {
         if (remainingRequests < 1) return false
 
         val resetEpoch = resp.headers["x-ratelimit-reset"]?.toLongOrNull() ?: 0
-        delay(Instant.fromEpochSeconds(resetEpoch) - Clock.System.now())
+        delayDuration(Instant.fromEpochSeconds(resetEpoch) - Clock.System.now())
 
         return true
     }

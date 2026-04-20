@@ -1622,8 +1622,11 @@ enum class UniqueType(
     }
 
     @Readonly
-    fun getDeprecationAnnotation(): Deprecated? = declaringJavaClass.getField(name)
-        .getAnnotation(Deprecated::class.java)
+    fun getDeprecationAnnotation(): Deprecated? = try {
+        declaringJavaClass.getField(name).getAnnotation(Deprecated::class.java)
+    } catch (_: Exception) {
+        null
+    }
 
     /** Checks whether a specific [uniqueTarget] as e.g. given by [IHasUniques.getUniqueTarget] works with `this` UniqueType */
     @Readonly

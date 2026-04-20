@@ -3,10 +3,25 @@ package com.unciv.ui.components.input
 import com.badlogic.gdx.Input
 import com.unciv.Constants
 import com.unciv.models.stats.Stat
+import com.unciv.utils.Log
 
-
-private val unCamelCaseRegex = Regex("([A-Z])([A-Z])([a-z])|([a-z])([A-Z])")
-private fun unCamelCase(name: String) = unCamelCaseRegex.replace(name, """$1$4 $2$3$5""")
+private fun unCamelCase(name: String): String {
+    if (name.length < 2) return name
+    val result = StringBuilder(name.length + 8)
+    for (index in name.indices) {
+        val current = name[index]
+        if (index > 0) {
+            val previous = name[index - 1]
+            val next = name.getOrNull(index + 1)
+            val splitBeforeCurrent =
+                (previous.isLowerCase() && current.isUpperCase()) ||
+                    (previous.isUpperCase() && current.isUpperCase() && next?.isLowerCase() == true)
+            if (splitBeforeCurrent) result.append(' ')
+        }
+        result.append(current)
+    }
+    return result.toString()
+}
 
 /**
  *  This is the database of supported "bindable" keyboard shortcuts.
@@ -255,7 +270,12 @@ enum class KeyboardBinding(
 
     init {
         this.label = label ?: unCamelCase(name)
-        this.defaultKey = key ?: KeyCharAndCode(name[0])
+        this.defaultKey = try {
+            key ?: KeyCharAndCode(name[0])
+        } catch (ex: IllegalArgumentException) {
+            Log.error("KeyboardBinding default key fallback: %s", name)
+            KeyCharAndCode.UNKNOWN
+        }
     }
 
     //region Helper constructors

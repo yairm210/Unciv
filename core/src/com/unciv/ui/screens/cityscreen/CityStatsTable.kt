@@ -51,10 +51,10 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
         )
 
         expander = ExpanderTab("",
-            startsOutOpened = !cityScreen.isCrampedPortrait(),
+            startsOutOpened = !cityScreen.useResponsiveCompactLayout(),
             persistenceID = "CityStatsTable",
             defaultPad = 7f,
-            headerPad = if (cityScreen.isCrampedPortrait()) 7f else 6f,
+            headerPad = if (cityScreen.useResponsiveCompactLayout()) 7f else 6f,
             topPad = 0f, // remove space between miniStatsTable and detailedStatsButton
             expanderWidth = miniStatsTable.width,
             expanderHeight = miniStatsTable.height,
@@ -437,7 +437,7 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
                 add(icon).size(27f).padRight(3f)
                 val valueToDisplay = if (stat == Stat.Happiness) city.cityStats.happinessList.values.sum() else amount
                 add(round(valueToDisplay).toInt().toLabel()).padRight(5f)
-                if (cityScreen.isCrampedPortrait() && (expanderIsOpen == null || !expanderIsOpen) && stat == Stat.Gold) {
+                if (cityScreen.useResponsiveCompactLayout() && (expanderIsOpen == null || !expanderIsOpen) && stat == Stat.Gold) {
                     row()
                 }
             }

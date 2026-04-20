@@ -38,7 +38,7 @@ object MapSaver {
 
     fun getMaps(): Array<FileHandle> = UncivGame.Current.files.getLocalFile(mapsFolder).list()
 
-    private fun mapFromJson(json: String): TileMap = json().fromJson(TileMap::class.java, json)
+    private fun mapFromJson(jsonString: String): TileMap = json().fromJson(TileMap::class.java, jsonString)
 
     fun loadMapParameters(mapFile: FileHandle): MapParameters {
         return loadMapPreview(mapFile).mapParameters
