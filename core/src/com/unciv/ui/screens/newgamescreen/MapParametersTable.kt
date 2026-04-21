@@ -19,6 +19,10 @@ import com.unciv.ui.components.widgets.*
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.victoryscreen.LoadMapPreview
 import com.unciv.utils.Concurrency
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.isActive
 
 /** Table for editing [mapParameters]
  *
@@ -59,6 +63,7 @@ class MapParametersTable(
 
     private val maxMapSize = ((previousScreen as? NewGameScreen)?.getColumnWidth() ?: 200f) - 10f // There is 5px padding each side
     private val mapTypeExample = Table()
+    private var generateMapExampleJob: Job? = null
 
     // Keep references (in the key) and settings value getters (in the value) of the 'advanced' sliders
     // in a HashMap for reuse later - in the reset to defaults button. Better here as field than as closure.
@@ -140,20 +145,24 @@ class MapParametersTable(
 
     private fun generateExampleMap(){
         val ruleset = if (previousScreen is NewGameScreen) previousScreen.ruleset else RulesetCache.getVanillaRuleset()
-        Concurrency.run("Generate example map") {
-            val mapParametersForExample = if (forMapEditor) mapParameters else mapParameters.clone().apply { seed = 0 }
-            val exampleMap = MapGenerator(ruleset).generateMap(mapParametersForExample, GameParameters())
-            Concurrency.runOnGLThread {
-                mapTypeExample.clear()
-                val mapPreview = LoadMapPreview(exampleMap, maxMapSize, maxMapSize)
-                if (!forMapEditor){
-                    val label = "Example map".toLabel()
-                    label.centerX(mapPreview)
-                    label.y = mapPreview.height - label.height - 10f
-                    mapPreview.addActor(label)
+        synchronized(mapTypeExample) { // this synchronizes the cancel and assignment, butis not held during the async work
+            generateMapExampleJob?.cancel("User changed a setting")
+            generateMapExampleJob = Concurrency.run("Generate example map") {
+                val mapParametersForExample = if (forMapEditor) mapParameters else mapParameters.clone().apply { seed = 0 }
+                val exampleMap = MapGenerator(ruleset).generateMap(mapParametersForExample, GameParameters(), ensureNotCancelled=::ensureActive)
+                Concurrency.runOnGLThread {
+                    mapTypeExample.clear()
+                    val mapPreview = LoadMapPreview(exampleMap, maxMapSize, maxMapSize)
+                    if (!forMapEditor){
+                        val label = "Example map".toLabel()
+                        label.centerX(mapPreview)
+                        label.y = mapPreview.height - label.height - 10f
+                        mapPreview.addActor(label)
+                    }
+                    mapTypeExample.add(mapPreview)
+                    pack()
+                    if (previousScreen is NewGameScreen) previousScreen.updateTables(mapPreview)
                 }
-                mapTypeExample.add(mapPreview)
-                pack()
             }
         }
     }
@@ -229,6 +238,7 @@ class MapParametersTable(
         customMapSizeRadius.onChange {
             mapParameters.mapSize = MapSize(customMapSizeRadius.intValue ?: 0)
             updateHexagonalWarnings()
+            generateExampleMap()
         }
         hexWarningLabel = "".toLabel(Color.RED).apply { wrap = true }
         hexagonalSizeTable.add("{Radius}:".toLabel()).grow().left()
@@ -253,10 +263,12 @@ class MapParametersTable(
         customMapWidth.onChange {
             mapParameters.mapSize = MapSize(customMapWidth.intValue ?: 0, customMapHeight.intValue ?: 0)
             updateRectangularWarnings()
+            generateExampleMap()
         }
         customMapHeight.onChange {
             mapParameters.mapSize = MapSize(customMapWidth.intValue ?: 0, customMapHeight.intValue ?: 0)
             updateRectangularWarnings()
+            generateExampleMap()
         }
 
         rectWarningLabel = "".toLabel(Color.RED).apply { wrap = true }
@@ -341,6 +353,7 @@ class MapParametersTable(
     private fun Table.addWorldWrapCheckbox() {
         worldWrapCheckbox = "World Wrap".toCheckBox(mapParameters.worldWrap) {
             mapParameters.worldWrap = it
+            generateExampleMap()
         }
         add(worldWrapCheckbox).row()
     }
@@ -435,13 +448,13 @@ class MapParametersTable(
             }
         }
         addSlider("Map Elevation", {mapParameters.elevationExponent}, 0.6f, 0.8f)
-        { mapParameters.elevationExponent = it }
+        { mapParameters.elevationExponent = it; generateExampleMap() }
 
         addSlider("Temperature intensity", {mapParameters.temperatureintensity}, 0.4f, 0.8f)
-        { mapParameters.temperatureintensity = it }
+        { mapParameters.temperatureintensity = it; generateExampleMap() }
 
         addSlider("Temperature shift", {mapParameters.temperatureShift}, -0.4f, 0.4f, 0.1f)
-        { mapParameters.temperatureShift = it }
+        { mapParameters.temperatureShift = it; generateExampleMap() }
 
         if (forMapEditor) {
             addSlider("Resource richness", { mapParameters.resourceRichness }, 0f, 0.5f)
@@ -455,19 +468,20 @@ class MapParametersTable(
         { mapParameters.rareFeaturesRichness = it }
 
         addSlider("Max Coast extension", {mapParameters.maxCoastExtension.toFloat()}, 1f, 5f)
-        { mapParameters.maxCoastExtension = it.toInt() }.apply { stepSize = 1f }
+        { mapParameters.maxCoastExtension = it.toInt(); generateExampleMap() }.apply { stepSize = 1f }
 
         addSlider("Biome size", {mapParameters.tilesPerBiomeArea.toFloat()}, 1f, 15f)
-        { mapParameters.tilesPerBiomeArea = it.toInt() }.apply { stepSize = 1f }
+        { mapParameters.tilesPerBiomeArea = it.toInt(); generateExampleMap() }.apply { stepSize = 1f }
 
         addSlider("Water level", {mapParameters.waterThreshold}, -0.1f, 0.1f)
-        { mapParameters.waterThreshold = it }
+        { mapParameters.waterThreshold = it; generateExampleMap() }
 
         addTextButton("Reset to defaults", true) {
             mapParameters.resetAdvancedSettings()
             seedTextField.value = mapParameters.seed
             for (entry in advancedSliders)
                 entry.key.value = entry.value()
+            generateExampleMap() 
         }
     }
 }

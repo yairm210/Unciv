@@ -38,6 +38,7 @@ import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.pickerscreens.PickerScreen
+import com.unciv.ui.screens.victoryscreen.LoadMapPreview
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import com.unciv.utils.isUUID
@@ -70,7 +71,7 @@ class NewGameScreen(
 
         rightSideButton.enable()  // now because PlayerPickerTable init might disable it again
         playerPickerTable = PlayerPickerTable(
-            this, gameSetupInfo.gameParameters,
+            this, 
             if (isPortrait) stage.width - 20f else 0f
         )
         newGameOptionsTable = GameOptionsTable(
@@ -408,11 +409,13 @@ class NewGameScreen(
         newGameOptionsTable.locked = false
     }
 
-    fun updateTables() {
-        playerPickerTable.gameParameters = gameSetupInfo.gameParameters
-        playerPickerTable.update()
-        newGameOptionsTable.changeGameParameters(gameSetupInfo.gameParameters)
-        newGameOptionsTable.update()
+    fun updateTables(mapPreview: LoadMapPreview? = null) {
+        if (mapPreview == null) { // These only care about real updates, not map preview updates
+            playerPickerTable.gameParameters = gameSetupInfo.gameParameters
+            newGameOptionsTable.changeGameParameters(gameSetupInfo.gameParameters)
+            newGameOptionsTable.update()
+        }
+        playerPickerTable.update(mapPreview = mapPreview)
     }
 
     override fun recreate(): BaseScreen = NewGameScreen(gameSetupInfo)

@@ -63,9 +63,9 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         val isConstrained: Boolean
     ) {
         val name get() = terrain.name
-        val occursInChains: Boolean = terrain.hasUnique(UniqueType.OccursInChains)
-        val occursInGroups: Boolean = terrain.hasUnique(UniqueType.OccursInGroups)
-        val hasVegitation: Boolean = terrain.hasUnique(UniqueType.Vegetation)
+        val occursInChains: Boolean = terrain.isMountain
+        val occursInGroups: Boolean = terrain.isHill
+        val hasVegitation: Boolean = terrain.isVegetation
         val isRough: Boolean get() = terrain.isRough
         val isFreshwater: Boolean get() = terrain.isFreshwater
         val isCoast: Boolean get() = terrain.isCoast
@@ -91,7 +91,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
                         && tile.getBaseTerrain().isCoast == isCoast
                 else if (terrain.type == TerrainType.Land)
                     tile.getBaseTerrain().type == TerrainType.Land
-                        && tile.getBaseTerrain().hasUnique(UniqueType.OccursInChains) == occursInChains
+                        && tile.getBaseTerrain().isHill == occursInChains
                 else
                     terrain.occursOn.contains(tile.lastTerrain.name)
         }
@@ -133,7 +133,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             .map { unique -> TerrainOccursRange(this, unique) }
             .ifEmpty { sequenceOf(TerrainOccursRange(this)) }
 
-    fun generateMap(mapParameters: MapParameters, gameParameters: GameParameters = GameParameters(), gameInfo: GameInfo? = null): TileMap {
+    fun generateMap(mapParameters: MapParameters, gameParameters: GameParameters = GameParameters(), gameInfo: GameInfo? = null, ensureNotCancelled:()->Unit={}): TileMap {
         val mapSize = mapParameters.mapSize
         val mapType = mapParameters.type
 
@@ -163,31 +163,41 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         runAndMeasure("MapLandmassGenerator") {
             MapLandmassGenerator(map, ruleset, randomness).generateLand()
         }
+        ensureNotCancelled()
         runAndMeasure("applyHumidityAndTemperature") {
             applyHumidityAndTemperature(map)
         }
+        ensureNotCancelled()
         runAndMeasure("raiseMountainsAndHills") {
             MapElevationGenerator(map, ruleset, terrainConditions, randomness).raiseMountainsAndHills()
         }
+        ensureNotCancelled()
         runAndMeasure("spawnLakesAndCoasts") {
             spawnLakesAndCoasts(map)
         }
+        ensureNotCancelled()
         runAndMeasure("spawnVegetation") {
             spawnVegetation(map)
         }
+        ensureNotCancelled()
         runAndMeasure("spawnRareFeatures") {
             spawnRareFeatures(map)
         }
+        ensureNotCancelled()
         runAndMeasure("spawnIce") {
             spawnIce(map)
         }
+        ensureNotCancelled()
         runAndMeasure("assignContinents") {
             map.assignContinents(TileMap.AssignContinentsMode.Assign)
         }
+        ensureNotCancelled()
         runAndMeasure("RiverGenerator") {
             RiverGenerator(map, randomness, ruleset).spawnRivers()
         }
+        ensureNotCancelled()
         convertTerrains(map.values)
+        ensureNotCancelled()
 
         // Region based map generation - not used when generating maps in map editor
         val civilizations = gameInfo?.civilizations
@@ -197,26 +207,34 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             runAndMeasure("generateRegions") {
                 regions.generateRegions(map, civilizations.count { ruleset.nations[it.civName]!!.isMajorCiv })
             }
+            ensureNotCancelled()
             runAndMeasure("assignRegions") {
                 regions.assignRegions(map, civilizations.filter { ruleset.nations[it.civName]!!.isMajorCiv }, gameParameters)
             }
+            ensureNotCancelled()
             // Natural wonders need to go before most resources since there is a minimum distance
             runAndMeasure("NaturalWonderGenerator") {
                 NaturalWonderGenerator(ruleset, randomness).spawnNaturalWonders(map)
             }
+            ensureNotCancelled()
             runAndMeasure("placeResourcesAndMinorCivs") {
                 regions.placeResourcesAndMinorCivs(map, civilizations.filter { ruleset.nations[it.civName]!!.isCityState })
             }
+            ensureNotCancelled()
         } else {
             runAndMeasure("NaturalWonderGenerator") {
                 NaturalWonderGenerator(ruleset, randomness).spawnNaturalWonders(map)
             }
+            ensureNotCancelled()
             // Fallback spread resources function - used when generating maps in map editor
             runAndMeasure("spreadResources") { spreadResources(map) }
+            ensureNotCancelled()
         }
         runAndMeasure("spreadAncientRuins") { spreadAncientRuins(map) }
+        ensureNotCancelled()
         
         mirror(map)
+        ensureNotCancelled()
 
         // Map generation may generate incompatible terrain/feature combinations
         for (tile in map.values)

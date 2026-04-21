@@ -490,6 +490,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         /** Handles an uncaught exception or error. First attempts a platform-specific handler, and if that didn't handle the exception or error, brings the game to a [CrashScreen]. */
         fun handleUncaughtThrowable(ex: Throwable) {
             if (ex is CancellationException) {
+                Log.debug("CancellationException", ex)
                 return // kotlin coroutines use this for control flow... so we can just ignore them.
             }
             Log.error("Uncaught throwable", ex)
