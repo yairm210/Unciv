@@ -1,0 +1,21 @@
+
+
+chore(code-docs): Added comments to edge image logic
+
+By Ambeco:
+- Timers can analyze performance of specified spans 
+- assetlinks lets Unciv intercept https://yairm210.github.io/Unciv/... links 
+- BuildAndTest runs in `yairm210/unciv:main`. 
+
+By unciv-loof:
+- Replace hard cap on concurrent denouncements 
+- Add back option to disable rendering of unitset in display settings 
+- Do not forcibly reset mod selections after closing warning in new game screen 
+- Clicking Bully and Conquer CS quests moves map to target's capital 
+- Don't display empty message in popup 
+- Small refactor 
+
+By SeventhM:
+- Allow beliefs gotten from triggers to use triggerables 
+- [Refactor] [Tests] Refactor countable tests into filter tests 
+- [Test] Fix created base units starting with malformed ruleset unique lists 
