@@ -387,7 +387,6 @@ class WorkerAutomation(
         }
 
         val lastTerrain = tile.lastTerrain
-
         @Readonly fun isRemovable(terrain: Terrain): Boolean =
             potentialTileImprovements.containsKey(Constants.remove + terrain.name)
 
@@ -468,6 +467,15 @@ class WorkerAutomation(
                 })
         )
             return 0f
+        
+        // Sets the ranking for removing tiles with removable vegetation 
+        // to 0 when stopAutomatedWorkersRemoveVegetation true.
+        // The Ai should not be affected by the player automated workers settings.
+        if (tile.terrainHasUnique(UniqueType.Vegetation) &&
+            improvement.name.contains(Constants.remove) &&
+            UncivGame.Current.settings.stopAutomatedWorkersRemoveVegetation &&
+            civInfo.isCurrentPlayer()) // Make sure to only apply this to player automated works.
+            return 0f
 
         @LocalState val stats = tile.stats.getStatDiffForImprovement(improvement, civInfo, tile.getCity(), localUniqueCache, currentTileStats)
 
@@ -483,14 +491,7 @@ class WorkerAutomation(
                 @LocalState val newTile = tile.clone(addUnits = false)
                 newTile.setTerrainTransients()
                 if (removedFeature != null) {
-                    val allowedRemoveVegetation = (
-                                tile.terrainHasUnique(UniqueType.Vegetation) &&
-                                    !UncivGame.Current.settings.stopAutomatedWorkersRemoveVegetation &&
-                                    civInfo.isCurrentPlayer()) // Make sure to only apply this to player automated works.
-
-                    // The Ai should not be affected by the player automated workers settings.
-                    if (allowedRemoveVegetation || civInfo.isAI()) 
-                        newTile.removeTerrainFeature(removedFeature)
+                    newTile.removeTerrainFeature(removedFeature)
                 }
                 if (removalImprovement != null)
                     newTile.removeImprovement()
