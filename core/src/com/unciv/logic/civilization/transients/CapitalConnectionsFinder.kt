@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization.transients
 
+import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
@@ -40,7 +41,7 @@ class CapitalConnectionsFinder(private val civInfo: Civilization) {
     private val railroadIsResearched = ruleset.tileImprovements[RoadStatus.Railroad.name].let {
         it != null && (it.techRequired==null || civInfo.tech.isResearched(it.techRequired!!)) }
 
-    fun find(): Map<City, EnumSet<CapitalConnectionMedium>> {
+    fun find(): Map<City, EnumSet<CapitalConnectionMedium>> = timeThis("CapitalConnectionsFinder.find") {
         // We map which cities we've reached, to the mediums they've been reached by -
         // this is so we know that if we've seen which cities can be connected by port A, and one
         // of those is city B, then we don't need to check the cities that B can connect to by port,
@@ -82,7 +83,7 @@ class CapitalConnectionsFinder(private val civInfo: Civilization) {
         )
     }
 
-    private fun checkHarbor(cityToConnectFrom: City) {
+    private fun checkHarbor(cityToConnectFrom: City) = timeThis("CapitalConnectionsFinder.checkHarbor") {
         check(
             cityToConnectFrom,
             transportType = if (cityToConnectFrom.wasPreviouslyReached(CapitalConnectionMedium.Railroad,null))
@@ -101,7 +102,7 @@ class CapitalConnectionsFinder(private val civInfo: Civilization) {
                       transportType: CapitalConnectionMedium,
                       overridingTransportType: CapitalConnectionMedium? = null,
                       tileFilter: (Tile) -> Boolean,
-                      cityFilter: (City) -> Boolean = { true }) {
+                      cityFilter: (City) -> Boolean = { true })  = timeThis("CapitalConnectionsFinder.check") {
         // This is the time-saving mechanism we discussed earlier - If I arrived at this city via a certain BFS,
         // then obviously I already have all the cities that can be reached via that BFS so I don't need to run it again.
         if (cityToConnectFrom.wasPreviouslyReached(transportType, overridingTransportType))

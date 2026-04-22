@@ -68,6 +68,8 @@ allprojects {
             "com.badlogic.gdx.files.FileHandle.isFile",
             "com.badlogic.gdx.files.FileHandle.name",
 
+            "com.badlogic.gdx.utils.IntArray.get",
+
             "java.util.stream.StreamSupport.longStream",
             "java.util.stream.LongStream.parallel",
             "kotlin.sequences.shuffled",

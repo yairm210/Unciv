@@ -1,5 +1,6 @@
 package com.unciv.logic.map
 
+import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.FixedPointMovement.Companion.FPM_ONE
@@ -130,7 +131,7 @@ class PathingMap(
      */
     @Readonly
     @Suppress("purity")
-    fun getShortestPath(destination: Tile, maxTurns: Int = MAX_VALID_TURNS): List<Tile>? {
+    fun getShortestPath(destination: Tile, maxTurns: Int = MAX_VALID_TURNS): List<Tile>? =timeThis("TileStatFunctions.getShortestPath") {
         val cache = fetchCache()
         if (destination.position == cache.key.startingPoint) {
             if (VERBOSE_PATHFINDING_LOGS == cache.key.startingPoint || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)

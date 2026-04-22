@@ -20,11 +20,12 @@ import com.unciv.utils.Log
 import yairm210.purity.annotations.Readonly
 import kotlin.math.min
 import kotlin.random.Random
+import com.unciv.logic.automation.Timers.Companion.timeThis
 
 class TurnManager(val civInfo: Civilization) {
 
 
-    fun startTurn(progressBar: NextTurnProgress? = null) {
+    fun startTurn(progressBar: NextTurnProgress? = null) = timeThis("TurnManager.startTurn") {
         if (civInfo.isSpectator()) return
 
         civInfo.threatManager.clear()
@@ -236,7 +237,7 @@ class TurnManager(val civInfo: Civilization) {
             * civInfo.gameInfo.speed.modifier.coerceAtLeast(1f)).toInt()
 
 
-    fun endTurn(progressBar: NextTurnProgress? = null) {
+    fun endTurn(progressBar: NextTurnProgress? = null) = timeThis("TurnManager.endTurn") {
         if (UncivGame.Current.settings.citiesAutoBombardAtEndOfTurn)
             NextTurnAutomation.automateCityBombardment(civInfo) // Bombard with all cities that haven't, maybe you missed one
 
@@ -353,13 +354,14 @@ class TurnManager(val civInfo: Civilization) {
         // Defeated civs do nothing
         if (civInfo.isDefeated())
             return
-
-        // Do stuff
+        timeThis("automateTurn") {
+            // Do stuff
         NextTurnAutomation.automateCivMoves(civInfo)
 
         // Update barbarian camps
         if (civInfo.isBarbarian && !civInfo.gameInfo.gameParameters.noBarbarians)
             civInfo.gameInfo.barbarians.updateEncampments()
+        }
     }
 
 }

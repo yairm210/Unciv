@@ -1,6 +1,7 @@
 package com.unciv.logic.civilization.diplomacy
 
 import com.unciv.Constants
+import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.civilization.DiplomacyAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
@@ -16,7 +17,7 @@ import kotlin.math.min
 
 object DiplomacyTurnManager {
 
-    fun DiplomacyManager.nextTurn() {
+    fun DiplomacyManager.nextTurn() = timeThis("DiplomacyManager.nextTurn") {
         nextTurnTrades()
         removeUntenableTrades()
         updateHasOpenBorders()

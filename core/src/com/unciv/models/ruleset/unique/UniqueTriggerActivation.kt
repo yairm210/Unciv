@@ -421,7 +421,7 @@ object UniqueTriggerActivation {
                         true
                     }
                     belief != null && civInfo.religionManager.religion?.hasBelief(name) == false -> return {
-                        civInfo.religionManager.religion?.addBelief(belief)
+                        civInfo.religionManager.chooseBeliefs(listOf(belief))
                         getNotificationText(notification, triggerNotificationText, "You gain the [$name] Belief")?.let {
                             civInfo.addNotification(it, NotificationCategory.Religion, NotificationIcon.Faith)
                         }

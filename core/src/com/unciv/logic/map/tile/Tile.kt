@@ -5,6 +5,7 @@ import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.MultiFilter
+import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
@@ -534,12 +535,12 @@ class Tile : IsPartOfGameInfoSerialization {
 
     /** Implements [UniqueParameterType.TileFilter][com.unciv.models.ruleset.unique.UniqueParameterType.TileFilter] */
     @Readonly
-    fun matchesFilter(filter: String, civInfo: Civilization? = null): Boolean {
+    fun matchesFilter(filter: String, civInfo: Civilization? = null): Boolean = timeThis("Tile.matchesFilter")  {
         return MultiFilter.multiFilter(filter, { matchesSingleFilter(it, civInfo) })
     }
 
     @Readonly
-    private fun matchesSingleFilter(filter: String, civInfo: Civilization? = null): Boolean {
+    private fun matchesSingleFilter(filter: String, civInfo: Civilization? = null): Boolean = timeThis("Tile.matchesSingleFilter")  {
         if (matchesSingleTerrainFilter(filter, civInfo)) return true
         if ((improvement == null || improvementIsPillaged) && filter == "unimproved") return true
         if (improvement != null && !improvementIsPillaged && filter == "improved") return true

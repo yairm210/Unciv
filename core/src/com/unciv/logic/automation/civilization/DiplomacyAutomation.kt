@@ -24,9 +24,7 @@ import com.unciv.utils.Log
 import com.unciv.utils.hashOf
 import yairm210.purity.annotations.Readonly
 import kotlin.math.abs
-import kotlin.math.ceil
 import kotlin.math.pow
-import kotlin.math.sqrt
 import kotlin.random.Random
 
 object DiplomacyAutomation {
@@ -477,11 +475,12 @@ object DiplomacyAutomation {
                     || trade.trade.theirOffers.any { offer -> offer.name == offerName } }
     }
 
-    /**
-     * If opinion of the other civ drops by this amount or more
-     */
-    const val DENOUNCE_REQUIRED_OPINION_CHANGE_INITIAL = -68f
+    /** Denounce if the AI's opinion of the other civ drops by this amount or more */
+    const val DENOUNCE_REQUIRED_OPINION_CHANGE_INITIAL = -65f
+    /** Adjusts the willingness to denounce friends and enemies */
     const val DENOUNCE_REQUIRED_OPINION_CHANGE_BASE = 1.005f
+    /** Makes the AI less willing to denounce multiple civs at the same time */
+    const val CONCURRENT_DENOUNCEMENTS_REQUIRED_OPINION_CHANGE_BASE = 1.1f
 
     /**
      * Check if [civInfo] has become frustrated with other civs. If so, denounce those civs.
@@ -501,56 +500,54 @@ object DiplomacyAutomation {
          * 0 to -50
          * -60 to -100
          * ```
-         * Adjust with [DiplomacyManager.EMA_PERIOD], [DENOUNCE_REQUIRED_OPINION_CHANGE_INITIAL] and [DENOUNCE_REQUIRED_OPINION_CHANGE_BASE]
+         * Adjust with [DiplomacyManager.EMA_PERIOD] and other constants (see above)
          */
         fun requiredOpinionChange(
-            diplomacy: DiplomacyManager
+            diplomacy: DiplomacyManager,
+            numberOfActiveDenouncements: Int
         ): Float {
             val personality = diplomacy.civInfo.getPersonality()
             if (personality.denounceWillingness == 0f)
-                return Float.NEGATIVE_INFINITY
-            val willingnessModifier = 1f / personality.scaledFocus(PersonalityValue.DenounceWillingness)
+                return Float.NEGATIVE_INFINITY // never denounce
+            val personalityModifier = 1f / personality.scaledFocus(PersonalityValue.DenounceWillingness)
             val opinionModifier = DENOUNCE_REQUIRED_OPINION_CHANGE_BASE.pow(diplomacy.opinionOfOtherCiv())
-            return DENOUNCE_REQUIRED_OPINION_CHANGE_INITIAL * willingnessModifier * opinionModifier
+            val multipleDenouncementsModifier = CONCURRENT_DENOUNCEMENTS_REQUIRED_OPINION_CHANGE_BASE.pow(numberOfActiveDenouncements)
+            return DENOUNCE_REQUIRED_OPINION_CHANGE_INITIAL * personalityModifier * opinionModifier * multipleDenouncementsModifier
         }
 
         // debugging: records every civ's opinion of every other civ
         Log.debug(civInfo.civName)
-        fun debug(diplomacy: DiplomacyManager) {
+        fun debug(
+            diplomacy: DiplomacyManager,
+            numberOfActiveDenouncements: Int
+        ) {
             Log.debug(
                 "-> %s: %.1f (%.1f), %.1f / %.1f",
                 diplomacy.otherCivName,
                 { diplomacy.opinionOfOtherCiv() },
                 { diplomacy.smoothedOpinionOfOtherCiv },
                 { diplomacy.smoothedOpinionDelta() },
-                { requiredOpinionChange(diplomacy) }
+                { requiredOpinionChange(diplomacy, numberOfActiveDenouncements) }
             )
         }
 
-        // limit how many civs we can denounce similtaneously
-        // TODO: replace hard cap with logic where number of active denunciations affects the opinion change required to denounce more civs
-        // max = square root of number of alive known major civs, rounded up
-        val maxActiveDenunciations = ceil(sqrt(civInfo.getKnownCivs().filter { it.isMajorCiv() }.count().toFloat()))
-
-        var activeDenunciations = civInfo.diplomacy.values.count { it.hasFlag(DiplomacyFlags.Denunciation) }
+        var numberOfActiveDenouncements = civInfo.diplomacy.values.count { it.hasFlag(DiplomacyFlags.Denunciation) }
         
         val ourRelationships = civInfo.diplomacy.values.asSequence()
             .filter { it.otherCiv.isMajorCiv() }
-            .onEach { debug(it) }
+            .onEach { debug(it, numberOfActiveDenouncements) }
             .filter { it.diplomaticStatus != DiplomaticStatus.War
                     && !it.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
                     && !it.hasFlag(DiplomacyFlags.Denunciation) }
         
         for (relationship in ourRelationships) {
-            if (activeDenunciations >= maxActiveDenunciations)
-                break
             // TODO: consider consequences of denouncing others
             // compare our current opinion with the smoothed opinion
             val opinionChange = relationship.smoothedOpinionDelta()
             // denounce if opinion dropped too quickly
-            if (opinionChange <= requiredOpinionChange(relationship)) {
+            if (opinionChange <= requiredOpinionChange(relationship, numberOfActiveDenouncements)) {
                 relationship.denounce()
-                activeDenunciations++
+                numberOfActiveDenouncements++
             }
         }
     }

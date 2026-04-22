@@ -1,5 +1,6 @@
 package com.unciv.logic.automation
 
+import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityFocus
 import com.unciv.logic.city.CityStats
@@ -71,7 +72,8 @@ object Automation {
     }
 
     @Readonly
-    fun rankStatsForCityWork(stats: Stats, city: City, areWeRankingSpecialist: Boolean, localUniqueCache: LocalUniqueCache): Float {
+    fun rankStatsForCityWork(stats: Stats, city: City, areWeRankingSpecialist: Boolean, localUniqueCache: LocalUniqueCache): Float
+        = timeThis("Automation.rankStatsForCityWork") {
         val cityAIFocus = city.getCityFocus()
         @LocalState val yieldStats = stats.clone()
         val cityStatsObj = city.cityStats

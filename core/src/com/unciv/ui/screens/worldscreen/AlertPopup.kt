@@ -496,7 +496,9 @@ class AlertPopup(
         if (civInfo.isDefeated()) return false
         addLeaderName(civInfo)
         addTopicHeader("DECLARATION OF WAR", LIGHTER_RED_COLOR)
-        addGoodSizedLabel(civInfo.nation.declaringWar).row()
+        val leaderMessage = civInfo.nation.declaringWar
+        if (leaderMessage.isNotEmpty())
+            addGoodSizedLabel(leaderMessage).row()
         addCloseButton("You'll pay for this!")
         addCloseButton("Very well.")
         equalizeLastTwoButtonWidths()
