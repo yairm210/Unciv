@@ -350,6 +350,8 @@ object UnitActionsFromUniques {
                     associatedUnique = unique,
                     action = {
                         val unitTile = unit.getTile()
+                        
+                        tile.improvementQueue.removeIf { it.improvement !in listOf("Road", "Railroad")}
                         unitTile.setImprovement(improvement, unit.civ, unit)
 
                         unit.civ.cache.updateViewableTiles() // to update 'last seen improvement'
