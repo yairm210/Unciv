@@ -490,9 +490,8 @@ class WorkerAutomation(
             if (removedFeature != null || removalImprovement != null) {
                 @LocalState val newTile = tile.clone(addUnits = false)
                 newTile.setTerrainTransients()
-                if (removedFeature != null) {
+                if (removedFeature != null)
                     newTile.removeTerrainFeature(removedFeature)
-                }
                 if (removalImprovement != null)
                     newTile.removeImprovement()
                 val wantedFinalImprovement = chooseImprovement(unit, newTile, localUniqueCache, ignoreImprovements = ignoreImprovements)
