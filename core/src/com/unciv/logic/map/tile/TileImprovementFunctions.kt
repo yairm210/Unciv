@@ -214,7 +214,7 @@ class TileImprovementFunctions(val tile: Tile) {
                 }
 
                 // relevant when the improvement was created instantly - such as Great Improvement
-                tile.improvementQueue.removeIf { it.improvement !in listOf("Road", "Railroad")}
+                tile.improvementQueue.removeIf { it.improvement !in listOf(RoadStatus.Road.name, RoadStatus.Railroad.name)}
             }
         }
 
