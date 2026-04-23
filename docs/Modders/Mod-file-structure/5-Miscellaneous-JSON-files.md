@@ -232,6 +232,7 @@ and city distance in another. In case of conflicts, there is no guarantee which 
 | religionLimitMultiplier                  | Float  | 0.5                           | [^K]  |
 | pantheonBase                             | Int    | 10                            | [^L]  |
 | pantheonGrowth                           | Int    | 5                             | [^L]  |
+| policyCostExponent                       | Float  | 1.7                           | [^X]  |
 | workboatAutomationSearchMaxTiles         | Int    | 20                            | [^M]  |
 | maxSpyRank                               | Int    | 3                             | [^N]  |
 | spyRankSkillPercentBonus                 | Float  | 30                            | [^O]  |
@@ -285,6 +286,7 @@ Legend:
 - [^U]: The multiplier of the gold value of a regular trade to be stored as gifts. Set to 0 to disable gold gifting in two-sided trades.
 - [^U]: Modifies how quickly the GaveUsGifts dimplomacy modifier runs out. A higher value makes it run out quicker. Normally the gifts reduced by ~2.5% per turn depending on the diplomatic relations with the default value.
 - [^W]: Number of air units that can be stationed in a city, not including carried/transported air units.
+- [^X]: The base policy cost is calculated as follows: `25 + (numberOfAdoptedPolicies * 6) ^ policyCostExponent`
 
 #### UnitUpgradeCost
 

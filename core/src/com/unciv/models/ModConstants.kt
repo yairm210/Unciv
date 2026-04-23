@@ -101,6 +101,10 @@ class ModConstants {
     // Factors in formula for pantheon cost
     var pantheonBase = 10
     var pantheonGrowth = 5
+    
+    // Affects the growth rate of policy costs.
+    // Small changes to this can have a significant impact in the late game.
+    var policyCostExponent = 1.7
 
     // AI behaviour
     var workboatAutomationSearchMaxTiles = 37
