@@ -45,6 +45,7 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
+import com.unciv.logic.automation.Timers.Companion.timeThis
 
 enum class Proximity : IsPartOfGameInfoSerialization {
     None, // ie no cities
@@ -430,7 +431,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     @Transient
     val cache = CivInfoTransientCache(this)
 
-    fun updateStatsForNextTurn() {
+    fun updateStatsForNextTurn(): Unit = timeThis<Unit>("Civilization.updateStatsForNextTurn") {
         val previousHappiness = stats.happiness
         stats.happiness = stats.getHappinessBreakdown().values.sum().roundToInt()
         if (stats.happiness != previousHappiness && gameInfo.ruleset.allHappinessLevelsThatAffectUniques.any {
@@ -862,7 +863,7 @@ class Civilization : IsPartOfGameInfoSerialization {
                 ?: throw MissingNationException("Nation $civName is not found!", gameInfo.ruleset.mods)
     }
 
-    fun setTransients() {
+    fun setTransients() = timeThis("Civilization.setTransients") {
         goldenAges.civInfo = this
         greatPeople.civInfo = this
         civConstructions.setTransients(civInfo = this)

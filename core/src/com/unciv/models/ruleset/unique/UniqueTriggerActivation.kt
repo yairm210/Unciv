@@ -421,7 +421,7 @@ object UniqueTriggerActivation {
                         true
                     }
                     belief != null && civInfo.religionManager.religion?.hasBelief(name) == false -> return {
-                        civInfo.religionManager.religion?.addBelief(belief)
+                        civInfo.religionManager.chooseBeliefs(listOf(belief))
                         getNotificationText(notification, triggerNotificationText, "You gain the [$name] Belief")?.let {
                             civInfo.addNotification(it, NotificationCategory.Religion, NotificationIcon.Faith)
                         }
@@ -1278,7 +1278,7 @@ object UniqueTriggerActivation {
 
             UniqueType.OneTimeRemoveImprovementsFromTile -> {
                 if (tile == null) return null
-                val tileImprovement = tile.getTileImprovement() ?: return null
+                val tileImprovement = tile.tileImprovement ?: return null
                 val improvementFilter = unique.params[0]
                 if (!tileImprovement.matchesFilter(improvementFilter)) return null
                 return {

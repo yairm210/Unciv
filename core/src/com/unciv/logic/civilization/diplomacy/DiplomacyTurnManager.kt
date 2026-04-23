@@ -1,6 +1,7 @@
 package com.unciv.logic.civilization.diplomacy
 
 import com.unciv.Constants
+import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.civilization.DiplomacyAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
@@ -16,7 +17,7 @@ import kotlin.math.min
 
 object DiplomacyTurnManager {
 
-    fun DiplomacyManager.nextTurn() {
+    fun DiplomacyManager.nextTurn() = timeThis("DiplomacyManager.nextTurn") {
         nextTurnTrades()
         removeUntenableTrades()
         updateHasOpenBorders()
@@ -304,14 +305,14 @@ object DiplomacyTurnManager {
         revertToZero(DiplomaticModifiers.GaveUsUnits, 1 / 4f)
         revertToZero(DiplomaticModifiers.LiberatedCity, 1 / 8f)
         if (hasModifier(DiplomaticModifiers.GaveUsGifts)) {
-            val giftLoss = when {
-                relationshipLevel() == RelationshipLevel.Ally -> 1f
-                relationshipLevel() == RelationshipLevel.Friend -> 1.5f
-                relationshipLevel() == RelationshipLevel.Favorable -> 2f
-                relationshipLevel() == RelationshipLevel.Neutral -> 2.5f
-                relationshipLevel() == RelationshipLevel.Competitor -> 5f
-                relationshipLevel() == RelationshipLevel.Enemy -> 7.5f
-                relationshipLevel() == RelationshipLevel.Unforgivable -> 10f
+            val giftLoss = when (relationshipLevel()) {
+                RelationshipLevel.Ally -> 1f
+                RelationshipLevel.Friend -> 1.5f
+                RelationshipLevel.Favorable -> 2f
+                RelationshipLevel.Neutral -> 2.5f
+                RelationshipLevel.Competitor -> 5f
+                RelationshipLevel.Enemy -> 7.5f
+                RelationshipLevel.Unforgivable -> 10f
                 else -> 2.5f
             } * civInfo.gameInfo.ruleset.modOptions.constants.goldGiftDegradationMultiplier
             // We should subtract a certain amount from this balanced each turn

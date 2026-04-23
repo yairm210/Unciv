@@ -4,6 +4,7 @@ import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.MultiFilter
+import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.city.managers.CityConquestFunctions
 import com.unciv.logic.city.managers.CityEspionageManager
 import com.unciv.logic.city.managers.CityExpansionManager
@@ -32,7 +33,6 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.SubStat
 import com.unciv.utils.withoutItem
 import yairm210.purity.annotations.Cache
-import yairm210.purity.annotations.InternalState
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 import java.util.EnumSet
@@ -201,7 +201,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     @Readonly fun isWorked(tile: Tile) = workedTiles.contains(tile.position)
 
     @Readonly fun isCapital(): Boolean = cityConstructions.builtBuildingUniqueMap.hasUnique(UniqueType.IndicatesCapital, state)
-    @Readonly fun isCoastal(): Boolean = centerTile.isCoastalTile()
+    @Readonly fun isCoastal(): Boolean = centerTile.isAdjacentToCoast()
     @Readonly fun isNaval(): Boolean = centerTile.isWater || isCoastal()
     
     @Readonly fun getBombardRange(): Int = civ.gameInfo.ruleset.modOptions.constants.baseCityBombardRange
@@ -388,8 +388,10 @@ class City : IsPartOfGameInfoSerialization, INamed {
         espionage.setTransients(this)
     }
 
-    fun setFlag(flag: CityFlags, amount: Int) {
-        flagsCountdown[flag.name] = amount
+    fun setFlag(flag: CityFlags, amount: Int, adjustWithGameSpeed: Boolean = false) {
+        flagsCountdown[flag.name] = 
+            if (adjustWithGameSpeed) (amount * civ.gameInfo.speed.modifier).roundToInt()
+            else amount
     }
 
     fun removeFlag(flag: CityFlags) {
@@ -415,7 +417,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
      *
      *  If the next City.startTurn is soon enough, then use [reassignPopulationDeferred] instead.
      */
-    fun reassignPopulation(resetLocked: Boolean = false) {
+    fun reassignPopulation(resetLocked: Boolean = false) = timeThis("reassignPopulation") {
         if (resetLocked) {
             workedTiles = hashSetOf()
             lockedTiles = hashSetOf()
@@ -447,6 +449,11 @@ class City : IsPartOfGameInfoSerialization, INamed {
         // Destroy planes stationed in city
         for (airUnit in getCenterTile().airUnits.toList()) airUnit.destroy()
 
+        // Evacuate spies BEFORE relinquishing tile ownership, because spy lookup uses tile.owningCity
+        // to find which city a spy is stationed in (after save/load when the transient city field is null).
+        // If we relinquish ownership first, owningCity becomes null and spies are not found/evacuated.
+        espionage.removeAllPresentSpies(SpyFleeReason.CityDestroyed)
+
         // The relinquish ownership MUST come before removing the city,
         // because it updates the city stats which assumes there is a capital, so if you remove the capital it crashes
         for (tile in getTiles()) {
@@ -468,8 +475,6 @@ class City : IsPartOfGameInfoSerialization, INamed {
             if (!unit.movement.canPassThrough(getCenterTile()))
                 unit.movement.teleportToClosestMoveableTile()
         }
-
-        espionage.removeAllPresentSpies(SpyFleeReason.CityDestroyed)
 
         // Update proximity rankings for all civs
         for (otherCiv in civ.gameInfo.getAliveMajorCivs()) {

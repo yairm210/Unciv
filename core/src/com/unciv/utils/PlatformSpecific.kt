@@ -13,4 +13,6 @@ interface PlatformSpecific {
 
     /** If the OS localizes all error messages, this should provide a lookup */
     fun getSystemErrorMessage(errorCode: Int): String? = null
+
+    fun getGcCount(): Int
 }

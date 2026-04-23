@@ -80,11 +80,43 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
     /** @return Total XP including that already "spent" on promotions */
     @Readonly fun totalXpProduced() = XP + (numberOfPromotions * (numberOfPromotions + 1)) * 5
 
+    /**
+     * @return Combined value of all promotions and XP = Number of promotions if all xp is spent + number of free promotions + progress to next promotion
+     */
+    @Readonly
+    fun valueOfPromotionsAndXp(): Float {
+        /*
+        Consider a unit with:
+        - 2 chosen promotions
+        - 1 free promotion
+        - 50 unspent XP (next promotion costs 30 XP)
+        
+        Assume the unit spends all its XP on promotions:
+        - 3 chosen promotions
+        - 1 free promotion
+        - 20 unspent XP (next promotion costs 40 XP)
+        
+        It now has 4 promotions + 50% of the way to the next promotion = a score of 4.50
+         */
+        var effectiveNumberOfPromotions = numberOfPromotions
+        var remainingFreeXp = XP
+        while (true) {
+            val nextPromotionCost = xpCostForPromotionNumber(effectiveNumberOfPromotions + 1)
+            if (remainingFreeXp < nextPromotionCost)
+                break
+            effectiveNumberOfPromotions++
+            remainingFreeXp -= nextPromotionCost
+        }
+        val progressToNextPromotion = remainingFreeXp.toFloat() / xpCostForPromotionNumber(effectiveNumberOfPromotions + 1)
+        val numberOfFreePromotions = promotions.size - numberOfPromotions
+        return effectiveNumberOfPromotions + numberOfFreePromotions + progressToNextPromotion
+    }
+    
     @Readonly
     fun canBePromoted(): Boolean {
-        if (XP < xpForNextPromotion()) return false
         if (getAvailablePromotions().none()) return false
-        return true
+        if (XP >= xpForNextPromotion()) return true
+        return getAvailablePromotions().any { it.hasUnique(UniqueType.FreePromotion) }
     }
 
     fun addPromotion(promotionName: String, isFree: Boolean = false) {

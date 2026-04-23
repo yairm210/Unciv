@@ -2,6 +2,7 @@ package com.unciv.logic.city
 
 import com.unciv.GUI
 import com.unciv.UncivGame
+import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.city.ConstructionAutomation
@@ -116,7 +117,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
      * @return [Stats] provided by all built buildings in city
      */
     @Readonly
-    fun getStats(localUniqueCache: LocalUniqueCache): StatTreeNode {
+    fun getStats(localUniqueCache: LocalUniqueCache): StatTreeNode = timeThis("CityConstructions.getStats") {
         @LocalState val stats = StatTreeNode()
         for (building in getBuiltBuildings())
             stats.addStats(building.getStats(city, localUniqueCache), building.name)
@@ -357,7 +358,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         inProgressConstructions[constructionName] = inProgressConstructions[constructionName]!! + productionToAdd
     }
 
-    fun constructIfEnough() {
+    fun constructIfEnough() = timeThis("constructIfEnough") {
         validateConstructionQueue()
 
         // Update InProgressConstructions for any available refunds
@@ -664,7 +665,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         
         if (building.hasCreateOneImprovementUnique()){
             val improvement = building.getImprovementToCreate(city.getRuleset(), city.civ)!!
-            val tileWithImprovementToRemove = city.getTiles().firstOrNull { it.improvement == improvement.name }
+            val tileWithImprovementToRemove = city.getTiles().firstOrNull { it.tileImprovement == improvement }
             tileWithImprovementToRemove?.removeImprovement()
         }
         
@@ -815,7 +816,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     private fun removeCurrentConstruction() = removeFromQueue(0, true)
 
-    fun chooseNextConstruction() {
+    fun chooseNextConstruction() = timeThis("chooseNextConstruction") {
         if (!isQueueEmptyOrIdle()) {
             // If the USER set a perpetual construction, then keep it!
             if (getConstruction( currentConstructionName()) !is PerpetualConstruction || currentConstructionIsUserSet) return
@@ -988,7 +989,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         val tileForImprovement = getTileForImprovement(improvement.name) ?: return
         tileForImprovement.stopWorkingOnImprovement()  // clears mark
         if (removeOnly) return
-        tileForImprovement.setImprovement(improvement.name, city.civ)
+        tileForImprovement.setImprovement(improvement, city.civ)
         // If bought the worldscreen will not have been marked to update, and the new improvement won't show until later...
         GUI.setUpdateWorldOnNextRender()
     }

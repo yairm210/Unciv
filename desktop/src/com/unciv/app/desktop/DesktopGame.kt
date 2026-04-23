@@ -4,6 +4,10 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
 import com.sun.jna.platform.win32.Kernel32Util
 import com.unciv.UncivGame
+import java.lang.management.GarbageCollectorMXBean
+import java.lang.management.ManagementFactory
+
+
 
 class DesktopGame(config: Lwjgl3ApplicationConfiguration, override var customDataDirectory: String?) : UncivGame() {
 

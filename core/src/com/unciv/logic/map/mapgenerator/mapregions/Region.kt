@@ -78,7 +78,7 @@ class Region (val tileMap: TileMap, val rect: Rectangle, val continentID: Int = 
             for (terrain in terrainsToCount) {
                 terrainCounts[terrain] = (terrainCounts[terrain] ?: 0) + 1
             }
-            if (tile.isCoastalTile())
+            if (tile.isAdjacentToCoast())
                 terrainCounts["Coastal"] = (terrainCounts["Coastal"] ?: 0) + 1
         }
     }

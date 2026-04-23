@@ -29,6 +29,7 @@ import com.unciv.ui.screens.victoryscreen.RankingType
 import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 import kotlin.math.sqrt
+import com.unciv.logic.automation.Timers.Companion.timeThis
 
 class ConstructionAutomation(val cityConstructions: CityConstructions) {
 
@@ -113,7 +114,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
     }
 
 
-    fun chooseNextConstruction() {
+    fun chooseNextConstruction() = timeThis("ConstructionAutomation.chooseNextConstruction") {
         if (cityConstructions.getCurrentConstruction() !is PerpetualConstruction) return  // don't want to be stuck on these forever
         
         addBuildingChoices()

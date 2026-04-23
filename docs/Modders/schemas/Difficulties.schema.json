@@ -171,6 +171,12 @@
         "title": "AI Unhappiness Modifier",
         "description": "Multiplier for AI unhappiness effects."
       },
+      "aisExchangeTechs": {
+        "type": "boolean",
+        "default": false,
+        "title": "AI Exchange Techs",
+        "description": "Whether or not AI players can exchange technologies."
+      },
       "turnBarbariansCanEnterPlayerTiles": {
         "type": "integer",
         "default": 0,

@@ -140,7 +140,6 @@ class NewGameScreen(
                 Concurrency.runOnGLThread {
                     AcceptModErrorsPopup(
                         this@NewGameScreen, modCheckResult,
-                        restoreDefault = { newGameOptionsTable.resetRuleset() },
                         action = {
                             gameSetupInfo.gameParameters.acceptedModCheckErrors = modCheckResult
                             startGameAvoidANRs()
@@ -350,6 +349,8 @@ class NewGameScreen(
         }
 
         val worldScreen = game.loadGame(newGame)
+        
+        worldScreen.autoSave()
 
         if (newGame.gameParameters.isOnlineMultiplayer) {
             launchOnGLThread {
