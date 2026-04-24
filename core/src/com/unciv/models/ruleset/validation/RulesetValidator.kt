@@ -274,12 +274,7 @@ open class RulesetValidator protected constructor(
     protected open fun addModOptionsErrors(lines: RulesetErrorList) {
         // Basic Unique validation (type, target, parameters) should always run.
         // Using reportRulesetSpecificErrors=true as ModOptions never should use Uniques depending on objects from a base ruleset anyway.
-        uniqueValidator.checkUniques(
-            ruleset.modOptions,
-            lines,
-            reportRulesetSpecificErrors = true,
-            tryFixUnknownUniques
-        )
+        uniqueValidator.checkUniques(ruleset.modOptions, lines, reportRulesetSpecificErrors = true, tryFixUnknownUniques)
         
         fun lineText(constantName: String, detail: String = ""): String {
             return "Invalid ModConstant '%s'. %s".format(constantName, detail)
