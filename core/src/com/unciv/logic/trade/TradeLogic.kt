@@ -182,9 +182,19 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
                     val warType = if (currentTrade.theirOffers.any { it.type == TradeOfferType.WarDeclaration && it.name == nameOfCivToDeclareWarOn }
                             && currentTrade.ourOffers.any {it.type == TradeOfferType.WarDeclaration && it.name == nameOfCivToDeclareWarOn})
                         WarType.TeamWar
-                    else WarType.JoinWar
-
-                    from.getDiplomacyManager(nameOfCivToDeclareWarOn)!!.declareWar(DeclareWarReason(warType, to))
+                    else if (currentTrade.theirOffers.any { it.type == TradeOfferType.WarDeclaration && it.name == nameOfCivToDeclareWarOn && ourCivilization.isAtWarWith(to.gameInfo.getCivilization(it.name))}
+                        || currentTrade.ourOffers.any {it.type == TradeOfferType.WarDeclaration && it.name == nameOfCivToDeclareWarOn && otherCivilization.isAtWarWith(to.gameInfo.getCivilization(it.name))})
+                        WarType.JoinWar
+                    else WarType.DirectWar
+                    when(warType) {
+                        WarType.TeamWar, WarType.JoinWar -> from.getDiplomacyManager(nameOfCivToDeclareWarOn)!!.declareWar(DeclareWarReason(warType, to))
+                        WarType.DirectWar -> {
+                            // from will always be the declaring Civ
+                            from.getDiplomacyManager(nameOfCivToDeclareWarOn)!!
+                                .declareWar(DeclareWarReason(warType))
+                        }
+                        else -> {throw IllegalStateException("Unhandled WarType: $warType found within TradeOfferType.WarDeclaration")}
+                    }
                 }
                 TradeOfferType.PeaceProposal -> {
                     // Convert PeaceProposal to peaceTreaty and apply to warring civs
@@ -213,10 +223,19 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
 
         // We shouldn't evaluate trades if we are doing a peace treaty
         // Their value can be so big it throws the gift system out of wack
-        if (applyGifts && !currentTrade.ourOffers.any { it.name == Constants.peaceTreaty }) {
+        // Also, offers for peace/war with a third nation are not a "gift"
+        val shouldChangeRelationshipDueToGiftedValue = applyGifts
+                && !currentTrade.ourOffers.any { 
+                    it.name == Constants.peaceTreaty
+                            || it.type == TradeOfferType.WarDeclaration
+                            || it.type == TradeOfferType.PeaceProposal
+                }
+        
+        if (shouldChangeRelationshipDueToGiftedValue) {
             // Must evaluate before moving, or else cities have already moved and we get an exception
             val ourGoldValueOfTrade = TradeEvaluation().getTradeAcceptability(currentTrade, ourCivilization, otherCivilization, includeDiplomaticGifts = false)
             val theirGoldValueOfTrade = TradeEvaluation().getTradeAcceptability(currentTrade.reverse(), otherCivilization, ourCivilization, includeDiplomaticGifts = false)
+            
             if (ourGoldValueOfTrade > theirGoldValueOfTrade) {
                 val isPureGift = currentTrade.ourOffers.isEmpty()
                 ourDiploManager.giftGold(ourGoldValueOfTrade - theirGoldValueOfTrade.coerceAtLeast(0), isPureGift)

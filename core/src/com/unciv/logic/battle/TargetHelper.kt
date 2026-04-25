@@ -1,6 +1,7 @@
 package com.unciv.logic.battle
 
 import com.unciv.Constants
+import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.city.City
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.movement.PathsToTilesWithinTurn
@@ -16,7 +17,7 @@ object TargetHelper {
         unitDistanceToTiles: PathsToTilesWithinTurn,
         tilesToCheck: List<Tile>? = null,
         stayOnTile: Boolean = false
-    ): ArrayList<AttackableTile> {
+    ): ArrayList<AttackableTile> = timeThis("getAttackableEnemies") {
         val rangeOfAttack = unit.getRange()
         val attackableTiles = ArrayList<AttackableTile>()
 
@@ -121,7 +122,7 @@ object TargetHelper {
         
         if (combatant is MapUnitCombatant) {
             val gameContext = GameContext(
-                unit = (combatant as? MapUnitCombatant)?.unit, tile = tile, 
+                unit = combatant.unit, tile = tile, 
                 ourCombatant = combatant, theirCombatant = tileCombatant, combatAction = CombatAction.Attack)
 
             if (combatant.hasUnique(UniqueType.CannotAttack, gameContext))
@@ -143,8 +144,7 @@ object TargetHelper {
         // Only units with the right unique can view submarines (or other invisible units) from more then one tile away.
         // Garrisoned invisible units can be attacked by anyone, as else the city will be in invincible.
         if (tileCombatant.isInvisible(combatant.getCivInfo()) && !tile.isCityCenter()) {
-            return combatant is MapUnitCombatant
-                && combatant.getCivInfo().viewableInvisibleUnitsTiles.map { it.position }.contains(tile.position)
+            return combatant.getCivInfo().viewableInvisibleUnitsTiles.map { it.position }.contains(tile.position)
         }
         
         return true

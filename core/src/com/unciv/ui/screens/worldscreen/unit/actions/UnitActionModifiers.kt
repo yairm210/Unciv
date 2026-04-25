@@ -210,4 +210,11 @@ object UnitActionModifiers {
         return if (effects.isEmpty()) ""
         else "(${effects.joinToString { it.tr() }})"
     }
+    
+    fun getUseFrequency(unit: MapUnit, actionUnique: Unique?, default: Float): Float
+        = actionUnique?.modifiersMap[UniqueType.UnitActionPriority]
+        ?.firstOrNull { it.conditionalsApply(unit.cache.state) }
+        ?.params[0]
+        ?.toFloat()
+        ?: default
 }

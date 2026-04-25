@@ -3,10 +3,7 @@ package com.unciv.logic.civilization
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.json.LastSeenImprovement
-import com.unciv.logic.GameInfo
-import com.unciv.logic.IsPartOfGameInfoSerialization
-import com.unciv.logic.MultiFilter
-import com.unciv.logic.UncivShowableException
+import com.unciv.logic.*
 import com.unciv.logic.automation.unit.WorkerAutomation
 import com.unciv.logic.city.City
 import com.unciv.logic.city.managers.CityFounder
@@ -42,10 +39,13 @@ import com.unciv.ui.screens.victoryscreen.RankingType
 import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.Readonly
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
+import com.unciv.logic.automation.Timers.Companion.timeThis
 
 enum class Proximity : IsPartOfGameInfoSerialization {
     None, // ie no cities
@@ -124,6 +124,8 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     /** Used in online multiplayer for human players */
     var playerId = ""
+    /** Used in online multiplayer, if a player exceed this time to complete their turn, others can force them to resign*/
+    var playerMinutesBeforeForceResign = 3 * 24 * 60
     /** The Civ's gold reserves. Public get, private set - please use [addGold] method to modify. */
     var gold = 0
         private set
@@ -160,6 +162,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     var naturalWonders = ArrayList<String>()
 
     var notifications = ArrayList<Notification>()
+    var notificationCountAtStartTurn: Int? = null  // Used by NotificationsOverviewTable to highlight new entries
 
     var notificationsLog = ArrayList<NotificationsLog>()
     class NotificationsLog(val turn: Int = 0) : IsPartOfGameInfoSerialization {
@@ -279,6 +282,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.gold = gold
         toReturn.playerType = playerType
         toReturn.playerId = playerId
+        toReturn.playerMinutesBeforeForceResign = playerMinutesBeforeForceResign
         toReturn.civName = civName
         toReturn.civID = civID
         toReturn.tech = tech.clone()
@@ -302,6 +306,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.leaderTitle = leaderTitle
         toReturn.notifications.addAll(notifications)
         toReturn.notificationsLog.addAll(notificationsLog)
+        toReturn.notificationCountAtStartTurn = notificationCountAtStartTurn
         toReturn.citiesCreated = citiesCreated
         toReturn.popupAlerts.addAll(popupAlerts)
         toReturn.tradeRequests.addAll(tradeRequests)
@@ -426,7 +431,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     @Transient
     val cache = CivInfoTransientCache(this)
 
-    fun updateStatsForNextTurn() {
+    fun updateStatsForNextTurn(): Unit = timeThis<Unit>("Civilization.updateStatsForNextTurn") {
         val previousHappiness = stats.happiness
         stats.happiness = stats.getHappinessBreakdown().values.sum().roundToInt()
         if (stats.happiness != previousHappiness && gameInfo.ruleset.allHappinessLevelsThatAffectUniques.any {
@@ -442,6 +447,14 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     @Readonly
     fun getHappiness() = stats.happiness
+    
+    @OptIn(ExperimentalContracts::class)
+    @Readonly
+    fun canSeeResource(resource: TileResource?): Boolean {
+        contract { returns(true) implies(resource != null) }
+        if (resource == null) return false
+        return tech.isRevealed(resource)
+    }
 
     /** Note that for stockpiled resources, this gives by how much it grows per turn, not current amount */
     @Readonly
@@ -512,6 +525,15 @@ class Civilization : IsPartOfGameInfoSerialization {
         return getCivResourceSupply().firstOrNull { !it.resource.isStockpiled && it.resource.name == resourceName }?.amount ?: 0
     }
 
+    /** Gets the number of resources available to this city
+     * Does not include city-wide resources
+     * Returns 0 for undefined resources */
+    @Readonly
+    fun getResourceAmount(resource: TileResource): Int {
+        if (resource.isStockpiled) return resourceStockpiles[resource.name]
+        return getCivResourceSupply().firstOrNull { it.resource == resource }?.amount ?: 0
+    }
+
     /** Gets modifiers for ALL resources */
     @Readonly
     fun getResourceModifiers(): Map<String, Float> =
@@ -537,6 +559,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     }
 
     @Readonly fun hasResource(resourceName: String): Boolean = getResourceAmount(resourceName) > 0
+    @Readonly fun hasResource(resource: TileResource): Boolean = getResourceAmount(resource) > 0
 
     @Readonly
     fun hasUnique(uniqueType: UniqueType, gameContext: GameContext = state) =
@@ -570,18 +593,21 @@ class Civilization : IsPartOfGameInfoSerialization {
         trigger: UniqueType,
         gameContext: GameContext = state,
         triggerFilter: (Unique) -> Boolean = { true }
-    ) : Iterable<Unique> = sequence {
-        yieldAll(nation.uniqueMap.getTriggeredUniques(trigger, gameContext, triggerFilter))
-        yieldAll(cities.asSequence()
-            .flatMap { city -> city.cityConstructions.builtBuildingUniqueMap.getTriggeredUniques(trigger, gameContext, triggerFilter) }
-        )
+    ) : Sequence<Unique> = sequence {
+        // Gathering all uniques into a list first since triggers can add e.g. buildings 
+        // which contain triggers, causing concurrent modification errors.
+        // Cannont use getTriggeredUniques from uniqueMaps since we don't want to check conditionals yet
+        yieldAll(nation.uniqueMap.getAllUniques())
+        yieldAll(cities.asSequence().flatMap { city -> city.cityConstructions.builtBuildingUniqueMap.getAllUniques() })
         if (religionManager.religion != null)
-            yieldAll(religionManager.religion!!.founderBeliefUniqueMap.getTriggeredUniques(trigger, gameContext, triggerFilter))
-        yieldAll(policies.policyUniques.getTriggeredUniques(trigger, gameContext, triggerFilter))
-        yieldAll(tech.techUniques.getTriggeredUniques(trigger, gameContext, triggerFilter))
-        yieldAll(getEra().uniqueMap.getTriggeredUniques (trigger, gameContext, triggerFilter))
-        yieldAll(gameInfo.getGlobalUniques().uniqueMap.getTriggeredUniques(trigger, gameContext, triggerFilter))
-    }.toList() // Triggers can e.g. add buildings which contain triggers, causing concurrent modification errors
+            yieldAll(religionManager.religion!!.founderBeliefUniqueMap.getAllUniques())
+        yieldAll(policies.policyUniques.getAllUniques())
+        yieldAll(tech.techUniques.getAllUniques())
+        yieldAll(getEra().uniqueMap.getAllUniques())
+        yieldAll(gameInfo.getGlobalUniques().uniqueMap.getAllUniques())
+    }.toList().asSequence() // Then convert back to a Sequence to check conditionals when triggering rather than before triggering
+        .filter { it.getModifiers(trigger).any(triggerFilter) && it.conditionalsApply(gameContext) }
+        .flatMap { it.getMultiplied(gameContext) }
 
     @Readonly
     fun getTriggeredUniques(
@@ -589,18 +615,23 @@ class Civilization : IsPartOfGameInfoSerialization {
         gameContext: GameContext = state,
         triggerFilter: (Unique) -> Boolean = { true },
         ignoreCities: Boolean = false
-    ) : Iterable<Unique> = sequence {
-        yieldAll(nation.uniqueMap.getTriggeredUniques(trigger, gameContext, triggerFilter))
-        if (!ignoreCities) yieldAll(cities.asSequence()
-            .flatMap { city -> city.cityConstructions.builtBuildingUniqueMap.getTriggeredUniques(trigger, gameContext, triggerFilter) }
+    ) : Sequence<Unique> = sequence {
+        // Gathering all uniques into a list first since triggers can add e.g. buildings 
+        // which contain triggers, causing concurrent modification errors.
+        // Cannont use getTriggeredUniques from uniqueMaps since we don't want to check conditionals yet
+        yieldAll(nation.uniqueMap.getAllUniques())
+        if(!ignoreCities) yieldAll(cities.asSequence()
+            .flatMap { city -> city.cityConstructions.builtBuildingUniqueMap.getAllUniques() }
         )
         if (religionManager.religion != null)
-            yieldAll(religionManager.religion!!.founderBeliefUniqueMap.getTriggeredUniques(trigger, gameContext, triggerFilter))
-        yieldAll(policies.policyUniques.getTriggeredUniques(trigger, gameContext, triggerFilter))
-        yieldAll(tech.techUniques.getTriggeredUniques(trigger, gameContext, triggerFilter))
-        yieldAll(getEra().uniqueMap.getTriggeredUniques (trigger, gameContext, triggerFilter))
-        yieldAll(gameInfo.getGlobalUniques().uniqueMap.getTriggeredUniques(trigger, gameContext, triggerFilter))
-    }.toList() // Triggers can e.g. add buildings which contain triggers, causing concurrent modification errors
+            yieldAll(religionManager.religion!!.founderBeliefUniqueMap.getAllUniques())
+        yieldAll(policies.policyUniques.getAllUniques())
+        yieldAll(tech.techUniques.getAllUniques())
+        yieldAll(getEra().uniqueMap.getAllUniques())
+        yieldAll(gameInfo.getGlobalUniques().uniqueMap.getAllUniques())
+    }.toList().asSequence() // Then convert back to a Sequence to check conditionals when triggering rather than before triggering
+        .filter { it.getModifiers(trigger).any(triggerFilter) && it.conditionalsApply(gameContext) }
+        .flatMap { it.getMultiplied(gameContext) }
 
     /** Implements [UniqueParameterType.CivFilter][com.unciv.models.ruleset.unique.UniqueParameterType.CivFilter] */
     @Readonly
@@ -674,7 +705,7 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     @Readonly
     fun getEquivalentUnit(baseUnit: BaseUnit): BaseUnit {
-        if (baseUnit.replaces != null)
+        if (baseUnit.replaces != null && baseUnit.replaces in gameInfo.ruleset.units)
             return getEquivalentUnit(baseUnit.replaces!!) // Equivalent of unique unit is the equivalent of the replaced unit
 
         for (unit in cache.uniqueUnits)
@@ -829,10 +860,10 @@ class Civilization : IsPartOfGameInfoSerialization {
      *  */
     fun setNationTransient() {
         nation = gameInfo.ruleset.nations[civName]
-                ?: throw UncivShowableException("Nation $civName is not found!")
+                ?: throw MissingNationException("Nation $civName is not found!", gameInfo.ruleset.mods)
     }
 
-    fun setTransients() {
+    fun setTransients() = timeThis("Civilization.setTransients") {
         goldenAges.civInfo = this
         greatPeople.civInfo = this
         civConstructions.setTransients(civInfo = this)
@@ -949,6 +980,16 @@ class Civilization : IsPartOfGameInfoSerialization {
             else -> {}
             // Food and Production wouldn't make sense to be added nationwide
             // Happiness cannot be added as it is recalculated again, use a unique instead
+        }
+    }
+    
+    @Readonly
+    fun getGameResource(gameResource:GameResource): Int {
+        return when (gameResource) {
+            is TileResource -> getResourceAmount(gameResource)
+            is Stat -> getStatReserve(gameResource)
+            SubStat.GoldenAgePoints -> goldenAges.storedHappiness
+            else -> throw Exception("Unrecognized gameResource ${gameResource.name}")
         }
     }
 
@@ -1077,7 +1118,7 @@ class Civilization : IsPartOfGameInfoSerialization {
                     it.hasUnique(UniqueType.MovesToNewCapital)
                 }.toSet()
 
-                oldCapital.cityConstructions.removeBuildings(buildingsToMove)
+                for (building in buildingsToMove) oldCapital.cityConstructions.removeBuilding(building)
 
                 // Add the buildings to new capital
                 for (building in buildingsToMove) city.cityConstructions.addBuilding(building)
@@ -1170,6 +1211,7 @@ class CivilizationInfoPreview() {
     var civID = ""
     var playerType = PlayerType.AI
     var playerId = ""
+    var playerMinutesBeforeForceResign = 60*24*3
     @Readonly fun isPlayerCivilization() = playerType == PlayerType.Human
 
     /**
@@ -1180,6 +1222,7 @@ class CivilizationInfoPreview() {
         civID = civilization.civID
         playerType = civilization.playerType
         playerId = civilization.playerId
+        playerMinutesBeforeForceResign = civilization.playerMinutesBeforeForceResign
     }
 }
 

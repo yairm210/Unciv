@@ -3,9 +3,11 @@ package com.unciv.logic.civilization.diplomacy
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeLogic
@@ -17,6 +19,7 @@ import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.ui.components.extensions.toPercent
+import com.unciv.utils.Log
 import yairm210.purity.annotations.Cache
 import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Immutable
@@ -24,6 +27,7 @@ import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 import kotlin.math.ceil
 import kotlin.math.max
+import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlin.math.sign
 
@@ -100,7 +104,7 @@ enum class DiplomaticModifiers(val text: String) {
     CapturedOurCities("You have captured our cities!"),
     DeclaredFriendshipWithOurEnemies("You have declared friendship with our enemies!"),
     BetrayedDeclarationOfFriendship("Your so-called 'friendship' is worth nothing."),
-    SignedDefensivePactWithOurEnemies("You have declared a defensive pact with our enemies!"),
+    SignedDefensivePactWithOurEnemies("You have signed a defensive pact with our enemy!"),
     BetrayedDefensivePact("Your so-called 'defensive pact' is worth nothing."),
     Denunciation("You have publicly denounced us!"),
     DenouncedOurAllies("You have denounced our allies"),
@@ -132,7 +136,7 @@ enum class DiplomaticModifiers(val text: String) {
     DeclarationOfFriendship("We have signed a public declaration of friendship"),
     DeclaredFriendshipWithOurAllies("You have declared friendship with our allies"),
     DefensivePact("We have signed a promise to protect each other."),
-    SignedDefensivePactWithOurAllies("You have declared a defensive pact with our allies"),
+    SignedDefensivePactWithOurAllies("You have signed a defensive pact with our ally"),
     DenouncedOurEnemies("You have denounced our enemies"),
     OpenBorders("Our open borders have brought us closer together."),
     FulfilledPromiseToNotSettleCitiesNearUs("You fulfilled your promise to stop settling cities near us!"),
@@ -154,6 +158,16 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     companion object {
         /** The value city-state influence can't go below */
         const val MINIMUM_INFLUENCE = -60f
+        /**
+         * Smoothing period used in denounce automation, before adjusting for game speed etc.
+         * Higher values make denunciations more likely.
+         */ 
+        const val EMA_PERIOD = 30f
+        /** In old savefiles, if we have already met a civ, but the smoothed opinion value has not been set, apply a very low initial value to prevent sudden mass denunciations */
+        const val OLD_SAVEFILE_INITIAL_SMOOTHED_OPINION = -250f
+
+        /** How upset should the AI be when they are denounced for the first time? */
+        const val INITIAL_OPINION_CHANGE_WHEN_DENOUNCED = -35f
     }
 
     @Transient
@@ -197,6 +211,41 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     /** Total of each turn Science during Research Agreement */
     internal var totalOfScienceDuringRA = 0
 
+    /**
+     * How quickly do we forget past relationships?
+     * 
+     * Used in AI denounce logic (values updated for all major civs, including humans, incase player resigns).
+     * 
+     * A period of 1 is equivalent to only remembering our opinion from the last turn - very sudden drop in opinion is required to denounce.
+     * 
+     * A period of >1 means we keep some memory of opinions from previous turns.
+     * 
+     * If the old average is 10, new value is 25, and period is 3, then the new average will be 15, because (25-10)/3 = +5
+     * 
+     * (ema = exponential moving average)
+     */
+    @Readonly
+    private fun smoothedOpinionEmaPeriod() = EMA_PERIOD * civInfo.gameInfo.speed.modifier // setting all this to 1 is useful for debugging
+
+    /** The smoothed opinion perpetually converges with the actual opinion, updated each turn */
+    var smoothedOpinionOfOtherCiv = OLD_SAVEFILE_INITIAL_SMOOTHED_OPINION
+        private set
+    
+    /** Needed as a cache because the opinion value is saved right before the automation logic runs - but we want to use the one from the previous turn */
+    private var cachedSmoothedOpinionOfOtherCiv = OLD_SAVEFILE_INITIAL_SMOOTHED_OPINION
+
+    /**
+     * Smoothing formula = (newValue + oldAverage * (period - 1)) / period
+     */
+    internal fun saveSmoothedOpinionOfOtherCiv() {
+        smoothedOpinionOfOtherCiv = cachedSmoothedOpinionOfOtherCiv
+        cachedSmoothedOpinionOfOtherCiv = (opinionOfOtherCiv() + smoothedOpinionOfOtherCiv * (smoothedOpinionEmaPeriod() - 1)) / smoothedOpinionEmaPeriod()
+    }
+    
+    /** How much has our opinion of the other civ changed recently? */
+    @Readonly
+    fun smoothedOpinionDelta() = opinionOfOtherCiv() - smoothedOpinionOfOtherCiv
+
     fun clone(): DiplomacyManager {
         val toReturn = DiplomacyManager()
         toReturn.otherCivName = otherCivName
@@ -206,13 +255,18 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         toReturn.flagsCountdown.putAll(flagsCountdown)
         toReturn.diplomaticModifiers.putAll(diplomaticModifiers)
         toReturn.totalOfScienceDuringRA = totalOfScienceDuringRA
+        toReturn.smoothedOpinionOfOtherCiv = smoothedOpinionOfOtherCiv
+        toReturn.cachedSmoothedOpinionOfOtherCiv = cachedSmoothedOpinionOfOtherCiv
         return toReturn
     }
 
+    // called when we meet a new civ
     constructor(civilization: Civilization, otherCivName: String) : this() {
         civInfo = civilization
         this.otherCivName = otherCivName
         updateHasOpenBorders()
+        smoothedOpinionOfOtherCiv = 0f
+        cachedSmoothedOpinionOfOtherCiv = 0f
     }
 
     constructor(civilization: Civilization, otherCiv: Civilization) : this() {
@@ -220,6 +274,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         _otherCiv = otherCiv
         otherCivName = otherCiv.civID
         updateHasOpenBorders()
+        smoothedOpinionOfOtherCiv = 0f
+        cachedSmoothedOpinionOfOtherCiv = 0f
     }
 
     //region pure functions
@@ -233,6 +289,10 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         return 0
     }
 
+    /**
+     * Reflects how we perceive the other civ, and affects willingness to trade, declare war, etc..
+     * The other civ can view this number in the diplimacy screen.
+     */
     @Readonly
     fun opinionOfOtherCiv(): Float {
         var modifierSum = diplomaticModifiers.values.sum()
@@ -558,11 +618,26 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
                     NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCiv.civName
             )
         }
+        
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponSigningPeace)) {
+            if (otherCiv.matchesFilter(unique.params[0])) {
+                UniqueTriggerActivation.triggerUnique(unique, civInfo)
+            }
+        }
+
+        for (unique in otherCiv.getTriggeredUniques(UniqueType.TriggerUponSigningPeace)) {
+            if (civInfo.matchesFilter(unique.params[0])) {
+                UniqueTriggerActivation.triggerUnique(unique, otherCiv)
+            }
+        }
     }
 
     @Readonly fun hasFlag(flag: DiplomacyFlags) = flagsCountdown.containsKey(flag.name)
-    fun setFlag(flag: DiplomacyFlags, amount: Int) {
-        flagsCountdown[flag.name] = amount
+    
+    fun setFlag(flag: DiplomacyFlags, amount: Int, adjustWithGameSpeed: Boolean = false) {
+        flagsCountdown[flag.name] =
+            if (adjustWithGameSpeed) (amount * civInfo.gameInfo.speed.modifier).roundToInt()
+            else amount
     }
 
     /** 0 indicates 'flag does not exist' */
@@ -571,10 +646,15 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         flagsCountdown.remove(flag.name)
     }
 
-    fun addModifier(modifier: DiplomaticModifiers, amount: Float) {
+    fun addModifier(modifier: DiplomaticModifiers, amount: Float, limit: Float? = null) {
         val modifierString = modifier.name
         if (!hasModifier(modifier)) setModifier(modifier, 0f)
-        diplomaticModifiers[modifierString] = diplomaticModifiers[modifierString]!! + amount
+        var newValue = diplomaticModifiers[modifierString]!! + amount
+        if (limit != null) {
+            if (limit < 0) newValue = newValue.coerceAtLeast(limit)
+            else newValue = newValue.coerceAtMost(limit)
+        }
+        diplomaticModifiers[modifierString] = newValue
         if (diplomaticModifiers[modifierString] == 0f) diplomaticModifiers.remove(modifierString)
     }
 
@@ -600,15 +680,16 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     fun signDeclarationOfFriendship() {
         setModifier(DiplomaticModifiers.DeclarationOfFriendship, 35f)
         otherCivDiplomacy().setModifier(DiplomaticModifiers.DeclarationOfFriendship, 35f)
+        // before adjusting with game speed - consider side effects
         setFlag(DiplomacyFlags.DeclarationOfFriendship, 30)
         otherCivDiplomacy().setFlag(DiplomacyFlags.DeclarationOfFriendship, 30)
 
         for (thirdCiv in getCommonKnownCivsWithSpectators()) {
             thirdCiv.addNotification("[${civInfo.civName}] and [${otherCiv.civName}] have signed a Declaration of Friendship!",
                 NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCiv.civName)
+            if (thirdCiv.isSpectator()) continue
             thirdCiv.getDiplomacyManager(civInfo)!!.setFriendshipBasedModifier()
-            if (thirdCiv.isSpectator()) return
-            thirdCiv.getDiplomacyManager(civInfo)!!.setFriendshipBasedModifier()
+            thirdCiv.getDiplomacyManager(otherCiv)!!.setFriendshipBasedModifier()
         }
 
         // Ignore contitionals as triggerUnique will check again, and that would break
@@ -705,14 +786,40 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
     fun denounce() {
         activateDenounceEffects()
+        // legacy code for AI to counter-denounce
+        /*
         if (otherCiv.isAI())
             otherCivDiplomacy().activateDenounceEffects()
+        */
     }
     
+    
+    
     private fun activateDenounceEffects() {
-        setFlag(DiplomacyFlags.Denunciation, 30)
-        otherCivDiplomacy().setModifier(DiplomaticModifiers.Denunciation, -35f)
+        // This shows the relationship at the point of denouncing
+        Log.debug("%s (opinion: %.1f, smoothed opinion change: %.1f) decided to denounce %s because...", civInfo.civName, ::opinionOfOtherCiv, ::smoothedOpinionDelta, otherCivName)
+        for ((modifier, value) in diplomaticModifiers.entries)
+            Log.debug("- %s: %.1f", modifier, value)
         
+        // the other civ's opinion of us will drop by 35 if we are the only civ to denounce them
+        // if they have already been denounced by many others, our denouncement will not surprise / anger them quite as much
+        // -35, -25, -18, -12, ...
+        val activeDenunciationsAgainstOtherCiv = otherCiv.getKnownCivs().count {
+            it.getDiplomacyManager(otherCiv)!!.hasFlag(DiplomacyFlags.Denunciation)
+        }
+        val otherCivOpinionChangeFromBeingDenounced = INITIAL_OPINION_CHANGE_WHEN_DENOUNCED * 2f.pow(-0.5f * activeDenunciationsAgainstOtherCiv)
+        Log.debug("%s is upset that %s denounced them: %.1f opinion", otherCivName, civInfo.civName, otherCivOpinionChangeFromBeingDenounced)
+        otherCivDiplomacy().setModifier(DiplomaticModifiers.Denunciation, otherCivOpinionChangeFromBeingDenounced)
+        
+        // denouncements are active for 30 turns
+        // before adjusting with game speed - consider possible side effects of this
+        setFlag(DiplomacyFlags.Denunciation, 30)
+        
+        // the denounced civ will get a popup
+        otherCiv.popupAlerts.add(
+            PopupAlert(AlertType.Denounced, civInfo.civID)
+        )
+        // ...and a notification as a reminder for the rest of the turn
         otherCiv.addNotification(
             "[${civInfo.civName}] has denounced us!",
             NotificationCategory.Diplomacy,
@@ -723,7 +830,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         civInfo.diplomacyFunctions.removeEmbassies(otherCiv)
 
         // We, A, are denouncing B. What do other major civs (C,D, etc) think of this?
-        getCommonKnownCivsWithSpectators().forEach { thirdCiv ->
+        for (thirdCiv in getCommonKnownCivsWithSpectators()) {
             thirdCiv.addNotification(
                 "[${civInfo.civName}] has denounced [${otherCiv.civName}]!",
                 NotificationCategory.Diplomacy,
@@ -731,35 +838,46 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             )
             
             if (thirdCiv.isSpectator())
-                return@forEach
+                continue
 
-            // their relationship with us
-            val thirdCivRelationship = thirdCiv.getDiplomacyManager(civInfo)!!
+            // their diplomacy with us
+            val thirdCivDiplomacyWithUs = thirdCiv.getDiplomacyManager(civInfo)!!
             // their relationship with the civ we are denouncing
             val thirdCivRelationshipWithTarget = thirdCiv.getDiplomacyManager(otherCiv)!!.relationshipIgnoreAfraid()
             when (thirdCivRelationshipWithTarget) {
-                RelationshipLevel.Unforgivable -> thirdCivRelationship.addModifier(DiplomaticModifiers.DenouncedOurEnemies, 15f)
-                RelationshipLevel.Enemy -> thirdCivRelationship.addModifier(DiplomaticModifiers.DenouncedOurEnemies, 5f)
-                RelationshipLevel.Friend -> thirdCivRelationship.addModifier(DiplomaticModifiers.DenouncedOurAllies, -5f)
-                RelationshipLevel.Ally -> thirdCivRelationship.addModifier(DiplomaticModifiers.DenouncedOurAllies, -15f)
+                RelationshipLevel.Unforgivable -> thirdCivDiplomacyWithUs.addModifier(DiplomaticModifiers.DenouncedOurEnemies, 15f)
+                RelationshipLevel.Enemy -> thirdCivDiplomacyWithUs.addModifier(DiplomaticModifiers.DenouncedOurEnemies, 5f)
+                RelationshipLevel.Friend -> thirdCivDiplomacyWithUs.addModifier(DiplomaticModifiers.DenouncedOurAllies, -5f)
+                RelationshipLevel.Ally -> thirdCivDiplomacyWithUs.addModifier(DiplomaticModifiers.DenouncedOurAllies, -15f)
                 else -> {}
             }
         }
     }
-    
+
+    /**
+     * Queues a PopupAlert to be displayed on [otherCiv]'s turn
+     * If a popup of the same type is already queued, do nothing.
+     */
+    private fun queueOtherCivPopupIfUnique(popup: PopupAlert) {
+        if (otherCiv.popupAlerts.none { it.type == popup.type && it.value == popup.value })
+            otherCiv.popupAlerts.add(popup)
+    }
+
     fun agreeToDemand(demand: Demand){
-        otherCivDiplomacy().setFlag(demand.agreedToDemand, 100)
+        otherCivDiplomacy().setFlag(demand.agreedToDemand, 100, true)
         addModifier(DiplomaticModifiers.UnacceptableDemands, -10f)
         val text = demand.agreedToDemandText.fillPlaceholders(civInfo.civName)
         otherCiv.addNotification(text, NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
+        queueOtherCivPopupIfUnique(PopupAlert(AlertType.AcceptingDemand, civInfo.civID))
     }
     
     fun refuseDemand(demand: Demand) {
         addModifier(DiplomaticModifiers.UnacceptableDemands, -20f)
-        otherCivDiplomacy().setFlag(demand.willIgnoreViolation, 100)
+        otherCivDiplomacy().setFlag(demand.willIgnoreViolation, 100, true)
         otherCivDiplomacy().addModifier(demand.refusedDiplomaticModifier, -15f)
         val text = demand.refusedDemandText.fillPlaceholders(civInfo.civName)
         otherCiv.addNotification(text, NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
+        queueOtherCivPopupIfUnique(PopupAlert(AlertType.RejectingDemand, civInfo.civID))
     }
 
     fun sideWithCityState() {

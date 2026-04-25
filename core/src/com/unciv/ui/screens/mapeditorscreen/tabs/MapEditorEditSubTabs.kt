@@ -158,7 +158,7 @@ class MapEditorEditResourcesTab(
         val eraser = FormattedLine("Remove resource", icon = eraserIcon, size = 32, iconCrossed = true)
         add(eraser.render(0f).apply { onClick {
             editTab.setBrush("Remove resource", eraserIcon, pediaLink = "", isRemove = true) { tile ->
-                tile.resource = null
+                tile.tileResource = null
                 tile.resourceAmount = 0
             }
         } }).padBottom(0f).row()
@@ -169,7 +169,7 @@ class MapEditorEditResourcesTab(
         ) { resourceName ->
             val resource = ruleset.tileResources[resourceName]!!
             editTab.setBrush(resourceName, resource.makeLink()) {
-                if (it.resource == resourceName && resource.resourceType == ResourceType.Strategic)
+                if (it.tileResource == resource && resource.resourceType == ResourceType.Strategic)
                     it.resourceAmount = (it.resourceAmount + 1).coerceAtMost(42)
                 else
                     it.setTileResource(resource, rng = editTab.randomness.RNG)
@@ -348,7 +348,7 @@ class MapEditorEditRiversTab(
 ): Table(BaseScreen.skin), IMapEditorEditSubTabs, TabbedPager.IPageExtensions {
     private val iconSize = 50f
     private val showOnTerrain = ruleset.terrains.values.asSequence()
-        .filter { it.type.isBaseTerrain && !it.isRough() }
+        .filter { it.type.isBaseTerrain && !it.isRough}
         .sortedByDescending { it.production * 2 + it.food }
         .firstOrNull()
         ?: ruleset.terrains[Constants.plains]

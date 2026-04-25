@@ -11,6 +11,13 @@
         "description": "The name for the Tutorial.",
         "title": "Name"
       },
+      "category": {
+        "type": "string",
+        "description": "The sub-category in which to place this Tutorial within the Civilopedia.",
+        "title": "Category",
+        "default": "Tutorials",
+        "examples": ["Cities", "Stats", "Units"]
+      },
       "steps": {
         "title": "Steps",
         "type": "array",

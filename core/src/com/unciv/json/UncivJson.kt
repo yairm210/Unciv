@@ -44,9 +44,9 @@ fun <T> Json.fromJsonFile(tClass: Class<T>, filePath: String): T = fromJsonFile(
  */
 fun <T> Json.fromJsonFile(tClass: Class<T>, file: FileHandle): T {
     try {
-        val jsonText = file.readString(Charsets.UTF_8.name())
-        return fromJson(tClass, jsonText)
+        return fromJson(tClass, file)
     } catch (exception: Exception) {
+        val jsonText = file.readString(Charsets.UTF_8.name())
         throw Exception("Could not parse json of file ${file.name()}", exception)
     }
 }

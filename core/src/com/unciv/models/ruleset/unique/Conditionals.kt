@@ -2,12 +2,14 @@ package com.unciv.models.ruleset.unique
 
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
+import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.battle.CombatAction
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.models.ruleset.validation.ModCompatibility
 import com.unciv.models.stats.Stat
+import com.unciv.utils.hashOf
 import yairm210.purity.annotations.Readonly
 import kotlin.random.Random
 
@@ -15,9 +17,10 @@ object Conditionals {
 
     @Readonly @Suppress("purity") // hashcode... requires a think
     private fun getStateBasedRandom(state: GameContext, unique: Unique?): Float {
-        var seed = state.gameInfo?.turns?.hashCode() ?: 0
-        seed = seed * 31 + (unique?.hashCode() ?: 0)
-        seed = seed * 31 + state.hashCode()
+        
+        val seed = hashOf(state.gameInfo?.turns?.hashCode() ?: 0,
+            unique?.hashCode() ?: 0,
+            state.hashCode())
         return Random(seed).nextFloat()
     }
 
@@ -26,7 +29,7 @@ object Conditionals {
         unique: Unique?,
         conditional: Unique,
         state: GameContext
-    ): Boolean {
+    ): Boolean = timeThis("Conditionals.conditionalApplies") {
 
         if (conditional.isOtherModifierType)
             return true // not a filtering condition, includes e.g. ModifierHiddenFromUsers
@@ -269,6 +272,8 @@ object Conditionals {
                     || state.ourCombatant != null && state.ourCombatant.getHealth() > conditional.params[0].toInt()
             UniqueType.ConditionalBelowHP -> state.relevantUnit != null && state.relevantUnit!!.health < conditional.params[0].toInt()
                     ||state.ourCombatant != null && state.ourCombatant.getHealth() < conditional.params[0].toInt()
+            UniqueType.ConditionalAboveMovement -> state.relevantUnit != null && state.relevantUnit!!.currentMovement > conditional.params[0].toInt()
+            UniqueType.ConditionalBelowMovement -> state.relevantUnit != null && state.relevantUnit!!.currentMovement < conditional.params[0].toInt()
             UniqueType.ConditionalHasNotUsedOtherActions ->
                 state.unit == null || // So we get the action as a valid action in BaseUnit.hasUnique()
                     state.unit.abilityToTimesUsed.isEmpty()
@@ -363,7 +368,18 @@ object Conditionals {
                     first, second, third ->
                     first in second..third
                 }
-
+                
+            UniqueType.ConditionalWhenCarriedBy -> {
+                // Check if the unit is currently transported and being carried by matching filter
+                if (state.relevantUnit == null || !state.relevantUnit!!.isTransported) false
+                else {
+                    val carrier = state.relevantUnit!!.getTile().militaryUnit
+                    // Only true if: 1) carrier exists, 2) carrier is NOT the unit itself, 3) carrier matches filter
+                    carrier != null && carrier != state.relevantUnit && 
+                    carrier.matchesFilter(conditional.params[0]) == true
+                }
+            }
+            
             UniqueType.ConditionalModEnabled -> checkOnGameInfo {
                 val filter = conditional.params[0]
                 (gameParameters.mods.asSequence() + gameParameters.baseRuleset).any { ModCompatibility.modNameFilter(it, filter) }

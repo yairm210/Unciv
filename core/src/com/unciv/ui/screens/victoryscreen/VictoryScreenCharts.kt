@@ -35,11 +35,12 @@ class VictoryScreenCharts(
     }
 
     private var lineChart = LineChart(viewingCiv)
-    // if it is negative - no zoom, if positive - zoom at turn X
+
+    /** if it is negative - no zoom, if positive - zoom at turn X */
     private var zoomAtX : IntRange? = null
 
     init {
-        civButtonsScroll.setScrollingDisabled(true, false)
+        civButtonsScroll.setScrollingDisabled(x = true, y = false)
         civButtonsTable.defaults().space(20f).fillX()
         controlsColumn.defaults().space(20f).fillX()
         controlsColumn.add(rankingTypeSelect).right().row()
@@ -47,7 +48,7 @@ class VictoryScreenCharts(
         defaults().fill().pad(20f)
         add(controlsColumn)
         updateControls()
-        add(lineChart).growX().top().padLeft(0f)
+        add(lineChart).growX().expandY().top().padLeft(0f)
 
         val onChartClick = OnClickListener(function = { _ , x, _ ->
             zoomAtX = if (zoomAtX == null) lineChart.getTurnAt(x) else null
@@ -73,8 +74,10 @@ class VictoryScreenCharts(
         val sortedCivs = gameInfo.civilizations.asSequence()
             .filter { it.isMajorCiv() }
             .map { VictoryScreen.CivWithStat(it, rankingType) }
-            .sortedBy { it.civ.civName }
-            .sortedByDescending { if(it.civ.isDefeated()) Int.MIN_VALUE else it.value }
+            .sortedWith(
+                compareByDescending<VictoryScreen.CivWithStat> { if (it.civ.isDefeated()) Int.MIN_VALUE else it.value }
+                .thenBy { it.civ.civName }
+            )
         for (civEntry in sortedCivs) {
             if (civEntry.civ != selectedCiv) civButtonsTable.add()
             else civButtonsTable.add(markerIcon).size(24f).right()
@@ -111,6 +114,9 @@ class VictoryScreenCharts(
                 turn.value.map { (civ, value) -> DataPoint(turn.key, value, civ) }
             }.toMutableList()
 
+        if (dataPoints.isEmpty()) // e.g. spectator on first turn, before any civ has had a chance to have a turn
+            return emptyList()
+
         // Historical data does not include data for current turn for civs which haven't got their turn yet,
         // so we append missing stat for current turn to the data for each such civ
         val pointsByCiv = dataPoints.sortedBy { it.x }.groupBy { it.civ }
@@ -118,7 +124,7 @@ class VictoryScreenCharts(
         for (civ in pointsByCiv.keys.filterNot { it.isDefeated() })
             if (pointsByCiv[civ]!!.last().x != actualTurn)
                 dataPoints += DataPoint(actualTurn, civ.getStatForRanking(rankingType), civ)
-        
+
         return dataPoints
     }
 

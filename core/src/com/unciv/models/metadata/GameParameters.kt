@@ -36,13 +36,19 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
     var victoryTypes: ArrayList<String> = arrayListOf()
     var startingEra = "Ancient era"
 
+    var showVictoryStats = true
+    var showDemographics = false
+
     // Multiplayer parameters
     var isOnlineMultiplayer = false
     var multiplayerServerUrl: String? = null
     var anyoneCanSpectate = true
     /** After this amount of minutes, anyone can choose to 'skip turn' of the current player to keep the game going */
     var minutesUntilSkipTurn = 60 * 24
-    var hoursUntilForceResign = 3 * 24
+    /** Initial players' timer to play before they can be forced to resign permanently*/
+    var minutesUntilForceResign = 3 * 24 * 60
+    /** Time a player recover on their timer before they can be forced to resign. Time isn't added if the player get their turn skipped*/
+    var minutesRecoveredPerTurn = 60 * 24
 
     var baseRuleset: String = BaseRuleset.Civ_V_GnK.fullName
     var mods = LinkedHashSet<String>()
@@ -76,6 +82,8 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
         parameters.shufflePlayerOrder = shufflePlayerOrder
         parameters.victoryTypes = ArrayList(victoryTypes)
         parameters.startingEra = startingEra
+        parameters.showVictoryStats = showVictoryStats
+        parameters.showDemographics = showDemographics
         parameters.isOnlineMultiplayer = isOnlineMultiplayer
         parameters.multiplayerServerUrl = multiplayerServerUrl
         parameters.anyoneCanSpectate = anyoneCanSpectate

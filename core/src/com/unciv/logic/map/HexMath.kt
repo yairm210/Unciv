@@ -49,9 +49,9 @@ object HexMath {
 
     // In our reference system latitude, i.e. how distant from equator we are, is proportional to x + y
     @Readonly fun getLatitude(hexCoord: HexCoord) = hexCoord.x + hexCoord.y
-    
+
     @Readonly fun getLongitude(hexCoord: HexCoord) = hexCoord.x - hexCoord.y
-    
+
 
     /**
      * Convert a latitude and longitude back into a hex coordinate.
@@ -96,7 +96,7 @@ object HexMath {
     @Pure
     fun getEquivalentHexagonalRadius(width: Int, height: Int) =
         getHexagonalRadiusForArea(width * height).roundToInt()
-    
+
 
     // HexCoordinates are a (x,y) vector, where x is the vector getting us to the top-left hex (e.g. 10 o'clock)
     // and y is the vector getting us to the top-right hex (e.g. 2 o'clock)
@@ -128,10 +128,10 @@ object HexMath {
         // Distance between cells = 2* normal of triangle = 2* (sqrt(3)/2) = sqrt(3)
         val xVector = getVectorByClockHour(10)
         xVector.scl(sqrt(3.0).toFloat() * hexCoord.x)
-        
+
         val yVector = getVectorByClockHour(2)
         yVector.scl(sqrt(3.0).toFloat() * hexCoord.y)
-        
+
         return xVector.add(yVector)
     }
 
@@ -167,9 +167,9 @@ object HexMath {
 
         // So for even columns, the row is incremented by half
         var twoRows = row * 2
-        if (abs(column) %2==1) twoRows += 1
+        if (abs(column) % 2 == 1) twoRows += 1
 
-        return HexCoord.of((twoRows-column)/2, (twoRows+column)/2)
+        return HexCoord.of((twoRows - column) / 2, (twoRows + column) / 2)
     }
 
     /** Todo: find a mathematically equivalent way to round hex coords without cubic magic */
@@ -215,11 +215,11 @@ object HexMath {
         if (distance == 0) {
             return listOf(origin.cpy())
         }
-        
+
         @Readonly
-        fun getHexcoordOnOtherSideOfClock(vector: HexCoord): HexCoord = 
+        fun getHexcoordOnOtherSideOfClock(vector: HexCoord): HexCoord =
             origin.times(2).minus(vector)
-        
+
         @LocalState
         var current = origin.minus(HexCoord.of(distance, distance))  // start at 6 o clock
         for (i in 0 until distance) { // From 6 to 8
@@ -272,7 +272,7 @@ object HexMath {
         else
             (abs(relativeX) + abs(relativeY))
     }
-    
+
     @Immutable
     private val clockPositionToHexcoordMap: Map<Int, HexCoord> = mapOf(
         0 to HexCoord.of(1, 1), // This alias of 12 makes clock modulo logic easier
@@ -286,7 +286,7 @@ object HexMath {
     /** Returns the hex-space distance corresponding to [clockPosition], or a zero vector if [clockPosition] is invalid */
     @Pure
     fun getClockPositionToHexcoord(clockPosition: Int): HexCoord =
-        clockPositionToHexcoordMap[clockPosition]?: HexCoord.Zero
+        clockPositionToHexcoordMap[clockPosition] ?: HexCoord.Zero
 
 
     // Statically allocate the Vectors (in World coordinates)
@@ -341,11 +341,11 @@ object HexMath {
     @Pure
     fun getZeroBasedIndex(x: Int, y: Int): Int {
         if (x == 0 && y == 0) return 0
-        val ring = getDistance(0,0, x, y)
+        val ring = getDistance(0, 0, x, y)
         val ringStart = 1 + 6 * ring * (ring - 1) / 2 // 1 for the center tile, then 6 for each ring
-        
+
         // total number of elements in the ring is 6 * ring
-        
+
         // We divide the ring into its 6 edges, each of which can be determined by an equality comparison
         // Each edge has a start index, a variable from 0 to the number of elements in that edge
         val positionInRing = when (ring) {
@@ -359,11 +359,11 @@ object HexMath {
         }
         return ringStart + positionInRing
     }
-    
+
     // Much simpler to understand, passes same tests, but ~5x slower than the above
     fun mapRelativePositionToPositiveIntRedblob(x: Int, y: Int): Int {
         if (x == 0 && y == 0) return 0
-        val ring = getDistance(0,0, x, y)
+        val ring = getDistance(0, 0, x, y)
         val ringStart = 1 + 6 * ring * (ring - 1) / 2 // 1 for the center tile, then 6 for each ring
         val vectorsInRing = getHexCoordsAtDistance(HexCoord.Zero, ring, ring, false)
         val positionInRing = vectorsInRing.indexOf(HexCoord.of(x, y))
@@ -371,7 +371,7 @@ object HexMath {
     }
 
     fun tilesAndNeighborUniqueIndex(tile: Tile, neighbor: Tile): Int {
-        return tile.zeroBasedIndex * 6 +  // each tile has 6 neighbors 
+        return tile.zeroBasedIndex * 6 +  // each tile has 6 neighbors
                 tile.tileMap.getNeighborTileClockPosition(tile, neighbor) / 2 - 1 // min: 2, max: 12, step 2; Divide by 2 and it's numbers 1-6, -1 to get 0-5
     }
 
@@ -380,11 +380,12 @@ object HexMath {
 //interface HexCoord{
 //    val x: Int
 //    val y: Int
-//    
+//
 //}
 
 /** Required for ser/deser since the stupid json parser can't handle the inline ints -_-  */
-data class HexCoord(val x:Int=0, val y:Int=0){
+@Suppress("RemoveRedundantQualifierName")
+data class HexCoord(val x: Int = 0, val y: Int = 0) {
 
     @Pure fun plus(hexCoord: HexCoord): HexCoord = HexCoord.of(x + hexCoord.x, y + hexCoord.y)
     @Pure fun plus(plusX: Int, plusY: Int): HexCoord = HexCoord.of(x + plusX, y + plusY)
@@ -393,29 +394,47 @@ data class HexCoord(val x:Int=0, val y:Int=0){
 
     @Pure fun toVector2(): Vector2 = Vector2(x.toFloat(), y.toFloat())
 
-    @Pure fun eq(x:Int,y:Int): Boolean = this.x == x && this.y == y
+    @Pure fun eq(x: Int, y: Int): Boolean = this.x == x && this.y == y
 
     // Conversion helpers for 1:1 Vector2 compatibility
     @Pure fun cpy() = this
     @Pure fun toHexCoord() = this
-    @Pure fun asSerializable() = HexCoord(x,y)
+    @Pure fun asSerializable() = HexCoord(x, y)
 
     fun toPrettyString(): String = "($x,$y)"
 
     companion object {
-        val Zero = HexCoord.of(0,0)
+        val Zero = HexCoord.of(0, 0)
         @Pure
-        fun of(x: Int, y: Int): HexCoord = HexCoord(x,y)
+        fun of(x: Int, y: Int): HexCoord = HexCoord(x, y)
+
+        fun fromString(string: String): HexCoord {
+            val commaPos = string.indexOf(',')
+            if (commaPos < 1 || !string.startsWith('(') || !string.endsWith(')'))
+                throw NumberFormatException("\"$string\" is not a valid HexCoord representation")
+            val x = string.substring(1, commaPos).toInt()
+            val y = string.substring(commaPos + 1, string.length - 1).toInt()
+            return HexCoord(x, y)
+        }
     }
+
     /** Ser/deser to be 1:1 with Vector2, to allow us to replace Vector2 in game saves with HexCoord */
     class Serializer : Json.Serializer<HexCoord> {
         override fun write(json: Json, coord: HexCoord, knownType: Class<*>?) {
-            json.writeValue(mapOf("x" to coord.x.toFloat(), "y" to coord.y.toFloat()))
+            json.writeObjectStart()
+            if (coord.x != 0)
+                json.writeValue("x", coord.x)
+            if (coord.y != 0)
+                json.writeValue("y", coord.y)
+            json.writeObjectEnd()
         }
 
         override fun read(json: Json, jsonData: JsonValue, type: Class<*>?): HexCoord {
-            val x = json.readValue(Float::class.java, jsonData["x"]) ?: 0f
-            val y = json.readValue(Float::class.java, jsonData["y"]) ?: 0f
+            //TODO once we can assume there are no more games out there serialized in the verbose
+            //     {"class": "java.lang.Float", "value": 23} format, replace with Int::class.java
+            //     and remove `testCanDeserializeVerboseVector2Format`
+            val x = json.readValue("x", Float::class.java, 0f, jsonData)
+            val y = json.readValue("y", Float::class.java, 0f, jsonData)
             return HexCoord(x.toInt(), y.toInt())
         }
     }
@@ -433,7 +452,7 @@ value class InlineHexCoord(val coords: Int = 0) {
     // Extract bottom 16 bits and sign-extend - required to keep negative numbers
     val y: Int
         get() = (coords shl 16) shr 16
-    
+
     override fun toString(): String = "HexCoord(x=${x}, y=${y})"
 
     companion object {

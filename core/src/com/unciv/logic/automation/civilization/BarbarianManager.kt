@@ -126,7 +126,7 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
 
             // If we're biasing for coast, get a coast tile if possible
             if (biasCoast) {
-                tile = viableTiles.filter { it.isCoastalTile() }.randomOrNull()
+                tile = viableTiles.filter { it.isAdjacentToCoast() }.randomOrNull()
                 if (tile == null)
                     tile = viableTiles.random()
             } else

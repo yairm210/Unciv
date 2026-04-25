@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.SplitPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
@@ -39,21 +40,32 @@ class CivilopediaScreen(
 ) : BaseScreen(), RecreateOnResize {
 
     /** Container collecting data per Civilopedia entry
-     * @param name From [Ruleset] object [INamed.name]
-     * @param image Icon for button
-     * @param flavour [ICivilopediaText]
-     * @param y Y coordinate for scrolling to
-     * @param height Cell height
+     * @property name From [Ruleset] object [INamed.name]
+     * @property image Icon for button
+     * @property flavour Original [ICivilopediaText] reference allowing to render its [ICivilopediaText.civilopediaText]
+     * @property y Y coordinate for scrolling to
+     * @property height Cell height for scrolling to
+     * @property sortBy Optional, enables overriding alphabetical order. Ususally supplied by [ICivilopediaText.getSortGroup]
+     * @property subCategory Optional, enablesg grouping with sub-category labels. Ususally supplied by [ICivilopediaText.getSubCategory]
      */
     private class CivilopediaEntry (
         val name: String,
         val image: Actor? = null,
         val flavour: ICivilopediaText? = null,
-        val y: Float = 0f,              // coordinates of button cell used to scroll to entry
+        val y: Float = 0f,
         val height: Float = 0f,
-        val sortBy: Int = 0             // optional, enabling overriding alphabetical order
+        val sortBy: Int = 0,
+        val subCategory: String? = null
     ) {
-        fun withCoordinates(y: Float, height: Float) = CivilopediaEntry(name, image, flavour, y, height, sortBy)
+        constructor(ruleset: Ruleset, item: ICivilopediaText, category: CivilopediaCategories, imageSize: Float) : this(
+            (item as INamed).name,
+            category.getImage?.invoke(item.getIconName(), imageSize),
+            flavour = item,
+            sortBy = item.getSortGroup(ruleset),
+            subCategory = item.getSubCategory(ruleset)
+        )
+
+        fun withCoordinates(y: Float, height: Float) = CivilopediaEntry(name, image, flavour, y, height, sortBy, subCategory)
     }
 
     private val categoryToEntries = LinkedHashMap<CivilopediaCategories, Collection<CivilopediaEntry>>()
@@ -71,7 +83,7 @@ class CivilopediaScreen(
     private var currentEntry: String = ""
     private val currentEntryPerCategory = HashMap<CivilopediaCategories, String>()
 
-    private val searchPopup by lazy { CivilopediaSearchPopup(this, tutorialController) {
+    private val searchPopup by lazy { CivilopediaSearchPopup(this) {
         selectLink(it)
     } }
 
@@ -116,16 +128,19 @@ class CivilopediaScreen(
         buttonTableScroll.scrollX = buttonInfo.x + (buttonInfo.width - buttonTableScroll.width) / 2
 
         if (category !in categoryToEntries) return        // defense, allowing buggy panes to remain empty while others work
-        var entries = categoryToEntries[category]!!
-        if (category != CivilopediaCategories.Difficulty) // this is the only case where we need them in order
-            // Alphabetical order of localized names, using system default locale
-            entries = entries.sortedWith(
-                compareBy<CivilopediaEntry>{ it.sortBy }
-                    .thenBy (UncivGame.Current.settings.getCollatorFromLocale()) {
-                        // In order for the extra icons on Happiness and Faith to not affect sort order
-                        it.name.tr(true, true)})
+        val entries = categoryToEntries[category]!!
+            // Sort by [CivilopediaEntry.sortBy], then alphabetical order of localized names, using system default locale
+            // Categories that should not sort alphabetically, e.g. Difficulties, will override `getSortGroup`.
+            .sortedWith(
+                compareBy<CivilopediaEntry> { it.sortBy }
+                .thenBy (UncivGame.Current.settings.getCollatorFromLocale()) {
+                    // In order for the extra icons on Happiness and Faith to not affect sort order
+                    it.name.tr(hideIcons = true, hideStats = true)
+                }
+            )
 
         var currentY = -1f
+        var currentSubCategory: String? = null
 
         for (entry in entries) {
             val entryButton = Table().apply {
@@ -141,10 +156,17 @@ class CivilopediaScreen(
                 else
                     entryButton.add(entry.image).padLeft(10f)
             entryButton.left().add(entry.name
-                .toLabel(Color.WHITE, 25, hideIcons=true)).pad(10f)
+                .toLabel(Color.WHITE, 25, hideIcons = true)).pad(10f)
             entryButton.onClick { selectEntry(entry) }
             entryButton.name = entry.name               // make button findable
-            val cell = entrySelectTable.add(entryButton).height(75f).expandX().fillX()
+
+            if (currentSubCategory != entry.subCategory) {
+                if (entry.subCategory != null)
+                    entrySelectTable.add(SubCategoryTable(entry.subCategory)).fillX().row()
+                currentSubCategory = entry.subCategory
+            }
+
+            val cell = entrySelectTable.add(entryButton).height(75f).growX()
             entrySelectTable.row()
             if (currentY < 0f) currentY = cell.padTop
             entryIndex[entry.name] = entry.withCoordinates(currentY, cell.prefHeight)
@@ -211,14 +233,9 @@ class CivilopediaScreen(
         for (loopCategory in CivilopediaCategories.entries) {
             if (!religionEnabled && loopCategory == CivilopediaCategories.Belief) continue
             categoryToEntries[loopCategory] =
-                loopCategory.getCategoryIterator(ruleset, tutorialController, game.gameInfo)
+                loopCategory.getCategoryIterator(ruleset, game.gameInfo)
                     .filter(::shouldBeDisplayed)
-                    .map { CivilopediaEntry(
-                        (it as INamed).name,
-                        loopCategory.getImage?.invoke(it.getIconName(), imageSize),
-                        flavour = it,
-                        sortBy = it.getSortGroup(ruleset)
-                    ) }
+                    .map { CivilopediaEntry(ruleset, it, loopCategory, imageSize) }
         }
 
         val buttonTable = Table()

@@ -81,6 +81,9 @@ enum class UniqueTarget(
 
         override fun isAcceptableModifierFor(unique: Unique): Boolean {
             val targetTypes = unique.type?.targetTypes ?: return false
+            
+            // This is a triggerable of any kind that's on a unit - this can be also a timed triggerable
+            if (unique.isTriggerable && unique.sourceObjectType?.canAcceptUniqueTarget(Unit) == true ) return true
             // Also needs to accept triggerables
             return targetTypes.any { UnitTriggerable.canAcceptUniqueTarget(it) }
         }
@@ -102,9 +105,11 @@ enum class UniqueTarget(
      *  [None] ensures use *only* as leading Unique, [Conditional] / [Other] disallow use as leading Unique. */
     enum class ModifierType { None, Conditional, Other }
 
-    /** Checks whether a specific UniqueTarget `this` as e.g. given by [IHasUniques.getUniqueTarget] works with [uniqueTarget] as e.g. declared in UniqueType */
-    // Building.canAcceptUniqueTarget(Global) == true
-    // Global.canAcceptUniqueTarget(Building) == false
+    /** Checks whether a specific UniqueTarget `this` as e.g. given by [IHasUniques.getUniqueTarget] 
+     * works with [uniqueTarget] as e.g. declared in UniqueType
+     * Building.canAcceptUniqueTarget(Global) == true
+     * Global.canAcceptUniqueTarget(Building) == false
+     */
     @Readonly
     fun canAcceptUniqueTarget(uniqueTarget: UniqueTarget): Boolean {
         if (this == uniqueTarget) return true

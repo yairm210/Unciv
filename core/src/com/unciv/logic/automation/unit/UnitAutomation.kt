@@ -23,15 +23,15 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
-import com.unciv.utils.randomWeighted
 import yairm210.purity.annotations.Readonly
+import com.unciv.logic.automation.Timers.Companion.timeThis
 
 object UnitAutomation {
 
     private const val CLOSE_ENEMY_TILES_AWAY_LIMIT = 5
     private const val CLOSE_ENEMY_TURNS_AWAY_LIMIT = 3f
 
-    fun automateUnitMoves(unit: MapUnit) {
+    fun automateUnitMoves(unit: MapUnit) = timeThis("automateUnitMoves") {
         check(!unit.civ.isBarbarian) { "Barbarians is not allowed here." }
 
         // Might die next turn - move!
@@ -116,7 +116,6 @@ object UnitAutomation {
             wander(unit, stayInTerritory = true)
     }
 
-
     @Readonly
     private fun isGoodTileToExplore(unit: MapUnit, tile: Tile, unitVisibilityRange: Int): Boolean {
         // These should be ordered by increasing computational cost
@@ -129,7 +128,7 @@ object UnitAutomation {
                 && unit.movement.canReach(tile) // expensive, evaluate last
     }
 
-    internal fun tryExplore(unit: MapUnit): Boolean {
+    internal fun tryExplore(unit: MapUnit): Boolean = timeThis("tryExplore") {
         if (tryGoToRuin(unit) && (!unit.hasMovement() || unit.isDestroyed)) return true
 
         val unitVisibilityRange = unit.getVisibilityRange()
@@ -159,7 +158,7 @@ object UnitAutomation {
 
         val tileWithRuin = unit.viewableTiles
             .firstOrNull {
-                (it.getTileImprovement()?.isAncientRuinsEquivalent(unit.cache.state) == true)
+                (it.tileImprovement?.isAncientRuinsEquivalent(unit.cache.state) == true)
                         && unit.movement.canMoveTo(it) && unit.movement.canReach(it)
             } ?: return false
         unit.movement.headTowards(tileWithRuin)
@@ -204,6 +203,7 @@ object UnitAutomation {
     }
 
     fun wander(unit: MapUnit, stayInTerritory: Boolean = false, tilesToAvoid: Set<Tile> = setOf()) {
+        if (!unit.hasMovement()) return // return in case we can't move anyways
         val unitDistanceToTiles = unit.currentTile.getTilesAtDistance(1)
         // We could walk further, but wander() is meant to let units not stay on the same tile permanently,
         // to avoid obstructing human scouts and workers, moving just one tile should be enough
@@ -211,9 +211,9 @@ object UnitAutomation {
                 .filter {
                     it !in tilesToAvoid
                         && unit.movement.canMoveTo(it)
-                        && unit.movement.canReach(it)
+                        && unit.movement.canReachInCurrentTurn(it) // Yes this is required despite the above line - see #14461
                         && unit.getDamageFromTerrain(it) <= 0 // Don't end turn on damaging terrain for no good reason
-                        && (!stayInTerritory || it.getOwner() == unit.civ)
+                        && (!stayInTerritory || it.getOwner() == unit.civ || unit.currentTile.getOwner() != unit.civ)
                 }
         if (reachableTiles.any()) unit.movement.moveToTile(reachableTiles.toList().random())
     }
@@ -250,8 +250,12 @@ object UnitAutomation {
                 return true
             if (unit.civ.isBarbarian && baseUnit.hasUnique(UniqueType.CannotBeBarbarian))
                 return true
-            return baseUnit.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)
-                .any { !it.conditionalsApply(unit.cache.state) }
+            if (baseUnit.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)
+                    .any { !it.conditionalsApply(unit.cache.state) })
+                return true
+            if (baseUnit.getMatchingUniques(UniqueType.Unavailable, unit.cache.state).any())
+                return true
+            return false
         }
 
         return unit.baseUnit.getRulesetUpgradeUnits(unit.cache.state)

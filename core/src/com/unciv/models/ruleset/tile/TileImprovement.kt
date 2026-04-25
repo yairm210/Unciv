@@ -105,6 +105,21 @@ class TileImprovement : RulesetStatsObject() {
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> =
         ImprovementDescriptions.getCivilopediaTextLines(this, ruleset)
 
+    override fun getSortGroup(ruleset: Ruleset) = when {
+        isGreatImprovement() -> 1
+        name.startsWith("Cancel ") -> 2
+        name.startsWith("Remove ") -> 2
+        name == "Repair" -> 2
+        else -> 0
+    }
+    override fun getSubCategory(ruleset: Ruleset): String? = when {
+        isGreatImprovement() -> "Great Improvement"
+        name.startsWith("Cancel ") -> "Action"
+        name.startsWith("Remove ") -> "Action"
+        name == "Repair" -> "Action"
+        else -> "Tile Improvements"
+    }
+
     @Readonly
     fun getConstructorUnits(ruleset: Ruleset): List<BaseUnit> {
         //todo Why does this have to be so complicated? A unit's "Can build [Land] improvements on tiles"

@@ -2,6 +2,7 @@ package com.unciv.models.tilesets
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
@@ -75,6 +76,11 @@ object TileSetCache : HashMap<String, TileSet>() {
 
         values.forEach { it.fallback = get(it.config.fallbackTileSet) }
 
+        // The tileset in settings was removed
+        // This can be either by deleting the folder or deleting the mod in-game
+        if (!containsKey(UncivGame.Current.settings.tileSet))
+            UncivGame.Current.settings.tileSet = Constants.defaultTileset
+
         assembleTileSetConfigs(hashSetOf()) // no game is loaded, this is just the initial game setup
     }
 
@@ -96,22 +102,5 @@ object TileSetCache : HashMap<String, TileSet>() {
             tileset.cacheConfigFromMod(configId, config)
             set(name, tileset)
         }
-    }
-
-    /** Determines potentially available TileSets - by scanning for TileSet jsons.
-     *  Available before initialization finishes.
-     */
-    fun getAvailableTilesets(imageGetterTilesets: Sequence<String>): Set<String> {
-        val modTilesetConfigFiles = UncivGame.Current.files.getModsFolder().list().asSequence()
-            .filter { it.isDirectory && !it.name().startsWith('.') }
-            .flatMap { it.child("jsons/TileSets").list().asSequence() }
-
-        val builtinTilesetConfigFiles = imageGetterTilesets
-            .map { Gdx.files.internal("jsons/TileSets/$it.json") }
-
-        return (builtinTilesetConfigFiles + modTilesetConfigFiles)
-            .filter { it.exists() }
-            .map { it.nameWithoutExtension().removeSuffix("Config") }
-            .toSet()
     }
 }

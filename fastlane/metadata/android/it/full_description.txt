@@ -6,7 +6,7 @@ Suggerimenti? Bug? L'elenco dei problemi aperti è disponibile nella <a href="ht
 
 Qualche domanda? Commenti? O anche solo molto tempo libero da investire? Vieni a chattare con noi sul <a href="https://discord.gg/bjrB4Xw">server Discord Unciv</a>.
 
-Vuoi dare una mano a tradurre il gioco nella tua lingua? Segui le istruzioni nell'<a href="https://yairm210.github.io/Unciv/Other/Translating">articolo wiki</a> per i traduttori.
+Vuoi dare una mano a tradurre il gioco nella tua lingua? Segui le istruzioni nell'<a href="https://yairm210.github.io/Unciv/Translating/Translating">articolo wiki</a> per i traduttori.
 
 Kotlin e/o Java non hanno segreti per te? Sentiti libero di partecipare allo sviluppo sulla <a href="https://github.com/yairm210/Unciv">pagina Github</a>.
 

@@ -1,3 +1,277 @@
+## 4.20.2
+
+By unciv-loof:
+- Add back option to disable rendering of unitset in display settings 
+- Do not forcibly reset mod selections after closing warning in new game screen 
+- Clicking Bully and Conquer CS quests centers map on target's capital 
+- Don't display empty message in 'declare war' popup 
+- AIs can denounce multiple civs 
+
+Allow beliefs gotten from triggers to use triggerables - by SeventhM
+
+Ocean Ice should spawn again - by Ambeco
+
+## 4.20.1
+
+Drastically reduced memory consumption
+
+Barbarian encampments removed when tile enters civ territory
+
+Peace/war declarations on a third civ not considered trade "gifts"
+
+Fixed rare crash in cities when purchasing
+
+Buildings with "Moves to new capital when capital changes" not destroyed on city capture
+
+Desktop executables: Max JVM RAM *actually* increased to 4GB  
+
+Notifications shown in UI in order
+
+By unciv-loof:
+- Denouncement popups with moddable messages and audio 
+- turn 0 Autosave 
+
+## 4.20.0
+
+By unciv-loof:
+- Fix embassy trade logic bug 
+- Popup after other civ responds to a demand 
+
+By SeventhM:
+- Add conditionals for current unit movement 
+- Fix unavailable unique being ignored in unexpected places 
+
+Theoretical improvements to workerAutomation performance - By Ambeco
+
+Fixed translation in multiplayer game preview description - By evanofficial (new contributor!)
+
+'Upon signing a peace treaty' unique - By PLynx01
+
+## 4.19.19
+
+Reset tileset settings when deleting the mod that contained the tileset
+
+AIs ignore demands/declarations of friendship from dead civs
+
+By Ambeco:
+- AStar pathing no longer treats rivers as multi-turn obstacles 
+- flat earth hexigonal no longer crashes 
+
+Bugfix: don't try to buy missionaries in cities with a civilian unit - By EmperorPinguin
+
+## 4.19.18
+
+Ignore free promotions for promotion path costs
+
+Allow gaining free promotions before gaining XP
+
+By Ambeco:
+- Mods can have multiple Ocean and Coast Terrains 
+- AStar moves through same tiles as Classic  
+
+Add showDemographics option - By ICanSeeForever
+
+Forced unit disbandment considers refundability and promotions - By unciv-loof
+DenounceWillingness personality trait - by unciv-loof
+
+AI: only get mad at spreading religion while they can found their own - By EmperorPinguin
+
+## 4.19.17
+
+Ruleset switching in new game screen no longer allows zero victory types
+
+Users cannot offer negative gold with "-50" buttons
+
+By unciv-loof:
+- Notification shows who is responsible for skipping or resigning a player 
+- Newly fetched mod entries respect current filter 
+- Declaation of War + Declaration of Friendship UI improvements
+
+By Ambeco:
+- Fixed alternate pathfinding bugs 
+- Unitactions and UnitTriggers have moddable priority
+- Eliminated most Hardcoded Terrains 
+
+## 4.19.16
+
+Changed default max RAM from 1GB to 4GB, it's 2026, let people go crazy if they want
+
+Feature/spy city view restrictions - By ICanSeeForever
+
+FreshWater NaturalWonders no longer appear as lakes - By Ambeco
+
+Scale demands and WLTK duration with game speed - By unciv-loof
+
+## 4.19.15
+
+More explicit warning about large maps causing memory crashes 
+
+Catch base terrains with occursOn in ruleset validation
+
+Removing improvement-creating buildings where the no city tile has the improvement, no longer crashes
+
+Cities can attack revealed invisible units
+
+By Ambeco:
+- Adding alternate pathing algorithm 
+- Jungles again no longer spawn on hills 
+- MapGeneration ignores rareFeatures when placing normal tiles 
+
+Add max(), min() functions to countable expressions - By AutumnPizazz
+
+## 4.19.14
+
+Add star icon to resources on map that are currently provided
+
+Consistent XP cost for next N promotions vs single promotion
+
+AI denounce automation - By unciv-loof
+
+By AutumnPizazz:
+- Add game option to hide victory screen statistics 
+- Change 'Set [stockpile] to [amount]' to 'Set [stockpile] to [countable]' 
+
+MapGeneration supports multiple Mountains, Hills, Ice, Snow, Lakes, and Vegetation. - By Ambeco
+
+## 4.19.13
+
+Clear diplomatic modifiers and countdowns to resurrected civs
+
+Puppeted cities remove "marked for improvement by building" markers correctly
+
+Modding:
+- Specific uniques for gold purchase cost always override default cost
+- Global uniques can accept unit trigger conditions when placed on units
+
+By unciv-loof:
+- Border expansion logic 
+   - considers neighboring bonus resources at the edge of work range
+   - does not consider unexplored tiles  
+   - slightly prioritizes contested tiles 
+
+## 4.19.12
+
+Policies from overridden policy branches no longer "stick around" to affect the UI
+
+Added stockpiled resource stockpiles to resource overview
+
+Added "Set [stockpile] to [amount]" triggered unique
+
+Don't copy mod list download error to clipboard without human approval
+
+Download all possible mods when loading a game with missing mods, before notifying of problems
+
+Don't crash when finding civ-equivalent unit if the replacement unit doesn't exist in the ruleset
+
+## 4.19.11
+
+"Unit can be promoted" notification shows correct unit name
+
+Fixed DOF diplomacy changes for 3rd party civs
+
+Added limit to diplomatic modifiers that accumulate, specifically to negative protected-city-state modifiers
+
+City state quests are "consistent random"
+
+Fixed great people not creating improvements
+
+Sending a unit where it can't move any closer, no longer makes the unit image disappear
+
+"Must not be on [amount] largest landmasses" compatible with resource - By chenxing61
+
+## 4.19.10
+
+Add `[cityFilter] Cities of [civFilter] Civilizations` countable - By RobLoach
+
+Food consumption by population unique - By PLynx01
+
+Fix VictoryScreen Charts Visibility for Spectator and Layout - By SomeTroglodyte
+
+Customizable game duration during online games - By AubertJocelyn (new contributor!)
+
+## 4.19.9
+
+Fixed mp server change on options, crashing the game
+
+Modding: Resolved "divide by zero" errors in expressions by defaulting to zero
+
+Add city context to stat and resource countables - By SeventhM 
+
+## 4.19.8
+
+Fixed map generation on world wrap and 3 continents
+
+Use default tileset if the configured one exists but cannot be loaded
+
+Adjust turn-end diplomatic modifier accumulation and reversion by game speed - By unciv-loof
+
+## 4.19.7
+
+modchecker: Improvements can grant sight on tiles
+
+Handle case of viewing charts before any turn has happened
+
+modding: Rebel unit unique - By chenxing61
+
+Traded Declarations of War can affect single Civ instead of both trading Civs - By itanasi
+
+Fixed notifications log - By SomeTroglodyte
+
+Fix bug with "Unit can be promoted" notification - By Nicholas-py
+
+## 4.19.6
+
+Units unset sleep/automation on manual repair commands
+
+Fixed crash on unit wander
+
+By SomeTroglodyte:
+- Options reworked - faster opening 
+- Redo Notification log page in empire overview 
+- Fix links to Translation wiki 
+
+By RobLoach:
+- Add Remaining Civilopedia Sub-Categories 
+- Fix notification of perpetual stat conversion 
+- Fix Resource Production Modifier Calculations 
+
+Carrying conditional and countable - By PhiRite
+
+## 4.19.5
+
+Add `[resource] of [civ] Civilizations` Countable - By RobLoach
+
+By SomeTroglodyte:
+- Civilopedia Subcategories 
+- Improve "unit can be promoted" notifications 
+- Fix dev console crashable from autocomplete code 
+
+By SeventhM:
+- Fix Civi-based triggers ignoring changes from prior triggers 
+- Fix triggerables not multiplying correctly under some circumstances 
+
+Reload multiplayer text on connection success - By touhidurrr
+
+Prevent wandering if unit has no movement - By EmperorPinguin
+
+## 4.19.4
+
+minor perf(cpu): better order for "ignore terrain change" operations
+
+By RobLoach:
+- Correct MP games' first turn time 
+- Restore Civilopedia Event-based Tutorials 
+
+By EmperorPinguin:
+- AI: don't send workers to other civ's territory 
+- AI: keep wandering if inadvertently ended up in foreign territory 
+
+MP server: Display URL errors & optimize redirects - By touhidurrr
+
+Change mounted attack sounds - By SomeTroglodyte
+
+Gain city-only stockpiles from provides/consumes uniques - By SeventhM
+
 ## 4.19.3
 
 Remove incompatible improvements in progress upon changing terrain

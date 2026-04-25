@@ -1,4 +1,4 @@
-﻿package com.unciv.logic.automation.unit
+package com.unciv.logic.automation.unit
 
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.unit.CivilianUnitAutomation.tryRunAwayIfNeccessary
@@ -196,11 +196,12 @@ object SpecificUnitAutomation {
         val localUniqueCache = LocalUniqueCache()
         for (city in citiesByStatBoost) {
             val applicableTiles = city.getWorkableTiles().filter {
-                it.isLand && it.resource == null && !it.isCityCenter()
-                        && (unit.currentTile == it || unit.movement.canMoveTo(it))
-                        && it.improvement == null
-                        && it.improvementFunctions.canBuildImprovement(improvement, unit.cache.state)
-                        && Automation.rankTile(it, unit.civ, localUniqueCache) > averageTerrainStatsValue
+                it.isLand && (it.tileResource?.isImprovedBy(improvementName) != false) && !it.isCityCenter()
+                    && (unit.currentTile == it || unit.movement.canMoveTo(it))
+                    // okay if we replace regular improvements by great improvements, but not the other way around
+                    && (it.tileImprovement == null || !it.tileImprovement!!.hasUnique(UniqueType.GreatImprovement))
+                    && it.improvementFunctions.canBuildImprovement(improvement, unit.cache.state)
+                    && (!improvement.hasUnique(UniqueType.GreatImprovement) || Automation.rankStatsValue(it.getBaseTerrain().cloneStats(), unit.civ) > averageTerrainStatsValue)
             }
 
             if (applicableTiles.none()) continue

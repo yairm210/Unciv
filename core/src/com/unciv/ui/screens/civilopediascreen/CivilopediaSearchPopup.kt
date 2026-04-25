@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
+import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.IHasUniques
@@ -32,7 +33,6 @@ import com.badlogic.gdx.utils.Array as GdxArray
 
 class CivilopediaSearchPopup(
     private val pediaScreen: CivilopediaScreen,
-    private val tutorialController: TutorialController,
     private val linkAction: (String) -> Unit
 ) : Popup(pediaScreen) {
     private var ruleset = pediaScreen.ruleset
@@ -118,15 +118,15 @@ class CivilopediaSearchPopup(
             if (!isActive) break
             if (!ruleset.modOptions.isBaseRuleset && category == CivilopediaCategories.Tutorial)
                 continue  // Search tutorials only when the mod filter is a base ruleset
-            for (entry in category.getCategoryIterator(ruleset, tutorialController, gameInfo)) {
+            for (entry in category.getCategoryIterator(ruleset, gameInfo)) {
                 if (!isActive) break
                 if (entry !is INamed) continue
                 if (!ruleset.modOptions.isBaseRuleset) {
                     val sort = entry.getSortGroup(ruleset)
                     if (category == CivilopediaCategories.UnitType && sort < 2)
                         continue  // Search "Domain:" entries only when the mod filter is a base ruleset
-                    if (category == CivilopediaCategories.Belief && sort == 0)
-                        continue  // Search "Religions" from `getCivilopediaReligionEntry` only when the mod filter is a base ruleset
+                    if (category == CivilopediaCategories.Belief && sort == BeliefType.None.ordinal)
+                        continue  // Search "Beliefs" and "Religions" from `getCivilopediaBeliefsEntry`/`getCivilopediaReligionEntry` only when the mod filter is a base ruleset
                 }
                 if (entry is IHasUniques && entry.isHiddenFromCivilopedia(gameInfo, ruleset)) continue
                 searchEntry(entry)

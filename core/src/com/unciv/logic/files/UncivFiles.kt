@@ -432,7 +432,9 @@ class UncivFiles(
          * @throws SerializationException
          */
         fun gameInfoPreviewFromString(gameData: String): GameInfoPreview {
-            return json().fromJson(GameInfoPreview::class.java, Gzip.unzip(gameData))
+            val preview = json().fromJson(GameInfoPreview::class.java, Gzip.unzip(gameData))
+            preview.migrateCivID()
+            return preview
         }
 
         /** Returns gzipped serialization of [game], optionally gzipped ([forceZip] overrides [saveZipped]) */

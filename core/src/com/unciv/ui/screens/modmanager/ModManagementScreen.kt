@@ -287,14 +287,6 @@ class ModManagementScreen private constructor(
                 repoSearch = Github.tryGetGithubReposWithTopic(pageNum, amountPerPage)
             } catch (ex: Exception) {
                 Log.error("Could not download mod list", ex)
-                launchOnGLThread {
-                    ToastPopup("Could not download mod list", this@ModManagementScreen)
-                }
-                try {
-                    // If it's too large Android won't let you copy, hence the guardrails
-                    Gdx.app.clipboard.contents = ex.stackTraceToString()
-                } catch (_:Exception) {}
-
                 runningSearchJob = null
                 return@run
             }
@@ -345,7 +337,9 @@ class ModManagementScreen private constructor(
             val mod = ModUIData(repo, isUpdatedVersionOfInstalledMod)
             onlineModInfo[repo.name] = mod
             modButtons.remove(mod) // Remove *cached* mod button since we have NEW DATA
-            onlineModsTable.add(getCachedModButton(mod)).row()
+            if (mod.matchesFilter(optionsManager.getFilter())) {
+                onlineModsTable.add(getCachedModButton(mod)).row()
+            }
         }
 
         Concurrency.run("Cache mod list"){
@@ -503,12 +497,8 @@ class ModManagementScreen private constructor(
         Concurrency.run("DownloadMod") { // to avoid ANRs - we've learnt our lesson from previous download-related actions
             try {
                 val modFolder =
-                    repo.downloadAndExtract(
-                        UncivGame.Current.files.getModsFolder(),
-                        updateProgressPercent
-                    )
+                    repo.downloadAndExtract(updateProgressPercent)
                         ?: throw Exception("Exception during GitHub download")    // downloadAndExtract returns null for 404 errors and the like -> display something!
-                Github.rewriteModOptions(repo, modFolder)
                 launchOnGLThread {
                     val repoName = modFolder.name()  // repo.name still has the replaced "-"'s
                     val toast = ToastPopup("[$repoName] Downloaded!", this@ModManagementScreen)

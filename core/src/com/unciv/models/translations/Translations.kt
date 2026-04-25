@@ -12,6 +12,7 @@ import com.unciv.ui.components.fonts.DiacriticSupport
 import com.unciv.ui.components.fonts.FontRulesetIcons
 import com.unciv.utils.Log
 import com.unciv.utils.debug
+import com.unciv.utils.hashOf
 import java.util.Locale
 import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Immutable
@@ -296,9 +297,9 @@ object TranslationActiveModsCache {
     private fun getCurrentHash(): Int {
         val gameInfo = UncivGame.Current.gameInfo
         return if (gameInfo != null) {
-            gameInfo.gameParameters.mods.hashCode() + gameInfo.gameParameters.baseRuleset.hashCode() * 31
+            hashOf(gameInfo.gameParameters.mods.hashCode(), gameInfo.gameParameters.baseRuleset.hashCode())
         } else {
-            UncivGame.Current.translations.translationActiveMods.hashCode() * 31 * 31
+            UncivGame.Current.translations.translationActiveMods.hashCode()
         }
     }
 
