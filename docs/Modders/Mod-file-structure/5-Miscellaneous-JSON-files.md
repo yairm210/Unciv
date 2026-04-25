@@ -289,8 +289,6 @@ Legend:
 
 #### UnitUpgradeCost
 
-These values are not merged individually, only the entire sub-structure is.
-
 | Attribute     | Type  |    | Notes |
 |---------------|-------|----|-------|
 | base          | Float | 10 |       |
@@ -307,8 +305,6 @@ The formula for the gold cost of a unit upgrade is (rounded down to a multiple o
 With `civModifier` being the multiplicative aggregate of ["\[relativeAmount\]% Gold cost of upgrading"](../uniques.md#global-uniques) uniques that apply.
 
 #### PolicyCultureCost
-
-These values are not merged individually, only the entire sub-structure is.
 
 | Attribute  | Type  | Default | Restrictions | Notes                                          |
 |------------|-------|---------|--------------|------------------------------------------------|
