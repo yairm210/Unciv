@@ -197,7 +197,7 @@ enum class Countables(
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
     },
     
-    FilteredPopulation("[populationFilter] Population in [cityFilter] Cities") {
+    FilteredPopulation("[populationFilter] in [cityFilter] Cities") {
         
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val (populationFilter, cityFilter) = parameterText.getPlaceholderParameters()
