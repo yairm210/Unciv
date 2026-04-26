@@ -232,7 +232,7 @@ and city distance in another. In case of conflicts, there is no guarantee which 
 | religionLimitMultiplier                  | Float     | 0.5                             | [^K]  |
 | pantheonBase                             | Int       | 10                              | [^L]  |
 | pantheonGrowth                           | Int       | 5                               | [^L]  |
-| policyCultureCost                        | Object    | [See below](#policyculturecost) |       |
+| policyCultureCost                        | Object    | [See below](#policyculturecost) | [^J]  |
 | workboatAutomationSearchMaxTiles         | Int       | 20                              | [^M]  |
 | maxSpyRank                               | Int       | 3                               | [^N]  |
 | spyRankSkillPercentBonus                 | Float     | 30                              | [^O]  |
@@ -272,7 +272,7 @@ Legend:
 - [^G]: MapGenerator.spawnIce: spawn Ice where T < this, with T calculated from temperatureExtremeness, latitude and perlin noise.
 - [^H]: MapGenerator.spawnLakesAndCoasts: Water bodies up to this tile count become Lakes
 - [^I]: RiverGenerator: river frequency and length bounds
-- [^J]: A [UnitUpgradeCost](#unitupgradecost) sub-structure.
+- [^J]: When using multiple mods that change this sub-structure, then the values are not merged individually, only the entire sub-structure is.
 - [^K]: Maximum foundable Religions = religionLimitBase + floor(MajorCivCount * religionLimitMultiplier)
 - [^L]: Cost of pantheon = pantheonBase + CivsWithReligion * pantheonGrowth
 - [^M]: When the AI decides whether to build a work boat, how many tiles to search from the city center for an improvable tile
