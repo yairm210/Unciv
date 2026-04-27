@@ -1,3 +1,24 @@
+## 4.20.3
+
+CI: Pin WiX version, and make MSI failures not preclude Github version
+
+Resolved  - custom maps are retained when starting a new game from an old one
+
+Resolved  - spies "evacuate" correctly from destroyed cities
+
+Resolved  - spectators can see the building list again
+
+By unciv-loof:
+- Confirmation popup before breaking promise not to spy 
+- ConstructImprovementInstantly now clears tile improvement queue 
+
+Fixed issue with units selection in city. - By ValeraShimchuck
+
+By Ambeco:
+- TargetHelper minimizes movement before attacking 
+- Warnings for unseeded random 
+- PathingMap can now also BFS, taking moveCost into consideration 
+
 ## 4.20.2
 
 By unciv-loof:
