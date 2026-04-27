@@ -65,7 +65,7 @@ class CityScreen(
 
     private val selectedCiv: Civilization = GUI.getWorldScreen().selectedCiv
 
-    internal val isSpying = selectedCiv.gameInfo.isEspionageEnabled() && selectedCiv != city.civ
+    internal val isSpying = selectedCiv.gameInfo.isEspionageEnabled() && selectedCiv != city.civ && !selectedCiv.isSpectator()
 
     /**
      * This is the regular civ city list if we are not spying, if we are spying then it is every foreign city that our spies are in

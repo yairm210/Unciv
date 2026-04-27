@@ -1,5 +1,6 @@
 package com.unciv.logic.map.mapunit
 
+import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.civilization.*
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
@@ -135,7 +136,7 @@ class UnitTurnManager(val unit: MapUnit) {
     }
 
 
-    fun startTurn() {
+    fun startTurn() = timeThis("UnitTurnManager.startTurn") {
         unit.movement.clearPathfindingCache()
         unit.currentMovement = unit.getMaxMovement().toFloat()
         unit.attacksThisTurn = 0

@@ -1,6 +1,7 @@
 package com.unciv.logic.map.tile
 
 import com.unciv.Constants
+import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.tile.Terrain
@@ -36,7 +37,7 @@ class TileStatFunctions(val tile: Tile) {
     fun getTileStats(
         city: City?, observingCiv: Civilization?,
         localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)
-    ): Stats {
+    ): Stats = timeThis("getTileStats") {
         val statsBreakdown = getTileStatsBreakdown(city, observingCiv, localUniqueCache)
 
         val improvement = tile.getUnpillagedImprovement()
@@ -197,7 +198,8 @@ class TileStatFunctions(val tile: Tile) {
     // Only gets the tile percentage bonus, not the improvement percentage bonus
     @Suppress("MemberVisibilityCanBePrivate")
     @Readonly
-    fun getTilePercentageStats(observingCiv: Civilization?, city: City?, uniqueCache: LocalUniqueCache): EnumMap<TilePercentageCategory, Stats> {
+    fun getTilePercentageStats(observingCiv: Civilization?, city: City?, uniqueCache: LocalUniqueCache): EnumMap<TilePercentageCategory, Stats>
+    = timeThis("TileStatFunctions.getTilePercentageStats") {
         val terrainStats = Stats()
         val gameContext = GameContext(civInfo = observingCiv, city = city, tile = tile)
 
@@ -314,7 +316,7 @@ class TileStatFunctions(val tile: Tile) {
         improvement: TileImprovement,
         observingCiv: Civilization,
         city: City?
-    ): Stats {
+    ): Stats = timeThis("TileStatFunctions.getExtraImprovementStats"){
         val stats = Stats()
 
         val resource = tile.tileResource

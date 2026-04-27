@@ -4,6 +4,7 @@ package com.unciv.logic.map.mapunit.movement
 
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.HexCoord
@@ -70,7 +71,7 @@ class UnitMovement(val unit: MapUnit) {
         canPassThroughCache: ArrayList<Boolean?> = ArrayList(),
         movementCostCache: HashMap<Int, Float> = HashMap(),
         includeOtherEscortUnit: Boolean = true
-    ): PathsToTilesWithinTurn {
+    ): PathsToTilesWithinTurn = timeThis("getMovementToTilesAtPosition") {
         if (UncivGame.Current.settings.useAStarPathfinding) {
             if (!considerZoneOfControl) require(includeOtherEscortUnit)
             val pathingMap = if (!considerZoneOfControl) aStarPathingWithoutZoneControl
@@ -146,7 +147,7 @@ class UnitMovement(val unit: MapUnit) {
      * Returns an empty list if there's no way to get to the destination.
      */
     @Readonly @Suppress("purity")
-    fun getShortestPath(destination: Tile, avoidDamagingTerrain: Boolean = false): List<Tile> {
+    fun getShortestPath(destination: Tile, avoidDamagingTerrain: Boolean = false): List<Tile> = timeThis<List<Tile>>("getShortestPath")  {
         if (unit.cache.cannotMove) return listOf()
         if (UncivGame.Current.settings.useAStarPathfinding)
             return aStarPathing.getShortestPath(destination) ?: listOf()
@@ -262,6 +263,7 @@ class UnitMovement(val unit: MapUnit) {
 
             distance++
         }
+        return emptyList()
     }
 
     class UnreachableDestinationException(msg: String) : Exception(msg)
@@ -464,7 +466,7 @@ class UnitMovement(val unit: MapUnit) {
         else unit.destroy()
     }
 
-    fun moveToTile(destination: Tile, considerZoneOfControl: Boolean = true) {
+    fun moveToTile(destination: Tile, considerZoneOfControl: Boolean = true): Unit = timeThis<Unit>("moveToTile") {
         if (destination == unit.getTile() || unit.isDestroyed) return // already here (or dead)!
         // Reset closestEnemy chache
         val escortUnit = if (unit.isEscorting()) unit.getOtherEscortUnit()!! else null

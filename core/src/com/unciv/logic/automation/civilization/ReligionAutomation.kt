@@ -435,14 +435,15 @@ object ReligionAutomation {
 
     private fun foundReligion(civInfo: Civilization) {
         if (civInfo.religionManager.religionState != ReligionState.FoundingReligion) return
+        val rng = civInfo.state.stateBasedRandom("ReligionAutomation.foundReligion")
         val usedReligions = civInfo.gameInfo.religions.values.mapTo(mutableSetOf()) { it.name }
         val availableReligions = civInfo.gameInfo.ruleset.religions.filterNot { it in usedReligions }
         val favoredReligion = civInfo.nation.favoredReligion?.takeIf { it in availableReligions }
         val allFavoredReligions = civInfo.gameInfo.civilizations.mapNotNullTo(mutableSetOf()) { it.nation.favoredReligion}
         val nonFavoredReligions = availableReligions.filterNot { it in allFavoredReligions }
         val chosenReligion = favoredReligion
-            ?: nonFavoredReligions.randomOrNull() // allow other civs to found their own favoured religion when possible
-            ?: availableReligions.randomOrNull()
+            ?: nonFavoredReligions.randomOrNull(rng) // allow other civs to found their own favoured religion when possible
+            ?: availableReligions.randomOrNull(rng)
             ?: return // Wait what? How did we pass the checking when using a great prophet but not this?
 
         civInfo.religionManager.foundReligion(chosenReligion, chosenReligion)

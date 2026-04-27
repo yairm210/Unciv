@@ -4,6 +4,7 @@ import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.MultiFilter
+import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.city.managers.CityConquestFunctions
 import com.unciv.logic.city.managers.CityEspionageManager
 import com.unciv.logic.city.managers.CityExpansionManager
@@ -237,6 +238,17 @@ class City : IsPartOfGameInfoSerialization, INamed {
         else destination.getRoadPath(this, maxTurns)
     }
 
+    @Readonly
+    fun getRoadPathToAny(destinations: Set<Tile>, maxBfsReachPadding: Int): List<Tile>? {
+        // TODO: replace with multi-target AStar
+        val maxTurns = maxBfsReachPadding + destinations.minOf { it.aerialDistanceTo(centerTile) }
+        if (!::potentialRoadPathing.isInitialized)
+            potentialRoadPathing = PathingMap.createRoadPathingMap(civ, centerTile)
+        val otherCity = potentialRoadPathing.bfsUntilMatchingTile(maxTurns) { tile,_ -> destinations.contains(tile) }
+        if (otherCity == null) return null
+        return potentialRoadPathing.getShortestPath(otherCity) // this just reads from cached results
+    }
+
     @Readonly fun isGarrisoned() = getGarrison() != null
     @Readonly
     fun getGarrison(): MapUnit? =
@@ -416,7 +428,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
      *
      *  If the next City.startTurn is soon enough, then use [reassignPopulationDeferred] instead.
      */
-    fun reassignPopulation(resetLocked: Boolean = false) {
+    fun reassignPopulation(resetLocked: Boolean = false) = timeThis("reassignPopulation") {
         if (resetLocked) {
             workedTiles = hashSetOf()
             lockedTiles = hashSetOf()
@@ -448,6 +460,11 @@ class City : IsPartOfGameInfoSerialization, INamed {
         // Destroy planes stationed in city
         for (airUnit in getCenterTile().airUnits.toList()) airUnit.destroy()
 
+        // Evacuate spies BEFORE relinquishing tile ownership, because spy lookup uses tile.owningCity
+        // to find which city a spy is stationed in (after save/load when the transient city field is null).
+        // If we relinquish ownership first, owningCity becomes null and spies are not found/evacuated.
+        espionage.removeAllPresentSpies(SpyFleeReason.CityDestroyed)
+
         // The relinquish ownership MUST come before removing the city,
         // because it updates the city stats which assumes there is a capital, so if you remove the capital it crashes
         for (tile in getTiles()) {
@@ -469,8 +486,6 @@ class City : IsPartOfGameInfoSerialization, INamed {
             if (!unit.movement.canPassThrough(getCenterTile()))
                 unit.movement.teleportToClosestMoveableTile()
         }
-
-        espionage.removeAllPresentSpies(SpyFleeReason.CityDestroyed)
 
         // Update proximity rankings for all civs
         for (otherCiv in civ.gameInfo.getAliveMajorCivs()) {

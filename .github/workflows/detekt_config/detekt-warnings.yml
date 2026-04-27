@@ -321,7 +321,7 @@ naming:
     enumEntryPattern: '^[a-zA-Z0-9_]*$'
   ForbiddenClassName:
     active: false
-    forbiddenName: []
+    forbiddenName: ['kotlin.random.(Random.)?Default']
   FunctionMaxLength:
     active: false
     maximumFunctionNameLength: 30
@@ -581,12 +581,20 @@ style:
     imports: []
     forbiddenPatterns: ''
   ForbiddenMethodCall:
-    active: false
+    active: true
     methods:
       - reason: 'print does not allow you to configure the output stream. Use a logger instead.'
         value: 'kotlin.io.print'
       - reason: 'println does not allow you to configure the output stream. Use a logger instead.'
         value: 'kotlin.io.println'
+      - reason: 'Avoid unseeded random. Instead, use GameContext.random'
+        value: 'kotlin.collections.Collection.random()'
+      - reason: 'Unciv prefers pseudorandom. Instead, use GameContext.random'
+        value: 'kotlin.collections.Collection.randomOrNull()'
+      - reason: 'Unciv prefers pseudorandom. Instead, use GameContext.random'
+        value: 'java.util.Random.<init>()'
+      - reason: 'Unciv prefers pseudorandom. Instead, use GameContext.random'
+        value: 'java.util.Random.Default.*'
   ForbiddenSuppress:
     active: false
     rules: []

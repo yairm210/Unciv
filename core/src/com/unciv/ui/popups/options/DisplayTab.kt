@@ -156,7 +156,8 @@ internal class DisplayTab(
 
     private fun addUnitSetSelectBox() {
         val nullValue = "None".tr()
-        addSelectBox("Unitset", settings::unitSet, ImageGetter.getAvailableUnitsets().asIterable()) { value, _ ->
+        val choices = sequenceOf(nullValue) + ImageGetter.getAvailableUnitsets()
+        addSelectBox("Unitset", settings::unitSet, choices.asIterable()) { value, _ ->
             if (value == nullValue) settings.unitSet = null
             // ImageGetter ruleset should be correct no matter what screen we're on
             TileSetCache.assembleTileSetConfigs(ImageGetter.ruleset.mods)

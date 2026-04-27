@@ -242,7 +242,7 @@ jobs:
           dir .github/workflows/wix-msi-files
         
       - name: Install WiX
-        run: dotnet tool install --global wix
+        run: dotnet tool install --global wix --version 5.0.2
         
       - name: Build WiX on Windows
         shell: bash
@@ -301,7 +301,7 @@ jobs:
           mv UncivDeploymentZips/Unciv-Linux64.zip deploy
           mv UncivAPK/Unciv-signed.apk deploy
           mv UncivServer/UncivServer.jar deploy
-          mv Unciv-MSI/Unciv.msi deploy
+          [ -d "Unciv-MSI" ] && mv Unciv-MSI/Unciv.msi deploy || true
 
       - name: Check if this is a real release or a test version, for Github release
         id: check-version-tag
