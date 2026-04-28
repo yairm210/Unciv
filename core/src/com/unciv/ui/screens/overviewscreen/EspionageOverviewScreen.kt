@@ -234,6 +234,7 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
                 if (city != null
                     && city.civ.civName != civInfo.civName
                     && city.civ.isMajorCiv()
+                    && city.civ.knows(civInfo) // ensures the !! below won't crash
                     && city.civ.getDiplomacyManager(civInfo)!!.hasFlag(DiplomacyFlags.AgreedToNotSendSpies)) {
                     ConfirmPopup(
                         UncivGame.Current.screen!!,
