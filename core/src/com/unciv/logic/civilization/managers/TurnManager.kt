@@ -110,9 +110,10 @@ class TurnManager(val civInfo: Civilization) {
             if (!civInfo.flagsCountdown.containsKey(flag)) continue
 
             if (flag == CivFlags.CityStateGreatPersonGift.name) {
+                val rng = civInfo.state.stateBasedRandom("TurnManager.startTurnFlags")
                 val cityStateAllies: List<Civilization> =
                         civInfo.getKnownCivs().filter { it.isCityState && it.allyCiv == civInfo }.toList()
-                val givingCityState = cityStateAllies.filter { it.cities.isNotEmpty() }.randomOrNull()
+                val givingCityState = cityStateAllies.filter { it.cities.isNotEmpty() }.randomOrNull(rng)
 
                 if (cityStateAllies.isNotEmpty()) civInfo.flagsCountdown[flag] = civInfo.flagsCountdown[flag]!! - 1
 
@@ -189,7 +190,7 @@ class TurnManager(val civInfo: Civilization) {
             return
         }
 
-        val random = Random.Default
+        val random = civInfo.state.stateBasedRandom("TurnManager.doRevoltSpawn")
         val rebelCount = 1 + random.nextInt(100 + 20 * (civInfo.cities.size - 1)) / 100
         val spawnCity = civInfo.cities.maxByOrNull { random.nextInt(it.population.population + 10) } ?: return
         val spawnTile = spawnCity.getTiles().maxByOrNull { rateTileForRevoltSpawn(it) } ?: return
@@ -233,7 +234,7 @@ class TurnManager(val civInfo: Civilization) {
     
     @Readonly
     private fun getTurnsBeforeRevolt() =
-        ((civInfo.gameInfo.ruleset.modOptions.constants.baseTurnsUntilRevolt + Random.Default.nextInt(3)) 
+        ((civInfo.gameInfo.ruleset.modOptions.constants.baseTurnsUntilRevolt + civInfo.state.stateBasedRandom("TurnManager.getTurnsBeforeRevolt").nextInt(3)) 
             * civInfo.gameInfo.speed.modifier.coerceAtLeast(1f)).toInt()
 
 

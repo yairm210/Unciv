@@ -14,7 +14,6 @@ import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
 import kotlin.math.roundToInt
-import kotlin.random.Random
 
 class CityTurnManager(val city: City) {
 
@@ -58,8 +57,9 @@ class CityTurnManager(val city: City) {
     }
     
     private fun setWltkResourceDemandCooldown(isNewCity: Boolean) {
+        val rng = city.state.stateBasedRandom("CityTurnManager.setWltkResourceDemandCooldown")
         // Demand a new resource in ~20 turns on Standard speed
-        var duration = 15 + Random.Default.nextInt(10)
+        var duration = 15 + rng.nextInt(10)
         if (isNewCity && city.isCapital())
             duration += 10
         city.setFlag(CityFlags.ResourceDemand, duration, true)
@@ -109,6 +109,7 @@ class CityTurnManager(val city: City) {
 
 
     private fun demandNewResource() {
+        val rng = city.state.stateBasedRandom("CityTurnManager.demandNewResource")
         val candidates = city.getRuleset().tileResources.values.filter {
             it.resourceType == ResourceType.Luxury && // Must be luxury
                     !it.hasUnique(UniqueType.CityStateOnlyResource) && // Not a city-state only resource eg jewelry
@@ -119,11 +120,11 @@ class CityTurnManager(val city: City) {
         val missingResources = candidates.filter { !city.civ.hasResource(it) }
         
         if (missingResources.isEmpty()) { // hooray happpy day forever!
-            city.demandedResource = candidates.randomOrNull()?.name ?: ""
+            city.demandedResource = candidates.randomOrNull(rng)?.name ?: ""
             return // actually triggering "wtlk" is done in tryWeLoveTheKing(), *next turn*
         }
 
-        val chosenResource = missingResources.randomOrNull()
+        val chosenResource = missingResources.randomOrNull(rng)
         
         city.demandedResource = chosenResource?.name ?: "" // mods may have no resources as candidates even
         setWltkResourceDemandCooldown(false)

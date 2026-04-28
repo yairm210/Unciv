@@ -102,7 +102,7 @@ object HolidayDates {
                 (1..12)
                     .map { LocalDate.of(year, it, 13) }
                     .filter { it.dayOfWeek == DayOfWeek.FRIDAY }
-                    .randomOrNull()
+                    .randomOrNull(Random(year))
                     ?.let { DateRange.of(it) }
                     ?: DateRange.never
         },

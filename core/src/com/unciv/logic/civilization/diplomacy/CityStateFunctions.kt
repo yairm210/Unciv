@@ -29,6 +29,7 @@ class CityStateFunctions(val civInfo: Civilization) {
 
     /** Attempts to initialize the city state, returning true if successful. */
     fun initCityState(ruleset: Ruleset, startingEra: String, usedMajorCivs: Sequence<Nation>): Boolean {
+        val rng = civInfo.state.stateBasedRandom("CityStateFunctions.initCityState")
         val allMercantileResources = ruleset.tileResources.values.filter { it.hasUnique(UniqueType.CityStateOnlyResource) }.map { it.name }
         val uniqueTypes = HashSet<UniqueType>()    // We look through these to determine what kinds of city states we have
 
@@ -37,12 +38,12 @@ class CityStateFunctions(val civInfo: Civilization) {
         uniqueTypes.addAll(cityStateType.allyBonusUniqueMap.getAllUniques().mapNotNull { it.type })
 
         // CS Personality
-        civInfo.cityStatePersonality = CityStatePersonality.entries.random()
+        civInfo.cityStatePersonality = CityStatePersonality.entries.random(rng)
 
         // Mercantile bonus resources
 
         if (uniqueTypes.contains(UniqueType.CityStateUniqueLuxury)) {
-            civInfo.cityStateResource = allMercantileResources.randomOrNull()
+            civInfo.cityStateResource = allMercantileResources.randomOrNull(rng)
         }
         
         fun possibleUnits(): ArrayList<BaseUnit> {
@@ -119,7 +120,8 @@ class CityStateFunctions(val civInfo: Civilization) {
     }
 
     @Readonly
-    fun turnsForGreatPersonFromCityState(): Int = ((37 + Random.Default.nextInt(7)) * civInfo.gameInfo.speed.modifier).toInt()
+    fun turnsForGreatPersonFromCityState(): Int = 
+        ((37 + civInfo.state.stateBasedRandom("CityStateFunctions.turnsForGreatPersonFromCityState").nextInt(7)) * civInfo.gameInfo.speed.modifier).toInt()
 
     /** Gain a random great person from the city state */
     fun giveGreatPersonToPatron(receivingCiv: Civilization) {
@@ -129,7 +131,8 @@ class CityStateFunctions(val civInfo: Civilization) {
                 && !it.hasUnique(UniqueType.MayFoundReligion) }
         if (giftableUnits.isEmpty()) // For badly defined mods that don't have great people but do have the policy that makes city states grant them
             return
-        val giftedUnit = giftableUnits.random()
+        val rng = civInfo.getDiplomacyManager(receivingCiv)!!.state.stateBasedRandom("CityStateFunctions.giveGreatPersonToPatron")
+        val giftedUnit = giftableUnits.random(rng)
         val city = NextTurnAutomation.getForeignCityNearCapital(civInfo.getCapital(), receivingCiv)?.city ?: return
         val placedUnit = receivingCiv.units.placeUnitNearTile(city.location.toHexCoord(), giftedUnit)
             ?: return
@@ -140,6 +143,7 @@ class CityStateFunctions(val civInfo: Civilization) {
 
     fun giveMilitaryUnitToPatron(receivingCiv: Civilization) {
         val city = NextTurnAutomation.getForeignCityNearCapital(civInfo.getCapital(), receivingCiv)?.city ?: return
+        val rng = civInfo.getDiplomacyManager(receivingCiv)!!.state.stateBasedRandom("CityStateFunctions.giveGreatPersonToPatron")
 
         @Readonly
         fun giftableUniqueUnit(): BaseUnit? {
@@ -159,7 +163,7 @@ class CityStateFunctions(val civInfo: Civilization) {
                 .filter { it.getResourceRequirementsPerTurn(receivingCiv.state).none {
                     it.value > 0 && receivingCiv.getResourceAmount(it.key) < it.value
                 } }
-                .toList().randomOrNull()
+                .toList().randomOrNull(rng)
         
         val militaryUnit = giftableUniqueUnit() // If the receiving civ has discovered the required tech and not the obsolete tech for our unique, always give them the unique
             ?: randomGiftableUnit() // Otherwise pick at random
@@ -513,13 +517,14 @@ class CityStateFunctions(val civInfo: Civilization) {
 
     fun tributeWorker(demandingCiv: Civilization) {
         if (!civInfo.isCityState) throw Exception("You can only demand workers from City-States!")
+        val rng = civInfo.getDiplomacyManager(demandingCiv)!!.state.stateBasedRandom("CityStateFunctions.tributeWorker")
 
         val buildableWorkerLikeUnits = civInfo.gameInfo.ruleset.units.filter {
             it.value.hasUnique(UniqueType.BuildImprovements) &&
                 it.value.isCivilian() && it.value.isBuildable(civInfo)
         }
         if (buildableWorkerLikeUnits.isEmpty()) return  // Bad luck?
-        demandingCiv.units.placeUnitNearTile(civInfo.getCapital()!!.location.toHexCoord(), buildableWorkerLikeUnits.values.random())
+        demandingCiv.units.placeUnitNearTile(civInfo.getCapital()!!.location.toHexCoord(), buildableWorkerLikeUnits.values.random(rng))
 
         civInfo.getDiplomacyManager(demandingCiv)!!.addInfluence(-50f)
         cityStateBullied(demandingCiv)

@@ -223,7 +223,15 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
 
         val diplomacyManager = viewingCiv.getDiplomacyManager(otherCiv)!!
         
-        for (demand in Demand.entries){
+        for (demand in Demand.entries) {
+            
+            // this particular demand can currently only be made by AI to human players
+            // TODO logic for AI to appropriately respond to this ultimatum
+            // additionally, I suggest to only enable the button when there is a genuine military presence
+            // see DiplomacyAutomation
+            if (demand == Demand.DoNotAttackUs)
+                continue
+            
             val button = demand.demandText.toTextButton()
             
             if (otherCiv.popupAlerts.any { it.type == demand.demandAlert && it.value == viewingCiv.civID } // Already demanded

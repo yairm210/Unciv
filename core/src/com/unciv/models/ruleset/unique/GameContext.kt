@@ -13,6 +13,7 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.stats.Stat
 import com.unciv.utils.hashOf
 import yairm210.purity.annotations.Readonly
+import kotlin.random.Random
 
 data class GameContext(
     val civInfo: Civilization? = null,
@@ -25,13 +26,20 @@ data class GameContext(
     val attackedTile: Tile? = null,
     val combatAction: CombatAction? = null,
 
+    val otherCiv: Civilization? = null,
+
     val region: Region? = null,
-    val gameInfo: GameInfo? = civInfo?.gameInfo,
+    // tile and region do not deduce gameInfo because that field is not set during MapGeneration,
+    // and querying if its initialized is non-trivial
+    val gameInfo: GameInfo? = (civInfo?.gameInfo) ?: (city?.civ?.gameInfo) ?: (unit?.civ?.gameInfo) ?:
+        (ourCombatant?.getCivInfo()?.gameInfo) ?: (theirCombatant?.getCivInfo()?.gameInfo) ?: (attackedTile?.tileMap?.gameInfo) ?:
+        (otherCiv?.gameInfo),
 
     val ignoreConditionals: Boolean = false,
 ) {
-    constructor(city: City) : this(city.civ, city, tile = city.getCenterTileOrNull())
-    constructor(unit: MapUnit) : this(unit.civ, unit = unit, tile = if (unit.hasTile()) unit.getTile() else null)
+    constructor(city: City) : this(city.civ, city, tile = city.getCenterTileOrNull(), gameInfo = city.civ.gameInfo)
+    constructor(unit: MapUnit) : this(unit.civ, unit = unit, tile = if (unit.hasTile()) unit.getTile() else null, gameInfo = unit.civ.gameInfo)
+    constructor(civ: Civilization, civ2: Civilization?=null) : this(civ, otherCiv = civ2, gameInfo = civ.gameInfo)
     constructor(ourCombatant: ICombatant, theirCombatant: ICombatant? = null,
                 attackedTile: Tile? = null, combatAction: CombatAction? = null) : this(
         ourCombatant.getCivInfo(),
@@ -41,7 +49,9 @@ data class GameContext(
         ourCombatant,
         theirCombatant,
         attackedTile,
-        combatAction
+        combatAction,
+        theirCombatant?.getCivInfo(),
+        gameInfo = ourCombatant.getCivInfo().gameInfo
     )
 
 
@@ -75,7 +85,11 @@ data class GameContext(
         relevantCity?.civ ?:
         relevantUnit?.civ
     }
-
+    
+    @Readonly
+    fun stateBasedRandom(caller: String, seed: Int=31) =
+        Random(hashOf(caller.hashCode(), seed, this.hashCode()))
+        
     @Readonly
     fun getResourceAmount(resourceName: String): Int {
         return when {
@@ -108,7 +122,9 @@ data class GameContext(
         fun Civilization?.hash() = this?.civID?.hashCode() ?: 0
         fun City?.hash() = this?.id?.hashCode() ?: 0
         fun Tile?.hash() = this?.position?.hashCode() ?: 0
-        fun MapUnit?.hash() = if (this == null) 0 else name.hashCode() + (if (hasTile()) 17 * currentTile.hash() else 0)
+        fun MapUnit?.hash() = if (this == null) 0 else name.hashCode() +
+            (if (hasTile()) 17 * currentTile.hash() else 0) +
+            (17 * currentMovement).hashCode()
         fun ICombatant?.hash() = if (this == null) 0
             else if (this is MapUnitCombatant) unit.hash()  // line only serves as `lateinit currentTile not initialized` guard
             else getName().hashCode() + 17 * getTile().hash()
@@ -116,6 +132,8 @@ data class GameContext(
         fun Region?.hash() = this?.rect?.hashCode() ?: 0
 
         val hash = hashOf(
+            gameInfo?.turns?.hashCode() ?: 0,
+            (gameInfo?.gameId?.hashCode() ?: gameInfo?.tileMap?.mapParameters?.seed?.hashCode() ?: 0),
             relevantCiv.hash(),
             relevantCity.hash(),
             relevantUnit.hash(),
@@ -124,6 +142,7 @@ data class GameContext(
             theirCombatant.hash(),
             attackedTile.hash(),
             combatAction.hash(),
+            otherCiv.hash(),
             region.hash(),
             ignoreConditionals.hashCode()
         )

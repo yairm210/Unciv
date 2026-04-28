@@ -113,9 +113,10 @@ class AlertPopup(
             AlertType.ReligionSpreadDespiteOurPromise -> shouldOpen = addDemandViolationNoticed(Demand.DoNotSpreadReligion)
             AlertType.DemandToStopSpyingOnUs -> shouldOpen = addDemand(Demand.DontSpyOnUs)
             AlertType.SpyingOnUsDespiteOurPromise -> shouldOpen = addDemand(Demand.DontSpyOnUs)
+            AlertType.DemandToNotAttackUs -> shouldOpen = addDemand(Demand.DoNotAttackUs)
+            AlertType.AttackedUsDespitePromise -> shouldOpen = addDemandViolationNoticed(Demand.DoNotAttackUs)
             AlertType.AcceptingDemand -> shouldOpen = addAcceptingDemand()
             AlertType.RejectingDemand -> shouldOpen = addRejectingDemand()
-            
             
             AlertType.DeclarationOfFriendship -> shouldOpen = addDeclarationOfFriendship()
             AlertType.BulliedProtectedMinor, AlertType.AttackedProtectedMinor, AlertType.AttackedAllyMinor -> 
@@ -317,6 +318,8 @@ class AlertPopup(
         }.row()
         addCloseButton(demand.refuseDemandText, KeyboardBinding.Cancel) {
             playerDiploManager.refuseDemand(demand)
+            if (demand == Demand.DoNotAttackUs)
+                viewingCiv.getDiplomacyManager(otherciv)!!.declareWar()
         }
         return true
     }

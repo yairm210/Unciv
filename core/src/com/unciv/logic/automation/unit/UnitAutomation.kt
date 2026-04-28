@@ -175,10 +175,11 @@ object UnitAutomation {
             return false
         }
 
+        val rng = unit.cache.state.stateBasedRandom("UnitAutomation.tryFogBust")
         val reachableTilesThisTurn =
                 unit.movement.getDistanceToTiles().keys.filter { isGoodTileForFogBusting(unit, it) }
         if (reachableTilesThisTurn.any()) {
-            unit.movement.headTowards(reachableTilesThisTurn.random()) // Just pick one
+            unit.movement.headTowards(reachableTilesThisTurn.random(rng)) // Just pick one
             return true
         }
 
@@ -215,7 +216,8 @@ object UnitAutomation {
                         && unit.getDamageFromTerrain(it) <= 0 // Don't end turn on damaging terrain for no good reason
                         && (!stayInTerritory || it.getOwner() == unit.civ || unit.currentTile.getOwner() != unit.civ)
                 }
-        if (reachableTiles.any()) unit.movement.moveToTile(reachableTiles.toList().random())
+        val rng = unit.cache.state.stateBasedRandom("UnitAutomation.wander")
+        if (reachableTiles.any()) unit.movement.moveToTile(reachableTiles.toList().random(rng))
     }
 
     internal fun tryUpgradeUnit(unit: MapUnit): Boolean {

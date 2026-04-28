@@ -13,7 +13,7 @@ enum class Demand(
     val violationOccurred: DiplomacyFlags,
     val willIgnoreViolation: DiplomacyFlags,
     val refusedDiplomaticModifier: DiplomaticModifiers,
-    val betrayedPromiseDiplomacyMpodifier: DiplomaticModifiers,
+    val betrayedPromiseDiplomacyModifier: DiplomaticModifiers,
     val fulfilledPromiseDiplomacyModifier: DiplomaticModifiers,
     val demandAlert: AlertType,
     val violationDiscoveredAlert: AlertType,
@@ -28,13 +28,14 @@ enum class Demand(
     /** Must contain 1 parameter, to be replaced with turns left */
     val wePromisedText: String,
     /** Must contain 1 parameter, to be replaced with turns left */
-    val theyPromisedText: String) {
+    val theyPromisedText: String
+) {
     DontSpyOnUs(
         agreedToDemand = DiplomacyFlags.AgreedToNotSendSpies,
         violationOccurred = DiplomacyFlags.DiscoveredSpiesInOurCities,
         willIgnoreViolation = DiplomacyFlags.IgnoreThemSendingSpies,
         refusedDiplomaticModifier = DiplomaticModifiers.RefusedToNotSendingSpiesToUs,
-        betrayedPromiseDiplomacyMpodifier = DiplomaticModifiers.BetrayedPromiseToNotSendingSpiesToUs,
+        betrayedPromiseDiplomacyModifier = DiplomaticModifiers.BetrayedPromiseToNotSendingSpiesToUs,
         fulfilledPromiseDiplomacyModifier = DiplomaticModifiers.FulfilledPromiseToNotSpy,
         demandAlert = AlertType.DemandToStopSpyingOnUs,
         violationDiscoveredAlert = AlertType.SpyingOnUsDespiteOurPromise,
@@ -52,7 +53,7 @@ enum class Demand(
         violationOccurred = DiplomacyFlags.SpreadReligionInOurCities,
         willIgnoreViolation = DiplomacyFlags.IgnoreThemSpreadingReligion,
         refusedDiplomaticModifier = DiplomaticModifiers.RefusedToNotSpreadReligionToUs,
-        betrayedPromiseDiplomacyMpodifier = DiplomaticModifiers.BetrayedPromiseToNotSpreadReligionToUs,
+        betrayedPromiseDiplomacyModifier = DiplomaticModifiers.BetrayedPromiseToNotSpreadReligionToUs,
         fulfilledPromiseDiplomacyModifier = DiplomaticModifiers.FulfilledPromiseToNotSpreadReligion,
         demandAlert = AlertType.DemandToStopSpreadingReligion,
         violationDiscoveredAlert = AlertType.ReligionSpreadDespiteOurPromise,
@@ -70,7 +71,7 @@ enum class Demand(
         violationOccurred = DiplomacyFlags.SettledCitiesNearUs,
         willIgnoreViolation = DiplomacyFlags.IgnoreThemSettlingNearUs,
         refusedDiplomaticModifier = DiplomaticModifiers.RefusedToNotSettleCitiesNearUs,
-        betrayedPromiseDiplomacyMpodifier = DiplomaticModifiers.BetrayedPromiseToNotSettleCitiesNearUs,
+        betrayedPromiseDiplomacyModifier = DiplomaticModifiers.BetrayedPromiseToNotSettleCitiesNearUs,
         fulfilledPromiseDiplomacyModifier = DiplomaticModifiers.FulfilledPromiseToNotSettleCitiesNearUs,
         demandAlert = AlertType.DemandToStopSettlingCitiesNear,
         violationDiscoveredAlert = AlertType.CitySettledNearOtherCivDespiteOurPromise,
@@ -82,6 +83,25 @@ enum class Demand(
         violationNoticedText = "We noticed your new city near our borders, despite your promise. This will have....implications.",
         wePromisedText = "We promised not to settle near them ([turns] turns remaining)",
         theyPromisedText = "They promised not to settle near us ([turns] turns remaining)"
+    ),
+    DoNotAttackUs(
+        agreedToDemand = DiplomacyFlags.AgreedToNotAttackUs,
+        // first violation = notice military presence near border
+        // second violation = declare war after promising not to
+        violationOccurred = DiplomacyFlags.MilitaryPresenceNearBorderOrAttackedUsDespitePromise,
+        willIgnoreViolation = DiplomacyFlags.IgnoreMilitaryPresenceNearBorder,
+        refusedDiplomaticModifier = DiplomaticModifiers.RefusedToPromiseNotToAttackUs,
+        betrayedPromiseDiplomacyModifier = DiplomaticModifiers.BetrayedPromiseToNotAttackUs,
+        fulfilledPromiseDiplomacyModifier = DiplomaticModifiers.FulfilledPromiseToNotAttackUs,
+        demandAlert = AlertType.DemandToNotAttackUs,
+        violationDiscoveredAlert = AlertType.AttackedUsDespitePromise,
+        demandText = "We have noticed substantial military activity near our borders. How should we interpret this?",
+        acceptDemandText = "Do not worry. Our soldiers are merely passing by.",
+        refuseDemandText = "Our military stands ready to finish what diplomacy could not! (DECLARE WAR)",
+        agreedToDemandText = "[civName] has promised not to attack us!",
+        refusedDemandText = "[civName] declared war on us after we questioned the positioning of their military!",
+        violationNoticedText = "You have exposed yourself as a treacherous warmonger.",
+        wePromisedText = "We promised not to attack them ([turns] turns remaining)",
+        theyPromisedText = "They promised not to attack us ([turns] turns remaining)"
     )
-    ;
 }

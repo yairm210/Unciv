@@ -69,5 +69,11 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     fun hasUnique(uniqueType: UniqueType, conditionalState: GameContext? = null): Boolean =
         if (conditionalState == null) unit.hasUnique(uniqueType)
         else unit.hasUnique(uniqueType, conditionalState)
+    
+    @Readonly
+    override fun hashCode() = unit.hashCode()
+    @Readonly
+    override fun equals(other: Any?) = other is MapUnitCombatant && other.unit == unit
+
 
 }
