@@ -212,7 +212,7 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
             add(getSpyIcon(spy))
     }
 
-    private abstract inner class SpyCityActionButton : Button(SmallButtonStyle()) {
+    private abstract class SpyCityActionButton : Button(SmallButtonStyle()) {
         open fun setDirection(align: Int) {}
     }
 
