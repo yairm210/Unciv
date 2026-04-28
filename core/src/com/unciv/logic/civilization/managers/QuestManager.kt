@@ -173,11 +173,12 @@ class QuestManager : IsPartOfGameInfoSerialization {
         if (globalQuestCountdown != UNSET)
             return
 
+        val rng = civ.state.stateBasedRandom("QuestManager.seedGlobalQuestCooldown")
         val countdown =
                 if (civ.gameInfo.turns == GLOBAL_QUEST_FIRST_POSSIBLE_TURN)
-                    Random.nextInt(GLOBAL_QUEST_FIRST_POSSIBLE_TURN_RAND)
+                    rng.nextInt(GLOBAL_QUEST_FIRST_POSSIBLE_TURN_RAND)
                 else
-                    GLOBAL_QUEST_MIN_TURNS_BETWEEN + Random.nextInt(GLOBAL_QUEST_RAND_TURNS_BETWEEN)
+                    GLOBAL_QUEST_MIN_TURNS_BETWEEN + rng.nextInt(GLOBAL_QUEST_RAND_TURNS_BETWEEN)
 
         globalQuestCountdown = (countdown * civ.gameInfo.speed.modifier).toInt()
     }
@@ -193,11 +194,12 @@ class QuestManager : IsPartOfGameInfoSerialization {
     }
 
     private fun seedIndividualQuestsCountdown(challenger: Civilization) {
+        val rng = civ.state.copy(otherCiv = challenger).stateBasedRandom("QuestManager.seedIndividualQuestCooldown")
         val countdown: Int =
                 if (civ.gameInfo.turns == INDIVIDUAL_QUEST_FIRST_POSSIBLE_TURN)
-                    Random.nextInt(INDIVIDUAL_QUEST_FIRST_POSSIBLE_TURN_RAND)
+                    rng.nextInt(INDIVIDUAL_QUEST_FIRST_POSSIBLE_TURN_RAND)
                 else
-                    INDIVIDUAL_QUEST_MIN_TURNS_BETWEEN + Random.nextInt(
+                    INDIVIDUAL_QUEST_MIN_TURNS_BETWEEN + rng.nextInt(
                         INDIVIDUAL_QUEST_RAND_TURNS_BETWEEN
                     )
 

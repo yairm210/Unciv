@@ -34,7 +34,7 @@ object MapRegionResources {
             ResourceType.Bonus -> ImpactType.Bonus
             ResourceType.Luxury -> ImpactType.Luxury
         }
-        val conditionalTerrain = GameContext(attackedTile = tileList.firstOrNull(), gameInfo = null)
+        val conditionalTerrain = GameContext(attackedTile = tileList.firstOrNull())
         val weightings = resourceOptions.associateWith {
             val unique = it.getMatchingUniques(UniqueType.ResourceWeighting, conditionalTerrain).firstOrNull()
             val weight = if (unique != null) unique.params[0].toFloat() else 1f
@@ -54,10 +54,11 @@ object MapRegionResources {
             if (tileData[tile.position]!!.impacts.containsKey(impactType)) {
                 fallbackTiles.add(tile) // Taken but might be a viable fallback tile
             } else {
+                val rng = GameContext(tile = tile).stateBasedRandom("MapRegionResources.placeResourcesInTiles")
                 // Add a resource to the tile
-                val resourceToPlace = possibleResourcesForTile.randomWeighted { weightings[it] ?: 0f }
+                val resourceToPlace = possibleResourcesForTile.randomWeighted(rng) { weightings[it] ?: 0f }
                 tile.setTileResource(resourceToPlace, majorDeposit)
-                tileData.placeImpact(impactType, tile, baseImpact + Random.nextInt(randomImpact + 1))
+                tileData.placeImpact(impactType, tile, baseImpact + rng.nextInt(randomImpact + 1))
                 amountPlaced++
                 detailedPlaced[resourceToPlace] = detailedPlaced[resourceToPlace]!! + 1
                 if (amountPlaced >= amountToPlace) {
@@ -69,11 +70,12 @@ object MapRegionResources {
         while (amountPlaced < amountToPlace && fallbackTiles.isNotEmpty()) {
             // Sorry, we do need to re-sort the list for every pass since new impacts are made with every placement
             val bestTile = fallbackTiles.minByOrNull { tileData[it.position]!!.impacts[impactType]!! }!!
+            val rng = GameContext(tile = bestTile).stateBasedRandom("MapRegionResources.placeResourcesInTiles")
             fallbackTiles.remove(bestTile)
             val possibleResourcesForTile = resourceOptions.filter { it.generatesNaturallyOn(bestTile) }
-            val resourceToPlace = possibleResourcesForTile.randomWeighted { weightings[it] ?: 0f }
+            val resourceToPlace = possibleResourcesForTile.randomWeighted(rng) { weightings[it] ?: 0f }
             bestTile.setTileResource(resourceToPlace, majorDeposit)
-            tileData.placeImpact(impactType, bestTile, baseImpact + Random.nextInt(randomImpact + 1))
+            tileData.placeImpact(impactType, bestTile, baseImpact + rng.nextInt(randomImpact + 1))
             amountPlaced++
             detailedPlaced[resourceToPlace] = detailedPlaced[resourceToPlace]!! + 1
         }
@@ -102,11 +104,10 @@ object MapRegionResources {
                     tile.setTileResource(resource, majorDeposit)
                     ratioProgress -= 1f
                     amountAdded++
-                    if (baseImpact + randomImpact >= 0)
-                        tileData.placeImpact(impactType, tile, baseImpact + Random.nextInt(
-                            randomImpact + 1
-                        )
-                        )
+                    if (baseImpact + randomImpact >= 0) {
+                        val rng = GameContext(tile = tile).stateBasedRandom("MapRegionResources.tryAddingResourceToTiles")
+                        tileData.placeImpact(impactType, tile, baseImpact + rng.nextInt(randomImpact + 1))
+                    }
                     if (amountAdded >= amount) break
                 }
                 ratioProgress += ratio

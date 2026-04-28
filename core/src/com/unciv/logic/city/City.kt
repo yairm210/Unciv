@@ -31,12 +31,12 @@ import com.unciv.models.stats.GameResource
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.SubStat
+import com.unciv.utils.pseudoRandomUuid
 import com.unciv.utils.withoutItem
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 import java.util.EnumSet
-import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.roundToInt
 
@@ -67,7 +67,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     var hasJustBeenConquered = false
 
     var location = HexCoord()
-    var id: String = UUID.randomUUID().toString()
+    var id: String = NO_ID
     override var name: String = ""
     /** Serialization field for [foundingCivObject]. Is equivalent to `foundingCivObject.civName` */
     private var foundingCiv = ""
@@ -163,7 +163,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     fun clone(): City {
         val toReturn = City()
         toReturn.location = location
-        toReturn.id = id
+        toReturn.id = if (id != NO_ID) id else pseudoRandomId(civ)
         toReturn.name = name
         toReturn.health = health
         toReturn.population = population.clone()
@@ -386,6 +386,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     //region state-changing functions
     fun setTransients(civInfo: Civilization) {
         this.civ = civInfo
+        this.id = if (id != NO_ID) id else pseudoRandomId(civ)
         tileMap = civInfo.gameInfo.tileMap
         centerTile = tileMap[location]
         state = GameContext(this)
@@ -678,4 +679,9 @@ class City : IsPartOfGameInfoSerialization, INamed {
     }
 
     //endregion
+    
+    companion object {
+        const val NO_ID = "00000000-0000-0000-0000-000000000000"
+        fun pseudoRandomId(civ: Civilization) = pseudoRandomUuid(GameContext(civ).stateBasedRandom("City.Id", civ.cities.size)).toString()
+    }
 }

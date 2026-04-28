@@ -23,6 +23,7 @@ import yairm210.purity.annotations.Readonly
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.abs
 import kotlin.math.max
+import kotlin.random.Random
 
 /** An Unciv map with all properties as produced by the [map editor][com.unciv.ui.screens.mapeditorscreen.MapEditorScreen]
  * or [MapGenerator][com.unciv.logic.map.mapgenerator.MapGenerator]; or as part of a running [game][GameInfo].
@@ -759,7 +760,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
      *  @throws Exception when `mode==Assign` and any land tile already has a continent ID
      *  @return A map of continent sizes (continent ID to tile count)
      */
-    fun assignContinents(mode: AssignContinentsMode) {
+    fun assignContinents(mode: AssignContinentsMode, rng: Random = GameContext(gameInfo = gameInfo).stateBasedRandom("TileMap.assignContinents")) {
         if (mode == AssignContinentsMode.Clear) {
             values.forEach { it.clearContinent() }
             continentSizes.clear()
@@ -784,7 +785,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             values.forEach { it.clearContinent() }
 
         while (landTiles.any()) {
-            val bfs = BFS(landTiles.random()) { it.isLand && !it.isImpassible() }
+            val bfs = BFS(landTiles.random(rng)) { it.isLand && !it.isImpassible() }
             bfs.stepToEnd()
             bfs.getReachedTiles().forEach {
                 it.setContinent(currentContinent)

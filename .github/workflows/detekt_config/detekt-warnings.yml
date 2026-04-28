@@ -595,6 +595,10 @@ style:
         value: 'java.util.Random.<init>()'
       - reason: 'Unciv prefers pseudorandom. Instead, use GameContext.random'
         value: 'java.util.Random.Default.*'
+      - reason: 'Unciv prefers pseudorandom. Instead, use GameContext.random'
+        value: 'kotlin.ranges.randomOrNull()'
+      - reason: 'Unciv prefers pseudorandom. Instead, use GameContext.random'
+        value: 'java.util.UUID.randomUUID()'
   ForbiddenSuppress:
     active: false
     rules: []

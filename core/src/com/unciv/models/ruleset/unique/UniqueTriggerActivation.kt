@@ -103,6 +103,7 @@ object UniqueTriggerActivation {
         }
 
         val gameContext = GameContext(civInfo, city, unit, tile)
+        val rng = gameContext.stateBasedRandom("UniqueTriggerActivation.getTriggerFunction", unique.text.hashCode())
 
         val chosenCity = relevantCity ?:
             civInfo.cities.firstOrNull { it.isCapital() }
@@ -118,7 +119,7 @@ object UniqueTriggerActivation {
                 val choices = event.getMatchingChoices(gameContext)
                     ?: return null
                 if (civInfo.isAI() || event.presentation == Event.Presentation.None) return {
-                    val choice = choices.toList().randomWeighted { it.getWeightForAiDecision(gameContext) }
+                    val choice = choices.toList().randomWeighted(rng) { it.getWeightForAiDecision(gameContext) }
                     choice.triggerChoice(civInfo, unit)
                 }
                 if (event.presentation == Event.Presentation.Alert) return {

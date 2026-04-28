@@ -13,7 +13,7 @@ import kotlin.random.Random
  * The probability for each element is proportional to the value of its corresponding element in the [weights] List.
  */
 @Readonly 
-fun <T> List<T>.randomWeighted(weights: List<Float>, random: Random = Random): T {
+fun <T> List<T>.randomWeighted(weights: List<Float>, random: Random): T {
     if (this.isEmpty()) throw NoSuchElementException("Empty list.")
     if (this.size != weights.size) throw UnsupportedOperationException("Weights size does not match this list size.")
 
@@ -34,7 +34,7 @@ fun <T> List<T>.randomWeighted(weights: List<Float>, random: Random = Random): T
  * The probability for each element is proportional to the result of [getWeight] (evaluated only once).
  */
 @Readonly
-fun <T> List<T>.randomWeighted(random: Random = Random, getWeight: (T) -> Float): T =
+fun <T> List<T>.randomWeighted(random: Random, getWeight: (T) -> Float): T =
     randomWeighted(map(getWeight), random)
 
 /** Gets a clone of any [List] as [ArrayList] with an additional item

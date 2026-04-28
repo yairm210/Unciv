@@ -11,6 +11,7 @@ import com.unciv.logic.BackwardCompatibility.guaranteeUnitPromotions
 import com.unciv.logic.BackwardCompatibility.migrateGreatGeneralPools
 import com.unciv.logic.BackwardCompatibility.migrateToTileHistory
 import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
+import com.unciv.logic.GameInfoPreview.Companion.randomGameId
 import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.automation.civilization.BarbarianManager
 import com.unciv.logic.city.City
@@ -39,11 +40,12 @@ import com.unciv.ui.screens.savescreens.Gzip
 import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.utils.DebugUtils
 import com.unciv.utils.debug
+import com.unciv.utils.pseudoRandomUuid
 import yairm210.purity.annotations.Readonly
 import java.security.MessageDigest
+import java.security.SecureRandom
 import java.time.Duration
 import java.time.Instant
-import java.util.UUID
 import java.util.*
 
 
@@ -110,7 +112,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     var oneMoreTurnMode = false
     var currentPlayer = ""
     var currentTurnStartTime = System.currentTimeMillis()
-    var gameId = UUID.randomUUID().toString() // random string
+    var gameId = randomGameId()
     var checksum = ""
     var lastUnitId = 0
 
@@ -863,4 +865,8 @@ class GameInfoPreview() {
     @Readonly fun getCivilization(civID: String) = civilizations.first { it.civID == civID }
     @Readonly fun getCurrentPlayerCiv() = getCivilization(currentPlayer)
     @Readonly fun getPlayerCiv(playerId: String) = civilizations.firstOrNull { it.playerId == playerId }
+    
+    companion object {
+        fun randomGameId() = pseudoRandomUuid(SecureRandom()).toString()
+    }
 }

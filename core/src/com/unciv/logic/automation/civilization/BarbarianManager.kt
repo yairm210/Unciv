@@ -8,6 +8,7 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.utils.randomWeighted
@@ -279,8 +280,9 @@ class Encampment() : IsPartOfGameInfoSerialization {
         // Civ V weights its list by FAST_ATTACK or ATTACK_SEA AI types, we'll do it a bit differently
         // getForceEvaluation is already conveniently biased towards fast units and against ranged naval
         val weightings = unitList.map { it.getForceEvaluation().toFloat() }
+        val rng = GameContext(gameInfo = gameInfo).stateBasedRandom("BarbarianManager.chooseBarbarianUnit")
 
-        return unitList.randomWeighted(weightings)
+        return unitList.randomWeighted(weightings, rng)
     }
 
     /** When a barbarian is spawned, seed the counter for next spawn */

@@ -237,6 +237,8 @@ object NextTurnAutomation {
     }
 
     private fun chooseTechToResearch(civInfo: Civilization) {
+        val rng = civInfo.state.stateBasedRandom("NextTurnAutomation.chooseTechToResearch")
+
         @Readonly
         fun getGroupedResearchableTechs(): List<List<Technology>> {
             val researchableTechs = civInfo.gameInfo.ruleset.technologies.values
@@ -255,7 +257,7 @@ object NextTurnAutomation {
                 // Ignore rows where all techs have 0 weight
                 it.any { it.getWeightForAiDecision(stateForConditionals) > 0 }
             } ?: costs.last()
-            val chosenTech = mostExpensiveTechs.randomWeighted { it.getWeightForAiDecision(stateForConditionals) }
+            val chosenTech = mostExpensiveTechs.randomWeighted(rng) { it.getWeightForAiDecision(stateForConditionals) }
             civInfo.tech.getFreeTechnology(chosenTech.name)
         }
         if (civInfo.tech.techsToResearch.isEmpty()) {
@@ -268,11 +270,11 @@ object NextTurnAutomation {
             //Do not consider advanced techs if only one tech left in cheapest group
             val techToResearch: Technology =
                 if (cheapestTechs.size == 1 || costs.size == 1) {
-                    cheapestTechs.randomWeighted { it.getWeightForAiDecision(stateForConditionals) }
+                    cheapestTechs.randomWeighted(rng) { it.getWeightForAiDecision(stateForConditionals) }
                 } else {
                     //Choose randomly between cheapest and second cheapest group
                     val techsAdvanced = costs[1]
-                    (cheapestTechs + techsAdvanced).randomWeighted { it.getWeightForAiDecision(stateForConditionals) }
+                    (cheapestTechs + techsAdvanced).randomWeighted(rng) { it.getWeightForAiDecision(stateForConditionals) }
                 }
 
             civInfo.tech.techsToResearch.add(techToResearch.name)
@@ -337,7 +339,7 @@ object NextTurnAutomation {
             val policyToAdopt: Policy =
                 if (civInfo.policies.isAdoptable(targetBranch)) targetBranch
                 else targetBranch.policies.filter { civInfo.policies.isAdoptable(it) }
-                    .randomWeighted { it.getWeightForAiDecision(civInfo.state) }
+                    .randomWeighted(rng) { it.getWeightForAiDecision(civInfo.state) }
 
             civInfo.policies.adopt(policyToAdopt)
         }
@@ -417,6 +419,7 @@ object NextTurnAutomation {
                 // Restrict Human automated units from promotions via setting
                 (UncivGame.Current.settings.automatedUnitsChoosePromotions || unit.civ.isAI())
             ) {
+                val rng = unit.cache.state.stateBasedRandom("NextTurnAutomation.automateUnits")
                 val promotions = unit.promotions.getAvailablePromotions()
                 val availablePromotions = if (unit.health <= 60
                     && promotions.any { it.hasUnique(UniqueType.OneTimeUnitHeal) }
@@ -431,11 +434,11 @@ object NextTurnAutomation {
                 val stateForConditionals = unit.cache.state
 
                 val chosenPromotion =
-                    if (freePromotions.isNotEmpty()) freePromotions.randomWeighted {
+                    if (freePromotions.isNotEmpty()) freePromotions.randomWeighted(rng) {
                         it.getWeightForAiDecision(stateForConditionals)
                     }
                     else availablePromotions.toList()
-                        .randomWeighted { it.getWeightForAiDecision(stateForConditionals) }
+                        .randomWeighted(rng) { it.getWeightForAiDecision(stateForConditionals) }
 
                 unit.promotions.addPromotion(chosenPromotion.name)
             }

@@ -371,8 +371,10 @@ object Battle {
     }
 
     internal fun takeDamage(attacker: ICombatant, defender: ICombatant): DamageDealt {
+        val attackContext = GameContext(attacker, defender, defender.getTile(), CombatAction.Attack)
         var potentialDamageToDefender = BattleDamage.calculateDamageToDefender(attacker, defender)
         var potentialDamageToAttacker = BattleDamage.calculateDamageToAttacker(attacker, defender)
+        val rng = attackContext.stateBasedRandom("Battle.takeDamage")
 
         val attackerHealthBefore = attacker.getHealth()
         val defenderHealthBefore = defender.getHealth()
@@ -386,7 +388,7 @@ object Battle {
             //so...for each round, we randomize who gets the attack in. Seems to be a good way to work for now.
 
             while (potentialDamageToDefender + potentialDamageToAttacker > 0) {
-                if (Random.Default.nextInt(potentialDamageToDefender + potentialDamageToAttacker) < potentialDamageToDefender) {
+                if (rng.nextInt(potentialDamageToDefender + potentialDamageToAttacker) < potentialDamageToDefender) {
                     potentialDamageToDefender--
                     defender.takeDamage(1)
                     if (defender.isDefeated()) break
@@ -750,6 +752,8 @@ object Battle {
         // Promotions have no effect as per what I could find in available documentation
         val fromTile = defender.getTile()
         val attackerTile = attacker.getTile()
+        val attackContext = GameContext(attacker, defender, fromTile, CombatAction.Defend)
+        val rng = attackContext.stateBasedRandom("Battle.doWithdrawFromMeleeAbility")
 
         @Readonly
         fun canNotWithdrawTo(tile: Tile): Boolean { // if the tile is what the defender can't withdraw to, this fun will return true
@@ -763,8 +767,8 @@ object Battle {
         val secondCandidateTiles = fromTile.neighbors.filter { it in attackerTile.neighbors }
                 .filterNot { canNotWithdrawTo(it) }
         val toTile: Tile = when {
-            firstCandidateTiles.any() -> firstCandidateTiles.toList().random()
-            secondCandidateTiles.any() -> secondCandidateTiles.toList().random()
+            firstCandidateTiles.any() -> firstCandidateTiles.toList().random(rng)
+            secondCandidateTiles.any() -> secondCandidateTiles.toList().random(rng)
             else -> return false
         }
         // Withdraw success: Do it - move defender to toTile for no cost

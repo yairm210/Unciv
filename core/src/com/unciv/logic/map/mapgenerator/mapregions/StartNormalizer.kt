@@ -49,6 +49,7 @@ object StartNormalizer {
         ruleset: Ruleset,
         tileData: TileDataMap
     ) {
+        val rng = GameContext(civInfo = startTile.getOwner(), tile = startTile).stateBasedRandom("StartNormalizer.normalizeProduction")
         // evaluate production potential
         val innerProduction =
             startTile.neighbors.sumOf { getPotentialYield(it, Stat.Production).toInt() }
@@ -68,7 +69,7 @@ object StartNormalizer {
         if (innerProduction == 0 || (innerProduction < 2 && outerProduction < 8) || (isMinorCiv && innerProduction < 4)) {
             val hillSpot = startTile.neighbors
                 .filter { it.isLand && it.terrainFeatures.isEmpty() && !it.isAdjacentTo(Constants.freshWater) && !it.isImpassible() }
-                .toList().randomOrNull()
+                .toList().randomOrNull(rng)
             val hillEquivalent = ruleset.terrains.values
                 .firstOrNull {
                     it.type == TerrainType.TerrainFeature && it.production >= 2 && !it.hasUnique(
@@ -136,6 +137,7 @@ object StartNormalizer {
 
     /** Check for very food-heavy starts that might still need some stone to help with production */
     private fun addProductionBonuses(startTile: Tile, ruleset: Ruleset) {
+        val rng = GameContext(gameInfo = startTile.tileMap.gameInfo).stateBasedRandom("StartNormalizer.addProductionBonuses")
         val grassTypePlots = startTile.getTilesInDistanceRange(1..2).filter {
             it.isLand &&
                 getPotentialYield(it, Stat.Food, unimproved = true) >= 2f && // Food neutral natively
@@ -156,12 +158,12 @@ object StartNormalizer {
 
         if (productionBonuses.isNotEmpty()) {
             while (productionBonusesNeeded > 0 && grassTypePlots.isNotEmpty()) {
-                val plot = grassTypePlots.random()
+                val plot = grassTypePlots.random(rng)
                 grassTypePlots.remove(plot)
 
                 if (plot.tileResource != null) continue
 
-                val bonusToPlace = productionBonuses.filter { it.generatesNaturallyOn(plot) }.randomOrNull()
+                val bonusToPlace = productionBonuses.filter { it.generatesNaturallyOn(plot) }.randomOrNull(rng)
                 if (bonusToPlace != null) {
                     plot.tileResource = bonusToPlace
                     productionBonusesNeeded--
@@ -244,6 +246,7 @@ object StartNormalizer {
         ruleset: Ruleset,
         foodBonusesNeeded: Int
     ) {
+        val rng = GameContext(tile = startTile).stateBasedRandom("StartNormalizer.placeFoodBonuses")
         var bonusesStillNeeded = foodBonusesNeeded
         val oasisEquivalent = ruleset.terrains.values.firstOrNull {
             it.type == TerrainType.TerrainFeature &&
@@ -269,7 +272,7 @@ object StartNormalizer {
             candidatePlots.remove(plot) // remove the plot as it has now been tried, whether successfully or not
             if (plot.getBaseTerrain().hasUnique(
                     UniqueType.BlocksResources,
-                    GameContext(attackedTile = plot, gameInfo = null)
+                    GameContext(attackedTile = plot)
                 )
             )
                 continue // Don't put bonuses on snow hills
@@ -287,7 +290,7 @@ object StartNormalizer {
                     plot.addTerrainFeature(oasisEquivalent!!.name)
                     canPlaceOasis = false
                 } else {
-                    plot.setTileResource(validBonuses.random())
+                    plot.setTileResource(validBonuses.random(rng))
                 }
 
                 if (plot.aerialDistanceTo(startTile) == 1) {

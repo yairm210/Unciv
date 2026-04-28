@@ -213,18 +213,22 @@ object ReligionAutomation {
 
         for (city in civInfo.cities) {
             for (tile in city.getCenterTile().getTilesInDistance(city.getWorkRange())) {
+                val tileRng = tile.stateThisTile.stateBasedRandom("ReligionAutomation.rateBelief")
                 val tileScore = beliefBonusForTile(belief, tile, city)
+                
                 score += tileScore * when {
                     city.workedTiles.contains(tile.position) -> 1f // worked
                     tile.getCity() == city -> 0.7f // workable
                     else -> 0.5f // unavailable - for now
-                } * (Random.nextFloat() * 0.05f + 0.975f)
+                } * (tileRng.nextFloat() * 0.05f + 0.975f)
             }
 
-            score += beliefBonusForCity(civInfo, belief, city) * (Random.nextFloat() * 0.1f + 0.95f)
+            val cityRng = city.state.stateBasedRandom("ReligionAutomation.rateBelief")
+            score += beliefBonusForCity(civInfo, belief, city) * (cityRng.nextFloat() * 0.1f + 0.95f)
         }
 
-        score += beliefBonusForPlayer(civInfo, belief) * (Random.nextFloat() * 0.3f + 0.85f)
+        val civRng = civInfo.state.stateBasedRandom("ReligionAutomation.rateBelief")
+        score += beliefBonusForPlayer(civInfo, belief) * (civRng.nextFloat() * 0.3f + 0.85f)
 
         // All of these Random.nextFloat() don't exist in the original, but I've added them to make things a bit more random.
 

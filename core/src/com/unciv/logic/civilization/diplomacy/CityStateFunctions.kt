@@ -64,7 +64,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         if (uniqueTypes.contains(UniqueType.CityStateMilitaryUnits)) {
             val possibleUnits = possibleUnits()
             if (possibleUnits.isNotEmpty())
-                civInfo.cityStateUniqueUnit = possibleUnits.random().name
+                civInfo.cityStateUniqueUnit = possibleUnits.random(rng).name
         }
 
         // TODO: Return false if attempting to put a religious city-state in a game without religion
@@ -636,13 +636,15 @@ class CityStateFunctions(val civInfo: Civilization) {
     fun cityStateAttacked(attacker: Civilization) {
         if (!civInfo.isCityState) return // What are we doing here?
         if (attacker.isCityState) return // City states can't be upset with each other
+        val context = GameContext(civInfo, attacker)
+        val rng = context.stateBasedRandom("CityStateFunctions.cityStateAttacked")
 
         // We might become wary!
         if (attacker.isMinorCivWarmonger()) { // They've attacked a lot of city-states
             civInfo.getDiplomacyManager(attacker)!!.becomeWary()
         }
         else if (attacker.isMinorCivAggressor()) { // They've attacked a few
-            if (Random.Default.nextBoolean()) { // 50% chance
+            if (rng.nextBoolean()) { // 50% chance
                 civInfo.getDiplomacyManager(attacker)!!.becomeWary()
             }
         }
@@ -660,6 +662,8 @@ class CityStateFunctions(val civInfo: Civilization) {
     }
 
     private fun makeOtherCityStatesWaryOfAttacker(attacker: Civilization) {
+        val context = GameContext(civInfo, attacker)
+        val rng = context.stateBasedRandom("CityStateFunctions.makeOtherCityStatesWaryOfAttacker")
         for (cityState in civInfo.gameInfo.getAliveCityStates()) {
             if (cityState == civInfo) // Must be a different minor
                 continue
@@ -692,7 +696,7 @@ class CityStateFunctions(val civInfo: Civilization) {
             if (cityState.isAtWarWith(attacker))
                 probability += 50
 
-            if (Random.nextInt(100) <= probability) {
+            if (rng.nextInt(100) <= probability) {
                 cityState.getDiplomacyManager(attacker)!!.becomeWary()
             }
         }

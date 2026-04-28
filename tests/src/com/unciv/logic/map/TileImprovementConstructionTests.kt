@@ -2,6 +2,8 @@
 package com.unciv.logic.map
 
 import com.unciv.logic.city.City
+import com.unciv.logic.city.City.Companion.NO_ID
+import com.unciv.logic.city.City.Companion.pseudoRandomId
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.ruleset.tile.TerrainType
@@ -60,6 +62,7 @@ class TileImprovementConstructionTests {
                 for (tech in testGame.ruleset.technologies.values)
                     civInfo.tech.addTechnology(tech.name)
                 city.civ = civInfo
+                city.id = if (city.id != NO_ID) city.id else pseudoRandomId(civInfo)
             }
 
             val canBeBuilt = tile.improvementFunctions.canBuildImprovement(improvement, civInfo.state)
@@ -100,6 +103,7 @@ class TileImprovementConstructionTests {
                 for (tech in testGame.ruleset.technologies.values)
                     civInfo.tech.addTechnology(tech.name)
                 city.civ = civInfo
+                city.id = if (city.id != NO_ID) city.id else pseudoRandomId(civInfo)
             }
             val canBeBuilt = coastalTile.improvementFunctions.canBuildImprovement(improvement, civInfo.state)
             Assert.assertTrue(improvement.name, canBeBuilt)

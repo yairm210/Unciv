@@ -153,11 +153,12 @@ object HolidayDates {
     fun getHolidayByYear(holiday: Holidays, year: Int) = holiday.getByYear(year)
 
     fun getHolidayByDate(date: LocalDate = LocalDate.now()): Holidays? {
+        val rng = Random(date.hashCode())
         return System.getProperty("easterEgg")?.let {
             Holidays.safeValueOf(it)
         } ?: Holidays.entries.firstOrNull {
             val range = it.getByYear(date.year)
-            date in range && Random.nextFloat() <= it.chance
+            date in range && rng.nextFloat() <= it.chance
         }
     }
 
