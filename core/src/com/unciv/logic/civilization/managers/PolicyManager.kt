@@ -168,8 +168,8 @@ class PolicyManager : IsPartOfGameInfoSerialization {
 
     @Readonly
     fun getPolicyCultureCost(numberOfAdoptedPolicies: Int): Int {
-        val (base, multiplier, exponent) = civInfo.modConstants.policyCultureCost
-        var policyCultureCost = base + (numberOfAdoptedPolicies * multiplier).pow(exponent)
+        val (initial, multiplier, exponent) = civInfo.modConstants.policyCultureCost
+        var policyCultureCost = initial + (numberOfAdoptedPolicies * multiplier).pow(exponent)
         val worldSizeModifier = civInfo.gameInfo.tileMap.mapParameters.mapSize.getPredefinedOrNextSmaller().policyCostPerCityModifier
         var cityModifier = worldSizeModifier * (civInfo.cities.count { !it.isPuppet } - 1)
 
