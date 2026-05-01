@@ -21,9 +21,10 @@ internal class ActorAttachments private constructor(actor: Actor) {
         // Since 'keyShortcuts' has it anyway.
         get() = keyShortcuts.actor
 
-    private lateinit var activationActions: ActivationActionMap
+    var activationActions: ActivationActionMap? = null
     private var activationListener: ActivationListener? = null
 
+    
     /**
      *  Keyboard dispatcher for the [actor] this is attached to.
      *
@@ -37,39 +38,41 @@ internal class ActorAttachments private constructor(actor: Actor) {
     val keyShortcuts = ActorKeyShortcutDispatcher(actor)
 
     fun activate(type: ActivationTypes): Boolean {
-        if (!this::activationActions.isInitialized) return false
+        val actions = activationActions ?: return false
         if ((actor as? Disableable)?.isDisabled == true) return false // Skip if disabled
-        return activationActions.activate(type)
+        return actions.activate(type)
     }
 
     fun addActivationAction(
         type: ActivationTypes,
         sound: UncivSound = UncivSound.Click,
         noEquivalence: Boolean = false,
-        action: ActivationAction
+        action: ActivationAction,
+        allowEventPropagation: Boolean = true
     ) {
-        if (!this::activationActions.isInitialized)
-            activationActions = ActivationActionMap()
-
-        else if (activationListener != null && activationListener !in actor.listeners) {
+        var actions: ActivationActionMap? = this.activationActions
+        if (actions == null) {
+            actions = ActivationActionMap()
+            activationActions = actions
+        } else if (activationListener != null && activationListener !in actor.listeners) {
             // We think our listener should be active but it isn't - Actor.clearListeners() was called.
             // Decision: To keep existing code (which could have to call clearActivationActions otherwise),
             // we start over clearing any registered actions using that listener.
             actor.addListener(activationListener)
-            activationActions.clearGestures()
+            actions.clearGestures()
         }
 
-        activationActions.add(type, sound, noEquivalence, action)
+        actions.add(type, sound, noEquivalence, action)
 
         if (!type.isGesture || activationListener != null) return
-        activationListener = ActivationListener()
+        activationListener = if (allowEventPropagation) ActivationListener() else SuppressiveActivationListener()
         actor.addListener(activationListener)
     }
 
     fun clearActivationActions(type: ActivationTypes, noEquivalence: Boolean = true) {
-        if (!this::activationActions.isInitialized) return
-        activationActions.clear(type, noEquivalence)
-        if (activationListener == null || activationActions.isNotEmpty()) return
+        val actions = activationActions ?: return
+        actions.clear(type, noEquivalence)
+        if (activationListener == null || actions.isNotEmpty()) return
         actor.removeListener(activationListener)
         activationListener = null
     }

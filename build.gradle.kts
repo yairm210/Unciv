@@ -41,7 +41,7 @@ plugins {
     kotlin("multiplatform") version kotlinVersion
     kotlin("plugin.serialization") version kotlinVersion
     id("io.gitlab.arturbosch.detekt") version "1.23.8"
-    id("io.github.yairm210.purity-plugin") version "1.3.3" apply false
+    id("io.github.yairm210.purity-plugin") version "1.4.0" apply false
 }
 
 allprojects {
@@ -190,7 +190,7 @@ project(":core") {
         "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
         "implementation"("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
 
-        "implementation"("io.github.yairm210:purity-annotations:1.3.4")
+        "implementation"("io.github.yairm210:purity-annotations:1.4.0")
 
         "implementation"("io.ktor:ktor-client-core:$ktorVersion")
         "implementation"("io.ktor:ktor-client-cio:$ktorVersion")

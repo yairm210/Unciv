@@ -57,10 +57,33 @@ class UniqueValidator(val ruleset: Ruleset) {
                 unique,
                 tryFixUnknownUniques,
                 uniqueContainer,
-                reportRulesetSpecificErrors
+                reportRulesetSpecificErrors && !isDisabledByModConditionals(unique)
             )
             lines.addAll(errors)
         }
+    }
+
+    /** Returns true if [unique] has a [UniqueType.ConditionalModEnabled] or [UniqueType.ConditionalModNotEnabled]
+     *  modifier that is not satisfied by the mods present in [ruleset], meaning the unique will
+     *  never be active in this ruleset and should be excluded from ruleset-specific validation.*/
+    @Readonly
+    private fun isDisabledByModConditionals(unique: Unique): Boolean {
+        for (modifier in unique.modifiers) {
+            when (modifier.type) {
+                UniqueType.ConditionalModEnabled -> {
+                    val filter = modifier.params[0]
+                    if (ruleset.mods.none { ModCompatibility.modNameFilter(it, filter) })
+                        return true
+                }
+                UniqueType.ConditionalModNotEnabled -> {
+                    val filter = modifier.params[0]
+                    if (ruleset.mods.any { ModCompatibility.modNameFilter(it, filter) })
+                        return true
+                }
+                else -> {}
+            }
+        }
+        return false
     }
 
     private val performanceHeavyConditionals = setOf(UniqueType.ConditionalNeighborTiles, UniqueType.ConditionalAdjacentTo,

@@ -212,6 +212,9 @@ class TileImprovementFunctions(val tile: Tile) {
                     // Let's not cancel our "Districts" in progress unless when finishing it (don't mess it up with accidental worker movements etc.)
                     removeCreatesOneImprovementMarker()
                 }
+
+                // relevant when the improvement was created instantly - such as Great Improvement
+                tile.improvementQueue.removeIf { tile.ruleset.tileImprovements[it.improvement]?.isRoad() == true }
             }
         }
 

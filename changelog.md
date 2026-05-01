@@ -1,3 +1,21 @@
+## 4.20.3
+
+Custom maps are retained when starting a new game from an old one
+
+Spies "evacuate" correctly from destroyed cities
+
+Spectators can see the building list again
+
+By unciv-loof:
+- Confirmation popup before breaking promise not to spy 
+- ConstructImprovementInstantly now clears tile improvement queue 
+
+Fixed issue with units selection in city - By ValeraShimchuck
+
+By Ambeco:
+- AI: Minimize movement before attacking
+- PathingMap can now also BFS, taking moveCost into consideration 
+
 ## 4.20.2
 
 By unciv-loof:

@@ -269,6 +269,7 @@ object DiplomacyTurnManager {
     }
 
     private fun DiplomacyManager.nextTurnDiplomaticModifiers() {
+        val rng = state.stateBasedRandom("DiplomacyManager.nextTurnDiplomaticModifiers")
         if (diplomaticStatus == DiplomaticStatus.Peace)
             accumulateToAtMost(DiplomaticModifiers.YearsOfPeace, 0.5f, 30f)
         else
@@ -287,12 +288,14 @@ object DiplomacyTurnManager {
         revertToZero(DiplomaticModifiers.BetrayedDeclarationOfFriendship, 1 / 8f) // That's a bastardly thing to do
         revertToZero(DiplomaticModifiers.BetrayedDefensivePact, 1 / 16f) // That's an outrageous thing to do
         revertToZero(DiplomaticModifiers.RefusedToNotSettleCitiesNearUs, 1 / 4f)
+        revertToZero(DiplomaticModifiers.RefusedToPromiseNotToAttackUs, 1 / 2f)
         revertToZero(DiplomaticModifiers.BulliedProtectedMinor, 1 / 2f) // Decays at same rate as warmongering
         revertToZero(DiplomaticModifiers.AttackedProtectedMinor, 1 / 2f) // Decays at same rate as warmongering
         revertToZero(DiplomaticModifiers.DestroyedProtectedMinor, 1 / 4f) // Decays slower, similar to capturing cities
         for (demand in Demand.entries) {
-            revertToZero(demand.betrayedPromiseDiplomacyMpodifier, 1 / 8f)
+            revertToZero(demand.betrayedPromiseDiplomacyModifier, 1 / 8f)
         }
+        revertToZero(DiplomaticModifiers.BetrayedPromiseToNotAttackOtherCiv, 1 / 8f) // betrayals are remembered for a long time
         revertToZero(DiplomaticModifiers.UnacceptableDemands, 1 / 4f)
         revertToZero(DiplomaticModifiers.StealingTerritory, 1 / 4f)
         revertToZero(DiplomaticModifiers.DenouncedOurAllies, 1 / 4f)
@@ -344,7 +347,7 @@ object DiplomacyTurnManager {
             return
         }
 
-        val variance = listOf(-1, 0, 1).random()
+        val variance = listOf(-1, 0, 1).random(rng)
 
         val provideMilitaryUnitUniques = CityStateFunctions
             .getCityStateBonuses(otherCiv.cityStateType, relationshipIgnoreAfraid(), UniqueType.CityStateMilitaryUnits)
