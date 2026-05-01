@@ -73,6 +73,9 @@ class GoldenAgeManager : IsPartOfGameInfoSerialization {
                 NotificationCategory.General,
                 "StatIcons/Happiness"
             )
+            
+            for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponBreakingGoldenAge))
+                UniqueTriggerActivation.triggerUnique(unique, civInfo)
         }
     }
 
