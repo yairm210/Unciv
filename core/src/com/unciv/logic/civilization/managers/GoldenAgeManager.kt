@@ -63,6 +63,18 @@ class GoldenAgeManager : IsPartOfGameInfoSerialization {
         for (city in civInfo.cities)
             city.cityStats.update()
     }
+    
+    fun breakGoldenAge() {
+        if (isGoldenAge()) {
+            turnsLeftForCurrentGoldenAge = 0
+
+            civInfo.addNotification(
+                "The Golden Age has been broken!",
+                NotificationCategory.General,
+                "StatIcons/Happiness"
+            )
+        }
+    }
 
     fun endTurn(happiness: Int) {
         if (!isGoldenAge())

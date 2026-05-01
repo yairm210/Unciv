@@ -4,7 +4,17 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.*
+import com.unciv.logic.civilization.AlertType
+import com.unciv.logic.civilization.CivFlags
+import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.MapUnitAction
+import com.unciv.logic.civilization.NotificationAction
+import com.unciv.logic.civilization.NotificationCategory
+import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.PolicyAction
+import com.unciv.logic.civilization.PopupAlert
+import com.unciv.logic.civilization.TechAction
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.managers.PolicyManager
@@ -492,6 +502,13 @@ object UniqueTriggerActivation {
                     )
                     if (notificationText != null)
                         civInfo.addNotification(notificationText, NotificationCategory.General, NotificationIcon.Happiness)
+                    true
+                }
+            }
+            
+            UniqueType.OneTimeBreakGoldenAge -> {
+                return {
+                    civInfo.goldenAges.breakGoldenAge()
                     true
                 }
             }
