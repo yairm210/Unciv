@@ -32,85 +32,123 @@ object UnitAutomation {
     private const val CLOSE_ENEMY_TURNS_AWAY_LIMIT = 3f
 
     fun automateUnitMoves(unit: MapUnit) = timeThis("automateUnitMoves") {
+        val uniqueActionQueue = UniqueActionQueue(unit)
+        automateUnitMovesImpl(unit, uniqueActionQueue)
+        uniqueActionQueue.automateRemainingUniqueActions()
+    }
+    
+    fun automateUnitMovesImpl(unit: MapUnit, uniqueActionQueue: UniqueActionQueue) {
         check(!unit.civ.isBarbarian) { "Barbarians is not allowed here." }
-
+        
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(200f)
         // Might die next turn - move!
         if (unit.getDamageFromTerrain() > 0 && tryHealUnit(unit)) return
-
+        
+        // UnitActionType.Promote is useFrequency 150f
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(150f)
 
         if (unit.isCivilian()) {
-            CivilianUnitAutomation.automateCivilianUnit(unit, getDangerousTiles(unit))
+            CivilianUnitAutomation.automateCivilianUnit(unit, uniqueActionQueue, getDangerousTiles(unit))
             return
         }
-
+        
+        // UnitActionType.Upgrade is useFrequency 120f
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(120f)
         // AI upgrades units via UseGoldAutomation in NextTurnAutomation
         if (unit.civ.isHuman() && tryUpgradeUnit(unit)) return
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(118f)
 
         //This allows for military units with certain civilian abilities to behave as civilians in peace and soldiers in war
         if ((unit.hasUnique(UniqueType.BuildImprovements) || unit.hasUnique(UniqueType.FoundCity) || 
                     unit.hasUnique(UniqueType.FoundPuppetCity) ||
                     unit.hasUnique(UniqueType.ReligiousUnit) || unit.hasUnique(UniqueType.CreateWaterImprovements))
             && !unit.civ.isAtWar()){
-            CivilianUnitAutomation.automateCivilianUnit(unit, getDangerousTiles(unit))
+            CivilianUnitAutomation.automateCivilianUnit(unit, uniqueActionQueue, getDangerousTiles(unit))
             return
         }
 
         // Note that not all nukes have to be air units
         if (unit.isNuclearWeapon()) {
-            return AirUnitAutomation.automateNukes(unit)
+            return AirUnitAutomation.automateNukes(unit, uniqueActionQueue)
         }
 
         if (unit.baseUnit.isAirUnit()) {
             if (unit.canIntercept())
-                return AirUnitAutomation.automateFighter(unit)
+                return AirUnitAutomation.automateFighter(unit, uniqueActionQueue)
 
             if (unit.hasUnique(UniqueType.SelfDestructs))
-                return AirUnitAutomation.automateMissile(unit)
+                return AirUnitAutomation.automateMissile(unit, uniqueActionQueue)
 
-            return AirUnitAutomation.automateBomber(unit)
+            return AirUnitAutomation.automateBomber(unit, uniqueActionQueue)
         }
-
+        
+        // UnitActionType.EscortFormation is useFrequency 50f
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(50f)
         // Accompany settlers
         if (tryAccompanySettlerOrGreatPerson(unit)) return
 
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(48f)
         if (tryGoToRuin(unit) && !unit.hasMovement()) return
 
+        // UnitActionType.FortifyUntilHealed is useFrequency 45f
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(45f)
         if (unit.health < 50 && (tryRetreat(unit) || tryHealUnit(unit))) return // do nothing but heal
 
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(43f)
         // If there are no enemies nearby and we can heal here, wait until we are at full health
         if (unit.health < 100 && canUnitHealInTurnsOnCurrentTile(unit,2, 3)) return
 
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(41f)
         if (tryHeadTowardsOurSiegedCity(unit)) return
 
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(39f)
         // if a embarked melee unit can land and attack next turn, do not attack from water.
         if (BattleHelper.tryDisembarkUnitToAttackPosition(unit)) return
 
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(37f)
         // if there is an attackable unit in the vicinity, attack!
         if (tryAttacking(unit)) return
 
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(35f)
         if (tryTakeBackCapturedCity(unit)) return
 
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(33f)
         // Focus all units without a specific target on the enemy city closest to one of our cities
         if (HeadTowardsEnemyCityAutomation.tryHeadTowardsEnemyCity(unit)) return
 
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(31f)
         if (tryHeadTowardsEncampment(unit)) return
 
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(29f)
         if (tryGarrisoningLandUnit(unit)) return
 
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(27f)
         if (unit.health < 80 && tryHealUnit(unit)) return
 
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(25f)
         // move towards the closest reasonably attackable enemy unit within 3 turns of movement (and 5 tiles range)
         if (tryAdvanceTowardsCloseEnemy(unit)) return
 
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(23f)
         if (unit.health < 100 && tryHealUnit(unit)) return
 
+        // UnitActionType.(Un)fortify is useFrequency 10f
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(10f)
+
         if (tryPrepare(unit)) return
+
+        // UnitActionType.Explore is useFrequency 5f
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(5f)
 
         // else, try to go to unreached tiles
         if (tryExplore(unit)) return
 
+        // UnitActionType.Guard is useFrequency 0f
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(0f)
+        
         if (tryFogBust(unit)) return
 
+        uniqueActionQueue.automateRemainingUniqueActions()
         // Idle CS units should wander so they don't obstruct players so much
         if (unit.civ.isCityState)
             wander(unit, stayInTerritory = true)

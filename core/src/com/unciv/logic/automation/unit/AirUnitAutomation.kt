@@ -14,9 +14,12 @@ import yairm210.purity.annotations.Readonly
 
 object AirUnitAutomation {
 
-    fun automateFighter(unit: MapUnit) {
+    fun automateFighter(unit: MapUnit, uniqueActionQueue: UniqueActionQueue) {
+        // automateBomber called after usePriority=118
+        
         if (unit.health < 75) return // Wait and heal
 
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(100f)
         val tilesWithEnemyUnitsInRange = unit.civ.threatManager.getTilesWithEnemyUnitsInDistance(unit.getTile(), unit.getRange())
         // TODO: Optimize [friendlyAirUnitsInRange] by creating an alternate [ThreatManager.getTilesWithEnemyUnitsInDistance] that handles only friendly units
         val friendlyAirUnitsInRange = unit.getTile().getTilesInDistance(unit.getRange()).flatMap { it.airUnits }.filter { it.civ == unit.civ }
@@ -30,6 +33,7 @@ object AirUnitAutomation {
         // We need to be on standby in case they attack
         if (friendlyUnusedFighterCount < enemyFighters) return
 
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(98f)
         if (friendlyUsedFighterCount <= enemyFighters) {
             @Readonly fun airSweepDamagePercentBonus(): Int {
                 return unit.getMatchingUniques(UniqueType.StrengthWhenAirsweep)
@@ -47,16 +51,21 @@ object AirUnitAutomation {
             }
         }
 
+        // UnitActionType.FortifyUntilHealed is useFrequency 45f
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(45f)
         if (unit.health < 80) {
             return // Wait and heal up, no point in moving closer to battle if we aren't healed
         }
 
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(42f)
         if (BattleHelper.tryAttackNearbyEnemy(unit)) return
 
         if (unit.cache.cannotMove) return // from here on it's all "try to move somewhere else"
 
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(40f)
         if (tryRelocateToCitiesWithEnemyNearBy(unit)) return
 
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(38f)
         val pathsToCities = unit.movement.getAerialPathsToCities()
         if (pathsToCities.isEmpty()) return // can't actually move anywhere else
 
@@ -78,8 +87,9 @@ object AirUnitAutomation {
             return
         }
 
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(36f)
         // no city needs fighters to defend, so let's attack stuff from the closest possible location
-        tryMoveToCitiesToAerialAttackFrom(pathsToCities, unit)
+        tryMoveToCitiesToAerialAttackFrom(pathsToCities, unit, uniqueActionQueue)
     }
 
     private fun tryAirSweep(unit: MapUnit, tilesWithEnemyUnitsInRange: List<Tile>): Boolean {
@@ -91,25 +101,36 @@ object AirUnitAutomation {
         return !unit.hasMovement()
     }
 
-    fun automateBomber(unit: MapUnit) {
+    fun automateBomber(unit: MapUnit, uniqueActionQueue: UniqueActionQueue) {
+        // automateBomber called after usePriority=118
+
+        // UnitActionType.FortifyUntilHealed is useFrequency 45f
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(45f)
         if (unit.health < 75) return // Wait and heal
 
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(42f)
         if (BattleHelper.tryAttackNearbyEnemy(unit)) return
 
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(40f)
         if (unit.health <= 90 || (unit.health < 100 && !unit.civ.isAtWar())) {
             return // Wait and heal
         }
 
         if (unit.cache.cannotMove) return // from here on it's all "try to move somewhere else"
 
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(38f)
         if (tryRelocateToCitiesWithEnemyNearBy(unit)) return
 
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(36f)
         val pathsToCities = unit.movement.getAerialPathsToCities()
         if (pathsToCities.isEmpty()) return // can't actually move anywhere else
-        tryMoveToCitiesToAerialAttackFrom(pathsToCities, unit)
+        tryMoveToCitiesToAerialAttackFrom(pathsToCities, unit, uniqueActionQueue)
     }
 
-    private fun tryMoveToCitiesToAerialAttackFrom(pathsToCities: HashMap<Tile, ArrayList<Tile>>, airUnit: MapUnit) {
+    private fun tryMoveToCitiesToAerialAttackFrom(pathsToCities: HashMap<Tile, ArrayList<Tile>>, airUnit: MapUnit, uniqueActionQueue: UniqueActionQueue) {
+        // automateBomber called after usePriority=36
+        
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(34f)
         val citiesThatCanAttackFrom = pathsToCities.keys
             .filter { destinationCity ->
                 destinationCity != airUnit.currentTile
@@ -120,13 +141,15 @@ object AirUnitAutomation {
 
         //todo: this logic looks similar to some parts of automateFighter, maybe pull out common code
         //todo: maybe group by size and choose highest priority within the same size turns
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(32f)
         val closestCityThatCanAttackFrom =
             citiesThatCanAttackFrom.minByOrNull { pathsToCities[it]!!.size }!!
         val firstStepInPath = pathsToCities[closestCityThatCanAttackFrom]!!.first()
         airUnit.movement.moveToTile(firstStepInPath)
     }
 
-    fun automateNukes(unit: MapUnit) {
+    fun automateNukes(unit: MapUnit, uniqueActionQueue: UniqueActionQueue) {
+        // automateBomber called after usePriority=118
         if (!unit.civ.isAtWar()) return
         // We should *Almost* never want to nuke our own city, so don't consider it
         if (unit.type.isAirUnit()) {
@@ -135,8 +158,8 @@ object AirUnitAutomation {
                 .maxByOrNull { it.second }
             if (highestTileNukeValue != null && highestTileNukeValue.second > 0)
                 Nuke.NUKE(MapUnitCombatant(unit), highestTileNukeValue.first)
-
-            tryRelocateMissileToNearbyAttackableCities(unit)
+            
+            tryRelocateMissileToNearbyAttackableCities(unit, uniqueActionQueue)
         } else {
             val attackableTiles = TargetHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
             val highestTileNukeValue = attackableTiles.map { it to getNukeLocationValue(unit, it.tileToAttack) }
@@ -212,12 +235,18 @@ object AirUnitAutomation {
     }
 
     // This really needs to be changed, to have better targeting for missiles
-    fun automateMissile(unit: MapUnit) {
+    fun automateMissile(unit: MapUnit, uniqueActionQueue: UniqueActionQueue) {
+        // automateBomber called after usePriority=118
         if (BattleHelper.tryAttackNearbyEnemy(unit)) return
-        tryRelocateMissileToNearbyAttackableCities(unit)
+        
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(50f)
+        tryRelocateMissileToNearbyAttackableCities(unit, uniqueActionQueue)
     }
 
-    private fun tryRelocateMissileToNearbyAttackableCities(unit: MapUnit) {
+    private fun tryRelocateMissileToNearbyAttackableCities(unit: MapUnit, uniqueActionQueue: UniqueActionQueue) {
+        // automateBomber called after usePriority=118
+        
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(50f)
         val tilesInRange = unit.currentTile.getTilesInDistance(unit.getRange())
         val immediatelyReachableCities = tilesInRange
             .filter { unit.movement.canMoveTo(it) }
@@ -229,9 +258,10 @@ object AirUnitAutomation {
             return
         }
 
+        uniqueActionQueue.automateUniqueActionsUntilUseFrequency(48f)
         val pathsToCities = unit.movement.getAerialPathsToCities()
         if (pathsToCities.isEmpty()) return // can't actually move anywhere else
-        tryMoveToCitiesToAerialAttackFrom(pathsToCities, unit)
+        tryMoveToCitiesToAerialAttackFrom(pathsToCities, unit, uniqueActionQueue)
     }
 
     private fun tryRelocateToCitiesWithEnemyNearBy(unit: MapUnit): Boolean {

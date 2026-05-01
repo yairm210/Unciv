@@ -226,8 +226,10 @@ class PathingMap(
      * IMPORTANT NOTE: This does NOT consider obstacles (hills/mountains) in the attack range.
      * Callers have to check for obstacles along the path themselves.
      **/
-    fun bfsUntilMatchingTile(timeLimitTurns: Int = MAX_VALID_TURNS, endSearchPredicate: EndSearchPredicate): Tile?
+    fun bfsUntilMatchingTile(timeLimitTurns: Int, endSearchPredicate: EndSearchPredicate): Tile?
         = bfsStepUntilDestination(fetchCache(), endSearchPredicate, timeLimitTurns)
+    fun bfsUntilMatchingTileThisTurn(endSearchPredicate: EndSearchPredicate): Tile?
+        = bfsStepUntilDestination(fetchCache(), endSearchPredicate, 0)
 
     /**
      * finds all tiles in attack range that match a predicate.

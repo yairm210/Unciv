@@ -83,11 +83,24 @@ object UniqueTriggerActivation {
         tile: Tile? = city?.getCenterTile() ?: unit?.currentTile,
         notification: String? = null,
         triggerNotificationText: String? = null
-    ): (()->Boolean)? {
+    ): (()->Boolean)? 
+        = getTriggerFunction(unique, GameContext(civInfo, city, unit, tile), notification, triggerNotificationText)
 
-        val relevantCity by lazy {
-            city?: tile?.getCity()
-        }
+    /** @return The action to be performed if possible, else null
+     * This is so the unit actions can be displayed as "disabled" if they won't actually do anything
+     * Even if the action itself is performable, there are still cases where it can fail -
+     *   for example unit placement - which is why the action itself needs to return Boolean to indicate success */
+    fun getTriggerFunction(
+        unique: Unique,
+        gameContext: GameContext,
+        notification: String? = null,
+        triggerNotificationText: String? = null
+    ): (()->Boolean)? {
+        val civInfo = gameContext.relevantCiv!!
+        val city = gameContext.relevantCity
+        val unit = gameContext.relevantUnit
+        val tile = gameContext.relevantTile ?: city?.getCenterTile() ?: unit?.currentTile
+        val relevantCity = city
         @Readonly fun getApplicableCities(cityFilter: String) =
             if (cityFilter == "in this city") sequenceOf(relevantCity).filterNotNull()
             else civInfo.cities.asSequence().filter { it.matchesFilter(cityFilter) }
@@ -101,8 +114,6 @@ object UniqueTriggerActivation {
                 true
             }
         }
-
-        val gameContext = GameContext(civInfo, city, unit, tile)
 
         val chosenCity = relevantCity ?:
             civInfo.cities.firstOrNull { it.isCapital() }

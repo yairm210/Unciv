@@ -7,6 +7,7 @@ import com.unciv.logic.battle.CombatAction
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.ReligionState
+import com.unciv.models.ruleset.unique.Countables.Companion.getMatching
 import com.unciv.models.ruleset.validation.ModCompatibility
 import com.unciv.models.stats.Stat
 import com.unciv.utils.hashOf
@@ -37,6 +38,7 @@ object Conditionals {
         /** Helper to simplify conditional tests requiring gameInfo */
         @Readonly
         fun checkOnGameInfo(@Readonly predicate: (GameInfo.() -> Boolean)): Boolean {
+            if (!state.considerGameInfo) return true
             if (state.gameInfo == null) return false
             return state.gameInfo.predicate()
         }
@@ -44,6 +46,7 @@ object Conditionals {
         /** Helper to simplify conditional tests requiring a Civilization */
         @Readonly
         fun checkOnCiv(@Readonly predicate: (Civilization.() -> Boolean)): Boolean {
+            if (!state.considerCiv) return true
             if (state.relevantCiv == null) return false
             return state.relevantCiv!!.predicate()
         }
@@ -51,6 +54,7 @@ object Conditionals {
         /** Helper to simplify conditional tests requiring a City */
         @Readonly
         fun checkOnCity(@Readonly predicate: (City.() -> Boolean)): Boolean {
+            if (!state.considerCiv) return true
             if (state.relevantCity == null) return false
             return state.relevantCity!!.predicate()
         }
@@ -58,6 +62,7 @@ object Conditionals {
         /** Helper to simplify the "compare civ's current era with named era" conditions */
         @Readonly
         fun compareEra(eraParam: String, @Readonly compare: (civEra: Int, paramEra: Int) -> Boolean): Boolean {
+            if (!state.considerGameInfo) return true
             if (state.gameInfo == null) return false
             val era = state.gameInfo.ruleset.eras[eraParam] ?: return false
             return compare(state.relevantCiv!!.getEraNumber(), era.eraNumber)
@@ -72,6 +77,7 @@ object Conditionals {
             modifyByGameSpeed: Boolean = false,
             @Readonly compare: (current: Int, lowerLimit: Float, upperLimit: Float) -> Boolean
         ): Boolean {
+            if (!state.considerCiv) return true
             if (state.gameInfo == null) return false
             var gameSpeedModifier = if (modifyByGameSpeed) state.gameInfo.speed.modifier else 1f
 
@@ -90,7 +96,7 @@ object Conditionals {
             first: String,
             second: String,
             @Readonly compare: (first: Int, second: Int) -> Boolean): Boolean {
-
+            if (!state.considerCiv) return true
             val firstNumber = Countables.getCountableAmount(first, state)
             val secondNumber = Countables.getCountableAmount(second, state)
 
@@ -103,7 +109,7 @@ object Conditionals {
         @Readonly
         fun compareCountables(first: String, second: String, third: String,
                               @Readonly compare: (first: Int, second: Int, third: Int) -> Boolean): Boolean {
-
+            if (!state.considerCiv) return true
             val firstNumber = Countables.getCountableAmount(first, state)
             val secondNumber = Countables.getCountableAmount(second, state)
             val thirdNumber = Countables.getCountableAmount(third, state)
@@ -389,6 +395,142 @@ object Conditionals {
                 (gameParameters.mods.asSequence() + gameParameters.baseRuleset).none { ModCompatibility.modNameFilter(it, filter) }
             }
 
+            else -> false
+        }
+    }
+
+    @Readonly
+    fun unitActionModifiersAreTileSpecific(gameInfo: GameInfo, conditional: Unique): Boolean {
+        if (conditional.isOtherModifierType)
+            return false // not a filtering condition, includes e.g. ModifierHiddenFromUsers
+
+        // These are always false today, but makes it easy to add that functionality later, if desired.
+        @Readonly
+        fun countableIsTileSpecific(countable: String): Boolean
+         =  getMatching(countable, gameInfo.ruleset)
+             ?.isTileSpecificForUnitAction 
+            ?: return false
+
+        return when (conditional.type) {
+            UniqueType.ConditionalChance -> false
+            UniqueType.ConditionalEveryTurns -> false
+            UniqueType.ConditionalBeforeTurns -> false
+            UniqueType.ConditionalAfterTurns -> false
+            UniqueType.ConditionalTutorialsEnabled -> false
+            UniqueType.ConditionalTutorialCompleted -> false
+
+            UniqueType.ConditionalCivFilter -> false
+            UniqueType.ConditionalWar -> false
+            UniqueType.ConditionalNotWar -> false
+            UniqueType.ConditionalWithResource -> true
+            UniqueType.ConditionalWithoutResource -> true
+
+            UniqueType.ConditionalWhenAboveAmountStatResource -> true
+            UniqueType.ConditionalWhenBelowAmountStatResource -> true
+            UniqueType.ConditionalWhenBetweenStatResource -> true
+
+            UniqueType.ConditionalHappy -> false
+            UniqueType.ConditionalGoldenAge -> false
+            UniqueType.ConditionalNotGoldenAge -> false
+
+            UniqueType.ConditionalBeforeEra -> false
+            UniqueType.ConditionalStartingFromEra -> false
+            UniqueType.ConditionalDuringEra -> false
+            UniqueType.ConditionalIfStartingInEra -> false
+            UniqueType.ConditionalSpeed -> false
+            UniqueType.ConditionalDifficulty -> false
+            UniqueType.ConditionalDifficultyOrHigher -> false
+            UniqueType.ConditionalDifficultyOrLower -> false
+            UniqueType.ConditionalVictoryEnabled -> false
+            UniqueType.ConditionalVictoryDisabled -> false
+            UniqueType.ConditionalReligionEnabled -> false
+            UniqueType.ConditionalReligionDisabled -> false
+            UniqueType.ConditionalEspionageEnabled -> false
+            UniqueType.ConditionalEspionageDisabled -> false
+            UniqueType.ConditionalNuclearWeaponsEnabled -> false
+            UniqueType.ConditionalNuclearWeaponsDisabled -> false
+            UniqueType.ConditionalTech -> false
+            UniqueType.ConditionalNoTech -> false
+            UniqueType.ConditionalWhileResearching -> false
+            UniqueType.ConditionalNoCivAdopted -> false
+            UniqueType.ConditionalAfterPolicyOrBelief -> false
+            UniqueType.ConditionalBeforePolicyOrBelief -> false
+            UniqueType.ConditionalBeforePantheon -> false
+            UniqueType.ConditionalAfterPantheon -> false
+            UniqueType.ConditionalBeforeReligion -> false
+            UniqueType.ConditionalAfterReligion -> false
+            UniqueType.ConditionalBeforeEnhancingReligion -> false
+            UniqueType.ConditionalAfterEnhancingReligion -> false
+            UniqueType.ConditionalAfterGeneratingGreatProphet -> false
+
+            UniqueType.ConditionalBuildingBuilt -> false
+            UniqueType.ConditionalBuildingNotBuilt -> false
+            UniqueType.ConditionalBuildingBuiltAll -> false
+            UniqueType.ConditionalBuildingBuiltAmount -> false
+            UniqueType.ConditionalBuildingBuiltByAnybody -> false
+            UniqueType.ConditionalBuildingNotBuiltByAnybody -> false
+
+            // Filtered via city.getMatchingUniques
+            UniqueType.ConditionalInThisCity -> true
+            UniqueType.ConditionalCityFilter -> true
+            UniqueType.ConditionalCityConnected -> true
+            UniqueType.ConditionalCityReligion -> true
+            UniqueType.ConditionalCityNotReligion -> true
+            UniqueType.ConditionalCityMajorReligion -> true
+            UniqueType.ConditionalCityEnhancedReligion -> true
+            UniqueType.ConditionalCityThisReligion -> true
+            UniqueType.ConditionalWLTKD -> true
+            UniqueType.ConditionalCityWithBuilding -> true
+            UniqueType.ConditionalCityWithoutBuilding -> true
+            UniqueType.ConditionalPopulationFilter -> true
+            UniqueType.ConditionalExactPopulationFilter -> true
+            UniqueType.ConditionalBetweenPopulationFilter -> true
+            UniqueType.ConditionalBelowPopulationFilter -> true
+            UniqueType.ConditionalWhenGarrisoned -> true
+
+            UniqueType.ConditionalVsCity -> false
+            UniqueType.ConditionalVsUnits,  UniqueType.ConditionalVsCombatant -> false
+            UniqueType.ConditionalOurUnit, UniqueType.ConditionalOurUnitOnUnit -> false
+            UniqueType.ConditionalUnitWithPromotion ->false
+            UniqueType.ConditionalUnitWithoutPromotion -> false
+            UniqueType.ConditionalAttacking -> false
+            UniqueType.ConditionalDefending -> false
+            UniqueType.ConditionalAboveHP -> false
+            UniqueType.ConditionalBelowHP -> false
+            UniqueType.ConditionalAboveMovement -> false /* we can approach the target even if we'll use the ability next turn*/
+            UniqueType.ConditionalBelowMovement -> false /* we can approach the target even if we'll use the ability next turn*/
+            UniqueType.ConditionalHasNotUsedOtherActions -> false
+            UniqueType.ConditionalStackedWithUnit -> true
+            UniqueType.ConditionalNotStackedWithUnit -> true
+
+            UniqueType.ConditionalInTiles -> true
+            UniqueType.ConditionalInTilesNot -> true
+            UniqueType.ConditionalAdjacentTo -> true
+            UniqueType.ConditionalNotAdjacentTo -> true
+            UniqueType.ConditionalFightingInTiles -> true
+            UniqueType.ConditionalNearTiles -> true
+            UniqueType.ConditionalVsLargerCiv -> false
+            UniqueType.ConditionalForeignContinent -> true
+            UniqueType.ConditionalAdjacentUnit -> true
+
+            UniqueType.ConditionalNeighborTiles -> true
+            UniqueType.ConditionalOnWaterMaps -> false
+            UniqueType.ConditionalInRegionOfType -> true
+            UniqueType.ConditionalInRegionExceptOfType -> true
+
+            UniqueType.ConditionalFirstCivToResearch ->false
+            UniqueType.ConditionalFirstCivToAdopt -> false
+            UniqueType.ConditionalCountableEqualTo,
+            UniqueType.ConditionalCountableDifferentThan,
+            UniqueType.ConditionalCountableMoreThan,
+            UniqueType.ConditionalCountableLessThan -> 
+                countableIsTileSpecific(conditional.params[0]) && countableIsTileSpecific(conditional.params[1])
+            UniqueType.ConditionalCountableBetween ->
+                countableIsTileSpecific(conditional.params[0]) && countableIsTileSpecific(conditional.params[1]) && countableIsTileSpecific(conditional.params[2])
+            UniqueType.ConditionalWhenCarriedBy -> false
+
+            UniqueType.ConditionalModEnabled -> false
+            UniqueType.ConditionalModNotEnabled -> false
             else -> false
         }
     }
