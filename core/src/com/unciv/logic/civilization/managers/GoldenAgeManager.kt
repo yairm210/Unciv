@@ -71,7 +71,7 @@ class GoldenAgeManager : IsPartOfGameInfoSerialization {
         if (isGoldenAge()){
             turnsLeftForCurrentGoldenAge--
             if (turnsLeftForCurrentGoldenAge <= 0)
-                for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUpponEndingGoldenAge))
+                for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEndingGoldenAge))
                     UniqueTriggerActivation.triggerUnique(unique, civInfo)
         }
                 
