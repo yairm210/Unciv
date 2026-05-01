@@ -76,6 +76,9 @@ class GoldenAgeManager : IsPartOfGameInfoSerialization {
             
             for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponBreakingGoldenAge))
                 UniqueTriggerActivation.triggerUnique(unique, civInfo)
+            
+            for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEndingGoldenAge))
+                UniqueTriggerActivation.triggerUnique(unique, civInfo)
         }
     }
 
