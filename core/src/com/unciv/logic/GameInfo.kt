@@ -342,7 +342,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
      *  @param progressBar Optional reference to UI widget either provided by [WorldScreen.nextTurn][com.unciv.ui.screens.worldscreen.WorldScreen.nextTurn] or `null` when simulating
      *  @param shouldGainTime on a multiplayer game, if true, makes the player who's turn is ended recover time to play before risking to get forced to resign, 'false' by default 
      */
-    fun nextTurn(progressBar: NextTurnProgress? = null, shouldGainTime: Boolean = false) = timeThis("GameInfo.nextTurn") {
+    fun nextTurn(progressBar: NextTurnProgress? = null, shouldGainTime: Boolean = false):Unit = timeThis("GameInfo.nextTurn") {
         var player = currentPlayerCiv
         var playerIndex = civilizations.indexOf(player)
 
@@ -772,7 +772,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         combinedGlobalUniques = GlobalUniques.combine(ruleset.globalUniques, speed, difficultyObject)
     }
 
-    private fun updateCivilizationState() = timeThis("GameInfo.updateCivilizationState") {
+    private fun updateCivilizationState():Unit = timeThis("GameInfo.updateCivilizationState") {
         for (civInfo in civilizations.asSequence()
             // update city-state resource first since the happiness of major civ depends on it.
             // See issue: https://github.com/yairm210/Unciv/issues/7781

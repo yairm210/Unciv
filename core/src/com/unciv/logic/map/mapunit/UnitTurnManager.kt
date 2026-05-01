@@ -136,7 +136,7 @@ class UnitTurnManager(val unit: MapUnit) {
     }
 
 
-    fun startTurn() = timeThis("UnitTurnManager.startTurn") {
+    fun startTurn():Unit = timeThis("UnitTurnManager.startTurn") {
         unit.movement.clearPathfindingCache()
         unit.currentMovement = unit.getMaxMovement().toFloat()
         unit.attacksThisTurn = 0

@@ -92,7 +92,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         }
     }
 
-    fun updateSightAndResources() = timeThis("updateSightAndResources") {
+    fun updateSightAndResources():Unit = timeThis("updateSightAndResources") {
         updateViewableTiles()
         updateHasActiveEnemyMovementPenalty()
         updateCivResources()
@@ -169,7 +169,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
     /** Our tiles update pretty infrequently - most 'viewable tile' changes are due to unit movements,
      * which means we can store this separately and use it 'as is' so we don't need to find the neighboring tiles every time
      * a unit moves */
-    fun updateOurTiles() = timeThis("CivInfoTransientCache.updateOurTiles")  {
+    fun updateOurTiles():Unit = timeThis("CivInfoTransientCache.updateOurTiles")  {
         ourTilesAndNeighboringTiles = civInfo.cities.asSequence()
             .flatMap { it.getTiles() } // our owned tiles, still distinct
             .flatMap { sequenceOf(it) + it.neighbors }
@@ -289,7 +289,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
                 civInfo.getMatchingUniques(UniqueType.EnemyUnitsSpendExtraMovement)
     }
 
-    fun updateCitiesConnectedToCapital(initialSetup: Boolean = false) = timeThis("CivInfoTransientCache.updateCitiesConnectedToCapital") {
+    fun updateCitiesConnectedToCapital(initialSetup: Boolean = false):Unit = timeThis("CivInfoTransientCache.updateCitiesConnectedToCapital") {
         if (civInfo.cities.isEmpty()) return // No cities to connect
 
         val oldConnectedCities = if (initialSetup)
@@ -317,7 +317,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
             city.connectedToCapitalStatus = city in newConnectedCities
     }
 
-    fun updateCivResources() = timeThis("CivInfoTransientCache.updateCivResources") {
+    fun updateCivResources():Unit = timeThis("CivInfoTransientCache.updateCivResources") {
         val newDetailedCivResources = ResourceSupplyList()
         for (city in civInfo.cities) newDetailedCivResources.add(city.getResourcesGeneratedByCity())
 

@@ -765,7 +765,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     /**
      * Update this unit's cache of viewable tiles and its civ's as well.
      */
-    fun updateVisibleTiles(updateCivViewableTiles: Boolean = true, explorerPosition: HexCoord? = null) = timeThis("MapUnit.updateVisibleTiles") {
+    fun updateVisibleTiles(updateCivViewableTiles: Boolean = true, explorerPosition: HexCoord? = null):Unit = timeThis("MapUnit.updateVisibleTiles") {
         val oldViewableTiles = viewableTiles
 
         viewableTiles = when {

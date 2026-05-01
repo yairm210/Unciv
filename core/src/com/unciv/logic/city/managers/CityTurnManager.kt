@@ -18,7 +18,7 @@ import kotlin.math.roundToInt
 class CityTurnManager(val city: City) {
 
 
-    fun startTurn() = timeThis("CityTurnManager.startTurn") {
+    fun startTurn():Unit = timeThis("CityTurnManager.startTurn") {
         city.clearCaches()
         
         for (resource in city.getResourcesGeneratedByCity()) {
@@ -136,7 +136,7 @@ class CityTurnManager(val city: City) {
     }
 
 
-    fun endTurn() = timeThis("CityTurnManager.endTurn") {
+    fun endTurn():Unit = timeThis("CityTurnManager.endTurn") {
         for (unique in city.getTriggeredUniques(UniqueType.TriggerUponTurnEnd, includeCivUniques = false).toList()) {
             UniqueTriggerActivation.triggerUnique(unique, city)
         }

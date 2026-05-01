@@ -114,7 +114,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
     }
 
 
-    fun chooseNextConstruction() = timeThis("ConstructionAutomation.chooseNextConstruction") {
+    fun chooseNextConstruction(): Unit = timeThis("ConstructionAutomation.chooseNextConstruction") {
         if (cityConstructions.getCurrentConstruction() !is PerpetualConstruction) return  // don't want to be stuck on these forever
         
         addBuildingChoices()

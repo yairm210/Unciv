@@ -17,7 +17,7 @@ import kotlin.math.min
 
 object DiplomacyTurnManager {
 
-    fun DiplomacyManager.nextTurn() = timeThis("DiplomacyManager.nextTurn") {
+    fun DiplomacyManager.nextTurn():Unit = timeThis("DiplomacyManager.nextTurn") {
         nextTurnTrades()
         removeUntenableTrades()
         updateHasOpenBorders()

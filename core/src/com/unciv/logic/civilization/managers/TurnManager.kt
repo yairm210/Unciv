@@ -25,7 +25,7 @@ import com.unciv.logic.automation.Timers.Companion.timeThis
 class TurnManager(val civInfo: Civilization) {
 
 
-    fun startTurn(progressBar: NextTurnProgress? = null) = timeThis("TurnManager.startTurn") {
+    fun startTurn(progressBar: NextTurnProgress? = null):Unit = timeThis("TurnManager.startTurn") {
         if (civInfo.isSpectator()) return
 
         civInfo.threatManager.clear()
@@ -238,7 +238,7 @@ class TurnManager(val civInfo: Civilization) {
             * civInfo.gameInfo.speed.modifier.coerceAtLeast(1f)).toInt()
 
 
-    fun endTurn(progressBar: NextTurnProgress? = null) = timeThis("TurnManager.endTurn") {
+    fun endTurn(progressBar: NextTurnProgress? = null):Unit = timeThis("TurnManager.endTurn") {
         if (UncivGame.Current.settings.citiesAutoBombardAtEndOfTurn)
             NextTurnAutomation.automateCityBombardment(civInfo) // Bombard with all cities that haven't, maybe you missed one
 

@@ -31,7 +31,7 @@ object UnitAutomation {
     private const val CLOSE_ENEMY_TILES_AWAY_LIMIT = 5
     private const val CLOSE_ENEMY_TURNS_AWAY_LIMIT = 3f
 
-    fun automateUnitMoves(unit: MapUnit) = timeThis("automateUnitMoves") {
+    fun automateUnitMoves(unit: MapUnit):Unit = timeThis("automateUnitMoves") {
         check(!unit.civ.isBarbarian) { "Barbarians is not allowed here." }
 
         // Might die next turn - move!

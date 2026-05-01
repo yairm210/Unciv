@@ -83,7 +83,7 @@ class CapitalConnectionsFinder(private val civInfo: Civilization) {
         )
     }
 
-    private fun checkHarbor(cityToConnectFrom: City) = timeThis("CapitalConnectionsFinder.checkHarbor") {
+    private fun checkHarbor(cityToConnectFrom: City):Unit = timeThis("CapitalConnectionsFinder.checkHarbor") {
         check(
             cityToConnectFrom,
             transportType = if (cityToConnectFrom.wasPreviouslyReached(CapitalConnectionMedium.Railroad,null))
@@ -102,7 +102,7 @@ class CapitalConnectionsFinder(private val civInfo: Civilization) {
                       transportType: CapitalConnectionMedium,
                       overridingTransportType: CapitalConnectionMedium? = null,
                       tileFilter: (Tile) -> Boolean,
-                      cityFilter: (City) -> Boolean = { true })  = timeThis("CapitalConnectionsFinder.check") {
+                      cityFilter: (City) -> Boolean = { true }):Unit  = timeThis("CapitalConnectionsFinder.check") {
         // This is the time-saving mechanism we discussed earlier - If I arrived at this city via a certain BFS,
         // then obviously I already have all the cities that can be reached via that BFS so I don't need to run it again.
         if (cityToConnectFrom.wasPreviouslyReached(transportType, overridingTransportType))

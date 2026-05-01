@@ -346,7 +346,7 @@ class CityStats(val city: City) {
     //endregion
     //region State-Changing Methods
 
-    fun updateTileStats(localUniqueCache: LocalUniqueCache = LocalUniqueCache()) = timeThis("updateTileStats") {
+    fun updateTileStats(localUniqueCache: LocalUniqueCache = LocalUniqueCache()):Unit = timeThis("updateTileStats") {
         val stats = Stats()
         val workedTiles = city.tilesInRange.asSequence()
             .filter {

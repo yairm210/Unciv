@@ -863,7 +863,7 @@ class Civilization : IsPartOfGameInfoSerialization {
                 ?: throw MissingNationException("Nation $civName is not found!", gameInfo.ruleset.mods)
     }
 
-    fun setTransients() = timeThis("Civilization.setTransients") {
+    fun setTransients():Unit = timeThis("Civilization.setTransients") {
         goldenAges.civInfo = this
         greatPeople.civInfo = this
         civConstructions.setTransients(civInfo = this)

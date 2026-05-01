@@ -358,7 +358,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         inProgressConstructions[constructionName] = inProgressConstructions[constructionName]!! + productionToAdd
     }
 
-    fun constructIfEnough() = timeThis("constructIfEnough") {
+    fun constructIfEnough():Unit = timeThis("constructIfEnough") {
         validateConstructionQueue()
 
         // Update InProgressConstructions for any available refunds
@@ -816,7 +816,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     private fun removeCurrentConstruction() = removeFromQueue(0, true)
 
-    fun chooseNextConstruction() = timeThis("chooseNextConstruction") {
+    fun chooseNextConstruction():Unit = timeThis("chooseNextConstruction") {
         if (!isQueueEmptyOrIdle()) {
             // If the USER set a perpetual construction, then keep it!
             if (getConstruction( currentConstructionName()) !is PerpetualConstruction || currentConstructionIsUserSet) return
