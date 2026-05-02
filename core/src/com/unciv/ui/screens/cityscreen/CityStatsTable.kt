@@ -159,7 +159,7 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
             tableWithIcons.add(Table().apply {
                 add(ImageGetter.getImage("StatIcons/Resistance")).size(20f).padRight(2f)
                 add("In resistance for another [${city.getFlag(CityFlags.Resistance)}] turns".toLabel())
-            })
+            }).row()
         }
 
         val resourceTable = Table()
