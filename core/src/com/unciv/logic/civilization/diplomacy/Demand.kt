@@ -1,10 +1,13 @@
 package com.unciv.logic.civilization.diplomacy
 
+import com.unciv.logic.automation.civilization.DiplomacyAutomation
 import com.unciv.logic.civilization.AlertType
+import com.unciv.logic.civilization.Civilization
 
 /** After creating the required flags, modifiers, and alert type, the only remaining work should be
  * - Adding the new alerts in the when() of AlertPopup.kt
  * - Triggering the violation (adding the violationOccurred flag) from somewhere in the code
+ * (Translation templates are found automatically)
  */
 
 enum class Demand(
@@ -47,7 +50,9 @@ enum class Demand(
         violationNoticedText = "Take back your spy and your broken promises.",
         wePromisedText = "We promised not to send spies to them ([turns] turns remaining)",
         theyPromisedText = "They promised not to send spies to us ([turns] turns remaining)"
-    ),
+    ) {
+        override fun show(civ: Civilization) = civ.gameInfo.isEspionageEnabled()
+    },
     DoNotSpreadReligion(
         agreedToDemand = DiplomacyFlags.AgreedToNotSpreadReligion,
         violationOccurred = DiplomacyFlags.SpreadReligionInOurCities,
@@ -65,7 +70,9 @@ enum class Demand(
         violationNoticedText = "We noticed you have continued spreading your religion to us, despite your promise. This will have....consequences.",
         wePromisedText = "We promised not to spread religion to them ([turns] turns remaining)",
         theyPromisedText = "They promised not to spread religion to us ([turns] turns remaining)",
-    ),
+    ) {
+        override fun show(civ: Civilization) = civ.gameInfo.isReligionEnabled()
+    },
     DoNotSettleNearUs(
         agreedToDemand = DiplomacyFlags.AgreedToNotSettleNearUs,
         violationOccurred = DiplomacyFlags.SettledCitiesNearUs,
@@ -103,5 +110,15 @@ enum class Demand(
         violationNoticedText = "You have exposed yourself as a treacherous warmonger.",
         wePromisedText = "We promised not to attack them ([turns] turns remaining)",
         theyPromisedText = "They promised not to attack us ([turns] turns remaining)"
-    )
+    ) {
+        /** This particular demand can currently only be made by AI to human players
+         * TODO logic for AI to appropriately respond to this ultimatum
+         * additionally, I suggest to only enable the button when there is a genuine military presence
+         * @see DiplomacyAutomation
+         */
+        override fun show(civ: Civilization) = false
+    };
+
+    /** Determines whether to offer the demand to players on the diplomacy screen */
+    open fun show(civ: Civilization) = true
 }
