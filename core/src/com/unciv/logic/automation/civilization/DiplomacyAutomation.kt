@@ -480,6 +480,9 @@ object DiplomacyAutomation {
                     || trade.trade.theirOffers.any { offer -> offer.name == offerName } }
     }
     
+    private const val MIN_UNITS_NEAR_BORDER_TO_ISSUE_DEMAND = 10
+    private const val MIN_FORCE_VALUE_NEAR_BORDER_TO_ISSUE_DEMAND  = 0.5f
+    
     /**
      * Checks if any civ have positioned large portions of their troops along our borders.
      * Usually indicates an imminent attack.
@@ -530,7 +533,7 @@ object DiplomacyAutomation {
                 || theirDiplomacy.hasOpenBorders)
                 continue
             // ignore if they only have a few units near our borders (relevant in early game)
-            if (nearbyUnitCountByCiv[otherCiv]!! < 5)
+            if (nearbyUnitCountByCiv[otherCiv]!! < MIN_UNITS_NEAR_BORDER_TO_ISSUE_DEMAND)
                 continue
             val threatAssessment = Automation.threatAssessment(civInfo, otherCiv)
             // ignore if they are weak, stay silent if they are too strong
@@ -539,7 +542,7 @@ object DiplomacyAutomation {
             val nearbyForce = nearbyForceByCiv[otherCiv]!!
             val totalForce = otherCiv.getStatForRanking(RankingType.Force)
             // ignore if most of their force is elsewhere
-            if (nearbyForce.toFloat() / totalForce < 0.5f)
+            if (nearbyForce.toFloat() / totalForce < MIN_FORCE_VALUE_NEAR_BORDER_TO_ISSUE_DEMAND)
                 continue
             // let's ask what's up
             ourDiplomacy.setFlag(
