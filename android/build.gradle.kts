@@ -149,6 +149,7 @@ tasks.register<Exec>("run") {
 dependencies {
     implementation(libs.android.ktx.core)
     implementation(libs.android.ktx.runtime)
+    implementation(libs.android.free.droid.warn)
     // Needed to convert e.g. Android 26 API calls to Android 21
     // If you remove this run `./gradlew :android:lintDebug` to ensure everything's okay.
     // If you want to upgrade this, check it's working by building an apk,
