@@ -26,6 +26,8 @@ ktxCore = "1.16.0"
 ktxRuntime = "2.10.3"
 desugar = "2.1.5"
 
+# https://github.com/woheller69/FreeDroidWarn
+free-droid-warn = "V1.12"
 
 [libraries]
 #note - thanks to the subproject problem Studio won't properly recognize what is used or not:
@@ -77,6 +79,7 @@ android-ktx-runtime = { group = "androidx.work", name = "work-runtime-ktx", vers
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 mockito = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
 
+android-free-droid-warn = { group = "com.github.woheller69", name = "FreeDroidWarn", version.ref = "free-droid-warn" }
 
 [bundles]
 jna = ["jna", "jna-platform"]

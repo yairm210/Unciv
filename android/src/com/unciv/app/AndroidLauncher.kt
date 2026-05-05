@@ -6,15 +6,15 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.work.WorkManager
 import com.badlogic.gdx.backends.android.AndroidApplication
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration
+import com.unciv.UncivGame
 import com.unciv.logic.IdChecker
 import com.unciv.logic.files.UncivFiles
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.screens.multiplayerscreens.AddFriendScreen
 import com.unciv.utils.Concurrency.runOnGLThread
-import com.unciv.utils.Dispatcher
 import com.unciv.utils.Display
 import com.unciv.utils.Log
-import com.unciv.utils.launchOnGLThread
+import org.woheller69.freeDroidWarn.FreeDroidWarn
 import java.io.File
 import java.lang.Exception
 import kotlinx.coroutines.CoroutineScope
@@ -59,12 +59,13 @@ open class AndroidLauncher : AndroidApplication() {
         game = AndroidGame(this)
         initialize(game, config)
 
+        FreeDroidWarn.showWarningOnUpgrade(this, UncivGame.VERSION.number)
+
         // can be triggered via `adb shell am start -a android.intent.action.VIEW -d https://unciv.app/g/G-ef0f5e5a-f1db-4a54-9d94-92ca986afe8a-9 com.unciv.app`
         // or whatever your game id is
         game!!.setDeepLinkedGame(intent)
         game!!.addScreenObscuredListener()
         processPossibleFriendDeepLink(intent)
-        
     }
 
     /**
