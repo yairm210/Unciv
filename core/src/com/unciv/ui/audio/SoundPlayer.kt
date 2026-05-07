@@ -1,6 +1,6 @@
 package com.unciv.ui.audio
 
-import com.badlogic.gdx.Files
+import com.badlogic.gdx.Files.FileType
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.UncivGame
@@ -28,8 +28,6 @@ import yairm210.purity.annotations.Readonly
  * app lifetime - and we do dispose them when the app is disposed.
  */
 object SoundPlayer {
-    private const val maxEchoes = 5
-
     private val soundMap = Cache()
 
     private val separator = File.separator      // just a shorthand for readability
@@ -154,21 +152,23 @@ object SoundPlayer {
             return logAndMarkFailure("Sound ${sound.fileName} not found!")
 
         return try {
-            storeAndReturn(getSoundForFile(UncivGame.Current.miniAudio, file))
+            storeAndReturn(UncivGame.Current.miniAudio.createSound(file))
         } catch (e: Exception) {
             logAndMarkFailure(e)
         }
     }
 
-    private fun getSoundForFile(ma: MiniAudio, file: FileHandle): MASound {
-        try {
-            // Use Flags.MA_SOUND_FLAG_DECODE: keep decoded in memory?
-            return ma.createSound(file.path())
+    fun MiniAudio.createSound(file: FileHandle): MASound {
+        val flags = if (file.extension() == IMediaFinder.SupportedAudioExtensions.ogg.name) 0.toShort() else MASound.Flags.MA_SOUND_FLAG_STREAM
+        val maExternal = when(file.type()) { FileType.Absolute, FileType.External, FileType.Local -> true; else -> false }
+        val path = if (maExternal) file.file().absolutePath else file.file().path
+        return try {
+            createSound(path, flags, null, maExternal)
         } catch (e: MiniAudioException) {
             // TODO follow https://github.com/rednblackgames/gdx-miniaudio/issues/2 - this may become obsolete?
-            if (file.type() != Files.FileType.Internal || !IMediaFinder.isRunFromJar()) throw e
+            if (file.type() != FileType.Internal || !IMediaFinder.isRunFromJar()) throw e
             val bytes = file.readBytes()
-            return ma.createSound(ma.decodeBytes(bytes, 2))
+            return createSound(decodeBytes(bytes, 2))
         }
     }
 
@@ -190,7 +190,7 @@ object SoundPlayer {
         val volume = UncivGame.Current.settings.soundEffectsVolume
         if (sound == UncivSound.Silent || volume < 0.01) return true
         val (resource, _) = get(sound) ?: return false
-        resource.setVolume(volume)
+        resource.volume = volume
         resource.seekTo(0f)
         resource.play()
         return true
@@ -215,7 +215,7 @@ object SoundPlayer {
             for (index in 0 until count) {
                 val sound = if (index == 0) firstSound else {
                     delay(interval)
-                    getSoundForFile(ma, file)
+                    ma.createSound(file)
                 }
                 sound.volume = volume * (1f - index * 0.1f)
                 sound.play()
