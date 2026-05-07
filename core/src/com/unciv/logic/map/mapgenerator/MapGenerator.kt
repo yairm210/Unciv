@@ -3,7 +3,7 @@ package com.unciv.logic.map.mapgenerator
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.GameInfo
 import com.unciv.logic.map.*
 import com.unciv.logic.map.mapgenerator.mapregions.MapRegions
 import com.unciv.logic.map.tile.Tile
@@ -28,6 +28,7 @@ import kotlin.math.roundToInt
 import kotlin.math.sign
 import kotlin.math.sqrt
 import kotlin.math.ulp
+import kotlin.sequences.filter
 
 
 /** Map generator, used by new game, map editor and main menu background
@@ -43,37 +44,80 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         private const val consoleTimings = false
     }
 
-    private val landTerrainName =
-            MapLandmassGenerator.getInitializationTerrain(ruleset, TerrainType.Land)
-    private val waterTerrainName: String = try {
-        MapLandmassGenerator.getInitializationTerrain(ruleset, TerrainType.Water)
-    } catch (_: Exception) {
-        landTerrainName
-    }
-
     private var randomness = MapGenerationRandomness()
-    private val firstLandTerrain = ruleset.terrains.values.first { it.type==TerrainType.Land }
+    private val terrainConditions = ruleset.terrains.values.asSequence()
+        .filter { !it.hasUnique(UniqueType.NoNaturalGeneration)}
+        .flatMap { it.getGenerationConditions() }
+        .toList()
+        .sortedBy { it.isConstrained }
+    private val baseTerrainPicker = terrainConditions
+        .filter{ it.terrain.type == TerrainType.Land || it.terrain.type == TerrainType.Water }
+    private val terrainFeaturePicker = terrainConditions
+        .filter{ it.terrain.type == TerrainType.TerrainFeature }
 
     /** Associates [terrain] with a range of temperatures and a range of humidities (both open to closed) */
-    private class TerrainOccursRange(
+    internal class TerrainOccursRange(
         val terrain: Terrain,
         val tempFrom: Float, val tempTo: Float,
-        val humidFrom: Float, val humidTo: Float
+        val humidFrom: Float, val humidTo: Float,
+        val isConstrained: Boolean
     ) {
+        val name get() = terrain.name
+        val occursInChains: Boolean = terrain.hasUnique(UniqueType.OccursInChains)
+        val occursInGroups: Boolean = terrain.hasUnique(UniqueType.OccursInGroups)
+        val hasVegitation: Boolean = terrain.hasUnique(UniqueType.Vegetation)
+        val isRough: Boolean get() = terrain.isRough
+        val isFreshwater: Boolean get() = terrain.isFreshwater
+        val isCoast: Boolean get() = terrain.isCoast
+        val isOcean: Boolean get() = terrain.isOcean
+        val rareFeature: Boolean = terrain.hasUnique(UniqueType.RareFeature)
+        
         /** builds a [TerrainOccursRange] for [terrain] from a [unique] (type [UniqueType.TileGenerationConditions]) */
         constructor(terrain: Terrain, unique: Unique)
                 : this(terrain,
             unique.params[0].toFloatMakeInclusive(-1f), unique.params[1].toFloat(),
-            unique.params[2].toFloatMakeInclusive(0f), unique.params[3].toFloat())
-
+            unique.params[2].toFloatMakeInclusive(0f), unique.params[3].toFloat(),
+            isConstrained = true)
+        
+        /** builds a [TerrainOccursRange] for [terrain] without a [unique] (type [UniqueType.TileGenerationConditions]) */
+        constructor(terrain: Terrain)
+            : this(terrain, -Float.MAX_VALUE, Float.MAX_VALUE, -Float.MAX_VALUE, Float.MAX_VALUE, isConstrained = false)
+        
+        
+        private fun matchesBaseTerrain(tile: Tile): Boolean {
+            return if (terrain.type == TerrainType.Water) 
+                    tile.getBaseTerrain().type == TerrainType.Water
+                        && tile.getBaseTerrain().isFreshwater == isFreshwater
+                        && tile.getBaseTerrain().isCoast == isCoast
+                else if (terrain.type == TerrainType.Land)
+                    tile.getBaseTerrain().type == TerrainType.Land
+                        && tile.getBaseTerrain().hasUnique(UniqueType.OccursInChains) == occursInChains
+                else
+                    terrain.occursOn.contains(tile.lastTerrain.name)
+        }
+        
         /** Checks if both [temperature] and [humidity] satisfy their ranges (>From, <=To)
          *  Note the lowest allowed limit has been made inclusive (temp -1 nudged down by 1 [Float.ulp], humidity at 0)
          */
-
         // Yes this does implicit conversions Float/Double
-        fun matches(temperature: Double, humidity: Double) =
-            tempFrom < temperature && temperature <= tempTo &&
-            humidFrom < humidity && humidity <= humidTo
+        fun matchesHumidityAndTemp(tile: Tile) = matchesHumidity(tile, tile.temperature?:0.0)
+        
+        fun matchesHumidity(tile: Tile, overrideTileTemp: Double) =
+            tempFrom < overrideTileTemp && overrideTileTemp <= tempTo &&
+                humidFrom < (tile.humidity ?: 0.0) && (tile.humidity?:0.0) <= humidTo
+        
+        fun matchesTempAndTerrain(tile: Tile) = matchesBaseTerrain(tile) && matchesHumidityAndTemp(tile)
+        
+        fun matchesTempAndTerrain(tile: Tile, overrideTileTemp: Double) = matchesBaseTerrain(tile) && matchesHumidity(tile, overrideTileTemp)
+
+        fun maybeSnow() = terrain.type == TerrainType.Land 
+            && tempFrom <= -1 && tempTo <= -.5 
+            && humidFrom >= -.1 && humidTo >= 1 
+            && !rareFeature
+
+        override fun toString(): String {
+            return name
+        }
 
         companion object {
             /** A [toFloat] that also nudges the value slightly down if it matches [limit] to make the resulting range inclusive on the lower end */
@@ -87,8 +131,9 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
     private fun Terrain.getGenerationConditions() =
         getMatchingUniques(UniqueType.TileGenerationConditions)
             .map { unique -> TerrainOccursRange(this, unique) }
+            .ifEmpty { sequenceOf(TerrainOccursRange(this)) }
 
-    fun generateMap(mapParameters: MapParameters, gameParameters: GameParameters = GameParameters(), civilizations: List<Civilization> = emptyList()): TileMap {
+    fun generateMap(mapParameters: MapParameters, gameParameters: GameParameters = GameParameters(), gameInfo: GameInfo? = null): TileMap {
         val mapSize = mapParameters.mapSize
         val mapType = mapParameters.type
 
@@ -118,11 +163,11 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         runAndMeasure("MapLandmassGenerator") {
             MapLandmassGenerator(map, ruleset, randomness).generateLand()
         }
-        runAndMeasure("raiseMountainsAndHills") {
-            MapElevationGenerator(map, ruleset, randomness).raiseMountainsAndHills()
-        }
         runAndMeasure("applyHumidityAndTemperature") {
             applyHumidityAndTemperature(map)
+        }
+        runAndMeasure("raiseMountainsAndHills") {
+            MapElevationGenerator(map, ruleset, terrainConditions, randomness).raiseMountainsAndHills()
         }
         runAndMeasure("spawnLakesAndCoasts") {
             spawnLakesAndCoasts(map)
@@ -137,7 +182,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             spawnIce(map)
         }
         runAndMeasure("assignContinents") {
-            map.assignContinents(TileMap.AssignContinentsMode.Assign)
+            map.assignContinents(TileMap.AssignContinentsMode.Assign, randomness.RNG)
         }
         runAndMeasure("RiverGenerator") {
             RiverGenerator(map, randomness, ruleset).spawnRivers()
@@ -145,7 +190,9 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         convertTerrains(map.values)
 
         // Region based map generation - not used when generating maps in map editor
-        if (civilizations.isNotEmpty()) {
+        val civilizations = gameInfo?.civilizations
+        if (civilizations?.isNotEmpty() ?: false) {
+            map.gameInfo = gameInfo
             val regions = MapRegions(ruleset)
             runAndMeasure("generateRegions") {
                 regions.generateRegions(map, civilizations.count { ruleset.nations[it.civName]!!.isMajorCiv })
@@ -198,7 +245,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
 
                 else -> return null
             }
-            return map.getIfTileExistsOrNull(mirrorTileVector.x.toInt(), mirrorTileVector.y.toInt())
+            return map.getIfTileExistsOrNull(mirrorTileVector.x, mirrorTileVector.y)
         }
         
         fun copyTile(tile: Tile, mirroringType: String) {
@@ -207,8 +254,8 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             tile.setBaseTerrain(mirrorTile.getBaseTerrain())
             tile.naturalWonder = mirrorTile.naturalWonder
             tile.setTerrainFeatures(mirrorTile.terrainFeatures)
-            tile.resource = mirrorTile.resource
-            tile.improvement = mirrorTile.improvement
+            tile.tileResource = mirrorTile.tileResource
+            tile.setImprovementBasic(mirrorTile.tileImprovement)
             
             for (neighbor in tile.neighbors){
                 val neighborMirror = getMirrorTile(neighbor, mirroringType) ?: continue
@@ -234,13 +281,13 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
                 MapGeneratorSteps.None -> Unit
                 MapGeneratorSteps.All -> throw IllegalArgumentException("MapGeneratorSteps.All cannot be used in generateSingleStep")
                 MapGeneratorSteps.Landmass -> MapLandmassGenerator(map, ruleset, randomness).generateLand()
-                MapGeneratorSteps.Elevation -> MapElevationGenerator(map, ruleset, randomness).raiseMountainsAndHills()
                 MapGeneratorSteps.HumidityAndTemperature -> applyHumidityAndTemperature(map)
+                MapGeneratorSteps.Elevation -> MapElevationGenerator(map, ruleset, terrainConditions, randomness).raiseMountainsAndHills()
                 MapGeneratorSteps.LakesAndCoast -> spawnLakesAndCoasts(map)
                 MapGeneratorSteps.Vegetation -> spawnVegetation(map)
                 MapGeneratorSteps.RareFeatures -> spawnRareFeatures(map)
                 MapGeneratorSteps.Ice -> spawnIce(map)
-                MapGeneratorSteps.Continents -> map.assignContinents(TileMap.AssignContinentsMode.Reassign)
+                MapGeneratorSteps.Continents -> map.assignContinents(TileMap.AssignContinentsMode.Reassign, randomness.RNG)
                 MapGeneratorSteps.NaturalWonders -> NaturalWonderGenerator(ruleset, randomness).spawnNaturalWonders(map)
                 MapGeneratorSteps.Rivers -> {
                     val resultingTiles = mutableSetOf<Tile>()
@@ -283,16 +330,16 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         }
     }
 
-    private fun spreadCoast(map: TileMap) {
+    private fun spreadCoast(map: TileMap, coasts: List<TerrainOccursRange>) {
         for (i in 1..map.mapParameters.maxCoastExtension) {
             val toCoast = mutableListOf<Tile>()
-            for (tile in map.values.filter { it.baseTerrain == Constants.ocean }) {
+            for (tile in map.values.filter { it.isOcean }) {
                 val tilesInDistance = tile.getTilesInDistance(1)
                 for (neighborTile in tilesInDistance) {
                     if (neighborTile.isLand) {
                         toCoast.add(tile)
                         break
-                    } else if (neighborTile.baseTerrain == Constants.coast) {
+                    } else if (neighborTile.getBaseTerrain().isCoast) {
                         val randbool = randomness.RNG.nextBoolean()
                         if (randbool) {
                             toCoast.add(tile)
@@ -302,15 +349,16 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
                 }
             }
             for (tile in toCoast) {
-                tile.baseTerrain = Constants.coast
+                val coast = coasts.filter { it.matchesHumidityAndTemp(tile) }.ifEmpty { coasts }.random(randomness.RNG)
+                tile.baseTerrain = coast.name
                 tile.setTransients()
             }
         }
     }
 
     private fun spawnLakesAndCoasts(map: TileMap) {
-
-        if (ruleset.terrains.containsKey(Constants.lakes)) {
+        val lakeTerrains = terrainConditions.filter { it.isFreshwater && !it.rareFeature && it.terrain.type == TerrainType.Water }
+        if (lakeTerrains.isNotEmpty()) {
             //define lakes
             val waterTiles = map.values.filter { it.isWater }.toMutableList()
 
@@ -336,9 +384,12 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
                     }
                 }
 
+                val lakeTerrain = lakeTerrains.filter { it.matchesHumidityAndTemp(initialWaterTile) }
+                    .ifEmpty {lakeTerrains}
+                    .random(randomness.RNG)
                 if (tilesInArea.size <= maxLakeSize) {
                     for (tile in tilesInArea) {
-                        tile.baseTerrain = Constants.lakes
+                        tile.baseTerrain = lakeTerrain.name
                         tile.setTransients()
                     }
                 }
@@ -347,8 +398,9 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         }
 
         //Coasts
-        if (ruleset.terrains.containsKey(Constants.coast)) {
-            spreadCoast(map)
+        val coasts = terrainConditions.filter { it.isCoast && !it.rareFeature }
+        if (coasts.isNotEmpty()) {
+            spreadCoast(map, coasts)
         }
     }
 
@@ -367,22 +419,26 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
                 (suitableTiles.size * ruleset.modOptions.constants.ancientRuinCountMultiplier).roundToInt(),
                 suitableTiles,
                 map.mapParameters.mapSize.radius)
-        for (tile in locations)
-            tile.improvement = ruinsEquivalents.values.filter { isPlaceable(it, tile) }.random().name
+        for (tile in locations) {
+            val rng = GameContext(tile = tile).stateBasedRandom("MapGenerator.spreadAncientRuins")
+            val ruins = ruinsEquivalents.values.filter { isPlaceable(it, tile) }.random(rng)
+            tile.setImprovementBasic(ruins)
+        }
     }
 
     private fun spreadResources(tileMap: TileMap) {
         val mapRadius = tileMap.mapParameters.mapSize.radius
         for (tile in tileMap.values)
-            tile.resource = null
+            tile.tileResource = null
 
-        spreadStrategicResources(tileMap, mapRadius)
-        spreadResources(tileMap, mapRadius, ResourceType.Luxury)
-        spreadResources(tileMap, mapRadius, ResourceType.Bonus)
+        val snowTerrains = terrainConditions.filter { it.maybeSnow()}
+        spreadStrategicResources(tileMap, mapRadius, snowTerrains)
+        spreadResources(tileMap, mapRadius, ResourceType.Luxury, snowTerrains)
+        spreadResources(tileMap, mapRadius, ResourceType.Bonus, snowTerrains)
     }
 
     // Here, we need each specific resource to be spread over the map - it matters less if specific resources are near each other
-    private fun spreadStrategicResources(tileMap: TileMap, mapRadius: Int) {
+    private fun spreadStrategicResources(tileMap: TileMap, mapRadius: Int, snowTerrains: List<TerrainOccursRange>) {
         val strategicResources = ruleset.tileResources.values.filter { it.resourceType == ResourceType.Strategic }
         // passable land tiles (no mountains, no wonders) without resources yet
         // can't be next to NW
@@ -393,7 +449,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         for (resource in strategicResources) {
             // remove the tiles where previous resources have been placed
             val suitableTiles = candidateTiles
-                    .filterNot { it.baseTerrain == Constants.snow && it.isHill() }
+                    .filterNot { snowTerrains.any {terrain -> it.baseTerrain == terrain.name } && it.isHill() }
                     .filter { it.resource == null && resource.generatesNaturallyOn(it) }
 
             val locations = randomness.chooseSpreadOutLocations(resourcesPerType, suitableTiles, mapRadius)
@@ -407,11 +463,11 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
      * which is determined from [mapRadius] and then tuned down until the desired number fits.
      * [MapParameters.resourceRichness] used to control how many resources to spawn.
      */
-    private fun spreadResources(tileMap: TileMap, mapRadius: Int, resourceType: ResourceType) {
+    private fun spreadResources(tileMap: TileMap, mapRadius: Int, resourceType: ResourceType, snowTerrains: List<TerrainOccursRange>) {
         val resourcesOfType = ruleset.tileResources.values.filter { it.resourceType == resourceType }
 
         val suitableTiles = tileMap.values
-                .filterNot { it.baseTerrain == Constants.snow && it.isHill() }
+                .filterNot { snowTerrains.any {terrain -> it.baseTerrain == terrain.name } && it.isHill() }
                 .filter { it.resource == null
                     && it.neighbors.none { neighbor -> neighbor.isNaturalWonder() }
                     && resourcesOfType.any { r -> r.generatesNaturallyOn(it) }
@@ -449,23 +505,19 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         val humidityShift = if (temperatureShift > 0) -temperatureShift / 2 else 0f
 
         // List is OK here as it's only sequentially scanned
-        val limitsMap: List<TerrainOccursRange> =
-            ruleset.terrains.values.filter { it.type == TerrainType.Land }
-                .flatMap { it.getGenerationConditions() }
-        val noTerrainUniques = limitsMap.isEmpty()
-        val elevationTerrains = ruleset.terrains.values.asSequence()
-            .filter {
-                it.hasUnique(UniqueType.OccursInChains)
-            }.mapTo(mutableSetOf()) { it.name }
-        if (elevationTerrains.isEmpty())
-            elevationTerrains.add(Constants.mountain)
+        val landTerrains = baseTerrainPicker.filter { it.terrain.type == TerrainType.Land && !it.terrain.impassable && !it.isRough && !it.rareFeature }
+        val coastTerrains = baseTerrainPicker.filter { it.terrain.isCoast && !it.rareFeature }
+        val oceanTerrains = baseTerrainPicker.filter { it.terrain.isOcean && !it.rareFeature }
+        val noTerrainUniques = landTerrains.none { it.isConstrained}
+        val elevationTerrains = baseTerrainPicker.filter {  it.occursInChains }.mapTo(mutableSetOf()) { it.name }
 
         for (tile in tileMap.values.asSequence()) {
-            if (tile.isWater || tile.baseTerrain in elevationTerrains)
+            if (tile.baseTerrain in elevationTerrains)
                 continue
 
             val humidityRandom = randomness.getPerlinNoise(tile, humiditySeed, scale = scale, nOctaves = 1)
             val humidity = ((humidityRandom + 1.0) / 2.0 + humidityShift).coerceIn(0.0..1.0)
+            tile.humidity = humidity
 
             val expectedTemperature = if (tileMap.mapParameters.shape == MapShape.flatEarth) {
                 // Flat Earth uses radius because North is center of map
@@ -482,6 +534,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             var temperature = (5.0 * expectedTemperature + randomTemperature) / 6.0
             temperature = abs(temperature).pow(1.0 - temperatureintensity) * temperature.sign
             temperature = (temperature + temperatureShift).coerceIn(-1.0..1.0)
+            tile.temperature = temperature
 
             // Old, static map generation rules - necessary for existing base ruleset mods to continue to function
             if (noTerrainUniques) {
@@ -491,24 +544,28 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
                     temperature <= 1.0 -> if (humidity < 0.7) Constants.desert else Constants.plains
                     else -> {
                         debug("applyHumidityAndTemperature: Invalid temperature %s", temperature)
-                        firstLandTerrain.name
+                        continue
                     }
                 }
-                if (ruleset.terrains.containsKey(autoTerrain)) tile.baseTerrain = autoTerrain
-                tile.setTerrainTransients()
+                if (ruleset.terrains.containsKey(autoTerrain)) {
+                    tile.baseTerrain = autoTerrain
+                    tile.setTerrainTransients()
+                }
                 continue
             }
 
-            val matchingTerrain = limitsMap.firstOrNull { it.matches(temperature, humidity) }
+            val terrains = 
+                if (tile.isLand) landTerrains 
+                else if (tile.getBaseTerrain().isCoast) coastTerrains
+                else oceanTerrains
+            val matchingTerrain = terrains.filter{ it.matchesTempAndTerrain(tile) }.ifEmpty { terrains }.randomOrNull(randomness.RNG)
 
-            if (matchingTerrain != null) tile.baseTerrain = matchingTerrain.terrain.name
-            else {
-                tile.baseTerrain = firstLandTerrain.name
+            if (matchingTerrain != null) {
+                tile.baseTerrain = matchingTerrain.name
+                tile.setTerrainTransients()
+            } else {
                 debug("applyHumidityAndTemperature: No terrain found for temperature: %s, humidity: %s", temperature, humidity)
             }
-            tile.humidity = humidity
-            tile.temperature = temperature
-            tile.setTerrainTransients()
         }
     }
 
@@ -577,9 +634,9 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
      */
     private fun spawnVegetation(tileMap: TileMap) {
         val vegetationSeed = randomness.RNG.nextInt().toDouble()
-        val vegetationTerrains = (Constants.vegetation.mapNotNull { ruleset.terrains[it] }
-                + ruleset.terrains.values.filter { it.hasUnique(UniqueType.Vegetation) }).toHashSet()
-        val candidateTerrains = vegetationTerrains.flatMap{ it.occursOn }
+        val vegetationTerrains = terrainFeaturePicker.filter { it.hasVegitation && !it.rareFeature }
+            .ifEmpty {terrainFeaturePicker.filter { Constants.vegetation.contains(it.name)}}
+        val candidateTerrains = vegetationTerrains.flatMap{ it.terrain.occursOn }
         // Checking it.baseTerrain in candidateTerrains to make sure forest does not spawn on desert hill
         for (tile in tileMap.values.asSequence().filter { it.baseTerrain in candidateTerrains
                 && it.lastTerrain.name in candidateTerrains }) {
@@ -587,16 +644,12 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             val vegetation = (randomness.getPerlinNoise(tile, vegetationSeed, scale = 3.0, nOctaves = 1) + 1.0) / 2.0
 
             if (vegetation <= tileMap.mapParameters.vegetationRichness) {
-                val possibleVegetation = vegetationTerrains.filter { vegetationTerrain ->
-                    vegetationTerrain.occursOn.contains(tile.lastTerrain.name)
-                            && vegetationTerrain.getMatchingUniques(UniqueType.TileGenerationConditions).none {
-                            tile.temperature!! < it.params[0].toDouble() || tile.temperature!! > it.params[1].toDouble()
-                                    || tile.humidity!! < it.params[2].toDouble() || tile.humidity!! > it.params[3].toDouble()
-                        }
-                            && NaturalWonderGenerator.fitsTerrainUniques(vegetationTerrain, tile)
+                val possibleVegetation = vegetationTerrains.filter { it.matchesTempAndTerrain(tile)
+                    && NaturalWonderGenerator.fitsTerrainUniques(it.terrain, tile)
                 }
                 if (possibleVegetation.isEmpty()) continue
                 val randomVegetation = possibleVegetation.random(randomness.RNG)
+                tile.hasVegetation = true
                 tile.addTerrainFeature(randomVegetation.name)
             }
         }
@@ -606,15 +659,13 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
      * [MapParameters.rareFeaturesRichness] is the probability of spawning a rare feature
      */
     private fun spawnRareFeatures(tileMap: TileMap) {
-        val rareFeatures = ruleset.terrains.values.filter {
-            it.type == TerrainType.TerrainFeature && it.hasUnique(UniqueType.RareFeature)
-        }
+        val rareFeatures = terrainFeaturePicker.filter { it.rareFeature }
         for (tile in tileMap.values.asSequence().filter { it.terrainFeatures.isEmpty() }) {
             if (randomness.RNG.nextDouble() <= tileMap.mapParameters.rareFeaturesRichness) {
-                val possibleFeatures = rareFeatures.filter {
-                    it.occursOn.contains(tile.baseTerrain)
-                            && (!tile.isHill() || it.occursOn.contains(Constants.hill))
-                            && NaturalWonderGenerator.fitsTerrainUniques(it, tile)
+                val hillFeature = tile.getHillTerrain()
+                val possibleFeatures = rareFeatures.filter { it.matchesTempAndTerrain(tile)
+                    && (hillFeature == null || it.terrain.occursOn.contains(hillFeature.name))
+                    && NaturalWonderGenerator.fitsTerrainUniques(it.terrain, tile)
                 }
                 if (possibleFeatures.any())
                     tile.addTerrainFeature(possibleFeatures.random(randomness.RNG).name)
@@ -626,107 +677,46 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
      * [MapParameters.temperatureintensity] as in [applyHumidityAndTemperature]
      */
     private fun spawnIce(tileMap: TileMap) {
-        val waterTerrain: Set<String> =
-            ruleset.terrains.values.asSequence()
-            .filter { it.type == TerrainType.Water }
-            .map { it.name }.toSet()
-        val iceEquivalents: List<TerrainOccursRange> =
-            ruleset.terrains.values.asSequence()
-            .filter { terrain ->
-                terrain.type == TerrainType.TerrainFeature &&
-                terrain.impassable &&
-                terrain.occursOn.all { it in waterTerrain }
-            }.flatMap { terrain ->
-                val conditions = terrain.getGenerationConditions()
-                if (conditions.any()) conditions
-                else sequenceOf(TerrainOccursRange(terrain,
-                    -1f, ruleset.modOptions.constants.spawnIceBelowTemperature,
-                    0f, 1f))
-            }.toList()
+        val oceanTerrains: List<TerrainOccursRange> = baseTerrainPicker.filter { it.terrain.isOcean && it.tempFrom<= -1 }
+            .ifEmpty { terrainFeaturePicker.filter { it.terrain.isOcean} }
+        val iceTerrains: List<TerrainOccursRange> = terrainFeaturePicker.filter { it.terrain.isIce }
 
         if (tileMap.mapParameters.shape == MapShape.flatEarth) {
-            spawnFlatEarthIceWalls(tileMap, iceEquivalents)
+            spawnFlatEarthIceWalls(tileMap, iceTerrains, oceanTerrains)
         }
 
-        if (iceEquivalents.isEmpty()) return
+        if (iceTerrains.isEmpty()) return
 
         tileMap.setTransients(ruleset)
         val temperatureSeed = randomness.RNG.nextInt().toDouble()
         for (tile in tileMap.values) {
-            if (tile.baseTerrain !in waterTerrain || tile.terrainFeatures.isNotEmpty())
+            if (oceanTerrains.none { it.name == tile.baseTerrain} || tile.terrainFeatures.isNotEmpty())
                 continue
 
             val randomTemperature = randomness.getPerlinNoise(tile, temperatureSeed, scale = tileMap.mapParameters.tilesPerBiomeArea.toDouble(), nOctaves = 1)
             val latitudeTemperature = 1.0 - 2.0 * abs(tile.latitude) / tileMap.maxLatitude
-            var temperature = ((latitudeTemperature + randomTemperature) / 2.0)
-            temperature = abs(temperature).pow(1.0 - tileMap.mapParameters.temperatureintensity) * temperature.sign
-            temperature = (temperature + tileMap.mapParameters.temperatureShift).coerceIn(-1.0..1.0)
+            var iceTemperature = ((latitudeTemperature + randomTemperature) / 2.0)
+            iceTemperature = abs(iceTemperature).pow(1.0 - tileMap.mapParameters.temperatureintensity) * iceTemperature.sign
+            iceTemperature = (iceTemperature + tileMap.mapParameters.temperatureShift).coerceIn(-1.0..1.0)
+            // This is quite different from the normal tile temperature. TODO: Unify
 
-            val candidates = iceEquivalents
-                .filter {
-                    it.matches(temperature, 1.0)
-                            && tile.lastTerrain.name in it.terrain.occursOn
-                            && NaturalWonderGenerator.fitsTerrainUniques(it.terrain, tile)
+            val iceTerrain = iceTerrains
+                .filter { it.matchesTempAndTerrain(tile, iceTemperature) 
+                    && NaturalWonderGenerator.fitsTerrainUniques(it.terrain, tile)
                 }.map { it.terrain.name }
-            when (candidates.size) {
-                1 -> tile.addTerrainFeature(candidates.first())
-                !in 0..1 -> tile.addTerrainFeature(candidates.random(randomness.RNG))
-            }
+                .randomOrNull(randomness.RNG)
+            if (iceTerrain != null)
+                tile.addTerrainFeature(iceTerrain)
         }
     }
 
-    private fun spawnFlatEarthIceWalls(tileMap: TileMap, iceEquivalents: List<TerrainOccursRange>) {
-        val iceCandidates = iceEquivalents.filter {
-            it.matches(-1.0, 1.0)
-        }.map {
-            it.terrain.name
-        }
-        val iceTerrainName =
-                when (iceCandidates.size) {
-                    1 -> iceCandidates.first()
-                    !in 0..1 -> iceCandidates.random(randomness.RNG)
-                    else -> null
-                }
-
-        val snowCandidates = ruleset.terrains.values.asSequence().filter {
-            it.type == TerrainType.Land
-        }.flatMap { terrain ->
-            val conditions = terrain.getGenerationConditions()
-            if (conditions.any()) conditions
-            else sequenceOf(
-                TerrainOccursRange(
-                    terrain,
-                    -1f, ruleset.modOptions.constants.spawnIceBelowTemperature,
-                    0f, 1f
-                )
-            )
-        }.toList().filter {
-            it.matches(-1.0, 1.0)
-        }.map {
-            it.terrain.name
-        }
-        val snowTerrainName =
-                when (snowCandidates.size) {
-                    1 -> snowCandidates.first()
-                    !in 0..1 -> snowCandidates.random(randomness.RNG)
-                    else -> null
-                }
-
-        val mountainTerrainName =
-                ruleset.terrains.values.firstOrNull { it.hasUnique(UniqueType.OccursInChains) }?.name
-
-        val bestArcticTileName = when {
-            iceTerrainName != null -> iceTerrainName
-            snowTerrainName != null -> snowTerrainName
-            mountainTerrainName != null -> mountainTerrainName
-            else -> null
-        }
-
-        val arcticTileNameList =
-                arrayOf(iceTerrainName, snowTerrainName, mountainTerrainName).filterNotNull()
+    private fun spawnFlatEarthIceWalls(tileMap: TileMap, iceTerrains: List<TerrainOccursRange>, oceanTerrains: List<TerrainOccursRange>) {
+        val snowTerrains = baseTerrainPicker.filter { it.maybeSnow() }
+        val mountainTerrains = baseTerrainPicker.filter { it.terrain.impassable && it.occursInChains && !it.rareFeature }
+        val allArcticTerrains = iceTerrains + snowTerrains + mountainTerrains
 
         // Skip the tile loop if nothing can be done in it
-        if (bestArcticTileName == null && arcticTileNameList.isEmpty()) return
+        if (allArcticTerrains.isEmpty()) return
 
         // Flat Earth needs a 1 tile wide perimeter of ice/mountain/snow and a 2 radius cluster of ice in the center.
         for (tile in tileMap.values) {
@@ -734,106 +724,97 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             val isEdgeTile = tile.neighbors.count() < 6
 
             // Make center tiles ice or snow or mountain depending on availability
-            if (isCenterTile && bestArcticTileName != null) {
-                spawnFlatEarthCenterIceWall(tile, bestArcticTileName, iceTerrainName, mountainTerrainName)
+            if (isCenterTile) {
+                spawnFlatEarthCenterIceWall(tile, iceTerrains, mountainTerrains, oceanTerrains)
             }
 
             // Make edge tiles randomly ice or snow or mountain if available
-            if (isEdgeTile && arcticTileNameList.isNotEmpty()) {
-                spawnFlatEarthEdgeIceWall(tile, arcticTileNameList, iceTerrainName, mountainTerrainName)
+            if (isEdgeTile) {
+                spawnFlatEarthEdgeIceWall(tile, allArcticTerrains, iceTerrains)
             }
         }
     }
-
-    private fun spawnFlatEarthCenterIceWall(tile: Tile, bestArcticTileName: String, iceTerrainName: String?, mountainTerrainName: String?) {
-        // Spawn ice on center tile
-        if (bestArcticTileName == iceTerrainName) {
-            tile.baseTerrain = waterTerrainName
+    
+    private fun spawnBestIce(
+        tile: Tile,
+        iceTerrains: List<TerrainOccursRange>,
+        mountainTerrains: List<TerrainOccursRange>,
+        oceanTerrains: List<TerrainOccursRange>) {
+        val ice = iceTerrains.filter { it.matchesTempAndTerrain(tile, -1.0) }.randomOrNull(randomness.RNG)
+            ?: iceTerrains.randomOrNull(randomness.RNG)
+        if (ice != null) {
+            if (!ice.matchesTempAndTerrain(tile, -1.0)) {
+                val fallbackBase = oceanTerrains.filter { ice.terrain.occursOn.contains (it.name) }
+                    .ifEmpty { oceanTerrains.filter {it.isOcean} }
+                    .randomOrNull(randomness.RNG)
+                if (fallbackBase != null)
+                    tile.baseTerrain = fallbackBase.name          
+            }
             tile.removeTerrainFeatures()
-            tile.addTerrainFeature(iceTerrainName)
-        } else if (iceTerrainName != null && bestArcticTileName != mountainTerrainName) {
-            tile.baseTerrain = bestArcticTileName // snow (or a mod's equivalent)
-            tile.removeTerrainFeatures()
-            tile.addTerrainFeature(iceTerrainName)
+            tile.addTerrainFeature(ice.terrain.name)
+            tile.setTerrainTransients()
         } else {
-            tile.baseTerrain = bestArcticTileName // mountain (or a mod's equivalent)
+            val mountain =
+                mountainTerrains.filter { it.matchesHumidity(tile, -1.0) }.randomOrNull(randomness.RNG)
+                    ?: mountainTerrains.random(randomness.RNG)
+            tile.baseTerrain = mountain.terrain.name
             tile.removeTerrainFeatures()
         }
+        tile.setTerrainTransients()
+    }
+
+    private fun spawnFlatEarthCenterIceWall(
+        tile: Tile, 
+        iceTerrains: List<TerrainOccursRange>, 
+        mountainTerrains: List<TerrainOccursRange>,
+        oceanTerrains: List<TerrainOccursRange>) {
+        // Spawn ice on center tile
+        spawnBestIce(tile, iceTerrains, mountainTerrains, oceanTerrains)
 
         // Spawn circle of ice around center tile
         for (neighbor in tile.neighbors) {
-            if (bestArcticTileName == iceTerrainName) {
-                neighbor.baseTerrain = waterTerrainName
-                neighbor.removeTerrainFeatures()
-                neighbor.addTerrainFeature(iceTerrainName)
-            } else if (iceTerrainName != null && bestArcticTileName != mountainTerrainName) {
-                neighbor.baseTerrain = bestArcticTileName // snow (or a mod's equivalent)
-                neighbor.removeTerrainFeatures()
-                neighbor.addTerrainFeature(iceTerrainName)
-            } else {
-                neighbor.baseTerrain = bestArcticTileName // mountain (or a mod's equivalent)
-                neighbor.removeTerrainFeatures()
-            }
+            spawnBestIce(neighbor, iceTerrains, mountainTerrains, oceanTerrains)
 
             // Spawn partial circle of ice around circle of ice
             for (neighbor2 in neighbor.neighbors) {
-                if (randomness.RNG.nextDouble() < 0.75) {
-                    // Do nothing most of the time at random.
-                } else if (bestArcticTileName == iceTerrainName) {
-                    neighbor2.baseTerrain = waterTerrainName
-                    neighbor2.removeTerrainFeatures()
-                    neighbor2.addTerrainFeature(iceTerrainName)
-                } else if (iceTerrainName != null && bestArcticTileName != mountainTerrainName) {
-                    neighbor2.baseTerrain = bestArcticTileName // snow (or a mod's equivalent)
-                    neighbor2.removeTerrainFeatures()
-                    neighbor2.addTerrainFeature(iceTerrainName)
-                } else {
-                    neighbor2.baseTerrain = bestArcticTileName // mountain (or a mod's equivalent)
-                    neighbor2.removeTerrainFeatures()
-                }
+                // Do nothing most of the time at random.
+                if (randomness.RNG.nextDouble() > 0.75)
+                    spawnBestIce(neighbor2, iceTerrains, mountainTerrains, oceanTerrains)
             }
         }
     }
 
-    private fun spawnFlatEarthEdgeIceWall(tile: Tile, arcticTileNameList: List<String>, iceTerrainName: String?, mountainTerrainName: String?) {
-        // Select one of the arctic tiles at random
-        val arcticTileName = when (arcticTileNameList.size) {
-            1 -> arcticTileNameList.first()
-            else -> arcticTileNameList.random(randomness.RNG)
-        }
-
-        // Spawn arctic tiles on edge tile
-        if (arcticTileName == iceTerrainName) {
-            tile.baseTerrain = waterTerrainName
-            tile.removeTerrainFeatures()
-            tile.addTerrainFeature(iceTerrainName)
-        } else if (iceTerrainName != null && arcticTileName != mountainTerrainName) {
-            tile.baseTerrain = arcticTileName // snow (or a mod's equivalent)
-            tile.removeTerrainFeatures()
-            tile.addTerrainFeature(iceTerrainName)
+    private fun spawnRandomIce(tile: Tile, arcticTerrain: TerrainOccursRange, iceTerrains: List<TerrainOccursRange>) {
+        tile.removeTerrainFeatures()
+        if (arcticTerrain.terrain.type == TerrainType.Land && arcticTerrain.terrain.impassable) {
+            tile.baseTerrain = arcticTerrain.terrain.name
+        }  else if (arcticTerrain.terrain.type == TerrainType.Land) {
+            // legacy code forced ice on snow even though that's impossible
+            tile.baseTerrain = arcticTerrain.terrain.name
+            tile.addTerrainFeature(iceTerrains.random(randomness.RNG).terrain.name)
+        } else if (arcticTerrain.terrain.type == TerrainType.TerrainFeature && arcticTerrain.matchesTempAndTerrain(tile)) {
+            tile.addTerrainFeature(arcticTerrain.terrain.name)                
         } else {
-            tile.baseTerrain = arcticTileName // mountain (or a mod's equivalent)
-            tile.removeTerrainFeatures()
+            // legacy code forced ice on ocean without checking if possible
+            tile.baseTerrain = Constants.ocean
+            tile.addTerrainFeature(arcticTerrain.terrain.name)
         }
+        tile.setTerrainTransients()
+    }
+
+    private fun spawnFlatEarthEdgeIceWall(tile: Tile, arcticTerrains: List<TerrainOccursRange>, iceTerrains: List<TerrainOccursRange>) {
+        val arcticTerrain = arcticTerrains.filter { it.matchesTempAndTerrain(tile, -1.0) }.randomOrNull(randomness.RNG)
+            ?: arcticTerrains.filter { it.matchesHumidity(tile, -1.0) }.randomOrNull(randomness.RNG)
+            ?: arcticTerrains.random(randomness.RNG)
+        spawnRandomIce(tile, arcticTerrain, iceTerrains)
 
         // Spawn partial circle of arctic tiles next to the edge
         for (neighbor in tile.neighbors) {
             val neighborIsEdgeTile = neighbor.neighbors.count() < 6
-            if (neighborIsEdgeTile) {
-                // Do not redo edge tile. It is already done.
-            } else if (randomness.RNG.nextDouble() < 0.75) {
-                // Do nothing most of the time at random.
-            } else if (arcticTileName == iceTerrainName) {
-                neighbor.baseTerrain = waterTerrainName
-                neighbor.removeTerrainFeatures()
-                neighbor.addTerrainFeature(iceTerrainName)
-            } else if (iceTerrainName != null && arcticTileName != mountainTerrainName) {
-                neighbor.baseTerrain = arcticTileName // snow (or a mod's equivalent)
-                neighbor.removeTerrainFeatures()
-                neighbor.addTerrainFeature(iceTerrainName)
-            } else {
-                neighbor.baseTerrain = arcticTileName // mountain (or a mod's equivalent)
-                neighbor.removeTerrainFeatures()
+            // Do not redo edge tile. It is already done.
+            // Do nothing most of the time at random.
+            if (!neighborIsEdgeTile && randomness.RNG.nextDouble() >= 0.75) {
+                spawnRandomIce(tile, arcticTerrain, iceTerrains)
             }
         }
     }

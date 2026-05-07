@@ -18,6 +18,7 @@ internal object Tokenizer {
      *  - [Operator]
      *  - [Node.Constant]
      *  - [Node.Countable]
+     *  - [Comma] - argument separator in function calls
      */
     internal sealed interface Token {
         @Pure fun canBeUnary() = this is Operator.Unary || this is Operator.UnaryOrBinary
@@ -37,6 +38,10 @@ internal object Tokenizer {
         }
     }
 
+    data object Comma : Token {
+        override fun toString() = ","
+    }
+
     // Define our own "Char is part of literal constant" and "Char is part of identifier" functions - decouple from Java CharacterData
     @Pure private fun Char.isNumberLiteral() = this == '.' || this in '0'..'9' // NOT using library isDigit() here - potentially non-latin
     @Pure private fun Char.isIdentifierStart() = isLetter() // Allow potentially non-latin script //TODO questionable
@@ -50,6 +55,9 @@ internal object Tokenizer {
         assert(text.isNotBlank())
         if (text.first().isNumberLiteral())
             return position to Node.NumericConstant(text.toDouble())
+        if (text == ",") return position to Comma
+        
+        // Check if this is a function (identifier followed by parentheses will be handled in parsing)
         val operator = Operator.of(text)
         if (operator != null) return position to operator
         

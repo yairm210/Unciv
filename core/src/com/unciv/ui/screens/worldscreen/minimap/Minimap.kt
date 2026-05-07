@@ -5,7 +5,10 @@ import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Touchable
+import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
@@ -73,6 +76,7 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
         addActor(scrollIndicatorLayer)
 
         mapHolder.onViewportChangedListener = ::updateScrollPosition
+        addClickListener()
     }
 
     @Readonly
@@ -185,14 +189,26 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
                 if (civInfo != null) civInfo.exploredRegion.getMinimapLeft(tileSize) else -Float.MAX_VALUE
         for (tileInfo in mapHolder.tileMap.values) {
             if (civInfo?.exploredRegion?.isPositionInRegion(tileInfo.position) == false) continue
-            val minimapTile = MinimapTile(tileInfo, tileSize, onClick = {
-                mapHolder.setCenterPosition(tileInfo.position)
-            })
+            val minimapTile = MinimapTile(tileInfo, tileSize)
             if (minimapTile.image.x < leftSide)
                 minimapTile.image.x += pad
             tiles.add(minimapTile)
         }
         return tiles
+    }
+
+    private fun addClickListener() {
+        // Single listener on the Minimap instead of one per MinimapTile - same approach as WorldMapHolder
+        val imageToTile = minimapTiles.associateBy { it.image }
+        val listener = object : ActorGestureListener(20f, 0.25f, 1.1f, Int.MAX_VALUE.toFloat()) {
+            override fun tap(event: InputEvent?, x: Float, y: Float, count: Int, button: Int) {
+                // tileLayer is at (0,0) with no transform so Minimap coordinates == tileLayer coordinates
+                val image = tileLayer.hit(x, y, true) as? Image ?: return
+                val tile = imageToTile[image]?.tile ?: return
+                mapHolder.setCenterPosition(tile.position)
+            }
+        }
+        addListener(listener)
     }
 
     /**### Transform and set coordinates for the scrollPositionIndicator.

@@ -138,7 +138,11 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedF
 
             // Try to build a plan for the road to the city
             // TODO: May return inconsistent paths across turns due to worker position, this makes it impossible to plan an exact road resulting in excessive roads built
-            val roadPath = if (civInfo.cities.indexOf(city) < civInfo.cities.indexOf(closeCity)) MapPathing.getRoadPath(civInfo, city.getCenterTile(), closeCity.getCenterTile()) ?: continue
+            val roadPath = 
+                if (UncivGame.Current.settings.useAStarPathfinding)
+                    city.getRoadPath(closeCity) ?: continue
+                else if (civInfo.cities.indexOf(city) < civInfo.cities.indexOf(closeCity)) 
+                    MapPathing.getRoadPath(civInfo, city.getCenterTile(), closeCity.getCenterTile()) ?: continue
                 else MapPathing.getRoadPath(civInfo, closeCity.getCenterTile(), city.getCenterTile()) ?: continue
             val worstRoadStatus = getWorstRoadTypeInPath(roadPath)
             if (worstRoadStatus == bestRoadAvailable) continue
@@ -242,6 +246,14 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedF
 
         val isCandidateTilePredicate: (Tile) -> Boolean = { it.isLand && MapPathing.isValidRoadPathTile(city.civ, it) }
         val toConnectTile = city.getCenterTile()
+        val cityTilesToSeek = HashSet(tilesOfConnectedCities)
+        if (UncivGame.Current.settings.useAStarPathfinding) {
+            val pathToCity =
+                city.getRoadPathToAny(cityTilesToSeek, WorkerAutomationConst.maxBfsReachPadding)
+                    ?: return null
+            val cityTile = pathToCity.last()
+            return Pair(cityTile.getCity()!!, pathToCity)
+        }
         @LocalState val bfs: BFS = bfsCache[toConnectTile.position.toVector2()] ?: run {
             val bfs = BFS(toConnectTile, isCandidateTilePredicate)
             bfs.maxSize = HexMath.getNumberOfTilesInHexagon(
@@ -251,7 +263,6 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedF
             bfsCache[toConnectTile.position.toVector2()] = bfs
             bfs
         }
-        val cityTilesToSeek = HashSet(tilesOfConnectedCities)
 
         var nextTile = bfs.nextStep()
         while (nextTile != null) {

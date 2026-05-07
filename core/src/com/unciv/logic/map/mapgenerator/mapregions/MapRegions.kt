@@ -24,6 +24,7 @@ import com.unciv.utils.Tag
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.random.Random
 
 class TileDataMap : HashMap<HexCoord, MapGenTileData>() {
 
@@ -279,7 +280,7 @@ class MapRegions (val ruleset: Ruleset) {
         // First assign coast bias civs
         for (civ in coastBiasCivs) {
             // Try to find a coastal start, preferably a really coastal one
-            var startRegion = unpickedRegions.filter { tileMap[it.startPosition!!].isCoastalTile() }
+            var startRegion = unpickedRegions.filter { tileMap[it.startPosition!!].isAdjacentToCoast() }
                     .maxByOrNull { it.terrainCounts["Coastal"] ?: 0 }
             if (startRegion != null) {
                 logAssignRegion(true, BiasTypes.Coastal, civ, startRegion)
@@ -371,8 +372,9 @@ class MapRegions (val ruleset: Ruleset) {
 
         // Finally assign the remaining civs randomly
         for (civ in randomCivs) {
+            val rng = civ.state.stateBasedRandom("MapRegions.assignRegions")
             // throws if regions.size < civilizations.size or if the assigning mismatched - leads to popup on newgame screen
-            val startRegion = unpickedRegions.random()
+            val startRegion = unpickedRegions.random(rng)
             logAssignRegion(true, BiasTypes.Random, civ, startRegion)
             assignCivToRegion(civ, startRegion)
             unpickedRegions.remove(startRegion)
@@ -480,7 +482,7 @@ fun Tile.getTileFertility(checkCoasts: Boolean): Int {
     }
     if (isAdjacentToRiver()) fertility += 1
     if (isAdjacentTo(Constants.freshWater)) fertility += 1 // meaning total +2 for river
-    if (checkCoasts && isCoastalTile()) fertility += 2
+    if (checkCoasts && isAdjacentToCoast()) fertility += 2
     return fertility
 }
 

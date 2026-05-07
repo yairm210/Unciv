@@ -32,7 +32,7 @@ class TileUniquesTests {
         civInfo.addGold(-civInfo.gold) // reset gold just to be sure
 
         val testImprovement = game.createTileImprovement("Pillaging this improvement yields [+20 Gold, +11 Food]")
-        tile.setImprovement(testImprovement.name)
+        tile.setImprovement(testImprovement)
         val unit = game.addUnit("Warrior", civInfo, tile)
         unit.currentMovement = 2f
 

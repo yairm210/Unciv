@@ -1,6 +1,7 @@
 package com.unciv.logic.map.mapunit.movement
 
 import com.unciv.Constants
+import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.MapUnitCache
@@ -19,7 +20,7 @@ object MovementCost {
         to: Tile,
         considerZoneOfControl: Boolean = true,
         includeEscortUnit: Boolean = true,
-    ): Float {
+    ): Float = timeThis("MovementCost.getMovementCostBetweenAdjacentTilesEscort")  {
         val movementCost = if (includeEscortUnit && unit.isEscorting()) {
             maxOf(getMovementCostBetweenAdjacentTiles(unit, from, to, considerZoneOfControl),
                 getMovementCostBetweenAdjacentTiles(unit.getOtherEscortUnit()!!, from, to, considerZoneOfControl))
@@ -108,8 +109,8 @@ object MovementCost {
 
         if (hasDoubleMovement(unit, to.baseTerrain, MapUnitCache.DoubleMovementTerrainTarget.Base, gameContext))
             return terrainCost * 0.5f + extraCost
-        if (hasDoubleMovement(unit, Constants.hill, MapUnitCache.DoubleMovementTerrainTarget.Hill, gameContext)
-            && to.isHill())
+        val hillTerrain = to.getHillTerrain()
+        if (hillTerrain != null && hasDoubleMovement(unit, hillTerrain.name, MapUnitCache.DoubleMovementTerrainTarget.Hill, gameContext))
             return terrainCost * 0.5f + extraCost
 
         if (unit.cache.noFilteredDoubleMovementUniques)

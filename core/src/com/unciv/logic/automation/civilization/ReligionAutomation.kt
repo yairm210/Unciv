@@ -109,10 +109,11 @@ object ReligionAutomation {
         val hasUniqueToTakeCivReligion = missionaryConstruction.hasUnique(UniqueType.TakeReligionOverBirthCity)
 
         val validCitiesToBuy = civInfo.cities.filter {
-            (hasUniqueToTakeCivReligion || it.religion.getMajorityReligion() == civInfo.religionManager.religion)
-            && (missionaryConstruction.getStatBuyCost(it, Stat.Faith) ?: return@filter false) <= civInfo.religionManager.storedFaith
-            && missionaryConstruction.isPurchasable(it.cityConstructions)
-            && missionaryConstruction.canBePurchasedWithStat(it, Stat.Faith)
+            it.getCenterTile().civilianUnit == null // can't purchase them here
+                && (hasUniqueToTakeCivReligion || it.religion.getMajorityReligion() == civInfo.religionManager.religion)
+                && (missionaryConstruction.getStatBuyCost(it, Stat.Faith) ?: return@filter false) <= civInfo.religionManager.storedFaith
+                && missionaryConstruction.isPurchasable(it.cityConstructions)
+                && missionaryConstruction.canBePurchasedWithStat(it, Stat.Faith)
         }
         if (validCitiesToBuy.isEmpty()) return
 
@@ -212,18 +213,22 @@ object ReligionAutomation {
 
         for (city in civInfo.cities) {
             for (tile in city.getCenterTile().getTilesInDistance(city.getWorkRange())) {
+                val tileRng = tile.stateThisTile.stateBasedRandom("ReligionAutomation.rateBelief")
                 val tileScore = beliefBonusForTile(belief, tile, city)
+                
                 score += tileScore * when {
                     city.workedTiles.contains(tile.position) -> 1f // worked
                     tile.getCity() == city -> 0.7f // workable
                     else -> 0.5f // unavailable - for now
-                } * (Random.nextFloat() * 0.05f + 0.975f)
+                } * (tileRng.nextFloat() * 0.05f + 0.975f)
             }
 
-            score += beliefBonusForCity(civInfo, belief, city) * (Random.nextFloat() * 0.1f + 0.95f)
+            val cityRng = city.state.stateBasedRandom("ReligionAutomation.rateBelief")
+            score += beliefBonusForCity(civInfo, belief, city) * (cityRng.nextFloat() * 0.1f + 0.95f)
         }
 
-        score += beliefBonusForPlayer(civInfo, belief) * (Random.nextFloat() * 0.3f + 0.85f)
+        val civRng = civInfo.state.stateBasedRandom("ReligionAutomation.rateBelief")
+        score += beliefBonusForPlayer(civInfo, belief) * (civRng.nextFloat() * 0.3f + 0.85f)
 
         // All of these Random.nextFloat() don't exist in the original, but I've added them to make things a bit more random.
 
@@ -240,15 +245,25 @@ object ReligionAutomation {
         var bonusYield = 0f
         for (unique in belief.uniqueObjects) {
             when (unique.type) {
-                UniqueType.StatsFromObject -> if ((tile.matchesFilter(unique.params[1])
-                    && !(tile.lastTerrain.hasUnique(UniqueType.ProductionBonusWhenRemoved) && tile.lastTerrain.matchesFilter(unique.params[1])) //forest pantheons are bad, as we want to remove the forests
-                    || (tile.resource != null && (tile.tileResource.matchesFilter(unique.params[1]) || tile.tileResource.isImprovedBy(unique.params[1]))))) //resource pantheons are good, as we want to work the tile anyways
-                    bonusYield += unique.stats.values.sum()
-                UniqueType.StatsFromTilesWithout ->
-                    if (city.matchesFilter(unique.params[3])
-                        && tile.matchesFilter(unique.params[1])
-                        && !tile.matchesFilter(unique.params[2])
+                UniqueType.StatsFromObject -> {
+                    val resource = tile.tileResource
+                    if (tile.matchesFilter(unique.params[1])) {
+                        if (!tile.lastTerrain.hasUnique(UniqueType.ProductionBonusWhenRemoved) ||
+                            !tile.lastTerrain.matchesFilter(unique.params[1]) //forest pantheons are bad, as we want to remove the forests
+                        ) bonusYield += unique.stats.values.sum()
+                        else if (resource != null && (resource.matchesFilter(unique.params[1]) ||
+                                resource.isImprovedBy(unique.params[1]))
+                        ) bonusYield += unique.stats.values.sum() //resource pantheons are good, as we want to work the tile anyways
+                    } else if (resource != null && (resource.matchesFilter(unique.params[1]) ||
+                            resource.isImprovedBy(unique.params[1]))
+                    ) bonusYield += unique.stats.values.sum() //resource pantheons are good, as we want to work the tile anyways
+                }
+                UniqueType.StatsFromTilesWithout -> {
+                    if (city.matchesFilter(unique.params[3]) &&
+                        tile.matchesFilter(unique.params[1]) &&
+                        !tile.matchesFilter(unique.params[2])
                     ) bonusYield += unique.stats.values.sum()
+                }
                 else -> {}
             }
         }
@@ -424,14 +439,15 @@ object ReligionAutomation {
 
     private fun foundReligion(civInfo: Civilization) {
         if (civInfo.religionManager.religionState != ReligionState.FoundingReligion) return
+        val rng = civInfo.state.stateBasedRandom("ReligionAutomation.foundReligion")
         val usedReligions = civInfo.gameInfo.religions.values.mapTo(mutableSetOf()) { it.name }
         val availableReligions = civInfo.gameInfo.ruleset.religions.filterNot { it in usedReligions }
         val favoredReligion = civInfo.nation.favoredReligion?.takeIf { it in availableReligions }
         val allFavoredReligions = civInfo.gameInfo.civilizations.mapNotNullTo(mutableSetOf()) { it.nation.favoredReligion}
         val nonFavoredReligions = availableReligions.filterNot { it in allFavoredReligions }
         val chosenReligion = favoredReligion
-            ?: nonFavoredReligions.randomOrNull() // allow other civs to found their own favoured religion when possible
-            ?: availableReligions.randomOrNull()
+            ?: nonFavoredReligions.randomOrNull(rng) // allow other civs to found their own favoured religion when possible
+            ?: availableReligions.randomOrNull(rng)
             ?: return // Wait what? How did we pass the checking when using a great prophet but not this?
 
         civInfo.religionManager.foundReligion(chosenReligion, chosenReligion)
@@ -480,7 +496,8 @@ object ReligionAutomation {
                     && !additionalBeliefsToExclude.contains(it)
                     && civInfo.religionManager.getReligionWithBelief(it) == null
                     && it.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)
-                    .none { unique -> !unique.conditionalsApply(civInfo.state) }
+                        .none { unique -> !unique.conditionalsApply(civInfo.state) }
+                    && it.getMatchingUniques(UniqueType.Unavailable, civInfo.state).none()
             }
             .maxByOrNull { rateBelief(civInfo, it) }
     }

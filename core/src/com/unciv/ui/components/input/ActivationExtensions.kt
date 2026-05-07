@@ -33,9 +33,10 @@ fun Actor.onActivation(
     type: ActivationTypes,
     sound: UncivSound = UncivSound.Click,
     noEquivalence: Boolean = false,
+    allowEventPropagation: Boolean = true,
     action: ActivationAction
 ): Actor {
-    ActorAttachments.get(this).addActivationAction(type, sound, noEquivalence, action)
+    ActorAttachments.get(this).addActivationAction(type, sound, noEquivalence, action, allowEventPropagation)
     return this
 }
 
@@ -70,7 +71,10 @@ fun Actor.onActivation(action: ActivationAction): Actor =
  *  @return `this` to allow chaining
  */
 fun Actor.onClick(sound: UncivSound = UncivSound.Click, action: ActivationAction): Actor =
-    onActivation(ActivationTypes.Tap, sound, noEquivalence = true, action)
+    onActivation(ActivationTypes.Tap, sound, noEquivalence = true, allowEventPropagation = true, action)
+
+fun Actor.onClickSuppressive(sound: UncivSound = UncivSound.Click, action: ActivationAction): Actor =
+    onActivation(ActivationTypes.Tap, sound, noEquivalence = true,  allowEventPropagation = false,action)
 
 /** Routes clicks to your handler [action], ignoring [keyboard shortcuts][keyShortcuts].
  *  A [Click sound][UncivSound.Click] will be played (concurrently).
@@ -99,7 +103,7 @@ fun Actor.onRightClick(sound: UncivSound = UncivSound.Click, action: ActivationA
  *  @return `this` to allow chaining
  */
 fun Actor.onLongPress(sound: UncivSound = UncivSound.Click, action: ActivationAction): Actor =
-    onActivation(ActivationTypes.Longpress, sound, noEquivalence = true, action)
+    onActivation(ActivationTypes.Longpress, sound, noEquivalence = true, allowEventPropagation = true, action)
 
 /** Clears activation actions for a specific [type], and, if [noEquivalence] is `true`,
  *  its [equivalent][ActivationTypes.isEquivalent] types.

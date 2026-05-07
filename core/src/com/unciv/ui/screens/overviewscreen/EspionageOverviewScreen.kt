@@ -9,6 +9,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.models.Spy
 import com.unciv.models.SpyAction
 import com.unciv.models.translations.tr
@@ -211,7 +212,7 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
             add(getSpyIcon(spy))
     }
 
-    private abstract inner class SpyCityActionButton : Button(SmallButtonStyle()) {
+    private abstract class SpyCityActionButton : Button(SmallButtonStyle()) {
         open fun setDirection(align: Int) {}
     }
 
@@ -225,9 +226,26 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
             arrow.setOrigin(Align.center)
             arrow.color = Color.WHITE
             onClick {
-                selectedSpy!!.moveTo(city)
-                resetSelection()
-                update()
+                fun move() {
+                    selectedSpy!!.moveTo(city)
+                    resetSelection()
+                    update()
+                }
+                if (city != null
+                    && city.civ.civName != civInfo.civName
+                    && city.civ.isMajorCiv()
+                    && city.civ.knows(civInfo) // ensures the !! below won't crash
+                    && city.civ.getDiplomacyManager(civInfo)!!.hasFlag(DiplomacyFlags.AgreedToNotSendSpies)) {
+                    ConfirmPopup(
+                        UncivGame.Current.screen!!,
+                        // The promise isn't broken when you move the spy - only when they catch you stealing a tech
+                        "This may result in breaking your promise to [${city.civ.civName}]",
+                        "Move",
+                        action = ::move
+                    ).open(force = true)
+                } else {
+                    move()
+                }
             }
             spyActionButtons[this] = city
             isVisible = false

@@ -28,6 +28,7 @@ import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
+import java.security.SecureRandom
 import java.time.Instant
 import java.util.Random
 import java.util.UUID
@@ -287,7 +288,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
      */
     private suspend fun sendPing(size: Int = 0): Boolean {
         val body = ByteArray(size)
-        Random().nextBytes(body)
+        SecureRandom().nextBytes(body)
         return sendPing(body)
     }
 
@@ -339,7 +340,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
     suspend fun awaitPing(size: Int = 2, timeout: Duration? = null): Double? {
         require(size < 2) { "Size too small to identify ping responses uniquely" }
         val body = ByteArray(size)
-        Random().nextBytes(body)
+        SecureRandom().nextBytes(body)
 
         val key = body.toHex()
         val channel = Channel<Exception?>(capacity = Channel.RENDEZVOUS)

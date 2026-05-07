@@ -412,8 +412,11 @@ class TechPickerScreen(
 
         val pathToTech = civTech.getRequiredTechsToDestination(tech)
         for (requiredTech in pathToTech) {
-            for (unique in requiredTech.uniqueObjects
-                .filter { it.type == UniqueType.OnlyAvailable && !it.conditionalsApply(civInfo.state) }) {
+            val unavailableUniques = requiredTech.uniqueObjects.filter {
+                it.type == UniqueType.OnlyAvailable && !it.conditionalsApply(civInfo.state) ||
+                    it.type == UniqueType.Unavailable && it.conditionalsApply(civInfo.state)
+            }
+            for (unique in unavailableUniques) {
                 rightSideButton.setText(unique.getDisplayText().tr())
                 rightSideButton.disable()
                 return

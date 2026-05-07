@@ -39,10 +39,13 @@ import com.unciv.ui.screens.victoryscreen.RankingType
 import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.Readonly
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
+import com.unciv.logic.automation.Timers.Companion.timeThis
 
 enum class Proximity : IsPartOfGameInfoSerialization {
     None, // ie no cities
@@ -121,6 +124,8 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     /** Used in online multiplayer for human players */
     var playerId = ""
+    /** Used in online multiplayer, if a player exceed this time to complete their turn, others can force them to resign*/
+    var playerMinutesBeforeForceResign = 3 * 24 * 60
     /** The Civ's gold reserves. Public get, private set - please use [addGold] method to modify. */
     var gold = 0
         private set
@@ -277,6 +282,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.gold = gold
         toReturn.playerType = playerType
         toReturn.playerId = playerId
+        toReturn.playerMinutesBeforeForceResign = playerMinutesBeforeForceResign
         toReturn.civName = civName
         toReturn.civID = civID
         toReturn.tech = tech.clone()
@@ -425,7 +431,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     @Transient
     val cache = CivInfoTransientCache(this)
 
-    fun updateStatsForNextTurn() {
+    fun updateStatsForNextTurn(): Unit = timeThis<Unit>("Civilization.updateStatsForNextTurn") {
         val previousHappiness = stats.happiness
         stats.happiness = stats.getHappinessBreakdown().values.sum().roundToInt()
         if (stats.happiness != previousHappiness && gameInfo.ruleset.allHappinessLevelsThatAffectUniques.any {
@@ -441,6 +447,14 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     @Readonly
     fun getHappiness() = stats.happiness
+    
+    @OptIn(ExperimentalContracts::class)
+    @Readonly
+    fun canSeeResource(resource: TileResource?): Boolean {
+        contract { returns(true) implies(resource != null) }
+        if (resource == null) return false
+        return tech.isRevealed(resource)
+    }
 
     /** Note that for stockpiled resources, this gives by how much it grows per turn, not current amount */
     @Readonly
@@ -511,6 +525,15 @@ class Civilization : IsPartOfGameInfoSerialization {
         return getCivResourceSupply().firstOrNull { !it.resource.isStockpiled && it.resource.name == resourceName }?.amount ?: 0
     }
 
+    /** Gets the number of resources available to this city
+     * Does not include city-wide resources
+     * Returns 0 for undefined resources */
+    @Readonly
+    fun getResourceAmount(resource: TileResource): Int {
+        if (resource.isStockpiled) return resourceStockpiles[resource.name]
+        return getCivResourceSupply().firstOrNull { it.resource == resource }?.amount ?: 0
+    }
+
     /** Gets modifiers for ALL resources */
     @Readonly
     fun getResourceModifiers(): Map<String, Float> =
@@ -536,6 +559,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     }
 
     @Readonly fun hasResource(resourceName: String): Boolean = getResourceAmount(resourceName) > 0
+    @Readonly fun hasResource(resource: TileResource): Boolean = getResourceAmount(resource) > 0
 
     @Readonly
     fun hasUnique(uniqueType: UniqueType, gameContext: GameContext = state) =
@@ -681,7 +705,7 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     @Readonly
     fun getEquivalentUnit(baseUnit: BaseUnit): BaseUnit {
-        if (baseUnit.replaces != null)
+        if (baseUnit.replaces != null && baseUnit.replaces in gameInfo.ruleset.units)
             return getEquivalentUnit(baseUnit.replaces!!) // Equivalent of unique unit is the equivalent of the replaced unit
 
         for (unit in cache.uniqueUnits)
@@ -839,7 +863,7 @@ class Civilization : IsPartOfGameInfoSerialization {
                 ?: throw MissingNationException("Nation $civName is not found!", gameInfo.ruleset.mods)
     }
 
-    fun setTransients() {
+    fun setTransients():Unit = timeThis("Civilization.setTransients") {
         goldenAges.civInfo = this
         greatPeople.civInfo = this
         civConstructions.setTransients(civInfo = this)
@@ -956,6 +980,16 @@ class Civilization : IsPartOfGameInfoSerialization {
             else -> {}
             // Food and Production wouldn't make sense to be added nationwide
             // Happiness cannot be added as it is recalculated again, use a unique instead
+        }
+    }
+    
+    @Readonly
+    fun getGameResource(gameResource:GameResource): Int {
+        return when (gameResource) {
+            is TileResource -> getResourceAmount(gameResource)
+            is Stat -> getStatReserve(gameResource)
+            SubStat.GoldenAgePoints -> goldenAges.storedHappiness
+            else -> throw Exception("Unrecognized gameResource ${gameResource.name}")
         }
     }
 
@@ -1084,7 +1118,7 @@ class Civilization : IsPartOfGameInfoSerialization {
                     it.hasUnique(UniqueType.MovesToNewCapital)
                 }.toSet()
 
-                oldCapital.cityConstructions.removeBuildings(buildingsToMove)
+                for (building in buildingsToMove) oldCapital.cityConstructions.removeBuilding(building)
 
                 // Add the buildings to new capital
                 for (building in buildingsToMove) city.cityConstructions.addBuilding(building)
@@ -1177,6 +1211,7 @@ class CivilizationInfoPreview() {
     var civID = ""
     var playerType = PlayerType.AI
     var playerId = ""
+    var playerMinutesBeforeForceResign = 60*24*3
     @Readonly fun isPlayerCivilization() = playerType == PlayerType.Human
 
     /**
@@ -1187,6 +1222,7 @@ class CivilizationInfoPreview() {
         civID = civilization.civID
         playerType = civilization.playerType
         playerId = civilization.playerId
+        playerMinutesBeforeForceResign = civilization.playerMinutesBeforeForceResign
     }
 }
 

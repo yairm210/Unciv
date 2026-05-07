@@ -123,7 +123,7 @@ internal interface OptionsPopupHelpers {
      *  @see addTranslatedSelectBox
      *  @see addEnumAsStringSelectBox
      */
-    fun <T> Table.addSelectBox(text: String, property: KMutableProperty0<T>, items: Iterable<T>, action: ((T, T) -> Unit)? = null) {
+    fun <T> Table.addSelectBox(text: String, property: KMutableProperty0<T>, items: Iterable<T>, action: ((T, T) -> Unit)? = null): SelectBox<T> {
         add(text.toLabel()).left().fillX()
 
         val select = SelectBox<T>(BaseScreen.skin)
@@ -137,6 +137,7 @@ internal interface OptionsPopupHelpers {
             property.set(newValue)
             action?.invoke(newValue, oldValue)
         }
+        return select
     }
 
     /**

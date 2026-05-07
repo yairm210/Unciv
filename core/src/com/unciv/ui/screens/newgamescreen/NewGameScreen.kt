@@ -140,7 +140,6 @@ class NewGameScreen(
                 Concurrency.runOnGLThread {
                     AcceptModErrorsPopup(
                         this@NewGameScreen, modCheckResult,
-                        restoreDefault = { newGameOptionsTable.resetRuleset() },
                         action = {
                             gameSetupInfo.gameParameters.acceptedModCheckErrors = modCheckResult
                             startGameAvoidANRs()
@@ -162,7 +161,7 @@ class NewGameScreen(
                     else "Couldn't connect to Dropbox!"
 
             for (player in gameSetupInfo.gameParameters.players.filter { it.playerType == PlayerType.Human }) {
-                if (!(IdChecker.checkAndReturnPlayerUuid(player.playerId)?.isUUID() ?: false)) {
+                if (!(IdChecker.checkAndReturnPlayerUuid(player.playerId)?.playerID?.isUUID() ?: false)) {
                     return "Invalid player ID!"
                 }
             }
@@ -350,6 +349,8 @@ class NewGameScreen(
         }
 
         val worldScreen = game.loadGame(newGame)
+        
+        worldScreen.autoSave()
 
         if (newGame.gameParameters.isOnlineMultiplayer) {
             launchOnGLThread {

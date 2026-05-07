@@ -201,7 +201,7 @@ class CityPopulationManagerTest {
         city.workedTiles.add(HexCoord(-1,0))
         city.lockedTiles.add(HexCoord(-1,0)) // force the first pop to work on a specific tile to avoid being reassigned
         val goodTile = testGame.setTileTerrain(HexCoord(1,0), Constants.grassland)
-        goodTile.improvement = "Farm"
+        goodTile.setImprovementBasic("Farm")
 
         assertFalse(city.workedTiles.contains(goodTile.position))
 
@@ -223,12 +223,12 @@ class CityPopulationManagerTest {
         city.workedTiles.add(HexCoord(-1,0))
         city.lockedTiles.add(HexCoord(-1,0)) // force the first pop to work on a specific tile to avoid being reassigned
         val goodFoodTile = testGame.setTileTerrain(HexCoord(1,0), Constants.grassland)
-        goodFoodTile.improvement = "Farm"
+        goodFoodTile.setImprovementBasic("Farm")
         assertFalse(city.workedTiles.contains(goodFoodTile.position))
 
         val goodGoldTile = testGame.setTileTerrain(HexCoord(0,1), Constants.grassland)
         val goldImprovement = testGame.createTileImprovement("[+5 Gold]")
-        goodGoldTile.improvement = goldImprovement.name
+        goodGoldTile.setImprovementBasic(goldImprovement)
         assertFalse(city.workedTiles.contains(goodGoldTile.position))
 
         city.population.foodStored = 14

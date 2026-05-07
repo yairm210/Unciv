@@ -12,6 +12,7 @@ import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionModifiers
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionModifiers.canUse
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import yairm210.purity.annotations.Readonly
+import com.unciv.logic.automation.Timers.Companion.timeThis
 
 object CivilianUnitAutomation {
 
@@ -21,7 +22,7 @@ object CivilianUnitAutomation {
         && !unit.hasUnique(UniqueType.AddInCapital)
         && unit.civ.units.getCivUnits().any { unit.hasUnique(UniqueType.AddInCapital) }
 
-    fun automateCivilianUnit(unit: MapUnit, dangerousTiles: HashSet<Tile>) {
+    fun automateCivilianUnit(unit: MapUnit, dangerousTiles: HashSet<Tile>) = timeThis<Unit>("automateCivilianUnit") {
         // To allow "found city" actions that can only trigger a limited number of times
         
         // Slightly modified getUsableUnitActionUniques() to allow for settlers with *conditional* settling uniques

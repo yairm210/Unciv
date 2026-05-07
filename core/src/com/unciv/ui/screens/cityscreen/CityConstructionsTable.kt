@@ -290,7 +290,16 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         for (entry in constructionsSequence.filter { it.shouldBeDisplayed(cityConstructions) }) {
 
             val useStoredProduction = entry is Building || !cityConstructions.isBeingConstructedOrEnqueued(entry.name)
-            val buttonText = cityConstructions.getTurnsToConstructionString(entry, useStoredProduction).trim()
+            
+            // this is susceptible to comodification since ANY change in unique sources - for example a new building - 
+            //   can cause comodification change
+            // This is however rare enough and short enough in duration that a second run will work
+            val buttonText = try {
+                cityConstructions.getTurnsToConstructionString(entry, useStoredProduction).trim()
+            } catch (ex: Exception){
+                cityConstructions.getTurnsToConstructionString(entry, useStoredProduction).trim()
+            }
+            
             val resourcesRequired = if (entry is BaseUnit)
                 entry.getResourceRequirementsPerTurn(city.civ.state)
                 else entry.getResourceRequirementsPerTurn(city.state)

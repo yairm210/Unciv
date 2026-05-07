@@ -1,0 +1,13 @@
+Ruleset switching in new game screen no longer allows zero victory types
+
+Users cannot offer negative gold with "-50" buttons
+
+By unciv-loof:
+- Notification shows who is responsible for skipping or resigning a player 
+- Newly fetched mod entries respect current filter 
+- Declaation of War + Declaration of Friendship UI improvements
+
+By Ambeco:
+- Fixed alternate pathfinding bugs 
+- Unitactions and UnitTriggers have moddable priority
+- Eliminated most Hardcoded Terrains

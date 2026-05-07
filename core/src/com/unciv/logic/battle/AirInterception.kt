@@ -149,8 +149,11 @@ object AirInterception {
         interceptingCiv: Civilization,
         defender: ICombatant?
     ): Battle.DamageDealt {
-        if (attacker.unit.hasUnique(UniqueType.CannotBeIntercepted, GameContext(attacker.getCivInfo(), ourCombatant = attacker, theirCombatant = defender, attackedTile = attackedTile)))
+        val attackContext = GameContext(attacker, defender, attackedTile, CombatAction.Intercept)
+        if (attacker.unit.hasUnique(UniqueType.CannotBeIntercepted, attackContext))
             return Battle.DamageDealt.None
+        val rng = attackContext.stateBasedRandom("AirInterception.tryInterceptAirAttack")
+
 
         // Pick highest chance interceptor
         val interceptor = interceptingCiv.units.getCivUnits()
@@ -168,7 +171,7 @@ object AirInterception {
 
         interceptor.attacksThisTurn++  // even if you miss, you took the shot
         // Does Intercept happen? If not, exit
-        if (Random.Default.nextFloat() > interceptor.interceptChance() / 100f)
+        if (rng.nextFloat() > interceptor.interceptChance() / 100f)
             return Battle.DamageDealt.None
 
         var damage = BattleDamage.calculateDamageToDefender(

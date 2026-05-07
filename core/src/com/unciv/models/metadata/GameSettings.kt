@@ -24,22 +24,27 @@ import java.text.Collator
 import java.text.NumberFormat
 import java.time.Duration
 import java.util.Locale
-import kotlin.reflect.KClass
-import kotlin.reflect.KMutableProperty0
 
 /** Settings that apply across all games, stored in GameSettings.json */
 class GameSettings {
+    enum class PathfindingAlgorithm {
+        ClassicPathfinding,
+        AStarPathfinding
+    }
 
     /** Allows panning the map by moving the pointer to the screen edges */
     var mapAutoScroll: Boolean = false
     /** How fast the map pans using keyboard or with [mapAutoScroll] and mouse */
     var mapPanningSpeed: Float = 6f
+    
+    var useAStarPathfinding: Boolean = false
 
     var showWorkedTiles: Boolean = false
     var showResourcesAndImprovements: Boolean = true
     var showTileYields: Boolean = false
     var showUnitMovements: Boolean = false
     var showSettlersSuggestedCityLocations: Boolean = true
+    var stopAutomatedWorkersRemoveVegetation: Boolean = false
 
     var checkForDueUnits: Boolean = true
     var checkForDueUnitsCycles: Boolean = false

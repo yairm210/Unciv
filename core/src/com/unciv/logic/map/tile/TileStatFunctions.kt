@@ -1,6 +1,7 @@
 package com.unciv.logic.map.tile
 
 import com.unciv.Constants
+import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.tile.Terrain
@@ -36,7 +37,7 @@ class TileStatFunctions(val tile: Tile) {
     fun getTileStats(
         city: City?, observingCiv: Civilization?,
         localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)
-    ): Stats {
+    ): Stats = timeThis("getTileStats") {
         val statsBreakdown = getTileStatsBreakdown(city, observingCiv, localUniqueCache)
 
         val improvement = tile.getUnpillagedImprovement()
@@ -110,7 +111,8 @@ class TileStatFunctions(val tile: Tile) {
         var minimumStats = if (tile.isCityCenter()) Stats.DefaultCityCenterMinimum else Stats.ZERO
         if (observingCiv != null) {
             // resource base
-            if (tile.hasViewableResource(observingCiv)) listOfStats.add(tile.tileResource.name to tile.tileResource)
+            val resource = tile.tileResource
+            if (observingCiv.canSeeResource(resource)) listOfStats.add(resource.name to resource)
 
             if (improvement != null)
                 improvementStats.add(getExtraImprovementStats(improvement, observingCiv, city))
@@ -196,7 +198,8 @@ class TileStatFunctions(val tile: Tile) {
     // Only gets the tile percentage bonus, not the improvement percentage bonus
     @Suppress("MemberVisibilityCanBePrivate")
     @Readonly
-    fun getTilePercentageStats(observingCiv: Civilization?, city: City?, uniqueCache: LocalUniqueCache): EnumMap<TilePercentageCategory, Stats> {
+    fun getTilePercentageStats(observingCiv: Civilization?, city: City?, uniqueCache: LocalUniqueCache): EnumMap<TilePercentageCategory, Stats>
+    = timeThis("TileStatFunctions.getTilePercentageStats") {
         val terrainStats = Stats()
         val gameContext = GameContext(civInfo = observingCiv, city = city, tile = tile)
 
@@ -267,11 +270,11 @@ class TileStatFunctions(val tile: Tile) {
             sum -= 2f
         if (tile.isAdjacentToRiver())
             sum += 2f
-        if (tile.neighbors.any { it.baseTerrain == Constants.mountain })
+        if (tile.neighbors.any { it.getBaseTerrain().isMountain })
             sum += 2f
-        if (tile.isCoastalTile())
+        if (tile.isAdjacentToCoast())
             sum += 3f
-        if (!tile.isCoastalTile() && tile.neighbors.any { it.isCoastalTile() })
+        if (!tile.isAdjacentToCoast() && tile.neighbors.any { it.isAdjacentToCoast() })
             sum -= 7f
 
         return sum
@@ -279,7 +282,7 @@ class TileStatFunctions(val tile: Tile) {
 
     private fun getTileStartYield(minimumStats: Stats) =
         getTerrainStatsBreakdown().toStats().run {
-            if (tile.resource != null) add(tile.tileResource)
+            if (tile.tileResource != null) add(tile.tileResource!!)
             add(missingFromMinimum(this, minimumStats))
             food + production + gold
         }
@@ -313,13 +316,14 @@ class TileStatFunctions(val tile: Tile) {
         improvement: TileImprovement,
         observingCiv: Civilization,
         city: City?
-    ): Stats {
+    ): Stats = timeThis("TileStatFunctions.getExtraImprovementStats"){
         val stats = Stats()
 
-        if (tile.hasViewableResource(observingCiv) && tile.tileResource.isImprovedBy(improvement.name)
-                && tile.tileResource.improvementStats != null
+        val resource = tile.tileResource
+        if (observingCiv.canSeeResource(resource) && resource.isImprovedBy(improvement.name)
+                && resource.improvementStats != null
         )
-            stats.add(tile.tileResource.improvementStats!!) // resource-specific improvement
+            stats.add(resource.improvementStats!!) // resource-specific improvement
 
         val conditionalState = GameContext(civInfo = observingCiv, city = city, tile = tile)
         for (unique in improvement.getMatchingUniques(UniqueType.Stats, conditionalState)) {

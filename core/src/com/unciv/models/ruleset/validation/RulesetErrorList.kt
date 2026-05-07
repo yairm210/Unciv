@@ -114,6 +114,7 @@ class RulesetErrorList(
                         // This will go through tr(), unavoidably, which will move the conditionals
                         // out of place. Prevent via kludge:
                         it.text.replace('<','〈').replace('>','〉')
+                            .replace('[','⟦').replace(']','⟧')
                 }
 
     companion object {

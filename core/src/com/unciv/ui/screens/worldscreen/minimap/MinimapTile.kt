@@ -10,14 +10,13 @@ import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.tile.TileHistory.TileHistoryState.CityCenterType
 import com.unciv.ui.components.extensions.surroundWithCircle
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.utils.DebugUtils
 import kotlin.math.PI
 import kotlin.math.atan
 
-class MinimapTile(val tile: Tile, tileSize: Float, val onClick: () -> Unit) {
+class MinimapTile(val tile: Tile, tileSize: Float) {
     val image: Image = ImageGetter.getImage("OtherIcons/Hexagon")
     private var cityCircleImage: IconCircleGroup? = null
     var owningCiv: Civilization? = null
@@ -33,7 +32,6 @@ class MinimapTile(val tile: Tile, tileSize: Float, val onClick: () -> Unit) {
             positionalVector.x * 0.5f * tileSize,
             positionalVector.y * 0.5f * tileSize
         )
-        image.onClick(onClick)
     }
 
     fun updateColor(isTileUnrevealed: Boolean, turn: Int? = null) {
@@ -133,7 +131,6 @@ class MinimapTile(val tile: Tile, tileSize: Float, val onClick: () -> Unit) {
         cityCircle.x = hexCenterXPosition - nationIconSize / 2
         val hexCenterYPosition = image.y + image.height / 2
         cityCircle.y = hexCenterYPosition - nationIconSize / 2
-        cityCircle.onClick(onClick)
         cityCircleImage = cityCircle
 
         return ActorChange(if (prevCircle != null) setOf(prevCircle) else emptySet(), setOf(cityCircle))

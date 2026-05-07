@@ -1,8 +1,11 @@
 package com.unciv.utils
 
 import com.badlogic.gdx.utils.Array
+import com.badlogic.gdx.utils.IntArray as GdxIntArray
+import com.badlogic.gdx.utils.LongArray as GdxLongArray
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
+import java.util.BitSet
 import kotlin.random.Random
 
 /** Get one random element of a given List.
@@ -10,7 +13,7 @@ import kotlin.random.Random
  * The probability for each element is proportional to the value of its corresponding element in the [weights] List.
  */
 @Readonly 
-fun <T> List<T>.randomWeighted(weights: List<Float>, random: Random = Random): T {
+fun <T> List<T>.randomWeighted(weights: List<Float>, random: Random): T {
     if (this.isEmpty()) throw NoSuchElementException("Empty list.")
     if (this.size != weights.size) throw UnsupportedOperationException("Weights size does not match this list size.")
 
@@ -31,7 +34,7 @@ fun <T> List<T>.randomWeighted(weights: List<Float>, random: Random = Random): T
  * The probability for each element is proportional to the result of [getWeight] (evaluated only once).
  */
 @Readonly
-fun <T> List<T>.randomWeighted(random: Random = Random, getWeight: (T) -> Float): T =
+fun <T> List<T>.randomWeighted(random: Random, getWeight: (T) -> Float): T =
     randomWeighted(map(getWeight), random)
 
 /** Gets a clone of any [List] as [ArrayList] with an additional item
@@ -130,4 +133,45 @@ fun <T> ArrayList<T?>.getOrPut(index: Int, getValue: () -> T): T {
 
     this[index] = value // Now we can safely set the value
     return value
+}
+
+inline fun BitSet.forEachSetBit(action: (Int) -> Unit) {
+    var bit = nextSetBit(0)
+    while (bit >= 0) {
+        action(bit)
+        bit = nextSetBit(bit + 1)
+    }
+}
+
+inline fun BitSet.forEachClearBit(action: (Int) -> Unit) {
+    var bit = nextClearBit(0)
+    while (bit >= 0) {
+        action(bit)
+        bit = nextClearBit(bit + 1)
+    }
+}
+
+inline fun GdxIntArray.forEach(op: (Int) -> Unit) {
+    for (i in 0 until size) {
+        op(items[i])
+    }
+}
+inline fun <T> GdxIntArray.fold(initial: T, op: (T, Int) -> T): T {
+    var r = initial
+    for (i in 0 until size) {
+        r = op(r, items[i])
+    }
+    return r
+}
+inline fun GdxLongArray.forEach(op: (Long) -> Unit) {
+    for (i in 0 until size) {
+        op(items[i])
+    }
+}
+inline fun <T> GdxLongArray.fold(initial: T, op: (T, Long) -> T): T {
+    var r = initial
+    for (i in 0 until size) {
+        r = op(r, items[i])
+    }
+    return r
 }

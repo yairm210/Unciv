@@ -24,6 +24,7 @@ internal class AutomationTab(
         }
         addCheckbox("Auto-build roads", settings::autoBuildingRoads)
         addCheckbox("Automated workers replace improvements", settings::automatedWorkersReplaceImprovements)
+        addCheckbox("Stop automated workers from removing vegetation terrain", settings::stopAutomatedWorkersRemoveVegetation)
         addCheckbox("Automated units move on turn start", settings::automatedUnitsMoveOnTurnStart, updateWorld = true)
         addCheckbox("Automated units can upgrade", settings::automatedUnitsCanUpgrade)
         addCheckbox("Automated units choose promotions", settings::automatedUnitsChoosePromotions)

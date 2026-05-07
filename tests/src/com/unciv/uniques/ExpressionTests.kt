@@ -31,13 +31,17 @@ class ExpressionTests {
             "2 ^ 3 ^ 2" to 512.0,
             "pi * .5" to PI / 2,
             "(2+1.5)*(4+10)" to (2 + 1.5) * (4 + 10),
+            "max(0,1)" to 1.0,
+            "min(0,1)" to 0.0,
+            "max(5,3,7,2)" to 7.0,
         )
 
         var fails = 0
         for ((expression, expected) in input) {
             val actual = try {
                 Parser.eval(expression)
-            } catch (_: Parser.ParsingError) {
+            } catch (ex: Parser.ParsingError) {
+                println("Expression \"$expression\" threw exception: ${ex::class.simpleName}: ${ex.message}")
                 null
             }
             if (actual != null && abs(actual - expected) < epsilon) continue

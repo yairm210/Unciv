@@ -4,16 +4,20 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Rect
 import android.net.Uri
+import android.os.Build
+import android.os.Debug
 import android.view.View
 import android.view.ViewTreeObserver
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.backends.android.AndroidGraphics
 import com.badlogic.gdx.math.Rectangle
 import com.unciv.UncivGame
+import com.unciv.logic.IdChecker
 import com.unciv.logic.event.EventBus
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.UncivStage
 import com.unciv.utils.Concurrency
+import com.unciv.utils.isUUID
 import games.rednblack.miniaudio.MiniAudio
 
 class AndroidGame(private val activity: Activity) : UncivGame() {
@@ -73,10 +77,15 @@ class AndroidGame(private val activity: Activity) : UncivGame() {
     /** This is needed in onCreate _and_ onNewIntent to open links and notifications
      *  correctly even if the app was not running */
     fun setDeepLinkedGame(intent: Intent) {
-        deepLinkedMultiplayerGame = if (intent.action != Intent.ACTION_VIEW) null else {
-            val uri: Uri? = intent.data
-            uri?.getQueryParameter("id")
+        if (intent.action != Intent.ACTION_VIEW) {
+            deepLinkedMultiplayerGame = null
         }
+        val uri: Uri? = intent.data
+        val idParam = uri?.getQueryParameter("id") //legacy game url
+        deepLinkedMultiplayerGame = 
+            if (idParam != null && idParam.isUUID()) idParam
+            else if (IdChecker.isGameDeepLink(uri.toString())) IdChecker.checkAndReturnUuiId(uri.toString())
+            else null
     }
 
     fun isInitializedProxy() = super.isInitialized
@@ -84,4 +93,7 @@ class AndroidGame(private val activity: Activity) : UncivGame() {
     override fun initAudio(miniAudio: MiniAudio) {
         miniAudio.setupAndroid(activity.applicationContext.assets)
     }
+
+    override fun getGcCount(): Int = 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) Debug.getRuntimeStat("art.gc.gc-count").toInt() else 0
 }

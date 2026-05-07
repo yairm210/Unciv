@@ -119,13 +119,13 @@ class CityFounderTest {
     fun `should remove improvements upon city founding`() {
         // given
         val tile = testGame.getTile(HexCoord.Zero)
-        tile.improvement = "Farm"
+        tile.setImprovementBasic("Farm")
 
         // when
         cityFounder.foundCity(civ, HexCoord.Zero)
 
         // then
-        assertFalse(tile.improvement.equals("Farm"))
+        assertFalse(tile.improvement == "Farm")
     }
 
     @Test

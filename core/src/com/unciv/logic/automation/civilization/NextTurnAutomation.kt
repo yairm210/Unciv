@@ -3,6 +3,7 @@ package com.unciv.logic.automation.civilization
 import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.ThreatLevel
+import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.automation.unit.CivilianUnitAutomation
 import com.unciv.logic.automation.unit.EspionageAutomation
 import com.unciv.logic.automation.unit.UnitAutomation
@@ -28,6 +29,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.ui.screens.victoryscreen.RankingType
 import com.unciv.utils.randomWeighted
+import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Readonly
 import kotlin.random.Random
 
@@ -36,7 +38,7 @@ object NextTurnAutomation {
     /** Top-level AI turn task list */
     fun automateCivMoves(civInfo: Civilization,
                          /** set false for 'forced' automation, such as skip turn */
-                         tradeAndChangeState: Boolean = true) {
+                         tradeAndChangeState: Boolean = true): Unit = timeThis("automateCivMoves") {
         if (civInfo.isBarbarian) return BarbarianAutomation(civInfo).automate()
         if (civInfo.isSpectator()) return // When there's a spectator in multiplayer games, it's processed automatically, but shouldn't be able to actually do anything
 
@@ -54,10 +56,12 @@ object NextTurnAutomation {
                 ReligionAutomation.spendFaithOnReligion(civInfo)
             }
 
+            DiplomacyAutomation.denounce(civInfo)
             DiplomacyAutomation.offerToEstablishEmbassy(civInfo)
             DiplomacyAutomation.offerOpenBorders(civInfo)
             DiplomacyAutomation.offerResearchAgreement(civInfo)
             DiplomacyAutomation.offerDefensivePact(civInfo)
+            DiplomacyAutomation.checkMilitaryPresenceNearBorder(civInfo)
             TradeAutomation.exchangeLuxuries(civInfo)
             
             issueRequests(civInfo)
@@ -112,9 +116,11 @@ object NextTurnAutomation {
     private fun respondToPopupAlerts(civInfo: Civilization) {
         for (popupAlert in civInfo.popupAlerts.toList()) { // toList because this can trigger other things that give alerts, like Golden Age
             
+            
             for (demand in Demand.entries){
                 if (popupAlert.type == demand.demandAlert) {
                     val demandingCiv = civInfo.gameInfo.getCivilization(popupAlert.value)
+                    if (demandingCiv.isDefeated()) break // ignore demand from dead civ. break since we're in an inner for loop
                     val diploManager = civInfo.getDiplomacyManager(demandingCiv)!!
                     if (Automation.threatAssessment(civInfo, demandingCiv) >= ThreatLevel.High
                         || diploManager.isRelationshipLevelGT(RelationshipLevel.Ally))
@@ -125,6 +131,7 @@ object NextTurnAutomation {
             
             if (popupAlert.type == AlertType.DeclarationOfFriendship) {
                 val requestingCiv = civInfo.gameInfo.getCivilization(popupAlert.value)
+                if (requestingCiv.isDefeated()) continue // ignore DOF from dead civ
                 val diploManager = civInfo.getDiplomacyManager(requestingCiv)!!
                 if (civInfo.diplomacyFunctions.canSignDeclarationOfFriendshipWith(requestingCiv)
                     && DiplomacyAutomation.wantsToSignDeclarationOfFrienship(civInfo,requestingCiv)) {
@@ -232,6 +239,8 @@ object NextTurnAutomation {
     }
 
     private fun chooseTechToResearch(civInfo: Civilization) {
+        val rng = civInfo.state.stateBasedRandom("NextTurnAutomation.chooseTechToResearch")
+
         @Readonly
         fun getGroupedResearchableTechs(): List<List<Technology>> {
             val researchableTechs = civInfo.gameInfo.ruleset.technologies.values
@@ -250,7 +259,7 @@ object NextTurnAutomation {
                 // Ignore rows where all techs have 0 weight
                 it.any { it.getWeightForAiDecision(stateForConditionals) > 0 }
             } ?: costs.last()
-            val chosenTech = mostExpensiveTechs.randomWeighted { it.getWeightForAiDecision(stateForConditionals) }
+            val chosenTech = mostExpensiveTechs.randomWeighted(rng) { it.getWeightForAiDecision(stateForConditionals) }
             civInfo.tech.getFreeTechnology(chosenTech.name)
         }
         if (civInfo.tech.techsToResearch.isEmpty()) {
@@ -263,11 +272,11 @@ object NextTurnAutomation {
             //Do not consider advanced techs if only one tech left in cheapest group
             val techToResearch: Technology =
                 if (cheapestTechs.size == 1 || costs.size == 1) {
-                    cheapestTechs.randomWeighted { it.getWeightForAiDecision(stateForConditionals) }
+                    cheapestTechs.randomWeighted(rng) { it.getWeightForAiDecision(stateForConditionals) }
                 } else {
                     //Choose randomly between cheapest and second cheapest group
                     val techsAdvanced = costs[1]
-                    (cheapestTechs + techsAdvanced).randomWeighted { it.getWeightForAiDecision(stateForConditionals) }
+                    (cheapestTechs + techsAdvanced).randomWeighted(rng) { it.getWeightForAiDecision(stateForConditionals) }
                 }
 
             civInfo.tech.techsToResearch.add(techToResearch.name)
@@ -275,6 +284,7 @@ object NextTurnAutomation {
     }
 
     private fun adoptPolicy(civInfo: Civilization) {
+        val rng = civInfo.state.stateBasedRandom("NextTurnAutomation.adoptPolicy")
         /*
         # Branch-based policy-to-adopt decision
         Basically the AI prioritizes finishing incomplete branches before moving on, \
@@ -326,12 +336,12 @@ object NextTurnAutomation {
             // Choose the branch with the LEAST REMAINING policies, not the MOST ADOPTED ones
             val targetBranch = candidateCompletionMap.asIterable()
                 .groupBy { it.key.policies.size - it.value }
-                .minByOrNull { it.key }!!.value.random().key
+                .minByOrNull { it.key }!!.value.random(rng).key
 
             val policyToAdopt: Policy =
                 if (civInfo.policies.isAdoptable(targetBranch)) targetBranch
                 else targetBranch.policies.filter { civInfo.policies.isAdoptable(it) }
-                    .randomWeighted { it.getWeightForAiDecision(civInfo.state) }
+                    .randomWeighted(rng) { it.getWeightForAiDecision(civInfo.state) }
 
             civInfo.policies.adopt(policyToAdopt)
         }
@@ -339,6 +349,7 @@ object NextTurnAutomation {
 
     fun chooseGreatPerson(civInfo: Civilization) {
         if (civInfo.greatPeople.freeGreatPeople == 0) return
+        val rng = civInfo.state.stateBasedRandom("NextTurnAutomation.chooseGreatPerson")
         val mayanGreatPerson = civInfo.greatPeople.mayaLimitedFreeGP > 0
         val greatPeople =
             if (mayanGreatPerson)
@@ -346,7 +357,7 @@ object NextTurnAutomation {
             else civInfo.greatPeople.getGreatPeople()
 
         if (greatPeople.isEmpty()) return
-        var greatPerson = greatPeople.random()
+        var greatPerson = greatPeople.random(rng)
         val scienceGP = greatPeople.firstOrNull { it.uniques.contains("Great Person - [Science]") }
         if (scienceGP != null)  greatPerson = scienceGP
         // Humans would pick a prophet or engineer, but it'd require more sophistication on part of the AI - a scientist is the safest option for now
@@ -380,12 +391,13 @@ object NextTurnAutomation {
             for (city in civInfo.cities) {
                 if (city.hasSoldBuildingThisTurn)
                     continue
+                val rng = city.state.stateBasedRandom("NextTurnAutomation.freeUpSpaceResources")
                 val buildingToSell = civInfo.gameInfo.ruleset.buildings.values.filter {
                         city.cityConstructions.isBuilt(it.name)
                         && it.requiredResources(city.state).contains(resource)
                         && it.isSellable()
                         && !civInfo.civConstructions.hasFreeBuilding(city, it) }
-                    .randomOrNull()
+                    .randomOrNull(rng)
                 if (buildingToSell != null) {
                     city.sellBuilding(buildingToSell)
                     break
@@ -409,6 +421,7 @@ object NextTurnAutomation {
                 // Restrict Human automated units from promotions via setting
                 (UncivGame.Current.settings.automatedUnitsChoosePromotions || unit.civ.isAI())
             ) {
+                val rng = unit.cache.state.stateBasedRandom("NextTurnAutomation.automateUnits")
                 val promotions = unit.promotions.getAvailablePromotions()
                 val availablePromotions = if (unit.health <= 60
                     && promotions.any { it.hasUnique(UniqueType.OneTimeUnitHeal) }
@@ -423,11 +436,11 @@ object NextTurnAutomation {
                 val stateForConditionals = unit.cache.state
 
                 val chosenPromotion =
-                    if (freePromotions.isNotEmpty()) freePromotions.randomWeighted {
+                    if (freePromotions.isNotEmpty()) freePromotions.randomWeighted(rng) {
                         it.getWeightForAiDecision(stateForConditionals)
                     }
                     else availablePromotions.toList()
-                        .randomWeighted { it.getWeightForAiDecision(stateForConditionals) }
+                        .randomWeighted(rng) { it.getWeightForAiDecision(stateForConditionals) }
 
                 unit.promotions.addPromotion(chosenPromotion.name)
             }
@@ -493,7 +506,9 @@ object NextTurnAutomation {
             Battle.moveAndAttack(MapUnitCombatant(unit), mostSurroundedEnemy)
         }
     }
-    private fun automateSettlerEscorting(civInfo: Civilization){
+    
+    @VisibleForTesting
+    fun automateSettlerEscorting(civInfo: Civilization){
         val capitalTile = civInfo.getCapital()!!.getCenterTile()
         @Readonly fun bestUnitInRange(tile: Tile, range: Int) = tile.getTilesInDistance(range)
             .mapNotNull { it.militaryUnit }.filter {
@@ -605,6 +620,7 @@ object NextTurnAutomation {
     // However, that can be added in another update, this PR is large enough as it is.
     private fun tryVoteForDiplomaticVictory(civ: Civilization) {
         if (!civ.mayVoteForDiplomaticVictory()) return
+        val rng = civ.state.stateBasedRandom("NextTurnAutomation.tryVoteForDiplomaticVictory")
 
         val chosenCiv: Civilization? = if (civ.isMajorCiv()) {
             val knownMajorCivs = civ.getKnownCivs().filter { it.isMajorCiv() }
@@ -614,11 +630,11 @@ object NextTurnAutomation {
                 }
 
             if (highestOpinion == null) null  // Abstain if we know nobody
-            else if (highestOpinion < -80 || highestOpinion < -40 && highestOpinion + Random.Default.nextInt(40) < -40)
+            else if (highestOpinion < -80 || highestOpinion < -40 && highestOpinion + rng.nextInt(40) < -40)
                 null // Abstain if we hate everybody (proportional chance in the RelationshipLevel.Enemy range - lesser evil)
             else knownMajorCivs
                 .filter { civ.getDiplomacyManager(it)!!.opinionOfOtherCiv() == highestOpinion }
-                .toList().random()
+                .toList().random(rng)
 
         } else {
             civ.allyCiv
@@ -628,30 +644,45 @@ object NextTurnAutomation {
     }
 
     private fun issueRequests(civInfo: Civilization) {
-        for (otherCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() && !civInfo.isAtWarWith(it) }) {
+        for (otherCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() }) {
             val diploManager = civInfo.getDiplomacyManager(otherCiv)!!
-            for (demand in Demand.entries){
+            for (demand in Demand.entries) {
                 if (diploManager.hasFlag(demand.violationOccurred))
                     onDemandViolation(demand, civInfo, otherCiv)
             }
         }
     }
-
     
-    private fun onDemandViolation(demand: Demand, civInfo: Civilization, otherCiv: Civilization) {
-        val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)!!
+    private fun onDemandViolation(demand: Demand, civInfo: Civilization, offendingCiv: Civilization) {
+        // most demand violations are not checked during war
+        if (civInfo.isAtWarWith(offendingCiv) && demand != Demand.DoNotAttackUs)
+            return
+        val diplomacyManager = civInfo.getDiplomacyManager(offendingCiv)!!
         when {
             diplomacyManager.hasFlag(demand.willIgnoreViolation) -> {}
+            // violation after promise (broke promise)
             diplomacyManager.hasFlag(demand.agreedToDemand) -> {
-                otherCiv.popupAlerts.add(PopupAlert(demand.violationDiscoveredAlert, civInfo.civID))
-                diplomacyManager.setFlag(demand.willIgnoreViolation, 100)
-                diplomacyManager.setModifier(demand.betrayedPromiseDiplomacyMpodifier, -20f)
+                offendingCiv.popupAlerts.add(PopupAlert(demand.violationDiscoveredAlert, civInfo.civID))
+                diplomacyManager.setFlag(demand.willIgnoreViolation, 100, true)
+                diplomacyManager.setModifier(demand.betrayedPromiseDiplomacyModifier, -20f)
+                if (demand == Demand.DoNotAttackUs)
+                    // relationship penalty with all common known civs, similar to DoF backstabbing
+                    // TODO: apply WarmongerHatred personality trait here?
+                    for (thirdPartyCiv in diplomacyManager.getCommonKnownCivs()) {
+                        thirdPartyCiv.getDiplomacyManager(offendingCiv)!!
+                            .setModifier(
+                                DiplomaticModifiers.BetrayedPromiseToNotAttackOtherCiv,
+                                -10f
+                            )
+                    }
                 diplomacyManager.removeFlag(demand.agreedToDemand)
             }
+            // violation before promise
             else -> {
-                val threatLevel = Automation.threatAssessment(civInfo, otherCiv)
-                if (threatLevel < ThreatLevel.High) // don't piss them off for no reason please.
-                    otherCiv.popupAlerts.add(PopupAlert(demand.demandAlert, civInfo.civID))
+                val threatLevel = Automation.threatAssessment(civInfo, offendingCiv)
+                if (threatLevel < ThreatLevel.High // don't piss them off for no reason please.
+                    || demand == Demand.DoNotAttackUs) 
+                    offendingCiv.popupAlerts.add(PopupAlert(demand.demandAlert, civInfo.civID))
             }
         }
         diplomacyManager.removeFlag(demand.violationOccurred)

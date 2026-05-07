@@ -2,6 +2,7 @@ package com.unciv.models.ruleset
 
 import com.unciv.logic.GameInfo
 import com.unciv.logic.MultiFilter
+import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.civilization.Civilization
@@ -81,7 +82,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     fun getStats(city: City,
                  /* By default, do not cache - if we're getting stats for only one building this isn't efficient.
                  * Only use a cache if it was sent to us from outside, which means we can use the results for other buildings.  */
-                 localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): Stats {
+                 localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): Stats = timeThis("Building.getStats") {
         // Calls the clone function of the NamedStats this class is derived from, not a clone function of this class
         @LocalState val stats = cloneStats()
         
@@ -187,13 +188,10 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         )
     }
 
-    override fun getBaseBuyCost(city: City, stat: Stat): Float? {
+    @Readonly
+    private fun getSpecificBuyCost(city: City, stat: Stat): Float? {
         val conditionalState = city.state
-
         return sequence {
-            val baseCost = super.getBaseBuyCost(city, stat)
-            if (baseCost != null)
-                yield(baseCost)
             yieldAll(city.getMatchingUniques(UniqueType.BuyBuildingsIncreasingCost, conditionalState)
                 .filter {
                     it.params[2] == stat.name
@@ -228,6 +226,13 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 }.map { it.params[1].toInt() * city.civ.gameInfo.speed.statCostModifiers[stat]!! }
             )
         }.minOrNull()
+    }
+
+    override fun getBaseBuyCost(city: City, stat: Stat): Float? {
+        // Specific 
+        val specificCost = getSpecificBuyCost(city, stat)
+        if (specificCost != null) return specificCost
+        return super.getBaseBuyCost(city, stat)
     }
 
     override fun getStatBuyCost(city: City, stat: Stat): Int? {
@@ -417,12 +422,13 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (requiredNearbyImprovedResources != null) {
             val containsResourceWithImprovement = cityConstructions.city.getWorkableTiles()
                 .any {
-                    it.resource != null
-                    && requiredNearbyImprovedResources!!.contains(it.resource!!)
-                    && it.getOwner() == civ
-                    && ((it.getUnpillagedImprovement() != null && it.tileResource.isImprovedBy(it.improvement!!)) || it.isCityCenter()
-                       || (it.getUnpillagedTileImprovement()?.isGreatImprovement() == true && it.tileResource.resourceType == ResourceType.Strategic)
-                    )
+                    val tileResource = it.tileResource ?: return@any false
+                    val improvement = it.getUnpillagedTileImprovement() ?: return@any false
+                    requiredNearbyImprovedResources!!.contains(tileResource.name) &&
+                        it.getOwner() == civ &&
+                        (tileResource.isImprovedBy(improvement) ||
+                            it.isCityCenter() ||
+                            (improvement.isGreatImprovement() && tileResource.resourceType == ResourceType.Strategic))
                 }
             if (!containsResourceWithImprovement)
                 yield(RejectionReasonType.RequiresNearbyResource.toInstance("Nearby $requiredNearbyImprovedResources required"))

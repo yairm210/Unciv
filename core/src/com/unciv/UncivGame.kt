@@ -51,8 +51,16 @@ import games.rednblack.miniaudio.MiniAudio
 import kotlinx.coroutines.CancellationException
 import yairm210.purity.annotations.Readonly
 import java.io.PrintWriter
-import java.util.EnumSet
-import java.util.UUID
+import java.lang.management.ManagementFactory
+import java.util.*
+import kotlin.collections.ArrayDeque
+import kotlin.collections.asSequence
+import kotlin.collections.count
+import kotlin.collections.filter
+import kotlin.collections.forEach
+import kotlin.collections.listOf
+import kotlin.collections.none
+import kotlin.collections.removeAll
 import kotlin.reflect.KClass
 
 /** Represents the Unciv app itself:
@@ -139,12 +147,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
         ImageGetter.resetAtlases()
         ImageGetter.reloadImages()  // This needs to come after the settings, since we may have default visual mods
-        val imageGetterTilesets = ImageGetter.getAvailableTilesets()
-        val availableTileSets = TileSetCache.getAvailableTilesets(imageGetterTilesets)
-        if (settings.tileSet !in availableTileSets) { // If the configured tileset is no longer available, default back
-            settings.tileSet = Constants.defaultTileset
-        }
-
+        
         Gdx.graphics.isContinuousRendering = settings.continuousRendering
 
         Concurrency.run("LoadJSON") {
@@ -152,6 +155,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
             translations.tryReadTranslationForCurrentLanguage()
             translations.loadPercentageCompleteOfLanguages()
             TileSetCache.loadTileSetConfigs()
+
             SkinCache.loadSkinConfigs()
 
             val vanillaRuleset = RulesetCache.getVanillaRuleset()
@@ -484,9 +488,11 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         return mainMenuScreen
     }
 
+    override fun getGcCount(): Int = ManagementFactory.getGarbageCollectorMXBeans().sumOf { it.collectionCount }.toInt()
+
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.19.7", 1195)
+        val VERSION = Version("4.20.4", 1215)
         //endregion
 
         /** Global reference to the one Gdx.Game instance created by the platform launchers - do not use without checking [isCurrentInitialized] first. */

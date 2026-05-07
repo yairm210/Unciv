@@ -1,5 +1,6 @@
 package com.unciv.logic.city
 
+import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
@@ -345,7 +346,7 @@ class CityStats(val city: City) {
     //endregion
     //region State-Changing Methods
 
-    fun updateTileStats(localUniqueCache: LocalUniqueCache = LocalUniqueCache()) {
+    fun updateTileStats(localUniqueCache: LocalUniqueCache = LocalUniqueCache()):Unit = timeThis("updateTileStats") {
         val stats = Stats()
         val workedTiles = city.tilesInRange.asSequence()
             .filter {
@@ -456,7 +457,7 @@ class CityStats(val city: City) {
     }
     
     @Readonly
-    private fun getStatPercentBonusList(currentConstruction: IConstruction): StatTreeNode {
+    private fun getStatPercentBonusList(currentConstruction: IConstruction): StatTreeNode = timeThis("CityStats.getStatPercentBonusList") {
         val newStatsBonusTree = StatTreeNode()
 
         newStatsBonusTree.addStats(getStatPercentBonusesFromGoldenAge(city.civ.goldenAges.isGoldenAge()),"Golden Age")
@@ -487,7 +488,7 @@ class CityStats(val city: City) {
                updateTileStats:Boolean = true,
                updateCivStats:Boolean = true,
                localUniqueCache:LocalUniqueCache = LocalUniqueCache(),
-               calculateGrowthModifiers:Boolean = true) {
+               calculateGrowthModifiers:Boolean = true): Unit = timeThis<Unit>("CityStats.update") {
 
         if (updateTileStats) updateTileStats(localUniqueCache)
 
@@ -639,14 +640,21 @@ class CityStats(val city: City) {
 
     @Readonly
     private fun calcFoodEaten(): Float {
-        var foodEaten = city.population.population.toFloat() * 2
         var foodEatenBySpecialists = 2f * city.population.getNumberOfSpecialists()
-
+        var foodEaten = city.population.population.toFloat() * 2 - foodEatenBySpecialists
+        
         for (unique in city.getMatchingUniques(UniqueType.FoodConsumptionBySpecialists))
             if (city.matchesFilter(unique.params[1]))
                 foodEatenBySpecialists *= unique.params[0].toPercent()
 
-        foodEaten -= 2f * city.population.getNumberOfSpecialists() - foodEatenBySpecialists
+        foodEaten += foodEatenBySpecialists
+        
+        for (unique in city.getMatchingUniques(UniqueType.FoodConsumptionByPopulation)) {
+            if (!city.matchesFilter(unique.params[2])) continue
+            val foodEatenByPopulationFilter = 2f * city.population.getPopulationFilterAmount(unique.params[1])
+            foodEaten -= foodEatenByPopulationFilter * (1f - unique.params[0].toPercent())
+        }
+        
         return foodEaten
     }
 

@@ -38,16 +38,17 @@ If you use external tools and multiple atlases, you will need to maintain this f
 A large number of atlases may be the result of having very large icons.
 We find that 100x100 pixels is good enough for most icons.
 
-#### Circle icons
+#### Rendering performance
 
 To allow for faster rendering for icons, which has a major performance effect, you can copy the ["OtherIcons/circle.png"](https://github.com/yairm210/Unciv/blob/master/android/Images.Icons/OtherIcons/Circle.png) to:
 
-- "ImprovementIcons/Circle.png" for improvements
+- "ImprovementIcons/Circle.png" for improvements - you can also copy "ImprovementIcons/Pillaged.png" for it to be packed with your icons
 - "ResourceIcons/Circle.png" for resources
 - "TechIcons/Circle.png" for technologies
 - "ConstructionIcons/Circle.png" for buildings and units
 - "StatIcons/Circle.png" for stats
 
+You should only do so if the mod icons will be the *majority* of the icons for each category, NOT if you're adding on a few more.
 
 ### Texture packer settings
 
