@@ -184,6 +184,12 @@ class UnitManager(val civInfo: Civilization) {
         civInfo.updateStatsForNextTurn() // unit upkeep
         if (mapUnit.getResourceRequirementsPerTurn().isNotEmpty())
             civInfo.cache.updateCivResources()
+        
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponLosingUnit, mapUnit.cache.state)) {
+            if (mapUnit.matchesFilter(unique.params[0])) { 
+                UniqueTriggerActivation.triggerUnique(unique, mapUnit)
+            }
+        }    
     }
 
     @Readonly fun getIdleUnits() = getCivUnits().filter { it.isIdle() }
