@@ -39,7 +39,7 @@ plugins {
 
 // Kludge to get the correct string notation for a gdx native (':' _after_ version seems beyond toml)
 fun gdxNatives(platform: String) = "${libs.gdx.platform.get()}:natives-$platform"
-fun miniaudioNatives(platform: String) = "${libs.rednblack.miniaudio.platform.get()}:natives-$platform"
+fun miniaudioNatives(platform: String) = "${libs.miniaudio.platform.get()}:natives-$platform"
 
 //from here on you can't simply use `libs` anymore, see https://github.com/gradle/gradle/issues/18237#issuecomment-928079890
 
@@ -124,7 +124,7 @@ project(":desktop") {
             exclude("com.badlogicgames.gdx", "gdx-backend-lwjgl")
         }
 
-        "implementation"(rootProject.libs.rednblack.miniaudio.desktop)
+        "implementation"(miniaudioNatives("desktop"))
 
         // Needed to display "Playing Unciv" in Discord
         "implementation"(rootProject.libs.discord)
@@ -196,7 +196,7 @@ project(":core") {
 
     dependencies {
         "implementation"(rootProject.libs.gdx)
-        "api"(rootProject.libs.rednblack.miniaudio)
+        "api"(rootProject.libs.miniaudio)
         "implementation"(rootProject.libs.coroutines.core)
         "implementation"(rootProject.libs.kotlin.reflect)
 

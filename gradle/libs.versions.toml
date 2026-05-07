@@ -8,6 +8,7 @@ coroutines = "1.10.2"
 
 gdx = "1.14.0"
 discord = "v2.0.1"
+miniaudio = "0.7"
 
 jna = "5.17.0"
 ktor = "3.2.3"
@@ -47,6 +48,9 @@ gdx-tools = { group = "com.badlogicgames.gdx", name = "gdx-tools", version.ref =
 gdx-backend-desktop = { group = "com.badlogicgames.gdx", name = "gdx-backend-lwjgl3", version.ref = "gdx" }
 gdx-backend-android = { group = "com.badlogicgames.gdx", name = "gdx-backend-android", version.ref = "gdx" }
 gdx-backend-headless = { group = "com.badlogicgames.gdx", name = "gdx-backend-headless", version.ref = "gdx" }
+
+miniaudio = { group = "games.rednblack.miniaudio", name = "miniaudio", version.ref = "miniaudio" }
+miniaudio-platform = { group = "games.rednblack.miniaudio", name = "gdx-miniaudio-platform", version.ref = "miniaudio" }
 
 discord = { group = "com.github.MinnDevelopment", name = "java-discord-rpc", version.ref = "discord" }
 
