@@ -105,7 +105,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
     private fun canTradeEmbassies(): Boolean {
         return civInfo.isMajorCiv()
             && civInfo.hasUnique(UniqueType.EnablesEmbassies)
-            && civInfo.hasUnique(UniqueType.RequiresEmbassiesForDiplomacy)
+            //&& civInfo.hasUnique(UniqueType.RequiresEmbassiesForDiplomacy)
     }
 
     /**
