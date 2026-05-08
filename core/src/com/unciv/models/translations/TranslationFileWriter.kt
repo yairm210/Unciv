@@ -425,9 +425,9 @@ object TranslationFileWriter {
         // Example: PolicyBranch inherits from Policy inherits from RulesetObject.
         // RulesetObject has the name and uniques properties and we wish to include them.
         // So we need superclass recursion to be sure not to miss stuff in the future.
-        // The superclass != null check is made obsolete in theory by the Object check, but better play safe.
+        // The superclass != null check is made obsolete in theory by the Any check, but better play safe.
         fun Class<*>.allSupers(): Sequence<Class<*>> = sequence {
-            if (this@allSupers == Object::class.java) return@sequence
+            if (this@allSupers == Any::class.java) return@sequence
             yield(this@allSupers)
             if (superclass != null)
                 yieldAll(superclass.allSupers())
@@ -547,7 +547,7 @@ object TranslationFileWriter {
             private fun isFieldTypeRelevant(type: Class<*>) =
                     type == String::class.java ||
                     type == java.util.ArrayList::class.java ||
-                    type == java.util.List::class.java ||        // CivilopediaText is not an ArrayList
+                    type == List::class.java ||        // CivilopediaText is not an ArrayList
                     type == java.util.HashSet::class.java ||
                     type.isEnum  // allow scanning Enum names
 
