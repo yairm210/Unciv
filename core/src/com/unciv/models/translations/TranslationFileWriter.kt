@@ -539,6 +539,8 @@ object TranslationFileWriter {
                 "promotions",
                 // Same for victory milestones
                 "milestones",
+                // e.g. "See also: [rulesetobject]" in civilopediaText
+                "FormattedLine.text",
             )
 
             @Readonly
