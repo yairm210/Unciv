@@ -4182,6 +4182,15 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: MetaModifier
 
+??? example  "&lt;Civilopedia link [pediaLink]&gt;"
+	Allows linking a unique to any Civilopedia page when it is listed in Civilopedia normally. This overrides automatic links to objects in the unique's parameters.
+
+	Example: "&lt;Civilopedia link [Units/Settler]&gt;"
+
+	This unique is automatically hidden from users.
+
+	Applicable to: MetaModifier
+
 ??? example  "&lt;Suppress warning [validationWarning]&gt;"
 	Allows suppressing specific validation warnings. Errors, deprecation warnings, or warnings about untyped and non-filtering uniques should be heeded, not suppressed, and are therefore not accepted. Note that this can be used in ModOptions, in the uniques a warning is about, or as modifier on the unique triggering a warning - but you still need to be specific. Even in the modifier case you will need to specify a sufficiently selective portion of the warning text as parameter.
 
@@ -4215,6 +4224,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 Note that this must use the Mod name as Unciv displays it, not the Repository name.
 There is a conversion affecting dashes and leading/trailing blanks. Please make sure not to get confused.
 *[nonNegativeAmount]: This indicates a non-negative whole number, larger than or equal to zero, a '+' sign is optional.
+*[pediaLink]: A Civilopedia link in the form category/entry.
 *[policy]: The name of any policy.
 *[policyFilter]: The name of any policy, a filtering Unique, any branch (matching only the branch itself), a branch name with " Completed" appended (matches if the branch is completed), or a policy branch as `[branchName] branch` (matching all policies in that branch).
 *[positiveAmount]: This indicates a positive whole number, larger than zero, a '+' sign is optional.

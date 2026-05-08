@@ -1050,6 +1050,8 @@ enum class UniqueType(
         docDescription = "Can only be applied to certain uniques, see details of each unique for specifics"),
     Comment("Comment [comment]", *UniqueTarget.Displayable,
         docDescription = "Allows displaying arbitrary text in a Unique listing. Only the text within the '[]' brackets will be displayed, the rest serves to allow Ruleset validation to recognize the intent."),
+    CivilopediaLink("Civilopedia link [pediaLink]", UniqueTarget.MetaModifier, flags = UniqueFlag.setOfHiddenToUsers,
+        docDescription = "Allows linking a unique to any Civilopedia page when it is listed in Civilopedia normally. This overrides automatic links to objects in the unique's parameters."),
 
     // Formerly `ModOptionsConstants`
     DiplomaticRelationshipsCannotChange("Diplomatic relationships cannot change", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),

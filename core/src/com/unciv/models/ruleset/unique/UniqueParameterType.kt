@@ -653,6 +653,14 @@ enum class UniqueParameterType(
         override fun isKnownValue(parameterText: String, ruleset: Ruleset) = Suppression.isValidFilter(parameterText)
     },
 
+    /** For [UniqueType.CivilopediaLink] */
+    CivilopediaLink("pediaLink", "Units/Settler", "A Civilopedia link in the form category/entry", "Unique Specials",
+        severityDefault = UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+    ) {
+        override fun isKnownValue(parameterText: String, ruleset: Ruleset) =
+            parameterText.split('/').run { size == 2 && none { it.isEmpty() } }
+    },
+
     /** Behaves like [Unknown], but states explicitly the parameter is OK and its contents are ignored */
     Comment("comment", "comment", null, "Unique Specials") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = null
