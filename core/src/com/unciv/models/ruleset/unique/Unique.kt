@@ -242,7 +242,11 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
 
     override fun toString() = if (type == null) "\"$text\"" else "$type (\"$text\")"
+
     @Readonly
-    fun getDisplayText(): String = if (modifiers.none { it.isHiddenToUsers() }) text
-        else text.removeConditionals() + " " + modifiers.filter { !it.isHiddenToUsers() }.joinToString(" ") { "<${it.text}>" }
+    fun getDisplayText(): String = when {
+        modifiers.none { it.isHiddenToUsers() } -> text
+        modifiers.all { it.isHiddenToUsers() } -> text.removeConditionals()
+        else -> text.removeConditionals() + modifiers.filter { !it.isHiddenToUsers() }.joinToString(" ", prefix = " ") { "<${it.text}>" }
+    }
 }
