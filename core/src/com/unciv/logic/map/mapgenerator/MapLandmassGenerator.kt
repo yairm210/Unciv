@@ -186,9 +186,9 @@ class MapLandmassGenerator(
                 spawnLandOrWater(tile, elevation)
                 tile.setTerrainTransients() // necessary for assignContinents
             }
-            tileMap.assignContinents(TileMap.AssignContinentsMode.Reassign, randomness.RNG) // to support largeContinents above
+            tileMap.assignContinents(TileMap.AssignContinentsMode.Reassign) // to support largeContinents above
         }
-        tileMap.assignContinents(TileMap.AssignContinentsMode.Clear, randomness.RNG)
+        tileMap.assignContinents(TileMap.AssignContinentsMode.Clear)
     }
 
     private fun createInnerSea() {

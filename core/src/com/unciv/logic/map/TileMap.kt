@@ -760,7 +760,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
      *  @throws Exception when `mode==Assign` and any land tile already has a continent ID
      *  @return A map of continent sizes (continent ID to tile count)
      */
-    fun assignContinents(mode: AssignContinentsMode, rng: Random = GameContext(gameInfo = gameInfo).stateBasedRandom("TileMap.assignContinents")) {
+    fun assignContinents(mode: AssignContinentsMode) {
         if (mode == AssignContinentsMode.Clear) {
             values.forEach { it.clearContinent() }
             continentSizes.clear()
@@ -785,7 +785,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             values.forEach { it.clearContinent() }
 
         while (landTiles.any()) {
-            val bfs = BFS(landTiles.random(rng)) { it.isLand && !it.isImpassible() }
+            val bfs = BFS(landTiles[landTiles.size / 2]) { it.isLand && !it.isImpassible() }
             bfs.stepToEnd()
             bfs.getReachedTiles().forEach {
                 it.setContinent(currentContinent)

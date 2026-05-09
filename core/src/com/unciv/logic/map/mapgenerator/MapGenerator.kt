@@ -182,7 +182,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             spawnIce(map)
         }
         runAndMeasure("assignContinents") {
-            map.assignContinents(TileMap.AssignContinentsMode.Assign, randomness.RNG)
+            map.assignContinents(TileMap.AssignContinentsMode.Assign)
         }
         runAndMeasure("RiverGenerator") {
             RiverGenerator(map, randomness, ruleset).spawnRivers()
@@ -287,7 +287,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
                 MapGeneratorSteps.Vegetation -> spawnVegetation(map)
                 MapGeneratorSteps.RareFeatures -> spawnRareFeatures(map)
                 MapGeneratorSteps.Ice -> spawnIce(map)
-                MapGeneratorSteps.Continents -> map.assignContinents(TileMap.AssignContinentsMode.Reassign, randomness.RNG)
+                MapGeneratorSteps.Continents -> map.assignContinents(TileMap.AssignContinentsMode.Reassign)
                 MapGeneratorSteps.NaturalWonders -> NaturalWonderGenerator(ruleset, randomness).spawnNaturalWonders(map)
                 MapGeneratorSteps.Rivers -> {
                     val resultingTiles = mutableSetOf<Tile>()
