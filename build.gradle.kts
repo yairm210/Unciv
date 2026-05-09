@@ -9,7 +9,7 @@ buildscript {
         // maven{ url = uri("https://maven.aliyun.com/repository/gradle-plugin") }
         mavenCentral()
         google()  // needed for com.android.tools.build:gradle
-        maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots/") }
+        maven { url = uri("https://central.sonatype.com/repository/maven-snapshots/") }
         gradlePluginPortal()
     }
     dependencies {
@@ -40,10 +40,10 @@ plugins {
 // Kludge to get the correct string notation for a gdx native (':' _after_ version seems beyond toml)
 fun gdxNatives(platform: String) = "${libs.gdx.platform.get()}:natives-$platform"
 
-//from here on you can't simply use `libs` anymore, see https://github.com/gradle/gradle/issues/18237#issuecomment-928079890
+// from here on you can't simply use `libs` anymore, see https://github.com/gradle/gradle/issues/18237#issuecomment-928079890
 
 allprojects {
-//    repositories{ // for local purity
+//    repositories { // for local purity
 //        mavenLocal()
 //    }
     val purityId = rootProject.libs.plugins.purity.get().pluginId
@@ -72,12 +72,12 @@ allprojects {
             "java.util.stream.StreamSupport.longStream",
             "java.util.stream.LongStream.parallel",
             "kotlin.sequences.shuffled",
-            
+
             "kotlin.LongArray.get",
             "kotlin.LongArray.iterator",
             "kotlin.collections.copyInto",
             "kotlin.collections.List.get",
-            
+
             "io.ktor.http.Url.segments",
             "io.ktor.http.Url.parameters",
             "io.ktor.http.Parameters.get",
@@ -101,8 +101,10 @@ allprojects {
         // maven{ url = uri("https://maven.aliyun.com/repository/google") }
         mavenCentral()
         google()
-        maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots/") }
-        maven { url = uri("https://oss.sonatype.org/content/repositories/releases/") }
+        // Needed only in case a version with a "-SNAPSHOT" qualifier is requested
+        maven { url = uri("https://central.sonatype.com/repository/maven-snapshots/") }
+        // Activate only when Central is down, or you need a super-fresh release (typically a matter of hours at most)
+        // maven { url = uri("https://central.sonatype.com/repository/maven-releases/") }
         maven { url = uri("https://jitpack.io") } // for java-discord-rpc
     }
 }
