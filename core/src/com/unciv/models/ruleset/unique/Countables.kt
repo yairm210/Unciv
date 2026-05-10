@@ -291,20 +291,6 @@ enum class Countables(
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
     },
 
-    WorkedPopulationCity("Worked [populationFilter] in this city") {
-        override fun eval(parameterText: String, gameContext: GameContext): Int? {
-            val city = gameContext.city ?: return null
-            val filter = parameterText.getPlaceholderParameters()[0]
-            return city.population.getPopulationFilterAmount(filter)
-        }
-
-        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
-            return UniqueParameterType.PopulationFilter.getTranslatedErrorSeverity(parameterText, ruleset)
-        }
-
-        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
-    },
-
     WorkedTiles("Worked [tileFilter] Tiles") {
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val cities = gameContext.civInfo?.cities ?: return null
@@ -313,20 +299,6 @@ enum class Countables(
         }
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
             return UniqueParameterType.TileFilter.getTranslatedErrorSeverity(parameterText, ruleset)
-        }
-
-        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
-    },
-
-    WorkedPopulation("Worked [populationFilter]") {
-        override fun eval(parameterText: String, gameContext: GameContext): Int? {
-            val cities = gameContext.civInfo?.cities ?: return null
-            val filter = parameterText.getPlaceholderParameters()[0]
-            return cities.sumOf { it.population.getPopulationFilterAmount(filter) }
-        }
-
-        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
-            return UniqueParameterType.PopulationFilter.getTranslatedErrorSeverity(parameterText, ruleset)
         }
 
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
