@@ -1,0 +1,17 @@
+
+
+Fix checkUnique tests and simplify with default value
+
+modding: Correctly ignore possible filtering uniques for ruleset-disabled uniques
+
+modding: Check for event loops that the AI can get stuck in
+
+By SomeTroglodyte:
+- Improve Civilopedia around Diplomacy concepts depending on Embassies 
+- Add padding between player controls and download thatched villagers button 
+- Remove rng from assignContinents, fixing lateinit NPE saving maps from editor 
+- chore: Move to a gradle version catalog and treat mockito dynamic agent loading 
+
+Trigger upon losing unit unique - By PLynx01
+
+fix: handle display cutout in all orientations and fix rotation - By Gatien-L
