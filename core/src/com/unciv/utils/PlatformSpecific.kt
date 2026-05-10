@@ -1,5 +1,7 @@
 package com.unciv.utils
 
+import java.util.Locale
+
 interface PlatformSpecific {
 
     /** Notifies player that his multiplayer turn started */
@@ -15,4 +17,7 @@ interface PlatformSpecific {
     fun getSystemErrorMessage(errorCode: Int): String? = null
 
     fun getGcCount(): Int
+
+    /** Get system locale, on Android 13+ app-specific locale */
+    fun getDefaultLocale(): Locale = Locale.getDefault()
 }

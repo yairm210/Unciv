@@ -1,9 +1,12 @@
 package com.unciv.ui.screens
 
-import com.unciv.Constants
+import com.unciv.models.metadata.LocaleCode
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.scrollTo
+import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.LanguageTable
 import com.unciv.ui.components.widgets.LanguageTable.Companion.addLanguageKeyShortcuts
@@ -17,7 +20,7 @@ import com.unciv.ui.screens.pickerscreens.PickerScreen
  *  Reusable code is in [LanguageTable] and [addLanguageTables].
  */
 class LanguagePickerScreen : PickerScreen() {
-    private var chosenLanguage = Constants.english
+    private var chosenLanguage: String
 
     private val languageTables: ArrayList<LanguageTable>
 
@@ -26,6 +29,8 @@ class LanguagePickerScreen : PickerScreen() {
     }
 
     init {
+        chosenLanguage = LocaleCode.getSystemLanguage()
+
         closeButton.isVisible = false
 
         languageTables = topTable.addLanguageTables(stage.width - 60f)
@@ -44,13 +49,18 @@ class LanguagePickerScreen : PickerScreen() {
         }
 
         rightSideButton.setText("Pick language".tr())
-        rightSideButton.onClick {
+        rightSideButton.onActivation {
             pickLanguage()
         }
+        rightSideButton.keyShortcuts.add(KeyCharAndCode.RETURN)
+        if (chosenLanguage.isNotEmpty()) onChoice()
     }
 
     private fun onChoice(choice: String) {
         chosenLanguage = choice
+        onChoice()
+    }
+    private fun onChoice() {
         rightSideButton.enable()
         update()
     }

@@ -13,7 +13,6 @@ import com.unciv.ui.components.fonts.FontRulesetIcons
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import com.unciv.utils.hashOf
-import java.util.Locale
 import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Immutable
 import yairm210.purity.annotations.LocalState
@@ -161,32 +160,9 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
     }
 
     /** Get a list of supported languages for [readAllLanguagesTranslation] */
-    // This function is too strange for me, however, let's keep it "as is" for now. - JackRainy
     private fun getLanguagesWithTranslationFile(): List<String> {
-
-        val languages = HashSet<String>()
-        // So apparently the Locales don't work for everyone, which is horrendous
-        // So for those players, which seem to be Android-y, we try to see what files exist directly...yeah =/
-        try{
-            for (file in Gdx.files.internal("jsons/translations").list())
-                languages.add(file.nameWithoutExtension())
-        }
-        catch (ex: Exception) {
-            Log.error("Failed to add languages", ex)
-        } // Iterating on internal files will not work when running from a .jar
-
-        languages.addAll(Locale.getAvailableLocales() // And this should work for Desktop, meaning from a .jar
-                .map { it.getDisplayName(Locale.ENGLISH) }) // Maybe THIS is the problem, that the DISPLAY locale wasn't english
-        // and then languages were displayed according to the player's locale... *sweatdrop*
-
-        // These should probably be renamed
-        languages.add("Simplified_Chinese")
-        languages.add("Traditional_Chinese")
-
-        languages.remove("template")
-        languages.remove("completionPercentages")
-
-        return languages.filter { Gdx.files.internal("jsons/translations/$it.properties").exists() }
+        val languages = LocaleCode.getSupportedLanguages()
+        return languages.filter { Gdx.files.internal("jsons/translations/$it.properties").exists() }.toList()
     }
 
     /** Ensure _all_ languages are loaded, used by [TranslationFileWriter] and `TranslationTests` only.
