@@ -43,7 +43,7 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
         if (civInfo.isAtWarWith(otherCiv))
             offers.add(TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty, speed = civInfo.gameInfo.speed))
         
-        if (civInfo.diplomacyFunctions.hasMutualEmbassyWith(otherCiv)
+        if (civInfo.diplomacyFunctions.meetsEmbassyRequirementFor(otherCiv)
             && !otherCiv.getDiplomacyManager(civInfo)!!.hasOpenBorders
             && civInfo.hasUnique(UniqueType.EnablesOpenBorders)
             && otherCiv.hasUnique(UniqueType.EnablesOpenBorders)) {
