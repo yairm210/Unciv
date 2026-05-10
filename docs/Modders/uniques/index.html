@@ -6631,6 +6631,13 @@
 <p>Applicable to: MetaModifier</p>
 </details>
 <details class="example">
+<summary>&lt;Civilopedia link [<abbr title="A Civilopedia link in the form category/entry.">pediaLink</abbr>]&gt;</summary>
+<p>Allows linking a unique to any Civilopedia page when it is listed in Civilopedia normally. This overrides automatic links to objects in the unique's parameters.</p>
+<p>Example: "&lt;Civilopedia link [Units/Settler]&gt;"</p>
+<p>This unique is automatically hidden from users.</p>
+<p>Applicable to: MetaModifier</p>
+</details>
+<details class="example">
 <summary>&lt;Suppress warning [<abbr title="Suppresses one specific Ruleset validation warning. This can specify the full text verbatim including correct upper/lower case, or it can be a wildcard case-insensitive simple pattern starting and ending in an asterisk ('*'). If the suppression unique is used within an object or as modifier (not ModOptions), the wildcard symbols can be omitted, as selectivity is better due to the limited scope.">validationWarning</abbr>]&gt;</summary>
 <p>Allows suppressing specific validation warnings. Errors, deprecation warnings, or warnings about untyped and non-filtering uniques should be heeded, not suppressed, and are therefore not accepted. Note that this can be used in ModOptions, in the uniques a warning is about, or as modifier on the unique triggering a warning - but you still need to be specific. Even in the modifier case you will need to specify a sufficiently selective portion of the warning text as parameter.</p>
 <p>Example: "&lt;Suppress warning [Tinman is supposed to automatically upgrade at <abbr title="The name of any tech.">tech</abbr> Clockwork, and therefore Servos for its upgrade Mecha may not yet be researched! -or- <em>is supposed to automatically upgrade</em>]&gt;"</p>
