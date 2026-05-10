@@ -236,7 +236,7 @@ enum class UniqueType(
     PercentResourceProduction("[relativeAmount]% [resourceFilter] resource production", UniqueTarget.Global),
 
     /// Diplomacy
-    EnablesEmbassies("Enables establishment of embassies", UniqueTarget.Tech),
+    EnablesEmbassies("Enables establishment of embassies", UniqueTarget.Global),
     RequiresEmbassiesForDiplomacy("Requires establishing embassies to conduct advanced diplomacy", UniqueTarget.Global),
 
     /// Agreements
