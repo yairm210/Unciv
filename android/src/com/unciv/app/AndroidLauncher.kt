@@ -43,12 +43,7 @@ open class AndroidLauncher : AndroidApplication() {
 
         // Setup Android custom saver-loader
         UncivFiles.saverLoader = AndroidSaverLoader(this)
-
-        // Use app-specific external directory: no storage permissions needed, user-accessible
-        // via file manager at /sdcard/Android/data/com.unciv.app/files/.
-        // Avoid files.external() which maps to /sdcard/ — writes there are blocked by scoped
-        // storage on Android 10+ without WRITE_EXTERNAL_STORAGE (not declared in manifest).
-        val externalFilesDir = getExternalFilesDir(null)?.path ?: filesDir.path
+        UncivFiles.preferExternalStorage = true
 
         val settings = UncivFiles.getSettingsForPlatformLaunchers(filesDir.path)
         val config = AndroidApplicationConfiguration().apply { useImmersiveMode = settings.androidHideSystemUi }
@@ -65,7 +60,6 @@ open class AndroidLauncher : AndroidApplication() {
         }
 
         game = AndroidGame(this)
-        game!!.customDataDirectory = externalFilesDir
         initialize(game, config)
 
         ViewCompat.setOnApplyWindowInsetsListener(window.decorView, ::insetsListener)
