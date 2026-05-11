@@ -9,11 +9,11 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
  *  Keeping each layer type in its own Group lets [com.unciv.ui.components.tilegroups.TileGroupMap]
  *  short-circuit [hit] and [act] at the layer boundary instead of iterating every tile actor:
  *  non-interactive layers have [touchable] = [Touchable.disabled] so [hit] returns null without
- *  recursing into N childre, act() needs to be overridden in this class. */
-class TileMapLayer<T : TileLayer>(initialCapacity: Int, private val actable: Boolean = true) : Group() {
+ *  recursing into N children; [act] is suppressed unless [actable] is true. */
+class TileMapLayer<T : TileLayer>(initialCapacity: Int, private val actable: Boolean = false, touchable: Boolean = false) : Group() {
     init {
         isTransform = false
-        touchable = Touchable.disabled
+        this.touchable = if (touchable) Touchable.childrenOnly else Touchable.disabled
         children.ensureCapacity(initialCapacity)
     }
 

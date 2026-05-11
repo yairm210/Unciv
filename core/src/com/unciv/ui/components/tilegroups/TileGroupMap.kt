@@ -103,25 +103,25 @@ class TileGroupMap<T: TileGroup>(
 
         val numberOfTilegroups = tileGroups.count()
 
-        val terrainMapLayer     = TileMapLayer<TileLayerTerrain>(numberOfTilegroups, actable = false)
-        val featureMapLayer     = TileMapLayer<TileLayerFeatures>(numberOfTilegroups, actable = false)
-        val borderMapLayer      = TileMapLayer<TileLayerBorders>(numberOfTilegroups, actable = false)
-        val resourceMapLayer    = TileMapLayer<TileLayerResource>(numberOfTilegroups)
-        val improvementMapLayer = TileMapLayer<TileLayerImprovement>(numberOfTilegroups)
+        val terrainMapLayer     = TileMapLayer<TileLayerTerrain>(numberOfTilegroups)
+        val featureMapLayer     = TileMapLayer<TileLayerFeatures>(numberOfTilegroups)
+        val borderMapLayer      = TileMapLayer<TileLayerBorders>(numberOfTilegroups)
+        val resourceMapLayer    = TileMapLayer<TileLayerResource>(numberOfTilegroups, actable = true)
+        val improvementMapLayer = TileMapLayer<TileLayerImprovement>(numberOfTilegroups, actable = true)
         // TileLayerMisc.hit() may delegate to workedIcon, so the container must forward touches
-        val miscMapLayer        = TileMapLayer<TileLayerMisc>(numberOfTilegroups, actable = false).also { it.touchable = Touchable.childrenOnly }
-        val yieldMapLayer       = TileMapLayer<TileLayerYield>(numberOfTilegroups, actable = false)
-        val unitSpriteMapLayer  = TileMapLayer<TileLayerUnitSprite>(numberOfTilegroups, actable = false)
-        val overlayMapLayer     = TileMapLayer<TileLayerOverlay>(numberOfTilegroups, actable = false)
+        val miscMapLayer        = TileMapLayer<TileLayerMisc>(numberOfTilegroups, touchable = true)
+        val yieldMapLayer       = TileMapLayer<TileLayerYield>(numberOfTilegroups)
+        val unitSpriteMapLayer  = TileMapLayer<TileLayerUnitSprite>(numberOfTilegroups)
+        val overlayMapLayer     = TileMapLayer<TileLayerOverlay>(numberOfTilegroups)
         // TileGroups themselves provide click detection; not TileLayer subclasses so plain Group
         val tileGroupLayer      = Group().also {
             it.isTransform = false
             it.touchable = Touchable.childrenOnly
             it.children.ensureCapacity(numberOfTilegroups)
         }
-        val unitFlagMapLayer    = TileMapLayer<TileLayerUnitFlag>(numberOfTilegroups)
+        val unitFlagMapLayer    = TileMapLayer<TileLayerUnitFlag>(numberOfTilegroups, actable = true)
         // TileLayerCityButton has Touchable.childrenOnly internally, so the container must forward touches
-        val cityButtonMapLayer  = TileMapLayer<TileLayerCityButton>(numberOfTilegroups).also { it.touchable = Touchable.childrenOnly }
+        val cityButtonMapLayer  = TileMapLayer<TileLayerCityButton>(numberOfTilegroups, actable = true, touchable = true)
 
         // Apparently the sortedByDescending is kinda memory-intensive because it needs to sort ALL the tiles
         //  So instead we group by and then sort on the groups
