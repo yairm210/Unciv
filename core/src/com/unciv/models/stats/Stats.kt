@@ -9,7 +9,7 @@ import yairm210.purity.annotations.*
  *
  * Supports e.g. `for ((key,value) in <Stats>)` - the [iterator] will skip zero values automatically.
  *
- * Also possible: `<Stats>`.[values].sum() and similar aggregates over a Sequence<Float>.
+ * Use [sum], [min], [max] for fast aggregates.
  */
 @InternalState
 open class Stats(
@@ -180,13 +180,6 @@ open class Stats(
         (if (it.value > 0) "+" else "") + it.value.toInt() + " " + it.key.toString()
     }
 
-    // For display in diplomacy window
-    fun toStringWithDecimals(): String {
-        return this.joinToString {
-            (if (it.value > 0) "+" else "") + it.value.tr().removeSuffix(".0") + " " + it.key.toString().tr()
-        }
-    }
-
     // function that removes the icon from the Stats object since the circular icons all appear the same
     // delete this and replace above instances with toString() once the text-coloring-affecting-font-icons bug is fixed (e.g., in notification text)
     @Readonly
@@ -221,21 +214,19 @@ open class Stats(
         if (faith != 0f) yield(StatValuePair(Stat.Faith, faith))
     }
 
-    /** Enables aggregates over the values, never empty */
-    // Property syntax to emulate Map.values pattern
-    // Doesn't skip zero values as it's meant for sum() or max() where the overhead would be higher than any gain
-    @Deprecated(message = "forEachValue is faster. If not viable, then this can still be used",
-        replaceWith = ReplaceWith("forEachValue"))
-    val values
-        get() = sequence {
-            yield(production)
-            yield(food)
-            yield(gold)
-            yield(science)
-            yield(culture)
-            yield(happiness)
-            yield(faith)
-        }
+    @Readonly
+    /** Fast aggregate: Sum over all seven stats */
+    fun sum() = production + food + gold + science + culture + happiness + faith
+    @Readonly
+    /** Fast aggregate: Min of all seven stats */
+    fun min() = production.coerceAtMost(food).coerceAtMost(gold)
+        .coerceAtMost(science).coerceAtMost(culture)
+        .coerceAtMost(happiness).coerceAtMost(faith)
+    @Readonly
+    /** Fast aggregate: Max of all seven stats */
+    fun max() = production.coerceAtLeast(food).coerceAtLeast(gold)
+        .coerceAtLeast(science).coerceAtLeast(culture)
+        .coerceAtLeast(happiness).coerceAtLeast(faith)
 
     /** Returns an iterator over the elements of this object, wrapped as [StatValuePair]s */
     override fun iterator(): Iterator<StatValuePair> = asSequence().iterator()

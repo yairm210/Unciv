@@ -184,7 +184,7 @@ object Automation {
             yieldStats[stat] = currentStat * statMultiplier
         }
 
-        return yieldStats.values.sum()
+        return yieldStats.sum()
     }
 
     fun tryTrainMilitaryUnit(city: City) {
@@ -471,7 +471,7 @@ object Automation {
         if (tile.naturalWonder != null) score -= 105
 
         // Straight up take the sum of all yields
-        score -= tile.stats.getTileStats(city, city.civ).values.sum().toInt()
+        score -= tile.stats.getTileStats(city, city.civ).sum().toInt()
 
         // Check if we get access to better tiles from this tile
         var adjacentNaturalWonder = false
