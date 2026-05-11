@@ -170,9 +170,9 @@ class WorldScreen(
         stage.addActor(unitActionsTable)
         stage.addActor(bottomTileInfoTable)
         stage.addActor(minimapWrapper)
-        battleTable.width = stage.width / 3
-        battleTable.x = stage.width / 3
-        stage.addActor(battleTable)
+        battleTable.width = mapHolder.width / 3
+        battleTable.x = mapHolder.width / 3
+        mapHolder.addActor(battleTable)
 
         val tileToCenterOn: HexCoord =
                 when {

@@ -368,7 +368,12 @@ class CityScreen(
 
         for (tileGroup in cityTileGroups) {
             tileGroup.onClick { tileGroupOnClick(tileGroup, city) }
-            tileGroup.layerMisc.onClick { tileWorkedIconOnClick(tileGroup, city) }
+            // layerMisc is no longer in TileGroup's parent chain after the layer-container refactoring,
+            // so TileGroup's onClick won't bubble when layerMisc is hit — call it explicitly here.
+            tileGroup.layerMisc.onClick {
+                tileWorkedIconOnClick(tileGroup, city)
+                tileGroupOnClick(tileGroup, city)
+            }
             tileGroup.layerMisc.onDoubleClick { tileWorkedIconDoubleClick(tileGroup, city) }
             tileGroups.add(tileGroup)
         }

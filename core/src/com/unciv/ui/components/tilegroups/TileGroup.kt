@@ -1,6 +1,7 @@
 package com.unciv.ui.components.tilegroups
 
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.unciv.logic.civilization.Civilization
@@ -137,4 +138,15 @@ open class TileGroup(
 
     override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
     override fun act(delta: Float) {}
+
+    override fun hit(x: Float, y: Float, touchable: Boolean): Actor? {
+        // After the layer-container refactoring, layerMisc is no longer a child of TileGroup.
+        // But TileGroup still holds a reference, and after TileGroupMap.init both share the same
+        // coordinate origin, so we can forward the hit check directly.
+        if (layerMisc.isVisible) {
+            val miscHit = layerMisc.hit(x, y, touchable)
+            if (miscHit != null) return miscHit
+        }
+        return super.hit(x, y, touchable)
+    }
 }

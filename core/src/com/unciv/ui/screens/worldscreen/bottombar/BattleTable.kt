@@ -300,7 +300,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
 
         pack()
 
-        setPosition(worldScreen.stage.width / 2 - width / 2, 5f)
+        setPosition(worldScreen.mapHolder.width / 2 - width / 2, 5f)
     }
 
     private fun onAttackButtonClicked(
@@ -380,7 +380,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
                 val targetTileGroup = worldScreen.mapHolder.tileGroups[targetTile]!!
                 nukeCircle.x = targetTileGroup.x
                 nukeCircle.y = targetTileGroup.y
-                targetTileGroup.parent.addActor(nukeCircle)
+                worldScreen.mapHolder.addActorToTileGroupMap(nukeCircle)
 
 
                 worldScreen.mapHolder.removeUnitActionOverlay() // the overlay was one of attacking
@@ -392,7 +392,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
 
         pack()
 
-        setPosition(worldScreen.stage.width / 2 - width / 2, 5f)
+        setPosition(worldScreen.mapHolder.width / 2 - width / 2, 5f)
     }
 
     private fun simulateAirsweep(attacker: MapUnitCombatant, targetTile: Tile)
@@ -451,6 +451,6 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
 
         pack()
 
-        setPosition(worldScreen.stage.width / 2 - width / 2, 5f)
+        setPosition(worldScreen.mapHolder.width / 2 - width / 2, 5f)
     }
 }
