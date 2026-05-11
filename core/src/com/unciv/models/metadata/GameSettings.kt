@@ -43,6 +43,7 @@ class GameSettings {
     var showTileYields: Boolean = false
     var showUnitMovements: Boolean = false
     var showSettlersSuggestedCityLocations: Boolean = true
+    var stopAutomatedWorkersRemoveVegetation: Boolean = false
 
     var checkForDueUnits: Boolean = true
     var checkForDueUnitsCycles: Boolean = false

@@ -544,16 +544,14 @@ class Ruleset {
                             UniqueValidator(this@Ruleset).checkUnique(
                                 Unique(it),
                                 false,
-                                null,
-                                true
+                                null
                             ).isEmpty()
                         })
                         allyBonusUniques = ArrayList(cityStateType.allyBonusUniques.filter {
                             UniqueValidator(this@Ruleset).checkUnique(
                                 Unique(it),
                                 false,
-                                null,
-                                true
+                                null
                             ).isEmpty()
                         })
                     }

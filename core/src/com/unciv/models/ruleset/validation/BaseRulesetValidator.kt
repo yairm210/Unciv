@@ -2,6 +2,7 @@ package com.unciv.models.ruleset.validation
 
 import com.unciv.Constants
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.EventChoice
 import com.unciv.models.ruleset.MilestoneType
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Ruleset
@@ -201,6 +202,53 @@ internal class BaseRulesetValidator(
         for (policy in ruleset.policyBranches.values.flatMap { it.policies + it })
             if (policy != ruleset.policies[policy.name])
                 lines.add("More than one policy with the name ${policy.name} exists!", sourceObject = policy)
+    }
+
+    override fun addEventErrors(lines: RulesetErrorList) {
+        super.addEventErrors(lines)
+        checkEventCircularTriggers(lines)
+    }
+
+    private fun checkEventCircularTriggers(lines: RulesetErrorList) {
+        // A choice with an unconditional AiChoiceWeight of -100% (or worse) has weight 0 for AI
+        // and will never be selected, so it cannot contribute to an infinite loop.
+        fun isChoiceUnreachableForAI(choice: EventChoice): Boolean {
+            var weight = 1f
+            for (unique in choice.uniqueObjects) {
+                if (unique.type != UniqueType.AiChoiceWeight) continue
+                if (unique.modifiers.isNotEmpty()) continue // skip conditional weights
+                weight *= (1 + unique.params[0].toFloat() / 100)
+            }
+            return weight <= 0f
+        }
+
+        fun recursiveCheck(history: HashSet<String>, eventName: String, level: Int) {
+            if (eventName in history) {
+                lines.add(
+                    "Circular trigger in Events: ${history.joinToString("→")}→$eventName - will cause an infinite loop for AI!",
+                    RulesetErrorSeverity.Warning,
+                    sourceObject = ruleset.events[eventName]
+                )
+                return
+            }
+            if (level > 99) return
+            val event = ruleset.events[eventName] ?: return
+            val triggerEventUniques = event.choices
+                .filter { !isChoiceUnreachableForAI(it) }
+                .flatMap { choice -> choice.uniqueObjects.filter { it.type == UniqueType.TriggerEvent } }
+            if (triggerEventUniques.isEmpty()) return
+            history.add(eventName)
+            for (unique in triggerEventUniques) {
+                val linkedSetToPass =
+                    if (triggerEventUniques.size == 1) history
+                    else history.toHashSet()
+                recursiveCheck(linkedSetToPass, unique.params[0], level + 1)
+            }
+        }
+
+        for (eventName in ruleset.events.keys) {
+            recursiveCheck(hashSetOf(), eventName, 0)
+        }
     }
 
     override fun addPromotionErrors(lines: RulesetErrorList) {

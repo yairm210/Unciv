@@ -5,6 +5,10 @@ import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 import java.time.Instant
 import java.util.regex.Pattern
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.Returns
+import kotlin.contracts.ReturnsNotNull
+import kotlin.contracts.contract
 
 
 /**
@@ -112,6 +116,7 @@ object Log {
      *
      * The [params] can contain value-producing lambdas, which will be called and their value used as parameter for the message instead.
      */
+    @Pure @Suppress("purity") // good suppression - log considered pure everywhere
     fun error(msg: String, vararg params: Any?) {
         error(getTag(), msg, *params)
     }
@@ -138,6 +143,7 @@ object Log {
      *
      * A tag will be added equal to the name of the calling class.
      */
+    @Pure @Suppress("purity") // good suppression - log considered pure everywhere
     fun error(msg: String, throwable: Throwable) {
         error(getTag(), msg, throwable)
     }
@@ -208,6 +214,26 @@ fun debug(msg: String, throwable: Throwable) {
 /** Shortcut for [Log.debug] */
 fun debug(tag: Tag, msg: String, throwable: Throwable) {
     Log.debug(tag, msg, throwable)
+}
+
+/**
+ * If condition is met, returns non-null. Otherwise, logs an error and returns null
+ * 
+ * Usage:
+ *     softRequire(input > 0, "input %s must be positive", input) ?: return
+ **/
+@Suppress("NOTHING_TO_INLINE")
+@OptIn(ExperimentalContracts::class)
+@Pure
+inline fun softRequire(condition: Boolean, msg: String, vararg params: Any?): Any? {
+    contract { // theoretically this helps the compiler cast nullables correctly in callers
+        returns(null) implies !condition // but in practice the compiler isn't figuring it out
+        returns(true) implies condition
+    }
+    if (condition)
+        return msg
+    Log.error(msg, *params)
+    return null
 }
 
 private fun doLog(logger: (Tag, String, String) -> Unit, tag: Tag, msg: String, vararg params: Any?) {

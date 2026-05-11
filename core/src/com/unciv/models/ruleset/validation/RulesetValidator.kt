@@ -159,7 +159,8 @@ open class RulesetValidator protected constructor(
     protected open fun addCityStateTypeErrors(lines: RulesetErrorList) {
         for (cityStateType in ruleset.cityStateTypes.values) {
             for (unique in cityStateType.allyBonusUniqueMap.getAllUniques() + cityStateType.friendBonusUniqueMap.getAllUniques()) {
-                val errors = uniqueValidator.checkUnique(unique, tryFixUnknownUniques, null, reportRulesetSpecificErrors)
+                val errors = uniqueValidator.checkUnique(unique, tryFixUnknownUniques, null,
+                    if (reportRulesetSpecificErrors) UniqueValidator.allParameterSeverities else UniqueValidator.extensionModParameterSeverities)
                 lines.addAll(errors)
             }
         }
@@ -225,7 +226,7 @@ open class RulesetValidator protected constructor(
                 unique,
                 tryFixUnknownUniques,
                 fakeUniqueContainer,
-                reportRulesetSpecificErrors
+                if (reportRulesetSpecificErrors) UniqueValidator.allParameterSeverities else UniqueValidator.extensionModParameterSeverities
             )
             lines.addAll(errors)
         }

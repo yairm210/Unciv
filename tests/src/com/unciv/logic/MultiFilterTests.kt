@@ -62,7 +62,7 @@ class MultiFilterTests {
     fun `test a complete Unique with a complex multi-filter is parsed and validated correctly`() {
         val text = "Only available <if [Colosseum] is constructed in all [non-[{non-[Resisting]} {non-[Razing]} {non-[Coastal]}]] cities>"
         val unique = Unique(text)
-        val errors = UniqueValidator(game.ruleset).checkUnique(unique, false, null, false)
+        val errors = UniqueValidator(game.ruleset).checkUnique(unique, false, null, UniqueValidator.extensionModParameterSeverities)
         Assert.assertFalse(errors.isNotOK())
     }
 

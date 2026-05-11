@@ -8,6 +8,7 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.utils.randomWeighted
@@ -15,7 +16,6 @@ import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
-import kotlin.random.Random
 
 class BarbarianManager : IsPartOfGameInfoSerialization {
 
@@ -75,8 +75,9 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
     }
 
     fun placeBarbarianEncampment(forTesting: Boolean = false) {
+        val rng = gameInfo.getBarbarianCivilization().state.stateBasedRandom("BarbarianManager.placeBarbarianEncampent")
         // Before we do the expensive stuff, do a roll to see if we will place a camp at all
-        if (!forTesting && gameInfo.turns > 1 && Random.Default.nextBoolean())
+        if (!forTesting && gameInfo.turns > 1 && rng.nextBoolean())
             return
 
         // Barbarians will only spawn in places that no one can see
@@ -117,7 +118,7 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
 
         var tile: Tile?
         var addedCamps = 0
-        var biasCoast = Random.Default.nextInt(6) == 0
+        var biasCoast = rng.nextInt(6) == 0
 
         // Add the camps
         while (addedCamps < campsToAdd) {
@@ -126,11 +127,11 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
 
             // If we're biasing for coast, get a coast tile if possible
             if (biasCoast) {
-                tile = viableTiles.filter { it.isAdjacentToCoast() }.randomOrNull()
+                tile = viableTiles.filter { it.isAdjacentToCoast() }.randomOrNull(rng)
                 if (tile == null)
-                    tile = viableTiles.random()
+                    tile = viableTiles.random(rng)
             } else
-                tile = viableTiles.random()
+                tile = viableTiles.random(rng)
 
             createNewCamp(tile)
             notifyCivsOfBarbarianEncampment(tile)
@@ -141,7 +142,7 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
                 // Remove some newly non-viable tiles
                 viableTiles.removeAll(tile.getTilesInDistance(7).toSet())
                 // Reroll bias
-                biasCoast = Random.Default.nextInt(6) == 0
+                biasCoast = rng.nextInt(6) == 0
             }
         }
     }
@@ -241,7 +242,8 @@ class Encampment() : IsPartOfGameInfoSerialization {
         }
         if (validTiles.isEmpty()) return false
 
-        return spawnUnit(validTiles.random().isWater) // Attempt to spawn a barbarian on a valid tile
+        val rng = gameInfo.getBarbarianCivilization().state.stateBasedRandom("BarbarianManager.spawnBarbarian")
+        return spawnUnit(validTiles.random(rng).isWater) // Attempt to spawn a barbarian on a valid tile
     }
 
     /** Attempts to spawn a barbarian on [position], returns true if successful and false if unsuccessful. */
@@ -278,14 +280,16 @@ class Encampment() : IsPartOfGameInfoSerialization {
         // Civ V weights its list by FAST_ATTACK or ATTACK_SEA AI types, we'll do it a bit differently
         // getForceEvaluation is already conveniently biased towards fast units and against ranged naval
         val weightings = unitList.map { it.getForceEvaluation().toFloat() }
+        val rng = GameContext(gameInfo = gameInfo).stateBasedRandom("BarbarianManager.chooseBarbarianUnit")
 
-        return unitList.randomWeighted(weightings)
+        return unitList.randomWeighted(weightings, rng)
     }
 
     /** When a barbarian is spawned, seed the counter for next spawn */
     private fun resetCountdown() {
+        val rng = gameInfo.getBarbarianCivilization().state.stateBasedRandom("BarbarianManager.resetCooldown")
         // Base 8-12 turns
-        countdown = 8 + Random.Default.nextInt(5)
+        countdown = 8 + rng.nextInt(5)
         // Quicker on Raging Barbarians
         if (gameInfo.gameParameters.ragingBarbarians)
             countdown /= 2

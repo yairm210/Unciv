@@ -3,7 +3,7 @@ package com.unciv.logic.map.mapgenerator
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.GameInfo
 import com.unciv.logic.map.*
 import com.unciv.logic.map.mapgenerator.mapregions.MapRegions
 import com.unciv.logic.map.tile.Tile
@@ -133,7 +133,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             .map { unique -> TerrainOccursRange(this, unique) }
             .ifEmpty { sequenceOf(TerrainOccursRange(this)) }
 
-    fun generateMap(mapParameters: MapParameters, gameParameters: GameParameters = GameParameters(), civilizations: List<Civilization> = emptyList()): TileMap {
+    fun generateMap(mapParameters: MapParameters, gameParameters: GameParameters = GameParameters(), gameInfo: GameInfo? = null): TileMap {
         val mapSize = mapParameters.mapSize
         val mapType = mapParameters.type
 
@@ -190,7 +190,9 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         convertTerrains(map.values)
 
         // Region based map generation - not used when generating maps in map editor
-        if (civilizations.isNotEmpty()) {
+        val civilizations = gameInfo?.civilizations
+        if (civilizations?.isNotEmpty() ?: false) {
+            map.gameInfo = gameInfo
             val regions = MapRegions(ruleset)
             runAndMeasure("generateRegions") {
                 regions.generateRegions(map, civilizations.count { ruleset.nations[it.civName]!!.isMajorCiv })
@@ -418,7 +420,8 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
                 suitableTiles,
                 map.mapParameters.mapSize.radius)
         for (tile in locations) {
-            val ruins = ruinsEquivalents.values.filter { isPlaceable(it, tile) }.random()
+            val rng = GameContext(tile = tile).stateBasedRandom("MapGenerator.spreadAncientRuins")
+            val ruins = ruinsEquivalents.values.filter { isPlaceable(it, tile) }.random(rng)
             tile.setImprovementBasic(ruins)
         }
     }
@@ -674,7 +677,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
      * [MapParameters.temperatureintensity] as in [applyHumidityAndTemperature]
      */
     private fun spawnIce(tileMap: TileMap) {
-        val oceanTerrains: List<TerrainOccursRange> = terrainFeaturePicker.filter { it.terrain.isOcean && it.tempFrom<= -1 }
+        val oceanTerrains: List<TerrainOccursRange> = baseTerrainPicker.filter { it.terrain.isOcean && it.tempFrom<= -1 }
             .ifEmpty { terrainFeaturePicker.filter { it.terrain.isOcean} }
         val iceTerrains: List<TerrainOccursRange> = terrainFeaturePicker.filter { it.terrain.isIce }
 

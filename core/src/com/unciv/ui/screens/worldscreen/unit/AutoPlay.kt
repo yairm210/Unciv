@@ -1,5 +1,6 @@
 package com.unciv.ui.screens.worldscreen.unit
 
+import com.unciv.logic.automation.Timers
 import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.utils.Concurrency
@@ -21,6 +22,7 @@ class AutoPlay(private var autoPlaySettings: GameSettings.GameSettingsAutoPlay) 
     var autoPlayJob: Job? = null
 
     fun startMultiturnAutoPlay() {
+        Timers.singleton.startTiming()
         autoPlayTurnInProgress = false
         turnsToAutoPlay = autoPlaySettings.autoPlayMaxTurns
     }
@@ -40,6 +42,7 @@ class AutoPlay(private var autoPlaySettings: GameSettings.GameSettingsAutoPlay) 
     fun stopAutoPlay() {
         turnsToAutoPlay = 0
         autoPlayTurnInProgress = false
+        Timers.singleton.endTiming()
     }
 
     /**

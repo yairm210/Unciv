@@ -213,18 +213,22 @@ object ReligionAutomation {
 
         for (city in civInfo.cities) {
             for (tile in city.getCenterTile().getTilesInDistance(city.getWorkRange())) {
+                val tileRng = tile.stateThisTile.stateBasedRandom("ReligionAutomation.rateBelief")
                 val tileScore = beliefBonusForTile(belief, tile, city)
+                
                 score += tileScore * when {
                     city.workedTiles.contains(tile.position) -> 1f // worked
                     tile.getCity() == city -> 0.7f // workable
                     else -> 0.5f // unavailable - for now
-                } * (Random.nextFloat() * 0.05f + 0.975f)
+                } * (tileRng.nextFloat() * 0.05f + 0.975f)
             }
 
-            score += beliefBonusForCity(civInfo, belief, city) * (Random.nextFloat() * 0.1f + 0.95f)
+            val cityRng = city.state.stateBasedRandom("ReligionAutomation.rateBelief")
+            score += beliefBonusForCity(civInfo, belief, city) * (cityRng.nextFloat() * 0.1f + 0.95f)
         }
 
-        score += beliefBonusForPlayer(civInfo, belief) * (Random.nextFloat() * 0.3f + 0.85f)
+        val civRng = civInfo.state.stateBasedRandom("ReligionAutomation.rateBelief")
+        score += beliefBonusForPlayer(civInfo, belief) * (civRng.nextFloat() * 0.3f + 0.85f)
 
         // All of these Random.nextFloat() don't exist in the original, but I've added them to make things a bit more random.
 
@@ -435,14 +439,15 @@ object ReligionAutomation {
 
     private fun foundReligion(civInfo: Civilization) {
         if (civInfo.religionManager.religionState != ReligionState.FoundingReligion) return
+        val rng = civInfo.state.stateBasedRandom("ReligionAutomation.foundReligion")
         val usedReligions = civInfo.gameInfo.religions.values.mapTo(mutableSetOf()) { it.name }
         val availableReligions = civInfo.gameInfo.ruleset.religions.filterNot { it in usedReligions }
         val favoredReligion = civInfo.nation.favoredReligion?.takeIf { it in availableReligions }
         val allFavoredReligions = civInfo.gameInfo.civilizations.mapNotNullTo(mutableSetOf()) { it.nation.favoredReligion}
         val nonFavoredReligions = availableReligions.filterNot { it in allFavoredReligions }
         val chosenReligion = favoredReligion
-            ?: nonFavoredReligions.randomOrNull() // allow other civs to found their own favoured religion when possible
-            ?: availableReligions.randomOrNull()
+            ?: nonFavoredReligions.randomOrNull(rng) // allow other civs to found their own favoured religion when possible
+            ?: availableReligions.randomOrNull(rng)
             ?: return // Wait what? How did we pass the checking when using a great prophet but not this?
 
         civInfo.religionManager.foundReligion(chosenReligion, chosenReligion)

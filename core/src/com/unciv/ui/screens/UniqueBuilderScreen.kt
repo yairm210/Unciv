@@ -195,7 +195,7 @@ class UniqueTable(isMainUnique: Boolean, val ruleset: Ruleset, stage: Stage,
         uniqueErrorTable.add("Errors:".toLabel()).row()
 
         val uniqueErrors = UniqueValidator(ruleset)
-            .checkUnique(Unique(uniqueTextField.text), true, null, true)
+            .checkUnique(Unique(uniqueTextField.text), true, null)
         for (error in uniqueErrors)
             uniqueErrorTable.add(error.text.toLabel().apply { wrap = true }).width(stage.width/2).row()
         if (uniqueErrors.isEmpty())

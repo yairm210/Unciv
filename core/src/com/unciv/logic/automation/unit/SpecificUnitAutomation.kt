@@ -10,7 +10,6 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.TerrainType
-import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
@@ -193,7 +192,6 @@ object SpecificUnitAutomation {
             .map { Automation.rankStatsValue(it, unit.civ) }
             .average()
 
-        val localUniqueCache = LocalUniqueCache()
         for (city in citiesByStatBoost) {
             val applicableTiles = city.getWorkableTiles().filter {
                 it.isLand && (it.tileResource?.isImprovedBy(improvementName) != false) && !it.isCityCenter()
@@ -229,7 +227,6 @@ object SpecificUnitAutomation {
                 Automation.rankTile(
                     it,
                     unit.civ,
-                    localUniqueCache
                 )
             }
                 .firstOrNull { unit.movement.canReach(it) }

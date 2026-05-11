@@ -62,7 +62,8 @@ object UniqueAutoUpdater {
                 uniqueReplacementText += " <${conditional.text}>"
             val replacementUnique = Unique(uniqueReplacementText)
 
-            val modErrors = validator.checkUnique(replacementUnique, false, null, reportRulesetSpecificErrors)
+            val modErrors = validator.checkUnique(replacementUnique, false, null,
+                if (reportRulesetSpecificErrors) UniqueValidator.allParameterSeverities else UniqueValidator.extensionModParameterSeverities)
             for (error in modErrors)
                 Log.error("ModError: %s - %s", error.text, error.errorSeverityToReport)
             if (modErrors.isNotEmpty()) continue // errors means no autoreplace

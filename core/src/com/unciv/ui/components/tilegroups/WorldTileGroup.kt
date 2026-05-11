@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
-import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.darken
@@ -18,8 +17,8 @@ class WorldTileGroup(tile: Tile, tileSetStrings: TileSetStrings)
         layerMisc.touchable = Touchable.disabled
     }
 
-    override fun update(viewingCiv: Civilization?, localUniqueCache: LocalUniqueCache) {
-        super.update(viewingCiv, localUniqueCache)
+    override fun update(viewingCiv: Civilization?) {
+        super.update(viewingCiv)
 
         updateWorkedIcon(viewingCiv!!)
     }

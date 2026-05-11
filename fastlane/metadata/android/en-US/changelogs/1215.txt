@@ -1,0 +1,14 @@
+modding: Ignore ruleset-specific errors when unique is disabled in this ruleset
+
+By SomeTroglodyte:
+- Hide religion- or espionage-specific demands when disabled 
+- Fixed NPE when Espionage Screen is used to move a spy to an unknown civ's city 
+
+By unciv-loof:
+- Add missing table row for city resistance 
+
+By Ambeco:
+- Unciv can receive links directly to games or new friends
+- Prevent save-scumming for more types of randomness
+
+Added option to stop workers from removing vegetation - By Emandac

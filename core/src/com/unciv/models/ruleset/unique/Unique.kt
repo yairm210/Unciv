@@ -1,6 +1,7 @@
 package com.unciv.models.ruleset.unique
 
 import com.unciv.Constants
+import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.GlobalUniques
@@ -82,7 +83,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     }
 
     @Readonly
-    fun conditionalsApply(state: GameContext): Boolean {
+    fun conditionalsApply(state: GameContext): Boolean = timeThis("Unique.conditionalsApply") {
         if (state.ignoreConditionals) return true
         // Always allow Timed conditional uniques. They are managed elsewhere
         if (isTimedTriggerable) return true
@@ -132,6 +133,13 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     fun getMultiplied(gameContext: GameContext): Sequence<Unique> {
         val multiplier = getUniqueMultiplier(gameContext)
         return EndlessSequenceOf(this).take(multiplier)
+    }
+    
+    @Readonly
+    fun forEachMultiplied(gameContext: GameContext, op:(Unique)->Unit) {
+        val multiplier = getUniqueMultiplier(gameContext)
+        for (j in 0..<multiplier)
+            op(this)
     }
 
     private class EndlessSequenceOf<T>(private val value: T) : Sequence<T> {
@@ -230,10 +238,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         // filter out possible replacements that are obviously wrong
         val uniquesWithNoErrors = finalPossibleUniques.filter {
             val unique = Unique(it)
-            val errors = UniqueValidator(ruleset).checkUnique(
-                unique, true, null,
-                true
-            )
+            val errors = UniqueValidator(ruleset).checkUnique(unique, true, null)
             errors.isEmpty()
         }
         if (uniquesWithNoErrors.size == 1) return uniquesWithNoErrors.first()
@@ -244,7 +249,11 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
 
     override fun toString() = if (type == null) "\"$text\"" else "$type (\"$text\")"
+
     @Readonly
-    fun getDisplayText(): String = if (modifiers.none { it.isHiddenToUsers() }) text
-        else text.removeConditionals() + " " + modifiers.filter { !it.isHiddenToUsers() }.joinToString(" ") { "<${it.text}>" }
+    fun getDisplayText(): String = when {
+        modifiers.none { it.isHiddenToUsers() } -> text
+        modifiers.all { it.isHiddenToUsers() } -> text.removeConditionals()
+        else -> text.removeConditionals() + modifiers.filter { !it.isHiddenToUsers() }.joinToString(" ", prefix = " ") { "<${it.text}>" }
+    }
 }

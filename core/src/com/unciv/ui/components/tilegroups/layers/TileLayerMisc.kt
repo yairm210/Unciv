@@ -11,7 +11,6 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.toHexCoord
-import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.*
 import com.unciv.ui.components.extensions.*
@@ -53,16 +52,15 @@ class TileLayerYield(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, s
         this@TileLayerYield.addActor(this)
     }
     
-    override fun doUpdate(viewingCiv: Civilization?, localUniqueCache: LocalUniqueCache) {
+    override fun doUpdate(viewingCiv: Civilization?) {
         val showTileYields = if (tileGroup is WorldTileGroup) UncivGame.Current.settings.showTileYields else true
-        updateYieldIcon(viewingCiv, showTileYields, localUniqueCache)
+        updateYieldIcon(viewingCiv, showTileYields)
     }
 
     // JN updating display of tile yields
     private fun updateYieldIcon(
         viewingCiv: Civilization?,
         show: Boolean,
-        localUniqueCache: LocalUniqueCache
     ) {
         val effectiveVisible = show &&
                 !tileGroup.isForMapEditorIcon &&  // don't have a map to calc yields
@@ -73,9 +71,9 @@ class TileLayerYield(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, s
         if (effectiveVisible) yields.run {
             // Update YieldGroup Icon
             if (tileGroup is CityTileGroup)
-                setStats(tile.stats.getTileStats(tileGroup.city, viewingCiv, localUniqueCache))
+                setStats(tile.stats.getTileStats(tileGroup.city, viewingCiv))
             else
-                setStats(tile.stats.getTileStats(viewingCiv, localUniqueCache))
+                setStats(tile.stats.getTileStats(viewingCiv))
             toFront()
             centerX(tileGroup)
             isVisible = true
@@ -89,8 +87,8 @@ class TileLayerYield(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, s
     
     fun dimYields(dim: Boolean) { yields.color.a = if (dim) 0.5f else 1f }
 
-    fun reset(localUniqueCache: LocalUniqueCache) {
-        updateYieldIcon(null, false, localUniqueCache)
+    fun reset() {
+        updateYieldIcon(null, false)
     }
 
     override fun act(delta: Float) {}
@@ -181,7 +179,7 @@ class TileLayerResource(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
 
     fun dimResource(dim: Boolean) { resourceIcon?.color?.a = if (dim) 0.5f else 1f }
     
-    override fun doUpdate(viewingCiv: Civilization?, localUniqueCache: LocalUniqueCache) {
+    override fun doUpdate(viewingCiv: Civilization?) {
         val showResourcesAndImprovements = if (tileGroup is WorldTileGroup)
             UncivGame.Current.settings.showResourcesAndImprovements else true
 
@@ -199,7 +197,7 @@ class TileLayerImprovement(tileGroup: TileGroup, size: Float) : TileLayer(tileGr
         private set  // Getter public for BattleTable to display as City Combatant
 
     
-    override fun doUpdate(viewingCiv: Civilization?, localUniqueCache: LocalUniqueCache) {
+    override fun doUpdate(viewingCiv: Civilization?) {
         val showResourcesAndImprovements = if (tileGroup is WorldTileGroup)
             UncivGame.Current.settings.showResourcesAndImprovements else true
 
@@ -457,7 +455,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
     fun dimPopulation(dim: Boolean) { workedIcon?.color?.a = if (dim) 0.4f else 1f }
 
 
-    override fun doUpdate(viewingCiv: Civilization?, localUniqueCache: LocalUniqueCache) {
+    override fun doUpdate(viewingCiv: Civilization?) {
         if (tileGroup !is WorldTileGroup || DebugUtils.SHOW_TILE_COORDS)
             updateStartingLocationIcon(true)
         updateArrows()

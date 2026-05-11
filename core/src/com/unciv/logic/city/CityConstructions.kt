@@ -2,6 +2,7 @@ package com.unciv.logic.city
 
 import com.unciv.GUI
 import com.unciv.UncivGame
+import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.city.ConstructionAutomation
@@ -22,7 +23,6 @@ import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.RejectionReasonType
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
@@ -116,10 +116,10 @@ class CityConstructions : IsPartOfGameInfoSerialization {
      * @return [Stats] provided by all built buildings in city
      */
     @Readonly
-    fun getStats(localUniqueCache: LocalUniqueCache): StatTreeNode {
+    fun getStats(): StatTreeNode = timeThis("CityConstructions.getStats") {
         @LocalState val stats = StatTreeNode()
         for (building in getBuiltBuildings())
-            stats.addStats(building.getStats(city, localUniqueCache), building.name)
+            stats.addStats(building.getStats(city), building.name)
         return stats
     }
 
@@ -357,7 +357,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         inProgressConstructions[constructionName] = inProgressConstructions[constructionName]!! + productionToAdd
     }
 
-    fun constructIfEnough() {
+    fun constructIfEnough():Unit = timeThis("constructIfEnough") {
         validateConstructionQueue()
 
         // Update InProgressConstructions for any available refunds
@@ -815,7 +815,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     private fun removeCurrentConstruction() = removeFromQueue(0, true)
 
-    fun chooseNextConstruction() {
+    fun chooseNextConstruction():Unit = timeThis("chooseNextConstruction") {
         if (!isQueueEmptyOrIdle()) {
             // If the USER set a perpetual construction, then keep it!
             if (getConstruction( currentConstructionName()) !is PerpetualConstruction || currentConstructionIsUserSet) return

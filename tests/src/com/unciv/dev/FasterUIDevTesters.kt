@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.HexMath
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.testing.TestGame
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
@@ -44,8 +45,9 @@ internal enum class FasterUIDevTesters : IFasterUITester {
                 // create random relations
                 for ((j, other) in civs.withIndex()) {
                     if (j <= i || Random.nextInt(3) == 0) continue
+                    val rng = GameContext(civInfo = civ, otherCiv = other).stateBasedRandom("FasterUIDevTesters.testCreateExample")
                     // Do a makeCivilizationsMeet without gifts, notifications, or war joins
-                    val status = DiplomaticStatus.entries.random()
+                    val status = DiplomaticStatus.entries.random(rng)
                     civ.diplomacy[other.civID] = diplomacyManagerFactory(civ, other, status)
                     other.diplomacy[civ.civID] = diplomacyManagerFactory(other, civ, status)
                 }

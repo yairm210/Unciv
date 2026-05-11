@@ -15,6 +15,7 @@ import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.nation.Nation
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
@@ -528,15 +529,6 @@ class GameOptionsTable(
         modCheckboxes.setBaseRuleset(gameParameters.baseRuleset)
     }
 
-    fun resetRuleset() {
-        val rulesetName = BaseRuleset.Civ_V_GnK.fullName
-        gameParameters.baseRuleset = rulesetName
-        modCheckboxes.setBaseRuleset(rulesetName)
-        modCheckboxes.disableAllCheckboxes()
-        baseRulesetSelectBox?.setSelected(rulesetName)
-        reloadRuleset()
-    }
-
     private fun reloadRuleset() {
         ruleset.clear()
         val newRuleset = RulesetCache.getComplexRuleset(gameParameters)
@@ -568,11 +560,12 @@ class GameOptionsTable(
         update()
 
         var desiredCiv = ""
+        val rng = GameContext(gameInfo = UncivGame.Current.gameInfo).stateBasedRandom("GameOptionsTable.onChooseMod", mod.hashCode())
         if (gameParameters.mods.contains(mod)) {
             val modNations = RulesetCache[mod]?.nations?.values?.filter { it.isMajorCiv }
 
             if (modNations != null && modNations.any())
-                desiredCiv = modNations.random().name
+                desiredCiv = modNations.random(rng).name
 
             val music = UncivGame.Current.musicController
             if (!music.chooseTrack(mod, MusicMood.Theme, MusicTrackChooserFlags.setSelectNation) && desiredCiv.isNotEmpty())

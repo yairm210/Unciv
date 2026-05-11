@@ -103,6 +103,7 @@ object UniqueTriggerActivation {
         }
 
         val gameContext = GameContext(civInfo, city, unit, tile)
+        val rng = gameContext.stateBasedRandom("UniqueTriggerActivation.getTriggerFunction", unique.text.hashCode())
 
         val chosenCity = relevantCity ?:
             civInfo.cities.firstOrNull { it.isCapital() }
@@ -118,7 +119,7 @@ object UniqueTriggerActivation {
                 val choices = event.getMatchingChoices(gameContext)
                     ?: return null
                 if (civInfo.isAI() || event.presentation == Event.Presentation.None) return {
-                    val choice = choices.toList().randomWeighted { it.getWeightForAiDecision(gameContext) }
+                    val choice = choices.toList().randomWeighted(rng) { it.getWeightForAiDecision(gameContext) }
                     choice.triggerChoice(civInfo, unit)
                 }
                 if (event.presentation == Event.Presentation.Alert) return {
@@ -351,10 +352,11 @@ object UniqueTriggerActivation {
                     civUnit = civInfo.getEquivalentUnit(replacementUnit.name)
                 }
 
-                val placingTile =
-                    tile ?: civInfo.cities.random().getCenterTile()
 
                 fun placeUnit(): Boolean {
+                    val rng = (unit?.cache?.state ?: civInfo.state).stateBasedRandom("UniqueTriggerActivation.getTriggerFunction") 
+                    val placingTile =
+                        tile ?: civInfo.cities.random(rng).getCenterTile()
                     val placedUnit = civInfo.units.placeUnitNearTile(placingTile.position, civUnit.name)
                     if (notification != null && placedUnit != null) {
                         val notificationText =
@@ -421,7 +423,7 @@ object UniqueTriggerActivation {
                         true
                     }
                     belief != null && civInfo.religionManager.religion?.hasBelief(name) == false -> return {
-                        civInfo.religionManager.religion?.addBelief(belief)
+                        civInfo.religionManager.chooseBeliefs(listOf(belief))
                         getNotificationText(notification, triggerNotificationText, "You gain the [$name] Belief")?.let {
                             civInfo.addNotification(it, NotificationCategory.Religion, NotificationIcon.Faith)
                         }

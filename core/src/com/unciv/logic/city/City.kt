@@ -4,6 +4,7 @@ import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.MultiFilter
+import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.city.managers.CityConquestFunctions
 import com.unciv.logic.city.managers.CityEspionageManager
 import com.unciv.logic.city.managers.CityExpansionManager
@@ -30,12 +31,12 @@ import com.unciv.models.stats.GameResource
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.SubStat
+import com.unciv.utils.pseudoRandomUuid
 import com.unciv.utils.withoutItem
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 import java.util.EnumSet
-import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.roundToInt
 
@@ -66,7 +67,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     var hasJustBeenConquered = false
 
     var location = HexCoord()
-    var id: String = UUID.randomUUID().toString()
+    var id: String = NO_ID
     override var name: String = ""
     /** Serialization field for [foundingCivObject]. Is equivalent to `foundingCivObject.civName` */
     private var foundingCiv = ""
@@ -162,7 +163,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     fun clone(): City {
         val toReturn = City()
         toReturn.location = location
-        toReturn.id = id
+        toReturn.id = if (id != NO_ID) id else pseudoRandomId(civ)
         toReturn.name = name
         toReturn.health = health
         toReturn.population = population.clone()
@@ -235,6 +236,17 @@ class City : IsPartOfGameInfoSerialization, INamed {
             potentialRoadPathing = PathingMap.createRoadPathingMap(civ, centerTile)
         return if (id < destination.id) potentialRoadPathing.getShortestPath( destination.centerTile, maxTurns)
         else destination.getRoadPath(this, maxTurns)
+    }
+
+    @Readonly
+    fun getRoadPathToAny(destinations: Set<Tile>, maxBfsReachPadding: Int): List<Tile>? {
+        // TODO: replace with multi-target AStar
+        val maxTurns = maxBfsReachPadding + destinations.minOf { it.aerialDistanceTo(centerTile) }
+        if (!::potentialRoadPathing.isInitialized)
+            potentialRoadPathing = PathingMap.createRoadPathingMap(civ, centerTile)
+        val otherCity = potentialRoadPathing.bfsUntilMatchingTile(maxTurns) { tile,_ -> destinations.contains(tile) }
+        if (otherCity == null) return null
+        return potentialRoadPathing.getShortestPath(otherCity) // this just reads from cached results
     }
 
     @Readonly fun isGarrisoned() = getGarrison() != null
@@ -374,6 +386,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     //region state-changing functions
     fun setTransients(civInfo: Civilization) {
         this.civ = civInfo
+        this.id = if (id != NO_ID) id else pseudoRandomId(civ)
         tileMap = civInfo.gameInfo.tileMap
         centerTile = tileMap[location]
         state = GameContext(this)
@@ -416,7 +429,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
      *
      *  If the next City.startTurn is soon enough, then use [reassignPopulationDeferred] instead.
      */
-    fun reassignPopulation(resetLocked: Boolean = false) {
+    fun reassignPopulation(resetLocked: Boolean = false):Unit = timeThis("reassignPopulation") {
         if (resetLocked) {
             workedTiles = hashSetOf()
             lockedTiles = hashSetOf()
@@ -448,6 +461,11 @@ class City : IsPartOfGameInfoSerialization, INamed {
         // Destroy planes stationed in city
         for (airUnit in getCenterTile().airUnits.toList()) airUnit.destroy()
 
+        // Evacuate spies BEFORE relinquishing tile ownership, because spy lookup uses tile.owningCity
+        // to find which city a spy is stationed in (after save/load when the transient city field is null).
+        // If we relinquish ownership first, owningCity becomes null and spies are not found/evacuated.
+        espionage.removeAllPresentSpies(SpyFleeReason.CityDestroyed)
+
         // The relinquish ownership MUST come before removing the city,
         // because it updates the city stats which assumes there is a capital, so if you remove the capital it crashes
         for (tile in getTiles()) {
@@ -469,8 +487,6 @@ class City : IsPartOfGameInfoSerialization, INamed {
             if (!unit.movement.canPassThrough(getCenterTile()))
                 unit.movement.teleportToClosestMoveableTile()
         }
-
-        espionage.removeAllPresentSpies(SpyFleeReason.CityDestroyed)
 
         // Update proximity rankings for all civs
         for (otherCiv in civ.gameInfo.getAliveMajorCivs()) {
@@ -591,6 +607,8 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     // Finds matching uniques provided from both local and non-local sources.
     @Readonly
+    @Deprecated(message = "forEachMatchingUnique is faster. If not viable, then this can still be used",
+        replaceWith = ReplaceWith("forEachMatchingUnique"))
     fun getMatchingUniques(
         uniqueType: UniqueType,
         gameContext: GameContext = state,
@@ -607,8 +625,32 @@ class City : IsPartOfGameInfoSerialization, INamed {
             }.flatMap { it.getMultiplied(gameContext) }
     }
 
+    @Readonly
+    fun forEachMatchingUnique(uniqueType: UniqueType, op: (unique: Unique)->Unit)
+        = forEachMatchingUnique(uniqueType, state, true, op)
+    @Readonly
+    fun forEachMatchingUnique(uniqueType: UniqueType, gameContext: GameContext, op: (unique: Unique)->Unit)
+        = forEachMatchingUnique(uniqueType, gameContext, true, op)
+    @Readonly
+    fun forEachMatchingUnique(
+        uniqueType: UniqueType,
+        gameContext: GameContext = state,
+        includeCivUniques: Boolean,
+        op: (unique: Unique)->Unit,
+    ) {
+        if (includeCivUniques) {
+            civ.forEachMatchingUnique(uniqueType, gameContext, op)
+            forEachLocalMatchingUnique(uniqueType, gameContext, op)
+        } else {
+            cityConstructions.builtBuildingUniqueMap.forEachMatchingUnique(uniqueType, state, isTimedUniqueFilter, op)
+            religion.forEachMatchingUnique(uniqueType, state, isTimedUniqueFilter, op)
+        }
+    }
+
     // Uniques special to this city
     @Readonly
+    @Deprecated(message = "forEachLocalMatchingUnique is faster. If not viable, then this can still be used",
+        replaceWith = ReplaceWith("forEachLocalMatchingUnique"))
     fun getLocalMatchingUniques(uniqueType: UniqueType, gameContext: GameContext = state): Sequence<Unique> {
         val uniques = cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType).filter { it.isLocalEffect } +
             religion.getUniques(uniqueType)
@@ -616,14 +658,36 @@ class City : IsPartOfGameInfoSerialization, INamed {
                 .flatMap { it.getMultiplied(gameContext) }
     }
 
+    // Uniques special to this city
+    @Readonly
+    fun forEachLocalMatchingUnique(uniqueType: UniqueType, gameContext: GameContext = state, op: (unique: Unique)->Unit) {
+        cityConstructions.builtBuildingUniqueMap.forEachMatchingUnique(uniqueType, gameContext, isLocalUniqueFilter, op)
+        religion.forEachMatchingUnique(uniqueType, gameContext, op)
+    }
+
     // Uniques coming from this city, but that should be provided globally
     @Readonly
+    @Deprecated(message = "forEachMatchingUniqueWithNonLocalEffects is faster. If not viable, then this can still be used",
+        replaceWith = ReplaceWith("forEachMatchingUniqueWithNonLocalEffects"))
     fun getMatchingUniquesWithNonLocalEffects(uniqueType: UniqueType, gameContext: GameContext = state): Sequence<Unique> {
         val uniques = cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType)
         // Memory performance showed that this function was very memory intensive, thus we only create the filter if needed
         return if (uniques.any()) uniques.filter { !it.isLocalEffect && !it.isTimedTriggerable
             && it.conditionalsApply(gameContext) }.flatMap { it.getMultiplied(gameContext) }
         else uniques
+    }
+
+    // Uniques coming from this city, but that should be provided globally
+    @Readonly
+    fun forEachMatchingUniqueWithNonLocalEffects(uniqueType: UniqueType, gameContext: GameContext, op: (unique: Unique)->Unit)
+        = cityConstructions.builtBuildingUniqueMap.forEachMatchingUnique(uniqueType, gameContext, nonLocalUniqueFilter, op)
+
+    // All uniques affecting this city: both local uniques and civ uniques.
+    // This replaces LocalUniqueCache#forCityGetMatchingUniques
+    @Readonly
+    fun forEachAffectingMatchingUnique(uniqueType: UniqueType, gameContext: GameContext = state, op: (unique: Unique)->Unit) {
+        forEachLocalMatchingUnique(uniqueType, gameContext, op)
+        civ.forEachMatchingUnique(uniqueType, gameContext, op)
     }
     
     fun clearCaches() {
@@ -634,6 +698,8 @@ class City : IsPartOfGameInfoSerialization, INamed {
     }
 
     @Readonly
+    @Deprecated(message = "forEachTriggeredUnique is faster. If not viable, then this can still be used",
+        replaceWith = ReplaceWith("forEachTriggeredUnique"))
     fun getTriggeredUniques(
         trigger: UniqueType,
         gameContext: GameContext = state,
@@ -653,6 +719,26 @@ class City : IsPartOfGameInfoSerialization, INamed {
     }
 
     @Readonly
+    fun forEachTriggeredUnique(
+        trigger: UniqueType,
+        gameContext: GameContext = state,
+        triggerFilter: (Unique) -> Boolean = { true },
+        includeCivUniques: Boolean = true,
+        op: (Unique) -> Unit) {
+        if (includeCivUniques) {
+            civ.forEachTriggeredUnique(trigger, gameContext, triggerFilter, op)
+            forEachLocalTriggeredUnique(trigger, gameContext, triggerFilter, op)
+        }
+        else {
+            fun filter(unique: Unique): Boolean  =
+                unique.getModifiers(trigger).any(triggerFilter) && unique.conditionalsApply(gameContext)
+            fun multipliedOp(unique: Unique) = unique.forEachMultiplied(gameContext, op)
+            cityConstructions.builtBuildingUniqueMap.forEachUnique(::filter, ::multipliedOp)
+            religion.forEachUnique(::filter, ::multipliedOp)
+        }
+    }
+
+    @Readonly
     fun getLocalTriggeredUniques(trigger: UniqueType, gameContext: GameContext = state,
         triggerFilter: (Unique) -> Boolean = { true }): Sequence<Unique> {
         val uniques =
@@ -662,5 +748,29 @@ class City : IsPartOfGameInfoSerialization, INamed {
         }.flatMap { it.getMultiplied(gameContext) }
     }
 
+    @Readonly
+    fun forEachLocalTriggeredUnique(trigger: UniqueType, gameContext: GameContext = state, op: (Unique)->Unit)
+        = forEachLocalTriggeredUnique(trigger, gameContext, {true}, op)
+    @Readonly
+    // UniqueMap lacks a way to iterate over all Uniques without allocations, so this is not *dramatically* faster than getLocalTriggeredUniques
+    fun forEachLocalTriggeredUnique(trigger: UniqueType, gameContext: GameContext = state,
+                                 triggerFilter: (Unique) -> Boolean, op: (Unique)->Unit) {
+        fun uniqueFilter(unique: Unique): Boolean
+            = unique.getModifiers(trigger).any(triggerFilter) && unique.conditionalsApply(gameContext)
+        fun buildingFilter(unique: Unique): Boolean
+            = unique.isLocalEffect && uniqueFilter(unique)
+        cityConstructions.builtBuildingUniqueMap.forEachUnique(::buildingFilter, op)
+        religion.forEachUnique(::uniqueFilter, op)
+    }
+
     //endregion
+    
+    companion object {
+        const val NO_ID = "00000000-0000-0000-0000-000000000000"
+        fun pseudoRandomId(civ: Civilization) = pseudoRandomUuid(GameContext(civ).stateBasedRandom("City.Id", civ.cities.size)).toString()
+
+        val isLocalUniqueFilter: (unique: Unique)->Boolean = {unique -> unique.isLocalEffect && !unique.isTimedTriggerable }
+        val nonLocalUniqueFilter: (unique: Unique)->Boolean = {unique -> !unique.isLocalEffect }
+        val isTimedUniqueFilter: (unique: Unique)->Boolean = {unique -> !unique.isTimedTriggerable }
+    }
 }

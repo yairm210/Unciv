@@ -162,7 +162,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
             Log.i(LOG_TAG, "notifyUserAboutTurn ${game.first}")
             val intent = Intent(applicationContext, AndroidLauncher::class.java).apply {
                 action = Intent.ACTION_VIEW
-                data = Uri.parse("https://unciv.app/multiplayer?id=${game.second}")
+                data = Uri.parse("https://unciv.app/${game.second}")
             }
             val flags = (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) FLAG_IMMUTABLE else 0) or
                     FLAG_UPDATE_CURRENT

@@ -24,13 +24,14 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 import yairm210.purity.annotations.Readonly
+import com.unciv.logic.automation.Timers.Companion.timeThis
 
 object UnitAutomation {
 
     private const val CLOSE_ENEMY_TILES_AWAY_LIMIT = 5
     private const val CLOSE_ENEMY_TURNS_AWAY_LIMIT = 3f
 
-    fun automateUnitMoves(unit: MapUnit) {
+    fun automateUnitMoves(unit: MapUnit):Unit = timeThis("automateUnitMoves") {
         check(!unit.civ.isBarbarian) { "Barbarians is not allowed here." }
 
         // Might die next turn - move!
@@ -127,7 +128,7 @@ object UnitAutomation {
                 && unit.movement.canReach(tile) // expensive, evaluate last
     }
 
-    internal fun tryExplore(unit: MapUnit): Boolean {
+    internal fun tryExplore(unit: MapUnit): Boolean = timeThis("tryExplore") {
         if (tryGoToRuin(unit) && (!unit.hasMovement() || unit.isDestroyed)) return true
 
         val unitVisibilityRange = unit.getVisibilityRange()
@@ -174,10 +175,11 @@ object UnitAutomation {
             return false
         }
 
+        val rng = unit.cache.state.stateBasedRandom("UnitAutomation.tryFogBust")
         val reachableTilesThisTurn =
                 unit.movement.getDistanceToTiles().keys.filter { isGoodTileForFogBusting(unit, it) }
         if (reachableTilesThisTurn.any()) {
-            unit.movement.headTowards(reachableTilesThisTurn.random()) // Just pick one
+            unit.movement.headTowards(reachableTilesThisTurn.random(rng)) // Just pick one
             return true
         }
 
@@ -214,7 +216,8 @@ object UnitAutomation {
                         && unit.getDamageFromTerrain(it) <= 0 // Don't end turn on damaging terrain for no good reason
                         && (!stayInTerritory || it.getOwner() == unit.civ || unit.currentTile.getOwner() != unit.civ)
                 }
-        if (reachableTiles.any()) unit.movement.moveToTile(reachableTiles.toList().random())
+        val rng = unit.cache.state.stateBasedRandom("UnitAutomation.wander")
+        if (reachableTiles.any()) unit.movement.moveToTile(reachableTiles.toList().random(rng))
     }
 
     internal fun tryUpgradeUnit(unit: MapUnit): Boolean {

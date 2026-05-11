@@ -11,6 +11,7 @@ import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.logic.map.mapgenerator.MapResourceSetting
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.ui.components.extensions.*
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
@@ -111,14 +112,15 @@ class MapParametersTable(
 
     private fun addMapShapeSelectBox() {
         val mapShapes = MapShape.allValues
+        val rng = GameContext().stateBasedRandom("MapParametersTable.addMapShapeSelectBox", System.currentTimeMillis().toInt())
 
         if (mapGeneratedMainType == MapGeneratedMainType.randomGenerated) {
             mapShapesOptionsValues = mapShapes.toHashSet()
             val optionsTable = MultiCheckboxTable("{Enabled Map Shapes}", "NewGameMapShapes", mapShapesOptionsValues) {
                 if (mapShapesOptionsValues.isEmpty()) {
-                    mapParameters.shape = mapShapes.random()
+                    mapParameters.shape = mapShapes.random(rng)
                 } else {
-                    mapParameters.shape = mapShapesOptionsValues.random()
+                    mapParameters.shape = mapShapesOptionsValues.random(rng)
                 }
             }
             add(optionsTable).colspan(2).grow().row()
@@ -140,7 +142,7 @@ class MapParametersTable(
         val ruleset = if (previousScreen is NewGameScreen) previousScreen.ruleset else RulesetCache.getVanillaRuleset()
         Concurrency.run("Generate example map") {
             val mapParametersForExample = if (forMapEditor) mapParameters else mapParameters.clone().apply { seed = 0 }
-            val exampleMap = MapGenerator(ruleset).generateMap(mapParametersForExample, GameParameters(), emptyList())
+            val exampleMap = MapGenerator(ruleset).generateMap(mapParametersForExample, GameParameters())
             Concurrency.runOnGLThread {
                 mapTypeExample.clear()
                 val mapPreview = LoadMapPreview(exampleMap, maxMapSize, maxMapSize)
@@ -158,6 +160,7 @@ class MapParametersTable(
 
     private fun addMapTypeSelectBox() {
         // MapType is not an enum so we can't simply enumerate. //todo: make it so!
+        val rng = GameContext().stateBasedRandom("MapParametersTable.addMapTypeSelectBox", System.currentTimeMillis().toInt())
         var mapTypes = MapType.allValues
         if (forMapEditor && mapGeneratedMainType != MapGeneratedMainType.randomGenerated) mapTypes = mapTypes + MapType.empty
 
@@ -165,9 +168,9 @@ class MapParametersTable(
             mapTypesOptionsValues = mapTypes.toHashSet()
             val optionsTable = MultiCheckboxTable("{Enabled Map Generation Types}", "NewGameMapGenerationTypes", mapTypesOptionsValues) {
                 if (mapTypesOptionsValues.isEmpty()) {
-                    mapParameters.type = mapTypes.random()
+                    mapParameters.type = mapTypes.random(rng)
                 } else {
-                    mapParameters.type = mapTypesOptionsValues.random()
+                    mapParameters.type = mapTypesOptionsValues.random(rng)
                 }
             }
             add(optionsTable).colspan(2).grow().row()
@@ -192,14 +195,15 @@ class MapParametersTable(
     }
 
     private fun addWorldSizeTable() {
+        val rng = GameContext().stateBasedRandom("MapParametersTable.addWorldSizeTable", System.currentTimeMillis().toInt())
         if (mapGeneratedMainType == MapGeneratedMainType.randomGenerated) {
             val mapSizes = MapSize.names()
             mapSizesOptionsValues = mapSizes.toHashSet()
             val optionsTable = MultiCheckboxTable("{Enabled World Sizes}", "NewGameWorldSizes", mapSizesOptionsValues) {
                 if (mapSizesOptionsValues.isEmpty()) {
-                    mapParameters.mapSize = MapSize(mapSizes.random())
+                    mapParameters.mapSize = MapSize(mapSizes.random(rng))
                 } else {
-                    mapParameters.mapSize = MapSize(mapSizesOptionsValues.random())
+                    mapParameters.mapSize = MapSize(mapSizesOptionsValues.random(rng))
                 }
             }
             add(optionsTable).colspan(2).grow().row()
@@ -287,15 +291,16 @@ class MapParametersTable(
     }
 
     private fun addResourceSelectBox() {
+        val rng = GameContext().stateBasedRandom("MapParametersTable.addResourceSelectBox", System.currentTimeMillis().toInt())
         val mapResources = MapResourceSetting.activeLabels()
 
         if (mapGeneratedMainType == MapGeneratedMainType.randomGenerated) {
             mapResourcesOptionsValues = mapResources.toHashSet()
             val optionsTable = MultiCheckboxTable("{Enabled Resource Settings}", "NewGameResourceSettings", mapResourcesOptionsValues) {
                 if (mapResourcesOptionsValues.isEmpty()) {
-                    mapParameters.mapResources = mapResources.random()
+                    mapParameters.mapResources = mapResources.random(rng)
                 } else {
-                    mapParameters.mapResources = mapResourcesOptionsValues.random()
+                    mapParameters.mapResources = mapResourcesOptionsValues.random(rng)
                 }
             }
             add(optionsTable).colspan(2).grow().row()

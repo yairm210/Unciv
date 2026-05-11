@@ -4,6 +4,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameStarter
+import com.unciv.logic.automation.Timers
 import com.unciv.models.metadata.GameSetupInfo
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.Dispatchers
@@ -92,6 +93,7 @@ class Simulation(
 
         newGameInfo.gameParameters.shufflePlayerOrder = true
 
+        Timers.singleton.startTiming()
         val jobs = (1..threadsNumber).map { threadId ->
             launch(Dispatchers.Default + CoroutineName("simulation-$threadId")) {
                 repeat(simulationsPerThread) {
@@ -135,6 +137,7 @@ class Simulation(
         }
 
         jobs.forEach { it.join() }
+        Timers.singleton.endTiming()
     }
 
     @Suppress("UNUSED_PARAMETER")   // used when activating debug output

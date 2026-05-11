@@ -425,9 +425,9 @@ object TranslationFileWriter {
         // Example: PolicyBranch inherits from Policy inherits from RulesetObject.
         // RulesetObject has the name and uniques properties and we wish to include them.
         // So we need superclass recursion to be sure not to miss stuff in the future.
-        // The superclass != null check is made obsolete in theory by the Object check, but better play safe.
+        // The superclass != null check is made obsolete in theory by the Any check, but better play safe.
         fun Class<*>.allSupers(): Sequence<Class<*>> = sequence {
-            if (this@allSupers == Object::class.java) return@sequence
+            if (this@allSupers == Any::class.java) return@sequence
             yield(this@allSupers)
             if (superclass != null)
                 yieldAll(superclass.allSupers())
@@ -461,30 +461,25 @@ object TranslationFileWriter {
                         && UniqueType.HiddenFromCivilopedia.placeholderText in element.uniques)
                     continue
                 val isPreTranslatable = isFieldPreTranslatable(element.javaClass, field)
+                val isParameterized = isFieldParameterized(element.javaClass, field)
                 fun submitCollectionItem(item: Any?) {
                     if (item === null) return
                     if (item !is String) serializeElement(item)
                     else if (isPreTranslatable) submitPretranslatableString(item)
+                    else if (isParameterized) submitString(item, Unique(item))
                     else submitString(item)
                 }
                 // this field can contain sub-objects, let's serialize them as well
                 @Suppress("RemoveRedundantQualifierName")  // to clarify List does _not_ inherit from anything in java.util
                 when {
-                    // Promotion names are not uniques but since we did the "[unitName] ability"
-                    // they need the "parameters" treatment too
-                    // Same for victory milestones
-                    (field.name in fieldsToProcessParameters)
-                            && (fieldValue is java.util.AbstractCollection<*>) ->
-                        for (item in fieldValue)
-                            if (item is String) submitString(item, Unique(item)) else serializeElement(item!!)
                     fieldValue is java.util.AbstractCollection<*> ->
                         for (item in fieldValue)
                             submitCollectionItem(item)
                     fieldValue is kotlin.collections.List<*> ->
                         for (item in fieldValue)
                             submitCollectionItem(item)
-                    element is Promotion && field.name == "name" ->  // see above
-                        submitString(fieldValue.toString(), Unique(fieldValue.toString()))
+                    isParameterized && (fieldValue is String) ->
+                        submitString(fieldValue, Unique(fieldValue))
                     else -> submitString(fieldValue.toString())
                 }
             }
@@ -537,14 +532,22 @@ object TranslationFileWriter {
             )
 
             private val fieldsToProcessParameters = setOf(
-                "uniques", "promotions", "milestones",
+                "uniques",
+                // Promotion names are not uniques but since we did the "[unitName] ability"
+                // they need the "parameters" treatment too
+                "Promotion.name",
+                "promotions",
+                // Same for victory milestones
+                "milestones",
+                // e.g. "See also: [rulesetobject]" in civilopediaText
+                "FormattedLine.text",
             )
 
             @Readonly
             private fun isFieldTypeRelevant(type: Class<*>) =
                     type == String::class.java ||
                     type == java.util.ArrayList::class.java ||
-                    type == java.util.List::class.java ||        // CivilopediaText is not an ArrayList
+                    type == List::class.java ||        // CivilopediaText is not an ArrayList
                     type == java.util.HashSet::class.java ||
                     type.isEnum  // allow scanning Enum names
 
@@ -557,8 +560,7 @@ object TranslationFileWriter {
                 return fieldValue != null &&
                         fieldValue != "" &&
                         (!field.type.isEnum || field.type.simpleName in translatableEnumsSet) &&
-                        field.name !in untranslatableFieldSet &&
-                        (clazz.componentType?.simpleName ?: clazz.simpleName) + "." + field.name !in untranslatableFieldSet
+                        !containsPotentiallyQualifiedName(untranslatableFieldSet, clazz, field)
             }
 
             /** Checks whether a field's content should be marked as "pre-translatable", meaning if it's not yet translated for a language,
@@ -566,8 +568,14 @@ object TranslationFileWriter {
              *  ONLY applies to collections of simple strings which can't contain {} placeholders.
              */
             private fun isFieldPreTranslatable(clazz: Class<*>, field: Field) =
-                field.name in preTranslatableFieldSet ||
-                (clazz.componentType?.simpleName ?: clazz.simpleName) + "." + field.name in preTranslatableFieldSet
+                containsPotentiallyQualifiedName(preTranslatableFieldSet, clazz, field)
+
+            /** Checks whether a field content should be treated as translatable as-is, or whether to potentially expect parameters */
+            private fun isFieldParameterized(clazz: Class<*>, field: Field) =
+                containsPotentiallyQualifiedName(fieldsToProcessParameters, clazz, field)
+
+            private fun containsPotentiallyQualifiedName(set: Set<String>, clazz: Class<*>, field: Field) =
+                field.name in set || (clazz.componentType?.simpleName ?: clazz.simpleName) + "." + field.name in set
 
             private fun getJavaClassByName(name: String): Class<Any>? {
                 return when (name) {

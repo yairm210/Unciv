@@ -1,6 +1,7 @@
 package com.unciv.logic.civilization.transients
 
 import com.unciv.Constants
+import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
@@ -9,6 +10,7 @@ import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.GameContext
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
@@ -168,7 +170,7 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
     @Readonly fun getUnitSupplyProductionPenalty(): Float = -min(getUnitSupplyDeficit() * 10f, 70f)
 
     @Readonly
-    fun getStatMapForNextTurn(): StatMap {
+    fun getStatMapForNextTurn(): StatMap = timeThis("getStatMapForNextTurn") {
         val statMap = StatMap()
         for (city in civInfo.cities) {
             for (entry in city.cityStats.finalStatList)

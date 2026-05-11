@@ -27,6 +27,13 @@ import com.unciv.utils.debug
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 
+/*
+ * Starts a new game
+ *
+ * Map terrain is determinisic, but game setup, including start locations, resources, and other 
+ * details, are random, based on GameContext.stateBasedRandom, which is based on the gameId, which
+ *  is fully random per game.
+ */
 object GameStarter {
     // temporary instrumentation while tuning/debugging
     private const val consoleTimings = false
@@ -70,7 +77,7 @@ object GameStarter {
             // The MapGen needs to know what civs are in the game to generate regions, starts and resources
             phaseOneChosenCivs = chooseCivilizations(gameSetupInfo.gameParameters, gameInfo, ruleset, existingMap = false)
             addCivilizations(gameSetupInfo.gameParameters, gameInfo, ruleset, phaseOneChosenCivs)
-            tileMap = mapGen.generateMap(gameSetupInfo.mapParameters, gameSetupInfo.gameParameters, gameInfo.civilizations)
+            tileMap = mapGen.generateMap(gameSetupInfo.mapParameters, gameSetupInfo.gameParameters, gameInfo)
             tileMap.mapParameters = gameSetupInfo.mapParameters
             // Now forget them for a moment! MapGen can silently fail to place some city states, so then we'll use the old fallback method to place those.
             gameInfo.civilizations.clear()
@@ -244,6 +251,7 @@ object GameStarter {
         ruleset: Ruleset,
         existingMap: Boolean
     ): List<Player> {
+        val rng = GameContext(gameInfo = gameInfo).stateBasedRandom("GameStarter.chooseCivilizations")
         val selectedPlayerNames = newGameParameters.players
             .map { it.chosenCiv }.toSet()
         @LocalState val randomNationsPool = (
@@ -277,7 +285,7 @@ object GameStarter {
             val nonAICount = newGameParameters.players.count {
                 it.playerType === PlayerType.Human || it.chosenCiv === Constants.spectator
             }
-            val desiredNumberOfPlayers = (min.coerceAtLeast(nonAICount)..max.coerceAtLeast(nonAICount)).random()
+            val desiredNumberOfPlayers = (min.coerceAtLeast(nonAICount)..max.coerceAtLeast(nonAICount)).random(rng)
 
             if (desiredNumberOfPlayers > newGameParameters.players.size) {
                 extraRandomAIPlayers = desiredNumberOfPlayers - newGameParameters.players.size
@@ -327,7 +335,7 @@ object GameStarter {
             // This swaps min and max if the user accidentally swapped min and max
             val min = newGameParameters.minNumberOfCityStates.coerceAtMost(newGameParameters.maxNumberOfCityStates)
             val max = newGameParameters.maxNumberOfCityStates.coerceAtLeast(newGameParameters.minNumberOfCityStates)
-            (min..max).random()
+            (min..max).random(rng)
         } else {
             newGameParameters.numberOfCityStates
         }
@@ -473,6 +481,7 @@ object GameStarter {
         eraUnitReplacement: String,
         settlerLikeUnits: Map<String, BaseUnit>
     ): BaseUnit? {
+        val rng = GameContext(civInfo = civ).stateBasedRandom("GameStarter.getEquivalentUnit($unitParam,$eraUnitReplacement)")
         var unit = unitParam // We want to change it and this is the easiest way to do so
         if (unit == Constants.eraSpecificUnit) unit = eraUnitReplacement
         if (unit == Constants.settler && Constants.settler !in ruleset.units) {
@@ -482,7 +491,7 @@ object GameStarter {
                         && it.value.isCivilian()
                 }
             if (buildableSettlerLikeUnits.isEmpty()) return null // No settlers in this mod
-            return civ.getEquivalentUnit(buildableSettlerLikeUnits.keys.random())
+            return civ.getEquivalentUnit(buildableSettlerLikeUnits.keys.random(rng))
         }
         if (unit == "Worker" && "Worker" !in ruleset.units) {
             val buildableWorkerLikeUnits = ruleset.units.filter {
@@ -490,7 +499,7 @@ object GameStarter {
                     it.value.isBuildable(civ) && it.value.isCivilian()
             }
             if (buildableWorkerLikeUnits.isEmpty()) return null // No workers in this mod
-            return civ.getEquivalentUnit(buildableWorkerLikeUnits.keys.random())
+            return civ.getEquivalentUnit(buildableWorkerLikeUnits.keys.random(rng))
         }
         return civ.getEquivalentUnit(unit)
     }
@@ -501,12 +510,13 @@ object GameStarter {
         startingUnits: MutableList<String>,
         settlerLikeUnits: Map<String, BaseUnit>
     ) {
+        val rng = GameContext(civInfo = civ).stateBasedRandom("GameStarter.adjustStartingUnitsForCityStatesAndOneCityChallenge")
         // Adjust starting units for city states
         if (civ.isCityState && !gameInfo.ruleset.modOptions.hasUnique(UniqueType.AllowCityStatesSpawnUnits)) {
             val startingSettlers = startingUnits.filter { settlerLikeUnits.contains(it) }
 
             startingUnits.clear()
-            startingUnits.add(startingSettlers.random())
+            startingUnits.add(startingSettlers.random(rng))
         }
 
         // Adjust starting units for one city challenge
@@ -514,7 +524,7 @@ object GameStarter {
             val startingSettlers = startingUnits.filter { settlerLikeUnits.contains(it) }
 
             startingUnits.removeAll(startingSettlers)
-            startingUnits.add(startingSettlers.random())
+            startingUnits.add(startingSettlers.random(rng))
         }
     }
 
@@ -622,9 +632,10 @@ object GameStarter {
         freeTiles: MutableList<Tile>,
         startScores: HashMap<Tile, Float>,
     ): Tile? {
-        var startingLocation = tileMap.startingLocationsByNation[civ.civID]?.randomOrNull()
+        val rng = GameContext(civInfo = civ).stateBasedRandom("GameStarter.getCivStartingLocation")
+        var startingLocation = tileMap.startingLocationsByNation[civ.civID]?.randomOrNull(rng)
         if (startingLocation == null) {
-            startingLocation = tileMap.startingLocationsByNation[Constants.spectator]?.randomOrNull()
+            startingLocation = tileMap.startingLocationsByNation[Constants.spectator]?.randomOrNull(rng)
             if (startingLocation != null) {
                 tileMap.startingLocationsByNation[Constants.spectator]?.remove(startingLocation)
             }
@@ -642,8 +653,9 @@ object GameStarter {
         freeTiles: MutableList<Tile>,
         startScores: HashMap<Tile, Float>
     ): Tile {
+        val rng = GameContext(civInfo = civ).stateBasedRandom("GameStarter.getOneStartingLocation")
         if (gameSetupInfo.gameParameters.noStartBias) {
-            return freeTiles.random()
+            return freeTiles.random(rng)
         }
         if (civ.nation.startBias.any { it in tileMap.naturalWonders }) {
             // startPref wants Natural wonder neighbor: Rare and very likely to be outside getDistanceFromEdge
@@ -673,6 +685,6 @@ object GameStarter {
                 }
             }
         }
-        return preferredTiles.randomOrNull() ?: freeTiles.random()
+        return preferredTiles.randomOrNull(rng) ?: freeTiles.random(rng)
     }
 }

@@ -29,6 +29,7 @@ import yairm210.purity.annotations.Readonly
 import java.text.DecimalFormat
 import kotlin.math.pow
 import kotlin.math.ulp
+import com.unciv.logic.automation.Timers.Companion.timeThis
 
 
 /**
@@ -309,6 +310,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
     @Readonly fun getUniques(): Sequence<Unique> = tempUniquesMap.getAllUniques()
 
     @Readonly
+    @Deprecated(message = "forEachMatchingUnique is faster. If not viable, then this can still be used",
+        replaceWith = ReplaceWith("forEachMatchingUnique"))
     fun getMatchingUniques(
         uniqueType: UniqueType,
         gameContext: GameContext = cache.state,
@@ -319,6 +322,21 @@ class MapUnit : IsPartOfGameInfoSerialization {
         )
         if (checkCivInfoUniques)
             yieldAll(civ.getMatchingUniques(uniqueType, gameContext))
+    }
+
+    @Readonly
+    fun forEachMatchingUnique(uniqueType: UniqueType, gameContext: GameContext = cache.state, op: (Unique)->Unit)
+        = forEachMatchingUnique(uniqueType, gameContext, checkCivInfoUniques = false, op)
+    @Readonly
+    fun forEachMatchingUnique(
+        uniqueType: UniqueType,
+        gameContext: GameContext = cache.state,
+        checkCivInfoUniques: Boolean,
+        op: (Unique)->Unit,
+    ) {
+        tempUniquesMap.forEachMatchingUnique(uniqueType, gameContext, op)
+        if (checkCivInfoUniques)
+            civ.forEachMatchingUnique(uniqueType, gameContext, op)
     }
 
     @Readonly
@@ -764,7 +782,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     /**
      * Update this unit's cache of viewable tiles and its civ's as well.
      */
-    fun updateVisibleTiles(updateCivViewableTiles: Boolean = true, explorerPosition: HexCoord? = null) {
+    fun updateVisibleTiles(updateCivViewableTiles: Boolean = true, explorerPosition: HexCoord? = null):Unit = timeThis("MapUnit.updateVisibleTiles") {
         val oldViewableTiles = viewableTiles
 
         viewableTiles = when {

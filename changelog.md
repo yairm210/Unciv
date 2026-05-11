@@ -1,3 +1,65 @@
+## 4.20.5
+
+modding: Correctly ignore possible filtering uniques for ruleset-disabled uniques
+
+modding: Check for event loops that the AI can get stuck in
+
+By SomeTroglodyte:
+- Improve Civilopedia around Diplomacy concepts depending on Embassies
+- Fixed map editor crash 
+
+Trigger upon losing unit unique - By PLynx01
+
+Handle display cutout in all orientations and fix rotation - By Gatien-L
+
+## 4.20.4
+
+modding: Ignore ruleset-specific errors when unique is disabled in this ruleset
+
+By SomeTroglodyte:
+- Hide religion- or espionage-specific demands when disabled 
+- Fixed NPE when Espionage Screen is used to move a spy to an unknown civ's city 
+
+By unciv-loof:
+- Add missing table row for city resistance 
+
+By Ambeco:
+- Unciv can receive links directly to games or new friends
+- Prevent save-scumming for more types of randomness
+
+Added option to stop workers from removing vegetation - By Emandac
+
+## 4.20.3
+
+Custom maps are retained when starting a new game from an old one
+
+Spies "evacuate" correctly from destroyed cities
+
+Spectators can see the building list again
+
+By unciv-loof:
+- Confirmation popup before breaking promise not to spy 
+- ConstructImprovementInstantly now clears tile improvement queue 
+
+Fixed issue with units selection in city - By ValeraShimchuck
+
+By Ambeco:
+- AI: Minimize movement before attacking
+- PathingMap can now also BFS, taking moveCost into consideration 
+
+## 4.20.2
+
+By unciv-loof:
+- Add back option to disable rendering of unitset in display settings 
+- Do not forcibly reset mod selections after closing warning in new game screen 
+- Clicking Bully and Conquer CS quests centers map on target's capital 
+- Don't display empty message in 'declare war' popup 
+- AIs can denounce multiple civs 
+
+Allow beliefs gotten from triggers to use triggerables - by SeventhM
+
+Ocean Ice should spawn again - by Ambeco
+
 ## 4.20.1
 
 Drastically reduced memory consumption

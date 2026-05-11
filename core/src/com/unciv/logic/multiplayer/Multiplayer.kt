@@ -5,7 +5,6 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.automation.civilization.NextTurnAutomation
-import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.event.EventBus
@@ -173,10 +172,7 @@ class Multiplayer {
 
         val notificationText = if (responsibleCivNameOrPlayerId == playerCivName || responsibleCivNameOrPlayerId.isEmpty()) {
             "[$playerCivName] resigned and is now controlled by AI"
-        } else try {
-            val responsibleCivName = gameInfo.getCivilization(responsibleCivNameOrPlayerId).civName
-            "[$playerCivName] was forcibly resigned by [$responsibleCivName] and is now controlled by AI"
-        } catch (_: NoSuchElementException) {
+        } else {
             "[$playerCivName] was forcibly resigned by [$responsibleCivNameOrPlayerId] and is now controlled by AI"
         }
         
@@ -224,10 +220,7 @@ class Multiplayer {
 
         val notificationText = if (responsibleCivNameOrPlayerId == playerCivName || responsibleCivNameOrPlayerId.isEmpty()) {
             "[$playerCivName] skipped their own turn"
-        } else try {
-            val responsibleCiv: Civilization = gameInfo.getCivilization(responsibleCivNameOrPlayerId)
-            "[$playerCivName]'s turn was skipped by [$responsibleCiv]"
-        } catch (_: NoSuchElementException) {
+        } else {
             "[$playerCivName]'s turn was skipped by [$responsibleCivNameOrPlayerId]"
         }
 
