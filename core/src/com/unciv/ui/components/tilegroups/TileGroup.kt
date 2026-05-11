@@ -138,15 +138,4 @@ open class TileGroup(
 
     override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
     override fun act(delta: Float) {}
-
-    override fun hit(x: Float, y: Float, touchable: Boolean): Actor? {
-        // After the layer-container refactoring, layerMisc is no longer a child of TileGroup.
-        // But TileGroup still holds a reference, and after TileGroupMap.init both share the same
-        // coordinate origin, so we can forward the hit check directly.
-        if (layerMisc.isVisible) {
-            val miscHit = layerMisc.hit(x, y, touchable)
-            if (miscHit != null) return miscHit
-        }
-        return super.hit(x, y, touchable)
-    }
 }
