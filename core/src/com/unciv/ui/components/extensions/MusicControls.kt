@@ -11,6 +11,8 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.UncivSlider
 import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.popups.Popup
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import kotlin.math.floor
 
 /**
@@ -98,10 +100,30 @@ interface MusicControls {
         val expectedWidth = if (width == 0f) prefWidth else width
         val label = WrappableLabel("", expectedWidth - 10f, Color(0xffd0afff.toInt()), 16, true)
         label.wrap = true
+
+        var length = 0f // captured by getTipText and music.onChange. Transports slider.maxValue so we don't have to change the getTipText signature.
+        val formatter = DateTimeFormatter.ofPattern("mm:ss")
+        fun Float.formatTime() = LocalTime.ofSecondOfDay(toLong()).format(formatter)
+        val slider = UncivSlider(0f, 1000f, 1f, plusMinus = false, initial = 0f,
+            sound = UncivSound.Silent, tipType = UncivSlider.TipType.Auto,
+            getTipText = { value -> "${value.formatTime()} / ${length.formatTime()}" }
+        ) {
+            music.setCurrentPosition(it)
+        }
+        slider.isVisible = false
+
         add(label).padTop(20f).colspan(2).fillX().row()
+        add(slider).padTop(20f).colspan(2).row()
+
         music.onChange {
             label.setText("Currently playing: [$it]".tr())
             label.optimizePrefWidth()
+            if (it.length != null && it.length > 0f && it.position != null) {
+                length = it.length
+                slider.setRange(0f, it.length)
+                slider.value = it.position
+                slider.isVisible = true
+            } else slider.isVisible = false
         }
         firstAscendant(Popup::class.java)?.run {
             closeListeners.add { music.onChange(null) }
