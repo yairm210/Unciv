@@ -39,6 +39,7 @@ plugins {
 
 // Kludge to get the correct string notation for a gdx native (':' _after_ version seems beyond toml)
 fun gdxNatives(platform: String) = "${libs.gdx.platform.get()}:natives-$platform"
+fun miniaudioNatives(platform: String) = "${libs.miniaudio.platform.get()}:natives-$platform"
 
 // from here on you can't simply use `libs` anymore, see https://github.com/gradle/gradle/issues/18237#issuecomment-928079890
 
@@ -68,6 +69,9 @@ allprojects {
             "com.badlogic.gdx.files.FileHandle.name",
 
             "com.badlogic.gdx.utils.IntArray.get",
+
+            "games.rednblack.miniaudio.MASound.getLength",
+            "games.rednblack.miniaudio.MASound.getCursorPosition",
 
             "io.ktor.http.Url.segments",
             "io.ktor.http.Url.parameters",
@@ -114,6 +118,8 @@ project(":desktop") {
         "implementation"(rootProject.libs.gdx.tools) {
             exclude("com.badlogicgames.gdx", "gdx-backend-lwjgl")
         }
+
+        "implementation"(miniaudioNatives("desktop"))
 
         // Needed to display "Playing Unciv" in Discord
         "implementation"(rootProject.libs.discord)
@@ -169,6 +175,10 @@ if (getSdkPath() != null) {
             natives(gdxNatives("arm64-v8a"))
             natives(gdxNatives("x86"))
             natives(gdxNatives("x86_64"))
+            natives(miniaudioNatives("armeabi-v7a"))
+            natives(miniaudioNatives("arm64-v8a"))
+            natives(miniaudioNatives("x86"))
+            natives(miniaudioNatives("x86_64"))
         }
     }
 }
@@ -181,6 +191,7 @@ project(":core") {
 
     dependencies {
         "implementation"(rootProject.libs.gdx)
+        "api"(rootProject.libs.miniaudio)
         "implementation"(rootProject.libs.coroutines.core)
         "implementation"(rootProject.libs.kotlin.reflect)
 
@@ -205,6 +216,7 @@ project(":core") {
             "implementation"(rootProject.libs.gdx.backend.headless)
             "implementation"(rootProject.libs.gdx.backend.desktop)
             "implementation"(gdxNatives("desktop"))
+            "implementation"(miniaudioNatives("desktop"))
         }
     }
 }

@@ -29,6 +29,11 @@
 -keepclassmembers class com.badlogic.gdx.backends.android.AndroidInput* {
    <init>(com.badlogic.gdx.Application, android.content.Context, java.lang.Object, com.badlogic.gdx.backends.android.AndroidApplicationConfiguration);
 }
+-keepclassmembers class games.rednblack.miniaudio.MiniAudio {
+    public void on_native_sound_end(long);
+    public void on_native_log(int, java.lang.String);
+    public void on_native_notification(int);
+}
 
 # You will need the next three lines if you use scene2d for UI or gameplay.
 # If you don't use scene2d at all, you can remove or comment out the next line:
