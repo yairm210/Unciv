@@ -1,3 +1,21 @@
+## 4.20.6
+
+chore(ci): Attempt to fix CI by using latest upstream AUR updater
+
+4.20.5-patch1
+
+Revert bad android settings change 
+
+By SeventhM:
+- Allow enabling embassies in Global/Policy/Era uniques instead of just techs 
+- Fix redundant requirement for sending embassies 
+- Add countables for worked tiles/population 
+- Fix edge case where Great Prophet costs are wrong 
+
+Improve language handling and slightly ease use of first-run language picker - By SomeTroglodyte
+
+Replaced LocalUniqueCache with .forEach mathods. - By Ambeco
+
 ## 4.20.5
 
 modding: Correctly ignore possible filtering uniques for ruleset-disabled uniques
