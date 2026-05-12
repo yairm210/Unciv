@@ -134,6 +134,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
             && !ourDiploManager.hasModifier(DiplomaticModifiers.SharedEmbassies)
     }
 
+    @Readonly
     fun meetsEmbassyRequirementFor(otherCiv: Civilization): Boolean {
         return !civInfo.hasUnique(UniqueType.RequiresEmbassiesForDiplomacy) ||
             civInfo.getDiplomacyManager(otherCiv)!!.hasModifier(DiplomaticModifiers.SharedEmbassies)
