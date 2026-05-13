@@ -228,10 +228,14 @@ and city distance in another. In case of conflicts, there is no guarantee which 
 | riverCountMultiplier                     | Float  | 0.01                          | [^I]  |
 | minRiverLength                           | Int    | 5                             | [^I]  |
 | maxRiverLength                           | Int    | 666                           | [^I]  |
-| religionLimitBase                        | Int    | 1                             | [^K]  |
-| religionLimitMultiplier                  | Float  | 0.5                           | [^K]  |
-| pantheonBase                             | Int    | 10                            | [^L]  |
-| pantheonGrowth                           | Int    | 5                             | [^L]  |
+| religionLimitBase                        | Int    | 1                             | [^KA] |
+| religionLimitMultiplier                  | Float  | 0.5                           | [^KA] |
+| pantheonBase                             | Int    | 10                            | [^KB] |
+| pantheonGrowth                           | Int    | 5                             | [^KB] |
+| prophetBase                              | Int    | 200                           | [^KC] |
+| prophetGrowth                            | Int    | 100                           | [^KC] |
+| prophetSpawnChanceBase                   | Float  | 5.0                           | [^KD] |
+| prophetSpawnChanceExcessFaithMultiplier  | Float  | 1.0                           | [^KD] |
 | workboatAutomationSearchMaxTiles         | Int    | 20                            | [^M]  |
 | maxSpyRank                               | Int    | 3                             | [^N]  |
 | spyRankSkillPercentBonus                 | Float  | 30                            | [^O]  |
@@ -272,8 +276,10 @@ Legend:
 - [^H]: MapGenerator.spawnLakesAndCoasts: Water bodies up to this tile count become Lakes
 - [^I]: RiverGenerator: river frequency and length bounds
 - [^J]: A [UnitUpgradeCost](#unitupgradecost) sub-structure.
-- [^K]: Maximum foundable Religions = religionLimitBase + floor(MajorCivCount * religionLimitMultiplier)
-- [^L]: Cost of pantheon = pantheonBase + CivsWithReligion * pantheonGrowth
+- [^KA]: Maximum foundable Religions = religionLimitBase + floor(MajorCivCount * religionLimitMultiplier)
+- [^KB]: Cost of pantheon = pantheonBase + CivsWithReligion * pantheonGrowth
+- [^KC]: Cost of prophet = prophetBase + prophetsEarned * (prophetsEarned+1)/2  * prophetGrowth
+- [^KD]: Prophet spawn chance = prophetSpawnChanceBase + (storedFaith - faithRequired) * prophetSpawnChanceExcessFaithMultiplier
 - [^M]: When the AI decides whether to build a work boat, how many tiles to search from the city center for an improvable tile
 - [^N]: The maximum rank any spy can reach
 - [^O]: How much skill bonus each rank gives
