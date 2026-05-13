@@ -137,8 +137,8 @@ class GameOptionsTable(
             if (gameParameters.enableRandomNationsPool) {
                 it.addNationsSelectTextButton()
             }
-            it.addShowRankingsCheckbox()
-            if (!gameParameters.showRankings) {
+            it.addShowVictoryStatsCheckbox()
+            if (!gameParameters.showVictoryStats) {
                 it.addShowDemographicsCheckbox()
             }
         }
@@ -214,10 +214,10 @@ class GameOptionsTable(
         }
     }
 
-    private fun Table.addShowRankingsCheckbox() =
-        addCheckbox("Show Rankings", gameParameters.showRankings)
+    private fun Table.addShowVictoryStatsCheckbox() =
+        addCheckbox("Show Rankings", gameParameters.showVictoryStats)
         {
-            gameParameters.showRankings = it
+            gameParameters.showVictoryStats = it
             if (it) gameParameters.showDemographics = false
             update()  // To show/hide showDemographics checkbox
         }
