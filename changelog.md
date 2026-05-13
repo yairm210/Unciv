@@ -1,3 +1,15 @@
+## 4.20.6
+
+By SeventhM:
+- Allow enabling embassies in Global/Policy/Era uniques instead of just techs 
+- Fix redundant requirement for sending embassies 
+- Add countables for worked tiles/population 
+- Fix edge case where Great Prophet costs are wrong 
+
+Improve language handling and slightly ease use of first-run language picker - By SomeTroglodyte
+
+CPU performance improvements - By Ambeco
+
 ## 4.20.5
 
 modding: Correctly ignore possible filtering uniques for ruleset-disabled uniques

@@ -368,7 +368,10 @@ class CityScreen(
 
         for (tileGroup in cityTileGroups) {
             tileGroup.onClick { tileGroupOnClick(tileGroup, city) }
-            tileGroup.layerMisc.onClick { tileWorkedIconOnClick(tileGroup, city) }
+            tileGroup.layerMisc.onClick {
+                tileWorkedIconOnClick(tileGroup, city)
+                tileGroupOnClick(tileGroup, city)
+            }
             tileGroup.layerMisc.onDoubleClick { tileWorkedIconDoubleClick(tileGroup, city) }
             tileGroups.add(tileGroup)
         }

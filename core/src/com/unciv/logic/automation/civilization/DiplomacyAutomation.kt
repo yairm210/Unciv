@@ -178,7 +178,7 @@ object DiplomacyAutomation {
                 && it.hasUnique(UniqueType.EnablesOpenBorders)
                 && !ourDiploManager.hasOpenBorders
                 && !ourDiploManager.otherCivDiplomacy().hasOpenBorders
-                && civInfo.diplomacyFunctions.hasMutualEmbassyWith(it)
+                && civInfo.diplomacyFunctions.meetsEmbassyRequirementFor(it)
                 && !ourDiploManager.hasFlag(DiplomacyFlags.DeclinedOpenBorders)
                 && !areWeOfferingTrade(civInfo, it, Constants.openBorders)
         }.sortedByDescending { it.getDiplomacyManager(civInfo)!!.relationshipLevel() }

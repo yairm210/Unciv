@@ -18,6 +18,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.UncivStage
 import com.unciv.utils.Concurrency
 import com.unciv.utils.isUUID
+import java.util.Locale
 
 class AndroidGame(private val activity: Activity) : UncivGame() {
 
@@ -91,4 +92,8 @@ class AndroidGame(private val activity: Activity) : UncivGame() {
 
     override fun getGcCount(): Int = 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) Debug.getRuntimeStat("art.gc.gc-count").toInt() else 0
+
+    override fun getDefaultLocale(): Locale =
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) super.getDefaultLocale()
+        else activity.resources.configuration.locales.get(0)
 }

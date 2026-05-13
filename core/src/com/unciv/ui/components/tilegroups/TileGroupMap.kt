@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.TileMap
 import com.unciv.ui.components.tilegroups.layers.*
@@ -25,7 +26,7 @@ class TileGroupMap<T: TileGroup>(
     val worldWrap: Boolean = false,
     tileGroupsToUnwrap: Set<T>? = null
 ): Group() {
-    
+
     companion object {
         /** Vertical size of a hex in world coordinates, or the distance between the centers of any two opposing edges
          *  (the hex is oriented so it has corners to the left and right of the center and its upper and lower bounds are horizontal edges) */
@@ -58,6 +59,10 @@ class TileGroupMap<T: TileGroup>(
     private var drawBottomX = 0f
 
     private var maxVisibleMapWidth = 0f
+
+    /** All top-level layer container groups in render order (bottom to top).
+     *  Used by the world-wrap draw path to reposition tile-level actors. */
+    private val allMapLayers: List<Group>
 
     init {
 
@@ -97,18 +102,26 @@ class TileGroupMap<T: TileGroup>(
         drawBottomX = bottomX - bottomX
 
         val numberOfTilegroups = tileGroups.count()
-        
-        val baseLayers = ArrayList<TileLayerTerrain>(numberOfTilegroups)
-        val featureLayers = ArrayList<TileLayerFeatures>(numberOfTilegroups)
-        val borderLayers = ArrayList<TileLayerBorders>(numberOfTilegroups)
-        val resourceLayers = ArrayList<TileLayerResource>(numberOfTilegroups)
-        val improvementLayers = ArrayList<TileLayerImprovement>(numberOfTilegroups)
-        val miscLayers = ArrayList<TileLayerMisc>(numberOfTilegroups)
-        val yieldLayers = ArrayList<TileLayerYield>(numberOfTilegroups)
-        val pixelUnitLayers = ArrayList<TileLayerUnitSprite>(numberOfTilegroups)
-        val circleFogCrosshairLayers = ArrayList<TileLayerOverlay>(numberOfTilegroups)
-        val unitLayers = ArrayList<TileLayerUnitFlag>(numberOfTilegroups)
-        val cityButtonLayers = ArrayList<TileLayerCityButton>(numberOfTilegroups)
+
+        val terrainMapLayer     = TileMapLayer<TileLayerTerrain>(numberOfTilegroups)
+        val featureMapLayer     = TileMapLayer<TileLayerFeatures>(numberOfTilegroups)
+        val borderMapLayer      = TileMapLayer<TileLayerBorders>(numberOfTilegroups)
+        val resourceMapLayer    = TileMapLayer<TileLayerResource>(numberOfTilegroups, actable = true)
+        val improvementMapLayer = TileMapLayer<TileLayerImprovement>(numberOfTilegroups, actable = true)
+        // TileLayerMisc.hit() may delegate to workedIcon, so the container must forward touches
+        val miscMapLayer        = TileMapLayer<TileLayerMisc>(numberOfTilegroups, touchable = true)
+        val yieldMapLayer       = TileMapLayer<TileLayerYield>(numberOfTilegroups)
+        val unitSpriteMapLayer  = TileMapLayer<TileLayerUnitSprite>(numberOfTilegroups)
+        val overlayMapLayer     = TileMapLayer<TileLayerOverlay>(numberOfTilegroups)
+        // TileGroups themselves provide click detection; not TileLayer subclasses so plain Group
+        val tileGroupLayer      = Group().also {
+            it.isTransform = false
+            it.touchable = Touchable.childrenOnly
+            it.children.ensureCapacity(numberOfTilegroups)
+        }
+        val unitFlagMapLayer    = TileMapLayer<TileLayerUnitFlag>(numberOfTilegroups, actable = true)
+        // TileLayerCityButton has Touchable.childrenOnly internally, so the container must forward touches
+        val cityButtonMapLayer  = TileMapLayer<TileLayerCityButton>(numberOfTilegroups, actable = true, touchable = true)
 
         // Apparently the sortedByDescending is kinda memory-intensive because it needs to sort ALL the tiles
         //  So instead we group by and then sort on the groups
@@ -116,49 +129,55 @@ class TileGroupMap<T: TileGroup>(
         for (group in tileGroups.groupBy { it.tile.position.x + it.tile.position.y }
             .entries.sortedByDescending { it.key }.flatMap { it.value }) {
             // now, we steal the subgroups from all the tilegroups, that's how we form layers!
-            baseLayers.add(group.layerTerrain.apply { setPosition(group.x, group.y) })
-            featureLayers.add(group.layerFeatures.apply { setPosition(group.x, group.y) })
-            borderLayers.add(group.layerBorders.apply { setPosition(group.x, group.y) })
-            resourceLayers.add(group.layerResource.apply { setPosition(group.x, group.y) })
-            improvementLayers.add(group.layerImprovement.apply { setPosition(group.x, group.y) })
-            miscLayers.add(group.layerMisc.apply { setPosition(group.x, group.y) })
-            yieldLayers.add(group.layerYield.apply { setPosition(group.x, group.y) })
-            pixelUnitLayers.add(group.layerUnitArt.apply { setPosition(group.x, group.y) })
-            circleFogCrosshairLayers.add(group.layerOverlay.apply { setPosition(group.x, group.y) })
-            unitLayers.add(group.layerUnitFlag.apply { setPosition(group.x, group.y) })
-            cityButtonLayers.add(group.layerCityButton.apply { setPosition(group.x, group.y) })
+            terrainMapLayer.add(group.layerTerrain.apply { setPosition(group.x, group.y) })
+            featureMapLayer.add(group.layerFeatures.apply { setPosition(group.x, group.y) })
+            borderMapLayer.add(group.layerBorders.apply { setPosition(group.x, group.y) })
+            resourceMapLayer.add(group.layerResource.apply { setPosition(group.x, group.y) })
+            improvementMapLayer.add(group.layerImprovement.apply { setPosition(group.x, group.y) })
+            miscMapLayer.add(group.layerMisc.apply { setPosition(group.x, group.y) })
+            yieldMapLayer.add(group.layerYield.apply { setPosition(group.x, group.y) })
+            unitSpriteMapLayer.add(group.layerUnitArt.apply { setPosition(group.x, group.y) })
+            overlayMapLayer.add(group.layerOverlay.apply { setPosition(group.x, group.y) })
+            unitFlagMapLayer.add(group.layerUnitFlag.apply { setPosition(group.x, group.y) })
+            cityButtonMapLayer.add(group.layerCityButton.apply { setPosition(group.x, group.y) })
         }
 
-        
-        val layerLists = listOf(
-            baseLayers,
-            featureLayers,
-            borderLayers,
-            resourceLayers,
-            improvementLayers,
-            miscLayers,
-            yieldLayers,
-            pixelUnitLayers,
-            circleFogCrosshairLayers,
-            tileGroups, // The above layers are for the visual layers, this is for the clickability of the tile
-            unitLayers,  // Aaand units above everything else.
-            cityButtonLayers
+        for (group in tileGroups) tileGroupLayer.addActor(group)
+
+        allMapLayers = listOf(
+            terrainMapLayer,
+            featureMapLayer,
+            borderMapLayer,
+            resourceMapLayer,
+            improvementMapLayer,
+            tileGroupLayer,       // TileGroups for click detection; kept below miscMapLayer so
+                                  // miscMapLayer is hit-tested first (city-screen workedIcon clicks)
+            miscMapLayer,
+            yieldMapLayer,
+            unitSpriteMapLayer,
+            overlayMapLayer,
+            unitFlagMapLayer,
+            cityButtonMapLayer
         )
-        
-        // Resize the children list ONCE instead of multiple times with item copying between them
-        children.ensureCapacity(layerLists.sumOf { it.count() })
-        for (layer in layerLists) 
-            for (group in layer) 
-                addActor(group)
-        
+
+        children.ensureCapacity(allMapLayers.size)
+        for (mapLayer in allMapLayers) addActor(mapLayer)
+
+        val mapWidth = topX - bottomX
+        val mapHeight = topY - bottomY
+
+        // Each container group must cover the full map so TileGroupMap's culling check always
+        // passes for it (actual per-tile culling is done inside each container via its own
+        // cullingArea, which is propagated from TileGroupMap's cullingArea in draw()).
+        for (mapLayer in allMapLayers) mapLayer.setSize(mapWidth, mapHeight)
 
         // there are tiles "below the zero",
         // so we zero out the starting position of the whole board so they will be displayed as well
-        setSize(topX - bottomX, topY - bottomY)
+        setSize(mapWidth, mapHeight)
 
-        cullingArea = Rectangle(0f, 0f, width, height)
+        cullingArea = Rectangle(0f, 0f, mapWidth, mapHeight)
 
-        maxVisibleMapWidth = width - groupSize * 1.5f
+        maxVisibleMapWidth = mapWidth - groupSize * 1.5f
     }
 
     /**
@@ -184,6 +203,11 @@ class TileGroupMap<T: TileGroup>(
     }
 
     override fun draw(batch: Batch?, parentAlpha: Float) {
+        // Propagate the viewport culling area into each layer container so that individual tile
+        // actors are culled correctly. Container groups span the full map so they are never
+        // culled at the TileGroupMap level; the real per-tile work happens inside each container.
+        val ca = cullingArea
+        for (mapLayer in allMapLayers) mapLayer.setCullingArea(ca)
 
         if (worldWrap) {
             // Prevent flickering when zoomed out so you can see entire map
@@ -210,18 +234,37 @@ class TileGroupMap<T: TileGroup>(
                 var newBottomX = Float.MAX_VALUE
                 var newTopX = -Float.MAX_VALUE
 
-                children.forEach {
-                    if (beyondRight) {
-                        // Move from left to right
-                        if (it.x - drawBottomX <= diffRight)
-                            it.x += width
-                    } else if (beyondLeft) {
-                        // Move from right to left
-                        if (it.x + groupSize + 4f >= drawTopX + diffLeft)
-                            it.x -= width
+                // Reposition tile-level actors within each layer container.
+                // Bounds are tracked only from the first layer (all layers share the same positions).
+                val referenceLayer = allMapLayers[0]
+                for (mapLayer in allMapLayers) {
+                    val trackBounds = mapLayer === referenceLayer
+                    for (actor in mapLayer.children) {
+                        if (beyondRight) {
+                            if (actor.x - drawBottomX <= diffRight)
+                                actor.x += width
+                        } else if (beyondLeft) {
+                            if (actor.x + groupSize + 4f >= drawTopX + diffLeft)
+                                actor.x -= width
+                        }
+                        if (trackBounds) {
+                            newBottomX = min(newBottomX, actor.x)
+                            newTopX = max(newTopX, actor.x + groupSize + 4f)
+                        }
                     }
-                    newBottomX = min(newBottomX, it.x)
-                    newTopX = max(newTopX, it.x + groupSize + 4f)
+                }
+
+                // Also reposition any actors added directly to this group (e.g. transient overlays).
+                for (child in children) {
+                    if (child !in allMapLayers) {
+                        if (beyondRight) {
+                            if (child.x - drawBottomX <= diffRight)
+                                child.x += width
+                        } else if (beyondLeft) {
+                            if (child.x + groupSize + 4f >= drawTopX + diffLeft)
+                                child.x -= width
+                        }
+                    }
                 }
 
                 drawBottomX = newBottomX

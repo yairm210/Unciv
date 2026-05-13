@@ -103,9 +103,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
      */
     @Readonly
     private fun canTradeEmbassies(): Boolean {
-        return civInfo.isMajorCiv()
-            && civInfo.hasUnique(UniqueType.EnablesEmbassies)
-            && civInfo.hasUnique(UniqueType.RequiresEmbassiesForDiplomacy)
+        return civInfo.isMajorCiv() && civInfo.hasUnique(UniqueType.EnablesEmbassies)
     }
 
     /**
@@ -136,16 +134,10 @@ class DiplomacyFunctions(val civInfo: Civilization) {
             && !ourDiploManager.hasModifier(DiplomaticModifiers.SharedEmbassies)
     }
 
-    /**
-     * Test if both civs have embassies established in each others' capital
-     * Returns true if base ruleset or mods don't enable embassies
-     */
     @Readonly
-    fun hasMutualEmbassyWith(otherCiv: Civilization): Boolean {
-        return if (civInfo.hasUnique(UniqueType.EnablesEmbassies)
-            && civInfo.hasUnique(UniqueType.RequiresEmbassiesForDiplomacy))
+    fun meetsEmbassyRequirementFor(otherCiv: Civilization): Boolean {
+        return !civInfo.hasUnique(UniqueType.RequiresEmbassiesForDiplomacy) ||
             civInfo.getDiplomacyManager(otherCiv)!!.hasModifier(DiplomaticModifiers.SharedEmbassies)
-        else true // Embassies are not enabled
     }
 
     /**
@@ -183,7 +175,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
         val ourDiploManager = civInfo.getDiplomacyManager(otherCiv)!!
         return canSignResearchAgreement()
             && otherCiv.diplomacyFunctions.canSignResearchAgreement()
-            && hasMutualEmbassyWith(otherCiv)
+            && meetsEmbassyRequirementFor(otherCiv)
             && ourDiploManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
             && !ourDiploManager.hasFlag(DiplomacyFlags.ResearchAgreement)
             && !ourDiploManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.ResearchAgreement)
@@ -216,7 +208,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
         val ourDiplomacyManager = civInfo.getDiplomacyManager(otherCiv)!!
         return canSignDefensivePact()
             && otherCiv.diplomacyFunctions.canSignDefensivePact()
-            && hasMutualEmbassyWith(otherCiv)
+            && meetsEmbassyRequirementFor(otherCiv)
             && ourDiplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
             && !ourDiplomacyManager.hasFlag(DiplomacyFlags.DefensivePact)
             && !ourDiplomacyManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.DefensivePact)

@@ -201,6 +201,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
 
     private fun generateProphet() {
         val prophetUnit = getGreatProphetEquivalent() ?: return // No prophet units in this mod
+        val prophetCost = faithForNextGreatProphet()
 
         val prophetSpawnChance = (civInfo.gameInfo.ruleset.modOptions.constants.prophetSpawnChanceBase + 
             civInfo.gameInfo.ruleset.modOptions.constants.prophetSpawnChanceExcessFaithMultiplier * 
@@ -216,7 +217,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
                 }
             val prophet = civInfo.units.addUnit(prophetUnit, birthCity) ?: return
             prophet.religion = religion!!.name
-            storedFaith -= faithForNextGreatProphet()
+            storedFaith -= prophetCost
             civInfo.civConstructions.boughtItemsWithIncreasingPrice.add(prophetUnit.name, 1)
         }
     }
