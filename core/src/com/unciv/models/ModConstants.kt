@@ -101,7 +101,12 @@ class ModConstants {
     // Factors in formula for pantheon cost
     var pantheonBase = 10
     var pantheonGrowth = 5
-
+    // Factors in formula for great prophet cost
+    var prophetBase = 200
+    var prophetGrowth = 100
+    // Factors in formula for great prophet spawn chance
+    var prophetSpawnChanceBase = 5f
+    var prophetSpawnChanceExcessFaithMultiplier = 1f
     // AI behaviour
     var workboatAutomationSearchMaxTiles = 37
     var minimumCityLocationTileValue = 53f

@@ -170,7 +170,9 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         val greatProphetsEarned = greatProphetsEarned()
 
         var faithCost =
-            (200 + 100 * greatProphetsEarned * (greatProphetsEarned + 1) / 2f) *
+            (civInfo.gameInfo.ruleset.modOptions.constants.prophetBase + 
+            civInfo.gameInfo.ruleset.modOptions.constants.prophetGrowth * 
+            greatProphetsEarned * (greatProphetsEarned + 1) / 2f) *
             civInfo.gameInfo.speed.faithCostModifier
 
         for (unique in civInfo.getMatchingUniques(UniqueType.FaithCostOfGreatProphetChange))
@@ -201,9 +203,11 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         val prophetUnit = getGreatProphetEquivalent() ?: return // No prophet units in this mod
         val prophetCost = faithForNextGreatProphet()
 
-        val prophetSpawnChange = (5f + storedFaith - prophetCost) / 100f
+        val prophetSpawnChance = (civInfo.gameInfo.ruleset.modOptions.constants.prophetSpawnChanceBase + 
+            civInfo.gameInfo.ruleset.modOptions.constants.prophetSpawnChanceExcessFaithMultiplier * 
+            (storedFaith - faithForNextGreatProphet())) / 100f
 
-        if (Random(civInfo.gameInfo.turns).nextFloat() < prophetSpawnChange) {
+        if (Random(civInfo.gameInfo.turns).nextFloat() < prophetSpawnChance) {
             val birthCity =
                 if (religionState <= ReligionState.Pantheon) civInfo.getCapital()
                 else {
