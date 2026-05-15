@@ -114,10 +114,16 @@ class TileGroupMap<T: TileGroup>(
         val unitSpriteMapLayer  = TileMapLayer<TileLayerUnitSprite>(numberOfTilegroups)
         val overlayMapLayer     = TileMapLayer<TileLayerOverlay>(numberOfTilegroups)
         // TileGroups themselves provide click detection; not TileLayer subclasses so plain Group
-        val tileGroupLayer      = Group().also {
-            it.isTransform = false
-            it.touchable = Touchable.childrenOnly
-            it.children.ensureCapacity(numberOfTilegroups)
+        val tileGroupLayer      = object: Group(){
+            init {
+                isTransform = false
+                touchable = Touchable.childrenOnly
+                children.ensureCapacity(numberOfTilegroups)
+            }
+
+            // only exists to register clicks, so no act or render required
+            override fun act(delta: Float) {}
+            override fun draw(batch: Batch, parentAlpha: Float) {}
         }
         val unitFlagMapLayer    = TileMapLayer<TileLayerUnitFlag>(numberOfTilegroups, actable = true)
         // TileLayerCityButton has Touchable.childrenOnly internally, so the container must forward touches
