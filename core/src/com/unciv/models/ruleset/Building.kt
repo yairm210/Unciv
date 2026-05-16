@@ -430,6 +430,11 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             if (!containsResourceWithImprovement)
                 yield(RejectionReasonType.RequiresNearbyResource.toInstance("Nearby $requiredNearbyImprovedResources required"))
         }
+
+        for (unique in civ.getMatchingUniques(UniqueType.CannotBuildBuildings, stateForConditionals))
+            if (this@Building.matchesFilter(unique.params[0], stateForConditionals)) {
+                yield(RejectionReasonType.CannotBeBuilt.toInstance())
+            }
     }
 
     /**
@@ -535,7 +540,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             if (getMatchingUniques(UniqueType.Stats).any { it.stats[stat] > 0 }) return true
             if (getStatPercentageBonuses(null)[stat] > 0) return true
         }
-        if (getMatchingUniques(UniqueType.StatsFromTiles).any { it.stats[stat] > 0 }) return true
+        if (    getMatchingUniques(UniqueType.StatsFromTiles).any { it.stats[stat] > 0 }) return true
         if (getMatchingUniques(UniqueType.StatsPerPopulation).any { it.stats[stat] > 0 }) return true
         if (stat == Stat.Happiness && hasUnique(UniqueType.RemovesAnnexUnhappiness)) return true
         return false
