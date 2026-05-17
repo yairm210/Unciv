@@ -17,6 +17,7 @@ import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeRequest
 import com.unciv.logic.trade.TradeOfferType
+import com.unciv.models.Counter
 import com.unciv.models.ruleset.nation.PersonalityValue
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.screens.victoryscreen.RankingType
@@ -498,21 +499,17 @@ object DiplomacyAutomation {
             .toSet()
 
         // only counts what is visible to us
-        val nearbyUnitCountByCiv = mutableMapOf<Civilization, Int>()
-        val nearbyForceByCiv = mutableMapOf<Civilization, Int>()
-        civInfo.getKnownCivs().forEach {
-            nearbyUnitCountByCiv[it] = 0
-            nearbyForceByCiv[it] = 0
-        }
+        val nearbyUnitCountByCiv = Counter<Civilization>()
+        val nearbyForceByCiv = Counter<Civilization>()
 
         for (tile in nearbyTiles) {
             if (tile.militaryUnit == null)
                 continue
             val unit = tile.militaryUnit!!
-            if (! unit.civ.isMajorCiv() || unit.civ == civInfo)
+            if (! unit.civ.isMajorCiv() || unit.civ == civInfo || unit.isInvisible(civInfo))
                 continue
-            nearbyUnitCountByCiv[unit.civ] = nearbyUnitCountByCiv[unit.civ]!! + 1
-            nearbyForceByCiv[unit.civ] = nearbyForceByCiv[unit.civ]!! + unit.getForceEvaluation()
+            nearbyUnitCountByCiv.add(unit.civ, 1)
+            nearbyForceByCiv.add(unit.civ, unit.getForceEvaluation())
         }
 
         for (otherCiv in civInfo.getKnownCivs()) {
@@ -533,13 +530,13 @@ object DiplomacyAutomation {
                 || theirDiplomacy.hasOpenBorders)
                 continue
             // ignore if they only have a few units near our borders (relevant in early game)
-            if (nearbyUnitCountByCiv[otherCiv]!! < MIN_UNITS_NEAR_BORDER_TO_ISSUE_DEMAND)
+            if (nearbyUnitCountByCiv[otherCiv] < MIN_UNITS_NEAR_BORDER_TO_ISSUE_DEMAND)
                 continue
             val threatAssessment = Automation.threatAssessment(civInfo, otherCiv)
             // ignore if they are weak, stay silent if they are too strong
             if (threatAssessment == ThreatLevel.VeryLow || threatAssessment == ThreatLevel.VeryHigh)
                 continue
-            val nearbyForce = nearbyForceByCiv[otherCiv]!!
+            val nearbyForce = nearbyForceByCiv[otherCiv]
             val totalForce = otherCiv.getStatForRanking(RankingType.Force)
             // ignore if most of their force is elsewhere
             if (nearbyForce.toFloat() / totalForce < MIN_FORCE_VALUE_NEAR_BORDER_TO_ISSUE_DEMAND)
