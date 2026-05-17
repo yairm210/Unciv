@@ -540,7 +540,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             if (getMatchingUniques(UniqueType.Stats).any { it.stats[stat] > 0 }) return true
             if (getStatPercentageBonuses(null)[stat] > 0) return true
         }
-        if (    getMatchingUniques(UniqueType.StatsFromTiles).any { it.stats[stat] > 0 }) return true
+        if (getMatchingUniques(UniqueType.StatsFromTiles).any { it.stats[stat] > 0 }) return true
         if (getMatchingUniques(UniqueType.StatsPerPopulation).any { it.stats[stat] > 0 }) return true
         if (stat == Stat.Happiness && hasUnique(UniqueType.RemovesAnnexUnhappiness)) return true
         return false
