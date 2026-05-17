@@ -99,6 +99,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
             isVisible = false
         }
 
+        setPosition(stage.width / 2 - width / 2, 5f)
     }
 
     @Readonly
@@ -301,11 +302,6 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
 
             add(attackButton).colspan(2)
         }
-
-
-        pack()
-
-        setPosition(worldScreen.mapHolder.width / 2 - width / 2, 5f)
     }
 
     private fun onAttackButtonClicked(
@@ -392,10 +388,6 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
         }
 
         add(attackButton).colspan(2)
-
-        pack()
-
-        setPosition(worldScreen.mapHolder.width / 2 - width / 2, 5f)
     }
 
     private fun simulateAirsweep(attacker: MapUnitCombatant, targetTile: Tile) {
@@ -450,9 +442,5 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
         }
 
         add(attackButton).colspan(2)
-
-        pack()
-
-        setPosition(worldScreen.mapHolder.width / 2 - width / 2, 5f)
     }
 }
