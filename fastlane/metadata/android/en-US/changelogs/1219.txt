@@ -1,0 +1,17 @@
+
+
+perf(cpu): Exclude TileGroup layer from act + render - avoids iterating all tilegroups 1/11 times
+
+docs: Better documentation for TileGroups, TileGroupMaps, and TileLayers
+
+lint: Battletable gets width/position from stage
+
+Resolved  - Fix battleTable parent
+
+Added intermediate TileMapLayer 
+
+Replace deprecated `Stats.values` with dedicated aggregates - By SomeTroglodyte
+
+Bugfix for military presence check - By unciv-loof
+
+cannot build xx buildings - By chenxing61
