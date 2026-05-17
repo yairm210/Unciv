@@ -1041,6 +1041,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Rebel units may spawn"
 	Applicable to: Global
 
+??? example  "Cannot build [buildingFilter] buildings"
+	Example: "Cannot build [Culture] buildings"
+
+	Applicable to: Global
+
 ??? example  "[relativeAmount]% Strength"
 	Multiple bonuses stack additively: +50% + +50% = +100%
 

@@ -224,7 +224,7 @@ class GameOptionsTable(
         }
 
     private fun Table.addShowDemographicsCheckbox() =
-        addCheckbox("Show demographics", gameParameters.showDemographics)
+        addCheckbox("Show Demographics", gameParameters.showDemographics)
         { gameParameters.showDemographics = it }
 
     private fun Table.addNationsSelectTextButton() {
