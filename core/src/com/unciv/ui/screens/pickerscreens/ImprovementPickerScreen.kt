@@ -184,7 +184,7 @@ class ImprovementPickerScreen(
         // worked by a city's population
         if (tile.owningCity != null
             && !improvement.isRoad()
-            && stats.values.any { it > 0f }
+            && stats.max() > 0f
             && !improvement.name.startsWith(Constants.remove)
             && !tile.getTilesInDistance(currentPlayerCiv.modConstants.cityWorkRange)
                 .any { it.isCityCenter() && it.getCity()!!.civ == currentPlayerCiv }

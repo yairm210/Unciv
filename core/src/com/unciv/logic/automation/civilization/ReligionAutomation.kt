@@ -14,7 +14,6 @@ import com.unciv.models.stats.Stat
 import yairm210.purity.annotations.Readonly
 import kotlin.math.min
 import kotlin.math.pow
-import kotlin.random.Random
 
 object ReligionAutomation {
 
@@ -250,19 +249,19 @@ object ReligionAutomation {
                     if (tile.matchesFilter(unique.params[1])) {
                         if (!tile.lastTerrain.hasUnique(UniqueType.ProductionBonusWhenRemoved) ||
                             !tile.lastTerrain.matchesFilter(unique.params[1]) //forest pantheons are bad, as we want to remove the forests
-                        ) bonusYield += unique.stats.values.sum()
+                        ) bonusYield += unique.stats.sum()
                         else if (resource != null && (resource.matchesFilter(unique.params[1]) ||
                                 resource.isImprovedBy(unique.params[1]))
-                        ) bonusYield += unique.stats.values.sum() //resource pantheons are good, as we want to work the tile anyways
+                        ) bonusYield += unique.stats.sum() //resource pantheons are good, as we want to work the tile anyways
                     } else if (resource != null && (resource.matchesFilter(unique.params[1]) ||
                             resource.isImprovedBy(unique.params[1]))
-                    ) bonusYield += unique.stats.values.sum() //resource pantheons are good, as we want to work the tile anyways
+                    ) bonusYield += unique.stats.sum() //resource pantheons are good, as we want to work the tile anyways
                 }
                 UniqueType.StatsFromTilesWithout -> {
                     if (city.matchesFilter(unique.params[3]) &&
                         tile.matchesFilter(unique.params[1]) &&
                         !tile.matchesFilter(unique.params[2])
-                    ) bonusYield += unique.stats.values.sum()
+                    ) bonusYield += unique.stats.sum()
                 }
                 else -> {}
             }
@@ -289,32 +288,32 @@ object ReligionAutomation {
                 UniqueType.PercentProductionUnits -> unique.params[0].toFloat() / 3f
                 UniqueType.StatsFromCitiesOnSpecificTiles ->
                     if (city.getCenterTile().matchesFilter(unique.params[1]))
-                        unique.stats.values.sum() // Modified by personality
+                        unique.stats.sum() // Modified by personality
                     else 0f
                 UniqueType.StatsFromObject ->
                     when {
                         ruleSet.buildings.containsKey(unique.params[1]) -> {
-                            unique.stats.values.sum() *
+                            unique.stats.sum() *
                                 if (ruleSet.buildings[unique.params[1]]!!.isNationalWonder) 0.25f //there's at most 1 copy of each of these in our empire, and the AI is slow at getting it
                                 else 1f // Yields from regular buildings won't need the upfront purchase cost as is the case with religion buildings, but they may have weird requirements (gardens etc.)
 
                         }
                         ruleSet.specialists.containsKey(unique.params[1]) -> {
-                            unique.stats.values.sum() *
+                            unique.stats.sum() *
                                 if (city.population.population > 8f) 2f
                                 else 1f
                         }
-                        else -> unique.stats.values.sum() * 0f //yields from world wonders and great improvements - the latter needs additional AI logic to be used correctly
+                        else -> unique.stats.sum() * 0f //yields from world wonders and great improvements - the latter needs additional AI logic to be used correctly
                     }
                 UniqueType.StatsFromTradeRoute ->
-                    unique.stats.values.sum() *
+                    unique.stats.sum() *
                         if (city.isConnectedToCapital()) 1f
                         else 0f //no yields from the belief yet, also for pantheons it's quite low-tempo
                 UniqueType.StatPercentFromReligionFollowers ->
                     min(unique.params[0].toFloat() * city.population.population, unique.params[2].toFloat())
                 UniqueType.StatsPerCity ->
                     if (city.matchesFilter(unique.params[1]))
-                        unique.stats.values.sum() * 1f //free yields
+                        unique.stats.sum() * 1f //free yields
                     else 0f
                 else -> 0f
             }
@@ -385,13 +384,13 @@ object ReligionAutomation {
                 UniqueType.StatsWhenSpreading ->
                     unique.params[0].toFloat() / 15f
                 UniqueType.StatsWhenAdoptingReligion ->
-                    unique.stats.values.sum() / 50f
+                    unique.stats.sum() / 50f
                 UniqueType.RestingPointOfCityStatesFollowingReligionChange ->
                     unique.params[0].toFloat() / 8f
                 UniqueType.StatsFromGlobalCitiesFollowingReligion ->
-                    unique.stats.values.sum() * 2f //free yields that are potentially more than our own number of cities would allow
+                    unique.stats.sum() * 2f //free yields that are potentially more than our own number of cities would allow
                 UniqueType.StatsFromGlobalFollowers ->
-                    10f * (unique.stats.values.sum() / unique.params[1].toFloat())
+                    10f * (unique.stats.sum() / unique.params[1].toFloat())
                 UniqueType.Strength ->
                     unique.params[0].toFloat() * 3f//combat strength from beliefs is very strong
                 UniqueType.ReligionSpreadDistance ->

@@ -253,7 +253,7 @@ open class RulesetValidator protected constructor(
                 .filter { it.type == UniqueType.PillageYieldRandom || it.type == UniqueType.PillageYieldFixed }) {
                 if (!Stats.isStats(unique.params[0])) continue
                 val params = Stats.parse(unique.params[0])
-                if (params.values.any { it < 0 }) lines.add(
+                if (params.min() < 0f) lines.add(
                     "${improvement.name} cannot have a negative value for a pillage yield!",
                     RulesetErrorSeverity.Error, improvement
                 )
