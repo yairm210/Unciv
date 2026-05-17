@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.battle.AirInterception
@@ -30,6 +31,7 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.components.widgets.UnitIconGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -93,6 +95,14 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
 
         isVisible = true
         pack()
+
+        // Limit height - will force the reduction down to the modifier ScrollPanes
+        // Calculating a cell maxHeight for the ScrollPanes before the pack might be faster, but this is simpler
+        // Use a larget padding on top (10f) to make sure the addRoundCloseButton isn't clipped
+        if (height > stage.height - 15f) {
+            height = stage.height - 15f
+            validate()
+        }
 
         addBorderAllowOpacity(2f, Color.WHITE)
         addRoundCloseButton(this) {
@@ -159,6 +169,20 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
         add(modifierLabel).width(quarterScreen - upOrDownLabel.minWidth)
     }
 
+    private fun createModifiersScroll(modifiers: Iterable<Table>): ScrollPane {
+        val wrapper = Table()
+        wrapper.defaults().pad(2.5f)
+        wrapper.top()
+        for (modifier in modifiers)
+            wrapper.add(modifier).row()
+        return AutoScrollPane(wrapper, skin).apply {
+            fadeScrollBars = false
+            setScrollbarsVisible(true)
+            setOverscroll(false, false)
+            setScrollingDisabled(true, false)
+        }
+    }
+
     private fun simulateBattle(attacker: ICombatant, defender: ICombatant, tileToAttackFrom: Tile) {
         clear()
 
@@ -196,11 +220,8 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
                     }
                 else listOf()
 
-        for (i in 0..max(attackerModifiers.size, defenderModifiers.size)) {
-            if (i < attackerModifiers.size) add(attackerModifiers[i]) else add().width(quarterScreen)
-            if (i < defenderModifiers.size) add(defenderModifiers[i]) else add().width(quarterScreen)
-            row().pad(2f)
-        }
+        add(createModifiersScroll(attackerModifiers)).pad(0f).uniformX().fillY()
+        add(createModifiersScroll(defenderModifiers)).pad(0f).uniformX().fillY().row()
 
         if (attackerModifiers.any() || defenderModifiers.any()) {
             addSeparator()
@@ -415,11 +436,8 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
                     getModifierTable(it.key, it.value)
                 }
 
-        for (modifier in attackerModifiers) {
-            add(modifier)
-            add().width(quarterScreen)
-            row().pad(2f)
-        }
+        add(createModifiersScroll(attackerModifiers)).pad(0f).uniformX().fillY()
+        add().uniformX().row()
 
         add(getHealthBar(attacker.getMaxHealth(), attacker.getHealth(), attacker.getHealth(), attacker.getHealth()))
         add(getHealthBar(attacker.getMaxHealth(), attacker.getMaxHealth(), attacker.getMaxHealth(), attacker.getMaxHealth()))
