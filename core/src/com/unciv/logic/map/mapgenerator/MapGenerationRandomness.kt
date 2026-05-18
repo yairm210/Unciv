@@ -1,10 +1,14 @@
 package com.unciv.logic.map.mapgenerator
 
 import com.unciv.logic.map.HexMath
+import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.tile.Tile
 import com.unciv.utils.debug
+import kotlin.math.PI
+import kotlin.math.cos
 import kotlin.math.pow
 import kotlin.math.roundToInt
+import kotlin.math.sin
 import kotlin.random.Random
 
 class MapGenerationRandomness {
@@ -35,7 +39,50 @@ class MapGenerationRandomness {
         scale: Double = 30.0
     ): Double {
         val worldCoords = HexMath.hex2WorldCoords(tile.position)
-        return Perlin.noise3d(worldCoords.x.toDouble(), worldCoords.y.toDouble(), seed, nOctaves, persistence, lacunarity, scale)
+        val params = tile.tileMap.mapParameters
+
+        // Non-wrapping maps use standard 2D noise which naturally has a seam at the edges.
+        if (!params.worldWrap)
+            return Perlin.noise3d(worldCoords.x.toDouble(), worldCoords.y.toDouble(), seed, nOctaves, persistence, lacunarity, scale)
+
+        // We wrap the 2D map plane into a 3D cylinder. By calculating noise on the surface of this 
+        // cylinder, the left edge (0°) and right edge (360°) of the map occupy the exact same 
+        // coordinates in 3D noise space, making the transition mathematically perfect.
+        val radius = if (params.shape == MapShape.rectangular) {
+            val width = params.mapSize.width
+            val adjustedWidth = if (width % 2 != 0) width - 1 else width
+            adjustedWidth / 2.0
+        } else params.mapSize.radius.toDouble()
+
+        // Map horizontal world coordinates to a circle. In Unciv HexMath, a full wrap is 3.0 * radius.
+        val wrapPeriod = 3.0 * radius
+        val angle = (worldCoords.x / wrapPeriod) * 2 * PI
+        val cylinderRadius = wrapPeriod / (2 * PI)
+
+        // Generate three independent, uncorrelated spatial offsets from the single map seed.
+        // - The hex values are borrowed SplitMix64 constants (the first is the golden ratio/Weyl 
+        //   increment, the others are bit-mixers). Used here as a one-off multiplicative hash, 
+        //   they perfectly scramble the seed into three distinct coordinates.
+        // - 'ushr 32' and '/ 4294967296.0' (2^32) extract the top 32 bits into a 0.0 to 1.0 fraction.
+        // - '* 10000.0' jumps the sample area far from the origin. Because these are later divided 
+        //   by a 'scale' (~30.0) in the Perlin function, we need a large offset (> 7680) to ensure 
+        //   we can explore the entire 256-period domain of the noise.
+        // Check out:
+        // - https://en.wikipedia.org/wiki/Weyl_sequence
+        // - https://rosettacode.org/wiki/Pseudo-random_numbers/Splitmix64
+        val seedLong = seed.toLong()
+        val offsetX = (((seedLong * 0x9E3779B97F4A7C15uL.toLong()) ushr 32).toDouble() / 4294967296.0) * 10000.0
+        val offsetY = (((seedLong * 0xBF58476D1CE4E5B9uL.toLong()) ushr 32).toDouble() / 4294967296.0) * 10000.0
+        val offsetZ = (((seedLong * 0x94D049BB133111EBuL.toLong()) ushr 32).toDouble() / 4294967296.0) * 10000.0
+
+        // Map the 2D coordinates onto a 3D cylinder to achieve seamless X-axis world wrapping.
+        // The X coordinate becomes an angle wrapped around the circumference (nx, ny), 
+        // while the Y coordinate runs straight up and down the cylinder's height (nz).
+        val nx = cylinderRadius * cos(angle) + offsetX
+        val ny = cylinderRadius * sin(angle) + offsetY
+        val nz = worldCoords.y.toDouble() + offsetZ
+
+        return Perlin.noise3d(nx, ny, nz, nOctaves, persistence, lacunarity, scale)
     }
 
     fun chooseSpreadOutLocations(number: Int, suitableTiles: List<Tile>, mapRadius: Int): ArrayList<Tile> {

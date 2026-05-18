@@ -5,10 +5,13 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.UniqueType
+import kotlin.math.PI
 import kotlin.math.abs
+import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
+import kotlin.math.sin
 import kotlin.math.sqrt
 
 class MapLandmassGenerator(
@@ -388,13 +391,19 @@ class MapLandmassGenerator(
 
         var elevationOffset = 0.0
 
-        val xdistanceratio = abs(x) / maxX
-        val ydistanceratio = abs(y) / maxY
+        val xdistanceratio = abs(x).toDouble() / maxX
+        val ydistanceratio = abs(y).toDouble() / maxY
+
         if (tileMap.mapParameters.shape == MapShape.hexagonal || tileMap.mapParameters.shape == MapShape.flatEarth) {
             val startdropoffratio = 0.8 // distance from center at which we start decreasing elevation linearly
-            val xdrsquared = xdistanceratio * xdistanceratio
-            val ydrsquared = ydistanceratio * ydistanceratio
-            val distancefromcenter = sqrt((xdrsquared+ydrsquared).toFloat())
+
+            // On wrapping maps, we must NOT reduce elevation at the East/West edges, otherwise
+            // land will never span across the map seam. 
+            // We ignore the horizontal (X) ratio and only apply the ocean drop-off to the
+            // North/South (Y) poles.
+            val distancefromcenter = if (tileMap.mapParameters.worldWrap && tileMap.mapParameters.shape == MapShape.hexagonal) ydistanceratio
+            else sqrt(xdistanceratio * xdistanceratio + ydistanceratio * ydistanceratio)
+
             var distanceoffset = 0.0
             if (distancefromcenter > startdropoffratio) {
                 val dropoffdistance = distancefromcenter - startdropoffratio
@@ -407,7 +416,8 @@ class MapLandmassGenerator(
             var xoffset = 0.0
 
             val xstartdropoffratio = 0.8
-            if (xdistanceratio > xstartdropoffratio) {
+            // Only force oceans on the left/right edges of rectangular maps if the world is NOT wrapping.
+            if (!tileMap.mapParameters.worldWrap && xdistanceratio > xstartdropoffratio) {
                 val xdropoffdistance = xdistanceratio - xstartdropoffratio
                 val xnormalizationdivisor = 1.0 - xstartdropoffratio // for normalizing to [0;1] range
                 xoffset = xdropoffdistance / xnormalizationdivisor
@@ -438,7 +448,32 @@ class MapLandmassGenerator(
                                      lacunarity: Double = 2.0,
                                      scale: Double = 10.0): Double {
         val worldCoords = HexMath.hex2WorldCoords(tile.position)
-        return Perlin.ridgedNoise3d(worldCoords.x.toDouble(), worldCoords.y.toDouble(), seed, nOctaves, persistence, lacunarity, scale)
+        val params = tileMap.mapParameters
+
+        // Standard noise exit for non-wrapping worlds.
+        if (!params.worldWrap)
+            return Perlin.ridgedNoise3d(worldCoords.x.toDouble(), worldCoords.y.toDouble(), seed, nOctaves, persistence, lacunarity, scale)
+
+        // Same 3D cylinder logic as standard Perlin noise.
+        val radius = if (params.shape == MapShape.rectangular) {
+            val width = params.mapSize.width
+            val adjustedWidth = if (width % 2 != 0) width - 1 else width
+            adjustedWidth / 2.0
+        } else params.mapSize.radius.toDouble()
+
+        val wrapPeriod = 3.0 * radius
+        val angle = (worldCoords.x / wrapPeriod) * 2 * PI
+        val cylinderRadius = wrapPeriod / (2 * PI)
+
+        val seedLong = seed.toLong()
+        val offsetX = (((seedLong * 0x9E3779B97F4A7C15uL.toLong()) ushr 32).toDouble() / 4294967296.0) * 10000.0
+        val offsetY = (((seedLong * 0xBF58476D1CE4E5B9uL.toLong()) ushr 32).toDouble() / 4294967296.0) * 10000.0
+        val offsetZ = (((seedLong * 0x94D049BB133111EBuL.toLong()) ushr 32).toDouble() / 4294967296.0) * 10000.0
+        val nx = cylinderRadius * cos(angle) + offsetX
+        val ny = cylinderRadius * sin(angle) + offsetY
+        val nz = worldCoords.y.toDouble() + offsetZ
+
+        return Perlin.ridgedNoise3d(nx, ny, nz, nOctaves, persistence, lacunarity, scale)
     }
     
     /** Returns lon at lat "percentile from center" - numbers between 0.0-0.1 */
