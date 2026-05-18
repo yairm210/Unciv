@@ -38,12 +38,31 @@ class MapGenerationRandomness {
         lacunarity: Double = 2.0,
         scale: Double = 30.0
     ): Double {
+        return getNoise(tile, seed, nOctaves, persistence, lacunarity, scale, Perlin::noise3d)
+    }
+
+    /**
+     * Generates a noise value using the specified noise function, accounting for world wrap.
+     *
+     * @param tile Source for coordinates.
+     * @param seed Z-axis value (often used as a variation seed).
+     * @param noiseFunction The underlying noise function to use (e.g., Perlin::noise3d or Perlin::ridgedNoise3d).
+     */
+    inline fun getNoise(
+        tile: Tile,
+        seed: Double,
+        nOctaves: Int,
+        persistence: Double,
+        lacunarity: Double,
+        scale: Double,
+        noiseFunction: (Double, Double, Double, Int, Double, Double, Double) -> Double
+    ): Double {
         val worldCoords = HexMath.hex2WorldCoords(tile.position)
         val params = tile.tileMap.mapParameters
 
         // Non-wrapping maps use standard 2D noise which naturally has a seam at the edges.
         if (!params.worldWrap)
-            return Perlin.noise3d(worldCoords.x.toDouble(), worldCoords.y.toDouble(), seed, nOctaves, persistence, lacunarity, scale)
+            return noiseFunction(worldCoords.x.toDouble(), worldCoords.y.toDouble(), seed, nOctaves, persistence, lacunarity, scale)
 
         // We wrap the 2D map plane into a 3D cylinder. By calculating noise on the surface of this 
         // cylinder, the left edge (0°) and right edge (360°) of the map occupy the exact same 
@@ -82,7 +101,7 @@ class MapGenerationRandomness {
         val ny = cylinderRadius * sin(angle) + offsetY
         val nz = worldCoords.y.toDouble() + offsetZ
 
-        return Perlin.noise3d(nx, ny, nz, nOctaves, persistence, lacunarity, scale)
+        return noiseFunction(nx, ny, nz, nOctaves, persistence, lacunarity, scale)
     }
 
     fun chooseSpreadOutLocations(number: Int, suitableTiles: List<Tile>, mapRadius: Int): ArrayList<Tile> {

@@ -5,13 +5,10 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.UniqueType
-import kotlin.math.PI
 import kotlin.math.abs
-import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
-import kotlin.math.sin
 import kotlin.math.sqrt
 
 class MapLandmassGenerator(
@@ -447,33 +444,7 @@ class MapLandmassGenerator(
                                      persistence: Double = 0.5,
                                      lacunarity: Double = 2.0,
                                      scale: Double = 10.0): Double {
-        val worldCoords = HexMath.hex2WorldCoords(tile.position)
-        val params = tileMap.mapParameters
-
-        // Standard noise exit for non-wrapping worlds.
-        if (!params.worldWrap)
-            return Perlin.ridgedNoise3d(worldCoords.x.toDouble(), worldCoords.y.toDouble(), seed, nOctaves, persistence, lacunarity, scale)
-
-        // Same 3D cylinder logic as standard Perlin noise.
-        val radius = if (params.shape == MapShape.rectangular) {
-            val width = params.mapSize.width
-            val adjustedWidth = if (width % 2 != 0) width - 1 else width
-            adjustedWidth / 2.0
-        } else params.mapSize.radius.toDouble()
-
-        val wrapPeriod = 3.0 * radius
-        val angle = (worldCoords.x / wrapPeriod) * 2 * PI
-        val cylinderRadius = wrapPeriod / (2 * PI)
-
-        val seedLong = seed.toLong()
-        val offsetX = (((seedLong * 0x9E3779B97F4A7C15uL.toLong()) ushr 32).toDouble() / 4294967296.0) * 10000.0
-        val offsetY = (((seedLong * 0xBF58476D1CE4E5B9uL.toLong()) ushr 32).toDouble() / 4294967296.0) * 10000.0
-        val offsetZ = (((seedLong * 0x94D049BB133111EBuL.toLong()) ushr 32).toDouble() / 4294967296.0) * 10000.0
-        val nx = cylinderRadius * cos(angle) + offsetX
-        val ny = cylinderRadius * sin(angle) + offsetY
-        val nz = worldCoords.y.toDouble() + offsetZ
-
-        return Perlin.ridgedNoise3d(nx, ny, nz, nOctaves, persistence, lacunarity, scale)
+        return randomness.getNoise(tile, seed, nOctaves, persistence, lacunarity, scale, Perlin::ridgedNoise3d)
     }
     
     /** Returns lon at lat "percentile from center" - numbers between 0.0-0.1 */
