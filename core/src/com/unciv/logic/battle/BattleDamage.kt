@@ -47,10 +47,11 @@ object BattleDamage {
             modifiers.add(unitUniqueModifiers)
 
             val civResources = civInfo.getCivResourcesByName()
-            for (resource in combatant.unit.getResourceRequirementsPerTurn().keys)
-                if (civResources[resource]!! < 0 && !civInfo.isBarbarian)
+            for (resource in combatant.unit.getResourceRequirementsPerTurn().keys) {
+                val available = civResources[resource] ?: 0   // safe access
+                if (available < 0 && !civInfo.isBarbarian)
                     modifiers["Missing resource"] = BattleConstants.MISSING_RESOURCES_MALUS
-
+            }
             val (greatGeneralName, greatGeneralBonus) = GreatGeneralImplementation.getGreatGeneralBonus(combatant, enemy, combatAction)
             if (greatGeneralBonus != 0)
                 modifiers[greatGeneralName] = greatGeneralBonus

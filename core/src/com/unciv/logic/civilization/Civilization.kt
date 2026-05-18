@@ -515,15 +515,16 @@ class Civilization : IsPartOfGameInfoSerialization {
      * Returns a dictionary of ALL resource names, and the amount that the civ has of each
      * Stockpiled resources return the stockpiled amount
      */
-    @Readonly
+    @Readonly 
     fun getCivResourcesByName(): HashMap<String, Int> {
-        val hashMap = HashMap<String, Int>(gameInfo.ruleset.tileResources.size)
-        for (resource in gameInfo.ruleset.tileResources.keys) hashMap[resource] = 0
-        for (entry in getCivResourceSupply())
-            if (!entry.resource.isStockpiled)
-                hashMap[entry.resource.name] = entry.amount
-        for ((key, value) in resourceStockpiles)
-            hashMap[key] = value
+        val hashMap = HashMap<String, Int>()
+        for (entry in getCivResourceSupply()) {
+            if (!entry.resource.isStockpiled) {
+                val modifiedAmount = (entry.amount * getResourceModifier(entry.resource)).toInt()
+                hashMap[entry.resource.name] = modifiedAmount
+            }
+        }
+        for ((key, value) in resourceStockpiles) hashMap[key] = value
         return hashMap
     }
 

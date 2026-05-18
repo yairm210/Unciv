@@ -316,8 +316,10 @@ object Automation {
     }
 
 
-    /** Determines whether the AI should be willing to spend strategic resources to build
-     *  [construction] for [civInfo], assumes that we are actually able to do so. */
+    /**
+     * Determines whether the AI should be willing to spend strategic resources to build
+     * [construction] for [civInfo], assumes that we are actually able to do so.
+     */
     @Readonly
     fun allowSpendingResource(civInfo: Civilization, construction: INonPerpetualConstruction, cityInfo: City? = null): Boolean {
         // City states do whatever they want
@@ -331,11 +333,23 @@ object Automation {
         val requiredResources = if (construction is BaseUnit)
             construction.getResourceRequirementsPerTurn(civInfo.state)
         else construction.getResourceRequirementsPerTurn(cityInfo?.state ?: civInfo.state)
+
         // Does it even require any resources?
         if (requiredResources.isEmpty())
             return true
 
-        val civResources = civInfo.getCivResourcesByName()
+        // ----- Get available resources with percentage modifiers applied -----
+        val civResources = mutableMapOf<String, Int>()
+        for (supply in civInfo.getCivResourceSupply()) {
+            if (!supply.resource.isStockpiled) {
+                val modifiedAmount = (supply.amount * civInfo.getResourceModifier(supply.resource)).toInt()
+                civResources[supply.resource.name] = modifiedAmount
+            }
+        }
+        for ((key, value) in civInfo.resourceStockpiles) {
+            civResources[key] = value
+        }
+        // ----------------------------------------------------------------
 
         // Rule of thumb: reserve 2-3 for spaceship, then reserve half each for buildings and units
         // Assume that no buildings provide any resources
@@ -353,8 +367,9 @@ object Automation {
                     futureForUnits += otherConstruction.getResourceRequirementsPerTurn(civInfo.state)[resource]
             }
 
-            // Make sure we have some for space
-            if (resource in civInfo.gameInfo.spaceResources && civResources[resource]!! - amount - futureForBuildings - futureForUnits < 2) {
+            // Make sure we have some for space (safe access)
+            val availableForSpace = civResources[resource] ?: 0
+            if (resource in civInfo.gameInfo.spaceResources && availableForSpace - amount - futureForBuildings - futureForUnits < 2) {
                 return false
             }
 
@@ -362,7 +377,7 @@ object Automation {
             val neededForBuilding = civInfo.cache.lastEraResourceUsedForBuilding[resource] != null
             // Don't care about old units
             val neededForUnits = civInfo.cache.lastEraResourceUsedForUnit[resource] != null
-                    && civInfo.cache.lastEraResourceUsedForUnit[resource]!! >= civInfo.getEraNumber()
+                && civInfo.cache.lastEraResourceUsedForUnit[resource]!! >= civInfo.getEraNumber()
 
             // No need to save for both
             if (!neededForBuilding || !neededForUnits) {
@@ -372,14 +387,16 @@ object Automation {
             val usedForUnits = civInfo.detailedCivResources.filter { it.resource.name == resource && it.origin == "Units" }.sumOf { -it.amount }
             val usedForBuildings = civInfo.detailedCivResources.filter { it.resource.name == resource && it.origin == "Buildings" }.sumOf { -it.amount }
 
+            val totalAvailable = civResources[resource] ?: 0
+
             if (construction is Building) {
                 // Will more than half the total resources be used for buildings after this construction?
-                if (civResources[resource]!! + usedForUnits < usedForBuildings + amount + futureForBuildings) {
+                if (totalAvailable + usedForUnits < usedForBuildings + amount + futureForBuildings) {
                     return false
                 }
             } else {
                 // Will more than half the total resources be used for units after this construction?
-                if (civResources[resource]!! + usedForBuildings < usedForUnits + amount + futureForUnits) {
+                if (totalAvailable + usedForBuildings < usedForUnits + amount + futureForUnits) {
                     return false
                 }
             }
