@@ -12,6 +12,7 @@ import com.unciv.models.Counter
 import com.unciv.models.Religion
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
+import com.unciv.models.ruleset.unique.Countables
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -173,8 +174,10 @@ class ReligionManager : IsPartOfGameInfoSerialization {
             (200 + 100 * greatProphetsEarned * (greatProphetsEarned + 1) / 2f) *
             civInfo.gameInfo.speed.faithCostModifier
 
-        for (unique in civInfo.getMatchingUniques(UniqueType.FaithCostOfGreatProphet))
-            faithCost = unique.params[0].toFloat()
+        for (unique in civInfo.getMatchingUniques(UniqueType.FaithCostOfGreatProphet)) {
+            val countableVal = Countables.getCountableAmount(unique.params[0], civInfo.state)
+            if (countableVal != null) faithCost = unique.params[0].toFloat()
+        }
         for (unique in civInfo.getMatchingUniques(UniqueType.FaithCostOfGreatProphetChange))
             faithCost *= unique.params[0].toPercent()
 
@@ -205,8 +208,10 @@ class ReligionManager : IsPartOfGameInfoSerialization {
 
         var prophetSpawnChance = (5f + storedFaith - prophetCost) / 100f
         
-        for (unique in civInfo.getMatchingUniques(UniqueType.SpawnChanceOfGreatProphet))
-            prophetSpawnChance = unique.params[0].toFloat() / 100f
+        for (unique in civInfo.getMatchingUniques(UniqueType.SpawnChanceOfGreatProphet)) {
+            val countableVal = Countables.getCountableAmount(unique.params[0], civInfo.state)
+            if (countableVal != null) prophetSpawnChance = unique.params[0].toFloat() / 100f
+        }
 
         if (Random(civInfo.gameInfo.turns).nextFloat() < prophetSpawnChance) {
             val birthCity =
