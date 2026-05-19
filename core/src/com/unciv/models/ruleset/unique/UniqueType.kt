@@ -175,7 +175,7 @@ enum class UniqueType(
     LessPolicyCostFromCities("Each city founded increases culture cost of policies [relativeAmount]% less than normal", UniqueTarget.Global),
     LessPolicyCost("[relativeAmount]% Culture cost of adopting new Policies", UniqueTarget.Global,
         docDescription = MULTIPLICATIVE_BONUS_EXPLANATION),
-
+    PolicyCost("[countable] Culture cost of adopting new Policies", UniqueTarget.Global),
     /// Tech Cost
     LessTechCostFromCities("Each city founded increases Science cost of Technologies [relativeAmount]% less than normal", UniqueTarget.Global),
     LessTechCost("[relativeAmount]% Science cost of researching new Technologies", UniqueTarget.Global,
@@ -269,6 +269,8 @@ enum class UniqueType(
     ReligionSpreadDistance("Religion naturally spreads to cities [amount] tiles away", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     MayNotGenerateGreatProphet("May not generate great prophet equivalents naturally", UniqueTarget.Global),
     FaithCostOfGreatProphetChange("[relativeAmount]% Faith cost of generating Great Prophet equivalents", UniqueTarget.Global),
+    FaithCostOfGreatProphet("[countable] Faith cost of generating Great Prophet equivalents", UniqueTarget.Global),
+    SpawnChanceOfGreatProphet("[countable]% chance of generating Great Prophet equivalents every turn", UniqueTarget.Global),
 
     /// Espionage
     SpyEffectiveness("[relativeAmount]% spy effectiveness [cityFilter]", UniqueTarget.Global),
