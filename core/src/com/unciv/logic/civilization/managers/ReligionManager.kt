@@ -173,8 +173,6 @@ class ReligionManager : IsPartOfGameInfoSerialization {
             (200 + 100 * greatProphetsEarned * (greatProphetsEarned + 1) / 2f) *
             civInfo.gameInfo.speed.faithCostModifier
 
-        for (unique in civInfo.getMatchingUniques(UniqueType.FaithCostOfGreatProphet))
-            faithCost = unique.params[0].toFloat()
         for (unique in civInfo.getMatchingUniques(UniqueType.FaithCostOfGreatProphetChange))
             faithCost *= unique.params[0].toPercent()
 
@@ -203,12 +201,9 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         val prophetUnit = getGreatProphetEquivalent() ?: return // No prophet units in this mod
         val prophetCost = faithForNextGreatProphet()
 
-        var prophetSpawnChance = (5f + storedFaith - prophetCost) / 100f
-        
-        for (unique in civInfo.getMatchingUniques(UniqueType.SpawnChanceOfGreatProphet))
-            prophetSpawnChance = unique.params[0].toFloat() / 100f
+        val prophetSpawnChange = (5f + storedFaith - prophetCost) / 100f
 
-        if (Random(civInfo.gameInfo.turns).nextFloat() < prophetSpawnChance) {
+        if (Random(civInfo.gameInfo.turns).nextFloat() < prophetSpawnChange) {
             val birthCity =
                 if (religionState <= ReligionState.Pantheon) civInfo.getCapital()
                 else {
@@ -218,7 +213,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
                 }
             val prophet = civInfo.units.addUnit(prophetUnit, birthCity) ?: return
             prophet.religion = religion!!.name
-            storedFaith -= faithForNextGreatProphet()
+            storedFaith -= prophetCost
             civInfo.civConstructions.boughtItemsWithIncreasingPrice.add(prophetUnit.name, 1)
         }
     }
