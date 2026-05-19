@@ -78,21 +78,32 @@ class MapGenerationRandomness {
         val angle = (worldCoords.x / wrapPeriod) * 2 * PI
         val cylinderRadius = wrapPeriod / (2 * PI)
 
+        // OPTIMIZATION NOTE: Since `seed` and `scale` are constant for all tiles during a single 
+        // generation pass (e.g., generating all landmasses), calculating these offsets could be 
+        // moved out of this per-tile function and passed in/cached to save thousands of redundant 
+        // bit-shifts and floating-point math operations per map generation.
+
+        // Unciv's Perlin noise algorithm uses a 256-element permutation array, meaning the core 
+        // noise pattern mathematically repeats every 256 integer units.
+        // Because the input coordinates are divided by `scale` inside the noise function, the actual
+        // spatial period before the terrain pattern repeats is exactly `256.0 * scale`.
+        val maxOffset = 256.0 * scale
+
         // Generate three independent, uncorrelated spatial offsets from the single map seed.
         // - The hex values are borrowed SplitMix64 constants (the first is the golden ratio/Weyl 
         //   increment, the others are bit-mixers). Used here as a one-off multiplicative hash, 
         //   they perfectly scramble the seed into three distinct coordinates.
-        // - 'ushr 32' and '/ 4294967296.0' (2^32) extract the top 32 bits into a 0.0 to 1.0 fraction.
-        // - '* 10000.0' jumps the sample area far from the origin. Because these are later divided 
-        //   by a 'scale' (~30.0) in the Perlin function, we need a large offset (> 7680) to ensure 
-        //   we can explore the entire 256-period domain of the noise.
+        // - 'ushr 32' and '/ 4294967296.0' (2^32) extract the top 32 bits into a [0.0, 1.0) fraction.
+        // - Multiplying by `maxOffset` maps this fraction exactly to the full period of the noise domain.
+        //   This guarantees that ALL map seed variations are mathematically possible (no limitations)
+        //   and that every phase shift is equally likely to be generated (no statistical bias).
         // Check out:
         // - https://en.wikipedia.org/wiki/Weyl_sequence
         // - https://rosettacode.org/wiki/Pseudo-random_numbers/Splitmix64
         val seedLong = seed.toLong()
-        val offsetX = (((seedLong * 0x9E3779B97F4A7C15uL.toLong()) ushr 32).toDouble() / 4294967296.0) * 10000.0
-        val offsetY = (((seedLong * 0xBF58476D1CE4E5B9uL.toLong()) ushr 32).toDouble() / 4294967296.0) * 10000.0
-        val offsetZ = (((seedLong * 0x94D049BB133111EBuL.toLong()) ushr 32).toDouble() / 4294967296.0) * 10000.0
+        val offsetX = (((seedLong * 0x9E3779B97F4A7C15uL.toLong()) ushr 32).toDouble() / 4294967296.0) * maxOffset
+        val offsetY = (((seedLong * 0xBF58476D1CE4E5B9uL.toLong()) ushr 32).toDouble() / 4294967296.0) * maxOffset
+        val offsetZ = (((seedLong * 0x94D049BB133111EBuL.toLong()) ushr 32).toDouble() / 4294967296.0) * maxOffset
 
         // Map the 2D coordinates onto a 3D cylinder to achieve seamless X-axis world wrapping.
         // The X coordinate becomes an angle wrapped around the circumference (nx, ny), 
