@@ -176,7 +176,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
 
         for (unique in civInfo.getMatchingUniques(UniqueType.FaithCostOfGreatProphet)) {
             val countableVal = Countables.getCountableAmount(unique.params[0], civInfo.state)
-            if (countableVal != null) faithCost = unique.params[0].toFloat()
+            if (countableVal != null) faithCost = countableVal.toFloat()
         }
         for (unique in civInfo.getMatchingUniques(UniqueType.FaithCostOfGreatProphetChange))
             faithCost *= unique.params[0].toPercent()
@@ -210,7 +210,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         
         for (unique in civInfo.getMatchingUniques(UniqueType.SpawnChanceOfGreatProphet)) {
             val countableVal = Countables.getCountableAmount(unique.params[0], civInfo.state)
-            if (countableVal != null) prophetSpawnChance = unique.params[0].toFloat() / 100f
+            if (countableVal != null) prophetSpawnChance = countableVal.toFloat() / 100f
         }
 
         if (Random(civInfo.gameInfo.turns).nextFloat() < prophetSpawnChance) {
