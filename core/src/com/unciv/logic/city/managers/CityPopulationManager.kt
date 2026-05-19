@@ -40,7 +40,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
         return toReturn
     }
 
-    @Readonly fun getNumberOfSpecialists() = getNewSpecialists().values.sum()
+    @Readonly fun getNumberOfSpecialists() = getNewSpecialists().sumValues()
 
     @Readonly
     fun getFreePopulation(): Int {

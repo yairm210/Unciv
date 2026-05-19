@@ -173,7 +173,7 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
         if (city.population.population <= 0) return
 
         val remainders = HashMap<String, Float>()
-        val pressurePerFollower = pressures.values.sum() / city.population.population
+        val pressurePerFollower = pressures.sumValues() / city.population.population
 
         // First give each religion an approximate share based on pressure
         for ((religion, pressure) in pressures) {
@@ -182,7 +182,7 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
             remainders[religion] = pressure.toFloat() - followersOfThisReligion * pressurePerFollower
         }
 
-        var unallocatedPopulation = city.population.population - followers.values.sum()
+        var unallocatedPopulation = city.population.population - followers.sumValues()
 
         // Divide up the remaining population
         while (unallocatedPopulation > 0) {

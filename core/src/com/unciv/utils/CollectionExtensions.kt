@@ -175,3 +175,14 @@ inline fun <T> GdxLongArray.fold(initial: T, op: (T, Long) -> T): T {
     }
     return r
 }
+
+@Suppress("unused") // If we ever compile to non-JVM, this will be used. On JVM, it'll be optimized away.
+private inline fun <K, V> MutableMap<K, V>.compute(key: K, crossinline mapping: (K, V?) -> V?) {
+    val oldValue = this[key]
+    val newValue = mapping(key, oldValue)
+    if (newValue == null) {
+        if (oldValue != null) this.remove(key)
+    } else {
+        this[key] = newValue
+    }
+}

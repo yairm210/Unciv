@@ -76,6 +76,7 @@ allprojects {
             "kotlin.LongArray.iterator",
 
             "kotlin.collections.List.get",
+            "kotlin.collections.Map.getOrDefault",
             "kotlin.collections.firstNotNullOfOrNull",
             "kotlin.collections.copyInto",
             "kotlin.sequences.shuffled",
