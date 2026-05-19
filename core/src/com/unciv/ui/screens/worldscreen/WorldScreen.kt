@@ -434,8 +434,7 @@ class WorldScreen(
             minimapWrapper.update(getGameViewConsideringForOfWar().civView.getCiv())
             bottomTileInfoTable.civView = getGameViewConsideringForOfWar().civView
             bottomTileInfoTable.updateTileTable(mapHolder.selectedTile)
-            bottomTileInfoTable.x = stage.width - bottomTileInfoTable.width
-            bottomTileInfoTable.y = if (game.settings.showMinimap) minimapWrapper.height + 5f else 0f
+            bottomTileInfoTable.setPosition()
 
             battleTable.update()
 
@@ -501,8 +500,12 @@ class WorldScreen(
         updateGameplayButtons()
 
         val coveredNotificationsTop = stage.height - statusButtons.y
-        val coveredNotificationsBottom = (bottomTileInfoTable.height + bottomTileInfoTable.y)
-//                (if (game.settings.showMinimap) minimapWrapper.height else 0f)
+        val coveredNotificationsBottom = when {
+            game.settings.tileInfoPosition == GameSettings.WidgetPosition.Right ->
+                bottomTileInfoTable.height + bottomTileInfoTable.y
+            game.settings.showMinimap -> minimapWrapper.height
+            else -> 0f
+        }
         notificationsScroll.update(viewingCiv.notifications, coveredNotificationsTop, coveredNotificationsBottom)
 
         val posZoomFromRight = if (game.settings.showMinimap) minimapWrapper.width
