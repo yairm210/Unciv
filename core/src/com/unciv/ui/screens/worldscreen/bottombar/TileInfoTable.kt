@@ -1,7 +1,11 @@
 package com.unciv.ui.screens.worldscreen.bottombar
 
-import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.utils.DragListener
+import com.badlogic.gdx.utils.Align
+import com.unciv.GUI
+import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.widgets.BasicTileInfo
 import com.unciv.ui.screens.worldscreen.WorldScreen
@@ -22,17 +26,61 @@ class TileInfoTable(
     // For pick-up by UiElementDocsWriter
     // skinStrings.getUiBackground("WorldScreen/TileInfoTable")
     // skinStrings.getUiBackground("WorldScreen/TileInfoTableBorder")
+    var position by worldScreen.game.settings::tileInfoPosition
+
+    init {
+        touchable = Touchable.enabled
+        indicator.touchable = Touchable.disabled
+        indicator.rotation = -90f
+        indicator.setSize(16f)
+        indicator.setOrigin(Align.center)
+        indicator.color.a = 0f
+
+        addListener(MoveDragListener())
+    }
 
     override fun shouldBeVisible(tileView: TileView) = DebugUtils.VISIBLE_MAP || civView.hasExplored(tileView)
 
     override fun Table.addAdditionalContent(tileView: TileView) {
         if (DebugUtils.VISIBLE_MAP)
             add(tileView.position().toPrettyString()).colspan(2).pad(5f) // No toLabel() to avoid tr(), eats comma
-        if (DebugUtils.SHOW_TILE_IMAGE_LOCATIONS){
+        if (DebugUtils.SHOW_TILE_IMAGE_LOCATIONS) {
             val imagesString = "Images: " + worldScreen.mapHolder.tileGroups[tileView]!!.layerTerrain.tileBaseImages.joinToString{"\n"+it.name}
             add(imagesString.toLabel())
         }
     }
 
-    override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
+    internal fun setPosition() {
+        val x: Float
+        val y: Float
+        val isBottom = position == GameSettings.WidgetPosition.Bottom
+        if (worldScreen.game.settings.showMinimap) {
+            x = stage.width - (if (isBottom) worldScreen.minimapWrapper.width + 5f else 0f)
+            y = if (isBottom) 0f else worldScreen.minimapWrapper.height + 5f
+        } else {
+            x = stage.width
+            y = 0f
+        }
+        setPosition(x, y, Align.bottomRight)
+    }
+
+    private inner class MoveDragListener : DragListener() {
+        private var dragged = false
+        override fun touchDragged(event: InputEvent, x: Float, y: Float, pointer: Int) {
+            super.touchDragged(event, x, y, pointer)
+            if (!isDragging) return
+            dragged = true
+            this@TileInfoTable.setPosition(event.stageX, event.stageY, Align.center)
+        }
+        override fun touchUp(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int) {
+            if (dragged) event.stop()
+            super.touchUp(event, x, y, pointer, button)
+            if (dragged) {
+                position = if (event.stageY > stage.width - event.stageX) GameSettings.WidgetPosition.Right
+                    else GameSettings.WidgetPosition.Bottom
+                setPosition()
+                GUI.setUpdateWorldOnNextRender() // full update so the notification scroll can adapt
+            }
+        }
+    }
 }
