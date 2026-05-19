@@ -388,13 +388,19 @@ class MapLandmassGenerator(
 
         var elevationOffset = 0.0
 
-        val xdistanceratio = abs(x) / maxX
-        val ydistanceratio = abs(y) / maxY
+        val xdistanceratio = abs(x).toDouble() / maxX
+        val ydistanceratio = abs(y).toDouble() / maxY
+
         if (tileMap.mapParameters.shape == MapShape.hexagonal || tileMap.mapParameters.shape == MapShape.flatEarth) {
             val startdropoffratio = 0.8 // distance from center at which we start decreasing elevation linearly
-            val xdrsquared = xdistanceratio * xdistanceratio
-            val ydrsquared = ydistanceratio * ydistanceratio
-            val distancefromcenter = sqrt((xdrsquared+ydrsquared).toFloat())
+
+            // On wrapping maps, we must NOT reduce elevation at the East/West edges, otherwise
+            // land will never span across the map seam. 
+            // We ignore the horizontal (X) ratio and only apply the ocean drop-off to the
+            // North/South (Y) poles.
+            val distancefromcenter = if (tileMap.mapParameters.worldWrap && tileMap.mapParameters.shape == MapShape.hexagonal) ydistanceratio
+            else sqrt(xdistanceratio * xdistanceratio + ydistanceratio * ydistanceratio)
+
             var distanceoffset = 0.0
             if (distancefromcenter > startdropoffratio) {
                 val dropoffdistance = distancefromcenter - startdropoffratio
@@ -407,7 +413,8 @@ class MapLandmassGenerator(
             var xoffset = 0.0
 
             val xstartdropoffratio = 0.8
-            if (xdistanceratio > xstartdropoffratio) {
+            // Only force oceans on the left/right edges of rectangular maps if the world is NOT wrapping.
+            if (!tileMap.mapParameters.worldWrap && xdistanceratio > xstartdropoffratio) {
                 val xdropoffdistance = xdistanceratio - xstartdropoffratio
                 val xnormalizationdivisor = 1.0 - xstartdropoffratio // for normalizing to [0;1] range
                 xoffset = xdropoffdistance / xnormalizationdivisor
@@ -437,8 +444,7 @@ class MapLandmassGenerator(
                                      persistence: Double = 0.5,
                                      lacunarity: Double = 2.0,
                                      scale: Double = 10.0): Double {
-        val worldCoords = HexMath.hex2WorldCoords(tile.position)
-        return Perlin.ridgedNoise3d(worldCoords.x.toDouble(), worldCoords.y.toDouble(), seed, nOctaves, persistence, lacunarity, scale)
+        return randomness.getNoise(tile, seed, nOctaves, persistence, lacunarity, scale, Perlin::ridgedNoise3d)
     }
     
     /** Returns lon at lat "percentile from center" - numbers between 0.0-0.1 */
