@@ -1,3 +1,18 @@
+## 4.20.8
+
+Migrate DeprecationLevel.ERROR uniques out of UniqueType into DeprecatedUniqueType 
+
+Changelog update
+
+Seamless world wrap generation for procedural maps - By Romelium
+
+By SomeTroglodyte:
+- Improve "Battle Table" on small screens 
+- Minor optimizations for class `Counter` 
+- Use our icon for the IDEA project 
+
+Json deserialization interns all strings - By Ambeco
+
 ## 4.20.7
 
 Rendering improvements for large maps
