@@ -14,7 +14,6 @@ import yairm210.purity.annotations.Readonly
  *  - The Json.Serializable implementation ensures compact format, it does not solve the non-string-key map problem.
  *  - Therefore, Deserialization works properly ***only*** with [K] === String.
  *    (ignoring this will return a deserialized map, but the keys will violate the compile-time type and BE strings)
- *  - Deserialization will still ensure all values are actually Int's.
  */
 @InternalState
 open class Counter<K>(
@@ -26,7 +25,12 @@ open class Counter<K>(
                 super.put(key, value)
     }
 
-    override operator fun get(key: K): Int = getOrDefault(key, 0)
+    override operator fun get(key: K): Int { // don't return null if empty
+        return if (containsKey(key))
+        // .toInt(), because GDX deserializes Counter values as *floats* for some reason
+            super.get(key)!!.toInt()
+        else 0
+    }
 
     override fun put(key: K, value: Int): Int? {
         if (value == 0) return remove(key) // No objects of this sort left, no need to count
@@ -34,8 +38,7 @@ open class Counter<K>(
     }
 
     fun add(key: K, value: Int) {
-        // Using Java lib directly, so it's only one hash access. Uses compute's ability to remove entries.
-        compute(key) { _, old -> ((old ?: 0) + value).takeIf { it != 0 } }
+        put(key, get(key) + value)
     }
 
     fun add(other: Counter<K>) {
@@ -56,7 +59,7 @@ open class Counter<K>(
         return newCounter
     }
 
-    @Readonly
+    @Readonly 
     operator fun plus(other: Counter<K>): Counter<K> {
         @LocalState val clone = clone()
         clone.add(other)
