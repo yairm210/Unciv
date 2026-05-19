@@ -3223,7 +3223,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
-## Tutorial uniques
 ## CityState uniques
 ??? example  "Provides military units every ≈[positiveAmount] turns"
 	Example: "Provides military units every ≈[3] turns"
