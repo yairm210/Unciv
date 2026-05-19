@@ -96,7 +96,11 @@ class UniqueValidator(val ruleset: Ruleset) {
     ): RulesetErrorList {
         val reportRulesetSpecificErrors = UniqueType.UniqueParameterErrorSeverity.RulesetSpecific in severityToReport
         val prefix by lazy { getUniqueContainerPrefix(uniqueContainer) + "\"${unique.text}\"" }
-        if (unique.type == null) return checkUntypedUnique(unique, tryFixUnknownUniques, uniqueContainer, prefix, reportRulesetSpecificErrors)
+        if (unique.type == null) {
+            if (unique.deprecatedType != null && reportRulesetSpecificErrors)
+                return getDeprecationAnnotationErrors(unique, prefix, uniqueContainer)
+            return checkUntypedUnique(unique, tryFixUnknownUniques, uniqueContainer, prefix, reportRulesetSpecificErrors)
+        }
 
         val rulesetErrors = RulesetErrorList(ruleset)
 

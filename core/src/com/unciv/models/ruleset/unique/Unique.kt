@@ -23,6 +23,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     /** Does not include conditional params */
     val params = text.getPlaceholderParameters()
     val type = UniqueType.uniqueTypeMap[placeholderText]
+    val deprecatedType: DeprecatedUniqueType? = if (type == null) DeprecatedUniqueType.uniqueTypeMap[placeholderText] else null
 
     val stats: Stats by lazy {
         val firstStatParam = params.firstOrNull { Stats.isStats(it) }
@@ -149,7 +150,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         }
     }
 
-    @Readonly fun getDeprecationAnnotation(): Deprecated? = type?.getDeprecationAnnotation()
+    @Readonly fun getDeprecationAnnotation(): Deprecated? =
+        type?.getDeprecationAnnotation() ?: deprecatedType?.getDeprecationAnnotation()
 
     @Readonly
     fun getSourceNameForUser(): String {
@@ -181,7 +183,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     fun getReplacementText(ruleset: Ruleset): String {
         val deprecationAnnotation = getDeprecationAnnotation() ?: return ""
         val replacementUniqueText = deprecationAnnotation.replaceWith.expression
-        val deprecatedUniquePlaceholders = type!!.text.getPlaceholderParameters()
+        val deprecatedUniquePlaceholders = (type?.text ?: deprecatedType!!.text).getPlaceholderParameters()
         val possibleUniques = replacementUniqueText.split(Constants.uniqueOrDelimiter)
 
         // Here, for once, we DO want the conditional placeholder parameters together with the regular ones,
@@ -207,12 +209,13 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 if (parameterNumberInDeprecatedUnique !in params.indices) continue
                 timesParameterWasSeen.add(parameterUnsigned, 1)
                 
-                val positionInDeprecatedUnique =  type.text.indexOf("[$parameterUnsigned]")
+                val positionInDeprecatedUnique = (type?.text ?: deprecatedType!!.text).indexOf("[$parameterUnsigned]")
                 var replacementText = params[parameterNumberInDeprecatedUnique]
-                if (UniqueParameterType.Number in type.parameterTypeMap[parameterNumberInDeprecatedUnique]) {
+                if (type == null || UniqueParameterType.Number in type.parameterTypeMap[parameterNumberInDeprecatedUnique]) {
                     // The following looks for a sign just before [amount] and detects replacing "-[-33]" with "[+33]" and similar situations
-                    val deprecatedHadPlusSign = positionInDeprecatedUnique > 0 && type.text[positionInDeprecatedUnique - 1] == '+'
-                    val deprecatedHadMinusSign = positionInDeprecatedUnique > 0 && type.text[positionInDeprecatedUnique - 1] == '-'
+                    val deprecatedSourceText = type?.text ?: deprecatedType!!.text
+                    val deprecatedHadPlusSign = positionInDeprecatedUnique > 0 && deprecatedSourceText[positionInDeprecatedUnique - 1] == '+'
+                    val deprecatedHadMinusSign = positionInDeprecatedUnique > 0 && deprecatedSourceText[positionInDeprecatedUnique - 1] == '-'
                     val deprecatedHadSign = deprecatedHadPlusSign || deprecatedHadMinusSign
                     val positionInNewUnique = possibleUnique.indexOf("[$parameter]")
                     val newHasMinusSign = positionInNewUnique > 0 && possibleUnique[positionInNewUnique - 1] == '-'
