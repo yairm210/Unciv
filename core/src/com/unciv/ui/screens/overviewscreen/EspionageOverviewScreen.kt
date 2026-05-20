@@ -27,6 +27,7 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.images.Portrait
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
@@ -76,30 +77,46 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
         updateCityList()
     }
 
+    private fun getIconForCity(city: City): Portrait {
+        val icon = ImageGetter.getNationPortrait(city.civ.nation, 30f)
+        if (!city.isCapital() || city.civ.isCityState) return icon
+        icon.addActor(ImageGetter.getImage("OtherIcons/Capital").apply {
+            color = Color.BLACK.cpy().apply { a = 0.4f }
+            setSize(22f)
+            setPosition(29f, 27f, Align.center)
+        })
+        icon.addActor(ImageGetter.getImage("OtherIcons/Capital").apply {
+            setSize(18f)
+            setPosition(28f, 28f, Align.center)
+        })
+        return icon
+    }
+
     private fun updateSpyList() {
         spySelectionTable.clear()
         moveSpyButtons.clear()
         spySelectionTable.add("Spy".toLabel())
         spySelectionTable.add("Rank".toLabel())
-        spySelectionTable.add("Location".toLabel())
+        spySelectionTable.add() // icon column
+        spySelectionTable.add("Location".toLabel()).left()
         spySelectionTable.add("Action".toLabel()).row()
         for (spy in manager.spyList) {
+            // "Spy" column
             spySelectionTable.add(spy.name.toLabel())
+            // "Rank" column
             spySelectionTable.add(spy.rank.toLabel())
-            val locationTable = Table()
+            // icon column
             val spyCity = spy.getCityOrNull()
-            if (spyCity != null) {
-                locationTable.add(ImageGetter.getNationPortrait(spyCity.civ.nation, 30f)).padRight(5f)
-                if (spyCity.isCapital() && !spyCity.civ.isCityState)
-                    locationTable.add(ImageGetter.getImage("OtherIcons/Capital")).size(20f).padRight(5f)
-            }
-            locationTable.add(spy.getLocationName().toLabel(hideIcons = true))
-            spySelectionTable.add(locationTable).left()
+            if (spyCity == null) spySelectionTable.add()
+            else spySelectionTable.add(getIconForCity(spyCity)).padRight(5f)
+            // "Location" column
+            spySelectionTable.add(spy.getLocationName().toLabel(hideIcons = true)).left()
+            // "Action" column
             val actionString = if (spy.action.showTurns)
                 "[${spy.action.displayString}] ${spy.turnsRemainingForAction}${Fonts.turn}"
             else spy.action.displayString
             spySelectionTable.add(actionString.toLabel())
-
+            // Move button column
             val moveSpyButton = "Move".toTextButton()
             moveSpyButton.onClick {
                 onSpyClicked(moveSpyButton, spy)
@@ -119,14 +136,14 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
     private fun updateCityList() {
         citySelectionTable.clear()
         spyActionButtons.clear()
-        citySelectionTable.add()
-        citySelectionTable.add("City".toLabel()).padTop(10f)
+        citySelectionTable.add() // icon column
+        citySelectionTable.add("City".toLabel()).padTop(10f).left()
         citySelectionTable.add("Spy present".toLabel()).padTop(10f).row()
 
         // First add the hideout to the table
 
         citySelectionTable.add()
-        citySelectionTable.add("Spy Hideout".toLabel())
+        citySelectionTable.add("Spy Hideout".toLabel()).left()
         citySelectionTable.add(getSpyIcons(manager.getIdleSpies()))
         val moveSpyHereButton = MoveToCityButton(null)
         citySelectionTable.add(moveSpyHereButton).row()
@@ -152,19 +169,13 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
     }
 
     private fun addCityToSelectionTable(city: City) {
-        citySelectionTable.add(ImageGetter.getNationPortrait(city.civ.nation, 30f))
-            .padLeft(20f)
+        citySelectionTable.add(getIconForCity(city)).padLeft(20f)
         val label = city.name.toLabel(hideIcons = true)
         label.onClick {
             worldScreen.game.popScreen() // If a detour to this screen (i.e. not directly from worldScreen) is made possible, use resetToWorldScreen instead
             worldScreen.mapHolder.setCenterPosition(city.location.toHexCoord())
         }
-        val cityNameTable = Table()
-        if (city.isCapital() && !city.civ.isCityState) {
-            cityNameTable.add(ImageGetter.getImage("OtherIcons/Capital")).size(20f).padRight(5f)
-        }
-        cityNameTable.add(label)
-        citySelectionTable.add(cityNameTable).fill()
+        citySelectionTable.add(label).left()
         citySelectionTable.add(getSpyIcons(manager.getSpiesInCity(city)))
 
         val spy = civInfo.espionageManager.getSpyAssignedToCity(city)
