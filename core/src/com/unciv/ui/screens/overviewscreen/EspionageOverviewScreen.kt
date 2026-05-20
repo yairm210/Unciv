@@ -47,8 +47,8 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
     private var selectedSpy: Spy? = null
 
     // if the value == null, this means the Spy Hideout.
-    private var spyActionButtons = hashMapOf<SpyCityActionButton, City?>()
-    private var moveSpyButtons = hashMapOf<Spy, TextButton>()
+    private val spyActionButtons = hashMapOf<SpyCityActionButton, City?>()
+    private val moveSpyButtons = hashMapOf<Spy, TextButton>()
 
     /** Readability shortcut */
     private val manager get() = civInfo.espionageManager
