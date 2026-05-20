@@ -391,6 +391,8 @@ Allowed values:
     - Example: `Only available <when number of [[in all cities] Cities] is more than [0]>`
 -   `[mapUnitFilter] Units`
     - Example: `Only available <when number of [[Wounded] Units] is more than [0]>`
+-   `[greatPerson] Spawned` - Total great persons spawned
+    - Example: `Only available <when number of [[Great Prophet] Spawned] is more than [0]>`
 -   `Carried [mapUnitFilter] units` - The number of units being carried by this unit
     - Example: `Only available <when number of [Carried [Air] units] is more than [0]>`
     - Only counts transported units matching the filter. For use with 'when number of' conditionals.
