@@ -86,7 +86,15 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
         for (spy in manager.spyList) {
             spySelectionTable.add(spy.name.toLabel())
             spySelectionTable.add(spy.rank.toLabel())
-            spySelectionTable.add(spy.getLocationName().toLabel())
+            val locationTable = Table()
+            val spyCity = spy.getCityOrNull()
+            if (spyCity != null) {
+                locationTable.add(ImageGetter.getNationPortrait(spyCity.civ.nation, 30f)).padRight(5f)
+                if (spyCity.isCapital() && !spyCity.civ.isCityState)
+                    locationTable.add(ImageGetter.getImage("OtherIcons/Capital")).size(20f).padRight(5f)
+            }
+            locationTable.add(spy.getLocationName().toLabel(hideIcons = true))
+            spySelectionTable.add(locationTable).left()
             val actionString = if (spy.action.showTurns)
                 "[${spy.action.displayString}] ${spy.turnsRemainingForAction}${Fonts.turn}"
             else spy.action.displayString
@@ -151,7 +159,12 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
             worldScreen.game.popScreen() // If a detour to this screen (i.e. not directly from worldScreen) is made possible, use resetToWorldScreen instead
             worldScreen.mapHolder.setCenterPosition(city.location.toHexCoord())
         }
-        citySelectionTable.add(label).fill()
+        val cityNameTable = Table()
+        if (city.isCapital() && !city.civ.isCityState) {
+            cityNameTable.add(ImageGetter.getImage("OtherIcons/Capital")).size(20f).padRight(5f)
+        }
+        cityNameTable.add(label)
+        citySelectionTable.add(cityNameTable).fill()
         citySelectionTable.add(getSpyIcons(manager.getSpiesInCity(city)))
 
         val spy = civInfo.espionageManager.getSpyAssignedToCity(city)
