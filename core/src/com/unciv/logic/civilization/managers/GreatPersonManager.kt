@@ -69,7 +69,7 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
             }
             val requiredPoints = pointsForNextGreatGeneralCounter[unit]
             if (value > requiredPoints) {
-                greatPersonsSpawned.add("Great General",1)
+                greatPersonsSpawned.add(unit,1)
                 greatGeneralPointsCounter[unit] -= requiredPoints
                 pointsForNextGreatGeneralCounter[unit] += 50
                 return unit
