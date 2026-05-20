@@ -85,37 +85,41 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
         spySelectionTable.add() // icon column
         spySelectionTable.add("Location".toLabel()).left()
         spySelectionTable.add("Action".toLabel()).row()
+        // Show spies in insertion order = order of seniority
         for (spy in manager.spyList) {
-            // "Spy" column
-            spySelectionTable.add(spy.name.toLabel())
-            // "Rank" column
-            spySelectionTable.add(spy.rank.toLabel())
-            // icon column
-            val spyCity = spy.getCityOrNull()
-            if (spyCity == null) spySelectionTable.add()
-            else spySelectionTable.add(getIconForCity(spyCity)).padRight(5f)
-            // "Location" column
-            spySelectionTable.add(spy.getLocationName().toLabel(hideIcons = true)).left()
-            // "Action" column
-            val actionString = if (spy.action.showTurns)
-                "[${spy.action.displayString}] ${spy.turnsRemainingForAction}${Fonts.turn}"
-            else spy.action.displayString
-            spySelectionTable.add(actionString.toLabel())
-            // Move button column
-            val moveSpyButton = "Move".toTextButton()
-            moveSpyButton.onClick {
-                onSpyClicked(moveSpyButton, spy)
-            }
-            moveSpyButton.onRightClick {
-                onSpyRightClicked(spy)
-            }
-            if (!worldScreen.canChangeState || !spy.isAlive() || civInfo.isDefeated()) {
-                // Spectators aren't allowed to move the spies of the Civs they are viewing
-                moveSpyButton.disable()
-            }
-            spySelectionTable.add(moveSpyButton).pad(5f, 10f, 5f, 20f).row()
-            moveSpyButtons[spy] = moveSpyButton
+            addSpyToSelectionTable(spy)
         }
+    }
+
+    private fun addSpyToSelectionTable(spy: Spy) {
+        // "Spy" column
+        spySelectionTable.add(spy.name.toLabel())
+        // "Rank" column
+        spySelectionTable.add(spy.rank.toLabel())
+        // 2 "Location" columns
+        val spyCity = spy.getCityOrNull()
+        if (spyCity == null) spySelectionTable.add()
+        else spySelectionTable.add(getIconForCity(spyCity)).padRight(5f)
+        spySelectionTable.add(spy.getLocationName().toLabel(hideIcons = true)).left()
+        // "Action" column
+        val actionString = if (spy.action.showTurns)
+            "[${spy.action.displayString}] ${spy.turnsRemainingForAction}${Fonts.turn}"
+        else spy.action.displayString
+        spySelectionTable.add(actionString.toLabel())
+        // Move button column
+        val moveSpyButton = "Move".toTextButton()
+        moveSpyButton.onClick {
+            onSpyClicked(moveSpyButton, spy)
+        }
+        moveSpyButton.onRightClick {
+            onSpyRightClicked(spy)
+        }
+        if (!worldScreen.canChangeState || !spy.isAlive() || civInfo.isDefeated()) {
+            // Spectators aren't allowed to move the spies of the Civs they are viewing
+            moveSpyButton.disable()
+        }
+        spySelectionTable.add(moveSpyButton).pad(5f, 10f, 5f, 20f).row()
+        moveSpyButtons[spy] = moveSpyButton
     }
 
     private fun updateCityList() {
