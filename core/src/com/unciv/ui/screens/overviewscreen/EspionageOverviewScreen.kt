@@ -236,12 +236,18 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
             add(getSpyIcon(spy))
     }
 
-    private abstract class SpyCityActionButton : Button(SmallButtonStyle()) {
+    private abstract inner class SpyCityActionButton(protected val city: City?) : Button(SmallButtonStyle()) {
+        init {
+            onClick(::clickHandler)
+            spyActionButtons[this] = city
+            isVisible = false
+        }
+        protected abstract fun clickHandler()
         open fun setDirection(align: Int) {}
     }
 
     // city == null is interpreted as 'spy hideout'
-    private inner class MoveToCityButton(city: City?) : SpyCityActionButton() {
+    private inner class MoveToCityButton(city: City?) : SpyCityActionButton(city) {
         val arrow = ImageGetter.getArrowImage(Align.left)
 
         init {
@@ -249,30 +255,29 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
             add(arrow).size(24f)
             arrow.setOrigin(Align.center)
             arrow.color = Color.WHITE
-            onClick {
-                fun move() {
-                    selectedSpy!!.moveTo(city)
-                    resetSelection()
-                    update()
-                }
-                if (city != null
-                    && city.civ.civName != civInfo.civName
-                    && city.civ.isMajorCiv()
-                    && city.civ.knows(civInfo) // ensures the !! below won't crash
-                    && city.civ.getDiplomacyManager(civInfo)!!.hasFlag(DiplomacyFlags.AgreedToNotSendSpies)) {
-                    ConfirmPopup(
-                        UncivGame.Current.screen!!,
-                        // The promise isn't broken when you move the spy - only when they catch you stealing a tech
-                        "This may result in breaking your promise to [${city.civ.civName}]",
-                        "Move",
-                        action = ::move
-                    ).open(force = true)
-                } else {
-                    move()
-                }
+        }
+
+        private fun move() {
+            selectedSpy!!.moveTo(city)
+            resetSelection()
+            update()
+        }
+
+        override fun clickHandler() {
+            if (city != null
+                && city.civ.civName != civInfo.civName
+                && city.civ.isMajorCiv()
+                && city.civ.knows(civInfo) // ensures the !! below won't crash
+                && city.civ.getDiplomacyManager(civInfo)!!.hasFlag(DiplomacyFlags.AgreedToNotSendSpies)) {
+                ConfirmPopup(this@EspionageOverviewScreen,
+                    // The promise isn't broken when you move the spy - only when they catch you stealing a tech
+                    "This may result in breaking your promise to [${city.civ.civName}]",
+                    "Move",
+                    action = ::move
+                ).open(force = true)
+            } else {
+                move()
             }
-            spyActionButtons[this] = city
-            isVisible = false
         }
 
         override fun setDirection(align: Int) {
@@ -316,7 +321,7 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
             button.isVisible = false
     }
 
-    private inner class CoupButton(city: City, isCurrentAction: Boolean) : SpyCityActionButton() {
+    private inner class CoupButton(city: City, private val isCurrentAction: Boolean) : SpyCityActionButton(city) {
         val fist = ImageGetter.getStatIcon("Resistance")
 
         init {
@@ -325,25 +330,26 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
             fist.setOrigin(Align.center)
             if (isCurrentAction) fist.color = Color.WHITE
             else fist.color = Color.DARK_GRAY
-            onClick {
-                val spy = selectedSpy!!
-                if (!isCurrentAction) {
-                    ConfirmPopup(this@EspionageOverviewScreen,
-                        "Do you want to stage a coup in [${city.civ.civName}] with a " +
-                            "[${(selectedSpy!!.getCoupChanceOfSuccess(false) * 100f).toInt()}]% " +
-                            "chance of success?", "Stage Coup") {
-                        spy.setAction(SpyAction.Coup, 1)
-                        fist.color = Color.DARK_GRAY
-                        update()
-                    }.open()
-                } else {
-                    spy.setAction(SpyAction.CounterIntelligence, 10)
-                    fist.color = Color.WHITE
+        }
+
+        override fun clickHandler() {
+            val spy = selectedSpy!!
+            if (!isCurrentAction) {
+                ConfirmPopup(this@EspionageOverviewScreen,
+                    "Do you want to stage a coup in [${city!!.civ.civName}] with a " +
+                        "[${(selectedSpy!!.getCoupChanceOfSuccess(false) * 100f).toInt()}]% " +
+                        "chance of success?",
+                    "Stage Coup"
+                ) {
+                    spy.setAction(SpyAction.Coup, 1)
+                    fist.color = Color.DARK_GRAY
                     update()
-                }
+                }.open()
+            } else {
+                spy.setAction(SpyAction.CounterIntelligence, 10)
+                fist.color = Color.WHITE
+                update()
             }
-            spyActionButtons[this] = city
-            isVisible = false
         }
     }
 }
