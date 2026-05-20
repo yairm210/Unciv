@@ -144,7 +144,19 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
     }
 
     private fun addCityToSelectionTable(city: City) {
-        citySelectionTable.add(ImageGetter.getNationPortrait(city.civ.nation, 30f))
+        val icon = ImageGetter.getNationPortrait(city.civ.nation, 30f)
+        if (city.isCapital()) {
+            icon.addActor(ImageGetter.getImage("OtherIcons/Capital").apply {
+                color = Color.BLACK.cpy().apply { a = 0.4f }
+                setSize(22f)
+                setPosition(29f, 27f, Align.center)
+            })
+            icon.addActor(ImageGetter.getImage("OtherIcons/Capital").apply {
+                setSize(18f)
+                setPosition(28f, 28f, Align.center)
+            })
+        }
+        citySelectionTable.add(icon)
             .padLeft(20f)
         val label = city.name.toLabel(hideIcons = true)
         label.onClick {
