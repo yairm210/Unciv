@@ -142,7 +142,7 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
 
         // First add the hideout to the table
 
-        citySelectionTable.add()
+        citySelectionTable.add(ImageGetter.getImage("OtherIcons/Hideout")).size(33f).padLeft(20f) // 33 because PortraitNation adds 10% to hat was asked
         citySelectionTable.add("Spy Hideout".toLabel()).left()
         citySelectionTable.add(getSpyIcons(manager.getIdleSpies()))
         val moveSpyHereButton = MoveToCityButton(null)

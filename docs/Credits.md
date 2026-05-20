@@ -790,6 +790,7 @@ HexaRealm tileset images by legacymtgsalvationuser69544 [here](https://github.co
 - [RobotHeadRect](https://thenounproject.com/icon/robot-1704106/) by suib icon
 - Bobot by reallybasicname in the Discord
 - [DollarSign](https://thenounproject.com/icon/dollar-sign-6466560/) by Ahmad Arzaha
+- [trapdoor](https://thenounproject.com/icon/trapdoor-3608407/) by Lucas Helle for Spy hideout
 
 ### Main menu
 
