@@ -167,7 +167,7 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
         citySelectionTable.add(label).left()
         citySelectionTable.add(getSpyIcons(manager.getSpiesInCity(city)))
 
-        val spy = civInfo.espionageManager.getSpyAssignedToCity(city)
+        val spy = manager.getSpyAssignedToCity(city)
         if (city.civ.isCityState && spy != null && spy.canDoCoup()) {
             val coupButton = CoupButton(city, spy.action == SpyAction.Coup)
             citySelectionTable.add(coupButton)
