@@ -36,8 +36,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     val isTimedTriggerable = hasModifier(UniqueType.ConditionalTimedUnique)
 
     val isTriggerable = type != null && (
-        type.targetTypes.contains(UniqueTarget.Triggerable)
-            || type.targetTypes.contains(UniqueTarget.UnitTriggerable)
+        type.targetTypes.any { it.canAcceptUniqueTarget(UniqueTarget.Triggerable) }
+            || type.targetTypes.any { it.canAcceptUniqueTarget(UniqueTarget.UnitTriggerable) }
             || isTimedTriggerable
         )
 
