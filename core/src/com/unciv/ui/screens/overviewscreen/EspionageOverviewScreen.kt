@@ -2,6 +2,7 @@ package com.unciv.ui.screens.overviewscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Button
+import com.badlogic.gdx.scenes.scene2d.ui.SplitPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
@@ -14,7 +15,6 @@ import com.unciv.models.Spy
 import com.unciv.models.SpyAction
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.SmallButtonStyle
-import com.unciv.ui.components.extensions.addSeparatorVertical
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.extensions.toLabel
@@ -37,11 +37,11 @@ import yairm210.purity.annotations.Pure
 class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldScreen) : PickerScreen(true) {
     private val collator = UncivGame.Current.settings.getCollatorFromLocale()
 
-    private val spySelectionTable = Table(skin)
+    private val spySelectionTable = Table()
     private val spyScrollPane = AutoScrollPane(spySelectionTable)
-    private val citySelectionTable = Table(skin)
+    private val citySelectionTable = Table()
     private val cityScrollPane = AutoScrollPane(citySelectionTable)
-    private val middlePanes = Table(skin)
+    private val middlePanes = SplitPane(spyScrollPane, cityScrollPane, false, skin)
 
     private var selectedSpyButton: TextButton? = null
     private var selectedSpy: Spy? = null
@@ -54,16 +54,17 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
     private val manager get() = civInfo.espionageManager
 
     init {
-        middlePanes.add(spyScrollPane)
-        middlePanes.addSeparatorVertical()
-        middlePanes.add(cityScrollPane)
-        topTable.add(middlePanes)
         spySelectionTable.defaults().space(10f)
         spySelectionTable.pad(10f).top()
         citySelectionTable.defaults().space(5f)
         citySelectionTable.pad(10f).top()
 
         update()
+
+        middlePanes.minSplitAmount = 0.25f
+        middlePanes.maxSplitAmount = 0.75f
+        middlePanes.splitAmount = getPrefSplitAmount()
+        topTable.add(middlePanes).grow()
 
         closeButton.isVisible = true
         closeButton.onActivation {
@@ -74,6 +75,32 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
         rightSideButton.isVisible = false
     }
 
+    private fun getPrefSplitAmount(): Float {
+        val handleWidth = middlePanes.style.handle.minWidth
+        val freeSpace = stage.width - handleWidth - spySelectionTable.prefWidth - citySelectionTable.prefWidth
+        val x = spySelectionTable.prefWidth + freeSpace.coerceAtLeast(handleWidth) / 2
+        return (x / stage.width).coerceIn(0.3f, 0.7f)
+    }
+
+    //region Update
+    private fun initSpyHeader() = spySelectionTable.apply {
+        add("Spy".toLabel())
+        add("Rank".toLabel())
+        add() // icon column
+        add("Location".toLabel()).left()
+        add("Action".toLabel())
+        // button column: No header cell
+        row()
+    }
+
+    private fun initCityHeader() = citySelectionTable.apply {
+        add() // Empty column for city icon
+        add("City".toLabel()).left()
+        add("Spy present".toLabel())
+        // button column: no header cell
+        row()
+    }
+
     private fun update() {
         updateSpyList()
         updateCityList()
@@ -82,11 +109,7 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
     private fun updateSpyList() {
         spySelectionTable.clear()
         moveSpyButtons.clear()
-        spySelectionTable.add("Spy".toLabel())
-        spySelectionTable.add("Rank".toLabel())
-        spySelectionTable.add() // icon column
-        spySelectionTable.add("Location".toLabel()).left()
-        spySelectionTable.add("Action".toLabel()).row()
+        initSpyHeader()
         // Show spies in insertion order = order of seniority
         for (spy in manager.spyList) {
             addSpyToSelectionTable(spy)
@@ -98,10 +121,11 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
         spySelectionTable.add(spy.name.toLabel())
         // "Rank" column
         spySelectionTable.add(spy.rank.toLabel())
-        // 2 "Location" columns
+        // icon column
         val spyCity = spy.getCityOrNull()
         if (spyCity == null) spySelectionTable.add()
         else spySelectionTable.add(getIconForCity(spyCity)).padRight(5f)
+        // "Location" column
         spySelectionTable.add(spy.getLocationName().toLabel(hideIcons = true)).left()
         // "Action" column
         val actionString = if (spy.action.showTurns)
@@ -120,16 +144,14 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
             // Spectators aren't allowed to move the spies of the Civs they are viewing
             moveSpyButton.disable()
         }
-        spySelectionTable.add(moveSpyButton).pad(5f, 10f, 5f, 20f).row()
+        spySelectionTable.add(moveSpyButton).row()
         moveSpyButtons[spy] = moveSpyButton
     }
 
     private fun updateCityList() {
         citySelectionTable.clear()
         spyActionButtons.clear()
-        citySelectionTable.add() // icon column
-        citySelectionTable.add("City".toLabel()).padTop(10f).left()
-        citySelectionTable.add("Spy present".toLabel()).padTop(10f).row()
+        initCityHeader()
 
         // First add the hideout to the table
 
@@ -242,7 +264,9 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
         })
         return icon
     }
+    //endregion
 
+    //region Interaction helpers
     private fun onSpyClicked(moveSpyButton: TextButton, spy: Spy) {
         if (selectedSpyButton == moveSpyButton) {
             resetSelection()
@@ -277,6 +301,7 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
         for ((button, _) in spyActionButtons)
             button.isVisible = false
     }
+    //endregion
 
     //region Spy Movement Button classes
     private abstract inner class SpyCityActionButton(protected val city: City?) : Button(SmallButtonStyle()) {
