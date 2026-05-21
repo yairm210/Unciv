@@ -42,19 +42,19 @@ class UniqueErrorTests {
         val errors = ruleset.getErrorList(false)
         assert(errors.isNotOK())
     }
-    
+
     @Test
     fun testTimedGlobalUniqueAcceptsTriggerConditionsWhenOnUnit(){
         RulesetCache.loadRulesets(noMods = true)
         val ruleset = RulesetCache.getVanillaRuleset()
         // Since the <for [3] turns> turns this unique into a triggerable, the <upon> trigger condition should be ok
         val uniqueText = "[-5]% Strength <for [3] turns> <upon damaging a [Warrior] unit>"
-        
+
         // Without a unit, this is an error
         val uniqueNoSourceObject = Unique(uniqueText)
         val errorListNoSourceObject = UniqueValidator(ruleset).checkUnique(uniqueNoSourceObject, false, null)
         assert(errorListNoSourceObject.getFinalSeverity() == RulesetErrorSeverity.Warning)
-        
+
         // When applied on a unit or promotion etc, this is fine
         val uniqueWithSourceObject = Unique(uniqueText, sourceObjectType = UniqueTarget.Promotion)
         val errorListCorrectUniqueContainer = UniqueValidator(ruleset).checkUnique(uniqueWithSourceObject, false, null)
