@@ -54,12 +54,14 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
     private val manager get() = civInfo.espionageManager
 
     init {
-        spySelectionTable.defaults().pad(10f)
-        citySelectionTable.defaults().pad(5f)
         middlePanes.add(spyScrollPane)
         middlePanes.addSeparatorVertical()
         middlePanes.add(cityScrollPane)
         topTable.add(middlePanes)
+        spySelectionTable.defaults().space(10f)
+        spySelectionTable.pad(10f).top()
+        citySelectionTable.defaults().space(5f)
+        citySelectionTable.pad(10f).top()
 
         update()
 
@@ -131,7 +133,8 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
 
         // First add the hideout to the table
 
-        citySelectionTable.add(ImageGetter.getImage("OtherIcons/Hideout")).size(33f).padLeft(20f) // 33 because PortraitNation adds 10% to hat was asked
+        citySelectionTable.add(ImageGetter.getImage("OtherIcons/Hideout"))
+            .size(33f).padLeft(20f).padRight(10f) // 33 because PortraitNation adds 10% to hat was asked
         citySelectionTable.add("Spy Hideout".toLabel()).left()
         citySelectionTable.add(getSpyIcons(manager.getIdleSpies()))
         val moveSpyHereButton = MoveToCityButton(null)
@@ -158,7 +161,7 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
     }
 
     private fun addCityToSelectionTable(city: City) {
-        citySelectionTable.add(getIconForCity(city)).padLeft(20f)
+        citySelectionTable.add(getIconForCity(city)).padLeft(20f).padRight(10f)
         val label = city.name.toLabel(hideIcons = true)
         label.onClick {
             worldScreen.game.popScreen() // If a detour to this screen (i.e. not directly from worldScreen) is made possible, use resetToWorldScreen instead
