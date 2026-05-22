@@ -169,7 +169,7 @@ class ImprovementPickerScreen(
             currentPlayerCiv,
             tile.getCity(),
         )
-        
+
         // Add per-turn maintenance costs as negative stats
         val maintenanceUniques = improvement.getMatchingUniques(UniqueType.ImprovementMaintenance) + 
                 improvement.getMatchingUniques(UniqueType.ImprovementAllMaintenance)
