@@ -77,7 +77,6 @@ class UniqueErrorTests {
         val flagName = CivFlags.CityStateGreatPersonGift.name
         val game = TestGame()
         game.makeHexagonalMap(2)
-        game.setSpeed("Quick")
         // prevent files access from completing tutorial tasks
         UncivGame.Current.settings.tutorialTasksCompleted.addAll(
             game.gameInfo.ruleset.events.keys
@@ -100,7 +99,6 @@ class UniqueErrorTests {
             logFailure("The test civ and city-state should be allied after a 10k gift")
 
         // adopt the GP-gift-enabling policy
-        civ.removeFlag(flagName)
         val ee = game.ruleset.policies["Educated Elite"]!!
         civ.policies.freePolicies++
         civ.policies.adopt(ee)
