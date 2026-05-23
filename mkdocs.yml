@@ -1,4 +1,5 @@
 site_name: Unciv
+docs_dir: docs/English/
 theme:
   name: material
   logo: assets/Icon.png

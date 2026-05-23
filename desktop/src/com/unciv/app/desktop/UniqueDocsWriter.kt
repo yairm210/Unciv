@@ -6,22 +6,20 @@ import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.translations.DocStrings
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.utils.Log
 import java.io.File
 
 class UniqueDocsWriter {
     companion object {
-        /** Where the UniqueType file is to be overwritten,
-         *  relative to the current (assets) directory (not incluenced by `--data-dir=`). */
-        private const val uniqueTypesFileName = "../../docs/Modders/uniques.md"
+        private const val docsDir = "../../docs/"
+        private const val uniqueTypesFileName = "uniques.md"
+        private const val countablesFileName = "Unique-parameters.md"
 
-        /** Where the Countables documentation is to inserted,
-         *  relative to the current (assets) directory (not incluenced by `--data-dir=`). */
-        private const val countablesFileName = "../../docs/Modders/Unique-parameters.md"
         /** Where in the documentation file the Countables are to be inserted, start marker. */
         private const val countablesBeginMarker = "[//]: # (Countables automatically generated BEGIN)"
-        /** Where in the documentation file the Countables are to be inserted, end marker. An empty line will always be inserted above it. */
+        /** Where in the documentation file the Countables are to be inserted, end marker. */
         private const val countablesEndMarker = "[//]: # (Countables automatically generated END)"
 
         /**
@@ -43,54 +41,88 @@ class UniqueDocsWriter {
             UniqueType.entries.asSequence().filter {
                 this in it.targetTypes
             }
-    }
 
-    @Suppress("unused")  // was used in the past? 
-    /** Create the anchor-navigation part to append to a link for a given header */
-    fun toLink(string: String): String {
-        return "#" + string.split(' ').joinToString("-") { it.lowercase() }
-    }
+        /** Discover available languages from translation file directory. */
+        fun discoverLanguages(): List<String> {
+            val dir = File("jsons/translations/")
+            if (!dir.exists()) return emptyList()
+            return dir.listFiles { f ->
+                f.extension == "properties"
+                    && f.nameWithoutExtension != "template"
+                    && f.nameWithoutExtension != "completionPercentages"
+            }
+                ?.map { it.nameWithoutExtension }
+                ?.sorted()
+                ?: emptyList()
+        }
 
-    // Thanks https://github.com/ktorio/ktor/blob/d89d41ef6dc91479e6c13c25eb306abc15040b8e/ktor-utils/common/src/io/ktor/util/Text.kt#L7-L28
-    /** An escaping routine specifically for mkdocs input: `<>` are escaped **unless** within backticks, and newlines are doubled */
-    private fun String.escapeHtml(indent: Int = 0) = buildString(capacity = length + indent + 6) {
-        var inCodeBlock = false
-        for (char in this@escapeHtml) {
-            when(char) {
-                //'\'' -> append("&#x27;") // not necessary for this case
-                //'\"' -> append("&quot;") // not necessary for this case
-                '`' -> {
-                    inCodeBlock = !inCodeBlock
-                    append('`')
+        /** Load translations from a .properties file. Returns empty map if file not found. */
+        fun loadTranslations(language: String): Map<String, String> {
+            val file = File("jsons/translations/$language.properties")
+            if (!file.exists()) return emptyMap()
+            val translations = LinkedHashMap<String, String>()
+            file.forEachLine { line ->
+                if (line.isBlank() || line.startsWith('#') || !line.contains(" = ")) return@forEachLine
+                val splitLine = line.split(" = ", limit = 2)
+                if (splitLine.size < 2 || splitLine[1].isEmpty()) return@forEachLine
+                val value = splitLine[1].replace("\\n", "\n")
+                val key = splitLine[0].replace("\\n", "\n").replace("\\= ", " = ")
+                translations[key] = value
+            }
+            return translations
+        }
+
+        // Thanks https://github.com/ktorio/ktor/blob/d89d41ef6dc91479e6c13c25eb306abc15040b8e/ktor-utils/common/src/io/ktor/util/Text.kt#L7-L28
+        /** An escaping routine specifically for mkdocs input: `<>` are escaped **unless** within backticks, and newlines are doubled */
+        private fun String.escapeHtml(indent: Int = 0) = buildString(capacity = length + indent + 6) {
+            var inCodeBlock = false
+            for (char in this@escapeHtml) {
+                when(char) {
+                    '`' -> {
+                        inCodeBlock = !inCodeBlock
+                        append('`')
+                    }
+                    '&' -> append("&amp;")
+                    '<' -> append(if (inCodeBlock) "<" else "&lt;")
+                    '>' -> append(if (inCodeBlock) ">" else "&gt;")
+                    '\n' -> append("\n\n" + "\t".repeat(indent))
+                    else -> append(char)
                 }
-                '&' -> append("&amp;")
-                '<' -> append(if (inCodeBlock) "<" else "&lt;")
-                '>' -> append(if (inCodeBlock) ">" else "&gt;")
-                '\n' -> append("\n\n" + "\t".repeat(indent))
-                else -> append(char)
             }
         }
     }
 
     fun write() {
-        writeUniqueTypes()
-        writeCountables()
+        // Generate English first — needed as template for other languages' writeCountables
+        writeForLanguage("English")
+
+        val languages = discoverLanguages().filter { it != "English" }
+        for (language in languages) {
+            writeForLanguage(language)
+        }
     }
 
-    private fun writeUniqueTypes() {
-        // This will output each unique only once, even if it has several targets.
-        // Each is grouped under the UniqueTarget is is allowed for with the lowest enum ordinal.
-        // UniqueTarget.inheritsFrom is _not_ resolved for this.
-        // The UniqueType are shown in enum order within their group, and groups are ordered
-        // by their UniqueTarget.ordinal as well - source code order.
-        val targetTypesToUniques: Map<UniqueTarget, List<UniqueType>> =
+    private fun writeForLanguage(language: String) {
+        val translations = if (language == "English") emptyMap()
+            else loadTranslations(language)
+
+        val targetDir = File("${docsDir}$language/Modders/")
+        targetDir.mkdirs()
+        writeUniqueTypes(language, translations)
+        writeCountables(language, translations)
+    }
+
+    /** Look up a translation, falling back to English (the key itself). */
+    private fun tr(text: String, translations: Map<String, String>): String =
+        translations[text] ?: text
+
+    private fun writeUniqueTypes(language: String, translations: Map<String, String>) {
+        val targetTypesToUniques =
             if (showUniqueOnOneTarget)
                 UniqueType.entries
                     .groupBy { it.targetTypes.minOrNull()!! }
                     .toSortedMap()
             else
-        // if, on the other hand, we wish to list every UniqueType with multiple targets under
-        // _each_ of the groups it is applicable to, then this might do:
                 UniqueTarget.entries.asSequence().associateWith { target ->
                     target.allTargets().flatMap { inheritedTarget ->
                         inheritedTarget.allUniqueTypes()
@@ -99,18 +131,32 @@ class UniqueDocsWriter {
 
         val capacity = 25 + targetTypesToUniques.size + UniqueType.entries.size * (if (showUniqueOnOneTarget) 3 else 16)
         val lines = ArrayList<String>(capacity)
-        lines += "# Uniques"
-        lines += "An overview of uniques can be found [here](../Developers/Uniques.md)"
-        lines += "\nSimple unique parameters are explained by mouseover. Complex parameters are explained in [Unique parameter types](Unique-parameters.md)"
-        lines += ""
+
+        // Title and intro
+        fun addLine(text: String) { lines.add(text) }
+        val isEnglish = language == "English"
+
+        addLine(tr(DocStrings.UNIQUES_TITLE, translations))
+        addLine(tr(DocStrings.UNIQUES_OVERVIEW, translations))
+        addLine("\n" + tr(DocStrings.UNIQUES_INTRO, translations))
+        addLine("")
 
         for ((targetType, uniqueTypes) in targetTypesToUniques) {
             if (uniqueTypes.isEmpty()) continue
-            lines += "## " + targetType.name + " uniques"
 
-            if (targetType.documentationString.isNotEmpty())
-                lines += "!!! note \"\"\n\n    ${targetType.documentationString}\n"
+            // Section header: "## Global uniques（全局）" etc.
+            val englishHeader = targetType.name + " uniques"
+            val translatedName = if (!isEnglish) translations[targetType.name] else null
+            val header = if (translatedName != null && translatedName != targetType.name)
+                "## $englishHeader（$translatedName）"
+            else
+                "## $englishHeader"
+            addLine(header)
 
+            if (targetType.documentationString.isNotEmpty()) {
+                val docString = tr(targetType.documentationString, translations)
+                addLine("!!! note \"\"\n\n    $docString\n")
+            }
 
             for (uniqueType in uniqueTypes) {
                 if (uniqueType.getDeprecationAnnotation() != null) continue
@@ -118,63 +164,81 @@ class UniqueDocsWriter {
                 val uniqueText = if (targetType.modifierType != UniqueTarget.ModifierType.None)
                     "&lt;${uniqueType.text}&gt;"
                 else uniqueType.text
-                lines += "??? example  \"$uniqueText\"" // collapsable material mkdocs block, see https://squidfunk.github.io/mkdocs-material/reference/admonitions/?h=%3F%3F%3F#collapsible-blocks
-                // These blocks will join all indented lines that follow, they need an empty line followed by more indented lines to render one break.
-                // Thus, all optional lines up to "Applicable" get an extra `\n`, and the `escapeHtml` helper doubles newlines found in docDescription:
-                if (uniqueType.docDescription != null)
-                    lines += "\t${uniqueType.docDescription!!.escapeHtml(1)}\n"
+                addLine("??? example  \"$uniqueText\"")
+
+                // Show translation of the unique text on a separate line
+                if (!isEnglish) {
+                    val translatedUniqueText = translations[uniqueType.text]
+                    if (translatedUniqueText != null && translatedUniqueText != uniqueType.text) {
+                        addLine("\t/ $translatedUniqueText\n")
+                    }
+                }
+
+                if (uniqueType.docDescription != null) {
+                    val docDesc = tr(uniqueType.docDescription!!, translations)
+                    addLine("\t${docDesc.escapeHtml(1)}\n")
+                }
                 if (uniqueType.parameterTypeMap.isNotEmpty()) {
-                    // This one will give examples for _each_ filter in a "tileFilter/specialist/buildingFilter" kind of parameter e.g. "Farm/Merchant/Library":
-                    // `val paramExamples = uniqueType.parameterTypeMap.map { it.joinToString("/") { pt -> pt.docExample } }.toTypedArray()`
-                    // Might confuse modders to think "/" can go into the _actual_ unique and mean "or", so better show just one ("Farm" in the example above):
                     val paramExamples = uniqueType.parameterTypeMap.map { it.first().docExample }.toTypedArray()
-                    lines += "\tExample: \"${uniqueText.fillPlaceholders(*paramExamples)}\"\n"
+                    val examplePrefix = tr(DocStrings.DOC_EXAMPLE, translations)
+                    addLine("\t$examplePrefix \"${uniqueText.fillPlaceholders(*paramExamples)}\"\n")
                 }
-                if (uniqueType.flags.contains(UniqueFlag.AcceptsSpeedModifier))
-                    lines += "\tThis unique's effect can be modified with &lt;${UniqueType.ModifiedByGameSpeed.text}&gt;\n"
-                if (uniqueType.flags.contains(UniqueFlag.AcceptsGameProgressModifier))
-                    lines += "\tThis unique's effect can be modified with &lt;${UniqueType.ModifiedByGameProgress.text}&gt;\n"
+                if (uniqueType.flags.contains(UniqueFlag.AcceptsSpeedModifier)) {
+                    val modifierIntro = tr(DocStrings.DOC_MODIFIER_INTRO, translations)
+                    addLine("\t$modifierIntro &lt;${UniqueType.ModifiedByGameSpeed.text}&gt;\n")
+                }
+                if (uniqueType.flags.contains(UniqueFlag.AcceptsGameProgressModifier)) {
+                    val modifierIntro = tr(DocStrings.DOC_MODIFIER_INTRO, translations)
+                    addLine("\t$modifierIntro &lt;${UniqueType.ModifiedByGameProgress.text}&gt;\n")
+                }
                 if (uniqueType in MapUnitCache.UnitMovementUniques) {
-                    lines += "\tDue to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.\n"
+                    addLine("\t${tr(DocStrings.DOC_CACHED_UNIQUE, translations)}\n")
                 }
-                if (uniqueType.flags.contains(UniqueFlag.NoConditionals))
-                    lines += "\tThis unique does not support conditionals.\n"
-                if (uniqueType.flags.contains(UniqueFlag.HiddenToUsers))
-                    lines += "\tThis unique is automatically hidden from users.\n"
-                lines += "\tApplicable to: " + uniqueType.allTargets().sorted().joinToString()
-                lines += ""
+                if (uniqueType.flags.contains(UniqueFlag.NoConditionals)) {
+                    addLine("\t${tr(DocStrings.DOC_NO_CONDITIONALS, translations)}\n")
+                }
+                if (uniqueType.flags.contains(UniqueFlag.HiddenToUsers)) {
+                    addLine("\t${tr(DocStrings.DOC_HIDDEN_TO_USERS, translations)}\n")
+                }
+                val applicableTo = tr(DocStrings.DOC_APPLICABLE_TO, translations)
+                addLine("\t$applicableTo " + uniqueType.allTargets().sorted().joinToString())
+                addLine("")
             }
         }
 
-        // Abbreviations, for adding short unique parameter help - see https://squidfunk.github.io/mkdocs-material/reference/abbreviations/
-        lines += ""
-        // order irrelevant for rendered wiki, but could potentially reduce source control differences
+        // Abbreviations
+        addLine("")
         for (paramType in UniqueParameterType.entries.asSequence().sortedBy { it.parameterName }) {
             if (paramType.docDescription == null) continue
-            val punctuation = if (paramType.docDescription!!.last().category == '.'.category) "" else "."
-            lines += "*[${paramType.parameterName}]: ${paramType.docDescription}$punctuation"
+            val description = tr(paramType.docDescription!!, translations)
+            val punctuation = if (description.last().category == '.'.category) "" else "."
+            addLine("*[${paramType.parameterName}]: $description$punctuation")
         }
 
-        File(uniqueTypesFileName).writeText(lines.joinToString("\n"))
+        val file = File("${docsDir}$language/Modders/$uniqueTypesFileName")
+        file.writeText(lines.joinToString("\n"))
     }
 
-    private fun writeCountables() {
-        val file = File(countablesFileName)
+    private fun writeCountables(language: String, translations: Map<String, String>) {
+        val sourceFile = File("${docsDir}English/Modders/$countablesFileName")
         val oldContent = try {
-            file.readText(Charsets.UTF_8)
+            sourceFile.readText(Charsets.UTF_8)
         } catch (ex: Throwable) {
-            Log.error("Can't read $countablesFileName", ex)
+            Log.error("Can't read ${sourceFile.path}", ex)
             return
         }
         val truncateBegin = oldContent.indexOf(countablesBeginMarker)
-        if (truncateBegin < 0)
-            Log.error("Can't find `%s` in %s", countablesBeginMarker, countablesFileName)
+        if (truncateBegin < 0) {
+            Log.error("Can't find `%s` in %s", countablesBeginMarker, sourceFile.path)
+            return
+        }
         val truncateEnd = oldContent.indexOf(countablesEndMarker)
-        if (truncateEnd < 0)
-            Log.error("Can't find `%s` in %s", countablesEndMarker, countablesFileName)
-        if (truncateBegin < 0 || truncateEnd < 0) return
+        if (truncateEnd < 0) {
+            Log.error("Can't find `%s` in %s", countablesEndMarker, sourceFile.path)
+            return
+        }
         if (truncateEnd < truncateBegin) {
-            Log.error("Inverted Countables markers in %s", countablesEndMarker, countablesFileName)
+            Log.error("Inverted Countables markers in %s", countablesEndMarker, sourceFile.path)
             return
         }
 
@@ -184,21 +248,19 @@ class UniqueDocsWriter {
 
         for (countable in Countables.entries) {
             if (countable.getDeprecationAnnotation() != null) continue
-            newContent.appendLine("-   ${countable.documentationHeader}")
-            newContent.appendLine("    - Example: `Only available <when number of [${countable.example}] is more than [0]>`") // Sublist
+            val header = tr(countable.documentationHeader, translations)
+            newContent.appendLine("-   $header")
+            newContent.appendLine("    - Example: `Only available <when number of [${countable.example}] is more than [0]>`")
             for (extraLine in countable.documentationStrings) {
-                newContent.append("    - ") // Sublist
-                newContent.appendLine(extraLine)
+                newContent.append("    - ")
+                newContent.appendLine(tr(extraLine, translations))
             }
         }
 
         newContent.appendLine()
         newContent.append(oldContent, truncateEnd, oldContent.length)
-        try {
-            file.writeText(newContent.toString(), Charsets.UTF_8)
-        } catch (ex: Throwable) {
-            Log.error("Can't write $countablesFileName", ex)
-            return
-        }
+
+        val file = File("${docsDir}$language/Modders/$countablesFileName")
+        file.writeText(newContent.toString(), Charsets.UTF_8)
     }
 }

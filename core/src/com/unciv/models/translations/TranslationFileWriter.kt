@@ -185,6 +185,14 @@ object TranslationFileWriter {
             for (bindingLabel in KeyboardBinding.getTranslationEntries())
                 linesToTranslate += "$bindingLabel = "
 
+            linesToTranslate += "\n\n#################### Lines from Doc template strings #######################\n"
+            for (field in DocStrings::class.java.declaredFields) {
+                if (field.type != String::class.java) continue
+                field.isAccessible = true
+                val text = field.get(null) as? String ?: continue
+                linesToTranslate += "$text = "
+            }
+
             for (baseRuleset in BaseRuleset.entries) {
                 val generatedStringsFromBaseRuleset =
                         GenerateStringsFromJSONs(UncivGame.Current.files.getLocalFile("jsons/${baseRuleset.fullName}"))
