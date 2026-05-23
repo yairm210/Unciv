@@ -1,7 +1,9 @@
 package com.unciv.logic.civilization.managers
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.RuinReward
 import com.unciv.models.ruleset.unique.GameContext
@@ -32,13 +34,22 @@ class RuinsManager(
     }
 
     @Readonly
-    private fun getShuffledPossibleRewards(triggeringUnit: MapUnit): Iterable<RuinReward> {
+    private fun getPossibleRewards(triggeringUnit: MapUnit) =
+        validRewards.asSequence().filter { isPossibleReward(it, triggeringUnit) }
+
+    @Readonly
+    fun getChoosableRewards(triggeringUnit: MapUnit) =
+        getPossibleRewards(triggeringUnit)
+        .filter { it.uniqueObjects.any { unique -> unique.conditionalsApply(triggeringUnit.cache.state) } }
+
+    @Readonly
+    private fun getShuffledPossibleRewards(triggeringUnit: MapUnit, getWeight: RuinReward.() -> Int = { weight }): Iterable<RuinReward> {
         val candidates =
-            validRewards.asSequence().filter { isPossibleReward(it, triggeringUnit) }
+            getPossibleRewards(triggeringUnit)
             // This might be a dirty way to do this, but it works (we do have randomWeighted in CollectionExtensions, but below we
             // need to choose another when the first choice's TriggerActivations report failure, and that's simpler this way)
             // For each possible reward, this feeds (reward.weight) copies of this reward to the overall Sequence to implement 'weight'.
-            .flatMap { reward -> generateSequence { reward }.take(reward.weight) }
+            .flatMap { reward -> generateSequence { reward }.take(reward.getWeight()) }
             // Convert to List since Sequence.shuffled would do one anyway, Mutable so shuffle doesn't need to pull a copy
             .toMutableList()
         // The resulting List now gets shuffled, using a tile-based random to thwart save-scumming.
@@ -59,26 +70,38 @@ class RuinsManager(
     }
 
     fun selectNextRuinsReward(triggeringUnit: MapUnit) {
-        for (possibleReward in getShuffledPossibleRewards(triggeringUnit)) {
-            var atLeastOneUniqueHadEffect = false
-            for (unique in possibleReward.uniqueObjects) {
-                if (!unique.conditionalsApply(triggeringUnit.cache.state)) continue
-                var uniqueTriggered = false
-                repeat(unique.getUniqueMultiplier(triggeringUnit.cache.state)) {
-                    uniqueTriggered =
-                        UniqueTriggerActivation.triggerUnique(
-                            unique,
-                            triggeringUnit,
-                            notification = possibleReward.notification,
-                            triggerNotificationText = "from the ruins"
-                        ) || uniqueTriggered
-                }
-                atLeastOneUniqueHadEffect = atLeastOneUniqueHadEffect || uniqueTriggered
+        val possibleRewards = if (triggeringUnit.hasUnique(UniqueType.ChooseRuinReward, checkCivInfoUniques = true)) {
+            if (civInfo.isHuman()) {
+                civInfo.popupAlerts.add(PopupAlert(AlertType.ChooseRuinReward, triggeringUnit.id.toString()))
+                return
+            } else {
+                // TODO: Let AI apply strategy to its choices
+                getShuffledPossibleRewards(triggeringUnit) { aiWeight }
             }
-            if (atLeastOneUniqueHadEffect) {
-                rememberReward(possibleReward.name)
-                break
-            }
+        } else getShuffledPossibleRewards(triggeringUnit)
+        for (possibleReward in possibleRewards) {
+            if (activateReward(triggeringUnit, possibleReward)) break
         }
+    }
+
+    fun activateReward(triggeringUnit: MapUnit, reward: RuinReward): Boolean {
+        var atLeastOneUniqueHadEffect = false
+        for (unique in reward.uniqueObjects) {
+            if (!unique.conditionalsApply(triggeringUnit.cache.state)) continue
+            var uniqueTriggered = false
+            repeat(unique.getUniqueMultiplier(triggeringUnit.cache.state)) {
+                uniqueTriggered = uniqueTriggered ||
+                    UniqueTriggerActivation.triggerUnique(
+                        unique,
+                        triggeringUnit,
+                        notification = reward.notification,
+                        triggerNotificationText = "from the ruins"
+                    )
+            }
+            atLeastOneUniqueHadEffect = atLeastOneUniqueHadEffect || uniqueTriggered
+        }
+        if (atLeastOneUniqueHadEffect)
+            rememberReward(reward.name)
+        return atLeastOneUniqueHadEffect
     }
 }

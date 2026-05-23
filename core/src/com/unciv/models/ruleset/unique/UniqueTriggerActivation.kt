@@ -1416,6 +1416,14 @@ object UniqueTriggerActivation {
                 }
             }
 
+            UniqueType.OneTimeUnitGiveRuinReward -> {
+                if (unit == null) return null
+                val reward = ruleset.ruinRewards[unique.params[1]] ?: return null
+                return {
+                    civInfo.ruinsManager.activateReward(unit, reward)
+                }
+            }
+
             UniqueType.OneTimeGlobalAlert -> {
                 if (triggerNotificationText == null) return null
                 val alertText = unique.params[0]
