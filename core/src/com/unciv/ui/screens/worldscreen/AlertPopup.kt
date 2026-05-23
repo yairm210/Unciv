@@ -18,6 +18,9 @@ import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.*
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.models.ruleset.Event
+import com.unciv.models.ruleset.EventChoice
+import com.unciv.models.ruleset.RuinReward
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
@@ -32,6 +35,7 @@ import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.diplomacyscreen.LeaderIntroTable
 import com.unciv.ui.screens.victoryscreen.VictoryScreen
 import yairm210.purity.annotations.Readonly
@@ -63,7 +67,7 @@ class AlertPopup(
     private val worldScreen: WorldScreen,
     private val popupAlert: PopupAlert
 ): Popup(worldScreen) {
-    
+
     companion object {
         private const val SEPARATOR_LINE_TO_TEXT_PADDING = 25f
         private val LIGHTER_RED_COLOR = Color(1f, 1/3f, 1/3f, 1f)
@@ -105,7 +109,7 @@ class AlertPopup(
             AlertType.BorderConflict -> shouldOpen = addBorderConflict()
             AlertType.TilesStolen -> shouldOpen = addTilesStolen()
             AlertType.Denounced -> shouldOpen = addDenouncement()
-            
+
             // demands
             AlertType.DemandToStopSettlingCitiesNear -> shouldOpen = addDemand(Demand.DoNotSettleNearUs)
             AlertType.CitySettledNearOtherCivDespiteOurPromise -> shouldOpen = addDemandViolationNoticed(Demand.DoNotSettleNearUs)
@@ -117,7 +121,7 @@ class AlertPopup(
             AlertType.AttackedUsDespitePromise -> shouldOpen = addDemandViolationNoticed(Demand.DoNotAttackUs)
             AlertType.AcceptingDemand -> shouldOpen = addAcceptingDemand()
             AlertType.RejectingDemand -> shouldOpen = addRejectingDemand()
-            
+
             AlertType.DeclarationOfFriendship -> shouldOpen = addDeclarationOfFriendship()
             AlertType.BulliedProtectedMinor, AlertType.AttackedProtectedMinor, AlertType.AttackedAllyMinor -> 
                 shouldOpen = addBulliedOrAttackedProtectedOrAlliedMinor()
@@ -130,6 +134,7 @@ class AlertPopup(
             AlertType.RecapturedCivilian -> shouldOpen = addRecapturedCivilian()
             AlertType.GameHasBeenWon -> addGameHasBeenWon()
             AlertType.Event -> shouldOpen = addEvent()
+            AlertType.ChooseRuinReward -> shouldOpen = addChooseRuinReward()
         }
         if (shouldOpen) open()
         else viewingCiv.popupAlerts.remove(popupAlert)
@@ -663,15 +668,37 @@ class AlertPopup(
                 unit = viewingCiv.units.getUnitById(unitId)
             }
         }
-        
-        
+
         val event = gameInfo.ruleset.events[eventName] ?: return false
+        return addEvent(event, unit)
+    }
+
+    private fun addEvent(event: Event, unit: MapUnit?): Boolean {
         val render = RenderEvent(event, worldScreen, unit) { close() }
         if (!render.isValid) return false
         add(render).pad(0f).row()
         return true
     }
 
+    private fun addChooseRuinReward(): Boolean {
+        fun RuinReward.toChoice() = EventChoice().also {
+            it.text = name
+            val uniqueText = UniqueType.OneTimeUnitGiveRuinReward.placeholderText.fillPlaceholders(Constants.thisUnit, name)
+            it.uniques.add(uniqueText + " <" + UniqueType.ModifierHiddenFromUsers.text + ">")
+        }
+
+        val unit = viewingCiv.units.getUnitById(popupAlert.value.toInt()) ?: return false
+        val rewards = viewingCiv.ruinsManager.getChoosableRewards(unit)
+        val source = unit.getMatchingUniques(UniqueType.ChooseRuinReward, checkCivInfoUniques = true).firstNotNullOfOrNull { it.sourceObjectName }
+        val line1 = FormattedLine("Your [${unit.shortDisplayName()}] has discovered an ancient ruin.", link = unit.baseUnit.makeLink())
+        val line2 = source?.let { FormattedLine("Thanks to [$source], you can choose!", FormattedLine.getAutoLink(source)) }
+        val event = Event().apply {
+            text = "Choose a ruin reward"
+            civilopediaText = listOfNotNull(line1, line2)
+            choices.addAll(rewards.map { it.toChoice() })
+        }
+        return addEvent(event, unit)
+    }
     //endregion
 
     override fun close() {
