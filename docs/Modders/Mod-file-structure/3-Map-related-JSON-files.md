@@ -108,7 +108,7 @@ Each of the objects in the file represents a single reward you can get from ruin
 - Create a list of all possible rewards. Each reward's frequency in the list corresponds to its weight, a reward with weight one will appear once, a reward with weight two will appear twice, etc.
 - Shuffle this list
 - Try give rewards starting from the top of the list. If any of the uniques of the rewards is valid in this context, reward it and stop trying more rewards.
-- Not that high weights increase memory consumption due to the shuffle step.
+- Note that high weights increase memory consumption due to the shuffle step.
 
 ### Notifications
 
