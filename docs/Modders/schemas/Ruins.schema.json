@@ -32,6 +32,13 @@
         "default": 1,
         "description": "Relative weight this reward is chosen next."
       },
+      "aiWeight": {
+        "title": "AI Weight",
+        "type": "integer",
+        "minimum": 0,
+        "default": 1,
+        "description": "Relative weight this reward is chosen next by AI with the ChooseRuinReward unique."
+      },
       "color": {
         "title": "Color",
         "type": "string",

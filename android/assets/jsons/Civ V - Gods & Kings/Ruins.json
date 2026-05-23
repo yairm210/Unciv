@@ -6,13 +6,15 @@
             "Gain [20] [Culture] <(modified by game speed)>",
             "Play [policy] sound"
         ],
-        "color": "#cf8ff7"
+        "color": "#cf8ff7",
+        "aiWeight": 4
     },
     {
         "name": "squatters willing to work for you",
         "notification": "A [Worker] has joined us!",
         "uniques": ["Free [Worker] found in the ruins", "Unavailable <on [Prince] difficulty or higher>"],
-        "excludedDifficulties": ["Prince", "King", "Emperor", "Immortal", "Deity"]
+        "excludedDifficulties": ["Prince", "King", "Emperor", "Immortal", "Deity"],
+        "aiWeight": 6
     },
     {
         "name": "squatters wishing to settle under your rule",
@@ -21,7 +23,8 @@
             "Free [Settler] found in the ruins", "Unavailable <on [Prince] difficulty or higher>",
             "Play [wagon] sound"
         ],
-        "excludedDifficulties": ["Warlord","Prince","King","Emperor","Immortal","Deity"]
+        "excludedDifficulties": ["Warlord","Prince","King","Emperor","Immortal","Deity"],
+        "aiWeight": 8
     },
     {
         "name": "your exploring unit receives training",
@@ -29,7 +32,8 @@
         "uniques": [
             "[This Unit] gains [10] XP", "Only available <after turn number [10]>",
             "Play [promote] sound"
-        ]
+        ],
+        "aiWeight": 3
     },
     {
         "name": "survivors (adds population to a city)",
@@ -38,7 +42,8 @@
             "[+1] population in a random city", // This can't be easily added to cityFilter, as it is non-deterministic
             "Play [wagon] sound"
         ],
-        "color": "#81c784"
+        "color": "#81c784",
+        "aiWeight": 4
     },
     {
         "name": "a stash of gold",
@@ -47,28 +52,33 @@
             "Gain [50]-[100] [Gold] <(modified by game speed)>",
             "Play [coin] sound"
         ],
-        "color": "#ffeb7f"
+        "color": "#ffeb7f",
+        "aiWeight": 2
     },
     {
         "name": "discover a lost technology",
         "notification": "We have discovered the lost technology of [techName] in the ruins!",
         "uniques": ["[1] free random researchable Tech(s) from the [Ancient era]"],
-		"color": "#7f7fff"
+		"color": "#7f7fff",
+        "aiWeight": 6
     },
     {
         "name": "advanced weaponry for your explorer",
         "notification": "Our unit finds advanced weaponry hidden in the ruins!",
-        "uniques": ["[This Unit] upgrades for free including special upgrades"]
+        "uniques": ["[This Unit] upgrades for free including special upgrades"],
+        "aiWeight": 20
     },
     {
         "name": "reveal nearby Barbarian camps",
         "notification": "You find evidence of Barbarian activity. Nearby Barbarian camps are revealed!",
-        "uniques": ["Reveal up to [All] [Barbarian encampment] within a [10] tile radius"]
+        "uniques": ["Reveal up to [All] [Barbarian encampment] within a [10] tile radius"],
+        "aiWeight": 1
     },
     {
         "name": "find a crudely-drawn map",
         "notification": "We have found a crudely-drawn map in the ruins!",
-        "uniques": ["From a randomly chosen tile [4] tiles away from the ruins, reveal tiles up to [4] tiles away with [80]% chance"]
+        "uniques": ["From a randomly chosen tile [4] tiles away from the ruins, reveal tiles up to [4] tiles away with [80]% chance"],
+        "aiWeight": 1
     },
     {
         "name": "discover holy symbols",
@@ -77,7 +87,8 @@
             "Only available <when religion is enabled>", "Gain enough Faith for a Pantheon", "Only available <before founding a Pantheon>", "Only available <after turn number [20]>",
             "Play [choir] sound"
         ],
-		"color": "#CDDDF4"
+		"color": "#CDDDF4",
+        "aiWeight": 8
     },
     {
         "name": "an ancient prophecy",
@@ -87,6 +98,7 @@
             "Only available <after founding a Pantheon>", "Only available <after turn number [20]>",
             "Play [choir] sound"
         ],
-		"color": "#CDDDF4"
+		"color": "#CDDDF4",
+        "aiWeight": 8
     }
 ]
