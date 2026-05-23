@@ -122,6 +122,13 @@ object TranslationFileWriter {
                 linesToTranslate += "${uniqueType.getTranslatable()} = "
             }
 
+            linesToTranslate += "\n\n#################### Lines from Unique Type doc descriptions #######################\n"
+            for (uniqueType in UniqueType.entries) {
+                val description = uniqueType.docDescription ?: continue
+                if (" = " in description) continue
+                linesToTranslate += "$description = "
+            }
+
             for (uniqueParameterType in UniqueParameterType.entries) {
                 val strings = uniqueParameterType.getTranslationWriterStringsForOutput()
                 if (strings.isEmpty()) continue
@@ -129,13 +136,37 @@ object TranslationFileWriter {
                 linesToTranslate.addAll(strings.map { "$it = " })
             }
 
+            linesToTranslate += "\n\n#################### Lines from Unique Parameter Type doc descriptions #######################\n"
+            for (uniqueParameterType in UniqueParameterType.entries) {
+                val description = uniqueParameterType.docDescription ?: continue
+                if (" = " in description) continue
+                linesToTranslate += "$description = "
+            }
+
             for (uniqueTarget in UniqueTarget.entries)
                 linesToTranslate += "$uniqueTarget = "
+
+            linesToTranslate += "\n\n#################### Lines from Unique Target documentation #######################\n"
+            for (uniqueTarget in UniqueTarget.entries) {
+                val doc = uniqueTarget.documentationString
+                if (doc.isEmpty() || " = " in doc) continue
+                linesToTranslate += "$doc = "
+            }
 
             linesToTranslate += "\n\n#################### Lines from Countables #######################\n"
             for (countable in Countables.entries)
                 if (countable.text.isNotEmpty())
                     linesToTranslate += "${countable.text} = "
+
+            linesToTranslate += "\n\n#################### Lines from Countables documentation #######################\n"
+            for (countable in Countables.entries) {
+                val header = countable.documentationHeader
+                if (" = " !in header)
+                    linesToTranslate += "$header = "
+                for (docLine in countable.documentationStrings)
+                    if (" = " !in docLine)
+                        linesToTranslate += "$docLine = "
+            }
 
             linesToTranslate += "\n\n#################### Lines from spy actions #######################\n"
             for (spyAction in SpyAction.entries)
