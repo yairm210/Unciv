@@ -125,8 +125,7 @@ object TranslationFileWriter {
             linesToTranslate += "\n\n#################### Lines from Unique Type doc descriptions #######################\n"
             for (uniqueType in UniqueType.entries) {
                 val description = uniqueType.docDescription ?: continue
-                if (" = " in description) continue
-                linesToTranslate += "$description = "
+                linesToTranslate += "${description.replace(" = ", "\\= ")} = "
             }
 
             for (uniqueParameterType in UniqueParameterType.entries) {
@@ -139,8 +138,7 @@ object TranslationFileWriter {
             linesToTranslate += "\n\n#################### Lines from Unique Parameter Type doc descriptions #######################\n"
             for (uniqueParameterType in UniqueParameterType.entries) {
                 val description = uniqueParameterType.docDescription ?: continue
-                if (" = " in description) continue
-                linesToTranslate += "$description = "
+                linesToTranslate += "${description.replace(" = ", "\\= ")} = "
             }
 
             for (uniqueTarget in UniqueTarget.entries)
@@ -149,8 +147,8 @@ object TranslationFileWriter {
             linesToTranslate += "\n\n#################### Lines from Unique Target documentation #######################\n"
             for (uniqueTarget in UniqueTarget.entries) {
                 val doc = uniqueTarget.documentationString
-                if (doc.isEmpty() || " = " in doc) continue
-                linesToTranslate += "$doc = "
+                if (doc.isEmpty()) continue
+                linesToTranslate += "${doc.replace(" = ", "\\= ")} = "
             }
 
             linesToTranslate += "\n\n#################### Lines from Countables #######################\n"
@@ -160,12 +158,9 @@ object TranslationFileWriter {
 
             linesToTranslate += "\n\n#################### Lines from Countables documentation #######################\n"
             for (countable in Countables.entries) {
-                val header = countable.documentationHeader
-                if (" = " !in header)
-                    linesToTranslate += "$header = "
+                linesToTranslate += "${countable.documentationHeader.replace(" = ", "\\= ")} = "
                 for (docLine in countable.documentationStrings)
-                    if (" = " !in docLine)
-                        linesToTranslate += "$docLine = "
+                    linesToTranslate += "${docLine.replace(" = ", "\\= ")} = "
             }
 
             linesToTranslate += "\n\n#################### Lines from spy actions #######################\n"
@@ -233,7 +228,7 @@ object TranslationFileWriter {
                 }
 
                 val lineParts = line.split(" = ")
-                val translationKey = lineParts[0].replace("\\n", "\n")
+                val translationKey = lineParts[0].replace("\\n", "\n").replace("\\= ", " = ")
                 val hashMapKey = translationKey
                         .replace(pointyBraceRegex, "")
                         .replace(squareBraceRegex, "[]")
@@ -309,7 +304,7 @@ object TranslationFileWriter {
 
     @Pure
     private fun StringBuilder.appendTranslation(key: String, value: String) {
-        appendLine(key.replace("\n", "\\n") +
+        appendLine(key.replace("\n", "\\n").replace(" = ", "\\= ") +
                 " = " + value.replace("\n", "\\n"))
     }
 
