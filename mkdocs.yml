@@ -25,7 +25,7 @@ theme:
 
 repo_name: yairm210/unciv
 repo_url: https://github.com/yairm210/unciv
-site_url: https://yairm210.github.io/Unciv
+# site_url set in CI via environment variable for deployment
 
 markdown_extensions:
   - admonition
@@ -165,3 +165,129 @@ plugins:
           name: isiZulu
           build: true
   - search
+
+extra:
+  alternate:
+    - name: English
+      link: .
+      lang: en
+    - name: Afrikaans
+      link: af/
+      lang: af
+    - name: বাংলা
+      link: bn/
+      lang: bn
+    - name: Беларуская
+      link: be/
+      lang: be
+    - name: Bosanski
+      link: bs/
+      lang: bs
+    - name: Português (Brasil)
+      link: pt-BR/
+      lang: pt-BR
+    - name: Български
+      link: bg/
+      lang: bg
+    - name: Català
+      link: ca/
+      lang: ca
+    - name: Hrvatski
+      link: hr/
+      lang: hr
+    - name: Čeština
+      link: cs/
+      lang: cs
+    - name: Nederlands
+      link: nl/
+      lang: nl
+    - name: Filipino
+      link: tl/
+      lang: tl
+    - name: Suomi
+      link: fi/
+      lang: fi
+    - name: Français
+      link: fr/
+      lang: fr
+    - name: Galego
+      link: gl/
+      lang: gl
+    - name: Deutsch
+      link: de/
+      lang: de
+    - name: Ελληνικά
+      link: el/
+      lang: el
+    - name: हिन्दी
+      link: hi/
+      lang: hi
+    - name: Magyar
+      link: hu/
+      lang: hu
+    - name: Bahasa Indonesia
+      link: id/
+      lang: id
+    - name: Italiano
+      link: it/
+      lang: it
+    - name: 日本語
+      link: ja/
+      lang: ja
+    - name: 한국어
+      link: ko/
+      lang: ko
+    - name: Latina
+      link: la/
+      lang: la
+    - name: Lietuvių
+      link: lt/
+      lang: lt
+    - name: Bahasa Melayu
+      link: ms/
+      lang: ms
+    - name: Malti
+      link: mt/
+      lang: mt
+    - name: Norsk
+      link: no/
+      lang: "no"
+    - name: Polski
+      link: pl/
+      lang: pl
+    - name: Português
+      link: pt/
+      lang: pt
+    - name: Română
+      link: ro/
+      lang: ro
+    - name: Русский
+      link: ru/
+      lang: ru
+    - name: 简体中文
+      link: zh/
+      lang: zh
+    - name: Español
+      link: es/
+      lang: es
+    - name: Svenska
+      link: sv/
+      lang: sv
+    - name: ไทย
+      link: th/
+      lang: th
+    - name: 繁體中文
+      link: zh-TW/
+      lang: zh-TW
+    - name: Türkçe
+      link: tr/
+      lang: tr
+    - name: Українська
+      link: uk/
+      lang: uk
+    - name: Tiếng Việt
+      link: vi/
+      lang: vi
+    - name: isiZulu
+      link: zu/
+      lang: zu
