@@ -26,12 +26,14 @@ class UiElementDocsWriter {
 
     private fun writeForLanguage(language: String, translations: Map<String, String>) {
         val srcFile = File(srcPath)
-        val targetDir = File("${docsDir}$language/Modders/")
+        val locale = UniqueDocsWriter.languageToLocale(language)
+        val targetDir = File("${docsDir}$locale/Modders/")
         if (!srcFile.exists()) return
         targetDir.mkdirs()
 
         // Read the English file as template (hand-written parts around the table)
-        val templateFile = File("${docsDir}English/Modders/$docFileName")
+        val enLocale = UniqueDocsWriter.languageToLocale("English")
+        val templateFile = File("${docsDir}$enLocale/Modders/$docFileName")
         val originalLines = if (templateFile.exists()) templateFile.readLines() else emptyList()
 
         val endIndex = originalLines.indexOf(endMarker).takeIf { it != -1 } ?: (originalLines.size - 1)
@@ -125,7 +127,7 @@ class UiElementDocsWriter {
             yieldAll(originalLines.subList(endIndex + 1, originalLines.size))
         }
 
-        val outputFile = File("${docsDir}$language/Modders/$docFileName")
+        val outputFile = File("${docsDir}$locale/Modders/$docFileName")
         outputFile.writeText(newLines.joinToString("\n"))
     }
 }

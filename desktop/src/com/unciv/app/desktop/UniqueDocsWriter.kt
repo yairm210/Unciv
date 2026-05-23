@@ -42,6 +42,55 @@ class UniqueDocsWriter {
                 this in it.targetTypes
             }
 
+        /** Map language names (from .properties files) to ISO 639-1 locale codes. */
+        fun languageToLocale(language: String): String = when (language) {
+            "English" -> "en"
+            "Afrikaans" -> "af"
+            "Bangla" -> "bn"
+            "Belarusian" -> "be"
+            "Bosnian" -> "bs"
+            "Brazilian_Portuguese" -> "pt-BR"
+            "Bulgarian" -> "bg"
+            "Catalan" -> "ca"
+            "Croatian" -> "hr"
+            "Czech" -> "cs"
+            "Dutch" -> "nl"
+            "Filipino" -> "tl"
+            "Finnish" -> "fi"
+            "French" -> "fr"
+            "Galician" -> "gl"
+            "German" -> "de"
+            "Greek" -> "el"
+            "Hindi" -> "hi"
+            "Hungarian" -> "hu"
+            "Indonesian" -> "id"
+            "Italian" -> "it"
+            "Japanese" -> "ja"
+            "Korean" -> "ko"
+            "Latin" -> "la"
+            "Lithuanian" -> "lt"
+            "Malay" -> "ms"
+            "Maltese" -> "mt"
+            "Norwegian" -> "no"
+            "Persian_(Pinglish-DIN)" -> "fa-DIN"
+            "Persian_(Pinglish-UN)" -> "fa-UN"
+            "Polish" -> "pl"
+            "Portuguese" -> "pt"
+            "Romanian" -> "ro"
+            "Russian" -> "ru"
+            "Rusyn" -> "rue"
+            "Simplified_Chinese" -> "zh"
+            "Spanish" -> "es"
+            "Swedish" -> "sv"
+            "Thai" -> "th"
+            "Traditional_Chinese" -> "zh-TW"
+            "Turkish" -> "tr"
+            "Ukrainian" -> "uk"
+            "Vietnamese" -> "vi"
+            "Zulu" -> "zu"
+            else -> language  // fallback: use the name as-is
+        }
+
         /** Discover available languages from translation file directory. */
         fun discoverLanguages(): List<String> {
             val dir = File("jsons/translations/")
@@ -105,18 +154,19 @@ class UniqueDocsWriter {
     private fun writeForLanguage(language: String) {
         val translations = if (language == "English") emptyMap()
             else loadTranslations(language)
+        val locale = languageToLocale(language)
 
-        val targetDir = File("${docsDir}$language/Modders/")
+        val targetDir = File("${docsDir}$locale/Modders/")
         targetDir.mkdirs()
-        writeUniqueTypes(language, translations)
-        writeCountables(language, translations)
+        writeUniqueTypes(language, translations, locale)
+        writeCountables(language, translations, locale)
     }
 
     /** Look up a translation, falling back to English (the key itself). */
     private fun tr(text: String, translations: Map<String, String>): String =
         translations[text] ?: text
 
-    private fun writeUniqueTypes(language: String, translations: Map<String, String>) {
+    private fun writeUniqueTypes(language: String, translations: Map<String, String>, locale: String) {
         val targetTypesToUniques =
             if (showUniqueOnOneTarget)
                 UniqueType.entries
@@ -215,12 +265,13 @@ class UniqueDocsWriter {
             addLine("*[${paramType.parameterName}]: $description$punctuation")
         }
 
-        val file = File("${docsDir}$language/Modders/$uniqueTypesFileName")
+        val file = File("${docsDir}$locale/Modders/$uniqueTypesFileName")
         file.writeText(lines.joinToString("\n"))
     }
 
-    private fun writeCountables(language: String, translations: Map<String, String>) {
-        val sourceFile = File("${docsDir}English/Modders/$countablesFileName")
+    private fun writeCountables(language: String, translations: Map<String, String>, locale: String) {
+        val enLocale = languageToLocale("English")
+        val sourceFile = File("${docsDir}$enLocale/Modders/$countablesFileName")
         val oldContent = try {
             sourceFile.readText(Charsets.UTF_8)
         } catch (ex: Throwable) {
@@ -260,7 +311,7 @@ class UniqueDocsWriter {
         newContent.appendLine()
         newContent.append(oldContent, truncateEnd, oldContent.length)
 
-        val file = File("${docsDir}$language/Modders/$countablesFileName")
+        val file = File("${docsDir}$locale/Modders/$countablesFileName")
         file.writeText(newContent.toString(), Charsets.UTF_8)
     }
 }
