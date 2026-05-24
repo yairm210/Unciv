@@ -580,7 +580,8 @@ class ModManagementScreen private constructor(
         // show mod information first - this starts by clearing modActionTable
         modActionTable.update(mod)
 
-        val modInfo = installedModInfo[mod.name]!!
+        // The mod may have been deleted by the user while an update download was in progress
+        val modInfo = installedModInfo[mod.name] ?: return
 
         // offer 'permanent visual mod' toggle
         val isVisualMod = game.settings.visualMods.contains(mod.name)
