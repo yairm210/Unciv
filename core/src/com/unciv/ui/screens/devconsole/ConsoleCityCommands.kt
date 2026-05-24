@@ -1,5 +1,6 @@
 package com.unciv.ui.screens.devconsole
 
+import com.unciv.logic.city.managers.OwnershipSource
 import com.unciv.models.ruleset.Building
 import com.unciv.ui.screens.devconsole.CliInput.Companion.findCliInput
 
@@ -42,16 +43,17 @@ internal class ConsoleCityCommands : ConsoleCommandNode {
             DevConsoleResponse.OK
         },
 
-        "addtile" to ConsoleAction("city addtile <cityName> [radius]") { console, params ->
+        "addtile" to ConsoleAction("city addtile <cityName> [radius] [Free|Expansion|Bought]") { console, params ->
             val selectedTile = console.getSelectedTile()
             val city = console.getCity(params[0])
             if (selectedTile.neighbors.none { it.getCity() == city })
                 throw ConsoleErrorException("Tile is not adjacent to any tile already owned by the city")
             if (selectedTile.isCityCenter()) throw ConsoleErrorException("Cannot transfer city center")
             val radius = params.getOrNull(1)?.toInt() ?: 0
+            val source = params.getOrNull(2)?.let { OwnershipSource.parse(it.content) } ?: OwnershipSource.Free
             for (tile in selectedTile.getTilesInDistance(radius)) {
                 if (tile.getCity() != city && !tile.isCityCenter())
-                    city.expansion.takeOwnership(tile)
+                    city.expansion.takeOwnership(tile, source)
             }
             DevConsoleResponse.OK
         },

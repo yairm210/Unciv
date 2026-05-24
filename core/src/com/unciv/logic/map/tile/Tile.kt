@@ -882,6 +882,7 @@ class Tile : IsPartOfGameInfoSerialization {
         }
     }
 
+    /** Do not call from outside [CityExpansionManager][com.unciv.logic.city.managers.CityExpansionManager], or the tile counters will de-synchronize */
     fun setOwningCity(city: City?) {
         if (roadOwner != "" && roadOwnerObject == null)
             roadOwnerObject = tileMap.gameInfo.getCivilization(roadOwner)

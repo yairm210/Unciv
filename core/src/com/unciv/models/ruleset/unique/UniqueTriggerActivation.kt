@@ -4,6 +4,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.city.City
+import com.unciv.logic.city.managers.OwnershipSource
 import com.unciv.logic.civilization.*
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
@@ -1073,7 +1074,7 @@ object UniqueTriggerActivation {
                     for (applicableCity in applicableCities) {
                         for (i in 1..positiveAmount) {
                             val tileToOwn = applicableCity.expansion.chooseNewTileToOwn() ?: break
-                            applicableCity.expansion.takeOwnership(tileToOwn)
+                            applicableCity.expansion.takeOwnership(tileToOwn, OwnershipSource.Free)
                         }
                     }
                     if (notification != null)
@@ -1365,7 +1366,7 @@ object UniqueTriggerActivation {
                                 diplomacyCityState.setFlag(DiplomacyFlags.TilesStolen, 1)
                             }
                         }
-                        cityToAddTo.expansion.takeOwnership(tileToTakeOver)
+                        cityToAddTo.expansion.takeOwnership(tileToTakeOver, OwnershipSource.Free)
                     }
 
                     for (otherCiv in civsToNotify)

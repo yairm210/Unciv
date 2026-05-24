@@ -391,8 +391,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         state = GameContext(this)
         tilesInRange = getCenterTile().getTilesInDistance(getWorkRange()).toHashSet()
         population.city = this
-        expansion.city = this
-        expansion.setTransients()
+        expansion.setTransients(this)
         cityConstructions.city = this
         religion.setTransients(this)
         cityConstructions.setTransients()

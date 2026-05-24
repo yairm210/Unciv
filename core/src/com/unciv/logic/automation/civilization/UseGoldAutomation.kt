@@ -2,6 +2,7 @@ package com.unciv.logic.automation.civilization
 
 import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.city.City
+import com.unciv.logic.city.managers.OwnershipSource
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.tile.Tile
@@ -107,7 +108,7 @@ object UseGoldAutomation {
             }
             if (ranOutOfMoney) {
                 for (tileThatNeedsBuying in tilesThatNeedBuying) {
-                    cityWithLeastCostToBuy.expansion.relinquishOwnership(tileThatNeedsBuying)
+                    cityWithLeastCostToBuy.expansion.relinquishOwnership(tileThatNeedsBuying, OwnershipSource.Bought)
                 }
                 civInfo.addGold(goldSpent)
             }

@@ -14,6 +14,7 @@ import com.unciv.ui.components.extensions.toPercent
 import com.unciv.utils.withItem
 import com.unciv.utils.withoutItem
 import org.jetbrains.annotations.VisibleForTesting
+import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 import kotlin.math.pow
@@ -27,17 +28,48 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
     /** Amount of culture this city has accumulated, serialized */
     var cultureStored: Int = 0
 
+    /** Number of tiles acquired per source, _partially_ serialized - see class doc */
+    @Cache
+    private val tileCounts = CityExpansionTileCounter()
+
+    @delegate:Transient
+    private val foundingUnique by lazy {
+        @Suppress("DEPRECATION") // forEachMatchingUnique doesn't allow chaining
+        city.civ.getMatchingUniques(UniqueType.OneTimeTakeOverTilesInRadius)
+            .firstOrNull { it.hasModifier(UniqueType.TriggerUponFoundingCity) }
+    }
+    @delegate:Transient
+    /** Radius for tiles a city gets assigned when being founded.
+     *  * Usually 1, unless the civ has OneTimeTakeOverTilesInRadius with TriggerUponFoundingCity.
+     *  * Determines which tiles are considered "base free" and not counting against expansion costs.
+     *  * Re-evaluated per turn, since CityExpansionManager gets cloned. Should enable dynamic base size modding.
+     */
+    internal val foundingRadius by lazy {
+        foundingUnique?.let { it.params[1].toInt() } ?: 1
+    }
+    @delegate:Transient
+    /** Filter function for tiles a city gets assigned when being founded.
+     *  * Usually returning true, unless the civ has OneTimeTakeOverTilesInRadius with TriggerUponFoundingCity.
+     *  * Determines which tiles are considered "base free" and not counting against expansion costs.
+     *  * Re-evaluated per turn, since CityExpansionManager gets cloned. Should enable dynamic base size modding.
+     */
+    internal val foundingTileFilter: (Tile)->Boolean by lazy {
+        if (foundingUnique == null || foundingUnique!!.params[0] in Constants.all) fun(tile: Tile) = true
+        else fun(tile: Tile) = tile.matchesFilter(foundingUnique!!.params[0], city.civ)
+    }
+
     fun clone(): CityExpansionManager {
         val toReturn = CityExpansionManager()
         toReturn.cultureStored = cultureStored
+        toReturn.tileCounts.cloneFrom(tileCounts)
         return toReturn
     }
 
     @Readonly
-    fun tilesClaimed(): Int {
-        val tilesAroundCity = city.getCenterTile().neighbors
-                .map { it.position }
-        return city.tiles.count { it != city.location && it !in tilesAroundCity}
+    /** Return tiles claimed, per source */
+    fun tilesClaimed(source: OwnershipSource = OwnershipSource.Expansion): Int {
+        tileCounts.normalize()
+        return tileCounts[source]
     }
 
     // This one has conflicting sources -
@@ -48,7 +80,7 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
     // -- Note (added later) that this last link is specific to civ VI and not civ V
     @Readonly
     fun getCultureToNextTile(): Int {
-        var cultureToNextTile = 6 * (max(0, tilesClaimed()) + 1.4813).pow(1.3)
+        var cultureToNextTile = 6 * (max(0, tilesClaimed(OwnershipSource.Expansion)) + 1.4813).pow(1.3)
 
         cultureToNextTile *= city.civ.gameInfo.speed.cultureCostModifier
 
@@ -85,7 +117,7 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
             throw NotEnoughGoldToBuyTileException("$city tried to buy $tile, but lacks gold (cost $goldCost, has ${city.civ.gold})")
 
         city.civ.addGold(-goldCost)
-        takeOwnership(tile)
+        takeOwnership(tile, OwnershipSource.Bought)
 
         // Reapply worked tiles optimization (aka CityFocus) - doing it here means AI profits too
         city.reassignPopulationDeferred()
@@ -95,7 +127,7 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
     fun getGoldCostOfTile(tile: Tile): Int {
         val baseCost = 50
         val distanceFromCenter = tile.aerialDistanceTo(city.getCenterTile())
-        var cost = baseCost * (distanceFromCenter - 1) + tilesClaimed() * 5.0
+        var cost = baseCost * (distanceFromCenter - 1) + tilesClaimed(OwnershipSource.Bought) * 5.0
 
         cost *= city.civ.gameInfo.speed.goldCostModifier
 
@@ -124,7 +156,7 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
     }
 
     //region state-changing functions
-    /** Relinquishes all tiles.
+    /** Relinquishes all tiles and resets tile acquisition source counts.
      *  @see reset */
     fun clear() {
         for (tile in city.getTiles())
@@ -132,7 +164,7 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         tileCounts.reset()
     }
 
-    /** Relinquishes all tiles, and re-acquires the base initial tiles
+    /** Relinquishes all tiles and resets tile acquisition source counts, and re-acquires the base initial tiles
      *  @see clear */
     fun reset() {
         clear()
@@ -140,18 +172,19 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         // The only way to create a city inside an owned tile is if it's in your territory
         // In this case, if you don't assign control of the central tile to the city,
         // It becomes an invisible city and weird shit starts happening
-        takeOwnership(city.getCenterTile())
+        takeOwnership(city.getCenterTile(), OwnershipSource.Base)
 
-        for (tile in city.getCenterTile().getTilesInDistance(1)
-                .filter { it.getCity() == null }) // can't take ownership of owned tiles (by other cities)
-            takeOwnership(tile)
+        val tilesToTake = city.getCenterTile().getTilesInDistance(foundingRadius)
+            .filter { it.getCity() == null && foundingTileFilter(it) } // can't take ownership of owned tiles (by other cities)
+        for (tile in tilesToTake)
+            takeOwnership(tile, OwnershipSource.Base)
     }
 
     private fun addNewTileWithCulture(): HexCoord? {
         val chosenTile = chooseNewTileToOwn()
         if (chosenTile != null) {
             cultureStored -= getCultureToNextTile()
-            takeOwnership(chosenTile)
+            takeOwnership(chosenTile, OwnershipSource.Expansion)
             return chosenTile.position
         }
         return null
@@ -162,9 +195,12 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
      * things like worked tiles, locked tiles, and stats.
      * @param tile The tile to relinquish
      */
-    fun relinquishOwnership(tile: Tile) {
+    fun relinquishOwnership(tile: Tile, source: OwnershipSource? = null) {
         if (tile.owningCity != city) return // UseGoldAutomation will relinquish tiles that is hasn't actually bought
+        tileCounts.normalize()
         city.tiles = city.tiles.withoutItem(tile.position)
+        tileCounts.relinquishOne(source)
+
         for (city in city.civ.cities) {
             if (city.isWorked(tile)) {
                 city.population.stopWorkingTile(tile.position)
@@ -189,8 +225,9 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
      * that are no longer allowed on that tile.
      *
      * @param tile The tile to take over
+     * @param source How the tile was acquired, for accounting
      */
-    fun takeOwnership(tile: Tile) {
+    fun takeOwnership(tile: Tile, source: OwnershipSource) {
         check(!tile.isCityCenter()) { "Trying to found a city in a tile that already has one" }
         if (tile.getCity() != null)
             tile.getCity()!!.expansion.relinquishOwnership(tile)
@@ -198,8 +235,10 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         if (tile.improvement == Constants.barbarianEncampment)
             tile.setImprovementBasic(null)
 
+        tileCounts.normalize()
         city.tiles = city.tiles.withItem(tile.position)
         tile.setOwningCity(city)
+        tileCounts[source]++
         city.population.autoAssignPopulation()
         city.civ.cache.updateOurTiles()
         city.cityStats.update()
@@ -219,6 +258,10 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         tile.history.recordTakeOwnership(tile)
     }
 
+    @VisibleForTesting
+    /** Only unit tests are allowed to call [takeOwnership] without a source, and they will count as free */
+    fun takeOwnership(tile: Tile) = takeOwnership(tile, OwnershipSource.Free)
+
     fun nextTurn(culture: Float) {
         cultureStored += culture.toInt()
         if (cultureStored >= getCultureToNextTile()) {
@@ -231,7 +274,9 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         }
     }
 
-    fun setTransients() {
+    fun setTransients(city: City) {
+        this.city = city
+        tileCounts.setTransients(city)
         val tiles = city.getTiles()
         for (tile in tiles)
             tile.setOwningCity(city)

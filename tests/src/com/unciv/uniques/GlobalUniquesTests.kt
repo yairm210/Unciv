@@ -2,6 +2,7 @@
 package com.unciv.uniques
 
 import com.unciv.Constants
+import com.unciv.logic.city.managers.OwnershipSource
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.ruleset.BeliefType
@@ -730,10 +731,12 @@ class GlobalUniquesTests {
         val civInfo = game.addCiv()
         val tile = game.getTile(HexCoord.Zero)
         val city = game.addCity(civInfo, tile, true)
-        Assert.assertEquals(7, city.getTiles().count())
+        fun tileCount() = city.expansion.tilesClaimed(OwnershipSource.All)
+
+        Assert.assertEquals(7, tileCount())
         val building = game.createBuilding("Gain control over [8] tiles [in this city]")
         city.cityConstructions.addBuilding(building)
-        Assert.assertEquals(15, city.getTiles().count())
+        Assert.assertEquals(15, tileCount())
     }
 
     // endregion

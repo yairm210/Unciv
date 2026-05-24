@@ -72,6 +72,8 @@ allprojects {
             "java.util.stream.StreamSupport.longStream",
             "java.util.stream.LongStream.parallel",
 
+            "kotlin.IntArray.get",
+            "kotlin.IntArray.iterator",
             "kotlin.LongArray.get",
             "kotlin.LongArray.iterator",
 

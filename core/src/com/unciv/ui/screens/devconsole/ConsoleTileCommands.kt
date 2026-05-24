@@ -1,6 +1,7 @@
 package com.unciv.ui.screens.devconsole
 import com.unciv.Constants
 import com.unciv.logic.city.City
+import com.unciv.logic.city.managers.OwnershipSource
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.Notification
 import com.unciv.logic.civilization.NotificationCategory
@@ -106,13 +107,14 @@ internal class ConsoleTileCommands: ConsoleCommandNode {
         "addriver" to ConsoleRiverAction("tile addriver <direction>", true),
         "removeriver" to ConsoleRiverAction("tile removeriver <direction>", false),
 
-        "setowner" to ConsoleAction("tile setowner [civName|cityName]") { console, params ->
+        "setowner" to ConsoleAction("tile setowner [civName|cityName] [Free|Expansion|Bought]") { console, params ->
             val selectedTile = console.getSelectedTile()
+            val source = params.getOrNull(1)?.let { OwnershipSource.parse(it.content) } ?: OwnershipSource.Free
             val oldOwner = selectedTile.getCity()
             val newOwner = getOwnerCity(console, params, selectedTile)
             // for simplicity, treat assign to civ without cities same as un-assign
             oldOwner?.expansion?.relinquishOwnership(selectedTile) // redundant if new owner is not null, but simpler for un-assign
-            newOwner?.expansion?.takeOwnership(selectedTile)
+            newOwner?.expansion?.takeOwnership(selectedTile, source)
             DevConsoleResponse.OK
         },
 

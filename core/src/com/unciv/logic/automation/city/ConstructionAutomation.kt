@@ -375,7 +375,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         newCity.cityConstructions.builtBuildings.add(building)
         newCity.cityConstructions.setTransients()
         newCity.cityStats.update(updateCivStats = false, calculateGrowthModifiers = false)
-        city.expansion.setTransients() // Revert owned tiles to original city
+        city.expansion.setTransients(city) // Revert owned tiles to original city
         return newCity.cityStats.currentCityStats - oldStats
     }
 
