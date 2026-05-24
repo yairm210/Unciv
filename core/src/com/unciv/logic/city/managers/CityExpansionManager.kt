@@ -1,6 +1,5 @@
 package com.unciv.logic.city.managers
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.automation.Automation
@@ -8,12 +7,13 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.toHexCoord
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.utils.withItem
 import com.unciv.utils.withoutItem
+import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 import kotlin.math.pow
@@ -21,7 +21,10 @@ import kotlin.math.roundToInt
 
 class CityExpansionManager : IsPartOfGameInfoSerialization {
     @Transient
-    lateinit var city: City
+    private lateinit var city: City
+
+    @VisibleForTesting
+    /** Amount of culture this city has accumulated, serialized */
     var cultureStored: Int = 0
 
     fun clone(): CityExpansionManager {
@@ -121,9 +124,18 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
     }
 
     //region state-changing functions
-    fun reset() {
+    /** Relinquishes all tiles.
+     *  @see reset */
+    fun clear() {
         for (tile in city.getTiles())
             relinquishOwnership(tile)
+        tileCounts.reset()
+    }
+
+    /** Relinquishes all tiles, and re-acquires the base initial tiles
+     *  @see clear */
+    fun reset() {
+        clear()
 
         // The only way to create a city inside an owned tile is if it's in your territory
         // In this case, if you don't assign control of the central tile to the city,
@@ -135,12 +147,12 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
             takeOwnership(tile)
     }
 
-    private fun addNewTileWithCulture(): Vector2? {
+    private fun addNewTileWithCulture(): HexCoord? {
         val chosenTile = chooseNewTileToOwn()
         if (chosenTile != null) {
             cultureStored -= getCultureToNextTile()
             takeOwnership(chosenTile)
-            return chosenTile.position.toVector2()
+            return chosenTile.position
         }
         return null
     }
@@ -151,6 +163,7 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
      * @param tile The tile to relinquish
      */
     fun relinquishOwnership(tile: Tile) {
+        if (tile.owningCity != city) return // UseGoldAutomation will relinquish tiles that is hasn't actually bought
         city.tiles = city.tiles.withoutItem(tile.position)
         for (city in city.civ.cities) {
             if (city.isWorked(tile)) {
@@ -184,7 +197,7 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
 
         if (tile.improvement == Constants.barbarianEncampment)
             tile.setImprovementBasic(null)
-            
+
         city.tiles = city.tiles.withItem(tile.position)
         tile.setOwningCity(city)
         city.population.autoAssignPopulation()
@@ -196,7 +209,7 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
                 unit.movement.teleportToClosestMoveableTile()
             else if (unit.civ == city.civ && unit.isSleeping()) {
                 // If the unit is sleeping and is a worker, it might want to build on this tile
-                // So lets try to wake it up for the player to notice it
+                // So let's try to wake it up for the player to notice it
                 if (unit.cache.hasUniqueToBuildImprovements || unit.cache.hasUniqueToCreateWaterImprovements) {
                     unit.due = true
                     unit.action = null
@@ -211,7 +224,7 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         if (cultureStored >= getCultureToNextTile()) {
             val location = addNewTileWithCulture()
             if (location != null) {
-                val locations = LocationAction(location.toHexCoord(), city.location.toHexCoord())
+                val locations = LocationAction(location, city.location.toHexCoord())
                 city.civ.addNotification("[${city.name}] has expanded its borders!", locations,
                     NotificationCategory.Cities, NotificationIcon.Culture)
             }

@@ -1338,8 +1338,7 @@ object UniqueTriggerActivation {
 
                 val citiesWithAdjacentTiles = tilesToTakeOver.asSequence()
                     .flatMap { it.neighbors + it }
-                    .map { it.owningCity }
-                    .filterNotNull()
+                    .mapNotNull { it.owningCity }
                     .filter { it.civ == civInfo }
                     .toSet()
 

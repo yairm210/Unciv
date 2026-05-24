@@ -15,7 +15,6 @@ import java.util.*
 
 object UseGoldAutomation {
 
-
     /** allow AI to spend money to purchase city-state friendship, buildings & unit */
     fun useGold(civ: Civilization) {
         for (unit in civ.units.getCivUnits())

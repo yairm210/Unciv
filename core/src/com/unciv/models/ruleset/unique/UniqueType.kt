@@ -12,8 +12,8 @@ import yairm210.purity.annotations.Readonly
 // I didn't put this in a companion object because APPARENTLY doing that means you can't use it in the init function.
 private val numberRegex = Regex("\\d+$") // Any number of trailing digits
 
-const val ADDITIVE_BONUS_EXPLANATION = "Multiple bonuses stack additively: +50% + +50% = +100%"
-const val MULTIPLICATIVE_BONUS_EXPLANATION = "Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%"
+private const val ADDITIVE_BONUS_EXPLANATION = "Multiple bonuses stack additively: +50% + +50% = +100%"
+private const val MULTIPLICATIVE_BONUS_EXPLANATION = "Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%"
 
 enum class UniqueType(
     val text: String,
@@ -72,7 +72,7 @@ enum class UniqueType(
     PercentProductionBuildingsInCapital("[relativeAmount]% Production towards any buildings that already exist in the Capital", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     PercentYieldFromPillaging("[relativeAmount]% Yield from pillaging tiles", UniqueTarget.Global, UniqueTarget.Unit),
     PercentHealthFromPillaging("[relativeAmount]% Health from pillaging tiles", UniqueTarget.Global, UniqueTarget.Unit),
-    
+
     // endregion Stat providing uniques
 
     // region City-State related uniques
@@ -85,8 +85,8 @@ enum class UniqueType(
     CityStateMoreGiftedUnits("Militaristic City-States grant units [positiveAmount] times as fast when you are at war with a common nation", UniqueTarget.Global),
 
     CityStateGoldGiftsProvideMoreInfluence("Gifts of Gold to City-States generate [relativeAmount]% more Influence", UniqueTarget.Global),
-    
-    
+
+
     CityStateCanBeBoughtForGold("Can spend Gold to annex or puppet a City-State that has been your Ally for [nonNegativeAmount] turns", UniqueTarget.Global),
     CityStateTerritoryAlwaysFriendly("City-State territory always counts as friendly territory", UniqueTarget.Global),
 
@@ -127,7 +127,7 @@ enum class UniqueType(
 
     /// Buying units/buildings
     // There is potential to merge these
-    
+
     BuyUnitsIncreasingCost("May buy [baseUnitFilter] units for [nonNegativeAmount] [stat] [cityFilter] at an increasing price ([amount])", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     BuyBuildingsIncreasingCost("May buy [buildingFilter] buildings for [nonNegativeAmount] [stat] [cityFilter] at an increasing price ([amount])", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     BuyUnitsForAmountStat("May buy [baseUnitFilter] units for [nonNegativeAmount] [stat] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
@@ -213,7 +213,7 @@ enum class UniqueType(
     UnitStartingPromotions("All newly-trained [baseUnitFilter] units [cityFilter] receive the [promotion] promotion", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     // Todo: Lowercase the 'U' of 'Units' in this unique
     CityHealingUnits("[mapUnitFilter] Units adjacent to this city heal [amount] HP per turn when healing", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    
+
     // change the XP cost for a relative amount %
     XPForPromotionModifier("[relativeAmount]% XP required for promotions",UniqueTarget.Global,
         docDescription = MULTIPLICATIVE_BONUS_EXPLANATION),
@@ -314,7 +314,7 @@ enum class UniqueType(
     CanBePurchasedWithStat("Can be purchased with [stat] [cityFilter]", UniqueTarget.Building, UniqueTarget.Unit),
     CanBePurchasedForAmountStat("Can be purchased for [amount] [stat] [cityFilter]", UniqueTarget.Building, UniqueTarget.Unit),
     MaxNumberBuildable("Limited to [amount] per Civilization", UniqueTarget.Building, UniqueTarget.Unit),
-    
+
     /** A special unique, as it only activates [RejectionReasonType] when it has conditionals that *do not* apply.
      * Meant to be used together with conditionals, like `"Only available <after adopting [Piety]> <while the empire is happy>"`.
      * Restricts Upgrade/Transform pathways.
@@ -379,7 +379,7 @@ enum class UniqueType(
 
     CreatesOneImprovement("Creates a [improvementName] improvement on a specific tile", UniqueTarget.Building,
         docDescription = "When choosing to construct this building, the player must select a tile where the improvement can be built." +
-                " Upon building completion, the tile will gain this improvement." + 
+                " Upon building completion, the tile will gain this improvement." +
                 " Limited to one per building.",
         flags = UniqueFlag.setOfNoConditionals
         ),
@@ -464,7 +464,7 @@ enum class UniqueType(
     WithdrawsBeforeMeleeCombat("Withdraws before melee combat", UniqueTarget.Unit),
     CannotCaptureCities("Unable to capture cities", UniqueTarget.Unit, UniqueTarget.Global),
     CannotPillage("Unable to pillage tiles", UniqueTarget.Unit, UniqueTarget.Global),
-    
+
     // allow any unit to destory cities instead of capturing them, also allows non melee units to destroy cities
     CanDestroyCities("Destroys [cityFilter] cities instead of capturing", UniqueTarget.Unit,
         docDescription = "The unit will destroy [cityFilter] cities instead of capturing them, also allows non-melee units to destroy cities." + "Capital cities (including city states) are immune to this effect."),
@@ -688,7 +688,7 @@ enum class UniqueType(
     NoFeatureRemovalNeeded("Does not need removal of [terrainFeature]", UniqueTarget.Improvement),
     RemovesFeaturesIfBuilt("Removes removable features when built", UniqueTarget.Improvement),
 
-    DefensiveBonus("Gives a defensive bonus of [relativeAmount]%", UniqueTarget.Improvement, 
+    DefensiveBonus("Gives a defensive bonus of [relativeAmount]%", UniqueTarget.Improvement,
         docDescription = "Does not accept unit-based conditionals"),
     ImprovementMaintenance("Costs [amount] [stat] per turn when in your territory", UniqueTarget.Improvement), // Roads
     ImprovementAllMaintenance("Costs [amount] [stat] per turn", UniqueTarget.Improvement), // Roads
@@ -748,7 +748,7 @@ enum class UniqueType(
     ConditionalWLTKD("during We Love The King Day", UniqueTarget.Conditional),
 
     ConditionalHappy("while the empire is happy", UniqueTarget.Conditional),
-    
+
     ConditionalDuringEra("during the [era]", UniqueTarget.Conditional),
     ConditionalBeforeEra("before the [era]", UniqueTarget.Conditional),
     ConditionalStartingFromEra("starting from the [era]", UniqueTarget.Conditional),
@@ -934,7 +934,7 @@ enum class UniqueType(
     GetLeaderTitle("Get the leader title of [leaderTitle]", UniqueTarget.Triggerable, flags = UniqueFlag.setOfHiddenToUsers),
 
     //endregion
-    
+
     ///////////////////////////////////////// region 09 UNIT TRIGGERABLES /////////////////////////////////////////
 
     OneTimeUnitHeal("[unitTriggerTarget] heals [positiveAmount] HP", UniqueTarget.UnitTriggerable),
@@ -1024,7 +1024,7 @@ enum class UniqueType(
         UniqueTarget.Promotion,
         UniqueTarget.Tech,
         flags = UniqueFlag.setOfHiddenToUsers),
-    
+
     UnitActionPriority("with [amount] priority",
         UniqueTarget.UnitActionModifier,
         UniqueTarget.MetaModifier, // Can also be applied to UniqueTarget.Triggerable
@@ -1038,14 +1038,14 @@ enum class UniqueType(
     ShowsWhenUnbuilable("Shown while unbuilable", UniqueTarget.Building, UniqueTarget.Unit, flags = UniqueFlag.setOfHiddenToUsers),
     ModifierHiddenFromUsers("hidden from users", UniqueTarget.MetaModifier),
     WillNotBeChosenForNewGames("Will not be chosen for new games", UniqueTarget.Nation),
-    
+
     ForEveryCountable("for every [countable]", UniqueTarget.MetaModifier,
         docDescription = "Works for positive numbers only"),
     ForEveryAdjacentTile("for every adjacent [tileFilter]", UniqueTarget.MetaModifier,
         docDescription = "Works for positive numbers only"),
     ForEveryAmountCountable("for every [positiveAmount] [countable]", UniqueTarget.MetaModifier,
         docDescription = "Works for positive numbers only"),
-    
+
     ModifiedByGameSpeed("(modified by game speed)", UniqueTarget.MetaModifier,
         docDescription = "Can only be applied to certain uniques, see details of each unique for specifics"),
     ModifiedByGameProgress("(modified by game progress up to [relativeAmount]%)", UniqueTarget.MetaModifier,
