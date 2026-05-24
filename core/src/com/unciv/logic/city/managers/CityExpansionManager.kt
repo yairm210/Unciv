@@ -54,7 +54,9 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
      *  * Re-evaluated per turn, since CityExpansionManager gets cloned. Should enable dynamic base size modding.
      */
     internal val foundingTileFilter: (Tile)->Boolean by lazy {
-        if (foundingUnique == null || foundingUnique!!.params[0] in Constants.all) fun(tile: Tile) = true
+        if (foundingUnique == null || foundingUnique!!.params[0] in Constants.all)
+            @Suppress("FunctionOnlyReturningConstant") // detekt false positive
+            fun(tile: Tile) = true
         else fun(tile: Tile) = tile.matchesFilter(foundingUnique!!.params[0], city.civ)
     }
 
