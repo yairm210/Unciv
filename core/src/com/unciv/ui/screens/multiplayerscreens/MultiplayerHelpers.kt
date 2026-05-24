@@ -49,14 +49,11 @@ object MultiplayerHelpers {
         if (preview?.currentPlayer != null) {
             val currentTurnStartTime = Instant.ofEpochMilli(preview.currentTurnStartTime)
             val currentPlayer = preview.getCurrentPlayerCiv()
+            val mpSettings = UncivGame.Current.settings.multiplayer
             // "You", name of friend, or null
             val playerDescriptor: String? = 
-                if (currentPlayer.playerId == UncivGame.Current.settings.multiplayer.getUserId()) 
-                    "You" 
-                else UncivGame.Current.settings.multiplayer.friendList
-                    .filter{ it.playerID == currentPlayer.playerId }
-                    .map{ it.name }
-                    .firstOrNull()
+                if (currentPlayer.playerId == mpSettings.getUserId()) "You" 
+                else mpSettings.friendList.firstOrNull { it.playerID == currentPlayer.playerId }?.name
             
             var playerText = "{${preview.currentPlayer}}"
             if (playerDescriptor != null)
