@@ -216,7 +216,7 @@ enum class UniqueParameterType(
 
     /** Implemented by [Civ.matchesFilter][com.unciv.logic.civilization.Civilization.matchesFilter] */
     CivFilter("civFilter", Constants.cityStates) {
-        override val staticKnownValues = setOf("AI player", "Human player", "Open Borders", "Friendly", "Hostile", "Known")
+        override val staticKnownValues = setOf(Constants.aiPlayer, Constants.humanPlayer, "Open Borders", "Friendly", "Hostile", "Known")
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = getErrorSeverityForFilter(parameterText, ruleset)
 
