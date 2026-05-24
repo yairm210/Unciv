@@ -27,7 +27,7 @@ class CityExpansionManagerTest {
         testGame.makeHexagonalMap(6)
         civ = testGame.addCiv()
         city = testGame.addCity(civ, testGame.getTile(HexCoord.Zero), initialPopulation = 1)
-        cityExpansionManager.city = city
+        cityExpansionManager.setTransients(city)
     }
 
     @Test
@@ -100,7 +100,7 @@ class CityExpansionManagerTest {
         val cityStateCiv = testGame.addCiv(cityStateType = "Militaristic")
         val cityState = testGame.addCity(cityStateCiv, testGame.getTile(4,0))
         val cityStateExpansionManager = CityExpansionManager()
-        cityStateExpansionManager.city = cityState
+        cityStateExpansionManager.setTransients(cityState)
 
         val cultureToNextTileCiv = cityExpansionManager.getCultureToNextTile()
 
@@ -118,7 +118,7 @@ class CityExpansionManagerTest {
         val uniqueCiv = testGame.addCiv("[-25]% Culture cost of natural border growth [in all cities]")
         val uniqueCity = testGame.addCity(uniqueCiv, testGame.getTile(4,0))
         val cityUniqueExpansionManager = CityExpansionManager()
-        cityUniqueExpansionManager.city = uniqueCity
+        cityUniqueExpansionManager.setTransients(uniqueCity)
 
         val cultureToNextTile = cityExpansionManager.getCultureToNextTile()
 
@@ -135,7 +135,7 @@ class CityExpansionManagerTest {
         val uniqueCiv = testGame.addCiv("[-25]% Gold cost of acquiring tiles [in all cities]")
         val uniqueCity = testGame.addCity(uniqueCiv, testGame.getTile(4,0))
         val cityUniqueExpansionManager = CityExpansionManager()
-        cityUniqueExpansionManager.city = uniqueCity
+        cityUniqueExpansionManager.setTransients(uniqueCity)
 
         val goldCost2TileDistance = cityExpansionManager.getGoldCostOfTile(testGame.getTile(2,0))
 
