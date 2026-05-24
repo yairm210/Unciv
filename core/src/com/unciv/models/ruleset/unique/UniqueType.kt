@@ -14,6 +14,11 @@ private val numberRegex = Regex("\\d+$") // Any number of trailing digits
 
 private const val ADDITIVE_BONUS_EXPLANATION = "Multiple bonuses stack additively: +50% + +50% = +100%"
 private const val MULTIPLICATIVE_BONUS_EXPLANATION = "Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%"
+private const val TILE_ACQUISITION_EXPLANATION =
+    "Without this, Unciv determines costs of both tile acquisition from Culture and buying with Gold from the same source:" +
+    " total tiles acquired outside the initial founding ring, independent of how the tile was acquired." +
+    " This unique changes that, so only normal expansion affects culture cost, and only buying affects purchase price," +
+    " while free sources like a Citadel won't affect costs at all."
 
 enum class UniqueType(
     val text: String,
@@ -1065,6 +1070,7 @@ enum class UniqueType(
         docDescription = "In this case, 'starting era' means the first defined Era in the entire ruleset."),
     AllowRazeCapital("Allow raze capital", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
     AllowRazeHolyCity("Allow raze holy city", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
+    EnableSeparateTileAcquisitionCosts("Enable separate tile acquisition costs", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals, docDescription = TILE_ACQUISITION_EXPLANATION),
 
     SuppressWarnings("Suppress warning [validationWarning]", *UniqueTarget.CanIncludeSuppression, flags = UniqueFlag.setOfHiddenNoConditionals, docDescription = Suppression.uniqueDocDescription),
 

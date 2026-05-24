@@ -178,6 +178,12 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     @Transient
     var spaceResources = HashSet<String>()
 
+    @delegate:Transient
+    /** Used by all [CityExpansionManager][com.unciv.logic.city.managers.CityExpansionManager] instances to decide on cost formula */
+    val useSeparateTileAcquisitionCosts by lazy {
+        ruleset.modOptions.hasUnique(UniqueType.EnableSeparateTileAcquisitionCosts)
+    }
+
     //endregion
     //region Pure functions
 

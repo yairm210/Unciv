@@ -80,7 +80,7 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
     // -- Note (added later) that this last link is specific to civ VI and not civ V
     @Readonly
     fun getCultureToNextTile(): Int {
-        var cultureToNextTile = 6 * (max(0, tilesClaimed(OwnershipSource.Expansion)) + 1.4813).pow(1.3)
+        var cultureToNextTile = getLegacyCultureToNextTile() // TODO This is meant to allow using an optional Countables-based moddable formula instead
 
         cultureToNextTile *= city.civ.gameInfo.speed.cultureCostModifier
 
@@ -92,6 +92,13 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
                 cultureToNextTile *= unique.params[0].toPercent()
 
         return cultureToNextTile.roundToInt()
+    }
+
+    @Readonly
+    fun getLegacyCultureToNextTile(): Double {
+        val tileCount = if (city.civ.gameInfo.useSeparateTileAcquisitionCosts) tilesClaimed(OwnershipSource.Expansion)
+        else tilesClaimed(OwnershipSource.All) - tilesClaimed(OwnershipSource.Base)
+        return 6 * (max(0, tileCount) + 1.4813).pow(1.3)
     }
 
     @Readonly
@@ -125,9 +132,7 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
 
     @Readonly
     fun getGoldCostOfTile(tile: Tile): Int {
-        val baseCost = 50
-        val distanceFromCenter = tile.aerialDistanceTo(city.getCenterTile())
-        var cost = baseCost * (distanceFromCenter - 1) + tilesClaimed(OwnershipSource.Bought) * 5.0
+        var cost = getLegacyGoldCostOfTile(tile) // TODO This is meant to allow using an optional Countables-based moddable formula instead
 
         cost *= city.civ.gameInfo.speed.goldCostModifier
 
@@ -137,6 +142,15 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         }
 
         return cost.roundToInt()
+    }
+
+    @Readonly
+    private fun getLegacyGoldCostOfTile(tile: Tile): Double {
+        val baseCost = 50
+        val distanceFromCenter = tile.aerialDistanceTo(city.getCenterTile())
+        val tileCount = if (city.civ.gameInfo.useSeparateTileAcquisitionCosts) tilesClaimed(OwnershipSource.Bought)
+            else tilesClaimed(OwnershipSource.All) - tilesClaimed(OwnershipSource.Base)
+        return baseCost * (distanceFromCenter - 1) + tileCount * 5.0
     }
 
     @Readonly

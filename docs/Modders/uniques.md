@@ -3277,6 +3277,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: ModOptions
 
+??? example  "Enable separate tile acquisition costs"
+	Without this, Unciv determines costs of both tile acquisition from Culture and buying with Gold from the same source: total tiles acquired outside the initial founding ring, independent of how the tile was acquired. This unique changes that, so only normal expansion affects culture cost, and only buying affects purchase price, while free sources like a Citadel won't affect costs at all.
+
+	This unique does not support conditionals.
+
+	Applicable to: ModOptions
+
 ??? example  "Suppress warning [validationWarning]"
 	Allows suppressing specific validation warnings. Errors, deprecation warnings, or warnings about untyped and non-filtering uniques should be heeded, not suppressed, and are therefore not accepted. Note that this can be used in ModOptions, in the uniques a warning is about, or as modifier on the unique triggering a warning - but you still need to be specific. Even in the modifier case you will need to specify a sufficiently selective portion of the warning text as parameter.
 
