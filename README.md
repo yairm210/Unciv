@@ -29,7 +29,7 @@ Mod source metadata keeps README and credits information close to each imported 
 
 ## Screenshots
 
-Screenshots will be added as the integrated build comes together.
+Screenshots for the readme will be added as the integrated build comes together.
 
 > Screenshot placeholder: world map.
 
