@@ -22,10 +22,10 @@ The mod repositories are tracked in [mods-manifest.json](mods-manifest.json). Ea
 
 - Repo-backed mod source tracking is in place.
 - The `Mod updates` GitHub Action checks source repositories and opens separate PRs per mod update.
-- License review stubs live in [docs/mod-licenses](docs/mod-licenses).
+- Attribution notes live in [docs/mod-attribution](docs/mod-attribution).
 - Actual bundling into a generated `Reciv - Vanilla` base ruleset is planned but not complete yet.
 
-All mod sources currently remain license-gated. Their manifest entries use `license.status: pending` until their README, credits, and asset permissions are reviewed.
+Mod source metadata keeps README and credits information close to each imported source, but it does not block imports.
 
 ## Screenshots
 
@@ -65,9 +65,56 @@ android/build/outputs/apk/debug/
 
 If the `android` Gradle project is not included, check that the Android SDK is discoverable. This project only includes the Android module when `ANDROID_HOME` or `local.properties` points to a valid SDK.
 
+## Building On Windows
+
+For a desktop JAR on Windows:
+
+```powershell
+.\gradlew.bat desktop:dist
+```
+
+The JAR is written to:
+
+```text
+desktop/build/libs/Unciv.jar
+```
+
+Run it with:
+
+```powershell
+java -jar desktop\build\libs\Unciv.jar
+```
+
+For a portable Windows package with a bundled runtime, first build the JAR, then provide Packr and a Windows JRE archive in the repository root:
+
+```powershell
+.\gradlew.bat desktop:dist
+```
+
+Required files for the Packr task:
+
+```text
+packr-all-4.0.0.jar
+jdk-windows-64.zip
+```
+
+Then run:
+
+```powershell
+.\gradlew.bat desktop:packrWindows64
+```
+
+The portable ZIP is written to:
+
+```text
+deploy/Unciv-Windows64.zip
+```
+
+The GitHub release workflow downloads Packr and the Windows JRE automatically, so the manual Packr setup is only needed for local Windows packaging.
+
 ## GitHub APK Builds
 
-The planned debug APK workflow should:
+The `Android debug APK` workflow:
 
 - Run on push, pull request, and manual dispatch.
 - Set up JDK 21, Android SDK, and Gradle caching.
@@ -75,6 +122,42 @@ The planned debug APK workflow should:
 - Upload the APK as a GitHub Actions artifact.
 
 Release signing is intentionally separate. Do not add signing secrets until a release workflow is needed.
+
+## Versioned Releases
+
+Reciv releases use SemVer tags such as `v0.1.0`, `v0.2.0`, or `v1.0.0-beta.1`. The tag version must match both `BuildConfig.appVersion` and `UncivGame.VERSION`.
+
+Prepare a release locally from PowerShell:
+
+```powershell
+.\tools\releases\prepare_reciv_release.ps1 -Version 0.1.0
+```
+
+That script updates:
+
+- `buildSrc/src/main/kotlin/BuildConfig.kt`
+- `core/src/com/unciv/UncivGame.kt`
+- `RECIV_CHANGELOG.md`
+
+Before tagging, edit the generated section in [RECIV_CHANGELOG.md](RECIV_CHANGELOG.md) and replace the TODO with real release notes.
+
+Create and push the tag:
+
+```powershell
+git add buildSrc\src\main\kotlin\BuildConfig.kt core\src\com\unciv\UncivGame.kt RECIV_CHANGELOG.md
+git commit -m "Prepare Reciv 0.1.0 release"
+git tag v0.1.0
+git push origin HEAD --tags
+```
+
+The `Reciv release builds` workflow then:
+
+- Validates the tag/version/changelog.
+- Builds Android debug and unsigned release APKs.
+- Builds a Windows x64 portable ZIP.
+- Publishes a GitHub Release with artifacts and changelog notes.
+
+You can also run the workflow manually from GitHub Actions by entering the version, but the checked-in version files must already match.
 
 ## Mod Source Updates
 
@@ -100,11 +183,11 @@ Reciv keeps upstream Unciv visible and updateable. The intended update flow is:
 
 This keeps upstream engine conflicts, mod content conflicts, and generated asset changes easier to reason about.
 
-## Credits And Licenses
+## Credits And Attribution
 
 Unciv is licensed under the MPL-2.0 license; see [LICENSE](LICENSE). Reciv inherits Unciv engine code and must preserve upstream notices.
 
-DeCiv mod content may include additional third-party art, audio, and community contributions. Review the source repositories and [docs/mod-licenses](docs/mod-licenses) before distributing bundled mod builds.
+DeCiv mod content may include third-party art, audio, and community contributions. Attribution notes are tracked in [docs/mod-attribution](docs/mod-attribution) and updated from the source repositories where practical.
 
 ## Upstream Credits
 

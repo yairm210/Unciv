@@ -1,0 +1,191 @@
+name: Reciv release builds
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version without v prefix, for example 0.1.0"
+        required: true
+        type: string
+      prerelease:
+        description: "Mark the GitHub release as a prerelease"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  release-info:
+    name: Validate release version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.info.outputs.version }}
+      tag: ${{ steps.info.outputs.tag }}
+      prerelease: ${{ steps.info.outputs.prerelease }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Validate version and changelog
+        id: info
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            tag="${GITHUB_REF_NAME}"
+            version="${tag#v}"
+            prerelease=false
+          else
+            version="${{ inputs.version }}"
+            tag="v${version}"
+            prerelease="${{ inputs.prerelease }}"
+          fi
+
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "::error::Version must use SemVer, for example 0.1.0 or 0.1.0-beta.1"
+            exit 1
+          fi
+
+          build_config_version="$(grep -Po 'appVersion = "\K[^"]+' buildSrc/src/main/kotlin/BuildConfig.kt)"
+          unciv_game_version="$(grep -Po 'Version\("\K[^"]+' core/src/com/unciv/UncivGame.kt | head -n 1)"
+          if [[ "$build_config_version" != "$version" || "$unciv_game_version" != "$version" ]]; then
+            echo "::error::Release version $version must match BuildConfig.kt ($build_config_version) and UncivGame.kt ($unciv_game_version). Run tools/releases/prepare_reciv_release.ps1 first."
+            exit 1
+          fi
+
+          if ! grep -qE "^## ${version}(\\s|-|$)" RECIV_CHANGELOG.md; then
+            echo "::error::RECIV_CHANGELOG.md must contain a '## ${version}' section."
+            exit 1
+          fi
+
+          awk -v version="$version" '
+            $0 ~ "^## " version "([[:space:]]|-|$)" { capture=1; next }
+            capture && /^## / { exit }
+            capture { print }
+          ' RECIV_CHANGELOG.md > release-notes.md
+
+          if [[ ! -s release-notes.md ]]; then
+            echo "Reciv ${version}" > release-notes.md
+          fi
+
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+          echo "prerelease=${prerelease}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload release notes
+        uses: actions/upload-artifact@v4
+        with:
+          name: reciv-release-notes
+          path: release-notes.md
+          retention-days: 1
+
+  android:
+    name: Build Android APK
+    needs: release-info
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-java@v5
+        with:
+          cache: gradle
+          distribution: temurin
+          java-version: 21
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v4
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Build debug and unsigned release APKs
+        run: |
+          ./gradlew :android:assembleDebug
+          ./gradlew :android:assembleRelease
+
+      - name: Stage Android artifacts
+        run: |
+          mkdir -p release-artifacts
+          cp android/build/outputs/apk/debug/*.apk "release-artifacts/Reciv-${{ needs.release-info.outputs.version }}-android-debug.apk"
+          cp android/build/outputs/apk/release/*.apk "release-artifacts/Reciv-${{ needs.release-info.outputs.version }}-android-release-unsigned.apk"
+
+      - name: Upload Android artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: reciv-android
+          path: release-artifacts/*.apk
+
+  windows:
+    name: Build Windows portable ZIP
+    needs: release-info
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-java@v5
+        with:
+          cache: gradle
+          distribution: temurin
+          java-version: 21
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Build desktop JAR
+        run: ./gradlew desktop:dist
+
+      - name: Build Windows package with Packr
+        run: |
+          wget -q -O packr-all-4.0.0.jar https://github.com/libgdx/packr/releases/download/4.0.0/packr-all-4.0.0.jar
+          wget -q -O jdk-windows-64.zip https://api.adoptium.net/v3/binary/latest/21/ga/windows/x64/jre/hotspot/normal/eclipse
+          ./gradlew desktop:packrWindows64
+
+      - name: Stage Windows artifact
+        run: |
+          mkdir -p release-artifacts
+          cp deploy/Unciv-Windows64.zip "release-artifacts/Reciv-${{ needs.release-info.outputs.version }}-windows-x64.zip"
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: reciv-windows
+          path: release-artifacts/*.zip
+
+  publish:
+    name: Publish GitHub release
+    needs:
+      - release-info
+      - android
+      - windows
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: reciv-release-notes
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: reciv-android
+          path: release-artifacts
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: reciv-windows
+          path: release-artifacts
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.release-info.outputs.tag }}
+          name: Reciv ${{ needs.release-info.outputs.version }}
+          body_path: release-notes.md
+          prerelease: ${{ needs.release-info.outputs.prerelease }}
+          files: release-artifacts/*

@@ -19,18 +19,16 @@ Example entry:
   "integrationRole": "extension",
   "integrationOrder": 20,
   "dependsOn": [],
-  "license": {
-    "status": "pending",
-    "files": [],
+  "attribution": {
+    "licenseFiles": [],
     "readmes": [],
     "credits": []
   }
 }
 ```
 
-Set `license.status` to `approved` or `compatible` only after reviewing the mod's
-license, README, and credits. The importer refuses to bundle a repo-backed mod
-while the status is still `pending`.
+The importer preserves README, credits, and license-like files when present so
+the integrated build can keep attribution close to the imported mod content.
 
 Useful commands:
 
