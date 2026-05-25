@@ -6,8 +6,8 @@ on:
       - "v*"
   workflow_dispatch:
     inputs:
-      version:
-        description: "Release version without v prefix, for example 0.1.0"
+      tag:
+        description: "Release tag, for example v0.1.0"
         required: true
         type: string
       prerelease:
@@ -33,7 +33,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Validate version and changelog
+      - name: Resolve version and release notes
         id: info
         shell: bash
         run: |
@@ -44,9 +44,14 @@ jobs:
             version="${tag#v}"
             prerelease=false
           else
-            version="${{ inputs.version }}"
-            tag="v${version}"
+            tag="${{ inputs.tag }}"
+            version="${tag#v}"
             prerelease="${{ inputs.prerelease }}"
+          fi
+
+          if [[ "$tag" != v* ]]; then
+            echo "::error::Release tag must start with v, for example v0.1.0"
+            exit 1
           fi
 
           if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
@@ -54,23 +59,19 @@ jobs:
             exit 1
           fi
 
-          build_config_version="$(grep -Po 'appVersion = "\K[^"]+' buildSrc/src/main/kotlin/BuildConfig.kt)"
-          unciv_game_version="$(grep -Po 'Version\("\K[^"]+' core/src/com/unciv/UncivGame.kt | head -n 1)"
-          if [[ "$build_config_version" != "$version" || "$unciv_game_version" != "$version" ]]; then
-            echo "::error::Release version $version must match BuildConfig.kt ($build_config_version) and UncivGame.kt ($unciv_game_version). Run tools/releases/prepare_reciv_release.ps1 first."
-            exit 1
+          if grep -qE "^## ${version}(\\s|-|$)" RECIV_CHANGELOG.md; then
+            awk -v version="$version" '
+              $0 ~ "^## " version "([[:space:]]|-|$)" { capture=1; next }
+              capture && /^## / { exit }
+              capture { print }
+            ' RECIV_CHANGELOG.md > release-notes.md
+          else
+            awk '
+              /^## Unreleased[[:space:]]*$/ { capture=1; next }
+              capture && /^## / { exit }
+              capture { print }
+            ' RECIV_CHANGELOG.md > release-notes.md
           fi
-
-          if ! grep -qE "^## ${version}(\\s|-|$)" RECIV_CHANGELOG.md; then
-            echo "::error::RECIV_CHANGELOG.md must contain a '## ${version}' section."
-            exit 1
-          fi
-
-          awk -v version="$version" '
-            $0 ~ "^## " version "([[:space:]]|-|$)" { capture=1; next }
-            capture && /^## / { exit }
-            capture { print }
-          ' RECIV_CHANGELOG.md > release-notes.md
 
           if [[ ! -s release-notes.md ]]; then
             echo "Reciv ${version}" > release-notes.md
@@ -79,6 +80,7 @@ jobs:
           echo "version=${version}" >> "$GITHUB_OUTPUT"
           echo "tag=${tag}" >> "$GITHUB_OUTPUT"
           echo "prerelease=${prerelease}" >> "$GITHUB_OUTPUT"
+          echo "RECIV_VERSION=${version}" > release-version.env
 
       - name: Upload release notes
         uses: actions/upload-artifact@v4
@@ -87,12 +89,23 @@ jobs:
           path: release-notes.md
           retention-days: 1
 
+      - name: Upload version
+        uses: actions/upload-artifact@v4
+        with:
+          name: reciv-release-version
+          path: release-version.env
+          retention-days: 1
+
   android:
     name: Build Android APK
     needs: release-info
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: reciv-release-version
 
       - uses: actions/setup-java@v5
         with:
@@ -105,6 +118,13 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
+
+      - name: Apply release version
+        shell: bash
+        run: |
+          set -euo pipefail
+          source release-version.env
+          python3 tools/releases/apply_reciv_version.py "$RECIV_VERSION"
 
       - name: Build debug and unsigned release APKs
         run: |
@@ -130,6 +150,10 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - uses: actions/download-artifact@v4
+        with:
+          name: reciv-release-version
+
       - uses: actions/setup-java@v5
         with:
           cache: gradle
@@ -138,6 +162,13 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
+
+      - name: Apply release version
+        shell: bash
+        run: |
+          set -euo pipefail
+          source release-version.env
+          python3 tools/releases/apply_reciv_version.py "$RECIV_VERSION"
 
       - name: Build desktop JAR
         run: ./gradlew desktop:dist
