@@ -1,0 +1,114 @@
+{
+  "version": 1,
+  "generatedBaseRuleset": {
+    "name": "Reciv - Vanilla",
+    "enabled": true,
+    "description": "Generated custom vanilla ruleset assembled from upstream Unciv content and approved mod sources."
+  },
+  "mods": [
+    {
+      "name": "DeCiv 2",
+      "slug": "deciv-2",
+      "source": {
+        "type": "repo",
+        "url": "https://github.com/SpacedOutChicken/Deciv-2.git",
+        "ref": "master",
+        "pinnedCommit": ""
+      },
+      "includeInRecivVanilla": true,
+      "integrationRole": "base-ruleset",
+      "integrationOrder": 10,
+      "dependsOn": [],
+      "license": {
+        "status": "pending",
+        "files": [],
+        "readmes": [
+          "README.md"
+        ],
+        "credits": [
+          "Credits.md"
+        ],
+        "notes": "No root LICENSE file found via GitHub API. Credits.md lists numerous third-party art/audio sources that need review before bundling."
+      }
+    },
+    {
+      "name": "Forgotten Factions for DeCiv",
+      "slug": "forgotten-factions-for-deciv",
+      "source": {
+        "type": "repo",
+        "url": "https://github.com/carriontrooper/Forgotten-Factions-for-Deciv.git",
+        "ref": "main",
+        "pinnedCommit": ""
+      },
+      "includeInRecivVanilla": true,
+      "integrationRole": "extension",
+      "integrationOrder": 20,
+      "dependsOn": [
+        "deciv-2"
+      ],
+      "license": {
+        "status": "pending",
+        "files": [],
+        "readmes": [
+          "README.md"
+        ],
+        "credits": [
+          "Credits.md"
+        ],
+        "notes": "No root LICENSE file found via GitHub API. Credits.md references multiple original DeCiv faction mods; source permissions need review before bundling."
+      }
+    },
+    {
+      "name": "Outlaws of the Wastes",
+      "slug": "outlaws-of-the-wastes",
+      "source": {
+        "type": "repo",
+        "url": "https://github.com/the-s-is-silent/Outlaws-of-the-Wastes.git",
+        "ref": "main",
+        "pinnedCommit": ""
+      },
+      "includeInRecivVanilla": true,
+      "integrationRole": "extension",
+      "integrationOrder": 30,
+      "dependsOn": [
+        "deciv-2"
+      ],
+      "license": {
+        "status": "pending",
+        "files": [],
+        "readmes": [
+          "README.md"
+        ],
+        "credits": [
+          "Credits.md"
+        ],
+        "notes": "No root LICENSE file found via GitHub API. README.md says this is compatible with DeCiv 2; Credits.md includes many third-party assets and permission notes that need review."
+      }
+    },
+    {
+      "name": "Steampunk Nations for DeCiv",
+      "slug": "steampunk-nations-for-deciv",
+      "source": {
+        "type": "repo",
+        "url": "https://github.com/carriontrooper/Steampunk-Nations-for-Deciv.git",
+        "ref": "main",
+        "pinnedCommit": ""
+      },
+      "includeInRecivVanilla": true,
+      "integrationRole": "extension",
+      "integrationOrder": 40,
+      "dependsOn": [
+        "deciv-2"
+      ],
+      "license": {
+        "status": "pending",
+        "files": [],
+        "readmes": [
+          "README.md"
+        ],
+        "credits": [],
+        "notes": "No root LICENSE or Credits.md file found via GitHub API. Needs explicit licensing/credits review before bundling."
+      }
+    }
+  ]
+}

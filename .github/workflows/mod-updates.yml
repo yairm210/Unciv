@@ -1,0 +1,110 @@
+name: Mod updates
+
+on:
+  workflow_dispatch:
+    inputs:
+      mod:
+        description: "Optional mod slug/name from mods-manifest.json"
+        required: false
+        type: string
+  schedule:
+    - cron: "31 9 * * 1"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  discover:
+    name: Discover mod updates
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.discover.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Validate manifest
+        run: python tools/mods/mod_repo_manager.py validate-manifest
+
+      - name: Build update matrix
+        id: discover
+        env:
+          MOD_INPUT: ${{ inputs.mod }}
+        run: |
+          if [ -n "$MOD_INPUT" ]; then
+            python tools/mods/mod_repo_manager.py check-updates --github-matrix --mod "$MOD_INPUT" >> "$GITHUB_OUTPUT"
+          else
+            python tools/mods/mod_repo_manager.py check-updates --github-matrix >> "$GITHUB_OUTPUT"
+          fi
+
+  update:
+    name: Update ${{ matrix.name }}
+    needs: discover
+    if: ${{ needs.discover.outputs.matrix != '{"include":[]}' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.discover.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-java@v5
+        with:
+          cache: gradle
+          distribution: temurin
+          java-version: 21
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v4
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Import updated mod
+        run: python tools/mods/mod_repo_manager.py update-one --mod "${{ matrix.slug }}"
+
+      - name: Validate updated import
+        run: python tools/mods/mod_repo_manager.py update-one --mod "${{ matrix.slug }}" --dry-run
+
+      - name: Run checks
+        run: ./gradlew check
+
+      - name: Build debug APK
+        run: ./gradlew :android:assembleDebug
+
+      - name: Build pull request body
+        run: |
+          {
+            echo "Updates \`${{ matrix.name }}\` from the repository pinned in \`mods-manifest.json\`."
+            echo
+            echo "Changed files:"
+            echo
+            git diff --name-only | sed 's/^/- /'
+            echo
+            echo "Validation run in this workflow:"
+            echo
+            echo "- \`python tools/mods/mod_repo_manager.py update-one --mod \"${{ matrix.slug }}\" --dry-run\`"
+            echo "- \`./gradlew check\`"
+            echo "- \`./gradlew :android:assembleDebug\`"
+          } > pr-body.md
+
+      - name: Create mod update pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: mod-updates/${{ matrix.slug }}
+          delete-branch: true
+          commit-message: Update ${{ matrix.name }} mod source
+          title: Update ${{ matrix.name }} mod source
+          body-path: pr-body.md
