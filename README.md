@@ -112,53 +112,6 @@ deploy/Unciv-Windows64.zip
 
 The GitHub release workflow downloads Packr and the Windows JRE automatically, so the manual Packr setup is only needed for local Windows packaging.
 
-## GitHub APK Builds
-
-The `Android debug APK` workflow:
-
-- Run on push, pull request, and manual dispatch.
-- Set up JDK 21, Android SDK, and Gradle caching.
-- Run `./gradlew :android:assembleDebug`.
-- Upload the APK as a GitHub Actions artifact.
-
-Release signing is intentionally separate. Do not add signing secrets until a release workflow is needed.
-
-## Versioned Releases
-
-Reciv releases use SemVer tags such as `v0.1.0`, `v0.2.0`, or `v1.0.0-beta.1`. The tag version must match both `BuildConfig.appVersion` and `UncivGame.VERSION`.
-
-Prepare a release locally from PowerShell:
-
-```powershell
-.\tools\releases\prepare_reciv_release.ps1 -Version 0.1.0
-```
-
-That script updates:
-
-- `buildSrc/src/main/kotlin/BuildConfig.kt`
-- `core/src/com/unciv/UncivGame.kt`
-- `RECIV_CHANGELOG.md`
-
-Before tagging, edit the generated section in [RECIV_CHANGELOG.md](RECIV_CHANGELOG.md) and replace the TODO with real release notes.
-
-Create and push the tag:
-
-```powershell
-git add buildSrc\src\main\kotlin\BuildConfig.kt core\src\com\unciv\UncivGame.kt RECIV_CHANGELOG.md
-git commit -m "Prepare Reciv 0.1.0 release"
-git tag v0.1.0
-git push origin HEAD --tags
-```
-
-The `Reciv release builds` workflow then:
-
-- Validates the tag/version/changelog.
-- Builds Android debug and unsigned release APKs.
-- Builds a Windows x64 portable ZIP.
-- Publishes a GitHub Release with artifacts and changelog notes.
-
-You can also run the workflow manually from GitHub Actions by entering the version, but the checked-in version files must already match.
-
 ## Mod Source Updates
 
 The mod update pipeline is documented in [docs/Mod-source-updates.md](docs/Mod-source-updates.md).
