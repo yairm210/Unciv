@@ -126,6 +126,9 @@ jobs:
           source release-version.env
           python3 tools/releases/apply_reciv_version.py "$RECIV_VERSION"
 
+      - name: Generate Reciv vanilla content
+        run: python3 tools/mods/mod_repo_manager.py generate-reciv-vanilla
+
       - name: Build debug and unsigned release APKs
         run: |
           ./gradlew :android:assembleDebug
@@ -169,6 +172,9 @@ jobs:
           set -euo pipefail
           source release-version.env
           python3 tools/releases/apply_reciv_version.py "$RECIV_VERSION"
+
+      - name: Generate Reciv vanilla content
+        run: python3 tools/mods/mod_repo_manager.py generate-reciv-vanilla
 
       - name: Build desktop JAR
         run: ./gradlew desktop:dist

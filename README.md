@@ -2,7 +2,7 @@
 
 Reciv is a DeCiv-focused fork of [Unciv](https://github.com/yairm210/Unciv). The goal is to turn a curated set of DeCiv community projects into one built-in, default 4X experience: post-collapse factions, rulesets, resources, units, buildings, tilesets, translations, and balance changes integrated into the base game rather than treated as optional downloads.
 
-This project is early in that transition. The current repository includes the source-tracking and update automation for the DeCiv mod stack; the generated `Reciv - Vanilla` base ruleset and bundled assets are the next implementation step.
+This project is early in that transition. The repository tracks the DeCiv mod stack by source repository and can generate a built-in `Reciv - Vanilla` base ruleset before Android or desktop builds.
 
 > Screenshot placeholder: integrated Reciv world map.
 
@@ -21,9 +21,10 @@ The mod repositories are tracked in [mods-manifest.json](mods-manifest.json). Ea
 ## Project Status
 
 - Repo-backed mod source tracking is in place.
+- `Reciv - Vanilla` is registered as the default built-in ruleset.
+- The mod generator imports pinned mod sources and emits generated ruleset JSON and image assets for builds.
 - The `Mod updates` GitHub Action checks source repositories and opens separate PRs per mod update.
 - Attribution notes live in [docs/mod-attribution](docs/mod-attribution).
-- Actual bundling into a generated `Reciv - Vanilla` base ruleset is planned but not complete yet.
 
 Mod source metadata keeps README and credits information close to each imported source, but it does not block imports.
 
@@ -43,7 +44,21 @@ Requirements:
 
 - JDK 21
 - Android SDK with `ANDROID_HOME` set, or a `local.properties` file containing `sdk.dir=...`
+- Python 3 and Git, used by the Reciv content generator
 - A shell that can run the Gradle wrapper
+
+Generate the built-in Reciv ruleset and bundled art from the pinned mod repositories:
+
+```powershell
+python tools\mods\mod_repo_manager.py generate-reciv-vanilla
+```
+
+That command clones the manifest sources into `mods-src`, then generates:
+
+```text
+android/assets/jsons/Reciv - Vanilla/
+android/Images.Reciv/
+```
 
 Build the debug APK:
 
@@ -65,11 +80,14 @@ android/build/outputs/apk/debug/
 
 If the `android` Gradle project is not included, check that the Android SDK is discoverable. This project only includes the Android module when `ANDROID_HOME` or `local.properties` points to a valid SDK.
 
+The GitHub debug APK and release workflows run the Reciv generator automatically before Gradle packages assets.
+
 ## Building On Windows
 
 For a desktop JAR on Windows:
 
 ```powershell
+python tools\mods\mod_repo_manager.py generate-reciv-vanilla
 .\gradlew.bat desktop:dist
 ```
 

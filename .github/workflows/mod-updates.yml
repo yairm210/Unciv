@@ -77,6 +77,9 @@ jobs:
       - name: Validate updated import
         run: python tools/mods/mod_repo_manager.py update-one --mod "${{ matrix.slug }}" --dry-run
 
+      - name: Generate Reciv vanilla content
+        run: python tools/mods/mod_repo_manager.py generate-reciv-vanilla
+
       - name: Run checks
         run: ./gradlew check
 
@@ -95,6 +98,7 @@ jobs:
             echo "Validation run in this workflow:"
             echo
             echo "- \`python tools/mods/mod_repo_manager.py update-one --mod \"${{ matrix.slug }}\" --dry-run\`"
+            echo "- \`python tools/mods/mod_repo_manager.py generate-reciv-vanilla\`"
             echo "- \`./gradlew check\`"
             echo "- \`./gradlew :android:assembleDebug\`"
           } > pr-body.md

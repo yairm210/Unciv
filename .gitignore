@@ -113,6 +113,11 @@ nb-configuration.xml
 .gradle/
 gradle-app.setting
 
+## Reciv generated mod content
+/mods-src/
+/android/Images.Reciv/
+/android/assets/jsons/Reciv - Vanilla/
+
 ## OS Specific
 .DS_Store
 Thumbs.db

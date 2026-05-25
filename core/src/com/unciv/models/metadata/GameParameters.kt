@@ -50,7 +50,7 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
     /** Time a player recover on their timer before they can be forced to resign. Time isn't added if the player get their turn skipped*/
     var minutesRecoveredPerTurn = 60 * 24
 
-    var baseRuleset: String = BaseRuleset.Civ_V_GnK.fullName
+    var baseRuleset: String = BaseRuleset.Reciv_Vanilla.fullName
     var mods = LinkedHashSet<String>()
 
     var maxTurns = 500
