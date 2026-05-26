@@ -166,6 +166,8 @@ ModListCache.json
 fonts/
 maps/
 mods/
+!/tools/mods/
+!/tools/mods/**
 MultiplayerGames/
 music/
 SaveFiles/
