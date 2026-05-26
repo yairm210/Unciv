@@ -108,4 +108,12 @@ jobs:
 
       - name: Fail workflow if checks failed
         if: steps.run_checks.outputs.check_exit_code != '0'
-        run: exit 1
+        run: |
+          echo "Gradle check failed. Failure excerpt:"
+          echo
+          if [ -f test_failures.txt ]; then
+            cat test_failures.txt
+          else
+            echo "No extracted failure excerpt was found. Check the Run code checks step or the uploaded check_output.log artifact."
+          fi
+          exit 1
