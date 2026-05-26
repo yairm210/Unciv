@@ -79,7 +79,7 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".CopyToClipboardReceiver"  android:exported="false" />
+        <receiver android:name="com.unciv.app.CopyToClipboardReceiver"  android:exported="false" />
     </application>
 
 </manifest>
