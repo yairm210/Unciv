@@ -17,6 +17,7 @@ import com.unciv.models.ruleset.GlobalUniques
 import com.unciv.models.ruleset.PolicyBranch
 import com.unciv.models.ruleset.Quest
 import com.unciv.models.ruleset.RuinReward
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.Specialist
 import com.unciv.models.ruleset.Speed
@@ -62,6 +63,11 @@ object TranslationFileWriter {
     private const val fullDescriptionFile = "full_description.txt"
     // Current dir on desktop should be assets, so use two '..' get us to project root
     private const val fastlanePath = "../../fastlane/metadata/android/"
+    private fun BaseRuleset.jsonFolderName() = "jsons/$fullName"
+    private fun BaseRuleset.jsonFolder() = if (UncivGame.isCurrentInitialized())
+            UncivGame.Current.files.getLocalFile(jsonFolderName())
+        else Gdx.app.files.local(jsonFolderName())
+    private fun defaultFileFilter(file: File) = file.name.endsWith(".json", true)
 
     //region Update translation files
     fun writeNewTranslationFiles(): String {
@@ -162,8 +168,7 @@ object TranslationFileWriter {
                 linesToTranslate += "$bindingLabel = "
 
             for (baseRuleset in BaseRuleset.entries) {
-                val generatedStringsFromBaseRuleset =
-                        GenerateStringsFromJSONs(UncivGame.Current.files.getLocalFile("jsons/${baseRuleset.fullName}"))
+                val generatedStringsFromBaseRuleset = GenerateStringsFromJSONs(baseRuleset)
                 for (entry in generatedStringsFromBaseRuleset)
                     fileNameToGeneratedStrings[entry.key + " from " + baseRuleset.fullName] = entry.value
             }
@@ -333,24 +338,40 @@ object TranslationFileWriter {
      *  All work is done right on instantiation.
       */
     private class GenerateStringsFromJSONs(
+        /** Used only to call UniqueParameterType.guessTypeForTranslationWriter */
+        private val ruleset: Ruleset,
         jsonsFolder: FileHandle,
-        fileFilter: (File) -> Boolean = { file -> file.name.endsWith(".json", true) }
+        fileFilter: (File) -> Boolean
     ): LinkedHashMap<String, MutableSet<String>>() {
         // Using LinkedHashMap (instead of HashMap) is important to maintain the order of sections in the translation file
 
-        val ruleset = RulesetCache.getVanillaRuleset()
-        val startMillis = System.currentTimeMillis()
-
-        var uniqueIndexOfNewLine = 0
-        val listOfJSONFiles = jsonsFolder
-            .list(fileFilter)
-            .sortedBy { it.name() }       // generatedStrings maintains order, so let's feed it a predictable one
+        constructor(baseRuleset: BaseRuleset) : this(
+            RulesetCache[baseRuleset.fullName]!!,
+            baseRuleset.jsonFolder(),
+            ::defaultFileFilter
+        )
+        constructor(jsonsFolder: FileHandle, fileFilter: (File) -> Boolean = ::defaultFileFilter) : this(
+            RulesetCache[jsonsFolder.parent().name()]?.takeIf { it.modOptions.isBaseRuleset } ?: RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!,
+            jsonsFolder, fileFilter
+        )
 
         // One set per json file, secondary loop var. Could be nicer to isolate all per-file
         // processing into another class, but then we'd have to pass uniqueIndexOfNewLine around.
         lateinit var resultStrings: MutableSet<String>
 
         init {
+            val startMillis = System.currentTimeMillis()
+
+            var uniqueIndexOfNewLine = 0
+            fun addNewLine() {
+                // This is a small hack to insert multiple /n into the set, which can't contain identical lines
+                resultStrings.add("$specialNewLineCode ${uniqueIndexOfNewLine++}")
+            }
+
+            val listOfJSONFiles = jsonsFolder
+                .list(fileFilter)
+                .sortedBy { it.name() }       // generatedStrings maintains order, so let's feed it a predictable one
+
             for (jsonFile in listOfJSONFiles) {
                 val filename = jsonFile.nameWithoutExtension()
 
@@ -366,12 +387,11 @@ object TranslationFileWriter {
                 if (data is kotlin.Array<*>) {
                     for (element in data) {
                         serializeElement(element!!) // let's serialize the strings recursively
-                        // This is a small hack to insert multiple /n into the set, which can't contain identical lines
-                        resultStrings.add("$specialNewLineCode ${uniqueIndexOfNewLine++}")
+                        addNewLine()
                     }
                 } else {
                     serializeElement(data)
-                    resultStrings.add("$specialNewLineCode ${uniqueIndexOfNewLine++}")
+                    addNewLine()
                 }
             }
             val displayName = if (jsonsFolder.name() != "jsons") jsonsFolder.name()
