@@ -442,15 +442,8 @@ object TranslationFileWriter {
             }
 
             // Do simpler parameter numbering when typed, as the code below is susceptible to problems with nested brackets - UniqueTypes don't have them (yet)!
-            if (unique.type != null) {
-                for ((index, typeList) in unique.type.parameterTypeMap.withIndex()) {
-                    if (typeList.none { it in translatableUniqueParameterTypes }) continue
-                    // Unknown/Comment parameter contents better be offered to translators too
-                    resultStrings.add("${unique.params[index]} = ")
-                }
-                resultStrings.add("${unique.type.getTranslatable()} = ")
-                return
-            }
+            if (unique.type != null)
+                return submitTypedUnique(unique)
 
             if (unique.deprecatedType != null) {
                 resultStrings.add("${unique.deprecatedType.getTranslatable()} = ")
@@ -465,6 +458,23 @@ object TranslationFileWriter {
                 resultStrings.add("$parameter = ")
             }
             resultStrings.add("${stringToTranslate.fillPlaceholders(*parameterNames.toTypedArray())} = ")
+        }
+
+        fun submitTypedUnique(unique: Unique) {
+            require(unique.type != null)
+            if (unique.type == UniqueType.Comment && unique.params[0] == "[+10]% growth [in all cities]")
+                Unit
+            for ((index, typeList) in unique.type.parameterTypeMap.withIndex()) {
+                if (typeList.none { it in translatableUniqueParameterTypes }) continue
+                // Unknown/Comment parameter contents better be offered to translators too
+                if (unique.type == UniqueType.Comment) {
+                    val subUnique = Unique(unique.params[index])
+                    if (subUnique.type != null)
+                        return submitTypedUnique(subUnique)
+                }
+                resultStrings.add("${unique.params[index]} = ")
+            }
+            resultStrings.add("${unique.type.getTranslatable()} = ")
         }
 
         // Example: PolicyBranch inherits from Policy inherits from RulesetObject.
