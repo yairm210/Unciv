@@ -41,26 +41,45 @@ jobs:
         id: run_checks
         continue-on-error: true
         run: |
-          ./gradlew check 2>&1 | tee check_output.log
+          ./gradlew check --stacktrace 2>&1 | tee check_output.log
           echo "check_exit_code=${PIPESTATUS[0]}" >> $GITHUB_OUTPUT
 
       - name: Extract test failures
         if: steps.run_checks.outputs.check_exit_code != '0'
         id: extract_failures
         run: |
-          # Extract relevant failure information from check output
-          FAILURE_CONTENT=$(awk '/FAILED|STANDARD_OUT/{p=1} p{print} /^[[:space:]]*$/ && p{p=0}' check_output.log | head -100)
+          # Extract relevant failure information from check output, falling back to the tail when Gradle does not emit test-style markers.
+          awk '/FAILED|FAILURE:|Execution failed|Exception|STANDARD_OUT|> Task .* FAILED/{p=1} p{print} /^[[:space:]]*$/ && p{p=0}' check_output.log | head -200 > test_failures.txt
 
-          # Save to file and create GitHub output
-          echo "$FAILURE_CONTENT" > test_failures.txt
+          if [ ! -s test_failures.txt ]; then
+            tail -200 check_output.log > test_failures.txt
+          fi
+
+          {
+            echo "## Gradle check failure excerpt"
+            echo
+            echo '```text'
+            cat test_failures.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          cat test_failures.txt
 
           # Create multiline output for GitHub
           echo "failures<<EOF" >> $GITHUB_OUTPUT
-          echo "$FAILURE_CONTENT" >> $GITHUB_OUTPUT
+          cat test_failures.txt >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
+      - name: Upload check output
+        if: steps.run_checks.outputs.check_exit_code != '0'
+        uses: actions/upload-artifact@v4
+        with:
+          name: reciv-gradle-check-output
+          path: check_output.log
+          retention-days: 7
+
       - name: Comment test failures on PR
-        if: steps.run_checks.outputs.check_exit_code != '0' && github.event_name == 'pull_request'
+        if: steps.run_checks.outputs.check_exit_code != '0' && (github.event_name == 'pull_request' || github.event_name == 'pull_request_target')
         uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.ACTIONS_ACCESS_TOKEN }}
@@ -69,7 +88,7 @@ jobs:
             const failures = fs.readFileSync('test_failures.txt', 'utf8');
             const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
 
-            const body = `## ❌ Test Failures Detected
+            const body = `## Test Failures Detected
 
             The following tests failed in this PR:
 
