@@ -70,25 +70,35 @@ object TranslationFileWriter {
     private fun defaultFileFilter(file: File) = file.name.endsWith(".json", true)
 
     //region Update translation files
-    fun writeNewTranslationFiles(): String {
+    fun writeNewTranslationFiles(modSelection: String): String {
+        val allSelected = modSelection == "All mods"
+        val baseSelected = allSelected || BaseRuleset.entries.any { it.fullName == modSelection }
+
         try {
             val translations = Translations()
             translations.readAllLanguagesTranslation()
+            val modSelected = !baseSelected && modSelection in translations.modsWithTranslations
 
             var fastlaneOutput = ""
             // check to make sure we're not running from a jar since these users shouldn't need to
             // regenerate base game translation and fastlane files
-            if (!isRunFromJar(this)) {
+            if (baseSelected && !isRunFromJar(this)) {
                 val percentages = generateTranslationFiles(translations)
                 writeLanguagePercentages(percentages)
                 fastlaneOutput = "\n" + writeTranslatedFastlaneFiles(translations)
             }
 
-            // See #5168 for some background on this
-            for ((modName, modTranslations) in translations.modsWithTranslations) {
+            fun processMod(modName: String, modTranslations: Translations) {
                 val modFolder = UncivGame.Current.files.getModFolder(modName)
                 val modPercentages = generateTranslationFiles(modTranslations, modFolder, translations)
                 writeLanguagePercentages(modPercentages, modFolder)  // unused by the game but maybe helpful for the mod developer
+            }
+            if (allSelected) {
+                // See #5168 for some background on this
+                for ((modName, modTranslations) in translations.modsWithTranslations)
+                    processMod(modName, modTranslations)
+            } else if (modSelected) {
+                processMod(modSelection, translations.modsWithTranslations[modSelection]!!)
             }
 
             return "Translation files are generated successfully.".tr() + fastlaneOutput
