@@ -91,6 +91,9 @@ android {
 
     lint {
         disable += "MissingTranslation"   // see res/values/strings.xml
+        textReport = true
+        xmlReport = true
+        htmlReport = true
     }
     compileOptions {
         targetCompatibility = JavaVersion.VERSION_1_8
