@@ -420,6 +420,47 @@ def strip_trailing_json_commas(text: str) -> str:
     return "".join(result)
 
 
+def insert_missing_json_value_commas(text: str) -> str:
+    result: list[str] = []
+    in_string = False
+    escaped = False
+    index = 0
+    while index < len(text):
+        char = text[index]
+
+        if in_string:
+            result.append(char)
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == '"':
+                in_string = False
+            index += 1
+            continue
+
+        if char == '"':
+            in_string = True
+            result.append(char)
+            index += 1
+            continue
+
+        if char in "}]":
+            lookahead = index + 1
+            while lookahead < len(text) and text[lookahead].isspace():
+                lookahead += 1
+            if lookahead < len(text) and text[lookahead] in "{[":
+                result.append(char)
+                result.append(",")
+                index += 1
+                continue
+
+        result.append(char)
+        index += 1
+
+    return "".join(result)
+
+
 def load_json_file(path: Path, default: Any) -> Any:
     if not path.exists():
         return default
@@ -427,7 +468,9 @@ def load_json_file(path: Path, default: Any) -> Any:
     try:
         return json.loads(text)
     except json.JSONDecodeError:
-        lenient_text = strip_trailing_json_commas(strip_json_comments(text))
+        lenient_text = strip_json_comments(text)
+        lenient_text = insert_missing_json_value_commas(lenient_text)
+        lenient_text = strip_trailing_json_commas(lenient_text)
         try:
             return json.loads(lenient_text)
         except json.JSONDecodeError as exc:
