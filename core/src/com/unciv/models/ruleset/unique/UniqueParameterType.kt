@@ -14,7 +14,6 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.SubStat
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.hasPlaceholderParameters
-import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 
