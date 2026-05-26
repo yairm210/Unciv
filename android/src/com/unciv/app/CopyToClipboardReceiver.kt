@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.widget.Toast
 import com.badlogic.gdx.backends.android.AndroidApplication
+import com.reciv.app.R
 
 /**
  * This Receiver can be called from an Action on the error Notification shown by MultiplayerTurnCheckWorker.
