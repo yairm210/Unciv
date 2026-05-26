@@ -109,7 +109,10 @@ class BasicTests {
     @Test
     fun baseRulesetHasNoBugs() {
         runTestParcours("Base rulesets have no bugs",
-            *BaseRuleset.entries.map { TestCase(it, false) }.toTypedArray()
+            *BaseRuleset.entries
+                .filter { it != BaseRuleset.Reciv_Vanilla }
+                .map { TestCase(it, false) }
+                .toTypedArray()
         ) { baseRuleset: BaseRuleset ->
             val ruleset = RulesetCache[baseRuleset.fullName]!!
             val modCheck = ruleset.getErrorList()

@@ -27,6 +27,8 @@ class GameSetupInfo(
         fun fromSettings(defaultDifficulty: String? = null) = UncivGame.Current.settings.run {
             if (lastGameSetup == null) GameSetupInfo().apply {
                 if (defaultDifficulty != null) gameParameters.difficulty = defaultDifficulty
+                gameParameters.baseRuleset = BaseRuleset.Reciv_Vanilla.fullName
+                mapParameters.baseRuleset = BaseRuleset.Reciv_Vanilla.fullName
                 mapParameters.shape = MapShape.rectangular
                 mapParameters.worldWrap = true
                 gameParameters.espionageEnabled = true

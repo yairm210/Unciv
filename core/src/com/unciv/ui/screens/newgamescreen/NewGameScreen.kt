@@ -102,6 +102,8 @@ class NewGameScreen(
                     "Reset to defaults",
                 ) {
                     val gameSetupInfo = GameSetupInfo().apply {
+                        gameParameters.baseRuleset = BaseRuleset.Reciv_Vanilla.fullName
+                        mapParameters.baseRuleset = BaseRuleset.Reciv_Vanilla.fullName
                         gameParameters.espionageEnabled = true
                     }
                     game.replaceCurrentScreen(NewGameScreen(gameSetupInfo))
