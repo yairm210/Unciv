@@ -55,6 +55,14 @@ jobs:
             tail -200 check_output.log > test_failures.txt
           fi
 
+          if [ -f android/build/reports/lint-results-debug.txt ]; then
+            {
+              echo
+              echo "Android lint report:"
+              cat android/build/reports/lint-results-debug.txt
+            } >> test_failures.txt
+          fi
+
           {
             echo "## Gradle check failure excerpt"
             echo
@@ -75,7 +83,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: reciv-gradle-check-output
-          path: check_output.log
+          path: |
+            check_output.log
+            android/build/reports/lint-results-debug.*
           retention-days: 7
 
       - name: Comment test failures on PR
