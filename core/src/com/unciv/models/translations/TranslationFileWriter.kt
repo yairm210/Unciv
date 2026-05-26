@@ -44,6 +44,7 @@ import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.utils.Log
 import com.unciv.utils.debug
+import com.unciv.utils.isRunFromJar
 import java.io.File
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
@@ -71,7 +72,7 @@ object TranslationFileWriter {
             var fastlaneOutput = ""
             // check to make sure we're not running from a jar since these users shouldn't need to
             // regenerate base game translation and fastlane files
-            if (TranslationFileWriter.javaClass.`package`.specificationVersion == null) {
+            if (!isRunFromJar(this)) {
                 val percentages = generateTranslationFiles(translations)
                 writeLanguagePercentages(percentages)
                 fastlaneOutput = "\n" + writeTranslatedFastlaneFiles(translations)
