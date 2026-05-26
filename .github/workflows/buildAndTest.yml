@@ -31,6 +31,9 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
 
+      - name: Generate Reciv vanilla content
+        run: python3 tools/mods/mod_repo_manager.py generate-reciv-vanilla
+
       - name: Compile kotlin and build classes
         run: ./gradlew classes
 
