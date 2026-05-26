@@ -436,6 +436,11 @@ def insert_missing_json_value_commas(text: str) -> str:
                 escaped = True
             elif char == '"':
                 in_string = False
+                lookahead = index + 1
+                while lookahead < len(text) and text[lookahead].isspace():
+                    lookahead += 1
+                if lookahead < len(text) and text[lookahead] in '"{[0123456789-tfn':
+                    result.append(",")
             index += 1
             continue
 
@@ -449,7 +454,7 @@ def insert_missing_json_value_commas(text: str) -> str:
             lookahead = index + 1
             while lookahead < len(text) and text[lookahead].isspace():
                 lookahead += 1
-            if lookahead < len(text) and text[lookahead] in "{[":
+            if lookahead < len(text) and text[lookahead] in '"{[':
                 result.append(char)
                 result.append(",")
                 index += 1
