@@ -170,10 +170,13 @@ class ImprovementPickerScreen(
             tile.getCity(),
         )
         
-        // Add per-turn maintenance costs as negative stats
-        val maintenanceUniques = improvement.getMatchingUniques(UniqueType.ImprovementMaintenance) + 
-                improvement.getMatchingUniques(UniqueType.ImprovementAllMaintenance)
-        for (maintenanceUnique in maintenanceUniques ) {
+        // Add per-turn maintenance costs as negative stats.
+        // ImprovementMaintenance only applies inside city territory; ImprovementAllMaintenance applies everywhere.
+        val tileIsOwned = tile.getOwner() == currentPlayerCiv
+        val maintenanceUniques = improvement.getMatchingUniques(UniqueType.ImprovementAllMaintenance) +
+                if (tileIsOwned) improvement.getMatchingUniques(UniqueType.ImprovementMaintenance)
+                else emptySequence()
+        for (maintenanceUnique in maintenanceUniques) {
             val amount = maintenanceUnique.params[0].toFloat()
             val statName = Stat.safeValueOf(maintenanceUnique.params[1]) ?: continue
             stats.add(statName, -amount)
