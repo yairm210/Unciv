@@ -605,17 +605,21 @@ object DiplomacyAutomation {
                 { requiredOpinionChange(diplomacy, numberOfActiveDenouncements) }
             )
         }
-
-        var numberOfActiveDenouncements = civInfo.diplomacy.values.count { it.hasFlag(DiplomacyFlags.Denunciation) }
         
-        val ourRelationships = civInfo.diplomacy.values.asSequence()
-            .filter { it.otherCiv.isMajorCiv() }
+        val relationships = civInfo.getKnownCivs()
+            .filter { it.isMajorCiv() }
+            .map { civInfo.getDiplomacyManager(it)!! } // ok because known civs are by definition those we have a relationship with
+        
+        var numberOfActiveDenouncements: Int = relationships
+            .count { it.hasFlag(DiplomacyFlags.Denunciation) }
+        
+        val denounceableRelationships = relationships
             .onEach { debug(it, numberOfActiveDenouncements) }
             .filter { it.diplomaticStatus != DiplomaticStatus.War
-                    && !it.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
-                    && !it.hasFlag(DiplomacyFlags.Denunciation) }
+                && !it.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
+                && !it.hasFlag(DiplomacyFlags.Denunciation) }
         
-        for (relationship in ourRelationships) {
+        for (relationship in denounceableRelationships) {
             // TODO: consider consequences of denouncing others
             // compare our current opinion with the smoothed opinion
             val opinionChange = relationship.smoothedOpinionDelta()
