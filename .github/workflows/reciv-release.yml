@@ -136,7 +136,7 @@ jobs:
         run: |
           set -euo pipefail
           if [ -z "$RECIV_ANDROID_KEYSTORE_BASE64" ]; then
-            echo "No Android release keystore secret configured; release APK will be unsigned."
+            echo "No Android release keystore secret configured; only the debug APK will be published."
             exit 0
           fi
           echo "$RECIV_ANDROID_KEYSTORE_BASE64" | base64 --decode > android/reciv-release.keystore
@@ -160,8 +160,6 @@ jobs:
           cp android/build/outputs/apk/debug/*.apk "release-artifacts/ReCiv-${{ needs.release-info.outputs.version }}-android-debug.apk"
           if [ -n "$RECIV_ANDROID_KEYSTORE_BASE64" ]; then
             cp android/build/outputs/apk/release/*.apk "release-artifacts/ReCiv-${{ needs.release-info.outputs.version }}-android-release-signed.apk"
-          else
-            cp android/build/outputs/apk/release/*.apk "release-artifacts/ReCiv-${{ needs.release-info.outputs.version }}-android-release-unsigned.apk"
           fi
 
       - name: Upload Android artifacts
