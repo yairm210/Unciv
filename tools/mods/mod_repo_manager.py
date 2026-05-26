@@ -425,6 +425,14 @@ def insert_missing_json_value_commas(text: str) -> str:
     in_string = False
     escaped = False
     index = 0
+    value_literals = ("true", "false", "null")
+
+    def should_insert_comma_after_value(value_end_index: int) -> bool:
+        lookahead = value_end_index + 1
+        while lookahead < len(text) and text[lookahead].isspace():
+            lookahead += 1
+        return lookahead < len(text) and text[lookahead] in '"{['
+
     while index < len(text):
         char = text[index]
 
@@ -451,14 +459,31 @@ def insert_missing_json_value_commas(text: str) -> str:
             continue
 
         if char in "}]":
-            lookahead = index + 1
-            while lookahead < len(text) and text[lookahead].isspace():
-                lookahead += 1
-            if lookahead < len(text) and text[lookahead] in '"{[':
+            if should_insert_comma_after_value(index):
                 result.append(char)
                 result.append(",")
                 index += 1
                 continue
+
+        if char == "-" or char.isdigit():
+            start = index
+            index += 1
+            while index < len(text) and text[index] in "0123456789.eE+-":
+                index += 1
+            value_end = index - 1
+            result.append(text[start:index])
+            if should_insert_comma_after_value(value_end):
+                result.append(",")
+            continue
+
+        matched_literal = next((literal for literal in value_literals if text.startswith(literal, index)), None)
+        if matched_literal is not None:
+            value_end = index + len(matched_literal) - 1
+            result.append(matched_literal)
+            if should_insert_comma_after_value(value_end):
+                result.append(",")
+            index += len(matched_literal)
+            continue
 
         result.append(char)
         index += 1
