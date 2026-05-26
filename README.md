@@ -1,14 +1,14 @@
-# Reciv
+# ReCiv
 
-Reciv is a DeCiv-focused fork of [Unciv](https://github.com/yairm210/Unciv). The goal is to turn a curated set of DeCiv community projects into one built-in, default 4X experience: post-collapse factions, rulesets, resources, units, buildings, tilesets, translations, and balance changes integrated into the base game rather than treated as optional downloads.
+ReCiv is a DeCiv-focused fork of [Unciv](https://github.com/yairm210/Unciv). The goal is to turn a curated set of DeCiv community projects into one built-in, default 4X experience: post-collapse factions, rulesets, resources, units, buildings, tilesets, translations, and balance changes integrated into the base game rather than treated as optional downloads.
 
 This project is early in that transition. The repository tracks the DeCiv mod stack by source repository and can generate a built-in `Reciv - Vanilla` base ruleset before Android or desktop builds.
 
-> Screenshot placeholder: integrated Reciv world map.
+> Screenshot placeholder: integrated ReCiv world map.
 
 ## Source Projects
 
-Reciv stands on two layers of open source work:
+ReCiv stands on two layers of open source work:
 
 - [Unciv](https://github.com/yairm210/Unciv), the original open source Civ V-inspired Android and desktop game engine.
 - [DeCiv 2](https://github.com/SpacedOutChicken/Deciv-2), the primary DeCiv ruleset foundation for this fork.
@@ -146,7 +146,7 @@ The scheduled GitHub workflow checks each repo-backed mod and opens a separate p
 
 ## Development Notes
 
-Reciv keeps upstream Unciv visible and updateable. The intended update flow is:
+ReCiv keeps upstream Unciv visible and updateable. The intended update flow is:
 
 - Unciv upstream updates land through a dedicated upstream sync PR.
 - DeCiv mod source updates land through separate mod update PRs.
@@ -156,7 +156,7 @@ This keeps upstream engine conflicts, mod content conflicts, and generated asset
 
 ## Credits And Attribution
 
-Unciv is licensed under the MPL-2.0 license; see [LICENSE](LICENSE). Reciv inherits Unciv engine code and must preserve upstream notices.
+Unciv is licensed under the MPL-2.0 license; see [LICENSE](LICENSE). ReCiv inherits Unciv engine code and must preserve upstream notices.
 
 DeCiv mod content may include third-party art, audio, and community contributions. Attribution notes are tracked in [docs/mod-attribution](docs/mod-attribution) and updated from the source repositories where practical.
 

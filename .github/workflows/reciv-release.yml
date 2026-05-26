@@ -1,4 +1,4 @@
-name: Reciv release builds
+name: ReCiv release builds
 
 on:
   push:
@@ -74,7 +74,7 @@ jobs:
           fi
 
           if [[ ! -s release-notes.md ]]; then
-            echo "Reciv ${version}" > release-notes.md
+            echo "ReCiv ${version}" > release-notes.md
           fi
 
           echo "version=${version}" >> "$GITHUB_OUTPUT"
@@ -129,16 +129,40 @@ jobs:
       - name: Generate Reciv vanilla content
         run: python3 tools/mods/mod_repo_manager.py generate-reciv-vanilla
 
-      - name: Build debug and unsigned release APKs
+      - name: Prepare Android signing key
+        shell: bash
+        env:
+          RECIV_ANDROID_KEYSTORE_BASE64: ${{ secrets.RECIV_ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          set -euo pipefail
+          if [ -z "$RECIV_ANDROID_KEYSTORE_BASE64" ]; then
+            echo "No Android release keystore secret configured; release APK will be unsigned."
+            exit 0
+          fi
+          echo "$RECIV_ANDROID_KEYSTORE_BASE64" | base64 --decode > android/reciv-release.keystore
+
+      - name: Build debug and release APKs
+        env:
+          RECIV_ANDROID_KEYSTORE_PATH: android/reciv-release.keystore
+          RECIV_ANDROID_KEYSTORE_PASSWORD: ${{ secrets.RECIV_ANDROID_KEYSTORE_PASSWORD }}
+          RECIV_ANDROID_KEY_ALIAS: ${{ secrets.RECIV_ANDROID_KEY_ALIAS }}
+          RECIV_ANDROID_KEY_PASSWORD: ${{ secrets.RECIV_ANDROID_KEY_PASSWORD }}
+          RECIV_ANDROID_KEYSTORE_BASE64: ${{ secrets.RECIV_ANDROID_KEYSTORE_BASE64 }}
         run: |
           ./gradlew :android:assembleDebug
           ./gradlew :android:assembleRelease
 
       - name: Stage Android artifacts
+        env:
+          RECIV_ANDROID_KEYSTORE_BASE64: ${{ secrets.RECIV_ANDROID_KEYSTORE_BASE64 }}
         run: |
           mkdir -p release-artifacts
-          cp android/build/outputs/apk/debug/*.apk "release-artifacts/Reciv-${{ needs.release-info.outputs.version }}-android-debug.apk"
-          cp android/build/outputs/apk/release/*.apk "release-artifacts/Reciv-${{ needs.release-info.outputs.version }}-android-release-unsigned.apk"
+          cp android/build/outputs/apk/debug/*.apk "release-artifacts/ReCiv-${{ needs.release-info.outputs.version }}-android-debug.apk"
+          if [ -n "$RECIV_ANDROID_KEYSTORE_BASE64" ]; then
+            cp android/build/outputs/apk/release/*.apk "release-artifacts/ReCiv-${{ needs.release-info.outputs.version }}-android-release-signed.apk"
+          else
+            cp android/build/outputs/apk/release/*.apk "release-artifacts/ReCiv-${{ needs.release-info.outputs.version }}-android-release-unsigned.apk"
+          fi
 
       - name: Upload Android artifacts
         uses: actions/upload-artifact@v4
@@ -188,12 +212,112 @@ jobs:
       - name: Stage Windows artifact
         run: |
           mkdir -p release-artifacts
-          cp deploy/Unciv-Windows64.zip "release-artifacts/Reciv-${{ needs.release-info.outputs.version }}-windows-x64.zip"
+          cp deploy/ReCiv-Windows64.zip "release-artifacts/ReCiv-${{ needs.release-info.outputs.version }}-windows-x64.zip"
 
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
         with:
           name: reciv-windows
+          path: release-artifacts/*.zip
+
+  linux:
+    name: Build Linux portable ZIP
+    needs: release-info
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: reciv-release-version
+
+      - uses: actions/setup-java@v5
+        with:
+          cache: gradle
+          distribution: temurin
+          java-version: 21
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Apply release version
+        shell: bash
+        run: |
+          set -euo pipefail
+          source release-version.env
+          python3 tools/releases/apply_reciv_version.py "$RECIV_VERSION"
+
+      - name: Generate Reciv vanilla content
+        run: python3 tools/mods/mod_repo_manager.py generate-reciv-vanilla
+
+      - name: Build desktop JAR
+        run: ./gradlew desktop:dist
+
+      - name: Build Linux package with Packr
+        run: |
+          wget -q -O packr-all-4.0.0.jar https://github.com/libgdx/packr/releases/download/4.0.0/packr-all-4.0.0.jar
+          wget -q -O jre-linux-64.tar.gz https://api.adoptium.net/v3/binary/latest/21/ga/linux/x64/jre/hotspot/normal/eclipse
+          ./gradlew desktop:packrLinux64
+
+      - name: Stage Linux artifact
+        run: |
+          mkdir -p release-artifacts
+          cp deploy/ReCiv-Linux64.zip "release-artifacts/ReCiv-${{ needs.release-info.outputs.version }}-linux-x64.zip"
+
+      - name: Upload Linux artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: reciv-linux
+          path: release-artifacts/*.zip
+
+  macos:
+    name: Build macOS portable ZIP
+    needs: release-info
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: reciv-release-version
+
+      - uses: actions/setup-java@v5
+        with:
+          cache: gradle
+          distribution: temurin
+          java-version: 21
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Apply release version
+        shell: bash
+        run: |
+          set -euo pipefail
+          source release-version.env
+          python3 tools/releases/apply_reciv_version.py "$RECIV_VERSION"
+
+      - name: Generate Reciv vanilla content
+        run: python3 tools/mods/mod_repo_manager.py generate-reciv-vanilla
+
+      - name: Build desktop JAR
+        run: ./gradlew desktop:dist
+
+      - name: Build macOS package with Packr
+        run: |
+          wget -q -O packr-all-4.0.0.jar https://github.com/libgdx/packr/releases/download/4.0.0/packr-all-4.0.0.jar
+          wget -q -O jre-macOS.tar.gz https://api.adoptium.net/v3/binary/latest/21/ga/mac/x64/jre/hotspot/normal/eclipse
+          ./gradlew desktop:packrMacOS
+
+      - name: Stage macOS artifact
+        run: |
+          mkdir -p release-artifacts
+          cp deploy/ReCiv-MacOS.zip "release-artifacts/ReCiv-${{ needs.release-info.outputs.version }}-macos-x64.zip"
+
+      - name: Upload macOS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: reciv-macos
           path: release-artifacts/*.zip
 
   publish:
@@ -202,6 +326,8 @@ jobs:
       - release-info
       - android
       - windows
+      - linux
+      - macos
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
@@ -218,11 +344,21 @@ jobs:
           name: reciv-windows
           path: release-artifacts
 
+      - uses: actions/download-artifact@v4
+        with:
+          name: reciv-linux
+          path: release-artifacts
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: reciv-macos
+          path: release-artifacts
+
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ needs.release-info.outputs.tag }}
-          name: Reciv ${{ needs.release-info.outputs.version }}
+          name: ReCiv ${{ needs.release-info.outputs.version }}
           body_path: release-notes.md
           prerelease: ${{ needs.release-info.outputs.prerelease }}
           files: release-artifacts/*

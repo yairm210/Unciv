@@ -144,13 +144,13 @@ for (platform in Platform.values()) {
             val command = "java -jar $rootDir/packr-all-4.0.0.jar" +
                     " --platform $platformNameForPackrCmd" +
                     " --jdk $jdkFile" +
-                    " --executable Unciv" +
+                    " --executable ${BuildConfig.appName}" +
                     " --classpath $jarFile" +
                     " --mainclass $mainClassName" +
                     " --vmargs Xmx4G " +
                     " --output $outputDir"
             command.runCommand(rootDir)
-            Files.copy(File("$rootDir/extraImages/Icons/Unciv.ico"), File(outputDir, "Unciv.ico"))
+            Files.copy(File("$rootDir/extraImages/Icons/Unciv.ico"), File(outputDir, "${BuildConfig.appName}.ico"))
         }
 
         tasks.register<Zip>("zip${platformName}") {

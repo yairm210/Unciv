@@ -4,6 +4,11 @@ import com.unciv.build.BuildConfig
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.util.Properties
 
+val recivAndroidKeystorePath = providers.environmentVariable("RECIV_ANDROID_KEYSTORE_PATH").orNull
+val recivAndroidKeystorePassword = providers.environmentVariable("RECIV_ANDROID_KEYSTORE_PASSWORD").orNull
+val recivAndroidKeyAlias = providers.environmentVariable("RECIV_ANDROID_KEY_ALIAS").orNull
+val recivAndroidKeyPassword = providers.environmentVariable("RECIV_ANDROID_KEY_PASSWORD").orNull
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -35,7 +40,7 @@ android {
         versionCode = BuildConfig.appCodeNumber
         versionName = BuildConfig.appVersion
 
-        base.archivesName.set("Unciv")
+        base.archivesName.set(BuildConfig.appName)
     }
 
     // necessary for Android Work lib
@@ -55,6 +60,20 @@ android {
             keyPassword = "android"
             storePassword = "android"
         }
+        if (
+            !recivAndroidKeystorePath.isNullOrBlank() &&
+            !recivAndroidKeystorePassword.isNullOrBlank() &&
+            !recivAndroidKeyAlias.isNullOrBlank() &&
+            !recivAndroidKeyPassword.isNullOrBlank() &&
+            rootProject.file(recivAndroidKeystorePath).exists()
+        ) {
+            create("release") {
+                storeFile = rootProject.file(recivAndroidKeystorePath)
+                storePassword = recivAndroidKeystorePassword
+                keyAlias = recivAndroidKeyAlias
+                keyPassword = recivAndroidKeyPassword
+            }
+        }
     }
 
     buildTypes {
@@ -66,6 +85,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
             isDebuggable = false
+            signingConfig = signingConfigs.findByName("release")
         }
     }
 
@@ -143,7 +163,7 @@ tasks.register<Exec>("run") {
     val path = getSdkPath()
     val adb = "$path/platform-tools/adb"
 
-    commandLine(adb, "shell", "am", "start", "-n", "com.unciv.app/AndroidLauncher")
+    commandLine(adb, "shell", "am", "start", "-n", "${BuildConfig.identifier}/com.unciv.app.AndroidLauncher")
 }
 
 dependencies {
