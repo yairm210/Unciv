@@ -1,5 +1,6 @@
 package com.unciv.ui.screens.devconsole
 
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.tech.Technology
@@ -92,5 +93,36 @@ internal class ConsoleCivCommands : ConsoleCommandNode {
             val amount = Countables.getCountableAmount(params[0].originalUnquoted(), GameContext(civ))
             DevConsoleResponse.hint(amount?.toString() ?: "Invalid countable")
         },
+
+        /** This is meant for Scenario building. It adds any Civ in form of one Settler which isn't already in the game. */
+        "add" to ConsoleAction("civ add <newCivName>") { console, params ->
+            val gameInfo = console.gameInfo
+            val ruleset = gameInfo.ruleset
+            val civilizations = gameInfo.civilizations
+            val nation = params[0].find(ruleset.nations.values.filterNot { civilizations.any { civ -> civ.nation == it } })
+            val selectedTile = console.getSelectedTile()
+            val settlerLikeUnits = ruleset.units.values.filter {
+                (it.uniqueTo == null || it.uniqueTo == nation.name) && it.isCityFounder()
+            }
+            val baseUnit = settlerLikeUnits.firstOrNull() // Not random - getting a Conquistador might be unfair
+                ?: throw ConsoleErrorException("No allowed Settler units in the ruleset")
+            val civ = Civilization(nation)
+            if (nation.isCityState) {
+                val usedMajorCivs = civilizations.asSequence().filter { it.isMajorCiv() }.map { it.nation }
+                if (!civ.cityStateFunctions.initCityState(ruleset, gameInfo.gameParameters.startingEra, usedMajorCivs))
+                    throw ConsoleErrorException("City-state not allowed in this game")
+            }
+            civ.gameInfo = gameInfo
+            civ.cache.updateState()
+            civ.setTransients()
+            civilizations.add(civ)
+            val location = civ.units.placeUnitNearTile(selectedTile.position, baseUnit)
+            civ.cache.updateViewableTiles()
+            if (location == null) {
+                civilizations.remove(civ)
+                DevConsoleResponse.error("No place for new Settler found")
+            }
+            else DevConsoleResponse.OK
+        }
     )
 }
