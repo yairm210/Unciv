@@ -98,10 +98,6 @@ class ModConstants {
     var religionLimitBase = 1
     var religionLimitMultiplier = 0.5f
 
-    // Factors in formula for pantheon cost
-    var pantheonBase = 10
-    var pantheonGrowth = 5
-
     // AI behaviour
     var workboatAutomationSearchMaxTiles = 37
     var minimumCityLocationTileValue = 53f

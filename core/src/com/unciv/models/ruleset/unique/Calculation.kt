@@ -68,10 +68,15 @@ enum class Calculation(val text: String, val defaultExpression: String, val desc
         return defaultExpression
     }
 
-    /** Evaluates this calculation for the given [civ], returning 0 on failure. */
+    /** Evaluates this calculation for the given [civ], returning 0 on failure.
+     *  [countableOverrides] optionally substitute specific countable parameter texts with fixed values,
+     *  e.g. `"[Major] Civilizations" to 8` to use an estimated civ count instead of the live value. */
     @Readonly
-    fun evaluate(civ: Civilization): Int =
-        Expressions().eval(getExpression(civ), civ.state) ?: 0
+    fun evaluate(civ: Civilization, vararg countableOverrides: Pair<String, Int>): Int {
+        val context = if (countableOverrides.isEmpty()) civ.state
+                      else civ.state.copy(countableOverrides = countableOverrides.toMap())
+        return Expressions().eval(getExpression(civ), context) ?: 0
+    }
 
     companion object {
         private val byText = entries.associateBy { it.text }

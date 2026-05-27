@@ -41,12 +41,14 @@ internal sealed interface Node {
     class Countable(private val parameterText: String, 
                     /** Most countables can be detected via string pattern */ private val rulesetInvariantCountable: Countables?): Node, Tokenizer.Token {
         override fun eval(context: GameContext): Double {
+            context.countableOverrides[parameterText]?.let { return it.toDouble() }
+
             val ruleset = context.gameInfo?.ruleset
-                ?: return 0.0 // We use "surprised pikachu face" for any unexpected issue so games don't crash 
-            
+                ?: return 0.0 // We use "surprised pikachu face" for any unexpected issue so games don't crash
+
             val countable = getCountable(ruleset)
                 ?: return 0.0
-            
+
             return countable.eval(parameterText, context)?.toDouble() ?: 0.0
         }
 
