@@ -1,40 +1,20 @@
 ## 4.20.9
 
-Improvements outside your territory, with the "improvement cost when in your territory" unique, do not have maintenance costs in the improvement picker screen
+AIs no longer stop creating cities late-game
 
-Resolved  - Fixed translation mismatches due to the DeprecatedUnique separation
-
-chore: more deprecated uniques missed by robit
-
-Resolved  - AIs no longer stop creating cities after 55% of techs researched
-
-Resolved  - Guard against deleting mods while they are being downloaded for update
-
-modding: Better filter for circular event loop cases
-
-Add nation and capital city indicators in spy management screen
-
-Resolved  - Promotion screen works when the "final promotion" in the tree contains multiple levels of promotion
-
-4.20.8-patch1
-
-Revert "Minor optimizations for class `Counter` " ()
+Add nation and capital city indicators in spy management
 
 Workers try to stay spread out - By Ambeco
 
 By SomeTroglodyte:
-- chore: Unit test for educated elite trigger and GP gifting by CS 
-- Apply modifiers properly in ImprovementPickerScreen's maintenance calculation 
-- Improve Espionage screen layout and capital markers 
+- Show modifiers properly for improvement maintenance 
 - Fix translation generation for Comment nesting typed uniques 
-- Normalize EOL to match .gitattributes (after including rules for json and properties too) 
-- Git rules for more consistent line endings 
 
 By unciv-loof:
 - Prevent AI from denouncing defeated civs 
 - Do not display (Unknown) after Civ name in MP metadata preview 
 
-Fix isTriggerable to use inheritance-aware check instead of exact match - By AutumnPizazz
+Fix Educated Elite policy not gifting Great People - By AutumnPizazz
 
 ## 4.20.8
 
