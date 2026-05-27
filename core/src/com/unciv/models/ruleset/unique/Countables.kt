@@ -125,6 +125,18 @@ enum class Countables(
             gameContext.civInfo?.getCompletedPolicyBranchesCount()
     },
 
+    AdoptedPolicies("Adopted Policies", shortDocumentation = "The number of policies adopted via culture (free policies excluded)") {
+        override fun eval(parameterText: String, gameContext: GameContext) =
+            gameContext.civInfo?.policies?.numberOfAdoptedPolicies
+    },
+
+    CivsWithReligion("Civs with Religion", shortDocumentation = "The number of major civilizations that have founded a Religion (not just a Pantheon)") {
+        override fun eval(parameterText: String, gameContext: GameContext) =
+            gameContext.gameInfo?.civilizations?.count {
+                it.isMajorCiv() && it.religionManager.religion != null
+            }
+    },
+
     FilteredCities("[cityFilter] Cities") {
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val filter = parameterText.getPlaceholderParameters()[0]

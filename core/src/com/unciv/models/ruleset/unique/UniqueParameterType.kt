@@ -661,6 +661,14 @@ enum class UniqueParameterType(
             parameterText.split('/').run { size == 2 && none { it.isEmpty() } }
     },
 
+    /** For [UniqueType.FunctionCalculation] - validated against [Calculation.text] values */
+    CalculationName("calculationType", "Pantheon Cost",
+        "Identifies a game calculation that can be replaced by mods. See [Calculation] for available values.",
+        severityDefault = UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+    ) {
+        override val staticKnownValues = Calculation.entries.map { it.text }.toSet()
+    },
+
     /** Behaves like [Unknown], but states explicitly the parameter is OK and its contents are ignored */
     Comment("comment", "comment", null, "Unique Specials") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = null

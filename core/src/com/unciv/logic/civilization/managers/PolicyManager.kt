@@ -5,13 +5,13 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Policy.PolicyBranchType
 import com.unciv.models.ruleset.PolicyBranch
+import com.unciv.models.ruleset.unique.Calculation
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
 import yairm210.purity.annotations.Readonly
-import kotlin.math.pow
 import kotlin.math.roundToInt
 
 
@@ -33,7 +33,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     var freePolicies = 0
     var storedCulture = 0
     internal val adoptedPolicies = HashSet<String>()
-    private var numberOfAdoptedPolicies = 0
+    internal var numberOfAdoptedPolicies = 0
 
     private var cultureOfLast8Turns = IntArray(8)
 
@@ -168,7 +168,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
 
     @Readonly
     fun getPolicyCultureCost(numberOfAdoptedPolicies: Int): Int {
-        var policyCultureCost = 25 + (numberOfAdoptedPolicies * 6).toDouble().pow(1.7)
+        var policyCultureCost = Calculation.PolicyCostBase.evaluate(civInfo).toDouble()
         val worldSizeModifier = civInfo.gameInfo.tileMap.mapParameters.mapSize.getPredefinedOrNextSmaller().policyCostPerCityModifier
         var cityModifier = worldSizeModifier * (civInfo.cities.count { !it.isPuppet } - 1)
 

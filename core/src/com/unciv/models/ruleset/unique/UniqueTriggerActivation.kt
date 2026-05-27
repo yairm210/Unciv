@@ -832,7 +832,7 @@ object UniqueTriggerActivation {
             }
             UniqueType.OneTimeGainPantheon -> {
                 if (civInfo.religionManager.religionState != ReligionState.None) return null
-                val gainedFaith = civInfo.religionManager.faithForPantheon(2)
+                val gainedFaith = civInfo.religionManager.faithForPantheon()
                 if (gainedFaith == 0) return null
 
                 return {
