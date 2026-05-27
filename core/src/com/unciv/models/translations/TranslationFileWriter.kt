@@ -123,6 +123,12 @@ object TranslationFileWriter {
                 linesToTranslate += "${uniqueType.getTranslatable()} = "
             }
 
+            linesToTranslate += "\n\n#################### Lines from Unique Type doc descriptions #######################\n"
+            for (uniqueType in UniqueType.entries) {
+                val description = uniqueType.docDescription ?: continue
+                linesToTranslate += "${description.replace(" = ", "\\= ")} = "
+            }
+
             for (uniqueParameterType in UniqueParameterType.entries) {
                 val strings = uniqueParameterType.getTranslationWriterStringsForOutput()
                 if (strings.isEmpty()) continue
@@ -130,13 +136,33 @@ object TranslationFileWriter {
                 linesToTranslate.addAll(strings.map { "$it = " })
             }
 
+            linesToTranslate += "\n\n#################### Lines from Unique Parameter Type doc descriptions #######################\n"
+            for (uniqueParameterType in UniqueParameterType.entries) {
+                val description = uniqueParameterType.docDescription ?: continue
+                linesToTranslate += "${description.replace(" = ", "\\= ")} = "
+            }
+
             for (uniqueTarget in UniqueTarget.entries)
                 linesToTranslate += "$uniqueTarget = "
+
+            linesToTranslate += "\n\n#################### Lines from Unique Target documentation #######################\n"
+            for (uniqueTarget in UniqueTarget.entries) {
+                val doc = uniqueTarget.documentationString
+                if (doc.isEmpty()) continue
+                linesToTranslate += "${doc.replace(" = ", "\\= ")} = "
+            }
 
             linesToTranslate += "\n\n#################### Lines from Countables #######################\n"
             for (countable in Countables.entries)
                 if (countable.text.isNotEmpty())
                     linesToTranslate += "${countable.text} = "
+
+            linesToTranslate += "\n\n#################### Lines from Countables documentation #######################\n"
+            for (countable in Countables.entries) {
+                linesToTranslate += "${countable.documentationHeader.replace(" = ", "\\= ")} = "
+                for (docLine in countable.documentationStrings)
+                    linesToTranslate += "${docLine.replace(" = ", "\\= ")} = "
+            }
 
             linesToTranslate += "\n\n#################### Lines from spy actions #######################\n"
             for (spyAction in SpyAction.entries)
@@ -159,6 +185,14 @@ object TranslationFileWriter {
             linesToTranslate += "\n\n#################### Lines from key bindings #######################\n"
             for (bindingLabel in KeyboardBinding.getTranslationEntries())
                 linesToTranslate += "$bindingLabel = "
+
+            linesToTranslate += "\n\n#################### Lines from Doc template strings #######################\n"
+            for (field in DocStrings::class.java.declaredFields) {
+                if (field.type != String::class.java) continue
+                field.isAccessible = true
+                val text = field.get(null) as? String ?: continue
+                linesToTranslate += "$text = "
+            }
 
             for (baseRuleset in BaseRuleset.entries) {
                 val generatedStringsFromBaseRuleset =
@@ -203,7 +237,7 @@ object TranslationFileWriter {
                 }
 
                 val lineParts = line.split(" = ")
-                val translationKey = lineParts[0].replace("\\n", "\n")
+                val translationKey = lineParts[0].replace("\\n", "\n").replace("\\= ", " = ")
                 val hashMapKey = translationKey
                         .replace(pointyBraceRegex, "")
                         .replace(squareBraceRegex, "[]")
@@ -279,7 +313,7 @@ object TranslationFileWriter {
 
     @Pure
     private fun StringBuilder.appendTranslation(key: String, value: String) {
-        appendLine(key.replace("\n", "\\n") +
+        appendLine(key.replace("\n", "\\n").replace(" = ", "\\= ") +
                 " = " + value.replace("\n", "\\n"))
     }
 

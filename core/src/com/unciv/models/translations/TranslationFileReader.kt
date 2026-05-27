@@ -18,7 +18,7 @@ object TranslationFileReader {
             val splitLine = line.split(" = ", limit = 2)
             if (splitLine[1].isNotEmpty()) { // if the value is empty, this means this wasn't translated yet
                 val value = splitLine[1].replace("\\n","\n")
-                val key = splitLine[0].replace("\\n","\n")
+                val key = splitLine[0].replace("\\n","\n").replace("\\= ", " = ")
                 translations[key] = value
             }
         }

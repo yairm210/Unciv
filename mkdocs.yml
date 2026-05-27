@@ -1,6 +1,8 @@
 site_name: Unciv
+docs_dir: docs/
 theme:
   name: material
+  language: en
   logo: assets/Icon.png
   favicon: assets/favicon.png
 
@@ -23,20 +25,269 @@ theme:
 
 repo_name: yairm210/unciv
 repo_url: https://github.com/yairm210/unciv
-site_url: https://yairm210.github.io/Unciv
+# site_url set in CI via environment variable for deployment
 
 markdown_extensions:
-  # For adminitions
   - admonition
   - pymdownx.details
   - pymdownx.superfences
-  - pymdownx.details # For collapsable admonitions - see https://squidfunk.github.io/mkdocs-material/reference/admonitions/?h=%3F%3F%3F#collapsible-blocks
-
-  # For Abbreviations
   - abbr
   - pymdownx.snippets
 
 plugins:
+  - i18n:
+      docs_structure: folder
+      fallback_to_default: true
+      reconfigure_material: false
+      languages:
+        - locale: en
+          name: English
+          default: true
+          build: true
+        - locale: af
+          name: Afrikaans
+          build: true
+        - locale: bn
+          name: বাংলা
+          build: true
+        - locale: be
+          name: Беларуская
+          build: true
+        - locale: bs
+          name: Bosanski
+          build: true
+        - locale: pt-BR
+          name: Português (Brasil)
+          build: true
+        - locale: bg
+          name: Български
+          build: true
+        - locale: ca
+          name: Català
+          build: true
+        - locale: hr
+          name: Hrvatski
+          build: true
+        - locale: cs
+          name: Čeština
+          build: true
+        - locale: nl
+          name: Nederlands
+          build: true
+        - locale: tl
+          name: Filipino
+          build: true
+        - locale: fi
+          name: Suomi
+          build: true
+        - locale: fr
+          name: Français
+          build: true
+        - locale: gl
+          name: Galego
+          build: true
+        - locale: de
+          name: Deutsch
+          build: true
+        - locale: el
+          name: Ελληνικά
+          build: true
+        - locale: hi
+          name: हिन्दी
+          build: true
+        - locale: hu
+          name: Magyar
+          build: true
+        - locale: id
+          name: Bahasa Indonesia
+          build: true
+        - locale: it
+          name: Italiano
+          build: true
+        - locale: ja
+          name: 日本語
+          build: true
+        - locale: ko
+          name: 한국어
+          build: true
+        - locale: la
+          name: Latina
+          build: true
+        - locale: lt
+          name: Lietuvių
+          build: true
+        - locale: ms
+          name: Bahasa Melayu
+          build: true
+        - locale: mt
+          name: Malti
+          build: true
+        - locale: "no"
+          name: Norsk
+          build: true
+        - locale: pl
+          name: Polski
+          build: true
+        - locale: pt
+          name: Português
+          build: true
+        - locale: ro
+          name: Română
+          build: true
+        - locale: ru
+          name: Русский
+          build: true
+        - locale: zh
+          name: 简体中文
+          build: true
+        - locale: es
+          name: Español
+          build: true
+        - locale: sv
+          name: Svenska
+          build: true
+        - locale: th
+          name: ไทย
+          build: true
+        - locale: zh-TW
+          name: 繁體中文
+          build: true
+        - locale: tr
+          name: Türkçe
+          build: true
+        - locale: uk
+          name: Українська
+          build: true
+        - locale: vi
+          name: Tiếng Việt
+          build: true
+        - locale: zu
+          name: isiZulu
+          build: true
   - search
-  - awesome-pages # For reordering pages so modders have a clear progression for understanding
 
+extra:
+  alternate:
+    - name: English
+      link: .
+      lang: en
+    - name: Afrikaans
+      link: af/
+      lang: af
+    - name: বাংলা
+      link: bn/
+      lang: bn
+    - name: Беларуская
+      link: be/
+      lang: be
+    - name: Bosanski
+      link: bs/
+      lang: bs
+    - name: Português (Brasil)
+      link: pt-BR/
+      lang: pt-BR
+    - name: Български
+      link: bg/
+      lang: bg
+    - name: Català
+      link: ca/
+      lang: ca
+    - name: Hrvatski
+      link: hr/
+      lang: hr
+    - name: Čeština
+      link: cs/
+      lang: cs
+    - name: Nederlands
+      link: nl/
+      lang: nl
+    - name: Filipino
+      link: tl/
+      lang: tl
+    - name: Suomi
+      link: fi/
+      lang: fi
+    - name: Français
+      link: fr/
+      lang: fr
+    - name: Galego
+      link: gl/
+      lang: gl
+    - name: Deutsch
+      link: de/
+      lang: de
+    - name: Ελληνικά
+      link: el/
+      lang: el
+    - name: हिन्दी
+      link: hi/
+      lang: hi
+    - name: Magyar
+      link: hu/
+      lang: hu
+    - name: Bahasa Indonesia
+      link: id/
+      lang: id
+    - name: Italiano
+      link: it/
+      lang: it
+    - name: 日本語
+      link: ja/
+      lang: ja
+    - name: 한국어
+      link: ko/
+      lang: ko
+    - name: Latina
+      link: la/
+      lang: la
+    - name: Lietuvių
+      link: lt/
+      lang: lt
+    - name: Bahasa Melayu
+      link: ms/
+      lang: ms
+    - name: Malti
+      link: mt/
+      lang: mt
+    - name: Norsk
+      link: no/
+      lang: "no"
+    - name: Polski
+      link: pl/
+      lang: pl
+    - name: Português
+      link: pt/
+      lang: pt
+    - name: Română
+      link: ro/
+      lang: ro
+    - name: Русский
+      link: ru/
+      lang: ru
+    - name: 简体中文
+      link: zh/
+      lang: zh
+    - name: Español
+      link: es/
+      lang: es
+    - name: Svenska
+      link: sv/
+      lang: sv
+    - name: ไทย
+      link: th/
+      lang: th
+    - name: 繁體中文
+      link: zh-TW/
+      lang: zh-TW
+    - name: Türkçe
+      link: tr/
+      lang: tr
+    - name: Українська
+      link: uk/
+      lang: uk
+    - name: Tiếng Việt
+      link: vi/
+      lang: vi
+    - name: isiZulu
+      link: zu/
+      lang: zu
