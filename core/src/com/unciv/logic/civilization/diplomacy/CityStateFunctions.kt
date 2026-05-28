@@ -32,7 +32,7 @@ class CityStateFunctions(val civInfo: Civilization) {
     /** Attempts to initialize the city state, returning true if successful. */
     fun initCityState(ruleset: Ruleset, startingEra: String, usedMajorCivs: Sequence<Nation>): Boolean {
         val cityStateType = ruleset.cityStateTypes[civInfo.nation.cityStateType] ?: return false
-        if (!civInfo.gameInfo.isReligionEnabled() && cityStateType.isReligious()) return false 
+        if (!ruleset.isReligionEnabled(startingEra) && cityStateType.isReligious()) return false 
 
         val rng = civInfo.state.stateBasedRandom("CityStateFunctions.initCityState")
         val allMercantileResources = ruleset.tileResources.values.filter { it.hasUnique(UniqueType.CityStateOnlyResource) }.map { it.name }
