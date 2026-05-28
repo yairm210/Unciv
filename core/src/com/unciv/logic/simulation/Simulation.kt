@@ -8,6 +8,7 @@ import com.unciv.logic.automation.Timers
 import com.unciv.models.metadata.GameSetupInfo
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlin.math.max
@@ -136,7 +137,7 @@ class Simulation(
             }
         }
 
-        jobs.forEach { it.join() }
+        jobs.joinAll()
         Timers.singleton.endTiming()
     }
 
@@ -314,4 +315,3 @@ class Simulation(
         return if (x >= 0) 1 - tau else tau - 1
     }
 }
-

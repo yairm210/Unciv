@@ -11,6 +11,7 @@ import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.GameContext
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
@@ -210,8 +211,15 @@ internal class BaseRulesetValidator(
     }
 
     private fun checkEventCircularTriggers(lines: RulesetErrorList) {
-        // A choice with an unconditional AiChoiceWeight of -100% (or worse) has weight 0 for AI
-        // and will never be selected, so it cannot contribute to an infinite loop.
+        fun isHumanOnlyModifier(unique: Unique) =
+            unique.type == UniqueType.ConditionalCivFilter && unique.params[0] == Constants.humanPlayer
+        fun isAiOnlyModifier(unique: Unique) =
+            unique.type == UniqueType.ConditionalCivFilter && unique.params[0] == Constants.aiPlayer
+
+        // A choice is unreachable for AI if:
+        // - It has an unconditional AiChoiceWeight of -100% (or worse) → effective weight ≤ 0
+        // - It has OnlyAvailable with <for [Human player] Civilizations> → AI never satisfies this
+        // - It has Unavailable with only <for [AI player] Civilizations> → always blocks AI
         fun isChoiceUnreachableForAI(choice: EventChoice): Boolean {
             var weight = 1f
             for (unique in choice.uniqueObjects) {
@@ -219,8 +227,25 @@ internal class BaseRulesetValidator(
                 if (unique.modifiers.isNotEmpty()) continue // skip conditional weights
                 weight *= (1 + unique.params[0].toFloat() / 100)
             }
-            return weight <= 0f
+            if (weight <= 0f) return true
+
+            if (choice.uniqueObjects.any { unique ->
+                unique.type == UniqueType.OnlyAvailable &&
+                unique.modifiers.any { isHumanOnlyModifier(it) }
+            }) return true
+
+            if (choice.uniqueObjects.any { unique ->
+                unique.type == UniqueType.Unavailable &&
+                unique.modifiers.size == 1 && isAiOnlyModifier(unique.modifiers[0])
+            }) return true
+
+            return false
         }
+
+        // A TriggerEvent unique is unreachable for AI if it has <for [Human player] Civilizations>,
+        // since conditionalsApply will always be false for an AI civ.
+        fun isTriggerUnreachableForAI(unique: Unique) =
+            unique.modifiers.any { isHumanOnlyModifier(it) }
 
         fun recursiveCheck(history: HashSet<String>, eventName: String, level: Int) {
             if (eventName in history) {
@@ -235,7 +260,9 @@ internal class BaseRulesetValidator(
             val event = ruleset.events[eventName] ?: return
             val triggerEventUniques = event.choices
                 .filter { !isChoiceUnreachableForAI(it) }
-                .flatMap { choice -> choice.uniqueObjects.filter { it.type == UniqueType.TriggerEvent } }
+                .flatMap { choice -> choice.uniqueObjects.filter {
+                    it.type == UniqueType.TriggerEvent && !isTriggerUnreachableForAI(it)
+                }}
             if (triggerEventUniques.isEmpty()) return
             history.add(eventName)
             for (unique in triggerEventUniques) {

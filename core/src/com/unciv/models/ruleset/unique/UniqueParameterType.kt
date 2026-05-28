@@ -216,7 +216,7 @@ enum class UniqueParameterType(
 
     /** Implemented by [Civ.matchesFilter][com.unciv.logic.civilization.Civilization.matchesFilter] */
     CivFilter("civFilter", Constants.cityStates) {
-        override val staticKnownValues = setOf("AI player", "Human player", "Open Borders", "Friendly", "Hostile", "Known")
+        override val staticKnownValues = setOf(Constants.aiPlayer, Constants.humanPlayer, "Open Borders", "Friendly", "Hostile", "Known")
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = getErrorSeverityForFilter(parameterText, ruleset)
 
@@ -746,23 +746,20 @@ enum class UniqueParameterType(
 
     companion object {
         @Readonly
-        private fun scanExistingValues(type: UniqueParameterType): Set<String> {
-            return BaseRuleset.entries
+        private fun scanExistingValues(type: UniqueParameterType) =
+            BaseRuleset.entries.asSequence()
                 .mapNotNull { RulesetCache[it.fullName] }
-                .map { scanExistingValues(type, it) }
-                .fold(setOf()) { a, b -> a + b }
-        }
+                .flatMap { scanExistingValues(type, it) }
+                .toSet()
         @Readonly
-        private fun scanExistingValues(type: UniqueParameterType, ruleset: Ruleset): Set<String> {
-            val result = mutableSetOf<String>()
+        private fun scanExistingValues(type: UniqueParameterType, ruleset: Ruleset) = sequence {
             for (unique in ruleset.allUniques()) {
                 val parameterMap = unique.type?.parameterTypeMap ?: continue
                 for ((index, param) in unique.params.withIndex()) {
                     if (type !in parameterMap[index]) continue
-                    result += param
+                    yield(param)
                 }
             }
-            return result
         }
 
         /** Emulate legacy behaviour as exactly as possible */

@@ -28,23 +28,6 @@ import yairm210.purity.annotations.Readonly
  *
  *   [DecreasedBuildingMaintenanceDeprecated] → [BuildingMaintenanceOld] → [UniqueType.BuildingMaintenance]
  *
- * ## Integration requirements (this file alone is insufficient)
- *
- * ### Unique.kt
- * - Add `val deprecatedType: DeprecatedUniqueType?` looked up via [uniqueTypeMap].
- * - Extend `getDeprecationAnnotation()` to also return [getDeprecationAnnotation] from `deprecatedType`
- *   when `type` (the [UniqueType]) is null.
- * - Extend `getReplacementText()` to fall back to `deprecatedType!!.text` for placeholder-parameter
- *   extraction when `type` is null.
- *
- * ### UniqueAutoUpdater.kt
- * - The initial deprecated-unique filter must include uniques matched by [uniqueTypeMap].
- * - The upgrade-chain while-loop must also continue when the replacement text resolves to a
- *   [DeprecatedUniqueType] entry.
- *
- * ### UniqueValidator.kt
- * - `getDeprecationAnnotationErrors` must fire for [DeprecatedUniqueType] matches in addition to
- *   [UniqueType] `@Deprecated` matches.
  */
 enum class DeprecatedUniqueType(
     val text: String,
@@ -497,6 +480,14 @@ enum class DeprecatedUniqueType(
     StatsFromSpecialistDeprecated("[stats] from every specialist", UniqueTarget.Global),
     @Deprecated("as of 3.16.16 - removed 3.17.11", ReplaceWith("[stats] <if this city has at least [amount] specialists>"), DeprecationLevel.ERROR)
     StatBonusForNumberOfSpecialists("[stats] if this city has at least [amount] specialists", UniqueTarget.Global),
+
+    @Deprecated("as of 3.18.12", ReplaceWith("[amount]% XP gained from combat"), DeprecationLevel.ERROR)
+    BonuxXPGain("[amount]% Bonus XP gain", UniqueTarget.Unit),
+    @Deprecated("as of 3.18.12", ReplaceWith("[amount]% XP gained from combat <for [mapUnitFilter] units>"), DeprecationLevel.ERROR)
+    BonusXPGainForUnits("[mapUnitFilter] units gain [amount]% more Experience from combat", UniqueTarget.Global),
+
+    @Deprecated("as of 3.18.14", ReplaceWith("[amount]% maintenance costs <for [mapUnitFilter] units>"), DeprecationLevel.ERROR)
+    UnitMaintenanceDiscountGlobal("[amount]% maintenance costs for [mapUnitFilter] units", UniqueTarget.Global),
 
     @Deprecated("Extremely old - used for auto-updates only", ReplaceWith("[+1] Sight"), DeprecationLevel.ERROR)
     Plus1SightForAutoupdates("+1 Visibility Range", UniqueTarget.Unit),

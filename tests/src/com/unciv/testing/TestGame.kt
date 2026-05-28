@@ -26,7 +26,14 @@ import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.images.ImageGetter
 
 /**
- *  A testing game using a fresh clone of the Civ_V_GnK ruleset so it can be modded in-place
+ *  A testing game using a fresh clone of the Civ_V_GnK ruleset so it can be modded in-place.
+ *  * By default, it will have a map consisting of a single Tile. Use [makeHexagonalMap] or [makeRectangularMap] for more room.
+ *  * Starts with no civilizations, not even barbarians. Use [addCiv], [addBarbarianCiv] as needed. Note addCiv has two overloads, one creating a Nation and one using a G&K Nation.
+ *  * Initially, [GameInfo.currentPlayerCiv] is an uninitialized dummy and not suitable for e.g. a nextTurn.
+ *  * Helpers to modify the ruleset: [createBaseUnit], [createBelief], [createBuilding], [createPolicy], [createPolicyBranch],
+ *    [createResource], [createTileImprovement], [createUnitPromotion], [createUnitType], [createWonder]
+ *  * Helpers to modify game state: [addCity], [addDefaultMeleeUnitWithUniques], [addDefaultRangedUnitWithUniques], [addReligion], [addTileToCity], [addUnit]
+ *
  *  @param addGlobalUniques optional global uniques to add to the ruleset
  *  @param forUITesting default initializes UncivGame.Current and its settings, `true` initializes ImageGetter ruleset instead. Needed for FasterUIDevelopment.
  */

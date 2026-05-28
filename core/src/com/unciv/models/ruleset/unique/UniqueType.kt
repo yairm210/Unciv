@@ -1093,15 +1093,9 @@ enum class UniqueType(
 
     // endregion
 
-    ///////////////////////////////////////////// region 99 DEPRECATED AND REMOVED /////////////////////////////////////////////
-
-    @Deprecated("as of 3.18.12", ReplaceWith("[amount]% XP gained from combat"), DeprecationLevel.WARNING)
-    BonuxXPGain("[amount]% Bonus XP gain", UniqueTarget.Unit),
-    @Deprecated("as of 3.18.12", ReplaceWith("[amount]% XP gained from combat <for [mapUnitFilter] units>"), DeprecationLevel.WARNING)
-    BonusXPGainForUnits("[mapUnitFilter] units gain [amount]% more Experience from combat", UniqueTarget.Global),
-
-    @Deprecated("as of 3.18.14", ReplaceWith("[amount]% maintenance costs <for [mapUnitFilter] units>"), DeprecationLevel.WARNING)
-    UnitMaintenanceDiscountGlobal("[amount]% maintenance costs for [mapUnitFilter] units", UniqueTarget.Global),
+    ///////////////////////////////////////////// region 99 DEPRECATED /////////////////////////////////////////////
+    
+    // Deprecated uniques should be moved as-is to the DeprecatedUniques.kt file
 
     // Keep the endregion after the semicolon or it won't work
     ;

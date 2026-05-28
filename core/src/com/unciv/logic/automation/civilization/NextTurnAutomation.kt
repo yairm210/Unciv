@@ -591,7 +591,15 @@ object NextTurnAutomation {
         if (civInfo.isOneCityChallenger()) return
         if (civInfo.cities.none()) return
         if (civInfo.getHappiness() <= civInfo.cities.size) return
-        if (CivilianUnitAutomation.isLateGame(civInfo)) return // all suitable land should be occupied already; there will only be a risk of the settler getting bombed
+        if (CivilianUnitAutomation.isLateGame(civInfo)){
+            // all suitable land may be occupied already
+            // 10 tiles away and 6 "options" are heuristics based on nothing, feel free to change 
+            val unoccupiedNearishTiles = civInfo.cities.asSequence()
+                .flatMap { it.getCenterTile().getTilesInDistance(10) }
+                .filter { it.owningCity == null && it.neighbors.all { it.owningCity == null } }
+                .count()
+            if (unoccupiedNearishTiles < 6) return
+        } 
 
         // This is a tough one - if we don't ignore conditionals we could have units that can found only on certain tiles that are ignored
         // If we DO ignore conditionals we could get a unit that can only found if there's a certain tech, or something

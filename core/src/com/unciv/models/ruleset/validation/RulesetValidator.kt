@@ -36,6 +36,7 @@ import com.unciv.ui.images.AtlasPreview
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.Portrait
 import com.unciv.ui.images.PortraitPromotion
+import com.unciv.utils.isRunFromJar
 
 /**
  *  Class mananging ruleset validation.
@@ -676,7 +677,7 @@ open class RulesetValidator protected constructor(
     private fun checkTilesetSanity(lines: RulesetErrorList) {
         // If running from a jar *and* checking a builtin ruleset, skip this check.
         // - We can't list() the jsons, and the unit test before release is sufficient, the tileset config can't have changed since then.
-        if (ruleset.folderLocation == null && this::class.java.`package`?.specificationVersion != null)
+        if (ruleset.folderLocation == null && isRunFromJar(this))
             return
 
         val tilesetConfigFolder = (ruleset.folderLocation ?: Gdx.files.internal("")).child("jsons/TileSets")

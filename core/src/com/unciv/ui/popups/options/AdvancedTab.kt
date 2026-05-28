@@ -13,14 +13,17 @@ import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.map.HexCoord
+import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSettings.ScreenSize
 import com.unciv.models.metadata.ModCategories
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.disable
+import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.isEnabled
 import com.unciv.ui.components.extensions.setFontColor
 import com.unciv.ui.components.extensions.toLabel
@@ -31,11 +34,14 @@ import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.TranslatedSelectBox
 import com.unciv.ui.components.widgets.UncivTextField
+import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Display
+import com.unciv.utils.isRunFromJar
 import com.unciv.utils.isUUID
 import com.unciv.utils.launchOnGLThread
 import com.unciv.utils.withoutItem
@@ -217,21 +223,35 @@ internal class AdvancedTab(
 
         val generateTranslationsButton = "Generate translation files".toTextButton()
 
-        generateTranslationsButton.onActivation {
-            generateTranslationsButton.setText(Constants.working.tr())
-            Concurrency.run("WriteTranslations") {
-                val result = TranslationFileWriter.writeNewTranslationFiles()
-                launchOnGLThread {
-                    // notify about completion
-                    generateTranslationsButton.setText(result.tr())
-                    generateTranslationsButton.disable()
-                }
-            }
-        }
+        // Can't use UncivGame.Current.translations.modsWithTranslations here, it's selective to the chosen language
+        val entries = listOf("All mods") +
+            (if (isRunFromJar(this)) emptyList() else listOf(BaseRuleset.Civ_V_GnK.fullName)) +
+            RulesetCache.keys.filter { mod -> BaseRuleset.entries.none { it.fullName == mod } }.sorted()
+        val modSelect = TranslatedSelectBox(entries, "All mods")
 
         generateTranslationsButton.keyShortcuts.add(Input.Keys.F12)
         generateTranslationsButton.addTooltip("F12", 18f)
-        add(generateTranslationsButton).colspan(2).row()
+
+        add(generateTranslationsButton)
+        add(modSelect).maxWidth(stage.width / 2).row()
+        val resultCell = add().colspan(2)
+        row()
+
+        generateTranslationsButton.onActivation {
+            resultCell.setActor(null)
+            generateTranslationsButton.setText(Constants.working.tr())
+            generateTranslationsButton.disable()
+            Concurrency.run("WriteTranslations") {
+                val result = TranslationFileWriter.writeNewTranslationFiles(modSelect.selected.value)
+                launchOnGLThread {
+                    // notify about completion
+                    val resultLabel = WrappableLabel(result, stage.width / 2, Color.GOLD).apply { wrap = true }
+                    resultCell.minHeight(resultLabel.height + 10f).setActor(resultLabel)
+                    generateTranslationsButton.setText("Generate translation files".tr())
+                    generateTranslationsButton.enable()
+                }
+            }
+        }
     }
 
     private fun addUpdateModCategories() {

@@ -89,6 +89,8 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
 
     @Readonly
     private fun getTransportationUpkeep(): Stats {
+        // NOTE: When this logic changes, you might need to update the UI-only ImprovementPickerScreen.getMaintenance function too.
+
         val transportationUpkeep = Stats()
         // we no longer use .flatMap, because there are a lot of tiles and keeping them all in a list
         // just to go over them once is a waste of memory - there are low-end phones who don't have much ram
