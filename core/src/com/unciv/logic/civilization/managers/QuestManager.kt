@@ -131,6 +131,12 @@ class QuestManager : IsPartOfGameInfoSerialization {
             quest.setTransients(civ.gameInfo)
     }
 
+    /** Remove all quests for [civ] without side effects, for console `civ remove` */
+    fun removeQuestsFor(civ: Civilization) {
+        assignedQuests.removeAll(getAssignedQuestsFor(civ).toList())
+        individualQuestCountdown.remove(civ.civID)
+    }
+
     fun endTurn() {
 
         if (civ.isDefeated()) {

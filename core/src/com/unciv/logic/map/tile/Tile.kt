@@ -1075,6 +1075,12 @@ class Tile : IsPartOfGameInfoSerialization {
         }
     }
 
+    /** Clear road owner, for console `civ remove` */
+    fun removeRoadOwner() {
+        roadOwner = ""
+        roadOwnerObject = null
+    }
+
     fun startWorkingOnImprovement(improvement: TileImprovement, civInfo: Civilization, unit: MapUnit) {
         improvementQueue.clear()
         queueImprovement(improvement, civInfo, unit)

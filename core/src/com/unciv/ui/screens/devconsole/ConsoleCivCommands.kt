@@ -7,6 +7,7 @@ import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.unique.Countables
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.stats.Stat
+import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.screens.devconsole.CliInput.Companion.findCliInput
 
 internal class ConsoleCivCommands : ConsoleCommandNode {
@@ -123,6 +124,46 @@ internal class ConsoleCivCommands : ConsoleCommandNode {
                 DevConsoleResponse.error("No place for new Settler found")
             }
             else DevConsoleResponse.OK
+        },
+
+        "remove" to ConsoleAction("civ remove <civName>") { console, params ->
+            val civ = console.getCivByName(params[0])
+            if (civ.civID == console.gameInfo.currentPlayer)
+                throw ConsoleErrorException("Suicide is not yet supported")
+            val msg = "${civ.civName} has ${civ.cities.size} cities and ${civ.units.getCivUnitsSize()} units.\n\nDo you really want to annihilate the poor buggers?"
+            fun annihilate() {
+                // kill units. Using destroy() would be slower and might have unwelcome side effects.
+                for (unit in civ.units.getCivUnits()) {
+                    civ.units.removeUnit(unit)
+                    unit.removeFromTile()
+                }
+                // Relinquish territory
+                for (city in civ.cities) {
+                    for (tile in city.getTiles()) {
+                        tile.setOwningCity(null)
+                    }
+                    city.getCenterTile().removeImprovement()
+                }
+                // Remove tile references outside territory
+                for (tile in console.gameInfo.tileMap.tileList)
+                    if (tile.getRoadOwner() == civ) tile.removeRoadOwner()
+                // Remove the civ
+                val civilizations = console.gameInfo.civilizations
+                civilizations.remove(civ)
+                (console.gameInfo.civMap as LinkedHashMap<String, Civilization>).remove(civ.civID)
+                // Make othe civs forget the victim
+                for (otherCiv in civilizations) {
+                    otherCiv.diplomacy.remove(civ.civID)
+                    if (otherCiv.isCityState)
+                        otherCiv.questManager.removeQuestsFor(civ)
+                }
+                console.screen.shouldUpdate = true
+            }
+            if (civ.isDefeated())
+                annihilate()
+            else
+                ConfirmPopup(console.screen, msg, "Yes", action = ::annihilate).open(true)
+            DevConsoleResponse.OK
         }
     )
 }
