@@ -331,7 +331,7 @@ class NewGameScreen(
                 if (gameInfo.currentPlayer == Constants.spectator) {
                     gameInfo.currentPlayer = ""
                     gameInfo.nextTurn() // TODO Risky - triggers?
-                    gameInfo.turns = 0
+                    gameInfo.turns--
                 }
                 gameInfo
             }
