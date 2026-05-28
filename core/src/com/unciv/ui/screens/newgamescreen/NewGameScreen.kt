@@ -9,6 +9,8 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.GameStarter
 import com.unciv.logic.IdChecker
 import com.unciv.logic.UncivShowableException
+import com.unciv.logic.civilization.AlertType
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.files.MapSaver
 import com.unciv.logic.map.MapGeneratedMainType
@@ -16,6 +18,7 @@ import com.unciv.logic.multiplayer.Multiplayer
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSetupInfo
+import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
@@ -297,10 +300,38 @@ class NewGameScreen(
                 GameStarter.startNewGame(gameSetupInfo)
             else {
                 val gameInfo = game.files.loadGameFromFile(selectedScenario.file)
-                // Instead of removing spectator we AI-ify it, so we don't get problems in e.g. diplomacy
-                gameInfo.civilizations.firstOrNull { it.civName == Constants.spectator }?.playerType = PlayerType.AI
-                for (playerInfo in gameSetupInfo.gameParameters.players){
-                    gameInfo.civilizations.firstOrNull { it.civName == playerInfo.chosenCiv }?.playerType = playerInfo.playerType
+                // Remove the Spectator - it was recommended by the wiki as Scenario builder
+                gameInfo.civilizations.removeIf { it.civID == Constants.spectator }
+                for (civ in gameInfo.civilizations) {
+                    civ.playerType = PlayerType.AI
+                    civ.diplomacy.remove(Constants.spectator)
+                    civ.popupAlerts.removeIf { it.type == AlertType.FirstContact && it.value == Constants.spectator }
+                }
+                // Ergo the Spectator can't be chosen from NewGameScreen - make sure
+                gameSetupInfo.gameParameters.players.removeIf { it.chosenCiv == Constants.spectator }
+                // Now assign player types to explicit player Nation choices that exist in the game,
+                // remembering which are already "used".
+                // (at the moment NewGameScreen forbids such choices for scenarios, but let's support it here in case someone goes and does) 
+                val randomPool = gameInfo.civilizations.filter { it.isMajorCiv() }.map { it.civID }.toMutableSet()
+                fun Civilization.assign(playerInfo: Player) {
+                    playerType = playerInfo.playerType
+                    randomPool.remove(civID)
+                }
+                for (playerInfo in gameSetupInfo.gameParameters.players) {
+                    if (playerInfo.chosenCiv == Constants.random) continue
+                    gameInfo.getCivilizationOrNull(playerInfo.chosenCiv)?.assign(playerInfo)
+                }
+                // Now assign player types for "Random" entries
+                for (playerInfo in gameSetupInfo.gameParameters.players) {
+                    if (playerInfo.chosenCiv != Constants.random) continue
+                    val civID = randomPool.randomOrNull() ?: continue
+                    gameInfo.getCivilizationOrNull(civID)?.assign(playerInfo)
+                }
+                // If the Spectator was active when saved, skip it
+                if (gameInfo.currentPlayer == Constants.spectator) {
+                    gameInfo.currentPlayer = ""
+                    gameInfo.nextTurn() // TODO Risky - triggers?
+                    gameInfo.turns = 0
                 }
                 gameInfo
             }
