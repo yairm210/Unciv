@@ -59,6 +59,10 @@ open class AnimatedMenuPopup(
          *  Note the Popup will center over this point.
          */
         fun getActorTopRight(actor: Actor): Vector2 = actor.localToStageCoordinates(Vector2(actor.width, actor.height / 2))
+        /** Get stage coords of an [actor]'s bottom edge center, to help position an [AnimatedMenuPopup].
+         *  Note the Popup will center over this point.
+         */
+        fun getActorBottomCenter(actor: Actor): Vector2 = actor.localToStageCoordinates(Vector2(actor.width / 2, 0f))
     }
 
     /**
