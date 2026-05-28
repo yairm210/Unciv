@@ -70,15 +70,18 @@ class RuinsManager(
     }
 
     fun selectNextRuinsReward(triggeringUnit: MapUnit) {
-        val possibleRewards = if (triggeringUnit.hasUnique(UniqueType.ChooseRuinReward, checkCivInfoUniques = true)) {
-            if (civInfo.isHuman()) {
+        val possibleRewards = when {
+            !triggeringUnit.hasUnique(UniqueType.ChooseRuinReward, checkCivInfoUniques = true) ->
+                getShuffledPossibleRewards(triggeringUnit)
+            civInfo.isHuman() -> {
                 civInfo.popupAlerts.add(PopupAlert(AlertType.ChooseRuinReward, triggeringUnit.id.toString()))
                 return
-            } else {
+            }
+            else -> {
                 // TODO: Let AI apply strategy to its choices
                 getShuffledPossibleRewards(triggeringUnit) { aiWeight }
             }
-        } else getShuffledPossibleRewards(triggeringUnit)
+        }
         for (possibleReward in possibleRewards) {
             if (activateReward(triggeringUnit, possibleReward)) break
         }
