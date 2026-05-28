@@ -99,7 +99,6 @@ Each of the objects in the file represents a single reward you can get from ruin
 | name                 | String          | Required | Name of the ruins. Never shown to the user, but they have to be distinct                                                                                                                          |
 | notification         | String          | Required | Notification added to the user when this reward is chosen. If omitted, an empty notification is shown. Some notifications may have parameters, refer to the table below.                          |
 | weight               | Integer (≥0)    | 1        | _Relative_ weight this reward is chosen next [^E]                                                                                                                                                 |
-| aiWeight             | Integer (≥0)    | 1        | Only when the AI is controlling a unit that can choose: _Relative_ weight like above                                                                                                              |
 | uniques              | List of Strings | empty    | List of [unique abilities](../uniques.md) that will trigger when entering the ruins. If more than 1 unique is added, the notification will be shown multiple times due to a bug (may be outdated) |
 | excludedDifficulties | List of Strings | empty    | A list of all difficulties on which this reward may _not_ be awarded                                                                                                                              |
 
@@ -108,7 +107,6 @@ Each of the objects in the file represents a single reward you can get from ruin
 - Create a list of all possible rewards. Each reward's frequency in the list corresponds to its weight, a reward with weight one will appear once, a reward with weight two will appear twice, etc.
 - Shuffle this list
 - Try give rewards starting from the top of the list. If any of the uniques of the rewards is valid in this context, reward it and stop trying more rewards.
-- Note that high weights increase memory consumption due to the shuffle step.
 
 ### Notifications
 

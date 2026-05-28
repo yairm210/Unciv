@@ -1298,7 +1298,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	This unique is automatically hidden from users.
 
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, EventChoice
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, Ruins, EventChoice
 
 ??? example  "Will not be displayed in Civilopedia"
 	This unique is automatically hidden from users.
@@ -1328,7 +1328,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	This unique is automatically hidden from users.
 
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, EventChoice
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, Ruins, EventChoice
 
 ??? example  "Will not be displayed in Civilopedia"
 	This unique is automatically hidden from users.
@@ -1377,7 +1377,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	This unique is automatically hidden from users.
 
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, EventChoice
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, Ruins, EventChoice
 
 ??? example  "Will not be displayed in Civilopedia"
 	This unique is automatically hidden from users.
@@ -1668,7 +1668,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	This unique is automatically hidden from users.
 
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, EventChoice
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, Ruins, EventChoice
 
 ??? example  "Will not be displayed in Civilopedia"
 	This unique is automatically hidden from users.
@@ -1863,7 +1863,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	This unique is automatically hidden from users.
 
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, EventChoice
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, Ruins, EventChoice
 
 ??? example  "Will not be displayed in Civilopedia"
 	This unique is automatically hidden from users.
@@ -2564,7 +2564,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	This unique is automatically hidden from users.
 
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, EventChoice
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, Ruins, EventChoice
 
 ??? example  "Will not be displayed in Civilopedia"
 	This unique is automatically hidden from users.
@@ -3183,6 +3183,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Ruins
 
+??? example  "[relativeAmount]% weight to this choice for AI decisions"
+	Example: "[+20]% weight to this choice for AI decisions"
+
+	This unique is automatically hidden from users.
+
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, Ruins, EventChoice
+
 ??? example  "Will not be displayed in Civilopedia"
 	This unique is automatically hidden from users.
 
@@ -3376,7 +3383,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	This unique is automatically hidden from users.
 
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, EventChoice
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, Ruins, EventChoice
 
 ??? example  "Will not be displayed in Civilopedia"
 	This unique is automatically hidden from users.

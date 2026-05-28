@@ -1027,9 +1027,10 @@ enum class UniqueType(
         UniqueTarget.FounderBelief,
         UniqueTarget.Policy,
         UniqueTarget.Promotion,
+        UniqueTarget.Ruins,
         UniqueTarget.Tech,
         flags = UniqueFlag.setOfHiddenToUsers),
-    
+
     UnitActionPriority("with [amount] priority",
         UniqueTarget.UnitActionModifier,
         UniqueTarget.MetaModifier, // Can also be applied to UniqueTarget.Triggerable

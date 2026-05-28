@@ -10,7 +10,6 @@ class RuinReward : RulesetObject() {
 
     val excludedDifficulties: List<String> = listOf()
     val weight: Int = 1
-    val aiWeight: Int = 1
     val color: String = ""  // For Civilopedia
 
     override fun makeLink() = "" //No own category on Civilopedia screen

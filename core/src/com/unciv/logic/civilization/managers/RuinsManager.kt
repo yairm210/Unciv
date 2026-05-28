@@ -47,7 +47,7 @@ class RuinsManager(
         val candidates =
             getPossibleRewards(triggeringUnit)
             // This might be a dirty way to do this, but it works (we do have randomWeighted in CollectionExtensions, but below we
-            // need to choose another when the first choice's TriggerActivations report failure, and that's simpler this way)
+            // need to choose another when the first choice's TriggerActivations report failure, and that's simpler this way).
             // For each possible reward, this feeds (reward.weight) copies of this reward to the overall Sequence to implement 'weight'.
             .flatMap { reward -> generateSequence { reward }.take(reward.getWeight()) }
             // Convert to List since Sequence.shuffled would do one anyway, Mutable so shuffle doesn't need to pull a copy
@@ -78,13 +78,21 @@ class RuinsManager(
                 return
             }
             else -> {
-                // TODO: Let AI apply strategy to its choices
-                getShuffledPossibleRewards(triggeringUnit) { aiWeight }
+                getShuffledPossibleRewards(triggeringUnit) { getAIWeight() }
             }
         }
         for (possibleReward in possibleRewards) {
             if (activateReward(triggeringUnit, possibleReward)) break
         }
+    }
+
+    private fun RuinReward.getAIWeight(): Int {
+        // TODO: Let AI apply strategy to its choices -> using conditionals in json?
+        var weight = weight
+        forEachMatchingUnique(UniqueType.AiChoiceWeight, civInfo.state) {
+            weight = weight * it.params[0].toInt() / 100
+        }
+        return weight
     }
 
     fun activateReward(triggeringUnit: MapUnit, reward: RuinReward): Boolean {
