@@ -2,10 +2,13 @@ package com.unciv.ui.screens.cityscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.utils.Align
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.tile.TileDescription
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.isEnabled
@@ -14,7 +17,9 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popups.AnimatedMenuPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.civilopediascreen.FormattedLine.IconDisplay
 import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
@@ -63,7 +68,8 @@ class CityScreenTileTable(private val cityScreen: CityScreen) : Table() {
                 buyTileButton.disable()
                 cityScreen.askToBuyTile(selectedTile)
             }
-            buyTileButton.isEnabled =  cityScreen.canChangeState && city.civ.hasStatToBuy(Stat.Gold, goldCostOfTile)
+            buyTileButton.onRightClick { TileBuyMenu(buyTileButton) }
+            buyTileButton.isEnabled = cityScreen.canChangeState && city.civ.hasStatToBuy(Stat.Gold, goldCostOfTile)
             innerTable.add(buyTileButton).padTop(5f).row()
         }
 
@@ -115,5 +121,39 @@ class CityScreenTileTable(private val cityScreen: CityScreen) : Table() {
             statsTable.add(value.roundToInt().toLabel()).padRight(5f)
         }
         return statsTable
+    }
+
+    private inner class TileBuyMenu(buyTileButton: TextButton) : AnimatedMenuPopup(stage, getActorTopRight(buyTileButton)) {
+        override fun createContentTable(): Table? {
+            val maxRing = city.getWorkRange()
+            val counts = IntArray(maxRing + 1) { countBuyableInRing(it) }
+            if (counts.sum() < 2) return null
+            return super.createContentTable()!!.apply {
+                add("Currently you have [${city.civ.gold}] [Gold].".toLabel(alignment = Align.center)).growX().row()
+                for (ring in 0..maxRing) {
+                    val count = counts[ring]
+                    if (count == 0 || ring > 0 && count == counts[ring - 1]) continue
+                    val cost = getRingCost(ring)
+                    val text = "Buy [$count] tiles in ring [$ring] for [$cost][${Stat.Gold.character}]"
+                    val button = getButton(text, KeyboardBinding.None) { buyRing(ring) }
+                    button.isDisabled = cost > city.civ.gold
+                    add(button).row()
+                }
+            }
+        }
+
+        @Suppress("DEPRECATION")
+        private fun getRing(ring: Int) = city.getCenterTile().getTilesInDistance(ring).filter { it.owningCity == null }
+        private fun countBuyableInRing(ring: Int) = getRing(ring).count()
+        private fun getRingCost(ring: Int) = getRing(ring).withIndex().sumOf { city.expansion.getGoldCostOfTile(it.value, it.index) }
+        private fun buyRing(ring: Int) {
+            for (tile in getRing(ring)) {
+                if (!city.expansion.canBuyTile(tile))
+                    break
+                city.expansion.buyTile(tile)
+            }
+            SoundPlayer.play(Stat.Gold.purchaseSound)
+            cityScreen.game.replaceCurrentScreen(CityScreen(city)) // update doesn't redo the tiles
+        }
     }
 }
