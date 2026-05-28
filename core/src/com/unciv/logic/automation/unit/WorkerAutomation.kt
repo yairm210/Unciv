@@ -119,7 +119,7 @@ class WorkerAutomation(
 
 
     private fun fillWorkersPerCity() {
-        if (workersPerCity.isNotEmpty() || civInfo.cities.size == 0) return
+        if (!workersPerCity.isEmpty()) return
         for (unit in civInfo.units.getCivUnits().filter { it.cache.hasUniqueToBuildImprovements }) 
             workersPerCity.add(unit.closestCity(), 1)
     }
