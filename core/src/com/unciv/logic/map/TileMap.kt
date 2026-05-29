@@ -673,8 +673,8 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     ): MapUnit? {
         val unit = baseUnit.newMapUnit(civInfo, unitId)
 
-        fun getPassableNeighbours(tile: Tile): Set<Tile> =
-                tile.neighbors.filter { unit.movement.canPassThrough(it) }.toSet()
+        fun getPassableNeighbours(tile: Tile) =
+                tile.neighbors.filter { unit.movement.canPassThrough(it) }
 
         // both the civ name and actual civ need to be in here in order to calculate the canMoveTo...Darn
         unit.assignOwner(civInfo, false)
@@ -690,17 +690,27 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
 
         // if it's not suitable, try to find another tile nearby
         if (unitToPlaceTile == null) {
+            class TileCandidates(
+                val land: MutableList<Tile> = mutableListOf(),
+                val water: MutableList<Tile> = mutableListOf()
+            ) {
+                constructor(isRestrictedLandUnit: Boolean, tiles: Sequence<Tile>) : this() {
+                    for (tile in tiles)
+                        if (!isRestrictedLandUnit || tile.isLand) land += tile
+                        else water += tile
+                }
+                val allTiles get() = land.asSequence() + water
+            }
+
+            val isRestrictedLandUnit = unit.baseUnit.isLandUnit && !unit.cache.canMoveOnWater
             var tryCount = 0
-            var potentialCandidates = getPassableNeighbours(currentTile)
+            var potentialCandidates = TileCandidates(isRestrictedLandUnit, getPassableNeighbours(currentTile))
             while (unitToPlaceTile == null && tryCount++ < 10) {
-                unitToPlaceTile = potentialCandidates
-                        .sortedByDescending { if (unit.baseUnit.isLandUnit && !unit.cache.canMoveOnWater) it.isLand else true } // Land units should prefer to go into land tiles
-                        .firstOrNull { unit.movement.canMoveTo(it) }
+                unitToPlaceTile = potentialCandidates.land.firstOrNull { unit.movement.canMoveTo(it) } // Land units should prefer to go into land tiles
+                    ?: potentialCandidates.water.firstOrNull { unit.movement.canMoveTo(it) }
                 if (unitToPlaceTile != null) continue
                 // if it's not found yet, let's check their neighbours
-                val newPotentialCandidates = mutableSetOf<Tile>()
-                potentialCandidates.forEach { newPotentialCandidates.addAll(getPassableNeighbours(it)) }
-                potentialCandidates = newPotentialCandidates
+                potentialCandidates = TileCandidates(isRestrictedLandUnit, potentialCandidates.allTiles.flatMap { getPassableNeighbours(it) })
             }
         }
 
