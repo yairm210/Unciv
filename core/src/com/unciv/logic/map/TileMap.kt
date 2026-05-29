@@ -291,7 +291,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         = forEachTileInDistance(origin, distance, {true}, op)
     @Readonly
     fun forEachTileInDistance(origin: HexCoord, distance: Int, filter: (Tile)->Boolean, op: (Tile)->Unit) {
-        for (i in 0 until distance)
+        for (i in 0..distance)
             forEachTileAtDistance(origin, i, filter, op)
     }
 
