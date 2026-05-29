@@ -497,12 +497,12 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             // that is to say, the "viewableTiles.contains(it) check will return false for neighbors from the same distance
             val tilesToAddInDistanceI = ArrayList<ViewableTile>()
 
-            for (cTile in getTilesAtDistance(position, i)) { // for each tile in that layer,
+            forEachTileAtDistance(position, i) { cTile -> // for each tile in that layer,
                 val cTileHeight = cTile.tileHeight
 
                 // For the sightdistance+1 layer - that's "one out of sight" - it's only visible if it's higher than the current tile
-                if (i == sightDistance+1 && (cTileHeight <= aUnitHeight || forAttack))
-                    continue
+                if (i == sightDistance + 1 && (cTileHeight <= aUnitHeight || forAttack))
+                    return@forEachTileAtDistance
 
                 /*
             Okay so, if we're looking at a tile from height a to one with height c with a MAXIMUM HEIGHT of b in the middle,
@@ -719,10 +719,9 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         for (promotion in unit.baseUnit.promotions)
             unit.promotions.addPromotion(promotion, true)
 
-        for (unique in civInfo.getMatchingUniques(UniqueType.UnitsGainPromotion)) {
-            if (unit.matchesFilter(unique.params[0])) {
+        civInfo.forEachMatchingUnique(UniqueType.UnitsGainPromotion) { unique ->
+            if (unit.matchesFilter(unique.params[0]))
                 unit.promotions.addPromotion(unique.params[1], true)
-            }
         }
 
         // And update civ stats, since the new unit changes both unit upkeep and resource consumption
