@@ -141,6 +141,8 @@ class GameSettings {
     var androidHideSystemUi = true
     var fontFamilyData: FontFamilyData = FontFamilyData.default
     var fontSizeMultiplier: Float = 1f
+    var longPressDelay = 1.1f
+    var multiTapInterval = 0.25f
 
     /** Maximum zoom-out of the map - performance heavy */
     var maxWorldZoomOut = 2f
