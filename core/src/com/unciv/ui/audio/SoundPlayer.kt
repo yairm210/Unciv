@@ -8,6 +8,7 @@ import com.unciv.logic.files.IMediaFinder
 import com.unciv.models.UncivSound
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
+import com.unciv.utils.isRunFromJar
 import games.rednblack.miniaudio.MASound
 import games.rednblack.miniaudio.MiniAudio
 import games.rednblack.miniaudio.MiniAudioException
@@ -166,7 +167,7 @@ object SoundPlayer {
             createSound(path, flags, null, maExternal)
         } catch (e: MiniAudioException) {
             // TODO follow https://github.com/rednblackgames/gdx-miniaudio/issues/2 - this may become obsolete?
-            if (file.type() != FileType.Internal || !IMediaFinder.isRunFromJar()) throw e
+            if (file.type() != FileType.Internal || isRunFromJar(this)) throw e
             val bytes = file.readBytes()
             return createSound(decodeBytes(bytes, 2))
         }
