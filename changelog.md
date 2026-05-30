@@ -1,10 +1,40 @@
+## 4.20.9
+
+AIs no longer stop creating cities late-game
+
+Add nation and capital city indicators in spy management
+
+Workers try to stay spread out - By Ambeco
+
+By SomeTroglodyte:
+- Show modifiers properly for improvement maintenance 
+- Fix translation generation for Comment nesting typed uniques 
+
+By unciv-loof:
+- Prevent AI from denouncing defeated civs 
+- Do not display (Unknown) after Civ name in MP metadata preview 
+
+Fix Educated Elite policy not gifting Great People - By AutumnPizazz
+
+## 4.20.8
+
+Seamless world wrap generation for procedural maps - By Romelium
+
+By SomeTroglodyte:
+- Improve "Battle Table" on small screens 
+- CPU performance improvements 
+
+RAM performance improvements - By Ambeco
+
+## 4.20.7
+
+Rendering improvements for large maps
+
+Bugfix for military presence check - By unciv-loof
+
+"cannot build xx buildings" unique - By chenxing61
+
 ## 4.20.6
-
-chore(ci): Attempt to fix CI by using latest upstream AUR updater
-
-4.20.5-patch1
-
-Revert bad android settings change 
 
 By SeventhM:
 - Allow enabling embassies in Global/Policy/Era uniques instead of just techs 
@@ -14,7 +44,7 @@ By SeventhM:
 
 Improve language handling and slightly ease use of first-run language picker - By SomeTroglodyte
 
-Replaced LocalUniqueCache with .forEach mathods. - By Ambeco
+CPU performance improvements - By Ambeco
 
 ## 4.20.5
 

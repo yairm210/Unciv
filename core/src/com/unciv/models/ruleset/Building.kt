@@ -430,6 +430,11 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             if (!containsResourceWithImprovement)
                 yield(RejectionReasonType.RequiresNearbyResource.toInstance("Nearby $requiredNearbyImprovedResources required"))
         }
+
+        for (unique in civ.getMatchingUniques(UniqueType.CannotBuildBuildings, stateForConditionals))
+            if (this@Building.matchesFilter(unique.params[0], stateForConditionals)) {
+                yield(RejectionReasonType.CannotBeBuilt.toInstance())
+            }
     }
 
     /**

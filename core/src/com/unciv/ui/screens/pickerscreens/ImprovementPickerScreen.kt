@@ -12,6 +12,7 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.ImprovementBuildingProblem
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.tile.TileImprovement
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -20,6 +21,7 @@ import com.unciv.ui.components.SmallButtonStyle
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.ActivationTypes
@@ -169,22 +171,16 @@ class ImprovementPickerScreen(
             currentPlayerCiv,
             tile.getCity(),
         )
-        
-        // Add per-turn maintenance costs as negative stats
-        val maintenanceUniques = improvement.getMatchingUniques(UniqueType.ImprovementMaintenance) + 
-                improvement.getMatchingUniques(UniqueType.ImprovementAllMaintenance)
-        for (maintenanceUnique in maintenanceUniques ) {
-            val amount = maintenanceUnique.params[0].toFloat()
-            val statName = Stat.safeValueOf(maintenanceUnique.params[1]) ?: continue
-            stats.add(statName, -amount)
-        }
+
+        // Add per-turn maintenance costs as negative stats.
+        stats.add(getMaintenance(improvement))
 
         //Warn when the current improvement will increase a stat for the tile,
         // but the tile is outside of the range (> 3 tiles from any city center) that can be
         // worked by a city's population
         if (tile.owningCity != null
             && !improvement.isRoad()
-            && stats.values.any { it > 0f }
+            && stats.max() > 0f
             && !improvement.name.startsWith(Constants.remove)
             && !tile.getTilesInDistance(currentPlayerCiv.modConstants.cityWorkRange)
                 .any { it.isCityCenter() && it.getCity()!!.civ == currentPlayerCiv }
@@ -235,6 +231,29 @@ class ImprovementPickerScreen(
         row()
     }
 
+    /** Calculate maintenance costs, matching logic in [getTransportationUpkeep][com.unciv.logic.civilization.transients.CivInfoStatsForNextTurn.getTransportationUpkeep] */
+    // Not centralized in [TileStatFunctions] because the actual upkeep calculation can optimize some things and rounding errors might accumulate differently
+    private fun getMaintenance(improvement: TileImprovement): Stats {
+        val maintenance = Stats()
+        if (currentPlayerCiv.getMatchingUniques(UniqueType.NoImprovementMaintenanceInSpecificTiles)
+                .any { tile.matchesFilter(it.params[0], currentPlayerCiv) }
+        ) return maintenance
+
+        val context = GameContext(currentPlayerCiv, tile = tile)
+        val maintenanceUniques = improvement.getMatchingUniques(UniqueType.ImprovementAllMaintenance, context) +
+            // ImprovementMaintenance only applies inside city territory; ImprovementAllMaintenance applies everywhere.
+            (if (tile.getOwner() == currentPlayerCiv) improvement.getMatchingUniques(UniqueType.ImprovementMaintenance, context) else emptySequence())
+        for (maintenanceUnique in maintenanceUniques) {
+            val amount = maintenanceUnique.params[0].toFloat()
+            val statName = Stat.safeValueOf(maintenanceUnique.params[1]) ?: continue
+            maintenance.add(statName, -amount)
+        }
+
+        for (unique in currentPlayerCiv.getMatchingUniques(UniqueType.RoadMaintenance))
+            maintenance.timesInPlace(unique.params[0].toPercent())
+        return maintenance
+    }
+
     /** Sets the PickerPane's description and where in Civilopedia a click on it should go - but not the right side button */
     private fun setDescription(improvement: TileImprovement, color: Color) {
         selectedImprovement = improvement
@@ -266,12 +285,12 @@ class ImprovementPickerScreen(
     private fun getStatsTable(stats: Stats): Table {
         val statsTable = Table()
         for ((key, value) in stats) {
-            val statValue = value.roundToInt()
-            if (statValue == 0) continue
+            val statValue = (value * 10).roundToInt() * 0.1f
+            if (statValue == 0f) continue
 
             statsTable.add(ImageGetter.getStatIcon(key.name)).size(20f).padRight(3f)
 
-            val valueLabel = statValue.toLabel()
+            val valueLabel = statValue.tr().toLabel()
             valueLabel.color = if (statValue < 0) Color.RED else Color.WHITE
 
             statsTable.add(valueLabel).padRight(13f)

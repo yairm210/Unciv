@@ -276,8 +276,8 @@ class TileStatFunctions(val tile: Tile) {
         observingCiv: Civilization,
         city: City?,
         /** Provide this for performance */
-        currentTileStats: Stats? = null): Stats {
-
+        currentTileStats: Stats? = null
+    ): Stats {
         val currentStats = currentTileStats ?: getTileStats(city, observingCiv)
 
         @LocalState val tileClone = tile.clone(addUnits = false)

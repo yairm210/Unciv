@@ -26,7 +26,6 @@ import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
-import kotlin.math.abs
 import kotlin.random.Random
 
 @RunWith(GdxTestRunner::class)
@@ -340,7 +339,7 @@ class BasicTests {
             val stat = Stat.entries[random.nextInt(statCount)]
             stats.add(stat, stats.times(4)[stat])
             stats.timesInPlace(0.8f)
-            if (abs(stats.values.maxOrNull()!!) > 1000000f)
+            if (stats.max() > 1000000f)
                 stats.timesInPlace(0.1f)
         }
         return stats

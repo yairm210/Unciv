@@ -474,7 +474,6 @@ fun Input.areSecretKeysPressed() = isKeyPressed(Input.Keys.SHIFT_RIGHT) &&
  * - This aligns columns only if the tables are arranged vertically with equal X coordinates.
  * - first table determines columns processed, all others must have at least the same column count.
  * - Tables are left as needsLayout==true, so while equal width is ensured, you may have to pack if you want to see the value before this is rendered.
- * - Note: The receiver <Group> isn't actually needed except to make sure the arguments are descendants.
  */
 fun equalizeColumns(vararg tables: Table) {
     for (table in tables) {
@@ -482,7 +481,7 @@ fun equalizeColumns(vararg tables: Table) {
     }
     val columns = tables.first().columns
     check(tables.all { it.columns >= columns }) {
-        "IPageExtensions.equalizeColumns needs all tables to have at least the same number of columns as the first one"
+        "equalizeColumns needs all tables to have at least the same number of columns as the first one"
     }
 
     val widths = (0 until columns)

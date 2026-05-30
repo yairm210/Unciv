@@ -888,6 +888,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
+??? example  "Enables establishment of embassies"
+	Applicable to: Global
+
 ??? example  "Requires establishing embassies to conduct advanced diplomacy"
 	Applicable to: Global
 
@@ -1036,6 +1039,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global
 
 ??? example  "Rebel units may spawn"
+	Applicable to: Global
+
+??? example  "Cannot build [buildingFilter] buildings"
+	Example: "Cannot build [Culture] buildings"
+
 	Applicable to: Global
 
 ??? example  "[relativeAmount]% Strength"
@@ -1254,9 +1262,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Era
 
 ## Tech uniques
-??? example  "Enables establishment of embassies"
-	Applicable to: Tech
-
 ??? example  "Starting tech"
 	Applicable to: Tech
 
@@ -3218,7 +3223,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
-## Tutorial uniques
 ## CityState uniques
 ??? example  "Provides military units every ≈[positiveAmount] turns"
 	Example: "Provides military units every ≈[3] turns"

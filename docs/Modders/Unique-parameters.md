@@ -410,6 +410,10 @@ Allowed values:
     - Repeatable technologies, like Future Tech, are only counted once
 -   `Remaining [civFilter] Civilizations`
     - Example: `Only available <when number of [Remaining [City-States] Civilizations] is more than [0]>`
+-   `Worked [tileFilter] Tiles in this city`
+    - Example: `Only available <when number of [Worked [Farm] Tiles in this city] is more than [0]>`
+-   `Worked [tileFilter] Tiles`
+    - Example: `Only available <when number of [Worked [Farm] Tiles] is more than [0]>`
 -   `Owned [tileFilter] Tiles`
     - Example: `Only available <when number of [Owned [Farm] Tiles] is more than [0]>`
 -   `[tileFilter] Tiles`

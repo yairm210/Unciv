@@ -14,6 +14,7 @@ import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.audio.MusicController
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.images.ImageGetter
+import com.unciv.utils.isRunFromJar
 import yairm210.purity.annotations.Readonly
 import kotlin.reflect.full.declaredMemberProperties
 
@@ -160,9 +161,8 @@ interface IMediaFinder {
     }
 
     companion object {
-        fun isRunFromJar(): Boolean =
-            Gdx.app.type == Application.ApplicationType.Desktop &&
-            this::class.java.`package`.specificationVersion != null
+        private fun isRunFromJar(): Boolean =
+            Gdx.app.type == Application.ApplicationType.Desktop && isRunFromJar(this)
     }
 
     //////////////////////////////////////////// Specializations

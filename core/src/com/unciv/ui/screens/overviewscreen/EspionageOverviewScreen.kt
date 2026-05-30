@@ -1,7 +1,9 @@
 package com.unciv.ui.screens.overviewscreen
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Button
+import com.badlogic.gdx.scenes.scene2d.ui.SplitPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
@@ -14,7 +16,6 @@ import com.unciv.models.Spy
 import com.unciv.models.SpyAction
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.SmallButtonStyle
-import com.unciv.ui.components.extensions.addSeparatorVertical
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.extensions.toLabel
@@ -32,35 +33,41 @@ import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import yairm210.purity.annotations.Pure
 
+/** On this screen, possible locations of spies are a [City] or the Spy Hideout which we represent as `null` */
+private typealias Location = City?
+
 /** Screen used for moving spies between cities */
 class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldScreen) : PickerScreen(true) {
     private val collator = UncivGame.Current.settings.getCollatorFromLocale()
 
-    private val spySelectionTable = Table(skin)
+    private val spySelectionTable = Table()
     private val spyScrollPane = AutoScrollPane(spySelectionTable)
-    private val citySelectionTable = Table(skin)
-    private val cityScrollPane = AutoScrollPane(citySelectionTable)
-    private val middlePanes = Table(skin)
+    private val locationSelectionTable = Table()
+    private val locationScrollPane = AutoScrollPane(locationSelectionTable)
+    private val middlePanes = SplitPane(spyScrollPane, locationScrollPane, false, skin)
 
     private var selectedSpyButton: TextButton? = null
     private var selectedSpy: Spy? = null
 
     // if the value == null, this means the Spy Hideout.
-    private var spyActionButtons = hashMapOf<SpyCityActionButton, City?>()
-    private var moveSpyButtons = hashMapOf<Spy, TextButton>()
+    private val spyActionButtons = hashMapOf<SpyLocationActionButton, Location>()
+    private val moveSpyButtons = hashMapOf<Spy, TextButton>()
 
     /** Readability shortcut */
     private val manager get() = civInfo.espionageManager
 
     init {
-        spySelectionTable.defaults().pad(10f)
-        citySelectionTable.defaults().pad(5f)
-        middlePanes.add(spyScrollPane)
-        middlePanes.addSeparatorVertical()
-        middlePanes.add(cityScrollPane)
-        topTable.add(middlePanes)
+        spySelectionTable.defaults().space(10f)
+        spySelectionTable.pad(10f).top()
+        locationSelectionTable.defaults().space(5f)
+        locationSelectionTable.pad(10f).top()
 
         update()
+
+        middlePanes.minSplitAmount = 0.25f
+        middlePanes.maxSplitAmount = 0.75f
+        middlePanes.splitAmount = getPrefSplitAmount()
+        topTable.add(middlePanes).grow()
 
         closeButton.isVisible = true
         closeButton.onActivation {
@@ -71,61 +78,87 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
         rightSideButton.isVisible = false
     }
 
+    private fun getPrefSplitAmount(): Float {
+        val handleWidth = middlePanes.style.handle.minWidth
+        val freeSpace = stage.width - handleWidth - spySelectionTable.prefWidth - locationSelectionTable.prefWidth
+        val x = spySelectionTable.prefWidth + freeSpace.coerceAtLeast(handleWidth) / 2
+        return (x / stage.width).coerceIn(0.3f, 0.7f)
+    }
+
+    //region Update
+    private fun initSpyHeader() = spySelectionTable.apply {
+        add("Spy".toLabel())
+        add("Rank".toLabel())
+        add() // icon column
+        add("Location".toLabel()).left()
+        add("Action".toLabel())
+        // button column: No header cell
+        row()
+    }
+
+    private fun initLocationHeader() = locationSelectionTable.apply {
+        add() // Empty column for location icon
+        add("City".toLabel()).left()
+        add("Spy present".toLabel())
+        // button column: no header cell
+        row()
+    }
+
     private fun update() {
         updateSpyList()
-        updateCityList()
+        updateLocationList()
     }
 
     private fun updateSpyList() {
         spySelectionTable.clear()
         moveSpyButtons.clear()
-        spySelectionTable.add("Spy".toLabel())
-        spySelectionTable.add("Rank".toLabel())
-        spySelectionTable.add("Location".toLabel())
-        spySelectionTable.add("Action".toLabel()).row()
+        initSpyHeader()
+        // Show spies in insertion order = order of seniority
         for (spy in manager.spyList) {
-            spySelectionTable.add(spy.name.toLabel())
-            spySelectionTable.add(spy.rank.toLabel())
-            spySelectionTable.add(spy.getLocationName().toLabel())
-            val actionString = if (spy.action.showTurns)
-                "[${spy.action.displayString}] ${spy.turnsRemainingForAction}${Fonts.turn}"
-            else spy.action.displayString
-            spySelectionTable.add(actionString.toLabel())
-
-            val moveSpyButton = "Move".toTextButton()
-            moveSpyButton.onClick {
-                onSpyClicked(moveSpyButton, spy)
-            }
-            moveSpyButton.onRightClick {
-                onSpyRightClicked(spy)
-            }
-            if (!worldScreen.canChangeState || !spy.isAlive() || civInfo.isDefeated()) {
-                // Spectators aren't allowed to move the spies of the Civs they are viewing
-                moveSpyButton.disable()
-            }
-            spySelectionTable.add(moveSpyButton).pad(5f, 10f, 5f, 20f).row()
-            moveSpyButtons[spy] = moveSpyButton
+            addSpyToSelectionTable(spy)
         }
     }
 
-    private fun updateCityList() {
-        citySelectionTable.clear()
+    private fun addSpyToSelectionTable(spy: Spy) {
+        // "Spy" column
+        spySelectionTable.add(spy.name.toLabel())
+        // "Rank" column
+        spySelectionTable.add(spy.rank.toLabel())
+        // icon column
+        val spyLocation = spy.getCityOrNull()
+        spySelectionTable.add(spyLocation.getIcon()).padRight(5f)
+        // "Location" column
+        spySelectionTable.add(spy.getLocationName().toLabel(hideIcons = true)).left()
+        // "Action" column
+        val actionString = if (spy.action.showTurns)
+            "[${spy.action.displayString}] ${spy.turnsRemainingForAction}${Fonts.turn}"
+        else spy.action.displayString
+        spySelectionTable.add(actionString.toLabel())
+        // Move button column
+        val moveSpyButton = "Move".toTextButton()
+        moveSpyButton.onClick {
+            onSpyClicked(moveSpyButton, spy)
+        }
+        moveSpyButton.onRightClick {
+            onSpyRightClicked(spy)
+        }
+        if (!worldScreen.canChangeState || !spy.isAlive() || civInfo.isDefeated()) {
+            // Spectators aren't allowed to move the spies of the Civs they are viewing
+            moveSpyButton.disable()
+        }
+        spySelectionTable.add(moveSpyButton).row()
+        moveSpyButtons[spy] = moveSpyButton
+    }
+
+    private fun updateLocationList() {
+        locationSelectionTable.clear()
         spyActionButtons.clear()
-        citySelectionTable.add()
-        citySelectionTable.add("City".toLabel()).padTop(10f)
-        citySelectionTable.add("Spy present".toLabel()).padTop(10f).row()
+        initLocationHeader()
 
-        // First add the hideout to the table
-
-        citySelectionTable.add()
-        citySelectionTable.add("Spy Hideout".toLabel())
-        citySelectionTable.add(getSpyIcons(manager.getIdleSpies()))
-        val moveSpyHereButton = MoveToCityButton(null)
-        citySelectionTable.add(moveSpyHereButton).row()
-
-        // Then add all cities
-
-        val sortedCities = civInfo.gameInfo.getCities()
+        @Suppress("DEPRECATION") // The replacement doesn't allow chaining filters
+        val sortedLocations =
+            sequenceOf<Location>(null) + // First add the hideout to the table
+            civInfo.gameInfo.getCities() // Then add all cities
             .filter { civInfo.hasExplored(it.getCenterTile()) }
             .sortedWith(
                 compareBy<City> {
@@ -138,31 +171,33 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
                     it.name.tr(hideIcons = true)
                 }
             )
-        for (city in sortedCities) {
-            addCityToSelectionTable(city)
+        for (location in sortedLocations) {
+            addLocationToSelectionTable(location)
         }
     }
 
-    private fun addCityToSelectionTable(city: City) {
-        citySelectionTable.add(ImageGetter.getNationPortrait(city.civ.nation, 30f))
-            .padLeft(20f)
-        val label = city.name.toLabel(hideIcons = true)
-        label.onClick {
-            worldScreen.game.popScreen() // If a detour to this screen (i.e. not directly from worldScreen) is made possible, use resetToWorldScreen instead
-            worldScreen.mapHolder.setCenterPosition(city.location.toHexCoord())
+    private fun addLocationToSelectionTable(location: Location) {
+        locationSelectionTable.add(location.getIcon()).padLeft(20f).padRight(10f)
+        val label = location.getLocationName().toLabel(hideIcons = true)
+        if (location != null) {
+            label.onClick {
+                worldScreen.game.popScreen() // If a detour to this screen (i.e. not directly from worldScreen) is made possible, use resetToWorldScreen instead
+                worldScreen.mapHolder.setCenterPosition(location.location.toHexCoord())
+            }
         }
-        citySelectionTable.add(label).fill()
-        citySelectionTable.add(getSpyIcons(manager.getSpiesInCity(city)))
+        locationSelectionTable.add(label).left()
+        val spies = location.getSpies()
+        locationSelectionTable.add(getSpyIcons(spies))
 
-        val spy = civInfo.espionageManager.getSpyAssignedToCity(city)
-        if (city.civ.isCityState && spy != null && spy.canDoCoup()) {
-            val coupButton = CoupButton(city, spy.action == SpyAction.Coup)
-            citySelectionTable.add(coupButton)
+        val spy = spies.firstOrNull()
+        if (location != null && location.civ.isCityState && spy != null && spy.canDoCoup()) {
+            val coupButton = CoupButton(location, spy.action == SpyAction.Coup)
+            locationSelectionTable.add(coupButton)
         } else {
-            val moveSpyHereButton = MoveToCityButton(city)
-            citySelectionTable.add(moveSpyHereButton)
+            val moveSpyHereButton = MoveToLocationButton(location)
+            locationSelectionTable.add(moveSpyHereButton)
         }
-        citySelectionTable.row()
+        locationSelectionTable.row()
     }
 
     private fun getSpyIcon(spy: Spy) = Table().apply {
@@ -212,51 +247,37 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
             add(getSpyIcon(spy))
     }
 
-    private abstract class SpyCityActionButton : Button(SmallButtonStyle()) {
-        open fun setDirection(align: Int) {}
+    /** Get the name of a location: City name or Spy Hideout for (`[this]==null`) */
+    private fun Location.getLocationName() =
+        this?.name ?: "Spy Hideout"
+
+    /** Get the spies at a location: Spies assigned to a City or Spies in the Hideout (`[this]==null`) */
+    private fun Location.getSpies() =
+        if (this == null) manager.getIdleSpies() else manager.getSpiesInCity(this)
+
+    /** Get an icon for a location:
+     *  City as Nation icon with optional Capital indicator, or the Hideout (`[this]==null`) */
+    private fun Location.getIcon(): Actor {
+        if (this == null)
+            return ImageGetter.getImage("OtherIcons/Hideout").apply { setSize(33f) }
+
+        val icon = ImageGetter.getNationPortrait(civ.nation, 30f)
+        if (!isCapital() || civ.isCityState) return icon
+
+        icon.addActor(ImageGetter.getImage("OtherIcons/Capital").apply {
+            color = Color.BLACK.cpy().apply { a = 0.4f }
+            setSize(22f)
+            setPosition(29f, 27f, Align.center)
+        })
+        icon.addActor(ImageGetter.getImage("OtherIcons/Capital").apply {
+            setSize(18f)
+            setPosition(28f, 28f, Align.center)
+        })
+        return icon
     }
+    //endregion
 
-    // city == null is interpreted as 'spy hideout'
-    private inner class MoveToCityButton(city: City?) : SpyCityActionButton() {
-        val arrow = ImageGetter.getArrowImage(Align.left)
-
-        init {
-            arrow.setSize(24f)
-            add(arrow).size(24f)
-            arrow.setOrigin(Align.center)
-            arrow.color = Color.WHITE
-            onClick {
-                fun move() {
-                    selectedSpy!!.moveTo(city)
-                    resetSelection()
-                    update()
-                }
-                if (city != null
-                    && city.civ.civName != civInfo.civName
-                    && city.civ.isMajorCiv()
-                    && city.civ.knows(civInfo) // ensures the !! below won't crash
-                    && city.civ.getDiplomacyManager(civInfo)!!.hasFlag(DiplomacyFlags.AgreedToNotSendSpies)) {
-                    ConfirmPopup(
-                        UncivGame.Current.screen!!,
-                        // The promise isn't broken when you move the spy - only when they catch you stealing a tech
-                        "This may result in breaking your promise to [${city.civ.civName}]",
-                        "Move",
-                        action = ::move
-                    ).open(force = true)
-                } else {
-                    move()
-                }
-            }
-            spyActionButtons[this] = city
-            isVisible = false
-        }
-
-        override fun setDirection(align: Int) {
-            arrow.rotation = if (align == Align.right) 0f else 180f
-            isDisabled = align == Align.right
-        }
-    }
-
+    //region Interaction helpers
     private fun onSpyClicked(moveSpyButton: TextButton, spy: Spy) {
         if (selectedSpyButton == moveSpyButton) {
             resetSelection()
@@ -266,13 +287,13 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
         selectedSpyButton = moveSpyButton
         selectedSpy = spy
         selectedSpyButton!!.label.setText(Constants.cancel.tr())
-        for ((button, city) in spyActionButtons) {
-            if (city == spy.getCityOrNull()) {
+        for ((button, location) in spyActionButtons) {
+            if (location == spy.getCityOrNull()) {
                 button.isVisible = true
                 button.setDirection(Align.right)
             } else {
-                button.isVisible = city == null // hideout
-                    || !city.espionage.hasSpyOf(civInfo)
+                button.isVisible = location == null // hideout
+                    || !location.espionage.hasSpyOf(civInfo)
                 button.setDirection(Align.left)
             }
         }
@@ -291,35 +312,87 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
         for ((button, _) in spyActionButtons)
             button.isVisible = false
     }
+    //endregion
 
-    private inner class CoupButton(city: City, isCurrentAction: Boolean) : SpyCityActionButton() {
+    //region Spy Movement Button classes
+    private abstract inner class SpyLocationActionButton(protected val location: Location) : Button(SmallButtonStyle()) {
+        init {
+            onClick(::clickHandler)
+            spyActionButtons[this] = location
+            isVisible = false
+        }
+        protected abstract fun clickHandler()
+        open fun setDirection(align: Int) {}
+    }
+
+    private inner class MoveToLocationButton(location: Location) : SpyLocationActionButton(location) {
+        val arrow = ImageGetter.getArrowImage(Align.left)
+
+        init {
+            arrow.setSize(24f)
+            add(arrow).size(24f)
+            arrow.setOrigin(Align.center)
+            arrow.color = Color.WHITE
+        }
+
+        private fun move() {
+            selectedSpy!!.moveTo(location)
+            resetSelection()
+            update()
+        }
+
+        override fun clickHandler() {
+            if (location != null
+                && location.civ.civName != civInfo.civName
+                && location.civ.isMajorCiv()
+                && location.civ.knows(civInfo) // ensures the !! below won't crash
+                && location.civ.getDiplomacyManager(civInfo)!!.hasFlag(DiplomacyFlags.AgreedToNotSendSpies)) {
+                ConfirmPopup(this@EspionageOverviewScreen,
+                    // The promise isn't broken when you move the spy - only when they catch you stealing a tech
+                    "This may result in breaking your promise to [${location.civ.civName}]",
+                    "Move",
+                    action = ::move
+                ).open(force = true)
+            } else {
+                move()
+            }
+        }
+
+        override fun setDirection(align: Int) {
+            arrow.rotation = if (align == Align.right) 0f else 180f
+            isDisabled = align == Align.right
+        }
+    }
+
+    private inner class CoupButton(city: City, private val isCurrentAction: Boolean) : SpyLocationActionButton(city) {
         val fist = ImageGetter.getStatIcon("Resistance")
 
         init {
             fist.setSize(24f)
             add(fist).size(24f)
             fist.setOrigin(Align.center)
-            if (isCurrentAction) fist.color = Color.WHITE
-            else fist.color = Color.DARK_GRAY
-            onClick {
-                val spy = selectedSpy!!
-                if (!isCurrentAction) {
-                    ConfirmPopup(this@EspionageOverviewScreen,
-                        "Do you want to stage a coup in [${city.civ.civName}] with a " +
-                            "[${(selectedSpy!!.getCoupChanceOfSuccess(false) * 100f).toInt()}]% " +
-                            "chance of success?", "Stage Coup") {
-                        spy.setAction(SpyAction.Coup, 1)
-                        fist.color = Color.DARK_GRAY
-                        update()
-                    }.open()
-                } else {
-                    spy.setAction(SpyAction.CounterIntelligence, 10)
-                    fist.color = Color.WHITE
+            fist.color = if (isCurrentAction) Color.WHITE else Color.DARK_GRAY
+        }
+
+        override fun clickHandler() {
+            val spy = selectedSpy!!
+            if (!isCurrentAction) {
+                ConfirmPopup(this@EspionageOverviewScreen,
+                    "Do you want to stage a coup in [${location!!.civ.civName}] with a " +
+                        "[${(selectedSpy!!.getCoupChanceOfSuccess(false) * 100f).toInt()}]% " +
+                        "chance of success?",
+                    "Stage Coup"
+                ) {
+                    spy.setAction(SpyAction.Coup, 1)
+                    fist.color = Color.DARK_GRAY
                     update()
-                }
+                }.open()
+            } else {
+                spy.setAction(SpyAction.CounterIntelligence, 10)
+                fist.color = Color.WHITE
+                update()
             }
-            spyActionButtons[this] = city
-            isVisible = false
         }
     }
+    //endregion
 }

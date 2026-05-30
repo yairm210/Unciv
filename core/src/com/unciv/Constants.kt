@@ -90,6 +90,8 @@ object Constants {
 
     const val barbarians = "Barbarians"
     const val spectator = "Spectator"
+    const val humanPlayer = "Human player"
+    const val aiPlayer = "AI player"
 
     const val embarked = "Embarked"
     const val wounded = "Wounded"

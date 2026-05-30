@@ -708,8 +708,8 @@ class Civilization : IsPartOfGameInfoSerialization {
     @Readonly
     fun matchesSingleFilter(filter: String, state: GameContext? = this.state): Boolean {
         return when (filter) {
-            "Human player" -> isHuman()
-            "AI player" -> isAI()
+            Constants.humanPlayer -> isHuman()
+            Constants.aiPlayer -> isAI()
             "Open Borders" -> state?.civInfo?.diplomacy?.get(civID)?.hasOpenBorders ?: false
             "Friendly" -> state?.civInfo?.let { it.civID == civID || (it.diplomacy[civID]?.isRelationshipLevelGE(RelationshipLevel.Friend) == true) } ?: false
             "Hostile" -> state?.civInfo?.let { isAtWarWith(it) } ?: false

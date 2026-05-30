@@ -377,7 +377,7 @@ class WorldMapHolder(
         
         for (spriteImage in unitSpriteSlot.spriteGroup.children.toList()) // toList because actors added remove themselves from previous parent  
             unitSpriteAndIcon.addActor(spriteImage)
-        tileGroup.parent.addActor(unitSpriteAndIcon)
+        tileGroupMap.addActor(unitSpriteAndIcon)
 
         
 
@@ -562,12 +562,15 @@ class WorldMapHolder(
             table.moveBy(0f, 48f)
     }
 
+    /** Adds [actor] as a direct child of the TileGroupMap, rendered above all layer groups. */
+    fun addActorToTileGroupMap(actor: Actor) = tileGroupMap.addActor(actor)
+
     fun addOverlayOnTileGroup(group: TileGroup, actor: Actor) {
 
         actor.center(group)
         actor.x += group.x
         actor.y += group.y
-        group.parent.addActor(actor) // Add the overlay to the TileGroupMap - it's what actually displays all the tiles
+        tileGroupMap.addActor(actor) // Add directly to TileGroupMap so toFront() places it above all layer groups
         actor.toFront()
 
         actor.y += actor.height
