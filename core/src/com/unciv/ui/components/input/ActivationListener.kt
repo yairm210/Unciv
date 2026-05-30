@@ -9,6 +9,10 @@ import com.unciv.UncivGame
  *  Wraps Gdx ActorGestureListener, pulling [multiTapInterval] and [longPressDelay] from settings
  */
 abstract class UncivActorGestureListener : ActorGestureListener(20f, multiTapInterval, longPressDelay, Int.MAX_VALUE.toFloat()) {
+    fun reloadSettings() {
+        gestureDetector.setLongPressSeconds(longPressDelay)
+        gestureDetector.setTapCountInterval(multiTapInterval)
+    }
 
     private companion object {
         val longPressDelay by UncivGame.Current.settings::longPressDelay

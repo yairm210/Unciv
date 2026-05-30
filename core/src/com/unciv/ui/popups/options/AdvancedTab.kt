@@ -8,6 +8,7 @@ import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.PixmapIO
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
 import com.unciv.GUI
@@ -30,6 +31,8 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.Fonts
+import com.unciv.ui.components.input.ActivationTypes
+import com.unciv.ui.components.input.ActorAttachments
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onChange
@@ -76,6 +79,11 @@ internal class AdvancedTab(
 
         addFontFamilySelect()
         addFontSizeMultiplier()
+
+        addSeparator()
+
+        addGestureControls()
+
         addSeparator()
 
         addMaxZoomSlider()
@@ -209,6 +217,34 @@ internal class AdvancedTab(
         addSlider("Font size multiplier", settings::fontSizeMultiplier, 0.7f, 1.5f, 0.05f) {
             reloadWorldAndOptions()
         }
+    }
+
+    private fun addGestureControls() {
+        val testButton = "Test area".toTextButton()
+        fun reloadSettings() = ActorAttachments.get(testButton).reloadSettings()
+
+        addSlider("Long press delay", settings::longPressDelay, 0.2f, 4f, 0.1f).padTop(20f).actor.apply {
+            onChange { reloadSettings() }
+        }
+        addSlider("Double tap interval", settings::multiTapInterval, 0.15f, 1f, 0.05f).actor.apply {
+            onChange { reloadSettings() }
+        }
+
+        fun onActivation(type: ActivationTypes, text: String) = testButton.run {
+            onActivation(type, noEquivalence = true) {
+                clearActions()
+                setText(text.tr())
+                addAction(Actions.sequence(
+                    Actions.delay(3f),
+                    Actions.run { setText("Test area".tr()) }
+                ))
+            }
+        }
+        onActivation(ActivationTypes.Tap, "Single tap")
+        onActivation(ActivationTypes.RightClick, "Right-click")
+        onActivation(ActivationTypes.Doubletap, "Double-click")
+        onActivation(ActivationTypes.Longpress, "Long press")
+        add(testButton).minWidth(240f).colspan(2).center().row()
     }
 
     private fun addMaxZoomSlider() {
