@@ -55,6 +55,7 @@ import kotlinx.coroutines.withContext
 import java.util.zip.Deflater
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlin.io.path.exists
 import kotlin.io.path.extension
 import kotlin.io.path.isDirectory
@@ -184,7 +185,7 @@ internal class AdvancedTab(
                     ))
                 }
             }
-        }
+        }.flowOn(Dispatchers.IO)
 
         /** Build provider for [addAsyncSelectBox]: default, mods, system */
         @Suppress("NewApi")
@@ -205,7 +206,7 @@ internal class AdvancedTab(
             // Add system fonts
             for (font in Fonts.getSystemFonts())
                 emit(font)
-        }
+        }.flowOn(Dispatchers.IO)
 
         addAsyncSelectBox("Font family", settings::fontFamilyData, ::loadFonts) { reloadWorldAndOptions() }
     }
