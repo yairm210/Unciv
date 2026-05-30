@@ -87,11 +87,8 @@ internal class AdvancedTab(
         addSeparator()
 
         addMaxZoomSlider()
-
         addCheckbox("Enable Easter Eggs", settings::enableEasterEggs)
-
         addCheckbox("Enlarge selected notifications", settings::enlargeSelectedNotification)
-
         addCheckbox("Enable experimental A* pathing", settings::useAStarPathfinding)
 
         addSeparator()
@@ -251,7 +248,7 @@ internal class AdvancedTab(
         addSlider("Max zoom out", settings::maxWorldZoomOut, 2f, 6f, 1f) {
             if (GUI.isWorldLoaded())
                 GUI.getMap().reloadMaxZoom()
-        }
+        }.padTop(20f)
     }
 
     private fun addTranslationGeneration() {
