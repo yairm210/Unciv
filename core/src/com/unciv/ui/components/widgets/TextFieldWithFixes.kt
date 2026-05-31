@@ -17,7 +17,7 @@ import com.unciv.ui.components.input.keyShortcuts
  * - If this TextField handles the Tab key (see [keyShortcuts]), its [focus navigation feature][TextField.next] is disabled (otherwise it would search for another TextField in the same parent to give focus to, and remove the on-screen keyboard if it finds none).
  * - Tells Android's on screen keyboard when this TextField is in password mode
  * - Shows/hides Android's on screen keyboard automatically whith keyboard focus gain/loss
- * - Fixes Gdx's password char from a cp-1252 Bullet to Unicode 
+ * - Fixes Gdx's password char from a cp-1252 Bullet to Unicode
  * - constructors same as standard TextField, plus a cloning constructor.
  */
 open class TextFieldWithFixes private constructor(text: String, style: TextFieldStyle) : TextField(text, style) {
