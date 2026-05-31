@@ -1,9 +1,13 @@
 package com.unciv.ui.components.widgets
 
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input.OnscreenKeyboardType
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
+import com.badlogic.gdx.scenes.scene2d.utils.FocusListener
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.keyShortcuts
 
@@ -11,6 +15,8 @@ import com.unciv.ui.components.input.keyShortcuts
  * Creates a text field with two deviations from the default Gdx [TextField]:
  * - Turns off Gdx color markup support while drawing, so [] in the text display properly
  * - If this TextField handles the Tab key (see [keyShortcuts]), its [focus navigation feature][TextField.next] is disabled (otherwise it would search for another TextField in the same parent to give focus to, and remove the on-screen keyboard if it finds none).
+ * - Tells Android's on screen keyboard when this TextField is in password mode
+ * - Shows/hides Android's on screen keyboard automatically whith keyboard focus gain/loss
  * - constructors same as standard TextField, plus a cloning constructor.
  */
 open class TextFieldWithFixes private constructor(text: String, style: TextFieldStyle) : TextField(text, style) {
@@ -23,13 +29,26 @@ open class TextFieldWithFixes private constructor(text: String, style: TextField
         selectionStart = textField.selectionStart
         alignment = textField.alignment
         isPasswordMode = textField.isPasswordMode
-        onscreenKeyboard = textField.onscreenKeyboard
+    }
+
+    init {
+        addListener(object : FocusListener() {
+            override fun keyboardFocusChanged(event: FocusEvent, actor: Actor?, focused: Boolean) {
+                if (!focused && event.relatedActor is TextFieldWithFixes) return // Will be reactivated anyway
+                onscreenKeyboard.show(focused)
+            }
+        })
     }
 
     // Without this, the DeveloperConsole can't catch the Tab key for Autocomplete reliably
     override fun next(up: Boolean) {
         if (KeyCharAndCode.TAB in keyShortcuts) return
         super.next(up)
+    }
+
+    override fun setDisabled(disabled: Boolean) {
+        onscreenKeyboard.show(!disabled)
+        super.setDisabled(disabled)
     }
 
     // Note - this way to force TextField to display `[]` characters normally is an incomplete hack.
@@ -43,6 +62,7 @@ open class TextFieldWithFixes private constructor(text: String, style: TextField
         super.layout()
         style.font.data.markupEnabled = oldEnable
     }
+
     override fun drawText(batch: Batch, font: BitmapFont, x: Float, y: Float) {
         val oldEnable = font.data.markupEnabled
         font.data.markupEnabled = false
