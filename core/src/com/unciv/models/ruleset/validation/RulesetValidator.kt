@@ -278,18 +278,22 @@ open class RulesetValidator protected constructor(
         // Using reportRulesetSpecificErrors=true as ModOptions never should use Uniques depending on objects from a base ruleset anyway.
         uniqueValidator.checkUniques(ruleset.modOptions, lines, reportRulesetSpecificErrors = true, tryFixUnknownUniques)
 
+        fun modConstantError(constantName: String, criteria: String): String {
+            return "ModConstant '$constantName' does not meet criteria '$criteria'."
+        }
+        
         //TODO: More thorough checks. Here I picked just those where bad values might endanger stability.
         val constants = ruleset.modOptions.constants
         if (constants.cityExpandRange !in 1..100)
-            lines.add("Invalid ModConstant 'cityExpandRange'.", sourceObject = null)
+            lines.add(modConstantError("cityExpandRange", "Minimum 1, maximum 100"))
         if (constants.cityWorkRange !in 1..100)
-            lines.add("Invalid ModConstant 'cityWorkRange'.", sourceObject = null)
+            lines.add(modConstantError("cityWorkRange", "Minimum 1, maximum 100"))
         if (constants.minimalCityDistance < 0) // 0 is ok because it is the number of tiles between cities
-            lines.add("Invalid ModConstant 'minimalCityDistance'.", sourceObject = null)
+            lines.add(modConstantError("minimalCityDistance", "Minimum 0"))
         if (constants.minimalCityDistanceOnDifferentContinents < 0)
-            lines.add("Invalid ModConstant 'minimalCityDistanceOnDifferentContinents'.", sourceObject = null)
+            lines.add(modConstantError("minimalCityDistanceOnDifferentContinents", "Minimum 0"))
         if (constants.baseCityBombardRange < 0) // 0 essentially disables bombardment
-            lines.add("Invalid ModConstant 'baseCityBombardRange'.", sourceObject = null)
+            lines.add(modConstantError("baseCityBombardRange", "Minimum 0"))
 
         if (ruleset.name.isBlank()) return // The rest of these tests don't make sense for combined rulesets
 
