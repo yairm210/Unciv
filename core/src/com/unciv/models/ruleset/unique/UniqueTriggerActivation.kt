@@ -389,7 +389,7 @@ object UniqueTriggerActivation {
                     val notificationText = getNotificationText(notification, triggerNotificationText,
                         "You may choose a free Policy")
                     if (notificationText != null)
-                        civInfo.addNotification(notificationText, NotificationCategory.General, NotificationIcon.Culture)
+                        civInfo.addNotification(notificationText, PolicyAction(), NotificationCategory.General, NotificationIcon.Culture)
                     true
                 }
             }
@@ -405,7 +405,7 @@ object UniqueTriggerActivation {
                         "You may choose [$newFreePolicies] free Policies"
                     )
                     if (notificationText != null)
-                        civInfo.addNotification(notificationText, NotificationCategory.General, NotificationIcon.Culture)
+                        civInfo.addNotification(notificationText, PolicyAction(), NotificationCategory.General, NotificationIcon.Culture)
                     true
                 }
             }
