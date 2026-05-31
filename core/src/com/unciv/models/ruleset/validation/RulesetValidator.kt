@@ -288,7 +288,7 @@ open class RulesetValidator protected constructor(
             lines.add("Invalid ModConstant 'minimalCityDistance'.", sourceObject = null)
         if (constants.minimalCityDistanceOnDifferentContinents < 0)
             lines.add("Invalid ModConstant 'minimalCityDistanceOnDifferentContinents'.", sourceObject = null)
-        if (constants.baseCityBombardRange < 0) // 0 is equivalent to disabling bombardment
+        if (constants.baseCityBombardRange < 0) // 0 essentially disables bombardment
             lines.add("Invalid ModConstant 'baseCityBombardRange'.", sourceObject = null)
 
         if (ruleset.name.isBlank()) return // The rest of these tests don't make sense for combined rulesets
