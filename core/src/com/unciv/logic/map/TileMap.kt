@@ -592,8 +592,9 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             // We have just calculated the dimensions above, so we know the final size.
             tileMatrix.ensureCapacity(rightX - leftX + 1)
             repeat (rightX - leftX + 1) {
-                val row = MutableList<Tile?>(topY - bottomY + 1) { null }
-                tileMatrix.add(row as ArrayList<Tile?>)
+                val row = ArrayList<Tile?>(topY - bottomY + 1)
+                repeat(topY - bottomY + 1) { row.add(null) }
+                tileMatrix.add(row)
             }
         } else {
             // Yes the map generator calls this repeatedly, and we don't want to end up with an oversized tileMatrix
