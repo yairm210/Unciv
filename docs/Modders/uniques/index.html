@@ -2705,6 +2705,16 @@
 <p>Applicable to: Triggerable</p>
 </details>
 <details class="example">
+<summary>Choose a music track for [unknown], [unknown], [unknown]</summary>
+<p>Parameters are unchecked, strings not matching existing tracks or flags are ignored.</p>
+<p>See <a href="../Images-and-Audio/#context-sensitive-music-overview">Context-sensitive music</a></p>
+<p>The first parameter is the track name prefix, e.g. a Civilization name or "this civ".</p>
+<p>The second parameter is a list of zero or more suffixes, comma-separated, used to specify a "mood", like Peace, War, Ambient etc. First track that matches wins.</p>
+<p>The third parameter is a list of zero or more flags: PrefixMustMatch, SuffixMustMatch, SlowFade, PlaySingle, PlayDefaultFile.</p>
+<p>This unique is automatically hidden from users.</p>
+<p>Applicable to: Triggerable</p>
+</details>
+<details class="example">
 <summary>Suppress warning [<abbr title="Suppresses one specific Ruleset validation warning. This can specify the full text verbatim including correct upper/lower case, or it can be a wildcard case-insensitive simple pattern starting and ending in an asterisk ('*'). If the suppression unique is used within an object or as modifier (not ModOptions), the wildcard symbols can be omitted, as selectivity is better due to the limited scope.">validationWarning</abbr>]</summary>
 <p>Allows suppressing specific validation warnings. Errors, deprecation warnings, or warnings about untyped and non-filtering uniques should be heeded, not suppressed, and are therefore not accepted. Note that this can be used in ModOptions, in the uniques a warning is about, or as modifier on the unique triggering a warning - but you still need to be specific. Even in the modifier case you will need to specify a sufficiently selective portion of the warning text as parameter.</p>
 <p>Example: "Suppress warning [Tinman is supposed to automatically upgrade at <abbr title="The name of any tech.">tech</abbr> Clockwork, and therefore Servos for its upgrade Mecha may not yet be researched! -or- <em>is supposed to automatically upgrade</em>]"</p>
