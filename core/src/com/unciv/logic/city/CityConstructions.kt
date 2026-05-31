@@ -788,7 +788,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     }
 
 
-    /** This is the *one true test* of "can we buty this construction"
+    /** This is the *one true test* of "can we buy this construction"
      * This tests whether the buy button should be _enabled_ */
     @Readonly
     fun isConstructionPurchaseAllowed(construction: INonPerpetualConstruction, stat: Stat, constructionBuyCost: Int): Boolean {
