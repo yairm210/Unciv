@@ -1,14 +1,9 @@
 ## 4.20.10
 
-4.20.9-patch1
-
-Resolved , resolved #14941 
-
-By SomeTroglodyte:
-- chore: Fix TileMap.forEachTileInDistance + general cleanup of that file 
+By SomeTroglodyte: 
 - Free policy notifications open policy screen 
 - A new triggerable Unique to choose a music track 
-- Better Scenario start with fewer surprises 
+- Better Scenario starts with fewer surprises 
 
 Boreal map type - By unciv-loof
 
