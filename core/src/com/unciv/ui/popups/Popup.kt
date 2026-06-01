@@ -219,7 +219,7 @@ open class Popup(
     /** Centers [innerTable] when only status bar and/or system UI limit the [visibleArea],
      *  otherwise shifts it from center just enough to fit in [visibleArea] plus 5f padding.
      */
-    private fun fitOrCenterContentIntoVisibleArea(visibleArea: Rectangle = lastKnownVisibleArea()) =
+    protected fun fitOrCenterContentIntoVisibleArea(visibleArea: Rectangle = lastKnownVisibleArea()) =
         if (visibleArea.isMostOfScreen()) centerContentIntoVisibleArea(visibleArea)
         else fitContentIntoVisibleArea(visibleArea)
 

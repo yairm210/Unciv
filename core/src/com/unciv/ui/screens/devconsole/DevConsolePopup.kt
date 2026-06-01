@@ -220,6 +220,7 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen, Scrollability.All
         innerTable.validate()
         val newHeight = innerTable.prefHeight.coerceIn(120f, maxPopupHeight)
         getCell(getScrollPane()).height(newHeight)  // Gdx quirks: Or else the ScrollPane's new prefHeight won't be respected
+        fitOrCenterContentIntoVisibleArea()
     }
 
     private fun handleCommand(): DevConsoleResponse {
