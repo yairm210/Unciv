@@ -281,7 +281,7 @@ open class RulesetValidator protected constructor(
 
         // TODO: Create overload method for floating point constants. Settle on using either floats or doubles in ModConstants.kt
         /**
-         * @param propertyName If the constant has a getter, then you should manually enter the name of the constant here.
+         * @param propertyName If the constant has a getter, then you should manually enter its name here.
          */
         fun checkConstant(property: KProperty0<Int>, range: IntRange, propertyName: String? = null) {
             if (property.get() in range) return
