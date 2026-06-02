@@ -37,6 +37,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.Portrait
 import com.unciv.ui.images.PortraitPromotion
 import com.unciv.utils.isRunFromJar
+import kotlin.reflect.KProperty0
 
 /**
  *  Class mananging ruleset validation.
@@ -278,22 +279,29 @@ open class RulesetValidator protected constructor(
         // Using reportRulesetSpecificErrors=true as ModOptions never should use Uniques depending on objects from a base ruleset anyway.
         uniqueValidator.checkUniques(ruleset.modOptions, lines, reportRulesetSpecificErrors = true, tryFixUnknownUniques)
 
-        fun modConstantError(constantName: String, criteria: String): String {
-            return "ModConstant '$constantName' does not meet criteria '$criteria'."
+        // TODO: Create overload method for floating point constants. Settle on using either floats or doubles in ModConstants.kt
+        /**
+         * @param propertyName If the [property] has an accessor (getter), then you should manually enter the name of the constant here.
+         */
+        fun checkConstant(property: KProperty0<Int>, range: IntRange, propertyName: String? = null) {
+            if (property.get() in range) return
+            fun IntRange.describe() = when {
+                this.first == Int.MIN_VALUE -> "Maximum $last"
+                this.last == Int.MAX_VALUE -> "Minimum $first"
+                else -> "Minimum $first, Maximum $last"
+            }
+            lines.add("ModConstant '${propertyName ?: property.name}}' does not meet criteria '${range.describe()}'.")
         }
         
         //TODO: More thorough checks. Here I picked just those where bad values might endanger stability.
         val constants = ruleset.modOptions.constants
-        if (constants.cityExpandRange !in 1..100)
-            lines.add(modConstantError("cityExpandRange", "Minimum 1, maximum 100"))
-        if (constants.cityWorkRange !in 1..100)
-            lines.add(modConstantError("cityWorkRange", "Minimum 1, maximum 100"))
-        if (constants.minimalCityDistance < 0) // 0 is ok because it is the number of tiles between cities
-            lines.add(modConstantError("minimalCityDistance", "Minimum 0"))
-        if (constants.minimalCityDistanceOnDifferentContinents < 0)
-            lines.add(modConstantError("minimalCityDistanceOnDifferentContinents", "Minimum 0"))
-        if (constants.baseCityBombardRange < 0) // 0 essentially disables bombardment
-            lines.add(modConstantError("baseCityBombardRange", "Minimum 0"))
+        checkConstant(constants::cityExpandRange, 1..100)
+        checkConstant(constants::cityWorkRange, 1..100)
+        // Crashed with 10 as of writing
+        checkConstant(constants::minimalCityDistance, 0..9)
+        checkConstant(constants::minimalCityDistanceOnDifferentContinents, 0..9)
+        // Game hangs with very high values
+        checkConstant(constants::baseCityBombardRange, 0..1000)
 
         if (ruleset.name.isBlank()) return // The rest of these tests don't make sense for combined rulesets
 
