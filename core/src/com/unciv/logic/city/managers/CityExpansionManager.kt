@@ -182,9 +182,12 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         if (tile.getCity() != null)
             tile.getCity()!!.expansion.relinquishOwnership(tile)
 
-        if (tile.improvement == Constants.barbarianEncampment)
-            tile.setImprovementBasic(null)
-            
+        if (tile.improvement == Constants.barbarianEncampment) {
+            tile.removeImprovement()
+            for (cityState in city.civ.gameInfo.getAliveCityStates())
+                cityState.questManager.handleObsoleteGlobalQuests()
+        }
+
         city.tiles = city.tiles.withItem(tile.position)
         tile.setOwningCity(city)
         city.population.autoAssignPopulation()

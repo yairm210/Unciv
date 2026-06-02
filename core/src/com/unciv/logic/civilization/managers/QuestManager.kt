@@ -34,6 +34,7 @@ import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toPercent
+import com.unciv.ui.components.fonts.Fonts
 import com.unciv.utils.randomWeighted
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
@@ -131,6 +132,10 @@ class QuestManager : IsPartOfGameInfoSerialization {
             quest.setTransients(civ.gameInfo)
     }
 
+    /** Debug visualization only */
+    override fun toString() = if (!::civ.isInitialized) "(uninitialized)"
+        else "${civ.civID}:$assignedQuests"
+
     fun endTurn() {
 
         if (civ.isDefeated()) {
@@ -211,9 +216,9 @@ class QuestManager : IsPartOfGameInfoSerialization {
 
     // by turn so the same civ doesn't give the same quests always, and by civID so on the same turn different civs give different quests
     @Readonly private fun getRandom() = civ.state.stateBasedRandom("QuestManager")
-    @Readonly private fun getRandom(challenger: Civilization?) = if (challenger == null) getRandom() 
+    @Readonly private fun getRandom(challenger: Civilization?) = if (challenger == null) getRandom()
         else civ.getDiplomacyManager(challenger)?.state?.stateBasedRandom("QuestManager") ?: getRandom()
-    
+
     private fun tryStartNewGlobalQuest() {
         if (globalQuestCountdown != 0)
             return
@@ -292,6 +297,15 @@ class QuestManager : IsPartOfGameInfoSerialization {
         winnersAndLosers.losers.forEach { notifyExpired(it, winnersAndLosers.winners) }
 
         assignedQuests.removeAll { it.questNameInstance == questName }  // removing winners then losers would leave those with score 0
+    }
+
+    fun handleObsoleteGlobalQuests() {
+        val iterator = assignedQuests.iterator()
+        for (assignedQuest in iterator) {
+            if (!isObsolete(assignedQuest)) continue
+            notifyExpired(assignedQuest)
+            iterator.remove()
+        }
     }
 
     fun handleIndividualQuests() {
@@ -1025,4 +1039,8 @@ class AssignedQuest : IsPartOfGameInfoSerialization {
             else -> Unit
         }
     }
+
+    /** Debug visualization only */
+    override fun toString() = if (!::quest.isInitialized) "(uninitialized)"
+        else "$questName(${quest.type}, assigner=$assigner, assignee=$assignee, d2=$data1, d1=$data2, ${Fonts.turn}$assignedOnTurn)"
 }
