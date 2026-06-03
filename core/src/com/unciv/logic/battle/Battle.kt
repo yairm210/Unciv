@@ -806,8 +806,8 @@ object Battle {
     }
 
     private fun extraRangedAttack(attacker: ICombatant, defender: ICombatant): DamageDealt {
-        if (attacker is MapUnitCombatant && defender is MapUnitCombatant && attacker.unit.hasUnique(UniqueType.ExtraRangedAttack) && attacker.isMelee()) {
-            for (unique in attacker.unit.getMatchingUniques(UniqueType.ExtraRangedAttack, checkCivInfoUniques = true)) {
+        if (attacker is MapUnitCombatant && defender is MapUnitCombatant && attacker.isMelee()) {
+            for (unique in attacker.unit.getMatchingUniques(UniqueType.ExtraRangedAttack)) {
                 val rangedStrengthForExtraAttack = (attacker.unit.baseUnit.strength * unique.params[0].toFloat() / 100).toInt()
                 val baseRangedStrength = attacker.unit.baseUnit.rangedStrength
                 attacker.unit.baseUnit.rangedStrength = rangedStrengthForExtraAttack
