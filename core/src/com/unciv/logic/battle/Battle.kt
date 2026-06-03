@@ -805,7 +805,7 @@ object Battle {
         }
     }
 
-    private class FakeUnitForExtraRangedAttack(val mapUnitCombatant: MapUnitCombatant, val baseRangedStrength: Int) : ICombatant {
+    internal class FakeUnitForExtraRangedAttack(val mapUnitCombatant: MapUnitCombatant, val baseRangedStrength: Int) : ICombatant {
         // All redirect to MapUnitCombatant except for isRanged() and getAttackingStrength()
         override fun getHealth(): Int = mapUnitCombatant.getHealth()
         override fun getMaxHealth() = mapUnitCombatant.getMaxHealth()
@@ -884,10 +884,13 @@ object Battle {
     private fun extraRangedAttack(attacker: ICombatant, defender: ICombatant, attackedTile: Tile): DamageDealt {
         if (attacker is MapUnitCombatant && defender is MapUnitCombatant) {
             for (unique in attacker.unit.getMatchingUniques(UniqueType.ExtraRangedAttack)) {
-                val baseRangedStrengthForExtraAttack = (attacker.unit.baseUnit.strength * unique.params[0].toFloat() / 100).toInt()
+                val baseRangedStrengthForExtraAttack = (attacker.unit.baseUnit.strength * 
+                    unique.params[0].toFloat() / 100).toInt()
                 val fakeAttacker = FakeUnitForExtraRangedAttack(attacker, baseRangedStrengthForExtraAttack)
                 triggerCombatUniques(fakeAttacker, defender, attackedTile)
+
                 val damageDealt =  takeDamage(fakeAttacker, defender)
+
                 //handleCityDefeated() // bonus attack should not trigger vs cities
                 triggerPostKillingUniques(defender, fakeAttacker, attackedTile)
                 triggerDamageUniquesForUnit(attacker, defender, attackedTile, CombatAction.Attack)

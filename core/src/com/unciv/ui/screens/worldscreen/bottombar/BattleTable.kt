@@ -240,12 +240,6 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
             row()
         }
 
-        if (attacker is MapUnitCombatant && attacker.unit.hasUnique(UniqueType.ExtraRangedAttack))
-         {
-             add("Will perform an extra ranged attack".toLabel(fontSize = 16).apply { wrap = true }).width(quarterScreen)
-             row()
-        }
-
         if (attacker.isMelee() &&
                 (defender.isCivilian() || defender is CityCombatant && defender.isDefeated())) {
             add()
@@ -256,11 +250,30 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
             }
             add(defeatedText.toLabel())
         } else {
-            val maxDamageToDefender = BattleDamage.calculateDamageToDefender(attacker, defender, tileToAttackFrom, 1f)
-            val minDamageToDefender = BattleDamage.calculateDamageToDefender(attacker, defender, tileToAttackFrom, 0f)
+            var maxDamageToDefender = BattleDamage.calculateDamageToDefender(attacker, defender, tileToAttackFrom, 1f)
+            var minDamageToDefender = BattleDamage.calculateDamageToDefender(attacker, defender, tileToAttackFrom, 0f)
 
             val maxDamageToAttacker = BattleDamage.calculateDamageToAttacker(attacker, defender, tileToAttackFrom, 1f)
             val minDamageToAttacker = BattleDamage.calculateDamageToAttacker(attacker, defender, tileToAttackFrom, 0f)
+
+            if (attacker is MapUnitCombatant && attacker.unit.hasUnique(UniqueType.ExtraRangedAttack))
+            {
+                add("Will perform an extra ranged attack".toLabel(fontSize = 16).apply { wrap = true }).width(quarterScreen)
+                row()
+
+                var maxExtraDamageToDefender = 0
+                var minExtraDamageToDefender = 0
+                for (unique in attacker.unit.getMatchingUniques(UniqueType.ExtraRangedAttack)) {
+                    val baseRangedStrengthForExtraAttack = (attacker.unit.baseUnit.strength *
+                        unique.params[0].toFloat() / 100).toInt()
+                    val fakeAttacker = Battle.FakeUnitForExtraRangedAttack(attacker, baseRangedStrengthForExtraAttack)
+
+                    maxExtraDamageToDefender += BattleDamage.calculateDamageToDefender(fakeAttacker, defender, tileToAttackFrom, 1f)
+                    minExtraDamageToDefender += BattleDamage.calculateDamageToDefender(fakeAttacker, defender, tileToAttackFrom, 0f)
+                }
+                maxDamageToDefender += maxExtraDamageToDefender
+                minDamageToDefender += minExtraDamageToDefender
+            }
 
             val attackerHealth = attacker.getHealth()
             val minRemainingLifeAttacker = max(attackerHealth-maxDamageToAttacker, 0)
