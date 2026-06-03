@@ -825,64 +825,10 @@ object Battle {
         }
         return DamageDealt(0,0)
     }
-
-    internal class FakeUnitForExtraRangedAttack(val mapUnitCombatant: MapUnitCombatant, val baseRangedStrength: Int) : ICombatant {
-        // All redirect to MapUnitCombatant except for isRanged() and getAttackingStrength()
-        override fun getHealth(): Int = mapUnitCombatant.getHealth()
-        override fun getMaxHealth() = mapUnitCombatant.getMaxHealth()
-        override fun getCivInfo(): Civilization = mapUnitCombatant.getCivInfo()
-        override fun getTile(): Tile = mapUnitCombatant.getTile()
-        override fun getName(): String = mapUnitCombatant.getName()
-        override fun isDefeated(): Boolean = mapUnitCombatant.isDefeated()
-        override fun isInvisible(to: Civilization): Boolean = mapUnitCombatant.isInvisible(to)
-        override fun canAttack(): Boolean = mapUnitCombatant.canAttack()
-        override fun matchesFilter(filter: String, multiFilter: Boolean) =
-            mapUnitCombatant.matchesFilter(filter, multiFilter)
-
-        override fun getAttackSound() = mapUnitCombatant.getAttackSound()
-
-        override fun getNotificationDisplay(leadingText: String): String {
-            return mapUnitCombatant.getNotificationDisplay(leadingText)
-        }
-
-        override fun takeDamage(damage: Int) = mapUnitCombatant.takeDamage(damage)
-
-        override fun getDefendingStrength(attacker: ICombatant?): Int {
-            return mapUnitCombatant.getDefendingStrength(attacker)
-        }
-
-        override fun getUnitType(): UnitType {
-            return mapUnitCombatant.getUnitType()
-        }
-
-        override fun toString(): String {
-            return mapUnitCombatant.toString()
-        }
-
-        @Readonly
-        fun getMatchingUniques(
-            uniqueType: UniqueType,
-            gameContext: GameContext,
-            checkCivUniques: Boolean
-        ): Sequence<Unique> =
-            mapUnitCombatant.getMatchingUniques(uniqueType, gameContext, checkCivUniques)
-
-        @Readonly
-        fun hasUnique(uniqueType: UniqueType, conditionalState: GameContext? = null): Boolean =
-            mapUnitCombatant.hasUnique(uniqueType, conditionalState)
-
-        @Readonly
-        override fun hashCode() = mapUnitCombatant.hashCode()
-
-        @Readonly
-        override fun equals(other: Any?) = mapUnitCombatant.equals(other)
-
-        @Readonly // This needs to be here because ICombatant assumes all airunits are either MapUnitCombatants or CityCombatants
-        override fun isAirUnit(): Boolean {
-            return false
-        }
-
-        // Differences from MapUnitCombatant
+    /** This has all the properties and methods of [mapUnitCombatant] (via delegation)
+     *  **except** for [isRanged] and [getAttackingStrength]
+     */
+    internal class FakeUnitForExtraRangedAttack(val mapUnitCombatant: MapUnitCombatant, val baseRangedStrength: Int) : ICombatant by mapUnitCombatant {
         override fun getAttackingStrength(defender: ICombatant?): Int {
             val state = GameContext(this, defender, this.getTile(), CombatAction.Attack)
             val extraStrength =
