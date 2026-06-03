@@ -120,13 +120,15 @@ object Battle {
             if (attacker.isDefeated()) return interceptDamage
         } else interceptDamage = DamageDealt.None
 
-        if (hasWithdrawnFromMeelee(attacker, defender, attackedTile)) return DamageDealt.None
+        if (hasWithdrawnFromMelee(attacker, defender, attackedTile)) return DamageDealt.None
 
         val isAlreadyDefeatedCity = defender is CityCombatant && defender.isDefeated()
 
+        val extraRangedAttackDamage = extraRangedAttack(attacker, defender)
+
         triggerCombatUniques(attacker, defender, attackedTile)
 
-        val damageDealt = takeDamage(attacker, defender)
+        val damageDealt = takeDamage(attacker, defender) + extraRangedAttackDamage
 
         // check if unit is captured by the attacker (prize ships unique)
         // As ravignir clarified in issue #4374, this only works for aggressor
@@ -732,7 +734,7 @@ object Battle {
         }
     }
     
-    private fun hasWithdrawnFromMeelee(attacker: ICombatant, defender: ICombatant, attackedTile: Tile): Boolean {
+    private fun hasWithdrawnFromMelee(attacker: ICombatant, defender: ICombatant, attackedTile: Tile): Boolean {
         return (attacker is MapUnitCombatant && attacker.isMelee() && defender is MapUnitCombatant
                 && defender.unit.hasUnique(UniqueType.WithdrawsBeforeMeleeCombat, gameContext = GameContext(
             civInfo = defender.getCivInfo(),
@@ -801,5 +803,19 @@ object Battle {
                 NotificationCategory.War, attacker.unit.baseUnit.name,
                 NotificationIcon.War)
         }
+    }
+
+    private fun extraRangedAttack(attacker: ICombatant, defender: ICombatant): DamageDealt {
+        if (attacker is MapUnitCombatant && defender is MapUnitCombatant && attacker.unit.hasUnique(UniqueType.ExtraRangedAttack) && attacker.isMelee()) {
+            for (unique in attacker.unit.getMatchingUniques(UniqueType.ExtraRangedAttack, checkCivInfoUniques = true)) {
+                val rangedStrengthForExtraAttack = (attacker.unit.baseUnit.strength * unique.params[0].toFloat() / 100).toInt()
+                val baseRangedStrength = attacker.unit.baseUnit.rangedStrength
+                attacker.unit.baseUnit.rangedStrength = rangedStrengthForExtraAttack
+                val damageDealt = attack(attacker, defender)
+                attacker.unit.baseUnit.rangedStrength = baseRangedStrength
+                return damageDealt
+            }
+        }
+        return DamageDealt(0,0)
     }
 }

@@ -2149,6 +2149,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, Unit
 
+??? example  "Before engaging in combat performs an extra ranged attack with [amount]% of melee combat strength"
+	Example: "Before engaging in combat performs an extra ranged attack with [3]% of melee combat strength"
+
+	Applicable to: Unit
+
 ??? example  "[relativeAmount]% Spread Religion Strength"
 	Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%
 
