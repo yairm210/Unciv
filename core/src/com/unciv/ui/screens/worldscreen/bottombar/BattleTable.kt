@@ -256,7 +256,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
             val maxDamageToAttacker = BattleDamage.calculateDamageToAttacker(attacker, defender, tileToAttackFrom, 1f)
             val minDamageToAttacker = BattleDamage.calculateDamageToAttacker(attacker, defender, tileToAttackFrom, 0f)
 
-            if (attacker is MapUnitCombatant && attacker.unit.hasUnique(UniqueType.ExtraRangedAttack)) {
+            if (attacker is MapUnitCombatant && defender is MapUnitCombatant && attacker.unit.hasUnique(UniqueType.ExtraRangedAttack)) {
                 add("Will perform an extra ranged attack".toLabel(fontSize = 16).apply { wrap = true }).width(quarterScreen)
                 row()
 
