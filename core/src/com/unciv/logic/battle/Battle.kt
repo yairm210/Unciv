@@ -101,10 +101,10 @@ object Battle {
         }
     }
 
-    fun attack(attacker: ICombatant, defender: ICombatant): DamageDealt {
+    fun attack(attacker: ICombatant, defender: ICombatant, isExtraRangedAttack: Boolean = false): DamageDealt {
         debug("%s %s attacked %s %s", attacker.getCivInfo().civID, attacker.getName(), defender.getCivInfo().civID, defender.getName())
         val attackedTile = defender.getTile()
-        if (attacker is MapUnitCombatant) {
+        if (attacker is MapUnitCombatant && !isExtraRangedAttack) {
             attacker.unit.attacksSinceTurnStart.add(attackedTile.position)
         } else {
             attacker.getCivInfo().attacksSinceTurnStart.add(Civilization.HistoricalAttackMemory(
@@ -134,7 +134,7 @@ object Battle {
         // As ravignir clarified in issue #4374, this only works for aggressor
         val captureMilitaryUnitSuccess = BattleUnitCapture.tryCaptureMilitaryUnit(attacker, defender, attackedTile)
 
-        if (!captureMilitaryUnitSuccess) // capture creates a new unit, but `defender` still is the original, so this function would still show a kill message
+        if (!captureMilitaryUnitSuccess && !isExtraRangedAttack) // capture creates a new unit, but `defender` still is the original, so this function would still show a kill message
             postBattleNotifications(attacker, defender, attackedTile, attacker.getTile(), damageDealt)
 
         if (defender.getCivInfo().isBarbarian && attackedTile.improvement == Constants.barbarianEncampment)
@@ -811,7 +811,7 @@ object Battle {
                 val rangedStrengthForExtraAttack = (attacker.unit.baseUnit.strength * unique.params[0].toFloat() / 100).toInt()
                 val baseRangedStrength = attacker.unit.baseUnit.rangedStrength
                 attacker.unit.baseUnit.rangedStrength = rangedStrengthForExtraAttack
-                val damageDealt = attack(attacker, defender)
+                val damageDealt = attack(attacker, defender, isExtraRangedAttack = true)
                 attacker.unit.baseUnit.rangedStrength = baseRangedStrength
                 return damageDealt
             }
