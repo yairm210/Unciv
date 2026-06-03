@@ -12,6 +12,7 @@ import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.stats.SubStat
@@ -23,7 +24,6 @@ import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
-import kotlin.random.Random
 
 /**
  * Damage calculations according to civ v wiki and https://steamcommunity.com/sharedfiles/filedetails/?id=170194443
@@ -101,10 +101,10 @@ object Battle {
         }
     }
 
-    fun attack(attacker: ICombatant, defender: ICombatant, isExtraRangedAttack: Boolean = false): DamageDealt {
+    fun attack(attacker: ICombatant, defender: ICombatant): DamageDealt {
         debug("%s %s attacked %s %s", attacker.getCivInfo().civID, attacker.getName(), defender.getCivInfo().civID, defender.getName())
         val attackedTile = defender.getTile()
-        if (attacker is MapUnitCombatant && !isExtraRangedAttack) {
+        if (attacker is MapUnitCombatant) {
             attacker.unit.attacksSinceTurnStart.add(attackedTile.position)
         } else {
             attacker.getCivInfo().attacksSinceTurnStart.add(Civilization.HistoricalAttackMemory(
@@ -124,7 +124,7 @@ object Battle {
 
         val isAlreadyDefeatedCity = defender is CityCombatant && defender.isDefeated()
 
-        val extraRangedAttackDamage = extraRangedAttack(attacker, defender)
+        val extraRangedAttackDamage = extraRangedAttack(attacker, defender, attackedTile)
 
         triggerCombatUniques(attacker, defender, attackedTile)
 
@@ -134,7 +134,7 @@ object Battle {
         // As ravignir clarified in issue #4374, this only works for aggressor
         val captureMilitaryUnitSuccess = BattleUnitCapture.tryCaptureMilitaryUnit(attacker, defender, attackedTile)
 
-        if (!captureMilitaryUnitSuccess && !isExtraRangedAttack) // capture creates a new unit, but `defender` still is the original, so this function would still show a kill message
+        if (!captureMilitaryUnitSuccess) // capture creates a new unit, but `defender` still is the original, so this function would still show a kill message
             postBattleNotifications(attacker, defender, attackedTile, attacker.getTile(), damageDealt)
 
         if (defender.getCivInfo().isBarbarian && attackedTile.improvement == Constants.barbarianEncampment)
@@ -805,14 +805,93 @@ object Battle {
         }
     }
 
-    private fun extraRangedAttack(attacker: ICombatant, defender: ICombatant): DamageDealt {
-        if (attacker is MapUnitCombatant && defender is MapUnitCombatant && attacker.isMelee()) {
+    private class FakeUnitForExtraRangedAttack(val mapUnitCombatant: MapUnitCombatant, val baseRangedStrength: Int) : ICombatant {
+        // All redirect to MapUnitCombatant except for isRanged() and getAttackingStrength()
+        override fun getHealth(): Int = mapUnitCombatant.getHealth()
+        override fun getMaxHealth() = mapUnitCombatant.getMaxHealth()
+        override fun getCivInfo(): Civilization = mapUnitCombatant.getCivInfo()
+        override fun getTile(): Tile = mapUnitCombatant.getTile()
+        override fun getName(): String = mapUnitCombatant.getName()
+        override fun isDefeated(): Boolean = mapUnitCombatant.isDefeated()
+        override fun isInvisible(to: Civilization): Boolean = mapUnitCombatant.isInvisible(to)
+        override fun canAttack(): Boolean = mapUnitCombatant.canAttack()
+        override fun matchesFilter(filter: String, multiFilter: Boolean) =
+            mapUnitCombatant.matchesFilter(filter, multiFilter)
+
+        override fun getAttackSound() = mapUnitCombatant.getAttackSound()
+
+        override fun getNotificationDisplay(leadingText: String): String {
+            return mapUnitCombatant.getNotificationDisplay(leadingText)
+        }
+
+
+        override fun takeDamage(damage: Int) = mapUnitCombatant.takeDamage(damage)
+
+        override fun getDefendingStrength(attacker: ICombatant?): Int {
+            return mapUnitCombatant.getDefendingStrength(attacker)
+        }
+
+        override fun getUnitType(): UnitType {
+            return mapUnitCombatant.getUnitType()
+        }
+
+        override fun toString(): String {
+            return mapUnitCombatant.toString()
+        }
+
+        @Readonly
+        fun getMatchingUniques(
+            uniqueType: UniqueType,
+            gameContext: GameContext,
+            checkCivUniques: Boolean
+        ): Sequence<Unique> =
+            mapUnitCombatant.getMatchingUniques(uniqueType, gameContext, checkCivUniques)
+
+
+        @Readonly
+        fun hasUnique(uniqueType: UniqueType, conditionalState: GameContext? = null): Boolean =
+            mapUnitCombatant.hasUnique(uniqueType, conditionalState)
+
+
+        @Readonly
+        override fun hashCode() = mapUnitCombatant.hashCode()
+
+        @Readonly
+        override fun equals(other: Any?) = mapUnitCombatant.equals(other)
+
+        @Readonly
+        override fun isAirUnit(): Boolean {
+            return false
+        }
+
+        // Differences from MapUnitCombatant
+        override fun getAttackingStrength(defender: ICombatant?): Int {
+            val state = GameContext(this, defender, this.getTile(), CombatAction.Attack)
+            val extraStrength =
+                mapUnitCombatant.unit.getMatchingUniques(UniqueType.StrengthAmount, state)
+                    .sumOf { it.params[0].toInt() }
+            return baseRangedStrength + extraStrength // Is always ranged
+        }
+
+        override fun isRanged(): Boolean {
+            return true
+
+        }
+    }
+
+
+
+    private fun extraRangedAttack(attacker: ICombatant, defender: ICombatant, attackedTile: Tile): DamageDealt {
+        if (attacker is MapUnitCombatant && defender is MapUnitCombatant) {
             for (unique in attacker.unit.getMatchingUniques(UniqueType.ExtraRangedAttack)) {
-                val rangedStrengthForExtraAttack = (attacker.unit.baseUnit.strength * unique.params[0].toFloat() / 100).toInt()
-                val baseRangedStrength = attacker.unit.baseUnit.rangedStrength
-                attacker.unit.baseUnit.rangedStrength = rangedStrengthForExtraAttack
-                val damageDealt = attack(attacker, defender, isExtraRangedAttack = true)
-                attacker.unit.baseUnit.rangedStrength = baseRangedStrength
+                val baseRangedStrengthForExtraAttack = (attacker.unit.baseUnit.strength * unique.params[0].toFloat() / 100).toInt()
+                val fakeAttacker = FakeUnitForExtraRangedAttack(attacker, baseRangedStrengthForExtraAttack)
+                triggerCombatUniques(fakeAttacker, defender, attackedTile)
+                val damageDealt =  takeDamage(fakeAttacker, defender)
+                //handleCityDefeated() // bonus attack should not trigger vs cities
+                triggerPostKillingUniques(defender, fakeAttacker, attackedTile)
+                triggerDamageUniquesForUnit(attacker, defender, attackedTile, CombatAction.Attack)
+                postBattleAddXp(fakeAttacker, defender)
                 return damageDealt
             }
         }
