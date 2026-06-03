@@ -1,34 +1,20 @@
 package com.unciv.logic.civilization.managers.quests
 
 import com.badlogic.gdx.math.Vector2
-import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.CivFlags
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.DiplomacyAction
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.Notification  // for Kdoc
-import com.unciv.logic.civilization.NotificationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
-import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.Proximity
-import com.unciv.logic.civilization.diplomacy.CityStatePersonality
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
-import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
-import com.unciv.logic.civilization.managers.quests.QuestTargetHelpers.getBarbarianEncampmentForQuest
-import com.unciv.logic.civilization.managers.quests.QuestTargetHelpers.getCityStateTarget
-import com.unciv.logic.civilization.managers.quests.QuestTargetHelpers.getCivilizationToFindForQuest
-import com.unciv.logic.civilization.managers.quests.QuestTargetHelpers.getGreatPersonForQuest
-import com.unciv.logic.civilization.managers.quests.QuestTargetHelpers.getMostRecentBully
-import com.unciv.logic.civilization.managers.quests.QuestTargetHelpers.getNaturalWonderToFindForQuest
 import com.unciv.logic.civilization.managers.quests.QuestTargetHelpers.getRandom
-import com.unciv.logic.civilization.managers.quests.QuestTargetHelpers.getResourceForQuest
-import com.unciv.logic.civilization.managers.quests.QuestTargetHelpers.getWonderToBuildForQuest
 import com.unciv.logic.map.HexCoord
 import com.unciv.models.ruleset.Quest
 import com.unciv.models.ruleset.QuestName
-import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.utils.randomWeighted
@@ -327,41 +313,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
         val turn = civ.gameInfo.turns
 
         for (assignee in assignees) {
-
-            var data1 = ""
-            var data2 = ""
-            var notificationActions: List<NotificationAction> = listOf(DiplomacyAction(civ))
-
-            when (quest.questNameInstance) {
-                QuestName.ClearBarbarianCamp -> {
-                    val camp = civ.getBarbarianEncampmentForQuest(assignee)!!
-                    data1 = camp.position.x.toString()
-                    data2 = camp.position.y.toString()
-                    notificationActions = listOf(LocationAction(camp.position), notificationActions.first())
-                }
-                QuestName.ConnectResource -> data1 = civ.getResourceForQuest(assignee)!!.name
-                QuestName.ConstructWonder -> data1 = civ.getWonderToBuildForQuest(assignee)!!.name
-                QuestName.GreatPerson -> data1 = civ.getGreatPersonForQuest(assignee)!!.name
-                QuestName.FindPlayer -> data1 = civ.getCivilizationToFindForQuest(assignee)!!.civID
-                QuestName.FindNaturalWonder -> data1 = civ.getNaturalWonderToFindForQuest(assignee)!!
-                QuestName.ConquerCityState -> data1 = civ.getCityStateTarget(assignee)!!.civID
-                QuestName.BullyCityState -> data1 = civ.getCityStateTarget(assignee)!!.civID
-                QuestName.PledgeToProtect -> data1 = civ.getMostRecentBully()!!
-                QuestName.GiveGold -> data1 = civ.getMostRecentBully()!!
-                QuestName.DenounceCiv -> data1 = civ.getMostRecentBully()!!
-                QuestName.SpreadReligion -> {
-                    val playerReligion = civ.gameInfo.religions.values
-                        .first { it.foundingCiv == assignee && it.isMajorReligion() }  // isQuestValid must have ensured this won't throw
-                    data1 = playerReligion.getReligionDisplayName() // For display
-                    data2 = playerReligion.name // To check completion
-                }
-                QuestName.ContestCulture -> data1 = assignee.totalCultureForContests.toString()
-                QuestName.ContestFaith -> data1 = assignee.totalFaithForContests.toString()
-                QuestName.ContestTech -> data1 = assignee.tech.getNumberOfTechsResearched().toString()
-                QuestName.Invest -> data1 = quest.description.getPlaceholderParameters().first()
-                else -> Unit
-            }
-
+            val (data1, data2) = quest.questNameInstance.getAssignedQuestData(civ, quest, assignee)
             val newQuest = AssignedQuest(
                 gameInfo = civ.gameInfo,
                 quest = quest,
@@ -371,6 +323,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
                 data1 = data1,
                 data2 = data2
             )
+            val notificationActions = quest.questNameInstance.getNotificationActions(civ, newQuest)
 
             assignedQuests.add(newQuest)
             if (quest.isIndividual())
@@ -391,90 +344,25 @@ class QuestManager : IsPartOfGameInfoSerialization {
 
     /** Returns true if the [quest] can be assigned to [challenger] */
     @Readonly
-    private fun isQuestValid(quest: Quest, challenger: Civilization): Boolean {
-        if (!canAssignAQuestTo(challenger))
-            return false
-        if (getAssignedQuestsOfName(quest.questNameInstance).any { it.assigneeCiv == challenger })
-            return false
-        if (quest.isIndividual() && civ.getDiplomacyManager(challenger)!!.hasFlag(DiplomacyFlags.Bullied))
-            return false
-
-        return when (quest.questNameInstance) {
-            QuestName.ClearBarbarianCamp -> civ.getBarbarianEncampmentForQuest(challenger) != null
-            QuestName.Route -> isRouteQuestValid(challenger)
-            QuestName.ConnectResource -> civ.getResourceForQuest(challenger) != null
-            QuestName.ConstructWonder -> civ.getWonderToBuildForQuest(challenger) != null
-            QuestName.GreatPerson -> civ.getGreatPersonForQuest(challenger) != null
-            QuestName.FindPlayer -> civ.getCivilizationToFindForQuest(challenger) != null
-            QuestName.FindNaturalWonder -> civ.getNaturalWonderToFindForQuest(challenger) != null
-            QuestName.PledgeToProtect -> civ.getMostRecentBully() != null && challenger !in civ.cityStateFunctions.getProtectorCivs()
-            QuestName.GiveGold -> civ.getMostRecentBully() != null
-            QuestName.DenounceCiv -> isDenounceCivQuestValid(challenger, civ.getMostRecentBully())
-            QuestName.SpreadReligion -> {
-                val playerReligion = civ.gameInfo.religions.values.firstOrNull { it.foundingCiv == challenger && it.isMajorReligion() }?.name
-                playerReligion != null && civ.getCapital()!!.religion.getMajorityReligion()?.name != playerReligion
-            }
-            QuestName.ConquerCityState -> civ.getCityStateTarget(challenger) != null && civ.cityStatePersonality != CityStatePersonality.Friendly
-            QuestName.BullyCityState -> civ.getCityStateTarget(challenger) != null
-            QuestName.ContestFaith -> civ.gameInfo.isReligionEnabled()
-            else -> true
-        }
-    }
-
-    @Readonly
-    private fun isRouteQuestValid(challenger: Civilization): Boolean {
-        if (challenger.cities.isEmpty()) return false
-        if (challenger.isCapitalConnectedToCity(civ.getCapital()!!)) return false
-        val capital = civ.getCapital() ?: return false
-        val capitalTile = capital.getCenterTile()
-        return challenger.cities.any {
-            it.getCenterTile().getContinent() == capitalTile.getContinent() &&
-            it.getCenterTile().aerialDistanceTo(capitalTile) <= 7
-        }
-    }
-
-    @Readonly
-    private fun isDenounceCivQuestValid(challenger: Civilization, mostRecentBully: String?): Boolean {
-        return mostRecentBully != null
-            && challenger.knows(mostRecentBully)
-            && !challenger.getDiplomacyManager(mostRecentBully)!!.hasFlag(DiplomacyFlags.Denunciation)
-            && challenger.getDiplomacyManager(mostRecentBully)!!.diplomaticStatus != DiplomaticStatus.War
-            && !( challenger.playerType == PlayerType.Human
-            && civ.gameInfo.getCivilization(mostRecentBully).playerType == PlayerType.Human)
+    private fun isQuestValid(quest: Quest, challenger: Civilization) = when {
+        !canAssignAQuestTo(challenger) ->
+            false
+        getAssignedQuestsOfName(quest.questNameInstance).any { it.assigneeCiv == challenger } ->
+            false
+        quest.isIndividual() && civ.getDiplomacyManager(challenger)!!.hasFlag(DiplomacyFlags.Bullied) ->
+            false
+        else -> quest.questNameInstance.isValid(civ, challenger)
     }
 
     /** Returns true if the [assignedQuest] is successfully completed */
     @Readonly
-    private fun isComplete(assignedQuest: AssignedQuest): Boolean {
-        val assignee = assignedQuest.assigneeCiv
-        return when (assignedQuest.questNameInstance) {
-            QuestName.Route -> assignee.isCapitalConnectedToCity(civ.getCapital()!!)
-            QuestName.ConnectResource -> assignee.detailedCivResources.map { it.resource }.contains(ruleset.tileResources[assignedQuest.data1])
-            QuestName.ConstructWonder -> assignee.cities.any { it.cityConstructions.isBuilt(assignedQuest.data1) }
-            QuestName.GreatPerson -> assignee.units.getCivGreatPeople().any { it.baseUnit.getReplacedUnit(ruleset).name == assignedQuest.data1 }
-            QuestName.FindPlayer -> assignee.hasMetCivTerritory(civ.gameInfo.getCivilization(assignedQuest.data1))
-            QuestName.FindNaturalWonder -> assignee.naturalWonders.contains(assignedQuest.data1)
-            QuestName.PledgeToProtect -> assignee in civ.cityStateFunctions.getProtectorCivs()
-            QuestName.DenounceCiv -> assignee.getDiplomacyManager(assignedQuest.data1)!!.hasFlag(DiplomacyFlags.Denunciation)
-            QuestName.SpreadReligion -> civ.getCapital()!!.religion.getMajorityReligion() == civ.gameInfo.religions[assignedQuest.data2]
-            else -> false
-        }
-    }
+    private fun isComplete(assignedQuest: AssignedQuest) =
+        assignedQuest.questNameInstance.isComplete(civ, assignedQuest)
 
     /** Returns true if the [assignedQuest] request cannot be fulfilled anymore */
     @Readonly
-    private fun isObsolete(assignedQuest: AssignedQuest): Boolean {
-        val assignee = assignedQuest.assigneeCiv
-        return when (assignedQuest.questNameInstance) {
-            QuestName.ClearBarbarianCamp -> civ.gameInfo.tileMap[assignedQuest.data1.toInt(), assignedQuest.data2.toInt()].improvement != Constants.barbarianEncampment
-            QuestName.ConstructWonder -> civ.gameInfo.getCities().any { it.civ != assignee && it.cityConstructions.isBuilt(assignedQuest.data1) }
-            QuestName.FindPlayer -> civ.gameInfo.getCivilization(assignedQuest.data1).isDefeated()
-            QuestName.ConquerCityState ->  civ.gameInfo.getCivilization(assignedQuest.data1).isDefeated()
-            QuestName.BullyCityState ->  civ.gameInfo.getCivilization(assignedQuest.data1).isDefeated()
-            QuestName.DenounceCiv ->  civ.gameInfo.getCivilization(assignedQuest.data1).isDefeated()
-            else -> false
-        }
-    }
+    private fun isObsolete(assignedQuest: AssignedQuest) =
+        assignedQuest.questNameInstance.isObsolete(civ, assignedQuest)
 
     /** Increments [assignedQuest.assignee][AssignedQuest.assignee] influence on [civ] and adds a [Notification] */
     private fun giveReward(assignedQuest: AssignedQuest) {
