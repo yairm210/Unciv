@@ -1,6 +1,5 @@
 package com.unciv.ui.screens.devconsole
 
-import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
@@ -26,7 +25,7 @@ import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.utils.Concurrency
 
 
-class DevConsolePopup(val screen: WorldScreen) : Popup(screen, Scrollability.All) {
+class DevConsolePopup(val screen: WorldScreen) : Popup(screen, Scrollability.DevConsole) {
     companion object {
         private const val maxHistorySize = 42
     }
@@ -73,8 +72,6 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen, Scrollability.All
         keyShortcuts.add(Input.Keys.UP) { navigateHistory(-1) }
         keyShortcuts.add(Input.Keys.DOWN) { navigateHistory(1) }
 
-        if (Gdx.app.type != Application.ApplicationType.Android) // I think this might be what's causing Android to fail, not sure
-            setFillParent(false) // ALLOW clicking the map while the console is open!
         open(true)
 
         screen.stage.keyboardFocus = textField
@@ -220,6 +217,7 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen, Scrollability.All
         innerTable.validate()
         val newHeight = innerTable.prefHeight.coerceIn(120f, maxPopupHeight)
         getCell(getScrollPane()).height(newHeight)  // Gdx quirks: Or else the ScrollPane's new prefHeight won't be respected
+        textField.onscreenKeyboard.show(true)
         fitOrCenterContentIntoVisibleArea()
     }
 

@@ -64,7 +64,7 @@ open class Popup(
      * @property All Entire content wrapped in an [AutoScrollPane] so it can scroll if larger than maximum dimensions
      * @property WithoutButtons Content separated into scrollable upper part and static lower part containing the buttons
      */
-    enum class Scrollability { None, All, WithoutButtons }
+    enum class Scrollability { None, All, WithoutButtons, DevConsole }
 
     protected val maxPopupWidth = stageToShowOn.width * maxSizePercentage
     protected val maxPopupHeight = stageToShowOn.height * maxSizePercentage
@@ -130,9 +130,10 @@ open class Popup(
         // Set actor name for debugging
         name = javaClass.simpleName
 
-        background = BaseScreen.skinStrings.getUiBackground(
-            "General/Popup/Background",
-            tintColor = Color.GRAY.cpy().apply { a = 0.5f })
+        if (scrollable != Scrollability.DevConsole)
+            background = BaseScreen.skinStrings.getUiBackground(
+                "General/Popup/Background",
+                tintColor = Color.GRAY.cpy().apply { a = 0.5f })
 
         //todo topTable and bottomTable _could_ be separately skinnable - but would need care so rounded edges work
         innerTable.background = BaseScreen.skinStrings.getUiBackground(
@@ -149,7 +150,7 @@ open class Popup(
                 bottomTable = innerTable
                 topTableCell = super.add(innerTable)
             }
-            Scrollability.All -> {
+            Scrollability.All, Scrollability.DevConsole -> {
                 topTable = innerTable
                 bottomTable = innerTable
                 topTableCell = super.add(wrapInScrollPane(innerTable))
@@ -172,7 +173,7 @@ open class Popup(
         topTableCell.maxSize(maxPopupWidth, maxPopupHeight)
 
         isVisible = false
-        touchable = Touchable.enabled
+        touchable = if (scrollable == Scrollability.DevConsole) Touchable.childrenOnly else Touchable.enabled
         // clicking behind gets special treatment
         super.addListener(getBehindClickListener())
         super.setFillParent(true)
