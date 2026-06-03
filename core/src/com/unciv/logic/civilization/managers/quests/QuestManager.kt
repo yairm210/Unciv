@@ -1,6 +1,6 @@
 @file:Suppress("ConvertArgumentToSet")  // Flags all assignedQuests.removeAll(List) - not worth it
 
-package com.unciv.logic.civilization.managers
+package com.unciv.logic.civilization.managers.quests
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
@@ -37,7 +37,7 @@ import com.unciv.ui.components.extensions.toPercent
 import com.unciv.utils.randomWeighted
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
-import kotlin.random.Random
+import kotlin.collections.iterator
 
 class QuestManager : IsPartOfGameInfoSerialization {
 
