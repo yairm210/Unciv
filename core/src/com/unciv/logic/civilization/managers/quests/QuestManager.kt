@@ -44,12 +44,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
         const val INDIVIDUAL_QUEST_MAX_ACTIVE = 2
     }
 
-    /** Civilization object holding and dispatching quests */
-    @Transient
-    private lateinit var civ: Civilization
-
-    /** Readability helper to access the Ruleset through [civ] */
-    private val ruleset get() = civ.gameInfo.ruleset
+    ////////// Serialized fields //////////
 
     /** List of active quests, both global and individual ones*/
     private var assignedQuests: ArrayList<AssignedQuest> = ArrayList()
@@ -67,35 +62,14 @@ class QuestManager : IsPartOfGameInfoSerialization {
     /** For this attacker, number of units killed by each civ */
     private var unitsKilledFromCiv: HashMap<String, HashMap<String, Int>> = HashMap()
 
-    /** Returns true if [civ] have active quests for [challenger] */
-    @Readonly fun haveQuestsFor(challenger: Civilization): Boolean = getAssignedQuestsFor(challenger).any()
+    ////////// Transients, clone, etc //////////
 
-    /** Access all assigned Quests for [civName] */
-    @Readonly
-    fun getAssignedQuestsFor(civName: String) =
-        assignedQuests.asSequence().filter { it.assignee == civName }
+    /** Civilization object holding and dispatching quests */
+    @Transient
+    private lateinit var civ: Civilization
 
-    /** Access all assigned Quests for [civ] */
-    @Readonly
-    fun getAssignedQuestsFor(civ: Civilization) =
-        assignedQuests.asSequence().filter { it.assigneeCiv == civ }
-
-    /** Access all assigned Quests of "type" [questName] */
-    // Note if we decide to cache an index of these (such as `assignedQuests.groupBy { it.questNameInstance }`), this accessor would simplify the transition
-    @Readonly
-    private fun getAssignedQuestsOfName(questName: QuestName) =
-        assignedQuests.asSequence().filter { it.questNameInstance == questName }
-
-    /** Returns true if [civ] has asked anyone to conquer [target] */
-    @Readonly fun wantsDead(target: String): Boolean = getAssignedQuestsOfName(QuestName.ConquerCityState).any { it.data1 == target }
-
-    /** Returns the influence multiplier for [donor] from a Investment quest that [civ] might have (assumes only one) */
-    @Readonly
-    fun getInvestmentMultiplier(donor: Civilization): Float {
-        val investmentQuest = getAssignedQuestsOfName(QuestName.Invest).firstOrNull { it.assigneeCiv == donor }
-            ?: return 1f
-        return investmentQuest.data1.toPercent()
-    }
+    /** Readability helper to access the Ruleset through [civ] */
+    private val ruleset get() = civ.gameInfo.ruleset
 
     fun clone(): QuestManager {
         val toReturn = QuestManager()
@@ -119,8 +93,31 @@ class QuestManager : IsPartOfGameInfoSerialization {
     override fun toString() = if (!::civ.isInitialized) "(uninitialized)"
         else "${civ.civID}:$assignedQuests"
 
-    fun endTurn() {
+    ////////// Public //////////
 
+    /** Returns true if [civ] have active quests for [challenger] */
+    @Readonly fun haveQuestsFor(challenger: Civilization): Boolean = getAssignedQuestsFor(challenger).any()
+
+    /** Access all assigned Quests for [civName] */
+    @Suppress("unused")
+    @Readonly fun getAssignedQuestsFor(civName: String) =
+        assignedQuests.asSequence().filter { it.assignee == civName }
+
+    /** Access all assigned Quests for [civ] */
+    @Readonly fun getAssignedQuestsFor(civ: Civilization) =
+        assignedQuests.asSequence().filter { it.assigneeCiv == civ }
+    /** Returns true if [civ] has asked anyone to conquer [target] */
+    @Readonly fun wantsDead(target: String): Boolean = getAssignedQuestsOfName(QuestName.ConquerCityState).any { it.data1 == target }
+
+    /** Returns the influence multiplier for [donor] from an Investment quest that [civ] might have (assumes only one) */
+    @Readonly
+    fun getInvestmentMultiplier(donor: Civilization): Float {
+        val investmentQuest = getAssignedQuestsOfName(QuestName.Invest).firstOrNull { it.assigneeCiv == donor }
+            ?: return 1f
+        return investmentQuest.data1.toPercent()
+    }
+
+    fun endTurn() {
         if (civ.isDefeated()) {
             assignedQuests.clear()
             individualQuestCountdown.clear()
@@ -144,6 +141,18 @@ class QuestManager : IsPartOfGameInfoSerialization {
         tryBarbarianInvasion()
         tryEndWarWithMajorQuests()
     }
+
+    fun handleIndividualQuests() {
+        assignedQuests.removeAll { it.isIndividual() && handleIndividualQuest(it) }
+    }
+
+    ////////// Internal Implementation //////////
+
+    /** Access all assigned Quests of "type" [questName] */
+    // Note if we decide to cache an index of these (such as `assignedQuests.groupBy { it.questNameInstance }`), this accessor would simplify the transition
+    @Readonly
+    private fun getAssignedQuestsOfName(questName: QuestName) =
+        assignedQuests.asSequence().filter { it.questNameInstance == questName }
 
     private fun decrementQuestCountdowns() {
         if (globalQuestCountdown > 0)
@@ -175,6 +184,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
         if (civ.gameInfo.turns < INDIVIDUAL_QUEST_FIRST_POSSIBLE_TURN)
             return
 
+        @Suppress("DEPRECATION") // At the time of writing this. the ReplaceWith is the deprecated function itself
         val majorCivs = civ.gameInfo.getAliveMajorCivs()
         for (majorCiv in majorCivs)
             if (!individualQuestCountdown.containsKey(majorCiv.civID) || individualQuestCountdown[majorCiv.civID] == UNSET)
@@ -203,6 +213,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
         if (assignedQuests.count { it.isGlobal() } >= GLOBAL_QUEST_MAX_ACTIVE)
             return
 
+        @Suppress("DEPRECATION") // We want a Sequence
         val majorCivs = civ.getKnownCivs().filter { it.isMajorCiv() && !it.isAtWarWith(civ) } // A Sequence - fine because the count below can be different for each Quest
         @Readonly fun Quest.isAssignable() = majorCivs.count { civ -> isQuestValid(this, civ) } >= minimumCivs
         val assignableQuests = getQuests {
@@ -211,6 +222,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
 
         if (assignableQuests.isNotEmpty()) {
             val quest = assignableQuests.randomWeighted(civ.getRandom()) { getQuestWeight(it.name) }
+            @Suppress("DEPRECATION") // At the time of writing this. the ReplaceWith is the deprecated function itself
             val assignees = civ.gameInfo.getAliveMajorCivs().filter { !it.isAtWarWith(civ) && isQuestValid(quest, it) }
 
             assignNewQuest(quest, assignees)
@@ -243,13 +255,13 @@ class QuestManager : IsPartOfGameInfoSerialization {
         if ((civ.getTurnsTillCallForBarbHelp() == null || civ.getTurnsTillCallForBarbHelp() == 0)
             && civ.cityStateFunctions.getNumThreateningBarbarians() >= 2) {
 
-            for (otherCiv in civ.getKnownCivs().filter {
-                    it.isMajorCiv()
+            civ.forEachKnownCiv {
+                if (it.isMajorCiv()
                     && it.isAlive()
                     && !it.isAtWarWith(civ)
                     && it.getProximity(civ) <= Proximity.Far
-            }) {
-                otherCiv.addNotification(
+                ) return@forEachKnownCiv
+                it.addNotification(
                     "[${civ.civName}] is being invaded by Barbarians! Destroy Barbarians near their territory to earn Influence.",
                     civ.getCapital()!!.location,
                     NotificationCategory.Diplomacy, civ.civName,
@@ -275,10 +287,6 @@ class QuestManager : IsPartOfGameInfoSerialization {
         winnersAndLosers.losers.forEach { notifyExpired(it, winnersAndLosers.winners) }
 
         assignedQuests.removeAll { it.questNameInstance == questName }  // removing winners then losers would leave those with score 0
-    }
-
-    fun handleIndividualQuests() {
-        assignedQuests.removeAll { it.isIndividual() && handleIndividualQuest(it) }
     }
 
     /** If quest is complete, it gives the influence reward to the player.
@@ -420,7 +428,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
      *    and by [handleGlobalQuest] to distribute rewards and notifications.
      *  @param questName filters [assignedQuests] by their [QuestName][AssignedQuest.questNameInstance]
      */
-    inner class WinnersAndLosers(questName: QuestName) {
+    private inner class WinnersAndLosers(questName: QuestName) {
         val winners = mutableListOf<AssignedQuest>()
         val losers = mutableListOf<AssignedQuest>()
         var maxScore: Int = -1
@@ -493,7 +501,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
         val matchingQuests = getAssignedQuestsOfName(QuestName.ClearBarbarianCamp)
                 .filter { it.data1.toInt() == location.x.toInt() && it.data2.toInt() == location.y.toInt() }
 
-        val winningQuest = matchingQuests.filter { it.assigneeCiv == civInfo }.firstOrNull()
+        val winningQuest = matchingQuests.firstOrNull { it.assigneeCiv == civInfo }
         if (winningQuest != null)
             giveReward(winningQuest)
 
@@ -548,9 +556,9 @@ class QuestManager : IsPartOfGameInfoSerialization {
 
         // Ask for assistance
         val location = civ.getCapital(firstCityIfNoCapital = true)?.location
-        for (thirdCiv in civ.getKnownCivs()) {
+        civ.forEachKnownCiv { thirdCiv ->
             if (!thirdCiv.isMajorCiv() || thirdCiv.isDefeated() || thirdCiv.isAtWarWith(civ))
-                continue
+                return@forEachKnownCiv
             notifyAskForAssistance(thirdCiv, attacker.civID, unitsToKill, location?.toHexCoord())
         }
     }
@@ -607,9 +615,11 @@ class QuestManager : IsPartOfGameInfoSerialization {
     }
 
     private fun endWarWithMajorQuest(attacker: Civilization) {
-        for (thirdCiv in civ.getKnownCivs().filterNot { it.isDefeated() || it == attacker || it.isAtWarWith(civ) }) {
+        civ.forEachKnownCiv { thirdCiv ->
+            if (thirdCiv.isDefeated() || thirdCiv == attacker || thirdCiv.isAtWarWith(civ))
+                return@forEachKnownCiv
             if (unitsKilledSoFar(attacker, thirdCiv) >= unitsToKill(attacker)) // Don't show the notification to the one who won the quest
-                continue
+                return@forEachKnownCiv
             thirdCiv.addNotification("[${civ.civName}] no longer needs your assistance against [${attacker.civName}].",
                 DiplomacyAction(civ), NotificationCategory.Diplomacy, civ.civName, "OtherIcons/Quest")
         }
