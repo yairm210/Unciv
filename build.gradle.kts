@@ -80,6 +80,11 @@ allprojects {
             "kotlin.collections.copyInto",
             "kotlin.sequences.shuffled",
 
+            "java.util.BitSet.isEmpty",
+            "java.util.BitSet.nextSetBit",
+            "kotlin.synchronized",
+            
+
             "io.ktor.http.Url.segments",
             "io.ktor.http.Url.parameters",
             "io.ktor.http.Parameters.get",
