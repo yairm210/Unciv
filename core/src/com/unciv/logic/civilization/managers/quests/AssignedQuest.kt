@@ -1,23 +1,26 @@
 package com.unciv.logic.civilization.managers.quests
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.GUI
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.map.toHexCoord
+import com.unciv.logic.map.HexCoord
 import com.unciv.models.ruleset.Quest
 import com.unciv.models.ruleset.QuestName
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.ui.components.fonts.Fonts
 import yairm210.purity.annotations.Readonly
 
-class AssignedQuest : IsPartOfGameInfoSerialization {
-
-    val questName: String
-    val assignedOnTurn: Int
-    val data1: String
-    val data2: String
+class AssignedQuest(
+    val questName: String = "",
+    val assigner: String = "",
+    val assignee: String = "",
+    val assignedOnTurn: Int = 0,
+    val data1: String = "",
+    val data2: String = "",
+) : IsPartOfGameInfoSerialization {
+    @Suppress("unused") // Used in deserialization
+    constructor(): this("")
 
     constructor(
         gameInfo: GameInfo,
@@ -27,45 +30,16 @@ class AssignedQuest : IsPartOfGameInfoSerialization {
         assignedOnTurn: Int = 0,
         data1: String = "",
         data2: String = ""
-    ) {
+    ) : this(quest.name, assigner.civID, assignee.civID, assignedOnTurn, data1, data2) {
         this.gameInfo = gameInfo
         this.quest = quest
-        this.questName = quest.name
-        this.assignedOnTurn = assignedOnTurn
-        this.data1 = data1
-        this.data2 = data2
-        this.assigner = assigner.civID
         this.assignerCiv = assigner
-        this.assignee = assignee.civID
         this.assigneeCiv = assignee
     }
-
-    @Suppress("unused") // Used in deserialization
-    constructor(): this("", "", "", 0, "", "")
-    @Suppress("unused")
-    constructor(
-        questName: String = "",
-        assigner: String = "",
-        assignee: String = "",
-        assignedOnTurn: Int = 0,
-        data1: String = "",
-        data2: String = ""
-    ) {
-        this.questName = questName
-        this.assignedOnTurn = assignedOnTurn
-        this.data1 = data1
-        this.data2 = data2
-        this.assigner = assigner
-        this.assignee = assignee
-    }
-
-    val assigner: String
 
     @Transient
     lateinit var assignerCiv: Civilization
         private set
-
-    val assignee: String
 
     @Transient
     lateinit var assigneeCiv: Civilization
@@ -79,6 +53,7 @@ class AssignedQuest : IsPartOfGameInfoSerialization {
         private set
 
     val questNameInstance get() = quest.questNameInstance
+
 
     fun clone() = AssignedQuest(questName, assigner, assignee, assignedOnTurn, data1, data2)
 
@@ -96,31 +71,23 @@ class AssignedQuest : IsPartOfGameInfoSerialization {
             assigneeCiv = gameInfo.getCivilization(assignee)
     }
 
-    @Readonly
-    fun isIndividual(): Boolean = !isGlobal()
-    @Readonly
-    fun isGlobal(): Boolean = quest.isGlobal()
+    @Readonly fun isIndividual(): Boolean = !isGlobal()
+    @Readonly fun isGlobal(): Boolean = quest.isGlobal()
     @Suppress("MemberVisibilityCanBePrivate")
-    @Readonly
-    fun doesExpire(): Boolean = quest.duration > 0
-    @Readonly
-    fun isExpired(): Boolean = doesExpire() && getRemainingTurns() == 0
+    @Readonly fun doesExpire(): Boolean = quest.duration > 0
+    @Readonly fun isExpired(): Boolean = doesExpire() && getRemainingTurns() == 0
     @Suppress("MemberVisibilityCanBePrivate")
-    @Readonly
-    fun getDuration(): Int = (gameInfo.speed.modifier * quest.duration).toInt()
-    @Readonly
-    fun getRemainingTurns(): Int = (assignedOnTurn + getDuration() - gameInfo.turns).coerceAtLeast(0)
-    @Readonly
-    fun getInfluence() = quest.influence
+    @Readonly fun getDuration(): Int = (gameInfo.speed.modifier * quest.duration).toInt()
+    @Readonly fun getRemainingTurns(): Int = (assignedOnTurn + getDuration() - gameInfo.turns).coerceAtLeast(0)
+    @Readonly fun getInfluence() = quest.influence
 
-    @Readonly
-    fun getDescription(): String = quest.description.fillPlaceholders(data1)
+    @Readonly fun getDescription(): String = quest.description.fillPlaceholders(data1)
 
     fun onClickAction() {
         when (questNameInstance) {
             QuestName.ClearBarbarianCamp -> {
                 GUI.resetToWorldScreen()
-                GUI.getMap().setCenterPosition(Vector2(data1.toFloat(), data2.toFloat()).toHexCoord(), selectUnit = false)
+                GUI.getMap().setCenterPosition(HexCoord(data1.toInt(), data2.toInt()), selectUnit = false)
             }
             QuestName.Route -> {
                 GUI.resetToWorldScreen()
@@ -128,6 +95,7 @@ class AssignedQuest : IsPartOfGameInfoSerialization {
             }
             QuestName.BullyCityState, QuestName.ConquerCityState -> {
                 // In case they were destroyed after issuing the quest
+                @Suppress("DEPRECATION")
                 val targetCs = gameInfo.getAliveCityStates().firstOrNull { it.civID == data1 }
                 if (targetCs != null) {
                     // Did they even settle their first city?
@@ -144,5 +112,5 @@ class AssignedQuest : IsPartOfGameInfoSerialization {
 
     /** Debug visualization only */
     override fun toString() = if (!::quest.isInitialized) "(uninitialized)"
-        else "$questName(${quest.type}, assigner=$assigner, assignee=$assignee, d2=$data1, d1=$data2, ${Fonts.turn}$assignedOnTurn)"
+        else "$questName(${quest.type}, assigner=$assigner, assignee=$assignee, d1=$data1, d2=$data2, ${Fonts.turn}$assignedOnTurn)"
 }
