@@ -12,7 +12,6 @@ import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.stats.SubStat
@@ -124,7 +123,7 @@ object Battle {
 
         val isAlreadyDefeatedCity = defender is CityCombatant && defender.isDefeated()
 
-        val extraRangedAttackDamage = extraRangedAttack(attacker, defender, attackedTile)
+        val extraRangedAttackDamage = tryExtraRangedAttack(attacker, defender, attackedTile)
 
         triggerCombatUniques(attacker, defender, attackedTile)
 
@@ -805,7 +804,8 @@ object Battle {
         }
     }
 
-    private fun extraRangedAttack(attacker: ICombatant, defender: ICombatant, attackedTile: Tile): DamageDealt {
+    private fun tryExtraRangedAttack(attacker: ICombatant, defender: ICombatant, attackedTile: Tile): DamageDealt {
+        var damageDealt = DamageDealt.None
         if (attacker is MapUnitCombatant && defender is MapUnitCombatant && !defender.isCivilian()) {
             for (unique in attacker.unit.getMatchingUniques(UniqueType.ExtraRangedAttack)) {
                 val baseRangedStrengthForExtraAttack = (attacker.unit.baseUnit.strength * 
@@ -813,17 +813,16 @@ object Battle {
                 val fakeAttacker = FakeUnitForExtraRangedAttack(attacker, baseRangedStrengthForExtraAttack)
                 triggerCombatUniques(fakeAttacker, defender, attackedTile)
 
-                val damageDealt =  takeDamage(fakeAttacker, defender)
+                damageDealt +=  takeDamage(fakeAttacker, defender)
 
                 //handleCityDefeated() // bonus attack should not trigger vs cities
                 triggerPostKillingUniques(defender, fakeAttacker, attackedTile)
                 triggerDamageUniquesForUnit(attacker, defender, attackedTile, CombatAction.Attack)
                 addXp(attacker, 2, defender)
                 addXp(defender, 2, attacker)
-                return damageDealt
             }
         }
-        return DamageDealt(0,0)
+        return damageDealt
     }
     /** This has all the properties and methods of [mapUnitCombatant] (via delegation)
      *  **except** for [isRanged] and [getAttackingStrength]
