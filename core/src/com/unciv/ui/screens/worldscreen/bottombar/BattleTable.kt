@@ -240,6 +240,12 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
             row()
         }
 
+        if (attacker is MapUnitCombatant && attacker.unit.hasUnique(UniqueType.ExtraRangedAttack))
+         {
+             add("Will perform an extra ranged attack".toLabel(fontSize = 16).apply { wrap = true }).width(quarterScreen)
+             row()
+        }
+
         if (attacker.isMelee() &&
                 (defender.isCivilian() || defender is CityCombatant && defender.isDefeated())) {
             add()
