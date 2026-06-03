@@ -882,7 +882,7 @@ object Battle {
 
 
     private fun extraRangedAttack(attacker: ICombatant, defender: ICombatant, attackedTile: Tile): DamageDealt {
-        if (attacker is MapUnitCombatant && defender is MapUnitCombatant) {
+        if (attacker is MapUnitCombatant && defender is MapUnitCombatant && !defender.isCivilian()) {
             for (unique in attacker.unit.getMatchingUniques(UniqueType.ExtraRangedAttack)) {
                 val baseRangedStrengthForExtraAttack = (attacker.unit.baseUnit.strength * 
                     unique.params[0].toFloat() / 100).toInt()
