@@ -891,7 +891,8 @@ object Battle {
                 //handleCityDefeated() // bonus attack should not trigger vs cities
                 triggerPostKillingUniques(defender, fakeAttacker, attackedTile)
                 triggerDamageUniquesForUnit(attacker, defender, attackedTile, CombatAction.Attack)
-                postBattleAddXp(fakeAttacker, defender)
+                addXp(attacker, 2, defender)
+                addXp(defender, 2, attacker)
                 return damageDealt
             }
         }
