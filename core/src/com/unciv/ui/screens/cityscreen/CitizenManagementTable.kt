@@ -8,6 +8,8 @@ import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onRightClick
+import com.unciv.ui.popups.AnimatedMenuPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 
 class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin) {
@@ -82,13 +84,16 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin
                     city.reassignPopulation()
                     cityScreen.update()
                 }
+                cell.onRightClick {
+                    FocusRightClickMenu(focus, cell)
+                }
             }
             cell.background = BaseScreen.skinStrings.getUiBackground(
                 "CityScreen/CitizenManagementTable/FocusCell",
                 tintColor = if (city.getCityFocus() == focus) colorSelected else colorButton
             )
             // make NoFocus and Manual their own special row
-            if(focus == CityFocus.NoFocus) {
+            if (focus == CityFocus.NoFocus) {
                 defaultTable.add(cell).growX().pad(3f)
             } else if (focus == CityFocus.Manual) {
                 defaultTable.add(cell).growX().pad(3f)
@@ -122,4 +127,15 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin
         }
     }
 
+    private inner class FocusRightClickMenu(private val focus: CityFocus, parent: Table) : AnimatedMenuPopup(stage, getActorBottomCenter(parent)) {
+        override fun createContentTable() = super.createContentTable()!!.apply {
+            add(getButton("Set all cities to [${focus.label}] focus", KeyboardBinding.None) {
+                for (city in city.civ.cities) {
+                    city.setCityFocus(focus)
+                    city.reassignPopulation()
+                }
+                cityScreen.update()
+            }).row()
+        }
+    }
 }
