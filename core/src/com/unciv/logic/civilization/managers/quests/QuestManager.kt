@@ -7,6 +7,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.DiplomacyAction
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.Notification  // for Kdoc
+import com.unciv.logic.civilization.NotificationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.Proximity
@@ -147,6 +148,14 @@ class QuestManager : IsPartOfGameInfoSerialization {
     }
 
     ////////// Internal Implementation //////////
+
+    private fun Civilization.addQuestNotification(text: String, actions: Iterable<NotificationAction>) =
+        addNotification(text, actions, NotificationCategory.Diplomacy, civ.civName, NotificationIcon.Quest)
+    private fun Civilization.addDiplomacyNotification(text: String) =
+        addQuestNotification(text, listOf(DiplomacyAction(civ)))
+    private fun Civilization.addQuestNotification(text: String, location: HexCoord? = civ.getCapital()!!.location) =
+        // Note: that LocationAction pseudo-constructor is able to filter out null location(s), no need for `if`
+        addQuestNotification(text, LocationAction(location).asIterable())
 
     /** Access all assigned Quests of "type" [questName] */
     // Note if we decide to cache an index of these (such as `assignedQuests.groupBy { it.questNameInstance }`), this accessor would simplify the transition
@@ -317,7 +326,6 @@ class QuestManager : IsPartOfGameInfoSerialization {
     }
 
     private fun assignNewQuest(quest: Quest, assignees: Iterable<Civilization>) {
-
         val turn = civ.gameInfo.turns
 
         for (assignee in assignees) {
@@ -337,9 +345,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
             if (quest.isIndividual())
                 individualQuestCountdown[assignee.civID] = UNSET
 
-            assignee.addNotification("[${civ.civName}] assigned you a new quest: [${quest.name}].",
-                notificationActions,
-                NotificationCategory.Diplomacy, civ.civName, "OtherIcons/Quest")
+            assignee.addQuestNotification("[${civ.civName}] assigned you a new quest: [${quest.name}].", notificationActions)
         }
     }
 
@@ -379,10 +385,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
 
         civ.getDiplomacyManager(assignee)!!.addInfluence(rewardInfluence)
         if (rewardInfluence > 0)
-            assignee.addNotification(
-                "[${civ.civName}] rewarded you with [${rewardInfluence.toInt()}] influence for completing the [${assignedQuest.questName}] quest.",
-                civ.getCapital()!!.location, NotificationCategory.Diplomacy, civ.civName, "OtherIcons/Quest"
-            )
+            assignee.addQuestNotification("[${civ.civName}] rewarded you with [${rewardInfluence.toInt()}] influence for completing the [${assignedQuest.questName}] quest.")
 
         // We may have received bonuses from city-state friend-ness or ally-ness
         for (city in civ.cities)
@@ -394,15 +397,9 @@ class QuestManager : IsPartOfGameInfoSerialization {
     private fun notifyExpired(assignedQuest: AssignedQuest, winners: List<AssignedQuest> = emptyList()) {
         val assignee = assignedQuest.assigneeCiv
         if (winners.isEmpty()) {
-            assignee.addNotification(
-                    "[${civ.civName}] no longer needs your help with the [${assignedQuest.questName}] quest.",
-                    civ.getCapital()!!.location,
-                NotificationCategory.Diplomacy, civ.civName, "OtherIcons/Quest")
+            assignee.addQuestNotification("[${civ.civName}] no longer needs your help with the [${assignedQuest.questName}] quest.")
         } else {
-            assignee.addNotification(
-                    "The [${assignedQuest.questName}] quest for [${civ.civName}] has ended. It was won by [${winners.joinToString { "{${it.assigneeCiv.civName}}" }}].",
-                    civ.getCapital()!!.location,
-                NotificationCategory.Diplomacy, civ.civName, "OtherIcons/Quest")
+            assignee.addQuestNotification("The [${assignedQuest.questName}] quest for [${civ.civName}] has ended. It was won by [${winners.joinToString { "{${it.assigneeCiv.civName}}" }}].")
         }
     }
 
@@ -542,9 +539,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
             .toList()
         assignedQuests.removeAll(revokedQuests)
         if (revokedQuests.isEmpty()) return
-        bully.addNotification("[${civ.civName}] cancelled the quests they had given you because you demanded tribute from them.",
-            DiplomacyAction(civ),
-            NotificationCategory.Diplomacy, civ.civName, "OtherIcons/Quest")
+        bully.addDiplomacyNotification("[${civ.civName}] cancelled the quests they had given you because you demanded tribute from them.")
     }
 
     /** Gets notified when we are attacked, for war with major pseudo-quest */
@@ -568,8 +563,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
         val message = "[${civ.civName}] is being attacked by [$attackerName]!" +
             // Space relevant in template!
             " Kill [$unitsToKill] of the attacker's military units and they will be immensely grateful."
-        // Note: that LocationAction pseudo-constructor is able to filter out null location(s), no need for `if`
-        assignee.addNotification(message, LocationAction(location), NotificationCategory.Diplomacy, civ.civName, "OtherIcons/Quest")
+        assignee.addQuestNotification(message, location)
     }
 
     /** Gets notified when [killed]'s military unit was killed by [killer], for war with major pseudo-quest */
@@ -588,8 +582,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
 
         // Quest complete?
         if (updatedKillCount >= unitsToKillForCiv[killed.civID]!!) {
-            killer.addNotification("[${civ.civName}] is deeply grateful for your assistance in the war against [${killed.civName}]!",
-                DiplomacyAction(civ), NotificationCategory.Diplomacy, civ.civName, "OtherIcons/Quest")
+            killer.addDiplomacyNotification("[${civ.civName}] is deeply grateful for your assistance in the war against [${killed.civName}]!")
             civ.getDiplomacyManager(killer)!!.addInfluence(100f) // yikes
             endWarWithMajorQuest(killed)
         }
@@ -620,8 +613,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
                 return@forEachKnownCiv
             if (unitsKilledSoFar(attacker, thirdCiv) >= unitsToKill(attacker)) // Don't show the notification to the one who won the quest
                 return@forEachKnownCiv
-            thirdCiv.addNotification("[${civ.civName}] no longer needs your assistance against [${attacker.civName}].",
-                DiplomacyAction(civ), NotificationCategory.Diplomacy, civ.civName, "OtherIcons/Quest")
+            thirdCiv.addDiplomacyNotification("[${civ.civName}] no longer needs your assistance against [${attacker.civName}].")
         }
         unitsToKillForCiv.remove(attacker.civID)
         unitsKilledFromCiv.remove(attacker.civID)
