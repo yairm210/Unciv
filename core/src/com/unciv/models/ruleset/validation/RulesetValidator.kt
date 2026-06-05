@@ -8,6 +8,7 @@ import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.logic.map.tile.RoadStatus
+import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IRulesetObject
@@ -118,6 +119,8 @@ open class RulesetValidator protected constructor(
         addDifficultyErrors(lines)
         addEventErrors(lines)
         addCityStateTypeErrors(lines)
+
+        addTranslationNameCollisionWarnings(lines)
 
         initTextureNamesCache(lines)
 
@@ -510,6 +513,70 @@ open class RulesetValidator protected constructor(
                         "Victory types ${victoryType.name} and ${otherVictory.name} have the same requirements!",
                         RulesetErrorSeverity.Warning, sourceObject = null
                     )
+        }
+    }
+
+    private data class TranslatableName(val name: String, val source: String, val originRuleset: String)
+
+    private fun addTranslationNameCollisionWarnings(lines: RulesetErrorList) {
+        fun originRuleset() = ruleset.name
+        fun IRulesetObject.originRulesetOrRulesetName() = originRuleset.ifEmpty { ruleset.name }
+
+        val translatableNames = sequence {
+            yieldAll(ruleset.allRulesetObjects().map {
+                TranslatableName(it.name, it::class.simpleName ?: "RulesetObject", it.originRulesetOrRulesetName())
+            })
+
+            yieldAll(ruleset.religions.map { TranslatableName(it, "Religion", originRuleset()) })
+            yieldAll(ruleset.specialists.values.map { TranslatableName(it.name, "Specialist", originRuleset()) })
+            yieldAll(ruleset.difficulties.values.map { TranslatableName(it.name, "Difficulty", it.originRulesetOrRulesetName()) })
+            yieldAll(ruleset.victories.values.map { TranslatableName(it.name, "Victory", originRuleset()) })
+            yieldAll(ruleset.cityStateTypes.values.map { TranslatableName(it.name, "CityStateType", originRuleset()) })
+            yieldAll(ruleset.quests.values.map { TranslatableName(it.name, "Quest", originRuleset()) })
+
+            yieldAll(ruleset.nations.values.asSequence().flatMap { nation ->
+                sequence {
+                    yield(TranslatableName(nation.leaderName, "Nation.leaderName", nation.originRulesetOrRulesetName()))
+                    yieldAll(nation.cities.map { TranslatableName(it, "Nation.cities", nation.originRulesetOrRulesetName()) })
+                    yieldAll(nation.spyNames.map { TranslatableName(it, "Nation.spyNames", nation.originRulesetOrRulesetName()) })
+                }
+            })
+            yieldAll(ruleset.unitNameGroups.values.flatMap { group ->
+                group.unitNames.map { TranslatableName(it, "UnitNameGroup.unitNames", group.originRulesetOrRulesetName()) }
+            })
+        }
+            .filter { it.name.isNotEmpty() }
+            .toList()
+
+        val builtInRulesetNames = BaseRuleset.entries.map { it.fullName }.toSet()
+        val knownBenignSourceCollisions = setOf(
+            setOf("BaseUnit", "UnitType"),
+            setOf("BaseUnit", "Difficulty"),
+            setOf("BaseUnit", "UnitNameGroup"),
+            setOf("Personality", "UnitNameGroup.unitNames"),
+            setOf("Specialist", "UnitNameGroup")
+        )
+
+        val duplicateNames = translatableNames
+            .groupBy { it.name }
+            .filter { (_, names) ->
+                val sourceSet = names.map { it.source }.toSet()
+                val origins = names.map { it.originRuleset }
+                val isKnownBuiltInRulesetCollision = origins.all { it.isNotEmpty() }
+                    && origins.toSet().singleOrNull()?.let { it in builtInRulesetNames } == true
+                sourceSet.size >= 2
+                    && sourceSet !in knownBenignSourceCollisions
+                    && !isKnownBuiltInRulesetCollision
+            }
+            .mapValues { (_, names) -> names.map { it.source }.distinct().sorted() }
+            .toSortedMap()
+
+        for ((name, sources) in duplicateNames) {
+            lines.add(
+                "The name \"$name\" is used by several ruleset entries (${sources.joinToString()}) and may cause translation problems.",
+                RulesetErrorSeverity.WarningOptionsOnly,
+                sourceObject = null
+            )
         }
     }
 
