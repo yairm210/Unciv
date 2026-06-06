@@ -1,8 +1,11 @@
 package com.unciv.dev
 
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
+import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.civilization.Civilization
@@ -11,10 +14,19 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.HexMath
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.testing.TestGame
+import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
+import com.unciv.ui.components.input.ActivationTypes
+import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.components.input.clearActivationActions
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.LoadingImage
 import com.unciv.ui.components.widgets.LoadingImage.Style
+import com.unciv.ui.popups.AnimatedMenuPopup
+import com.unciv.ui.popups.AnimatedMenuPopup.Companion.addContextMenu
+import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.overviewscreen.GlobalPoliticsDiagramGroup
 import kotlin.random.Random
@@ -39,7 +51,7 @@ internal enum class FasterUIDevTesters : IFasterUITester {
 
             for ((i, civ) in civs.withIndex()) {
                 // civ.isDefeated() is still true, and CS get-relation code runs deep, especially get tribute willingness needs a fully defined capital
-                
+
                 val pos = HexMath.getClockPositionToHexcoord(i * 2).times(3)
                 game.addCity(civ, game.tileMap[pos])
                 // create random relations
@@ -90,6 +102,45 @@ internal enum class FasterUIDevTesters : IFasterUITester {
             pack()
         }
     },
+
+    AnimatedMenuPopup {
+        override fun testCreateExample(screen: BaseScreen): Actor {
+            val button = TextButton("Testing", BaseScreen.skin)
+            button.keyShortcuts.add('x')
+            button.addTips(screen)
+            button.onActivation { ToastPopup("You hit me!", screen) }
+            button.keyShortcuts.add(Input.Keys.F10) { Menu(screen, button) }
+
+            val check = CheckBox("Simulate Android", BaseScreen.skin)
+            check.isChecked = FasterUIDevelopment.simulateAndroid
+            check.onChange {
+                FasterUIDevelopment.simulateAndroid = check.isChecked
+                button.addTips(screen)
+            }
+
+            val wrapper = Table()
+            wrapper.defaults().pad(10f).center()
+            wrapper.add(check).row()
+            wrapper.add(button)
+            return wrapper
+        }
+
+        @Suppress("RedundantInnerClassModifier") // A private class is forbidden in enum instance
+        inner class Menu(private val screen: BaseScreen, actor: Group) : AnimatedMenuPopup(screen.stage, actor) {
+            override fun createContentTable() = super.createContentTable()!!.apply {
+                add(getButton("Hello?", KeyboardBinding.Civilopedia) {
+                    ToastPopup("Hello!", screen)
+                })
+            }
+        }
+
+        private fun TextButton.addTips(screen: BaseScreen) {
+            children.filterIsInstance<Image>().forEach { it.remove() }
+            clearActivationActions(ActivationTypes.RightClick)
+            addTooltip('x')
+            addContextMenu { Menu(screen, this) }
+        }
+    }
     ;
     override fun testGetLabel(): String? = name // maybe use unCamelCase in KeyboardBinding?
 }
