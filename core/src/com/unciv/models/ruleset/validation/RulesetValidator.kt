@@ -516,39 +516,13 @@ open class RulesetValidator protected constructor(
         }
     }
 
-    private data class TranslatableName(val name: String, val source: String, val originRuleset: String)
-
     private fun addTranslationNameCollisionWarnings(lines: RulesetErrorList) {
-        fun originRuleset() = ruleset.name
-        fun IRulesetObject.originRulesetOrRulesetName() = originRuleset.ifEmpty { ruleset.name }
-
-        val translatableNames = sequence {
-            yieldAll(ruleset.allRulesetObjects().map {
-                TranslatableName(it.name, it::class.simpleName ?: "RulesetObject", it.originRulesetOrRulesetName())
-            })
-
-            yieldAll(ruleset.religions.map { TranslatableName(it, "Religion", originRuleset()) })
-            yieldAll(ruleset.specialists.values.map { TranslatableName(it.name, "Specialist", originRuleset()) })
-            yieldAll(ruleset.difficulties.values.map { TranslatableName(it.name, "Difficulty", it.originRulesetOrRulesetName()) })
-            yieldAll(ruleset.victories.values.map { TranslatableName(it.name, "Victory", originRuleset()) })
-            yieldAll(ruleset.cityStateTypes.values.map { TranslatableName(it.name, "CityStateType", originRuleset()) })
-            yieldAll(ruleset.quests.values.map { TranslatableName(it.name, "Quest", originRuleset()) })
-
-            yieldAll(ruleset.nations.values.asSequence().flatMap { nation ->
-                sequence {
-                    yield(TranslatableName(nation.leaderName, "Nation.leaderName", nation.originRulesetOrRulesetName()))
-                    yieldAll(nation.cities.map { TranslatableName(it, "Nation.cities", nation.originRulesetOrRulesetName()) })
-                    yieldAll(nation.spyNames.map { TranslatableName(it, "Nation.spyNames", nation.originRulesetOrRulesetName()) })
-                }
-            })
-            yieldAll(ruleset.unitNameGroups.values.flatMap { group ->
-                group.unitNames.map { TranslatableName(it, "UnitNameGroup.unitNames", group.originRulesetOrRulesetName()) }
-            })
-        }
-            .filter { it.name.isNotEmpty() }
-            .toList()
+        val translatableNames = ruleset.allNames().toList()
 
         val builtInRulesetNames = BaseRuleset.entries.map { it.fullName }.toSet()
+        // Base rulesets intentionally reuse a few display names in different source types:
+        // "Scout" is both a BaseUnit and UnitType, "Settler" is a BaseUnit and Difficulty,
+        // and some great person names appear in both UnitNameGroups and generated unit names.
         val knownBenignSourceCollisions = setOf(
             setOf("BaseUnit", "UnitType"),
             setOf("BaseUnit", "Difficulty"),
@@ -564,9 +538,11 @@ open class RulesetValidator protected constructor(
                 val origins = names.map { it.originRuleset }
                 val isKnownBuiltInRulesetCollision = origins.all { it.isNotEmpty() }
                     && origins.toSet().singleOrNull()?.let { it in builtInRulesetNames } == true
+                val isKnownBuiltInSourceCollision = sourceSet in knownBenignSourceCollisions
+                    && origins.all { it in builtInRulesetNames }
                 sourceSet.size >= 2
-                    && sourceSet !in knownBenignSourceCollisions
                     && !isKnownBuiltInRulesetCollision
+                    && !isKnownBuiltInSourceCollision
             }
             .mapValues { (_, names) -> names.map { it.source }.distinct().sorted() }
             .toSortedMap()
