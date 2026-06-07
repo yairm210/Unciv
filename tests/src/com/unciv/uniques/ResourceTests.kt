@@ -3,15 +3,21 @@ package com.unciv.uniques
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.HexCoord
 import com.unciv.models.ruleset.BeliefType
+import com.unciv.models.ruleset.tile.ResourceSupplyList
+import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.RedirectOutput
+import com.unciv.testing.RedirectPolicy
 import com.unciv.testing.TestGame
 import org.junit.Assert
 import org.junit.Assert.assertEquals
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
+import kotlin.random.Random
 
 
 @RunWith(GdxTestRunner::class)
@@ -55,7 +61,7 @@ class ResourceTests {
 
         city.cityConstructions.addBuilding(providesCoal)
         Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 1)
-        
+
         city.cityConstructions.addBuilding(doubleStrategicProduction)
         Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 2)
 
@@ -132,7 +138,7 @@ class ResourceTests {
         city.cityConstructions.addBuilding(doubleStrategicProduction)
         Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 4)
     }
-    
+
     @Test
     fun stringtoint(){
         assert(1f == "1".toFloat())
@@ -311,7 +317,7 @@ class ResourceTests {
         val building = game.createBuilding("Instantly provides [2] [${resource.name}]")
         city.cityConstructions.addBuilding(building)
         assert(civInfo.getCivResourcesByName()[resource.name] == 2)
-        
+
         val consumingBuilding = game.createBuilding("Costs [1] [${resource.name}]")
         assert(civInfo.getCivResourcesByName()[resource.name] == 2) // no change yet
         city.cityConstructions.setCurrentConstruction(consumingBuilding.name)
@@ -345,11 +351,77 @@ class ResourceTests {
 
         // when
         UniqueTriggerActivation.triggerUnique(
-            Unique("Set [${resource.name}] to [1+1]"),
+            Unique("Set [${resource.name}] to [1+1*2]"),
             civInfo
         )
 
         // then
-        assertEquals(2, civInfo.getCivResourcesByName()[resource.name])
+        assertEquals(3, civInfo.getCivResourcesByName()[resource.name])
+    }
+
+    @Test
+    //@Ignore("For performance testing, not CI")
+    @RedirectOutput(RedirectPolicy.Show)
+    fun stressTestResourceSupplyList() {
+        val resourceCount = 32
+        val originCount = 12
+        val totalTime = 10000L
+
+        val rng = Random(42)
+        val resources = (1..resourceCount).map {
+            val type = ResourceType.entries.random(rng)
+            val isStockpile = if (it % 3 == 0) arrayOf(UniqueType.Stockpiled.text) else emptyArray()
+            val resource = game.createResource(*isStockpile)
+            resource.resourceType = type
+            resource
+        }
+        val origins = (1..originCount).map { "${rng.nextInt(4242)} Origin #$it" }
+        val data = ResourceSupplyList()
+        var loops = 0
+
+        fun someResource() = resources.random(rng)
+        fun someOrigin() = origins.random(rng)
+        fun someAmount() = rng.nextInt(-5, 6)
+        fun exercise1() {
+            repeat(42) {
+                data.add(someResource(), someOrigin(), someAmount())
+            }
+        }
+        fun exercise2() {
+            repeat(6) {
+                val other = ResourceSupplyList()
+                repeat(7) {
+                    other.add(someResource(), someOrigin(), someAmount())
+                }
+                data.add(other)
+            }
+        }
+        fun exercise3() {
+            var output = ""
+            repeat(4) {
+                val resource = someResource()
+                val total = data.sumBy(resource)
+                output = data.listBy(resource).joinToString(prefix = "${resource.name} (", postfix = ") total=$total") { "${it.origin}: ${it.amount}" }
+            }
+            if (loops % 10000 == 0) println(output)
+            repeat(4) {
+                val origin = someOrigin()
+                val total = data.sumByOrigin(origin)
+                output = data.listBy(origin).joinToString(prefix = "$origin (", postfix = ") total=$total") { "${it.resource.name}: ${it.amount}" }
+            }
+            if (loops % 10000 == 5000) println(output)
+        }
+
+        val startTime = System.currentTimeMillis()
+        val maxTime = startTime + totalTime
+
+        while (System.currentTimeMillis() < maxTime) {
+            loops++
+            exercise1()
+            exercise2()
+            exercise3()
+        }
+        val elapsedTime = System.currentTimeMillis() - startTime
+        println("$loops loops done in ${elapsedTime}ms, ${loops * 1000 / elapsedTime} loops/s")
     }
 }
