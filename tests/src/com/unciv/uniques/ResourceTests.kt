@@ -12,7 +12,6 @@ import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
-import kotlin.math.roundToInt
 
 
 @RunWith(GdxTestRunner::class)
@@ -157,7 +156,7 @@ class ResourceTests {
 
         // then
         assertEquals(1, cityResources.size)
-        assertEquals("4 Iron from Tiles", cityResources[0].toString())
+        assertEquals("4 Iron from Tiles", cityResources.first().toString())
     }
 
     @Test
@@ -171,7 +170,7 @@ class ResourceTests {
 
         // then
         assertEquals(1, resources.size)
-        assertEquals("4 Iron from Buildings", resources[0].toString())
+        assertEquals("4 Iron from Buildings", resources.first().toString())
     }
 
     @Test
@@ -204,7 +203,7 @@ class ResourceTests {
 
         // then
         assertEquals(1, resources.size)
-        assertEquals("-1 Coal from Buildings", resources[0].toString())
+        assertEquals("-1 Coal from Buildings", resources.first().toString())
     }
 
     @Test
