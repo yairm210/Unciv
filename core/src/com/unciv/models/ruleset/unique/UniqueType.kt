@@ -153,8 +153,8 @@ enum class UniqueType(
         docDescription = MULTIPLICATIVE_BONUS_EXPLANATION),
 
     /// Production to Stat conversion
-    EnablesCivWideStatProduction("Enables conversion of city production to [civWideStat]", UniqueTarget.Global),
-    ProductionToCivWideStatConversionBonus("Production to [civWideStat] conversion in cities changed by [relativeAmount]%", UniqueTarget.Global),
+    EnablesStatProduction("Enables conversion of city production to [stat]", UniqueTarget.Global),
+    ProductionToStatConversionBonus("Production to [stat] conversion in cities changed by [relativeAmount]%", UniqueTarget.Global),
 
     /// Improvements
     // Should be replaced with moddable improvements when roads become moddable
