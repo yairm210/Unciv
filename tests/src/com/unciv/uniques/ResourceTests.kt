@@ -5,6 +5,7 @@ import com.unciv.logic.map.HexCoord
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
@@ -360,7 +361,7 @@ class ResourceTests {
     }
 
     @Test
-    //@Ignore("For performance testing, not CI")
+    @Ignore("For performance testing, not CI")
     @RedirectOutput(RedirectPolicy.Show)
     fun stressTestResourceSupplyList() {
         val resourceCount = 32
@@ -424,4 +425,14 @@ class ResourceTests {
         val elapsedTime = System.currentTimeMillis() - startTime
         println("$loops loops done in ${elapsedTime}ms, ${loops * 1000 / elapsedTime} loops/s")
     }
+
+    @Suppress("unused", "EXTENSION_SHADOWED_BY_MEMBER") // Methods hace precedence over extensions, so these are only used when the class is missing the methods
+    private fun ResourceSupplyList.listBy(resource: TileResource) =
+        asSequence().filter { it.resource == resource }
+    @Suppress("unused", "EXTENSION_SHADOWED_BY_MEMBER")
+    private fun ResourceSupplyList.listBy(origin: String) =
+        asSequence().filter { it.origin == origin }
+    @Suppress("unused", "EXTENSION_SHADOWED_BY_MEMBER")
+    private fun ResourceSupplyList.sumByOrigin(origin: String) =
+        listBy(origin).sumOf { it.amount }
 }
