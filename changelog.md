@@ -1,28 +1,18 @@
 ## 4.20.11
 
-Fix double buttons for great people for constructing great improvements (caught as a generic unit action due to <by consuming this unit>)
+Fix double buttons for great people for constructing great improvements
 
-Create missing directories also for missing local file directories (fixes crash visible in google play console)
-
-chore: clearer getUseFrequency, removed unusable forEachClearBit (would go forever)
+Fixed custom file directories on Android
 
 Approve values of 0 for certain mod constants in validator - By unciv-loof
 
-By SomeTroglodyte:
-- Fix leak for a LoadingPopup in "Resume" 
-- Fix black outlines for Stat symbols in notifications 
-- chore: Quest manager reorg 
+By SomeTroglodyte: 
+- Fix black outlines for Stat symbols in notifications
 - Fix TriggerUponLosingUnit 
-- Fix Popup reaction to VisibleAreaChanged event 
-- Fix Android on screen keyboard show/hide 
-- chore: Visual context menu indicator preparations 
-- Minor optimization of CapitalConnectionsFinder 
-- Fix a relative wiki link 
-- Unit tests for QuestManager 
+- Fix Android on screen keyboard show/hide
+- Minor CPU optimization
 
 Add "Vegetation" to Marsh - By EmperorPinguin
-
-Fix typo in isConstructionPurchaseAllowed comment - By BobbyCobby
 
 ## 4.20.10
 
