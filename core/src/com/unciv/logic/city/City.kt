@@ -192,7 +192,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         return toReturn
     }
 
-    @Readonly fun canBombard() = !attackedThisTurn && !isInResistance()
+    @Readonly fun canBombard() = getBombardRange() > 0 && !attackedThisTurn && !isInResistance()
     @Readonly fun getCenterTile(): Tile = centerTile
     @Readonly fun getCenterTileOrNull(): Tile? = if (::centerTile.isInitialized) centerTile else null
     @Readonly fun getTiles(): Sequence<Tile> = tiles.asSequence().map { tileMap[it] }
