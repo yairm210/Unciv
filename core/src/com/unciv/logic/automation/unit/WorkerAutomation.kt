@@ -4,6 +4,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.unit.UnitAutomation.wander
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.civilization.NotificationCategory
@@ -24,6 +25,7 @@ import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 import com.unciv.logic.automation.Timers.Companion.timeThis
+import com.unciv.models.Counter
 
 /**
  * Contains the logic for worker automation.
@@ -64,6 +66,8 @@ class WorkerAutomation(
                                    var repairImprovment: Boolean? = null)
 
     @Cache private val tileRankings = HashMap<Tile, TileImprovementRank>()
+    
+    @Cache private val workersPerCity = Counter<City>()
 
     ///////////////////////////////////////// Methods /////////////////////////////////////////
 
@@ -108,26 +112,48 @@ class WorkerAutomation(
         if (unit.civ.isCityState)
             wander(unit, stayInTerritory = true, tilesToAvoid = dangerousTiles)
     }
+    
+    @Readonly private fun MapUnit.closestCity()
+        = currentTile.owningCity
+        ?: this.civ.cities.minBy { this.getTile().aerialDistanceTo(it.getCenterTile()) }
+
+
+    private fun fillWorkersPerCity() {
+        if (!workersPerCity.isEmpty()) return
+        for (unit in civInfo.units.getCivUnits().filter { it.cache.hasUniqueToBuildImprovements }) 
+            workersPerCity.add(unit.closestCity(), 1)
+    }
 
     private fun tryHeadTowardsUndevelopedCity(
         unit: MapUnit,
         currentTile: Tile
     ): Boolean = timeThis("WorkerAutomation.tryHeadTowardsUndevelopedCity") {
-        // Note, however, that the closest city to a tile isn't necessarily the owning city
-        val closestUndevelopedCity = unit.civ.cities
-            .sortedBy { it.getCenterTile().aerialDistanceTo(currentTile) }
-            .firstOrNull { it != unit.currentTile.owningCity && it.getTiles().any { tile -> tile.isLand
-                    && tile.getUnits().none { unit -> unit.cache.hasUniqueToBuildImprovements }
-                    && (tile.isPillaged() || tileHasWorkToDo(tile, unit)) }
-                && unit.movement.canReach(it.getCenterTile()) } //goto closest undeveloped city
+        if (unit.civ.cities.isEmpty()) return false
+        
+        synchronized(workersPerCity) {
+            fillWorkersPerCity()
+            // Note, however, that the closest city to a tile isn't necessarily the owning city
+            // Only move to cities with fewer workers nearby.
+            val closestUndevelopedCity = unit.civ.cities
+                .sortedBy { it.getCenterTile().aerialDistanceTo(currentTile) }
+                .firstOrNull {
+                    it != unit.currentTile.owningCity
+                    && workersPerCity[it] < workersPerCity[unit.closestCity()]
+                    && it.getTiles().any { tile -> tile.isLand
+                        && tile.getUnits() .none { unit -> unit.cache.hasUniqueToBuildImprovements }
+                        && (tile.isPillaged() || tileHasWorkToDo(tile, unit)) }
+                    && unit.movement.canReach(it.getCenterTile()) } //goto closest undeveloped city
 
-        if (closestUndevelopedCity != null) {
-            debug("WorkerAutomation: %s -> head towards undeveloped city %s", unit, closestUndevelopedCity.name)
-            val reachedTile = unit.movement.headTowards(closestUndevelopedCity.getCenterTile())
-            if (reachedTile != currentTile) unit.doAction() // since we've moved, maybe we can do something here - automate
-            return true
+            if (closestUndevelopedCity != null) {
+                debug("WorkerAutomation: %s -> head towards undeveloped city %s", unit, closestUndevelopedCity.name)
+                workersPerCity.add(unit.closestCity(), -1)
+                workersPerCity.add(closestUndevelopedCity, +1)
+                val reachedTile = unit.movement.headTowards(closestUndevelopedCity.getCenterTile())
+                if (reachedTile != currentTile) unit.doAction() // since we've moved, maybe we can do something here - automate
+                return true
+            }
+            return false
         }
-        return false
     }
 
     private fun startWorkOnCurrentTile(unit: MapUnit) {

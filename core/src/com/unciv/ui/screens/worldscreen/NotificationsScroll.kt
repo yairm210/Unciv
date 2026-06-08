@@ -19,6 +19,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.MayaCalendar.toMayaNumerals
 import com.unciv.ui.components.extensions.packIfNeeded
+import com.unciv.ui.components.extensions.removeFontColorFromStatIcons
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.onClick
@@ -387,6 +388,7 @@ class NotificationsScroll(
             val maxLabelWidth = maxEntryWidth - (itemIconSize + 5f) * notification.icons.size - 10f
             val label = WrappableLabel(notification.text, maxLabelWidth, ImageGetter.CHARCOAL, labelFontSize, hideIcons = true)
             label.setAlignment(Align.center)
+            label.removeFontColorFromStatIcons()
             if (label.prefWidth > maxLabelWidth * scaleFactor) {  // can't explain why the comparison needs scaleFactor
                 label.wrap = true
                 listItem.add(label).maxWidth(label.optimizePrefWidth()).padRight(10f)

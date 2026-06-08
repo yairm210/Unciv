@@ -142,7 +142,7 @@ object HolidayDates {
         override fun hashCode() = hashOf(start.hashCode(), endInclusive.hashCode())
 
         companion object {
-            fun of(date: LocalDate) = DateRange(date, date)
+            @Pure fun of(date: LocalDate) = DateRange(date, date)
             fun of(year: Int, month: Int, day: Int) = of(LocalDate.of(year, month, day))
             fun of(date: LocalDate, duration: Int) = DateRange(date, date.plusDays(duration - 1L))
             fun of(year: Int, month: Int, day: Int, duration: Int) = of(LocalDate.of(year, month, day), duration)

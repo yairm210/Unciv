@@ -2,6 +2,7 @@ package com.unciv.ui.components.extensions
 
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.Colors
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.TextureData
 import com.badlogic.gdx.graphics.glutils.FileTextureData
@@ -29,6 +30,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Array
 import com.unciv.Constants
+import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.GdxKeyCodeFixes.DEL
 import com.unciv.ui.components.extensions.GdxKeyCodeFixes.toString
@@ -393,6 +395,28 @@ fun Label.setFontSize(size: Int): Label {
     return this
 }
 
+/** Only if this Label contains [Stat symbols][Stat.fontChars], tweak `fontColor` and `text`
+ *  so that these symbols render normally and not as black outline.
+ *  - **Only makes sense when the font color is very dark**
+ *  - **To be called _after_ translation!**
+ */
+fun Label.removeFontColorFromStatIcons() {
+    if (text.none { it in Stat.fontChars }) return
+    val fontColorMarkup = "[#${style.fontColor.toString().substring(0, 6)}]"
+    val newText = buildString {
+        append(fontColorMarkup)
+        for (char in text) {
+            if (char in Stat.fontChars) {
+                append("[]")
+                append(char)
+                append(fontColorMarkup)
+            } else append(char)
+        }
+    }
+    setFontColor(Color.WHITE)
+    setText(newText)
+}
+
 /** [pack][WidgetGroup.pack] a [WidgetGroup] if its [needsLayout][WidgetGroup.needsLayout] is true.
  *  @return the receiver to allow chaining
  */
@@ -474,7 +498,6 @@ fun Input.areSecretKeysPressed() = isKeyPressed(Input.Keys.SHIFT_RIGHT) &&
  * - This aligns columns only if the tables are arranged vertically with equal X coordinates.
  * - first table determines columns processed, all others must have at least the same column count.
  * - Tables are left as needsLayout==true, so while equal width is ensured, you may have to pack if you want to see the value before this is rendered.
- * - Note: The receiver <Group> isn't actually needed except to make sure the arguments are descendants.
  */
 fun equalizeColumns(vararg tables: Table) {
     for (table in tables) {
@@ -482,7 +505,7 @@ fun equalizeColumns(vararg tables: Table) {
     }
     val columns = tables.first().columns
     check(tables.all { it.columns >= columns }) {
-        "IPageExtensions.equalizeColumns needs all tables to have at least the same number of columns as the first one"
+        "equalizeColumns needs all tables to have at least the same number of columns as the first one"
     }
 
     val widths = (0 until columns)

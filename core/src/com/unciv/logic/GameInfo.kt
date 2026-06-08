@@ -248,34 +248,9 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     @Readonly fun getGlobalUniques() = combinedGlobalUniques
 
     /** @return Sequence of all cities in game, both major civilizations and city states */
-    @Deprecated(message = "forEachCity is faster. If not viable, then this can still be used",
-        replaceWith = ReplaceWith("forEachCity"))
     @Readonly fun getCities() = civilizations.asSequence().flatMap { it.cities }
-    @Deprecated(message = "getAliveCityStates is faster. If not viable, then this can still be used",
-        replaceWith = ReplaceWith("getAliveCityStates"))
     @Readonly fun getAliveCityStates() = civilizations.filter { it.isAlive() && it.isCityState }
-    @Deprecated(message = "getAliveMajorCivs is faster. If not viable, then this can still be used",
-        replaceWith = ReplaceWith("getAliveMajorCivs"))
     @Readonly fun getAliveMajorCivs() = civilizations.filter { it.isAlive() && it.isMajorCiv() }
-
-    @Readonly
-    fun forEachCity(op: (City) -> Unit)
-        = forEachCity({ true }, op)
-    @Readonly
-    fun forEachCity(filter: (Civilization) -> Boolean, op: (City) -> Unit) {
-        for (civ in civilizations) {
-            if (filter(civ)) {
-                for (city in civ.cities)
-                    op(city)
-            }
-        }
-    }
-    @Readonly
-    fun forEachAliveCityState(op: (City) -> Unit)
-        = forEachCity({ it.isAlive() && it.isCityState }, op)
-    @Readonly
-    fun getAliveMajorCivs(op: (City) -> Unit)
-        = forEachCity({ it.isAlive() && it.isMajorCiv() }, op)
 
     /** Gets civilizations in their commonly used order - City-states last,
      *  otherwise alphabetically by culture and translation. [civToSortFirst] can be used to force
@@ -366,9 +341,9 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     /**
      *  Advance a turn, running automation for AI players, stopping for human players
      *  @param progressBar Optional reference to UI widget either provided by [WorldScreen.nextTurn][com.unciv.ui.screens.worldscreen.WorldScreen.nextTurn] or `null` when simulating
-     *  @param shouldGainTime on a multiplayer game, if true, makes the player who's turn is ended recover time to play before risking to get forced to resign, 'false' by default 
+     *  @param shouldGainTime on a multiplayer game, if true, makes the player whose turn is ended recover time to play before risking getting forced to resign, 'false' by default 
      */
-    fun nextTurn(progressBar: NextTurnProgress? = null, shouldGainTime: Boolean = false):Unit = timeThis("GameInfo.nextTurn") {
+    fun nextTurn(progressBar: NextTurnProgress? = null, shouldGainTime: Boolean = false): Unit = timeThis("GameInfo.nextTurn") {
         var player = currentPlayerCiv
         var playerIndex = civilizations.indexOf(player)
 
@@ -428,8 +403,9 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
             val worldScreen = UncivGame.Current.worldScreen
             // Do we need to break if player won?
-            if (simulateUntilWin && player.victoryManager.hasWon()) {
+            if (simulateUntilWin && (player.victoryManager.hasWon() || simulateMaxTurns > 0 && turns >= simulateMaxTurns)) {
                 simulateUntilWin = false
+                simulateMaxTurns = 0
                 worldScreen?.autoPlay?.stopAutoPlay()
                 break
             }

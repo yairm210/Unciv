@@ -134,19 +134,6 @@ class UncivTooltip <T: Actor>(
         }
     }
 
-    private fun getOriginX(width: Float, align: Int) = when {
-        (align and Align.left) != 0 -> 0f
-        (align and Align.right) != 0 -> width
-        else -> width / 2
-    }
-    private fun getOriginY(height: Float, align: Int) = when {
-        (align and Align.bottom) != 0 -> 0f
-        (align and Align.top) != 0 -> height
-        else -> height / 2
-    }
-    private fun Actor.getEdgePoint(align: Int) =
-        Vector2(getOriginX(width,align),getOriginY(height,align))
-
     private fun startShowAction(endState: TipState) {
         container.clearActions()
         container.addAction(ShowAction(endState))
@@ -221,6 +208,22 @@ class UncivTooltip <T: Actor>(
         /** Duration of the fade/zoom-in/out animations */
         private const val tipAnimationDuration = 0.2f
 
+        private fun getOriginX(width: Float, align: Int) = when {
+            (align and Align.left) != 0 -> 0f
+            (align and Align.right) != 0 -> width
+            else -> width / 2
+        }
+        private fun getOriginY(height: Float, align: Int) = when {
+            (align and Align.bottom) != 0 -> 0f
+            (align and Align.top) != 0 -> height
+            else -> height / 2
+        }
+
+        /** Get a point over an [Actor's][this] center, edge or corner, depending on [align].
+         *  @return A newly allocated [Vector2] instance free to modify. */
+        fun Actor.getEdgePoint(align: Int) =
+            Vector2(getOriginX(width, align), getOriginY(height, align))
+
         /**
          * Add a [Label]-based Tooltip with a rounded-corner background to a [Table] or other [Group].
          *
@@ -244,10 +247,7 @@ class UncivTooltip <T: Actor>(
             hideIcons: Boolean = false,
             dynamicTextProvider: (() -> String)? = null
         ) {
-            for (tip in listeners.filterIsInstance<UncivTooltip<*>>()) {
-                tip.hide(true)
-                removeListener(tip)
-            }
+            removeTooltips()
 
             if (!(always || GUI.keyboardAvailable) || text.isEmpty()) return
 
@@ -303,6 +303,14 @@ class UncivTooltip <T: Actor>(
                 tipAlign = tipAlign,
                 contentRefresher = contentRefresher
             ))
+        }
+
+        /** Hide and remove all tooltips */
+        fun Actor.removeTooltips() {
+            for (tip in listeners.filterIsInstance<UncivTooltip<*>>()) {
+                tip.hide(true)
+                removeListener(tip)
+            }
         }
 
         /**

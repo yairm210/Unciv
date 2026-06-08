@@ -5,6 +5,7 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.UniqueType
+import kotlin.math.E
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -56,6 +57,7 @@ class MapLandmassGenerator(
             MapType.perlin -> createPerlin()
             MapType.fractal -> createFractal()
             MapType.lakes -> createLakes()
+            MapType.boreal -> createBoreal()
             MapType.smallContinents -> createSmallContinents()
         }
 
@@ -138,6 +140,36 @@ class MapLandmassGenerator(
 
                 spawnLandOrWater(tile, elevation)
             }
+        }
+    }
+
+    /**
+     * A large region that is all tundra and well forested.
+     * 
+     * Screenshot from Civ V: https://i.imgur.com/L63zfv6.jpeg
+     * 
+     * Implementation notes (see relevant files - search for MapType.boreal):
+     * - The bottom ~75% is fairly homogenous, with a mix of snow, tundra, plains (when river converts tundra), and a few lakes/small oceans.
+     * - There is a band of ocean with ice at the very top.
+     * - There is more vegetation and mountains than default.
+     */
+    private fun createBoreal() {
+        val elevationSeed = randomness.RNG.nextInt().toDouble()
+        for (tile in tileMap.values) {
+            // Size of lakes / oceans, scales with map size
+            val perlinScale = 0.3 * max(tileMap.maxLatitude, tileMap.maxLongitude)
+            // In range -1.0 to +1.0
+            val latitude =
+                if (tileMap.mapParameters.shape == MapShape.flatEarth)
+                    // North is at the edges instead of at the top
+                    2 * MapGenerator.getTileRadius(tile, tileMap) - 1 
+                else
+                    tile.latitude.toDouble() / tileMap.maxLatitude
+            // Elevation averages +0.25 across most (southern ~75%) of the map.
+            // It declines to -1.0 in the north to ensure a band of ocean.
+            var elevation = 0.25 - 1.25 * E.pow(5 * latitude - 5)
+            elevation += randomness.getPerlinNoise(tile, elevationSeed, scale=perlinScale)
+            spawnLandOrWater(tile, elevation)
         }
     }
 

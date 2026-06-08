@@ -1648,7 +1648,7 @@
 		"name": "Great General",
 		"unitType": "Civilian",
 		"uniques": [
-            "[+15]% Strength bonus for [Military] units within [2] tiles",
+            "[+15]% Strength bonus for [{Military} {Land}] units within [2] tiles",
             "Can instantly construct a [Citadel] improvement <by consuming this unit>",
 			"Can be earned through combat <for [Land] units>",
             "Is part of Great Person group [General]",
