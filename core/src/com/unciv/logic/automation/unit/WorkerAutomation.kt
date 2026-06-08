@@ -128,6 +128,8 @@ class WorkerAutomation(
         unit: MapUnit,
         currentTile: Tile
     ): Boolean = timeThis("WorkerAutomation.tryHeadTowardsUndevelopedCity") {
+        if (unit.civ.cities.isEmpty()) return false
+        
         synchronized(workersPerCity) {
             fillWorkersPerCity()
             // Note, however, that the closest city to a tile isn't necessarily the owning city

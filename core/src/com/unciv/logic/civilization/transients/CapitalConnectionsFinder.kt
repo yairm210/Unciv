@@ -32,6 +32,7 @@ class CapitalConnectionsFinder(private val civInfo: Civilization) {
     ) { city -> EnumSet.of(CapitalConnectionMedium.Start) }
     private lateinit var newCitiesToCheck: MutableList<City>
 
+    /** All cities we want to know about, including our own */
     private val openBordersCivCities = civInfo.gameInfo.getCities().filter { canEnterBordersOf(it.civ) }
 
     private val ruleset = civInfo.gameInfo.ruleset
@@ -46,7 +47,8 @@ class CapitalConnectionsFinder(private val civInfo: Civilization) {
         // this is so we know that if we've seen which cities can be connected by port A, and one
         // of those is city B, then we don't need to check the cities that B can connect to by port,
         // since we'll get the same cities we got from A, since they're connected to the same sea.
-        while (citiesToCheck.isNotEmpty() && citiesReachedToMediums.size < openBordersCivCities.count()) {
+        val maxCities = openBordersCivCities.count() // Won't change during this loop
+        while (citiesToCheck.isNotEmpty() && citiesReachedToMediums.size < maxCities) {
             newCitiesToCheck = mutableListOf()
             for (cityToConnectFrom in citiesToCheck) {
                 if (cityToConnectFrom.containsHarbor()) {

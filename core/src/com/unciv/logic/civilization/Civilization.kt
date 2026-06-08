@@ -46,6 +46,7 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 import com.unciv.logic.automation.Timers.Companion.timeThis
+import com.unciv.logic.civilization.managers.quests.QuestManager
 
 enum class Proximity : IsPartOfGameInfoSerialization {
     None, // ie no cities

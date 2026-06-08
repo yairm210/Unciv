@@ -26,10 +26,12 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.hasPlaceholderParameters
 import com.unciv.models.translations.tr
+import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 import com.unciv.utils.addToMapOfSets
 import com.unciv.utils.randomWeighted
+import java.util.EnumSet
 import yairm210.purity.annotations.Readonly
 import kotlin.math.roundToInt
 import kotlin.random.Random
@@ -146,6 +148,21 @@ object UniqueTriggerActivation {
                 SoundPlayer.get(sound) ?: return null
                 return {
                     SoundPlayer.play(sound)
+                    true
+                }
+            }
+            UniqueType.ChooseMusic -> {
+                if (civInfo.isAIOrAutoPlaying()) return null
+                val prefix = unique.params[0].let {
+                    if (it.equals("this civ", true)) civInfo.civID
+                    else it
+                }
+                val suffixes = unique.params[1].split(',').map { it.trim() }
+                val flags = unique.params[1].split(',')
+                    .mapNotNull { param -> MusicTrackChooserFlags.entries.firstOrNull { it.name.equals(param.trim(), true) } }
+                    .toCollection(EnumSet.noneOf(MusicTrackChooserFlags::class.java))
+                return {
+                    UncivGame.Current.musicController.chooseTrack(prefix, suffixes, flags)
                     true
                 }
             }
@@ -389,7 +406,7 @@ object UniqueTriggerActivation {
                     val notificationText = getNotificationText(notification, triggerNotificationText,
                         "You may choose a free Policy")
                     if (notificationText != null)
-                        civInfo.addNotification(notificationText, NotificationCategory.General, NotificationIcon.Culture)
+                        civInfo.addNotification(notificationText, PolicyAction(), NotificationCategory.General, NotificationIcon.Culture)
                     true
                 }
             }
@@ -405,7 +422,7 @@ object UniqueTriggerActivation {
                         "You may choose [$newFreePolicies] free Policies"
                     )
                     if (notificationText != null)
-                        civInfo.addNotification(notificationText, NotificationCategory.General, NotificationIcon.Culture)
+                        civInfo.addNotification(notificationText, PolicyAction(), NotificationCategory.General, NotificationIcon.Culture)
                     true
                 }
             }
