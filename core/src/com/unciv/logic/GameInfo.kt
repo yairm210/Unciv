@@ -248,34 +248,9 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     @Readonly fun getGlobalUniques() = combinedGlobalUniques
 
     /** @return Sequence of all cities in game, both major civilizations and city states */
-    @Deprecated(message = "forEachCity is faster. If not viable, then this can still be used",
-        replaceWith = ReplaceWith("forEachCity"))
     @Readonly fun getCities() = civilizations.asSequence().flatMap { it.cities }
-    @Deprecated(message = "getAliveCityStates is faster. If not viable, then this can still be used",
-        replaceWith = ReplaceWith("getAliveCityStates"))
     @Readonly fun getAliveCityStates() = civilizations.filter { it.isAlive() && it.isCityState }
-    @Deprecated(message = "getAliveMajorCivs is faster. If not viable, then this can still be used",
-        replaceWith = ReplaceWith("getAliveMajorCivs"))
     @Readonly fun getAliveMajorCivs() = civilizations.filter { it.isAlive() && it.isMajorCiv() }
-
-    @Readonly
-    fun forEachCity(op: (City) -> Unit)
-        = forEachCity({ true }, op)
-    @Readonly
-    fun forEachCity(filter: (Civilization) -> Boolean, op: (City) -> Unit) {
-        for (civ in civilizations) {
-            if (filter(civ)) {
-                for (city in civ.cities)
-                    op(city)
-            }
-        }
-    }
-    @Readonly
-    fun forEachAliveCityState(op: (City) -> Unit)
-        = forEachCity({ it.isAlive() && it.isCityState }, op)
-    @Readonly
-    fun getAliveMajorCivs(op: (City) -> Unit)
-        = forEachCity({ it.isAlive() && it.isMajorCiv() }, op)
 
     /** Gets civilizations in their commonly used order - City-states last,
      *  otherwise alphabetically by culture and translation. [civToSortFirst] can be used to force

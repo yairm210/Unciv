@@ -470,7 +470,7 @@ object ReligionAutomation {
         )
     }
 
-    private fun chooseBeliefs(civInfo: Civilization, beliefsToChoose: Counter<BeliefType>): HashSet<Belief> {
+    @Readonly private fun chooseBeliefs(civInfo: Civilization, beliefsToChoose: Counter<BeliefType>): HashSet<Belief> {
         val chosenBeliefs = hashSetOf<Belief>()
         // The `continue`s should never be reached, but just in case I'd rather have the AI have a
         // belief less than make the game crash. The `continue`s should only be reached whenever

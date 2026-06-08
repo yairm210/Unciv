@@ -791,6 +791,9 @@ HexaRealm tileset images by legacymtgsalvationuser69544 [here](https://github.co
 - Bobot by reallybasicname in the Discord
 - [DollarSign](https://thenounproject.com/icon/dollar-sign-6466560/) by Ahmad Arzaha
 - Spy hideout is gimped from [hide](https://thenounproject.com/icon/hide-8013/) by Luis Prado and the one listed for Spy
+- [hold](https://thenounproject.com/icon/hold-222516/) by icon 54 as long-press indicator
+- [right click](https://thenounproject.com/icon/right-click-8250175/) by Lewen Design
+
 
 ### Main menu
 
