@@ -1,7 +1,7 @@
 package com.unciv.logic.civilization
 
 import com.unciv.json.json
-import com.unciv.logic.civilization.managers.QuestManager
+import com.unciv.logic.civilization.managers.quests.QuestManager
 import com.unciv.models.ruleset.QuestName
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
