@@ -1,0 +1,25 @@
+
+
+Fix double buttons for great people for constructing great improvements (caught as a generic unit action due to <by consuming this unit>)
+
+Create missing directories also for missing local file directories (fixes crash visible in google play console)
+
+chore: clearer getUseFrequency, removed unusable forEachClearBit (would go forever)
+
+Approve values of 0 for certain mod constants in validator - By unciv-loof
+
+By SomeTroglodyte:
+- Fix leak for a LoadingPopup in "Resume" 
+- Fix black outlines for Stat symbols in notifications 
+- chore: Quest manager reorg 
+- Fix TriggerUponLosingUnit 
+- Fix Popup reaction to VisibleAreaChanged event 
+- Fix Android on screen keyboard show/hide 
+- chore: Visual context menu indicator preparations 
+- Minor optimization of CapitalConnectionsFinder 
+- Fix a relative wiki link 
+- Unit tests for QuestManager 
+
+Add "Vegetation" to Marsh - By EmperorPinguin
+
+Fix typo in isConstructionPurchaseAllowed comment - By BobbyCobby
