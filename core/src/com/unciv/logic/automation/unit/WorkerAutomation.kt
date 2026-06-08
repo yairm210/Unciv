@@ -113,7 +113,7 @@ class WorkerAutomation(
             wander(unit, stayInTerritory = true, tilesToAvoid = dangerousTiles)
     }
     
-    private fun MapUnit.closestCity() 
+    @Readonly private fun MapUnit.closestCity()
         = currentTile.owningCity
         ?: this.civ.cities.minBy { this.getTile().aerialDistanceTo(it.getCenterTile()) }
 
