@@ -82,10 +82,10 @@ class ResourceSupplyList(
 
     @Readonly
     fun listBy(resource: TileResource): Sequence<ResourceSupply> =
-        mapByResource[resource]?.values?.asSequence()?.map { it as ResourceSupply } ?: emptySequence()
+        mapByResource[resource]?.values?.asSequence() ?: emptySequence()
     @Readonly
     fun listBy(origin: String): Sequence<ResourceSupply> =
-        mapByOrigin[origin]?.values?.asSequence()?.map { it as ResourceSupply } ?: emptySequence()
+        mapByOrigin[origin]?.values?.asSequence() ?: emptySequence()
 
     /** Get the total amount for a resource by [resource] */
     @Readonly
