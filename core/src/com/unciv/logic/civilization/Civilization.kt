@@ -360,17 +360,16 @@ class Civilization : IsPartOfGameInfoSerialization {
      *  Note: Currently the implementation of `updateAllyCivForCityState` will cause the diplomacy map of
      *  city-states to contain the barbarians. Therefore, [getKnownCivs] will **not** list the barbarians
      *  for major civs, but **will** do so for city-states after some gameplay.
+     *  
+     *  forEachKnownCiv is faster, for cases that require high perf
      */
     @Readonly
-    @Deprecated(message = "forEachKnownCiv is faster. If not viable, then this can still be used",
-        replaceWith = ReplaceWith("forEachKnownCiv"))
     fun getKnownCivs() = diplomacy.values.asSequence().map { it.otherCiv }
         .filter { !it.isDefeated() && !it.isSpectator() }
 
 
     @Readonly
-    @Deprecated(message = "forEachKnownCiv is faster. If not viable, then this can still be used",
-        replaceWith = ReplaceWith("forEachKnownCiv"))
+    /** forEachKnownCiv is faster, for cases that require high perf */
     fun getKnownCivsWithSpectators() = diplomacy.values.asSequence().map { it.otherCiv }
         .filter { !it.isDefeated() }
     
