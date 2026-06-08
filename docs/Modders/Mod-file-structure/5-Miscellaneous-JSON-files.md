@@ -203,45 +203,46 @@ Stored in ModOptions.constants, this is a collection of constants used internall
 This is the only structure that is _merged_ field by field from mods, not overwritten, so you can change XP from Barbarians in one mod
 and city distance in another. In case of conflicts, there is no guarantee which mod wins, only that _default_ values are ignored.
 
-| Attribute                                | Type   | Default                       | Notes |
-|------------------------------------------|--------|-------------------------------|-------|
-| maxXPfromBarbarians                      | Int    | 30                            | [^A]  |
-| cityStrengthBase                         | Float  | 8.0                           | [^B]  |
-| cityStrengthPerPop                       | Float  | 0.4                           | [^B]  |
-| cityStrengthFromTechsMultiplier          | Float  | 5.5                           | [^B]  |
-| cityStrengthFromTechsExponent            | Float  | 2.8                           | [^B]  |
-| cityStrengthFromTechsFullMultiplier      | Float  | 1.0                           | [^B]  |
-| cityStrengthFromGarrison                 | Float  | 0.2                           | [^B]  |
-| baseCityBombardRange                     | Int    | 2                             | [^S]  |
-| cityWorkRange                            | Int    | 3                             | [^T]  |
-| cityExpandRange                          | Int    | 5                             | [^U]  |
-| cityAirUnitCapacity                      | Int    | 6                             | [^W]  |
-| unitSupplyPerPopulation                  | Float  | 0.5                           | [^C]  |
-| minimalCityDistance                      | Int    | 3                             | [^D]  |
-| minimalCityDistanceOnDifferentContinents | Int    | 2                             | [^D]  |
-| unitUpgradeCost                          | Object | [See below](#unitupgradecost) | [^J]  |
-| naturalWonderCountMultiplier             | Float  | 0.124                         | [^E]  |
-| naturalWonderCountAddedConstant          | Float  | 0.1                           | [^E]  |
-| ancientRuinCountMultiplier               | Float  | 0.02                          | [^F]  |
-| spawnIceBelowTemperature                 | Float  | -0.8                          | [^G]  |
-| maxLakeSize                              | Int    | 10                            | [^H]  |
-| riverCountMultiplier                     | Float  | 0.01                          | [^I]  |
-| minRiverLength                           | Int    | 5                             | [^I]  |
-| maxRiverLength                           | Int    | 666                           | [^I]  |
-| religionLimitBase                        | Int    | 1                             | [^K]  |
-| religionLimitMultiplier                  | Float  | 0.5                           | [^K]  |
-| pantheonBase                             | Int    | 10                            | [^L]  |
-| pantheonGrowth                           | Int    | 5                             | [^L]  |
-| workboatAutomationSearchMaxTiles         | Int    | 20                            | [^M]  |
-| maxSpyRank                               | Int    | 3                             | [^N]  |
-| spyRankSkillPercentBonus                 | Float  | 30                            | [^O]  |
-| minimumWarDuration                       | Int    | 10                            | [^P]  |
-| baseTurnsUntilRevolt                     | Int    | 4                             | [^Q]  |
-| cityStateElectionTurns                   | Int    | 15                            | [^R]  |
-| maxImprovementTechErasForward            | Int    | None                          | [^S]  |
-| goldGiftMultiplier                       | Float  | 1                             | [^T]  |
-| goldGiftTradeMultiplier                  | Float  | 0.8                           | [^U]  |
-| goldGiftDegradationMultiplier            | Float  | 1.0                           | [^V]  |
+| Attribute                                | Type      | Default                         | Notes |
+|------------------------------------------|-----------|---------------------------------|-------|
+| maxXPfromBarbarians                      | Int       | 30                              | [^A]  |
+| cityStrengthBase                         | Float     | 8.0                             | [^B]  |
+| cityStrengthPerPop                       | Float     | 0.4                             | [^B]  |
+| cityStrengthFromTechsMultiplier          | Float     | 5.5                             | [^B]  |
+| cityStrengthFromTechsExponent            | Float     | 2.8                             | [^B]  |
+| cityStrengthFromTechsFullMultiplier      | Float     | 1.0                             | [^B]  |
+| cityStrengthFromGarrison                 | Float     | 0.2                             | [^B]  |
+| baseCityBombardRange                     | Int       | 2                               | [^S]  |
+| cityWorkRange                            | Int       | 3                               | [^T]  |
+| cityExpandRange                          | Int       | 5                               | [^U]  |
+| cityAirUnitCapacity                      | Int       | 6                               | [^W]  |
+| unitSupplyPerPopulation                  | Float     | 0.5                             | [^C]  |
+| minimalCityDistance                      | Int       | 3                               | [^D]  |
+| minimalCityDistanceOnDifferentContinents | Int       | 2                               | [^D]  |
+| unitUpgradeCost                          | Object    | [See below](#unitupgradecost)   | [^J]  |
+| naturalWonderCountMultiplier             | Float     | 0.124                           | [^E]  |
+| naturalWonderCountAddedConstant          | Float     | 0.1                             | [^E]  |
+| ancientRuinCountMultiplier               | Float     | 0.02                            | [^F]  |
+| spawnIceBelowTemperature                 | Float     | -0.8                            | [^G]  |
+| maxLakeSize                              | Int       | 10                              | [^H]  |
+| riverCountMultiplier                     | Float     | 0.01                            | [^I]  |
+| minRiverLength                           | Int       | 5                               | [^I]  |
+| maxRiverLength                           | Int       | 666                             | [^I]  |
+| religionLimitBase                        | Int       | 1                               | [^K]  |
+| religionLimitMultiplier                  | Float     | 0.5                             | [^K]  |
+| pantheonBase                             | Int       | 10                              | [^L]  |
+| pantheonGrowth                           | Int       | 5                               | [^L]  |
+| policyCultureCost                        | Object    | [See below](#policyculturecost) | [^J]  |
+| workboatAutomationSearchMaxTiles         | Int       | 20                              | [^M]  |
+| maxSpyRank                               | Int       | 3                               | [^N]  |
+| spyRankSkillPercentBonus                 | Float     | 30                              | [^O]  |
+| minimumWarDuration                       | Int       | 10                              | [^P]  |
+| baseTurnsUntilRevolt                     | Int       | 4                               | [^Q]  |
+| cityStateElectionTurns                   | Int       | 15                              | [^R]  |
+| maxImprovementTechErasForward            | Int       | None                            | [^S]  |
+| goldGiftMultiplier                       | Float     | 1                               | [^T]  |
+| goldGiftTradeMultiplier                  | Float     | 0.8                             | [^U]  |
+| goldGiftDegradationMultiplier            | Float     | 1.0                             | [^V]  |
 
 Legend:
 
@@ -271,7 +272,7 @@ Legend:
 - [^G]: MapGenerator.spawnIce: spawn Ice where T < this, with T calculated from temperatureExtremeness, latitude and perlin noise.
 - [^H]: MapGenerator.spawnLakesAndCoasts: Water bodies up to this tile count become Lakes
 - [^I]: RiverGenerator: river frequency and length bounds
-- [^J]: A [UnitUpgradeCost](#unitupgradecost) sub-structure.
+- [^J]: When using multiple mods that change this sub-structure, then the values are not merged individually, only the entire sub-structure is.
 - [^K]: Maximum foundable Religions = religionLimitBase + floor(MajorCivCount * religionLimitMultiplier)
 - [^L]: Cost of pantheon = pantheonBase + CivsWithReligion * pantheonGrowth
 - [^M]: When the AI decides whether to build a work boat, how many tiles to search from the city center for an improvable tile
@@ -288,8 +289,6 @@ Legend:
 
 #### UnitUpgradeCost
 
-These values are not merged individually, only the entire sub-structure is.
-
 | Attribute     | Type  |    | Notes |
 |---------------|-------|----|-------|
 | base          | Float | 10 |       |
@@ -304,6 +303,16 @@ The formula for the gold cost of a unit upgrade is (rounded down to a multiple o
             \* (1 + eraNumber \* `eraMultiplier`) \* `civModifier`
         ) ^ `exponent`
 With `civModifier` being the multiplicative aggregate of ["\[relativeAmount\]% Gold cost of upgrading"](../uniques.md#global-uniques) uniques that apply.
+
+#### PolicyCultureCost
+
+| Attribute  | Type  | Default | Restrictions | Notes                                          |
+|------------|-------|---------|--------------|------------------------------------------------|
+| initial    | Float | 25      | Minimum 0    | Cost of the first policy                       |
+| multiplier | Float | 6       | Minimum 0    | Multiplied with the number of policies adopted |
+| exponent   | Float | 1.7     | Maximum 4    | Significant impact on late game policy costs   |
+
+The formula for policy culture cost is: `initial` + (`multiplier` * number_of_policies_adopted) ^ `exponent`
 
 ## GlobalUniques.json
 

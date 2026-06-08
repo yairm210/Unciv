@@ -101,6 +101,17 @@ class ModConstants {
     // Factors in formula for pantheon cost
     var pantheonBase = 10
     var pantheonGrowth = 5
+    
+    /** See usage in [com.unciv.logic.civilization.managers.PolicyManager.getPolicyCultureCost] */
+    data class PolicyCultureCost(
+        val initial: Float = 25f,
+        // multiplied with number of policies adopted
+        val multiplier: Float = 6f,
+        // small changes have big impact late game
+        val exponent: Float = 1.7f
+    )
+    
+    var policyCultureCost = PolicyCultureCost()
 
     // AI behaviour
     var workboatAutomationSearchMaxTiles = 37

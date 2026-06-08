@@ -277,19 +277,31 @@ open class RulesetValidator protected constructor(
         // Basic Unique validation (type, target, parameters) should always run.
         // Using reportRulesetSpecificErrors=true as ModOptions never should use Uniques depending on objects from a base ruleset anyway.
         uniqueValidator.checkUniques(ruleset.modOptions, lines, reportRulesetSpecificErrors = true, tryFixUnknownUniques)
+        
+        fun lineText(constantName: String, detail: String = ""): String {
+            return "Invalid ModConstant '%s'. %s".format(constantName, detail)
+        }
 
         //TODO: More thorough checks. Here I picked just those where bad values might endanger stability.
         val constants = ruleset.modOptions.constants
         if (constants.cityExpandRange !in 1..100)
-            lines.add("Invalid ModConstant 'cityExpandRange'.", sourceObject = null)
+            lines.add(lineText("cityExpandRange", "In range 1 to 100"), sourceObject = null)
         if (constants.cityWorkRange !in 1..100)
-            lines.add("Invalid ModConstant 'cityWorkRange'.", sourceObject = null)
+            lines.add(lineText("cityWorkRange", "In range 1 to 100"), sourceObject = null)
         if (constants.minimalCityDistance < 1)
-            lines.add("Invalid ModConstant 'minimalCityDistance'.", sourceObject = null)
+            lines.add(lineText("minimalCityDistance", "Minimum 1"), sourceObject = null)
         if (constants.minimalCityDistanceOnDifferentContinents < 1)
-            lines.add("Invalid ModConstant 'minimalCityDistanceOnDifferentContinents'.", sourceObject = null)
+            lines.add(lineText("minimalCityDistanceOnDifferentContinents", "Minimum 1"), sourceObject = null)
         if (constants.baseCityBombardRange < 1)
-            lines.add("Invalid ModConstant 'baseCityBombardRange'.", sourceObject = null)
+            lines.add(lineText("baseCityBombardRange", "Minimum 1"), sourceObject = null)
+        with(constants.policyCultureCost) {
+            if (initial < 0f)
+                lines.add(lineText("policyCultureCost.initial", "Minimum 0"))
+            if (multiplier < 0f)
+                lines.add(lineText("policyCultureCost.multiplier", "Minimum 0"))
+            if (exponent > 4f)
+                lines.add(lineText("policyCultureCost.exponent", "Maximum 4.0"))
+        }
 
         if (ruleset.name.isBlank()) return // The rest of these tests don't make sense for combined rulesets
 
