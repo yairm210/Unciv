@@ -1,6 +1,5 @@
 package com.unciv.logic.civilization.managers.quests
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.CivFlags
 import com.unciv.logic.civilization.Civilization
