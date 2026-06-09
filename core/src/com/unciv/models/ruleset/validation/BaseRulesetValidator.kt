@@ -301,26 +301,40 @@ internal class BaseRulesetValidator(
     }
 
     private fun checkPromotionCircularReferences(lines: RulesetErrorList) {
-        fun recursiveCheck(history: HashSet<Promotion>, promotion: Promotion, level: Int) {
-            if (promotion in history) {
-                lines.add("Circular Reference in Promotions: ${history.joinToString("→") { it.name }}→${promotion.name}",
-                    RulesetErrorSeverity.Warning, promotion)
-                return
-            }
-            if (level > 99) return
+        fun hasAcyclicPathToRoot(promotion: Promotion, history: HashSet<Promotion>, level: Int): Boolean {
+            if (promotion.prerequisites.isEmpty()) return true
+            if (promotion in history) return false
+            if (level > 99) return false
+
             history.add(promotion)
             for (prerequisiteName in promotion.prerequisites) {
                 val prerequisite = ruleset.unitPromotions[prerequisiteName] ?: continue
-                // Performance - if there's only one prerequisite, we can send this linked set as-is, since no one else will be using it
-                val linkedSetToPass =
-                    if (promotion.prerequisites.size == 1) history
-                    else history.toCollection(hashSetOf())
-                recursiveCheck(linkedSetToPass, prerequisite, level + 1)
+                if (hasAcyclicPathToRoot(prerequisite, history.toCollection(hashSetOf()), level + 1))
+                    return true
             }
+            return false
         }
+
+        fun findCircularReference(history: List<Promotion>, promotion: Promotion, level: Int): List<Promotion>? {
+            val existingIndex = history.indexOf(promotion)
+            if (existingIndex >= 0) return history.drop(existingIndex) + promotion
+            if (level > 99) return null
+
+            val newHistory = history + promotion
+            for (prerequisiteName in promotion.prerequisites) {
+                val prerequisite = ruleset.unitPromotions[prerequisiteName] ?: continue
+                return findCircularReference(newHistory, prerequisite, level + 1) ?: continue
+            }
+            return null
+        }
+
         for (promotion in ruleset.unitPromotions.values) {
             if (promotion.prerequisites.isEmpty()) continue
-            recursiveCheck(hashSetOf(), promotion, 0)
+            if (hasAcyclicPathToRoot(promotion, hashSetOf(), 0)) continue
+
+            val circularReference = findCircularReference(emptyList(), promotion, 0) ?: continue
+            lines.add("Circular Reference in Promotions: ${circularReference.joinToString("→") { it.name }}",
+                RulesetErrorSeverity.Warning, promotion)
         }
     }
 
