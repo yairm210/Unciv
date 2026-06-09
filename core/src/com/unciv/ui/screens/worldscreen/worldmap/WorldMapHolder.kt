@@ -673,15 +673,15 @@ class WorldMapHolder(
         val clampedCityButtonZoom = 1 / scaleX
         if (clampedCityButtonZoom >= 1) {
             for (tileGroup in tileGroups.values) {
-                tileGroup.layerCityButton.isTransform = false // to save on rendering time to improve framerate
+                tileGroup.layerCityButton.setButtonTransform(false) // save rendering time at normal zoom
             }
         } else if (clampedCityButtonZoom >= minZoom) {
             for (tileGroup in tileGroups.values) {
                 // ONLY set those groups that have active city buttons as transformable!
                 // This is massively framerate-improving!
-                if (tileGroup.layerCityButton.hasChildren())
-                    tileGroup.layerCityButton.isTransform = true
-                tileGroup.layerCityButton.setScale(clampedCityButtonZoom)
+                if (tileGroup.layerCityButton.hasButton())
+                    tileGroup.layerCityButton.setButtonTransform(true)
+                tileGroup.layerCityButton.setButtonScale(clampedCityButtonZoom)
             }
         }
     }

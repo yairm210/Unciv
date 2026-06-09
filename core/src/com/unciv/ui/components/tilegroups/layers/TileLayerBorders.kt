@@ -1,7 +1,5 @@
 package com.unciv.ui.components.tilegroups.layers
 
-import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
@@ -18,10 +16,6 @@ class TileLayerBorders(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         var isRightConcave: Boolean = false,
     )
 
-    override fun act(delta: Float) {}
-    override fun hit(x: Float, y: Float, touchable: Boolean): Actor? = null
-    override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
-
     private var previousTileOwner: Civilization? = null
     private val borderSegments = HashMap<Tile, BorderSegment>()
 
@@ -29,7 +23,7 @@ class TileLayerBorders(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         if (borderSegments.isNotEmpty()) {
             for (borderSegment in borderSegments.values)
                 for (image in borderSegment.images)
-                    image.remove()
+                    removeOwnedActor(image)
             borderSegments.clear()
         }
     }
@@ -101,7 +95,7 @@ class TileLayerBorders(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
 
             if (shouldRemoveBorderSegment) {
                 for (image in borderSegments[neighbor]!!.images)
-                    image.remove()
+                    removeOwnedActor(image)
                 borderSegments.remove(neighbor)
             }
             if (shouldAddBorderSegment) {
@@ -130,7 +124,7 @@ class TileLayerBorders(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
                     strings.orFallback { getBorder(borderShapeString,"Inner") }
                 ).setHexagonSize()
 
-                addActor(innerBorderImage)
+                addOwnedActor(innerBorderImage)
                 images.add(innerBorderImage)
                 innerBorderImage.rotateBy(angle)
                 innerBorderImage.color = civOuterColor
@@ -139,7 +133,7 @@ class TileLayerBorders(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
                     strings.orFallback { getBorder(borderShapeString, "Outer") }
                 ).setHexagonSize()
 
-                addActor(outerBorderImage)
+                addOwnedActor(outerBorderImage)
                 images.add(outerBorderImage)
                 outerBorderImage.rotateBy(angle)
                 outerBorderImage.color = civInnerColor

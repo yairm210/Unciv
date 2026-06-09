@@ -2,7 +2,6 @@ package com.unciv.ui.components.tilegroups
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.city.City
@@ -29,7 +28,7 @@ class CityTileGroup(val city: City, tile: Tile, tileSetStrings: TileSetStrings, 
     var tileState = CityTileState.NONE
 
     init {
-        layerMisc.touchable = Touchable.childrenOnly
+        // layerMisc is no longer a Group actor; touch handling is managed at the TileMapLayer level.
     }
 
     override fun update(viewingCiv: Civilization?) {
@@ -143,8 +142,8 @@ class CityTileGroup(val city: City, tile: Tile, tileSetStrings: TileSetStrings, 
 
         if (icon != null) {
             icon.setSize(26f, 26f)
-            icon.setPosition(width/2 - icon.width/2,
-                height*0.85f - icon.height/2)
+            // Position absolutely: tile origin (x,y) + tile-local offset
+            icon.setPosition(x + width/2 - icon.width/2, y + height*0.85f - icon.height/2)
             layerMisc.addWorkedIcon(icon)
         }
 
@@ -157,8 +156,5 @@ class CityTileGroup(val city: City, tile: Tile, tileSetStrings: TileSetStrings, 
         else layerUnitArt.dim()
         layerFeatures.dim()
         layerImprovement.dimImprovement(true)
-
-        // Put whole layer (yield, pop, improvement, res) to front
-        layerMisc.toFront()
     }
 }
