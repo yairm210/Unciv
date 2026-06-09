@@ -39,6 +39,12 @@ import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Readonly
 import kotlin.collections.set
 
+/** Specifies filenames to load for a Ruleset, and how to extract shared views over their contents.
+ *
+ *  [getRulesetObjects] and [getUniques] are used by ruleset-wide validation and unique parsing.
+ *  [getNames] lists names that should be considered translation keys. Override it when a file
+ *  contains names outside [IRulesetObject.name], such as nation city names or spy names.
+ */
 enum class RulesetFile(
     val filename: String,
     @Readonly val getRulesetObjects: Ruleset.() -> Sequence<IRulesetObject> = { emptySequence() },
@@ -350,6 +356,7 @@ class Ruleset {
     fun allRulesetObjects(): Sequence<IRulesetObject> = RulesetFile.entries.asSequence().flatMap { it.getRulesetObjects(this) }
     @Readonly
     fun allUniques(): Sequence<Unique> = RulesetFile.entries.asSequence().flatMap { it.getUniques(this) }
+    /** Returns all non-empty ruleset names that can act as translation keys, with their source metadata. */
     @Readonly
     fun allNames(): Sequence<RulesetName> =
         RulesetFile.entries.asSequence().flatMap { it.getNames(this) }.filter { it.name.isNotEmpty() }
