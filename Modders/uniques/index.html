@@ -1206,17 +1206,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#tutorial-uniques" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Tutorial uniques
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#citystate-uniques" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2339,17 +2328,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#tutorial-uniques" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Tutorial uniques
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#citystate-uniques" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2723,6 +2701,16 @@
 <details class="example">
 <summary>Get the leader title of [<abbr title="Provides a leader title that includes the leader's name in parameters.">leaderTitle</abbr>]</summary>
 <p>Example: "Get the leader title of [Sovereign [leaderName] the Great]"</p>
+<p>This unique is automatically hidden from users.</p>
+<p>Applicable to: Triggerable</p>
+</details>
+<details class="example">
+<summary>Choose a music track for [unknown], [unknown], [unknown]</summary>
+<p>Parameters are unchecked, strings not matching existing tracks or flags are ignored.</p>
+<p>See <a href="../Images-and-Audio/#context-sensitive-music-overview">Context-sensitive music</a></p>
+<p>The first parameter is the track name prefix, e.g. a Civilization name or "this civ".</p>
+<p>The second parameter is a list of zero or more suffixes, comma-separated, used to specify a "mood", like Peace, War, Ambient etc. First track that matches wins.</p>
+<p>The third parameter is a list of zero or more flags: PrefixMustMatch, SuffixMustMatch, SlowFade, PlaySingle, PlayDefaultFile.</p>
 <p>This unique is automatically hidden from users.</p>
 <p>Applicable to: Triggerable</p>
 </details>
@@ -3329,6 +3317,10 @@
 <p>Applicable to: Global</p>
 </details>
 <details class="example">
+<summary>Enables establishment of embassies</summary>
+<p>Applicable to: Global</p>
+</details>
+<details class="example">
 <summary>Requires establishing embassies to conduct advanced diplomacy</summary>
 <p>Applicable to: Global</p>
 </details>
@@ -3486,6 +3478,11 @@
 </details>
 <details class="example">
 <summary>Rebel units may spawn</summary>
+<p>Applicable to: Global</p>
+</details>
+<details class="example">
+<summary>Cannot build [buildingFilter] buildings</summary>
+<p>Example: "Cannot build [Culture] buildings"</p>
 <p>Applicable to: Global</p>
 </details>
 <details class="example">
@@ -3709,10 +3706,6 @@
 </details>
 <h2 id="tech-uniques">Tech uniques</h2>
 <details class="example">
-<summary>Enables establishment of embassies</summary>
-<p>Applicable to: Tech</p>
-</details>
-<details class="example">
 <summary>Starting <abbr title="The name of any tech.">tech</abbr></summary>
 <p>Applicable to: Tech</p>
 </details>
@@ -3728,7 +3721,7 @@
 <details class="example">
 <summary>Unavailable</summary>
 <p>Meant to be used together with conditionals, like "Unavailable &lt;after generating a Great Prophet&gt;".</p>
-<p>Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice</p>
+<p>Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice</p>
 </details>
 <details class="example">
 <summary>Cannot be hurried</summary>
@@ -3760,7 +3753,7 @@
 <details class="example">
 <summary>Unavailable</summary>
 <p>Meant to be used together with conditionals, like "Unavailable &lt;after generating a Great Prophet&gt;".</p>
-<p>Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice</p>
+<p>Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice</p>
 </details>
 <details class="example">
 <summary>[<abbr title="This indicates a number, usually with a + or - sign, such as `+25` (this kind of parameter is often followed by '%' which is nevertheless not part of the value).">relativeAmount</abbr>]% weight to this choice for AI decisions</summary>
@@ -3801,6 +3794,11 @@
 <details class="example">
 <summary>Only available</summary>
 <p>Meant to be used together with conditionals, like "Only available &lt;after adopting [<abbr title="The name of any policy.">policy</abbr>]&gt; &lt;while the empire is happy&gt;". Only allows Building when ALL conditionals are met. Will also block Upgrade and Transform actions. See also CanOnlyBeBuiltWhen</p>
+<p>Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice</p>
+</details>
+<details class="example">
+<summary>Unavailable</summary>
+<p>Meant to be used together with conditionals, like "Unavailable &lt;after generating a Great Prophet&gt;".</p>
 <p>Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice</p>
 </details>
 <details class="example">
@@ -4066,6 +4064,11 @@
 <p>Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice</p>
 </details>
 <details class="example">
+<summary>Unavailable</summary>
+<p>Meant to be used together with conditionals, like "Unavailable &lt;after generating a Great Prophet&gt;".</p>
+<p>Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice</p>
+</details>
+<details class="example">
 <summary>Earn [<abbr title="This indicates a whole number, possibly with a + or - sign, such as `2`, `+13`, or `-3`.">amount</abbr>]% of [mapUnitFilter] unit's [<abbr title="`Cost` or `Strength`.">costOrStrength</abbr>] as [<abbr title="The name of any stockpiled resource.">stockpile</abbr>] when killed within 4 tiles of a city following this religion</summary>
 <p>Example: "Earn [3]% of [Wounded] unit's [Cost] as [Mana] when killed within 4 tiles of a city following this religion"</p>
 <p>Applicable to: FollowerBelief</p>
@@ -4137,7 +4140,7 @@
 <details class="example">
 <summary>Unavailable</summary>
 <p>Meant to be used together with conditionals, like "Unavailable &lt;after generating a Great Prophet&gt;".</p>
-<p>Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice</p>
+<p>Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice</p>
 </details>
 <details class="example">
 <summary>Excess Food converted to Production when under construction</summary>
@@ -4411,7 +4414,7 @@
 <details class="example">
 <summary>Unavailable</summary>
 <p>Meant to be used together with conditionals, like "Unavailable &lt;after generating a Great Prophet&gt;".</p>
-<p>Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice</p>
+<p>Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice</p>
 </details>
 <details class="example">
 <summary>Excess Food converted to Production when under construction</summary>
@@ -4985,7 +4988,7 @@
 <details class="example">
 <summary>Unavailable</summary>
 <p>Meant to be used together with conditionals, like "Unavailable &lt;after generating a Great Prophet&gt;".</p>
-<p>Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice</p>
+<p>Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice</p>
 </details>
 <details class="example">
 <summary>Not shown on world screen</summary>
@@ -5294,7 +5297,7 @@
 <details class="example">
 <summary>Unavailable</summary>
 <p>Meant to be used together with conditionals, like "Unavailable &lt;after generating a Great Prophet&gt;".</p>
-<p>Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice</p>
+<p>Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice</p>
 </details>
 <details class="example">
 <summary>Must be next to [<abbr title="Anything that can be used either in an improvementFilter or in a terrainFilter can be used here, plus 'unimproved'">tileFilter</abbr>]</summary>
@@ -5582,7 +5585,7 @@
 <details class="example">
 <summary>Unavailable</summary>
 <p>Meant to be used together with conditionals, like "Unavailable &lt;after generating a Great Prophet&gt;".</p>
-<p>Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice</p>
+<p>Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice</p>
 </details>
 <details class="example">
 <summary>Free [unit] found in the ruins</summary>
@@ -5643,7 +5646,6 @@
 <p>Example: "Comment [comment]"</p>
 <p>Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice</p>
 </details>
-<h2 id="tutorial-uniques">Tutorial uniques</h2>
 <h2 id="citystate-uniques">CityState uniques</h2>
 <details class="example">
 <summary>Provides military units every ≈[<abbr title="This indicates a positive whole number, larger than zero, a '+' sign is optional.">positiveAmount</abbr>] turns</summary>
@@ -5751,7 +5753,7 @@
 <details class="example">
 <summary>Unavailable</summary>
 <p>Meant to be used together with conditionals, like "Unavailable &lt;after generating a Great Prophet&gt;".</p>
-<p>Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice</p>
+<p>Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice</p>
 </details>
 <h2 id="eventchoice-uniques">EventChoice uniques</h2>
 <details class="example">
@@ -5762,7 +5764,7 @@
 <details class="example">
 <summary>Unavailable</summary>
 <p>Meant to be used together with conditionals, like "Unavailable &lt;after generating a Great Prophet&gt;".</p>
-<p>Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice</p>
+<p>Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins, Event, EventChoice</p>
 </details>
 <details class="example">
 <summary>[<abbr title="This indicates a number, usually with a + or - sign, such as `+25` (this kind of parameter is often followed by '%' which is nevertheless not part of the value).">relativeAmount</abbr>]% weight to this choice for AI decisions</summary>
@@ -6190,6 +6192,16 @@
 <p>Applicable to: Conditional</p>
 </details>
 <details class="example">
+<summary>&lt;when below [<abbr title="This indicates a positive whole number, larger than zero, a '+' sign is optional.">positiveAmount</abbr>] movement&gt;</summary>
+<p>Example: "&lt;when below [3] movement&gt;"</p>
+<p>Applicable to: Conditional</p>
+</details>
+<details class="example">
+<summary>&lt;when above [<abbr title="This indicates a positive whole number, larger than zero, a '+' sign is optional.">positiveAmount</abbr>] movement&gt;</summary>
+<p>Example: "&lt;when above [3] movement&gt;"</p>
+<p>Applicable to: Conditional</p>
+</details>
+<details class="example">
 <summary>&lt;if it hasn't used other actions yet&gt;</summary>
 <p>Applicable to: Conditional</p>
 </details>
@@ -6327,6 +6339,11 @@
 <p>Applicable to: TriggerCondition</p>
 </details>
 <details class="example">
+<summary>&lt;upon signing a peace treaty with [civFilter] Civilizations&gt;</summary>
+<p>Example: "&lt;upon signing a peace treaty with [City-States] Civilizations&gt;"</p>
+<p>Applicable to: TriggerCondition</p>
+</details>
+<details class="example">
 <summary>&lt;upon declaring friendship&gt;</summary>
 <p>Applicable to: TriggerCondition</p>
 </details>
@@ -6376,6 +6393,11 @@
 <details class="example">
 <summary>&lt;upon gaining a [baseUnitFilter] unit&gt;</summary>
 <p>Example: "&lt;upon gaining a [Melee] unit&gt;"</p>
+<p>Applicable to: TriggerCondition</p>
+</details>
+<details class="example">
+<summary>&lt;upon losing a [mapUnitFilter] unit&gt;</summary>
+<p>Example: "&lt;upon losing a [Wounded] unit&gt;"</p>
 <p>Applicable to: TriggerCondition</p>
 </details>
 <details class="example">
@@ -6603,6 +6625,13 @@
 <summary>&lt;(modified by game progress up to [<abbr title="This indicates a number, usually with a + or - sign, such as `+25` (this kind of parameter is often followed by '%' which is nevertheless not part of the value).">relativeAmount</abbr>]%)&gt;</summary>
 <p>Can only be applied to certain uniques, see details of each unique for specifics</p>
 <p>Example: "&lt;(modified by game progress up to [+20]%)&gt;"</p>
+<p>Applicable to: MetaModifier</p>
+</details>
+<details class="example">
+<summary>&lt;Civilopedia link [<abbr title="A Civilopedia link in the form category/entry.">pediaLink</abbr>]&gt;</summary>
+<p>Allows linking a unique to any Civilopedia page when it is listed in Civilopedia normally. This overrides automatic links to objects in the unique's parameters.</p>
+<p>Example: "&lt;Civilopedia link [Units/Settler]&gt;"</p>
+<p>This unique is automatically hidden from users.</p>
 <p>Applicable to: MetaModifier</p>
 </details>
 <details class="example">
