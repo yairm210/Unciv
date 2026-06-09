@@ -413,8 +413,11 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
                 if (stockpileCosts.any { (resourceName, amount) ->
                             civResources[resourceName] == null
-                                    || amount > civResources[resourceName]!! })
+                                    || amount > civResources[resourceName]!! }) {
+                    if (construction is Building)
+                        removeImprovementForBuilding(construction)
                     continue // Removes this construction from the queue
+                }
             }
             if (construction.isBuildable(this))
                 constructionQueue.add(constructionName)
@@ -422,6 +425,22 @@ class CityConstructions : IsPartOfGameInfoSerialization {
                 removeImprovementForBuilding(construction)
         }
         chooseNextConstruction()
+        validateCreatesOneImprovementMarkers()
+    }
+
+    /** Remove orphaned [UniqueType.CreatesOneImprovement] markers whose queue entry was removed elsewhere. */
+    private fun validateCreatesOneImprovementMarkers() {
+        val improvementsInQueue = constructionQueue.asSequence()
+            .map { getConstruction(it) as? Building }
+            .mapNotNull { it?.getImprovementToCreate(city.getRuleset(), city.civ)?.name }
+            .toHashSet()
+
+        for (tile in city.getTiles()) {
+            if (!tile.isMarkedForCreatesOneImprovement()) continue
+            val improvementInProgress = tile.improvementInProgress ?: continue
+            if (improvementInProgress !in improvementsInQueue)
+                tile.stopWorkingOnImprovement()
+        }
     }
 
     fun validateInProgressConstructions() {
