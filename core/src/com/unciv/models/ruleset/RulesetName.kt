@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset
 
+import com.unciv.models.stats.INamed
 import yairm210.purity.annotations.Readonly
 
 /** A ruleset name entry for checks that need to reason about translation keys across ruleset sources.
@@ -15,11 +16,11 @@ data class RulesetName(
 )
 
 @Readonly
-internal fun IRulesetObject.toRulesetName(ruleset: Ruleset): RulesetName =
+internal fun INamed.toRulesetName(ruleset: Ruleset): RulesetName =
     RulesetName(
         name,
         this::class.simpleName ?: "RulesetObject",
-        originRuleset.ifEmpty { ruleset.name }
+        (this as? IRulesetObject)?.originRuleset?.ifEmpty { ruleset.name } ?: ruleset.name
     )
 
 @Readonly

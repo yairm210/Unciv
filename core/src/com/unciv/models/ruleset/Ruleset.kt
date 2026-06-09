@@ -42,14 +42,16 @@ import kotlin.collections.set
 /** Specifies filenames to load for a Ruleset, and how to extract shared views over their contents.
  *
  *  [getRulesetObjects] and [getUniques] are used by ruleset-wide validation and unique parsing.
- *  [getNames] lists names that should be considered translation keys. Override it when a file
- *  contains names outside [IRulesetObject.name], such as nation city names or spy names.
+ *  [getINamed] backs [getNames] for files whose entries have names without being [IRulesetObject]s.
+ *  Override [getNames] directly when a file contains names outside its main objects, such as nation
+ *  city names or spy names.
  */
 enum class RulesetFile(
     val filename: String,
     @Readonly val getRulesetObjects: Ruleset.() -> Sequence<IRulesetObject> = { emptySequence() },
     @Readonly val getUniques: Ruleset.() -> Sequence<Unique> = { getRulesetObjects().flatMap { it.uniqueObjects } },
-    @Readonly val getNames: Ruleset.() -> Sequence<RulesetName> = { getRulesetObjects().map { it.toRulesetName(this) } }
+    @Readonly val getINamed: Ruleset.() -> Sequence<INamed> = { getRulesetObjects() },
+    @Readonly val getNames: Ruleset.() -> Sequence<RulesetName> = { getINamed().map { it.toRulesetName(this) } }
 ) {
     Beliefs("Beliefs.json", { beliefs.values.asSequence() }),
     Buildings("Buildings.json", { buildings.values.asSequence() }),
@@ -72,7 +74,7 @@ enum class RulesetFile(
     Tutorials("Tutorials.json", { tutorials.values.asSequence() }),
     TileImprovements("TileImprovements.json", { tileImprovements.values.asSequence() }),
     TileResources("TileResources.json", { tileResources.values.asSequence() }),
-    Specialists("Specialists.json", getNames = { specialists.values.asSequence().map { rulesetName(it.name, "Specialist") } }),
+    Specialists("Specialists.json", getINamed = { specialists.values.asSequence() }),
     Units("Units.json", { units.values.asSequence() }),
     UnitPromotions("UnitPromotions.json", { unitPromotions.values.asSequence() }),
     UnitNameGroup("UnitNameGroups.json", { unitNameGroups.values.asSequence() }, getNames = {
@@ -85,17 +87,17 @@ enum class RulesetFile(
         }
     }),
     UnitTypes("UnitTypes.json", { unitTypes.values.asSequence() }),
-    VictoryTypes("VictoryTypes.json", getNames = { victories.values.asSequence().map { rulesetName(it.name, "Victory") } }),
+    VictoryTypes("VictoryTypes.json", getINamed = { victories.values.asSequence() }),
     CityStateTypes("CityStateTypes.json", getUniques =
         { cityStateTypes.values.asSequence().flatMap { it.allyBonusUniqueMap.getAllUniques() + it.friendBonusUniqueMap.getAllUniques() } },
-        getNames = { cityStateTypes.values.asSequence().map { rulesetName(it.name, "CityStateType") } }),
+        getINamed = { cityStateTypes.values.asSequence() }),
     Personalities("Personalities.json", { personalities.values.asSequence() }),
     Events("Events.json", { events.values.asSequence() + events.values.flatMap { it.choices } }),
     GlobalUniques("GlobalUniques.json", { sequenceOf(globalUniques) }),
     ModOptions("ModOptions.json", getUniques = { modOptions.uniqueObjects.asSequence() }),
     Speeds("Speeds.json", { speeds.values.asSequence() }),
-    Difficulties("Difficulties.json", getNames = { difficulties.values.asSequence().map { it.toRulesetName(this) } }),
-    Quests("Quests.json", getNames = { quests.values.asSequence().map { rulesetName(it.name, "Quest") } }),
+    Difficulties("Difficulties.json", getINamed = { difficulties.values.asSequence() }),
+    Quests("Quests.json", getINamed = { quests.values.asSequence() }),
     Ruins("Ruins.json", { ruinRewards.values.asSequence() });
 }
 

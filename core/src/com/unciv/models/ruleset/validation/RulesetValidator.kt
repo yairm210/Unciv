@@ -15,6 +15,7 @@ import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.RulesetFile
+import com.unciv.models.ruleset.RulesetName
 import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.nation.getContrastRatio
@@ -533,17 +534,7 @@ open class RulesetValidator protected constructor(
 
         val duplicateNames = translatableNames
             .groupBy { it.name }
-            .filter { (_, names) ->
-                val sourceSet = names.map { it.source }.toSet()
-                val origins = names.map { it.originRuleset }
-                val isKnownBuiltInRulesetCollision = origins.all { it.isNotEmpty() }
-                    && origins.toSet().singleOrNull()?.let { it in builtInRulesetNames } == true
-                val isKnownBuiltInSourceCollision = sourceSet in knownBenignSourceCollisions
-                    && origins.all { it in builtInRulesetNames }
-                sourceSet.size >= 2
-                    && !isKnownBuiltInRulesetCollision
-                    && !isKnownBuiltInSourceCollision
-            }
+            .filter { (_, names) -> shouldReportTranslationNameCollision(names, builtInRulesetNames, knownBenignSourceCollisions) }
             .mapValues { (_, names) -> names.map { it.source }.distinct().sorted() }
             .toSortedMap()
 
@@ -554,6 +545,40 @@ open class RulesetValidator protected constructor(
                 sourceObject = null
             )
         }
+    }
+
+    private fun shouldReportTranslationNameCollision(
+        names: List<RulesetName>,
+        builtInRulesetNames: Set<String>,
+        knownBenignSourceCollisions: Set<Set<String>>
+    ): Boolean {
+        val sourceTypes = names.map { it.source }.toSet()
+        if (sourceTypes.size < 2) return false
+
+        val origins = names.map { it.originRuleset }
+        if (isCollisionWithinSingleBuiltInRuleset(origins, builtInRulesetNames)) return false
+        if (isKnownBenignBuiltInSourceCollision(sourceTypes, origins, builtInRulesetNames, knownBenignSourceCollisions)) return false
+
+        return true
+    }
+
+    private fun isCollisionWithinSingleBuiltInRuleset(
+        origins: List<String>,
+        builtInRulesetNames: Set<String>
+    ): Boolean {
+        if (origins.any { it.isEmpty() }) return false
+        val distinctOrigins = origins.toSet()
+        return distinctOrigins.size == 1 && distinctOrigins.single() in builtInRulesetNames
+    }
+
+    private fun isKnownBenignBuiltInSourceCollision(
+        sourceTypes: Set<String>,
+        origins: List<String>,
+        builtInRulesetNames: Set<String>,
+        knownBenignSourceCollisions: Set<Set<String>>
+    ): Boolean {
+        return sourceTypes in knownBenignSourceCollisions
+            && origins.all { it in builtInRulesetNames }
     }
 
     //endregion
