@@ -17,9 +17,9 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.KeyboardBinding
-import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.AnimatedMenuPopup
+import com.unciv.ui.popups.AnimatedMenuPopup.Companion.addContextMenu
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.civilopediascreen.FormattedLine.IconDisplay
 import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
@@ -68,7 +68,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen) : Table() {
                 buyTileButton.disable()
                 cityScreen.askToBuyTile(selectedTile)
             }
-            buyTileButton.onRightClick { TileBuyMenu(buyTileButton) }
+            buyTileButton.addContextMenu { TileBuyMenu(buyTileButton) }
             buyTileButton.isEnabled = cityScreen.canChangeState && city.civ.hasStatToBuy(Stat.Gold, goldCostOfTile)
             innerTable.add(buyTileButton).padTop(5f).row()
         }
@@ -123,7 +123,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen) : Table() {
         return statsTable
     }
 
-    private inner class TileBuyMenu(buyTileButton: TextButton) : AnimatedMenuPopup(stage, getActorTopRight(buyTileButton)) {
+    private inner class TileBuyMenu(buyTileButton: TextButton) : AnimatedMenuPopup(stage, buyTileButton) {
         override fun createContentTable(): Table? {
             val maxRing = city.getWorkRange()
             val counts = IntArray(maxRing + 1) { countBuyableInRing(it) }
