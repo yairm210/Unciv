@@ -2,6 +2,7 @@ package com.unciv.ui.components.extensions
 
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.Colors
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.TextureData
 import com.badlogic.gdx.graphics.glutils.FileTextureData
@@ -29,6 +30,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Array
 import com.unciv.Constants
+import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.GdxKeyCodeFixes.DEL
 import com.unciv.ui.components.extensions.GdxKeyCodeFixes.toString
@@ -391,6 +393,28 @@ fun Label.setFontSize(size: Int): Label {
     @Suppress("UsePropertyAccessSyntax") setStyle(style)
     setFontScale(size / Fonts.ORIGINAL_FONT_SIZE)
     return this
+}
+
+/** Only if this Label contains [Stat symbols][Stat.fontChars], tweak `fontColor` and `text`
+ *  so that these symbols render normally and not as black outline.
+ *  - **Only makes sense when the font color is very dark**
+ *  - **To be called _after_ translation!**
+ */
+fun Label.removeFontColorFromStatIcons() {
+    if (text.none { it in Stat.fontChars }) return
+    val fontColorMarkup = "[#${style.fontColor.toString().substring(0, 6)}]"
+    val newText = buildString {
+        append(fontColorMarkup)
+        for (char in text) {
+            if (char in Stat.fontChars) {
+                append("[]")
+                append(char)
+                append(fontColorMarkup)
+            } else append(char)
+        }
+    }
+    setFontColor(Color.WHITE)
+    setText(newText)
 }
 
 /** [pack][WidgetGroup.pack] a [WidgetGroup] if its [needsLayout][WidgetGroup.needsLayout] is true.

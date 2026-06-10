@@ -239,7 +239,7 @@ class GameOptionsTable(
             popup.open()
             popup.update()
         }
-        add(button)
+        add(button).row()
     }
 
     private fun numberOfMajorCivs() = ruleset.nations.values.count {

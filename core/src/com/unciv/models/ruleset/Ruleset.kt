@@ -39,37 +39,65 @@ import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Readonly
 import kotlin.collections.set
 
+/** Specifies filenames to load for a Ruleset, and how to extract shared views over their contents.
+ *
+ *  [getRulesetObjects] and [getUniques] are used by ruleset-wide validation and unique parsing.
+ *  [getINamed] backs [getNames] for files whose entries have names without being [IRulesetObject]s.
+ *  Override [getNames] directly when a file contains names outside its main objects, such as nation
+ *  city names or spy names.
+ */
 enum class RulesetFile(
     val filename: String,
     @Readonly val getRulesetObjects: Ruleset.() -> Sequence<IRulesetObject> = { emptySequence() },
-    @Readonly val getUniques: Ruleset.() -> Sequence<Unique> = { getRulesetObjects().flatMap { it.uniqueObjects } }
+    @Readonly val getUniques: Ruleset.() -> Sequence<Unique> = { getRulesetObjects().flatMap { it.uniqueObjects } },
+    @Readonly val getINamed: Ruleset.() -> Sequence<INamed> = { getRulesetObjects() },
+    @Readonly val getNames: Ruleset.() -> Sequence<RulesetName> = { getINamed().map { it.toRulesetName(this) } }
 ) {
     Beliefs("Beliefs.json", { beliefs.values.asSequence() }),
     Buildings("Buildings.json", { buildings.values.asSequence() }),
     Eras("Eras.json", { eras.values.asSequence() }),
-    Religions("Religions.json"),
-    Nations("Nations.json", { nations.values.asSequence() }),
+    Religions("Religions.json", getNames = { religions.asSequence().map { rulesetName(it, "Religion") } }),
+    Nations("Nations.json", { nations.values.asSequence() }, getNames = {
+        val ruleset = this
+        nations.values.asSequence().flatMap { nation ->
+            sequence {
+                yield(nation.toRulesetName(ruleset))
+                yield(ruleset.rulesetName(nation.leaderName, "Nation.leaderName", nation.originRuleset.ifEmpty { ruleset.name }))
+                yieldAll(nation.cities.map { ruleset.rulesetName(it, "Nation.cities", nation.originRuleset.ifEmpty { ruleset.name }) })
+                yieldAll(nation.spyNames.map { ruleset.rulesetName(it, "Nation.spyNames", nation.originRuleset.ifEmpty { ruleset.name }) })
+            }
+        }
+    }),
     Policies("Policies.json", { policies.values.asSequence() }),
     Techs("Techs.json", { technologies.values.asSequence() }),
     Terrains("Terrains.json", { terrains.values.asSequence() }),
     Tutorials("Tutorials.json", { tutorials.values.asSequence() }),
     TileImprovements("TileImprovements.json", { tileImprovements.values.asSequence() }),
     TileResources("TileResources.json", { tileResources.values.asSequence() }),
-    Specialists("Specialists.json"),
+    Specialists("Specialists.json", getINamed = { specialists.values.asSequence() }),
     Units("Units.json", { units.values.asSequence() }),
     UnitPromotions("UnitPromotions.json", { unitPromotions.values.asSequence() }),
-    UnitNameGroup("UnitNameGroups.json", { unitNameGroups.values.asSequence() }),
+    UnitNameGroup("UnitNameGroups.json", { unitNameGroups.values.asSequence() }, getNames = {
+        val ruleset = this
+        unitNameGroups.values.asSequence().flatMap { group ->
+            sequence {
+                yield(group.toRulesetName(ruleset))
+                yieldAll(group.unitNames.map { ruleset.rulesetName(it, "UnitNameGroup.unitNames", group.originRuleset.ifEmpty { ruleset.name }) })
+            }
+        }
+    }),
     UnitTypes("UnitTypes.json", { unitTypes.values.asSequence() }),
-    VictoryTypes("VictoryTypes.json"),
+    VictoryTypes("VictoryTypes.json", getINamed = { victories.values.asSequence() }),
     CityStateTypes("CityStateTypes.json", getUniques =
-        { cityStateTypes.values.asSequence().flatMap { it.allyBonusUniqueMap.getAllUniques() + it.friendBonusUniqueMap.getAllUniques() } }),
+        { cityStateTypes.values.asSequence().flatMap { it.allyBonusUniqueMap.getAllUniques() + it.friendBonusUniqueMap.getAllUniques() } },
+        getINamed = { cityStateTypes.values.asSequence() }),
     Personalities("Personalities.json", { personalities.values.asSequence() }),
     Events("Events.json", { events.values.asSequence() + events.values.flatMap { it.choices } }),
     GlobalUniques("GlobalUniques.json", { sequenceOf(globalUniques) }),
     ModOptions("ModOptions.json", getUniques = { modOptions.uniqueObjects.asSequence() }),
     Speeds("Speeds.json", { speeds.values.asSequence() }),
-    Difficulties("Difficulties.json"),
-    Quests("Quests.json"),
+    Difficulties("Difficulties.json", getINamed = { difficulties.values.asSequence() }),
+    Quests("Quests.json", getINamed = { quests.values.asSequence() }),
     Ruins("Ruins.json", { ruinRewards.values.asSequence() });
 }
 
@@ -330,6 +358,10 @@ class Ruleset {
     fun allRulesetObjects(): Sequence<IRulesetObject> = RulesetFile.entries.asSequence().flatMap { it.getRulesetObjects(this) }
     @Readonly
     fun allUniques(): Sequence<Unique> = RulesetFile.entries.asSequence().flatMap { it.getUniques(this) }
+    /** Returns all non-empty ruleset names that can act as translation keys, with their source metadata. */
+    @Readonly
+    fun allNames(): Sequence<RulesetName> =
+        RulesetFile.entries.asSequence().flatMap { it.getNames(this) }.filter { it.name.isNotEmpty() }
     @Readonly fun allICivilopediaText(): Sequence<ICivilopediaText> = allRulesetObjects() + events.values.flatMap { it.choices }
 
     fun load(folderHandle: FileHandle) {

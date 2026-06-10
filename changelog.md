@@ -1,3 +1,40 @@
+## 4.20.12
+
+By xplon:
+- Hide icons when translating spy names 
+- Warn about translatable ruleset name collisions 
+
+By SomeTroglodyte:
+- Improve context menu indicator size 
+- Console: `civ add` and `civ remove` commands 
+
+Add missing newline in advanced game settings - By unciv-loof
+
+## 4.20.11
+
+Fix double buttons for great people for constructing great improvements
+
+Fixed custom file directories on Android
+
+Approve values of 0 for certain mod constants in validator - By unciv-loof
+
+By SomeTroglodyte: 
+- Fix black outlines for Stat symbols in notifications
+- Fix TriggerUponLosingUnit 
+- Fix Android on screen keyboard show/hide
+- Minor CPU optimization
+
+Add "Vegetation" to Marsh - By EmperorPinguin
+
+## 4.20.10
+
+By SomeTroglodyte: 
+- Free policy notifications open policy screen 
+- A new triggerable Unique to choose a music track 
+- Better Scenario starts with fewer surprises 
+
+Boreal map type - By unciv-loof
+
 ## 4.20.9
 
 AIs no longer stop creating cities late-game

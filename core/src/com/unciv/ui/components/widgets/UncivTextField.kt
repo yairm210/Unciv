@@ -3,7 +3,6 @@ package com.unciv.ui.components.widgets
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
@@ -46,7 +45,6 @@ open class UncivTextField(
     private val onFocusChange: (TextField.(Boolean) -> Unit)? = null
 ) : TextFieldWithFixes(preEnteredText, BaseScreen.skin) {
     private val isAndroid = false // disabled for now since it's not actually working // Gdx.app.type == Application.ApplicationType.Android
-    private val hideKeyboard = { Gdx.input.setOnscreenKeyboardVisible(false) }
 
     init {
         messageText = hint.tr()
@@ -60,10 +58,6 @@ open class UncivTextField(
         override fun keyboardFocusChanged(event: FocusEvent, actor: Actor, focused: Boolean) {
             if (focused) {
                 scrollAscendantToTextField()
-                if (isAndroid) {
-                    addPopupCloseListener()
-                    Gdx.input.setOnscreenKeyboardVisible(true)
-                }
             }
             onFocusChange?.invoke(this@UncivTextField, focused)
         }
@@ -91,17 +85,6 @@ open class UncivTextField(
                     }
                 }
             }
-        }
-        override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
-            addPopupCloseListener()
-            return false
-        }
-    }
-
-    private fun addPopupCloseListener() {
-        val popup = getAscendant<Popup>()
-        if (popup != null && !popup.closeListeners.contains(hideKeyboard)) {
-            popup.closeListeners.add(hideKeyboard)
         }
     }
 

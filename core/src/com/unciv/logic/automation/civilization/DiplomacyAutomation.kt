@@ -577,7 +577,7 @@ object DiplomacyAutomation {
          * ```
          * Adjust with [DiplomacyManager.EMA_PERIOD] and other constants (see above)
          */
-        fun requiredOpinionChange(
+        @Readonly fun requiredOpinionChange(
             diplomacy: DiplomacyManager,
             numberOfActiveDenouncements: Int
         ): Float {

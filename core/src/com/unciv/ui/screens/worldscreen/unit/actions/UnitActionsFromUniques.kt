@@ -221,6 +221,8 @@ object UnitActionsFromUniques {
         for (unique in unit.getUniques()) {
             // not a unit action
             if (unique.modifiers.none { it.type?.targetTypes?.contains(UniqueTarget.UnitActionModifier) == true }) continue
+            // has a dedicated action handler (e.g. ConstructImprovementInstantly → CreateImprovement)
+            if (unique.type?.targetTypes?.contains(UniqueTarget.UnitAction) == true) continue
             // extends an existing unit action
             if (unique.hasModifier(UniqueType.UnitActionExtraLimitedTimes)) continue
             if (!unique.isTriggerable) continue

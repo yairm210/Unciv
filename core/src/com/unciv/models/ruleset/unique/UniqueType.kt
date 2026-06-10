@@ -7,13 +7,22 @@ import com.unciv.models.ruleset.validation.RulesetValidator
 import com.unciv.models.ruleset.validation.Suppression
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
+import com.unciv.ui.audio.MusicTrackChooserFlags
 import yairm210.purity.annotations.Readonly
 
 // I didn't put this in a companion object because APPARENTLY doing that means you can't use it in the init function.
 private val numberRegex = Regex("\\d+$") // Any number of trailing digits
 
-const val ADDITIVE_BONUS_EXPLANATION = "Multiple bonuses stack additively: +50% + +50% = +100%"
-const val MULTIPLICATIVE_BONUS_EXPLANATION = "Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%"
+private const val ADDITIVE_BONUS_EXPLANATION = "Multiple bonuses stack additively: +50% + +50% = +100%"
+private const val MULTIPLICATIVE_BONUS_EXPLANATION = "Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%"
+private val CHOOSE_MUSIC_DOCSTRING get() = (
+    """Parameters are unchecked, strings not matching existing tracks or flags are ignored.
+    |See [Context-sensitive music](Images-and-Audio.md#context-sensitive-music-overview)
+    |The first parameter is the track name prefix, e.g. a Civilization name or "this civ".
+    |The second parameter is a list of zero or more suffixes, comma-separated, used to specify a "mood", like Peace, War, Ambient etc. First track that matches wins.
+    |The third parameter is a list of zero or more flags: """ + MusicTrackChooserFlags.entries.joinToString(postfix = ".") { it.name }
+    ).trimMargin()
+
 
 enum class UniqueType(
     val text: String,
@@ -144,8 +153,8 @@ enum class UniqueType(
         docDescription = MULTIPLICATIVE_BONUS_EXPLANATION),
 
     /// Production to Stat conversion
-    EnablesCivWideStatProduction("Enables conversion of city production to [civWideStat]", UniqueTarget.Global),
-    ProductionToCivWideStatConversionBonus("Production to [civWideStat] conversion in cities changed by [relativeAmount]%", UniqueTarget.Global),
+    EnablesStatProduction("Enables conversion of city production to [stat]", UniqueTarget.Global),
+    ProductionToStatConversionBonus("Production to [stat] conversion in cities changed by [relativeAmount]%", UniqueTarget.Global),
 
     /// Improvements
     // Should be replaced with moddable improvements when roads become moddable
@@ -932,9 +941,13 @@ enum class UniqueType(
     PlaySound("Play [comment] sound", UniqueTarget.Triggerable, flags = UniqueFlag.setOfHiddenToUsers,
         docDescription = "See [Images and Audio](Images-and-Audio.md#sounds) for a list of available sounds."),
     GetLeaderTitle("Get the leader title of [leaderTitle]", UniqueTarget.Triggerable, flags = UniqueFlag.setOfHiddenToUsers),
+    ChooseMusic("Choose a music track for [unknown], [unknown], [unknown]", UniqueTarget.Triggerable, flags = UniqueFlag.setOfHiddenToUsers,
+        docDescription = CHOOSE_MUSIC_DOCSTRING) {
+        override fun parameterTypeMapInitializer() = arrayListOf<List<UniqueParameterType>>()
+    },
 
     //endregion
-    
+
     ///////////////////////////////////////// region 09 UNIT TRIGGERABLES /////////////////////////////////////////
 
     OneTimeUnitHeal("[unitTriggerTarget] heals [positiveAmount] HP", UniqueTarget.UnitTriggerable),
