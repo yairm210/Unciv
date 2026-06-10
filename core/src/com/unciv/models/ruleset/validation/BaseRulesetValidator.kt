@@ -301,38 +301,53 @@ internal class BaseRulesetValidator(
     }
 
     private fun checkPromotionCircularReferences(lines: RulesetErrorList) {
-        fun hasAcyclicPathToRoot(promotion: Promotion, history: HashSet<Promotion>, level: Int): Boolean {
-            if (promotion.prerequisites.isEmpty()) return true
-            if (promotion in history) return false
-            if (level > 99) return false
-
-            history.add(promotion)
-            for (prerequisiteName in promotion.prerequisites) {
-                val prerequisite = ruleset.unitPromotions[prerequisiteName] ?: continue
-                if (hasAcyclicPathToRoot(prerequisite, history.toCollection(hashSetOf()), level + 1))
-                    return true
-            }
-            return false
+        val promotionsUnlockedByPrerequisite = HashMap<String, MutableList<Promotion>>()
+        for (promotion in ruleset.unitPromotions.values) {
+            for (prerequisiteName in promotion.prerequisites)
+                promotionsUnlockedByPrerequisite.getOrPut(prerequisiteName) { ArrayList() }.add(promotion)
         }
 
-        fun findCircularReference(history: List<Promotion>, promotion: Promotion, level: Int): List<Promotion>? {
+        val promotionsWithAcyclicPathToRoot = HashSet<Promotion>()
+        val promotionsToCheck = ArrayDeque<Promotion>()
+        for (promotion in ruleset.unitPromotions.values) {
+            if (promotion.prerequisites.isNotEmpty()) continue
+            promotionsWithAcyclicPathToRoot.add(promotion)
+            promotionsToCheck.add(promotion)
+        }
+
+        while (promotionsToCheck.isNotEmpty()) {
+            val promotion = promotionsToCheck.removeFirst()
+            for (unlockedPromotion in promotionsUnlockedByPrerequisite[promotion.name].orEmpty()) {
+                if (!promotionsWithAcyclicPathToRoot.add(unlockedPromotion)) continue
+                promotionsToCheck.add(unlockedPromotion)
+            }
+        }
+
+        val promotionsInAlreadyReportedCycles = HashSet<Promotion>()
+        val promotionsAlreadyChecked = HashSet<Promotion>()
+        fun findCircularReference(history: List<Promotion>, promotion: Promotion): List<Promotion>? {
             val existingIndex = history.indexOf(promotion)
             if (existingIndex >= 0) return history.drop(existingIndex) + promotion
-            if (level > 99) return null
+            if (promotion in promotionsAlreadyChecked) return null
+            if (promotion in promotionsWithAcyclicPathToRoot) return null
 
             val newHistory = history + promotion
             for (prerequisiteName in promotion.prerequisites) {
                 val prerequisite = ruleset.unitPromotions[prerequisiteName] ?: continue
-                return findCircularReference(newHistory, prerequisite, level + 1) ?: continue
+                val circularReference = findCircularReference(newHistory, prerequisite)
+                if (circularReference != null) return circularReference
             }
+
+            promotionsAlreadyChecked.add(promotion)
             return null
         }
 
         for (promotion in ruleset.unitPromotions.values) {
-            if (promotion.prerequisites.isEmpty()) continue
-            if (hasAcyclicPathToRoot(promotion, hashSetOf(), 0)) continue
+            if (promotion in promotionsWithAcyclicPathToRoot) continue
+            if (promotion in promotionsInAlreadyReportedCycles) continue
 
-            val circularReference = findCircularReference(emptyList(), promotion, 0) ?: continue
+            val circularReference = findCircularReference(emptyList(), promotion) ?: continue
+            promotionsInAlreadyReportedCycles.addAll(circularReference)
             lines.add("Circular Reference in Promotions: ${circularReference.joinToString("→") { it.name }}",
                 RulesetErrorSeverity.Warning, promotion)
         }
