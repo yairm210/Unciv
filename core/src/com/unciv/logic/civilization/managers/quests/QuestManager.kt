@@ -146,6 +146,12 @@ class QuestManager : IsPartOfGameInfoSerialization {
         assignedQuests.removeAll { it.isIndividual() && handleIndividualQuest(it) }
     }
 
+    /** Remove all quests for [civ] without side effects, for console `civ remove` */
+    fun removeQuestsFor(civ: Civilization) {
+        assignedQuests.removeAll(getAssignedQuestsFor(civ).toList())
+        individualQuestCountdown.remove(civ.civID)
+    }
+
     fun handleObsoleteGlobalQuests() {
         val iterator = assignedQuests.iterator()
         for (assignedQuest in iterator) {

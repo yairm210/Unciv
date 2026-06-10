@@ -1,3 +1,15 @@
+## 4.20.12
+
+By xplon:
+- Hide icons when translating spy names 
+- Warn about translatable ruleset name collisions 
+
+By SomeTroglodyte:
+- Improve context menu indicator size 
+- Console: `civ add` and `civ remove` commands 
+
+Add missing newline in advanced game settings - By unciv-loof
+
 ## 4.20.11
 
 Fix double buttons for great people for constructing great improvements

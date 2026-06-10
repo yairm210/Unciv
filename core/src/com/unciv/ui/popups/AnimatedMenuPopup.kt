@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.utils.Layout
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
 import com.badlogic.gdx.utils.Align
 import com.unciv.ui.components.SmallButtonStyle
@@ -51,7 +52,10 @@ open class AnimatedMenuPopup private constructor (stage: Stage) : Popup(stage, S
         private const val indicatorAndroid = "OtherIcons/ContextMenuAvailableA"
         private const val indicatorDesktop = "OtherIcons/ContextMenuAvailableD"
         private const val maxIndicatorSize = 32f
-        private const val indicatorXOffset = 10f
+        // These are partially to take up the "slack" inside the texture
+        // (which is square, but the visual content for the Desktop one has a wide transparent margin)
+        private const val indicatorXOffsetRelativeAndroid = 0.15f
+        private const val indicatorXOffsetRelativeDesktop = 0.35f
         private val indicatorColor = Color.WHITE
 
         /** Get stage coords of an [actor]'s top right corner, to help position an [AnimatedMenuPopup].
@@ -61,8 +65,8 @@ open class AnimatedMenuPopup private constructor (stage: Stage) : Popup(stage, S
 
         private fun Actor.getAlignedPosition(align: Int) = localToStageCoordinates(getEdgePoint(align))
 
-        fun Group.addContextMenu(factory: () -> AnimatedMenuPopup) {
-            Helpers.addIndicator(this)
+        fun Group.addContextMenu(indicatorMinSizeRelative: Float = 0.5f, factory: () -> AnimatedMenuPopup) {
+            Helpers.addIndicator(this, indicatorMinSizeRelative)
             onRightClick { factory() }
         }
     }
@@ -134,29 +138,36 @@ open class AnimatedMenuPopup private constructor (stage: Stage) : Popup(stage, S
 
 
     private object Helpers {
-        fun addIndicator(actor: Group) =
-            if (Gdx.app.type == Application.ApplicationType.Android) addIndicatorAndroid(actor)
-            else addIndicatorDesktop(actor)
+        fun addIndicator(actor: Group, indicatorMinSizeRelative: Float) =
+            if (Gdx.app.type == Application.ApplicationType.Android)
+                addIndicatorAndroid(actor, indicatorMinSizeRelative)
+            else addIndicatorDesktop(actor, indicatorMinSizeRelative)
 
-        private fun addIndicatorAndroid(actor: Group) {
-            val size = maxIndicatorSize.coerceAtMost(actor.height / 2)
+        private fun getIndicatorSize(actor: Group, indicatorMinSizeRelative: Float): Float {
+            val actorHeight = (actor as? Layout)?.prefHeight ?: actor.height
+            return maxIndicatorSize.coerceAtMost(actorHeight * indicatorMinSizeRelative)
+        }
+
+        private fun addIndicatorAndroid(actor: Group, indicatorMinSizeRelative: Float) {
             val icon = ImageGetter.getImage(indicatorAndroid, indicatorColor)
+            val size = getIndicatorSize(actor, indicatorMinSizeRelative)
             icon.setSize(size)
-            icon.setPosition(actor.width + indicatorXOffset, 0f, Align.bottomRight)
+            icon.setPosition(actor.width + size * indicatorXOffsetRelativeAndroid, 0f, Align.bottomRight)
             actor.addActor(icon)
         }
 
-        private fun addIndicatorDesktop(actor: Group) {
-            val size = maxIndicatorSize.coerceAtMost(actor.height / 2)
+        private fun addIndicatorDesktop(actor: Group, indicatorMinSizeRelative: Float) {
             val icon = ImageGetter.getImage(indicatorDesktop, indicatorColor)
+            val size = getIndicatorSize(actor, indicatorMinSizeRelative)
             icon.setSize(size)
+            val offset = size * indicatorXOffsetRelativeDesktop
             actor.addListener(
                 UncivTooltip(
                     target = actor,
                     content = icon,
                     targetAlign = Align.bottomRight,
                     tipAlign = Align.bottomRight,
-                    offset = Vector2(indicatorXOffset, 0f)
+                    offset = Vector2(offset, 0f)
                 )
             )
         }
