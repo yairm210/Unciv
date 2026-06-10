@@ -25,24 +25,7 @@ internal class DebugTab(
     optionsPopup: OptionsPopup
 ): OptionsPopupTab(optionsPopup) {
     override fun lateInitialize() {
-        if (GUI.isWorldLoaded()) {
-            val simulateButton = "Simulate until turn:".toTextButton()
-            val simulateTextField = UncivTextField.Numeric("Turn", DebugUtils.SIMULATE_UNTIL_TURN, integerOnly = true)
-            val invalidInputLabel = "This is not a valid integer!".toLabel().also { it.isVisible = false }
-            simulateButton.onClick {
-                val simulateUntilTurns = simulateTextField.value?.toInt()
-                if (simulateUntilTurns == null) {
-                    invalidInputLabel.isVisible = true
-                    return@onClick
-                }
-                DebugUtils.SIMULATE_UNTIL_TURN = simulateUntilTurns
-                invalidInputLabel.isVisible = false
-                GUI.getWorldScreen().nextTurn()
-            }
-            add(simulateButton)
-            add(simulateTextField).row()
-            add(invalidInputLabel).colspan(2).row()
-        }
+        if (GUI.isWorldLoaded()) addSimulationControls()
 
         addCheckbox("Supercharged", DebugUtils::SUPERCHARGED)
         addCheckbox("View entire map", DebugUtils::VISIBLE_MAP, updateWorld = true)
@@ -87,6 +70,25 @@ internal class DebugTab(
         addSeparator()
 
         super.lateInitialize()
+    }
+
+    private fun addSimulationControls() {
+        val simulateButton = "Simulate until turn:".toTextButton()
+        val simulateTextField = UncivTextField.Numeric("Turn", DebugUtils.SIMULATE_UNTIL_TURN, integerOnly = true)
+        val invalidInputLabel = "This is not a valid integer!".toLabel().also { it.isVisible = false }
+        simulateButton.onClick {
+            val simulateUntilTurns = simulateTextField.value?.toInt()
+            if (simulateUntilTurns == null) {
+                invalidInputLabel.isVisible = true
+                return@onClick
+            }
+            DebugUtils.SIMULATE_UNTIL_TURN = simulateUntilTurns
+            invalidInputLabel.isVisible = false
+            GUI.getWorldScreen().nextTurn()
+        }
+        add(simulateButton)
+        add(simulateTextField).row()
+        add(invalidInputLabel).colspan(2).row()
     }
 
     private fun GameInfo.unlockAllTechs() {

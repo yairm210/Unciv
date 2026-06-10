@@ -104,13 +104,13 @@ class CityScreenConstructionMenu(
     private fun canAddQueueTop() = construction !is PerpetualConstruction &&
         cityConstructions.canAddToQueue(construction)
             && !isConstructionImprovementCreationBuilding()
-    
+
     private fun addQueueTop() = cityConstructions.addToQueue(construction, addToTop = true)
 
     @Readonly
     private fun canAddAllQueues() = allCitiesEntryValid {
         it.canAddToQueue(construction)
-                && !isConstructionImprovementCreationBuilding() 
+                && !isConstructionImprovementCreationBuilding()
         // A Perpetual that is already queued can still be added says canAddToQueue, but here we don't want to count that
                 && !(construction is PerpetualConstruction && it.isBeingConstructedOrEnqueued(constructionName))
     }
@@ -121,7 +121,7 @@ class CityScreenConstructionMenu(
         allCitiesEntryValid {
             (it.canAddToQueue(construction) && !isConstructionImprovementCreationBuilding())
                     || it.isEnqueuedForLater(constructionName) }
-    
+
     private fun addAllQueuesTop() = forAllCities {
         val index = it.constructionQueue.indexOf(constructionName)
         if (index > 0)

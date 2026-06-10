@@ -86,7 +86,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     private val miniQueueHeight = 54f
     private val posFromEdge = CityScreen.posFromEdge
     private val stageHeight = cityScreen.stage.height
-    
+
     private val highlightColor = Color.GREEN.darken(0.4f)
 
     /** Gets or sets visibility of [both widgets][CityConstructionsTable] */
@@ -105,7 +105,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             tintColor = ImageGetter.CHARCOAL
         )
         queueExpander = ExpanderTab(
-            "Construction queue", 
+            "Construction queue",
             onChange = { cityScreen.update() },
             defaultPad = 0f,
             // keep lowerTable at fixed position
@@ -114,7 +114,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         )
 
         upperTable.defaults().left().top()
-        
+
         // The construction queue is collapsed by default, so there's more vertical space for the
         // available-constructions-table. When the user decides to expand the
         // queue, we can use the majority of available vertical space (3/4 of stage height)!
@@ -126,7 +126,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         upperTable.add(buttonsTable)
             .height("".toTextButton().height) // constant height in order to not let the lowerTable jump
             .padBottom(pad).row()
-        
+
         availableConstructionsScrollPane = ScrollPane(availableConstructionsTable.addBorder(2f, Color.WHITE))
         availableConstructionsScrollPane.setOverscroll(false, false)
         availableConstructionsTable.background = BaseScreen.skinStrings.getUiBackground(
@@ -171,7 +171,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         /** [UniqueType.MayBuyConstructionsInPuppets] support - we need a buy button for civs that could buy items in puppets */
         if (cityScreen.city.isPuppet && !cityScreen.city.getMatchingUniques(UniqueType.MayBuyConstructionsInPuppets).any()) return
         buttonsTable.clear()
-        
+
         for (button in buyButtonFactory.getBuyButtons(construction)) {
             buttonsTable.add(button).width(120f).padRight(10f)
         }
@@ -187,7 +187,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             val lowerButton = getLowerPriorityButton(selectedQueueEntry, constructionName, cityScreen.city)
             lowerButton.setEnabled(selectedQueueEntry != queue.lastIndex && cityScreen.canCityBeChanged())
             buttonsTable.add(lowerButton).padRight(5f)
-            
+
             if (cityScreen.canCityBeChanged() && !queueExpander.isOpen && selectedQueueEntry in 1..4)
                 buttonsTable.add(getRemoveFromQueueButton(selectedQueueEntry, cityScreen.city)).padLeft(10f)
         }
@@ -290,16 +290,16 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         for (entry in constructionsSequence.filter { it.shouldBeDisplayed(cityConstructions) }) {
 
             val useStoredProduction = entry is Building || !cityConstructions.isBeingConstructedOrEnqueued(entry.name)
-            
-            // this is susceptible to comodification since ANY change in unique sources - for example a new building - 
+
+            // this is susceptible to comodification since ANY change in unique sources - for example a new building -
             //   can cause comodification change
             // This is however rare enough and short enough in duration that a second run will work
             val buttonText = try {
                 cityConstructions.getTurnsToConstructionString(entry, useStoredProduction).trim()
-            } catch (ex: Exception){
+            } catch (_: Exception){
                 cityConstructions.getTurnsToConstructionString(entry, useStoredProduction).trim()
             }
-            
+
             val resourcesRequired = if (entry is BaseUnit)
                 entry.getResourceRequirementsPerTurn(city.civ.state)
                 else entry.getResourceRequirementsPerTurn(city.state)
@@ -473,7 +473,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         } else {
             cityScreen.clearSelection()
             selectedQueueEntry = -1
-        }    
+        }
         onBeforeUpdate()
         cityScreen.update()  // Not before CityScreenConstructionMenu or table will have no parent to get stage coords
         ensureQueueEntryVisible()
@@ -527,7 +527,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         val statIcons = if (construction is Building)
             " " + Stat.entries.filter { construction.isStatRelated(it, cityScreen.city) }.map { it.character }.joinToString("")
         else ""
-        
+
         val constructionNameText = "${construction.name.tr(hideIcons = true)}$statIcons"
 
         constructionTable.add(constructionNameText.toLabel(fontColor = textColor, hideIcons = true).apply { wrap=true })
@@ -689,7 +689,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             else -> UncivSound.Click
         }
     }
-    
+
     private fun getMovePriorityButton(
         arrowDirection: Int,
         binding: KeyboardBinding,
@@ -771,7 +771,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     }
 
     private fun resizeAvailableConstructionsScrollPane() {
-        availableConstructionsScrollPane.height = 
+        availableConstructionsScrollPane.height =
             min(availableConstructionsTable.prefHeight, lowerTableScrollCell.maxHeight)
         lowerTable.pack()
     }

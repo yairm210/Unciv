@@ -18,18 +18,17 @@ class NextTurnMenu(
         // We need to activate the end turn button again after the menu closes
         afterCloseCallback = { worldScreen.shouldUpdate = true }
     }
-    
+
     override fun createContentTable(): Table {
         val table = super.createContentTable()!!
-        table.add(getButton("Next Turn", KeyboardBinding.NextTurnMenuNextTurn) { 
-            worldScreen.nextTurn() 
+        table.add(getButton("Next Turn", KeyboardBinding.NextTurnMenuNextTurn) {
+            worldScreen.nextTurn()
         }).row()
         val automateUnitsAction = NextTurnAction.MoveAutomatedUnits
         if (automateUnitsAction.isChoice(worldScreen))
-            table.add(getButton("Move automated units", KeyboardBinding.NextTurnMenuMoveAutomatedUnits) { 
-                automateUnitsAction.action(worldScreen) 
+            table.add(getButton("Move automated units", KeyboardBinding.NextTurnMenuMoveAutomatedUnits) {
+                automateUnitsAction.action(worldScreen)
             }).row()
         return table
     }
 }
-

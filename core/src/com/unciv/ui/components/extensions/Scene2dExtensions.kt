@@ -2,7 +2,6 @@ package com.unciv.ui.components.extensions
 
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.Colors
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.TextureData
 import com.badlogic.gdx.graphics.glutils.FileTextureData
@@ -541,7 +540,7 @@ fun TextureData.getReadonlyPixmap(): Pixmap {
     return field.get(this) as Pixmap
 }
 
-fun <T: Actor>Stack.addInTable(actor: T): Cell<T> {
+fun <T: Actor> Stack.addInTable(actor: T): Cell<T> {
     val table = Table()
     add(table)
     return table.add(actor).grow()
