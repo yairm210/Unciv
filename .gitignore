@@ -144,7 +144,8 @@ android/release/
 
 # Transient Unciv files
 android/assets/GameSettings.json
-/android/assets/ModListCache.json
+android/assets/FasterUIDevSettings.json
+android/assets/ModListCache.json
 android/assets/lasterror.txt
 android/assets/fonts/
 android/assets/maps/
