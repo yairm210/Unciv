@@ -1,3 +1,28 @@
+## 4.20.12
+
+Hopefully resolved  - mkdocs deploys correctly
+
+test: Resource diversity test, triggered by user complaint which stated that he's getting more uniform resources recently.
+
+chore: Fix mipmap generation failures for tests that create UI elements
+
+chore: Removed "fake deprecations", and forEachCiv and forEachCity functions with no usages
+
+chore: More Purity fixes
+
+chore: Purity update
+
+By xplon:
+- Hide icons when translating spy names 
+- Warn about translatable ruleset name collisions 
+
+By SomeTroglodyte:
+- Improve context menu indicator sizing 
+- Console: `civ add` and `civ remove` commands 
+- Public run config for FasterUIDevelopment 
+
+Add missing newline in advanced game settings - By unciv-loof
+
 ## 4.20.11
 
 Fix double buttons for great people for constructing great improvements
