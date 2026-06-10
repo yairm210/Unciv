@@ -44,7 +44,7 @@ import com.unciv.utils.Concurrency
  *  inverting the fade-and-scale-in. Callbacks registered with [Popup.closeListeners] will run before the animation starts.
  *  Use [afterCloseCallback] instead if you need a notification after the animation finishes and the Popup is cleaned up.
  *
- *  Using the new constructor taking a target [Actor], it will receive a decoration symbol over its bottom right,
+ *  Using the new `onRightClick` replacement [addContextMenu], the target actor will receive a decoration symbol over its bottom right,
  *  permanent on Android but on hover only on desktop.
  */
 open class AnimatedMenuPopup private constructor (stage: Stage) : Popup(stage, Scrollability.None) {
@@ -91,7 +91,7 @@ open class AnimatedMenuPopup private constructor (stage: Stage) : Popup(stage, S
      *  @param actor Target [Actor]. This popup will be shown centered relative to it, and it will get a visual indicator.
      */
     @Suppress("deprecation")
-    constructor(stage: Stage, actor: Group, align: Int = Align.topRight) : this(stage, actor.getAlignedPosition(align))
+    constructor(stage: Stage, actor: Actor, align: Int = Align.topRight) : this(stage, actor.getAlignedPosition(align))
 
     private val container: Container<Table> = Container()
     private val animationDuration = 0.33f
