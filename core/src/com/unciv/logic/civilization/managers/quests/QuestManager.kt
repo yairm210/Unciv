@@ -147,6 +147,12 @@ class QuestManager : IsPartOfGameInfoSerialization {
         assignedQuests.removeAll { it.isIndividual() && handleIndividualQuest(it) }
     }
 
+    /** Remove all quests for [civ] without side effects, for console `civ remove` */
+    fun removeQuestsFor(civ: Civilization) {
+        assignedQuests.removeAll(getAssignedQuestsFor(civ).toList())
+        individualQuestCountdown.remove(civ.civID)
+    }
+
     ////////// Internal Implementation //////////
 
     private fun Civilization.addQuestNotification(text: String, actions: Iterable<NotificationAction>) =
