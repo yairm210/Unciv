@@ -9,10 +9,9 @@ import com.unciv.ui.screens.worldscreen.WorldScreen
 
 class NextTurnMenu(
     stage: Stage,
-    positionNextTo: Actor,
-    private val nextTurnButton: NextTurnButton,
+    nextTurnButton: NextTurnButton,
     private val worldScreen: WorldScreen
-) : AnimatedMenuPopup(stage, getActorTopRight(positionNextTo)) {
+) : AnimatedMenuPopup(stage, nextTurnButton) {
 
     init {
         // We need to activate the end turn button again after the menu closes

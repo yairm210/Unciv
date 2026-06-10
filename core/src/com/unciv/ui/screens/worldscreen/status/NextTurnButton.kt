@@ -31,7 +31,7 @@ class NextTurnButton(
     init {
         pad(15f)
         onActivation { nextTurnAction.action(worldScreen) }
-        onRightClick { NextTurnMenu(stage, this, this, worldScreen) }
+        onRightClick { NextTurnMenu(stage, this, worldScreen) }
         keyShortcuts.add(KeyboardBinding.NextTurn)
         keyShortcuts.add(KeyboardBinding.NextTurnAlternate)
         labelCell.row()

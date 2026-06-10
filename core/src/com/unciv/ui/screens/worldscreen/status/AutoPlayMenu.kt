@@ -19,7 +19,7 @@ class AutoPlayMenu(
     positionNextTo: Actor,
     private val nextTurnButton: NextTurnButton,
     private val worldScreen: WorldScreen
-) : AnimatedMenuPopup(stage, getActorTopRight(positionNextTo)) {
+) : AnimatedMenuPopup(stage, positionNextTo) {
 
     private val autoPlay: AutoPlay = worldScreen.autoPlay
 

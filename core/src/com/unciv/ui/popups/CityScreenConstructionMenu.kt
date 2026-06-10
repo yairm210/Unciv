@@ -29,7 +29,7 @@ class CityScreenConstructionMenu(
     private val city: City,
     private val construction: IConstruction,
     private val onButtonClicked: () -> Unit
-) : AnimatedMenuPopup(stage, getActorTopRight(positionNextTo)) {
+) : AnimatedMenuPopup(stage, positionNextTo) {
 
     // These are only readability shorteners
     private val cityConstructions = city.cityConstructions

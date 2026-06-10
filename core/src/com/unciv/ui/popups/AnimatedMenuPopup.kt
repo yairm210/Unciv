@@ -75,8 +75,8 @@ open class AnimatedMenuPopup private constructor (stage: Stage) : Popup(stage, S
      *  @param stage The stage this will be shown on, passed to Popup and used for clamping **`position`**
      *  @param position stage coordinates to show this centered over - clamped so that nothing is clipped outside the [stage]
      */
-    @Deprecated("Use the constructor taking a target actor instead.") // TODO remove deprecation and make ctor private
-    constructor(stage: Stage, position: Vector2) : this(stage) {
+    @Suppress("unused") // False positive
+    private constructor(stage: Stage, position: Vector2) : this(stage) {
         clickBehindToClose = true
         keyShortcuts.add(KeyCharAndCode.BACK) { close() }
         innerTable.remove()
@@ -90,7 +90,6 @@ open class AnimatedMenuPopup private constructor (stage: Stage) : Popup(stage, S
      *  @param stage The stage this will be shown on, passed to Popup and used for clamping **`position`**
      *  @param actor Target [Actor]. This popup will be shown centered relative to it, and it will get a visual indicator.
      */
-    @Suppress("deprecation")
     constructor(stage: Stage, actor: Actor, align: Int = Align.topRight) : this(stage, actor.getAlignedPosition(align))
 
     private val container: Container<Table> = Container()
