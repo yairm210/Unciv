@@ -312,8 +312,7 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedF
         for (toConnectCity in candidateCities.sortedByDescending { it.getCenterTile().aerialDistanceTo(unitStartingTile) }) {
             val tilesByPriority = getRoadsToBuildFromCity(toConnectCity).flatMap { roadPlan -> roadPlan.tiles.map { tile ->  Pair(tile, roadPlan.priority) } }
             val tilesSorted = tilesByPriority
-                    .filter { !it.first.isMarkedForCreatesOneImprovement() }
-                    .filter { it.first.getUnpillagedRoad() < bestRoadAvailable }
+                    .filter { !it.first.isMarkedForCreatesOneImprovement() && it.first.getUnpillagedRoad() < bestRoadAvailable }
                     .sortedBy { it.first.aerialDistanceTo(unitStartingTile) + (it.second / 10f) }
             val bestTile = tilesSorted.firstOrNull {
                 unitStartingTile == it.first || (unit.movement.canMoveTo(it.first) && unit.movement.canReach(it.first))

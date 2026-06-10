@@ -1083,6 +1083,7 @@ class Tile : IsPartOfGameInfoSerialization {
 
     /** Clears [improvementQueue] */
     fun stopWorkingOnImprovement() {
+        if (isMarkedForCreatesOneImprovement()) return
         improvementQueue.clear()
     }
 

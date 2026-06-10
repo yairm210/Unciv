@@ -139,8 +139,7 @@ class RoadToAutomation(val civInfo: Civilization) {
         unit.action = null
         unit.automatedRoadConnectionDestination = null
         unit.automatedRoadConnectionPath = null
-        if (!unit.currentTile.isMarkedForCreatesOneImprovement())
-            unit.currentTile.stopWorkingOnImprovement()
+        unit.currentTile.stopWorkingOnImprovement()
     }
 
 
