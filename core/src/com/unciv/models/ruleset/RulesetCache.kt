@@ -89,11 +89,11 @@ object RulesetCache : HashMap<String, Ruleset>() {
             modRuleset
         } catch (ex: Exception) {
             errorLines += "Exception loading mod '${modFolder.name()}':"
-            var cause: Throwable? = ex
-            while (cause != null) {
-                errorLines += "  ${cause.localizedMessage}"
-                cause = cause.cause
-            }
+            errorLines += "  ${ex.localizedMessage}"
+            val causes = generateSequence(ex as Throwable) { it.cause }
+            val cause = causes.firstOrNull { it.message?.contains("line", true) == true }
+                ?: causes.lastOrNull { it::class.java.name.startsWith("com.badlogic.gdx") }
+            cause?.let { errorLines += "  ${it.localizedMessage}" }
             null
         }
     }
