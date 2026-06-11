@@ -42,10 +42,11 @@ import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
-import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.components.widgets.ColorMarkupLabel
 import com.unciv.ui.components.widgets.ExpanderTab
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popups.AnimatedMenuPopup.Companion.addContextMenu
+import com.unciv.ui.popups.AnimatedMenuPopup.Companion.adjustContextMenuIndicators
 import com.unciv.ui.popups.CityScreenConstructionMenu
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Concurrency
@@ -164,6 +165,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         lowerTableScrollCell.maxHeight(
             (stageHeight - upperTable.height - 2 * posFromEdge).coerceAtLeast(20f)
         )
+        constructionsQueueTable.adjustContextMenuIndicators()
     }
 
     private fun updateButtons(construction: IConstruction?) {
@@ -404,6 +406,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                     updateVisualScroll()
                 }
                 lowerTable.pack()
+                availableConstructionsTable.adjustContextMenuIndicators()
             }
         }
     }
@@ -453,7 +456,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         table.onClick { selectQueueEntry(constructionQueueIndex) }
         if (cityScreen.canCityBeChanged()) {
-            table.onRightClick {
+            table.addContextMenu {
                 selectQueueEntry(constructionQueueIndex) {
                     CityScreenConstructionMenu(cityScreen.stage, table, cityScreen.city, construction) {
                         cityScreen.city.reassignPopulation()
@@ -466,7 +469,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         return table
     }
 
-    private fun selectQueueEntry(constructionQueueIndex: Int, onBeforeUpdate: () -> Unit = {}) {
+    private fun <T> selectQueueEntry(constructionQueueIndex: Int, onBeforeUpdate: () -> T): T {
         if (constructionQueueIndex in 0..<cityScreen.city.cityConstructions.constructionQueue.size) {
             cityScreen.selectConstructionFromQueue(constructionQueueIndex)
             selectedQueueEntry = constructionQueueIndex
@@ -474,10 +477,12 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             cityScreen.clearSelection()
             selectedQueueEntry = -1
         }
-        onBeforeUpdate()
+        val result = onBeforeUpdate()
         cityScreen.update()  // Not before CityScreenConstructionMenu or table will have no parent to get stage coords
         ensureQueueEntryVisible()
+        return result
     }
+    private fun selectQueueEntry(constructionQueueIndex: Int) = selectQueueEntry(constructionQueueIndex) {}
 
     private fun highlightQueueEntry(queueEntry: Table, highlight: Boolean) {
         queueEntry.background =
@@ -591,7 +596,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         if (!cityScreen.canCityBeChanged()) return pickConstructionButton
 
-        pickConstructionButton.onRightClick {
+        pickConstructionButton.addContextMenu {
             if (cityScreen.selectedConstruction != construction) {
                 // Ensure context is visible
                 cityScreen.selectConstruction(construction)

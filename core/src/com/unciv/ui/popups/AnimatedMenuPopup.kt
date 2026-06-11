@@ -20,6 +20,7 @@ import com.unciv.models.metadata.GameSettings.LongPressIndicatorSetting
 import com.unciv.ui.components.SmallButtonStyle
 import com.unciv.ui.components.UncivTooltip
 import com.unciv.ui.components.UncivTooltip.Companion.getEdgePoint
+import com.unciv.ui.components.extensions.allChildren
 import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.KeyCharAndCode
@@ -51,7 +52,7 @@ import com.unciv.utils.Concurrency
  */
 open class AnimatedMenuPopup private constructor (stage: Stage) : Popup(stage, Scrollability.None) {
     companion object {
-        private const val indicatorAndroid = "OtherIcons/ContextMenuAvailableA"
+        const val indicatorAndroid = "OtherIcons/ContextMenuAvailableA"
         private const val indicatorDesktop = "OtherIcons/ContextMenuAvailableD"
         private const val maxIndicatorSize = 32f
         // These are partially to take up the "slack" inside the texture
@@ -65,6 +66,12 @@ open class AnimatedMenuPopup private constructor (stage: Stage) : Popup(stage, S
         fun Group.addContextMenu(indicatorMinSizeRelative: Float = 0.5f, factory: () -> AnimatedMenuPopup) {
             Helpers.addIndicator(this, indicatorMinSizeRelative)
             onRightClick { factory() }
+        }
+
+        fun Group.adjustContextMenuIndicators() {
+            for (icon in allChildren().filter { it.name == indicatorAndroid }) {
+                Helpers.adjustPosition(icon)
+            }
         }
     }
 
@@ -142,6 +149,14 @@ open class AnimatedMenuPopup private constructor (stage: Stage) : Popup(stage, S
             else addIndicatorDesktop(actor, indicatorMinSizeRelative)
         }
 
+        fun adjustPosition(actor: Actor) {
+            val setting = UncivGame.Current.settings.showLongPressIndicators
+            if (setting == LongPressIndicatorSetting.Off) return
+            if (setting != LongPressIndicatorSetting.Debug && Gdx.app.type == Application.ApplicationType.Android) return
+            val x = actor.parent.width + actor.width * indicatorXOffsetRelativeAndroid
+            actor.setPosition(x , 0f, Align.bottomRight)
+        }
+
         private fun getIndicatorSize(actor: Group, indicatorMinSizeRelative: Float): Float {
             val actorHeight = (actor as? Layout)?.prefHeight ?: actor.height
             return maxIndicatorSize.coerceAtMost(actorHeight * indicatorMinSizeRelative)
@@ -149,9 +164,11 @@ open class AnimatedMenuPopup private constructor (stage: Stage) : Popup(stage, S
 
         private fun addIndicatorAndroid(actor: Group, indicatorMinSizeRelative: Float) {
             val icon = ImageGetter.getImage(indicatorAndroid, indicatorColor)
+            icon.name = indicatorAndroid
             val size = getIndicatorSize(actor, indicatorMinSizeRelative)
             icon.setSize(size)
-            icon.setPosition(actor.width + size * indicatorXOffsetRelativeAndroid, 0f, Align.bottomRight)
+            val x = ((actor as? Layout)?.prefWidth ?: actor.width) + size * indicatorXOffsetRelativeAndroid
+            icon.setPosition(x , 0f, Align.bottomRight)
             actor.addActor(icon)
         }
 

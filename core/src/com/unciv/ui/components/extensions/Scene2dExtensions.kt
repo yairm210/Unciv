@@ -545,3 +545,11 @@ fun <T: Actor> Stack.addInTable(actor: T): Cell<T> {
     add(table)
     return table.add(actor).grow()
 }
+
+/** Recursively return all children of a Group, depth-first */
+fun Group.allChildren(): Sequence<Actor> = sequence {
+    for (child in children) {
+        if (child is Group) yieldAll(child.allChildren())
+        yield(child)
+    }
+}
