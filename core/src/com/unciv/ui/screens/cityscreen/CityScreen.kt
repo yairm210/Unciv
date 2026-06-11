@@ -483,14 +483,7 @@ class CityScreen(
                 if (pickTileData.isBuying) {
                     BuyButtonFactory(this).askToBuyConstruction(pickTileData.building, pickTileData.buyStat, tileInfo)
                 } else {
-                    // This way to store where the improvement a CreatesOneImprovement Building will create goes
-                    // might get a bit fragile if several buildings constructing the same improvement type
-                    // were to be allowed in the queue - or a little nontransparent to the user why they
-                    // won't reorder - maybe one day redesign to have the target tiles attached to queue entries.
-                    if (city.cityConstructions.canAddToQueue(pickTileData.building)) {
-                        city.cityConstructions.addToQueue(pickTileData.building.name)
-                        tileInfo.improvementFunctions.markForCreatesOneImprovement(improvement.name)
-                    }
+                    city.cityConstructions.addToQueue(pickTileData.building, tile = tileInfo)
                 }
             }
             update()
