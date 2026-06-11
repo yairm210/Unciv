@@ -15,6 +15,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.Layout
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
 import com.badlogic.gdx.utils.Align
+import com.unciv.UncivGame
+import com.unciv.models.metadata.GameSettings.LongPressIndicatorSetting
 import com.unciv.ui.components.SmallButtonStyle
 import com.unciv.ui.components.UncivTooltip
 import com.unciv.ui.components.UncivTooltip.Companion.getEdgePoint
@@ -137,10 +139,13 @@ open class AnimatedMenuPopup private constructor (stage: Stage) : Popup(stage, S
 
 
     private object Helpers {
-        fun addIndicator(actor: Group, indicatorMinSizeRelative: Float) =
-            if (Gdx.app.type == Application.ApplicationType.Android)
+        fun addIndicator(actor: Group, indicatorMinSizeRelative: Float) {
+            val setting = UncivGame.Current.settings.showLongPressIndicators
+            if (setting == LongPressIndicatorSetting.Off) return
+            if (setting == LongPressIndicatorSetting.Debug || Gdx.app.type == Application.ApplicationType.Android)
                 addIndicatorAndroid(actor, indicatorMinSizeRelative)
             else addIndicatorDesktop(actor, indicatorMinSizeRelative)
+        }
 
         private fun getIndicatorSize(actor: Group, indicatorMinSizeRelative: Float): Float {
             val actorHeight = (actor as? Layout)?.prefHeight ?: actor.height
