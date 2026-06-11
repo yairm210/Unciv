@@ -89,8 +89,11 @@ object RulesetCache : HashMap<String, Ruleset>() {
             modRuleset
         } catch (ex: Exception) {
             errorLines += "Exception loading mod '${modFolder.name()}':"
-            errorLines += "  ${ex.localizedMessage}"
-            errorLines += "  ${ex.cause?.localizedMessage}"
+            var cause: Throwable? = ex
+            while (cause != null) {
+                errorLines += "  ${cause.localizedMessage}"
+                cause = cause.cause
+            }
             null
         }
     }
