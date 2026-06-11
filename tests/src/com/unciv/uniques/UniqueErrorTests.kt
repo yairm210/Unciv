@@ -77,7 +77,11 @@ class UniqueErrorTests {
         game.ruleset.modOptions.isBaseRuleset = true
 
         val errors = game.ruleset.getErrorList(false)
-        Assert.assertTrue(errors.any { it.text.startsWith("Circular Reference in Promotions") })
+        Assert.assertEquals(1, errors.size)
+        Assert.assertEquals(
+            "Circular Reference in Promotions: ${firstBranch.name}→${secondBranch.name}→${firstBranch.name}",
+            errors.single().text
+        )
     }
 
     @Test
