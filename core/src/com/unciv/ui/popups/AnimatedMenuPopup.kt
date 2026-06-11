@@ -60,11 +60,6 @@ open class AnimatedMenuPopup private constructor (stage: Stage) : Popup(stage, S
         private const val indicatorXOffsetRelativeDesktop = 0.35f
         private val indicatorColor = Color.WHITE
 
-        /** Get stage coords of an [actor]'s top right corner, to help position an [AnimatedMenuPopup].
-         *  Note the Popup will center over this point.
-         */
-        fun getActorTopRight(actor: Actor): Vector2 = actor.getAlignedPosition(Align.topRight)
-
         private fun Actor.getAlignedPosition(align: Int) = localToStageCoordinates(getEdgePoint(align))
 
         fun Group.addContextMenu(indicatorMinSizeRelative: Float = 0.5f, factory: () -> AnimatedMenuPopup) {
