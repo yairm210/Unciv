@@ -440,7 +440,9 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             .mapNotNullTo(hashSetOf()) { it.getImprovementToCreate(city.getRuleset(), city.civ)?.name }
 
         for (tile in markedTiles) {
-            val improvementInProgress = tile.improvementInProgress!!
+            val improvementInProgress = checkNotNull(tile.improvementInProgress) {
+                "Tile ${tile.position} is marked for ${UniqueType.CreatesOneImprovement.name} without an improvement in progress"
+            }
             if (improvementInProgress !in improvementsInQueue)
                 tile.improvementFunctions.removeCreatesOneImprovementMarker(removeConstruction = false)
         }

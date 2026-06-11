@@ -337,7 +337,9 @@ class TileImprovementFunctions(val tile: Tile) {
      *  @param removeConstruction whether to also remove the matching queued building. */
     fun removeCreatesOneImprovementMarker(removeConstruction: Boolean = true) {
         if (!tile.isMarkedForCreatesOneImprovement()) return
-        val improvementInProgress = tile.improvementInProgress!!
+        val improvementInProgress = checkNotNull(tile.improvementInProgress) {
+            "Cannot remove ${UniqueType.CreatesOneImprovement.name} marker from ${tile.position} without an improvement in progress"
+        }
         tile.improvementQueue.clear()
         if (removeConstruction)
             tile.owningCity?.cityConstructions?.removeCreateOneImprovementConstruction(improvementInProgress)
