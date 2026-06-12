@@ -517,7 +517,7 @@ fun equalizeColumns(vararg tables: Table) {
             table.cells[column].run {
                 if (actor == null)
                 // Empty cells ignore minWidth, so just doing Table.add() for an empty cell in the top row will break this. Fix!
-                    setActor<Label>("".toLabel())
+                    setActor(neutralActor)
                 else if (Align.isCenterHorizontal(align)) (actor as? Label)?.run {
                     // minWidth acts like fillX, so Labels will fill and then left-align by default. Fix!
                     if (!Align.isCenterHorizontal(labelAlign))
@@ -528,6 +528,7 @@ fun equalizeColumns(vararg tables: Table) {
         table.invalidate()
     }
 }
+private val neutralActor = Actor().apply { touchable = Touchable.disabled }
 
 /** Retrieve a texture Pixmap without reload or ownership transfer, useable for read operations only.
  *
