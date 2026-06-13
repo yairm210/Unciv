@@ -1032,19 +1032,20 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     private fun clearEncampment(tile: Tile) {
-        tile.removeImprovement()
-
         // Notify City-States that this unit cleared a Barbarian Encampment, required for quests
+        // Do this before removing the improvement, otherwise removeImprovement would obsolete the quest
         civ.gameInfo.getAliveCityStates()
-                .forEach { it.questManager.barbarianCampCleared(civ, tile.position.toVector2()) }
+            .forEach { it.questManager.barbarianCampCleared(civ, tile.position) }
+
+        tile.removeImprovement()
 
         var goldGained =
                 civ.getDifficulty().clearBarbarianCampReward * civ.gameInfo.speed.goldCostModifier
-        
+
         for (unique in civ.getMatchingUniques(UniqueType.GoldFromEncampmentsAndCities, cache.state)) {
             goldGained *= unique.params[0].toPercent()
         }
-        
+
         civ.addGold(goldGained.toInt())
         civ.addNotification(
                 "We have captured a barbarian encampment and recovered [${goldGained.toInt()}] gold!",

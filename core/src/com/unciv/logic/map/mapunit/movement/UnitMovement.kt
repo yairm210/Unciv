@@ -146,7 +146,7 @@ class UnitMovement(val unit: MapUnit) {
      * Does not consider if the [destination] tile can actually be entered, use [canMoveTo] for that.
      * Returns an empty list if there's no way to get to the destination.
      */
-    @Readonly @Suppress("purity")
+    @Readonly
     fun getShortestPath(destination: Tile, avoidDamagingTerrain: Boolean = false): List<Tile> = timeThis<List<Tile>>("getShortestPath")  {
         if (unit.cache.cannotMove) return listOf()
         if (UncivGame.Current.settings.useAStarPathfinding)
@@ -268,7 +268,7 @@ class UnitMovement(val unit: MapUnit) {
 
     class UnreachableDestinationException(msg: String) : Exception(msg)
 
-    @Readonly @Suppress("purity")
+    @Readonly
     fun getTileToMoveToThisTurn(finalDestination: Tile): Tile {
         val currentTile = unit.getTile()
         if (currentTile == finalDestination) return currentTile

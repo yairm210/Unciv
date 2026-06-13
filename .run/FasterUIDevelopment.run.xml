@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="FasterUIDevelopment" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="com.unciv.dev.FasterUIDevelopment" />
+    <module name="Unciv.tests.test" />
+    <option name="VM_PARAMETERS" value="-Xmx2048m -Xms256m -XX:MaxMetaspaceSize=256m" />
+    <option name="WORKING_DIRECTORY" value="$ProjectFileDir$/android/assets" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

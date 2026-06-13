@@ -55,6 +55,16 @@ class GameSettings {
     // There have no UI other than the "Reset tutorials" button:
     var tutorialsShown = HashSet<String>()
     var tutorialTasksCompleted = HashSet<String>()
+
+    enum class LongPressIndicatorSetting {
+        Default, Off, Debug; // Debug only offered on Debug page of Options
+        fun toBoolean() = this == Default
+        companion object {
+            fun of(bool: Boolean) = if (bool) Default else Off
+        }
+    }
+    var showLongPressIndicators = LongPressIndicatorSetting.Default
+
     var showZoomButtons = false
     var forbidPopupClickBehindToClose = false
     var useCirclesToIndicateMovableTiles = false

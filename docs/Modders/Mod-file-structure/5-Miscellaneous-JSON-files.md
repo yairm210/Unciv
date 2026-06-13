@@ -253,9 +253,9 @@ Legend:
     defensiveBuildingStrength
     where %techs is the percentage of techs in the tech tree that are complete
     If no techs exist in this ruleset, %techs = 0.5 (=50%)
-- [^S]: The distance that cities can attack
-- [^T]: The tiles in distance that population in cities can work on. Note: Higher values may lead to performace issues and may cause bugs. cityWorkRange may be greater than cityExpandRange.
-- [^U]: The distance that cities can expand their borders to. Note: Higher values may lead to performace issues and may cause bugs.
+- [^S]: The distance that cities can attack. Minimum 0.
+- [^T]: The tiles in distance that population in cities can work on. Note: Higher values may lead to performace issues and may cause bugs. cityWorkRange may be greater than cityExpandRange. Minimum 1, maximum 100.
+- [^U]: The distance that cities can expand their borders to. Note: Higher values may lead to performace issues and may cause bugs. Minimum 1, maximum 100.
 - [^C]: Formula for Unit Supply:
     Supply = unitSupplyBase (difficulties.json)
     unitSupplyPerCity \* amountOfCities + (difficulties.json)
@@ -266,6 +266,7 @@ Legend:
     The number is the amount of tiles between two cities, not counting the tiles the cities are on.
     e.g. "C__C", where "C" is a tile with a city and "_" is a tile without a city, has a distance of 2.
     First constant is for cities on the same landmass, the second is for cities on different continents.
+    Minimum 0.
 - [^E]: NaturalWonderGenerator uses these to determine the number of Natural Wonders to spawn for a given map size. The number scales linearly with map radius: #wonders = radius * naturalWonderCountMultiplier + naturalWonderCountAddedConstant. The defaults effectively mean Tiny - 1, Small - 2, Medium - 3, Large - 4, Huge - 5, Custom radius >=109 - all G&K wonders.
 - [^F]: MapGenerator.spreadAncientRuins: number of ruins = suitable tile count * this
 - [^G]: MapGenerator.spawnIce: spawn Ice where T < this, with T calculated from temperatureExtremeness, latitude and perlin noise.
