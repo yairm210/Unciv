@@ -11,6 +11,7 @@ import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.EventChoice
 import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
@@ -123,6 +124,7 @@ open class RulesetValidator protected constructor(
         addCityStateTypeErrors(lines)
 
         addTranslationNameCollisionWarnings(lines)
+        addEmptyNamesErrors(lines)
 
         initTextureNamesCache(lines)
 
@@ -592,6 +594,14 @@ open class RulesetValidator protected constructor(
     ): Boolean {
         return sourceTypes in knownBenignSourceCollisions
             && origins.all { it in builtInRulesetNames }
+    }
+
+    private fun addEmptyNamesErrors(lines: RulesetErrorList) {
+        val emptyNameObjects = ruleset.allRulesetObjects()
+            .filter { it.name.isEmpty() && it !is EventChoice }
+            .toList()
+        for (obj in emptyNameObjects)
+            lines.add("There's a ${obj::class.simpleName} with an empty name in ${obj.originRuleset}", RulesetErrorSeverity.Error, obj)
     }
 
     //endregion
