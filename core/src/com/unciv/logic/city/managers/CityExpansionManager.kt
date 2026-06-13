@@ -89,10 +89,10 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
     }
 
     @Readonly
-    fun getGoldCostOfTile(tile: Tile): Int {
+    fun getGoldCostOfTile(tile: Tile, extraTiles: Int = 0): Int {
         val baseCost = 50
         val distanceFromCenter = tile.aerialDistanceTo(city.getCenterTile())
-        var cost = baseCost * (distanceFromCenter - 1) + tilesClaimed() * 5.0
+        var cost = baseCost * (distanceFromCenter - 1) + (tilesClaimed() + extraTiles) * 5.0
 
         cost *= city.civ.gameInfo.speed.goldCostModifier
 
