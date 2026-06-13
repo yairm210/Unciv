@@ -10,14 +10,25 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
  *  short-circuit [hit] and [act] at the layer boundary instead of iterating every tile actor:
  *  non-interactive layers have [touchable] = [Touchable.disabled] so [hit] returns null without
  *  recursing into N children; [act] is suppressed unless [actable] is true. */
-class TileMapLayer<T : TileLayer>(initialCapacity: Int, private val actable: Boolean = false, touchable: Boolean = false) : Group() {
+class TileMapLayer<T : TileLayer>(
+    initialCapacity: Int,
+    private val actable: Boolean = false,
+    touchable: Boolean = false,
+) : Group() {
+
+    val tileLayers = ArrayList<T>(initialCapacity)
+
     init {
         isTransform = false
         this.touchable = if (touchable) Touchable.childrenOnly else Touchable.disabled
-        children.ensureCapacity(initialCapacity)
+        children.ensureCapacity(initialCapacity * 2) // rough estimate: ~2 images/tile on average
     }
 
-    fun add(layer: T) = addActor(layer)
+    /** Register a tile-layer and flush its buffered images into this Group. */
+    fun add(layer: T, tileX: Float, tileY: Float) {
+        tileLayers.add(layer)
+        layer.attachTo(this, tileX, tileY)
+    }
 
     override fun act(delta: Float) {
         if (actable) super.act(delta)

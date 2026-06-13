@@ -2,7 +2,6 @@ package com.unciv.ui.components.extensions
 
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.Colors
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.TextureData
 import com.badlogic.gdx.graphics.glutils.FileTextureData
@@ -518,7 +517,7 @@ fun equalizeColumns(vararg tables: Table) {
             table.cells[column].run {
                 if (actor == null)
                 // Empty cells ignore minWidth, so just doing Table.add() for an empty cell in the top row will break this. Fix!
-                    setActor<Label>("".toLabel())
+                    setActor(neutralActor)
                 else if (Align.isCenterHorizontal(align)) (actor as? Label)?.run {
                     // minWidth acts like fillX, so Labels will fill and then left-align by default. Fix!
                     if (!Align.isCenterHorizontal(labelAlign))
@@ -529,6 +528,7 @@ fun equalizeColumns(vararg tables: Table) {
         table.invalidate()
     }
 }
+private val neutralActor = Actor().apply { touchable = Touchable.disabled }
 
 /** Retrieve a texture Pixmap without reload or ownership transfer, useable for read operations only.
  *
@@ -542,10 +542,18 @@ fun TextureData.getReadonlyPixmap(): Pixmap {
     return field.get(this) as Pixmap
 }
 
-fun <T: Actor>Stack.addInTable(actor: T): Cell<T> {
+fun <T: Actor> Stack.addInTable(actor: T): Cell<T> {
     val table = Table()
     add(table)
     return table.add(actor).grow()
+}
+
+/** Recursively return all children of a Group, depth-first */
+fun Group.allChildren(): Sequence<Actor> = sequence {
+    for (child in children) {
+        if (child is Group) yieldAll(child.allChildren())
+        yield(child)
+    }
 }
 
 /** All defined by https://www.w3.org/TR/WCAG20/#relativeluminancedef */

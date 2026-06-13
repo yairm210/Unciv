@@ -59,6 +59,15 @@ class GameSettings {
     var tutorialsShown = HashSet<String>()
     var tutorialTasksCompleted = HashSet<String>()
 
+    enum class LongPressIndicatorSetting {
+        Default, Off, Debug; // Debug only offered on Debug page of Options
+        fun toBoolean() = this == Default
+        companion object {
+            fun of(bool: Boolean) = if (bool) Default else Off
+        }
+    }
+    var showLongPressIndicators = LongPressIndicatorSetting.Default
+
     var soundEffectsVolume = 0.5f
     var citySoundsVolume = 0.5f
     var musicVolume = 0.5f

@@ -16,13 +16,26 @@ data class RulesetName(
 )
 
 @Readonly
-internal fun INamed.toRulesetName(ruleset: Ruleset): RulesetName =
+internal fun INamed.toRulesetName(ruleset: Ruleset, getINamed: (Ruleset.() -> Sequence<INamed>)? = null): RulesetName =
     RulesetName(
         name,
         this::class.simpleName ?: "RulesetObject",
-        (this as? IRulesetObject)?.originRuleset?.ifEmpty { ruleset.name } ?: ruleset.name
+        (this as? IRulesetObject)?.originRuleset?.ifEmpty { null } ?: findOrigin(ruleset, getINamed)
     )
 
 @Readonly
 internal fun Ruleset.rulesetName(name: String, source: String, originRuleset: String = this.name): RulesetName =
     RulesetName(name, source, originRuleset)
+
+@Readonly
+private fun INamed.findOrigin(ruleset: Ruleset, getINamed: (Ruleset.() -> Sequence<INamed>)?): String {
+    if (getINamed == null || ruleset.name.isNotEmpty())
+        return ruleset.name
+    val componentRulesets = ruleset.mods.mapNotNull { RulesetCache[it] }
+    for (i in componentRulesets.size - 1 downTo 0) { // asReversed isn't recognized as readonly
+        val componentRuleset = componentRulesets[i]
+        if (componentRuleset.getINamed().any { it.name == this.name })
+            return componentRuleset.name
+    }
+    return ""
+}

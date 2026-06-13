@@ -48,6 +48,42 @@ class UniqueErrorTests {
         assert(errors.isNotOK())
     }
 
+
+    @Test
+    fun testPromotionCircularReferenceWithAcyclicAlternativeIsAllowed() {
+        val game = TestGame()
+        val root = game.createUnitPromotion()
+        val firstBranch = game.createUnitPromotion()
+        val secondBranch = game.createUnitPromotion()
+        listOf(root, firstBranch, secondBranch).forEach { it.unitTypes = listOf("Scout") }
+
+        firstBranch.prerequisites = listOf(secondBranch.name, root.name)
+        secondBranch.prerequisites = listOf(firstBranch.name)
+        game.ruleset.modOptions.isBaseRuleset = true
+
+        val errors = game.ruleset.getErrorList(false)
+        Assert.assertTrue(errors.none { it.text.startsWith("Circular Reference in Promotions") })
+    }
+
+    @Test
+    fun testPromotionCircularReferenceWithoutAcyclicAlternativeIsWarned() {
+        val game = TestGame()
+        val firstBranch = game.createUnitPromotion()
+        val secondBranch = game.createUnitPromotion()
+        listOf(firstBranch, secondBranch).forEach { it.unitTypes = listOf("Scout") }
+
+        firstBranch.prerequisites = listOf(secondBranch.name)
+        secondBranch.prerequisites = listOf(firstBranch.name)
+        game.ruleset.modOptions.isBaseRuleset = true
+
+        val errors = game.ruleset.getErrorList(false)
+        Assert.assertEquals(1, errors.size)
+        Assert.assertEquals(
+            "Circular Reference in Promotions: ${firstBranch.name}→${secondBranch.name}→${firstBranch.name}",
+            errors.single().text
+        )
+    }
+
     @Test
     fun testTimedGlobalUniqueAcceptsTriggerConditionsWhenOnUnit(){
         RulesetCache.loadRulesets(noMods = true)

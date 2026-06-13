@@ -51,7 +51,7 @@ enum class RulesetFile(
     @Readonly val getRulesetObjects: Ruleset.() -> Sequence<IRulesetObject> = { emptySequence() },
     @Readonly val getUniques: Ruleset.() -> Sequence<Unique> = { getRulesetObjects().flatMap { it.uniqueObjects } },
     @Readonly val getINamed: Ruleset.() -> Sequence<INamed> = { getRulesetObjects() },
-    @Readonly val getNames: Ruleset.() -> Sequence<RulesetName> = { getINamed().map { it.toRulesetName(this) } }
+    @Readonly val getNames: Ruleset.() -> Sequence<RulesetName> = { getINamed().map { it.toRulesetName(this, getINamed) } }
 ) {
     Beliefs("Beliefs.json", { beliefs.values.asSequence() }),
     Buildings("Buildings.json", { buildings.values.asSequence() }),
@@ -534,14 +534,17 @@ class Ruleset {
             events += createHashmap(json().fromJsonFile(Array<Event>::class.java, eventsFile))
         }
 
-        // Tutorials exist per builtin ruleset or mod, but there's also a global file that's always loaded
-        // Note we can't rely on UncivGame.Current here, so we do the same thing getBuiltinRulesetFileHandle in RulesetCache does
-        if (Gdx.files != null) { // we're not running console mode
+        // Tutorials exist per builtin ruleset or mod, but there's also a global file that should always be loaded in a game.
+        // Note we can't rely on UncivGame.Current here, so we do the same thing getBuiltinRulesetFileHandle in RulesetCache does.
+        // Only load them when not running console mode, and only for base rulesets.
+        // (games with extensions should get them from the base, and having them loaded in all extension mods would have the
+        // extension as originRuleset in combined rulesets, not to mention wasting some memory).
+        if (modOptions.isBaseRuleset && Gdx.files != null) { // we're not running console mode
             val globalTutorialsFile = Gdx.files.internal("jsons").child(RulesetFile.Tutorials.filename)
             if (globalTutorialsFile.exists())
                 tutorials += createHashmap(json().fromJsonFile(Array<Tutorial>::class.java, globalTutorialsFile))
         }
-        
+
         val tutorialsFile = RulesetFile.Tutorials.file()
         if (tutorialsFile.exists())
             tutorials += createHashmap(json().fromJsonFile(Array<Tutorial>::class.java, tutorialsFile))
