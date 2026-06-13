@@ -190,7 +190,7 @@ object NationDescriptions {
         val nations = ruleset.nations.values.filter { it.personality == name }
         if (nations.isNotEmpty()) {
             for (nation in nations)
-                add(FormattedLine("See also: [$nation]", icon = nation.makeLink()))
+                add(FormattedLine("See also: [$nation]", link = nation.makeLink()))
             add(FormattedLine())
         }
 
