@@ -6,6 +6,7 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.objectdescriptions.FormattedLineListBuilder.Companion.buildCivilopediaText
+import yairm210.purity.annotations.Readonly
 
 class Difficulty : RulesetObject() {
     override lateinit var name: String
@@ -47,8 +48,10 @@ class Difficulty : RulesetObject() {
 
     override fun getSortGroup(ruleset: Ruleset) = ruleset.difficulties.keys.indexOf(name)
 
-    private fun Float.toPercent() = (this * 100).toInt()
+    @Readonly
     override fun getCivilopediaTextLines(ruleset: Ruleset) = buildCivilopediaText {
+        fun Float.toPercent() = (this * 100).toInt()
+
         add("Player settings", header = 3)
         add("{Base happiness}: $baseHappiness ${Fonts.happiness}", indent = 1)
         add("{Extra happiness per luxury}: ${extraHappinessPerLuxury.toInt()} ${Fonts.happiness}", indent = 1)

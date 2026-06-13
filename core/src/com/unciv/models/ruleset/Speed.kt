@@ -5,7 +5,6 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.objectdescriptions.FormattedLineListBuilder.Companion.buildCivilopediaText
-import com.unciv.ui.objectdescriptions.uniquesToCivilopediaTextLines
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import yairm210.purity.annotations.Readonly
 import java.util.*
@@ -94,6 +93,7 @@ class Speed : RulesetObject() {
 
     override fun makeLink(): String = "Speed/$name"
     override fun getCivilopediaTextHeader() = FormattedLine(name, header = 2)
+    @Readonly
     override fun getCivilopediaTextLines(ruleset: Ruleset) = buildCivilopediaText {
         add("General speed modifier: [${modifier * 100}]%${Fonts.turn}")
         add("Production cost modifier: [${productionCostModifier * 100}]%${Fonts.production}")
