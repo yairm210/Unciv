@@ -539,6 +539,7 @@ open class RulesetValidator protected constructor(
         val knownBenignSourceCollisions = setOf(
             setOf("BaseUnit", "UnitType"),
             setOf("BaseUnit", "Difficulty"),
+            setOf("BaseUnit", "Difficulty", "Tutorial"),
             setOf("BaseUnit", "UnitNameGroup"),
             setOf("Personality", "UnitNameGroup.unitNames"),
             setOf("Specialist", "UnitNameGroup")
