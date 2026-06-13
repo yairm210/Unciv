@@ -183,8 +183,8 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
             tile.getCity()!!.expansion.relinquishOwnership(tile)
 
         if (tile.improvement == Constants.barbarianEncampment)
-            tile.setImprovementBasic(null)
-            
+            tile.removeImprovement()
+
         city.tiles = city.tiles.withItem(tile.position)
         tile.setOwningCity(city)
         city.population.autoAssignPopulation()

@@ -1,6 +1,5 @@
 package com.unciv.logic.civilization.managers.quests
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.CivFlags
 import com.unciv.logic.civilization.Civilization
@@ -151,6 +150,15 @@ class QuestManager : IsPartOfGameInfoSerialization {
     fun removeQuestsFor(civ: Civilization) {
         assignedQuests.removeAll(getAssignedQuestsFor(civ).toList())
         individualQuestCountdown.remove(civ.civID)
+    }
+
+    fun handleObsoleteGlobalQuests() {
+        val iterator = assignedQuests.iterator()
+        for (assignedQuest in iterator) {
+            if (!isObsolete(assignedQuest)) continue
+            notifyExpired(assignedQuest)
+            iterator.remove()
+        }
     }
 
     ////////// Internal Implementation //////////
@@ -500,9 +508,9 @@ class QuestManager : IsPartOfGameInfoSerialization {
      * Since [QuestName.ClearBarbarianCamp] is a global quest, it could have been assigned to
      * multiple civilizations, so after this notification all matching quests are removed.
      */
-    fun barbarianCampCleared(civInfo: Civilization, location: Vector2) {
+    fun barbarianCampCleared(civInfo: Civilization, location: HexCoord) {
         val matchingQuests = getAssignedQuestsOfName(QuestName.ClearBarbarianCamp)
-                .filter { it.data1.toInt() == location.x.toInt() && it.data2.toInt() == location.y.toInt() }
+                .filter { it.data1.toInt() == location.x && it.data2.toInt() == location.y }
 
         val winningQuest = matchingQuests.firstOrNull { it.assigneeCiv == civInfo }
         if (winningQuest != null)

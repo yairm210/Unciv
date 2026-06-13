@@ -186,12 +186,17 @@ class TileImprovementFunctions(val tile: Tile) {
             city.civ.cache.updateCivResources()
             city.reassignPopulationDeferred()
         }
-        
+
         if (improvement == null) {
+            val wasEncampment = tile.improvement == Constants.barbarianEncampment
             tile.improvementIsPillaged = false
             tile.setImprovementBasic(null)
             updateVisibility()
             updateCity()
+            if (!wasEncampment) return
+            // Any barbarian encampment cleared outside MapUnit.clearEncampment should obsolete ClearBarbarianCamp quests
+            for (cityState in tile.tileMap.gameInfo.getAliveCityStates())
+                cityState.questManager.handleObsoleteGlobalQuests()
             return
         }
 
