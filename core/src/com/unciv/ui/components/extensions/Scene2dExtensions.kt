@@ -46,6 +46,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
+import kotlin.math.pow
 
 /**
  * Collection of extension functions mostly for libGdx widgets
@@ -545,4 +546,30 @@ fun <T: Actor>Stack.addInTable(actor: T): Cell<T> {
     val table = Table()
     add(table)
     return table.add(actor).grow()
+}
+
+/** All defined by https://www.w3.org/TR/WCAG20/#relativeluminancedef */
+@Pure
+fun Color.getRelativeLuminance(): Double {
+    @Pure
+    fun getRelativeChannelLuminance(channel: Float): Double =
+        if (channel < 0.03928) channel / 12.92
+        else ((channel + 0.055) / 1.055).pow(2.4)
+
+    val r = getRelativeChannelLuminance(r)
+    val g = getRelativeChannelLuminance(g)
+    val b = getRelativeChannelLuminance(b)
+
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
+}
+
+/** https://www.w3.org/TR/WCAG20/#contrast-ratiodef */
+@Readonly
+fun getContrastRatio(color1: Color, color2: Color): Double { // ratio can range from 1 to 21
+    val innerColorLuminance = color1.getRelativeLuminance()
+    val outerColorLuminance = color2.getRelativeLuminance()
+
+    return if (innerColorLuminance > outerColorLuminance)
+        (innerColorLuminance + 0.05) / (outerColorLuminance + 0.05)
+    else (outerColorLuminance + 0.05) / (innerColorLuminance + 0.05)
 }

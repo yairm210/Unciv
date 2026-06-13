@@ -14,9 +14,9 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.HexMath
-import com.unciv.models.ruleset.nation.getContrastRatio
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.center
+import com.unciv.ui.components.extensions.getContrastRatio
 import com.unciv.ui.components.input.ClickableCircle
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
