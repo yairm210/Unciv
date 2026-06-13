@@ -1,47 +1,26 @@
 package com.unciv.ui.components.tilegroups.layers
 
-import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.components.widgets.UnitIconGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 
-/** The unit flag is the synbol that appears behind the map unit - circle regularly, shield when defending, etc */
+/** The unit flag is the symbol that appears behind the map unit - circle regularly, shield when defending, etc */
 class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, size) {
 
-    private var noIcons = true
     private var civilianUnitIcon: UnitIconGroup? = null
     private var militaryUnitIcon: UnitIconGroup? = null
 
-    init {
-        touchable = Touchable.disabled
-    }
-
-    override fun act(delta: Float) { // No 'snapshotting' since we trust it will remain the same
-        if (noIcons)
-            return
-        for (child in children)
-            child.act(delta)
-    }
-
-    // For perf profiling
-    override fun draw(batch: Batch?, parentAlpha: Float) {
-        if (noIcons) return
-        super.draw(batch, parentAlpha)
-    }
-
     private fun clearSlots() {
-        civilianUnitIcon?.remove()
-        militaryUnitIcon?.remove()
+        civilianUnitIcon?.let { removeOwnedActor(it) }
+        militaryUnitIcon?.let { removeOwnedActor(it) }
     }
 
     private fun showMilitaryUnit(viewingCiv: Civilization) = tileGroup.isForceVisible
@@ -49,13 +28,9 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
             || !tileGroup.tile.hasEnemyInvisibleUnit(viewingCiv)
 
     private fun setIconPosition(slot: Int, icon: UnitIconGroup) {
-        if (slot == 0) {
-            icon.center(this)
-            icon.y += -20f
-        } else if (slot == 1) {
-            icon.center(this)
-            icon.y += 20f
-        }
+        // Centre horizontally; offset vertically per slot (slot 0 = bottom, slot 1 = top)
+        icon.x = tileX + (size - icon.width) / 2
+        icon.y = tileY + (size - icon.height) / 2 + if (slot == 1) 20f else -20f
     }
 
     private fun newUnitIcon(slot: Int, unit: MapUnit?, isViewable: Boolean, viewingCiv: Civilization?): UnitIconGroup? {
@@ -64,8 +39,8 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
 
         if (unit != null && isViewable) {
             newIcon = UnitIconGroup(unit, 30f)
-            addActor(newIcon)
             setIconPosition(slot, newIcon)
+            addOwnedActor(newIcon)
 
             // Display air unit table for carriers/transports
             if (unit.getTile().airUnits.any { unit.isTransportTypeOf(it) } && !unit.getTile().isCityCenter()) {
@@ -142,7 +117,6 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
 
         civilianUnitIcon = newUnitIcon(0, tileGroup.tile.civilianUnit, isCivilianShown, viewingCiv)
         militaryUnitIcon = newUnitIcon(1, tileGroup.tile.militaryUnit, isMilitaryShown, viewingCiv)
-        noIcons = civilianUnitIcon == null && militaryUnitIcon == null
     }
 
     override fun doUpdate(viewingCiv: Civilization?) {
@@ -163,7 +137,11 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
 
     fun reset() {
         clearSlots()
-        noIcons = true
+        civilianUnitIcon = null
+        militaryUnitIcon = null
     }
 
+    override fun determineVisibility() {
+        isVisible = civilianUnitIcon != null || militaryUnitIcon != null
+    }
 }

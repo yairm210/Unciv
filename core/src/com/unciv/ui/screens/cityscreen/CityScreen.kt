@@ -31,7 +31,6 @@ import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
-import com.unciv.ui.components.input.onDoubleClick
 import com.unciv.ui.components.tilegroups.CityTileGroup
 import com.unciv.ui.components.tilegroups.CityTileState
 import com.unciv.ui.components.tilegroups.TileGroupMap
@@ -368,11 +367,11 @@ class CityScreen(
 
         for (tileGroup in cityTileGroups) {
             tileGroup.onClick { tileGroupOnClick(tileGroup, city) }
-            tileGroup.layerMisc.onClick {
+            tileGroup.layerMisc.onWorkedIconClick = {
                 tileWorkedIconOnClick(tileGroup, city)
                 tileGroupOnClick(tileGroup, city)
             }
-            tileGroup.layerMisc.onDoubleClick { tileWorkedIconDoubleClick(tileGroup, city) }
+            tileGroup.layerMisc.onWorkedIconDoubleClick = { tileWorkedIconDoubleClick(tileGroup, city) }
             tileGroups.add(tileGroup)
         }
 

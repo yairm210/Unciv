@@ -1,9 +1,7 @@
 package com.unciv.ui.components.tilegroups.layers
 
-import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.Civilization
 import com.unciv.ui.components.tilegroups.citybutton.CityButton
 import com.unciv.ui.components.tilegroups.TileGroup
@@ -14,26 +12,9 @@ class TileLayerCityButton(tileGroup: TileGroup, size: Float) : TileLayer(tileGro
 
     private var cityButton: CityButton? = null
 
-    init {
-        touchable = Touchable.childrenOnly
-        setOrigin(Align.center)
-    }
-
-    override fun act(delta: Float) {
-        if (tile.isCityCenter())
-            super.act(delta)
-    }
-
-    override fun hit(x: Float, y: Float, touchable: Boolean): Actor? {
-        if (tile.isCityCenter())
-            return super.hit(x, y, touchable)
-        return null
-    }
-
-    override fun draw(batch: Batch?, parentAlpha: Float) {
-        if (tile.isCityCenter())
-            super.draw(batch, parentAlpha)
-    }
+    // Per-city-tile wrapper Group so that CityButton.moveButtonDown/Up can still call
+    // `parent.addAction(moveTo(...))` and have the action processed by the actable cityButtonMapLayer.
+    private var cityButtonWrapper: Group? = null
 
     fun moveUp() {
         cityButton?.moveButtonUp()
@@ -43,27 +24,50 @@ class TileLayerCityButton(tileGroup: TileGroup, size: Float) : TileLayer(tileGro
         cityButton?.moveButtonDown()
     }
 
+    /** Returns true when a CityButton is currently displayed on this tile. */
+    fun hasButton(): Boolean = cityButton != null
+
+    /** Enables or disables scene-graph transform on the city button wrapper (for scaling). */
+    fun setButtonTransform(isTransform: Boolean) {
+        cityButtonWrapper?.isTransform = isTransform
+    }
+
+    /** Scales the city button wrapper (use together with [setButtonTransform]). */
+    fun setButtonScale(scale: Float) {
+        cityButtonWrapper?.setScale(scale)
+    }
+
     override fun doUpdate(viewingCiv: Civilization?) {
         if (tileGroup !is WorldTileGroup) return
 
         val city = tile.getCity()
 
         // There used to be a city here but it was razed
-        if (city == null && cityButton != null) {
-            cityButton!!.remove()
+        if (city == null && cityButtonWrapper != null) {
+            removeOwnedActor(cityButtonWrapper!!)
+            cityButtonWrapper = null
             cityButton = null
         }
 
         if (viewingCiv == null) return
         if (city == null || !tileGroup.tile.isCityCenter()) return
 
-        // Create (if not yet) and update city button
+        // Create wrapper + city button if not yet present
         if (cityButton == null) {
+            cityButtonWrapper = Group().apply {
+                isTransform = false
+                touchable = Touchable.childrenOnly
+                setPosition(tileX, tileY)
+            }
             cityButton = CityButton(city, tileGroup)
-            addActor(cityButton)
+            cityButtonWrapper!!.addActor(cityButton!!)
+            addOwnedActor(cityButtonWrapper!!)
         }
 
         cityButton!!.update(DebugUtils.VISIBLE_MAP || isViewable(viewingCiv))
     }
 
+    override fun determineVisibility() {
+        isVisible = cityButton != null
+    }
 }
