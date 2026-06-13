@@ -1,3 +1,26 @@
+## 4.20.13
+
+Restructuring tilegroup layers to not be groups! 
+
+Resolved  - show exact location of json file errors
+
+chore: Clean NextUnitAutomation - more subfunctions
+
+ci: Add retry to AUR pkgbuild fetching (transient errors)
+
+By SomeTroglodyte:
+- Context menu indicators for existing context menus 
+- Mod check complains about empty names for `RulesetObject`s 
+- Fix visual glitches caused by a Ruleset object with empty name registering a symbol in the font 
+- Fix false ruleset validation positives from addTranslationNameCollisionWarnings 
+- Fix expansion clearing barbarian camps leaving obsolete quests 
+- City buy tile context menu to buy several tiles at once 
+- More robust modcheck display of loading / json parsing errors 
+
+Avoid centering on hidden wonder locations - By xplon
+
+Respect alternative promotion prerequisites in validation - By superdusto
+
 ## 4.20.12
 
 By xplon:
