@@ -618,6 +618,13 @@ class Ruleset {
         globalUniques.uniques.addAll(uniques)
     }
 
+    @Readonly
+    fun isReligionEnabled(startingEra: String): Boolean {
+        if (eras[startingEra]?.hasUnique(UniqueType.DisablesReligion) == true) return false
+        if (modOptions.hasUnique(UniqueType.DisableReligion)) return false
+        return true
+    }
+
     /** Used for displaying a RuleSet's name */
     override fun toString() = when {
         name.isNotEmpty() -> name

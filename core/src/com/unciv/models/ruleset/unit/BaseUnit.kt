@@ -107,7 +107,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     @Readonly
     override fun isUnavailableBySettings(gameInfo: GameInfo) =
         super<INonPerpetualConstruction>.isUnavailableBySettings(gameInfo) ||
-        (!gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon())
+        (!gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon()) ||
+        (!gameInfo.isReligionEnabled() && hasUnique(UniqueType.ReligiousUnit))
 
     @Readonly
     fun getUpgradeUnits(gameContext: GameContext = GameContext.EmptyState): Sequence<String> {

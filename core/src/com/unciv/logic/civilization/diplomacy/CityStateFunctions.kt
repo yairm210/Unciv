@@ -13,9 +13,11 @@ import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
+import com.unciv.models.stats.Stats
 import com.unciv.ui.screens.victoryscreen.RankingType
 import com.unciv.utils.randomWeighted
 import yairm210.purity.annotations.Readonly
@@ -29,11 +31,13 @@ class CityStateFunctions(val civInfo: Civilization) {
 
     /** Attempts to initialize the city state, returning true if successful. */
     fun initCityState(ruleset: Ruleset, startingEra: String, usedMajorCivs: Sequence<Nation>): Boolean {
+        val cityStateType = ruleset.cityStateTypes[civInfo.nation.cityStateType] ?: return false
+        if (!ruleset.isReligionEnabled(startingEra) && cityStateType.isReligious()) return false 
+
         val rng = civInfo.state.stateBasedRandom("CityStateFunctions.initCityState")
         val allMercantileResources = ruleset.tileResources.values.filter { it.hasUnique(UniqueType.CityStateOnlyResource) }.map { it.name }
         val uniqueTypes = HashSet<UniqueType>()    // We look through these to determine what kinds of city states we have
 
-        val cityStateType = ruleset.cityStateTypes[civInfo.nation.cityStateType]!!
         uniqueTypes.addAll(cityStateType.friendBonusUniqueMap.getAllUniques().mapNotNull { it.type })
         uniqueTypes.addAll(cityStateType.allyBonusUniqueMap.getAllUniques().mapNotNull { it.type })
 
@@ -67,9 +71,14 @@ class CityStateFunctions(val civInfo: Civilization) {
                 civInfo.cityStateUniqueUnit = possibleUnits.random(rng).name
         }
 
-        // TODO: Return false if attempting to put a religious city-state in a game without religion
-
         return true
+    }
+
+    private fun CityStateType.isReligious(): Boolean {
+        fun UniqueMap.isReligious() =
+            getMatchingUniques(UniqueType.Stats, GameContext.IgnoreConditionals)
+                .any { Stats.parse(it.params[0]).faith > 0f }
+        return friendBonusUniqueMap.isReligious() || allyBonusUniqueMap.isReligious()
     }
 
     fun holdElections() {
