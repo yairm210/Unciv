@@ -54,7 +54,10 @@ class NextTurnButton(
             (!worldScreen.hasOpenPopups() && worldScreen.isPlayersTurn && !worldScreen.waitingForAutosave && !worldScreen.isNextTurnUpdateRunning())
         if (isEnabled) {
             addTooltip(KeyboardBinding.NextTurn)
-            addContextMenu { NextTurnMenu(stage, this, worldScreen) }
+            
+            // Don't add the context menu if the only option is "next turn"
+            if (NextTurnAction.MoveAutomatedUnits.isChoice(worldScreen))
+                addContextMenu { NextTurnMenu(stage, this, worldScreen) }
         } else {
             removeTooltips()
         }
