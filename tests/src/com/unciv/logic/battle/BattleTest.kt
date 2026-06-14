@@ -548,6 +548,38 @@ class BattleTest(
         assertTrue(defaultDefenderUnit.isDestroyed)
     }
 
+    @Test
+    fun `Perform extra ranged attack if unique is present`() {
+        // given
+        val attackerUnit = testGame.addDefaultMeleeUnitWithUniques(attackerCiv, testGame.getTile(0,1), "Before engaging in combat performs an extra ranged attack with [50]% of melee combat strength")
+
+        // when
+        val damageDealt = Battle.attack(MapUnitCombatant(attackerUnit), MapUnitCombatant(defaultDefenderUnit))
+
+        // then
+        assertEquals(7, attackerUnit.promotions.XP) // Attacker should get 2 xp from ranged attack + 5 xp from melee attack
+        assertEquals(6, defaultDefenderUnit.promotions.XP) // Defender should get 2 xp from ranged attack + 4 xp from melee attack
+        assertEquals(50, damageDealt.attackerDealt) // Attacker deals damage from both the ranged attack and melee attack
+        assertEquals(27, damageDealt.defenderDealt)
+        assertEquals(73, attackerUnit.health)
+        assertEquals(50, defaultDefenderUnit.health)
+    }
+
+    @Test
+    fun `extra ranged attack vs barbarians`() {
+        // given
+        val attackerUnit = testGame.addDefaultMeleeUnitWithUniques(attackerCiv, testGame.getTile(0,1), "Before engaging in combat performs an extra ranged attack with [50]% of melee combat strength")
+        attackerUnit.promotions.XP = 28
+        val barbarianCiv = testGame.addBarbarianCiv()
+        val barbarianUnit = testGame.addUnit("Brute", barbarianCiv, testGame.getTile(0,2))
+
+        // when
+        val damageDealt = Battle.attack(MapUnitCombatant(attackerUnit), MapUnitCombatant(barbarianUnit))
+
+        // then
+        assertEquals(30, attackerUnit.promotions.XP) // Attacker should get 2 xp from ranged attack but no xp from melee attack
+    }
+
     companion object {
         @Suppress("unused")
         @Parameters
