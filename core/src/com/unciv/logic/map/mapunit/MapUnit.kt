@@ -442,6 +442,11 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun canAttack(): Boolean {
         if (!hasMovement()) return false
         if (isCivilian()) return false
+        // Non-air units that are transported can only attack if inside an open topped carrier
+        if (isTransported && !baseUnit.movesLikeAirUnits) {
+            val carrier = currentTile.militaryUnit
+            if (carrier == null || !carrier.hasUnique(UniqueType.CarriedUnitsDisembarkWhenAttacking)) return false
+        }
         return attacksThisTurn < maxAttacksPerTurn()
     }
 
@@ -601,8 +606,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     @Readonly
     fun isTransportTypeOf(mapUnit: MapUnit): Boolean {
-        // Currently, only missiles and airplanes can be carried
-        if (!mapUnit.baseUnit.movesLikeAirUnits) return false
         return getMatchingUniques(UniqueType.CarryAirUnits).any { mapUnit.matchesFilter(it.params[1]) }
     }
 
@@ -997,7 +1000,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 val currentTile = if (hasTile()) currentTile else null
                 throw IllegalStateException("Unit $name of ${civ.civID} at $currentTile can't be put in tile $tile, reason: ${movement.getCannotMoveToReason(tile)}")
             }
-            baseUnit.movesLikeAirUnits -> tile.airUnits.add(this)
+            baseUnit.movesLikeAirUnits || isTransported -> tile.airUnits.add(this)
+
             isCivilian() -> tile.civilianUnit = this
             else -> tile.militaryUnit = this
         }
