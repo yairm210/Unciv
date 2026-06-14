@@ -4,11 +4,13 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.unique.Calculation
 import com.unciv.models.ruleset.unique.Countables
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
+import com.unciv.models.ruleset.unique.expressions.Parser
 import com.unciv.models.ruleset.validation.RulesetValidator
 import com.unciv.models.ruleset.validation.UniqueValidator
 import com.unciv.models.stats.Stat
@@ -136,6 +138,20 @@ class CountableTests {
                     UniqueParameterType.safeValueOf(parameter), UniqueParameterType.Unknown)
             }
         }
+    }
+
+    @Test
+    fun testAllCalculationTypeDefaultExpressionsAreParseable() {
+        var fails = 0
+        for (calcType in Calculation.entries) {
+            try {
+                Parser.eval(calcType.defaultExpression)
+            } catch (ex: Parser.ParsingError) {
+                println("CalculationType.${calcType.name} defaultExpression \"${calcType.defaultExpression}\" failed to parse: ${ex.message}")
+                fails++
+            }
+        }
+        assertEquals("failure count", 0, fails)
     }
 
     @Test

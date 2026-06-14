@@ -36,6 +36,11 @@ data class GameContext(
         (otherCiv?.gameInfo),
 
     val ignoreConditionals: Boolean = false,
+
+    /** Countable parameter text → value overrides for use with [Calculation.evaluate].
+     *  When set, [Node.Countable][com.unciv.models.ruleset.unique.expressions.Node.Countable] returns
+     *  the override value instead of evaluating the live game state. */
+    val countableOverrides: Map<String, Int> = emptyMap(),
 ) {
     constructor(city: City) : this(city.civ, city, tile = city.getCenterTileOrNull(), gameInfo = city.civ.gameInfo)
     constructor(unit: MapUnit) : this(unit.civ, unit = unit, tile = if (unit.hasTile()) unit.getTile() else null, gameInfo = unit.civ.gameInfo)
