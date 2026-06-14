@@ -196,26 +196,30 @@ class FormattedLine (
             val explicitLinks = unique.getModifiers(UniqueType.CivilopediaLink)
             if (explicitLinks.isNotEmpty())
                 return explicitLinks.first().params[0]
-            if (allObjectNamesCategoryMap == null || rulesetCachedInNameMap !== ruleSet)
-                allObjectNamesCategoryMap = initNamesCategoryMap(ruleSet)
+            initNamesCategoryMap(ruleSet)
             for (parameter in unique.params + unique.modifiers.flatMap { it.params }) {
                 val category = allObjectNamesCategoryMap!![parameter] ?: continue
                 return category.name + "/" + parameter
             }
             return ""
         }
+
+        fun getAutoLink(rulesetObjectName: String): String {
+            initNamesCategoryMap(getCurrentRuleset())
+            val category = allObjectNamesCategoryMap!![rulesetObjectName] ?: return ""
+            return category.name + "/" + rulesetObjectName
+        }
+
         private fun getCurrentRuleset() = when {
             !UncivGame.isCurrentInitialized() -> Ruleset()
             UncivGame.Current.gameInfo == null -> RulesetCache[BaseRuleset.Civ_V_Vanilla.fullName]!!
             else -> UncivGame.Current.gameInfo!!.ruleset
         }
-        private fun initNamesCategoryMap(ruleSet: Ruleset): HashMap<String, CivilopediaCategories> {
+
+        private fun initNamesCategoryMap(ruleSet: Ruleset) {
+            if (allObjectNamesCategoryMap != null && rulesetCachedInNameMap === ruleSet) return
             //val startTime = System.nanoTime()
-            // These are because the IDEA compiler DOES NOT like them being directly in the yield
-            //  This is some kinf o compiler bug, looks like
-            fun wonderBuildings() = ruleSet.buildings.filter { it.value.isAnyWonder() }
-            fun nonWonderBuildings() = ruleSet.buildings.filter { !it.value.isAnyWonder() }
-            
+
             // order these with the categories that should take precedence in case of name conflicts (e.g. Railroad) _last_
             val allObjectMapsSequence = sequence {
                 yield(CivilopediaCategories.Belief to ruleSet.beliefs)
@@ -229,8 +233,8 @@ class FormattedLine (
                 yield(CivilopediaCategories.UnitType to ruleSet.unitTypes)
                 yield(CivilopediaCategories.Unit to ruleSet.units)
                 yield(CivilopediaCategories.Technology to ruleSet.technologies)
-                yield(CivilopediaCategories.Building to nonWonderBuildings())
-                yield(CivilopediaCategories.Wonder to wonderBuildings())
+                yield(CivilopediaCategories.Building to ruleSet.buildings.filter { !it.value.isAnyWonder() })
+                yield(CivilopediaCategories.Wonder to ruleSet.buildings.filter { it.value.isAnyWonder() })
                 yield(CivilopediaCategories.UnitNameGroup to ruleSet.unitNameGroups)
             }
             val result = HashMap<String, CivilopediaCategories>()
@@ -243,7 +247,7 @@ class FormattedLine (
 
             //println("allObjectNamesCategoryMap took ${System.nanoTime()-startTime}ns to initialize")
             rulesetCachedInNameMap = ruleSet
-            return result
+            allObjectNamesCategoryMap = result
         }
     }
 
