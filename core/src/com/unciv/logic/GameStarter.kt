@@ -370,7 +370,7 @@ class GameStarter private constructor(
                 civ.playerId = player.playerId
                 civ.playerMinutesBeforeForceResign = newGameParameters.minutesUntilForceResign
             }
-            else if (!civ.cityStateFunctions.initCityState(ruleset, newGameParameters.startingEra, usedMajorCivs))
+            else if (!civ.cityStateFunctions.initCityState(ruleset, newGameParameters.startingEra, usedMajorCivs, rng))
                 continue
             gameInfo.civilizations.add(civ)
         }

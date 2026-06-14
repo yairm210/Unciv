@@ -28,8 +28,7 @@ import kotlin.random.Random
 class CityStateFunctions(val civInfo: Civilization) {
 
     /** Attempts to initialize the city state, returning true if successful. */
-    fun initCityState(ruleset: Ruleset, startingEra: String, usedMajorCivs: Sequence<Nation>): Boolean {
-        val rng = civInfo.state.stateBasedRandom("CityStateFunctions.initCityState")
+    fun initCityState(ruleset: Ruleset, startingEra: String, usedMajorCivs: Sequence<Nation>, rng: Random): Boolean {
         val allMercantileResources = ruleset.tileResources.values.filter { it.hasUnique(UniqueType.CityStateOnlyResource) }.map { it.name }
         val uniqueTypes = HashSet<UniqueType>()    // We look through these to determine what kinds of city states we have
 
