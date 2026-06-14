@@ -110,7 +110,8 @@ internal class ConsoleCivCommands : ConsoleCommandNode {
             val civ = Civilization(nation)
             if (nation.isCityState) {
                 val usedMajorCivs = civilizations.asSequence().filter { it.isMajorCiv() }.map { it.nation }
-                if (!civ.cityStateFunctions.initCityState(ruleset, gameInfo.gameParameters.startingEra, usedMajorCivs))
+                val rng = GameContext(gameInfo = gameInfo).stateBasedRandom("DevConsole civ add")
+                if (!civ.cityStateFunctions.initCityState(ruleset, gameInfo.gameParameters.startingEra, usedMajorCivs, rng))
                     throw ConsoleErrorException("City-state not allowed in this game")
             }
             civ.gameInfo = gameInfo
