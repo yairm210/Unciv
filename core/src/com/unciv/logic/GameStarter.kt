@@ -27,11 +27,11 @@ import com.unciv.utils.debug
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 
-/*
+/**
  * Starts a new game
  *
- * Map terrain is determinisic, but game setup, including start locations, resources, and other 
- * details, are random, based on GameContext.stateBasedRandom, which is based on the gameId, which
+ * Map terrain is determinisic, but game setup, including start locations, resources, and other
+ * details, are random, based on [GameContext.stateBasedRandom], which is based on the gameId, which
  *  is fully random per game.
  */
 object GameStarter {
@@ -192,8 +192,9 @@ object GameStarter {
                     civInfo.addTechSilently(tech)
 
             // generic start with technology unique
-            for (unique in civInfo.getMatchingUniques(UniqueType.StartsWithTech))
+            civInfo.forEachMatchingUnique(UniqueType.StartsWithTech) { unique ->
                 civInfo.addTechSilently(unique.params[0])
+            }
 
             // add all techs to spectators
             if (civInfo.isSpectator())
@@ -217,13 +218,13 @@ object GameStarter {
         for (civInfo in gameInfo.civilizations.filter { !it.isBarbarian }) {
 
             // generic start with policy unique
-            for (unique in civInfo.getMatchingUniques(UniqueType.StartsWithPolicy)) {
+            civInfo.forEachMatchingUnique(UniqueType.StartsWithPolicy) { unique ->
                 // get the parameter from the unique
                 val policyName = unique.params[0]
 
                 // check if the policy is in the ruleset and not already adopted
                 if (!ruleset.policies.containsKey(policyName) || civInfo.policies.isAdopted(policyName))
-                    continue
+                    return@forEachMatchingUnique
 
                 val policyToAdopt = ruleset.policies[policyName]!!
                 civInfo.policies.run {
@@ -322,7 +323,7 @@ object GameStarter {
         // ensure Spectators always first players
         val spectators = chosenPlayers.filter { it.chosenCiv == Constants.spectator }
         val otherPlayers = chosenPlayers.filterNot { it.chosenCiv == Constants.spectator }.toMutableList()
-        
+
         // Shuffle Major Civs
         if (newGameParameters.shufflePlayerOrder) otherPlayers.shuffle()
 
@@ -422,7 +423,7 @@ object GameStarter {
     }
 
     private fun removeAncientRuinsNearStartingLocation(startingLocation: Tile) {
-        for (tile in startingLocation.getTilesInDistance(3)) {
+        startingLocation.forEachTileAtDistance(3) { tile ->
             if (tile.tileImprovement != null && tile.tileImprovement!!.isAncientRuinsEquivalent()) {
                 tile.removeImprovement() // Remove ancient ruins in immediate vicinity
             }
@@ -445,7 +446,7 @@ object GameStarter {
             adjustStartingUnitsForCityStatesAndOneCityChallenge(civ, gameInfo, startingUnits, settlerLikeUnits)
             placeStartingUnits(civ, startingLocation, startingUnits, ruleset, ruleset.eras[startingEra]!!.startingMilitaryUnit, settlerLikeUnits)
 
-            // Trigger any global or nation uniques that should triggered.
+            // Trigger any global or nation uniques that should be triggered.
             // We may need the starting location for some uniques, which is why we're doing it now
             // This relies on gameInfo.ruleset already being initialized
             val startingTriggers = gameInfo.getGlobalUniques().uniqueObjects + civ.nation.uniqueObjects
@@ -620,6 +621,7 @@ object GameStarter {
 
             val distanceToNext = minimumDistanceBetweenStartingLocations /
                 (if (civ.isCityState) 2 else 1) // We allow city states to squeeze in tighter
+            @Suppress("DEPRECATION")
             freeTiles.removeAll(tileMap.getTilesInDistance(startingLocation.position, distanceToNext)
                 .toSet())
         }
@@ -672,6 +674,7 @@ object GameStarter {
                 startBias.equalsPlaceholderText("Avoid []") -> {
                     val tileToAvoid = startBias.getPlaceholderParameters()[0]
                     preferredTiles.filter { tile ->
+                        @Suppress("DEPRECATION")
                         !tile.getTilesInDistance(1).any {
                             it.matchesTerrainFilter(tileToAvoid, null)
                         }
@@ -679,6 +682,7 @@ object GameStarter {
                 }
                 startBias in tileMap.naturalWonders -> preferredTiles  // passthrough: already failed
                 else -> preferredTiles.filter { tile ->
+                    @Suppress("DEPRECATION")
                     tile.getTilesInDistance(1).any {
                         it.matchesTerrainFilter(startBias, null)
                     }
