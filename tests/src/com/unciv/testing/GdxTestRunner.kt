@@ -41,7 +41,6 @@ class GdxTestRunner(
 ) : BlockJUnit4ClassRunner(klass), ApplicationListener {
     constructor(klass: Class<*>) : this(klass, null) 
 
-    private val invokeInRender: MutableMap<FrameworkMethod, RunNotifier> = HashMap()
     private val measureDuration = klass?.getAnnotation(MeasureDuration::class.java) != null
     private val classPrefix = klass?.simpleName?.plus(".") ?: ""
 
@@ -59,49 +58,24 @@ class GdxTestRunner(
     override fun pause() {}
     override fun dispose() {}
 
-    override fun render() {
-        synchronized(invokeInRender) {
-            for ((method, notifier) in invokeInRender) {
-                val measure = measureDuration || method.getAnnotation(MeasureDuration::class.java) != null
-                val startTime = System.currentTimeMillis()
-                val redirect = method.getAnnotation(RedirectOutput::class.java)
-                    ?.policy
-                    ?: RedirectPolicy.ShowOnFailure
-                when (redirect) {
-                    RedirectPolicy.ShowOnFailure ->
-                        runChildRedirectingOutput(method, notifier)
-                    RedirectPolicy.Discard ->
-                        runChildDiscardingOutput(method, notifier)
-                    else ->
-                        super.runChild(method, notifier)
-                }
-                if (!measure) continue
-                println("Test $classPrefix${method.name} took ${System.currentTimeMillis() - startTime}ms.")
-            }
-            invokeInRender.clear()
-        }
-    }
+    override fun render() {}
 
-    // BlockJUnit4ClassRunner interface
     override fun runChild(method: FrameworkMethod, notifier: RunNotifier) {
-        synchronized(invokeInRender) {
-            // add for invoking in render phase, where gl context is available
-            invokeInRender.put(method, notifier)
+        val measure = measureDuration || method.getAnnotation(MeasureDuration::class.java) != null
+        val startTime = System.currentTimeMillis()
+        val redirect = method.getAnnotation(RedirectOutput::class.java)
+            ?.policy
+            ?: RedirectPolicy.ShowOnFailure
+        when (redirect) {
+            RedirectPolicy.ShowOnFailure ->
+                runChildRedirectingOutput(method, notifier)
+            RedirectPolicy.Discard ->
+                runChildDiscardingOutput(method, notifier)
+            else ->
+                super.runChild(method, notifier)
         }
-        // wait until that test was invoked
-        waitUntilInvokedInRenderMethod()
-    }
-
-    private fun waitUntilInvokedInRenderMethod() {
-        try {
-            while (true) {
-                Thread.sleep(10)
-                if (synchronized(invokeInRender) { invokeInRender.isEmpty() })
-                    break
-            }
-        } catch (e: InterruptedException) {
-            e.printStackTrace()
-        }
+        if (measure)
+            println("Test $classPrefix${method.name} took ${System.currentTimeMillis() - startTime}ms.")
     }
 
     // Standard output redirection
