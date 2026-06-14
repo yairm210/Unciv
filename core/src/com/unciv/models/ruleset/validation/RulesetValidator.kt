@@ -19,8 +19,6 @@ import com.unciv.models.ruleset.RulesetFile
 import com.unciv.models.ruleset.RulesetName
 import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.nation.Nation
-import com.unciv.models.ruleset.nation.getContrastRatio
-import com.unciv.models.ruleset.nation.getRelativeLuminance
 import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
@@ -35,6 +33,8 @@ import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stats
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.tilesets.TileSetConfig
+import com.unciv.ui.components.extensions.getContrastRatio
+import com.unciv.ui.components.extensions.getRelativeLuminance
 import com.unciv.ui.images.AtlasPreview
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.Portrait
@@ -637,8 +637,8 @@ open class RulesetValidator protected constructor(
     private data class SuggestedColors(val innerColor: Color, val outerColor: Color)
 
     private fun getSuggestedColors(innerColor: Color, outerColor: Color): SuggestedColors {
-        val innerColorLuminance = getRelativeLuminance(innerColor)
-        val outerColorLuminance = getRelativeLuminance(outerColor)
+        val innerColorLuminance = innerColor.getRelativeLuminance()
+        val outerColorLuminance = outerColor.getRelativeLuminance()
 
         val innerLerpColor: Color
         val outerLerpColor: Color

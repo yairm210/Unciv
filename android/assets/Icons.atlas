@@ -48,7 +48,7 @@ CityStateIcons/Militaristic
   index: -1
 CityStateIcons/Religious
   rotate: false
-  xy: 877, 1482
+  xy: 985, 1482
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -62,98 +62,98 @@ EmojiIcons/Automate
   index: -1
 EmojiIcons/Culture
   rotate: false
-  xy: 1294, 992
+  xy: 775, 558
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Death
   rotate: false
-  xy: 775, 558
+  xy: 833, 558
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Faith
   rotate: false
-  xy: 833, 558
+  xy: 1153, 1763
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Food
   rotate: false
-  xy: 1222, 804
+  xy: 1211, 1763
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Gold
   rotate: false
-  xy: 1211, 1763
+  xy: 1269, 1777
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Great Artist
   rotate: false
-  xy: 1095, 1742
+  xy: 1327, 1777
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Great Engineer
   rotate: false
-  xy: 1269, 1777
+  xy: 1385, 1777
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Great General
   rotate: false
-  xy: 1327, 1777
+  xy: 1153, 1705
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Great Merchant
   rotate: false
-  xy: 1385, 1777
+  xy: 1211, 1705
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Great Scientist
   rotate: false
-  xy: 1153, 1705
+  xy: 1269, 1719
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Happiness
   rotate: false
-  xy: 1211, 1705
+  xy: 1327, 1719
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Production
   rotate: false
-  xy: 941, 780
+  xy: 941, 664
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Science
   rotate: false
-  xy: 999, 774
+  xy: 1280, 812
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Turn
   rotate: false
-  xy: 1280, 920
+  xy: 1327, 1661
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -314,98 +314,98 @@ ImprovementIcons/Pasture
   index: -1
 ImprovementIcons/Plantation
   rotate: false
-  xy: 574, 800
+  xy: 559, 692
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ImprovementIcons/Polder
   rotate: false
-  xy: 559, 692
+  xy: 559, 584
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ImprovementIcons/Quarry
   rotate: false
-  xy: 652, 260
+  xy: 652, 152
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ImprovementIcons/Railroad
   rotate: false
-  xy: 661, 1650
+  xy: 769, 1588
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ImprovementIcons/Remove Fallout
   rotate: false
-  xy: 1093, 1482
+  xy: 760, 368
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ImprovementIcons/Remove Forest
   rotate: false
-  xy: 760, 368
+  xy: 760, 260
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ImprovementIcons/Remove Jungle
   rotate: false
-  xy: 760, 368
+  xy: 760, 260
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ImprovementIcons/Remove Marsh
   rotate: false
-  xy: 760, 153
+  xy: 760, 45
   size: 100, 99
   orig: 100, 99
   offset: 0, 0
   index: -1
 ImprovementIcons/Remove Railroad
   rotate: false
-  xy: 760, 45
+  xy: 553, 1542
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ImprovementIcons/Remove Road
   rotate: false
-  xy: 553, 1542
+  xy: 661, 1542
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ImprovementIcons/Repair
   rotate: false
-  xy: 661, 1542
+  xy: 769, 1480
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ImprovementIcons/Road
   rotate: false
-  xy: 640, 1434
+  xy: 748, 1372
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ImprovementIcons/Terrace farm
   rotate: false
-  xy: 1054, 1266
+  xy: 1162, 1266
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ImprovementIcons/Trading post
   rotate: false
-  xy: 1006, 1156
+  xy: 1006, 1048
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -482,14 +482,14 @@ OtherIcons/Loading
   index: -1
 NotificationIcons/PickConstruction
   rotate: false
-  xy: 466, 908
+  xy: 574, 908
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 StatIcons/Production
   rotate: false
-  xy: 466, 908
+  xy: 574, 908
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -503,42 +503,42 @@ NotificationIcons/PickPolicy
   index: -1
 NotificationIcons/PickTech
   rotate: false
-  xy: 574, 908
+  xy: 466, 800
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 StatIcons/Science
   rotate: false
-  xy: 574, 908
+  xy: 466, 800
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NotificationIcons/RobotArm
   rotate: false
-  xy: 748, 1372
+  xy: 856, 1372
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NotificationIcons/RobotHeadRect
   rotate: false
-  xy: 856, 1372
+  xy: 964, 1374
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NotificationIcons/RobotHeadSquare
   rotate: false
-  xy: 964, 1374
+  xy: 1072, 1374
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NotificationIcons/ServerRack
   rotate: false
-  xy: 838, 1264
+  xy: 682, 1156
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -587,7 +587,7 @@ StatIcons/Movement
   index: -1
 OtherIcons/BackArrow
   rotate: false
-  xy: 1222, 920
+  xy: 1222, 812
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -657,7 +657,7 @@ OtherIcons/Cities
   index: -1
 OtherIcons/CityState
   rotate: false
-  xy: 1222, 862
+  xy: 1294, 884
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -685,7 +685,7 @@ OtherIcons/ContextMenuAvailableA
   index: -1
 OtherIcons/ContextMenuAvailableD
   rotate: false
-  xy: 1222, 978
+  xy: 1222, 870
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
@@ -783,7 +783,7 @@ ImprovementIcons/Pillaged
   index: -1
 OtherIcons/ForwardArrow
   rotate: false
-  xy: 1153, 1763
+  xy: 1095, 1742
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -818,7 +818,7 @@ OtherIcons/Hideout
   index: -1
 OtherIcons/Improvements
   rotate: false
-  xy: 1269, 1719
+  xy: 1385, 1719
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -853,7 +853,7 @@ OtherIcons/Load
   index: -1
 OtherIcons/LockSmall
   rotate: false
-  xy: 1385, 1719
+  xy: 1201, 1589
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -895,7 +895,7 @@ OtherIcons/NationSwap
   index: -1
 OtherIcons/Nations
   rotate: false
-  xy: 883, 716
+  xy: 941, 780
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -923,7 +923,7 @@ OtherIcons/Options
   index: -1
 OtherIcons/Pause
   rotate: false
-  xy: 883, 658
+  xy: 941, 722
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -942,30 +942,37 @@ OtherIcons/Pentagon
   orig: 100, 100
   offset: 0, 0
   index: -1
+OtherIcons/Personality
+  rotate: false
+  xy: 466, 908
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
 OtherIcons/Pillage
   rotate: false
-  xy: 466, 800
+  xy: 574, 800
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Policies
   rotate: false
-  xy: 559, 584
+  xy: 667, 692
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Politics
   rotate: false
-  xy: 667, 692
+  xy: 667, 584
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NotificationIcons/WorldCongressVote
   rotate: false
-  xy: 667, 692
+  xy: 667, 584
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -979,7 +986,7 @@ OtherIcons/Politics-diagram-bg
   index: -1
 OtherIcons/Present
   rotate: false
-  xy: 652, 368
+  xy: 652, 260
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -993,77 +1000,77 @@ OtherIcons/Puppet
   index: -1
 OtherIcons/Quest
   rotate: false
-  xy: 652, 152
+  xy: 652, 44
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Question
   rotate: false
-  xy: 652, 44
+  xy: 553, 1650
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Quickstart
   rotate: false
-  xy: 553, 1650
+  xy: 661, 1650
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Reduce
   rotate: false
-  xy: 769, 1588
+  xy: 877, 1482
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Remove Heresy
   rotate: false
-  xy: 760, 260
+  xy: 760, 152
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Resources
   rotate: false
-  xy: 769, 1480
+  xy: 532, 1434
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Resume
   rotate: false
-  xy: 532, 1434
+  xy: 640, 1434
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Undo
   rotate: false
-  xy: 532, 1434
+  xy: 640, 1434
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Scenarios
   rotate: false
-  xy: 1180, 1374
+  xy: 622, 1326
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Search
   rotate: false
-  xy: 622, 1326
+  xy: 730, 1264
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/SecretOptions
   rotate: false
-  xy: 730, 1264
+  xy: 838, 1264
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -1077,63 +1084,63 @@ OtherIcons/Send
   index: -1
 OtherIcons/Settings
   rotate: false
-  xy: 682, 1156
+  xy: 790, 1156
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Shield
   rotate: false
-  xy: 682, 1048
+  xy: 790, 1048
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Skip
   rotate: false
-  xy: 790, 940
+  xy: 682, 832
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Sleep
   rotate: false
-  xy: 682, 832
+  xy: 790, 832
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Speaker
   rotate: false
-  xy: 790, 832
+  xy: 775, 724
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Spy
   rotate: false
-  xy: 898, 1156
+  xy: 898, 1048
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Star
   rotate: false
-  xy: 898, 1054
+  xy: 898, 946
   size: 100, 94
   orig: 100, 94
   offset: 0, 0
   index: -1
 OtherIcons/Swap
   rotate: false
-  xy: 946, 1264
+  xy: 1054, 1266
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Timer
   rotate: false
-  xy: 1162, 1266
+  xy: 1006, 1156
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -1147,21 +1154,21 @@ OtherIcons/Triangle
   index: -1
 OtherIcons/Turn right
   rotate: false
-  xy: 1006, 940
+  xy: 1114, 1158
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Tyrannosaurus
   rotate: false
-  xy: 1114, 1158
+  xy: 1114, 1050
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/UnitNameGroups
   rotate: false
-  xy: 1114, 1050
+  xy: 1114, 942
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -1175,7 +1182,7 @@ OtherIcons/WLTKD
   index: -1
 OtherIcons/Wonders
   rotate: false
-  xy: 1222, 1050
+  xy: 1222, 942
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -1371,91 +1378,91 @@ ResourceIcons/Pearls
   index: -1
 ResourceIcons/Porcelain
   rotate: false
-  xy: 652, 476
+  xy: 652, 368
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ResourceIcons/Salt
   rotate: false
-  xy: 1072, 1374
+  xy: 1180, 1374
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ResourceIcons/Sheep
   rotate: false
-  xy: 790, 1156
+  xy: 682, 1048
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ResourceIcons/Silk
   rotate: false
-  xy: 790, 1048
+  xy: 682, 940
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ResourceIcons/Silver
   rotate: false
-  xy: 682, 940
+  xy: 790, 940
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ResourceIcons/Spices
   rotate: false
-  xy: 775, 616
+  xy: 898, 1156
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ResourceIcons/Stone
   rotate: false
-  xy: 898, 946
+  xy: 898, 838
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ResourceIcons/Sugar
   rotate: false
-  xy: 898, 838
+  xy: 946, 1264
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ResourceIcons/Truffles
   rotate: false
-  xy: 1006, 1048
+  xy: 1006, 940
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ResourceIcons/Uranium
   rotate: false
-  xy: 1114, 942
+  xy: 1006, 832
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ResourceIcons/Whales
   rotate: false
-  xy: 1006, 832
+  xy: 1114, 834
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ResourceIcons/Wheat
   rotate: false
-  xy: 1114, 834
+  xy: 1222, 1158
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ResourceIcons/Wine
   rotate: false
-  xy: 1222, 1158
+  xy: 1222, 1050
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -1504,7 +1511,7 @@ StatIcons/Happiness
   index: -1
 StatIcons/InterceptRange
   rotate: false
-  xy: 1327, 1719
+  xy: 1201, 1647
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -1518,35 +1525,35 @@ StatIcons/Malcontent
   index: -1
 StatIcons/Population
   rotate: false
-  xy: 667, 584
+  xy: 652, 476
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 TileIcons/Worked
   rotate: false
-  xy: 667, 584
+  xy: 652, 476
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 StatIcons/Range
   rotate: false
-  xy: 941, 722
+  xy: 999, 774
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 StatIcons/RangedStrength
   rotate: false
-  xy: 941, 664
+  xy: 1057, 774
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 StatIcons/ReligiousStrength
   rotate: false
-  xy: 985, 1482
+  xy: 1093, 1482
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -1560,14 +1567,14 @@ StatIcons/Resistance
   index: -1
 StatIcons/Specialist
   rotate: false
-  xy: 775, 724
+  xy: 775, 616
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 StatIcons/Strength
   rotate: false
-  xy: 1057, 774
+  xy: 1269, 1661
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -1602,35 +1609,35 @@ TileIcons/Locked
   index: -1
 TileIcons/MapOverlayToggleImprovements
   rotate: false
-  xy: 1201, 1647
+  xy: 1201, 1531
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 TileIcons/MapOverlayToggleMovement
   rotate: false
-  xy: 1201, 1589
+  xy: 1270, 1316
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 TileIcons/MapOverlayToggleResources
   rotate: false
-  xy: 1201, 1531
+  xy: 883, 774
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 TileIcons/MapOverlayToggleWorkedTiles
   rotate: false
-  xy: 1270, 1316
+  xy: 883, 716
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 TileIcons/MapOverlayToggleYields
   rotate: false
-  xy: 883, 774
+  xy: 883, 658
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
