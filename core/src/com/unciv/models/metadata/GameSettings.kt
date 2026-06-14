@@ -30,7 +30,11 @@ class GameSettings {
         ClassicPathfinding,
         AStarPathfinding
     }
-
+    enum class WidgetPosition {
+        Right,
+        Bottom
+    }
+    
     /** Allows panning the map by moving the pointer to the screen edges */
     var mapAutoScroll: Boolean = false
     /** How fast the map pans using keyboard or with [mapAutoScroll] and mouse */
@@ -95,6 +99,7 @@ class GameSettings {
     var automatedUnitsChoosePromotions: Boolean = false
     var citiesAutoBombardAtEndOfTurn: Boolean = false
 
+    var tileInfoPosition: WidgetPosition = WidgetPosition.Right
     var showMinimap: Boolean = true
     var minimapSize: Int = 6    // default corresponds to 15% screen space
     var unitIconOpacity = 1f // default corresponds to fully opaque
@@ -110,7 +115,7 @@ class GameSettings {
     var showZoomButtons: Boolean = false
     var forbidPopupClickBehindToClose: Boolean = false
     var useCirclesToIndicateMovableTiles: Boolean = false
-    
+
     var unitMovementButtonAnimation: Boolean = false
     var unitActionsTableAnimation: Boolean = false
 

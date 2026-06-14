@@ -147,7 +147,7 @@ internal class WorldScreenTopBarStats(topbar: WorldScreenTopBar) : ScalingTableW
         faithLabel.setText(civInfo.religionManager.storedFaith.tr())
         faithPerTurnLabel.setText(rateLabel(nextTurnStats.faith))
 
-        scaleTo(worldScreen.stage.width)
+        scaleToWidth(worldScreen.stage.width)
     }
 
     private fun getCultureText(civInfo: Civilization, nextTurnStats: Stats): String {
