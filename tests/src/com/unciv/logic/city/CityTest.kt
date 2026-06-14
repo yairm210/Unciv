@@ -1,5 +1,6 @@
 package com.unciv.logic.city
 
+import com.unciv.Constants
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.HexCoord
 import com.unciv.testing.GdxTestRunner
@@ -94,5 +95,51 @@ class CityTest {
         assertTrue(capitalCity.hasSoldBuildingThisTurn)
     }
 
+    @Test
+    fun `should mark selected tile when queueing CreatesOneImprovement building`() {
+        val farm = testGame.ruleset.tileImprovements["Farm"]!!
+        testCiv.tech.techsResearched.add(farm.techRequired!!)
+        val building = createFarmPlacingBuilding()
+        val targetTile = testGame.getTile(1, 1)
+        targetTile.baseTerrain = Constants.grassland
+
+        capitalCity.cityConstructions.addToQueue(building, tile = targetTile)
+
+        assertTrue(capitalCity.cityConstructions.isBeingConstructedOrEnqueued(building.name))
+        assertTrue(targetTile.isMarkedForCreatesOneImprovement("Farm"))
+    }
+
+    @Test
+    fun `should require selected tile when queueing CreatesOneImprovement building`() {
+        val building = createFarmPlacingBuilding()
+
+        try {
+            capitalCity.cityConstructions.addToQueue(building)
+            fail("Expected queueing a CreatesOneImprovement building without a tile to fail")
+        } catch (ex: IllegalArgumentException) {
+            assertTrue(ex.message!!.contains("target tile"))
+        }
+
+        assertFalse(capitalCity.cityConstructions.isBeingConstructedOrEnqueued(building.name))
+    }
+
+    @Test
+    fun `should clear marker when removing CreatesOneImprovement building from queue`() {
+        val farm = testGame.ruleset.tileImprovements["Farm"]!!
+        testCiv.tech.techsResearched.add(farm.techRequired!!)
+        val building = createFarmPlacingBuilding()
+        val targetTile = testGame.getTile(1, 1)
+        targetTile.baseTerrain = Constants.grassland
+        capitalCity.cityConstructions.addToQueue(building, tile = targetTile)
+
+        capitalCity.cityConstructions.removeFromQueue(0, false)
+
+        assertFalse(targetTile.isMarkedForCreatesOneImprovement())
+        assertFalse(capitalCity.cityConstructions.isBeingConstructedOrEnqueued(building.name))
+    }
+
+    private fun createFarmPlacingBuilding() =
+        testGame.createBuilding("Creates a [Farm] improvement on a specific tile")
+            .apply { ruleset = testGame.ruleset }
 
 }
