@@ -113,6 +113,7 @@ class BasicTests {
         ) { baseRuleset: BaseRuleset ->
             val ruleset = RulesetCache[baseRuleset.fullName]!!
             val modCheck = ruleset.getErrorList()
+            println(modCheck.getErrorText(unfiltered = true))
             modCheck.isNotOK()
         }
     }

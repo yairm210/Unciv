@@ -37,7 +37,8 @@ class CityStateFunctions(val civInfo: Civilization) {
         uniqueTypes.addAll(cityStateType.allyBonusUniqueMap.getAllUniques().mapNotNull { it.type })
 
         // CS Personality
-        civInfo.cityStatePersonality = CityStatePersonality.entries.random(rng)
+        civInfo.cityStatePersonality = CityStatePersonality.safeValueOf(civInfo.nation.personality)
+            ?: CityStatePersonality.entries.random(rng)
 
         // Mercantile bonus resources
 
