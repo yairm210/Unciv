@@ -8,6 +8,7 @@ import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.PixmapIO
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
 import com.unciv.GUI
@@ -30,6 +31,8 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.Fonts
+import com.unciv.ui.components.input.ActivationTypes
+import com.unciv.ui.components.input.ActorAttachments
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onChange
@@ -52,6 +55,7 @@ import kotlinx.coroutines.withContext
 import java.util.zip.Deflater
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlin.io.path.exists
 import kotlin.io.path.extension
 import kotlin.io.path.isDirectory
@@ -76,14 +80,16 @@ internal class AdvancedTab(
 
         addFontFamilySelect()
         addFontSizeMultiplier()
+
+        addSeparator()
+
+        addGestureControls()
+
         addSeparator()
 
         addMaxZoomSlider()
-
         addCheckbox("Enable Easter Eggs", settings::enableEasterEggs)
-
         addCheckbox("Enlarge selected notifications", settings::enlargeSelectedNotification)
-
         addCheckbox("Enable experimental A* pathing", settings::useAStarPathfinding)
 
         addSeparator()
@@ -179,7 +185,7 @@ internal class AdvancedTab(
                     ))
                 }
             }
-        }
+        }.flowOn(Dispatchers.IO)
 
         /** Build provider for [addAsyncSelectBox]: default, mods, system */
         @Suppress("NewApi")
@@ -200,7 +206,7 @@ internal class AdvancedTab(
             // Add system fonts
             for (font in Fonts.getSystemFonts())
                 emit(font)
-        }
+        }.flowOn(Dispatchers.IO)
 
         addAsyncSelectBox("Font family", settings::fontFamilyData, ::loadFonts) { reloadWorldAndOptions() }
     }
@@ -211,11 +217,39 @@ internal class AdvancedTab(
         }
     }
 
+    private fun addGestureControls() {
+        val testButton = "Test area".toTextButton()
+        fun reloadSettings() = ActorAttachments.get(testButton).reloadSettings()
+
+        addSlider("Long press delay", settings::longPressDelay, 0.2f, 4f, 0.1f).padTop(20f).actor.apply {
+            onChange { reloadSettings() }
+        }
+        addSlider("Double tap interval", settings::multiTapInterval, 0.15f, 1f, 0.05f).actor.apply {
+            onChange { reloadSettings() }
+        }
+
+        fun onActivation(type: ActivationTypes, text: String) = testButton.run {
+            onActivation(type, noEquivalence = true) {
+                clearActions()
+                setText(text.tr())
+                addAction(Actions.sequence(
+                    Actions.delay(3f),
+                    Actions.run { setText("Test area".tr()) }
+                ))
+            }
+        }
+        onActivation(ActivationTypes.Tap, "Single tap")
+        onActivation(ActivationTypes.RightClick, "Right-click")
+        onActivation(ActivationTypes.Doubletap, "Double-click")
+        onActivation(ActivationTypes.Longpress, "Long press")
+        add(testButton).minWidth(240f).colspan(2).center().row()
+    }
+
     private fun addMaxZoomSlider() {
         addSlider("Max zoom out", settings::maxWorldZoomOut, 2f, 6f, 1f) {
             if (GUI.isWorldLoaded())
                 GUI.getMap().reloadMaxZoom()
-        }
+        }.padTop(20f)
     }
 
     private fun addTranslationGeneration() {
