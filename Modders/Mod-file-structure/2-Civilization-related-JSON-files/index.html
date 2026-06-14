@@ -2521,7 +2521,7 @@
 <td>personality</td>
 <td>String</td>
 <td>none</td>
-<td>The name of the personality specified in <a href="#personalitiesjson">Personalities.json</a></td>
+<td>The name of the personality specified in <a href="#personalitiesjson">Personalities.json</a> [^P]</td>
 </tr>
 <tr>
 <td>favoredReligion</td>
@@ -2678,6 +2678,7 @@ These notes are <strong>only</strong> valid when playing on generated maps, load
 regions" and startBias is processed differently (but you can expect single-entry startBias to work
 best).</p>
 <p>[^V]: See <a href="../../Images-and-Audio/#supply-leader-voices">Supply Leader Voices</a></p>
+<p>[^P]: Personalities for city-states work differently. The default chooses one randomly, but a mod can also specify one of Friendly, Neutral, Hostile or Irrational (case-sensitive).</p>
 <h2 id="personalitiesjson">Personalities.json</h2>
 <p><a href="https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20%26%20Kings/Personalities.json">Link to original</a></p>
 <p>This file contains all Personalities for computer players.</p>
@@ -2940,7 +2941,7 @@ example, the finisher of a policy branch "Tradition" will have the name "Traditi
 <h3 id="branch-priorities">Branch priorities</h3>
 <p>The "priorities" object defines the priority major civilizations' AI give to a policy branch. The AI
 chooses the policy branch with the highest sum of the peferred victory type listed here and the
-number flisted in the personality's priority. If two or more candidate branches have the same
+number listed in the personality's priority. If two or more candidate branches have the same
 priority, the AI chooses a random branch among the candidates.</p>
 <p>The object maps victory types to priority values for the major civilization using strings and
 integers. If the preferred victory type is not specified, the default priority value is set to 0.</p>
