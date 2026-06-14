@@ -154,7 +154,12 @@ object Battle {
         // Exploring units surviving an attack should "wake up"
         if (!defender.isDefeated() && defender is MapUnitCombatant && defender.unit.isExploring())
             defender.unit.action = null
-
+        
+        //Aoe attack
+        if (attacker is MapUnitCombatant && (attacker.unit.hasUnique(UniqueType.AoeDegradeAttack) || attacker.unit.hasUnique(UniqueType.AoeFlatAttack))) {
+            applyAoeAttack(attacker, defender)
+        }
+        
         if (attacker is MapUnitCombatant) {
             if (attacker.unit.hasUnique(UniqueType.SelfDestructs))
                 attacker.unit.destroy()
@@ -176,10 +181,85 @@ object Battle {
                 .firstOrNull { it.text == "Your city [${attacker.getName()}] can bombard the enemy!" }
             attacker.getCivInfo().notifications.remove(cityCanBombardNotification)
         }
-
+        
         return damageDealt + interceptDamage
     }
 
+    //Aoe Logic function
+    fun applyAoeAttack(attacker: MapUnitCombatant, defender: ICombatant) {
+        val degradeUnique = attacker.unit.getMatchingUniques(UniqueType.AoeDegradeAttack).firstOrNull()
+        val flatUnique = attacker.unit.getMatchingUniques(UniqueType.AoeFlatAttack).firstOrNull()
+        val aoeUnique = degradeUnique ?: flatUnique ?: return
+        val isDegrade = degradeUnique != null
+
+        val targetFilter = aoeUnique.params[0]
+        val radius = aoeUnique.params.getOrNull(1)?.toIntOrNull() ?: return
+        if (radius <= 0) return
+
+        val receivesCounterDamage = attacker.unit.hasUnique(UniqueType.TakeCounterDamageFromAOE)
+        val counterPercent = attacker.unit.getMatchingUniques(UniqueType.TakeCounterDamageFromAOE).sumOf { it.params[0].toDouble() }
+        val counterFactor = kotlin.math.abs(counterPercent) / 100.0
+
+        val selfDamagePercent = attacker.unit.getMatchingUniques(UniqueType.DamageSelfInAOE).sumOf { it.params[0].toDouble() }
+        val selfDamageFactor = kotlin.math.abs(selfDamagePercent) / 100.0
+
+        val centerTile = defender.getTile()
+
+        for (tile in centerTile.getTilesInDistance(radius)) {
+            val distance = centerTile.aerialDistanceTo(tile)
+            val distanceFactor = if (isDegrade)
+                (1.0 - distance.toDouble() / (radius + 1)).coerceAtLeast(0.0)
+            else 1.0
+
+            for (unit in tile.getUnits()) {
+                val isSelf = (unit == attacker.unit)
+
+                if (unit == (defender as? MapUnitCombatant)?.unit && unit != attacker.unit) continue
+
+                val aoeDefender = MapUnitCombatant(unit)
+                if (!aoeDefender.matchesFilter(targetFilter) && !(isSelf && selfDamageFactor > 0.0)) continue
+
+                var damage = (BattleDamage.calculateDamageToDefender(attacker, aoeDefender) * distanceFactor).toInt().coerceAtLeast(1)
+                if (isSelf) {
+                    damage = (damage * selfDamageFactor).roundToInt().coerceAtLeast(1)
+                }
+
+                if (aoeDefender.isCivilian() && attacker.isMelee()) {
+                    BattleUnitCapture.captureCivilianUnit(attacker, aoeDefender)
+                    continue
+                }
+
+                triggerCombatUniques(attacker, aoeDefender, tile)
+                aoeDefender.takeDamage(damage)
+                triggerDamageUniquesForUnit(attacker, aoeDefender, tile, CombatAction.Attack)
+
+                if (aoeDefender.isDefeated() && !aoeDefender.isCivilian()) {
+                    val captured = BattleUnitCapture.tryCaptureMilitaryUnit(attacker, aoeDefender, tile)
+                    if (!captured) {
+                        triggerPostKillingUniques(aoeDefender, attacker, tile)
+                    }
+                }
+
+                if (receivesCounterDamage && !aoeDefender.isCivilian()) {
+                    val isMainTarget =
+                        (defender is MapUnitCombatant && unit == defender.unit) ||
+                        (defender is CityCombatant && unit == defender.city)
+
+                    if (!isMainTarget && !isSelf) {
+                        val baseCounterDamage = BattleDamage.calculateDamageToAttacker(attacker, aoeDefender)
+                        val scaledCounter = baseCounterDamage * counterFactor * if (isDegrade) distanceFactor else 1.0
+                        val finalCounterDamage = scaledCounter.roundToInt().coerceAtLeast(1)
+
+                        attacker.takeDamage(finalCounterDamage)
+                        if (attacker.isDefeated()) return
+                    }
+                }
+
+                if (attacker.isDefeated()) return
+            }
+        }
+    }
+    
     private fun triggerPostKillingUniques(
         defender: ICombatant,
         attacker: ICombatant,
