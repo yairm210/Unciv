@@ -23,6 +23,7 @@ import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.RejectionReasonType
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
@@ -763,7 +764,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             val finalTile = tile
                 ?: Automation.getTileForConstructionImprovement(city, improvementToPlace)
                 ?: return false // This was never reached in testing
-            finalTile.improvementFunctions.markForCreatesOneImprovement(improvementToPlace.name)
+            if (!tryPlaceCreateOneImprovementMarker(improvementToPlace, finalTile)) return false
             // postBuildEvent does the rest by calling cityConstructions.applyCreateOneImprovement
         }
 
@@ -859,8 +860,38 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         
         if (getTileForImprovement(improvement.name) == null) {
             val newTile = Automation.getTileForConstructionImprovement(city, improvement) ?: return
-            newTile.improvementFunctions.markForCreatesOneImprovement(improvement.name)
+            tryPlaceCreateOneImprovementMarker(improvement, newTile)
         }
+    }
+
+    /** Whether this city may mark its own [tile] to create [improvement] when construction completes. */
+    @Readonly
+    fun canPlaceCreateOneImprovementOn(improvement: TileImprovement, tile: Tile): Boolean =
+        tile.getCity() == city
+            && tile in city.tilesInRange
+            && !tile.isCityCenter()
+            && !tile.isMarkedForCreatesOneImprovement()
+            && tile.improvementFunctions.canBuildImprovement(improvement, city.state)
+
+    /**
+     * Try to mark [tile] so completing this construction will create [improvement] there.
+     *
+     * The tile must already belong to this city; reaching marker placement with another
+     * city's tile is invalid internal state and fails loudly.
+     *
+     * @return `true` if [tile] is now marked for [improvement], or `false` if it is not eligible.
+     */
+    fun tryPlaceCreateOneImprovementMarker(improvement: TileImprovement, tile: Tile): Boolean {
+        if (tile.getCity() == city && tile.isMarkedForCreatesOneImprovement(improvement.name))
+            return true
+        check(tile.getCity() == city) {
+            "Cannot mark ${tile.position} for ${UniqueType.CreatesOneImprovement.name} in ${city.name}: tile is owned by ${tile.getCity()?.name ?: "no city"}"
+        }
+        if (!canPlaceCreateOneImprovementOn(improvement, tile))
+            return false
+
+        tile.improvementFunctions.markForCreatesOneImprovement(improvement.name)
+        return true
     }
 
     @Readonly
@@ -915,10 +946,9 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         val tileForImprovement = requireNotNull(tile) {
             "Cannot queue ${construction.name} without a target tile for ${UniqueType.CreatesOneImprovement.name}"
         }
-        require(tileForImprovement.improvementFunctions.canBuildImprovement(improvementToCreate, city.state)) {
-            "Cannot queue ${construction.name}: ${improvementToCreate.name} cannot be built on ${tileForImprovement.position}"
+        require(tryPlaceCreateOneImprovementMarker(improvementToCreate, tileForImprovement)) {
+            "Cannot queue ${construction.name}: ${improvementToCreate.name} cannot be created on ${tileForImprovement.position}"
         }
-        tileForImprovement.improvementFunctions.markForCreatesOneImprovement(improvementToCreate.name)
     }
 
     /** Add a construction named [constructionName] to the end of the queue with all checks
