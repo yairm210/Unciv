@@ -121,7 +121,6 @@ class MapSize private constructor(
          * Linear extrapolation for radiuses outside the range of predefined map sizes.
          * (!) Minimum 0 for all inferred values.
          */
-        @Readonly
         private fun inferPredefinedProperty(
             radius: Int,
             prop: KProperty1<Predefined, Float>
