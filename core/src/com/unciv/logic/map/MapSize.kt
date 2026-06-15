@@ -34,10 +34,13 @@ class MapSize private constructor(
 ) : IsPartOfGameInfoSerialization {
     
     var techCostMultiplier: Float? = techCostMultiplier
+        /** Never null */
         get() = field ?: getPredefinedOrNextSmaller().techCostMultiplier
     var techCostPerCityModifier: Float? = techCostPerCityModifier
+        /** Never null */
         get() = field ?: getPredefinedOrNextSmaller().techCostMultiplier
     var policyCostPerCityModifier: Float? = policyCostPerCityModifier
+        /** Never null */
         get() = field ?: getPredefinedOrNextSmaller().policyCostPerCityModifier
 
     /** Needed for Json parsing */
