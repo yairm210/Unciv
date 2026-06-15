@@ -28,24 +28,47 @@ class MapSize private constructor(
     var radius: Int,
     var width: Int,
     var height: Int,
+    techCostMultiplier: Float?,
+    techCostPerCityModifier: Float?,
+    policyCostPerCityModifier: Float?
 ) : IsPartOfGameInfoSerialization {
-    var techCostMultiplier = inferValueFromPredefined(Predefined::techCostMultiplier)
-    var techCostPerCityModifier = inferValueFromPredefined(Predefined::techCostPerCityModifier)
-    var policyCostPerCityModifier = inferValueFromPredefined(Predefined::policyCostPerCityModifier)
+    
+    var techCostMultiplier: Float? = techCostMultiplier
+        get() = field ?: getPredefinedOrNextSmaller().techCostMultiplier
+    var techCostPerCityModifier: Float? = techCostPerCityModifier
+        get() = field ?: getPredefinedOrNextSmaller().techCostMultiplier
+    var policyCostPerCityModifier: Float? = policyCostPerCityModifier
+        get() = field ?: getPredefinedOrNextSmaller().policyCostPerCityModifier
 
     /** Needed for Json parsing */
     @Suppress("unused")
-    private constructor() : this("", 0, 0, 0)
+    private constructor() : this("", 0, 0, 0,
+        null, null, null)
 
-    constructor(size: Predefined) : this(size.name, size.radius, size.width, size.height)
+    constructor(size: Predefined) : this(
+        size.name, size.radius, size.width, size.height,
+        size.techCostMultiplier,
+        size.techCostPerCityModifier,
+        size.policyCostPerCityModifier
+    )
 
     constructor(name: String) : this(Predefined.safeValueOf(name))
 
-    constructor(radius: Int) : this(custom, radius, 0, 0) {
+    constructor(radius: Int) : this(
+        custom, radius, 0, 0,
+        inferPredefinedProperty(radius, Predefined::techCostMultiplier),
+        inferPredefinedProperty(radius, Predefined::techCostPerCityModifier),
+        inferPredefinedProperty(radius, Predefined::policyCostPerCityModifier)
+    ) {
         setNewRadius(radius)
     }
 
-    constructor(width: Int, height: Int) : this(custom, HexMath.getEquivalentHexagonalRadius(width, height), width, height)
+    constructor(width: Int, height: Int) : this(
+        custom, HexMath.getEquivalentHexagonalRadius(width, height), width, height,
+        inferPredefinedProperty(HexMath.getEquivalentHexagonalRadius(width, height), Predefined::techCostMultiplier),
+        inferPredefinedProperty(HexMath.getEquivalentHexagonalRadius(width, height), Predefined::techCostPerCityModifier),
+        inferPredefinedProperty(HexMath.getEquivalentHexagonalRadius(width, height), Predefined::policyCostPerCityModifier)
+    )
 
     /** Predefined Map Sizes, their name can appear in json only as copy in MapSize */
     enum class Predefined(
@@ -87,37 +110,47 @@ class MapSize private constructor(
         val Large get() = MapSize(Predefined.Large)
         val Huge get() = MapSize(Predefined.Huge)
         fun names() = Predefined.entries.map { it.name }
+
+        /**
+         * Retrieves, interpolates or extrapolates a value for this map size.
+         * @param prop Any of [techCostMultiplier], [techCostPerCityModifier] or [policyCostPerCityModifier]
+         * @return Linear interpoation for radiuses between two predefined map sizes.
+         * Linear extrapolation for radiuses outside the range of predefined map sizes.
+         * (!) Minimum 0 for all inferred values.
+         */
+        @Readonly
+        private fun inferPredefinedProperty(
+            radius: Int,
+            prop: KProperty1<Predefined, Float>
+        ): Float {
+            val entries = Predefined.entries.sortedBy { it.radius }
+            require(entries.isNotEmpty()) { "Where did all the predefined map sizes go?" }
+            if (entries.size == 1)
+                return prop.get(entries.first())
+            fun interpolate(a: Predefined, b: Predefined): Float {
+                val growthRate = (prop.get(b) - prop.get(a)) / (b.radius - a.radius)
+                return max(0f, prop.get(a) + growthRate * (radius - a.radius))
+            }
+            for (i in 1..entries.size-1) {
+                if (radius > entries[i].radius)
+                    continue
+                // interpolate (or extrapolate) using the current and previous Predefined map size
+                return interpolate(entries[i-1], entries[i])
+            }
+            // if radius is greater than the last entry, we extrapolate using the last two
+            return interpolate(entries[entries.size-2], entries.last())
+        }
     }
 
-    fun clone() = MapSize(name, radius, width, height)
+    fun clone() = MapSize(name, radius, width, height, techCostMultiplier, techCostPerCityModifier, policyCostPerCityModifier)
 
-    /**
-     * Retrieves, interpolates or extrapolates value of given [Predefined].[prop] property for this map size.
-     * @param prop Any of [techCostMultiplier], [techCostPerCityModifier], [policyCostPerCityModifier]
-     * @return Predefined value for non-custom map types.
-     * Linear interpoation for radiuses between two predefined map sizes.
-     * Linear extrapolation for radiuses outside the range of predefined map sizes.
-     * (!) Minimum 0 for all inferred values.
-     */
-    private fun inferValueFromPredefined(prop: KProperty1<Predefined, Float>): Float {
-        if (name != custom)
-            return prop.get(Predefined.safeValueOf(name))
-        val entries = Predefined.entries.sortedBy { it.radius }
-        require(entries.isNotEmpty()) { "Where did all the predefined map sizes go?" }
-        if (entries.size == 1)
-            return prop.get(entries.first())
-        fun interpolate(a: Predefined, b: Predefined): Float {
-            val growthRate = (prop.get(b) - prop.get(a)) / (b.radius - a.radius)
-            return max(0f, prop.get(a) + growthRate * (radius - a.radius))
+    @Readonly
+    fun getPredefinedOrNextSmaller(): Predefined {
+        if (name != custom) return Predefined.safeValueOf(name)
+        for (predef in Predefined.entries.reversed()) {
+            if (radius >= predef.radius) return predef
         }
-        for (i in 1..entries.size-1) {
-            if (radius > entries[i].radius)
-                continue
-            // interpolate (or extrapolate) using this and the previous Predefined entry
-            return interpolate(entries[i-1], entries[i])
-        }
-        // if radius is greater than the last entry, we extrapolate using the last two
-        return interpolate(entries[entries.size-2], entries.last())
+        return Predefined.Tiny
     }
 
     /** Check custom dimensions, fix if too extreme
