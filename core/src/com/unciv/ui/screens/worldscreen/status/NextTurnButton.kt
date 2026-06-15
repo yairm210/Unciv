@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.unciv.logic.civilization.managers.TurnManager
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
-import com.unciv.ui.components.UncivTooltip.Companion.removeTooltips
 import com.unciv.ui.components.extensions.isEnabled
 import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.input.KeyboardBinding
@@ -13,11 +12,12 @@ import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.popups.AnimatedMenuPopup.Companion.addContextMenu
 import com.unciv.ui.popups.hasOpenPopups
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.ui.screens.worldscreen.status.NextTurnAction.Default
+import com.unciv.ui.screens.worldscreen.status.NextTurnMenuDescriptor.addContextMenu
+import com.unciv.ui.screens.worldscreen.status.NextTurnMenuDescriptor.removeContextMenu
 import com.unciv.utils.Concurrency
 import yairm210.purity.annotations.Readonly
 
@@ -31,7 +31,6 @@ class NextTurnButton(
     init {
         pad(15f)
         onActivation { nextTurnAction.action(worldScreen) }
-        addContextMenu { NextTurnMenu(stage, this, worldScreen) }
         keyShortcuts.add(KeyboardBinding.NextTurn)
         keyShortcuts.add(KeyboardBinding.NextTurnAlternate)
         labelCell.row()
@@ -55,8 +54,9 @@ class NextTurnButton(
             (!worldScreen.hasOpenPopups() && worldScreen.isPlayersTurn && !worldScreen.waitingForAutosave && !worldScreen.isNextTurnUpdateRunning())
         if (isEnabled) {
             addTooltip(KeyboardBinding.NextTurn)
+            addContextMenu(NextTurnMenuDescriptor.Context(worldScreen))
         } else {
-            removeTooltips()
+            removeContextMenu()
         }
 
         worldScreen.smallUnitButton.update()
@@ -85,6 +85,6 @@ class NextTurnButton(
         // Guaranteed to return a non-null NextTurnAction because the last isChoice always returns true
         NextTurnAction.entries.first { it.isChoice(worldScreen) }
 
-    @Readonly fun isNextUnitAction(): Boolean = nextTurnAction == NextTurnAction.NextUnit
-
+    @Readonly fun isNextUnitAction() = nextTurnAction == NextTurnAction.NextUnit
+    @Readonly fun isNextTurnAction() = nextTurnAction == NextTurnAction.NextTurn
 }
