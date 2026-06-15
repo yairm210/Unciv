@@ -79,4 +79,9 @@ internal class ActorAttachments private constructor(actor: Actor) {
     fun reloadSettings() {
         activationListener?.reloadSettings()
     }
+
+    fun hasActivationAction(type: ActivationTypes, noEquivalence: Boolean = true): Boolean {
+        val actions = activationActions ?: return false
+        return actions.hasAction(type, noEquivalence)
+    }
 }
