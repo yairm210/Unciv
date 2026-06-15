@@ -2,7 +2,9 @@ package com.unciv.ui.screens
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
@@ -18,6 +20,7 @@ import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.LanguageTable
 import com.unciv.ui.components.widgets.LanguageTable.Companion.addLanguageTables
+import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.options.OptionsPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -76,6 +79,8 @@ class UniqueTable(
     private val uniqueSelectBox = SelectBox<UniqueType>(BaseScreen.skin)
     private val uniqueSearchTextField = TextField("", BaseScreen.skin).apply { messageText = "Search" }
     internal val uniqueTextField = TextField("Unique", BaseScreen.skin)
+    private val documentationLabel = WrappableLabel("", stage.width * 0.9f)
+    private val documentationCell: Cell<Actor?>
     private val parameterSelectBoxTable = Table().apply { defaults().pad(5f) }
     private val uniqueErrorTable = Table().apply { defaults().pad(5f) }
 
@@ -119,6 +124,9 @@ class UniqueTable(
             updateUnique()
         }
         add(uniqueTextField).width(stage.width * 0.9f).row()
+
+        documentationCell = add().width(stage.width * 0.9f).pad(0f)
+        row()
         add(parameterSelectBoxTable).row()
 
         uniqueErrorTable.defaults().pad(5f)
@@ -145,6 +153,14 @@ class UniqueTable(
 
         uniqueTextField.text = uniqueType.text
         updateUnique()
+
+        if (uniqueType.docDescription.isNullOrEmpty()) {
+            documentationCell.setActor(null).pad(0f)
+        } else {
+            documentationLabel.setText(uniqueType.docDescription)
+            documentationLabel.optimizePrefWidth()
+            documentationCell.setActor(documentationLabel).pad(10f)
+        }
 
         parameterSelectBoxTable.clear()
         for ((index, parameter) in uniqueType.text.getPlaceholderParameters().withIndex()) {
