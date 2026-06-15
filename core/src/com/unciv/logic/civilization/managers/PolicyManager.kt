@@ -169,12 +169,14 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     @Readonly
     fun getPolicyCultureCost(numberOfAdoptedPolicies: Int): Int {
         var policyCultureCost = 25 + (numberOfAdoptedPolicies * 6).toDouble().pow(1.7)
-        val worldSizeModifier = civInfo.gameInfo.tileMap.mapParameters.mapSize.getPredefinedOrNextSmaller().policyCostPerCityModifier
+        val worldSizeModifier = civInfo.gameInfo.tileMap.mapParameters.mapSize.policyCostPerCityModifier
         var cityModifier = worldSizeModifier * (civInfo.cities.count { !it.isPuppet } - 1)
-
-        for (unique in civInfo.getMatchingUniques(UniqueType.LessPolicyCostFromCities)) cityModifier *= 1 - unique.params[0].toFloat() / 100
-        for (unique in civInfo.getMatchingUniques(UniqueType.LessPolicyCost)) policyCultureCost *= unique.params[0].toPercent()
-        if (civInfo.isHuman()) policyCultureCost *= civInfo.getDifficulty().policyCostModifier
+        for (unique in civInfo.getMatchingUniques(UniqueType.LessPolicyCostFromCities))
+            cityModifier *= 1 - unique.params[0].toFloat() / 100
+        for (unique in civInfo.getMatchingUniques(UniqueType.LessPolicyCost))
+            policyCultureCost *= unique.params[0].toPercent()
+        if (civInfo.isHuman())
+            policyCultureCost *= civInfo.getDifficulty().policyCostModifier
         policyCultureCost *= civInfo.gameInfo.speed.cultureCostModifier
         val cost: Int = (policyCultureCost * (1 + cityModifier)).roundToInt()
         return cost - (cost % 5)

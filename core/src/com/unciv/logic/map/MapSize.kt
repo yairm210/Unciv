@@ -2,6 +2,8 @@ package com.unciv.logic.map
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import yairm210.purity.annotations.Readonly
+import kotlin.math.max
+import kotlin.reflect.KProperty1
 
 
 /**
@@ -27,6 +29,9 @@ class MapSize private constructor(
     var width: Int,
     var height: Int,
 ) : IsPartOfGameInfoSerialization {
+    var techCostMultiplier = inferValueFromPredefined(Predefined::techCostMultiplier)
+    var techCostPerCityModifier = inferValueFromPredefined(Predefined::techCostPerCityModifier)
+    var policyCostPerCityModifier = inferValueFromPredefined(Predefined::policyCostPerCityModifier)
 
     /** Needed for Json parsing */
     @Suppress("unused")
@@ -86,13 +91,33 @@ class MapSize private constructor(
 
     fun clone() = MapSize(name, radius, width, height)
 
-    @Readonly
-    fun getPredefinedOrNextSmaller(): Predefined {
-        if (name != custom) return Predefined.safeValueOf(name)
-        for (predef in Predefined.entries.reversed()) {
-            if (radius >= predef.radius) return predef
+    /**
+     * Retrieves, interpolates or extrapolates value of given [Predefined].[prop] property for this map size.
+     * @param prop Any of [techCostMultiplier], [techCostPerCityModifier], [policyCostPerCityModifier]
+     * @return Predefined value for non-custom map types.
+     * Linear interpoation for radiuses between two predefined map sizes.
+     * Linear extrapolation for radiuses outside the range of predefined map sizes.
+     * (!) Minimum 0 for all inferred values.
+     */
+    private fun inferValueFromPredefined(prop: KProperty1<Predefined, Float>): Float {
+        if (name != custom)
+            return prop.get(Predefined.safeValueOf(name))
+        val entries = Predefined.entries.sortedBy { it.radius }
+        require(entries.isNotEmpty()) { "Where did all the predefined map sizes go?" }
+        if (entries.size == 1)
+            return prop.get(entries.first())
+        fun interpolate(a: Predefined, b: Predefined): Float {
+            val growthRate = (prop.get(b) - prop.get(a)) / (b.radius - a.radius)
+            return max(0f, prop.get(a) + growthRate * (radius - a.radius))
         }
-        return Predefined.Tiny
+        for (i in 1..entries.size-1) {
+            if (radius > entries[i].radius)
+                continue
+            // interpolate (or extrapolate) using this and the previous Predefined entry
+            return interpolate(entries[i-1], entries[i])
+        }
+        // if radius is greater than the last entry, we extrapolate using the last two
+        return interpolate(entries[entries.size-2], entries.last())
     }
 
     /** Check custom dimensions, fix if too extreme
