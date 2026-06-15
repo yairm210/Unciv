@@ -941,10 +941,8 @@ enum class UniqueType(
     PlaySound("Play [comment] sound", UniqueTarget.Triggerable, flags = UniqueFlag.setOfHiddenToUsers,
         docDescription = "See [Images and Audio](Images-and-Audio.md#sounds) for a list of available sounds."),
     GetLeaderTitle("Get the leader title of [leaderTitle]", UniqueTarget.Triggerable, flags = UniqueFlag.setOfHiddenToUsers),
-    ChooseMusic("Choose a music track for [unknown], [unknown], [unknown]", UniqueTarget.Triggerable, flags = UniqueFlag.setOfHiddenToUsers,
-        docDescription = CHOOSE_MUSIC_DOCSTRING) {
-        override fun parameterTypeMapInitializer() = arrayListOf<List<UniqueParameterType>>()
-    },
+    ChooseMusic("Choose a music track for [param], [param], [param]", UniqueTarget.Triggerable, flags = UniqueFlag.setOfHiddenToUsers,
+        docDescription = CHOOSE_MUSIC_DOCSTRING),
 
     //endregion
 
@@ -1115,7 +1113,7 @@ enum class UniqueType(
     /** For uniques that have "special" parameters that can accept multiple types, we can override them manually
      *  For 95% of cases, auto-matching is fine. */
     @Readonly
-    open fun parameterTypeMapInitializer(): ArrayList<List<UniqueParameterType>> {
+    internal open fun parameterTypeMapInitializer(): ArrayList<List<UniqueParameterType>> {
         val map = ArrayList<List<UniqueParameterType>>()
         for (placeholder in text.getPlaceholderParameters()) {
             val matchingParameterTypes = placeholder
