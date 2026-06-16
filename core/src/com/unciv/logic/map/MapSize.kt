@@ -48,11 +48,11 @@ class MapSize private constructor(
     private constructor() : this("", 0, 0, 0,
         null, null, null)
 
-    constructor(size: Predefined) : this(
-        size.name, size.radius, size.width, size.height,
-        size.techCostMultiplier,
-        size.techCostPerCityModifier,
-        size.policyCostPerCityModifier
+    constructor(predefined: Predefined) : this(
+        predefined.name, predefined.radius, predefined.width, predefined.height,
+        predefined.techCostMultiplier,
+        predefined.techCostPerCityModifier,
+        predefined.policyCostPerCityModifier
     )
 
     constructor(name: String) : this(Predefined.safeValueOf(name))
