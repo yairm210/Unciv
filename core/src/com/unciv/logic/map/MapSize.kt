@@ -57,21 +57,18 @@ class MapSize private constructor(
 
     constructor(name: String) : this(Predefined.safeValueOf(name))
 
-    constructor(radius: Int) : this(
-        custom, radius, 0, 0,
-        inferPredefinedProperty(radius, Predefined::techCostMultiplier),
-        inferPredefinedProperty(radius, Predefined::techCostPerCityModifier),
-        inferPredefinedProperty(radius, Predefined::policyCostPerCityModifier)
-    ) {
-        setNewRadius(radius)
-    }
-
-    constructor(width: Int, height: Int) : this(
-        custom, HexMath.getEquivalentHexagonalRadius(width, height), width, height,
+    private constructor(radius: Int, width: Int, height: Int) : this(
+        custom, radius, width, height,
         inferPredefinedProperty(HexMath.getEquivalentHexagonalRadius(width, height), Predefined::techCostMultiplier),
         inferPredefinedProperty(HexMath.getEquivalentHexagonalRadius(width, height), Predefined::techCostPerCityModifier),
         inferPredefinedProperty(HexMath.getEquivalentHexagonalRadius(width, height), Predefined::policyCostPerCityModifier)
     )
+    
+    constructor(radius: Int) : this(radius, 0, 0) {
+        setNewRadius(radius)
+    }
+
+    constructor(width: Int, height: Int) : this(HexMath.getEquivalentHexagonalRadius(width, height), width, height)
 
     /** Predefined Map Sizes, their name can appear in json only as copy in MapSize */
     enum class Predefined(
