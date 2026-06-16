@@ -60,10 +60,12 @@ class GameSettings {
     var tutorialTasksCompleted = HashSet<String>()
 
     enum class LongPressIndicatorSetting {
-        Default, Off, Debug; // Debug only offered on Debug page of Options
-        fun toBoolean() = this == Default
+        Default, Off, On, Debug; // Debug only offered on Debug page of Options
+        /** Android defaults to off - Desktop defaults to on.
+         * Manually setting it once turns it into "On" or "Off" properly */
+        fun toBoolean() = this == On || Gdx.app.type == ApplicationType.Desktop && this == Default
         companion object {
-            fun of(bool: Boolean) = if (bool) Default else Off
+            fun of(bool: Boolean) = if (bool) On else Off
         }
     }
     var showLongPressIndicators = LongPressIndicatorSetting.Default
