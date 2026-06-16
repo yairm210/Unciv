@@ -100,7 +100,7 @@ class CityTest {
         val farm = testGame.ruleset.tileImprovements["Farm"]!!
         testCiv.tech.techsResearched.add(farm.techRequired!!)
         val building = createFarmPlacingBuilding()
-        val targetTile = testGame.setTileTerrain(HexCoord(1, 1), Constants.grassland)
+        val targetTile = testGame.setTileTerrain(HexCoord(1, 0), Constants.grassland)
 
         capitalCity.cityConstructions.addToQueue(building, tile = targetTile)
 
@@ -147,8 +147,7 @@ class CityTest {
         val farm = testGame.ruleset.tileImprovements["Farm"]!!
         testCiv.tech.techsResearched.add(farm.techRequired!!)
         val building = createFarmPlacingBuilding()
-        val targetTile = testGame.getTile(1, 1)
-        targetTile.baseTerrain = Constants.grassland
+        val targetTile = testGame.setTileTerrain(HexCoord(1, 0), Constants.grassland)
         capitalCity.cityConstructions.addToQueue(building, tile = targetTile)
 
         capitalCity.cityConstructions.removeFromQueue(0, false)
