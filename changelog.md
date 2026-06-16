@@ -1,14 +1,16 @@
 ## 4.20.14
 
-After much user feedback - context menu indicators default to "on" in Desktop (where they are only visible in mouseover) and "off" in Android (where they are always visible and clog up the UI)
+Fix "black screen on next turn button"
 
-Resolved  - city buttons center correctly on the tile on zoom-in
+Context menu indicators no longer always visible
 
-Don't add "next turn" context menu if the only option is the same as clicking on the button
+City buttons center correctly on the tile on zoom-in
+
+Yields no longer overlaps population icons in cities
 
 By SomeTroglodyte:
 - Make gesture timings user-settable in Options-Advanced 
-- Fix "Choose a music track" triggerable in unique builder and unit test 
+- Fix "Choose a music track" triggerable in unique builder 
 - Fix city-states always have personality "Friendly" 
 
 Prevent automation from orphaning CreatesOneImprovement markers - By superdusto
