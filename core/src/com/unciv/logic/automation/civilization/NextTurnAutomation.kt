@@ -31,7 +31,6 @@ import com.unciv.ui.screens.victoryscreen.RankingType
 import com.unciv.utils.randomWeighted
 import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Readonly
-import kotlin.random.Random
 
 object NextTurnAutomation {
 
@@ -115,36 +114,39 @@ object NextTurnAutomation {
     
     private fun respondToPopupAlerts(civInfo: Civilization) {
         for (popupAlert in civInfo.popupAlerts.toList()) { // toList because this can trigger other things that give alerts, like Golden Age
-            
-            
-            for (demand in Demand.entries){
-                if (popupAlert.type == demand.demandAlert) {
-                    val demandingCiv = civInfo.gameInfo.getCivilization(popupAlert.value)
-                    if (demandingCiv.isDefeated()) break // ignore demand from dead civ. break since we're in an inner for loop
-                    val diploManager = civInfo.getDiplomacyManager(demandingCiv)!!
-                    if (Automation.threatAssessment(civInfo, demandingCiv) >= ThreatLevel.High
-                        || diploManager.isRelationshipLevelGT(RelationshipLevel.Ally))
-                        diploManager.agreeToDemand(demand)
-                    else diploManager.refuseDemand(demand)
-                }
-            }
-            
-            if (popupAlert.type == AlertType.DeclarationOfFriendship) {
-                val requestingCiv = civInfo.gameInfo.getCivilization(popupAlert.value)
-                if (requestingCiv.isDefeated()) continue // ignore DOF from dead civ
-                val diploManager = civInfo.getDiplomacyManager(requestingCiv)!!
-                if (civInfo.diplomacyFunctions.canSignDeclarationOfFriendshipWith(requestingCiv)
-                    && DiplomacyAutomation.wantsToSignDeclarationOfFrienship(civInfo,requestingCiv)) {
-                    diploManager.signDeclarationOfFriendship()
-                    requestingCiv.addNotification("We have signed a Declaration of Friendship with [${civInfo.civName}]!", NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
-                } else  {
-                    diploManager.otherCivDiplomacy().setFlag(DiplomacyFlags.DeclinedDeclarationOfFriendship, 10)
-                    requestingCiv.addNotification("[${civInfo.civName}] has denied our Declaration of Friendship!", NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
-                }
-            }
+            respondToDemandAlert(civInfo, popupAlert)
+            if (popupAlert.type == AlertType.DeclarationOfFriendship)
+                respondToDeclarationOfFriendship(civInfo, popupAlert)
         }
-
         civInfo.popupAlerts.clear() // AIs don't care about popups.
+    }
+
+    private fun respondToDemandAlert(civInfo: Civilization, popupAlert: PopupAlert) {
+        for (demand in Demand.entries) {
+            if (popupAlert.type != demand.demandAlert) continue
+            val demandingCiv = civInfo.gameInfo.getCivilization(popupAlert.value)
+            if (demandingCiv.isDefeated()) return
+            val diploManager = civInfo.getDiplomacyManager(demandingCiv)!!
+            if (Automation.threatAssessment(civInfo, demandingCiv) >= ThreatLevel.High
+                || diploManager.isRelationshipLevelGT(RelationshipLevel.Ally))
+                diploManager.agreeToDemand(demand)
+            else diploManager.refuseDemand(demand)
+            return
+        }
+    }
+
+    private fun respondToDeclarationOfFriendship(civInfo: Civilization, popupAlert: PopupAlert) {
+        val requestingCiv = civInfo.gameInfo.getCivilization(popupAlert.value)
+        if (requestingCiv.isDefeated()) return
+        val diploManager = civInfo.getDiplomacyManager(requestingCiv)!!
+        if (civInfo.diplomacyFunctions.canSignDeclarationOfFriendshipWith(requestingCiv)
+            && DiplomacyAutomation.wantsToSignDeclarationOfFrienship(civInfo, requestingCiv)) {
+            diploManager.signDeclarationOfFriendship()
+            requestingCiv.addNotification("We have signed a Declaration of Friendship with [${civInfo.civName}]!", NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
+        } else {
+            diploManager.otherCivDiplomacy().setFlag(DiplomacyFlags.DeclinedDeclarationOfFriendship, 10)
+            requestingCiv.addNotification("[${civInfo.civName}] has denied our Declaration of Friendship!", NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
+        }
     }
 
     @Readonly
@@ -226,15 +228,14 @@ object NextTurnAutomation {
     private fun bullyCityStates(civInfo: Civilization) {
         for (state in civInfo.getKnownCivs().filter { !it.isDefeated() && it.isCityState }.toList()) {
             val diplomacyManager = state.getDiplomacyManager(civInfo)!!
-            if (diplomacyManager.isRelationshipLevelLT(RelationshipLevel.Friend)
-                    && diplomacyManager.diplomaticStatus == DiplomaticStatus.Peace
-                    && valueCityStateAlliance(civInfo, state) <= 0
-                    && state.cityStateFunctions.getTributeWillingness(civInfo) >= 0) {
-                if (state.cityStateFunctions.getTributeWillingness(civInfo, demandingWorker = true) > 0)
-                    state.cityStateFunctions.tributeWorker(civInfo)
-                else
-                    state.cityStateFunctions.tributeGold(civInfo)
-            }
+            if (!diplomacyManager.isRelationshipLevelLT(RelationshipLevel.Friend)) continue
+            if (diplomacyManager.diplomaticStatus != DiplomaticStatus.Peace) continue
+            if (valueCityStateAlliance(civInfo, state) > 0) continue
+            if (state.cityStateFunctions.getTributeWillingness(civInfo) < 0) continue
+            if (state.cityStateFunctions.getTributeWillingness(civInfo, demandingWorker = true) > 0)
+                state.cityStateFunctions.tributeWorker(civInfo)
+            else
+                state.cityStateFunctions.tributeGold(civInfo)
         }
     }
 
@@ -380,29 +381,30 @@ object NextTurnAutomation {
 
         for (resource in civInfo.gameInfo.spaceResources) {
             // Have enough resources already
-            if (civInfo.getResourceAmount(resource) >= 2)
-                continue
+            if (civInfo.getResourceAmount(resource) >= 2) continue
 
             val unitToDisband = civInfo.units.getCivUnits()
                 .filter { it.requiresResource(resource) }
                 .minByOrNull { it.getForceEvaluation() }
             unitToDisband?.disband()
+            sellBuildingForResource(civInfo, resource)
+        }
+    }
 
-            for (city in civInfo.cities) {
-                if (city.hasSoldBuildingThisTurn)
-                    continue
-                val rng = city.state.stateBasedRandom("NextTurnAutomation.freeUpSpaceResources")
-                val buildingToSell = civInfo.gameInfo.ruleset.buildings.values.filter {
-                        city.cityConstructions.isBuilt(it.name)
+    private fun sellBuildingForResource(civInfo: Civilization, resource: String) {
+        for (city in civInfo.cities) {
+            if (city.hasSoldBuildingThisTurn) continue
+            val rng = city.state.stateBasedRandom("NextTurnAutomation.freeUpSpaceResources")
+            val buildingToSell = civInfo.gameInfo.ruleset.buildings.values
+                .filter {
+                    city.cityConstructions.isBuilt(it.name)
                         && it.requiredResources(city.state).contains(resource)
                         && it.isSellable()
-                        && !civInfo.civConstructions.hasFreeBuilding(city, it) }
-                    .randomOrNull(rng)
-                if (buildingToSell != null) {
-                    city.sellBuilding(buildingToSell)
-                    break
+                        && !civInfo.civConstructions.hasFreeBuilding(city, it)
                 }
-            }
+                .randomOrNull(rng) ?: continue
+            city.sellBuilding(buildingToSell)
+            return
         }
     }
 
@@ -416,35 +418,7 @@ object NextTurnAutomation {
             .filter { it.getCenterTile().getTilesInDistance(4).count { it.militaryUnit?.civ == civInfo } > 4 }
             .toList()
 
-        for (unit in sortedUnits) {
-            while (unit.promotions.canBePromoted() &&
-                // Restrict Human automated units from promotions via setting
-                (UncivGame.Current.settings.automatedUnitsChoosePromotions || unit.civ.isAI())
-            ) {
-                val rng = unit.cache.state.stateBasedRandom("NextTurnAutomation.automateUnits")
-                val promotions = unit.promotions.getAvailablePromotions()
-                val availablePromotions = if (unit.health <= 60
-                    && promotions.any { it.hasUnique(UniqueType.OneTimeUnitHeal) }
-                    && !(unit.baseUnit.isAirUnit() || unit.hasUnique(UniqueType.CanMoveAfterAttacking))
-                ) {
-                    promotions.filter { it.hasUnique(UniqueType.OneTimeUnitHeal) }
-                } else promotions.filterNot { it.hasUnique(UniqueType.SkipPromotion) }
-
-                if (availablePromotions.none()) break
-                val freePromotions =
-                    availablePromotions.filter { it.hasUnique(UniqueType.FreePromotion) }.toList()
-                val stateForConditionals = unit.cache.state
-
-                val chosenPromotion =
-                    if (freePromotions.isNotEmpty()) freePromotions.randomWeighted(rng) {
-                        it.getWeightForAiDecision(stateForConditionals)
-                    }
-                    else availablePromotions.toList()
-                        .randomWeighted(rng) { it.getWeightForAiDecision(stateForConditionals) }
-
-                unit.promotions.addPromotion(chosenPromotion.name)
-            }
-        }
+        for (unit in sortedUnits) applyPromotions(unit)
         for (unit in sortedUnits) {
             // settlers need to move before automateSettlerEscorting(),
             // move spaceship parts before that to make sure we're not blocking them
@@ -461,6 +435,32 @@ object NextTurnAutomation {
         }
     }
     
+    private fun applyPromotions(unit: MapUnit) {
+        // Restrict Human automated units from promotions via setting
+        if (!unit.civ.isAI() && !UncivGame.Current.settings.automatedUnitsChoosePromotions) return
+        val rng = unit.cache.state.stateBasedRandom("NextTurnAutomation.automateUnits")
+        val stateForConditionals = unit.cache.state
+        while (unit.promotions.canBePromoted()) {
+            val promotions = unit.promotions.getAvailablePromotions()
+            val availablePromotions = if (unit.health <= 60
+                && promotions.any { it.hasUnique(UniqueType.OneTimeUnitHeal) }
+                && !(unit.baseUnit.isAirUnit() || unit.hasUnique(UniqueType.CanMoveAfterAttacking))
+            ) {
+                promotions.filter { it.hasUnique(UniqueType.OneTimeUnitHeal) }
+            } else promotions.filterNot { it.hasUnique(UniqueType.SkipPromotion) }
+
+            if (availablePromotions.none()) break
+            val freePromotions = availablePromotions.filter { it.hasUnique(UniqueType.FreePromotion) }.toList()
+            val chosenPromotion =
+                if (freePromotions.isNotEmpty()) freePromotions.randomWeighted(rng) {
+                    it.getWeightForAiDecision(stateForConditionals)
+                }
+                else availablePromotions.toList()
+                    .randomWeighted(rng) { it.getWeightForAiDecision(stateForConditionals) }
+            unit.promotions.addPromotion(chosenPromotion.name)
+        }
+    }
+
     /** All units will continue after this to the regular automation, so units not moved in this function will still move */
     private fun automateCityConquer(civInfo: Civilization, city: City){
         @Readonly fun ourUnitsInRange(range: Int) = city.getCenterTile().getTilesInDistance(range)
@@ -559,6 +559,13 @@ object NextTurnAutomation {
         for (city in civInfo.cities) UnitAutomation.tryBombardEnemy(city)
     }
 
+    private fun shouldAnnexCity(civInfo: Civilization, city: City) =
+        city.isPuppet
+            && city.population.population > 9
+            && !city.isInResistance()
+            && !civInfo.hasUnique(UniqueType.MayNotAnnexCities)
+            && civInfo.stats.statsForNextTurn.happiness > city.population.population * 2 - 8 // don't go below -10 happiness due to annexing
+
     fun automateCities(civInfo: Civilization) {
         val ownMilitaryStrength = civInfo.getStatForRanking(RankingType.Force)
         val sumOfEnemiesMilitaryStrength =
@@ -568,12 +575,7 @@ object NextTurnAutomation {
         val civHasSignificantlyWeakerMilitaryThanEnemies =
                 ownMilitaryStrength < sumOfEnemiesMilitaryStrength * 0.66f
         for (city in civInfo.cities) {
-            if (city.isPuppet && city.population.population > 9
-                    && !city.isInResistance() && !civInfo.hasUnique(UniqueType.MayNotAnnexCities)
-                    && (civInfo.stats.statsForNextTurn.happiness > city.population.population * 2 - 8) // At all cost, don't go below -10 happiness due to annexing (consider -9 minimum acceptable)
-            ) {
-                city.annexCity()
-            }
+            if (shouldAnnexCity(civInfo, city)) city.annexCity()
 
             if (city.health < city.getMaxHealth() || civHasSignificantlyWeakerMilitaryThanEnemies) {
                 Automation.tryTrainMilitaryUnit(city) // need defenses if city is under attack
@@ -591,7 +593,15 @@ object NextTurnAutomation {
         if (civInfo.isOneCityChallenger()) return
         if (civInfo.cities.none()) return
         if (civInfo.getHappiness() <= civInfo.cities.size) return
-        if (CivilianUnitAutomation.isLateGame(civInfo)) return // all suitable land should be occupied already; there will only be a risk of the settler getting bombed
+        if (CivilianUnitAutomation.isLateGame(civInfo)){
+            // all suitable land may be occupied already
+            // 10 tiles away and 6 "options" are heuristics based on nothing, feel free to change 
+            val unoccupiedNearishTiles = civInfo.cities.asSequence()
+                .flatMap { it.getCenterTile().getTilesInDistance(10) }
+                .filter { it.owningCity == null && it.neighbors.all { it.owningCity == null } }
+                .count()
+            if (unoccupiedNearishTiles < 6) return
+        } 
 
         // This is a tough one - if we don't ignore conditionals we could have units that can found only on certain tiles that are ignored
         // If we DO ignore conditionals we could get a unit that can only found if there's a certain tech, or something

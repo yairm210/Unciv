@@ -17,6 +17,7 @@ import com.unciv.models.ruleset.GlobalUniques
 import com.unciv.models.ruleset.PolicyBranch
 import com.unciv.models.ruleset.Quest
 import com.unciv.models.ruleset.RuinReward
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.Specialist
 import com.unciv.models.ruleset.Speed
@@ -31,6 +32,7 @@ import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.Countables
+import com.unciv.models.ruleset.unique.DeprecatedUniqueType
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueParameterType
@@ -43,6 +45,7 @@ import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.utils.Log
 import com.unciv.utils.debug
+import com.unciv.utils.isRunFromJar
 import java.io.File
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
@@ -60,27 +63,42 @@ object TranslationFileWriter {
     private const val fullDescriptionFile = "full_description.txt"
     // Current dir on desktop should be assets, so use two '..' get us to project root
     private const val fastlanePath = "../../fastlane/metadata/android/"
+    private fun BaseRuleset.jsonFolderName() = "jsons/$fullName"
+    private fun BaseRuleset.jsonFolder() = if (UncivGame.isCurrentInitialized())
+            UncivGame.Current.files.getLocalFile(jsonFolderName())
+        else Gdx.app.files.local(jsonFolderName())
+    private fun defaultFileFilter(file: File) = file.name.endsWith(".json", true)
 
     //region Update translation files
-    fun writeNewTranslationFiles(): String {
+    fun writeNewTranslationFiles(modSelection: String): String {
+        val allSelected = modSelection == "All mods"
+        val baseSelected = allSelected || BaseRuleset.entries.any { it.fullName == modSelection }
+
         try {
             val translations = Translations()
             translations.readAllLanguagesTranslation()
+            val modSelected = !baseSelected && modSelection in translations.modsWithTranslations
 
             var fastlaneOutput = ""
             // check to make sure we're not running from a jar since these users shouldn't need to
             // regenerate base game translation and fastlane files
-            if (TranslationFileWriter.javaClass.`package`.specificationVersion == null) {
+            if (baseSelected && !isRunFromJar(this)) {
                 val percentages = generateTranslationFiles(translations)
                 writeLanguagePercentages(percentages)
                 fastlaneOutput = "\n" + writeTranslatedFastlaneFiles(translations)
             }
 
-            // See #5168 for some background on this
-            for ((modName, modTranslations) in translations.modsWithTranslations) {
+            fun processMod(modName: String, modTranslations: Translations) {
                 val modFolder = UncivGame.Current.files.getModFolder(modName)
                 val modPercentages = generateTranslationFiles(modTranslations, modFolder, translations)
                 writeLanguagePercentages(modPercentages, modFolder)  // unused by the game but maybe helpful for the mod developer
+            }
+            if (allSelected) {
+                // See #5168 for some background on this
+                for ((modName, modTranslations) in translations.modsWithTranslations)
+                    processMod(modName, modTranslations)
+            } else if (modSelected) {
+                processMod(modSelection, translations.modsWithTranslations[modSelection]!!)
             }
 
             return "Translation files are generated successfully.".tr() + fastlaneOutput
@@ -160,8 +178,7 @@ object TranslationFileWriter {
                 linesToTranslate += "$bindingLabel = "
 
             for (baseRuleset in BaseRuleset.entries) {
-                val generatedStringsFromBaseRuleset =
-                        GenerateStringsFromJSONs(UncivGame.Current.files.getLocalFile("jsons/${baseRuleset.fullName}"))
+                val generatedStringsFromBaseRuleset = GenerateStringsFromJSONs(baseRuleset)
                 for (entry in generatedStringsFromBaseRuleset)
                     fileNameToGeneratedStrings[entry.key + " from " + baseRuleset.fullName] = entry.value
             }
@@ -309,6 +326,14 @@ object TranslationFileWriter {
         return text.fillPlaceholders(*newPlaceholders.toTypedArray())
     }
 
+    private fun DeprecatedUniqueType.getTranslatable(): String {
+        val newPlaceholders = ArrayList<String>()
+        for (placeholderText in text.getPlaceholderParameters()) {
+            newPlaceholders.addNumberedParameter(placeholderText)
+        }
+        return text.fillPlaceholders(*newPlaceholders.toTypedArray())
+    }
+
     private fun ArrayList<String>.addNumberedParameter(name: String) {
         if (name !in this) {
             this += name
@@ -323,24 +348,40 @@ object TranslationFileWriter {
      *  All work is done right on instantiation.
       */
     private class GenerateStringsFromJSONs(
+        /** Used only to call UniqueParameterType.guessTypeForTranslationWriter */
+        private val ruleset: Ruleset,
         jsonsFolder: FileHandle,
-        fileFilter: (File) -> Boolean = { file -> file.name.endsWith(".json", true) }
+        fileFilter: (File) -> Boolean
     ): LinkedHashMap<String, MutableSet<String>>() {
         // Using LinkedHashMap (instead of HashMap) is important to maintain the order of sections in the translation file
 
-        val ruleset = RulesetCache.getVanillaRuleset()
-        val startMillis = System.currentTimeMillis()
-
-        var uniqueIndexOfNewLine = 0
-        val listOfJSONFiles = jsonsFolder
-            .list(fileFilter)
-            .sortedBy { it.name() }       // generatedStrings maintains order, so let's feed it a predictable one
+        constructor(baseRuleset: BaseRuleset) : this(
+            RulesetCache[baseRuleset.fullName]!!,
+            baseRuleset.jsonFolder(),
+            ::defaultFileFilter
+        )
+        constructor(jsonsFolder: FileHandle, fileFilter: (File) -> Boolean = ::defaultFileFilter) : this(
+            RulesetCache[jsonsFolder.parent().name()]?.takeIf { it.modOptions.isBaseRuleset } ?: RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!,
+            jsonsFolder, fileFilter
+        )
 
         // One set per json file, secondary loop var. Could be nicer to isolate all per-file
         // processing into another class, but then we'd have to pass uniqueIndexOfNewLine around.
         lateinit var resultStrings: MutableSet<String>
 
         init {
+            val startMillis = System.currentTimeMillis()
+
+            var uniqueIndexOfNewLine = 0
+            fun addNewLine() {
+                // This is a small hack to insert multiple /n into the set, which can't contain identical lines
+                resultStrings.add("$specialNewLineCode ${uniqueIndexOfNewLine++}")
+            }
+
+            val listOfJSONFiles = jsonsFolder
+                .list(fileFilter)
+                .sortedBy { it.name() }       // generatedStrings maintains order, so let's feed it a predictable one
+
             for (jsonFile in listOfJSONFiles) {
                 val filename = jsonFile.nameWithoutExtension()
 
@@ -356,12 +397,11 @@ object TranslationFileWriter {
                 if (data is kotlin.Array<*>) {
                     for (element in data) {
                         serializeElement(element!!) // let's serialize the strings recursively
-                        // This is a small hack to insert multiple /n into the set, which can't contain identical lines
-                        resultStrings.add("$specialNewLineCode ${uniqueIndexOfNewLine++}")
+                        addNewLine()
                     }
                 } else {
                     serializeElement(data)
-                    resultStrings.add("$specialNewLineCode ${uniqueIndexOfNewLine++}")
+                    addNewLine()
                 }
             }
             val displayName = if (jsonsFolder.name() != "jsons") jsonsFolder.name()
@@ -402,13 +442,11 @@ object TranslationFileWriter {
             }
 
             // Do simpler parameter numbering when typed, as the code below is susceptible to problems with nested brackets - UniqueTypes don't have them (yet)!
-            if (unique.type != null) {
-                for ((index, typeList) in unique.type.parameterTypeMap.withIndex()) {
-                    if (typeList.none { it in translatableUniqueParameterTypes }) continue
-                    // Unknown/Comment parameter contents better be offered to translators too
-                    resultStrings.add("${unique.params[index]} = ")
-                }
-                resultStrings.add("${unique.type.getTranslatable()} = ")
+            if (unique.type != null)
+                return submitTypedUnique(unique)
+
+            if (unique.deprecatedType != null) {
+                resultStrings.add("${unique.deprecatedType.getTranslatable()} = ")
                 return
             }
 
@@ -420,6 +458,23 @@ object TranslationFileWriter {
                 resultStrings.add("$parameter = ")
             }
             resultStrings.add("${stringToTranslate.fillPlaceholders(*parameterNames.toTypedArray())} = ")
+        }
+
+        fun submitTypedUnique(unique: Unique) {
+            require(unique.type != null)
+            if (unique.type == UniqueType.Comment && unique.params[0] == "[+10]% growth [in all cities]")
+                Unit
+            for ((index, typeList) in unique.type.parameterTypeMap.withIndex()) {
+                if (typeList.none { it in translatableUniqueParameterTypes }) continue
+                // Unknown/Comment parameter contents better be offered to translators too
+                if (unique.type == UniqueType.Comment) {
+                    val subUnique = Unique(unique.params[index])
+                    if (subUnique.type != null)
+                        return submitTypedUnique(subUnique)
+                }
+                resultStrings.add("${unique.params[index]} = ")
+            }
+            resultStrings.add("${unique.type.getTranslatable()} = ")
         }
 
         // Example: PolicyBranch inherits from Policy inherits from RulesetObject.

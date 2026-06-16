@@ -46,6 +46,7 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 import com.unciv.logic.automation.Timers.Companion.timeThis
+import com.unciv.logic.civilization.managers.quests.QuestManager
 
 enum class Proximity : IsPartOfGameInfoSerialization {
     None, // ie no cities
@@ -359,17 +360,16 @@ class Civilization : IsPartOfGameInfoSerialization {
      *  Note: Currently the implementation of `updateAllyCivForCityState` will cause the diplomacy map of
      *  city-states to contain the barbarians. Therefore, [getKnownCivs] will **not** list the barbarians
      *  for major civs, but **will** do so for city-states after some gameplay.
+     *  
+     *  forEachKnownCiv is faster, for cases that require high perf
      */
     @Readonly
-    @Deprecated(message = "forEachKnownCiv is faster. If not viable, then this can still be used",
-        replaceWith = ReplaceWith("forEachKnownCiv"))
     fun getKnownCivs() = diplomacy.values.asSequence().map { it.otherCiv }
         .filter { !it.isDefeated() && !it.isSpectator() }
 
 
     @Readonly
-    @Deprecated(message = "forEachKnownCiv is faster. If not viable, then this can still be used",
-        replaceWith = ReplaceWith("forEachKnownCiv"))
+    /** forEachKnownCiv is faster, for cases that require high perf */
     fun getKnownCivsWithSpectators() = diplomacy.values.asSequence().map { it.otherCiv }
         .filter { !it.isDefeated() }
     
@@ -708,8 +708,8 @@ class Civilization : IsPartOfGameInfoSerialization {
     @Readonly
     fun matchesSingleFilter(filter: String, state: GameContext? = this.state): Boolean {
         return when (filter) {
-            "Human player" -> isHuman()
-            "AI player" -> isAI()
+            Constants.humanPlayer -> isHuman()
+            Constants.aiPlayer -> isAI()
             "Open Borders" -> state?.civInfo?.diplomacy?.get(civID)?.hasOpenBorders ?: false
             "Friendly" -> state?.civInfo?.let { it.civID == civID || (it.diplomacy[civID]?.isRelationshipLevelGE(RelationshipLevel.Friend) == true) } ?: false
             "Hostile" -> state?.civInfo?.let { isAtWarWith(it) } ?: false

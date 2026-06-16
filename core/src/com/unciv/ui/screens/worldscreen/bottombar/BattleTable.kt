@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.battle.AirInterception
@@ -30,6 +31,7 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.components.widgets.UnitIconGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -64,38 +66,50 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
     }
 
     fun update() {
-        val attacker = tryGetAttacker() ?: return hide()
-
-        if (attacker is MapUnitCombatant && attacker.unit.isNuclearWeapon()) {
-            val selectedTile = worldScreen.mapHolder.selectedTile
-                ?: return hide() // no selected tile
-            if (selectedTile == attacker.getTile()) return hide() // mayUseNuke would test this again, but not actually seeing the nuke-yourself table just by selecting the nuke is nicer
-            simulateNuke(attacker, selectedTile)
-        } else if (attacker is MapUnitCombatant && attacker.unit.isPreparingAirSweep()) {
-            val selectedTile = worldScreen.mapHolder.selectedTile
-                ?: return hide() // no selected tile
-            simulateAirsweep(attacker, selectedTile)
-        } else {
-            val defender = tryGetDefender() ?: return hide()
-            if (attacker is CityCombatant && defender is CityCombatant) return hide()
-            val tileToAttackFrom = if (attacker is MapUnitCombatant)
-                TargetHelper.getAttackableEnemies(
-                    attacker.unit,
-                    attacker.unit.movement.getDistanceToTiles()
-                )
-                    .firstOrNull { it.tileToAttack == defender.getTile() }?.tileToAttackFrom ?: attacker.getTile()
-            else attacker.getTile()
-            simulateBattle(attacker, defender, tileToAttackFrom)
+        when (val attacker = tryGetAttacker()) {
+            null -> return hide()
+            is MapUnitCombatant if attacker.unit.isNuclearWeapon() -> {
+                val selectedTile = worldScreen.mapHolder.selectedTile
+                    ?: return hide() // no selected tile
+                if (selectedTile == attacker.getTile()) return hide() // mayUseNuke would test this again, but not actually seeing the nuke-yourself table just by selecting the nuke is nicer
+                simulateNuke(attacker, selectedTile)
+            }
+            is MapUnitCombatant if attacker.unit.isPreparingAirSweep() -> {
+                val selectedTile = worldScreen.mapHolder.selectedTile
+                    ?: return hide() // no selected tile
+                simulateAirsweep(attacker, selectedTile)
+            }
+            else -> {
+                val defender = tryGetDefender() ?: return hide()
+                if (attacker is CityCombatant && defender is CityCombatant) return hide()
+                val tileToAttackFrom = if (attacker is MapUnitCombatant)
+                    TargetHelper.getAttackableEnemies(
+                        attacker.unit,
+                        attacker.unit.movement.getDistanceToTiles()
+                    )
+                        .firstOrNull { it.tileToAttack == defender.getTile() }?.tileToAttackFrom ?: attacker.getTile()
+                else attacker.getTile()
+                simulateBattle(attacker, defender, tileToAttackFrom)
+            }
         }
 
         isVisible = true
         pack()
+
+        // Limit height - will force the reduction down to the modifier ScrollPanes
+        // Calculating a cell maxHeight for the ScrollPanes before the pack might be faster, but this is simpler
+        // Use a larget padding on top (10f) to make sure the addRoundCloseButton isn't clipped
+        if (height > stage.height - 15f) {
+            height = stage.height - 15f
+            validate()
+        }
 
         addBorderAllowOpacity(2f, Color.WHITE)
         addRoundCloseButton(this) {
             isVisible = false
         }
 
+        setPosition(stage.width / 2 - width / 2, 5f)
     }
 
     @Readonly
@@ -147,12 +161,26 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
             ("vs [" + key.drop(3) + "]").tr()
         else key.tr()
         val percentage = (if (value > 0) "+" else "") + value + "%"
-        val upOrDownLabel = if (value > 0f) "⬆".toLabel(Color.GREEN)
-        else "⬇".toLabel(Color.RED)
+        val upOrDownLabel = if (value > 0f) "⬆".toLabel(Color.GREEN) // U+2B06 UPWARDS BLACK ARROW
+        else "⬇".toLabel(Color.RED) // U+2B07 DOWNWARDS BLACK ARROW
 
         add(upOrDownLabel)
         val modifierLabel = "$percentage $description".toLabel(fontSize = 14).apply { wrap = true }
         add(modifierLabel).width(quarterScreen - upOrDownLabel.minWidth)
+    }
+
+    private fun createModifiersScroll(modifiers: Iterable<Table>): ScrollPane {
+        val wrapper = Table()
+        wrapper.defaults().pad(2.5f)
+        wrapper.top()
+        for (modifier in modifiers)
+            wrapper.add(modifier).row()
+        return AutoScrollPane(wrapper, skin).apply {
+            fadeScrollBars = false
+            setScrollbarsVisible(true)
+            setOverscroll(false, false)
+            setScrollingDisabled(true, false)
+        }
     }
 
     private fun simulateBattle(attacker: ICombatant, defender: ICombatant, tileToAttackFrom: Tile) {
@@ -192,11 +220,8 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
                     }
                 else listOf()
 
-        for (i in 0..max(attackerModifiers.size, defenderModifiers.size)) {
-            if (i < attackerModifiers.size) add(attackerModifiers[i]) else add().width(quarterScreen)
-            if (i < defenderModifiers.size) add(defenderModifiers[i]) else add().width(quarterScreen)
-            row().pad(2f)
-        }
+        add(createModifiersScroll(attackerModifiers)).pad(0f).uniformX().fillY()
+        add(createModifiersScroll(defenderModifiers)).pad(0f).uniformX().fillY().row()
 
         if (attackerModifiers.any() || defenderModifiers.any()) {
             addSeparator()
@@ -247,10 +272,12 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
             val avgDamageToDefender = avg(defenderHealth - minRemainingLifeDefender, defenderHealth - maxRemainingLifeDefender)
             val avgDamageToAttacker = avg(attackerHealth - minRemainingLifeAttacker, attackerHealth - maxRemainingLifeAttacker)
 
-            if (minRemainingLifeAttacker == attackerHealth) add(attackerHealth.toLabel())
-            else if (maxRemainingLifeAttacker == minRemainingLifeAttacker) add("$attackerHealth → $maxRemainingLifeAttacker ($avgDamageToAttacker)".toLabel())
-            else add("$attackerHealth → $minRemainingLifeAttacker-$maxRemainingLifeAttacker (~$avgDamageToAttacker)".toLabel())
-
+            if (minRemainingLifeAttacker == attackerHealth)
+                add(attackerHealth.toLabel())
+            else if (maxRemainingLifeAttacker == minRemainingLifeAttacker)
+                add("$attackerHealth → $maxRemainingLifeAttacker ($avgDamageToAttacker)".toLabel()) // U+2192 RIGHTWARDS ARROW
+            else
+                add("$attackerHealth → $minRemainingLifeAttacker-$maxRemainingLifeAttacker (~$avgDamageToAttacker)".toLabel())
 
             if (minRemainingLifeDefender == maxRemainingLifeDefender) add("$defenderHealth → $maxRemainingLifeDefender ($avgDamageToDefender)".toLabel())
             else add("$defenderHealth → $minRemainingLifeDefender-$maxRemainingLifeDefender (~$avgDamageToDefender)".toLabel())
@@ -296,11 +323,6 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
 
             add(attackButton).colspan(2)
         }
-
-
-        pack()
-
-        setPosition(worldScreen.mapHolder.width / 2 - width / 2, 5f)
     }
 
     private fun onAttackButtonClicked(
@@ -358,8 +380,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
         if (!worldScreen.isPlayersTurn || !attacker.canAttack() || !canNuke) {
             attackButton.disable()
             attackButton.label.color = Color.GRAY
-        }
-        else {
+        } else {
             attackButton.onClick(attacker.getAttackSound()) {
                 Nuke.NUKE(attacker, targetTile)
 
@@ -382,21 +403,15 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
                 nukeCircle.y = targetTileGroup.y
                 worldScreen.mapHolder.addActorToTileGroupMap(nukeCircle)
 
-
                 worldScreen.mapHolder.removeUnitActionOverlay() // the overlay was one of attacking
                 worldScreen.shouldUpdate = true
             }
         }
 
         add(attackButton).colspan(2)
-
-        pack()
-
-        setPosition(worldScreen.mapHolder.width / 2 - width / 2, 5f)
     }
 
-    private fun simulateAirsweep(attacker: MapUnitCombatant, targetTile: Tile)
-    {
+    private fun simulateAirsweep(attacker: MapUnitCombatant, targetTile: Tile) {
         clear()
 
         val attackerNameWrapper = Table()
@@ -421,13 +436,10 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
                     getModifierTable(it.key, it.value)
                 }
 
-        for (modifier in attackerModifiers) {
-            add(modifier)
-            add().width(quarterScreen)
-            row().pad(2f)
-        }
+        add(createModifiersScroll(attackerModifiers)).pad(0f).uniformX().fillY()
+        add().uniformX().row()
 
-        add(getHealthBar(attacker.getMaxHealth(), attacker.getHealth(), attacker.getHealth(),attacker.getHealth()))
+        add(getHealthBar(attacker.getMaxHealth(), attacker.getHealth(), attacker.getHealth(), attacker.getHealth()))
         add(getHealthBar(attacker.getMaxHealth(), attacker.getMaxHealth(), attacker.getMaxHealth(), attacker.getMaxHealth()))
         row().pad(5f)
 
@@ -448,9 +460,5 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
         }
 
         add(attackButton).colspan(2)
-
-        pack()
-
-        setPosition(worldScreen.mapHolder.width / 2 - width / 2, 5f)
     }
 }
