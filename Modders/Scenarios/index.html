@@ -1914,36 +1914,56 @@
 <p>When creating a mod, we differentiate the <em>ruleset</em> from the <em>scenario</em> - the scenario is just a specific game state, or in other words - a saved game.</p>
 <p>To create a scenario:</p>
 <ul>
-<li>Create a new game with the players you want, AND a spectator</li>
+<li>Create a new game with some of the players you want, AND a spectator</li>
 <li>Enter the game as the spectator, and edit the save using the console</li>
+<li>Note there's commands like <code>civ add</code>, <code>civ remove</code>, <code>city add</code> or <code>unit action</code> to set up the players exactly as you want them</li>
 <li>Save the game, copy the game save file to a "scenarios" folder in your mod</li>
+</ul>
+<p>To play a scenario:</p>
+<ul>
+<li>Get a mod with scenarios</li>
+<li>On the new game screen, choose "Map Type: Scenario" on the map options</li>
+<li>Choose the scenario from the next selectbox</li>
+</ul>
+<p>When loading a scenario:</p>
+<ul>
+<li>The Spectator will be removed.</li>
+<li>All civilizations are set to AI-controlled.</li>
+<li>Humans will be assigned from the choices on the new game screen.
+  At the moment, only the number of humans can be chosen, the locked "Random" nation choice will be respected, and your player will be assigned a random scenario civilization.
+  Contact us if you need the ability to determine which nations can be played.</li>
+<li>No civilizations will be added or removed (Numbers selected on the new game screen will be ignored).</li>
+<li>It will now be the turn of the civilization active when the scenario was saved (except it's probably the Spectator, which will be skipped).</li>
 </ul>
 <h2 id="console">Console</h2>
 <h3 id="opening">Opening</h3>
-<p>To open the console from the world screen, click the `` button on your keyboard.</p>
+<p>To open the console from the world screen, click the <code>`</code> button on your keyboard. It's the one top left, just below <code>Esc</code>, independent of international layout.</p>
 <p>On mobile:</p>
 <ul>
-<li>Long-click menu hamburger (3 lines)</li>
-<li>Click "developer console" button</li>
+<li>Long-press the hamburger menu (3 lines, top left of the world screen)</li>
+<li>Tap the "developer console" button</li>
 </ul>
 <p>To see available commands, click enter. This works for subcommands as well (e.g. when you entered <code>tile</code>).</p>
 <h3 id="command-formatting">Command formatting</h3>
-<p>Object names (units buildings civs etc) are case-insensitive.</p>
+<p>Object names (units buildings civs etc.) are case-insensitive.</p>
 <p>Unit and building names with spaces in them, like "Great General", can be inputted in 2 ways:</p>
 <ul>
 <li><strong>"great general"</strong> - with quotation marks around them</li>
 <li><strong>great-general</strong>  - with dashes instead of spaces</li>
 </ul>
 <h3 id="autocomplete">Autocomplete</h3>
-<p>The console has autocompletion - for commands and arguments with Tab.</p>
+<p>The console has autocompletion - for commands and arguments with Tab. On Android, use the button to the left of the input field.</p>
 <ul>
 <li>When two or more options match, the possibilities are displayed, and the longest common substring is entered for you (e.g. you enter 'c', Tab: commands 'city' or 'civ' match, the console partially completes 'ci' for you).</li>
 <li>When you haven't yet entered a partial text (console input is empty or ends in a space), autocompletion will display all options.</li>
+<li>A partial text beginning with a <code>"</code> quotation mark will use quoted format for auto-complete, and use the capitalization as defined in the ruleset.</li>
 </ul>
 <h3 id="other">Other</h3>
 <p>Some commands operate on a tile or unit you need to select on the map. You can also do so while the console is open.</p>
-<p>The console intentionally does not follow all rules defined by the ruleset - e.g. it allows Farms on hills without fresh water or the Mobility promotion on a Worker. Any unexpected consequences are your responsibility.</p>
-<p>You can access command history with the up/down buttons</p>
+<p>The console intentionally does not follow all rules defined by the ruleset - e.g. it allows Farms on hills without fresh water or the Mobility promotion on a Worker.
+Any unexpected consequences are your responsibility.</p>
+<p>You can access command history using the arrow keys, the <code>history</code> command, or on Android using the up/down buttons to the right of the input field.
+Note the entries that <code>history</code> displays are clickable.</p>
 
 
 

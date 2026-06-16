@@ -1236,6 +1236,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#testing-wiki-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing wiki changes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#cleaning-up-obsolete-files" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1984,6 +1995,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#testing-wiki-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing wiki changes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#cleaning-up-obsolete-files" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2140,13 +2162,14 @@ For an introduction, see <a href="../Testing-Android-Builds/">Testing android bu
 <h3 id="unit-tests">Unit Tests</h3>
 <p>You can (and in some cases <em>should</em>) run and even debug the unit tests locally.</p>
 <ul>
+<li>The repository contains a run configuration "Run unit tests". If it's missing:</li>
 <li>In Android Studio, Run &gt; Edit configurations.<ul>
 <li>Click "+" to add a new configuration</li>
-<li>Choose "Gradle" and name the config, e.g. "Unit Tests"</li>
+<li>Choose "Gradle" and name the config, e.g. "Run unit tests"</li>
 <li>Under "Gradle Project", choose "Unciv" from the dropdown (or type it), set "Tasks" to <code>:tests:test</code> and "Arguments" to <code>--tests "com.unciv.*"</code>, OK to close the window.</li>
 </ul>
 </li>
-<li>Select the "Unit Tests" configuration and click the green arrow button to run! Or start a debug session as above.</li>
+<li>Select the "Run unit tests" configuration and click the green arrow button to run! Or start a debug session as above.</li>
 </ul>
 <h3 id="linting">Linting</h3>
 <p>Detekt checks for code smells and other linting issues.
@@ -2159,6 +2182,36 @@ To generate Detekt reports:</p>
 </ul>
 </li>
 <li>The report will be generated in <code>detekt/reports.html</code></li>
+</ul>
+<h3 id="testing-wiki-changes">Testing wiki changes</h3>
+<p>This wiki is automatically built from <a href="https://github.com/yairm210/Unciv/tree/master/docs">the main repository's 'docs' folder</a>,
+so to help improve it, you would normally work on those files in a branch of your local Unciv clone.</p>
+<p>However, typical editor previews of markdown are <em><strong>NOT</strong></em> authoritative, as the files get processed by <code>mkdocs</code>.
+For a conclusive check, run <code>mkdocs</code> locally and view the result in your browser.</p>
+<p>Once set up, it's a simple <code>mkdocs serve</code> from Android Studio's terminal, or if you chose the simpler Windows setup, <code>python -m mkdocs serve</code>.</p>
+<p>The command will tell you the link it's serving on, and e.g. in Android Studio's shell, you can click it.
+The server will monitor the source for changes, so you can edit while your test is running and see the changes almost immediately.
+(Look up when Android Studio actually saves to disk, or hit Ctrl-S to make sure. The browser won't need a manual refresh!)</p>
+<p>The one-time setup procedure is as follows:</p>
+<ul>
+<li>Install python<ul>
+<li>Linux: <code>sudo apt install python3 python-is-python3 -y</code> or however you prefer</li>
+<li>Windows: Get it from python.org/downloads - look for "standalone installer"</li>
+</ul>
+</li>
+<li>Install mkdocs and required plugins<ul>
+<li>Run <code>pip install mkdocs mkdocs-material mkdocs-awesome-pages-plugin</code>.</li>
+<li>On Debian-based Linux, you'll run into the "virtual environment" hassle, so either learn to manage that or add the <code>--break-system-packages</code> option.</li>
+</ul>
+</li>
+<li>Manage PATH<ul>
+<li>
+<p>On Windows, the python scripts folder is not added to the PATH by default.</p>
+<p><code>pip install</code> will tell you about that, and show the correct location.</p>
+<p>Add <code>%AppData%\Python\Python314\Scripts</code> (adjust version as required) to your path, or use the more verbose command as shown.</p>
+</li>
+</ul>
+</li>
 </ul>
 <h3 id="cleaning-up-obsolete-files">Cleaning up obsolete files</h3>
 <p>From time to time, Unciv bumps the versions of major tools - mainly Gradle, the Android SDK Platform, and the Android SDK Build-Tools.
