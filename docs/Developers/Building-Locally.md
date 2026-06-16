@@ -105,11 +105,12 @@ Now would be a good time to get to know the project in general at [the Project S
 
 You can (and in some cases _should_) run and even debug the unit tests locally.
 
+-   The repository contains a run configuration "Run unit tests". If it's missing:
 -   In Android Studio, Run > Edit configurations.
     -   Click "+" to add a new configuration
-    -   Choose "Gradle" and name the config, e.g. "Unit Tests"
+    -   Choose "Gradle" and name the config, e.g. "Run unit tests"
     -   Under "Gradle Project", choose "Unciv" from the dropdown (or type it), set "Tasks" to `:tests:test` and "Arguments" to `--tests "com.unciv.*"`, OK to close the window.
--   Select the "Unit Tests" configuration and click the green arrow button to run! Or start a debug session as above.
+-   Select the "Run unit tests" configuration and click the green arrow button to run! Or start a debug session as above.
 
 ### Linting
 
