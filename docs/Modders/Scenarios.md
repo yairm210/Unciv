@@ -9,9 +9,26 @@ When creating a mod, we differentiate the *ruleset* from the *scenario* - the sc
 
 To create a scenario:
 
-- Create a new game with the players you want, AND a spectator
+- Create a new game with some of the players you want, AND a spectator
 - Enter the game as the spectator, and edit the save using the console
+- Note there's commands like `civ add`, `civ remove`, `city add` or `unit action` to set up the players exactly as you want them
 - Save the game, copy the game save file to a "scenarios" folder in your mod
+
+To play a scenario:
+
+- Get a mod with scenarios
+- On the new game screen, choose "Map Type: Scenario" on the map options
+- Choose the scenario from the next selectbox
+
+When loading a scenario:
+
+- The Spectator will be removed.
+- All civilizations are set to AI-controlled.
+- Humans will be assigned from the choices on the new game screen.
+  At the moment, only the number of humans can be chosen, the locked "Random" nation choice will be respected, and your player will be assigned a random scenario civilization.
+  Contact us if you need the ability to determine which nations can be played.
+- No civilizations will be added or removed (Numbers selected on the new game screen will be ignored).
+- It will now be the turn of the civilization active when the scenario was saved (except it's probably the Spectator, which will be skipped).
 
 ## Console
 
