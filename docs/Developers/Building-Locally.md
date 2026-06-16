@@ -122,6 +122,35 @@ To generate Detekt reports:
     - For errors: `PATH/TO/DETEKT/detekt-cli --parallel --report html:detekt/reports.html --config .github/workflows/detekt_config/detekt-errors.yml`
 - The report will be generated in `detekt/reports.html`
 
+### Testing wiki changes
+
+This wiki is automatically built from [the main repository's 'docs' folder](https://github.com/yairm210/Unciv/tree/master/docs),
+so to help improve it, you would normally work on those files in a branch of your local Unciv clone.
+
+However, typical editor previews of markdown are _**NOT**_ authoritative, as the files get processed by `mkdocs`.
+For a conclusive check, run `mkdocs` locally and view the result in your browser.
+
+Once set up, it's a simple `mkdocs serve` from Android Studio's terminal, or if you chose the simpler Windows setup, `python -m mkdocs serve`.
+
+The command will tell you the link it's serving on, and e.g. in Android Studio's shell, you can click it.
+The server will monitor the source for changes, so you can edit while your test is running and see the changes almost immediately.
+(Look up when Android Studio actually saves to disk, or hit Ctrl-S to make sure. The browser won't need a manual refresh!)
+
+The one-time setup procedure is as follows:
+
+- Install python
+    - Linux: `sudo apt install python3 python-is-python3 -y` or however you prefer
+    - Windows: Get it from python.org/downloads - look for "standalone installer"
+- Install mkdocs and required plugins
+    - Run `pip install mkdocs mkdocs-material mkdocs-awesome-pages-plugin`.
+    - On Debian-based Linux, you'll run into the "virtual environment" hassle, so either learn to manage that or add the `--break-system-packages` option.
+- Manage PATH
+    - On Windows, the python scripts folder is not added to the PATH by default.
+
+        `pip install` will tell you about that, and show the correct location.
+
+        Add `%AppData%\Python\Python314\Scripts` (adjust version as required) to your path, or use the more verbose command as shown.
+
 ### Cleaning up obsolete files
 
 From time to time, Unciv bumps the versions of major tools - mainly Gradle, the Android SDK Platform, and the Android SDK Build-Tools.
