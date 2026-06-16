@@ -26,36 +26,33 @@ import java.util.Locale
 
 /** Settings that apply across all games, stored in GameSettings.json */
 class GameSettings {
-    enum class PathfindingAlgorithm {
-        ClassicPathfinding,
-        AStarPathfinding
-    }
+    // This should group and order fields into regions by their Tab in OptionsPopup
+    //// 4-slash comments correspond to "section" headers within an Options Tab
 
-    /** Allows panning the map by moving the pointer to the screen edges */
-    var mapAutoScroll: Boolean = false
-    /** How fast the map pans using keyboard or with [mapAutoScroll] and mouse */
-    var mapPanningSpeed: Float = 6f
-    
-    var useAStarPathfinding: Boolean = false
+    //region 1: Display
 
-    var showWorkedTiles: Boolean = false
-    var showResourcesAndImprovements: Boolean = true
-    var showTileYields: Boolean = false
-    var showUnitMovements: Boolean = false
-    var showSettlersSuggestedCityLocations: Boolean = true
-    var stopAutomatedWorkersRemoveVegetation: Boolean = false
-
-    var checkForDueUnits: Boolean = true
-    var checkForDueUnitsCycles: Boolean = false
-    var autoUnitCycle: Boolean = true
-    var smallUnitButton: Boolean = true
-    var singleTapMove: Boolean = false
-    var longTapMove: Boolean = true
-    var language: String = Constants.english
-    @Transient
-    var locale: Locale? = null
+    //// Screen
     var screenSize: ScreenSize = ScreenSize.Small
-    var screenMode: Int = 0
+    /** Orientation for mobile platforms */
+    var displayOrientation = ScreenOrientation.Landscape
+    var screenMode = 0
+    /** Allows panning the map by moving the pointer to the screen edges */
+    var mapAutoScroll = false
+    /** How fast the map pans using keyboard or with [mapAutoScroll] and mouse */
+    var mapPanningSpeed = 6f
+
+    //// Graphics
+    var tileSet: String = Constants.defaultTileset
+    var unitSet: String? = Constants.defaultUnitset
+    var skin: String = Constants.defaultSkin
+
+    //// UI
+    /** NotificationScroll on Word Screen visibility control - mapped to [NotificationsScroll.UserSetting] enum */
+    // Defaulting this to "" - and implement the fallback only in NotificationsScroll leads to Options popup and actual effect being in disagreement!
+    var notificationScroll: String = NotificationsScroll.UserSetting.default().name
+    var showMinimap = true
+    var showTutorials = true
+    // There have no UI other than the "Reset tutorials" button:
     var tutorialsShown = HashSet<String>()
     var tutorialTasksCompleted = HashSet<String>()
 
@@ -70,102 +67,146 @@ class GameSettings {
     }
     var showLongPressIndicators = LongPressIndicatorSetting.Default
 
+    var showZoomButtons = false
+    var forbidPopupClickBehindToClose = false
+    var useCirclesToIndicateMovableTiles = false
+    /** Size of automatic display of UnitSet art in Civilopedia - 0 to disable */
+    var pediaUnitArtSize = 0f
+
+    //// Visual Hints
+    var showUnitMovements = false
+    var showSettlersSuggestedCityLocations = true
+    var showTileYields = false
+    var showWorkedTiles = false
+    var showResourcesAndImprovements = true
+    var showPixelImprovements = true
+    var unitIconOpacity = 1f // default corresponds to fully opaque
+
+    //// Performance
+    var continuousRendering = false
+
+    //// Experimental
+    var useDemographics = false
+    var unitMovementButtonAnimation = false
+    var unitActionsTableAnimation = false
+
+    //endregion
+
+    //region 2: Gameplay
+    var checkForDueUnits = true
+    var checkForDueUnitsCycles = false
+    var smallUnitButton = true
+    var autoUnitCycle = true
+    /** Cycle units by distance instead of queue */
+    var alternateUnitCycleOrder = false
+    var singleTapMove = false
+    var longTapMove = true
+    var orderTradeOffersByAmount = true
+    var confirmNextTurn = false
+    var notificationsLogMaxTurns = 5
+    //endregion
+
+    //region 3: Automation
+
+    //// Automation
+    var autoAssignCityProduction = false
+    var autoBuildingRoads = true
+    var automatedWorkersReplaceImprovements = true
+    var stopAutomatedWorkersRemoveVegetation = false
+    var automatedUnitsMoveOnTurnStart = false
+    var automatedUnitsCanUpgrade = false
+    var automatedUnitsChoosePromotions = false
+    var citiesAutoBombardAtEndOfTurn = false
+
+    //// Autoplay
+    var autoPlay = GameSettingsAutoPlay()
+
+    //endregion
+
+    //region 4: Language
+    var language: String = Constants.english
+    @Transient
+    var locale: Locale? = null
+    //endregion
+
+    //region 5: Sound
     var soundEffectsVolume = 0.5f
     var citySoundsVolume = 0.5f
     var musicVolume = 0.5f
     var voicesVolume = 0.5f
     var pauseBetweenTracks = 10
+    //endregion
 
-    var turnsBetweenAutosaves = 1
+    //region 6: Multiplayer
+    var multiplayer = GameSettingsMultiplayer()
+    //endregion
+
+    //region 7: Keyboard
+    var keyBindings = KeyboardBindings()
+    //endregion
+
+    //region 8: Advanced
     var maxAutosavesStored = 10
-    var tileSet: String = Constants.defaultTileset
-    var unitSet: String? = Constants.defaultUnitset
-    var skin: String = Constants.defaultSkin
-    var showTutorials: Boolean = true
-    var autoAssignCityProduction: Boolean = false
+    var turnsBetweenAutosaves = 1
 
+    var androidCutout = false
+    var androidHideSystemUi = true
+    var fontFamilyData: FontFamilyData = FontFamilyData.default
+    var fontSizeMultiplier: Float = 1f
+    var longPressDelay = 1.1f
+    var multiTapInterval = 0.25f
+
+    /** Maximum zoom-out of the map - performance heavy */
+    var maxWorldZoomOut = 2f
+    var enableEasterEggs = true
+    /** If on, selected notifications are drawn enlarged with wider padding */
+    var enlargeSelectedNotification = true
+    var useAStarPathfinding = false
+    //endregion
+
+    //region 9: Not in OptionsPopup
+
+    // Controlled via context menu in CityScreen:
     /** This set of construction names has two effects:
      *  * Matching constructions are no longer candidates for [autoAssignCityProduction]
      *  * Matching constructions are offered in a separate 'Disabled' category in CityScreen
      */
     var disabledAutoAssignConstructions = HashSet<String>()
 
-    var autoBuildingRoads: Boolean = true
-    var automatedWorkersReplaceImprovements = true
-    var automatedUnitsMoveOnTurnStart: Boolean = false
-    var automatedUnitsCanUpgrade: Boolean = false
-    var automatedUnitsChoosePromotions: Boolean = false
-    var citiesAutoBombardAtEndOfTurn: Boolean = false
+    // Controlled by dragging the minimap
+    var minimapSize = 6    // default corresponds to 15% screen space
 
-    var showMinimap: Boolean = true
-    var minimapSize: Int = 6    // default corresponds to 15% screen space
-    var unitIconOpacity = 1f // default corresponds to fully opaque
-    val showPixelUnits: Boolean get() = unitSet != null
-    var showPixelImprovements: Boolean = true
-    var continuousRendering = false
-    var orderTradeOffersByAmount = true
-    var confirmNextTurn = false
+    // This was a checkbox setting long ago
+    val showPixelUnits get() = unitSet != null
+
+    // Preserves desktop window size between runs
     var windowState = WindowState()
+
+    // Used by launcher to recognize a first-run
     var isFreshlyCreated = false
+
+    // Controlled from ModManagementScreen
     var visualMods = HashSet<String>()
-    var useDemographics: Boolean = false
-    var showZoomButtons: Boolean = false
-    var forbidPopupClickBehindToClose: Boolean = false
-    var useCirclesToIndicateMovableTiles: Boolean = false
-    
-    var unitMovementButtonAnimation: Boolean = false
-    var unitActionsTableAnimation: Boolean = false
 
-    var notificationsLogMaxTurns = 5
-
-    var showAutosaves: Boolean = false
-
-    var androidCutout: Boolean = false
-    var androidHideSystemUi = true
-
-    var multiplayer = GameSettingsMultiplayer()
-
-    var autoPlay = GameSettingsAutoPlay()
+    // On load screen
+    var showAutosaves = false
 
     /** Holds EmpireOverviewScreen per-page persistable states */
     val overview = OverviewPersistableData()
 
-    /** Orientation for mobile platforms */
-    var displayOrientation = ScreenOrientation.Landscape
-
     /** Saves the last successful new game's setup */
     var lastGameSetup: GameSetupInfo? = null
 
-    var fontFamilyData: FontFamilyData = FontFamilyData.default
-    var fontSizeMultiplier: Float = 1f
-
-    var enableEasterEggs: Boolean = true
-
-    /** Maximum zoom-out of the map - performance heavy */
-    var maxWorldZoomOut = 2f
-
-    var keyBindings = KeyboardBindings()
-
-    /** NotificationScroll on Word Screen visibility control - mapped to [NotificationsScroll.UserSetting] enum */
-    // Defaulting this to "" - and implement the fallback only in NotificationsScroll leads to Options popup and actual effect being in disagreement!
-    var notificationScroll: String = NotificationsScroll.UserSetting.default().name
-
-    /** If on, selected notifications are drawn enlarged with wider padding */
-    var enlargeSelectedNotification = true
-
     /** Whether the Nation Picker shows icons only or the horizontal "civBlocks" with leader/nation name */
     var nationPickerListMode = NationPickerListMode.List
-
-    /** Size of automatic display of UnitSet art in Civilopedia - 0 to disable */
-    var pediaUnitArtSize = 0f
-
-    /** Cycle units by distance instead of queue */
-    var alternateUnitCycleOrder: Boolean = false
 
     /** Don't close developer console after a successful command */
     var keepConsoleOpen = false
     /** Persist the history of successful developer console commands */
     val consoleCommandHistory = ArrayList<String>()
+
+    //endregion
+
 
     /** used to migrate from older versions of the settings */
     var version: Int? = null
@@ -223,6 +264,13 @@ class GameSettings {
 
     //endregion
     //region <Nested classes>
+
+    enum class PathfindingAlgorithm {
+        ClassicPathfinding,
+        AStarPathfinding
+    }
+
+    enum class NationPickerListMode { Icons, List }
 
     /**
      *  Knowledge on Window "state", limited.
@@ -289,7 +337,19 @@ class GameSettings {
         override fun toString() = name.tr() // Allow direct use in a SelectBox
     }
 
-    enum class NationPickerListMode { Icons, List }
+    class GameSettingsAutoPlay {
+        var showAutoPlayButton = false
+        var autoPlayUntilEnd = false
+        var autoPlayMaxTurns = 10
+        var fullAutoPlayAI = true
+        var autoPlayMilitary = true
+        var autoPlayCivilian = true
+        var autoPlayEconomy = true
+        var autoPlayTechnology = true
+        var autoPlayPolicies = true
+        var autoPlayReligion = true
+        var autoPlayDiplomacy = true
+    }
 
     //endregion
     //region Multiplayer-specific
@@ -349,20 +409,6 @@ class GameSettings {
             val preEncodedAuthValue = "$userId:$serverPassword"
             return "Basic ${Base64Coder.encodeString(preEncodedAuthValue)}"
         }
-    }
-
-    class GameSettingsAutoPlay {
-        var showAutoPlayButton: Boolean = false
-        var autoPlayUntilEnd: Boolean = false
-        var autoPlayMaxTurns = 10
-        var fullAutoPlayAI: Boolean = true
-        var autoPlayMilitary: Boolean = true
-        var autoPlayCivilian: Boolean = true
-        var autoPlayEconomy: Boolean = true
-        var autoPlayTechnology: Boolean = true
-        var autoPlayPolicies: Boolean = true
-        var autoPlayReligion: Boolean = true
-        var autoPlayDiplomacy: Boolean = true
     }
 
     //endregion
