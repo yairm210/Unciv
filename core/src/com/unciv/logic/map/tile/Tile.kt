@@ -1082,12 +1082,14 @@ class Tile : IsPartOfGameInfoSerialization {
     }
 
     fun startWorkingOnImprovement(improvement: TileImprovement, civInfo: Civilization, unit: MapUnit) {
+        if (isMarkedForCreatesOneImprovement()) return
         improvementQueue.clear()
         queueImprovement(improvement, civInfo, unit)
     }
 
     /** Clears [improvementQueue] */
     fun stopWorkingOnImprovement() {
+        if (isMarkedForCreatesOneImprovement()) return
         improvementQueue.clear()
     }
 
