@@ -15,6 +15,7 @@ import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unique.expressions.Expressions
+import com.unciv.models.stats.Stat
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Pure
@@ -333,6 +334,19 @@ class UniqueValidator(val ruleset: Ruleset) {
             UniqueType.RuinsUpgrade -> {
                 if (reportRulesetSpecificErrors && !anyAncientRuins)
                     rulesetErrors.add("$prefix is pointless - there are no ancient ruins", RulesetErrorSeverity.Warning, uniqueContainer, unique)
+            }
+            UniqueType.OneTimeGainStat,
+            UniqueType.OneTimeGainStatRange -> {
+                val statParamIndex = if (unique.type == UniqueType.OneTimeGainStat) 1 else 2
+                val stat = unique.params.getOrNull(statParamIndex)?.let { Stat.safeValueOf(it) }
+                if (stat != null && stat !in Stat.statsWithCivWideField) {
+                    val supportedStats = Stat.statsWithCivWideField.joinToString()
+                    rulesetErrors.add(
+                        "$prefix uses $stat, but only civ-wide stats ($supportedStats) are supported by this unique; " +
+                            "non-civ-wide stats have no effect.",
+                        RulesetErrorSeverity.Warning, uniqueContainer, unique
+                    )
+                }
             }
             else -> {}
         }
