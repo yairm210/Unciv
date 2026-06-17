@@ -271,7 +271,9 @@ class UniqueValidator(val ruleset: Ruleset) {
                 RulesetErrorSeverity.Warning, uniqueContainer, unique
             )
         
-        if (modifier.type.targetTypes.none { it.isAcceptableModifierFor(unique) }) { // No target is a modifier for whatever
+        if (unique.type != UniqueType.Comment
+            && modifier.type.targetTypes.none { it.isAcceptableModifierFor(unique) }
+        ) { // No target is a modifier for whatever
             rulesetErrors.add(
                 "$prefix contains the modifier \"${modifier.text}\"," +
                         " which is not an acceptable modifier for this unique.",
