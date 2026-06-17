@@ -57,6 +57,8 @@ class MapSize private constructor(
 
     constructor(name: String) : this(Predefined.safeValueOf(name))
 
+    /** Android Studio incorrectly claims it is unused... */
+    @Suppress("unused")
     private constructor(radius: Int, width: Int, height: Int) : this(
         custom, radius, width, height,
         inferPredefinedProperty(HexMath.getEquivalentHexagonalRadius(width, height), Predefined::techCostMultiplier),
