@@ -21,6 +21,10 @@ enum class AlertType : IsPartOfGameInfoSerialization {
     
     DemandToStopSpyingOnUs,
     SpyingOnUsDespiteOurPromise,
+    
+    DemandToNotAttackUs,
+    AttackedUsDespitePromise,
+    
     AcceptingDemand,
     RejectingDemand,
 

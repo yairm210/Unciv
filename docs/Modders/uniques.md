@@ -265,6 +265,23 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
+??? example  "Choose a music track for [param], [param], [param]"
+	Parameters are unchecked, strings not matching existing tracks or flags are ignored.
+
+	See [Context-sensitive music](Images-and-Audio.md#context-sensitive-music-overview)
+
+	The first parameter is the track name prefix, e.g. a Civilization name or "this civ".
+
+	The second parameter is a list of zero or more suffixes, comma-separated, used to specify a "mood", like Peace, War, Ambient etc. First track that matches wins.
+
+	The third parameter is a list of zero or more flags: PrefixMustMatch, SuffixMustMatch, SlowFade, PlaySingle, PlayDefaultFile.
+
+	Example: "Choose a music track for [Unknown], [Unknown], [Unknown]"
+
+	This unique is automatically hidden from users.
+
+	Applicable to: Triggerable
+
 ??? example  "Suppress warning [validationWarning]"
 	Allows suppressing specific validation warnings. Errors, deprecation warnings, or warnings about untyped and non-filtering uniques should be heeded, not suppressed, and are therefore not accepted. Note that this can be used in ModOptions, in the uniques a warning is about, or as modifier on the unique triggering a warning - but you still need to be specific. Even in the modifier case you will need to specify a sufficiently selective portion of the warning text as parameter.
 
@@ -664,13 +681,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "Enables conversion of city production to [civWideStat]"
-	Example: "Enables conversion of city production to [Gold]"
+??? example  "Enables conversion of city production to [stat]"
+	Example: "Enables conversion of city production to [Culture]"
 
 	Applicable to: Global
 
-??? example  "Production to [civWideStat] conversion in cities changed by [relativeAmount]%"
-	Example: "Production to [Gold] conversion in cities changed by [+20]%"
+??? example  "Production to [stat] conversion in cities changed by [relativeAmount]%"
+	Example: "Production to [Culture] conversion in cities changed by [+20]%"
 
 	Applicable to: Global
 
@@ -888,6 +905,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
+??? example  "Enables establishment of embassies"
+	Applicable to: Global
+
 ??? example  "Requires establishing embassies to conduct advanced diplomacy"
 	Applicable to: Global
 
@@ -1036,6 +1056,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global
 
 ??? example  "Rebel units may spawn"
+	Applicable to: Global
+
+??? example  "Cannot build [buildingFilter] buildings"
+	Example: "Cannot build [Culture] buildings"
+
 	Applicable to: Global
 
 ??? example  "[relativeAmount]% Strength"
@@ -1254,9 +1279,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Era
 
 ## Tech uniques
-??? example  "Enables establishment of embassies"
-	Applicable to: Tech
-
 ??? example  "Starting tech"
 	Applicable to: Tech
 
@@ -3218,7 +3240,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
 
-## Tutorial uniques
 ## CityState uniques
 ??? example  "Provides military units every ≈[positiveAmount] turns"
 	Example: "Provides military units every ≈[3] turns"
@@ -3952,6 +3973,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: TriggerCondition
 
+??? example  "&lt;upon losing a [mapUnitFilter] unit&gt;"
+	Example: "&lt;upon losing a [Wounded] unit&gt;"
+
+	Applicable to: TriggerCondition
+
 ??? example  "&lt;upon turn end&gt;"
 	Applicable to: TriggerCondition, UnitTriggerCondition
 
@@ -4182,6 +4208,15 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: MetaModifier
 
+??? example  "&lt;Civilopedia link [pediaLink]&gt;"
+	Allows linking a unique to any Civilopedia page when it is listed in Civilopedia normally. This overrides automatic links to objects in the unique's parameters.
+
+	Example: "&lt;Civilopedia link [Units/Settler]&gt;"
+
+	This unique is automatically hidden from users.
+
+	Applicable to: MetaModifier
+
 ??? example  "&lt;Suppress warning [validationWarning]&gt;"
 	Allows suppressing specific validation warnings. Errors, deprecation warnings, or warnings about untyped and non-filtering uniques should be heeded, not suppressed, and are therefore not accepted. Note that this can be used in ModOptions, in the uniques a warning is about, or as modifier on the unique triggering a warning - but you still need to be specific. Even in the modifier case you will need to specify a sufficiently selective portion of the warning text as parameter.
 
@@ -4215,6 +4250,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 Note that this must use the Mod name as Unciv displays it, not the Repository name.
 There is a conversion affecting dashes and leading/trailing blanks. Please make sure not to get confused.
 *[nonNegativeAmount]: This indicates a non-negative whole number, larger than or equal to zero, a '+' sign is optional.
+*[pediaLink]: A Civilopedia link in the form category/entry.
 *[policy]: The name of any policy.
 *[policyFilter]: The name of any policy, a filtering Unique, any branch (matching only the branch itself), a branch name with " Completed" appended (matches if the branch is completed), or a policy branch as `[branchName] branch` (matching all policies in that branch).
 *[positiveAmount]: This indicates a positive whole number, larger than zero, a '+' sign is optional.

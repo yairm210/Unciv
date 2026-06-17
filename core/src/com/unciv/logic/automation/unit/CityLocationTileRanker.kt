@@ -9,7 +9,6 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
-import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import yairm210.purity.annotations.Readonly
@@ -40,13 +39,12 @@ object CityLocationTileRanker {
             // Filter out tiles that we can't actually found on
             .filter { tile -> uniques.any { it.conditionalsApply(GameContext(unit = unit, tile = tile)) } }
             .filter { canSettleTile(it, unit.civ, nearbyCities) && (unit.getTile() == it || unit.movement.canMoveTo(it)) }
-        val uniqueCache = LocalUniqueCache()
         val bestTilesToFoundCity = BestTilesToFoundCity()
         val baseTileMap = HashMap<Tile, Float>()
 
         val possibleTileLocationsWithRank = possibleCityLocations
             .map {
-                var tileValue = rankTileToSettle(it, unit.civ, nearbyCities, baseTileMap, uniqueCache)
+                var tileValue = rankTileToSettle(it, unit.civ, nearbyCities, baseTileMap)
                 val distanceScore = (unit.currentTile.aerialDistanceTo(it) * distanceModifier).coerceIn(0f, 99f)
                 tileValue *= (100 - distanceScore) / 100
                 if (tileValue >= minimumValue)
@@ -89,7 +87,7 @@ object CityLocationTileRanker {
     }
 
     private fun rankTileToSettle(newCityTile: Tile, civ: Civilization, nearbyCities: Sequence<City>,
-                                 baseTileMap: HashMap<Tile, Float>, uniqueCache: LocalUniqueCache): Float {
+                                 baseTileMap: HashMap<Tile, Float>): Float {
         var tileValue = 0f
         tileValue += getDistanceToCityModifier(newCityTile, nearbyCities, civ)
 
@@ -125,7 +123,7 @@ object CityLocationTileRanker {
                 //Ideally, we shouldn't really count the center tile, as it's converted into 1 production 2 food anyways with special cases treated above, but doing so can lead to AI moving settler back and forth until forever
                 for (nearbyTile in newCityTile.getTilesAtDistance(i)) {
                     tiles++
-                    tileValue += rankTile(nearbyTile, civ, onCoast, newUniqueLuxuryResources, baseTileMap, uniqueCache) * (3 / (i + 1))
+                    tileValue += rankTile(nearbyTile, civ, onCoast, newUniqueLuxuryResources, baseTileMap) * (3 / (i + 1))
                     //Tiles close to the city can be worked more quickly, and thus should gain higher weight.
                 }
         }
@@ -164,7 +162,7 @@ object CityLocationTileRanker {
     }
 
     private fun rankTile(rankTile: Tile, civ: Civilization, onCoast: Boolean, newUniqueLuxuryResources: HashSet<TileResource>,
-                         baseTileMap: HashMap<Tile, Float>, uniqueCache: LocalUniqueCache): Float {
+                         baseTileMap: HashMap<Tile, Float>): Float {
         if (rankTile.getCity() != null) return -1f
         var locationSpecificTileValue = 0f
         // Don't settle near but not on the coast
@@ -184,7 +182,7 @@ object CityLocationTileRanker {
         if (baseTileMap.containsKey(rankTile)) return locationSpecificTileValue + baseTileMap[rankTile]!!
         if (rankTile.getOwner() != null && rankTile.getOwner() != civ) return 0f
 
-        var rankTileValue = Automation.rankStatsValue(rankTile.stats.getTileStats(null, civ, uniqueCache), civ)
+        var rankTileValue = Automation.rankStatsValue(rankTile.stats.getTileStats(null, civ), civ)
 
         if (civ.canSeeResource(resource)) {
             rankTileValue += when (resource.resourceType) {

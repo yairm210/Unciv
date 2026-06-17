@@ -257,7 +257,6 @@ class LongPriorityQueue(
         queue[j] = temp
     }
 
-    @Readonly
     fun toArray(array: LongArray) : LongArray {
         if (array.size >= size) {
             queue.copyInto(array, 0, 0, size)
@@ -268,7 +267,7 @@ class LongPriorityQueue(
         return newArray
     }
 
-    @Readonly
+    @Readonly @Suppress("purity")
     fun clone() : LongPriorityQueue {
         val c = LongPriorityQueue(size, comparator)
         queue.copyInto(c.queue, 0, size)

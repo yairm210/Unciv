@@ -134,15 +134,13 @@ class GlobalPoliticsDiagramGroup(
         }
     }
 
-    private class DiagramLegendPopup(stage: Stage, diagram: Actor) : AnimatedMenuPopup(stage, diagram.getCenterInStageCoordinates()) {
+    private class DiagramLegendPopup(stage: Stage, diagram: Actor) : AnimatedMenuPopup(stage, diagram, Align.center) {
         init {
             touchable = Touchable.enabled
             onActivation { close() }
         }
 
         companion object {
-            private fun Actor.getCenterInStageCoordinates(): Vector2 = localToStageCoordinates(Vector2(width / 2, height / 2))
-
             const val lineWidth = 3f  // a little thicker than the actual diagram
             const val lowContrastWidth = 4f
             const val lineLength = 120f

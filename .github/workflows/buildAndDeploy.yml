@@ -242,7 +242,7 @@ jobs:
           dir .github/workflows/wix-msi-files
         
       - name: Install WiX
-        run: dotnet tool install --global wix
+        run: dotnet tool install --global wix --version 5.0.2
         
       - name: Build WiX on Windows
         shell: bash
@@ -301,7 +301,7 @@ jobs:
           mv UncivDeploymentZips/Unciv-Linux64.zip deploy
           mv UncivAPK/Unciv-signed.apk deploy
           mv UncivServer/UncivServer.jar deploy
-          mv Unciv-MSI/Unciv.msi deploy
+          [ -d "Unciv-MSI" ] && mv Unciv-MSI/Unciv.msi deploy || true
 
       - name: Check if this is a real release or a test version, for Github release
         id: check-version-tag
@@ -349,11 +349,11 @@ jobs:
 
       - name: Get AUR PKGBUILD
         run: |
-          curl --silent --output PKGBUILD 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h=unciv-bin'
+          curl --silent --retry 3 --retry-delay 5 --output PKGBUILD 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h=unciv-bin'
           sed -E -e "s#(_pkgver=).*#\1${{ github.ref_name }}#" -e "s#(pkgrel=).*#\10#" -i PKGBUILD
 
       - name: Publish AUR package
-        uses: Thyrum/github-actions-deploy-aur@master
+        uses: KSXGitHub/github-actions-deploy-aur@v4.1.3
         with:
           pkgname: unciv-bin
           pkgbuild: ./PKGBUILD

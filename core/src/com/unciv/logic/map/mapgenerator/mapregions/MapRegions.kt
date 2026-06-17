@@ -24,6 +24,7 @@ import com.unciv.utils.Tag
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.random.Random
 
 class TileDataMap : HashMap<HexCoord, MapGenTileData>() {
 
@@ -371,8 +372,9 @@ class MapRegions (val ruleset: Ruleset) {
 
         // Finally assign the remaining civs randomly
         for (civ in randomCivs) {
+            val rng = civ.state.stateBasedRandom("MapRegions.assignRegions")
             // throws if regions.size < civilizations.size or if the assigning mismatched - leads to popup on newgame screen
-            val startRegion = unpickedRegions.random()
+            val startRegion = unpickedRegions.random(rng)
             logAssignRegion(true, BiasTypes.Random, civ, startRegion)
             assignCivToRegion(civ, startRegion)
             unpickedRegions.remove(startRegion)

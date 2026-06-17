@@ -29,6 +29,7 @@ import yairm210.purity.annotations.Readonly
 import java.text.DecimalFormat
 import kotlin.math.pow
 import kotlin.math.ulp
+import com.unciv.logic.automation.Timers.Companion.timeThis
 
 
 /**
@@ -309,6 +310,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
     @Readonly fun getUniques(): Sequence<Unique> = tempUniquesMap.getAllUniques()
 
     @Readonly
+    @Deprecated(message = "forEachMatchingUnique is faster. If not viable, then this can still be used",
+        replaceWith = ReplaceWith("forEachMatchingUnique"))
     fun getMatchingUniques(
         uniqueType: UniqueType,
         gameContext: GameContext = cache.state,
@@ -319,6 +322,21 @@ class MapUnit : IsPartOfGameInfoSerialization {
         )
         if (checkCivInfoUniques)
             yieldAll(civ.getMatchingUniques(uniqueType, gameContext))
+    }
+
+    @Readonly
+    fun forEachMatchingUnique(uniqueType: UniqueType, gameContext: GameContext = cache.state, op: (Unique)->Unit)
+        = forEachMatchingUnique(uniqueType, gameContext, checkCivInfoUniques = false, op)
+    @Readonly
+    fun forEachMatchingUnique(
+        uniqueType: UniqueType,
+        gameContext: GameContext = cache.state,
+        checkCivInfoUniques: Boolean,
+        op: (Unique)->Unit,
+    ) {
+        tempUniquesMap.forEachMatchingUnique(uniqueType, gameContext, op)
+        if (checkCivInfoUniques)
+            civ.forEachMatchingUnique(uniqueType, gameContext, op)
     }
 
     @Readonly
@@ -764,7 +782,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     /**
      * Update this unit's cache of viewable tiles and its civ's as well.
      */
-    fun updateVisibleTiles(updateCivViewableTiles: Boolean = true, explorerPosition: HexCoord? = null) {
+    fun updateVisibleTiles(updateCivViewableTiles: Boolean = true, explorerPosition: HexCoord? = null):Unit = timeThis("MapUnit.updateVisibleTiles") {
         val oldViewableTiles = viewableTiles
 
         viewableTiles = when {
@@ -1014,19 +1032,20 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     private fun clearEncampment(tile: Tile) {
-        tile.removeImprovement()
-
         // Notify City-States that this unit cleared a Barbarian Encampment, required for quests
+        // Do this before removing the improvement, otherwise removeImprovement would obsolete the quest
         civ.gameInfo.getAliveCityStates()
-                .forEach { it.questManager.barbarianCampCleared(civ, tile.position.toVector2()) }
+            .forEach { it.questManager.barbarianCampCleared(civ, tile.position) }
+
+        tile.removeImprovement()
 
         var goldGained =
                 civ.getDifficulty().clearBarbarianCampReward * civ.gameInfo.speed.goldCostModifier
-        
+
         for (unique in civ.getMatchingUniques(UniqueType.GoldFromEncampmentsAndCities, cache.state)) {
             goldGained *= unique.params[0].toPercent()
         }
-        
+
         civ.addGold(goldGained.toInt())
         civ.addNotification(
                 "We have captured a barbarian encampment and recovered [${goldGained.toInt()}] gold!",

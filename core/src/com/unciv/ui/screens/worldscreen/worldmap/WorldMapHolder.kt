@@ -10,8 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.scenes.scene2d.*
-import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.unciv.UncivGame
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
@@ -115,7 +113,7 @@ class WorldMapHolder(
 
     private fun addClickListener() {
         // ActivationListener-like listener to allow us to create only one listener for the entire worldmapholder instead of one per tile
-        val listener = object : ActorGestureListener(20f, 0.25f, 1.1f, Int.MAX_VALUE.toFloat()) {
+        val listener = object : UncivActorGestureListener() {
             override fun tap(event: InputEvent?, x: Float, y: Float, count: Int, button: Int) {
                 val child = tileGroupMap.hit(x, y, true) ?: return
 
@@ -378,7 +376,7 @@ class WorldMapHolder(
         
         for (spriteImage in unitSpriteSlot.spriteGroup.children.toList()) // toList because actors added remove themselves from previous parent  
             unitSpriteAndIcon.addActor(spriteImage)
-        tileGroup.parent.addActor(unitSpriteAndIcon)
+        tileGroupMap.addActor(unitSpriteAndIcon)
 
         
 
@@ -544,8 +542,7 @@ class WorldMapHolder(
             unitIconGroup.circle.color = Color.GRAY.cpy().apply { a = 0.5f }
             if (!unit.hasMovement()) unitIconGroup.color.a = 0.66f
             val clickableCircle = ClickableCircle(68f)
-            clickableCircle.touchable = Touchable.enabled
-            clickableCircle.onClick {
+            clickableCircle.onClickSuppressive {
                 worldScreen.bottomUnitTable.selectUnit(unit, Gdx.input.isShiftKeyPressed())
                 worldScreen.shouldUpdate = true
                 removeUnitActionOverlay()
@@ -564,12 +561,15 @@ class WorldMapHolder(
             table.moveBy(0f, 48f)
     }
 
+    /** Adds [actor] as a direct child of the TileGroupMap, rendered above all layer groups. */
+    fun addActorToTileGroupMap(actor: Actor) = tileGroupMap.addActor(actor)
+
     fun addOverlayOnTileGroup(group: TileGroup, actor: Actor) {
 
         actor.center(group)
         actor.x += group.x
         actor.y += group.y
-        group.parent.addActor(actor) // Add the overlay to the TileGroupMap - it's what actually displays all the tiles
+        tileGroupMap.addActor(actor) // Add directly to TileGroupMap so toFront() places it above all layer groups
         actor.toFront()
 
         actor.y += actor.height
@@ -672,15 +672,15 @@ class WorldMapHolder(
         val clampedCityButtonZoom = 1 / scaleX
         if (clampedCityButtonZoom >= 1) {
             for (tileGroup in tileGroups.values) {
-                tileGroup.layerCityButton.isTransform = false // to save on rendering time to improve framerate
+                tileGroup.layerCityButton.setButtonTransform(false) // save rendering time at normal zoom
             }
         } else if (clampedCityButtonZoom >= minZoom) {
             for (tileGroup in tileGroups.values) {
                 // ONLY set those groups that have active city buttons as transformable!
                 // This is massively framerate-improving!
-                if (tileGroup.layerCityButton.hasChildren())
-                    tileGroup.layerCityButton.isTransform = true
-                tileGroup.layerCityButton.setScale(clampedCityButtonZoom)
+                if (tileGroup.layerCityButton.hasButton())
+                    tileGroup.layerCityButton.setButtonTransform(true)
+                tileGroup.layerCityButton.setButtonScale(clampedCityButtonZoom)
             }
         }
     }

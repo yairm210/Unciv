@@ -20,11 +20,12 @@ import com.unciv.utils.Log
 import yairm210.purity.annotations.Readonly
 import kotlin.math.min
 import kotlin.random.Random
+import com.unciv.logic.automation.Timers.Companion.timeThis
 
 class TurnManager(val civInfo: Civilization) {
 
 
-    fun startTurn(progressBar: NextTurnProgress? = null) {
+    fun startTurn(progressBar: NextTurnProgress? = null):Unit = timeThis("TurnManager.startTurn") {
         if (civInfo.isSpectator()) return
 
         civInfo.threatManager.clear()
@@ -109,9 +110,10 @@ class TurnManager(val civInfo: Civilization) {
             if (!civInfo.flagsCountdown.containsKey(flag)) continue
 
             if (flag == CivFlags.CityStateGreatPersonGift.name) {
+                val rng = civInfo.state.stateBasedRandom("TurnManager.startTurnFlags")
                 val cityStateAllies: List<Civilization> =
                         civInfo.getKnownCivs().filter { it.isCityState && it.allyCiv == civInfo }.toList()
-                val givingCityState = cityStateAllies.filter { it.cities.isNotEmpty() }.randomOrNull()
+                val givingCityState = cityStateAllies.filter { it.cities.isNotEmpty() }.randomOrNull(rng)
 
                 if (cityStateAllies.isNotEmpty()) civInfo.flagsCountdown[flag] = civInfo.flagsCountdown[flag]!! - 1
 
@@ -188,7 +190,7 @@ class TurnManager(val civInfo: Civilization) {
             return
         }
 
-        val random = Random.Default
+        val random = civInfo.state.stateBasedRandom("TurnManager.doRevoltSpawn")
         val rebelCount = 1 + random.nextInt(100 + 20 * (civInfo.cities.size - 1)) / 100
         val spawnCity = civInfo.cities.maxByOrNull { random.nextInt(it.population.population + 10) } ?: return
         val spawnTile = spawnCity.getTiles().maxByOrNull { rateTileForRevoltSpawn(it) } ?: return
@@ -232,11 +234,11 @@ class TurnManager(val civInfo: Civilization) {
     
     @Readonly
     private fun getTurnsBeforeRevolt() =
-        ((civInfo.gameInfo.ruleset.modOptions.constants.baseTurnsUntilRevolt + Random.Default.nextInt(3)) 
+        ((civInfo.gameInfo.ruleset.modOptions.constants.baseTurnsUntilRevolt + civInfo.state.stateBasedRandom("TurnManager.getTurnsBeforeRevolt").nextInt(3)) 
             * civInfo.gameInfo.speed.modifier.coerceAtLeast(1f)).toInt()
 
 
-    fun endTurn(progressBar: NextTurnProgress? = null) {
+    fun endTurn(progressBar: NextTurnProgress? = null):Unit = timeThis("TurnManager.endTurn") {
         if (UncivGame.Current.settings.citiesAutoBombardAtEndOfTurn)
             NextTurnAutomation.automateCityBombardment(civInfo) // Bombard with all cities that haven't, maybe you missed one
 
@@ -276,7 +278,8 @@ class TurnManager(val civInfo: Civilization) {
             // Set turns to elections to a random number so not every city-state has the same election date
             // May be called at game start or when migrating a game from an older version
             if (civInfo.gameInfo.isEspionageEnabled() && !civInfo.hasFlag(CivFlags.TurnsTillCityStateElection.name)) {
-                civInfo.addFlag(CivFlags.TurnsTillCityStateElection.name, Random.nextInt(civInfo.gameInfo.ruleset.modOptions.constants.cityStateElectionTurns + 1))
+                val rng = civInfo.state.stateBasedRandom("TurnManager.endTurn(Espianage)")
+                civInfo.addFlag(CivFlags.TurnsTillCityStateElection.name, rng.nextInt(civInfo.gameInfo.ruleset.modOptions.constants.cityStateElectionTurns + 1))
             }
         }
 
@@ -353,13 +356,14 @@ class TurnManager(val civInfo: Civilization) {
         // Defeated civs do nothing
         if (civInfo.isDefeated())
             return
-
-        // Do stuff
+        timeThis("automateTurn") {
+            // Do stuff
         NextTurnAutomation.automateCivMoves(civInfo)
 
         // Update barbarian camps
         if (civInfo.isBarbarian && !civInfo.gameInfo.gameParameters.noBarbarians)
             civInfo.gameInfo.barbarians.updateEncampments()
+        }
     }
 
 }

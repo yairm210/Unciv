@@ -11,6 +11,8 @@ import com.unciv.logic.BackwardCompatibility.guaranteeUnitPromotions
 import com.unciv.logic.BackwardCompatibility.migrateGreatGeneralPools
 import com.unciv.logic.BackwardCompatibility.migrateToTileHistory
 import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
+import com.unciv.logic.GameInfoPreview.Companion.randomGameId
+import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.automation.civilization.BarbarianManager
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.*
@@ -29,7 +31,6 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.Speed
 import com.unciv.models.ruleset.nation.Difficulty
 import com.unciv.models.ruleset.tile.TileResource
-import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
@@ -38,11 +39,12 @@ import com.unciv.ui.screens.savescreens.Gzip
 import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.utils.DebugUtils
 import com.unciv.utils.debug
+import com.unciv.utils.pseudoRandomUuid
 import yairm210.purity.annotations.Readonly
 import java.security.MessageDigest
+import java.security.SecureRandom
 import java.time.Duration
 import java.time.Instant
-import java.util.UUID
 import java.util.*
 
 
@@ -109,7 +111,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     var oneMoreTurnMode = false
     var currentPlayer = ""
     var currentTurnStartTime = System.currentTimeMillis()
-    var gameId = UUID.randomUUID().toString() // random string
+    var gameId = randomGameId()
     var checksum = ""
     var lastUnitId = 0
 
@@ -339,10 +341,9 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     /**
      *  Advance a turn, running automation for AI players, stopping for human players
      *  @param progressBar Optional reference to UI widget either provided by [WorldScreen.nextTurn][com.unciv.ui.screens.worldscreen.WorldScreen.nextTurn] or `null` when simulating
-     *  @param shouldGainTime on a multiplayer game, if true, makes the player who's turn is ended recover time to play before risking to get forced to resign, 'false' by default 
+     *  @param shouldGainTime on a multiplayer game, if true, makes the player whose turn is ended recover time to play before risking getting forced to resign, 'false' by default 
      */
-    fun nextTurn(progressBar: NextTurnProgress? = null, shouldGainTime: Boolean = false) {
-
+    fun nextTurn(progressBar: NextTurnProgress? = null, shouldGainTime: Boolean = false): Unit = timeThis("GameInfo.nextTurn") {
         var player = currentPlayerCiv
         var playerIndex = civilizations.indexOf(player)
 
@@ -402,8 +403,9 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
             val worldScreen = UncivGame.Current.worldScreen
             // Do we need to break if player won?
-            if (simulateUntilWin && player.victoryManager.hasWon()) {
+            if (simulateUntilWin && (player.victoryManager.hasWon() || simulateMaxTurns > 0 && turns >= simulateMaxTurns)) {
                 simulateUntilWin = false
+                simulateMaxTurns = 0
                 worldScreen?.autoPlay?.stopAutoPlay()
                 break
             }
@@ -661,7 +663,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
     // All cross-game data which needs to be altered (e.g. when removing or changing a name of a building/tech)
     // will be done here, and not in Civilization.setTransients or City
-    fun setTransients() {
+    fun setTransients()  {
         tileMap.gameInfo = this
 
         // [TEMPORARY] Convert old saves to newer ones by moving base rulesets from the mod list to the base ruleset field
@@ -772,7 +774,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         combinedGlobalUniques = GlobalUniques.combine(ruleset.globalUniques, speed, difficultyObject)
     }
 
-    private fun updateCivilizationState() {
+    private fun updateCivilizationState():Unit = timeThis("GameInfo.updateCivilizationState") {
         for (civInfo in civilizations.asSequence()
             // update city-state resource first since the happiness of major civ depends on it.
             // See issue: https://github.com/yairm210/Unciv/issues/7781
@@ -792,11 +794,10 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             civInfo.cache.updateCitiesConnectedToCapital(true)
 
             // We need to determine the GLOBAL happiness state in order to determine the city stats
-            val localUniqueCache = LocalUniqueCache()
             for (city in civInfo.cities) {
-                city.cityStats.updateTileStats(localUniqueCache) // Some nat wonders can give happiness!
+                city.cityStats.updateTileStats() // Some nat wonders can give happiness!
                 city.cityStats.updateCityHappiness(
-                    city.cityConstructions.getStats(localUniqueCache)
+                    city.cityConstructions.getStats()
                 )
             }
 
@@ -814,7 +815,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
                     city.demandedResource = ""
 
                 // No uniques have changed since the cache was created, so we can still use it
-                city.cityStats.update(localUniqueCache=localUniqueCache)
+                city.cityStats.update()
             }
         }
     }
@@ -863,4 +864,8 @@ class GameInfoPreview() {
     @Readonly fun getCivilization(civID: String) = civilizations.first { it.civID == civID }
     @Readonly fun getCurrentPlayerCiv() = getCivilization(currentPlayer)
     @Readonly fun getPlayerCiv(playerId: String) = civilizations.firstOrNull { it.playerId == playerId }
+    
+    companion object {
+        fun randomGameId() = pseudoRandomUuid(SecureRandom()).toString()
+    }
 }

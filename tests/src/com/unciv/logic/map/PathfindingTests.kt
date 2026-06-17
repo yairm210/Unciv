@@ -384,7 +384,7 @@ class PathfindingTests(
 
     @Test
     fun getMovementToTilesAtPosition_civilian_alliedCivilians_pathsThrough() {
-        verticalWall(2, {tile -> testGame.addUnit("Worker", civInfo, tile)})
+        verticalWall(1, {tile -> testGame.addUnit("Worker", civInfo, tile)})
         val unit = testGame.addUnit("Worker", civInfo, originTile)
         val paths = unit.movement.getMovementToTilesAtPosition(originTile.position, 2f)
         assertTrue("getMovementToTilesAtPosition should path through allied civilians", paths.containsKey(testGame.tileMap[2,0]))

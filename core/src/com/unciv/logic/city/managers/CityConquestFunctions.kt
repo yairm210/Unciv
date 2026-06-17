@@ -4,6 +4,8 @@ import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.city.City
+import com.unciv.logic.city.City.Companion.NO_ID
+import com.unciv.logic.city.City.Companion.pseudoRandomId
 import com.unciv.logic.city.CityFlags
 import com.unciv.logic.city.CityFocus
 import com.unciv.logic.civilization.Civilization
@@ -295,6 +297,7 @@ class CityConquestFunctions(val city: City) {
         oldCiv.cities = oldCiv.cities.withoutItem(city)
         newCiv.cities = newCiv.cities.withItem(city)
         city.civ = newCiv
+        city.id = if (city.id != NO_ID) city.id else pseudoRandomId(newCiv)
         city.state = GameContext(city)
         city.hasJustBeenConquered = false
         city.turnAcquired = city.civ.gameInfo.turns

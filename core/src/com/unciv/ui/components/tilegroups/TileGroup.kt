@@ -2,10 +2,8 @@ package com.unciv.ui.components.tilegroups
 
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
-import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.ui.components.tilegroups.layers.*
 import com.unciv.utils.DebugUtils
 import kotlin.math.pow
@@ -23,7 +21,7 @@ open class TileGroup(
         3) Borders
         4) Misc: improvements, resources, yields, citizens, arrows, starting locations (editor)
         5) Unit Arts
-        6) Overlay: 
+        6) Overlay:
         7) Unit Flags
         8) City Button
     */
@@ -49,7 +47,7 @@ open class TileGroup(
     @Suppress("LeakingThis") val layerUnitArt = TileLayerUnitSprite(this, groupSize)
     @Suppress("LeakingThis") val layerUnitFlag = TileLayerUnitFlag(this, groupSize)
     @Suppress("LeakingThis") val layerCityButton = TileLayerCityButton(this, groupSize)
-    
+
     private val allLayers = listOf(
         layerTerrain,
         layerFeatures, // includes roads
@@ -67,9 +65,8 @@ open class TileGroup(
     init {
         this.setSize(groupSize, groupSize)
         this.isTransform = false // Cannot be a NonTransformGroup as this causes font-rendered terrain to be upside-down
-
-        for (layer in allLayers) this.addActor(layer)
-
+        // Layers are registered into TileMapLayer containers in TileGroupMap; they are not
+        // scene-graph children of this Group (only this Group itself lives in tileGroupLayer).
         layerTerrain.update(null)
     }
 
@@ -79,13 +76,13 @@ open class TileGroup(
             || viewingCiv.viewableTiles.contains(tile)
             || viewingCiv.isSpectator()
 
-    private fun reset(localUniqueCache: LocalUniqueCache) {
+    private fun reset() {
         layerTerrain.reset()
         layerBorders.reset()
         layerMisc.reset()
         layerResource.reset()
         layerImprovement.reset()
-        layerYield.reset(localUniqueCache)
+        layerYield.reset()
         layerOverlay.reset()
         layerUnitArt.reset()
         layerUnitFlag.reset()
@@ -95,23 +92,19 @@ open class TileGroup(
         for (layer in allLayers) layer.isVisible = isVisible
     }
 
-    open fun update(
-            viewingCiv: Civilization? = null,
-            localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)) {
+    open fun update(viewingCiv: Civilization? = null) {
         layerMisc.removeHexOutline()
         layerMisc.hideTerrainOverlay()
         layerOverlay.hideHighlight()
         layerOverlay.hideCrosshair()
         layerOverlay.hideGoodCityLocationIndicator()
-        
-        val wasPreviouslyVisible = layerTerrain.isVisible
-        
+
         // Show all layers by default
         setAllLayersVisible(true)
 
         // Do not update layers if tile is not explored by viewing player
         if (viewingCiv != null && !(isForceVisible || viewingCiv.hasExplored(tile))) {
-            reset(localUniqueCache)
+            reset()
             // If tile has explored neighbors - reveal layers partially
             if (tile.neighbors.none { viewingCiv.hasExplored(it) })
                 // Else - hide all layers
@@ -121,16 +114,8 @@ open class TileGroup(
         }
 
         removeMissingModReferences()
-        
-        for (layer in allLayers) layer.update(viewingCiv, localUniqueCache)
-        
-        if (!wasPreviouslyVisible){ // newly revealed tile!
-            layerTerrain.parent.addAction( 
-                Actions.sequence(
-                    Actions.targeting(layerTerrain, Actions.alpha(0f)),
-                    Actions.targeting(layerTerrain, Actions.fadeIn(0.5f)),
-                ))
-        }
+
+        for (layer in allLayers) layer.update(viewingCiv)
     }
 
     private fun removeMissingModReferences() {

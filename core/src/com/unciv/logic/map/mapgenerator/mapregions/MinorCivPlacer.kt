@@ -4,6 +4,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import yairm210.purity.annotations.Readonly
 import kotlin.math.min
@@ -168,7 +169,8 @@ object MinorCivPlacer {
         )
         // Fallback to a random region for civs that couldn't be placed in the wilderness
         for (unplacedCiv in civAssignedToUninhabited) {
-            regions.random().assignedMinorCivs.add(unplacedCiv)
+            val rng = unplacedCiv.state.stateBasedRandom("MinorCivPlacer.placeAssignedMinorCivs")
+            regions.random(rng).assignedMinorCivs.add(unplacedCiv)
         }
 
         // Now place the ones assigned to specific regions.
@@ -210,7 +212,8 @@ object MinorCivPlacer {
      *  Will modify both [civsToPlace] and [tileList] as it goes! */
     private fun tryPlaceMinorCivsInTiles(civsToPlace: MutableList<Civilization>, tileMap: TileMap, tileList: MutableList<Tile>, tileData: TileDataMap, ruleset: Ruleset) {
         while (tileList.isNotEmpty() && civsToPlace.isNotEmpty()) {
-            val chosenTile = tileList.random()
+            val rng = GameContext(gameInfo = tileMap.gameInfo).stateBasedRandom("MinorCivPlcer.tryPlaceMinorCivsInTiles")
+            val chosenTile = tileList.random(rng)
             tileList.remove(chosenTile)
             val data = tileData[chosenTile.position]!!
             // If the randomly chosen tile is too close to a player or a city state, discard it

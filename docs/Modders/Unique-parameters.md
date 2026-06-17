@@ -410,11 +410,15 @@ Allowed values:
     - Repeatable technologies, like Future Tech, are only counted once
 -   `Remaining [civFilter] Civilizations`
     - Example: `Only available <when number of [Remaining [City-States] Civilizations] is more than [0]>`
+-   `Worked [tileFilter] Tiles in this city`
+    - Example: `Only available <when number of [Worked [Farm] Tiles in this city] is more than [0]>`
+-   `Worked [tileFilter] Tiles`
+    - Example: `Only available <when number of [Worked [Farm] Tiles] is more than [0]>`
 -   `Owned [tileFilter] Tiles`
     - Example: `Only available <when number of [Owned [Farm] Tiles] is more than [0]>`
 -   `[tileFilter] Tiles`
     - Example: `Only available <when number of [[Desert] Tiles] is more than [0]>`
--   Resource name - From [TileResources.json](3-Map-related-JSON-files.md#tileresourcesjson)
+-   Resource name - From [TileResources.json](Mod-file-structure/3-Map-related-JSON-files.md#tileresourcesjson)
     - Example: `Only available <when number of [Iron] is more than [0]>`
     - Can be city stats or civilization stats, depending on where the unique is used
     - For example: If a unique is placed on a building, then the retrieved resources will be of the city. If placed on a policy, they will be of the civilization.

@@ -146,7 +146,7 @@ object TechnologyDescriptions {
             if (unique.isHiddenToUsers()) continue
             yield(
                 when {
-                    unique.type == UniqueType.EnablesCivWideStatProduction ->
+                    unique.type == UniqueType.EnablesStatProduction ->
                         ImageGetter.getConstructionPortrait(unique.params[0], techIconSize)
                     else ->
                         ImageGetter.getUniquePortrait(unique.text, techIconSize)

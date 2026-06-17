@@ -1,25 +1,18 @@
 package com.unciv.ui.components.tilegroups
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
-import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.darken
 
 
 class WorldTileGroup(tile: Tile, tileSetStrings: TileSetStrings)
     : TileGroup(tile,tileSetStrings) {
 
-    init {
-        layerMisc.touchable = Touchable.disabled
-    }
-
-    override fun update(viewingCiv: Civilization?, localUniqueCache: LocalUniqueCache) {
-        super.update(viewingCiv, localUniqueCache)
+    override fun update(viewingCiv: Civilization?) {
+        super.update(viewingCiv)
 
         updateWorkedIcon(viewingCiv!!)
     }
@@ -44,8 +37,9 @@ class WorldTileGroup(tile: Tile, tileSetStrings: TileSetStrings)
 
         if (icon != null) {
             icon.setSize(20f, 20f)
-            icon.center(this)
-            icon.x += 20f
+            // Position absolutely: tile origin (x,y) + tile-local centre + rightward offset
+            icon.x = x + (width - 20f) / 2 + 20f
+            icon.y = y + (height - 20f) / 2
             layerMisc.addWorkedIcon(icon)
         }
     }

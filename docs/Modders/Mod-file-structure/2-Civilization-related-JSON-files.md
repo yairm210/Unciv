@@ -64,7 +64,7 @@ Each nation has the following structure:
 | cityStateType           | String                                                              | none     | Distinguishes major civilizations from city states (must be in [CityStateTypes.json](#citystatetypesjson))                                      |
 | startBias               | List of strings                                                     | empty    | Zero or more of: [terrainFilter](../Unique-parameters.md#terrainfilter) or "Avoid [terrainFilter]". [^S]                                        |
 | preferredVictoryType    | String                                                              | Neutral  | The victory type major civilizations will pursue (need not be specified in [VictoryTypes.json](5-Miscellaneous-JSON-files.md#victorytypesjson)) |
-| personality             | String                                                              | none     | The name of the personality specified in [Personalities.json](#personalitiesjson)                                                               |
+| personality             | String                                                              | none     | The name of the personality specified in [Personalities.json](#personalitiesjson) [^P]                                                          |
 | favoredReligion         | String                                                              | none     | The religion major civilization will choose if available when founding a religion. Must be in [Religions.json](#religionsjson)                  |
 | startIntroPart1         | String                                                              | none     | Introductory blurb shown to Player on game start... [^V]                                                                                        |
 | startIntroPart2         | String                                                              | none     | ... second paragraph. ___NO___ "TBD"!!! Leave empty to skip that alert.                                                                         |
@@ -105,6 +105,8 @@ regions" and startBias is processed differently (but you can expect single-entry
 best).
 
 [^V]: See [Supply Leader Voices](../Images-and-Audio.md#supply-leader-voices)
+
+[^P]: Personalities for city-states work differently. The default chooses one randomly, but a mod can also specify one of Friendly, Neutral, Hostile or Irrational (case-sensitive).
 
 ## Personalities.json
 
@@ -224,7 +226,7 @@ Each policy branch has the following structure:
 
 The "priorities" object defines the priority major civilizations' AI give to a policy branch. The AI
 chooses the policy branch with the highest sum of the peferred victory type listed here and the
-number flisted in the personality's priority. If two or more candidate branches have the same
+number listed in the personality's priority. If two or more candidate branches have the same
 priority, the AI chooses a random branch among the candidates.
 
 The object maps victory types to priority values for the major civilization using strings and

@@ -10,7 +10,6 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.toHexCoord
-import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.utils.withItem
@@ -90,10 +89,10 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
     }
 
     @Readonly
-    fun getGoldCostOfTile(tile: Tile): Int {
+    fun getGoldCostOfTile(tile: Tile, extraTiles: Int = 0): Int {
         val baseCost = 50
         val distanceFromCenter = tile.aerialDistanceTo(city.getCenterTile())
-        var cost = baseCost * (distanceFromCenter - 1) + tilesClaimed() * 5.0
+        var cost = baseCost * (distanceFromCenter - 1) + (tilesClaimed() + extraTiles) * 5.0
 
         cost *= city.civ.gameInfo.speed.goldCostModifier
 
@@ -116,9 +115,8 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         // or selecting all possible tiles and only choosing one when the border expands.
         // But since the order in which tiles are selected in distance is kinda random anyways,
         // this is fine.
-        val localUniqueCache = LocalUniqueCache()
         return getChoosableTiles().minByOrNull {
-            Automation.rankTileForExpansion(it, city, localUniqueCache)
+            Automation.rankTileForExpansion(it, city)
         }
     }
 
@@ -185,8 +183,8 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
             tile.getCity()!!.expansion.relinquishOwnership(tile)
 
         if (tile.improvement == Constants.barbarianEncampment)
-            tile.setImprovementBasic(null)
-            
+            tile.removeImprovement()
+
         city.tiles = city.tiles.withItem(tile.position)
         tile.setOwningCity(city)
         city.population.autoAssignPopulation()
