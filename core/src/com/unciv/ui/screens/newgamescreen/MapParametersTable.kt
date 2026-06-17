@@ -143,19 +143,19 @@ class MapParametersTable(
         }
     }
 
-    internal fun generateExampleMap(){
+    internal fun generateExampleMap() {
         cancelBackgroundJobs()
         val generation = ++exampleMapGeneration
         val ruleset = if (previousScreen is NewGameScreen) previousScreen.ruleset.clone() else RulesetCache.getVanillaRuleset()
         val mapParametersForExample = if (forMapEditor) mapParameters else mapParameters.clone().apply { seed = 0 }
         exampleMapJob = Concurrency.run("Generate example map") {
             val exampleMap = MapGenerator(ruleset).generateMap(mapParametersForExample, GameParameters())
-            if (!isActive || generation != exampleMapGeneration) return@run
+            if (!isActive) return@run
             Concurrency.runOnGLThread {
                 if (generation != exampleMapGeneration) return@runOnGLThread
                 mapTypeExample.clear()
                 val mapPreview = LoadMapPreview(exampleMap, maxMapSize, maxMapSize)
-                if (!forMapEditor){
+                if (!forMapEditor) {
                     val label = "Example map".toLabel()
                     label.centerX(mapPreview)
                     label.y = mapPreview.height - label.height - 10f
