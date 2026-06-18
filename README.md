@@ -1,4 +1,5 @@
 # Unciv - Civ V remake for Android & Desktop
+**NOTE:** This is not the official version of Unciv. This is a language test variation created by SpideyBash4116 for languages I added.
 
 ![](/extraImages/GithubPreviewImage.jpg)
 
