@@ -61,9 +61,9 @@ class MapSize private constructor(
     @Suppress("unused")
     private constructor(radius: Int, width: Int, height: Int) : this(
         custom, radius, width, height,
-        inferPredefinedProperty(HexMath.getEquivalentHexagonalRadius(width, height), Predefined::techCostMultiplier),
-        inferPredefinedProperty(HexMath.getEquivalentHexagonalRadius(width, height), Predefined::techCostPerCityModifier),
-        inferPredefinedProperty(HexMath.getEquivalentHexagonalRadius(width, height), Predefined::policyCostPerCityModifier)
+        inferPredefinedProperty(radius, Predefined::techCostMultiplier),
+        inferPredefinedProperty(radius, Predefined::techCostPerCityModifier),
+        inferPredefinedProperty(radius, Predefined::policyCostPerCityModifier)
     )
     
     constructor(radius: Int) : this(radius, 0, 0) {
