@@ -58,6 +58,7 @@ enum class LocaleCode(
     Lithuanian("lt-LT"),
     Malay("ms-MY"),
     Maltese("mt-MT"),
+    Navajo("nv-US"),
     Norwegian("no-NO"),
     NorwegianNynorsk("nn-NO", unused = true),
     PersianPinglishDIN("fa-IR", languageName = "Persian_(Pinglish-DIN)"), // These might just fall back to default
