@@ -267,7 +267,6 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             tile.naturalWonder = mirrorTile.naturalWonder
             tile.setTerrainFeatures(mirrorTile.terrainFeatures)
             tile.tileResource = mirrorTile.tileResource
-            tile.resourceAmount = mirrorTile.resourceAmount
             tile.setImprovementBasic(mirrorTile.tileImprovement)
             
             for (neighbor in tile.neighbors){
@@ -277,10 +276,9 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             }
         }
 
-        //if (map.mapParameters.mirroring == MirroringType.none) return
+        if (map.mapParameters.mirroring == MirroringType.none) return
         for (tile in map.values) {
-            copyTile(tile, MirroringType.leftright)
-            //copyTile(tile, map.mapParameters.mirroring)
+            copyTile(tile, map.mapParameters.mirroring)
         }
     }
 
