@@ -17,7 +17,6 @@ import com.unciv.UncivGame
 import com.unciv.logic.battle.ICombatant
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.map.HexMath
-import com.unciv.logic.map.toVector2
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.tilegroups.TileSetStrings
 import com.unciv.ui.components.widgets.ShadowedLabel
@@ -180,7 +179,7 @@ object BattleTableHelpers {
         val actorsToMove = getMapActorsForCombatant(attacker).toList()
 
         val attackVectorHexCoords = defender.getTile().position.minus(attacker.getTile().position)
-        val attackVectorWorldCoords = HexMath.hex2WorldCoords(attackVectorHexCoords).toVector2()
+        val attackVectorWorldCoords = HexMath.hex2WorldCoords(attackVectorHexCoords)
             .nor()  // normalize vector to length of "1"
             .scl(moveActorsDisplacement)
 
