@@ -1,3 +1,17 @@
+## 4.20.15
+
+Improvements that cost stockpiled resources do so when starting construction, not on end, similar to buildings and units
+
+Memory reduction for large maps
+
+AI in Prince difficulty get no unit cost reduction (1:1 with human players)
+
+Require CreatesOneImprovement targets be owned by constructing city - By superdusto
+
+Resource overview tab improvements - By SomeTroglodyte  
+
+Modding: Fixed Personality uniques validation - By mvanhorn
+
 ## 4.20.14
 
 Fix "black screen on next turn button"

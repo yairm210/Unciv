@@ -383,8 +383,11 @@ object HexMath {
 //
 //}
 
-/** Required for ser/deser since the stupid json parser can't handle the inline ints -_-  */
-@Suppress("RemoveRedundantQualifierName")
+/**
+ *  Holds a position on our hexagon-based [TileMap].
+ *  * This data class is required for serialization/deserialization, see [InlineHexCoord].
+ */
+@Suppress("RemoveRedundantQualifierName") // `HexCoord.of()` reads better than `of()`
 data class HexCoord(val x: Int = 0, val y: Int = 0) {
 
     @Pure fun plus(hexCoord: HexCoord): HexCoord = HexCoord.of(x + hexCoord.x, y + hexCoord.y)
@@ -441,10 +444,18 @@ data class HexCoord(val x: Int = 0, val y: Int = 0) {
 }
 
 @JvmInline
-/** When we need to create a lot of coords we prefer to use this implementation - since it's inline it's passed around as as int
-    and doesn't require memory allocation or memory access */
+/**
+ *  Alternate implementation of [HexCoord], currently unused for reasons of serialization/backward compatibility.
+ *
+ *  When we need to create a lot of coords we would prefer to use this implementation -
+ *  since it's inline it's passed around as an int and doesn't require memory allocation or memory access.
+ *
+ *  * Java reflection will see a [InlineHexCoord] member fields as [Int], so Gdx [Json] has no chance to map the specific type.
+ *  * That limitation does not hold for certain collections - e.g. an ArrayList<InlineHexCoord> will not have its element type
+ *    erased, and Gdx _will_ see it and pass it down, allowing the type to be recognized for [Json.setSerializer].
+ */
 value class InlineHexCoord(val coords: Int = 0) {
-    // x value is stored in the 16 bits, and y value in the bottom 16 bits, allowing range -32768 to 32767
+    // x value is stored in the top 16 bits, and y value in the bottom 16 bits, allowing range -32768 to 32767
 
     val x: Int
         get() = coords shr 16
@@ -466,5 +477,3 @@ value class InlineHexCoord(val coords: Int = 0) {
 }
 
 @Pure fun Vector2.toHexCoord() = HexCoord.of(this.x.toInt(), this.y.toInt())
-@Pure fun Vector2.toVector2() = this // compatibility
-@Pure fun Vector2.asSerializable() = HexCoord(x.toInt(),y.toInt())
