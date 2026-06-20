@@ -50,7 +50,7 @@ abstract class TileLayer(val tileGroup: TileGroup, val size: Float) {
 
     protected fun removeOwnedActor(actor: Actor) {
         if (_ownedActors == null) return
-        if (!_ownedActors!!.remove(actor))
+        if (!_ownedActors!!.remove(actor)) return
         // parentMapLayer handles removal when attached; actor.remove() handles the
         // standalone case where the actor lives directly under tileGroup.
         if (parentMapLayer != null) parentMapLayer!!.removeActor(actor)
