@@ -1083,6 +1083,15 @@ class Tile : IsPartOfGameInfoSerialization {
 
     fun startWorkingOnImprovement(improvement: TileImprovement, civInfo: Civilization, unit: MapUnit) {
         if (isMarkedForCreatesOneImprovement()) return
+        
+        val gameContext = GameContext(civInfo, unit = unit, tile = this)
+        for (unique in improvement.getMatchingUniques(UniqueType.CostsResources, gameContext)) {
+            val resource = ruleset.tileResources[unique.params[1]] ?: continue
+            var amount = unique.params[0].toInt()
+            if (unique.isModifiedByGameSpeed()) amount = (amount * civInfo.gameInfo.speed.modifier).toInt()
+            civInfo.gainStockpiledResource(resource, -amount)
+        }
+        
         improvementQueue.clear()
         queueImprovement(improvement, civInfo, unit)
     }
