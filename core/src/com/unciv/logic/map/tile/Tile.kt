@@ -38,7 +38,6 @@ import kotlin.collections.HashSet
 import kotlin.math.abs
 import kotlin.math.min
 import kotlin.random.Random
-import kotlin.sequences.firstOrNull
 
 class Tile : IsPartOfGameInfoSerialization {
     //region Serialized fields
@@ -1085,13 +1084,11 @@ class Tile : IsPartOfGameInfoSerialization {
         if (isMarkedForCreatesOneImprovement()) return
         
         val gameContext = GameContext(civInfo, unit = unit, tile = this)
-        for (unique in improvement.getMatchingUniques(UniqueType.CostsResources, gameContext)) {
-            val resource = ruleset.tileResources[unique.params[1]] ?: continue
-            var amount = unique.params[0].toInt()
-            if (unique.isModifiedByGameSpeed()) amount = (amount * civInfo.gameInfo.speed.modifier).toInt()
+        for ((resourceName, amount) in improvement.getStockpiledResourceRequirements(gameContext)) {
+            val resource = ruleset.tileResources[resourceName] ?: continue
             civInfo.gainStockpiledResource(resource, -amount)
         }
-        
+
         improvementQueue.clear()
         queueImprovement(improvement, civInfo, unit)
     }
