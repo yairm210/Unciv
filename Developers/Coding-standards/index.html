@@ -1169,10 +1169,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#remove-trailing-space-before-commit-non-translation" class="md-nav__link">
+  <a href="#exit-early" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Remove trailing space before commit (non-Translation)
+        Exit Early
       
     </span>
   </a>
@@ -1180,10 +1180,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#dont-use-let-and" class="md-nav__link">
+  <a href="#dont-use-let-and-in-multiline-functions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Don't use .let{} and ?:
+        Don't use .let{} and ?: in multiline functions
       
     </span>
   </a>
@@ -1191,10 +1191,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#foritem-in-list-and-not-listforeach" class="md-nav__link">
+  <a href="#for-item-in-list-and-not-listforeach" class="md-nav__link">
     <span class="md-ellipsis">
       
-        for(item in list) and not list.forEach{}
+        for (item in list) and not list.forEach{}
       
     </span>
   </a>
@@ -1206,6 +1206,17 @@
     <span class="md-ellipsis">
       
         Avoid premature abstraction
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#remove-trailing-space-before-commit-non-translation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Remove trailing space before commit (non-Translation)
       
     </span>
   </a>
@@ -1811,10 +1822,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#remove-trailing-space-before-commit-non-translation" class="md-nav__link">
+  <a href="#exit-early" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Remove trailing space before commit (non-Translation)
+        Exit Early
       
     </span>
   </a>
@@ -1822,10 +1833,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#dont-use-let-and" class="md-nav__link">
+  <a href="#dont-use-let-and-in-multiline-functions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Don't use .let{} and ?:
+        Don't use .let{} and ?: in multiline functions
       
     </span>
   </a>
@@ -1833,10 +1844,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#foritem-in-list-and-not-listforeach" class="md-nav__link">
+  <a href="#for-item-in-list-and-not-listforeach" class="md-nav__link">
     <span class="md-ellipsis">
       
-        for(item in list) and not list.forEach{}
+        for (item in list) and not list.forEach{}
       
     </span>
   </a>
@@ -1848,6 +1859,17 @@
     <span class="md-ellipsis">
       
         Avoid premature abstraction
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#remove-trailing-space-before-commit-non-translation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Remove trailing space before commit (non-Translation)
       
     </span>
   </a>
@@ -1877,17 +1899,22 @@
 <h1 id="coding-standards">Coding standards</h1>
 <p>As an open-source project, there will be a lot of eyes on our code.</p>
 <p>The main purpose of having a coding standard is for the code to be as immediately readable as possible to as many potential contributors, and hence most of it focuses on defaulting to coding structures that exist in other similar languages (Java, C#) when possible.</p>
+<h2 id="exit-early">Exit Early</h2>
+<p>Check conditions where the function should exit at the top, and just <code>return</code>.</p>
+<p>This both reduces nesting and clarifies the flow of the function - "if we got this far we don't need to worry about X"</p>
+<h2 id="dont-use-let-and-in-multiline-functions">Don't use <code>.let{}</code> and <code>?:</code> in multiline functions</h2>
+<p>Kotlin is made greater for being strict with nullability. Don't let this fact confuse people new to it. These can be simply replaced by <code>if(x!=null)</code> which is much more readable. They all probably compile to the same bytecode anyway, so when in doubt - readability.</p>
+<p>If it's a single-line function anyway, then fine, I won't be pedantic</p>
+<h2 id="for-item-in-list-and-not-listforeach"><code>for (item in list)</code> and not <code>list.forEach{}</code></h2>
+<p>For loops go waaaay back, forEach doesn't.</p>
+<p>As above, if it's a single-line function I'm less pedantic.</p>
+<h2 id="avoid-premature-abstraction">Avoid premature abstraction</h2>
+<p>There's no need to create an interface if there is only one implementation of that interface. Doing so obfuscates the actual code that's running and increases the Time To Relevant Code. If abstraction becomes necessary later, we can always do it later.</p>
 <h2 id="remove-trailing-space-before-commit-non-translation">Remove trailing space before commit (non-Translation)</h2>
 <p>Trailing spaces are indent characters represented as <code>..</code> at the start of line. Android Studio always defaults to create similar indents as previous lines. Thus on attempts to create a blank line (in a code block), it produces trailing space character. Unchecking <code>Remove trailing spaces on [..]</code> is necessary for translation part of project but these characters creates annoying code merges.</p>
 <p>Settings &gt; Editor &gt; General &gt; Appearence &gt; Check <code>Show whitespaces</code> and remove the <code>..</code> characters.
 <img alt="image" src="../../assets/show_whitespace.png" />
 <img alt="gif" src="../../assets/trailing_space.gif" /></p>
-<h2 id="dont-use-let-and">Don't use <code>.let{}</code> and <code>?:</code></h2>
-<p>Kotlin is made greater for being strict with nullability. Don't let this fact confuse people new to it. These can be simply replaced by <code>if(x!=null)</code> which is much more readable. They all probably compile to the same bytecode anyway, so when in doubt - readability.</p>
-<h2 id="foritem-in-list-and-not-listforeach"><code>for(item in list)</code> and not <code>list.forEach{}</code></h2>
-<p>For loops go waaaay back, forEach doesn't. As an added bonus, I'm pretty sure that because forEach accepts a function parameter, then when debugging it won't automatically step into these lines, unlike for.</p>
-<h2 id="avoid-premature-abstraction">Avoid premature abstraction</h2>
-<p>There's no need to create an interface if there is only one implementation of that interface. Doing so obfuscates the actual code that's running and increases the Time To Relevant Code. If abstraction becomes necessary later, we can always do it later.</p>
 
 
 
