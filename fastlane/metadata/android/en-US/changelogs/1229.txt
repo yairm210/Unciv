@@ -1,0 +1,20 @@
+
+
+Unify resource requirements of "deduct" and "check"
+
+Resolved  - Improvements that cost stockpiled resources do so when starting construction, not on end, similar to buildings and units
+
+chore(docs): Exit early. This is *such* a basic rule that I didn't even think to include it, but many PRs have shown it's one of my most recurring comments
+
+Lazy-initialize the ownedActors in TileLayer, saving ~9% of map memory :)
+
+Require CreatesOneImprovement targets be owned by constructing city - By superdusto
+
+By SomeTroglodyte:
+- Improve and fix ResourcesOverviewTab 
+- Match "translating" wiki to  changes 
+- HexCoord linting 
+
+fix: Validate Personality uniques instead of blanket \"not supported\" warning - By mvanhorn
+
+Fix incorrect resource quantities on mirrored maps - By unciv-loof
