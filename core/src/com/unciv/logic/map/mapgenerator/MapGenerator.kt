@@ -267,6 +267,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             tile.naturalWonder = mirrorTile.naturalWonder
             tile.setTerrainFeatures(mirrorTile.terrainFeatures)
             tile.tileResource = mirrorTile.tileResource
+            tile.resourceAmount = mirrorTile.resourceAmount
             tile.setImprovementBasic(mirrorTile.tileImprovement)
             
             for (neighbor in tile.neighbors){
