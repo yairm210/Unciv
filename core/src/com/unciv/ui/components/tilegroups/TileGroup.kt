@@ -1,9 +1,7 @@
 package com.unciv.ui.components.tilegroups
 
 import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.ui.components.tilegroups.layers.*
@@ -23,7 +21,7 @@ open class TileGroup(
         3) Borders
         4) Misc: improvements, resources, yields, citizens, arrows, starting locations (editor)
         5) Unit Arts
-        6) Overlay: 
+        6) Overlay:
         7) Unit Flags
         8) City Button
     */
@@ -49,7 +47,7 @@ open class TileGroup(
     @Suppress("LeakingThis") val layerUnitArt = TileLayerUnitSprite(this, groupSize)
     @Suppress("LeakingThis") val layerUnitFlag = TileLayerUnitFlag(this, groupSize)
     @Suppress("LeakingThis") val layerCityButton = TileLayerCityButton(this, groupSize)
-    
+
     private val allLayers = listOf(
         layerTerrain,
         layerFeatures, // includes roads
@@ -67,9 +65,8 @@ open class TileGroup(
     init {
         this.setSize(groupSize, groupSize)
         this.isTransform = false // Cannot be a NonTransformGroup as this causes font-rendered terrain to be upside-down
-
-        for (layer in allLayers) this.addActor(layer)
-
+        // Layers are registered into TileMapLayer containers in TileGroupMap; they are not
+        // scene-graph children of this Group (only this Group itself lives in tileGroupLayer).
         layerTerrain.update(null)
     }
 
@@ -101,9 +98,7 @@ open class TileGroup(
         layerOverlay.hideHighlight()
         layerOverlay.hideCrosshair()
         layerOverlay.hideGoodCityLocationIndicator()
-        
-        val wasPreviouslyVisible = layerTerrain.isVisible
-        
+
         // Show all layers by default
         setAllLayersVisible(true)
 
@@ -119,16 +114,8 @@ open class TileGroup(
         }
 
         removeMissingModReferences()
-        
+
         for (layer in allLayers) layer.update(viewingCiv)
-        
-        if (!wasPreviouslyVisible){ // newly revealed tile!
-            layerTerrain.parent.addAction( 
-                Actions.sequence(
-                    Actions.targeting(layerTerrain, Actions.alpha(0f)),
-                    Actions.targeting(layerTerrain, Actions.fadeIn(0.5f)),
-                ))
-        }
     }
 
     private fun removeMissingModReferences() {

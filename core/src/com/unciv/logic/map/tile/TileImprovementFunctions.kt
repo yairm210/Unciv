@@ -186,12 +186,17 @@ class TileImprovementFunctions(val tile: Tile) {
             city.civ.cache.updateCivResources()
             city.reassignPopulationDeferred()
         }
-        
+
         if (improvement == null) {
+            val wasEncampment = tile.improvement == Constants.barbarianEncampment
             tile.improvementIsPillaged = false
             tile.setImprovementBasic(null)
             updateVisibility()
             updateCity()
+            if (!wasEncampment) return
+            // Any barbarian encampment cleared outside MapUnit.clearEncampment should obsolete ClearBarbarianCamp quests
+            for (cityState in tile.tileMap.gameInfo.getAliveCityStates())
+                cityState.questManager.handleObsoleteGlobalQuests()
             return
         }
 
@@ -329,15 +334,19 @@ class TileImprovementFunctions(val tile: Tile) {
 
     /** Marks tile as target tile for a building with a [UniqueType.CreatesOneImprovement] unique */
     fun markForCreatesOneImprovement(improvement: String) {
-        tile.stopWorkingOnImprovement()
+        tile.improvementQueue.clear()
         tile.queueImprovement(improvement, -1)
     }
 
-    /** Un-Marks a tile as target tile for a building with a [UniqueType.CreatesOneImprovement] unique,
-     *  and ensures that matching queued buildings are removed. */
-    fun removeCreatesOneImprovementMarker() {
+    /** Un-Marks a tile as target tile for a building with a [UniqueType.CreatesOneImprovement] unique.
+     *  @param removeConstruction whether to also remove the matching queued building. */
+    fun removeCreatesOneImprovementMarker(removeConstruction: Boolean = true) {
         if (!tile.isMarkedForCreatesOneImprovement()) return
-        tile.owningCity?.cityConstructions?.removeCreateOneImprovementConstruction(tile.improvementInProgress!!)
-        tile.stopWorkingOnImprovement()
+        val improvementInProgress = checkNotNull(tile.improvementInProgress) {
+            "Cannot remove ${UniqueType.CreatesOneImprovement.name} marker from ${tile.position} without an improvement in progress"
+        }
+        tile.improvementQueue.clear()
+        if (removeConstruction)
+            tile.owningCity?.cityConstructions?.removeCreateOneImprovementConstruction(improvementInProgress)
     }
 }

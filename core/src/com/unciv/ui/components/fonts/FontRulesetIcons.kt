@@ -39,7 +39,7 @@ object FontRulesetIcons {
         nextUnusedCharacterNumber = UNUSED_CHARACTER_CODES_START
 
         fun addChar(objectName: String, objectActor: Actor) {
-            if (nextUnusedCharacterNumber > UNUSED_CHARACTER_CODES_END) return
+            if (nextUnusedCharacterNumber > UNUSED_CHARACTER_CODES_END || objectName.isEmpty()) return
             val char = Char(nextUnusedCharacterNumber)
             nextUnusedCharacterNumber++
             rulesetObjectNameToChar[objectName] = char

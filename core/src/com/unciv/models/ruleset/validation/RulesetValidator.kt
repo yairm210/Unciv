@@ -8,12 +8,15 @@ import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.logic.map.tile.RoadStatus
+import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.EventChoice
 import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.RulesetFile
+import com.unciv.models.ruleset.RulesetName
 import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.nation.getContrastRatio
@@ -119,6 +122,9 @@ open class RulesetValidator protected constructor(
         addDifficultyErrors(lines)
         addEventErrors(lines)
         addCityStateTypeErrors(lines)
+
+        addTranslationNameCollisionWarnings(lines)
+        addEmptyNamesErrors(lines)
 
         initTextureNamesCache(lines)
 
@@ -523,6 +529,79 @@ open class RulesetValidator protected constructor(
                         RulesetErrorSeverity.Warning, sourceObject = null
                     )
         }
+    }
+
+    private fun addTranslationNameCollisionWarnings(lines: RulesetErrorList) {
+        val translatableNames = ruleset.allNames().toList()
+
+        val builtInRulesetNames = BaseRuleset.entries.map { it.fullName }.toSet()
+        // Base rulesets intentionally reuse a few display names in different source types:
+        // "Scout" is both a BaseUnit and UnitType, "Settler" is a BaseUnit and Difficulty,
+        // and some great person names appear in both UnitNameGroups and generated unit names.
+        val knownBenignSourceCollisions = setOf(
+            setOf("BaseUnit", "UnitType"),
+            setOf("BaseUnit", "Difficulty"),
+            setOf("BaseUnit", "Difficulty", "Tutorial"),
+            setOf("BaseUnit", "UnitNameGroup"),
+            setOf("Personality", "UnitNameGroup.unitNames"),
+            setOf("Specialist", "UnitNameGroup")
+        )
+
+        val duplicateNames = translatableNames
+            .groupBy { it.name }
+            .filter { (_, names) -> shouldReportTranslationNameCollision(names, builtInRulesetNames, knownBenignSourceCollisions) }
+            .mapValues { (_, names) -> names.map { it.source }.distinct().sorted() }
+            .toSortedMap()
+
+        for ((name, sources) in duplicateNames) {
+            lines.add(
+                "The name \"$name\" is used by several ruleset entries (${sources.joinToString()}) and may cause translation problems.",
+                RulesetErrorSeverity.WarningOptionsOnly,
+                sourceObject = null
+            )
+        }
+    }
+
+    private fun shouldReportTranslationNameCollision(
+        names: List<RulesetName>,
+        builtInRulesetNames: Set<String>,
+        knownBenignSourceCollisions: Set<Set<String>>
+    ): Boolean {
+        val sourceTypes = names.map { it.source }.toSet()
+        if (sourceTypes.size < 2) return false
+
+        val origins = names.map { it.originRuleset }
+        if (isCollisionWithinSingleBuiltInRuleset(origins, builtInRulesetNames)) return false
+        if (isKnownBenignBuiltInSourceCollision(sourceTypes, origins, builtInRulesetNames, knownBenignSourceCollisions)) return false
+
+        return true
+    }
+
+    private fun isCollisionWithinSingleBuiltInRuleset(
+        origins: List<String>,
+        builtInRulesetNames: Set<String>
+    ): Boolean {
+        if (origins.any { it.isEmpty() }) return false
+        val distinctOrigins = origins.toSet()
+        return distinctOrigins.size == 1 && distinctOrigins.single() in builtInRulesetNames
+    }
+
+    private fun isKnownBenignBuiltInSourceCollision(
+        sourceTypes: Set<String>,
+        origins: List<String>,
+        builtInRulesetNames: Set<String>,
+        knownBenignSourceCollisions: Set<Set<String>>
+    ): Boolean {
+        return sourceTypes in knownBenignSourceCollisions
+            && origins.all { it in builtInRulesetNames }
+    }
+
+    private fun addEmptyNamesErrors(lines: RulesetErrorList) {
+        val emptyNameObjects = ruleset.allRulesetObjects()
+            .filter { it.name.isEmpty() && it !is EventChoice }
+            .toList()
+        for (obj in emptyNameObjects)
+            lines.add("There's a ${obj::class.simpleName} with an empty name in ${obj.originRuleset}", RulesetErrorSeverity.Error, obj)
     }
 
     //endregion

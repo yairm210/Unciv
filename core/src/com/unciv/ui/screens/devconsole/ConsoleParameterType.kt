@@ -42,6 +42,7 @@ internal enum class ConsoleParameterType(
     boolean( { listOf("true", "false") }),
     diplomacyFlag( { DiplomacyFlags.entries.map { it.name } }),
     diplomaticModifier( { DiplomaticModifiers.entries.map { it.name } }),
+    newCivName({ ruleset.nations.keys.filterNot { civilizations.any { civ -> civ.nation.name == it } } }),
     ;
 
     private fun getOptions(console: DevConsolePopup) = console.gameInfo.getOptions()

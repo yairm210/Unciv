@@ -64,6 +64,10 @@ class TileGroupMap<T: TileGroup>(
      *  Used by the world-wrap draw path to reposition tile-level actors. */
     private val allMapLayers: List<Group>
 
+    /** TileGroups in the same sorted order used for allMapLayers registration,
+     *  so world-wrap can reposition the click-target by index. */
+    private val sortedTileGroups: List<T>
+
     init {
 
         for (tileGroup in tileGroups) {
@@ -108,7 +112,7 @@ class TileGroupMap<T: TileGroup>(
         val borderMapLayer      = TileMapLayer<TileLayerBorders>(numberOfTilegroups)
         val resourceMapLayer    = TileMapLayer<TileLayerResource>(numberOfTilegroups, actable = true)
         val improvementMapLayer = TileMapLayer<TileLayerImprovement>(numberOfTilegroups, actable = true)
-        // TileLayerMisc.hit() may delegate to workedIcon, so the container must forward touches
+        // TileLayerMisc.workedIcon may receive touches, so the container must forward them
         val miscMapLayer        = TileMapLayer<TileLayerMisc>(numberOfTilegroups, touchable = true)
         val yieldMapLayer       = TileMapLayer<TileLayerYield>(numberOfTilegroups)
         val unitSpriteMapLayer  = TileMapLayer<TileLayerUnitSprite>(numberOfTilegroups)
@@ -126,27 +130,32 @@ class TileGroupMap<T: TileGroup>(
             override fun draw(batch: Batch, parentAlpha: Float) {}
         }
         val unitFlagMapLayer    = TileMapLayer<TileLayerUnitFlag>(numberOfTilegroups, actable = true)
-        // TileLayerCityButton has Touchable.childrenOnly internally, so the container must forward touches
+        // CityButton wrapper Groups are Touchable.childrenOnly, so the container must forward touches
         val cityButtonMapLayer  = TileMapLayer<TileLayerCityButton>(numberOfTilegroups, actable = true, touchable = true)
 
         // Apparently the sortedByDescending is kinda memory-intensive because it needs to sort ALL the tiles
         //  So instead we group by and then sort on the groups
         // Profiling is a bit iffy if this is actually better but...probably?
-        for (group in tileGroups.groupBy { it.tile.position.x + it.tile.position.y }
-            .entries.sortedByDescending { it.key }.flatMap { it.value }) {
-            // now, we steal the subgroups from all the tilegroups, that's how we form layers!
-            terrainMapLayer.add(group.layerTerrain.apply { setPosition(group.x, group.y) })
-            featureMapLayer.add(group.layerFeatures.apply { setPosition(group.x, group.y) })
-            borderMapLayer.add(group.layerBorders.apply { setPosition(group.x, group.y) })
-            resourceMapLayer.add(group.layerResource.apply { setPosition(group.x, group.y) })
-            improvementMapLayer.add(group.layerImprovement.apply { setPosition(group.x, group.y) })
-            miscMapLayer.add(group.layerMisc.apply { setPosition(group.x, group.y) })
-            yieldMapLayer.add(group.layerYield.apply { setPosition(group.x, group.y) })
-            unitSpriteMapLayer.add(group.layerUnitArt.apply { setPosition(group.x, group.y) })
-            overlayMapLayer.add(group.layerOverlay.apply { setPosition(group.x, group.y) })
-            unitFlagMapLayer.add(group.layerUnitFlag.apply { setPosition(group.x, group.y) })
-            cityButtonMapLayer.add(group.layerCityButton.apply { setPosition(group.x, group.y) })
+        val sortedGroups = tileGroups.groupBy { it.tile.position.x + it.tile.position.y }
+            .entries.sortedByDescending { it.key }.flatMap { it.value }
+
+        for (group in sortedGroups) {
+            // Register each layer with its tile's absolute position; images are flushed
+            // from each layer's internal buffer into the shared TileMapLayer.
+            terrainMapLayer.add(group.layerTerrain, group.x, group.y)
+            featureMapLayer.add(group.layerFeatures, group.x, group.y)
+            borderMapLayer.add(group.layerBorders, group.x, group.y)
+            resourceMapLayer.add(group.layerResource, group.x, group.y)
+            improvementMapLayer.add(group.layerImprovement, group.x, group.y)
+            miscMapLayer.add(group.layerMisc, group.x, group.y)
+            yieldMapLayer.add(group.layerYield, group.x, group.y)
+            unitSpriteMapLayer.add(group.layerUnitArt, group.x, group.y)
+            overlayMapLayer.add(group.layerOverlay, group.x, group.y)
+            unitFlagMapLayer.add(group.layerUnitFlag, group.x, group.y)
+            cityButtonMapLayer.add(group.layerCityButton, group.x, group.y)
         }
+
+        sortedTileGroups = sortedGroups
 
         for (group in tileGroups) tileGroupLayer.addActor(group)
 
@@ -240,24 +249,29 @@ class TileGroupMap<T: TileGroup>(
                 var newBottomX = Float.MAX_VALUE
                 var newTopX = -Float.MAX_VALUE
 
-                // Reposition tile-level actors within each layer container.
-                // Bounds are tracked only from the first layer (all layers share the same positions).
-                val referenceLayer = allMapLayers[0]
-                for (mapLayer in allMapLayers) {
-                    val trackBounds = mapLayer === referenceLayer
-                    for (actor in mapLayer.children) {
-                        if (beyondRight) {
-                            if (actor.x - drawBottomX <= diffRight)
-                                actor.x += width
-                        } else if (beyondLeft) {
-                            if (actor.x + groupSize + 4f >= drawTopX + diffLeft)
-                                actor.x -= width
-                        }
-                        if (trackBounds) {
-                            newBottomX = min(newBottomX, actor.x)
-                            newTopX = max(newTopX, actor.x + groupSize + 4f)
-                        }
+                // Reposition tile-level actors via tileLayers (each TileLayer owns its actors).
+                // Bounds are tracked via the reference layer's tileX values.
+                val referenceMapLayer = allMapLayers
+                    .filterIsInstance<TileMapLayer<*>>()
+                    .first()
+
+                for ((i, referenceTileLayer) in referenceMapLayer.tileLayers.withIndex()) {
+                    val shouldMove = when {
+                        beyondRight -> referenceTileLayer.tileX - drawBottomX <= diffRight
+                        beyondLeft  -> referenceTileLayer.tileX + groupSize + 4f >= drawTopX + diffLeft
+                        else        -> false
                     }
+                    if (shouldMove) {
+                        val dx = if (beyondRight) width else -width
+                        for (mapLayer in allMapLayers) {
+                            val tl = (mapLayer as? TileMapLayer<*>)?.tileLayers?.get(i) ?: continue
+                            tl.tileX += dx
+                            tl.ownedActors.forEach { it.x += dx }
+                        }
+                        sortedTileGroups[i].x += dx
+                    }
+                    newBottomX = min(newBottomX, referenceTileLayer.tileX)
+                    newTopX    = max(newTopX,    referenceTileLayer.tileX + groupSize + 4f)
                 }
 
                 // Also reposition any actors added directly to this group (e.g. transient overlays).

@@ -1,3 +1,48 @@
+## 4.20.14
+
+Fix "black screen on next turn button"
+
+Context menu indicators no longer always visible
+
+City buttons center correctly on the tile on zoom-in
+
+Yields no longer overlaps population icons in cities
+
+By SomeTroglodyte:
+- Make gesture timings user-settable in Options-Advanced 
+- Fix "Choose a music track" triggerable in unique builder 
+- Fix city-states always have personality "Friendly" 
+
+Prevent automation from orphaning CreatesOneImprovement markers - By superdusto
+
+## 4.20.13
+
+Large memory performance improvements for large maps  
+
+Modding: show exact location of json file errors
+
+By SomeTroglodyte:
+- Context menu visual indicators 
+- Modding: Fixed "empty name" problems 
+- Fix expansion clearing barbarian camps leaving obsolete quests 
+- City buy tile context menu, to buy several tiles at once 
+
+Avoid centering on hidden wonder locations - By xplon
+
+Respect alternative promotion prerequisites in validation - By superdusto
+
+## 4.20.12
+
+By xplon:
+- Hide icons when translating spy names 
+- Warn about translatable ruleset name collisions 
+
+By SomeTroglodyte:
+- Improve context menu indicator size 
+- Console: `civ add` and `civ remove` commands 
+
+Add missing newline in advanced game settings - By unciv-loof
+
 ## 4.20.11
 
 Fix double buttons for great people for constructing great improvements

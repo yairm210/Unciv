@@ -265,7 +265,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
-??? example  "Choose a music track for [unknown], [unknown], [unknown]"
+??? example  "Choose a music track for [param], [param], [param]"
 	Parameters are unchecked, strings not matching existing tracks or flags are ignored.
 
 	See [Context-sensitive music](Images-and-Audio.md#context-sensitive-music-overview)
@@ -275,6 +275,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	The second parameter is a list of zero or more suffixes, comma-separated, used to specify a "mood", like Peace, War, Ambient etc. First track that matches wins.
 
 	The third parameter is a list of zero or more flags: PrefixMustMatch, SuffixMustMatch, SlowFade, PlaySingle, PlayDefaultFile.
+
+	Example: "Choose a music track for [Unknown], [Unknown], [Unknown]"
 
 	This unique is automatically hidden from users.
 
@@ -679,13 +681,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "Enables conversion of city production to [civWideStat]"
-	Example: "Enables conversion of city production to [Gold]"
+??? example  "Enables conversion of city production to [stat]"
+	Example: "Enables conversion of city production to [Culture]"
 
 	Applicable to: Global
 
-??? example  "Production to [civWideStat] conversion in cities changed by [relativeAmount]%"
-	Example: "Production to [Gold] conversion in cities changed by [+20]%"
+??? example  "Production to [stat] conversion in cities changed by [relativeAmount]%"
+	Example: "Production to [Culture] conversion in cities changed by [+20]%"
 
 	Applicable to: Global
 

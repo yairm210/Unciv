@@ -1,8 +1,9 @@
 package com.unciv.ui.popups
 
-import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.Align
 import com.unciv.ui.components.widgets.AutoScrollPane
 
 /**
@@ -13,8 +14,9 @@ import com.unciv.ui.components.widgets.AutoScrollPane
  */
 abstract class ScrollableAnimatedMenuPopup(
     stage: Stage,
-    position: Vector2
-) : AnimatedMenuPopup(stage, position) {
+    actor: Actor,
+    align: Int = Align.topRight
+) : AnimatedMenuPopup(stage, actor, align) {
 
     /** The API of this Widget is moved to [createScrollableContent], [createFixedContent], [createWrapperTable]. */
     final override fun createContentTable(): Table? {
