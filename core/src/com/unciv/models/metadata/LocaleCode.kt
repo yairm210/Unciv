@@ -7,7 +7,7 @@ import java.text.NumberFormat
 import java.util.Locale
 
 /** Map Unciv language key to Java locale, for the purpose of getting a Collator for sorting.
- *  Can also be used to list all available languages ([getSupportedLanguages]).
+ *  It is also used to list all available languages ([getSupportedLanguages]).
  *  Can translate Java [Locale] to/from an Unciv language as stored in [GameSettings] using [find] followed by [locale] or [languageName] calls.
  *
  *  - Effect depends on the Java libraries and may not always conform to expectations.
