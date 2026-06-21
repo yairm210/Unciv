@@ -805,23 +805,26 @@ object Battle {
     }
 
     private fun tryExtraRangedAttack(attacker: ICombatant, defender: ICombatant, attackedTile: Tile): DamageDealt {
+        if (attacker !is MapUnitCombatant) return DamageDealt.None
+        if (defender !is MapUnitCombatant) return DamageDealt.None
+        if (defender.isCivilian()) return DamageDealt.None
+    
         var damageDealt = DamageDealt.None
-        if (attacker is MapUnitCombatant && defender is MapUnitCombatant && !defender.isCivilian()) {
-            for (unique in attacker.unit.getMatchingUniques(UniqueType.ExtraRangedAttack)) {
-                val baseRangedStrengthForExtraAttack = (attacker.unit.baseUnit.strength * 
-                    unique.params[0].toFloat() / 100).toInt()
-                val fakeAttacker = FakeUnitForExtraRangedAttack(attacker, baseRangedStrengthForExtraAttack)
-                triggerCombatUniques(fakeAttacker, defender, attackedTile)
+        for (unique in attacker.unit.getMatchingUniques(UniqueType.ExtraRangedAttack)) {
+            val baseRangedStrengthForExtraAttack = (attacker.unit.baseUnit.strength * 
+                unique.params[0].toFloat() / 100).toInt()
+            val fakeAttacker = FakeUnitForExtraRangedAttack(attacker, baseRangedStrengthForExtraAttack)
+            triggerCombatUniques(fakeAttacker, defender, attackedTile)
 
-                damageDealt +=  takeDamage(fakeAttacker, defender)
+            damageDealt +=  takeDamage(fakeAttacker, defender)
 
-                //handleCityDefeated() // bonus attack should not trigger vs cities
-                triggerPostKillingUniques(defender, fakeAttacker, attackedTile)
-                triggerDamageUniquesForUnit(attacker, defender, attackedTile, CombatAction.Attack)
-                addXp(attacker, 2, defender)
-                addXp(defender, 2, attacker)
-            }
+            //handleCityDefeated() // bonus attack should not trigger vs cities
+            triggerPostKillingUniques(defender, fakeAttacker, attackedTile)
+            triggerDamageUniquesForUnit(attacker, defender, attackedTile, CombatAction.Attack)
+            addXp(attacker, 2, defender)
+            addXp(defender, 2, attacker)
         }
+        
         return damageDealt
     }
     /** This has all the properties and methods of [mapUnitCombatant] (via delegation)
