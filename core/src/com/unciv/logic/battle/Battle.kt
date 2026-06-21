@@ -808,7 +808,7 @@ object Battle {
         if (attacker !is MapUnitCombatant) return DamageDealt.None
         if (defender !is MapUnitCombatant) return DamageDealt.None
         if (defender.isCivilian()) return DamageDealt.None
-    
+
         var damageDealt = DamageDealt.None
         for (unique in attacker.unit.getMatchingUniques(UniqueType.ExtraRangedAttack)) {
             val baseRangedStrengthForExtraAttack = (attacker.unit.baseUnit.strength * 
@@ -824,7 +824,6 @@ object Battle {
             addXp(attacker, 2, defender)
             addXp(defender, 2, attacker)
         }
-        
         return damageDealt
     }
     /** This has all the properties and methods of [mapUnitCombatant] (via delegation)
