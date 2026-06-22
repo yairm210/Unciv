@@ -39,6 +39,7 @@ import com.unciv.ui.screens.multiplayerscreens.FriendPickerList
 import com.unciv.ui.screens.pickerscreens.PickerPane
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.utils.isUUID
+import com.unciv.utils.removeRange
 import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
 
 /**
@@ -92,7 +93,8 @@ class PlayerPickerTable(
         val newRulesetPlayableCivs = previousScreen.ruleset.nations
             .count { it.key != Constants.barbarians && !it.value.hasUnique(UniqueType.WillNotBeChosenForNewGames) }
         if (gameParameters.players.size > newRulesetPlayableCivs)
-            gameParameters.players = ArrayList(gameParameters.players.subList(0, newRulesetPlayableCivs))
+            gameParameters.players.removeRange(newRulesetPlayableCivs, gameParameters.players.size)
+
         if (desiredCiv.isNotEmpty()) assignDesiredCiv(desiredCiv)
 
         for (player in gameParameters.players) {
