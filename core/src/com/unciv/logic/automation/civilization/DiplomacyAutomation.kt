@@ -543,7 +543,8 @@ object DiplomacyAutomation {
                 if (totalForce > forceCutoff)
                     continue
             }
-            println("${civInfo.civName} ${otherCiv.civName} ${100 * nearbyForce / totalForce}")
+            if (totalForce > forceCutoff)
+                continue
             // let's ask what's up
             ourDiplomacy.setFlag(
                 DiplomacyFlags.MilitaryPresenceNearBorderOrAttackedUsDespitePromise,
