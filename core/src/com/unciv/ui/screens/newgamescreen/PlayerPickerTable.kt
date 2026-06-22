@@ -87,7 +87,7 @@ class PlayerPickerTable(
      */
     fun update(desiredCiv: String = "") {
         playerListTable.clear()
-        val gameBasics = previousScreen.ruleset // the mod picking changes this ruleset
+        val ruleset = previousScreen.ruleset // the mod picking changes this ruleset
 
         reassignRemovedModReferences()
         val newRulesetPlayableCivs = previousScreen.ruleset.nations
@@ -118,7 +118,7 @@ class PlayerPickerTable(
                         val availableCiv = getAvailablePlayerCivs().firstOrNull()
                         if (availableCiv != null) Player(availableCiv)
                         // Spectators can only be Humans
-                        else Player(Constants.spectator, PlayerType.Human).apply { setNationTransient(gameBasics) }
+                        else Player(Constants.spectator, PlayerType.Human).apply { setNationTransient(ruleset) }
                     } else Player()  // normal: add random AI
                     gameParameters.players.add(player)
                     update()
@@ -381,7 +381,7 @@ class FriendSelectionPopup(
         pickerPane.rightSideButton.setText("Select friend".tr())
         pickerPane.closeButton.onActivation(::close)
         pickerPane.closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
-        pickerCell.setActor<PickerPane>(pickerPane)
+        pickerCell.setActor(pickerPane)
         pickerPane.rightSideButton.onClick {
             close()
             val friendId = selectedFriendId
