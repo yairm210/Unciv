@@ -481,8 +481,8 @@ object DiplomacyAutomation {
                     || trade.trade.theirOffers.any { offer -> offer.name == offerName } }
     }
     
-    private const val MIN_UNITS_NEAR_BORDER_TO_ISSUE_DEMAND = 10
-    private const val MIN_FORCE_VALUE_NEAR_BORDER_TO_ISSUE_DEMAND  = 0.5f
+    private const val MIN_UNITS_NEAR_BORDER_TO_ISSUE_DEMAND = 8
+    private const val MIN_PERCENT_FORCE_VALUE_NEAR_BORDER_TO_ISSUE_DEMAND = 50
     
     /**
      * Checks if any civ have positioned large portions of their troops along our borders.
@@ -503,9 +503,7 @@ object DiplomacyAutomation {
         val nearbyForceByCiv = Counter<Civilization>()
 
         for (tile in nearbyTiles) {
-            if (tile.militaryUnit == null)
-                continue
-            val unit = tile.militaryUnit!!
+            val unit = tile.militaryUnit ?: continue
             if (! unit.civ.isMajorCiv() || unit.civ == civInfo || unit.isInvisible(civInfo))
                 continue
             nearbyUnitCountByCiv.add(unit.civ, 1)
@@ -537,9 +535,11 @@ object DiplomacyAutomation {
             if (threatAssessment == ThreatLevel.VeryLow || threatAssessment == ThreatLevel.VeryHigh)
                 continue
             val nearbyForce = nearbyForceByCiv[otherCiv]
-            val totalForce = otherCiv.getStatForRanking(RankingType.Force)
-            // ignore if most of their force is elsewhere
-            if (nearbyForce.toFloat() / totalForce < MIN_FORCE_VALUE_NEAR_BORDER_TO_ISSUE_DEMAND)
+            val totalForce = otherCiv.units.getCivUnits()
+                .filter { it.isMilitary() }
+                .sumOf { it.getForceEvaluation() }
+            // ignore if most of their military is elsewhere
+            if (nearbyForce.toFloat() / totalForce < MIN_PERCENT_FORCE_VALUE_NEAR_BORDER_TO_ISSUE_DEMAND / 100f)
                 continue
             // let's ask what's up
             ourDiplomacy.setFlag(
