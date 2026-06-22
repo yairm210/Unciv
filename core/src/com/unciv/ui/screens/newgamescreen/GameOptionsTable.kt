@@ -544,6 +544,15 @@ class GameOptionsTable(
         gameParameters.victoryTypes.removeAll { it !in ruleset.victories.keys }
         if (gameParameters.victoryTypes.isEmpty())
             gameParameters.victoryTypes.addAll(ruleset.victories.keys)
+
+        // Mod choices will change the number of available civs
+        val maxMajorCivs = numberOfMajorCivs()
+        if (gameParameters.maxNumberOfPlayers > maxMajorCivs) gameParameters.maxNumberOfPlayers = maxMajorCivs
+        if (gameParameters.minNumberOfPlayers > maxMajorCivs) gameParameters.minNumberOfPlayers = maxMajorCivs
+
+        val maxCityStates = numberOfCityStates()
+        if (gameParameters.maxNumberOfCityStates > maxCityStates) gameParameters.maxNumberOfCityStates = maxCityStates
+        if (gameParameters.minNumberOfCityStates > maxCityStates) gameParameters.minNumberOfCityStates = maxCityStates
     }
 
     private fun getModCheckboxes(isPortrait: Boolean = false): ModCheckboxTable {
