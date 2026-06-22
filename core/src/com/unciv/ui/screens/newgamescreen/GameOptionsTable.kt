@@ -242,7 +242,7 @@ class GameOptionsTable(
     }
 
     private fun numberOfMajorCivs() = ruleset.nations.values.count {
-        it.isMajorCiv
+        it.isMajorCiv && !it.hasUnique(UniqueType.WillNotBeChosenForNewGames)
     }
 
     private fun numberOfCityStates() = ruleset.nations.values.count {
