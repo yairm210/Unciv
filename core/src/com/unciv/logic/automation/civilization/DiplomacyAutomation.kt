@@ -510,7 +510,7 @@ object DiplomacyAutomation {
             nearbyForceByCiv.add(unit.civ, unit.getForceEvaluation())
         }
 
-        for (otherCiv in civInfo.getKnownCivs()) {
+        outer@ for (otherCiv in civInfo.getKnownCivs()) {
             // this ultimatum can currently only be made by AI to human players, to avoid abuse
             if (! otherCiv.isHuman())
                 continue
@@ -541,10 +541,8 @@ object DiplomacyAutomation {
             for (unit in otherCiv.units.getCivUnits().filter { it.isMilitary() }) {
                 totalForce += unit.getForceEvaluation()
                 if (totalForce > forceCutoff)
-                    break
+                    continue@outer
             }
-            if (totalForce > forceCutoff)
-                continue
             // let's ask what's up
             ourDiplomacy.setFlag(
                 DiplomacyFlags.MilitaryPresenceNearBorderOrAttackedUsDespitePromise,
