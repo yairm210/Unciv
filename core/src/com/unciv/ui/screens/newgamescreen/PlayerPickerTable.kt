@@ -90,8 +90,10 @@ class PlayerPickerTable(
         val ruleset = previousScreen.ruleset // the mod picking changes this ruleset
 
         reassignRemovedModReferences()
-        val newRulesetPlayableCivs = previousScreen.ruleset.nations
-            .count { it.key != Constants.barbarians && !it.value.hasUnique(UniqueType.WillNotBeChosenForNewGames) }
+
+        fun isChoosable(nation: Nation) = (nation.isMajorCiv || nation.isSpectator) && !nation.hasUnique(UniqueType.WillNotBeChosenForNewGames)
+        val newRulesetPlayableCivs = ruleset.nations.values.count(::isChoosable)
+
         if (gameParameters.players.size > newRulesetPlayableCivs)
             gameParameters.players.removeRange(newRulesetPlayableCivs, gameParameters.players.size)
 
@@ -108,7 +110,7 @@ class PlayerPickerTable(
             updateRandomNumberLabel()
         }
 
-        if (!locked && gameParameters.players.size < gameBasics.nations.values.count { it.isMajorCiv }) {
+        if (!locked && gameParameters.players.size < newRulesetPlayableCivs) {
             val addPlayerButton = "+".toLabel(ImageGetter.CHARCOAL, 30)
                 .apply { this.setAlignment(Align.center) }
                 .surroundWithCircle(50f)
