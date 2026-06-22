@@ -481,7 +481,7 @@ object DiplomacyAutomation {
                     || trade.trade.theirOffers.any { offer -> offer.name == offerName } }
     }
     
-    private const val MIN_UNITS_NEAR_BORDER_TO_ISSUE_DEMAND = 8
+    private const val MIN_UNITS_NEAR_BORDER_TO_ISSUE_DEMAND = 5
     private const val MIN_PERCENT_FORCE_VALUE_NEAR_BORDER_TO_ISSUE_DEMAND = 50
     
     /**
@@ -535,12 +535,15 @@ object DiplomacyAutomation {
             if (threatAssessment == ThreatLevel.VeryLow || threatAssessment == ThreatLevel.VeryHigh)
                 continue
             val nearbyForce = nearbyForceByCiv[otherCiv]
-            val totalForce = otherCiv.units.getCivUnits()
-                .filter { it.isMilitary() }
-                .sumOf { it.getForceEvaluation() }
             // ignore if most of their military is elsewhere
-            if (nearbyForce.toFloat() / totalForce < MIN_PERCENT_FORCE_VALUE_NEAR_BORDER_TO_ISSUE_DEMAND / 100f)
-                continue
+            val forceCutoff = nearbyForce / (MIN_PERCENT_FORCE_VALUE_NEAR_BORDER_TO_ISSUE_DEMAND / 100f)
+            var totalForce = 0
+            for (unit in otherCiv.units.getCivUnits().filter { it.isMilitary() }) {
+                totalForce += unit.getForceEvaluation()
+                if (totalForce > forceCutoff)
+                    continue
+            }
+            println("${civInfo.civName} ${otherCiv.civName} ${100 * nearbyForce / totalForce}")
             // let's ask what's up
             ourDiplomacy.setFlag(
                 DiplomacyFlags.MilitaryPresenceNearBorderOrAttackedUsDespitePromise,
