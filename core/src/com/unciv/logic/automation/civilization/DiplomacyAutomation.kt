@@ -481,7 +481,7 @@ object DiplomacyAutomation {
                     || trade.trade.theirOffers.any { offer -> offer.name == offerName } }
     }
     
-    private const val MIN_UNITS_NEAR_BORDER_TO_ISSUE_DEMAND = 5
+    private const val MIN_UNITS_NEAR_BORDER_TO_ISSUE_DEMAND = 8
     private const val MIN_PERCENT_FORCE_VALUE_NEAR_BORDER_TO_ISSUE_DEMAND = 50
     
     /**
