@@ -541,7 +541,7 @@ object DiplomacyAutomation {
             for (unit in otherCiv.units.getCivUnits().filter { it.isMilitary() }) {
                 totalForce += unit.getForceEvaluation()
                 if (totalForce > forceCutoff)
-                    continue
+                    break
             }
             if (totalForce > forceCutoff)
                 continue
