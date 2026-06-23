@@ -965,11 +965,12 @@ class MapUnit : IsPartOfGameInfoSerialization {
         for (triggeredUnique in triggeredUniques)
             UniqueTriggerActivation.triggerUnique(triggeredUnique, this)
 
+        if (improvement?.name == Constants.barbarianEncampment && !civ.isBarbarian)
+            clearEncampment(tile)
         if (civ.isMajorCiv() && improvement?.isAncientRuinsEquivalent(cache.state) == true) {
             getAncientRuinBonus(tile)
         }
-        if (improvement?.name == Constants.barbarianEncampment && !civ.isBarbarian)
-            clearEncampment(tile)
+
         // Check whether any civilians without military units are there.
         // Keep in mind that putInTile(), which calls this method,
         // might have already placed your military unit in this tile.
