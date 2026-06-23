@@ -296,6 +296,7 @@ class Tile : IsPartOfGameInfoSerialization {
             if (naturalWonder == null) throw Exception("No natural wonder exists for this tile!")
             else ruleset.terrains[naturalWonder!!]!!
 
+    /** Actively observed tiles (no fog of war) */
     @Readonly
     fun isVisible(player: Civilization): Boolean {
         if (DebugUtils.VISIBLE_MAP)
@@ -303,6 +304,7 @@ class Tile : IsPartOfGameInfoSerialization {
         return player.viewableTiles.contains(this)
     }
 
+    /** Tiles that have at some point been explored (may have fog of war) */
     @Readonly
     fun isExplored(player: Civilization): Boolean {
         if (DebugUtils.VISIBLE_MAP || player.isSpectator())
