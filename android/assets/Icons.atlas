@@ -902,14 +902,14 @@ OtherIcons/MenuIcon
   index: -1
 OtherIcons/ModUpdate
   rotate: false
-  xy: 436, 152
-  size: 100, 100
-  orig: 100, 100
+  xy: 436, 151
+  size: 100, 101
+  orig: 100, 101
   offset: 0, 0
   index: -1
 OtherIcons/Mods
   rotate: false
-  xy: 436, 44
+  xy: 436, 43
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
