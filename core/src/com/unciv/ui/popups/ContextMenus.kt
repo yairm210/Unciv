@@ -38,11 +38,16 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Concurrency
 
+// Don't remove the blank line after "Clients should first implement" in the Kdoc below,
+// or Android Studio will not render it as nested lists!
 /**
  *  Namespace container for the Context-menu "system"
  *
- *  - Clients should first implement [ContextMenus.IDescriptor], typically as object, and [ContextMenus.IMenu],
- *    typically inheriting the standard implementation [ContextMenus.Menu] (successor to AnimatedMenuPopup).
+ *  - Clients should first implement:
+ *
+ *    - [ContextMenus.IDescriptor], typically as object
+ *    - [ContextMenus.IMenu], typically inheriting the standard implementation [ContextMenus.Menu] (successor to `AnimatedMenuPopup`)
+ *    - [ContextMenus.IContext], depending on your needs, can be `IContext` itself when you don't need to pass any context.
  *  - In the containing UI code, call your new [IDescriptor.addContextMenu], passing as much context as your
  *    Pre-flight check [IDescriptor.isAvailable] or factory [IDescriptor.createMenu] need (typically none).
  *  - If calling code needs to change the context menu or needs to re-test its availability, simply call
@@ -50,12 +55,16 @@ import com.unciv.utils.Concurrency
  *    (This is not necessary if your containing screen never updates or does so by clearing and rebuilding widgets).
  *  - Note you need to tell the descriptor implementation what the type of your menu is, to ensure that class meets requirements
  *    (In addition to [ContextMenus.IMenu], it currently also must be a [Popup], because the standard implementation needs its features).
+ *  - You also need to explicitly tell your descriptor implementation what the type of your context is.
+ *    If you don't need context, you can specify the interface for the descriptor declaration and pass
+ *    `object : IContext {}` to the methods (or store a static instance of that here in the companion).
  */
 interface ContextMenus {
     /**
      *  Class describing a context menu feature, instantiated before the actual UI is built.
      *  - A factory to build the UI, pre-flight checks, and potentially meta-info go here.
      *  - Meant to be implemented by an object, must remain stateless
+     *  @see ContextMenus
      */
     interface IDescriptor<T, C>
     where T : IMenu, T : Popup, C : IContext {
@@ -93,6 +102,10 @@ interface ContextMenus {
         }
     }
 
+    /**
+     *  Marker for the context you can pass to [IDescriptor] overloads.
+     *  @see ContextMenus
+     */
     interface IContext
 
     @Suppress("ConstPropertyName")
@@ -206,8 +219,8 @@ interface ContextMenus {
 
             // Note that coerceIn throws if min>max, so we defend against newInnerTable being bigger than the stage,
             // and padding helps the rounded edges to look more natural:
-            val paddedHalfWidth = newInnerTable.width / 2 + 2f
-            val paddedHalfHeight = newInnerTable.height / 2 + 2f
+            val paddedHalfWidth = newInnerTable.width / 2 + newInnerTable.padLeft + newInnerTable.background.leftWidth + 5f
+            val paddedHalfHeight = newInnerTable.height / 2 + newInnerTable.padTop + newInnerTable.background.topHeight + 5f
             container.setPosition(
                 if (paddedHalfWidth * 2 > stage.width) stage.width / 2
                 else position.x.coerceIn(paddedHalfWidth, stage.width - paddedHalfWidth),
