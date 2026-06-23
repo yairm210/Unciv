@@ -16,6 +16,7 @@ import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
+import kotlin.random.Random
 
 class BarbarianManager : IsPartOfGameInfoSerialization {
 
@@ -42,8 +43,7 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
         val existingEncampmentLocations = encampments.asSequence().map { it.position }.toHashSet()
 
         for (tile in tileMap.values) {
-            if (tile.improvement == Constants.barbarianEncampment
-                    && !existingEncampmentLocations.contains(tile.position)) {
+            if (tile.isBarbarianEncampment() && !existingEncampmentLocations.contains(tile.position)) {
                 encampments.add(Encampment(tile.position))
             }
         }
@@ -55,7 +55,7 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
     fun updateEncampments() {
         // Check if camps were destroyed
         for (encampment in encampments.toList()) { // tolist to avoid concurrent modification
-            if (tileMap[encampment.position].improvement != Constants.barbarianEncampment) {
+            if (!tileMap[encampment.position].isBarbarianEncampment()) {
                 encampment.wasDestroyed()
             }
             // Check if the ghosts are ready to depart
@@ -133,7 +133,7 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
             } else
                 tile = viableTiles.random(rng)
 
-            createNewCamp(tile)
+            createNewCamp(tile, rng)
             notifyCivsOfBarbarianEncampment(tile)
             addedCamps++
 
@@ -152,23 +152,24 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
      * adopted Honor policy and have explored the [tile] where the Barbarian Encampment has spawned.
      */
     private fun notifyCivsOfBarbarianEncampment(tile: Tile) {
-        gameInfo.civilizations.filter {
-            it.hasUnique(UniqueType.NotifiedOfBarbarianEncampments)
-                    && it.hasExplored(tile)
+        for (civ in gameInfo.civilizations) {
+            if (!civ.hasExplored(tile)) continue
+            if (!civ.hasUnique(UniqueType.NotifiedOfBarbarianEncampments)) continue
+            civ.addNotification("A new barbarian encampment has spawned!", tile.position, NotificationCategory.War, NotificationIcon.War)
+            civ.setLastSeenImprovement(tile.position, tile.improvement)
         }
-            .forEach {
-                it.addNotification("A new barbarian encampment has spawned!", tile.position, NotificationCategory.War, NotificationIcon.War)
-                it.setLastSeenImprovement(tile.position, Constants.barbarianEncampment)
-            }
     }
-    // Creates a new camp without any checks - Does not affect notifications
-    fun createNewCamp(tile: Tile) {
-        tile.setImprovement(Constants.barbarianEncampment)
+
+    /** Creates a new camp without any checks - Does not affect notifications */
+    fun createNewCamp(tile: Tile, rng: Random = tile.stateThisTile.stateBasedRandom("createNewCamp")) {
+        val candidates = this.gameInfo.ruleset.tileImprovements.values
+            .filter { it.isBarbarianCampEquivalent(tile.stateThisTile) }
+        val improvement = candidates.randomOrNull(rng)?.name ?: Constants.barbarianEncampment
+        tile.setImprovement(improvement)
         val newCamp = Encampment(tile.position)
         newCamp.gameInfo = gameInfo
         encampments.add(newCamp)
     }
-
 }
 
 class Encampment() : IsPartOfGameInfoSerialization {

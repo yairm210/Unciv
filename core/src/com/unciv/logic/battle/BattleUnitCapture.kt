@@ -80,7 +80,7 @@ object BattleUnitCapture {
 
     private fun unitCapturedFromEncampment(attacker: MapUnitCombatant, defender: MapUnitCombatant, attackedTile: Tile): Boolean {
         if (!defender.getCivInfo().isBarbarian) return false
-        if (attackedTile.improvement != Constants.barbarianEncampment) return false
+        if (!attackedTile.isBarbarianEncampment()) return false
 
         var unitCaptured = false
         // German unique - needs to be checked before we try to move to the enemy tile, since the encampment disappears after we move in

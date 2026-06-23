@@ -135,7 +135,7 @@ object Battle {
         if (!captureMilitaryUnitSuccess) // capture creates a new unit, but `defender` still is the original, so this function would still show a kill message
             postBattleNotifications(attacker, defender, attackedTile, attacker.getTile(), damageDealt)
 
-        if (defender.getCivInfo().isBarbarian && attackedTile.improvement == Constants.barbarianEncampment)
+        if (defender.getCivInfo().isBarbarian && attackedTile.isBarbarianEncampment())
             defender.getCivInfo().gameInfo.barbarians.campAttacked(attackedTile.position)
 
         // This needs to come BEFORE the move-to-tile, because if we haven't conquered it we can't move there =)

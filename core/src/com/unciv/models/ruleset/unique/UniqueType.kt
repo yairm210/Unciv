@@ -705,6 +705,8 @@ enum class UniqueType(
 
     GreatImprovement("Great Improvement", UniqueTarget.Improvement),
     IsAncientRuinsEquivalent("Provides a random bonus when entered", UniqueTarget.Improvement),
+    IsBarbarianCampEquivalent("Marks a barbarian camp", UniqueTarget.Improvement, flags = UniqueFlag.setOfHiddenToUsers,
+        docDescription = "When several barbarian camp improvements are available, each new camp chooses one randomly."),
 
     Unpillagable("Unpillagable", UniqueTarget.Improvement),
     PillageYieldRandom("Pillaging this improvement yields approximately [stats]", UniqueTarget.Improvement, flags = setOf(UniqueFlag.AcceptsSpeedModifier, UniqueFlag.AcceptsGameProgressModifier)),
