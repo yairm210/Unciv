@@ -139,8 +139,13 @@ class GameOptionsTable(
                 it.addNationsSelectTextButton()
             }
             it.addShowVictoryStatsCheckbox()
-            if (!gameParameters.showVictoryStats) {
-                it.addShowDemographicsCheckbox()
+            if (gameParameters.showVictoryStats) {
+                val statsTable = Table().apply { defaults().growX().left().padLeft(30f).padBottom(10f) }
+                statsTable.addShowRankingsCheckbox()
+                statsTable.addShowChartsCheckbox()
+                statsTable.addShowDemographicsCheckbox()
+                statsTable.addCensorStatsCheckbox()
+                it.add(statsTable).left()
             }
         }
         add(expander).pad(10f).row()
@@ -219,13 +224,24 @@ class GameOptionsTable(
         addCheckbox("Show victory stats", gameParameters.showVictoryStats)
         {
             gameParameters.showVictoryStats = it
-            if (it) gameParameters.showDemographics = false
-            update()  // To show/hide showDemographics checkbox
+            update()  // To update checkboxTable
         }
 
     private fun Table.addShowDemographicsCheckbox() =
         addCheckbox("Show Demographics", gameParameters.showDemographics)
         { gameParameters.showDemographics = it }
+
+    private fun Table.addShowRankingsCheckbox() =
+        addCheckbox("Show Rankings", gameParameters.showRankings)
+        { gameParameters.showRankings = it }
+
+    private fun Table.addShowChartsCheckbox() =
+        addCheckbox("Show Charts", gameParameters.showCharts)
+        { gameParameters.showCharts = it }
+
+    private fun Table.addCensorStatsCheckbox() = 
+        addCheckbox("Censor Stats", gameParameters.censorStats)
+        { gameParameters.censorStats = it }
 
     private fun Table.addNationsSelectTextButton() {
         val button = "Select nations".toTextButton()

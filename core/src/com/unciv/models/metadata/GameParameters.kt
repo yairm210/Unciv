@@ -38,6 +38,9 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
 
     var showVictoryStats = true
     var showDemographics = false
+    var showRankings = true
+    var showCharts = true
+    var censorStats = false
 
     // Multiplayer parameters
     var isOnlineMultiplayer = false
@@ -84,6 +87,9 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
         parameters.startingEra = startingEra
         parameters.showVictoryStats = showVictoryStats
         parameters.showDemographics = showDemographics
+        parameters.showRankings = showRankings
+        parameters.showCharts = showCharts
+        parameters.censorStats = censorStats
         parameters.isOnlineMultiplayer = isOnlineMultiplayer
         parameters.multiplayerServerUrl = multiplayerServerUrl
         parameters.anyoneCanSpectate = anyoneCanSpectate

@@ -21,7 +21,9 @@ class VictoryScreenCivRankings(
         header.align(Align.topLeft)
         defaults().pad(10f)
 
-        val majorCivs = worldScreen.gameInfo.civilizations.filter { it.isMajorCiv() }
+        val majorCivs = worldScreen.gameInfo.civilizations
+            .filter { it.isMajorCiv() }
+            .filter { worldScreen.gameInfo.victoryData!=null || worldScreen.viewingCiv.isSpectator() || !worldScreen.gameInfo.gameParameters.censorStats || it == worldScreen.viewingCiv }
 
         for (category in RankingType.entries) {
             val textAndIcon = Table()
