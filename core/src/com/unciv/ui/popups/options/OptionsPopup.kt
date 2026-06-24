@@ -2,21 +2,18 @@ package com.unciv.ui.popups.options
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.GUI
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.components.extensions.areSecretKeysPressed
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.getCloseButton
-import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
-import kotlin.reflect.KMutableProperty0
 
 /**
  * The Options (Settings) Popup
@@ -142,28 +139,5 @@ class OptionsPopup(
         super.setVisible(visible)
         if (!visible) return
         if (tabs.activePage < 0) tabs.selectPage(selectPage)
-    }
-
-    internal fun addCheckbox(table: Table, text: String, initialState: Boolean, updateWorld: Boolean = false, newRow: Boolean = true, action: ((Boolean) -> Unit)) {
-        val checkbox = text.toCheckBox(initialState) {
-            action(it)
-            val worldScreen = GUI.getWorldScreenIfActive()
-            if (updateWorld && worldScreen != null) worldScreen.shouldUpdate = true
-        }
-        if (newRow) table.add(checkbox).colspan(2).left().row()
-        else table.add(checkbox).left()
-    }
-
-    internal fun addCheckbox(
-        table: Table,
-        text: String,
-        settingsProperty: KMutableProperty0<Boolean>,
-        updateWorld: Boolean = false,
-        action: (Boolean) -> Unit = {}
-    ) {
-        addCheckbox(table, text, settingsProperty.get(), updateWorld) {
-            action(it)
-            settingsProperty.set(it)
-        }
     }
 }
