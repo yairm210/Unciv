@@ -220,7 +220,7 @@ class GameOptionsTable(
     }
 
     private fun Table.addShowCivilizationStatsCheckbox() =
-        addCheckbox("Show civilization stats", gameParameters.showCivilizationStats)
+        addCheckbox("Show Civilization Stats", gameParameters.showCivilizationStats)
         {
             gameParameters.showCivilizationStats = it
             update()  // To update checkboxTable
