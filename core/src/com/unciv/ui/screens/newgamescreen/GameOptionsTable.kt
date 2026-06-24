@@ -9,7 +9,6 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.PlayerType
-import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Ruleset
@@ -138,8 +137,8 @@ class GameOptionsTable(
             if (gameParameters.enableRandomNationsPool) {
                 it.addNationsSelectTextButton()
             }
-            it.addShowVictoryStatsCheckbox()
-            if (gameParameters.showVictoryStats) {
+            it.addShowCivilizationStatsCheckbox()
+            if (gameParameters.showCivilizationStats) {
                 val statsTable = Table().apply { defaults().growX().left().padLeft(30f).padBottom(10f) }
                 statsTable.addShowRankingsCheckbox()
                 statsTable.addShowChartsCheckbox()
@@ -220,10 +219,10 @@ class GameOptionsTable(
         }
     }
 
-    private fun Table.addShowVictoryStatsCheckbox() =
-        addCheckbox("Show victory stats", gameParameters.showVictoryStats)
+    private fun Table.addShowCivilizationStatsCheckbox() =
+        addCheckbox("Show civilization stats", gameParameters.showCivilizationStats)
         {
-            gameParameters.showVictoryStats = it
+            gameParameters.showCivilizationStats = it
             update()  // To update checkboxTable
         }
 
@@ -239,7 +238,7 @@ class GameOptionsTable(
         addCheckbox("Show Charts", gameParameters.showCharts)
         { gameParameters.showCharts = it }
 
-    private fun Table.addCensorStatsCheckbox() = 
+    private fun Table.addCensorStatsCheckbox() =
         addCheckbox("Censor Stats", gameParameters.censorStats)
         { gameParameters.censorStats = it }
 
