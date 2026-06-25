@@ -162,20 +162,20 @@ internal class MapElevationGenerator(
     
     private fun Tile.isMountainTerrain(): Boolean {
         val terrainObj = ruleset.terrains[baseTerrain] ?: return false
-        if (terrainObj.hasUnique(UniqueType.OccursInChains)) return true
+        if (terrainObj.isMountain) return true
         for (feature in terrainFeatures) {
             val featureObj = ruleset.terrains[feature] ?: continue
-            if (featureObj.hasUnique(UniqueType.OccursInChains)) return true
+            if (featureObj.isMountain) return true
         }
         return false
     }
 
     private fun Tile.isHillTerrain(): Boolean {
         val terrainObj = ruleset.terrains[baseTerrain] ?: return false
-        if (terrainObj.hasUnique(UniqueType.OccursInGroups)) return true
+        if (terrainObj.isHill) return true
         for (feature in terrainFeatures) {
             val featureObj = ruleset.terrains[feature] ?: continue
-            if (featureObj.hasUnique(UniqueType.OccursInGroups)) return true
+            if (featureObj.isHill) return true
         }
         return false
     }
@@ -183,8 +183,7 @@ internal class MapElevationGenerator(
     private fun Tile.dropElevatedFeatures() {
         for (feature in terrainFeatures) {
             val featureObj = ruleset.terrains[feature] ?: continue
-            if (featureObj.hasUnique(UniqueType.OccursInChains)
-                || featureObj.hasUnique(UniqueType.OccursInGroups)) {
+            if (featureObj.isMountain || featureObj.isHill) {
                 removeTerrainFeature(feature)
                 return
             }
