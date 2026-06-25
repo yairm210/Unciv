@@ -61,14 +61,14 @@ class VictoryScreen(
             override fun getContent(parent: VictoryScreen) = VictoryScreenDemographics(parent.worldScreen)
             override fun isHidden(playerCiv: Civilization) =
                 !playerCiv.isSpectator()
-                    && !(playerCiv.gameInfo.gameParameters.showCivilizationStats && playerCiv.gameInfo.gameParameters.showDemographics)
+                    && !(playerCiv.gameInfo.gameParameters.showCivilizationStats == true && playerCiv.gameInfo.gameParameters.showDemographics)
                     && playerCiv.gameInfo.victoryData == null
         },
         Rankings('R', allowAsSecret = true) {
             override fun getContent(parent: VictoryScreen) = VictoryScreenCivRankings(parent.worldScreen)
             override fun isHidden(playerCiv: Civilization) =
                 !playerCiv.isSpectator()
-                    && !(playerCiv.gameInfo.gameParameters.showCivilizationStats && playerCiv.gameInfo.gameParameters.showRankings)
+                    && !(playerCiv.gameInfo.gameParameters.showCivilizationStats == true && playerCiv.gameInfo.gameParameters.showRankings)
                     && playerCiv.gameInfo.victoryData == null
         },
         Charts('C') {
@@ -78,7 +78,7 @@ class VictoryScreen(
                     playerCiv.gameInfo.civilizations.all { it.statsHistory.size < 2 }
                 else
                     (playerCiv.statsHistory.size < 2
-                        || !(playerCiv.gameInfo.gameParameters.showCivilizationStats && playerCiv.gameInfo.gameParameters.showCharts))
+                        || !(playerCiv.gameInfo.gameParameters.showCivilizationStats == true && playerCiv.gameInfo.gameParameters.showCharts))
                     && playerCiv.gameInfo.victoryData == null
         },
         Replay('P', allowAsSecret = true) {

@@ -23,7 +23,7 @@ class VictoryScreenCivRankings(
 
         val majorCivs = worldScreen.gameInfo.civilizations
             .filter { it.isMajorCiv() }
-            .filter { worldScreen.gameInfo.victoryData!=null || worldScreen.viewingCiv.isSpectator() || !worldScreen.gameInfo.gameParameters.censorStats || it == worldScreen.viewingCiv }
+            .filter { worldScreen.gameInfo.victoryData != null || worldScreen.viewingCiv.isSpectator() || !worldScreen.gameInfo.gameParameters.censorStats || it == worldScreen.viewingCiv }
 
         for (category in RankingType.entries) {
             val textAndIcon = Table()

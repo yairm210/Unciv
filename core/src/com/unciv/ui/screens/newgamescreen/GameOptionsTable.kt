@@ -138,12 +138,14 @@ class GameOptionsTable(
                 it.addNationsSelectTextButton()
             }
             it.addShowCivilizationStatsCheckbox()
-            if (gameParameters.showCivilizationStats) {
-                val statsTable = Table().apply { defaults().growX().left().padLeft(30f).padBottom(10f) }
-                statsTable.addShowRankingsCheckbox()
-                statsTable.addShowChartsCheckbox()
-                statsTable.addShowDemographicsCheckbox()
-                statsTable.addCensorStatsCheckbox()
+            if (gameParameters.showCivilizationStats == true) {
+                val statsTable = Table().apply {
+                    defaults().growX().left().padLeft(30f).padBottom(10f)
+                    addShowRankingsCheckbox()
+                    addShowChartsCheckbox()
+                    addShowDemographicsCheckbox()
+                    addCensorStatsCheckbox()
+                }
                 it.add(statsTable).left()
             }
         }
@@ -220,7 +222,7 @@ class GameOptionsTable(
     }
 
     private fun Table.addShowCivilizationStatsCheckbox() =
-        addCheckbox("Show Civilization Stats", gameParameters.showCivilizationStats)
+        addCheckbox("Show Civilization Stats", gameParameters.showCivilizationStats == true)
         {
             gameParameters.showCivilizationStats = it
             update()  // To update checkboxTable

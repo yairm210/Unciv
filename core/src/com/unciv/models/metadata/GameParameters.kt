@@ -36,7 +36,16 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
     var victoryTypes: ArrayList<String> = arrayListOf()
     var startingEra = "Ancient era"
 
-    var showCivilizationStats = true
+    @Deprecated("Use showCivilizationStats")
+    var showVictoryStats = true
+    // TODO: remove nullable after migration
+    var showCivilizationStats: Boolean? = null
+        get() = field ?: showVictoryStats
+        set(value) {
+            field = value
+            if (value != null)
+                showVictoryStats = value
+        }
     var showDemographics = false
     var showRankings = true
     var showCharts = true
