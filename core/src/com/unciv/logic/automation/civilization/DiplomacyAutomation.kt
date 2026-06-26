@@ -25,6 +25,8 @@ import com.unciv.utils.Log
 import com.unciv.utils.hashOf
 import yairm210.purity.annotations.Readonly
 import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.pow
 import kotlin.random.Random
 
@@ -482,7 +484,7 @@ object DiplomacyAutomation {
     }
     
     private const val MIN_UNITS_NEAR_BORDER_TO_ISSUE_DEMAND = 8
-    private const val MIN_PERCENT_FORCE_VALUE_NEAR_BORDER_TO_ISSUE_DEMAND = 50
+    private const val MIN_PERCENT_FORCE_VALUE_NEAR_BORDER_TO_ISSUE_DEMAND = 50 // minimum 1
     
     /**
      * Checks if any civ have positioned large portions of their troops along our borders.
@@ -510,30 +512,30 @@ object DiplomacyAutomation {
             nearbyForceByCiv.add(unit.civ, unit.getForceEvaluation())
         }
 
-        outer@ for (otherCiv in civInfo.getKnownCivs()) {
+        fun decideWhetherToDenounce(otherCiv: Civilization) {
             // this ultimatum can currently only be made by AI to human players, to avoid abuse
             if (! otherCiv.isHuman())
-                continue
+                return
             val ourDiplomacy = civInfo.getDiplomacyManager(otherCiv)!!
             // don't check violation if we are at war
             if (ourDiplomacy.diplomaticStatus == DiplomaticStatus.War)
-                continue
+                return
             // ignore if they promised they would not attack us
             if (ourDiplomacy.hasFlag(DiplomacyFlags.AgreedToNotAttackUs))
-                continue
+                return
             val theirDiplomacy = otherCiv.getDiplomacyManager(civInfo)!!
             // let's not doubt our allies
             if (ourDiplomacy.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
                 || ourDiplomacy.hasFlag(DiplomacyFlags.DefensivePact)
                 || theirDiplomacy.hasOpenBorders)
-                continue
+                return
             // ignore if they only have a few units near our borders (relevant in early game)
             if (nearbyUnitCountByCiv[otherCiv] < MIN_UNITS_NEAR_BORDER_TO_ISSUE_DEMAND)
-                continue
+                return
             val threatAssessment = Automation.threatAssessment(civInfo, otherCiv)
             // ignore if they are weak, stay silent if they are too strong
             if (threatAssessment == ThreatLevel.VeryLow || threatAssessment == ThreatLevel.VeryHigh)
-                continue
+                return
             val nearbyForce = nearbyForceByCiv[otherCiv]
             // ignore if most of their military is elsewhere
             val forceCutoff = nearbyForce / (MIN_PERCENT_FORCE_VALUE_NEAR_BORDER_TO_ISSUE_DEMAND / 100f)
@@ -541,7 +543,7 @@ object DiplomacyAutomation {
             for (unit in otherCiv.units.getCivUnits().filter { it.isMilitary() }) {
                 totalForce += unit.getForceEvaluation()
                 if (totalForce > forceCutoff)
-                    continue@outer
+                    return
             }
             // let's ask what's up
             ourDiplomacy.setFlag(
@@ -550,6 +552,9 @@ object DiplomacyAutomation {
                 true
             )
         }
+        
+        for (otherCiv in civInfo.getKnownCivs())
+            decideWhetherToDenounce(otherCiv)
     }
 
     /** Denounce if the AI's opinion of the other civ drops by this amount or more */
