@@ -1040,12 +1040,11 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
         tile.removeImprovement()
 
-        var goldGained =
-                civ.getDifficulty().clearBarbarianCampReward * civ.gameInfo.speed.goldCostModifier
+        var goldGained = civ.getDifficulty().clearBarbarianCampReward.toFloat()
 
         // German unique
         for (unique in civ.getMatchingUniques(UniqueType.GainFromEncampment)) {
-            goldGained += unique.params[0].toInt() // todo support for gamespeed conditional
+            goldGained += unique.params[0].toInt()
             val recruitedUnit = civ.gameInfo.barbarians.spawnBarbarian(tile, civ)
                 ?: continue
             recruitedUnit.health = 50
@@ -1057,6 +1056,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 recruitedUnit.name
             )
         }
+        
+        goldGained *= civ.gameInfo.speed.goldCostModifier
         
         // Songhai unique
         for (unique in civ.getMatchingUniques(UniqueType.GoldFromEncampmentsAndCities, cache.state))
