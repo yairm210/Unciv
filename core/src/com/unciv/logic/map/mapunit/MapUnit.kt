@@ -1045,7 +1045,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
         // German unique
         for (unique in civ.getMatchingUniques(UniqueType.GainFromEncampment)) {
-            goldGained += unique.params[0].toInt()
+            goldGained += unique.params[0].toInt() // todo support for gamespeed conditional
             val recruitedUnit = civ.gameInfo.barbarians.spawnBarbarian(tile, civ)
                 ?: continue
             recruitedUnit.health = 50
