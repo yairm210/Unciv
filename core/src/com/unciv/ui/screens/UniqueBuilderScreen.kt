@@ -2,7 +2,9 @@ package com.unciv.ui.screens
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
@@ -18,6 +20,7 @@ import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.LanguageTable
 import com.unciv.ui.components.widgets.LanguageTable.Companion.addLanguageTables
+import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.options.OptionsPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -65,15 +68,21 @@ class UniqueBuilderScreen(ruleset: Ruleset) : PickerScreen() {
     }
 }
 
-class UniqueTable(isMainUnique: Boolean, val ruleset: Ruleset, stage: Stage,
-                  val onUniqueChange : () -> Unit) :Table() {
-    private val parameterSelectBoxTable = Table().apply { defaults().pad(5f) }
-    private val uniqueSelectBoxTable = Table()
+class UniqueTable(
+    isMainUnique: Boolean,
+    val ruleset: Ruleset,
+    stage: Stage,
+    val onUniqueChange: () -> Unit
+) :Table() {
+    // in order of presentation
+    private val uniqueTargetsSelectBox: SelectBox<UniqueTarget>
+    private val uniqueSelectBox = SelectBox<UniqueType>(BaseScreen.skin)
     private val uniqueSearchTextField = TextField("", BaseScreen.skin).apply { messageText = "Search" }
+    internal val uniqueTextField = TextField("Unique", BaseScreen.skin)
+    private val documentationLabel = WrappableLabel("", stage.width * 0.9f)
+    private val documentationCell: Cell<Actor?>
+    private val parameterSelectBoxTable = Table().apply { defaults().pad(5f) }
     private val uniqueErrorTable = Table().apply { defaults().pad(5f) }
-
-    val uniqueTextField = TextField("Unique", BaseScreen.skin)
-    private var uniqueTargetsSelectBox: SelectBox<UniqueTarget>
 
     init {
         this.stage = stage // required for width
@@ -92,71 +101,66 @@ class UniqueTable(isMainUnique: Boolean, val ruleset: Ruleset, stage: Stage,
         uniqueTargetsSelectBox.selected = UniqueTarget.Global
         uniqueTargetSelectBoxTable.add(uniqueTargetsSelectBox)
 
-        uniqueTargetSelectBoxTable.add(uniqueSelectBoxTable).row()
+        uniqueTargetSelectBoxTable.add(uniqueSelectBox).width(stage.width * 0.5f).row()
         // Row 2
-        uniqueTargetSelectBoxTable.add()
-        uniqueTargetSelectBoxTable.add(uniqueSearchTextField).row()
+        uniqueTargetSelectBoxTable.add() // shift search to below uniques selectbox
+        uniqueTargetSelectBoxTable.add(uniqueSearchTextField).center().row()
         add(uniqueTargetSelectBoxTable).row()
 
         uniqueTargetsSelectBox.onChange {
-            onUniqueTargetChange(uniqueTargetsSelectBox, ruleset)
+            onUniqueTargetChange()
         }
-        if (!isMainUnique) onUniqueTargetChange(uniqueTargetsSelectBox, ruleset)
+        if (!isMainUnique) onUniqueTargetChange()
+        uniqueSelectBox.onChange {
+            onUniqueSelected()
+        }
+        // Unique search
+        uniqueSearchTextField.onChange {
+            setUniqueSelectBoxItems()
+        }
 
         row()
-        add(uniqueTextField).width(stage.width * 0.9f).row()
-        add(parameterSelectBoxTable).row()
-
-
         uniqueTextField.onChange {
-            updateUnique(ruleset, uniqueTextField)
+            updateUnique()
         }
+        add(uniqueTextField).width(stage.width * 0.9f).row()
+
+        documentationCell = add().width(stage.width * 0.9f).pad(0f)
+        row()
+        add(parameterSelectBoxTable).row()
 
         uniqueErrorTable.defaults().pad(5f)
         uniqueErrorTable.background = ImageGetter.getWhiteDotDrawable().tint(Color.DARK_GRAY)
         add(uniqueErrorTable).row()
     }
 
-    private fun onUniqueTargetChange(
-        uniqueTargetsSelectBox: SelectBox<UniqueTarget>,
-        ruleset: Ruleset,
-    ) {
-        val selected = uniqueTargetsSelectBox.selected
-        val uniqueSelectBox = SelectBox<UniqueType>(BaseScreen.skin)
-
-        fun setUniqueSelectBoxItems(){
-            val uniquesForTarget = UniqueType.entries.filter { it.canAcceptUniqueTarget(selected) }
-            val uniquesFiltered = uniquesForTarget.filter { it.getDeprecationAnnotation() == null }
-                .filter { it.text.contains(uniqueSearchTextField.text, ignoreCase = true) }
-            uniqueSelectBox.setItems(uniquesFiltered)
-        }
-
-        setUniqueSelectBoxItems()
-
-        uniqueSelectBox.onChange {
-            onUniqueSelected(uniqueSelectBox, uniqueTextField, ruleset, parameterSelectBoxTable)
-        }
-        onUniqueSelected(uniqueSelectBox, uniqueTextField, ruleset, parameterSelectBoxTable)
-
-        // Unique search
-        uniqueSearchTextField.onChange {
-            setUniqueSelectBoxItems()
-        }
-
-        uniqueSelectBoxTable.clear()
-        uniqueSelectBoxTable.add(uniqueSelectBox).width(stage.width * 0.5f).row()
+    private fun setUniqueSelectBoxItems() {
+        val oldType = uniqueSelectBox.selected
+        uniqueSelectBox.selection.clear()
+        val target = uniqueTargetsSelectBox.selected
+        val uniquesForTarget = UniqueType.entries.filter { it.canAcceptUniqueTarget(target) }
+        val uniquesFiltered = uniquesForTarget.filter { it.getDeprecationAnnotation() == null }
+            .filter { it.text.contains(uniqueSearchTextField.text, ignoreCase = true) }
+        uniqueSelectBox.setItems(uniquesFiltered)
+        if (oldType in uniquesFiltered)
+            uniqueSelectBox.selected = oldType
     }
 
-    private fun onUniqueSelected(
-        uniqueSelectBox: SelectBox<UniqueType>,
-        uniqueTextField: TextField,
-        ruleset: Ruleset,
-        parameterSelectBoxTable: Table
-    ) {
+    private fun onUniqueTargetChange() = setUniqueSelectBoxItems()
+
+    private fun onUniqueSelected() {
         val uniqueType = uniqueSelectBox.selected ?: return
 
         uniqueTextField.text = uniqueType.text
-        updateUnique(ruleset, uniqueTextField)
+        updateUnique()
+
+        if (uniqueType.docDescription.isNullOrEmpty()) {
+            documentationCell.setActor(null).pad(0f)
+        } else {
+            documentationLabel.setText(uniqueType.docDescription)
+            documentationLabel.optimizePrefWidth()
+            documentationCell.setActor(documentationLabel).pad(10f)
+        }
 
         parameterSelectBoxTable.clear()
         for ((index, parameter) in uniqueType.text.getPlaceholderParameters().withIndex()) {
@@ -174,7 +178,7 @@ class UniqueTable(isMainUnique: Boolean, val ruleset: Ruleset, stage: Stage,
                     currentParams[index] = paramSelectBox.selected ?: return@onChange
                     val newText = uniqueType.text.fillPlaceholders(*currentParams.toTypedArray())
                     uniqueTextField.text = newText
-                    updateUnique(ruleset, uniqueTextField)
+                    updateUnique()
                 }
                 paramTable.add(paramSelectBox).row()
 
@@ -190,12 +194,12 @@ class UniqueTable(isMainUnique: Boolean, val ruleset: Ruleset, stage: Stage,
         }
     }
 
-    private fun updateUnique(ruleset: Ruleset, uniqueTextField: TextField) {
+    private fun updateUnique() {
         uniqueErrorTable.clear()
         uniqueErrorTable.add("Errors:".toLabel()).row()
 
         val uniqueErrors = UniqueValidator(ruleset)
-            .checkUnique(Unique(uniqueTextField.text), true, null, true)
+            .checkUnique(Unique(uniqueTextField.text), true, null)
         for (error in uniqueErrors)
             uniqueErrorTable.add(error.text.toLabel().apply { wrap = true }).width(stage.width/2).row()
         if (uniqueErrors.isEmpty())
@@ -207,6 +211,6 @@ class UniqueTable(isMainUnique: Boolean, val ruleset: Ruleset, stage: Stage,
     /** Needs to come AFTER the UniqueTable is registered in the UniqueBuilderScreen,
      * because it needs to update the final unique text */
     fun initialize() {
-        onUniqueTargetChange(uniqueTargetsSelectBox, ruleset)
+        onUniqueTargetChange()
     }
 }

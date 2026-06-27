@@ -83,6 +83,7 @@ object StrategicBonusResourcePlacementLogic {
         tileMap: TileMap,
         tileData: TileDataMap
     ) {
+        val rng = GameContext(gameInfo = tileMap.gameInfo).stateBasedRandom("StrategicBonusResourcePlacementLogic.placeBonusInThirdRingOfStart")
         for (region in regions) {
             val terrain = if (region.type == "Hybrid") region.terrainCounts.filterNot { it.key == "Coastal" }
                 .maxByOrNull { it.value }!!.key
@@ -95,7 +96,7 @@ object StrategicBonusResourcePlacementLogic {
                 val possibleResources =
                     ruleset.tileResources.values.filter { it.resourceType == ResourceType.Bonus && terrain in it.terrainsCanBeFoundOn }
                 if (possibleResources.isEmpty()) continue
-                possibleResources.random()
+                possibleResources.random(rng)
             }
             val candidateTiles = tileMap[region.startPosition!!].getTilesAtDistance(3).shuffled()
             val amount = if (resourceUnique != null) 2 else 1 // Place an extra if the region type requests it
@@ -105,7 +106,7 @@ object StrategicBonusResourcePlacementLogic {
                     it.resourceType == ResourceType.Bonus &&
                             it.terrainsCanBeFoundOn.any { terrainName -> ruleset.terrains[terrainName]!!.type == TerrainType.Water }
                 }
-                    .randomOrNull()
+                    .randomOrNull(rng)
                 if (fishyBonus != null)
                     MapRegionResources.tryAddingResourceToTiles(tileData, fishyBonus, 1, candidateTiles)
             }
@@ -223,6 +224,7 @@ object StrategicBonusResourcePlacementLogic {
         fallbackStrategic: Boolean,
         totalPlaced: HashMap<TileResource, Int>
     ) {
+        val rng = GameContext(gameInfo = landList[0].tileMap.gameInfo).stateBasedRandom("StrategicBonusResourcePlacementLogic.placeMinorDepositsOnLand")
         val frequency = (baseMinorDepositFrequency * bonusMultiplier).toInt()
         val minorDepositsToAdd =
             (landList.size / frequency) + 1 // I sometimes have division by zero errors on this line
@@ -230,7 +232,7 @@ object StrategicBonusResourcePlacementLogic {
         for (tile in landList) {
             if (tile.resource != null || tileData[tile.position]!!.impacts.containsKey(ImpactType.Strategic))
                 continue
-            val conditionalTerrain = GameContext(attackedTile = tile)
+            val conditionalTerrain = GameContext(tile = tile)
             if (tile.getBaseTerrain().hasUnique(UniqueType.BlocksResources, conditionalTerrain))
                 continue
             val weightings = strategicResources.map {
@@ -243,9 +245,9 @@ object StrategicBonusResourcePlacementLogic {
             }
             if (weightings.sum() <= 0) continue
 
-            val resourceToPlace = strategicResources.randomWeighted(weightings)
+            val resourceToPlace = strategicResources.randomWeighted(weightings, rng)
             tile.setTileResource(resourceToPlace, majorDeposit = false)
-            tileData.placeImpact(ImpactType.Strategic, tile, Random.nextInt(2) + Random.nextInt(2))
+            tileData.placeImpact(ImpactType.Strategic, tile, rng.nextInt(2) + rng.nextInt(2))
             totalPlaced[resourceToPlace] = totalPlaced[resourceToPlace]!! + 1
             minorDepositsAdded++
             if (minorDepositsAdded >= minorDepositsToAdd)
@@ -260,6 +262,7 @@ object StrategicBonusResourcePlacementLogic {
         totalPlaced: HashMap<TileResource, Int>,
         tileData: TileDataMap
     ) {
+        val rng = GameContext(gameInfo = tileMap.gameInfo).stateBasedRandom("StrategicBonusResourcePlacementLogic.placeSmallDepositsOfModernStrategicResourcesOnCityStates")
         val lastEra = ruleset.eras.values.maxOf { it.eraNumber }
         val modernOptions = strategicResources.filter {
             it.revealedBy != null &&
@@ -269,7 +272,7 @@ object StrategicBonusResourcePlacementLogic {
         if (modernOptions.any())
             for (cityStateLocation in tileMap.startingLocationsByNation
                 .filterKeys { ruleset.nations[it]!!.isCityState }.values.map { it.first() }) {
-                val resourceToPlace = modernOptions.random()
+                val resourceToPlace = modernOptions.random(rng)
                 totalPlaced[resourceToPlace] =
                     totalPlaced[resourceToPlace]!! + MapRegionResources.tryAddingResourceToTiles(
                         tileData,

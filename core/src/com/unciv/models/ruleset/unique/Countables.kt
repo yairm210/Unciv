@@ -277,6 +277,33 @@ enum class Countables(
             UniqueParameterType.CivFilter.getKnownValuesForAutocomplete(ruleset)
                 .map { text.fillPlaceholders(it) }.toSet()
     },
+
+    WorkedTilesCity("Worked [tileFilter] Tiles in this city") {
+        override fun eval(parameterText: String, gameContext: GameContext): Int? {
+            val city = gameContext.city ?: return null
+            val filter = parameterText.getPlaceholderParameters()[0]
+            return city.getWorkedTiles().filter { it.matchesFilter(filter, city.civ) }.count()
+        }
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
+            return UniqueParameterType.TileFilter.getTranslatedErrorSeverity(parameterText, ruleset)
+        }
+
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
+    },
+
+    WorkedTiles("Worked [tileFilter] Tiles") {
+        override fun eval(parameterText: String, gameContext: GameContext): Int? {
+            val cities = gameContext.civInfo?.cities ?: return null
+            val filter = parameterText.getPlaceholderParameters()[0]
+            return cities.sumOf { it.getWorkedTiles().filter { it.matchesFilter(filter, gameContext.civInfo) }.count() }
+        }
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
+            return UniqueParameterType.TileFilter.getTranslatedErrorSeverity(parameterText, ruleset)
+        }
+
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
+    },
+
     OwnedTiles("Owned [tileFilter] Tiles") {
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val filter = parameterText.getPlaceholderParameters()[0]
@@ -299,7 +326,7 @@ enum class Countables(
         override val example: String = "[Desert] Tiles"
     },
     TileResources {
-        override val documentationHeader = "Resource name - From [TileResources.json](3-Map-related-JSON-files.md#tileresourcesjson)"
+        override val documentationHeader = "Resource name - From [TileResources.json](Mod-file-structure/3-Map-related-JSON-files.md#tileresourcesjson)"
         override val documentationStrings = listOf(
             "Can be city stats or civilization stats, depending on where the unique is used",
             "For example: If a unique is placed on a building, then the retrieved resources will be of the city. If placed on a policy, they will be of the civilization.",

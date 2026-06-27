@@ -1,5 +1,6 @@
 package com.unciv.models
 
+import com.unciv.utils.withHash
 import java.lang.reflect.Modifier
 
 /** Used as a member of [ModOptions][com.unciv.models.ruleset.ModOptions] for moddable "constants" - factors in formulae and such.
@@ -159,7 +160,7 @@ class ModConstants {
         var result = 0
         for (field in this::class.java.declaredFields) {
             if (field.modifiers and Modifier.STATIC != 0) continue
-            result = result * 31 + field.get(this).hashCode()
+            result = result.withHash(field.get(this).hashCode())
         }
         return result
     }

@@ -43,7 +43,7 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
         if (civInfo.isAtWarWith(otherCiv))
             offers.add(TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty, speed = civInfo.gameInfo.speed))
         
-        if (civInfo.diplomacyFunctions.hasMutualEmbassyWith(otherCiv)
+        if (civInfo.diplomacyFunctions.meetsEmbassyRequirementFor(otherCiv)
             && !otherCiv.getDiplomacyManager(civInfo)!!.hasOpenBorders
             && civInfo.hasUnique(UniqueType.EnablesOpenBorders)
             && otherCiv.hasUnique(UniqueType.EnablesOpenBorders)) {
@@ -223,10 +223,19 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
 
         // We shouldn't evaluate trades if we are doing a peace treaty
         // Their value can be so big it throws the gift system out of wack
-        if (applyGifts && !currentTrade.ourOffers.any { it.name == Constants.peaceTreaty }) {
+        // Also, offers for peace/war with a third nation are not a "gift"
+        val shouldChangeRelationshipDueToGiftedValue = applyGifts
+                && !currentTrade.ourOffers.any { 
+                    it.name == Constants.peaceTreaty
+                            || it.type == TradeOfferType.WarDeclaration
+                            || it.type == TradeOfferType.PeaceProposal
+                }
+        
+        if (shouldChangeRelationshipDueToGiftedValue) {
             // Must evaluate before moving, or else cities have already moved and we get an exception
             val ourGoldValueOfTrade = TradeEvaluation().getTradeAcceptability(currentTrade, ourCivilization, otherCivilization, includeDiplomaticGifts = false)
             val theirGoldValueOfTrade = TradeEvaluation().getTradeAcceptability(currentTrade.reverse(), otherCivilization, ourCivilization, includeDiplomaticGifts = false)
+            
             if (ourGoldValueOfTrade > theirGoldValueOfTrade) {
                 val isPureGift = currentTrade.ourOffers.isEmpty()
                 ourDiploManager.giftGold(ourGoldValueOfTrade - theirGoldValueOfTrade.coerceAtLeast(0), isPureGift)

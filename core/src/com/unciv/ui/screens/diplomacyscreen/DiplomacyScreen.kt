@@ -9,6 +9,7 @@ import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
@@ -170,7 +171,7 @@ class DiplomacyScreen(
             }
 
             if (civ.isCityState && civ.questManager.haveQuestsFor(viewingCiv)) {
-                val questIcon = ImageGetter.getImage("OtherIcons/Quest")
+                val questIcon = ImageGetter.getImage(NotificationIcon.Quest)
                     .surroundWithCircle(size = 30f, color = Color.GOLDENROD)
                 civIndicator.addActor(questIcon)
                 questIcon.x = floor(civIndicator.width - questIcon.width)
@@ -330,6 +331,10 @@ class DiplomacyScreen(
     private fun getDeclareWarButtonText(otherCiv: Civilization): String {
         val messageLines = arrayListOf<String>()
         messageLines += "Declare war on [${otherCiv.civName}]?"
+        
+        if (otherCiv.getDiplomacyManager(viewingCiv)!!.hasFlag(DiplomacyFlags.AgreedToNotAttackUs))
+            messageLines += "This will break your promise to not attack them. Other leaders will view this unfavorably."
+        
         // Tell the player who all will join the other side from defensive pacts
         val otherCivDefensivePactList = otherCiv.diplomacy.values.filter {
             otherCivDiploManager -> otherCivDiploManager.otherCiv != viewingCiv

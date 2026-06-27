@@ -186,12 +186,17 @@ class TileImprovementFunctions(val tile: Tile) {
             city.civ.cache.updateCivResources()
             city.reassignPopulationDeferred()
         }
-        
+
         if (improvement == null) {
+            val wasEncampment = tile.improvement == Constants.barbarianEncampment
             tile.improvementIsPillaged = false
             tile.setImprovementBasic(null)
             updateVisibility()
             updateCity()
+            if (!wasEncampment) return
+            // Any barbarian encampment cleared outside MapUnit.clearEncampment should obsolete ClearBarbarianCamp quests
+            for (cityState in tile.tileMap.gameInfo.getAliveCityStates())
+                cityState.questManager.handleObsoleteGlobalQuests()
             return
         }
 
@@ -212,6 +217,9 @@ class TileImprovementFunctions(val tile: Tile) {
                     // Let's not cancel our "Districts" in progress unless when finishing it (don't mess it up with accidental worker movements etc.)
                     removeCreatesOneImprovementMarker()
                 }
+
+                // relevant when the improvement was created instantly - such as Great Improvement
+                tile.improvementQueue.removeIf { tile.ruleset.tileImprovements[it.improvement]?.isRoad() == true }
             }
         }
 
@@ -244,13 +252,6 @@ class TileImprovementFunctions(val tile: Tile) {
         unit: MapUnit? = null
     ) {
         val gameContext = GameContext(civ, unit = unit, tile = tile)
-        
-        for (unique in improvement.getMatchingUniques(UniqueType.CostsResources, gameContext)) {
-            val resource = tile.ruleset.tileResources[unique.params[1]] ?: continue
-            var amount = unique.params[0].toInt()
-            if (unique.isModifiedByGameSpeed()) amount = (amount * civ.gameInfo.speed.modifier).toInt()
-            civ.gainStockpiledResource(resource, -amount)
-        }
 
         for (unique in improvement.uniqueObjects) {
             if (unique.hasTriggerConditional() || !unique.conditionalsApply(gameContext)) continue
@@ -326,15 +327,19 @@ class TileImprovementFunctions(val tile: Tile) {
 
     /** Marks tile as target tile for a building with a [UniqueType.CreatesOneImprovement] unique */
     fun markForCreatesOneImprovement(improvement: String) {
-        tile.stopWorkingOnImprovement()
+        tile.improvementQueue.clear()
         tile.queueImprovement(improvement, -1)
     }
 
-    /** Un-Marks a tile as target tile for a building with a [UniqueType.CreatesOneImprovement] unique,
-     *  and ensures that matching queued buildings are removed. */
-    fun removeCreatesOneImprovementMarker() {
+    /** Un-Marks a tile as target tile for a building with a [UniqueType.CreatesOneImprovement] unique.
+     *  @param removeConstruction whether to also remove the matching queued building. */
+    fun removeCreatesOneImprovementMarker(removeConstruction: Boolean = true) {
         if (!tile.isMarkedForCreatesOneImprovement()) return
-        tile.owningCity?.cityConstructions?.removeCreateOneImprovementConstruction(tile.improvementInProgress!!)
-        tile.stopWorkingOnImprovement()
+        val improvementInProgress = checkNotNull(tile.improvementInProgress) {
+            "Cannot remove ${UniqueType.CreatesOneImprovement.name} marker from ${tile.position} without an improvement in progress"
+        }
+        tile.improvementQueue.clear()
+        if (removeConstruction)
+            tile.owningCity?.cityConstructions?.removeCreateOneImprovementConstruction(improvementInProgress)
     }
 }

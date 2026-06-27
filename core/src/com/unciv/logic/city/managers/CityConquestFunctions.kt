@@ -1,9 +1,11 @@
-﻿package com.unciv.logic.city.managers
+package com.unciv.logic.city.managers
 
 import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.city.City
+import com.unciv.logic.city.City.Companion.NO_ID
+import com.unciv.logic.city.City.Companion.pseudoRandomId
 import com.unciv.logic.city.CityFlags
 import com.unciv.logic.city.CityFocus
 import com.unciv.logic.civilization.Civilization
@@ -56,6 +58,7 @@ class CityConquestFunctions(val city: City) {
             when {
                 building.hasUnique(UniqueType.NotDestroyedWhenCityCaptured) || building.isWonder -> continue
                 building.hasUnique(UniqueType.IndicatesCapital, city.state) -> continue // Palace needs to stay a just a bit longer so moveToCiv isn't confused
+                building.hasUnique(UniqueType.MovesToNewCapital, city.state) -> continue // Will move to the civ's new capital
                 building.hasUnique(UniqueType.DestroyedWhenCityCaptured) ->
                     city.cityConstructions.removeBuilding(building)
                 // Regular buildings have a 34% chance of removal
@@ -294,6 +297,7 @@ class CityConquestFunctions(val city: City) {
         oldCiv.cities = oldCiv.cities.withoutItem(city)
         newCiv.cities = newCiv.cities.withItem(city)
         city.civ = newCiv
+        city.id = if (city.id != NO_ID) city.id else pseudoRandomId(newCiv)
         city.state = GameContext(city)
         city.hasJustBeenConquered = false
         city.turnAcquired = city.civ.gameInfo.turns

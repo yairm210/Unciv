@@ -1,11 +1,8 @@
 package com.unciv.ui.components.tilegroups.layers
 
-import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.scenes.scene2d.Actor
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.ui.components.NonTransformGroup
 import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.images.ImageGetter
@@ -17,19 +14,12 @@ class UnitSpriteSlot {
 
 class TileLayerUnitSprite(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, size) {
 
-    override fun act(delta: Float) {}
-    override fun hit(x: Float, y: Float, touchable: Boolean): Actor? = null
-    override fun draw(batch: Batch?, parentAlpha: Float) {
-        if (civilianSlot == null && militarySlot == null) return
-        super.draw(batch, parentAlpha)
-    }
-    
     // Slots are only filled if units exist, and images for those units exist
     private var civilianSlot: UnitSpriteSlot? = null
     private var militarySlot: UnitSpriteSlot? = null
 
 
-    fun getSpriteSlot(unit:MapUnit) = if (unit.isCivilian()) civilianSlot else militarySlot
+    fun getSpriteSlot(unit: MapUnit) = if (unit.isCivilian()) civilianSlot else militarySlot
 
     private fun showMilitaryUnit(viewingCiv: Civilization) = tileGroup.isForceVisible
             || viewingCiv.viewableInvisibleUnitsTiles.contains(tileGroup.tile)
@@ -47,14 +37,20 @@ class TileLayerUnitSprite(tileGroup: TileGroup, size: Float) : TileLayer(tileGro
 
         if (currentSlot == null && location == "") return null // No-op - had none, has none
         if (currentSlot?.currentImageLocation == "$nationName$location") return currentSlot // No-op - had, has
-        
+
         if (location == "" || !ImageGetter.imageExists(location)){
-            currentSlot?.spriteGroup?.remove()
+            currentSlot?.spriteGroup?.let { removeOwnedActor(it) }
             return null
-        } 
-        
-        val slot = currentSlot ?: UnitSpriteSlot()
-            .apply { this@TileLayerUnitSprite.addActor(spriteGroup) }
+        }
+
+        val slot = currentSlot ?: UnitSpriteSlot().apply {
+            // Position the container at the tile origin so children use tile-local coords.
+            // This keeps spriteGroup visible to viewport culling and preserves the
+            // tile-local child positions that WorldMapHolder's animation code relies on.
+            spriteGroup.setPosition(tileX, tileY)
+            spriteGroup.setSize(size, size)
+            addOwnedActor(spriteGroup)
+        }
         slot.currentImageLocation = "$nationName$location"
         slot.spriteGroup.clear()
 
@@ -67,16 +63,18 @@ class TileLayerUnitSprite(tileGroup: TileGroup, size: Float) : TileLayer(tileGro
         )
         for (pixelUnitImage in pixelUnitImages) {
             slot.spriteGroup.addActor(pixelUnitImage)
-            pixelUnitImage.setHexagonSize()// Treat this as A TILE, which gets overlayed on the base tile.
+            // tileLocal=true: spriteGroup is already at (tileX,tileY) so children only need
+            // the hex-local offset (hexagonImagePosition), not the full absolute position.
+            pixelUnitImage.setHexagonSize(tileLocal = true)
         }
         return slot
     }
 
     fun dim() {
-        color.a = 0.5f
+        forEachOwnedActor { it.color.a = 0.5f }
     }
 
-    override fun doUpdate(viewingCiv: Civilization?, localUniqueCache: LocalUniqueCache) {
+    override fun doUpdate(viewingCiv: Civilization?) {
 
         val isPixelUnitsEnabled = UncivGame.Current.settings.showPixelUnits
         val isViewable = viewingCiv == null || isViewable(viewingCiv)
@@ -94,8 +92,8 @@ class TileLayerUnitSprite(tileGroup: TileGroup, size: Float) : TileLayer(tileGro
     }
 
     fun reset() {
-        civilianSlot?.spriteGroup?.remove()
-        militarySlot?.spriteGroup?.remove()
+        civilianSlot?.spriteGroup?.let { removeOwnedActor(it) }
+        militarySlot?.spriteGroup?.let { removeOwnedActor(it) }
         civilianSlot = null
         militarySlot = null
     }

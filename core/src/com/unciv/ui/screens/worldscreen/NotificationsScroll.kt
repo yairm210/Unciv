@@ -19,6 +19,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.MayaCalendar.toMayaNumerals
 import com.unciv.ui.components.extensions.packIfNeeded
+import com.unciv.ui.components.extensions.removeFontColorFromStatIcons
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.onClick
@@ -29,6 +30,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.BaseScreen.Companion.skinStrings
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
+import com.unciv.utils.withHash
 import yairm210.purity.annotations.Pure
 import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
 
@@ -228,7 +230,7 @@ class NotificationsScroll(
         // Detect what to draw and if there's any changes part 1
         if (oneTimeNotification == null && clickedNotification != null)
             oneTimeNotification = clickedNotification  // reselecting can keep a "one-time" in the list
-        val newHash = notifications.hashCode() + oneTimeNotification.hashCode() * 31
+        val newHash = notifications.hashCode().withHash(oneTimeNotification.hashCode())
 
         // Determine highlight
         coloredHighlight = false
@@ -266,7 +268,7 @@ class NotificationsScroll(
 
         val backgroundDrawable = BaseScreen.skinStrings.getUiBackground("WorldScreen/Notification", BaseScreen.skinStrings.roundedEdgeRectangleShape)
 
-        val orderedNotifications = (additionalNotification + notifications.asReversed())
+        val orderedNotifications = (additionalNotification + notifications)
             .groupBy { it.category }
             .toSortedMap()  // This sorts by Category ordinal, so far intentional - the order of the grouped lists are unaffected
         for ((category, categoryNotifications) in orderedNotifications) {
@@ -386,6 +388,7 @@ class NotificationsScroll(
             val maxLabelWidth = maxEntryWidth - (itemIconSize + 5f) * notification.icons.size - 10f
             val label = WrappableLabel(notification.text, maxLabelWidth, ImageGetter.CHARCOAL, labelFontSize, hideIcons = true)
             label.setAlignment(Align.center)
+            label.removeFontColorFromStatIcons()
             if (label.prefWidth > maxLabelWidth * scaleFactor) {  // can't explain why the comparison needs scaleFactor
                 label.wrap = true
                 listItem.add(label).maxWidth(label.optimizePrefWidth()).padRight(10f)

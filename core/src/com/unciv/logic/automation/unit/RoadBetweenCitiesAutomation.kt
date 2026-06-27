@@ -246,6 +246,14 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedF
 
         val isCandidateTilePredicate: (Tile) -> Boolean = { it.isLand && MapPathing.isValidRoadPathTile(city.civ, it) }
         val toConnectTile = city.getCenterTile()
+        val cityTilesToSeek = HashSet(tilesOfConnectedCities)
+        if (UncivGame.Current.settings.useAStarPathfinding) {
+            val pathToCity =
+                city.getRoadPathToAny(cityTilesToSeek, WorkerAutomationConst.maxBfsReachPadding)
+                    ?: return null
+            val cityTile = pathToCity.last()
+            return Pair(cityTile.getCity()!!, pathToCity)
+        }
         @LocalState val bfs: BFS = bfsCache[toConnectTile.position.toVector2()] ?: run {
             val bfs = BFS(toConnectTile, isCandidateTilePredicate)
             bfs.maxSize = HexMath.getNumberOfTilesInHexagon(
@@ -255,7 +263,6 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedF
             bfsCache[toConnectTile.position.toVector2()] = bfs
             bfs
         }
-        val cityTilesToSeek = HashSet(tilesOfConnectedCities)
 
         var nextTile = bfs.nextStep()
         while (nextTile != null) {
@@ -304,7 +311,8 @@ class RoadBetweenCitiesAutomation(val civInfo: Civilization, private val cachedF
         // Search through ALL candidate cities for the closest tile to build a road on
         for (toConnectCity in candidateCities.sortedByDescending { it.getCenterTile().aerialDistanceTo(unitStartingTile) }) {
             val tilesByPriority = getRoadsToBuildFromCity(toConnectCity).flatMap { roadPlan -> roadPlan.tiles.map { tile ->  Pair(tile, roadPlan.priority) } }
-            val tilesSorted = tilesByPriority.filter { it.first.getUnpillagedRoad() < bestRoadAvailable }
+            val tilesSorted = tilesByPriority
+                    .filter { !it.first.isMarkedForCreatesOneImprovement() && it.first.getUnpillagedRoad() < bestRoadAvailable }
                     .sortedBy { it.first.aerialDistanceTo(unitStartingTile) + (it.second / 10f) }
             val bestTile = tilesSorted.firstOrNull {
                 unitStartingTile == it.first || (unit.movement.canMoveTo(it.first) && unit.movement.canReach(it.first))

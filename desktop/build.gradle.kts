@@ -104,18 +104,8 @@ for (platform in Platform.values()) {
 
         // Needs to be here and not in doLast because the zip task depends on the outDir
         val jarFile = "$rootDir/desktop/build/libs/${BuildConfig.appName}.jar"
-        val config = PackrConfig()
-        config.platform = platform
-
-        config.apply {
-            executable = "Unciv"
-            classpath = listOf(jarFile)
-            removePlatformLibs = config.classpath
-            mainClass = mainClassName
-            vmArgs = listOf("Xmx2G")
-            minimizeJre = "desktop/packrConfig.json"
-            outDir = file("packr")
-        }
+        val outputDir = file("packr")
+        
 
         doLast {
             //  https://gist.github.com/seanf/58b76e278f4b7ec0a2920d8e5870eed6
@@ -137,7 +127,7 @@ for (platform in Platform.values()) {
             }
 
 
-            if (config.outDir!!.exists()) delete(config.outDir)
+            if (outputDir.exists()) delete(outputDir)
 
             // Requires that both packr and the jre are downloaded, as per buildAndDeploy.yml, "Upload to itch.io"
 
@@ -157,15 +147,15 @@ for (platform in Platform.values()) {
                     " --executable Unciv" +
                     " --classpath $jarFile" +
                     " --mainclass $mainClassName" +
-                    " --vmargs Xmx1G " +
-                    " --output ${config.outDir}"
+                    " --vmargs Xmx4G " +
+                    " --output $outputDir"
             command.runCommand(rootDir)
-            Files.copy(File("$rootDir/extraImages/Icons/Unciv.ico"), File(config.outDir, "Unciv.ico"))
+            Files.copy(File("$rootDir/extraImages/Icons/Unciv.ico"), File(outputDir, "Unciv.ico"))
         }
 
         tasks.register<Zip>("zip${platformName}") {
             archiveFileName.set("${BuildConfig.appName}-${platformName}.zip")
-            from(config.outDir)
+            from(outputDir)
             destinationDirectory.set(deployFolder)
         }
 

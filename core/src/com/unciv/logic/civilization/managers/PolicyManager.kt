@@ -195,7 +195,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
      */
     fun getAdoptedPoliciesMatching(
         policyFilter: String,
-        gameContext: GameContext,
+        gameContext: GameContext = civInfo.state,
         forRemoval: Boolean = false
     ): Sequence<Policy> {
         val rulesetPolicies = getRulesetPolicies()

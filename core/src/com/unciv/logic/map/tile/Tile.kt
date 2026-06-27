@@ -5,6 +5,7 @@ import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.MultiFilter
+import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
@@ -268,10 +269,16 @@ class Tile : IsPartOfGameInfoSerialization {
 
     /** Returns military, civilian and air units in tile */
     @Readonly
-    fun getUnits() = sequence {
-        if (militaryUnit != null) yield(militaryUnit!!)
-        if (civilianUnit != null) yield(civilianUnit!!)
-        if (airUnits.isNotEmpty()) yieldAll(airUnits)
+    fun getUnits(): Sequence<MapUnit> {
+        // common case - do not allocate memory for a new sequence
+        if (militaryUnit == null && civilianUnit == null && airUnits.isEmpty())
+            return emptySequence()
+        
+        return sequence {
+            if (militaryUnit != null) yield(militaryUnit!!)
+            if (civilianUnit != null) yield(civilianUnit!!)
+            if (airUnits.isNotEmpty()) yieldAll(airUnits)
+        }
     }
 
     /** This is for performance reasons of canPassThrough() - faster than getUnits().firstOrNull() */
@@ -289,6 +296,7 @@ class Tile : IsPartOfGameInfoSerialization {
             if (naturalWonder == null) throw Exception("No natural wonder exists for this tile!")
             else ruleset.terrains[naturalWonder!!]!!
 
+    /** Actively observed tiles (no fog of war) */
     @Readonly
     fun isVisible(player: Civilization): Boolean {
         if (DebugUtils.VISIBLE_MAP)
@@ -296,6 +304,7 @@ class Tile : IsPartOfGameInfoSerialization {
         return player.viewableTiles.contains(this)
     }
 
+    /** Tiles that at some point have been explored (may have fog of war) */
     @Readonly
     fun isExplored(player: Civilization): Boolean {
         if (DebugUtils.VISIBLE_MAP || player.isSpectator())
@@ -528,12 +537,12 @@ class Tile : IsPartOfGameInfoSerialization {
 
     /** Implements [UniqueParameterType.TileFilter][com.unciv.models.ruleset.unique.UniqueParameterType.TileFilter] */
     @Readonly
-    fun matchesFilter(filter: String, civInfo: Civilization? = null): Boolean {
+    fun matchesFilter(filter: String, civInfo: Civilization? = null): Boolean = timeThis("Tile.matchesFilter")  {
         return MultiFilter.multiFilter(filter, { matchesSingleFilter(it, civInfo) })
     }
 
     @Readonly
-    private fun matchesSingleFilter(filter: String, civInfo: Civilization? = null): Boolean {
+    private fun matchesSingleFilter(filter: String, civInfo: Civilization? = null): Boolean = timeThis("Tile.matchesSingleFilter")  {
         if (matchesSingleTerrainFilter(filter, civInfo)) return true
         if ((improvement == null || improvementIsPillaged) && filter == "unimproved") return true
         if (improvement != null && !improvementIsPillaged && filter == "improved") return true
@@ -606,9 +615,22 @@ class Tile : IsPartOfGameInfoSerialization {
     @Readonly fun isAdjacentToCoast() = _isAdjacentToCoast
 
     @Readonly fun getViewableTilesList(distance: Int): List<Tile> = tileMap.getViewableTiles(position, distance)
+    @Deprecated(message = "forEachTileInDistance is faster. If not viable, then this can still be used",
+        replaceWith = ReplaceWith("forEachTileInDistance"))
     @Readonly fun getTilesInDistance(distance: Int): Sequence<Tile> = tileMap.getTilesInDistance(position, distance)
+    @Deprecated(message = "forEachTileInDistanceRange is faster. If not viable, then this can still be used",
+        replaceWith = ReplaceWith("forEachTileInDistanceRange"))
     @Readonly fun getTilesInDistanceRange(range: IntRange): Sequence<Tile> = tileMap.getTilesInDistanceRange(position, range)
+    @Deprecated(message = "forEachTileAtDistance is faster. If not viable, then this can still be used",
+        replaceWith = ReplaceWith("forEachTileAtDistance"))
     @Readonly fun getTilesAtDistance(distance: Int): Sequence<Tile> = tileMap.getTilesAtDistance(position, distance)
+    
+    @Readonly fun forEachTileInDistance(distance: Int, op: (Tile)->Unit) = tileMap.forEachTileInDistance(position, distance, op)
+    @Readonly fun forEachTileInDistance(distance: Int, filter: (Tile)->Boolean, op: (Tile)->Unit) = tileMap.forEachTileInDistance(position, distance, filter, op)
+    @Readonly fun forEachTileInDistanceRange(range: IntRange, op: (Tile)->Unit) = tileMap.forEachTileInDistanceRange(position, range, op)
+    @Readonly fun forEachTileInDistanceRange(range: IntRange, filter: (Tile)->Boolean, op: (Tile)->Unit) = tileMap.forEachTileInDistanceRange(position, range, filter, op)
+    @Readonly fun forEachTileAtDistance(distance: Int, op: (Tile)->Unit) = tileMap.forEachTileAtDistance(position, distance, op)
+    @Readonly fun forEachTileAtDistance(distance: Int, filter: (Tile)->Boolean, op: (Tile)->Unit) = tileMap.forEachTileAtDistance(position, distance, filter, op)
 
     @Readonly
     fun getDefensiveBonus(includeImprovementBonus: Boolean = true, unit: MapUnit? = null): Float {
@@ -808,6 +830,8 @@ class Tile : IsPartOfGameInfoSerialization {
         else probability
     }
 
+    /** Will be false if this is a "fake tile" - either created for calculation purposes, 
+     * or to display how things look e.g. in Civilopedia  */
     fun isTilemapInitialized() = ::tileMap.isInitialized
 
     //endregion
@@ -1017,8 +1041,8 @@ class Tile : IsPartOfGameInfoSerialization {
         }
     }
 
-    fun setImprovementBasic(tileImprovement: String) {
-        val tileImprovement = ruleset.tileImprovements[tileImprovement]
+    fun setImprovementBasic(improvementName: String) {
+        val tileImprovement = ruleset.tileImprovements[improvementName]
         this.tileImprovement = tileImprovement
         improvement = tileImprovement?.name
     }
@@ -1052,13 +1076,28 @@ class Tile : IsPartOfGameInfoSerialization {
         }
     }
 
+    /** Clear road owner, for console `civ remove` */
+    fun removeRoadOwner() {
+        roadOwner = ""
+        roadOwnerObject = null
+    }
+
     fun startWorkingOnImprovement(improvement: TileImprovement, civInfo: Civilization, unit: MapUnit) {
+        if (isMarkedForCreatesOneImprovement()) return
+        
+        val gameContext = GameContext(civInfo, unit = unit, tile = this)
+        for ((resourceName, amount) in improvement.getStockpiledResourceRequirements(gameContext)) {
+            val resource = ruleset.tileResources[resourceName] ?: continue
+            civInfo.gainStockpiledResource(resource, -amount)
+        }
+
         improvementQueue.clear()
         queueImprovement(improvement, civInfo, unit)
     }
 
     /** Clears [improvementQueue] */
     fun stopWorkingOnImprovement() {
+        if (isMarkedForCreatesOneImprovement()) return
         improvementQueue.clear()
     }
 

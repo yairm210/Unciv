@@ -1,6 +1,7 @@
 package com.unciv.logic
 
 import com.unciv.ui.screens.mainmenuscreen.EasterEggFloatingArt
+import com.unciv.utils.hashOf
 import yairm210.purity.annotations.Pure
 import java.time.DayOfWeek
 import java.time.Instant
@@ -122,7 +123,7 @@ object HolidayDates {
                 (1..12)
                     .map { LocalDate.of(year, it, 13) }
                     .filter { it.dayOfWeek == DayOfWeek.FRIDAY }
-                    .randomOrNull()
+                    .randomOrNull(Random(year))
                     ?.let { DateRange.of(it) }
                     ?: DateRange.never
         },
@@ -159,10 +160,10 @@ object HolidayDates {
             if (other !is DateRange) return false
             return start == other.start && endInclusive == other.endInclusive
         }
-        override fun hashCode() = 31 * start.hashCode() + endInclusive.hashCode()
+        override fun hashCode() = hashOf(start.hashCode(), endInclusive.hashCode())
 
         companion object {
-            fun of(date: LocalDate) = DateRange(date, date)
+            @Pure fun of(date: LocalDate) = DateRange(date, date)
             fun of(year: Int, month: Int, day: Int) = of(LocalDate.of(year, month, day))
             fun of(date: LocalDate, duration: Int) = DateRange(date, date.plusDays(duration - 1L))
             fun of(year: Int, month: Int, day: Int, duration: Int) = of(LocalDate.of(year, month, day), duration)
@@ -177,7 +178,7 @@ object HolidayDates {
             Holidays.safeValueOf(it)
         } ?: Holidays.entries.firstOrNull {
             val range = it.getByYear(date.year)
-            date in range && Random.nextFloat() <= it.chance
+            date in range && rng.nextFloat() <= it.chance
         }
     }
 

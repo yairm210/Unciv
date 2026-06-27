@@ -1,7 +1,9 @@
 package com.unciv.models.ruleset.validation
 
 import com.unciv.Constants
+import com.unciv.logic.civilization.diplomacy.CityStatePersonality
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.EventChoice
 import com.unciv.models.ruleset.MilestoneType
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Ruleset
@@ -10,6 +12,7 @@ import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.GameContext
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
@@ -160,6 +163,12 @@ internal class BaseRulesetValidator(
             lines.add("${nation.name} is of city-state type ${nation.cityStateType} which does not exist!", sourceObject = nation)
         if (nation.favoredReligion != null && nation.favoredReligion !in ruleset.religions)
             lines.add("${nation.name} has ${nation.favoredReligion} as their favored religion, which does not exist!", sourceObject = nation)
+        if (nation.personality != null) {
+            val unknownPersonality = if (nation.isCityState) CityStatePersonality.safeValueOf(nation.personality) == null
+                else nation.personality !in ruleset.personalities.keys
+            if (unknownPersonality)
+                lines.add("${nation.name} has personality ${nation.personality}, which does not exist!", sourceObject = nation)
+        }
     }
 
     override fun addPersonalityErrors(lines: RulesetErrorList) {
@@ -203,6 +212,79 @@ internal class BaseRulesetValidator(
                 lines.add("More than one policy with the name ${policy.name} exists!", sourceObject = policy)
     }
 
+    override fun addEventErrors(lines: RulesetErrorList) {
+        super.addEventErrors(lines)
+        checkEventCircularTriggers(lines)
+    }
+
+    private fun checkEventCircularTriggers(lines: RulesetErrorList) {
+        fun isHumanOnlyModifier(unique: Unique) =
+            unique.type == UniqueType.ConditionalCivFilter && unique.params[0] == Constants.humanPlayer
+        fun isAiOnlyModifier(unique: Unique) =
+            unique.type == UniqueType.ConditionalCivFilter && unique.params[0] == Constants.aiPlayer
+
+        // A choice is unreachable for AI if:
+        // - It has an unconditional AiChoiceWeight of -100% (or worse) → effective weight ≤ 0
+        // - It has OnlyAvailable with <for [Human player] Civilizations> → AI never satisfies this
+        // - It has Unavailable with only <for [AI player] Civilizations> → always blocks AI
+        fun isChoiceUnreachableForAI(choice: EventChoice): Boolean {
+            var weight = 1f
+            for (unique in choice.uniqueObjects) {
+                if (unique.type != UniqueType.AiChoiceWeight) continue
+                if (unique.modifiers.isNotEmpty()) continue // skip conditional weights
+                weight *= (1 + unique.params[0].toFloat() / 100)
+            }
+            if (weight <= 0f) return true
+
+            if (choice.uniqueObjects.any { unique ->
+                unique.type == UniqueType.OnlyAvailable &&
+                unique.modifiers.any { isHumanOnlyModifier(it) }
+            }) return true
+
+            if (choice.uniqueObjects.any { unique ->
+                unique.type == UniqueType.Unavailable &&
+                unique.modifiers.size == 1 && isAiOnlyModifier(unique.modifiers[0])
+            }) return true
+
+            return false
+        }
+
+        // A TriggerEvent unique is unreachable for AI if it has <for [Human player] Civilizations>,
+        // since conditionalsApply will always be false for an AI civ.
+        fun isTriggerUnreachableForAI(unique: Unique) =
+            unique.modifiers.any { isHumanOnlyModifier(it) }
+
+        fun recursiveCheck(history: HashSet<String>, eventName: String, level: Int) {
+            if (eventName in history) {
+                lines.add(
+                    "Circular trigger in Events: ${history.joinToString("→")}→$eventName - will cause an infinite loop for AI!",
+                    RulesetErrorSeverity.Warning,
+                    sourceObject = ruleset.events[eventName]
+                )
+                return
+            }
+            if (level > 99) return
+            val event = ruleset.events[eventName] ?: return
+            val triggerEventUniques = event.choices
+                .filter { !isChoiceUnreachableForAI(it) }
+                .flatMap { choice -> choice.uniqueObjects.filter {
+                    it.type == UniqueType.TriggerEvent && !isTriggerUnreachableForAI(it)
+                }}
+            if (triggerEventUniques.isEmpty()) return
+            history.add(eventName)
+            for (unique in triggerEventUniques) {
+                val linkedSetToPass =
+                    if (triggerEventUniques.size == 1) history
+                    else history.toHashSet()
+                recursiveCheck(linkedSetToPass, unique.params[0], level + 1)
+            }
+        }
+
+        for (eventName in ruleset.events.keys) {
+            recursiveCheck(hashSetOf(), eventName, 0)
+        }
+    }
+
     override fun addPromotionErrors(lines: RulesetErrorList) {
         super.addPromotionErrors(lines)
         checkPromotionCircularReferences(lines)
@@ -226,26 +308,55 @@ internal class BaseRulesetValidator(
     }
 
     private fun checkPromotionCircularReferences(lines: RulesetErrorList) {
-        fun recursiveCheck(history: HashSet<Promotion>, promotion: Promotion, level: Int) {
-            if (promotion in history) {
-                lines.add("Circular Reference in Promotions: ${history.joinToString("→") { it.name }}→${promotion.name}",
-                    RulesetErrorSeverity.Warning, promotion)
-                return
-            }
-            if (level > 99) return
-            history.add(promotion)
-            for (prerequisiteName in promotion.prerequisites) {
-                val prerequisite = ruleset.unitPromotions[prerequisiteName] ?: continue
-                // Performance - if there's only one prerequisite, we can send this linked set as-is, since no one else will be using it
-                val linkedSetToPass =
-                    if (promotion.prerequisites.size == 1) history
-                    else history.toCollection(hashSetOf())
-                recursiveCheck(linkedSetToPass, prerequisite, level + 1)
+        val promotionsUnlockedByPrerequisite = HashMap<String, MutableList<Promotion>>()
+        for (promotion in ruleset.unitPromotions.values) {
+            for (prerequisiteName in promotion.prerequisites)
+                promotionsUnlockedByPrerequisite.getOrPut(prerequisiteName) { ArrayList() }.add(promotion)
+        }
+
+        val promotionsWithAcyclicPathToRoot = HashSet<Promotion>()
+        val promotionsToCheck = ArrayDeque<Promotion>()
+        for (promotion in ruleset.unitPromotions.values) {
+            if (promotion.prerequisites.isNotEmpty()) continue
+            promotionsWithAcyclicPathToRoot.add(promotion)
+            promotionsToCheck.add(promotion)
+        }
+
+        while (promotionsToCheck.isNotEmpty()) {
+            val promotion = promotionsToCheck.removeFirst()
+            for (unlockedPromotion in promotionsUnlockedByPrerequisite[promotion.name].orEmpty()) {
+                if (!promotionsWithAcyclicPathToRoot.add(unlockedPromotion)) continue
+                promotionsToCheck.add(unlockedPromotion)
             }
         }
+
+        val promotionsInAlreadyReportedCycles = HashSet<Promotion>()
+        val promotionsAlreadyChecked = HashSet<Promotion>()
+        fun findCircularReference(history: List<Promotion>, promotion: Promotion): List<Promotion>? {
+            val existingIndex = history.indexOf(promotion)
+            if (existingIndex >= 0) return history.drop(existingIndex) + promotion
+            if (promotion in promotionsAlreadyChecked) return null
+            if (promotion in promotionsWithAcyclicPathToRoot) return null
+
+            val newHistory = history + promotion
+            for (prerequisiteName in promotion.prerequisites) {
+                val prerequisite = ruleset.unitPromotions[prerequisiteName] ?: continue
+                val circularReference = findCircularReference(newHistory, prerequisite)
+                if (circularReference != null) return circularReference
+            }
+
+            promotionsAlreadyChecked.add(promotion)
+            return null
+        }
+
         for (promotion in ruleset.unitPromotions.values) {
-            if (promotion.prerequisites.isEmpty()) continue
-            recursiveCheck(hashSetOf(), promotion, 0)
+            if (promotion in promotionsWithAcyclicPathToRoot) continue
+            if (promotion in promotionsInAlreadyReportedCycles) continue
+
+            val circularReference = findCircularReference(emptyList(), promotion) ?: continue
+            promotionsInAlreadyReportedCycles.addAll(circularReference)
+            lines.add("Circular Reference in Promotions: ${circularReference.joinToString("→") { it.name }}",
+                RulesetErrorSeverity.Warning, promotion)
         }
     }
 

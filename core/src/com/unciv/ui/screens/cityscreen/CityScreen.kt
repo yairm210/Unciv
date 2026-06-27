@@ -15,7 +15,6 @@ import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IConstruction
 import com.unciv.models.ruleset.tile.TileImprovement
-import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
@@ -32,7 +31,6 @@ import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
-import com.unciv.ui.components.input.onDoubleClick
 import com.unciv.ui.components.tilegroups.CityTileGroup
 import com.unciv.ui.components.tilegroups.CityTileState
 import com.unciv.ui.components.tilegroups.TileGroupMap
@@ -65,7 +63,7 @@ class CityScreen(
 
     private val selectedCiv: Civilization = GUI.getWorldScreen().selectedCiv
 
-    internal val isSpying = selectedCiv.gameInfo.isEspionageEnabled() && selectedCiv != city.civ
+    internal val isSpying = selectedCiv.gameInfo.isEspionageEnabled() && selectedCiv != city.civ && !selectedCiv.isSpectator()
 
     /**
      * This is the regular civ city list if we are not spying, if we are spying then it is every foreign city that our spies are in
@@ -244,7 +242,6 @@ class CityScreen(
     }
 
     private fun updateTileGroups() {
-        val cityUniqueCache = LocalUniqueCache()
         fun isExistingImprovementValuable(tile: Tile): Boolean {
             val improvement = tile.tileImprovement ?: return false
             val civInfo = city.civ
@@ -253,7 +250,6 @@ class CityScreen(
                 improvement,
                 civInfo,
                 city,
-                cityUniqueCache
             )
 
             // If stat diff for new improvement is negative/zero utility, current improvement is valuable
@@ -264,7 +260,7 @@ class CityScreen(
             val improvementToPlace = pickTileData!!.improvement
             return when {
                 tile.isMarkedForCreatesOneImprovement() -> Color.BROWN to 0.7f
-                !tile.improvementFunctions.canBuildImprovement(improvementToPlace, city.state) -> Color.RED to 0.4f
+                !city.cityConstructions.canPlaceCreateOneImprovementOn(improvementToPlace, tile) -> Color.RED to 0.4f
                 isExistingImprovementValuable(tile) -> Color.ORANGE to 0.5f
                 tile.improvement != null -> Color.YELLOW to 0.6f
                 tile.turnsToImprovement > 0 -> Color.YELLOW to 0.6f
@@ -286,7 +282,7 @@ class CityScreen(
                 /** Support for [UniqueType.CreatesOneImprovement] */
                 tileGroup.tile == selectedQueueEntryTargetTile ->
                     tileGroup.layerMisc.addHexOutline(Color.BROWN)
-                pickTileData != null && city.tiles.contains(tileGroup.tile.position) ->
+                pickTileData != null && tileGroup.tile.getCity() == city && tileGroup.tile in city.tilesInRange ->
                     getPickImprovementColor(tileGroup.tile).run {
                         tileGroup.layerMisc.addHexOutline(first.cpy().apply { this.a = second }) }
             }
@@ -371,8 +367,11 @@ class CityScreen(
 
         for (tileGroup in cityTileGroups) {
             tileGroup.onClick { tileGroupOnClick(tileGroup, city) }
-            tileGroup.layerMisc.onClick { tileWorkedIconOnClick(tileGroup, city) }
-            tileGroup.layerMisc.onDoubleClick { tileWorkedIconDoubleClick(tileGroup, city) }
+            tileGroup.layerMisc.onWorkedIconClick = {
+                tileWorkedIconOnClick(tileGroup, city)
+                tileGroupOnClick(tileGroup, city)
+            }
+            tileGroup.layerMisc.onWorkedIconDoubleClick = { tileWorkedIconDoubleClick(tileGroup, city) }
             tileGroups.add(tileGroup)
         }
 
@@ -477,18 +476,12 @@ class CityScreen(
             val pickTileData = this.pickTileData!!
             this.pickTileData = null
             val improvement = pickTileData.improvement
-            if (tileInfo.improvementFunctions.canBuildImprovement(improvement, city.state)
-                && !tileInfo.isMarkedForCreatesOneImprovement()) {
+            if (city.cityConstructions.canPlaceCreateOneImprovementOn(improvement, tileInfo)) {
                 
                 if (pickTileData.isBuying) {
                     BuyButtonFactory(this).askToBuyConstruction(pickTileData.building, pickTileData.buyStat, tileInfo)
                 } else {
-                    // This way to store where the improvement a CreatesOneImprovement Building will create goes
-                    // might get a bit fragile if several buildings constructing the same improvement type
-                    // were to be allowed in the queue - or a little nontransparent to the user why they
-                    // won't reorder - maybe one day redesign to have the target tiles attached to queue entries.
-                    tileInfo.improvementFunctions.markForCreatesOneImprovement(improvement.name)
-                    city.cityConstructions.addToQueue(pickTileData.building.name)
+                    city.cityConstructions.addToQueue(pickTileData.building, tile = tileInfo)
                 }
             }
             update()

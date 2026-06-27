@@ -90,7 +90,7 @@ class TranslationTests {
     @Test
     fun allUnitActionsHaveTemplate() {
         fun String.getTemplateKey() = if (contains('[')) replace(squareBraceRegex, "[]") else this
-        fun String.getInnerTemplate() = (if (contains('{')) curlyBraceRegex.find(this)?.groupValues[1] else null) ?: this
+        fun String.getInnerTemplate() = (if (contains('{')) curlyBraceRegex.find(this)?.groupValues?.get(1) else null) ?: this
 
         val allKeys = TranslationFileReader.readTemplates { lines ->
             lines.filterNot { it.isEmpty() || it.startsWith('#') || !it.endsWith(" = ") }

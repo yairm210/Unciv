@@ -22,6 +22,7 @@ import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Display
 import com.unciv.utils.Log
+import com.unciv.utils.isRunFromJar
 import org.lwjgl.system.Configuration
 import java.awt.GraphicsEnvironment
 import java.awt.Image
@@ -106,7 +107,7 @@ internal object DesktopLauncher {
 
         val dataDirectory = customDataDir ?: "."
 
-        val isRunFromJAR = DesktopLauncher.javaClass.`package`.specificationVersion != null
+        val isRunFromJAR = isRunFromJar(this)
         ImagePacker.packImages(isRunFromJAR, dataDirectory)
 
         val config = Lwjgl3ApplicationConfiguration()

@@ -1,2 +1,11 @@
+*.kt   text eol=lf
+*.kts  text eol=lf
+*.json text eol=lf
+*.properties text eol=lf
+*.atlas text eol=lf
+
+*.md   text eol=lf
+# This helps Windows to not mark the auto-generated docs as changed on every Unciv launch
+
 *.svg binary
 # These are basically image files.

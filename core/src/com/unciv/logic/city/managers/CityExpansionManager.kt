@@ -1,15 +1,14 @@
 package com.unciv.logic.city.managers
 
-import com.badlogic.gdx.math.Vector2
+import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.toHexCoord
-import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.utils.withItem
@@ -89,10 +88,10 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
     }
 
     @Readonly
-    fun getGoldCostOfTile(tile: Tile): Int {
+    fun getGoldCostOfTile(tile: Tile, extraTiles: Int = 0): Int {
         val baseCost = 50
         val distanceFromCenter = tile.aerialDistanceTo(city.getCenterTile())
-        var cost = baseCost * (distanceFromCenter - 1) + tilesClaimed() * 5.0
+        var cost = baseCost * (distanceFromCenter - 1) + (tilesClaimed() + extraTiles) * 5.0
 
         cost *= city.civ.gameInfo.speed.goldCostModifier
 
@@ -115,9 +114,8 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         // or selecting all possible tiles and only choosing one when the border expands.
         // But since the order in which tiles are selected in distance is kinda random anyways,
         // this is fine.
-        val localUniqueCache = LocalUniqueCache()
         return getChoosableTiles().minByOrNull {
-            Automation.rankTileForExpansion(it, city, localUniqueCache)
+            Automation.rankTileForExpansion(it, city)
         }
     }
 
@@ -136,12 +134,12 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
             takeOwnership(tile)
     }
 
-    private fun addNewTileWithCulture(): Vector2? {
+    private fun addNewTileWithCulture(): HexCoord? {
         val chosenTile = chooseNewTileToOwn()
         if (chosenTile != null) {
             cultureStored -= getCultureToNextTile()
             takeOwnership(chosenTile)
-            return chosenTile.position.toVector2()
+            return chosenTile.position
         }
         return null
     }
@@ -183,6 +181,9 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         if (tile.getCity() != null)
             tile.getCity()!!.expansion.relinquishOwnership(tile)
 
+        if (tile.improvement == Constants.barbarianEncampment)
+            tile.removeImprovement()
+
         city.tiles = city.tiles.withItem(tile.position)
         tile.setOwningCity(city)
         city.population.autoAssignPopulation()
@@ -209,7 +210,7 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         if (cultureStored >= getCultureToNextTile()) {
             val location = addNewTileWithCulture()
             if (location != null) {
-                val locations = LocationAction(location.toHexCoord(), city.location.toHexCoord())
+                val locations = LocationAction(location, city.location)
                 city.civ.addNotification("[${city.name}] has expanded its borders!", locations,
                     NotificationCategory.Cities, NotificationIcon.Culture)
             }

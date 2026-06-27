@@ -44,8 +44,16 @@ interface IHasUniques : INamed {
     @Readonly fun getUniqueTarget(): UniqueTarget
 
     @Readonly
+    /** forEachMatchingUnique faster, for cases that require high perf */
     fun getMatchingUniques(uniqueType: UniqueType, state: GameContext = GameContext.EmptyState) =
         uniqueMap.getMatchingUniques(uniqueType, state)
+
+    @Readonly
+    fun forEachMatchingUnique(uniqueType: UniqueType, gameContext: GameContext, filter:(Unique)->Boolean, op: (unique: Unique)->Unit)
+        = uniqueMap.forEachMatchingUnique(uniqueType, gameContext, filter, op)
+    @Readonly
+    fun forEachMatchingUnique(uniqueType: UniqueType, gameContext: GameContext, op: (unique: Unique)->Unit)
+        = uniqueMap.forEachMatchingUnique(uniqueType, gameContext, op)
 
     @Readonly
     fun getMatchingTagUniques(uniqueTag: String, state: GameContext = GameContext.EmptyState) =
@@ -206,6 +214,10 @@ interface IHasUniques : INamed {
         for (unique in getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)) {
             if (unique.hasModifier(enabler)) return !hasFeature
             if (unique.hasModifier(disabler)) return hasFeature
+        }
+        for (unique in getMatchingUniques(UniqueType.Unavailable, GameContext.IgnoreConditionals)) {
+            if (unique.hasModifier(enabler)) return hasFeature
+            if (unique.hasModifier(disabler)) return !hasFeature
         }
         return false
     }
