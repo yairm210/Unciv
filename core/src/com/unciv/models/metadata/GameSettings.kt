@@ -166,13 +166,6 @@ class GameSettings {
 
     //region 9: Not in OptionsPopup
 
-    // Controlled via context menu in CityScreen:
-    /** This set of construction names has two effects:
-     *  * Matching constructions are no longer candidates for [autoAssignCityProduction]
-     *  * Matching constructions are offered in a separate 'Disabled' category in CityScreen
-     */
-    var disabledAutoAssignConstructions = HashSet<String>()
-
     // Controlled by dragging the minimap
     var minimapSize = 6    // default corresponds to 15% screen space
 
