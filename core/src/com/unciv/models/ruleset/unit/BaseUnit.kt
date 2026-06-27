@@ -28,7 +28,7 @@ import com.unciv.utils.yieldIfNotNull
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
-import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.pow
 
 // This is BaseUnit because Unit is already a base Kotlin class and to avoid mixing the two up
@@ -575,7 +575,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 UniqueType.AdditionalAttacks -> {
                     val additionalAttacks = unique.params[0].toInt()
                     val limit = if (isAirUnit()) Int.MAX_VALUE else movement - 1
-                    power *= (20f * max(additionalAttacks, limit)).toPercent()
+                    power *= (20f * min(additionalAttacks, limit)).toPercent()
                 }
                 else -> {}
             }
