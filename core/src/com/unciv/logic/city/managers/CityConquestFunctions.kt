@@ -353,6 +353,8 @@ class CityConquestFunctions(val city: City) {
         city.getTiles().forEach { tile ->
             tile.history.recordTakeOwnership(tile)
         }
+        
+        city.resetDisabledConstructions()
 
         newCiv.cache.updateOurTiles()
         oldCiv.cache.updateOurTiles()

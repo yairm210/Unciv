@@ -83,6 +83,15 @@ class City : IsPartOfGameInfoSerialization, INamed {
     var religion = CityReligionManager()
     var espionage = CityEspionageManager()
 
+    /** Effect: moved to disabled section in cosntruction list, and not built during automation */
+    var disabledConstructions = HashSet<String>()
+        private set
+    fun resetDisabledConstructions() {
+        disabledConstructions.clear()
+        if (civ.isHuman())
+            disabledConstructions.addAll(civ.disabledCityConstructions)
+    }
+
     @Transient  // CityStats has no serializable fields
     var cityStats = CityStats(this)
     

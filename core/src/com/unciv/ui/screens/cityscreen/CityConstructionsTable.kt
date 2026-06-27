@@ -351,7 +351,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 val buildableBuildings = ArrayList<Table>()
                 val specialConstructions = ArrayList<Table>()
                 val blacklisted = ArrayList<Table>()
-                val disabledAutoAssignConstructions: Set<String> = GUI.getSettings().disabledAutoAssignConstructions
+                val disabledAutoAssignConstructions: Set<String> = cityScreen.city.disabledConstructions
 
                 var maxButtonWidth = constructionsQueueTable.width
                 for (dto in constructionButtonDTOList) {
