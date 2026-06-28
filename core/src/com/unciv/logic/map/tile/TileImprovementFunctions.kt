@@ -188,7 +188,7 @@ class TileImprovementFunctions(val tile: Tile) {
         }
 
         if (improvement == null) {
-            val wasEncampment = tile.improvement == Constants.barbarianEncampment
+            val wasEncampment = tile.isBarbarianEncampment()
             tile.improvementIsPillaged = false
             tile.setImprovementBasic(null)
             updateVisibility()

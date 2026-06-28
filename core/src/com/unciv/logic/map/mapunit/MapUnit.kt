@@ -966,11 +966,12 @@ class MapUnit : IsPartOfGameInfoSerialization {
         for (triggeredUnique in triggeredUniques)
             UniqueTriggerActivation.triggerUnique(triggeredUnique, this)
 
-        if (civ.isMajorCiv() && improvement?.isAncientRuinsEquivalent(cache.state) == true) {
-            getAncientRuinBonus(tile)
-        }
-        if (improvement?.name == Constants.barbarianEncampment && !civ.isBarbarian)
+        // clearEncampment must run first, because removing the improvement will invalidate quests, and both functions do so.
+        if (!civ.isBarbarian && tile.isBarbarianEncampment())
             clearEncampment(tile)
+        if (civ.isMajorCiv() && improvement?.isAncientRuinsEquivalent(cache.state) == true)
+            getAncientRuinBonus(tile)
+
         // Check whether any civilians without military units are there.
         // Keep in mind that putInTile(), which calls this method,
         // might have already placed your military unit in this tile.
