@@ -1076,6 +1076,8 @@ enum class UniqueType(
         docDescription = "In this case, 'starting era' means the first defined Era in the entire ruleset."),
     AllowRazeCapital("Allow raze capital", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
     AllowRazeHolyCity("Allow raze holy city", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
+    FunctionCalculation("[calculationType] is calculated as [countable]", UniqueTarget.ModOptions, UniqueTarget.Global,
+        docDescription = "Replaces the formula for the named calculation with the given countable expression. When on a civilization (Global), takes priority over a ModOptions override. See [CalculationType] for available calculation names and their default expressions."),
 
     SuppressWarnings("Suppress warning [validationWarning]", *UniqueTarget.CanIncludeSuppression, flags = UniqueFlag.setOfHiddenNoConditionals, docDescription = Suppression.uniqueDocDescription),
 

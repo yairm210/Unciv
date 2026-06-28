@@ -12,6 +12,7 @@ import com.unciv.models.Counter
 import com.unciv.models.Religion
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
+import com.unciv.models.ruleset.unique.Calculation
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -114,11 +115,8 @@ class ReligionManager : IsPartOfGameInfoSerialization {
             || (religionState == ReligionState.Religion || religionState == ReligionState.EnhancedReligion) // any belief adding outside of great prophet use
 
     @Readonly
-    fun faithForPantheon(additionalCivs: Int = 0): Int {
-        val gameInfo = civInfo.gameInfo
-        val numCivs = additionalCivs + gameInfo.civilizations.count { it.isMajorCiv() && it.religionManager.religion != null }
-        val cost = gameInfo.ruleset.modOptions.constants.pantheonBase + numCivs * gameInfo.ruleset.modOptions.constants.pantheonGrowth
-        return (cost * gameInfo.speed.faithCostModifier).roundToInt()
+    fun faithForPantheon(): Int {
+        return (Calculation.PantheonCost.evaluate(civInfo) * civInfo.gameInfo.speed.faithCostModifier).roundToInt()
     }
 
     /** Used for founding the pantheon and for each time the player gets additional pantheon beliefs
@@ -220,12 +218,8 @@ class ReligionManager : IsPartOfGameInfoSerialization {
 
     @Readonly
     private fun maxNumberOfReligions(): Int {
-        val gameInfo = civInfo.gameInfo
-        val ruleset = gameInfo.ruleset
-        val multiplier = ruleset.modOptions.constants.religionLimitMultiplier
-        val base = ruleset.modOptions.constants.religionLimitBase
-        val civCount = gameInfo.civilizations.count { it.isMajorCiv() }
-        return min(ruleset.religions.size, base + (civCount * multiplier).toInt())
+        return min(civInfo.gameInfo.ruleset.religions.size,
+            Calculation.MaxFoundableReligions.evaluate(civInfo))
     }
 
     /** Calculates the number of religions that are already founded */
@@ -255,9 +249,6 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         val ruleset = gameInfo.ruleset
         yield("Available religion symbols" to ruleset.religions.size)
 
-        val multiplier = ruleset.modOptions.constants.religionLimitMultiplier
-        val base = ruleset.modOptions.constants.religionLimitBase
-        val civCount = gameInfo.civilizations.count { it.isMajorCiv() }
         val hideCivCount = civInfo.shouldHideCivCount()
         if (hideCivCount) {
             val knownCivs = 1 + civInfo.getKnownCivs().count { it.isMajorCiv() }
@@ -265,11 +256,10 @@ class ReligionManager : IsPartOfGameInfoSerialization {
                     gameInfo.gameParameters.minNumberOfPlayers.coerceAtLeast(knownCivs) +
                             gameInfo.gameParameters.maxNumberOfPlayers - 1
                     ) / 2 + 1
-            val civsAndBase = base + (estimatedCivCount * multiplier).toInt()
-            yield("Estimated number of civilizations * [$multiplier] + [$base]" to civsAndBase)
+            yield("Estimated max foundable religions" to
+                Calculation.MaxFoundableReligions.evaluate(civInfo, "[Major] Civilizations" to estimatedCivCount))
         } else {
-            val civsAndBase = base + (civCount * multiplier).toInt()
-            yield("Number of civilizations * [$multiplier] + [$base]" to civsAndBase)
+            yield("Max foundable religions" to Calculation.MaxFoundableReligions.evaluate(civInfo))
         }
 
         yield("Religions already founded" to foundedReligionsCount())
