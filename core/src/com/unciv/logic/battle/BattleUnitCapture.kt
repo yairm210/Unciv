@@ -1,6 +1,5 @@
 package com.unciv.logic.battle
 
-import com.unciv.Constants
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.MapUnitAction
@@ -35,7 +34,6 @@ object BattleUnitCapture {
         // Therefore we run all functions before checking if one is true.
         val wasUnitCaptured = listOf(
             unitCapturedPrizeShipsUnique(attacker, defender),
-            unitCapturedFromEncampment(attacker, defender, attackedTile),
             unitGainFromDefeatingUnit(attacker, defender)
         ).any { it }
 
@@ -74,21 +72,6 @@ object BattleUnitCapture {
                 attacker.getCivInfo().addGold(unique.params[1].toInt())
                 unitCaptured = true
             }
-        }
-        return unitCaptured
-    }
-
-    private fun unitCapturedFromEncampment(attacker: MapUnitCombatant, defender: MapUnitCombatant, attackedTile: Tile): Boolean {
-        if (!defender.getCivInfo().isBarbarian) return false
-        if (!attackedTile.isBarbarianEncampment()) return false
-
-        var unitCaptured = false
-        // German unique - needs to be checked before we try to move to the enemy tile, since the encampment disappears after we move in
-
-        for (unique in attacker.getCivInfo()
-            .getMatchingUniques(UniqueType.GainFromEncampment)) {
-            attacker.getCivInfo().addGold(unique.params[0].toInt())
-            unitCaptured = true
         }
         return unitCaptured
     }

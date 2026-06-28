@@ -30,6 +30,7 @@ import java.text.DecimalFormat
 import kotlin.math.pow
 import kotlin.math.ulp
 import com.unciv.logic.automation.Timers.Companion.timeThis
+import com.unciv.logic.civilization.MapUnitAction
 
 
 /**
@@ -1040,12 +1041,28 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
         tile.removeImprovement()
 
-        var goldGained =
-                civ.getDifficulty().clearBarbarianCampReward * civ.gameInfo.speed.goldCostModifier
+        var goldGained = civ.getDifficulty().clearBarbarianCampReward.toFloat()
 
-        for (unique in civ.getMatchingUniques(UniqueType.GoldFromEncampmentsAndCities, cache.state)) {
-            goldGained *= unique.params[0].toPercent()
+        // German unique
+        for (unique in civ.getMatchingUniques(UniqueType.GainFromEncampment)) {
+            goldGained += unique.params[0].toInt()
+            val recruitedUnit = civ.gameInfo.barbarians.spawnBarbarian(tile, civ)
+                ?: continue
+            recruitedUnit.health = 50
+            recruitedUnit.currentMovement = 0f
+            civ.addNotification(
+                "An enemy [${recruitedUnit.name}] has joined us!",
+                MapUnitAction(recruitedUnit),
+                NotificationCategory.War,
+                recruitedUnit.name
+            )
         }
+        
+        goldGained *= civ.gameInfo.speed.goldCostModifier
+        
+        // Songhai unique
+        for (unique in civ.getMatchingUniques(UniqueType.GoldFromEncampmentsAndCities, cache.state))
+            goldGained *= unique.params[0].toPercent()
 
         civ.addGold(goldGained.toInt())
         civ.addNotification(
