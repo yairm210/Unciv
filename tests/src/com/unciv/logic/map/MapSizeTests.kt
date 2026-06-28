@@ -11,9 +11,9 @@ class MapSizeTests {
     @Test
     fun testInferPredefinedProperty() {
         fun assertEqualModifiers(predefined: MapSize.Predefined, mapSize: MapSize) {
-            Assert.assertEquals(predefined.techCostMultiplier, mapSize.techCostMultiplier)
-            Assert.assertEquals(predefined.techCostPerCityModifier, mapSize.techCostPerCityModifier)
-            Assert.assertEquals(predefined.policyCostPerCityModifier, mapSize.policyCostPerCityModifier)
+            Assert.assertEquals(predefined.techCostMultiplier, mapSize.getTechCostMultiplier())
+            Assert.assertEquals(predefined.techCostPerCityModifier, mapSize.getTechCostPerCityModifier())
+            Assert.assertEquals(predefined.policyCostPerCityModifier, mapSize.getPolicyCostPerCityModifier())
         }
         
         // Non-custom map size
@@ -32,9 +32,9 @@ class MapSizeTests {
             policyCostPerCityModifier: Float
         ) {
             val delta = 0.0001f
-            Assert.assertEquals(techCostMultiplier, mapSize.techCostMultiplier!!, delta)
-            Assert.assertEquals(techCostPerCityModifier, mapSize.techCostPerCityModifier!!, delta)
-            Assert.assertEquals(policyCostPerCityModifier, mapSize.policyCostPerCityModifier!!, delta)
+            Assert.assertEquals(techCostMultiplier, mapSize.getTechCostMultiplier(), delta)
+            Assert.assertEquals(techCostPerCityModifier, mapSize.getTechCostPerCityModifier(), delta)
+            Assert.assertEquals(policyCostPerCityModifier, mapSize.getPolicyCostPerCityModifier(), delta)
         }
 
         /**

@@ -111,8 +111,8 @@ class TechManager : IsPartOfGameInfoSerialization {
         techCost *= civInfo.gameInfo.speed.scienceCostModifier
         techCost /= getScienceModifier(techName)
         val mapSize = civInfo.gameInfo.tileMap.mapParameters.mapSize
-        techCost *= mapSize.techCostMultiplier!!
-        var cityModifier = (civInfo.cities.count { !it.isPuppet } - 1) * mapSize.techCostPerCityModifier!!
+        techCost *= mapSize.getTechCostMultiplier()
+        var cityModifier = (civInfo.cities.count { !it.isPuppet } - 1) * mapSize.getTechCostPerCityModifier()
         for (unique in civInfo.getMatchingUniques(UniqueType.LessTechCostFromCities))
             cityModifier *= 1 - unique.params[0].toFloat() / 100
         for (unique in civInfo.getMatchingUniques(UniqueType.LessTechCost))
