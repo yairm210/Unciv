@@ -21,7 +21,7 @@ import kotlin.random.Random
 
 class BarbarianManager : IsPartOfGameInfoSerialization {
 
-    private val encampments = ArrayList<BarbarianEncampment>()
+    val encampments = ArrayList<BarbarianEncampment>()
 
     @Transient
     lateinit var gameInfo: GameInfo

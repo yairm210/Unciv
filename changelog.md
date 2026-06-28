@@ -1,19 +1,14 @@
 ## 4.20.16
 
-Added LibGDX link in readme.md
-
 By unciv-loof:
 - Cap force bonus from AdditionalAttacks based on movement points 
 - Fix German unique ability 
 - Fix force calculation when measuring military presence near border 
-- Reuse distanceToTiles variable 
-- Clarify visible / explored in kdocs 
 
-chore: Options linting - By SomeTroglodyte
+Make "Barbarian encampment" improvement moddable - By SomeTroglodyte
 
 By BobbyCobby:
-- Clearer mod update icon 
-- Add .atlas file type to .gitattributes 
+- Clearer mod update icon
 
 Fix map preview crash when changing rulesets - By Angais
 
