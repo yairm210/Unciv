@@ -368,8 +368,7 @@ open class RulesetValidator protected constructor(
 
     protected open fun addPersonalityErrors(lines: RulesetErrorList) {
         for (personality in ruleset.personalities.values) {
-            if (personality.uniques.isNotEmpty())
-                lines.add("Personality Uniques are not supported", RulesetErrorSeverity.Warning, personality)
+            uniqueValidator.checkUniques(personality, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
         }
     }
 

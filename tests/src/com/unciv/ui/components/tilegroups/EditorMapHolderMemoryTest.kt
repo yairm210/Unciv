@@ -101,6 +101,11 @@ class EditorMapHolderMemoryTest {
         val (_, total1x1) = MeasureMemory.measure { tile1x1.map { TileGroup(it, tileSetStrings) } }
         val neighborEdgeCost = (total / n) - (total1x1 / tile1x1.size)
 
+        // Reference: cost of ~10 ownedActors ArrayLists per tile (one per non-terrain layer).
+        // After lazy-init, only layerTerrain.ownedActors is created at construction; the other 10
+        // layers never add actors during init, so their lists are deferred to first gameplay update.
+        val (_, ownedActorLists10) = MeasureMemory.measure { (1..n * 10).map { ArrayList<Any>() } }
+
         fun Long.pct() = "(${"%4.1f".format(this * 100.0 / bpt)}%)"
 
         println("=== TileGroup memory breakdown ($n tiles) ===")
@@ -113,7 +118,8 @@ class EditorMapHolderMemoryTest {
         println("  3 HashMaps:       %6d b/t  %s  ← roadImages/borderSegments/arrows (empty)".format(hashMaps / n, (hashMaps / n).pct()))
         println("  3 ArrayLists:     %6d b/t  %s  ← arrowsToDraw/startingLocs/tileBaseImages".format(arrayLists / n, (arrayLists / n).pct()))
         println("  neighborEdgeData: %6d b/t  %s  ← ≈6 NeighborEdgeData objects (100×100 vs 1×1)".format(neighborEdgeCost, neighborEdgeCost.pct()))
-        val accounted = groups12 / n + yieldGroups / n + images / n + hashMaps / n + arrayLists / n + neighborEdgeCost
+        println("  10 ownedActors:   %6d b/t  %s  ← non-terrain layers now lazy (saved at construction)".format(ownedActorLists10 / n, (ownedActorLists10 / n).pct()))
+        val accounted = groups12 / n + yieldGroups / n + images / n + hashMaps / n + arrayLists / n + neighborEdgeCost + ownedActorLists10 / n
         println()
         println("  Subtotal above:   %6d b/t  %s".format(accounted, accounted.pct()))
         println("  Remainder:        %6d b/t  %s  ← terrain Images, TileGroup fields, etc.".format(bpt - accounted, (bpt - accounted).pct()))
