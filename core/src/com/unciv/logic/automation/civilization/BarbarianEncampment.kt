@@ -4,7 +4,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.map.HexCoord
 
-class Encampment() : IsPartOfGameInfoSerialization {
+class BarbarianEncampment() : IsPartOfGameInfoSerialization {
     var position = HexCoord()
     var countdown = 0
     var spawnedUnits = -1
@@ -17,8 +17,8 @@ class Encampment() : IsPartOfGameInfoSerialization {
         this.position = position
     }
 
-    fun clone(): Encampment {
-        val toReturn = Encampment(position)
+    fun clone(): BarbarianEncampment {
+        val toReturn = BarbarianEncampment(position)
         toReturn.countdown = countdown
         toReturn.spawnedUnits = spawnedUnits
         toReturn.destroyed = destroyed
@@ -59,7 +59,7 @@ class Encampment() : IsPartOfGameInfoSerialization {
         // Higher on low difficulties
         countdown += gameInfo.ruleset.difficulties[gameInfo.gameParameters.difficulty]!!.barbarianSpawnDelay
         // Quicker if this camp has already spawned units
-        countdown -= min(3, spawnedUnits)
+        countdown -= spawnedUnits.coerceAtMost(3)
 
         countdown = (countdown * gameInfo.speed.barbarianModifier).toInt()
     }

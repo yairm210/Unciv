@@ -21,7 +21,7 @@ import kotlin.random.Random
 
 class BarbarianManager : IsPartOfGameInfoSerialization {
 
-    val encampments = ArrayList<Encampment>()
+    val encampments = ArrayList<BarbarianEncampment>()
 
     @Transient
     lateinit var gameInfo: GameInfo
@@ -45,7 +45,7 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
 
         for (tile in tileMap.values) {
             if (tile.isBarbarianEncampment() && !existingEncampmentLocations.contains(tile.position)) {
-                encampments.add(Encampment(tile.position))
+                encampments.add(BarbarianEncampment(tile.position))
             }
         }
 
@@ -167,7 +167,7 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
             .filter { it.isBarbarianCampEquivalent(tile.stateThisTile) }
         val improvement = candidates.randomOrNull(rng)?.name ?: Constants.barbarianEncampment
         tile.setImprovement(improvement)
-        val newCamp = Encampment(tile.position)
+        val newCamp = BarbarianEncampment(tile.position)
         newCamp.gameInfo = gameInfo
         encampments.add(newCamp)
     }
@@ -187,13 +187,13 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
             if (tile.militaryUnit == null)
                 // Try spawning a unit on this tile, return null if unsuccessful
                 return spawnUnit(tile.position, false)
-            
+
             // Don't spawn wandering barbs too early
             if (gameInfo.turns < 10)
                 return null
-            
+
             val nearbyBarbarians = tile.getTilesInDistance(4)
-                .map { it.militaryUnit }.filterNotNull()
+                .mapNotNull { it.militaryUnit }
                 .count { it.civ.isBarbarian }
             // Too many barbarians around already?
             if (nearbyBarbarians > 2)
