@@ -252,7 +252,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     internal fun getConstruction(constructionName: String): IConstruction {
         val gameBasics = city.getRuleset()
         when {
-            constructionName == "" -> return PerpetualConstruction.idle
+            constructionName == "" -> return PerpetualConstruction.Idle
             gameBasics.buildings.containsKey(constructionName) -> return gameBasics.buildings[constructionName]!!
             gameBasics.units.containsKey(constructionName) -> return gameBasics.units[constructionName]!!
             else -> {
@@ -905,7 +905,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         // `getConstruction(constructionQueue.last()) is PerpetualConstruction` is clear but more expensive
 
     @Readonly fun isQueueEmptyOrIdle() = currentConstructionName().isEmpty()
-        ||  currentConstructionName() == PerpetualConstruction.idle.name
+        ||  currentConstructionName() == PerpetualConstruction.Idle.name
 
     /** Add [construction] to the end or top (controlled by [addToTop]) of the queue with all checks (does nothing if not possible)
      *
@@ -976,7 +976,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
         currentConstructionIsUserSet = if (constructionQueue.isEmpty()) {
             if (automatic) chooseNextConstruction()
-            else constructionQueue.add(PerpetualConstruction.idle.name) // To prevent Construction Automation
+            else constructionQueue.add(PerpetualConstruction.Idle.name) // To prevent Construction Automation
             false
         } else true // we're just continuing the regular queue
     }
@@ -1082,7 +1082,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         constructionQueue.removeAt(indexToRemove)
 
         currentConstructionIsUserSet = if (constructionQueue.isEmpty()) {
-            constructionQueue.add(PerpetualConstruction.idle.name)
+            constructionQueue.add(PerpetualConstruction.Idle.name)
             false
         } else true
     }
