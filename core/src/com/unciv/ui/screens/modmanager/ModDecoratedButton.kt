@@ -67,7 +67,7 @@ internal class ModDecoratedButton(private var modInfo: ModUIData) : Table() {
         /** image indicating _enabled as permanent visual mod_ */
         private val visualImage: Image = ImageGetter.getImage("UnitPromotionIcons/Scouting")
         /** image indicating _online mod has been updated_ */
-        private val hasUpdateImage: Image = ImageGetter.getImage("OtherIcons/Mods")
+        private val hasUpdateImage: Image = ImageGetter.getImage("OtherIcons/ModUpdate")
 
         init {
             defaults().size(20f).align(Align.topLeft)

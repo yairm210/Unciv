@@ -1,3 +1,22 @@
+## 4.20.16
+
+Added LibGDX link in readme.md
+
+By unciv-loof:
+- Cap force bonus from AdditionalAttacks based on movement points 
+- Fix German unique ability 
+- Fix force calculation when measuring military presence near border 
+- Reuse distanceToTiles variable 
+- Clarify visible / explored in kdocs 
+
+chore: Options linting - By SomeTroglodyte
+
+By BobbyCobby:
+- Clearer mod update icon 
+- Add .atlas file type to .gitattributes 
+
+Fix map preview crash when changing rulesets - By Angais
+
 ## 4.20.15
 
 Improvements that cost stockpiled resources do so when starting construction, not on end, similar to buildings and units

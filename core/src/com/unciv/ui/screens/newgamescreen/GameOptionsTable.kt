@@ -553,6 +553,8 @@ class GameOptionsTable(
         val maxCityStates = numberOfCityStates()
         if (gameParameters.maxNumberOfCityStates > maxCityStates) gameParameters.maxNumberOfCityStates = maxCityStates
         if (gameParameters.minNumberOfCityStates > maxCityStates) gameParameters.minNumberOfCityStates = maxCityStates
+
+        (previousScreen as? NewGameScreen)?.refreshExampleMap()
     }
 
     private fun getModCheckboxes(isPortrait: Boolean = false): ModCheckboxTable {
