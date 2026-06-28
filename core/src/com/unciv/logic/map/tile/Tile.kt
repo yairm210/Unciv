@@ -38,7 +38,6 @@ import kotlin.collections.HashSet
 import kotlin.math.abs
 import kotlin.math.min
 import kotlin.random.Random
-import kotlin.sequences.firstOrNull
 
 class Tile : IsPartOfGameInfoSerialization {
     //region Serialized fields
@@ -297,6 +296,7 @@ class Tile : IsPartOfGameInfoSerialization {
             if (naturalWonder == null) throw Exception("No natural wonder exists for this tile!")
             else ruleset.terrains[naturalWonder!!]!!
 
+    /** Actively observed tiles (no fog of war) */
     @Readonly
     fun isVisible(player: Civilization): Boolean {
         if (DebugUtils.VISIBLE_MAP)
@@ -304,6 +304,7 @@ class Tile : IsPartOfGameInfoSerialization {
         return player.viewableTiles.contains(this)
     }
 
+    /** Tiles that at some point have been explored (may have fog of war) */
     @Readonly
     fun isExplored(player: Civilization): Boolean {
         if (DebugUtils.VISIBLE_MAP || player.isSpectator())
@@ -1082,12 +1083,21 @@ class Tile : IsPartOfGameInfoSerialization {
     }
 
     fun startWorkingOnImprovement(improvement: TileImprovement, civInfo: Civilization, unit: MapUnit) {
+        if (isMarkedForCreatesOneImprovement()) return
+        
+        val gameContext = GameContext(civInfo, unit = unit, tile = this)
+        for ((resourceName, amount) in improvement.getStockpiledResourceRequirements(gameContext)) {
+            val resource = ruleset.tileResources[resourceName] ?: continue
+            civInfo.gainStockpiledResource(resource, -amount)
+        }
+
         improvementQueue.clear()
         queueImprovement(improvement, civInfo, unit)
     }
 
     /** Clears [improvementQueue] */
     fun stopWorkingOnImprovement() {
+        if (isMarkedForCreatesOneImprovement()) return
         improvementQueue.clear()
     }
 

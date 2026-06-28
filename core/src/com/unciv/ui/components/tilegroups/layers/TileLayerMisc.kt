@@ -54,8 +54,8 @@ class TileLayerYield(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, s
                 setScale(0.7f)
             }
             addOwnedActor(yields!!)
-            // y is tile-local before attachment (tileY == 0) or absolute after; either way correct.
-            yields!!.y = tileY + tileGroup.height * 0.25f - yields!!.height / 2
+            // Rough initial Y; updateYieldIcon corrects it once height is known after setStats.
+            yields!!.y = tileY + tileGroup.height * 0.25f
         }
         return yields!!
     }
@@ -88,8 +88,9 @@ class TileLayerYield(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, s
             else
                 setStats(tile.stats.getTileStats(viewingCiv))
             toFront()
-            // Centre horizontally on the tile (absolute position)
+            // Centre horizontally; recalculate Y now that height is known after setStats
             x = tileX + (tileGroup.width - width) / 2
+            this.y = tileY + tileGroup.height * 0.25f - height / 2
             isVisible = true
         }
     }

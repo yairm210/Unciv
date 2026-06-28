@@ -266,7 +266,7 @@ class TileGroupMap<T: TileGroup>(
                         for (mapLayer in allMapLayers) {
                             val tl = (mapLayer as? TileMapLayer<*>)?.tileLayers?.get(i) ?: continue
                             tl.tileX += dx
-                            tl.ownedActors.forEach { it.x += dx }
+                            tl.forEachOwnedActor { it.x += dx }
                         }
                         sortedTileGroups[i].x += dx
                     }

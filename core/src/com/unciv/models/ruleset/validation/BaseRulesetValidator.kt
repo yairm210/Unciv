@@ -1,6 +1,7 @@
 package com.unciv.models.ruleset.validation
 
 import com.unciv.Constants
+import com.unciv.logic.civilization.diplomacy.CityStatePersonality
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.EventChoice
 import com.unciv.models.ruleset.MilestoneType
@@ -162,6 +163,12 @@ internal class BaseRulesetValidator(
             lines.add("${nation.name} is of city-state type ${nation.cityStateType} which does not exist!", sourceObject = nation)
         if (nation.favoredReligion != null && nation.favoredReligion !in ruleset.religions)
             lines.add("${nation.name} has ${nation.favoredReligion} as their favored religion, which does not exist!", sourceObject = nation)
+        if (nation.personality != null) {
+            val unknownPersonality = if (nation.isCityState) CityStatePersonality.safeValueOf(nation.personality) == null
+                else nation.personality !in ruleset.personalities.keys
+            if (unknownPersonality)
+                lines.add("${nation.name} has personality ${nation.personality}, which does not exist!", sourceObject = nation)
+        }
     }
 
     override fun addPersonalityErrors(lines: RulesetErrorList) {

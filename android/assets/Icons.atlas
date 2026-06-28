@@ -200,6 +200,34 @@ OtherIcons/Stop
   orig: 100, 100
   offset: 0, 0
   index: -1
+ImprovementIcons/Circle
+  rotate: false
+  xy: 553, 1866
+  size: 178, 178
+  orig: 178, 178
+  offset: 0, 0
+  index: -1
+OtherIcons/Circle
+  rotate: false
+  xy: 553, 1866
+  size: 178, 178
+  orig: 178, 178
+  offset: 0, 0
+  index: -1
+ResourceIcons/Circle
+  rotate: false
+  xy: 553, 1866
+  size: 178, 178
+  orig: 178, 178
+  offset: 0, 0
+  index: -1
+StatIcons/Circle
+  rotate: false
+  xy: 553, 1866
+  size: 178, 178
+  orig: 178, 178
+  offset: 0, 0
+  index: -1
 ImprovementIcons/Citadel
   rotate: false
   xy: 190, 1232
@@ -293,21 +321,21 @@ ImprovementIcons/Moai
   index: -1
 ImprovementIcons/Offshore Platform
   rotate: false
-  xy: 544, 152
+  xy: 544, 44
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ImprovementIcons/Oil well
   rotate: false
-  xy: 1093, 1590
+  xy: 424, 1448
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ImprovementIcons/Pasture
   rotate: false
-  xy: 424, 1340
+  xy: 514, 1232
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -872,23 +900,30 @@ OtherIcons/MenuIcon
   orig: 100, 100
   offset: 0, 0
   index: -1
+OtherIcons/ModUpdate
+  rotate: false
+  xy: 436, 151
+  size: 100, 101
+  orig: 100, 101
+  offset: 0, 0
+  index: -1
 OtherIcons/Mods
   rotate: false
-  xy: 436, 152
+  xy: 436, 43
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Multiplayer
   rotate: false
-  xy: 436, 44
+  xy: 451, 584
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/NationSwap
   rotate: false
-  xy: 451, 584
+  xy: 544, 476
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -902,21 +937,21 @@ OtherIcons/Nations
   index: -1
 OtherIcons/New
   rotate: false
-  xy: 544, 476
+  xy: 544, 368
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Notifications
   rotate: false
-  xy: 544, 260
+  xy: 544, 152
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Options
   rotate: false
-  xy: 424, 1448
+  xy: 424, 1340
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -930,14 +965,14 @@ OtherIcons/Pause
   index: -1
 OtherIcons/Pencil
   rotate: false
-  xy: 574, 1124
+  xy: 574, 1016
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Pentagon
   rotate: false
-  xy: 574, 1016
+  xy: 466, 908
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -1215,34 +1250,6 @@ ResourceIcons/Cattle
   orig: 100, 100
   offset: 0, 0
   index: -1
-ResourceIcons/Circle
-  rotate: false
-  xy: 553, 1866
-  size: 178, 178
-  orig: 178, 178
-  offset: 0, 0
-  index: -1
-ImprovementIcons/Circle
-  rotate: false
-  xy: 553, 1866
-  size: 178, 178
-  orig: 178, 178
-  offset: 0, 0
-  index: -1
-OtherIcons/Circle
-  rotate: false
-  xy: 553, 1866
-  size: 178, 178
-  orig: 178, 178
-  offset: 0, 0
-  index: -1
-StatIcons/Circle
-  rotate: false
-  xy: 553, 1866
-  size: 178, 178
-  orig: 178, 178
-  offset: 0, 0
-  index: -1
 ResourceIcons/Citrus
   rotate: false
   xy: 769, 1804
@@ -1364,14 +1371,14 @@ ResourceIcons/Marble
   index: -1
 ResourceIcons/Oil
   rotate: false
-  xy: 544, 44
+  xy: 1093, 1590
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ResourceIcons/Pearls
   rotate: false
-  xy: 514, 1232
+  xy: 574, 1124
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -1644,7 +1651,7 @@ TileIcons/MapOverlayToggleYields
   index: -1
 TileIcons/NotWorked
   rotate: false
-  xy: 544, 368
+  xy: 544, 260
   size: 100, 100
   orig: 100, 100
   offset: 0, 0

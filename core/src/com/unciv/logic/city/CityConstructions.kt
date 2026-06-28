@@ -23,6 +23,7 @@ import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.RejectionReasonType
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
@@ -413,8 +414,11 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
                 if (stockpileCosts.any { (resourceName, amount) ->
                             civResources[resourceName] == null
-                                    || amount > civResources[resourceName]!! })
+                                    || amount > civResources[resourceName]!! }) {
+                    if (construction is Building)
+                        removeImprovementForBuilding(construction)
                     continue // Removes this construction from the queue
+                }
             }
             if (construction.isBuildable(this))
                 constructionQueue.add(constructionName)
@@ -422,6 +426,27 @@ class CityConstructions : IsPartOfGameInfoSerialization {
                 removeImprovementForBuilding(construction)
         }
         chooseNextConstruction()
+        validateCreatesOneImprovementMarkers()
+    }
+
+    /** Remove orphaned [UniqueType.CreatesOneImprovement] markers whose queue entry was removed elsewhere. */
+    private fun validateCreatesOneImprovementMarkers() {
+        val markedTiles = city.getTiles()
+            .filter { it.isMarkedForCreatesOneImprovement() }
+            .toList()
+        if (markedTiles.isEmpty()) return
+
+        val improvementsInQueue = constructionQueue.asSequence()
+            .mapNotNull { getConstruction(it) as? Building }
+            .mapNotNullTo(hashSetOf()) { it.getImprovementToCreate(city.getRuleset(), city.civ)?.name }
+
+        for (tile in markedTiles) {
+            val improvementInProgress = checkNotNull(tile.improvementInProgress) {
+                "Tile ${tile.position} is marked for ${UniqueType.CreatesOneImprovement.name} without an improvement in progress"
+            }
+            if (improvementInProgress !in improvementsInQueue)
+                tile.improvementFunctions.removeCreatesOneImprovementMarker(removeConstruction = false)
+        }
     }
 
     fun validateInProgressConstructions() {
@@ -469,7 +494,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     private fun removeImprovementForBuilding(building: Building){
         val improvementToCreate = building.getImprovementToCreate(city.getRuleset(), city.civ) ?: return
         val tile = city.getTiles().firstOrNull { it.isMarkedForCreatesOneImprovement(improvementToCreate.name) }
-        tile?.improvementFunctions?.removeCreatesOneImprovementMarker()
+        tile?.improvementFunctions?.removeCreatesOneImprovementMarker(removeConstruction = false)
     }
 
     private fun constructionBegun(construction: IConstruction) {
@@ -739,7 +764,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             val finalTile = tile
                 ?: Automation.getTileForConstructionImprovement(city, improvementToPlace)
                 ?: return false // This was never reached in testing
-            finalTile.improvementFunctions.markForCreatesOneImprovement(improvementToPlace.name)
+            if (!tryPlaceCreateOneImprovementMarker(improvementToPlace, finalTile)) return false
             // postBuildEvent does the rest by calling cityConstructions.applyCreateOneImprovement
         }
 
@@ -835,8 +860,38 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         
         if (getTileForImprovement(improvement.name) == null) {
             val newTile = Automation.getTileForConstructionImprovement(city, improvement) ?: return
-            newTile.improvementFunctions.markForCreatesOneImprovement(improvement.name)
+            tryPlaceCreateOneImprovementMarker(improvement, newTile)
         }
+    }
+
+    /** Whether this city may mark its own [tile] to create [improvement] when construction completes. */
+    @Readonly
+    fun canPlaceCreateOneImprovementOn(improvement: TileImprovement, tile: Tile): Boolean =
+        tile.getCity() == city
+            && tile in city.tilesInRange
+            && !tile.isCityCenter()
+            && !tile.isMarkedForCreatesOneImprovement()
+            && tile.improvementFunctions.canBuildImprovement(improvement, city.state)
+
+    /**
+     * Try to mark [tile] so completing this construction will create [improvement] there.
+     *
+     * The tile must already belong to this city; reaching marker placement with another
+     * city's tile is invalid internal state and fails loudly.
+     *
+     * @return `true` if [tile] is now marked for [improvement], or `false` if it is not eligible.
+     */
+    fun tryPlaceCreateOneImprovementMarker(improvement: TileImprovement, tile: Tile): Boolean {
+        if (tile.getCity() == city && tile.isMarkedForCreatesOneImprovement(improvement.name))
+            return true
+        check(tile.getCity() == city) {
+            "Cannot mark ${tile.position} for ${UniqueType.CreatesOneImprovement.name} in ${city.name}: tile is owned by ${tile.getCity()?.name ?: "no city"}"
+        }
+        if (!canPlaceCreateOneImprovementOn(improvement, tile))
+            return false
+
+        tile.improvementFunctions.markForCreatesOneImprovement(improvement.name)
+        return true
     }
 
     @Readonly
@@ -854,10 +909,13 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     /** Add [construction] to the end or top (controlled by [addToTop]) of the queue with all checks (does nothing if not possible)
      *
+     *  @param tile Supports [UniqueType.CreatesOneImprovement] the tile to place the improvement from that unique on.
+     *      Required when adding such a building without an existing marker.
      *  Note: Overload with string parameter `constructionName` exists as well.
      */
-    fun addToQueue(construction: IConstruction, addToTop: Boolean = false) {
+    fun addToQueue(construction: IConstruction, addToTop: Boolean = false, tile: Tile? = null) {
         if (!canAddToQueue(construction)) return
+        markTileForCreatesOneImprovement(construction, tile)
         val constructionName = construction.name
         when {
             isQueueEmptyOrIdle() ->
@@ -880,11 +938,24 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         currentConstructionIsUserSet = true
     }
 
+    private fun markTileForCreatesOneImprovement(construction: IConstruction, tile: Tile?) {
+        val improvementToCreate = (construction as? Building)?.getImprovementToCreate(city.getRuleset(), city.civ)
+            ?: return
+        if (getTileForImprovement(improvementToCreate.name) != null) return
+
+        val tileForImprovement = requireNotNull(tile) {
+            "Cannot queue ${construction.name} without a target tile for ${UniqueType.CreatesOneImprovement.name}"
+        }
+        require(tryPlaceCreateOneImprovementMarker(improvementToCreate, tileForImprovement)) {
+            "Cannot queue ${construction.name}: ${improvementToCreate.name} cannot be created on ${tileForImprovement.position}"
+        }
+    }
+
     /** Add a construction named [constructionName] to the end of the queue with all checks
      *
      *  Note: Delegates to overload with `construction` parameter.
      */
-    fun addToQueue(constructionName: String) = addToQueue(getConstruction(constructionName))
+    fun addToQueue(constructionName: String, tile: Tile? = null) = addToQueue(getConstruction(constructionName), tile = tile)
 
     /** Remove one entry from the queue by index.
      *  @param automatic  If this was done automatically, we should automatically try to choose a new construction and treat it as such
@@ -897,7 +968,9 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         if (construction is Building) {
             val improvement = construction.getImprovementToCreate(city.getRuleset(), city.civ)
             if (improvement != null) {
-                getTileForImprovement(improvement.name)?.stopWorkingOnImprovement()
+                getTileForImprovement(improvement.name)
+                    ?.improvementFunctions
+                    ?.removeCreatesOneImprovementMarker(removeConstruction = false)
             }
         }
 
@@ -986,7 +1059,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         val improvement = building.getImprovementToCreate(city.getRuleset(), city.civ)
             ?: return
         val tileForImprovement = getTileForImprovement(improvement.name) ?: return
-        tileForImprovement.stopWorkingOnImprovement()  // clears mark
+        tileForImprovement.improvementFunctions.removeCreatesOneImprovementMarker(removeConstruction = false)
         if (removeOnly) return
         tileForImprovement.setImprovement(improvement, city.civ)
         // If bought the worldscreen will not have been marked to update, and the new improvement won't show until later...

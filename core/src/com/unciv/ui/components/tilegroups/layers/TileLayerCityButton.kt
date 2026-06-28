@@ -58,6 +58,7 @@ class TileLayerCityButton(tileGroup: TileGroup, size: Float) : TileLayer(tileGro
                 isTransform = false
                 touchable = Touchable.childrenOnly
                 setPosition(tileX, tileY)
+                setOrigin(size / 2f, size / 2f)
             }
             cityButton = CityButton(city, tileGroup)
             cityButtonWrapper!!.addActor(cityButton!!)

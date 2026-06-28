@@ -31,6 +31,7 @@ class NextTurnButton(
     init {
         pad(15f)
         onActivation { nextTurnAction.action(worldScreen) }
+        addContextMenu { NextTurnMenu(stage, this, worldScreen) }
         keyShortcuts.add(KeyboardBinding.NextTurn)
         keyShortcuts.add(KeyboardBinding.NextTurnAlternate)
         labelCell.row()
@@ -54,7 +55,6 @@ class NextTurnButton(
             (!worldScreen.hasOpenPopups() && worldScreen.isPlayersTurn && !worldScreen.waitingForAutosave && !worldScreen.isNextTurnUpdateRunning())
         if (isEnabled) {
             addTooltip(KeyboardBinding.NextTurn)
-            addContextMenu { NextTurnMenu(stage, this, worldScreen) }
         } else {
             removeTooltips()
         }

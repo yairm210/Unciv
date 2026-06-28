@@ -19,17 +19,25 @@ abstract class TileLayer(val tileGroup: TileGroup, val size: Float) {
     internal var tileY: Float = 0f
     internal var parentMapLayer: TileMapLayer<*>? = null
 
-    /** All Actor children currently owned by this tile-slot. */
-    internal val ownedActors = ArrayList<Actor>(0)
+    /** All Actor children currently owned by this tile-slot. 
+     * Lazily initialized — most layers never have actors added during TileGroup construction */
+    private var _ownedActors: ArrayList<Actor>? = null
+    internal val ownedActors: ArrayList<Actor>
+        get() = _ownedActors ?: ArrayList<Actor>().also { _ownedActors = it }
 
     var isVisible: Boolean = true
         set(value) {
             if (field == value) return
             field = value
-            ownedActors.forEach { it.isVisible = value }
+            forEachOwnedActor { it.isVisible = value }
         }
 
     // ── scene-graph helpers ──────────────────────────────────────────────────
+
+    /** Iterates owned actors without triggering lazy initialization when the list is empty. */
+    internal fun forEachOwnedActor(action: (Actor) -> Unit) {
+        _ownedActors?.forEach(action)
+    }
 
     protected fun addOwnedActor(actor: Actor) {
         ownedActors.add(actor)
@@ -41,7 +49,8 @@ abstract class TileLayer(val tileGroup: TileGroup, val size: Float) {
     }
 
     protected fun removeOwnedActor(actor: Actor) {
-        ownedActors.remove(actor)
+        if (_ownedActors == null) return
+        if (!_ownedActors!!.remove(actor)) return
         // parentMapLayer handles removal when attached; actor.remove() handles the
         // standalone case where the actor lives directly under tileGroup.
         if (parentMapLayer != null) parentMapLayer!!.removeActor(actor)
@@ -78,7 +87,7 @@ abstract class TileLayer(val tileGroup: TileGroup, val size: Float) {
     }
 
     protected open fun determineVisibility() {
-        isVisible = ownedActors.isNotEmpty()
+        isVisible = _ownedActors?.isNotEmpty() == true
     }
 
     protected abstract fun doUpdate(viewingCiv: Civilization?)
@@ -88,7 +97,7 @@ abstract class TileLayer(val tileGroup: TileGroup, val size: Float) {
         tileX = x
         tileY = y
         parentMapLayer = mapLayer
-        for (actor in ownedActors) {
+        forEachOwnedActor { actor ->
             actor.x += x
             actor.y += y
             mapLayer.addActor(actor)

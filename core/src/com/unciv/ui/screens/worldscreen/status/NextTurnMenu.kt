@@ -23,10 +23,9 @@ class NextTurnMenu(
         table.add(getButton("Next Turn", KeyboardBinding.NextTurnMenuNextTurn) {
             worldScreen.nextTurn()
         }).row()
-        val automateUnitsAction = NextTurnAction.MoveAutomatedUnits
-        if (automateUnitsAction.isChoice(worldScreen))
+        if (NextTurnAction.MoveAutomatedUnits.isChoice(worldScreen))
             table.add(getButton("Move automated units", KeyboardBinding.NextTurnMenuMoveAutomatedUnits) {
-                automateUnitsAction.action(worldScreen)
+                NextTurnAction.MoveAutomatedUnits.action(worldScreen)
             }).row()
         return table
     }
