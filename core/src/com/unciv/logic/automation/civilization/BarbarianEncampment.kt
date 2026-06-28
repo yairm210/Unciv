@@ -4,7 +4,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.map.HexCoord
 
-class BarbarianEncampment() : IsPartOfGameInfoSerialization {
+internal class BarbarianEncampment() : IsPartOfGameInfoSerialization {
     var position = HexCoord()
     var countdown = 0
     var spawnedUnits = -1

@@ -21,7 +21,7 @@ import kotlin.random.Random
 
 class BarbarianManager : IsPartOfGameInfoSerialization {
 
-    val encampments = ArrayList<BarbarianEncampment>()
+    private val encampments = ArrayList<BarbarianEncampment>()
 
     @Transient
     lateinit var gameInfo: GameInfo
@@ -259,4 +259,7 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
 
         return unitList.randomWeighted(weightings, rng)
     }
+
+    /** Return a _mutable_ List of encampment tiles, allowing in-place sort */
+    fun getEncampmentTiles() = encampments.mapTo(mutableListOf()) { gameInfo.tileMap[it.position] }
 }
