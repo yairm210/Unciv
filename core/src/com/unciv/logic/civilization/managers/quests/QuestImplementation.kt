@@ -78,7 +78,7 @@ sealed class QuestImplementation : IQuestImplementation {
         /** Completion happens when [MapUnit.clearEncampment] calls [QuestManager.barbarianCampCleared]: */
         override fun isComplete(civ: Civilization, assignedQuest: AssignedQuest) = false
         override fun isObsolete(civ: Civilization, assignedQuest: AssignedQuest) =
-            assignedQuest.getTile(civ).improvement != Constants.barbarianEncampment
+            !assignedQuest.getTile(civ).isBarbarianEncampment()
     }
 
     class ConstructWonder : QuestImplementation() {

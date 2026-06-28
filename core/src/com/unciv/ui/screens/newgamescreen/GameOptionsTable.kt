@@ -562,6 +562,8 @@ class GameOptionsTable(
         gameParameters.victoryTypes.removeAll { it !in ruleset.victories.keys }
         if (gameParameters.victoryTypes.isEmpty())
             gameParameters.victoryTypes.addAll(ruleset.victories.keys)
+
+        (previousScreen as? NewGameScreen)?.refreshExampleMap()
     }
 
     private fun getModCheckboxes(isPortrait: Boolean = false): ModCheckboxTable {

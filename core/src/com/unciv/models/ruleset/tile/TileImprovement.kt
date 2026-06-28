@@ -56,7 +56,11 @@ class TileImprovement : RulesetStatsObject() {
 
     @Readonly fun isGreatImprovement() = hasUnique(UniqueType.GreatImprovement)
     @Readonly fun isRoad() = RoadStatus.entries.any { it != RoadStatus.None && it.name == this.name }
-    @Readonly fun isAncientRuinsEquivalent(state: GameContext? = GameContext.IgnoreConditionals) = hasUnique(UniqueType.IsAncientRuinsEquivalent, state)
+    @Readonly fun isAncientRuinsEquivalent(state: GameContext? = GameContext.IgnoreConditionals) =
+        hasUnique(UniqueType.IsAncientRuinsEquivalent, state)
+    @Readonly fun isBarbarianCampEquivalent(state: GameContext? = GameContext.IgnoreConditionals) =
+        name == Constants.barbarianEncampment || // backward compatibility for mods
+        hasUnique(UniqueType.IsBarbarianCampEquivalent, state)
 
     @Readonly fun canBeBuiltOn(terrain: String): Boolean = terrain in terrainsCanBeBuiltOn
     @Readonly fun canBeBuiltOn(terrain: Terrain): Boolean = terrainsCanBeBuiltOn.any { terrain.matchesFilter(it) }

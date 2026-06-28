@@ -30,7 +30,7 @@ internal object QuestTargetHelpers {
     fun Civilization.getBarbarianEncampmentForQuest(challenger: Civilization? = null): Tile? {
         @Suppress("DEPRECATION")
         val encampments = getCapital()!!.getCenterTile().getTilesInDistance(8)
-            .filter { it.improvement == Constants.barbarianEncampment }.toList()
+            .filter { it.isBarbarianEncampment() }.toList()
 
         return encampments.randomOrNull(getRandom(challenger))
     }

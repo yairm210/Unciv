@@ -134,7 +134,7 @@ class CityScreenConstructionMenu(
     private fun removeAllQueues() = forAllCities { it.removeAllByName(constructionName) }
 
     @Readonly private fun canDisable() = constructionName !in disabledAutoAssignConstructions &&
-        construction != PerpetualConstruction.idle
+        construction != PerpetualConstruction.Idle
     private fun disableEntry() {
         disabledAutoAssignConstructions.add(constructionName)
         settings.save()
