@@ -78,7 +78,7 @@ class TileLayerFeatures(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
     }
 
     fun dim() {
-        ownedActors.forEach { it.color.a = 0.5f }
+        forEachOwnedActor { it.color.a = 0.5f }
     }
 
 }
