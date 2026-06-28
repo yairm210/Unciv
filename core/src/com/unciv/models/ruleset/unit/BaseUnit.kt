@@ -222,7 +222,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
         val stateForConditionals = city?.state ?: civ.state
 
-        if (city != null && isWaterUnit && !city.isNaval())
+        if (city != null && isWaterUnit && !city.canBuildWaterUnits())
             yield(RejectionReasonType.WaterUnitsInCoastalCities.toInstance())
 
         for (unique in getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals))

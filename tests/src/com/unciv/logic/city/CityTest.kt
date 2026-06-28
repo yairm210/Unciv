@@ -96,6 +96,19 @@ class CityTest {
     }
 
     @Test
+    fun `should build water units next to non-coastal water`() {
+        testGame.setTileTerrain(HexCoord(1, 1), Constants.ocean)
+        val waterUnit = testGame.createBaseUnit("Melee Water").apply {
+            movement = 2
+            strength = 8
+        }
+
+        assertTrue(waterUnit.isBuildable(capitalCity.cityConstructions))
+        assertTrue(capitalCity.cityConstructions.completeConstruction(waterUnit))
+        assertEquals(waterUnit.name, capitalCity.getCenterTile().militaryUnit?.name)
+    }
+
+    @Test
     fun `should mark selected owned tile when queueing CreatesOneImprovement building`() {
         val farm = testGame.ruleset.tileImprovements["Farm"]!!
         testCiv.tech.techsResearched.add(farm.techRequired!!)

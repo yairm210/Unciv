@@ -240,7 +240,7 @@ enum class RejectionReasonType(val shouldShow: Boolean, val errorMessage: String
     MustBeNextToTile(false, "Must be next to a specific tile"),
     MustNotBeNextToTile(false, "Must not be next to a specific tile"),
     MustOwnTile(false, "Must own a specific tile close by"),
-    WaterUnitsInCoastalCities(false, "May only built water units in coastal cities"),
+    WaterUnitsInCoastalCities(false, "May only build water units in cities on or next to water"),
     CanOnlyBeBuiltInSpecificCities(false, "Build requirements not met in this city"),
     MaxNumberBuildable(false, "Maximum number have been built or are being constructed"),
 

@@ -59,7 +59,7 @@ class UnitManager(val civInfo: Civilization) {
         val citiesNotInResistance = civInfo.cities.filterNot { it.isInResistance() }
 
         // To allow cities on water tiles to be able to build water units.
-        val canSpawnUnitOnWater = city?.isNaval() == true
+        val canSpawnUnitOnWater = city?.canBuildWaterUnits() == true
         val cityToAddTo = when {
             unit.isWaterUnit && canSpawnUnitOnWater -> city
             unit.isWaterUnit ->
