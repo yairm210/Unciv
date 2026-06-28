@@ -19,6 +19,8 @@ import com.unciv.ui.components.widgets.*
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.victoryscreen.LoadMapPreview
 import com.unciv.utils.Concurrency
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.isActive
 
 /** Table for editing [mapParameters]
  *
@@ -59,6 +61,9 @@ class MapParametersTable(
 
     private val maxMapSize = ((previousScreen as? NewGameScreen)?.getColumnWidth() ?: 200f) - 10f // There is 5px padding each side
     private val mapTypeExample = Table()
+    private var exampleMapJob: Job? = null
+    @Volatile
+    private var exampleMapGeneration = 0
 
     // Keep references (in the key) and settings value getters (in the value) of the 'advanced' sliders
     // in a HashMap for reuse later - in the reset to defaults button. Better here as field than as closure.
@@ -138,15 +143,19 @@ class MapParametersTable(
         }
     }
 
-    private fun generateExampleMap(){
-        val ruleset = if (previousScreen is NewGameScreen) previousScreen.ruleset else RulesetCache.getVanillaRuleset()
-        Concurrency.run("Generate example map") {
-            val mapParametersForExample = if (forMapEditor) mapParameters else mapParameters.clone().apply { seed = 0 }
+    internal fun generateExampleMap() {
+        cancelBackgroundJobs()
+        val generation = ++exampleMapGeneration
+        val ruleset = if (previousScreen is NewGameScreen) previousScreen.ruleset.clone() else RulesetCache.getVanillaRuleset()
+        val mapParametersForExample = if (forMapEditor) mapParameters else mapParameters.clone().apply { seed = 0 }
+        exampleMapJob = Concurrency.run("Generate example map") {
             val exampleMap = MapGenerator(ruleset).generateMap(mapParametersForExample, GameParameters())
+            if (!isActive) return@run
             Concurrency.runOnGLThread {
+                if (generation != exampleMapGeneration) return@runOnGLThread
                 mapTypeExample.clear()
                 val mapPreview = LoadMapPreview(exampleMap, maxMapSize, maxMapSize)
-                if (!forMapEditor){
+                if (!forMapEditor) {
                     val label = "Example map".toLabel()
                     label.centerX(mapPreview)
                     label.y = mapPreview.height - label.height - 10f
@@ -155,7 +164,18 @@ class MapParametersTable(
                 mapTypeExample.add(mapPreview)
                 pack()
             }
+        }.apply {
+            invokeOnCompletion {
+                if (generation == exampleMapGeneration)
+                    exampleMapJob = null
+            }
         }
+    }
+
+    internal fun cancelBackgroundJobs() {
+        exampleMapGeneration++
+        exampleMapJob?.cancel()
+        exampleMapJob = null
     }
 
     private fun addMapTypeSelectBox() {
