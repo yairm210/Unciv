@@ -73,7 +73,7 @@ class VictoryScreenCharts(
         civButtonsTable.clear()
         val sortedCivs = gameInfo.civilizations.asSequence()
             .filter { it.isMajorCiv() }
-            .filter { gameInfo.victoryData != null || viewingCiv.isSpectator() || !gameInfo.gameParameters.hideOtherCivilizationStats || it == viewingCiv }
+            .filter { targetCiv -> VictoryScreen.canViewCivStats(gameInfo, viewingCiv, targetCiv) }
             .map { VictoryScreen.CivWithStat(it, rankingType) }
             .sortedWith(
                 compareByDescending<VictoryScreen.CivWithStat> { if (it.civ.isDefeated()) Int.MIN_VALUE else it.value }
@@ -103,7 +103,7 @@ class VictoryScreenCharts(
     private fun getLineChartData(rankingType: RankingType): List<DataPoint<Int>> {
         val dataPoints = gameInfo.civilizations.asSequence()
             .filter { it.isMajorCiv() }
-            .filter { gameInfo.victoryData != null || viewingCiv.isSpectator() || !gameInfo.gameParameters.hideOtherCivilizationStats || it == viewingCiv }
+            .filter { targetCiv -> VictoryScreen.canViewCivStats(gameInfo, viewingCiv, targetCiv) }
             .flatMap { civ ->
                 civ.statsHistory
                     .filterKeys { zoomAtX == null || it in zoomAtX!!  }

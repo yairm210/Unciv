@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.GameInfo
 import com.unciv.logic.VictoryData
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.metadata.GameSetupInfo
@@ -26,6 +27,7 @@ import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.newgamescreen.NewGameScreen
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
+import yairm210.purity.annotations.Readonly
 import java.util.EnumSet
 
 class VictoryScreen(
@@ -85,11 +87,11 @@ class VictoryScreen(
             override fun getContent(parent: VictoryScreen) = VictoryScreenReplay(parent.worldScreen)
             override fun isHidden(playerCiv: Civilization) =
                 !playerCiv.isSpectator()
-                        && playerCiv.gameInfo.victoryData == null
-                        && playerCiv.isAlive()
-                        // We show the replay after 5 turns. This is to ensure that the replay
-                        // slider doesn't look weird.
-                        && playerCiv.gameInfo.turns < 5
+                    && playerCiv.gameInfo.victoryData == null
+                    && playerCiv.isAlive()
+                    // We show the replay after 5 turns. This is to ensure that the replay
+                    // slider doesn't look weird.
+                    && playerCiv.gameInfo.turns < 5
         };
         abstract fun getContent(parent: VictoryScreen): Table
         open fun isHidden(playerCiv: Civilization) = false
@@ -209,4 +211,16 @@ class VictoryScreen(
     }
 
     override fun recreate(): BaseScreen = VictoryScreen(worldScreen, tabs.activePage)
+
+    companion object {
+        @Readonly
+        fun canViewCivStats(
+            gameInfo: GameInfo,
+            viewingCiv: Civilization,
+            viewedCiv: Civilization
+        ): Boolean = gameInfo.victoryData != null
+            || viewingCiv.isSpectator()
+            || !gameInfo.gameParameters.hideOtherCivilizationStats
+            || viewedCiv == viewingCiv
+    }
 }
