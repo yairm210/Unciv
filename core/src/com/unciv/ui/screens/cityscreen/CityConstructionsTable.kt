@@ -687,10 +687,10 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         return when(construction) {
             is Building -> UncivSound.Construction
             is BaseUnit -> UncivSound.Promote
-            PerpetualConstruction.gold -> UncivSound.Coin
-            PerpetualConstruction.science -> UncivSound.Paper
-            PerpetualConstruction.culture -> UncivSound.Policy
-            PerpetualConstruction.faith -> UncivSound.Choir
+            PerpetualConstruction.Gold -> UncivSound.Coin
+            PerpetualConstruction.Science -> UncivSound.Paper
+            PerpetualConstruction.Culture -> UncivSound.Policy
+            PerpetualConstruction.Faith -> UncivSound.Choir
             else -> UncivSound.Click
         }
     }

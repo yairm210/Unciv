@@ -9,7 +9,7 @@ import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IConstruction
 import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.PerpetualConstruction
-import com.unciv.models.ruleset.PerpetualConstruction.PerpetualStatConversion
+import com.unciv.models.ruleset.PerpetualConstruction.StatConversion
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.darken
@@ -83,7 +83,7 @@ class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
             val description = when (construction) {
                 is BaseUnit -> construction.getDescription(city)
                 is Building -> construction.getDescription(city, true)
-                is PerpetualStatConversion -> construction.description.replace("[rate]", "[${construction.getConversionRate(city)}]").tr()
+                is StatConversion -> construction.description.replace("[rate]", "[${construction.getConversionRate(city)}]").tr()
                 is PerpetualConstruction -> construction.description.tr()
                 else -> ""  // Should never happen
             }
@@ -91,7 +91,7 @@ class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
             val descriptionLabel = Label(description, BaseScreen.skin)  // already translated
             descriptionLabel.wrap = true
             add(descriptionLabel).colspan(2).width(stage.width / if(cityScreen.isCrampedPortrait()) 3 else 4)
-            
+
             if (cityConstructions.isBuilt(construction.name)) {
                 showSellButton(construction)
             } else if (buyButtonFactory.hasBuyButtons(construction)) {
@@ -103,7 +103,7 @@ class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
             if (construction is BaseUnit) {
                 val baseUnit = construction.name
                 val buildUnitWithPromotions = city.unitShouldUseSavedPromotion[baseUnit]
-                
+
                 if (buildUnitWithPromotions != null) {
                     row()
                     add("Use default promotions".toCheckBox(buildUnitWithPromotions) {city.unitShouldUseSavedPromotion[baseUnit] = it}).colspan(2).center()
@@ -143,7 +143,7 @@ class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
             }
         }
     }
-    
+
     private fun sellBuildingClicked(construction: Building, sellText: String) {
         cityScreen.closeAllPopups()
 
@@ -164,5 +164,5 @@ class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
         cityScreen.clearSelection()
         cityScreen.update()
     }
-    
+
 }

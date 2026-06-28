@@ -14,7 +14,7 @@ sealed class PerpetualConstruction(override var name: String, val description: S
     @Readonly
     abstract fun getProductionTooltip(city: City, withIcon: Boolean = false): String
 
-    abstract class PerpetualStatConversion(
+    abstract class StatConversion(
         val stat: Stat
     ) : PerpetualConstruction(stat.name, "Convert production to [${stat.name}] at a rate of [rate] to 1") {
         override fun getProductionTooltip(city: City, withIcon: Boolean) : String
@@ -44,12 +44,12 @@ sealed class PerpetualConstruction(override var name: String, val description: S
     @Readonly
     override fun requiredResources(state: GameContext): Set<String> = emptySet()
 
-    object science : PerpetualStatConversion(Stat.Science)
-    object gold : PerpetualStatConversion(Stat.Gold)
-    object culture : PerpetualStatConversion(Stat.Culture)
-    object faith : PerpetualStatConversion(Stat.Faith)
-    object food : PerpetualStatConversion(Stat.Food)
-    object idle : PerpetualConstruction("Nothing", "The city will not produce anything.") {
+    object Science : StatConversion(Stat.Science)
+    object Gold : StatConversion(Stat.Gold)
+    object Culture : StatConversion(Stat.Culture)
+    object Faith : StatConversion(Stat.Faith)
+    object Food : StatConversion(Stat.Food)
+    object Idle : PerpetualConstruction("Nothing", "The city will not produce anything.") {
         override fun getProductionTooltip(city: City, withIcon: Boolean) = ""
         override fun isBuildable(cityConstructions: CityConstructions) = true
     }

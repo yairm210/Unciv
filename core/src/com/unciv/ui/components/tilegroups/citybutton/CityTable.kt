@@ -180,7 +180,7 @@ internal class CityTable(
         val icon = if (cityConstructions.currentConstructionName().isEmpty()) null
             else ImageGetter.getConstructionPortrait(cityCurrentConstruction.name, 24f)
         val turns = when (cityCurrentConstruction) {
-            PerpetualConstruction.idle -> {
+            PerpetualConstruction.Idle -> {
                 "-"
             }
             is PerpetualConstruction -> {
