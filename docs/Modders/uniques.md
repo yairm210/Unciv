@@ -2980,6 +2980,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Provides a random bonus when entered"
 	Applicable to: Improvement
 
+??? example  "Marks a barbarian camp"
+	When several barbarian camp improvements are available, each new camp chooses one randomly.
+
+	This unique is automatically hidden from users.
+
+	Applicable to: Improvement
+
 ??? example  "Unpillagable"
 	Applicable to: Improvement
 

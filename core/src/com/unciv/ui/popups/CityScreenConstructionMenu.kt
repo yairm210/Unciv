@@ -134,11 +134,11 @@ class CityScreenConstructionMenu(
     private fun removeAllQueues() = forAllCities { it.removeAllByName(constructionName) }
 
     @Readonly private fun canDisable() = constructionName !in city.disabledConstructions 
-        && construction != PerpetualConstruction.idle
+        && construction != PerpetualConstruction.Idle
     
     @Readonly private fun canDisableAll() =
         constructionName !in city.civ.disabledCityConstructions
-        && construction != PerpetualConstruction.idle
+        && construction != PerpetualConstruction.Idle
 
     /**
      * One-time effect: disables the construction in this city only.
