@@ -379,5 +379,9 @@ jobs:
         with:
           formula-name: unciv
           download-url: https://github.com/yairm210/Unciv/releases/download/${{ github.ref_name }}/Unciv.jar
+          commit-message: |
+            unciv {{version}}
+
+            Created by `brew bump`
         env:
           COMMITTER_TOKEN: ${{ secrets.ACTIONS_ACCESS_TOKEN }}
