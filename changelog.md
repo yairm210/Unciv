@@ -1,3 +1,13 @@
+## 4.20.17
+
+CPU performance improvements
+
+fix: Avoid crash when removing encampments from map editor
+
+Adjust lake and coastline formation of Boreal map type - By unciv-loof
+
+Console: Allow setting strategic resource deposit amount - By SomeTroglodyte
+
 ## 4.20.16
 
 By unciv-loof:
