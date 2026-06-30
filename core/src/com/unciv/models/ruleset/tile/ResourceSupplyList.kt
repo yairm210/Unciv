@@ -3,6 +3,7 @@ package com.unciv.models.ruleset.tile
 import com.unciv.Constants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.IConstruction  // Kdoc only
+import com.unciv.models.ruleset.unique.UniqueType
 import yairm210.purity.annotations.InternalState
 import yairm210.purity.annotations.Readonly
 import kotlin.collections.LinkedHashMap
@@ -194,7 +195,10 @@ class ResourceSupplyList(
             removeRow(entry)
     }
 
-    /** Multiply each entry's amount by its resource's modifier, if one exists. */
+    /** Multiply each entry's amount by its resource's modifier, if one exists.
+     *
+     *  Part of the [UniqueType.PercentResourceProduction] implementation.
+     */
     fun applyModifiers(modifiers: Map<String, Float>) {
         if (modifiers.isEmpty()) return
         for ((resource, subMap) in mapByResource) {
