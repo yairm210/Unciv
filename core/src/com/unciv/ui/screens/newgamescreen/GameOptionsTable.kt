@@ -239,7 +239,7 @@ class GameOptionsTable(
             popup.open()
             popup.update()
         }
-        add(button)
+        add(button).row()
     }
 
     private fun numberOfMajorCivs() = ruleset.nations.values.count {
@@ -545,6 +545,8 @@ class GameOptionsTable(
         gameParameters.victoryTypes.removeAll { it !in ruleset.victories.keys }
         if (gameParameters.victoryTypes.isEmpty())
             gameParameters.victoryTypes.addAll(ruleset.victories.keys)
+
+        (previousScreen as? NewGameScreen)?.refreshExampleMap()
     }
 
     private fun getModCheckboxes(isPortrait: Boolean = false): ModCheckboxTable {

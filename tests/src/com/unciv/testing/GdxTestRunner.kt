@@ -49,6 +49,7 @@ class GdxTestRunner(
         val conf = HeadlessApplicationConfiguration()
         HeadlessApplication(this, conf)
         Gdx.gl = Mockito.mock(GL20::class.java)
+        Gdx.gl20 = Gdx.gl
     }
 
     // ApplicationListener interface
@@ -138,13 +139,13 @@ class GdxTestRunner(
         }
     }
 
-    protected override fun validateConstructor(errors: MutableList<Throwable?>) {
+    override fun validateConstructor(errors: MutableList<Throwable?>) {
         validateOnlyOneConstructor(errors)
         //Removing the validateZeroArgConstructor restriction since we allow parameterized tests.
     }
 
     @Throws(Exception::class)
-    protected override fun createTest(): Any? {
+    override fun createTest(): Any? {
         if (testConfig == null)
             return super.createTest()
         return BlockJUnit4ClassRunnerWithParameters(testConfig).createTest()
@@ -157,11 +158,11 @@ class GdxTestRunner(
      * @since 4.13
      */
     @Throws(Exception::class)
-    protected override fun createTest(method: FrameworkMethod?): Any? {
+    override fun createTest(method: FrameworkMethod?): Any? {
         return createTest()
     }
 
-    protected override fun testName(method: FrameworkMethod): String {
+    override fun testName(method: FrameworkMethod): String {
         return super.testName(method) + if (testConfig == null) "" else testConfig.parameters.toString()
     }
     

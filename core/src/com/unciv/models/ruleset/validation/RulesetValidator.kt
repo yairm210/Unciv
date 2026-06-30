@@ -8,12 +8,15 @@ import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.logic.map.tile.RoadStatus
+import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.EventChoice
 import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.RulesetFile
+import com.unciv.models.ruleset.RulesetName
 import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.nation.getContrastRatio
@@ -37,6 +40,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.Portrait
 import com.unciv.ui.images.PortraitPromotion
 import com.unciv.utils.isRunFromJar
+import kotlin.reflect.KProperty0
 
 /**
  *  Class mananging ruleset validation.
@@ -118,6 +122,9 @@ open class RulesetValidator protected constructor(
         addDifficultyErrors(lines)
         addEventErrors(lines)
         addCityStateTypeErrors(lines)
+
+        addTranslationNameCollisionWarnings(lines)
+        addEmptyNamesErrors(lines)
 
         initTextureNamesCache(lines)
 
@@ -278,18 +285,29 @@ open class RulesetValidator protected constructor(
         // Using reportRulesetSpecificErrors=true as ModOptions never should use Uniques depending on objects from a base ruleset anyway.
         uniqueValidator.checkUniques(ruleset.modOptions, lines, reportRulesetSpecificErrors = true, tryFixUnknownUniques)
 
+        // TODO: Create overload method for floating point constants. Settle on using either floats or doubles in ModConstants.kt
+        /**
+         * @param propertyName If the constant has a getter, then you should manually enter its name here.
+         */
+        fun checkConstant(property: KProperty0<Int>, range: IntRange, propertyName: String? = null) {
+            if (property.get() in range) return
+            fun IntRange.describe() = when {
+                this.first == Int.MIN_VALUE -> "Maximum $last"
+                this.last == Int.MAX_VALUE -> "Minimum $first"
+                else -> "Minimum $first, Maximum $last"
+            }
+            lines.add("ModConstant '${propertyName ?: property.name}}' does not meet criteria '${range.describe()}'.")
+        }
+        
         //TODO: More thorough checks. Here I picked just those where bad values might endanger stability.
         val constants = ruleset.modOptions.constants
-        if (constants.cityExpandRange !in 1..100)
-            lines.add("Invalid ModConstant 'cityExpandRange'.", sourceObject = null)
-        if (constants.cityWorkRange !in 1..100)
-            lines.add("Invalid ModConstant 'cityWorkRange'.", sourceObject = null)
-        if (constants.minimalCityDistance < 1)
-            lines.add("Invalid ModConstant 'minimalCityDistance'.", sourceObject = null)
-        if (constants.minimalCityDistanceOnDifferentContinents < 1)
-            lines.add("Invalid ModConstant 'minimalCityDistanceOnDifferentContinents'.", sourceObject = null)
-        if (constants.baseCityBombardRange < 1)
-            lines.add("Invalid ModConstant 'baseCityBombardRange'.", sourceObject = null)
+        checkConstant(constants::cityExpandRange, 1..100)
+        checkConstant(constants::cityWorkRange, 1..100)
+        // Crashed with 10 as of writing
+        checkConstant(constants::minimalCityDistance, 0..9)
+        checkConstant(constants::minimalCityDistanceOnDifferentContinents, 0..9)
+        // Game hangs with very high values
+        checkConstant(constants::baseCityBombardRange, 0..1000)
 
         if (ruleset.name.isBlank()) return // The rest of these tests don't make sense for combined rulesets
 
@@ -350,8 +368,7 @@ open class RulesetValidator protected constructor(
 
     protected open fun addPersonalityErrors(lines: RulesetErrorList) {
         for (personality in ruleset.personalities.values) {
-            if (personality.uniques.isNotEmpty())
-                lines.add("Personality Uniques are not supported", RulesetErrorSeverity.Warning, personality)
+            uniqueValidator.checkUniques(personality, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
         }
     }
 
@@ -511,6 +528,79 @@ open class RulesetValidator protected constructor(
                         RulesetErrorSeverity.Warning, sourceObject = null
                     )
         }
+    }
+
+    private fun addTranslationNameCollisionWarnings(lines: RulesetErrorList) {
+        val translatableNames = ruleset.allNames().toList()
+
+        val builtInRulesetNames = BaseRuleset.entries.map { it.fullName }.toSet()
+        // Base rulesets intentionally reuse a few display names in different source types:
+        // "Scout" is both a BaseUnit and UnitType, "Settler" is a BaseUnit and Difficulty,
+        // and some great person names appear in both UnitNameGroups and generated unit names.
+        val knownBenignSourceCollisions = setOf(
+            setOf("BaseUnit", "UnitType"),
+            setOf("BaseUnit", "Difficulty"),
+            setOf("BaseUnit", "Difficulty", "Tutorial"),
+            setOf("BaseUnit", "UnitNameGroup"),
+            setOf("Personality", "UnitNameGroup.unitNames"),
+            setOf("Specialist", "UnitNameGroup")
+        )
+
+        val duplicateNames = translatableNames
+            .groupBy { it.name }
+            .filter { (_, names) -> shouldReportTranslationNameCollision(names, builtInRulesetNames, knownBenignSourceCollisions) }
+            .mapValues { (_, names) -> names.map { it.source }.distinct().sorted() }
+            .toSortedMap()
+
+        for ((name, sources) in duplicateNames) {
+            lines.add(
+                "The name \"$name\" is used by several ruleset entries (${sources.joinToString()}) and may cause translation problems.",
+                RulesetErrorSeverity.WarningOptionsOnly,
+                sourceObject = null
+            )
+        }
+    }
+
+    private fun shouldReportTranslationNameCollision(
+        names: List<RulesetName>,
+        builtInRulesetNames: Set<String>,
+        knownBenignSourceCollisions: Set<Set<String>>
+    ): Boolean {
+        val sourceTypes = names.map { it.source }.toSet()
+        if (sourceTypes.size < 2) return false
+
+        val origins = names.map { it.originRuleset }
+        if (isCollisionWithinSingleBuiltInRuleset(origins, builtInRulesetNames)) return false
+        if (isKnownBenignBuiltInSourceCollision(sourceTypes, origins, builtInRulesetNames, knownBenignSourceCollisions)) return false
+
+        return true
+    }
+
+    private fun isCollisionWithinSingleBuiltInRuleset(
+        origins: List<String>,
+        builtInRulesetNames: Set<String>
+    ): Boolean {
+        if (origins.any { it.isEmpty() }) return false
+        val distinctOrigins = origins.toSet()
+        return distinctOrigins.size == 1 && distinctOrigins.single() in builtInRulesetNames
+    }
+
+    private fun isKnownBenignBuiltInSourceCollision(
+        sourceTypes: Set<String>,
+        origins: List<String>,
+        builtInRulesetNames: Set<String>,
+        knownBenignSourceCollisions: Set<Set<String>>
+    ): Boolean {
+        return sourceTypes in knownBenignSourceCollisions
+            && origins.all { it in builtInRulesetNames }
+    }
+
+    private fun addEmptyNamesErrors(lines: RulesetErrorList) {
+        val emptyNameObjects = ruleset.allRulesetObjects()
+            .filter { it.name.isEmpty() && it !is EventChoice }
+            .toList()
+        for (obj in emptyNameObjects)
+            lines.add("There's a ${obj::class.simpleName} with an empty name in ${obj.originRuleset}", RulesetErrorSeverity.Error, obj)
     }
 
     //endregion

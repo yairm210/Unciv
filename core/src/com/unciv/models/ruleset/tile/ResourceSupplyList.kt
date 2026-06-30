@@ -174,19 +174,6 @@ class ResourceSupplyList(
         ResourceSupplyList(keepZeroAmounts).addByResource(this, newOrigin)
 
     /**
-     * Applies the given modifier function to the resource supplies.
-     */
-    fun applyModifiers(resourceModifier: (TileResource) -> Float) {
-        for (subMap in mapByResource.values) {
-            for (resourceSupply in subMap.values) {
-                val modifier = resourceModifier(resourceSupply.resource)
-                if (modifier == 1f) continue
-                resourceSupply.amount = (resourceSupply.amount.toFloat() * modifier).toInt()
-            }
-        }
-    }
-
-    /**
      *  Remove all entries from a specific [origin]
      *  @return `this`, allowing chaining
      */
@@ -205,6 +192,16 @@ class ResourceSupplyList(
     fun removeAll(predicate: (ResourceSupply) -> Boolean) {
         for (entry in filter(predicate)) // Filter materializes a List so no CCM
             removeRow(entry)
+    }
+
+    /** Multiply each entry's amount by its resource's modifier, if one exists. */
+    fun applyModifiers(modifiers: Map<String, Float>) {
+        if (modifiers.isEmpty()) return
+        for ((resource, subMap) in mapByResource) {
+            val modifier = modifiers[resource.name] ?: continue
+            for (resourceSupply in subMap.values)
+                resourceSupply.amount = (resourceSupply.amount.toFloat() * modifier).toInt()
+        }
     }
 
     ///////////////////////////// Private helpers /////////////////////////////

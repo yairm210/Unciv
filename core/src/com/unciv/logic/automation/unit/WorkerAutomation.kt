@@ -77,10 +77,12 @@ class WorkerAutomation(
      */
     fun automateWorkerAction(unit: MapUnit, dangerousTiles: HashSet<Tile>) = timeThis<Unit>("automateWorkerAction") {
         val currentTile = unit.getTile()
+        val currentTileIsCreatesOneImprovementMarker = currentTile.isMarkedForCreatesOneImprovement()
         // Must be called before any getPriority checks to guarantee the local road cache is processed
         val citiesToConnect = roadBetweenCitiesAutomation.getNearbyCitiesToConnect(unit)
         // Shortcut, we are working a suitable tile, and we're better off minimizing worker-turns by finishing everything on this tile
-        if (currentTile.improvementInProgress != null && !dangerousTiles.contains(currentTile)
+        if (!currentTileIsCreatesOneImprovementMarker
+            && currentTile.improvementInProgress != null && !dangerousTiles.contains(currentTile)
             && getFullPriority(unit.getTile(), unit) >= 2) {
             return
         }
@@ -91,7 +93,7 @@ class WorkerAutomation(
             return
         }
 
-        if (currentTile.improvementInProgress != null) return // we're working!
+        if (!currentTileIsCreatesOneImprovementMarker && currentTile.improvementInProgress != null) return // we're working!
 
         if (tileToWork == currentTile && tileHasWorkToDo(currentTile, unit)) 
             return startWorkOnCurrentTile(unit)
@@ -113,7 +115,7 @@ class WorkerAutomation(
             wander(unit, stayInTerritory = true, tilesToAvoid = dangerousTiles)
     }
     
-    private fun MapUnit.closestCity() 
+    @Readonly private fun MapUnit.closestCity()
         = currentTile.owningCity
         ?: this.civ.cities.minBy { this.getTile().aerialDistanceTo(it.getCenterTile()) }
 
@@ -264,6 +266,7 @@ class WorkerAutomation(
         unit: MapUnit
     ): Boolean {
         if (tile in tilesToAvoid) return false
+        if (tile.isMarkedForCreatesOneImprovement()) return false
         if (!(tile == currentTile
                     || (unit.isCivilian() && (tile.civilianUnit == null || !tile.civilianUnit!!.cache.hasUniqueToBuildImprovements))
                     || (unit.isMilitary() && (tile.militaryUnit == null || !tile.militaryUnit!!.cache.hasUniqueToBuildImprovements))))
@@ -381,6 +384,7 @@ class WorkerAutomation(
           tile: Tile, 
           ignoreImprovements: Sequence<TileImprovement> = NO_IGNORED_IMPROVEMENTS
     ): TileImprovement? = timeThis("chooseImprovement") {
+        if (tile.isMarkedForCreatesOneImprovement()) return null
         // You can keep working on half-built improvements, even if they're unique to another civ
         if (tile.improvementInProgress != null) return ruleSet.tileImprovements[tile.improvementInProgress]
 

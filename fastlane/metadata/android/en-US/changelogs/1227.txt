@@ -1,0 +1,13 @@
+Large memory performance improvements for large maps  
+
+Modding: show exact location of json file errors
+
+By SomeTroglodyte:
+- Context menu visual indicators 
+- Modding: Fixed "empty name" problems 
+- Fix expansion clearing barbarian camps leaving obsolete quests 
+- City buy tile context menu, to buy several tiles at once 
+
+Avoid centering on hidden wonder locations - By xplon
+
+Respect alternative promotion prerequisites in validation - By superdusto

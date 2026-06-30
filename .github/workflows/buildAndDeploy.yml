@@ -349,7 +349,7 @@ jobs:
 
       - name: Get AUR PKGBUILD
         run: |
-          curl --silent --output PKGBUILD 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h=unciv-bin'
+          curl --silent --retry 3 --retry-delay 5 --output PKGBUILD 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h=unciv-bin'
           sed -E -e "s#(_pkgver=).*#\1${{ github.ref_name }}#" -e "s#(pkgrel=).*#\10#" -i PKGBUILD
 
       - name: Publish AUR package
@@ -375,9 +375,13 @@ jobs:
     steps:
       - name: Update Homebrew formula
         continue-on-error: true
-        uses: mislav/bump-homebrew-formula-action@v3
+        uses: mislav/bump-homebrew-formula-action@v4
         with:
           formula-name: unciv
           download-url: https://github.com/yairm210/Unciv/releases/download/${{ github.ref_name }}/Unciv.jar
+          commit-message: |
+            unciv {{version}}
+
+            Created by `brew bump`
         env:
           COMMITTER_TOKEN: ${{ secrets.ACTIONS_ACCESS_TOKEN }}

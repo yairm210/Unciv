@@ -2,7 +2,7 @@
 
 ## Generating "needs translation" entries
 If you can run desktop with the mod installed, then provide at least one valid translation of something that is present in your mod or the base game in that file. The file can be empty otherwise. Do this for each language you want to support.
-Now run Unciv and use options-advanced-"Generate translation files". Reload your translation file and it will have added all the necessary "requires translation" entries specific to your mod
+Now run Unciv and use options-advanced-"Generate translation files". Note you can and should choose your mod here to limit what the generator processes. Reload your translation file and it will have added all the necessary "requires translation" entries specific to your mod.
 (I repeat, works only if there's at least one valid entry already there).
 You can also override base game translations, but those won't be output by the "Generate translation files" tool.
 
@@ -11,9 +11,9 @@ Say you have a new nation in your mod named "The Borg". You create the translati
 
 If you're modding on Android only - don't. That said, it's not impossible, just make do without the described tool and add everything yourself, test, rinse, repeat. Be aware that the game does not read changed files from disk if it doesn't need to, so on Droid you could either edit locally and force-stop to ensure changes are read, or edit on a github repo and re-install from there, or...
 
-Adding new languages in a mod is not supported (because the completionPercentages.properties file determines which languages Unciv deems as known, and I'm not saying impossible as one could manipulate their GameSettings.json).
+Adding new languages in a mod is not supported. See [Adding a new language](Translating.md#adding-a-new-language) on how to do that properly.
 
-Remember, exact case is important both in translations left of the "=" and file names.
+Remember, exact case is important both in translation keys to the left of the "=" and file names.
 
 ## More about translating
 Sometimes you'll see a `English.properties` in the translation folder. For example, if you see `gold = credits` in `English.properties`, It means the word 'gold' will be displayed as 'credits' in the English version.

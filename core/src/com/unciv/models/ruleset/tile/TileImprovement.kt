@@ -5,6 +5,7 @@ import com.unciv.logic.MultiFilter
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
+import com.unciv.models.Counter
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetStatsObject
 import com.unciv.models.ruleset.unique.GameContext
@@ -55,7 +56,11 @@ class TileImprovement : RulesetStatsObject() {
 
     @Readonly fun isGreatImprovement() = hasUnique(UniqueType.GreatImprovement)
     @Readonly fun isRoad() = RoadStatus.entries.any { it != RoadStatus.None && it.name == this.name }
-    @Readonly fun isAncientRuinsEquivalent(state: GameContext? = GameContext.IgnoreConditionals) = hasUnique(UniqueType.IsAncientRuinsEquivalent, state)
+    @Readonly fun isAncientRuinsEquivalent(state: GameContext? = GameContext.IgnoreConditionals) =
+        hasUnique(UniqueType.IsAncientRuinsEquivalent, state)
+    @Readonly fun isBarbarianCampEquivalent(state: GameContext? = GameContext.IgnoreConditionals) =
+        name == Constants.barbarianEncampment || // backward compatibility for mods
+        hasUnique(UniqueType.IsBarbarianCampEquivalent, state)
 
     @Readonly fun canBeBuiltOn(terrain: String): Boolean = terrain in terrainsCanBeBuiltOn
     @Readonly fun canBeBuiltOn(terrain: Terrain): Boolean = terrainsCanBeBuiltOn.any { terrain.matchesFilter(it) }
@@ -175,6 +180,17 @@ class TileImprovement : RulesetStatsObject() {
                 || unit.hasUnique(UniqueType.CreateWaterImprovements)
                     && terrainsCanBeBuiltOnTypes.contains(TerrainType.Water)
             }.toList()
+    }
+
+    @Readonly
+    fun getStockpiledResourceRequirements(gameContext: GameContext): Counter<String> {
+        val counter = Counter<String>()
+        for (unique in getMatchingUniques(UniqueType.CostsResources, gameContext)) {
+            var amount = unique.params[0].toInt()
+            if (unique.isModifiedByGameSpeed()) amount = (amount * gameContext.gameInfo!!.speed.modifier).toInt()
+            counter.add(unique.params[1], amount)
+        }
+        return counter
     }
 
     @Readonly

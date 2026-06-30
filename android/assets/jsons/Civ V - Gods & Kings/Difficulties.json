@@ -109,7 +109,7 @@
 		"aiBuildingCostModifier": 1,
 		"aiWonderCostModifier": 1,
 		"aiBuildingMaintenanceModifier": 1,
-		"aiUnitMaintenanceModifier": 0.85,
+		"aiUnitMaintenanceModifier": 1,
 		"aiUnitSupplyModifier": 0.2,
 		"aiFreeTechs": [],
 		"aiMajorCivBonusStartingUnits": [],

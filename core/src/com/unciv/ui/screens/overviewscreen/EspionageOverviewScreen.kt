@@ -121,7 +121,7 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
 
     private fun addSpyToSelectionTable(spy: Spy) {
         // "Spy" column
-        spySelectionTable.add(spy.name.toLabel())
+        spySelectionTable.add(spy.name.toLabel(hideIcons = true))
         // "Rank" column
         spySelectionTable.add(spy.rank.toLabel())
         // icon column
