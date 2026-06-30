@@ -1,20 +1,8 @@
 ## 4.20.17
 
-perf(cpu): Cache city state bonus uniques to not have to iterate across all civs every time we look for any global unique
-
-perf(cpu): Faster city resource calculation, by generating all resource modifiers once and using them for all resources - see 
+CPU performance improvements
 
 fix: Avoid crash when removing encampments from map editor
-
-perf(cpu): Faster building filter - see 
-
-Revert "perf(cpu): Faster building filter - see "
-
-perf(cpu): Faster building filter - see 
-
-chore(ci): Update homebrew update version - related to  but not the solution
-
-Resolved  - Fix homebrew bump to contain the exact text they want in the PRs
 
 Adjust lake and coastline formation of Boreal map type - By unciv-loof
 
