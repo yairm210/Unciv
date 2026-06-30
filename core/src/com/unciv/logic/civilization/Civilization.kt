@@ -254,6 +254,10 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     var statsHistory = CivRankingHistory()
 
+    /** Deny all incoming trades asking for an embassy.
+     *  Set in TradePopup, cleared when asking for an Embassy */
+    var declineAllEmbassyRequests = false
+
     constructor()
 
     constructor(civName: String) {
@@ -326,6 +330,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.hasMovedAutomatedUnits = hasMovedAutomatedUnits
         toReturn.statsHistory = statsHistory.clone()
         toReturn.resourceStockpiles = resourceStockpiles.clone()
+        toReturn.declineAllEmbassyRequests = declineAllEmbassyRequests
         return toReturn
     }
 

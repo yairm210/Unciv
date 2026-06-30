@@ -53,6 +53,10 @@ class TradeTable(
                 retractOffer()
                 return@onClick
             }
+
+            if (tradeLogic.currentTrade.ourOffers.any { it.type == TradeOfferType.Embassy })
+                civ.declineAllEmbassyRequests = false
+
             // If there is a research agreement trade, make sure both civilizations should be able to pay for it.
             // If not lets add an extra gold offer to satisfy this.
             // There must be enough gold to add to the offer to satisfy this, otherwise the research agreement button would be disabled
