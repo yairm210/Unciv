@@ -497,20 +497,15 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     }
 
 
-    // Single-filter matches are NOT state dependent at all (cannot be "filtered out")
-    @Cache private val cachedMatchesSingleFilter = HashMap<String, Boolean>()
-    // hasTagUnique(tag) without state is deterministic per building — safe to cache indefinitely.
-    @Cache private val cachedHasTagUnique = HashMap<String, Boolean>()
+    @Cache private val cachedMatchesFilterResult = HashMap<String, Boolean>()
 
     /** Implements [UniqueParameterType.BuildingFilter] */
     @Readonly
     fun matchesFilter(filter: String, state: GameContext? = null): Boolean =
         MultiFilter.multiFilter(filter, {
-            cachedMatchesSingleFilter.getOrPut(it) { matchesSingleFilter(it) } ||
-                // hasTagUnique(it, state) implies hasTagUnique(it), so caching the unconditional
-                // check lets us skip the state-dependent call entirely for most filters.
-                cachedHasTagUnique.getOrPut(it) { hasTagUnique(it) } &&
-                    (state == null || hasTagUnique(it, state))
+            cachedMatchesFilterResult.getOrPut(it) { matchesSingleFilter(it) } ||
+                state != null && hasTagUnique(it, state) ||
+                state == null && hasTagUnique(it)
         })
 
     @Readonly
