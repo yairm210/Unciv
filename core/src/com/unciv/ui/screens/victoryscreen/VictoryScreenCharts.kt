@@ -1,6 +1,7 @@
 package com.unciv.ui.screens.victoryscreen
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Action
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
@@ -9,6 +10,7 @@ import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.packIfNeeded
+import com.unciv.ui.components.extensions.scrollTo
 import com.unciv.ui.components.input.OnClickListener
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -70,6 +72,7 @@ class VictoryScreenCharts(
     }
 
     private fun updateControls() {
+        val scrollY = civButtonsScroll.scrollY
         civButtonsTable.clear()
         val sortedCivs = gameInfo.civilizations.asSequence()
             .filter { it.isMajorCiv() }
@@ -92,6 +95,14 @@ class VictoryScreenCharts(
         civButtonsTable.add().padBottom(20f).row()
         civButtonsTable.pack()
         civButtonsScroll.layout()
+        
+        // Restore scroll position on the next frame
+        civButtonsScroll.stage?.addAction(object : Action() {
+            override fun act(delta: Float): Boolean {
+                civButtonsScroll.scrollTo(0f, civButtonsScroll.maxY - scrollY, 0f, 0f)
+                return true
+            }
+        })
     }
 
     private fun updateChart() {
