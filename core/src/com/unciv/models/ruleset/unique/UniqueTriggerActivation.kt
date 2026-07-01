@@ -1337,7 +1337,28 @@ object UniqueTriggerActivation {
                     true
                 }
             }
+            UniqueType.OneTimeAddResource -> {
+                if (tile == null) return null
+                val resourceName = unique.params[0]
+                val resource = ruleset.tileResources[resourceName] ?: return null
+                if (resource.terrainsCanBeFoundOn.none { it == tile.baseTerrain || tile.terrainFeatures.contains(it) }) return null
+                return {
+                    // Remove the original resources
+                    if (tile.tileResource != null) {
+                        tile.tileResource = null
+                        tile.resourceAmount = 0
+                    }
 
+                    // Remove the original improvement to prevent mismatch
+                    tile.removeImprovement()
+                    // Same deal as the place resource command
+                    tile.setTileResource(resource, majorDeposit = false)
+                    tile.getOwner()?.cache?.updateCivResources()
+
+                    true
+                }
+            }
+            
             UniqueType.OneTimeTakeOverTilesInRadius -> {
                 if (tile == null) return null
                 if (civInfo.cities.isEmpty()) return null

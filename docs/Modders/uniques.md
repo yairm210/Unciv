@@ -208,6 +208,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
+??? example  "Add [resource] to this tile"
+	Example: "Add [Iron] to this tile"
+
+	Applicable to: Triggerable
+
 ??? example  "Remove [resourceFilter] resources from this tile"
 	Example: "Remove [Strategic] resources from this tile"
 
