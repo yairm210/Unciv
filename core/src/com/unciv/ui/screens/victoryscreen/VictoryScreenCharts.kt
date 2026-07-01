@@ -1,7 +1,6 @@
 package com.unciv.ui.screens.victoryscreen
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Action
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
@@ -66,8 +65,8 @@ class VictoryScreenCharts(
     }
 
     private fun update() {
-        updateControls()
         updateChart()
+        updateControls()
     }
 
     private fun updateControls() {
@@ -93,15 +92,9 @@ class VictoryScreenCharts(
         }
         civButtonsTable.add().padBottom(20f).row()
         civButtonsTable.pack()
-        civButtonsScroll.layout()
         
-        // Restore scroll position on the next frame
-        civButtonsScroll.stage?.addAction(object : Action() {
-            override fun act(delta: Float): Boolean {
-                civButtonsScroll.scrollTo(0f, civButtonsScroll.maxY - scrollY, 0f, 0f)
-                return true
-            }
-        })
+        validate()
+        civButtonsScroll.scrollY = scrollY
     }
 
     private fun updateChart() {
