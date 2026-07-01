@@ -1348,13 +1348,11 @@ object UniqueTriggerActivation {
                         tile.tileResource = null
                         tile.resourceAmount = 0
                     }
-
                     // Remove the original improvement to prevent mismatch
                     tile.removeImprovement()
                     // Same deal as the place resource command
                     tile.setTileResource(resource, majorDeposit = false)
                     tile.getOwner()?.cache?.updateCivResources()
-
                     true
                 }
             }
