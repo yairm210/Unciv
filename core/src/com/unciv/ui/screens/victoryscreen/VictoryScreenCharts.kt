@@ -10,7 +10,6 @@ import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.packIfNeeded
-import com.unciv.ui.components.extensions.scrollTo
 import com.unciv.ui.components.input.OnClickListener
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
