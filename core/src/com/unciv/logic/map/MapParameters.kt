@@ -60,10 +60,10 @@ object MapType {
 
 object MirroringType {
     const val none = "None"
-    const val leftright = "Left-Right"
-    const val topbottom = "Top-Bottom"
-    const val fourway = "4-way"
-    const val aroundCenterTile = "Around Center Tile"
+    const val leftright = "Left-right"
+    const val topbottom = "Top-bottom"
+    const val fourway = "Four-way"
+    const val aroundCenterTile = "Around center tile"
 }
 
 class MapParameters : IsPartOfGameInfoSerialization {
