@@ -31,6 +31,7 @@ import kotlin.math.pow
 import kotlin.math.ulp
 import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.civilization.MapUnitAction
+import com.unciv.logic.map.CarrierSlotMatcher
 import org.jetbrains.annotations.VisibleForTesting
 
 
@@ -620,68 +621,27 @@ class MapUnit : IsPartOfGameInfoSerialization {
     /**
      *  Returns the free capacity of [this] carrier for [unit] or units matching the same Unique filters.
      *
-     *  - Uses a greedy algorithm that assigns carried units to the most-specific matching slots first.
-     *    It also tries to avoid carried units content with specific slots "grabbing away" more generic slots by sorting them.
-     *    This is optimal for vanilla and most mods, but could theoretically undercount capacity in
-     *    complex rulesets with highly overlapping filters (e.g., "carry 1 Fighter AND 2 any").
+     *  - Uses an optimizing algorithm that ensures complex overlapping filters are used to the max.
      *  - See issue [#15087](https://github.com/yairm210/Unciv/issues/15087)
      */
     fun checkCarryCapacity(unit: MapUnit): Int {
         // Fetch ALL "slots", not only those the new unit could occupy - otherwise we couldn't count optimally
         @LocalState
-        val slots = mutableMapOf<String, Int>()
+        val slots = mutableListOf<CarrierSlotMatcher.SlotRule>()
         fun getSlotsFor(type: UniqueType) {
             forEachMatchingUnique(type) { unique ->
-                slots[unique.params[1]] = unique.params[0].toInt()
+                slots += CarrierSlotMatcher.SlotRule(unique.params[1], unique.params[0].toInt())
             }
         }
         getSlotsFor(UniqueType.CarryAirUnits)
         getSlotsFor(UniqueType.CarryExtraAirUnits)
         if (slots.isEmpty()) return 0
 
-        // Sort slots, more specific ones first
-        val ruleset = civ.gameInfo.ruleset
-        fun specificity(filter: String) = when(filter) {
-            "all", "All" -> -1f
-            in ruleset.units.keys -> 1f
-            else -> {
-                val unitCount = ruleset.units.values.count { it.matchesFilter(filter) }
-                if (unitCount == 0) 0f else 1f / unitCount
-            }
-        }
-        fun sortedSlots(): MutableMap<String, Int> {
-            @LocalState
-            val result = mutableMapOf<String, Int>()
-            for ((key, value) in slots.entries.sortedByDescending { specificity(it.key) })
-                result[key] = value
-            return result
-        }
-        @LocalState
-        val sortedSlots = if (slots.size == 1) slots else sortedSlots()
-
-        // Sort carried units by "best matching slot specificity"
-        @LocalState
-        val carriedSorted = currentTile.airUnits
-            .filter { it.isTransported }
-            .sortedByDescending { carriedUnit ->
-                sortedSlots.keys.maxOfOrNull {
-                    if (carriedUnit.matchesFilter(it)) specificity(it) else -2f
-                } ?: -2f
-            }
-
-        // Now consume slots with already carried units
-        for (carriedUnit in carriedSorted) {
-            if (!carriedUnit.isTransported) continue
-            val (slot, value) = sortedSlots.entries
-                .firstOrNull { carriedUnit.matchesFilter(it.key) && it.value > 0 }
-                ?: sortedSlots.entries
-                    .firstOrNull { carriedUnit.matchesFilter(it.key) }
-                ?: continue
-            sortedSlots[slot] = value - 1
-        }
-
-        // tally what's left
-        return sortedSlots.filter { unit.matchesFilter(it.key) }.values.sum()
+        return CarrierSlotMatcher.availableCapacity(
+            slotRules = slots,
+            carriedUnits = currentTile.airUnits.asSequence().filter { it.isTransported },
+            newUnit = unit
+        )
     }
 
     @Readonly

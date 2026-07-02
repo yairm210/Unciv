@@ -508,8 +508,7 @@ enum class UniqueType(
 
     // Carrying
     CarryAirUnits("Can carry [amount] [mapUnitFilter] units", UniqueTarget.Unit,
-        docDescription = "Using several of these uniques with complex overlapping filters cannot guarantee perfect allocation in all cases.\n" +
-            "A single filter over this unique and \"carry extra\" uniques is safe, and using only base unit names and \"All\" is safe."),
+        docDescription = "Using several of these uniques with complex overlapping filters is supported."),
     CarryExtraAirUnits("Can carry [amount] extra [mapUnitFilter] units", UniqueTarget.Unit, UniqueTarget.Building,
         docDescription = "For buildings, supports using `Air` for `mapUnitFilter` to increase city air unit capacity."),
     CannotBeCarriedBy("Cannot be carried by [mapUnitFilter] units", UniqueTarget.Unit),
