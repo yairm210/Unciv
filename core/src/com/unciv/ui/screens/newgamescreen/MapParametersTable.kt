@@ -149,7 +149,12 @@ class MapParametersTable(
         cancelBackgroundJobs()
         val generation = ++exampleMapGeneration
         val ruleset = if (previousScreen is NewGameScreen) previousScreen.ruleset.clone() else RulesetCache.getVanillaRuleset()
-        val mapParametersForExample = if (forMapEditor) mapParameters else mapParameters.clone().apply { seed = 0 }
+        val mapParametersForExample =
+            if (forMapEditor) mapParameters
+            else mapParameters.clone().apply {
+                seed = 0
+                mirroring = MirroringType.none
+            }
         exampleMapJob = Concurrency.run("Generate example map") {
             val exampleMap = MapGenerator(ruleset).generateMap(mapParametersForExample, GameParameters())
             if (!isActive) return@run
