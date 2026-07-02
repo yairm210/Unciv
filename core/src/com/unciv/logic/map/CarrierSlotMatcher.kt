@@ -20,14 +20,19 @@ object CarrierSlotMatcher {
         val capacity: Int
     )
 
+    private sealed class BipartiteMatchingResult {
+        class Success(val allocations: Collection<Int>) : BipartiteMatchingResult()
+        class Failure(val overAllocation: Int) : BipartiteMatchingResult()
+    }
+
     @Readonly
     /**
      * Computes maximum available slots for [newUnit] given existing assignments.
      *
-     * @param slotRules The carrier's slot rules (e.g., "Fighter" cap 1, "all" cap 2)
+     * @param slotRules The carrier's [slot rules][SlotRule], (e.g., "Fighter" cap 1, "all" cap 2). Duplicates of filters are no problem and not even a performance penalty.
      * @param carriedUnits Units already carried by this carrier
      * @param newUnit The unit we want to fit
-     * @return Number of available slots for newUnit (-1 if system is overcapacity)
+     * @return Number of available slots for newUnit (negative if carrier is overcapacity, counting number of units that would need to be removed to conform to the ruleset)
      */
     fun availableCapacity(
         slotRules: Collection<SlotRule>,
@@ -43,28 +48,24 @@ object CarrierSlotMatcher {
             repeat(rule.capacity) { slots.add(rule.filter) }
         }
 
-        // Sanity check: if we're overcapacity, flag it
-        if (carriedUnits.count() > slots.size) {
-            return -1  // System is already overcapacity; this shouldn't happen in normal play
-        }
-
         // Find optimal assignment of carried units including the new unit to slots
         @LocalState
         val allUnits = arrayListOf(newUnit)
         allUnits.addAll(carriedUnits)
-        @LocalState
-        val slotAssignment = maxBipartiteMatching(slots, allUnits)
-            ?: return 0
 
-        // Count unmatched slots that newUnit can fill
-        @LocalState
-        val unassignedSlotIndices = (slots.indices).filterNot { it in slotAssignment.values }
-        @LocalState
-        val availableSlots = unassignedSlotIndices.count { slotIdx ->
-            newUnit.matchesFilter(slots[slotIdx])
+        return when(val allocationResult = maxBipartiteMatching(slots, allUnits)) {
+            is BipartiteMatchingResult.Failure -> {
+                -allocationResult.overAllocation
+            }
+            is BipartiteMatchingResult.Success -> {
+                // Count unmatched slots that newUnit can fill
+                val unassignedSlotIndices = (slots.indices).filterNot { it in allocationResult.allocations }
+                val availableSlots = unassignedSlotIndices.count { slotIdx ->
+                    newUnit.matchesFilter(slots[slotIdx])
+                }
+                availableSlots + 1 // newUnit was allocated, count that slot too
+            }
         }
-
-        return availableSlots + 1
     }
 
     /**
@@ -75,17 +76,26 @@ object CarrierSlotMatcher {
      * - Each slot gets at most one unit
      * - Matching size is maximized
      *
-     * @return Map of [unitIndex -> slotIndex]
+     * @return [BipartiteMatchingResult.Success]: Map of [unitIndex -> slotIndex]
+     *         [BipartiteMatchingResult.Failure]: Overallocation count (0: no place for new unit, 1: there's even one too many already loaded,...)
      */
     @Readonly
     private fun maxBipartiteMatching(
         slots: ArrayList<String>,
         units: ArrayList<MapUnit>
-    ): Map<Int, Int>? {
+    ): BipartiteMatchingResult {
         @LocalState
         val unitToSlot = mutableMapOf<Int, Int>()  // unit index -> slot index
         @LocalState
         val slotUsed = BooleanArray(slots.size)
+
+        fun countOverAllocation(): Int {
+            if (unitToSlot.isEmpty()) return 0
+            val slot = slots[unitToSlot[0]!!]
+            return units.indices
+                .filterNot { it in unitToSlot }
+                .count { units[it].matchesFilter(slot) } - 1 // The -1 again because newUnit is included
+        }
 
         // Process each unit, trying to assign it to a slot
         for (unitIdx in units.indices) {
@@ -94,10 +104,10 @@ object CarrierSlotMatcher {
             if (!dfsAugmentingPath(
                 unitIdx, units, slots,
                 slotUsed, visited, unitToSlot
-            )) return null
+            )) return BipartiteMatchingResult.Failure(countOverAllocation())
         }
 
-        return unitToSlot
+        return BipartiteMatchingResult.Success(unitToSlot.values)
     }
 
     @Readonly

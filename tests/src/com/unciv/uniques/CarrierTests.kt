@@ -82,4 +82,30 @@ class CarrierTests {
 
         testMixedCarriedUnits()
     }
+
+    @Test
+    fun testOverAllocation() {
+        // Fill up carrier to the brim
+        val carriedFighter = game.addUnit(fighterInCity.baseUnit.name, civ, carrier.currentTile)
+        val carriedFighter2 = game.addUnit(fighterInCity.baseUnit.name, civ, carrier.currentTile)
+        val carriedBomber = game.addUnit(bomberInCity.baseUnit.name, civ, carrier.currentTile)
+
+        // We need to cram units into the carrier beyond what is allowed...
+        val extraFighter = game.addUnit(fighterInCity.baseUnit.name, civ, game.getTile(0, 0))
+        for (unit in listOf(extraFighter, fighterInCity, bomberInCity)) {
+            unit.removeFromTile()
+            //unit.putInTile checks capacity, so avoid
+            carrier.getTile().airUnits.add(unit)
+            unit.isTransported = true
+        }
+        Assert.assertEquals(6, carrier.getTile().airUnits.size)
+
+        val remainingFighterCapacity = carrier.checkCarryCapacity(fighterInCity) // The unit is already on the carrier, but the function doesn't care, only filter matching is relevant
+        val remainingBomberCapacity = carrier.checkCarryCapacity(bomberInCity)
+
+        // Should return we got two fighters too many (the "Aircraft" slot is not relevant)
+        Assert.assertEquals(-2, remainingFighterCapacity)
+        // Should return there's a bomber over the allowed limit
+        Assert.assertEquals(-1, remainingBomberCapacity)
+    }
 }
