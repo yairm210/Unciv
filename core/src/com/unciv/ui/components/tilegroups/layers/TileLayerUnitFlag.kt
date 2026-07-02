@@ -41,7 +41,7 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
             addOwnedActor(newIcon)
 
             // Display air unit table for carriers/transports
-            if (rawUnit.getTile().airUnits.any { rawUnit.isTransportTypeOf(it) } && !rawUnit.getTile().isCityCenter()) {
+            if (!rawUnit.getTile().isCityCenter() && rawUnit.getTile().airUnits.any { rawUnit.isTransportTypeOf(it) }) {
                 val table = getAirUnitTable(rawUnit)
                 newIcon.addActor(table)
                 table.toBack()
