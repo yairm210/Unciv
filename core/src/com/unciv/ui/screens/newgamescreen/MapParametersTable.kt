@@ -356,7 +356,7 @@ class MapParametersTable(
             MirroringType.leftright
         )
         
-        mirrorSelectBox = TranslatedSelectBox(options, MirroringType.none)
+        mirrorSelectBox = TranslatedSelectBox(options, mapParameters.mirroring)
 
         mirrorSelectBox.onChange {
             mapParameters.mirroring = mirrorSelectBox.selected.value
