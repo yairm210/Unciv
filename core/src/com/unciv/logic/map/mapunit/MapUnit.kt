@@ -31,6 +31,7 @@ import kotlin.math.pow
 import kotlin.math.ulp
 import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.civilization.MapUnitAction
+import org.jetbrains.annotations.VisibleForTesting
 
 
 /**
@@ -615,6 +616,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     @Readonly
+    @VisibleForTesting
     /**
      *  Returns the free capacity of [this] carrier for [unit] or units matching the same Unique filters.
      *
@@ -624,7 +626,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
      *    complex rulesets with highly overlapping filters (e.g., "carry 1 Fighter AND 2 any").
      *  - See issue [#15087](https://github.com/yairm210/Unciv/issues/15087)
      */
-    private fun checkCarryCapacity(unit: MapUnit): Int {
+    fun checkCarryCapacity(unit: MapUnit): Int {
         // Fetch ALL "slots", not only those the new unit could occupy - otherwise we couldn't count optimally
         @LocalState
         val slots = mutableMapOf<String, Int>()
