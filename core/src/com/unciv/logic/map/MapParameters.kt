@@ -60,10 +60,10 @@ object MapType {
 
 object MirroringType {
     const val none = "None"
-    const val aroundCenterTile = "Around Center Tile"
-    const val fourway = "4-way"
+    const val leftright = "Left-Right"
     const val topbottom = "Top-Bottom"
-    const val leftright = "Bottom-Top"
+    const val fourway = "4-way"
+    const val aroundCenterTile = "Around Center Tile"
 }
 
 class MapParameters : IsPartOfGameInfoSerialization {
@@ -125,6 +125,7 @@ class MapParameters : IsPartOfGameInfoSerialization {
         toReturn.rareFeaturesRichness = rareFeaturesRichness
         toReturn.resourceRichness = resourceRichness
         toReturn.waterThreshold = waterThreshold
+        toReturn.mirroring = mirroring
         toReturn.createdWithVersion = createdWithVersion
         return toReturn
     }
