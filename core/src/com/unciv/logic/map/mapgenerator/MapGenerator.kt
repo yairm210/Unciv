@@ -225,10 +225,9 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             }
             // Fallback spread resources function - used when generating maps in map editor
             runAndMeasure("spreadResources") { spreadResources(map) }
+            mirror(map)
         }
         runAndMeasure("spreadAncientRuins") { spreadAncientRuins(map) }
-        
-        mirror(map)
 
         // Map generation may generate incompatible terrain/feature combinations
         for (tile in map.values)
