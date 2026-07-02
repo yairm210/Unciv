@@ -40,7 +40,7 @@ enum class LocaleCode(
     Danish("da-DK", unused = true),
     Dutch("nl-NL"),
     English("en-US"),
-    Esperanto("eo-EO", languageName = "Esperanto"),
+    Esperanto("eo"),
     Estonian("et-EE", unused = true),
     Filipino("fil-PH-u-co-search"),
     Finnish("fi-FI"),
