@@ -2342,6 +2342,10 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Unit
 
 ??? example  "Can carry [amount] [mapUnitFilter] units"
+	Using several of these uniques with complex overlapping filters cannot guarantee perfect allocation in all cases.
+
+	A single filter over this unique and "carry extra" uniques is safe, and using only base unit names and "All" is safe.
+
 	Example: "Can carry [3] [Wounded] units"
 
 	Applicable to: Unit

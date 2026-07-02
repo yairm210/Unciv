@@ -615,19 +615,83 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     @Readonly
-    private fun carryCapacity(unit: MapUnit): Int {
-        return (getMatchingUniques(UniqueType.CarryAirUnits)
-                + getMatchingUniques(UniqueType.CarryExtraAirUnits))
-                .filter { unit.matchesFilter(it.params[1]) }
-                .sumOf { it.params[0].toInt() }
+    /**
+     *  Returns the free capacity of [this] carrier for [unit] or units matching the same Unique filters.
+     *
+     *  - Uses a greedy algorithm that assigns carried units to the most-specific matching slots first.
+     *    It also tries to avoid carried units content with specific slots "grabbing away" more generic slots by sorting them.
+     *    This is optimal for vanilla and most mods, but could theoretically undercount capacity in
+     *    complex rulesets with highly overlapping filters (e.g., "carry 1 Fighter AND 2 any").
+     *  - See issue [#15087](https://github.com/yairm210/Unciv/issues/15087)
+     */
+    private fun checkCarryCapacity(unit: MapUnit): Int {
+        // Fetch ALL "slots", not only those the new unit could occupy - otherwise we couldn't count optimally
+        @LocalState
+        val slots = mutableMapOf<String, Int>()
+        fun getSlotsFor(type: UniqueType) {
+            forEachMatchingUnique(type) { unique ->
+                slots[unique.params[1]] = unique.params[0].toInt()
+            }
+        }
+        getSlotsFor(UniqueType.CarryAirUnits)
+        getSlotsFor(UniqueType.CarryExtraAirUnits)
+        if (slots.isEmpty()) return 0
+
+        // Sort slots, more specific ones first
+        val ruleset = civ.gameInfo.ruleset
+        fun specificity(filter: String) = when(filter) {
+            "all", "All" -> -1f
+            in ruleset.units.keys -> 1f
+            else -> {
+                val unitCount = ruleset.units.values.count { it.matchesFilter(filter) }
+                if (unitCount == 0) 0f else 1f / unitCount
+            }
+        }
+        fun sortedSlots(): MutableMap<String, Int> {
+            @LocalState
+            val result = mutableMapOf<String, Int>()
+            for ((key, value) in slots.entries.sortedByDescending { specificity(it.key) })
+                result[key] = value
+            return result
+        }
+        @LocalState
+        val sortedSlots = if (slots.size == 1) slots else sortedSlots()
+
+        // Sort carried units by "best matching slot specificity"
+        @LocalState
+        val carriedSorted = currentTile.airUnits
+            .filter { it.isTransported }
+            .sortedByDescending { carriedUnit ->
+                sortedSlots.keys.maxOfOrNull {
+                    if (carriedUnit.matchesFilter(it)) specificity(it) else -2f
+                } ?: -2f
+            }
+
+        // Now consume slots with already carried units
+        for (carriedUnit in carriedSorted) {
+            if (!carriedUnit.isTransported) continue
+            val (slot, value) = sortedSlots.entries
+                .firstOrNull { carriedUnit.matchesFilter(it.key) && it.value > 0 }
+                ?: sortedSlots.entries
+                    .firstOrNull { carriedUnit.matchesFilter(it.key) }
+                ?: continue
+            sortedSlots[slot] = value - 1
+        }
+
+        // tally what's left
+        return sortedSlots.filter { unit.matchesFilter(it.key) }.values.sum()
     }
+
+    @Readonly
+    private fun cannotCarry(unit: MapUnit) =
+        unit.getMatchingUniques(UniqueType.CannotBeCarriedBy).any { matchesFilter(it.params[0]) }
 
     @Readonly
     fun canTransport(unit: MapUnit): Boolean {
         if (owner != unit.owner) return false
         if (!isTransportTypeOf(unit)) return false
-        if (unit.getMatchingUniques(UniqueType.CannotBeCarriedBy).any { matchesFilter(it.params[0]) }) return false
-        if (currentTile.airUnits.count { it.isTransported } >= carryCapacity(unit)) return false
+        if (cannotCarry(unit)) return false
+        if (checkCarryCapacity(unit) <= 0) return false
         return true
     }
 
