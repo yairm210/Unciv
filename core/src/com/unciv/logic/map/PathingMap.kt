@@ -267,7 +267,7 @@ class PathingMap(
             // otherwise, add the tiles in turn 0, (or would be if unoccupied, and we can swap/attack in)
             cache.addedNeighborNodes.forEachSetBit {
                 val node = RouteNode(cache.routeNodes[it])
-                if (node.initialized && (node.turns == 0 || !node.canMoveTo)) {
+                if (node.initialized && node.turns == 0) {
                     val tile = node.tile(tileMap)
                     tilesSameTurn[tile] =
                         ParentTileAndTotalMovement(
@@ -277,7 +277,7 @@ class PathingMap(
             }
             cache.nodesNeedingNeighbors.forEachSetBit {
                 val node = RouteNode(cache.routeNodes[it])
-                if (node.initialized && (node.turns == 0 || !node.canMoveTo)) {
+                if (node.initialized && node.turns == 0) {
                     val tile = node.tile(tileMap)
                     tilesSameTurn[tile] =
                         ParentTileAndTotalMovement(tile, node.parentTile(tileMap), node.moveUsedThisTurn.toFloat())
