@@ -203,7 +203,8 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
 
         // Region based map generation - not used when generating maps in map editor
         val civilizations = gameInfo?.civilizations
-        if (civilizations?.isNotEmpty() ?: false) {
+        val isMapEditor = civilizations?.isEmpty() ?: true
+        if (! isMapEditor) {
             map.gameInfo = gameInfo
             val regions = MapRegions(ruleset)
             runAndMeasure("generateRegions") {
@@ -225,10 +226,12 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             }
             // Fallback spread resources function - used when generating maps in map editor
             runAndMeasure("spreadResources") { spreadResources(map) }
-            mirror(map)
         }
         runAndMeasure("spreadAncientRuins") { spreadAncientRuins(map) }
 
+        if (isMapEditor)
+            mirror(map)
+        
         // Map generation may generate incompatible terrain/feature combinations
         for (tile in map.values)
             TileNormalizer.normalizeToRuleset(tile, ruleset)
