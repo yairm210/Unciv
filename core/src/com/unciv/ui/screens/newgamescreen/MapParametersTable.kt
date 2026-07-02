@@ -360,10 +360,9 @@ class MapParametersTable(
 
         mirrorSelectBox.onChange {
             mapParameters.mirroring = mirrorSelectBox.selected.value
-            println("updated to ${mapParameters.mirroring}")
         }
 
-        add("{Mirroring type}:".toLabel()).left()
+        add("{Mirroring Type}:".toLabel()).left()
         add(mirrorSelectBox).fillX().row()
     }
 
