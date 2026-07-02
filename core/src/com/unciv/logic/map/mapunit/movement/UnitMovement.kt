@@ -383,6 +383,7 @@ class UnitMovement(val unit: MapUnit) {
         // We can't swap with ourself
         if (reachableTile == unit.getTile()) return false
         if (unit.cache.cannotMove) return false
+        if (!unit.hasMovement()) return false  // A* incorrectly reports occupied tiles as reachable when movement==0
 
         // Check whether the tile contains a unit of the same type as us that we own and that can also reach our tile in its current turn.
         // When looking for escort formation swaps, however, the 'other' unit should be taken disregarding this unit's type.
@@ -399,6 +400,7 @@ class UnitMovement(val unit: MapUnit) {
         val ourPosition = unit.getTile()
         if (otherUnit.owner != unit.owner
             || otherUnit.cache.cannotMove  // redundant but faster, line below would cover it too
+            || !otherUnit.hasMovement()  // A* incorrectly reports occupied tiles as reachable when movement==0
             || !otherUnit.movement.canReachInCurrentTurn(ourPosition)) return false
 
         if (!canMoveTo(reachableTile, allowSwap = true)) return false
@@ -841,6 +843,7 @@ class UnitMovement(val unit: MapUnit) {
         movementCostCache: HashMap<Int, Float>? = null,
         includeOtherEscortUnit: Boolean = true
     ): PathsToTilesWithinTurn {
+        if (unit.currentMovement <= 0f) return PathsToTilesWithinTurn()
         if (UncivGame.Current.settings.useAStarPathfinding) {
             if (!considerZoneOfControl) require(includeOtherEscortUnit)
             val pathingMap = if (!considerZoneOfControl) aStarPathingWithoutZoneControl
