@@ -38,6 +38,7 @@ object MapType {
     const val lakes = "Lakes"
     const val smallContinents = "Small Continents"
     const val boreal = "Boreal"
+    const val spiral = "Spiral"
     
     val allValues = listOf(
         perlin,
@@ -51,7 +52,8 @@ object MapType {
         innerSea,
         lakes,
         smallContinents,
-        boreal
+        boreal,
+        spiral
     )
 
     // All ocean tiles

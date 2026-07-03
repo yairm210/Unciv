@@ -7,9 +7,11 @@ import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.math.E
 import kotlin.math.abs
+import kotlin.math.atan2
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
+import kotlin.math.sin
 import kotlin.math.sqrt
 
 class MapLandmassGenerator(
@@ -59,6 +61,7 @@ class MapLandmassGenerator(
             MapType.lakes -> createLakes()
             MapType.boreal -> createBoreal()
             MapType.smallContinents -> createSmallContinents()
+            MapType.spiral -> createSpiral()
         }
 
         if (tileMap.mapParameters.shape == MapShape.flatEarth) {
@@ -187,6 +190,24 @@ class MapLandmassGenerator(
             
             val broadLayerImpact = 0.55
             elevation += broadLayerImpact * randomness.getPerlinNoise(tile, broadNoiseSeed, scale=broadNoiseScale)
+            spawnLandOrWater(tile, elevation)
+        }
+    }
+    
+    private fun createSpiral() {
+        val seed = randomness.RNG.nextInt().toDouble()
+        val scale = 1.5 * sqrt(tileMap.mapParameters.mapSize.radius.toDouble())
+        val flipX = if (randomness.RNG.nextBoolean()) -1 else 1
+        val flipY = if (randomness.RNG.nextBoolean()) -1 else 1
+        for (tile in tileMap.values) {
+            val coordinate = HexMath.hex2WorldCoords(tile.position)
+            val x = scale * coordinate.x / tileMap.width * flipX
+            val y = scale * coordinate.y / tileMap.width * flipY
+            // spiral function with output range -1 to +1
+            var elevation = sin(atan2(y, x) - 3 * sqrt(x.pow(2) + y.pow(2)))
+            elevation *= 0.2
+            elevation += 0.05
+            elevation += randomness.getPerlinNoise(tile, seed, scale=scale) * 0.25
             spawnLandOrWater(tile, elevation)
         }
     }
