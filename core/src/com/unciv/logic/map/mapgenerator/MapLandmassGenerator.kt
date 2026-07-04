@@ -196,7 +196,8 @@ class MapLandmassGenerator(
     
     private fun createSpiral() {
         val seed = randomness.RNG.nextInt().toDouble()
-        val scale = 1.5 * sqrt(tileMap.mapParameters.mapSize.radius.toDouble())
+        val spin = 1.5 // how quickly the spiral spins
+        val scale = spin * sqrt(tileMap.mapParameters.mapSize.radius.toDouble())
         val flipX = if (randomness.RNG.nextBoolean()) -1 else 1
         val flipY = if (randomness.RNG.nextBoolean()) -1 else 1
         for (tile in tileMap.values) {
@@ -205,9 +206,9 @@ class MapLandmassGenerator(
             val y = scale * coordinate.y / tileMap.width * flipY
             // spiral function with output range -1 to +1
             var elevation = sin(atan2(y, x) - 3 * sqrt(x.pow(2) + y.pow(2)))
-            elevation *= 0.2
-            elevation += 0.05
-            elevation += randomness.getPerlinNoise(tile, seed, scale=scale) * 0.25
+            elevation *= 0.25
+            elevation += 0.15
+            elevation += randomness.getPerlinNoise(tile, seed, scale=scale) * 0.15
             spawnLandOrWater(tile, elevation)
         }
     }
