@@ -196,20 +196,21 @@ class MapLandmassGenerator(
     }
     
     private fun createSpiral() {
+        val elevationSeed = randomness.RNG.nextInt().toDouble()
         val radius = tileMap.mapParameters.mapSize.radius.toDouble()
+        val flipX = if (randomness.RNG.nextBoolean()) -1 else 1
+        val flipY = if (randomness.RNG.nextBoolean()) -1 else 1
+        val coordinateDivisor = tileMap.width // prevent stretching of spiral
         
         // config
         val spinFactor = 4.5 * sqrt(radius) // how quickly the spiral spins
         val noiseScale = 0.5 * sqrt(radius) // lower means more grainy noise
         
-        val flipX = if (randomness.RNG.nextBoolean()) -1 else 1
-        val flipY = if (randomness.RNG.nextBoolean()) -1 else 1
-        val elevationSeed = randomness.RNG.nextInt().toDouble()
-        val divisor = tileMap.width // prevent stretching of spiral
         for (tile in tileMap.values) {
             val coordinate = HexMath.hex2WorldCoords(tile.position)
-            val x = coordinate.x / divisor * flipX
-            val y = coordinate.y / divisor * flipY
+            val x = coordinate.x / coordinateDivisor * flipX
+            val y = coordinate.y / coordinateDivisor * flipY
+            
             // spiral function with output range -1 to +1
             var elevation = sin(atan2(y, x) - spinFactor * hypot(x, y))
             
