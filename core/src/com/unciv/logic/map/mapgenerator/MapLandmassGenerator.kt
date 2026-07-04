@@ -207,8 +207,8 @@ class MapLandmassGenerator(
             // spiral function with output range -1 to +1
             var elevation = sin(atan2(y, x) - 3 * sqrt(x.pow(2) + y.pow(2)))
             elevation *= 0.25
-            elevation += 0.15
-            elevation += randomness.getPerlinNoise(tile, seed, scale=scale) * 0.15
+            elevation += 0.15 // more land than water
+            elevation += 0.15 * randomness.getPerlinNoise(tile, seed, scale=scale)
             spawnLandOrWater(tile, elevation)
         }
     }
