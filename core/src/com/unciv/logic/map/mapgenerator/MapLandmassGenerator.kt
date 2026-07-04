@@ -208,7 +208,7 @@ class MapLandmassGenerator(
             var elevation = sin(atan2(y, x) - 3 * sqrt(x.pow(2) + y.pow(2)))
             elevation *= 0.25
             elevation += 0.15 // more land than water
-            elevation += 0.15 * randomness.getPerlinNoise(tile, seed, scale=scale)
+            elevation += 0.20 * randomness.getPerlinNoise(tile, seed, scale=scale)
             spawnLandOrWater(tile, elevation)
         }
     }
