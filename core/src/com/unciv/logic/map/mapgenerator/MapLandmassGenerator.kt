@@ -8,6 +8,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.math.E
 import kotlin.math.abs
 import kotlin.math.atan2
+import kotlin.math.hypot
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
@@ -202,10 +203,11 @@ class MapLandmassGenerator(
         val flipY = if (randomness.RNG.nextBoolean()) -1 else 1
         for (tile in tileMap.values) {
             val coordinate = HexMath.hex2WorldCoords(tile.position)
-            val x = scale * coordinate.x / tileMap.width * flipX
-            val y = scale * coordinate.y / tileMap.width * flipY
+            val divisor = tileMap.width // prevent stretching of spiral
+            val x = scale * coordinate.x / divisor * flipX
+            val y = scale * coordinate.y / divisor * flipY
             // spiral function with output range -1 to +1
-            var elevation = sin(atan2(y, x) - 3 * sqrt(x.pow(2) + y.pow(2)))
+            var elevation = sin(atan2(y, x) - 3 * hypot(x, y))
             elevation *= 0.25
             elevation += 0.15 // more land than water
             elevation += 0.20 * randomness.getPerlinNoise(tile, seed, scale=scale)
