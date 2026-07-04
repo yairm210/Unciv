@@ -196,21 +196,28 @@ class MapLandmassGenerator(
     }
     
     private fun createSpiral() {
-        val seed = randomness.RNG.nextInt().toDouble()
-        val spin = 1.5 // how quickly the spiral spins
-        val scale = spin * sqrt(tileMap.mapParameters.mapSize.radius.toDouble())
+        val radius = tileMap.mapParameters.mapSize.radius.toDouble()
+        
+        // config
+        val spinFactor = 4.5 * sqrt(radius) // how quickly the spiral spins
+        val noiseScale = 0.5 * sqrt(radius) // lower means more grainy noise
+        
         val flipX = if (randomness.RNG.nextBoolean()) -1 else 1
         val flipY = if (randomness.RNG.nextBoolean()) -1 else 1
+        val elevationSeed = randomness.RNG.nextInt().toDouble()
+        val divisor = tileMap.width // prevent stretching of spiral
         for (tile in tileMap.values) {
             val coordinate = HexMath.hex2WorldCoords(tile.position)
-            val divisor = tileMap.width // prevent stretching of spiral
-            val x = scale * coordinate.x / divisor * flipX
-            val y = scale * coordinate.y / divisor * flipY
+            val x = coordinate.x / divisor * flipX
+            val y = coordinate.y / divisor * flipY
             // spiral function with output range -1 to +1
-            var elevation = sin(atan2(y, x) - 3 * hypot(x, y))
-            elevation *= 0.25
-            elevation += 0.15 // more land than water
-            elevation += 0.20 * randomness.getPerlinNoise(tile, seed, scale=scale)
+            var elevation = sin(atan2(y, x) - spinFactor * hypot(x, y))
+            
+            // config
+            elevation *= 0.25 // adjust range
+            elevation += 0.15 // water level
+            elevation += 0.18 * randomness.getPerlinNoise(tile, elevationSeed, scale=noiseScale)
+            
             spawnLandOrWater(tile, elevation)
         }
     }
