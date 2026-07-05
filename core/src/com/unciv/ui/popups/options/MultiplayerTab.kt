@@ -106,12 +106,12 @@ internal class MultiplayerTab(
         multiplayerServerTextField.onChange {
             fixTextFieldUrlOnType(multiplayerServerTextField)
 
-        try {
-            // we can't trim on 'fixTextFieldUrlOnType' for reasons
-            val uri = URI(multiplayerServerTextField.text.trimEnd('/'))
-            if (uri.scheme != "http" && uri.scheme != "https") {
-                throw Error("URL must start with http:// or https://")
-            }
+            try {
+                // we can't trim on 'fixTextFieldUrlOnType' for reasons
+                val uri = URI(multiplayerServerTextField.text.trimEnd('/'))
+                if (uri.scheme != "http" && uri.scheme != "https") {
+                    throw Error("URL must start with http:// or https://")
+                }
 
                 // URL has stricter validation than URI
                 settings.multiplayer.setServer(uri.toURL().toString())
