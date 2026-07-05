@@ -165,7 +165,7 @@ internal class MultiplayerTab(
             val passwordTextField = UncivTextField(
                 "Password", mpSettings.getCurrentServerPassword().orEmpty()
             )
-            passwordTextField.isPasswordMode = true
+            passwordTextField.isPasswordMode = false // disabled to make recovery (particularly on Android) easier
             val setPasswordButton = "Set password".toTextButton()
 
             serverIpTable.add("Set password".toLabel()).padTop(16f).colspan(2).row()
