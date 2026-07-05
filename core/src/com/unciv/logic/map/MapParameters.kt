@@ -26,31 +26,32 @@ object MapGeneratedMainType {
 }
 
 object MapType {
-    const val perlin = "Perlin"
     const val pangaea = "Pangaea"
+    const val smallContinents = "Small Continents"
+    const val perlin = "Perlin"
+    const val fractal = "Fractal"
     const val continentAndIslands = "Continent and Islands"
+    const val archipelago = "Archipelago"
     const val twoContinents = "Two Continents"
     const val threeContinents = "Three Continents"
-    const val fourCorners = "Four Corners"
-    const val archipelago = "Archipelago"
-    const val fractal = "Fractal"
     const val innerSea = "Inner Sea"
     const val lakes = "Lakes"
-    const val smallContinents = "Small Continents"
+    const val fourCorners = "Four Corners"
     const val boreal = "Boreal"
     
+    // ordered based on popularity poll
     val allValues = listOf(
-        perlin,
         pangaea,
+        smallContinents,
+        perlin,
+        fractal,
         continentAndIslands,
+        archipelago,
         twoContinents,
         threeContinents,
-        fourCorners,
-        archipelago,
-        fractal,
         innerSea,
         lakes,
-        smallContinents,
+        fourCorners,
         boreal
     )
 
