@@ -183,16 +183,18 @@ class TileSetStrings(
         }
 
         val civInfo = unit.civ
-        val style = civInfo.nation.getStyleOrCivName()
+        val style = civInfo.nation.style
+        val civName = civInfo.nation.name
 
         var imageAttempter = ImageAttempter(baseUnitIconLocation)
             // Era+style image: looks like  "pikeman-France-Medieval era"
-            // More advanced eras default to older eras
-            .tryEraImage(civInfo, baseUnitIconLocation, style, this)
+            .tryEraImage(civInfo, baseUnitIconLocation, civName, this)
+            .tryEraImage(civInfo, baseUnitIconLocation, style, this, active = style.isNotEmpty())
             // Era-only image: looks like "pikeman-Medieval era"
             .tryEraImage(civInfo, baseUnitIconLocation, null, this)
             // Style era: looks like "pikeman-France" or "pikeman-European"
-            .tryImage { getString(baseUnitIconLocation, tag, style) }
+            .tryImage { getString(baseUnitIconLocation, tag, civName) }
+            .tryImage(active = style.isNotEmpty()) { getString(baseUnitIconLocation, tag, style) }
             .tryImage { baseUnitIconLocation }
 
         if (unit.baseUnit.replaces != null)
