@@ -187,13 +187,15 @@ class TileSetStrings(
         val civName = civInfo.nation.name
 
         var imageAttempter = ImageAttempter(baseUnitIconLocation)
-            // Era+style image: looks like  "pikeman-France-Medieval era"
+            // Era+civ image: looks like  "pikeman-France-Medieval era"
             .tryEraImage(civInfo, baseUnitIconLocation, civName, this)
+            // Era+style image: looks like  "pikeman-European-Medieval era"
             .tryEraImage(civInfo, baseUnitIconLocation, style, this, active = style.isNotEmpty())
             // Era-only image: looks like "pikeman-Medieval era"
             .tryEraImage(civInfo, baseUnitIconLocation, null, this)
-            // Style era: looks like "pikeman-France" or "pikeman-European"
+            // Civ + era: looks like "pikeman-France"
             .tryImage { getString(baseUnitIconLocation, tag, civName) }
+            // Style + era: "pikeman-European"
             .tryImage(active = style.isNotEmpty()) { getString(baseUnitIconLocation, tag, style) }
             .tryImage { baseUnitIconLocation }
 
