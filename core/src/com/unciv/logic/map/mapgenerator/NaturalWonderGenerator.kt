@@ -163,7 +163,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
                     if (convertToTerrain.hasUnique(UniqueType.FreshWater) && tile.isAdjacentToCoast()) continue
                     val terrainObject = location.ruleset.terrains[convertTo] ?: continue
                     if (terrainObject.type == TerrainType.TerrainFeature && tile.baseTerrain !in terrainObject.occursOn) continue
-                    if (convertTo == Constants.coast)
+                    if (convertToTerrain.hasUnique(UniqueType.CoastalWater))
                         removeLakesNextToFutureCoast(location, tile)
                     if (terrainObject.type.isBaseTerrain) {
                         clearTile(tile)
