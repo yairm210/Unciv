@@ -1,18 +1,20 @@
 ## 4.20.18
 
-Resolves  - Conditional worker uniques no longer cause crashes when disabled
+Conditional worker uniques no longer cause crashes when disabled
 
-Resolves  - Improvement hotkeys can no longer trigger twice when 2 improvements have the same key
+Improvement hotkeys can no longer trigger twice when 2 improvements have the same key
 
-.
+Specific civ images override style images
 
-Resolved  - Specific civ images override style images.
+Resolved A* "units with no movement consider occupied tiles moveable to" bug
 
-Resolved A* "units with no movement consider occupied tiles moveable to" bug, and short-circuited getDistanceToTiles for zero-movement case as well
+City borders and city buttons no longer disappear near the south edge
 
-Resolved  - city borders and city buttons no longer disappear near the south edge
+CPU improvements 
 
-Optimized unit placement concentric rings - see 
+By unciv-loof:
+- Add mirroring type to map editor
+- Reorder map types
 
 ## 4.20.17
 

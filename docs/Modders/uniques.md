@@ -2676,8 +2676,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Terrain
 
 ??? example  "Vegetation"
-	This unique is automatically hidden from users.
-
 	Applicable to: Terrain, Improvement
 
 ??? example  "Tile provides yield without assigned population"
@@ -2895,8 +2893,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, Unit, Terrain, Improvement
 
 ??? example  "Vegetation"
-	This unique is automatically hidden from users.
-
 	Applicable to: Terrain, Improvement
 
 ??? example  "Tile provides yield without assigned population"
