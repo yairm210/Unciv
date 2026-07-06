@@ -55,7 +55,7 @@ class ImageAttempter<out T: Any>(val scope: T) {
      */
     fun tryImages(fileNames: Sequence<T.() -> String?>): ImageAttempter<T> {
         for (fileName in fileNames) {
-            tryImage(fileName)
+            tryImage(fileName = fileName)
         } // *Could* skip calls/break loop if already imageFound. But that means needing an internal guarantee/spec of tryImage being same as no-op when imageFound.
         return this
     }
