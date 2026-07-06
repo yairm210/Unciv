@@ -38,6 +38,7 @@ object MapType {
     const val lakes = "Lakes"
     const val fourCorners = "Four Corners"
     const val boreal = "Boreal"
+    const val spiral = "Spiral"
     
     // ordered based on popularity poll
     val allValues = listOf(
@@ -52,6 +53,7 @@ object MapType {
         innerSea,
         lakes,
         fourCorners,
+        spiral,
         boreal
     )
 
