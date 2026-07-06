@@ -1,3 +1,21 @@
+## 4.20.18
+
+Conditional worker uniques no longer cause crashes when disabled
+
+Improvement hotkeys can no longer trigger twice when 2 improvements have the same key
+
+Specific civ images override style images
+
+Resolved A* "units with no movement consider occupied tiles moveable to" bug
+
+City borders and city buttons no longer disappear near the south edge
+
+CPU improvements 
+
+By unciv-loof:
+- Add mirroring type to map editor
+- Reorder map types
+
 ## 4.20.17
 
 CPU performance improvements

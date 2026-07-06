@@ -128,8 +128,11 @@ jobs:
         run: |
           mkdir whatsNewDirectory
           echo "${{needs.get-release-body.outputs.release_body}}" > whatsNewDirectory/whatsnew-en-US
-          ./gradlew :android:bundleRelease
-          ./gradlew :android:assembleRelease
+          for attempt in 1 2 3; do
+            ./gradlew :android:bundleRelease :android:assembleRelease && break
+            echo "Attempt $attempt failed, retrying in 5s..."
+            sleep 5
+          done
 
       - name: Sign AAB for Google Play upload
         uses: r0adkll/sign-android-release@v1
