@@ -281,7 +281,7 @@ object UnitAutomation {
         val cities = unit.civ.cities
         val knownEncampments = cities.asSequence()
             .flatMap { it.getCenterTile().getTilesInDistance(6) }
-                .filter { it.improvement == Constants.barbarianEncampment && unit.civ.hasExplored(it) }
+                .filter { it.isBarbarianEncampment() && unit.civ.hasExplored(it) }
             .distinct()
         val encampmentsCloseToCities = knownEncampments.asSequence()
             .sortedBy { it.aerialDistanceTo(unit.currentTile) }

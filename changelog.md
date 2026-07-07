@@ -1,3 +1,45 @@
+## 4.20.18
+
+Conditional worker uniques no longer cause crashes when disabled
+
+Improvement hotkeys can no longer trigger twice when 2 improvements have the same key
+
+Specific civ images override style images
+
+Resolved A* "units with no movement consider occupied tiles moveable to" bug
+
+City borders and city buttons no longer disappear near the south edge
+
+CPU improvements 
+
+By unciv-loof:
+- Add mirroring type to map editor
+- Reorder map types
+
+## 4.20.17
+
+CPU performance improvements
+
+fix: Avoid crash when removing encampments from map editor
+
+Adjust lake and coastline formation of Boreal map type - By unciv-loof
+
+Console: Allow setting strategic resource deposit amount - By SomeTroglodyte
+
+## 4.20.16
+
+By unciv-loof:
+- Cap force bonus from AdditionalAttacks based on movement points 
+- Fix German unique ability 
+- Fix force calculation when measuring military presence near border 
+
+Make "Barbarian encampment" improvement moddable - By SomeTroglodyte
+
+By BobbyCobby:
+- Clearer mod update icon
+
+Fix map preview crash when changing rulesets - By Angais
+
 ## 4.20.15
 
 Improvements that cost stockpiled resources do so when starting construction, not on end, similar to buildings and units

@@ -296,6 +296,7 @@ class Tile : IsPartOfGameInfoSerialization {
             if (naturalWonder == null) throw Exception("No natural wonder exists for this tile!")
             else ruleset.terrains[naturalWonder!!]!!
 
+    /** Actively observed tiles (no fog of war) */
     @Readonly
     fun isVisible(player: Civilization): Boolean {
         if (DebugUtils.VISIBLE_MAP)
@@ -303,6 +304,7 @@ class Tile : IsPartOfGameInfoSerialization {
         return player.viewableTiles.contains(this)
     }
 
+    /** Tiles that at some point have been explored (may have fog of war) */
     @Readonly
     fun isExplored(player: Civilization): Boolean {
         if (DebugUtils.VISIBLE_MAP || player.isSpectator())
@@ -313,6 +315,9 @@ class Tile : IsPartOfGameInfoSerialization {
     @Readonly fun isCityCenter(): Boolean = isCityCenterInternal
     @Readonly fun isNaturalWonder(): Boolean = naturalWonder != null
     @Readonly fun isImpassible() = lastTerrain.impassable
+
+    @Readonly fun isBarbarianEncampment(): Boolean =
+        tileImprovement?.isBarbarianCampEquivalent(stateThisTile) == true
 
     @Readonly fun hasImprovementInProgress() = improvementQueue.isNotEmpty()
 

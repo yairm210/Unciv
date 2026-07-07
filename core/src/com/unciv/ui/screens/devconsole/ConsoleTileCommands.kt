@@ -8,6 +8,7 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.mapgenerator.RiverGenerator
 import com.unciv.logic.map.mapgenerator.RiverGenerator.RiverDirections
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
 
@@ -86,10 +87,16 @@ internal class ConsoleTileCommands: ConsoleCommandNode {
                 setBaseTerrain(selectedTile, terrain)
         },
 
-        "setresource" to ConsoleAction("tile setresource <resourceName>") { console, params ->
+        "setresource" to ConsoleAction("tile setresource <resourceName> [amount]") { console, params ->
             val selectedTile = console.getSelectedTile()
             val resource = params[0].find(console.gameInfo.ruleset.tileResources.values)
-            selectedTile.tileResource = resource
+            val amount = params.getOrNull(1)?.takeIf { !it.isEmpty() }?.toInt()
+            if (amount != null && resource.resourceType != ResourceType.Strategic)
+                return@ConsoleAction DevConsoleResponse.error("Can't set resource amount for ${resource.resourceType} resource")
+            if (amount != null && amount <= 0)
+                return@ConsoleAction DevConsoleResponse.error("Invalid resource amount")
+            selectedTile.setTileResource(resource)
+            if (amount != null) selectedTile.resourceAmount = amount
             selectedTile.setTerrainTransients()
             selectedTile.getCity()?.reassignPopulation()
             DevConsoleResponse.OK
