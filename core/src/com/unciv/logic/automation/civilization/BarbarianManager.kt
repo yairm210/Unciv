@@ -3,10 +3,12 @@ package com.unciv.logic.automation.civilization
 import com.unciv.Constants
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
@@ -169,6 +171,93 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
         encampments.add(newCamp)
     }
 
+    /**
+     * Attempts to spawn a random barbarian [MapUnit] at or near the provided [Tile].
+     * @param allegiance Which [Civilization] should the unit belong to? Defaults to the barbarian civilization.
+     *                   If non-barbarian, there are fewer restrictions on whether a unit can be spawned or not.
+     * @return The newly spawned [MapUnit], or null if unsuccessful.
+     */
+    fun spawnBarbarian(
+        tile: Tile,
+        allegiance: Civilization = gameInfo.getBarbarianCivilization()
+    ): MapUnit? {
+        if (allegiance.isBarbarian) {
+            // Empty camp - spawn a defender
+            if (tile.militaryUnit == null)
+                // Try spawning a unit on this tile, return null if unsuccessful
+                return spawnUnit(tile.position, false)
+            
+            // Don't spawn wandering barbs too early
+            if (gameInfo.turns < 10)
+                return null
+            
+            val nearbyBarbarians = tile.getTilesInDistance(4)
+                .map { it.militaryUnit }.filterNotNull()
+                .count { it.civ.isBarbarian }
+            // Too many barbarians around already?
+            if (nearbyBarbarians > 2)
+                return null
+        }
+
+        val canSpawnNaval = gameInfo.turns > 30
+        val validTiles = tile.neighbors.toList().filterNot {
+            it.isImpassible()
+                || it.isCityCenter()
+                || it.getFirstUnit() != null
+                || (it.isWater && !canSpawnNaval)
+                || (it.terrainHasUnique(UniqueType.FreshWater) && it.isWater) // No Lakes
+        }
+        if (validTiles.isEmpty())
+            return null
+
+        val rng = gameInfo.getBarbarianCivilization().state.stateBasedRandom("BarbarianManager.spawnBarbarian")
+        // Attempt to spawn a barbarian on a valid tile
+        return spawnUnit(tile.position, validTiles.random(rng).isWater, allegiance) 
+    }
+
+    /** Attempts to spawn a barbarian on [position], returns true if successful and false if unsuccessful. */
+    private fun spawnUnit(
+        position: HexCoord,
+        naval: Boolean,
+        allegiance: Civilization = gameInfo.getBarbarianCivilization()
+    ): MapUnit? {
+        updateBarbarianTech()
+        val unitToSpawn = chooseBarbarianUnit(naval)
+            ?: return null // return null if we didn't find a unit
+        val spawnedUnit = gameInfo.tileMap.placeUnitNearTile(position, unitToSpawn, allegiance)
+        return spawnedUnit
+    }
+
+    private fun updateBarbarianTech(){
+        val barbarianCiv = gameInfo.getBarbarianCivilization()
+        val allResearchedTechs = gameInfo.ruleset.technologies.keys.toMutableList()
+        for (civ in gameInfo.civilizations.filter { !it.isBarbarian && !it.isDefeated() }) {
+            allResearchedTechs.retainAll(civ.tech.techsResearched)
+        }
+        barbarianCiv.tech.techsResearched = allResearchedTechs.toHashSet()
+    }
+
+    @Readonly
+    private fun chooseBarbarianUnit(naval: Boolean): BaseUnit? {
+        // if we don't make this into a separate list then the retain() will happen on the Tech keys,
+        // which effectively removes those techs from the game and causes all sorts of problems
+        val barbarianCiv = gameInfo.getBarbarianCivilization()
+        val unitList = gameInfo.ruleset.units.values
+            .filter { it.isMilitary &&
+                !(it.hasUnique(UniqueType.CannotAttack) ||
+                    it.hasUnique(UniqueType.CannotBeBarbarian)) &&
+                (if (naval) it.isWaterUnit else it.isLandUnit) &&
+                it.isBuildable(barbarianCiv) }
+
+        if (unitList.isEmpty()) return null // No naval tech yet? Mad modders?
+
+        // Civ V weights its list by FAST_ATTACK or ATTACK_SEA AI types, we'll do it a bit differently
+        // getForceEvaluation is already conveniently biased towards fast units and against ranged naval
+        val weightings = unitList.map { it.getForceEvaluation().toFloat() }
+        val rng = GameContext(gameInfo = gameInfo).stateBasedRandom("BarbarianManager.chooseBarbarianUnit")
+
+        return unitList.randomWeighted(weightings, rng)
+    }
 }
 
 class Encampment() : IsPartOfGameInfoSerialization {
@@ -195,7 +284,8 @@ class Encampment() : IsPartOfGameInfoSerialization {
     fun update() {
         if (countdown > 0) // Not yet
             countdown--
-        else if (!destroyed && spawnBarbarian()) { // Countdown at 0, try to spawn a barbarian
+        // Countdown at 0, try to spawn a barbarian
+        else if (!destroyed && gameInfo.barbarians.spawnBarbarian(gameInfo.tileMap[position]) != null) { 
             // Successful
             spawnedUnits++
             resetCountdown()
@@ -212,77 +302,6 @@ class Encampment() : IsPartOfGameInfoSerialization {
             countdown = 15
             destroyed = true
         }
-    }
-
-    /** Attempts to spawn a Barbarian from this encampment. Returns true if a unit was spawned. */
-    private fun spawnBarbarian(): Boolean {
-        val tile = gameInfo.tileMap[position]
-
-        // Empty camp - spawn a defender
-        if (tile.militaryUnit == null) {
-            return spawnUnit(false) // Try spawning a unit on this tile, return false if unsuccessful
-        }
-
-        // Don't spawn wandering barbs too early
-        if (gameInfo.turns < 10)
-            return false
-
-        // Too many barbarians around already?
-        val barbarianCiv = gameInfo.getBarbarianCivilization()
-        if (tile.getTilesInDistance(4).count { it.militaryUnit?.civ == barbarianCiv } > 2)
-            return false
-
-        val canSpawnBoats = gameInfo.turns > 30
-        val validTiles = tile.neighbors.toList().filterNot {
-            it.isImpassible()
-                    || it.isCityCenter()
-                    || it.getFirstUnit() != null
-                    || (it.isWater && !canSpawnBoats)
-                    || (it.terrainHasUnique(UniqueType.FreshWater) && it.isWater) // No Lakes
-        }
-        if (validTiles.isEmpty()) return false
-
-        val rng = gameInfo.getBarbarianCivilization().state.stateBasedRandom("BarbarianManager.spawnBarbarian")
-        return spawnUnit(validTiles.random(rng).isWater) // Attempt to spawn a barbarian on a valid tile
-    }
-
-    /** Attempts to spawn a barbarian on [position], returns true if successful and false if unsuccessful. */
-    private fun spawnUnit(naval: Boolean): Boolean {
-        updateBarbarianTech()
-        val unitToSpawn = chooseBarbarianUnit(naval) ?: return false // return false if we didn't find a unit
-        val spawnedUnit = gameInfo.tileMap.placeUnitNearTile(position.toHexCoord(), unitToSpawn, gameInfo.getBarbarianCivilization())
-        return (spawnedUnit != null)
-    }
-    
-    private fun updateBarbarianTech(){
-        val barbarianCiv = gameInfo.getBarbarianCivilization()
-        val allResearchedTechs = gameInfo.ruleset.technologies.keys.toMutableList()
-        for (civ in gameInfo.civilizations.filter { !it.isBarbarian && !it.isDefeated() }) {
-            allResearchedTechs.retainAll(civ.tech.techsResearched)
-        }
-        barbarianCiv.tech.techsResearched = allResearchedTechs.toHashSet()
-    }
-
-    @Readonly
-    private fun chooseBarbarianUnit(naval: Boolean): BaseUnit? {
-        // if we don't make this into a separate list then the retain() will happen on the Tech keys,
-        // which effectively removes those techs from the game and causes all sorts of problems
-        val barbarianCiv = gameInfo.getBarbarianCivilization()
-        val unitList = gameInfo.ruleset.units.values
-            .filter { it.isMilitary &&
-                    !(it.hasUnique(UniqueType.CannotAttack) ||
-                            it.hasUnique(UniqueType.CannotBeBarbarian)) &&
-                    (if (naval) it.isWaterUnit else it.isLandUnit) &&
-                    it.isBuildable(barbarianCiv) }
-
-        if (unitList.isEmpty()) return null // No naval tech yet? Mad modders?
-
-        // Civ V weights its list by FAST_ATTACK or ATTACK_SEA AI types, we'll do it a bit differently
-        // getForceEvaluation is already conveniently biased towards fast units and against ranged naval
-        val weightings = unitList.map { it.getForceEvaluation().toFloat() }
-        val rng = GameContext(gameInfo = gameInfo).stateBasedRandom("BarbarianManager.chooseBarbarianUnit")
-
-        return unitList.randomWeighted(weightings, rng)
     }
 
     /** When a barbarian is spawned, seed the counter for next spawn */

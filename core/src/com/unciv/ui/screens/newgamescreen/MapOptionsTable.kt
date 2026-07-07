@@ -77,5 +77,14 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen) : Table() {
         return scenarioOptionsTable.selectedScenario
     }
 
-    internal fun cancelBackgroundJobs() = savedMapOptionsTable.cancelBackgroundJobs()
+    internal fun cancelBackgroundJobs() {
+        generatedMapOptionsTable.cancelBackgroundJobs()
+        randomMapOptionsTable.cancelBackgroundJobs()
+        savedMapOptionsTable.cancelBackgroundJobs()
+    }
+
+    internal fun refreshExampleMap() {
+        generatedMapOptionsTable.generateExampleMap()
+        randomMapOptionsTable.generateExampleMap()
+    }
 }
