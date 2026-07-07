@@ -143,10 +143,11 @@ class ImprovementPickerScreen(
                 .filter { it.shortcutKey == improvement.shortcutKey && it != improvement }
                 // civ can build it (checks tech researched)
                 .filter { tile.improvementFunctions.canBuildImprovement(it, unit.cache.state) }
-                // is technologically more advanced
-                .filter { getRequiredTechColumn(it) > techLevel }
-                .any()
-            // another supersedes this - ignore key binding
+                // is technologically more advanced, or same tech with alphabetically earlier name (tie-breaking
+                // prevents two improvements at the same tech level both registering the same shortcut key,
+                // which would trigger accept() twice and cause a spurious "exit game?" dialog)
+                .any { getRequiredTechColumn(it) > techLevel
+                       || (getRequiredTechColumn(it) == techLevel && it.name < improvement.name) }
             if (isSuperseded) shortcutKey = null
         }
 
