@@ -52,8 +52,11 @@ object BattleDamage {
                     modifiers["Missing resource"] = BattleConstants.MISSING_RESOURCES_MALUS
 
             val (greatGeneralName, greatGeneralBonus) = GreatGeneralImplementation.getGreatGeneralBonus(combatant, enemy, combatAction)
-            if (greatGeneralBonus != 0)
-                modifiers[greatGeneralName] = greatGeneralBonus
+            if (greatGeneralBonus.isNotEmpty()) {
+                for (i in 0 until greatGeneralBonus.size) {
+                    modifiers[greatGeneralName[i]] = greatGeneralBonus[i]
+                }
+            }
 
         } else if (combatant is CityCombatant) {
             for (unique in combatant.city.getMatchingUniques(UniqueType.StrengthForCities, conditionalState)) {

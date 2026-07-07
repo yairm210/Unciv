@@ -33,12 +33,14 @@ object GreatGeneralImplementation {
         ourUnitCombatant: MapUnitCombatant,
         enemy: ICombatant,
         combatAction: CombatAction
-    ): Pair<String, Int> {
+    ): Pair<List<String>, List<Int>> {
         val unit = ourUnitCombatant.unit
         val civInfo = ourUnitCombatant.unit.civ
         val allGenerals = civInfo.units.getCivUnits()
             .filter { it.cache.hasStrengthBonusInRadiusUnique }
-        if (allGenerals.none()) return Pair("", 0)
+            .filter { it != unit }
+            .groupBy { it.name }.values.flatten()
+        if (allGenerals.none()) return Pair(emptyList(), emptyList())
 
         val greatGeneral = allGenerals
             .flatMap { general ->
@@ -53,12 +55,13 @@ object GreatGeneralImplementation {
                 it.general.currentTile.aerialDistanceTo(unit.getTile()) <= it.radius
                         && (it.filter == "Military" || unit.matchesFilter(it.filter))
             }
-        val greatGeneralModifier = greatGeneral.maxByOrNull { it.bonus } ?: return Pair("",0)
+        val greatGeneralModifier = greatGeneral
+            .map { if (unit.hasUnique(UniqueType.GreatGeneralProvidesDoubleCombatBonus, checkCivInfoUniques = true)
+                && it.general.isGreatPersonOfType("War"))
+                it.bonus*2 
+            else it.bonus } ?: return Pair(emptyList(),emptyList())
 
-        if (unit.hasUnique(UniqueType.GreatGeneralProvidesDoubleCombatBonus, checkCivInfoUniques = true)
-            && greatGeneralModifier.general.isGreatPersonOfType("War")) // apply only on "true" generals
-            return Pair(greatGeneralModifier.general.name, greatGeneralModifier.bonus * 2)
-        return Pair(greatGeneralModifier.general.name, greatGeneralModifier.bonus)
+        return Pair(greatGeneral.map { it.general.name }, greatGeneralModifier)
     }
 
     /**
