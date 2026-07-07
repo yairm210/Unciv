@@ -39,10 +39,9 @@ object GreatGeneralImplementation {
         val allGenerals = civInfo.units.getCivUnits()
             .filter { it.cache.hasStrengthBonusInRadiusUnique }
             .filter { it != unit }
-            .groupBy { it.name }.values.flatten()
         if (allGenerals.none()) return Pair(emptyList(), emptyList())
 
-        val greatGeneral = allGenerals
+        val greatGenerals = allGenerals
             .flatMap { general ->
                 general.getMatchingUniques(UniqueType.StrengthBonusInRadius,
                     GameContext(unit.civ, ourCombatant = ourUnitCombatant, theirCombatant = enemy, combatAction = combatAction))
@@ -54,14 +53,17 @@ object GreatGeneralImplementation {
                 // optimization for the most common case, as this function is only called for `MapUnitCombatant`s
                 it.general.currentTile.aerialDistanceTo(unit.getTile()) <= it.radius
                         && (it.filter == "Military" || unit.matchesFilter(it.filter))
-            }
-        val greatGeneralModifier = greatGeneral
-            .map { if (unit.hasUnique(UniqueType.GreatGeneralProvidesDoubleCombatBonus, checkCivInfoUniques = true)
-                && it.general.isGreatPersonOfType("War"))
-                it.bonus*2 
-            else it.bonus } ?: return Pair(emptyList(),emptyList())
+            }.groupBy { it.general }
+        val greatGeneral = mutableMapOf<String, Int>()
+        for (general in greatGenerals) {
+            greatGeneral[general.key.name] = (greatGeneral[general.key.name] ?:0)
+                .coerceAtLeast( general.value.sumOf { 
+                    if (unit.hasUnique(UniqueType.GreatGeneralProvidesDoubleCombatBonus, checkCivInfoUniques = true)
+                    && it.general.isGreatPersonOfType("War")) it.bonus*2
+                    else it.bonus })
+        }
 
-        return Pair(greatGeneral.map { it.general.name }, greatGeneralModifier)
+        return Pair(greatGeneral.keys.toList(), greatGeneral.values.toList())
     }
 
     /**
