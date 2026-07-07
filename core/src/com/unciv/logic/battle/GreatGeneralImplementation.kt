@@ -57,7 +57,7 @@ object GreatGeneralImplementation {
         val greatGeneral = mutableMapOf<String, Int>()
         for (general in greatGenerals) {
             greatGeneral[general.key.name] = (greatGeneral[general.key.name] ?:0)
-                .coerceAtLeast( general.value.sumOf { 
+                .coerceAtLeast( general.value.maxOf { 
                     if (unit.hasUnique(UniqueType.GreatGeneralProvidesDoubleCombatBonus, checkCivInfoUniques = true)
                     && it.general.isGreatPersonOfType("War")) it.bonus*2
                     else it.bonus })
