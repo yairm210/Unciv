@@ -316,6 +316,9 @@ class Tile : IsPartOfGameInfoSerialization {
     @Readonly fun isNaturalWonder(): Boolean = naturalWonder != null
     @Readonly fun isImpassible() = lastTerrain.impassable
 
+    @Readonly fun isBarbarianEncampment(): Boolean =
+        tileImprovement?.isBarbarianCampEquivalent(stateThisTile) == true
+
     @Readonly fun hasImprovementInProgress() = improvementQueue.isNotEmpty()
 
     @Readonly fun getTileImprovementInProgress(): TileImprovement? = improvementQueue.firstOrNull()?.let { ruleset.tileImprovements[it.improvement] }

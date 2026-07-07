@@ -75,11 +75,13 @@ object WorldMapTileUpdater {
                 // Fade out population icons
                 group.layerMisc.dimPopulation(true)
 
-                val shownImprovement = group.tile.getShownImprovement(unit.civ)
+                val shownImprovementName = group.tile.getShownImprovement(unit.civ)
+                val shownImprovement = unit.civ.gameInfo.ruleset.tileImprovements[shownImprovementName]
 
                 // Fade out improvement icons (but not barb camps or ruins)
-                if (shownImprovement != null && shownImprovement != Constants.barbarianEncampment
-                    && !unit.civ.gameInfo.ruleset.tileImprovements[shownImprovement]!!.isAncientRuinsEquivalent(unit.cache.state))
+                if (shownImprovement != null &&
+                    !shownImprovement.isBarbarianCampEquivalent(group.tile.stateThisTile) &&
+                    !shownImprovement.isAncientRuinsEquivalent(unit.cache.state))
                     group.layerImprovement.dimImprovement(true)
             }
         }

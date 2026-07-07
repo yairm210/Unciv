@@ -128,8 +128,11 @@ jobs:
         run: |
           mkdir whatsNewDirectory
           echo "${{needs.get-release-body.outputs.release_body}}" > whatsNewDirectory/whatsnew-en-US
-          ./gradlew :android:bundleRelease
-          ./gradlew :android:assembleRelease
+          for attempt in 1 2 3; do
+            ./gradlew :android:bundleRelease :android:assembleRelease && break
+            echo "Attempt $attempt failed, retrying in 5s..."
+            sleep 5
+          done
 
       - name: Sign AAB for Google Play upload
         uses: r0adkll/sign-android-release@v1
@@ -375,9 +378,13 @@ jobs:
     steps:
       - name: Update Homebrew formula
         continue-on-error: true
-        uses: mislav/bump-homebrew-formula-action@v3
+        uses: mislav/bump-homebrew-formula-action@v4
         with:
           formula-name: unciv
           download-url: https://github.com/yairm210/Unciv/releases/download/${{ github.ref_name }}/Unciv.jar
+          commit-message: |
+            unciv {{version}}
+
+            Created by `brew bump`
         env:
           COMMITTER_TOKEN: ${{ secrets.ACTIONS_ACCESS_TOKEN }}
