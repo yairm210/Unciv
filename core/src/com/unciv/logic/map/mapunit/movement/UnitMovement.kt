@@ -843,7 +843,6 @@ class UnitMovement(val unit: MapUnit) {
         movementCostCache: HashMap<Int, Float>? = null,
         includeOtherEscortUnit: Boolean = true
     ): PathsToTilesWithinTurn {
-        if (unit.currentMovement <= 0f) return PathsToTilesWithinTurn()
         if (UncivGame.Current.settings.useAStarPathfinding) {
             if (!considerZoneOfControl) require(includeOtherEscortUnit)
             val pathingMap = if (!considerZoneOfControl) aStarPathingWithoutZoneControl
@@ -976,6 +975,7 @@ class PathfindingCache(private val unit: MapUnit) {
     }
 }
 
+/** Should contain current unit location even when it has no movement */
 class PathsToTilesWithinTurn : LinkedHashMap<Tile, UnitMovement.ParentTileAndTotalMovement>() {
     fun getPathToTile(tile: Tile): List<Tile> {
         if (!containsKey(tile)) {
