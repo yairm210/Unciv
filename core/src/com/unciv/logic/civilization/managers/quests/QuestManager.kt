@@ -560,7 +560,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
     fun wasAttackedBy(attacker: Civilization) {
         // Set target number units to kill
         val totalMilitaryUnits = attacker.units.getCivUnits().count { !it.isCivilian() }
-        val unitsToKill = (totalMilitaryUnits / 4).coerceAtMost(3)
+        val unitsToKill = (totalMilitaryUnits / 4).coerceAtLeast(3)
         unitsToKillForCiv[attacker.civID] = unitsToKill
 
         // Ask for assistance
