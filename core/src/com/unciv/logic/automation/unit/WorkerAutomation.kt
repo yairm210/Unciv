@@ -397,7 +397,7 @@ class WorkerAutomation(
                     && tile.improvementFunctions.canBuildImprovement(it.value, gameContext)
                 // Properly exclude removing forest and jungle tiles from potentialTileImprovements.
                     && !(UncivGame.Current.settings.stopAutomatedWorkersRemoveVegetation &&
-                        tile.terrainHasUnique(UniqueType.Vegetation) &&
+                        tile.lastTerrain.isVegetation &&
                         it.value.name.startsWith(Constants.remove) &&
                         civInfo.isHuman()) // Make sure to only apply this to player automated workers.
         }
