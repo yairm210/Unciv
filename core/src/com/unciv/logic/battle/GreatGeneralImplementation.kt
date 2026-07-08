@@ -26,20 +26,19 @@ object GreatGeneralImplementation {
      *
      * Used by [BattleDamage.getGeneralModifiers].
      *
-     * @return A pair of unit's name and bonus (percentage) as Int (typically 15), or 0 if no applicable Great General equivalents found
+     * @return A map of unit names and bonuses (percentage) as Int (typically 15)
      */
     @Readonly
     fun getGreatGeneralBonus(
         ourUnitCombatant: MapUnitCombatant,
         enemy: ICombatant,
         combatAction: CombatAction
-    ): Pair<List<String>, List<Int>> {
+    ): Map<String, Int> {
         val unit = ourUnitCombatant.unit
         val civInfo = ourUnitCombatant.unit.civ
         val allGenerals = civInfo.units.getCivUnits()
-            .filter { it.cache.hasStrengthBonusInRadiusUnique }
-            .filter { it != unit }
-        if (allGenerals.none()) return Pair(emptyList(), emptyList())
+            .filter { it.cache.hasStrengthBonusInRadiusUnique && it != unit }
+        if (allGenerals.none()) return emptyMap()
 
         val greatGenerals = allGenerals
             .flatMap { general ->
@@ -53,17 +52,14 @@ object GreatGeneralImplementation {
                 // optimization for the most common case, as this function is only called for `MapUnitCombatant`s
                 it.general.currentTile.aerialDistanceTo(unit.getTile()) <= it.radius
                         && (it.filter == "Military" || unit.matchesFilter(it.filter))
-            }.groupBy { it.general }
-        val greatGeneral = mutableMapOf<String, Int>()
-        for (general in greatGenerals) {
-            greatGeneral[general.key.name] = (greatGeneral[general.key.name] ?:0)
-                .coerceAtLeast( general.value.maxOf { 
-                    if (unit.hasUnique(UniqueType.GreatGeneralProvidesDoubleCombatBonus, checkCivInfoUniques = true)
-                    && it.general.isGreatPersonOfType("War")) it.bonus*2
-                    else it.bonus })
-        }
+            }.groupBy { it.general.name }
+            .mapValues { (general, bonusDataList) ->
+                bonusDataList.maxOf { if (unit.hasUnique(UniqueType.GreatGeneralProvidesDoubleCombatBonus, checkCivInfoUniques = true) && it.general.isGreatPersonOfType("War"))
+                    it.bonus * 2
+                else it.bonus }
+            }.mapKeys { it.key }
 
-        return Pair(greatGeneral.keys.toList(), greatGeneral.values.toList())
+        return greatGenerals
     }
 
     /**
