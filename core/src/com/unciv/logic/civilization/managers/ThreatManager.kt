@@ -94,7 +94,7 @@ class ThreatManager(val civInfo: Civilization) {
         // The list of tiles with distance that will be stored in distanceToClosestEnemyTiles
         val tileDataTilesWithEnemies: MutableList<Pair<Tile,Int>> = if (tileData?.tilesWithEnemies != null) tileData.tilesWithEnemies else mutableListOf()
 
-        if (tileData != null && tileData.distanceSearched >= maxDist) {
+        if (tileData != null) {
             // Add all tiles that we have previously found
             val tilesWithEnemiesIterator = tileDataTilesWithEnemies.listIterator()
             for (tileWithDistance in tilesWithEnemiesIterator) {
