@@ -89,7 +89,7 @@ object DeclareWarPlanEvaluator {
             motivation -= 20f
         }
 
-        val targetForce = target.getStatForRanking(RankingType.Force) - 0.8f * target.getCivsAtWarWith().sumOf { it.getStatForRanking(RankingType.Force) }.coerceAtLeast(100)
+        val targetForce = (target.getStatForRanking(RankingType.Force) - 0.8f * target.getCivsAtWarWith().sumOf { it.getStatForRanking(RankingType.Force) }).coerceAtLeast(100f)
         val civForce = civInfo.getStatForRanking(RankingType.Force)
 
         // They need to be at least half the targets size, and we need to be stronger than the target together
