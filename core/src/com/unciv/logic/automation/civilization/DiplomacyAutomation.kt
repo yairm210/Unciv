@@ -103,7 +103,7 @@ object DiplomacyAutomation {
         // Goes from 0 to -50 as more civs die
         // this is meant to prevent the game from stalemating when a group of friends
         // conquers all oposition
-        motivation -= deadCivs / allCivs * 50
+        motivation -= 50f * deadCivs / allCivs
 
         // Become more desperate as we have more wars
         motivation += civInfo.diplomacy.values.count { it.otherCiv.isMajorCiv() && it.diplomaticStatus == DiplomaticStatus.War } * 10
