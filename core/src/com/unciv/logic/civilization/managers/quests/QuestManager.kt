@@ -279,10 +279,10 @@ class QuestManager : IsPartOfGameInfoSerialization {
             && civ.cityStateFunctions.getNumThreateningBarbarians() >= 2) {
 
             civ.forEachKnownCiv {
-                if (it.isMajorCiv()
-                    && it.isAlive()
-                    && !it.isAtWarWith(civ)
-                    && it.getProximity(civ) <= Proximity.Far
+                if (!it.isMajorCiv()
+                    || !it.isAlive()
+                    || it.isAtWarWith(civ)
+                    || it.getProximity(civ) > Proximity.Far
                 ) return@forEachKnownCiv
                 it.addNotification(
                     "[${civ.civName}] is being invaded by Barbarians! Destroy Barbarians near their territory to earn Influence.",
