@@ -1,3 +1,26 @@
+## 4.20.19
+
+Hopefully resolved  - run actual audio code (play/dispose) on the GL thread
+
+Resolved  - Nation and Style no longer "fight" over the same image when the same style is shared between different nations
+
+4.20.18-patch1
+
+fix: Removed bad short-circuit - even for units with no movement, PathsToTilesWithinTurn should contain the current tile 
+
+fix(ci): Retry transient .aab compilation due to OOM
+
+By Angais:
+- Fix city population tile unassignment ignoring tile rank 
+- Fix cached threat search extension dropping closer enemy tiles 
+- Fix unit healing turn check 
+- Fix AddInCapital city center clearing 
+- Fix great person escort target selection 
+- Fix dead civs friendship modifier 
+- Fix barbarian invasion quest notifications 
+- Fix city-state war quest kill target 
+- Fix cached threat search extension dropping closer enemy tiles 
+
 ## 4.20.18
 
 Conditional worker uniques no longer cause crashes when disabled
