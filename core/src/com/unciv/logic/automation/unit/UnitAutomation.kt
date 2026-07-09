@@ -23,6 +23,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
+import kotlin.math.ceil
 import yairm210.purity.annotations.Readonly
 import com.unciv.logic.automation.Timers.Companion.timeThis
 
@@ -423,7 +424,8 @@ object UnitAutomation {
         if (!(unit.getTile().isCityCenter() && unit.getTile().getCity()!!.health > 50)
             && unit.civ.threatManager.getDistanceToClosestEnemyUnit(unit.getTile(), noEnemyDistance) <= noEnemyDistance) return false
 
-        val healthRequiredPerTurn =  (100 - unit.health) / turns
+        // Round up, otherwise e.g. 99 health over 2 turns would give 0 required healing per turn
+        val healthRequiredPerTurn = ceil((100 - unit.health).toFloat() / turns).toInt()
         return healthRequiredPerTurn <= unit.rankTileForHealing(unit.getTile())
     }
 
