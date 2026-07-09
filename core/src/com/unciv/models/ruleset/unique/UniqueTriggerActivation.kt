@@ -825,7 +825,9 @@ object UniqueTriggerActivation {
                 ) return null
 
 
-                val randomValue = tileBasedRandom.nextInt(unique.params[0].toInt(), unique.params[1].toInt())
+                val firstValue = unique.params[0].toInt()
+                val secondValue = unique.params[1].toInt()
+                val randomValue = (minOf(firstValue, secondValue)..maxOf(firstValue, secondValue)).random(tileBasedRandom)
                 val finalStatAmount = if (unique.isModifiedByGameSpeed()) (randomValue * civInfo.gameInfo.speed.statCostModifiers[stat]!!).roundToInt()
                                             else randomValue
 
