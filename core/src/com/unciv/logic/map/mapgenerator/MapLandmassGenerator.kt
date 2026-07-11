@@ -7,9 +7,12 @@ import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.math.E
 import kotlin.math.abs
+import kotlin.math.atan2
+import kotlin.math.hypot
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
+import kotlin.math.sin
 import kotlin.math.sqrt
 
 class MapLandmassGenerator(
@@ -59,6 +62,7 @@ class MapLandmassGenerator(
             MapType.lakes -> createLakes()
             MapType.boreal -> createBoreal()
             MapType.smallContinents -> createSmallContinents()
+            MapType.spiral -> createSpiral()
         }
 
         if (tileMap.mapParameters.shape == MapShape.flatEarth) {
@@ -187,6 +191,34 @@ class MapLandmassGenerator(
             
             val broadLayerImpact = 0.55
             elevation += broadLayerImpact * randomness.getPerlinNoise(tile, broadNoiseSeed, scale=broadNoiseScale)
+            spawnLandOrWater(tile, elevation)
+        }
+    }
+    
+    private fun createSpiral() {
+        val elevationSeed = randomness.RNG.nextInt().toDouble()
+        val radius = tileMap.mapParameters.mapSize.radius.toDouble()
+        val flipX = if (randomness.RNG.nextBoolean()) -1 else 1
+        val flipY = if (randomness.RNG.nextBoolean()) -1 else 1
+        val coordinateDivisor = tileMap.width // prevent stretching of spiral
+        
+        // config
+        val spinFactor = 4.5 * sqrt(radius) // how quickly the spiral spins
+        val noiseScale = 0.5 * sqrt(radius) // lower means more grainy noise
+        
+        for (tile in tileMap.values) {
+            val coordinate = HexMath.hex2WorldCoords(tile.position)
+            val x = coordinate.x / coordinateDivisor * flipX
+            val y = coordinate.y / coordinateDivisor * flipY
+            
+            // spiral function with output range -1 to +1
+            var elevation = sin(atan2(y, x) - spinFactor * hypot(x, y))
+            
+            // config
+            elevation *= 0.25 // adjust range
+            elevation += 0.15 // water level
+            elevation += 0.18 * randomness.getPerlinNoise(tile, elevationSeed, scale=noiseScale)
+            
             spawnLandOrWater(tile, elevation)
         }
     }
