@@ -1348,8 +1348,13 @@ object UniqueTriggerActivation {
                         tile.tileResource = null
                         tile.resourceAmount = 0
                     }
-                    // Remove the original improvement to prevent mismatch
-                    tile.removeImprovement()
+                    // Remove the original improvement if mismatched
+                    val tileImprovement = tile.tileImprovement
+                    if (tileImprovement != null) {
+                        if (!resource.isImprovedBy(tileImprovement)) {
+                            tile.removeImprovement()
+                        }
+                    }
                     // Same deal as the place resource command
                     tile.setTileResource(resource, majorDeposit = false)
                     tile.getOwner()?.cache?.updateCivResources()
