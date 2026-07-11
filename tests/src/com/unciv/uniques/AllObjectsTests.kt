@@ -2,16 +2,14 @@ package com.unciv.uniques
 
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.EventChoice
-import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.TestCase
+import com.unciv.testing.runTestParcours
 import com.unciv.ui.screens.civilopediascreen.ICivilopediaText
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.util.Collections
-import java.util.IdentityHashMap
 
 @RunWith(GdxTestRunner::class)
 class AllObjectsTests {
@@ -23,36 +21,45 @@ class AllObjectsTests {
     }
 
     @Test
-    fun `ruleset all functions should not return duplicate object references`() {
-        var success = true
-
-        for (baseRuleset in BaseRuleset.entries) {
-            val ruleset = RulesetCache[baseRuleset.fullName]!!
-            if (!testRuleset(ruleset, ruleset.allRulesetObjects(), "allRulesetObjects") { it.name })
-                success = false
-            if (!testRuleset(ruleset, ruleset.allICivilopediaText(), "allICivilopediaText", ::civilopediaEntryName))
-                success = false
-            if (!testRuleset(ruleset, ruleset.allUniques(), "allUniques") { it.text })
-                success = false
+    fun `allRulesetObjects should not return duplicate references`() {
+        runTestParcours("allRulesetObjects duplicate references", *baseRulesetTestCases()) { baseRuleset ->
+            RulesetCache[baseRuleset.fullName]!!.allRulesetObjects()
+                .findDuplicateReferences()
+                .map { it.name }
         }
-
-        assertTrue("Ruleset all-functions should not return the same instance more than once", success)
     }
+
+    @Test
+    fun `allICivilopediaText should not return duplicate references`() {
+        runTestParcours("allICivilopediaText duplicate references", *baseRulesetTestCases()) { baseRuleset ->
+            RulesetCache[baseRuleset.fullName]!!.allICivilopediaText()
+                .findDuplicateReferences()
+                .map { civilopediaEntryName(it) }
+        }
+    }
+
+    @Test
+    fun `allUniques should not return duplicate references`() {
+        runTestParcours("allUniques duplicate references", *baseRulesetTestCases()) { baseRuleset ->
+            RulesetCache[baseRuleset.fullName]!!.allUniques()
+                .findDuplicateReferences()
+                .map { it.text }
+        }
+    }
+
+    private fun baseRulesetTestCases() =
+        BaseRuleset.entries.map { TestCase(it, emptyList<String>()) }.toTypedArray()
 
     private fun civilopediaEntryName(entry: ICivilopediaText) =
         if (entry is EventChoice) entry.text else entry.makeLink()
 
-    private fun <T : Any> testRuleset(
-        ruleset: Ruleset,
-        entries: Sequence<T>,
-        functionName: String,
-        entryName: (T) -> String
-    ): Boolean {
-        val seen = Collections.newSetFromMap(IdentityHashMap<T, Boolean>())
-        val duplicates = entries.filter { !seen.add(it) }.toList()
-        for (duplicate in duplicates) {
-            println("Function $functionName delivered duplicate ${duplicate::class.simpleName} ${entryName(duplicate)} for ${ruleset.name}.")
+    private fun <T : Any> Sequence<T>.findDuplicateReferences(): List<T> {
+        val seen = mutableListOf<T>()
+        val duplicates = mutableListOf<T>()
+        for (entry in this) {
+            if (seen.any { it === entry }) duplicates.add(entry)
+            else seen.add(entry)
         }
-        return duplicates.isEmpty()
+        return duplicates
     }
 }
