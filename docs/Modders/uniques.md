@@ -3692,7 +3692,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
-??? example  "&lt;in cities with [positiveAmount] [populationFilter]&gt;"
+??? example  "&lt;in cities with [nonNegativeAmount] [populationFilter]&gt;"
 	Example: "&lt;in cities with [3] [Followers of this Religion]&gt;"
 
 	Applicable to: Conditional
@@ -3786,7 +3786,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
-??? example  "&lt;when above [positiveAmount] movement&gt;"
+??? example  "&lt;when above [nonNegativeAmount] movement&gt;"
 	Example: "&lt;when above [3] movement&gt;"
 
 	Applicable to: Conditional

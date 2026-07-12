@@ -1,26 +1,12 @@
-## 4.20.20
+## 4.21.0
 
-eo and tok language support   ()
-
-By SomeTroglodyte:
-- Personalities displayed in Civilopedia 
-- Reorder GL thread decoupling for MusicController.playOverlay 
+Personalities displayed in Civilopedia - By SomeTroglodyte 
 
 Reworked VictoryScreen - By cy-elec
 
-Allow for 0 as a parameter for uniques looking for a number or above - By SeventhM
+Modding: Allow for 0 as a parameter for uniques looking for a number or above - By SeventhM
 
-By Angais:
-- Fix nuke AI fallout check using ground zero tile instead of affected tile 
-- Fix integer division in settler location ring weighting 
-- Fix mediated peace treaty duration and countdown 
-- Fix previous owner cloning 
-- Fix join-war target force applying lower bound to enemy force sum 
-- Fix inverted motivation term in join-war trust penalty 
-- Fix crosshair overlay creation 
-- Fix AI peace city health check 
-- Fix inverse personality modifier scaling 
-- Fix spy deselection crash 
+Many, many small fixes - By Angais (with LLM assist)
 
 Avoid duplicate EventChoice entries in allICivilopediaText - By xplon
 
