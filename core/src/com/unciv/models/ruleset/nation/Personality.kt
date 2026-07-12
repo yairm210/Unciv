@@ -130,7 +130,7 @@ class Personality: RulesetObject() {
      */
     @Readonly
     fun inverseModifierFocus(value: PersonalityValue, weight: Float): Float {
-        return 1f - (inverseScaledFocus(value) - 2) * weight
+        return 1f + (inverseScaledFocus(value) - 1) * weight
     }
 
     /**
