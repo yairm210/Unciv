@@ -75,7 +75,6 @@ enum class LocaleCode(
     Spanish("es-ES"),
     Swedish("sv-SE"),
     Thai("th-TH"),
-    TokiPona("tok", languageName = "Toki_Pona"),
     TraditionalChinese("zh-TW", languageName = "Traditional_Chinese"),
     Turkish("tr-TR"),
     Ukrainian("uk-UA"),
