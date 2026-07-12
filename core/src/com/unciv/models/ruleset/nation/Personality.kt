@@ -1,53 +1,29 @@
 package com.unciv.models.ruleset.nation
 
 import com.unciv.Constants
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.ui.objectdescriptions.NationDescriptions.getCivilopediaTextHeaderImpl
+import com.unciv.ui.objectdescriptions.NationDescriptions.getCivilopediaTextLinesImpl
+import com.unciv.ui.objectdescriptions.NationDescriptions.getShortDescription
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
-import kotlin.reflect.KMutableProperty0
 
 /**
- * Type of Personality focus. Typically ranges from 0 (no focus) to 10 (double focus)
+ *  A Leader Personality as defined in Personalities.json
+ *
+ *  * Linked to a Nation via [Nation.personality]
+ *  * Contains biases for stats ([production]..[faith]) and others ([military]..[denounceWillingness])
+ *  * These biases can be indexed with a [PersonalityValue] as key, [get]/[set]
+ *  * Defines [preferredVictoryType]
+ *  * Defines Policy preferences in [priorities]
+ *  * Can have [civilopediaText], but not [uniques] (effect not implemented, guarded by `RulesetValidator`)
+ *  * API: [scaledFocus], [inverseScaledFocus], [inverseModifierFocus], [scaleStats]
  */
-enum class PersonalityValue {
-    // Stat focused personalities
-    Production,
-    Food,
-    Gold,
-    Science,
-    Culture,
-    Happiness,
-    Faith,
-    // Behaviour focused personalities
-    Military, // Building a military but not nessesarily using it
-    Aggressive, // How they use units agressively or defensively in wars, our their priority on war related buildings
-    DeclareWar, // Likelyhood of declaring war and acceptance of war mongering, a zero means they won't declare war at all
-    Commerce, // Trading frequency, open borders and liberating city-states, less negative diplomacy impact
-    Diplomacy, // Likelyhood of signing friendship, defensive pact, peace treaty and other diplomatic actions
-    Loyal, // Likelyhood to make a long lasting aliance with another civ and join wars with them
-    Expansion, // Founding/capturing new cities, opposite of a cultural victory
-    DenounceWillingness; // Eagerness to denounce other civs
-
-    companion object  {
-        @Pure
-        operator fun get(stat: Stat): PersonalityValue {
-            return when (stat) {
-                Stat.Production -> Production
-                Stat.Food -> Food
-                Stat.Gold -> Gold
-                Stat.Science -> Science
-                Stat.Culture -> Culture
-                Stat.Happiness -> Happiness
-                Stat.Faith -> Faith
-            }
-        }
-    }
-}
-
-class Personality: RulesetObject() {
+class Personality : RulesetObject() {
     var production: Float = 5f
     var food: Float = 5f
     var gold: Float = 5f
@@ -70,25 +46,7 @@ class Personality: RulesetObject() {
     var isNeutralPersonality: Boolean = false
 
     @Pure
-    private fun nameToVariable(value: PersonalityValue): KMutableProperty0<Float> {
-        return when(value) {
-            PersonalityValue.Production -> ::production
-            PersonalityValue.Food -> ::food
-            PersonalityValue.Gold -> ::gold
-            PersonalityValue.Science -> ::science
-            PersonalityValue.Culture -> ::culture
-            PersonalityValue.Happiness -> ::happiness
-            PersonalityValue.Faith -> ::faith
-            PersonalityValue.Military -> ::military
-            PersonalityValue.Aggressive -> ::aggressive
-            PersonalityValue.DeclareWar -> ::declareWar
-            PersonalityValue.Commerce -> ::commerce
-            PersonalityValue.Diplomacy -> ::diplomacy
-            PersonalityValue.Loyal -> ::loyal
-            PersonalityValue.Expansion -> ::expansion
-            PersonalityValue.DenounceWillingness -> ::denounceWillingness
-        }
-    }
+    private fun nameToVariable(value: PersonalityValue) = value.getProperty(this)
 
     companion object {
         val neutralPersonality: Personality by lazy {
@@ -151,8 +109,13 @@ class Personality: RulesetObject() {
 
     override fun getUniqueTarget() = UniqueTarget.Personality
 
+    ////// Civilopedia //////
     override fun makeLink(): String {
-        return ""
+        return "Personality/$name"
     }
-
+    override fun getIconName() = ""
+    override fun getCivilopediaTextHeader() = getCivilopediaTextHeaderImpl()
+    override fun getCivilopediaTextLines(ruleset: Ruleset) = getCivilopediaTextLinesImpl(ruleset)
+    /** Used in Nation Civilopedia UI */
+    override fun toString() = getShortDescription()
 }
