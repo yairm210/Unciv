@@ -83,7 +83,7 @@ object DeclareWarPlanEvaluator {
         // We need to be able to trust the thirdCiv at least somewhat
         if (thirdCivDiplo.diplomaticStatus != DiplomaticStatus.DefensivePact &&
             thirdCivDiplo.opinionOfOtherCiv() + motivation * 2 < 80) {
-            motivation -= 80f - thirdCivDiplo.opinionOfOtherCiv() + motivation * 2
+            motivation -= 80f - (thirdCivDiplo.opinionOfOtherCiv() + motivation * 2)
         }
         if (!civToJoin.threatManager.getNeighboringCivilizations().contains(target)) {
             motivation -= 20f
