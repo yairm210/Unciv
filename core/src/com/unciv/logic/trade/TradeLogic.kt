@@ -201,7 +201,7 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
                     val trade = Trade()
                     val peaceOffer = TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty, speed = from.gameInfo.speed)
                     trade.ourOffers.add(peaceOffer)
-                    trade.theirOffers.add(peaceOffer.copy())
+                    trade.theirOffers.add(peaceOffer)
                     
                     val thirdCiv = from.gameInfo.getCivilization(offer.name)
                     val tradePartnerDiplo = from.getDiplomacyManager(thirdCiv)!!
