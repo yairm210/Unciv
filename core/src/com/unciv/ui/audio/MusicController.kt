@@ -647,15 +647,17 @@ class MusicController {
         // newMusic() is GL-thread-safe (no OpenAL calls), so loading can happen here on any thread.
         // play() and dispose() make OpenAL calls, so those must run on the GL thread.
         val controller = MusicTrackController(volume, initialFadeVolume = if (fadeIn) 0f else 1f)
-        controller.load(file) {
+        controller.load(file) { newOverlay ->
+            val oldOverlay = overlay
+            overlay = null
+            newOverlay.music?.isLooping = isLooping
             Concurrency.runOnGLThread {
-                clearOverlay()
-                it.music?.isLooping = isLooping
-                it.play()
+                oldOverlay?.clear()
+                newOverlay.play()
                 //todo Needs to be called even when no fade desired to correctly set state - Think about changing that
-                it.startFade(MusicTrackController.State.FadeIn)
-                overlay = it
+                newOverlay.startFade(MusicTrackController.State.FadeIn)
             }
+            overlay = newOverlay
         }
     }
 
