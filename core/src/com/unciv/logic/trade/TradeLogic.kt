@@ -199,9 +199,9 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
                 TradeOfferType.PeaceProposal -> {
                     // Convert PeaceProposal to peaceTreaty and apply to warring civs
                     val trade = Trade()
-                    val peaceOffer = TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty, duration = offer.duration)
+                    val peaceOffer = TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty, speed = from.gameInfo.speed)
                     trade.ourOffers.add(peaceOffer)
-                    trade.theirOffers.add(peaceOffer)
+                    trade.theirOffers.add(peaceOffer.copy())
                     
                     val thirdCiv = from.gameInfo.getCivilization(offer.name)
                     val tradePartnerDiplo = from.getDiplomacyManager(thirdCiv)!!
@@ -211,7 +211,7 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
                     }
 
                     thirdCiv.getDiplomacyManager(from)!!.apply {
-                        trades.add(trade)
+                        trades.add(trade.reverse())
                         updateHasOpenBorders()
                     }
 
