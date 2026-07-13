@@ -46,6 +46,10 @@ import java.util.concurrent.atomic.AtomicReference
  * [UnitMovement.getDistanceToTiles], [AStar], [MapPathing.getPath], [MapPathing.getConnection], and
  * [MapPathing.getRoadPath].
  *
+ * Debugging help:
+ * - Set [VERBOSE_PATHFINDING_LOGS] to [ALWAYS_LOG] or to a specific starting coordinate.
+ * - Use [toDebugString] in a quick-watch
+ *
  * Future plans:
  * - createCityExpansionPathing
  *   - Useful for [UseGoldAutomation.maybeBuyCityTiles]
@@ -396,7 +400,8 @@ class PathingMap(
         @Suppress("unused")
         @VisibleForTesting
         val NEVER_LOG: HexCoord = HexCoord(0xFFFF,0xFFFF)
-        // can temporarily set this to a unit, civ, or tile position, to enable verbose logging for that thing's pathfinding
+        /** You can temporarily set this to a tile position, e.g. a unit's, or to [ALWAYS_LOG],
+         *  to enable verbose logging for that thing's pathfinding or for everything */
         @VisibleForTesting
         val VERBOSE_PATHFINDING_LOGS: HexCoord = NEVER_LOG
 
