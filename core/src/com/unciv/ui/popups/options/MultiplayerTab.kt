@@ -3,6 +3,7 @@ package com.unciv.ui.popups.options
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.Constants
@@ -19,6 +20,8 @@ import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.UncivTextField
+import com.unciv.ui.images.IconTextButton
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.options.MultiplayerSelectBoxHelpers.RefreshSelectOptions
 import com.unciv.ui.popups.AuthPopup
 import com.unciv.ui.popups.Popup
@@ -167,29 +170,39 @@ internal class MultiplayerTab(
             )
             passwordTextField.isPasswordMode = true
 
-            val togglePasswordVisibilityButton = "Show".toTextButton()
-            togglePasswordVisibilityButton.onClick {
+            val passwordTable = Table()
+
+            val showPasswordButton = IconTextButton("Show", ImageGetter.getImage("OtherIcons/ShowPassword"))
+            val hidePasswordButton = IconTextButton("Hide", ImageGetter.getImage("OtherIcons/HidePassword"))
+
+            fun togglePasswordVisibility() {
                 passwordTextField.isPasswordMode = !passwordTextField.isPasswordMode
-                val nextVisibilityMode = if (passwordTextField.isPasswordMode) "Show" else "Hide"
-                togglePasswordVisibilityButton.setText(nextVisibilityMode)
+                if (passwordTextField.isPasswordMode) {
+                    hidePasswordButton.remove()
+                    passwordTable.add(showPasswordButton)
+                } else {
+                    showPasswordButton.remove()
+                    passwordTable.add(hidePasswordButton)
+                }
+                passwordTable.invalidate()
             }
 
-            val passwordTable = Table()
+            showPasswordButton.onClick(::togglePasswordVisibility)
+            hidePasswordButton.onClick(::togglePasswordVisibility)
             
-            passwordTable.add("Set password".toLabel())
+            serverIpTable.add("Set password".toLabel())
                 .colspan(2)
+                .padTop(24f)
                 .padBottom(Constants.defaultFontSize / 2.0f)
                 .row()
 
             passwordTable.add(passwordTextField)
                 .padRight(Constants.defaultFontSize.toFloat())
                 .growX()
-            passwordTable.add(togglePasswordVisibilityButton)
-                .row()
+            passwordTable.add(showPasswordButton)
             
             serverIpTable.add(passwordTable)
                 .colspan(2)
-                .padTop(24f)
                 .padBottom(8f)
                 .growX()
                 .row()

@@ -649,7 +649,7 @@ HexaRealm tileset images by legacymtgsalvationuser69544 [here](https://github.co
 
 ### Promotions
 
--   [Sight](https://thenounproject.com/icon/sight-2631027) By Jejen Juliansyah Nur Agung for Scouting
+-   [Sight](https://thenounproject.com/icon/sight-2631027) By Jejen Juliansyah Nur Agung for Scouting, ShowPassword, HidePassword
 -   [skill bow rain arrow](https://thenounproject.com/icon/rain%20of%20arrows-2360192) by Maxicons for Barrage
 -   [Bomb](https://thenounproject.com/icon/bombardment-1705276) By Angelo Troiano for Bombardment
 -   [Private E2](https://thenounproject.com/yeongrong.kim.5/collection/miltary-rank/?i=833152) By Yeong Rong Kim for Shock
