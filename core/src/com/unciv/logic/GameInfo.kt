@@ -456,7 +456,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             val turnStart: Instant  = Instant.ofEpochMilli(currentTurnStartTime)
             val timeUsed = Duration.between(turnStart, Instant.now()).toMinutes().toInt()
             val timeRegained = if (shouldGainTime) gameParameters.minutesRecoveredPerTurn else 0
-            val rawNewTime = player.playerMinutesBeforeForceResign + timeUsed - timeRegained
+            val rawNewTime = player.playerMinutesBeforeForceResign - timeUsed + timeRegained
             val maxNewTime = gameParameters.minutesUntilForceResign
             player.playerMinutesBeforeForceResign = rawNewTime.coerceIn(0, maxNewTime)
     }
