@@ -58,8 +58,7 @@ open class UniqueMap() {
 
     // 160ms vs 1000-1250ms/30s
     @Readonly
-    @Deprecated(message = "forEachUnique is faster. If not viable, then this can still be used",
-        replaceWith = ReplaceWith("forEachUnique"))
+    /** forEachUnique is faster, for cases that require high perf */
     fun getUniques(uniqueType: UniqueType) = typedUniqueMap[uniqueType]
         ?.asSequence()
         ?: emptySequence()
@@ -72,15 +71,13 @@ open class UniqueMap() {
     }
 
     @Readonly
-    @Deprecated(message = "forEachTagUnique is faster. If not viable, then this can still be used",
-        replaceWith = ReplaceWith("forEachTagUnique"))
+    /** forEachTagUnique is faster, for cases that require high perf */
     fun getTagUniques(uniqueTag: String) = tagUniqueMap[uniqueTag]
         ?.asSequence()
         ?: emptySequence()
 
     @Readonly
-    @Deprecated(message = "forEachMatchingUnique is faster. If not viable, then this can still be used",
-        replaceWith = ReplaceWith("forEachMatchingUnique"))
+    /** forEachMatchingUnique faster, for cases that require high perf */ 
     fun getMatchingUniques(uniqueType: UniqueType, state: GameContext = GameContext.EmptyState) = 
         getUniques(uniqueType)
             // Same as .filter | .flatMap, but more cpu/mem performant (7.7 GB vs ?? for test)
@@ -102,8 +99,7 @@ open class UniqueMap() {
     }
 
     @Readonly
-    @Deprecated(message = "forEachMatchingTagUnique is faster. If not viable, then this can still be used",
-        replaceWith = ReplaceWith("forEachMatchingTagUnique"))
+    /** forEachMatchingTagUnique faster, for cases that require high perf */
     fun getMatchingTagUniques(uniqueTag: String, state: GameContext = GameContext.EmptyState) =
         getTagUniques(uniqueTag)
             // Same as .filter | .flatMap, but more cpu/mem performant (7.7 GB vs ?? for test)

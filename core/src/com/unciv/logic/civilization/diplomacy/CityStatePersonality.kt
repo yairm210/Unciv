@@ -5,4 +5,8 @@ enum class CityStatePersonality {
     Neutral,
     Hostile,
     Irrational
+    ;
+    companion object {
+        fun safeValueOf(name: String?) = entries.firstOrNull { it.name == name }
+    }
 }

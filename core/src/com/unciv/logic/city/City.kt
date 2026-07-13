@@ -177,6 +177,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         toReturn.isBeingRazed = isBeingRazed
         toReturn.attackedThisTurn = attackedThisTurn
         toReturn.foundingCiv = foundingCiv
+        toReturn.previousOwner = previousOwner
         toReturn.turnAcquired = turnAcquired
         toReturn.isPuppet = isPuppet
         toReturn.isOriginalCapital = isOriginalCapital
@@ -192,7 +193,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         return toReturn
     }
 
-    @Readonly fun canBombard() = !attackedThisTurn && !isInResistance()
+    @Readonly fun canBombard() = getBombardRange() > 0 && !attackedThisTurn && !isInResistance()
     @Readonly fun getCenterTile(): Tile = centerTile
     @Readonly fun getCenterTileOrNull(): Tile? = if (::centerTile.isInitialized) centerTile else null
     @Readonly fun getTiles(): Sequence<Tile> = tiles.asSequence().map { tileMap[it] }
@@ -272,28 +273,9 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     @Readonly fun getRuleset() = civ.gameInfo.ruleset
 
-    @Readonly fun getResourcesGeneratedByCity(resourceModifier: (TileResource) -> Float = ::getResourceModifier) = CityResources.getResourcesGeneratedByCity(this, resourceModifier)
+    @Readonly fun getResourcesGeneratedByCity() = CityResources.getResourcesGeneratedByCity(this)
     @Readonly fun getAvailableResourceAmount(resourceName: String) = CityResources.getAvailableResourceAmount(this, resourceName)
     @Readonly fun getAvailableResourceAmount(resource: TileResource) = CityResources.getAvailableResourceAmount(this, resource)
-
-    /**
-     * Returns the resource production modifier as a multiplier.
-     *
-     * For example: 1.0f means no change, 2.0f results in double production.
-     *
-     * @param resource The resource for which to calculate the modifier.
-     * @return The production modifier as a multiplier.
-     */
-    @Readonly
-    fun getResourceModifier(resource: TileResource): Float {
-        var finalModifier = 1f
-
-        for (unique in getMatchingUniques(UniqueType.PercentResourceProduction))
-            if (resource.matchesFilter(unique.params[1], state))
-                finalModifier += unique.params[0].toFloat() / 100f
-
-        return finalModifier
-    }
 
     @Readonly fun isGrowing() = foodForNextTurn() > 0
     @Readonly fun isStarving() = foodForNextTurn() < 0

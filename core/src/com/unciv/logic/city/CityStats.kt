@@ -117,7 +117,7 @@ class CityStats(val city: City) {
 
     @Readonly
     private fun getStatsFromProduction(production: Float): Stats? {
-        if (city.cityConstructions.currentConstructionName() in Stat.statsWithCivWideField.map { it.name }) {
+        if (Stat.isStat(city.cityConstructions.currentConstructionName())) {
             val stats = Stats()
             val stat = Stat.valueOf(city.cityConstructions.currentConstructionName())
             stats[stat] = production * getStatConversionRate(stat)
@@ -129,7 +129,7 @@ class CityStats(val city: City) {
     @Readonly
     fun getStatConversionRate(stat: Stat): Float {
         var conversionRate = 1 / 4f
-        val conversionUnique = city.civ.getMatchingUniques(UniqueType.ProductionToCivWideStatConversionBonus).firstOrNull { it.params[0] == stat.name }
+        val conversionUnique = city.civ.getMatchingUniques(UniqueType.ProductionToStatConversionBonus).firstOrNull { it.params[0] == stat.name }
         if (conversionUnique != null) {
             conversionRate *= conversionUnique.params[1].toPercent()
         }

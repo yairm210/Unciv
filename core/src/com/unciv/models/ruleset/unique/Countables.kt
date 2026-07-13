@@ -12,6 +12,7 @@ import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Cache
+import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 
 /**
@@ -165,11 +166,26 @@ enum class Countables(
     },
     
     FilteredBuildings("[buildingFilter] Buildings") {
+        // Since each filter matches a small subset of buildings,
+        //  and there can be lots of cities with lots of buildings,
+        //  it's faster to *pre-check* the filter *once* to find matching buildings
+        //  and then use that "list of matching buildings" for the count
+        @Cache private val filterToMatchingBuildingsCache = HashMap<String, Set<String>>()
+
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val filter = parameterText.getPlaceholderParameters()[0]
             val cities = gameContext.civInfo?.cities ?: return null
+            val ruleset = gameContext.gameInfo?.ruleset ?: return null
+            val matchingBuildings = filterToMatchingBuildingsCache.getOrPut(filter) {
+                ruleset.buildings.values.asSequence().filter { it.matchesFilter(filter) }.map { it.name }.toSet()
+            }
             return cities.sumOf { city ->
-                city.cityConstructions.getBuiltBuildings().count { it.matchesFilter(filter) }
+                // Pure time optimization, intersecting both ways gives the same result
+                val builtBuildings = city.cityConstructions.builtBuildings
+                if (matchingBuildings.size <= builtBuildings.size)
+                    matchingBuildings.count { it in builtBuildings }
+                else
+                    builtBuildings.count { it in matchingBuildings }
             }
         }
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
@@ -326,7 +342,7 @@ enum class Countables(
         override val example: String = "[Desert] Tiles"
     },
     TileResources {
-        override val documentationHeader = "Resource name - From [TileResources.json](3-Map-related-JSON-files.md#tileresourcesjson)"
+        override val documentationHeader = "Resource name - From [TileResources.json](Mod-file-structure/3-Map-related-JSON-files.md#tileresourcesjson)"
         override val documentationStrings = listOf(
             "Can be city stats or civilization stats, depending on where the unique is used",
             "For example: If a unique is placed on a building, then the retrieved resources will be of the city. If placed on a policy, they will be of the civilization.",

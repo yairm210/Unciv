@@ -135,19 +135,12 @@ fun <T> ArrayList<T?>.getOrPut(index: Int, getValue: () -> T): T {
     return value
 }
 
+@Readonly
 inline fun BitSet.forEachSetBit(action: (Int) -> Unit) {
     var bit = nextSetBit(0)
     while (bit >= 0) {
         action(bit)
         bit = nextSetBit(bit + 1)
-    }
-}
-
-inline fun BitSet.forEachClearBit(action: (Int) -> Unit) {
-    var bit = nextClearBit(0)
-    while (bit >= 0) {
-        action(bit)
-        bit = nextClearBit(bit + 1)
     }
 }
 

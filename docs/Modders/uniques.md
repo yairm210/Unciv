@@ -265,6 +265,23 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
+??? example  "Choose a music track for [param], [param], [param]"
+	Parameters are unchecked, strings not matching existing tracks or flags are ignored.
+
+	See [Context-sensitive music](Images-and-Audio.md#context-sensitive-music-overview)
+
+	The first parameter is the track name prefix, e.g. a Civilization name or "this civ".
+
+	The second parameter is a list of zero or more suffixes, comma-separated, used to specify a "mood", like Peace, War, Ambient etc. First track that matches wins.
+
+	The third parameter is a list of zero or more flags: PrefixMustMatch, SuffixMustMatch, SlowFade, PlaySingle, PlayDefaultFile.
+
+	Example: "Choose a music track for [Unknown], [Unknown], [Unknown]"
+
+	This unique is automatically hidden from users.
+
+	Applicable to: Triggerable
+
 ??? example  "Suppress warning [validationWarning]"
 	Allows suppressing specific validation warnings. Errors, deprecation warnings, or warnings about untyped and non-filtering uniques should be heeded, not suppressed, and are therefore not accepted. Note that this can be used in ModOptions, in the uniques a warning is about, or as modifier on the unique triggering a warning - but you still need to be specific. Even in the modifier case you will need to specify a sufficiently selective portion of the warning text as parameter.
 
@@ -671,13 +688,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "Enables conversion of city production to [civWideStat]"
-	Example: "Enables conversion of city production to [Gold]"
+??? example  "Enables conversion of city production to [stat]"
+	Example: "Enables conversion of city production to [Culture]"
 
 	Applicable to: Global
 
-??? example  "Production to [civWideStat] conversion in cities changed by [relativeAmount]%"
-	Example: "Production to [Gold] conversion in cities changed by [+20]%"
+??? example  "Production to [stat] conversion in cities changed by [relativeAmount]%"
+	Example: "Production to [Culture] conversion in cities changed by [+20]%"
 
 	Applicable to: Global
 
@@ -2676,8 +2693,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Terrain
 
 ??? example  "Vegetation"
-	This unique is automatically hidden from users.
-
 	Applicable to: Terrain, Improvement
 
 ??? example  "Tile provides yield without assigned population"
@@ -2895,8 +2910,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, Unit, Terrain, Improvement
 
 ??? example  "Vegetation"
-	This unique is automatically hidden from users.
-
 	Applicable to: Terrain, Improvement
 
 ??? example  "Tile provides yield without assigned population"
@@ -2978,6 +2991,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Improvement
 
 ??? example  "Provides a random bonus when entered"
+	Applicable to: Improvement
+
+??? example  "Marks a barbarian camp"
+	When several barbarian camp improvements are available, each new camp chooses one randomly.
+
+	This unique is automatically hidden from users.
+
 	Applicable to: Improvement
 
 ??? example  "Unpillagable"
@@ -3696,7 +3716,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
-??? example  "&lt;in cities with [positiveAmount] [populationFilter]&gt;"
+??? example  "&lt;in cities with [nonNegativeAmount] [populationFilter]&gt;"
 	Example: "&lt;in cities with [3] [Followers of this Religion]&gt;"
 
 	Applicable to: Conditional
@@ -3790,7 +3810,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
-??? example  "&lt;when above [positiveAmount] movement&gt;"
+??? example  "&lt;when above [nonNegativeAmount] movement&gt;"
 	Example: "&lt;when above [3] movement&gt;"
 
 	Applicable to: Conditional

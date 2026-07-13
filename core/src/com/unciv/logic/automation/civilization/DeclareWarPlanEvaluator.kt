@@ -83,13 +83,13 @@ object DeclareWarPlanEvaluator {
         // We need to be able to trust the thirdCiv at least somewhat
         if (thirdCivDiplo.diplomaticStatus != DiplomaticStatus.DefensivePact &&
             thirdCivDiplo.opinionOfOtherCiv() + motivation * 2 < 80) {
-            motivation -= 80f - thirdCivDiplo.opinionOfOtherCiv() + motivation * 2
+            motivation -= 80f - (thirdCivDiplo.opinionOfOtherCiv() + motivation * 2)
         }
         if (!civToJoin.threatManager.getNeighboringCivilizations().contains(target)) {
             motivation -= 20f
         }
 
-        val targetForce = target.getStatForRanking(RankingType.Force) - 0.8f * target.getCivsAtWarWith().sumOf { it.getStatForRanking(RankingType.Force) }.coerceAtLeast(100)
+        val targetForce = (target.getStatForRanking(RankingType.Force) - 0.8f * target.getCivsAtWarWith().sumOf { it.getStatForRanking(RankingType.Force) }).coerceAtLeast(100f)
         val civForce = civInfo.getStatForRanking(RankingType.Force)
 
         // They need to be at least half the targets size, and we need to be stronger than the target together

@@ -1,3 +1,149 @@
+## 4.21.0
+
+Personalities displayed in Civilopedia - By SomeTroglodyte 
+
+Reworked VictoryScreen - By cy-elec
+
+Modding: Allow for 0 as a parameter for uniques looking for a number or above - By SeventhM
+
+Many, many small fixes - By Angais (with LLM assist)
+
+Avoid duplicate EventChoice entries in allICivilopediaText - By xplon
+
+## 4.20.19
+
+Hopefully solved city-screen audio problems
+
+Nation and Style no longer "fight" over the same image when the same style is shared between different nations
+
+Many, many small fixes - By Angais (with LLM assist) 
+
+## 4.20.18
+
+Conditional worker uniques no longer cause crashes when disabled
+
+Improvement hotkeys can no longer trigger twice when 2 improvements have the same key
+
+Specific civ images override style images
+
+Resolved A* "units with no movement consider occupied tiles moveable to" bug
+
+City borders and city buttons no longer disappear near the south edge
+
+CPU improvements 
+
+By unciv-loof:
+- Add mirroring type to map editor
+- Reorder map types
+
+## 4.20.17
+
+CPU performance improvements
+
+fix: Avoid crash when removing encampments from map editor
+
+Adjust lake and coastline formation of Boreal map type - By unciv-loof
+
+Console: Allow setting strategic resource deposit amount - By SomeTroglodyte
+
+## 4.20.16
+
+By unciv-loof:
+- Cap force bonus from AdditionalAttacks based on movement points 
+- Fix German unique ability 
+- Fix force calculation when measuring military presence near border 
+
+Make "Barbarian encampment" improvement moddable - By SomeTroglodyte
+
+By BobbyCobby:
+- Clearer mod update icon
+
+Fix map preview crash when changing rulesets - By Angais
+
+## 4.20.15
+
+Improvements that cost stockpiled resources do so when starting construction, not on end, similar to buildings and units
+
+Memory reduction for large maps
+
+AI in Prince difficulty get no unit cost reduction (1:1 with human players)
+
+Require CreatesOneImprovement targets be owned by constructing city - By superdusto
+
+Resource overview tab improvements - By SomeTroglodyte  
+
+Modding: Fixed Personality uniques validation - By mvanhorn
+
+## 4.20.14
+
+Fix "black screen on next turn button"
+
+Context menu indicators no longer always visible
+
+City buttons center correctly on the tile on zoom-in
+
+Yields no longer overlaps population icons in cities
+
+By SomeTroglodyte:
+- Make gesture timings user-settable in Options-Advanced 
+- Fix "Choose a music track" triggerable in unique builder 
+- Fix city-states always have personality "Friendly" 
+
+Prevent automation from orphaning CreatesOneImprovement markers - By superdusto
+
+## 4.20.13
+
+Large memory performance improvements for large maps  
+
+Modding: show exact location of json file errors
+
+By SomeTroglodyte:
+- Context menu visual indicators 
+- Modding: Fixed "empty name" problems 
+- Fix expansion clearing barbarian camps leaving obsolete quests 
+- City buy tile context menu, to buy several tiles at once 
+
+Avoid centering on hidden wonder locations - By xplon
+
+Respect alternative promotion prerequisites in validation - By superdusto
+
+## 4.20.12
+
+By xplon:
+- Hide icons when translating spy names 
+- Warn about translatable ruleset name collisions 
+
+By SomeTroglodyte:
+- Improve context menu indicator size 
+- Console: `civ add` and `civ remove` commands 
+
+Add missing newline in advanced game settings - By unciv-loof
+
+## 4.20.11
+
+Fix double buttons for great people for constructing great improvements
+
+Fixed custom file directories on Android
+
+Approve values of 0 for certain mod constants in validator - By unciv-loof
+
+By SomeTroglodyte: 
+- Fix black outlines for Stat symbols in notifications
+- Fix TriggerUponLosingUnit 
+- Fix Android on screen keyboard show/hide
+- Minor CPU optimization
+
+Add "Vegetation" to Marsh - By EmperorPinguin
+
+## 4.20.10
+
+By SomeTroglodyte: 
+- Free policy notifications open policy screen 
+- A new triggerable Unique to choose a music track 
+- Better Scenario starts with fewer surprises 
+
+Boreal map type - By unciv-loof
+
 ## 4.20.9
 
 AIs no longer stop creating cities late-game

@@ -14,9 +14,9 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.HexMath
-import com.unciv.models.ruleset.nation.getContrastRatio
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.center
+import com.unciv.ui.components.extensions.getContrastRatio
 import com.unciv.ui.components.input.ClickableCircle
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
@@ -134,15 +134,13 @@ class GlobalPoliticsDiagramGroup(
         }
     }
 
-    private class DiagramLegendPopup(stage: Stage, diagram: Actor) : AnimatedMenuPopup(stage, diagram.getCenterInStageCoordinates()) {
+    private class DiagramLegendPopup(stage: Stage, diagram: Actor) : AnimatedMenuPopup(stage, diagram, Align.center) {
         init {
             touchable = Touchable.enabled
             onActivation { close() }
         }
 
         companion object {
-            private fun Actor.getCenterInStageCoordinates(): Vector2 = localToStageCoordinates(Vector2(width / 2, height / 2))
-
             const val lineWidth = 3f  // a little thicker than the actual diagram
             const val lowContrastWidth = 4f
             const val lineLength = 120f

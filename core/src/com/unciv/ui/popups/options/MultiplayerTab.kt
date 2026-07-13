@@ -163,8 +163,9 @@ internal class MultiplayerTab(
 
         if (mpServer.getFeatureSet().authVersion > 0) {
             val passwordTextField = UncivTextField(
-                mpSettings.getCurrentServerPassword() ?: "Password"
+                "Password", mpSettings.getCurrentServerPassword().orEmpty()
             )
+            passwordTextField.isPasswordMode = true
             val setPasswordButton = "Set password".toTextButton()
 
             serverIpTable.add("Set password".toLabel()).padTop(16f).colspan(2).row()

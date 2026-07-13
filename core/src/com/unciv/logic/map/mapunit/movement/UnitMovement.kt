@@ -146,7 +146,7 @@ class UnitMovement(val unit: MapUnit) {
      * Does not consider if the [destination] tile can actually be entered, use [canMoveTo] for that.
      * Returns an empty list if there's no way to get to the destination.
      */
-    @Readonly @Suppress("purity")
+    @Readonly
     fun getShortestPath(destination: Tile, avoidDamagingTerrain: Boolean = false): List<Tile> = timeThis<List<Tile>>("getShortestPath")  {
         if (unit.cache.cannotMove) return listOf()
         if (UncivGame.Current.settings.useAStarPathfinding)
@@ -268,7 +268,7 @@ class UnitMovement(val unit: MapUnit) {
 
     class UnreachableDestinationException(msg: String) : Exception(msg)
 
-    @Readonly @Suppress("purity")
+    @Readonly
     fun getTileToMoveToThisTurn(finalDestination: Tile): Tile {
         val currentTile = unit.getTile()
         if (currentTile == finalDestination) return currentTile
@@ -383,6 +383,7 @@ class UnitMovement(val unit: MapUnit) {
         // We can't swap with ourself
         if (reachableTile == unit.getTile()) return false
         if (unit.cache.cannotMove) return false
+        if (!unit.hasMovement()) return false  // A* incorrectly reports occupied tiles as reachable when movement==0
 
         // Check whether the tile contains a unit of the same type as us that we own and that can also reach our tile in its current turn.
         // When looking for escort formation swaps, however, the 'other' unit should be taken disregarding this unit's type.
@@ -399,6 +400,7 @@ class UnitMovement(val unit: MapUnit) {
         val ourPosition = unit.getTile()
         if (otherUnit.owner != unit.owner
             || otherUnit.cache.cannotMove  // redundant but faster, line below would cover it too
+            || !otherUnit.hasMovement()  // A* incorrectly reports occupied tiles as reachable when movement==0
             || !otherUnit.movement.canReachInCurrentTurn(ourPosition)) return false
 
         if (!canMoveTo(reachableTile, allowSwap = true)) return false
@@ -973,6 +975,7 @@ class PathfindingCache(private val unit: MapUnit) {
     }
 }
 
+/** Should contain current unit location even when it has no movement */
 class PathsToTilesWithinTurn : LinkedHashMap<Tile, UnitMovement.ParentTileAndTotalMovement>() {
     fun getPathToTile(tile: Tile): List<Tile> {
         if (!containsKey(tile)) {

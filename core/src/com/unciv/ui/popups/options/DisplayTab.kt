@@ -4,6 +4,7 @@ import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.unciv.GUI
+import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSettings.ScreenSize
 import com.unciv.models.skins.SkinCache
 import com.unciv.models.tilesets.TileSetCache
@@ -52,6 +53,9 @@ internal class DisplayTab(
         addCheckbox("Show minimap", settings::showMinimap, updateWorld = true)
         addCheckbox("Show tutorials", settings.showTutorials, updateWorld = true, newRow = false) { settings.showTutorials = it }
         addResetTutorials()
+        addCheckbox("Show long-press indicators", settings.showLongPressIndicators.toBoolean()) {
+            settings.showLongPressIndicators = GameSettings.LongPressIndicatorSetting.of(it)
+        }
         addCheckbox("Show zoom buttons in world screen", settings::showZoomButtons, true)
         addCheckbox("Never close popups by clicking outside", settings::forbidPopupClickBehindToClose)
         addCheckbox("Use circles to indicate movable tiles", settings::useCirclesToIndicateMovableTiles, updateWorld = true)
@@ -84,7 +88,6 @@ internal class DisplayTab(
 
         addHeader("Experimental")
 
-        addCheckbox("Experimental Demographics scoreboard", settings::useDemographics)
         addCheckbox("Animate Unit movement button", settings::unitMovementButtonAnimation)
         addCheckbox("Animate Unit actions menu", settings::unitActionsTableAnimation)
 
