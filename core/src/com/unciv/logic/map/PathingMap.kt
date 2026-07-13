@@ -410,7 +410,7 @@ class PathingMap(
             val name = if (!considerZoneOfControl) "createUnitPathingMapNoZoc"
                 else if (!includeEscortUnit) "createUnitPathingMapNoEscort"
                 else "createUnitPathingMap"
-            // These two precalculated because for some reason they're rediculously slow
+            // These two precalculated because for some reason they're ridiculously slow
             val selfFullMove = unit.getMaxMovement()
             val otherUntilFullMove = if (includeEscortUnit) unit.getOtherEscortUnit()?.getMaxMovement() ?: MAX_VALID_TURNS else MAX_VALID_TURNS
             val getCurrentCacheKey = {
