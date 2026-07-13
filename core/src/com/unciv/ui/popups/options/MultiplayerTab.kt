@@ -106,12 +106,12 @@ internal class MultiplayerTab(
         multiplayerServerTextField.onChange {
             fixTextFieldUrlOnType(multiplayerServerTextField)
 
-        try {
-            // we can't trim on 'fixTextFieldUrlOnType' for reasons
-            val uri = URI(multiplayerServerTextField.text.trimEnd('/'))
-            if (uri.scheme != "http" && uri.scheme != "https") {
-                throw Error("URL must start with http:// or https://")
-            }
+            try {
+                // we can't trim on 'fixTextFieldUrlOnType' for reasons
+                val uri = URI(multiplayerServerTextField.text.trimEnd('/'))
+                if (uri.scheme != "http" && uri.scheme != "https") {
+                    throw Error("URL must start with http:// or https://")
+                }
 
                 // URL has stricter validation than URI
                 settings.multiplayer.setServer(uri.toURL().toString())
@@ -166,10 +166,33 @@ internal class MultiplayerTab(
                 "Password", mpSettings.getCurrentServerPassword().orEmpty()
             )
             passwordTextField.isPasswordMode = true
-            val setPasswordButton = "Set password".toTextButton()
 
-            serverIpTable.add("Set password".toLabel()).padTop(16f).colspan(2).row()
-            serverIpTable.add(passwordTextField).colspan(2).growX().padBottom(8f).row()
+            val togglePasswordVisibilityButton = "Show".toTextButton()
+            togglePasswordVisibilityButton.onClick {
+                passwordTextField.isPasswordMode = !passwordTextField.isPasswordMode
+                val nextVisibilityMode = if (passwordTextField.isPasswordMode) "Show" else "Hide"
+                togglePasswordVisibilityButton.setText(nextVisibilityMode)
+            }
+
+            val passwordTable = Table()
+            
+            passwordTable.add("Set password".toLabel())
+                .colspan(2)
+                .padBottom(Constants.defaultFontSize / 2.0f)
+                .row()
+
+            passwordTable.add(passwordTextField)
+                .padRight(Constants.defaultFontSize.toFloat())
+                .growX()
+            passwordTable.add(togglePasswordVisibilityButton)
+                .row()
+            
+            serverIpTable.add(passwordTable)
+                .colspan(2)
+                .padTop(24f)
+                .padBottom(8f)
+                .growX()
+                .row()
 
             // initially assume no password
             val authStatusLabel = "Set a password to secure your userId".toLabel()
@@ -195,6 +218,7 @@ internal class MultiplayerTab(
                 }
             }
 
+            val setPasswordButton = "Set password".toTextButton()
             val passwordStatusTable = Table().apply {
                 add(authStatusLabel)
                 add(setPasswordButton.onClick {
