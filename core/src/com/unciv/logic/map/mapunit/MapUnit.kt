@@ -637,12 +637,12 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 || (civ.isCityState && civ.allyCiv == otherCiv)
     }
 
-    /** Implements [UniqueParameterType.MapUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.MapUnitFilter] */
+    /** Implements [UniqueParameterType.MapUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.MapUnitFilter] 
+     * Gets passed state explicitly when the unit applying the filter isn't this unit*/
     @Readonly
-    fun matchesFilter(filter: String, multiFilter: Boolean = true, state: GameContext = GameContext.EmptyState): Boolean {
-        return if (multiFilter) MultiFilter.multiFilter(filter, { matchesSingleFilter(it, state) })
+    fun matchesFilter(filter: String, multiFilter: Boolean = true, state: GameContext = GameContext.EmptyState): Boolean =
+        if (multiFilter) MultiFilter.multiFilter(filter, { matchesSingleFilter(it, state) })
         else matchesSingleFilter(filter, state)
-    }
 
     @Readonly
     private fun matchesSingleFilter(filter: String, state: GameContext = GameContext.EmptyState): Boolean {
