@@ -24,7 +24,7 @@ class TileLayerOverlay(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
     private fun getUnexplored() = ImageGetter.getImage(strings.unexploredTile).setHexagonSize()
 
     fun showCrosshair(alpha: Float = 1f) {
-        if (crosshair != null){
+        if (crosshair == null) {
             crosshair = getCrosshair()
             addOwnedActor(crosshair!!)
             determineVisibility()

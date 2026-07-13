@@ -1,3 +1,23 @@
+## 4.21.0
+
+Personalities displayed in Civilopedia - By SomeTroglodyte 
+
+Reworked VictoryScreen - By cy-elec
+
+Modding: Allow for 0 as a parameter for uniques looking for a number or above - By SeventhM
+
+Many, many small fixes - By Angais (with LLM assist)
+
+Avoid duplicate EventChoice entries in allICivilopediaText - By xplon
+
+## 4.20.19
+
+Hopefully solved city-screen audio problems
+
+Nation and Style no longer "fight" over the same image when the same style is shared between different nations
+
+Many, many small fixes - By Angais (with LLM assist) 
+
 ## 4.20.18
 
 Conditional worker uniques no longer cause crashes when disabled

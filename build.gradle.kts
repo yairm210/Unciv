@@ -74,6 +74,8 @@ allprojects {
             "io.ktor.http.Parameters.get",
             "kotlin.collections.mapKeys",
             "kotlin.collections.mapValues"
+
+            "java.util.BitSet.clone",
         )
         wellKnownPureClasses = setOf(
         )
