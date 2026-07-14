@@ -571,7 +571,7 @@ class Tile : IsPartOfGameInfoSerialization {
             "All", "all" -> return true
             "Water" -> return isWater
             "Land" -> return isLand
-            Constants.coastal -> return _isAdjacentToCoast
+            Constants.coastal -> return isAdjacentToCoast()
             Constants.river -> return isAdjacentToRiver()
             "Unowned" -> return getOwner() == null
             "your" -> return observingCiv != null && getOwner() == observingCiv
@@ -615,7 +615,7 @@ class Tile : IsPartOfGameInfoSerialization {
         }
     }
 
-    @Readonly fun isAdjacentToCoast() = _isAdjacentToCoast
+    @Readonly fun isAdjacentToCoast() = isLand && _isAdjacentToCoast
 
     @Readonly fun getViewableTilesList(distance: Int): List<Tile> = tileMap.getViewableTiles(position, distance)
     @Deprecated(message = "forEachTileInDistance is faster. If not viable, then this can still be used",
