@@ -7,6 +7,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.managers.ImprovementFunctions
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
@@ -146,10 +147,34 @@ class TileImprovementFunctions(val tile: Tile) {
                     && tile.isAdjacentTo(Constants.freshWater) -> true
 
             // I don't particularly like this check, but it is required to build mines on non-hill resources
-            resourceIsVisible && tile.tileResource!!.isImprovedBy(improvement.name) -> true
+            resourceIsVisible && tile.tileResource!!.isImprovedBy(improvement.name)
+                && extendedDomainCheck(improvement) -> true
             // No reason this improvement should be built here, so can't build it
             else -> false
         }
+    }
+
+    /** Helper for the "build mines on non-hill resources" branch above:
+     *  Verifies not to allow land improvements on water and vice versa.
+     */
+    @Readonly
+    private fun extendedDomainCheck(improvement: TileImprovement): Boolean {
+        // Don't check when there's no terrain and CanOnlyImproveResource is the only reason allowing the improvement
+        if (improvement.terrainsCanBeBuiltOn.isEmpty()) return true
+        // Resolve all terrainsCanBeBuiltOn entries to a TerrainType, using `occursOn` for TerrainFeatures
+        val allowedTypes = mutableSetOf<TerrainType>()
+        for (canBuildOn in improvement.terrainsCanBeBuiltOn) {
+            val type = TerrainType.entries.firstOrNull { it.name == canBuildOn }
+            if (type != null) allowedTypes += type
+            val terrain = tile.ruleset.terrains[canBuildOn] ?: continue
+            allowedTypes += terrain.type
+            for (occursOn in terrain.occursOn) {
+                val baseTerrain = tile.ruleset.terrains[occursOn] ?: continue
+                allowedTypes += baseTerrain.type
+            }
+        }
+        return tile.isLand && TerrainType.Land in allowedTypes ||
+            tile.isWater && TerrainType.Water in allowedTypes
     }
 
     fun setImprovement(
