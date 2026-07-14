@@ -196,10 +196,6 @@ object Battle {
         val radius = aoeUnique.params.getOrNull(1)?.toIntOrNull() ?: return
         if (radius <= 0) return
 
-        val receivesCounterDamage = attacker.unit.hasUnique(UniqueType.TakeCounterDamageFromAOE)
-        val counterPercent = attacker.unit.getMatchingUniques(UniqueType.TakeCounterDamageFromAOE).sumOf { it.params[0].toDouble() }
-        val counterFactor = kotlin.math.abs(counterPercent) / 100.0
-
         val selfDamagePercent = attacker.unit.getMatchingUniques(UniqueType.DamageSelfInAOE).sumOf { it.params[0].toDouble() }
         val selfDamageFactor = kotlin.math.abs(selfDamagePercent) / 100.0
 
@@ -237,21 +233,6 @@ object Battle {
                     val captured = BattleUnitCapture.tryCaptureMilitaryUnit(attacker, aoeDefender, tile)
                     if (!captured) {
                         triggerPostKillingUniques(aoeDefender, attacker, tile)
-                    }
-                }
-
-                if (receivesCounterDamage && !aoeDefender.isCivilian()) {
-                    val isMainTarget =
-                        (defender is MapUnitCombatant && unit == defender.unit) ||
-                        (defender is CityCombatant && unit == defender.city)
-
-                    if (!isMainTarget && !isSelf) {
-                        val baseCounterDamage = BattleDamage.calculateDamageToAttacker(attacker, aoeDefender)
-                        val scaledCounter = baseCounterDamage * counterFactor * if (isDegrade) distanceFactor else 1.0
-                        val finalCounterDamage = scaledCounter.roundToInt().coerceAtLeast(1)
-
-                        attacker.takeDamage(finalCounterDamage)
-                        if (attacker.isDefeated()) return
                     }
                 }
 
