@@ -73,7 +73,7 @@ allprojects {
             "io.ktor.http.Url.parameters",
             "io.ktor.http.Parameters.get",
             "kotlin.collections.mapKeys",
-            "kotlin.collections.mapValues"
+            "kotlin.collections.mapValues",
 
             "java.util.BitSet.clone",
         )
