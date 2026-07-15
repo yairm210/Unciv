@@ -76,6 +76,7 @@ class CityCombatant(val city: City) : ICombatant {
         return strength.roundToInt()
     }
 
+    @Readonly
     override fun getTriggeredUniques(
         trigger: UniqueType,
         gameContext: GameContext,

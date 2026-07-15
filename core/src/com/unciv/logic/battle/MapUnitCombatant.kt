@@ -65,6 +65,7 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     fun getMatchingUniques(uniqueType: UniqueType, gameContext: GameContext, checkCivUniques: Boolean): Sequence<Unique> =
         unit.getMatchingUniques(uniqueType, gameContext, checkCivUniques)
 
+    @Readonly
     override fun getTriggeredUniques(
         trigger: UniqueType,
         gameContext: GameContext,
@@ -78,10 +79,10 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
         if (conditionalState == null) unit.hasUnique(uniqueType)
         else unit.hasUnique(uniqueType, conditionalState)
     
-/*    @Readonly
+    @Readonly
     override fun hashCode() = unit.hashCode()
     @Readonly
     override fun equals(other: Any?) = other is MapUnitCombatant && other.unit == unit
-*/
+
 
 }
