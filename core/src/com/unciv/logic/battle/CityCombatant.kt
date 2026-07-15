@@ -76,5 +76,13 @@ class CityCombatant(val city: City) : ICombatant {
         return strength.roundToInt()
     }
 
+    override fun getTriggeredUniques(
+        trigger: UniqueType,
+        gameContext: GameContext,
+        triggerFilter: (Unique) -> Boolean
+    ): Sequence<Unique> {
+        return city.getTriggeredUniques(trigger, gameContext, triggerFilter)
+    }
+
     override fun toString() = city.name // for debug
 }
