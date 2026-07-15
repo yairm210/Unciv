@@ -10,12 +10,10 @@ The works listed in this document fall under various licenses. Here’s a list o
 * CC BY-SA 4.0 [Creative Commons Attribution-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-sa/4.0/)
 * CC BY-NC 3.0: [Creative Commons Attribution-NonCommercial 3.0 Unported](https://creativecommons.org/licenses/by-nc/3.0/)
 * CC BY-NC 4.0: [Creative Commons Attribution-NonCommercial 4.0 International](https://creativecommons.org/licenses/by-nc/4.0/)
-* Pixabay License (read note below): [Pixabay Content License](https://pixabay.com/service/license-summary/)
 * Public domain: The work has been released into the public domain.
 * Unknown license: Unfortunately, the license this work was released under got lost to history.
 
-Note: The Pixabay Content License is only used for the Unciv Gameplay Trailer which is *not* included in this code repository.
-Please note that CC BY-NC 3.0, CC BY-NC 4.0 and the Pixabay Content License are **non-free licenses** and incompatible with free software.
+Please note that CC BY-NC 3.0 and CC BY-NC 4.0 are **non-free licenses** and incompatible with free software.
 Unknown licenses are also incompatible with free software.
 
 ## Icon Credits
@@ -896,15 +894,7 @@ The following music is from https://filmmusic.io:
 
 ## Trailer audio
 
-The following track and sound effects are used for the Unciv Gameplay Trailer video (not included in the Unciv repository):
-
--   [Beyond New Horizons - Free Epic Viking Medieval Soundtrack](https://pixabay.com/music/main-title-beyond-new-horizons-free-epic-viking-medieval-soundtrack-22081/) by GioeleFazzeri for background music (Pixabay License)
--   [Beep 6](https://freesound.org/people/CogFireStudios/sounds/528866/) by Eponn for beep in Cross-Platform Play section (CC0)
--   [Cinematic Boom](https://freesound.org/people/Rizzard/sounds/559529/) by Rizzard for final boom (CC0)
--   [Cymbal Swell 2](https://freesound.org/people/rubberduckie/sounds/219835/) by rubberduckie for cymbal swells (CC0)
--   [hit of orchestral cymbals and bass drum](https://freesound.org/people/Selector/sounds/385011/) by Selector for intro crash (CC0)
-
-Note: The video and its audio is released separately from the game repository, so those sound files do *not* affect the license status of the game repository.
+Unciv has released a Unciv Gameplay Trailer video separately, not part of this repository. See `Credits_trailer.md` for credits and details for that video.
 
 ## Visual effects
 
