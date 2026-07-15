@@ -10,10 +10,11 @@ The works listed in this document fall under various licenses. Here’s a list o
 * CC BY-SA 4.0 [Creative Commons Attribution-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-sa/4.0/)
 * CC BY-NC 3.0: [Creative Commons Attribution-NonCommercial 3.0 Unported](https://creativecommons.org/licenses/by-nc/3.0/)
 * CC BY-NC 4.0: [Creative Commons Attribution-NonCommercial 4.0 International](https://creativecommons.org/licenses/by-nc/4.0/)
-* Pixabay License: [Pixabay Content License](https://pixabay.com/service/license-summary/)
+* Pixabay License (read note below): [Pixabay Content License](https://pixabay.com/service/license-summary/)
 * Public domain: The work has been released into the public domain.
 * Unknown license: Unfortunately, the license this work was released under got lost to history.
 
+Note: The Pixabay Content License is only used for the Unciv Gameplay Trailer which is *not* included in this code repository.
 Please note that CC BY-NC 3.0, CC BY-NC 4.0 and the Pixabay Content License are **non-free licenses** and incompatible with free software.
 Unknown licenses are also incompatible with free software.
 
@@ -832,7 +833,7 @@ HexaRealm tileset images by legacymtgsalvationuser69544 [here](https://github.co
 
 ## Sound credits
 
-With some exceptions, most sounds are from FreeSound.org and are either licensed CC0/Public Domain, CC BY, CC BY-NC, Pixabay License or an unknown license:
+With some exceptions, most sounds are from FreeSound.org. The sounds are either licensed CC0/Public Domain, CC BY, CC BY-NC or under an unknown license:
 
 - [Soft two-fingered snap](https://freesound.org/people/EathanMarkson/sounds/388958/) By EathanMarkson as 'click' for most clicks (CC0)
 - [Pencil1](https://freesound.org/people/stijn/sounds/43673/) By stijn as 'paper' for opening and closing the tech picker (CC0)
@@ -846,10 +847,10 @@ With some exceptions, most sounds are from FreeSound.org and are either licensed
 - [Tank reload](https://freesound.org/people/KieranKeegan/sounds/418882/) By KieranKeegan as 'setup' for siege unit setup (CC0)
 - [Scribble_short](https://freesound.org/people/waldram/sounds/257518/) By waldram as 'policy' for adopting policies (CC0)
 - [Hit Impact](https://freesound.org/people/Mrguff/sounds/369711/) by Mrguff as 'throw' for catapult & trebuchet attacks (CC0)
-- [Arrow Impact](https://pixabay.com/sound-effects/arrow-impact-87260/) by Twisted Euphoria on Pixabay as 'arrow' for arrow attacks (Pixabay License)
-- [Crossbow Firing](https://pixabay.com/sound-effects/crossbow-firing-95020/) by GameWithBepis on Pixabay as 'crossbow' for crossbow attacks (Pixabay License)
+- [Arrow Impact](https://freesound.org/people/Twisted_Euphoria/sounds/205938/) by Twisted Euphoria as 'arrow' for arrow attacks (CC0)
+- [Crossbow Firing](https://freesound.org/people/GameWithBepis/sounds/561475/) by GameWithBepis as 'crossbow' for crossbow attacks (CC0)
 - [Metal hit slide](https://freesound.org/people/orginaljun/sounds/149102/) by orginaljun as 'nonmetalhit' for pre-metal melee sounds (CC BY 4.0)
-- [wpn 1 generic](https://pixabay.com/sound-effects/wpn-1-generic-100027/) By SlavicMagic on Pixabay as 'metalhit' for metal melee sounds (Pixabay License)
+- [wpn 1 generic](https://freesound.org/people/SlavicMagic/sounds/446016/) By SlavicMagic as 'metalhit' for metal melee sounds (CC0)
 - [snorting horse](https://freesound.org/people/soundslikewillem/sounds/418427/) By soundslikewillem as part of 'horse' for mounted unit attack sounds (CC BY-NC 4.0)
 - [Horse's whinny](https://freesound.org/people/Kubuzz/sounds/347036/) By Kubuzz as part of 'horse' for mounted unit attack sounds (CC0)
 - [machine gun 001 - loop](https://freesound.org/people/pgi/sounds/212602/) By pgi as 'machinegun' for machine gun attack sound (CC0)
@@ -895,11 +896,15 @@ The following music is from https://filmmusic.io:
 
 ## Trailer audio
 
+The following track and sound effects are used for the Unciv Gameplay Trailer video (not included in the Unciv repository):
+
 -   [Beyond New Horizons - Free Epic Viking Medieval Soundtrack](https://pixabay.com/music/main-title-beyond-new-horizons-free-epic-viking-medieval-soundtrack-22081/) by GioeleFazzeri for background music (Pixabay License)
--   [Beep 6](https://pixabay.com/sound-effects/beep-6-96243/) by Eponn for beep in Cross-Platform Play section (Pixabay License)
--   [Cinematic Boom](https://pixabay.com/sound-effects/cinematic-boom-6872/) by Rizzard for final boom (Pixabay License)
--   [Cymbal Swell 2](https://pixabay.com/sound-effects/cymbal-swell-2-74766/) by rubberduckie for cymbal swells (Pixabay License)
--   [hit of orchestral cymbals and bass drum](https://pixabay.com/sound-effects/hit-of-orchestral-cymbals-and-bass-drum-14471/) by Selector for intro crash (Pixabay License)
+-   [Beep 6](https://freesound.org/people/CogFireStudios/sounds/528866/) by Eponn for beep in Cross-Platform Play section (CC0)
+-   [Cinematic Boom](https://freesound.org/people/Rizzard/sounds/559529/) by Rizzard for final boom (CC0)
+-   [Cymbal Swell 2](https://freesound.org/people/rubberduckie/sounds/219835/) by rubberduckie for cymbal swells (CC0)
+-   [hit of orchestral cymbals and bass drum](https://freesound.org/people/Selector/sounds/385011/) by Selector for intro crash (CC0)
+
+Note: The video and its audio is released separately from the game repository, so those sound files do *not* affect the license status of the game repository.
 
 ## Visual effects
 
