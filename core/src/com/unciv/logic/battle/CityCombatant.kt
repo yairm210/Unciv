@@ -14,7 +14,8 @@ import yairm210.purity.annotations.Readonly
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
-class CityCombatant(val city: City) : ICombatant {
+@JvmInline
+value class CityCombatant(val city: City) : ICombatant {
     override fun getMaxHealth(): Int {
         return city.getMaxHealth()
     }
