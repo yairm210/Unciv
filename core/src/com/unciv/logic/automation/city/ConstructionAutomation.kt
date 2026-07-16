@@ -129,11 +129,11 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             if (relativeCostEffectiveness.isEmpty()) { // choose one of the special constructions instead
                 // add science!
                 when {
-                    PerpetualConstruction.science.isBuildable(cityConstructions) && !allTechsAreResearched -> PerpetualConstruction.science
-                    PerpetualConstruction.gold.isBuildable(cityConstructions) -> PerpetualConstruction.gold
-                    PerpetualConstruction.culture.isBuildable(cityConstructions) && !civInfo.policies.allPoliciesAdopted(true) -> PerpetualConstruction.culture
-                    PerpetualConstruction.faith.isBuildable(cityConstructions) -> PerpetualConstruction.faith
-                    else -> PerpetualConstruction.idle
+                    PerpetualConstruction.Science.isBuildable(cityConstructions) && !allTechsAreResearched -> PerpetualConstruction.Science
+                    PerpetualConstruction.Gold.isBuildable(cityConstructions) -> PerpetualConstruction.Gold
+                    PerpetualConstruction.Culture.isBuildable(cityConstructions) && !civInfo.policies.allPoliciesAdopted(true) -> PerpetualConstruction.Culture
+                    PerpetualConstruction.Faith.isBuildable(cityConstructions) -> PerpetualConstruction.Faith
+                    else -> PerpetualConstruction.Idle
                 }
             } else { relativeCostEffectiveness.maxBy { (it.choiceModifier / it.remainingWork.coerceAtLeast(1)).coerceAtLeast(0f) }.choice }
             //TODO: All bad things are build anyways at the moment, maybe let's stop doing that and chose perpetual construction instead

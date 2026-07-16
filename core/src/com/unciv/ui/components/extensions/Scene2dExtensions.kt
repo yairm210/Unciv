@@ -2,7 +2,6 @@ package com.unciv.ui.components.extensions
 
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.Colors
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.TextureData
 import com.badlogic.gdx.graphics.glutils.FileTextureData
@@ -46,6 +45,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
+import kotlin.math.pow
 
 /**
  * Collection of extension functions mostly for libGdx widgets
@@ -517,7 +517,7 @@ fun equalizeColumns(vararg tables: Table) {
             table.cells[column].run {
                 if (actor == null)
                 // Empty cells ignore minWidth, so just doing Table.add() for an empty cell in the top row will break this. Fix!
-                    setActor<Label>("".toLabel())
+                    setActor(neutralActor)
                 else if (Align.isCenterHorizontal(align)) (actor as? Label)?.run {
                     // minWidth acts like fillX, so Labels will fill and then left-align by default. Fix!
                     if (!Align.isCenterHorizontal(labelAlign))
@@ -528,6 +528,7 @@ fun equalizeColumns(vararg tables: Table) {
         table.invalidate()
     }
 }
+private val neutralActor = Actor().apply { touchable = Touchable.disabled }
 
 /** Retrieve a texture Pixmap without reload or ownership transfer, useable for read operations only.
  *
@@ -541,8 +542,42 @@ fun TextureData.getReadonlyPixmap(): Pixmap {
     return field.get(this) as Pixmap
 }
 
-fun <T: Actor>Stack.addInTable(actor: T): Cell<T> {
+fun <T: Actor> Stack.addInTable(actor: T): Cell<T> {
     val table = Table()
     add(table)
     return table.add(actor).grow()
+}
+
+/** Recursively return all children of a Group, depth-first */
+fun Group.allChildren(): Sequence<Actor> = sequence {
+    for (child in children) {
+        if (child is Group) yieldAll(child.allChildren())
+        yield(child)
+    }
+}
+
+/** All defined by https://www.w3.org/TR/WCAG20/#relativeluminancedef */
+@Pure
+fun Color.getRelativeLuminance(): Double {
+    @Pure
+    fun getRelativeChannelLuminance(channel: Float): Double =
+        if (channel < 0.03928) channel / 12.92
+        else ((channel + 0.055) / 1.055).pow(2.4)
+
+    val r = getRelativeChannelLuminance(r)
+    val g = getRelativeChannelLuminance(g)
+    val b = getRelativeChannelLuminance(b)
+
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
+}
+
+/** https://www.w3.org/TR/WCAG20/#contrast-ratiodef */
+@Readonly
+fun getContrastRatio(color1: Color, color2: Color): Double { // ratio can range from 1 to 21
+    val innerColorLuminance = color1.getRelativeLuminance()
+    val outerColorLuminance = color2.getRelativeLuminance()
+
+    return if (innerColorLuminance > outerColorLuminance)
+        (innerColorLuminance + 0.05) / (outerColorLuminance + 0.05)
+    else (outerColorLuminance + 0.05) / (innerColorLuminance + 0.05)
 }

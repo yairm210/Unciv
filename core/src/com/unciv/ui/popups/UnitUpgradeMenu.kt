@@ -41,7 +41,7 @@ class UnitUpgradeMenu(
     private val enable: Boolean,
     private val callbackAfterAnimation: Boolean = false,
     private val onButtonClicked: () -> Unit
-) : ScrollableAnimatedMenuPopup(stage, getActorTopRight(positionNextTo)) {
+) : ScrollableAnimatedMenuPopup(stage, positionNextTo) {
 
     private val unitToUpgradeTo by lazy { unitAction.unitToUpgradeTo }
 

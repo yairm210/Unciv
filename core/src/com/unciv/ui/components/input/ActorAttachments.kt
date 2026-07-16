@@ -24,7 +24,6 @@ internal class ActorAttachments private constructor(actor: Actor) {
     var activationActions: ActivationActionMap? = null
     private var activationListener: ActivationListener? = null
 
-    
     /**
      *  Keyboard dispatcher for the [actor] this is attached to.
      *
@@ -75,5 +74,9 @@ internal class ActorAttachments private constructor(actor: Actor) {
         if (activationListener == null || actions.isNotEmpty()) return
         actor.removeListener(activationListener)
         activationListener = null
+    }
+
+    fun reloadSettings() {
+        activationListener?.reloadSettings()
     }
 }

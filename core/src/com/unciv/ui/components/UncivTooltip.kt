@@ -22,6 +22,7 @@ import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.KeyboardBindings
 import com.unciv.ui.components.widgets.ColorMarkupLabel
+import com.unciv.ui.popups.AnimatedMenuPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 
 /**
@@ -311,6 +312,8 @@ class UncivTooltip <T: Actor>(
                 tip.hide(true)
                 removeListener(tip)
             }
+            if (this !is Group) return
+            children.filter { it.name == AnimatedMenuPopup.indicatorAndroid }.forEach { it.remove() }
         }
 
         /**

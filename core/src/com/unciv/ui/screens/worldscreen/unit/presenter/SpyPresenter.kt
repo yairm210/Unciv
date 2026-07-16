@@ -3,6 +3,7 @@ package com.unciv.ui.screens.worldscreen.unit.presenter
 import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.map.HexCoord
 import com.unciv.models.Spy
+import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.worldscreen.unit.UnitTable
 
@@ -22,7 +23,7 @@ class SpyPresenter(private val unitTable: UnitTable) : UnitTable.Presenter {
     override fun updateWhenNeeded() = with(unitTable) {
         val spy = selectedSpy!!
         unitNameLabel.clearListeners()
-        unitNameLabel.setText(spy.name)
+        unitNameLabel.setText(spy.name.tr(hideIcons = true))
         descriptionTable.clear()
 
         unitIconHolder.clear()

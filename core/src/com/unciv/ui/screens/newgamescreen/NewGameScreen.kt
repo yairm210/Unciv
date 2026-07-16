@@ -59,6 +59,7 @@ class NewGameScreen(
     private val newGameOptionsTable: GameOptionsTable
     internal val playerPickerTable: PlayerPickerTable
     private val mapOptionsTable: MapOptionsTable
+    private var mapOptionsTableInitialized = false
 
     init {
         val isPortrait = isNarrowerThan4to3()
@@ -82,6 +83,7 @@ class NewGameScreen(
             updatePlayerPickerRandomLabel = { playerPickerTable.updateRandomNumberLabel() }
         )
         mapOptionsTable = MapOptionsTable(this)
+        mapOptionsTableInitialized = true
         closeButton.onActivation {
             mapOptionsTable.cancelBackgroundJobs()
             game.popScreen()
@@ -226,6 +228,11 @@ class NewGameScreen(
     /** Subtables may need an upper limit to their width - they can ask this function. */
     // In sync with isPortrait in init, here so UI details need not know about 3-column vs 1-column layout
     internal fun getColumnWidth() = floor(stage.width / (if (isNarrowerThan4to3()) 1 else 3))
+
+    internal fun refreshExampleMap() {
+        if (mapOptionsTableInitialized)
+            mapOptionsTable.refreshExampleMap()
+    }
 
     private fun initLandscape() {
         scrollPane.setScrollingDisabled(true,true)

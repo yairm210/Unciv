@@ -10,4 +10,4 @@ Szeretnél segíteni a játék fordításában? Lásd: https://yairm210.github.i
 
 A világ vár! Felépíted-e civilizációdat egy olyan birodalommá, amely kiállja az idő próbáját?
 
-A „teljes hálózati hozzáférés" engedély a felhasználó által kezdeményezett letöltésekhez és a többjátékos funkcióhoz szükséges. Az összes többi felsorolt engedélyt a többjátékos körértesítések megvalósításához használt API automatikusan tartalmazza. A hálózati engedélyeket modok listázására, modok és zenék letöltésére, valamint többjátékos játékok feltöltésére/letöltésére használja a játék. Az Unciv semmilyen más internetes kommunikációt nem kezdeményez.
+A „teljes hálózati hozzáférés" engedély a felhasználó által kezdeményezett letöltésekhez és a többjátékos funkcióhoz szükséges. A többi felsorolt engedélyt a többjátékos körértesítések megvalósításához használt API automatikusan tartalmazza. A hálózati engedélyeket modok listázására, modok és zenék letöltésére, valamint többjátékos játékok feltöltésére/letöltésére használja a játék. Az Unciv semmilyen más internetes kommunikációt nem kezdeményez.

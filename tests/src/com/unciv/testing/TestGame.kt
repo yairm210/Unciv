@@ -24,6 +24,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.images.ImageGetter
+import kotlin.random.Random
 
 /**
  *  A testing game using a fresh clone of the Civ_V_GnK ruleset so it can be modded in-place.
@@ -172,7 +173,7 @@ class TestGame(vararg addGlobalUniques: String, forUITesting: Boolean = false) {
         // Add 1 tech to the player so the era is computed correctly
         civInfo.tech.addTechnology(ruleset.technologies.values.minBy { it.era() }.name)
         if (cityStateType != null) {
-            civInfo.cityStateFunctions.initCityState(ruleset, "Ancient era", emptySequence())
+            civInfo.cityStateFunctions.initCityState(ruleset, "Ancient era", emptySequence(), Random.Default)
         }
         return civInfo
     }
@@ -273,6 +274,7 @@ class TestGame(vararg addGlobalUniques: String, forUITesting: Boolean = false) {
         createRulesetObject(ruleset.beliefs, *uniques) { Belief(type) }
     fun createBuilding(vararg uniques: String) =
         createRulesetObject(ruleset.buildings, *uniques) { Building() }
+            .apply { ruleset = gameInfo.ruleset }
     fun createResource(vararg uniques: String) =
         createRulesetObject(ruleset.tileResources, *uniques) { TileResource() }
 

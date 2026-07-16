@@ -138,9 +138,7 @@ class MinimapTile(val tile: Tile, tileSize: Float) {
 
     fun getOwningCivFromHistory(tile: Tile, turn: Int) : Civilization? {
         val owningCivName = tile.history.getState(turn).owningCivName
-        return if (owningCivName == null) null else tile.tileMap.gameInfo.getCivilization(
-            owningCivName
-        )
+        return if (owningCivName == null) null else tile.tileMap.gameInfo.getCivilizationOrNull(owningCivName)
     }
 
 }

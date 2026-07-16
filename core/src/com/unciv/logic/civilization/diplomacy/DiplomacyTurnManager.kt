@@ -74,7 +74,7 @@ object DiplomacyTurnManager {
             TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty, duration = durationLeft)
         )
         trades.add(treaty)
-        otherCiv.getDiplomacyManager(civInfo)!!.trades.add(treaty)
+        otherCiv.getDiplomacyManager(civInfo)!!.trades.add(treaty.reverse())
     }
 
 

@@ -11,6 +11,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -358,6 +359,55 @@ internal class WorkerAutomationTest {
             "Repair", currentTile.improvementInProgress
         )
         assertTrue(currentTile.turnsToImprovement > 0)
+    }
+
+
+    @Test
+    fun `automated workers should not target CreatesOneImprovement markers`() {
+        civInfo.tech.techsResearched.add(testGame.ruleset.tileImprovements["Farm"]!!.techRequired!!)
+        val city = testGame.addCity(civInfo, testGame.tileMap[0,0])
+
+        val workerTile = city.getCenterTile()
+        val markedTile = testGame.tileMap[1,1]
+        markedTile.baseTerrain = Constants.grassland
+        markedTile.improvementFunctions.markForCreatesOneImprovement("Farm")
+
+        val worker = testGame.addUnit("Worker", civInfo, workerTile)
+        worker.currentMovement = 2f
+
+        workerAutomation.automateWorkerAction(worker, hashSetOf())
+
+        assertNotEquals(
+            "Automated worker should not move onto a CreatesOneImprovement marker",
+            markedTile,
+            worker.getTile()
+            )
+        assertTrue(
+            "CreatesOneImprovement marker should remain on the district tile",
+            markedTile.isMarkedForCreatesOneImprovement()
+            )
+        assertEquals("Automated worker should leave CreatesOneImprovement marker unchanged",
+            "Farm", markedTile.improvementInProgress)
+        assertEquals("Automated worker should not convert CreatesOneImprovement marker into normal worker progress",
+            -1, markedTile.turnsToImprovement)
+    }
+
+    @Test
+    fun `worker orders should not overwrite CreatesOneImprovement markers`() {
+        civInfo.tech.techsResearched.add(testGame.ruleset.tileImprovements["Farm"]!!.techRequired!!)
+        testGame.addCity(civInfo, testGame.tileMap[0,0])
+
+        val markedTile = testGame.tileMap[1,1]
+        markedTile.baseTerrain = Constants.grassland
+        markedTile.improvementFunctions.markForCreatesOneImprovement("Farm")
+
+        val worker = testGame.addUnit("Worker", civInfo, markedTile)
+        val farm = testGame.ruleset.tileImprovements["Farm"]!!
+
+        markedTile.startWorkingOnImprovement(farm, civInfo, worker)
+
+        assertEquals("Farm", markedTile.improvementInProgress)
+        assertEquals(-1, markedTile.turnsToImprovement)
     }
 
 

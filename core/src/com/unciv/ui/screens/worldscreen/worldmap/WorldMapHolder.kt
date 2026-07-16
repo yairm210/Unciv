@@ -10,7 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.scenes.scene2d.*
-import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
 import com.unciv.UncivGame
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
@@ -114,7 +113,7 @@ class WorldMapHolder(
 
     private fun addClickListener() {
         // ActivationListener-like listener to allow us to create only one listener for the entire worldmapholder instead of one per tile
-        val listener = object : ActorGestureListener(20f, 0.25f, 1.1f, Int.MAX_VALUE.toFloat()) {
+        val listener = object : UncivActorGestureListener() {
             override fun tap(event: InputEvent?, x: Float, y: Float, count: Int, button: Int) {
                 val child = tileGroupMap.hit(x, y, true) ?: return
 
@@ -673,15 +672,15 @@ class WorldMapHolder(
         val clampedCityButtonZoom = 1 / scaleX
         if (clampedCityButtonZoom >= 1) {
             for (tileGroup in tileGroups.values) {
-                tileGroup.layerCityButton.isTransform = false // to save on rendering time to improve framerate
+                tileGroup.layerCityButton.setButtonTransform(false) // save rendering time at normal zoom
             }
         } else if (clampedCityButtonZoom >= minZoom) {
             for (tileGroup in tileGroups.values) {
                 // ONLY set those groups that have active city buttons as transformable!
                 // This is massively framerate-improving!
-                if (tileGroup.layerCityButton.hasChildren())
-                    tileGroup.layerCityButton.isTransform = true
-                tileGroup.layerCityButton.setScale(clampedCityButtonZoom)
+                if (tileGroup.layerCityButton.hasButton())
+                    tileGroup.layerCityButton.setButtonTransform(true)
+                tileGroup.layerCityButton.setButtonScale(clampedCityButtonZoom)
             }
         }
     }
