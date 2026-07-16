@@ -1,12 +1,10 @@
 ## 4.21.1
 
-Fixed stockpiled resource trade not actually transferring anything - whoops!
+Fixed stockpiled resource trade not actually transferring
 
 By SomeTroglodyte:
 - Build weight unique for personalities 
-- Fix "No ice" test in spawnIce 
-- Synchronized increment of `lastUnitId` prevents duplicate unit ID's 
-- chore: Lint A-star pathfinding classes 
+- Fix flat earth map generation with no ice 
 
 By Angais:
 - Fix map notification tile selection 
@@ -15,8 +13,7 @@ By Angais:
 Replace arrow Unicode characters for wider compatibility - By cy-elec
 
 By SeventhM:
-- Fix uniques for losing hp missing full combat context 
-- [Lint] specify return type for automation functions 
+- Fix uniques for losing hp missing full combat context
 
 implement "other" parameter for mapunit - By O-spin
 
