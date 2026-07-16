@@ -723,6 +723,8 @@ enum class UniqueType(
     /////////////////////////////////// region 07 PERSONALITY UNIQUES ////////////////////////////////////////
 
     WillNotBuild("Will not build [baseUnitFilter/buildingFilter]", UniqueTarget.Personality),
+    PersonalityAiWeight("[relativeAmount]% weight to [baseUnitFilter/buildingFilter] for AI decisions", UniqueTarget.Personality,
+        flags = UniqueFlag.setOfHiddenToUsers),
     //endregion
 
     ///////////////////////////////////////// region 08 CONDITIONALS /////////////////////////////////////////
