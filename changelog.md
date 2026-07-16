@@ -1,3 +1,26 @@
+## 4.21.1
+
+Fixed stockpiled resource trade not actually transferring
+
+By SomeTroglodyte:
+- Build weight unique for personalities 
+- Fix flat earth map generation with no ice 
+
+By Angais:
+- Fix map notification tile selection 
+- Fix options cleanup on outside close 
+
+Replace arrow Unicode characters for wider compatibility - By cy-elec
+
+By SeventhM:
+- Fix uniques for losing hp missing full combat context
+
+implement "other" parameter for mapunit - By O-spin
+
+Fix inverted force-resign bank update - By L3odr0id
+
+Clean up licensing information - By Wuzzy2
+
 ## 4.21.0
 
 Personalities displayed in Civilopedia - By SomeTroglodyte 

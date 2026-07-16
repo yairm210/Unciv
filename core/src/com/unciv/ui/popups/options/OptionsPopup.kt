@@ -122,17 +122,19 @@ class OptionsPopup(
             tabs.addPage("Debug", DebugTab(this), ImageGetter.getImage("OtherIcons/SecretOptions"), 24f)
         }
 
-        tabs.decorateHeader(getCloseButton {
-            screen.game.musicController.onChange(null)
-            center(screen.stage)
-            tabs.selectPage(-1, false)
-            settings.save()
-            onClose() // activate the passed 'on close' callback
-            close() // close this popup
-        })
+        tabs.decorateHeader(getCloseButton { close() })
 
         pack() // Needed to show the background.
         center(screen.stage)
+    }
+
+    override fun close() {
+        game.musicController.onChange(null)
+        center(stageToShowOn)
+        tabs.selectPage(-1, false)
+        settings.save()
+        onClose() // activate the passed 'on close' callback
+        super.close()
     }
 
     override fun setVisible(visible: Boolean) {

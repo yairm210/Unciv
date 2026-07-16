@@ -136,6 +136,11 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
                     to.addGold(offer.amount)
                     from.addGold(-offer.amount)
                 }
+                TradeOfferType.Stockpiled_Resource -> {
+                    val resource = from.gameInfo.ruleset.tileResources[offer.name] ?: return
+                    to.gainStockpiledResource(resource, offer.amount)
+                    from.gainStockpiledResource(resource, -offer.amount)
+                }
                 TradeOfferType.Technology -> {
                     to.tech.addTechnology(offer.name)
                 }

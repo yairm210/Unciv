@@ -1271,6 +1271,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Personality
 
+??? example  "[relativeAmount]% weight to [baseUnitFilter/buildingFilter] for AI decisions"
+	Example: "[+20]% weight to [Melee] for AI decisions"
+
+	This unique is automatically hidden from users.
+
+	Applicable to: Personality
+
 ## Era uniques
 ??? example  "Starting in this era disables religion"
 	Applicable to: Era
