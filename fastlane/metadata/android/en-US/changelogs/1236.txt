@@ -1,0 +1,25 @@
+
+
+Fixed stockpiled resource trade not actually transferring anything - whoops!
+
+By SomeTroglodyte:
+- Build weight unique for personalities 
+- Fix "No ice" test in spawnIce 
+- Synchronized increment of `lastUnitId` prevents duplicate unit ID's 
+- chore: Lint A-star pathfinding classes 
+
+By Angais:
+- Fix map notification tile selection 
+- Fix options cleanup on outside close 
+
+Replace arrow Unicode characters for wider compatibility - By cy-elec
+
+By SeventhM:
+- Fix uniques for losing hp missing full combat context 
+- [Lint] specify return type for automation functions 
+
+implement "other" parameter for mapunit - By O-spin
+
+Fix inverted force-resign bank update - By L3odr0id
+
+Clean up licensing information - By Wuzzy2
