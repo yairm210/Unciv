@@ -371,10 +371,11 @@ object Battle {
     }
 
     internal fun takeDamage(attacker: ICombatant, defender: ICombatant): DamageDealt {
-        val attackContext = GameContext(attacker, defender, defender.getTile(), CombatAction.Attack)
+        val attackerContext = GameContext(attacker, defender, defender.getTile(), CombatAction.Attack)
+        val defenderContext = GameContext(defender, attacker, defender.getTile(), CombatAction.Defend)
         var potentialDamageToDefender = BattleDamage.calculateDamageToDefender(attacker, defender)
         var potentialDamageToAttacker = BattleDamage.calculateDamageToAttacker(attacker, defender)
-        val rng = attackContext.stateBasedRandom("Battle.takeDamage")
+        val rng = attackerContext.stateBasedRandom("Battle.takeDamage")
 
         val attackerHealthBefore = attacker.getHealth()
         val defenderHealthBefore = defender.getHealth()
@@ -403,26 +404,60 @@ object Battle {
         val defenderDamageDealt = attackerHealthBefore - attacker.getHealth()
         val attackerDamageDealt = defenderHealthBefore - defender.getHealth()
 
-        if (attacker is MapUnitCombatant)
-            for (unique in attacker.unit.getTriggeredUniques(UniqueType.TriggerUponLosingHealth)
-                    { it.params[0].toInt() <= defenderDamageDealt }) {
-                val unit = if (unique.params[0] == Constants.targetUnit && defender is MapUnitCombatant)
-                    defender.unit
-                else attacker.unit
-                UniqueTriggerActivation.triggerUnique(unique, unit, triggerNotificationText = "due to losing [$defenderDamageDealt] HP")
-            }
-
-        if (defender is MapUnitCombatant)
-            for (unique in defender.unit.getTriggeredUniques(UniqueType.TriggerUponLosingHealth)
-                    { it.params[0].toInt() <= attackerDamageDealt }) {
-                val unit = if (unique.params[0] == Constants.targetUnit && attacker is MapUnitCombatant)
-                attacker.unit
-                else defender.unit
-                UniqueTriggerActivation.triggerUnique(unique, unit, triggerNotificationText = "due to losing [$attackerDamageDealt] HP")
-            }
+        triggerLosingHPUniques(attacker, attackerContext, attackerDamageDealt, defender, defenderContext, defenderDamageDealt)
 
         plunderFromDamage(attacker, defender, attackerDamageDealt)
         return DamageDealt(attackerDamageDealt, defenderDamageDealt)
+    }
+
+    private fun triggerLosingHPUniques(
+        attacker: ICombatant,
+        attackerContext: GameContext,
+        attackerDamageDealt: Int,
+        defender: ICombatant,
+        defenderContext: GameContext,
+        defenderDamageDealt: Int
+    ) {
+        fun triggerUnique(
+            combatant: ICombatant,
+            unique: Unique,
+            action: CombatAction
+        ) {
+            val triggerText =
+                if (action == CombatAction.Attack) "due to losing [$defenderDamageDealt] HP"
+                else "due to losing [$attackerDamageDealt] HP"
+            when (combatant) {
+                is MapUnitCombatant -> UniqueTriggerActivation.triggerUnique(
+                    unique,
+                    combatant.unit,
+                    triggerNotificationText = triggerText
+                )
+
+                is CityCombatant -> UniqueTriggerActivation.triggerUnique(
+                    unique,
+                    combatant.city,
+                    triggerNotificationText = triggerText
+                )
+            }
+        }
+
+        for (unique in attacker.getTriggeredUniques(
+            UniqueType.TriggerUponLosingHealth,
+            attackerContext
+        )
+        { it.params[0].toInt() <= defenderDamageDealt }) {
+            val combatant = if (unique.params[0] == Constants.targetUnit) defender else attacker
+            triggerUnique(combatant, unique, CombatAction.Attack)
+        }
+
+        for (unique in defender.getTriggeredUniques(
+            UniqueType.TriggerUponLosingHealth,
+            defenderContext
+        )
+        { it.params[0].toInt() <= attackerDamageDealt }) {
+            val combatant = if (unique.params[0] == Constants.targetUnit) attacker else defender
+            triggerUnique(combatant, unique, CombatAction.Defend)
+        }
     }
 
     private fun plunderFromDamage(
