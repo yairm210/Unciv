@@ -1348,10 +1348,11 @@ object UniqueTriggerActivation {
                         tile.tileResource = null
                         tile.resourceAmount = 0
                     }
-                    TileNormalizer.normalizeToRuleset(tile, ruleset)
+                    
                     // Same deal as the place resource command
                     tile.setTileResource(resource, majorDeposit = false)
                     tile.getOwner()?.cache?.updateCivResources()
+                    TileNormalizer.normalizeToRuleset(tile, ruleset)
                     true
                 }
             }
