@@ -111,7 +111,7 @@ enum class UniqueParameterType(
     /** Implemented by [MapUnit.matchesFilter][com.unciv.logic.map.mapunit.MapUnit.matchesFilter] */
     MapUnitFilter("mapUnitFilter", Constants.wounded, null, "Map Unit Filters") {
         override val staticKnownValues = setOf(Constants.wounded, Constants.barbarians, "Barbarian",
-            "City-State", Constants.embarked, "Non-City")
+            "City-State", Constants.embarked, "Non-City", "other")
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = getErrorSeverityForFilter(parameterText, ruleset)
 

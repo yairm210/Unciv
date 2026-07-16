@@ -64,6 +64,9 @@ class TileGroupMap<T: TileGroup>(
      *  Used by the world-wrap draw path to reposition tile-level actors. */
     private val allMapLayers: List<Group>
 
+    /** Cached expanded rectangle used to avoid per-frame allocation when culling borders/city buttons. */
+    private val expandedCullingArea = Rectangle()
+
     /** TileGroups in the same sorted order used for allMapLayers registration,
      *  so world-wrap can reposition the click-target by index. */
     private val sortedTileGroups: List<T>
@@ -222,7 +225,23 @@ class TileGroupMap<T: TileGroup>(
         // actors are culled correctly. Container groups span the full map so they are never
         // culled at the TileGroupMap level; the real per-tile work happens inside each container.
         val ca = cullingArea
-        for (mapLayer in allMapLayers) mapLayer.setCullingArea(ca)
+        // Border actors are rotated images whose pre-rotation bounding boxes sit at the south
+        // edge of the hexagon. After 180° rotation the visual content moves to the north edge,
+        // up to ~groupSize units above the pre-rotation box top. Without expansion, tiles whose
+        // center is just south of the viewport get their border actors incorrectly culled.
+        // City-button wrappers have size 0×0, so any button that extends above a tile just south
+        // of the viewport is also culled too aggressively — expand for those as well.
+        val expand = groupSize * 1.5f
+        expandedCullingArea.set(ca.x - expand, ca.y - expand, ca.width + expand * 2, ca.height + expand * 2)
+        for (mapLayer in allMapLayers) {
+            // Generic type parameters are erased at runtime, so we check the element type instead.
+            // Borders use rotated images (visual content displaced from pre-rotation bounds) and
+            // city-button wrappers have size 0×0 — both need an expanded culling area so they
+            // aren't incorrectly culled when a tile center is just south of the viewport.
+            val firstLayer = (mapLayer as? TileMapLayer<*>)?.tileLayers?.firstOrNull()
+            val culling = if (firstLayer is TileLayerBorders || firstLayer is TileLayerCityButton) expandedCullingArea else ca
+            mapLayer.cullingArea = culling
+        }
 
         if (worldWrap) {
             // Prevent flickering when zoomed out so you can see entire map
@@ -266,7 +285,7 @@ class TileGroupMap<T: TileGroup>(
                         for (mapLayer in allMapLayers) {
                             val tl = (mapLayer as? TileMapLayer<*>)?.tileLayers?.get(i) ?: continue
                             tl.tileX += dx
-                            tl.ownedActors.forEach { it.x += dx }
+                            tl.forEachOwnedActor { it.x += dx }
                         }
                         sortedTileGroups[i].x += dx
                     }

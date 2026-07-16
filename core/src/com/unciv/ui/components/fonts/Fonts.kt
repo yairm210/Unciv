@@ -148,12 +148,8 @@ object Fonts {
     const val star = '✯'                // U+272F 'pinwheel star'
     const val status = '◉'              // U+25C9 'fisheye'
     // The following two are used for sort visualization.
-    // They may disappear (show as placeholder box) on Linux if you clean out asian fonts.
-    // Alternatives: "↑" U+2191, "↓" U+2193 - much wider and weird spacing in some fonts (e.g. Verdana).
-    // These are possibly the highest codepoints in use in Unciv -
-    // Taken into account when limiting FontRulesetIcons codepoints (it respects the private area ending at U+F8FF)
-    const val sortUpArrow = '￪'         // U+FFEA 'half wide upward arrow'
-    const val sortDownArrow = '￬'       // U+FFEC 'half wide downward arrow'
+    const val sortUpArrow = '↑'         // U+2191 'upwards arrow'
+    const val sortDownArrow = '↓'       // U+2193 'downwards arrow'
     const val rightArrow = '→'          // U+2192, e.g. Battle table or event-based tutorials
     //endregion
 

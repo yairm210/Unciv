@@ -28,6 +28,7 @@ import com.unciv.utils.yieldIfNotNull
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
+import kotlin.math.min
 import kotlin.math.pow
 
 // This is BaseUnit because Unit is already a base Kotlin class and to avoid mixing the two up
@@ -132,7 +133,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         unit.name = name
         unit.civ = civInfo
         unit.owner = civInfo.civID
-        unit.id = unitId ?: ++civInfo.gameInfo.lastUnitId
+        unit.id = unitId ?: civInfo.gameInfo.getNextUnitId()
 
         // must be after setting name & civInfo because it sets the baseUnit according to the name
         // and the civInfo is required for using `hasUnique` when determining its movement options
@@ -570,8 +571,12 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                     -> power *= 1.25f
                 UniqueType.MustSetUp // Must set up - 20 % penalty
                     -> power /= 1.20f
-                UniqueType.AdditionalAttacks // Extra attacks - 20% bonus per extra attack
-                    -> power *= (unique.params[0].toInt() * 20f).toPercent()
+                // Extra attacks - 20% bonus per extra attack (if sufficient movement)
+                UniqueType.AdditionalAttacks -> {
+                    val additionalAttacks = unique.params[0].toInt()
+                    val limit = if (isAirUnit()) Int.MAX_VALUE else movement - 1
+                    power *= (20f * min(additionalAttacks, limit)).toPercent()
+                }
                 else -> {}
             }
         }

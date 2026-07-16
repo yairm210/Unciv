@@ -7,6 +7,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unique.GameContext
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.components.extensions.toPercent
@@ -74,6 +75,15 @@ class CityCombatant(val city: City) : ICombatant {
         strength += extraStrength
 
         return strength.roundToInt()
+    }
+
+    @Readonly
+    override fun getTriggeredUniques(
+        trigger: UniqueType,
+        gameContext: GameContext,
+        triggerFilter: (Unique) -> Boolean
+    ): Sequence<Unique> {
+        return city.getTriggeredUniques(trigger, gameContext, triggerFilter)
     }
 
     override fun toString() = city.name // for debug

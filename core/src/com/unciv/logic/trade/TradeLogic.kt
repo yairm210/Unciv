@@ -136,6 +136,11 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
                     to.addGold(offer.amount)
                     from.addGold(-offer.amount)
                 }
+                TradeOfferType.Stockpiled_Resource -> {
+                    val resource = from.gameInfo.ruleset.tileResources[offer.name] ?: return
+                    to.gainStockpiledResource(resource, offer.amount)
+                    from.gainStockpiledResource(resource, -offer.amount)
+                }
                 TradeOfferType.Technology -> {
                     to.tech.addTechnology(offer.name)
                 }
@@ -199,7 +204,7 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
                 TradeOfferType.PeaceProposal -> {
                     // Convert PeaceProposal to peaceTreaty and apply to warring civs
                     val trade = Trade()
-                    val peaceOffer = TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty, duration = offer.duration)
+                    val peaceOffer = TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty, speed = from.gameInfo.speed)
                     trade.ourOffers.add(peaceOffer)
                     trade.theirOffers.add(peaceOffer)
                     
@@ -211,7 +216,7 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
                     }
 
                     thirdCiv.getDiplomacyManager(from)!!.apply {
-                        trades.add(trade)
+                        trades.add(trade.reverse())
                         updateHasOpenBorders()
                     }
 

@@ -238,8 +238,8 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
                 city.workedTiles.asSequence()
                         .map { city.tileMap[it] }
                         .minByOrNull {
-                            Automation.rankTileForCityWork(it, city)
-                            +(if (it.isLocked()) 10 else 0)
+                            Automation.rankTileForCityWork(it, city) +
+                                (if (it.isLocked()) 10 else 0)
                         }!!
             }
             val valueWorstTile = if (worstWorkedTile == null) 0f

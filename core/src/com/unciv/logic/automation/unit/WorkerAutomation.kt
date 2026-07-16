@@ -75,7 +75,7 @@ class WorkerAutomation(
     /**
      * Automate one Worker - decide what to do and where, move, start or continue work.
      */
-    fun automateWorkerAction(unit: MapUnit, dangerousTiles: HashSet<Tile>) = timeThis<Unit>("automateWorkerAction") {
+    fun automateWorkerAction(unit: MapUnit, dangerousTiles: HashSet<Tile>): Unit = timeThis("automateWorkerAction") {
         val currentTile = unit.getTile()
         val currentTileIsCreatesOneImprovementMarker = currentTile.isMarkedForCreatesOneImprovement()
         // Must be called before any getPriority checks to guarantee the local road cache is processed

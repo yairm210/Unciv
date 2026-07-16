@@ -71,7 +71,7 @@ class TileLayerUnitSprite(tileGroup: TileGroup, size: Float) : TileLayer(tileGro
     }
 
     fun dim() {
-        ownedActors.forEach { it.color.a = 0.5f }
+        forEachOwnedActor { it.color.a = 0.5f }
     }
 
     override fun doUpdate(viewingCiv: Civilization?) {

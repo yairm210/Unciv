@@ -1271,6 +1271,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Personality
 
+??? example  "[relativeAmount]% weight to [baseUnitFilter/buildingFilter] for AI decisions"
+	Example: "[+20]% weight to [Melee] for AI decisions"
+
+	This unique is automatically hidden from users.
+
+	Applicable to: Personality
+
 ## Era uniques
 ??? example  "Starting in this era disables religion"
 	Applicable to: Era
@@ -2681,8 +2688,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Terrain
 
 ??? example  "Vegetation"
-	This unique is automatically hidden from users.
-
 	Applicable to: Terrain, Improvement
 
 ??? example  "Tile provides yield without assigned population"
@@ -2900,8 +2905,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, Unit, Terrain, Improvement
 
 ??? example  "Vegetation"
-	This unique is automatically hidden from users.
-
 	Applicable to: Terrain, Improvement
 
 ??? example  "Tile provides yield without assigned population"
@@ -2983,6 +2986,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Improvement
 
 ??? example  "Provides a random bonus when entered"
+	Applicable to: Improvement
+
+??? example  "Marks a barbarian camp"
+	When several barbarian camp improvements are available, each new camp chooses one randomly.
+
+	This unique is automatically hidden from users.
+
 	Applicable to: Improvement
 
 ??? example  "Unpillagable"
@@ -3694,7 +3704,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
-??? example  "&lt;in cities with [positiveAmount] [populationFilter]&gt;"
+??? example  "&lt;in cities with [nonNegativeAmount] [populationFilter]&gt;"
 	Example: "&lt;in cities with [3] [Followers of this Religion]&gt;"
 
 	Applicable to: Conditional
@@ -3788,7 +3798,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
-??? example  "&lt;when above [positiveAmount] movement&gt;"
+??? example  "&lt;when above [nonNegativeAmount] movement&gt;"
 	Example: "&lt;when above [3] movement&gt;"
 
 	Applicable to: Conditional
