@@ -320,6 +320,7 @@ class ImprovementPickerScreen(
             if (!canReport(unbuildableBecause)) return null
             report.suggestRemoval = true
         }
+        if (!canReport(unbuildableBecause)) return null
 
         with(report) {
             if (suggestRemoval) {
@@ -337,6 +338,7 @@ class ImprovementPickerScreen(
                 val maxEraNumber = if (maxErasForward == Int.MAX_VALUE) Int.MAX_VALUE else currentPlayerCiv.getEraNumber()
                 for (tech in improvement.requiredTechnologies(ruleset)) {
                     val techEra = tech?.era(ruleset) ?: continue
+                    if (unit.civ.tech.isResearched(tech.name)) continue
                     if (techEra.eraNumber > maxEraNumber) return null
                     proposedSolutions.add("Research [${tech.name}] first" to tech.makeLink())
                 }
