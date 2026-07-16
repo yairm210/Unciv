@@ -61,7 +61,7 @@ object GreatGeneralImplementation {
                 // The "Military" test is also supported deep down in unit.matchesFilter, a small
                 // optimization for the most common case, as this function is only called for `MapUnitCombatant`s
                 data.general.currentTile.aerialDistanceTo(unit.getTile()) <= data.radius
-                    && (data.filter == "Military" || unit.matchesFilter(data.filter)) // TODO: add state = data.general.cache.state here once #15167 has been accepted
+                    && (data.filter == "Military" || unit.matchesFilter(data.filter, state = data.general.cache.state))
             }
             .groupBy { it.source }
             .mapValues { (_, bonusDataList) ->
