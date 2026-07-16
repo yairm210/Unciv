@@ -334,7 +334,7 @@ class ImprovementPickerScreen(
             }
 
             if (ImprovementBuildingProblem.MissingTech in unbuildableBecause) {
-                val maxEraNumber = currentPlayerCiv.getEraNumber() + maxErasForward
+                val maxEraNumber = if (maxErasForward == Int.MAX_VALUE) Int.MAX_VALUE else currentPlayerCiv.getEraNumber()
                 for (tech in improvement.requiredTechnologies(ruleset)) {
                     val techEra = tech?.era(ruleset) ?: continue
                     if (techEra.eraNumber > maxEraNumber) return null
