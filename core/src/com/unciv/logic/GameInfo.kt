@@ -113,7 +113,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     var currentTurnStartTime = System.currentTimeMillis()
     var gameId = randomGameId()
     var checksum = ""
-    var lastUnitId = 0
+    private var lastUnitId = 0
 
     var victoryData: VictoryData? = null
 
@@ -204,6 +204,18 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         toReturn.unitNamesTaken.addAll(unitNamesTaken)
 
         return toReturn
+    }
+
+    @Synchronized // Important - duplicate unit ID's have been observed during debugging.
+    fun getNextUnitId(): Int {
+        return ++lastUnitId
+    }
+
+    /** ***Only*** for [BackwardCompatibility.ensureUnitIds] */
+    fun ensureLastUnitId() {
+        if (lastUnitId != 0) return
+        lastUnitId = tileMap.values.asSequence()
+            .flatMap { it.getUnits() }.maxOfOrNull { it.id }?.coerceAtLeast(0) ?: 0
     }
 
     fun getPlayerToViewAs(): Civilization {

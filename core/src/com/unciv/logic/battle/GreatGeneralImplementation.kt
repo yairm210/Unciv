@@ -12,58 +12,66 @@ import yairm210.purity.annotations.Readonly
 
 object GreatGeneralImplementation {
 
-    private data class GeneralBonusData(val general: MapUnit, val radius: Int, val filter: String, val bonus: Int) {
-        constructor(general: MapUnit, unique: Unique) : this(
+    private data class GeneralBonusData(val general: MapUnit, val radius: Int, val filter: String, val bonus: Int, val source: String) {
+        constructor(general: MapUnit, unique: Unique, source: String) : this(
             general,
             radius = unique.params[2].toIntOrNull() ?: 0,
             filter = unique.params[1],
-            bonus = unique.params[0].toIntOrNull() ?: 0
+            bonus = unique.params[0].toIntOrNull() ?: 0,
+            source
         )
     }
 
     /**
-     * Determine the "Great General" bonus for [ourUnitCombatant] by searching for units carrying the [UniqueType.StrengthBonusInRadius] in the vicinity.
-     *
+     * Determine the "Great General" bonuses for [ourUnitCombatant] by searching for units carrying the [UniqueType.StrengthBonusInRadius] in the vicinity.
+     * Applies only the largest bonuses found attached to each baseUnit and promotion.
+     * 
      * Used by [BattleDamage.getGeneralModifiers].
      *
-     * @return A pair of unit's name and bonus (percentage) as Int (typically 15), or 0 if no applicable Great General equivalents found
+     * @return A map of unit names and bonuses (percentage) as Int (typically 15)
      */
     @Readonly
     fun getGreatGeneralBonus(
         ourUnitCombatant: MapUnitCombatant,
         enemy: ICombatant,
         combatAction: CombatAction
-    ): Pair<List<String>, List<Int>> {
+    ): Map<String, Int> {
         val unit = ourUnitCombatant.unit
         val civInfo = ourUnitCombatant.unit.civ
         val allGenerals = civInfo.units.getCivUnits()
-            .filter { it.cache.hasStrengthBonusInRadiusUnique }
-            .filter { it != unit }
-        if (allGenerals.none()) return Pair(emptyList(), emptyList())
+            .filter { it.cache.hasStrengthBonusInRadiusUnique}
+        if (allGenerals.none()) return emptyMap()
 
         val greatGenerals = allGenerals
             .flatMap { general ->
-                general.getMatchingUniques(UniqueType.StrengthBonusInRadius,
-                    GameContext(unit.civ, ourCombatant = ourUnitCombatant, theirCombatant = enemy, combatAction = combatAction))
-                    .map { GeneralBonusData(general, it) }
-            }.filter {
+                val context = GameContext(unit.civ, ourCombatant = ourUnitCombatant, theirCombatant = enemy, combatAction = combatAction)
+                // Uniques from the unit type itself
+                val base = general.baseUnit.getMatchingUniques(UniqueType.StrengthBonusInRadius, context)
+                    .map { GeneralBonusData(general, it, general.name) }
+                // Uniques from each individual promotion
+                val promos = general.promotions.getPromotions().flatMap { promotion ->
+                         promotion.getMatchingUniques(UniqueType.StrengthBonusInRadius, context)
+                             .map { unique -> GeneralBonusData(general, unique, promotion.name)}
+                }
+                (base + promos)
+            }
+            .filter { data ->
                 // Support the border case when a mod unit has several
                 // GreatGeneralAura uniques (e.g. +50% as radius 1, +25% at radius 2, +5% at radius 3)
                 // The "Military" test is also supported deep down in unit.matchesFilter, a small
                 // optimization for the most common case, as this function is only called for `MapUnitCombatant`s
-                it.general.currentTile.aerialDistanceTo(unit.getTile()) <= it.radius
-                        && (it.filter == "Military" || unit.matchesFilter(it.filter))
-            }.groupBy { it.general }
-        val greatGeneral = mutableMapOf<String, Int>()
-        for (general in greatGenerals) {
-            greatGeneral[general.key.name] = (greatGeneral[general.key.name] ?:0)
-                .coerceAtLeast( general.value.maxOf { 
-                    if (unit.hasUnique(UniqueType.GreatGeneralProvidesDoubleCombatBonus, checkCivInfoUniques = true)
-                    && it.general.isGreatPersonOfType("War")) it.bonus*2
-                    else it.bonus })
-        }
+                data.general.currentTile.aerialDistanceTo(unit.getTile()) <= data.radius
+                    && (data.filter == "Military" || unit.matchesFilter(data.filter)) // TODO: add state = data.general.cache.state here once #15167 has been accepted
+            }
+            .groupBy { it.source }
+            .mapValues { (_, bonusDataList) ->
+                bonusDataList.maxOf { data ->
+                    val multiplier = if (unit.hasUnique(UniqueType.GreatGeneralProvidesDoubleCombatBonus) && data.general.isGreatPersonOfType("War")) 2 else 1
+                    data.bonus * multiplier
+                }
+            }
 
-        return Pair(greatGeneral.keys.toList(), greatGeneral.values.toList())
+        return greatGenerals
     }
 
     /**

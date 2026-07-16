@@ -362,7 +362,7 @@ class Ruleset {
     @Readonly
     fun allNames(): Sequence<RulesetName> =
         RulesetFile.entries.asSequence().flatMap { it.getNames(this) }.filter { it.name.isNotEmpty() }
-    @Readonly fun allICivilopediaText(): Sequence<ICivilopediaText> = allRulesetObjects() + events.values.flatMap { it.choices }
+    @Readonly fun allICivilopediaText(): Sequence<ICivilopediaText> = allRulesetObjects()
 
     fun load(folderHandle: FileHandle) {
         fun RulesetFile.file() = folderHandle.child(filename)

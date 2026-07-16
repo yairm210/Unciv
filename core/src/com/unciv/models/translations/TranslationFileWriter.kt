@@ -26,6 +26,8 @@ import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.nation.CityStateType
 import com.unciv.models.ruleset.nation.Difficulty
 import com.unciv.models.ruleset.nation.Nation
+import com.unciv.models.ruleset.nation.Personality
+import com.unciv.models.ruleset.nation.PersonalityValue
 import com.unciv.models.ruleset.tech.Era
 import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tile.Terrain
@@ -172,6 +174,10 @@ object TranslationFileWriter {
                 for (text in uiTexts)
                     linesToTranslate += "$text = "
             }
+
+            linesToTranslate += "\n\n#################### Lines from personality biases #######################\n"
+            for (focus in PersonalityValue.entries)
+                linesToTranslate += "${focus.description} = "
 
             linesToTranslate += "\n\n#################### Lines from key bindings #######################\n"
             for (bindingLabel in KeyboardBinding.getTranslationEntries())
@@ -643,6 +649,7 @@ object TranslationFileWriter {
                     "GlobalUniques" -> GlobalUniques().javaClass
                     "UnitNameGroups" -> emptyArray<UnitNameGroup>().javaClass
                     "Nations" -> emptyArray<Nation>().javaClass
+                    "Personalities" -> emptyArray<Personality>().javaClass
                     "Policies" -> emptyArray<PolicyBranch>().javaClass
                     "Quests" -> emptyArray<Quest>().javaClass
                     "Religions" -> emptyArray<String>().javaClass

@@ -209,7 +209,8 @@ class TileSetStrings(
         val imageKey = getString(
             unit.name, tag,
             unit.civ.getEra().name, tag,
-            unit.civ.nation.getStyleOrCivName(), tag,
+            unit.civ.nation.name, tag,
+            unit.civ.nation.style, tag,
             unit.isEmbarked().toString()
         )
         // if in cache return that

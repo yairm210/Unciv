@@ -15,75 +15,75 @@ import java.util.Formatter
 import java.util.Locale
 
 
-/*
+/**
  * All the information we need about a route node, crammed into a single Long
- * 
+ *
  * If we avoid passing this to any methods that are erased, such as generics, then we can eliminate
- * allocations, leading to huge performance improvements.  
- * API oddities: 
- * - Due to the bitfield cramming, extrating the Tile, or ParentTile, requires passing in a TileMap,
+ * allocations, leading to huge performance improvements.
+ * API oddities:
+ * - Due to the bitfield cramming, extracting the Tile, or ParentTile, requires passing in a TileMap,
  *   so we can look up the tile from that.
- * 
- * Squeezing it into a Long requires a lot of careful considerations.  Not only avoiding passing it 
+ *
+ * Squeezing it into a Long requires a lot of careful considerations.  Not only avoiding passing it
  * to methods with type erasure, but also ensuring that we squeeze everything into 63 bits, and also
- * fast compatability with PrioritizedNode, and also PrioritizedNode's Comparitor. 
- * - If we pack the bits just right, then the PrioritizedNode comparator can simply compare the 
+ * fast compatibility with [PrioritizedNode], and also PrioritizedNode's Comparator.
+ * - If we pack the bits just right, then the PrioritizedNode comparator can simply compare the
  *   entire Long directly.  So we want to store the highest priority values in the most significant
- *   bits, and the lowest priority values into the least significant bits. 
+ *   bits, and the lowest priority values into the least significant bits.
  * - Packing everything into bits requires careful consideration of ranges, and then also for
  *   floats, consideration of precision and accuracy.
- * - PrioritizedNode needs almost all of the values, so we need to make sure everything that needs
- *   fits in 63 bits.
- * 
+ * - PrioritizedNode needs almost all of the values, so we need to make sure everything that is
+ *   needed fits in 63 bits.
+ *
  * Movement needs to be stored in fixed-point, in a base that can represent increments of 0.1
  *   move for railroads, and also increments of 1/3 for normal roads, uniquely. Base 30 (10x3) is
  *   the obvious choice, as it can store both road fractions with no precision loss whatsoever. So
  *   movement of 3.666 is stored as 110 (3.666*30), and restored as 3.666 (73/30). This can actually
- *   make the code simpler, as the rounding during conversion eliminates all floating point 
- *   rounding, so we no longer need to worry about minimumMovementEpsilon. The fastest unit in the
+ *   make the code simpler, as the rounding during conversion eliminates all floating point
+ *   rounding, so we no longer need to worry about [minimumMovementEpsilon][com.unciv.Constants.minimumMovementEpsilon]. The fastest unit in the
  *   base game is the Missile Cruiser with 7 movement. The fastest LAND units in the base game have
  *   6 movement.  There are a few techs which can give double movement under specific conditions, so
  *   we want to allow ~14 movement. Thus, the biggest value we need to store is 420 (14*30), which
  *   requires 9 bits. (This actually allows movements up to 17, which is nice for mod support).
- * 
+ *
  * Fields, in order from least to highest priority:
- * - tileIdx: the zeroBasedIndex, which is trivial to convert to/from Tile instances. Maximum map 
- *   size is radius 500, or 748501 tiles, so this takes 20 bits. Not strictly needed by RouteNode, 
- *   but handy. 
- * - relationshipLevel: Used as a tiebreaker when pathing through tiles owned by different civs.
+ * - [tileIdx]: the [zeroBasedIndex][Tile.zeroBasedIndex], which is trivial to convert to/from [Tile] instances.
+ *   Maximum map size is radius 500, or 748501 tiles, so this takes 20 bits.
+ *   Not strictly needed by [RouteNode], but handy.
+ * - [relationshipLevel]: Used as a tie-breaker when pathing through tiles owned by different civs.
  *   Unowned tiles are considered Allies. Stored as (7-ordinal), so that Ally=0, and is the highest
  *   priority. In the future, this can be reduced to 2, or even 1 bits, if needed.
- * - pbmMoveThisTurn: (pbm=PauseBeforeMountains) How much movement we would have used this turn, if
+ * - [pbmMoveThisTurn]: (pbm=PauseBeforeMountains) How much movement we would have used this turn, if
  *   we had ended a turn right before entering damaging terrain.  0 if the terrain is not damaging.
  *   This is used to retroactively calculate how far we could enter mountains if we had already
  *   moved some before entering damaging terrain. This is stored as fixed-point, base 30, in 9 bits.
- * - moveUsedThisTurn: How much movement we have used this turn so far.  This is stored as 
+ * - [moveUsedThisTurn]: How much movement we have used this turn so far.  This is stored as
  *   fixed-point, base 30, in 9 bits.
- * - turns: The number of turns used so far. Tiles reachable on the current turn have turns=0. We
+ * - [turns]: The number of turns used so far. Tiles reachable on the current turn have turns=0. We
  *   assume a maximum of 64 turns for pathing. If the AStar calculation hits this limit when
  *   calculating a tile, it simply returns the route to this tile. Which is a surprisingly
  *   reasonable approximation, in an unreasonable scenario. This requires 6 bits.
- * - underestimatedTotal: How much movement it would take to reach the target from the current tile,
- *   if all remaining tiles to the target are railroads.  We store this as as base-30 fixed point, 
+ * - [underestimatedTotal][PrioritizedNode.underestimatedTotal]: How much movement it would take to reach the target from the current tile,
+ *   if all remaining tiles to the target are railroads.  We store this as base-30 fixed point,
  *   with a maximum value of 819.15 movement used (25.55*64). This takes 14 bits. This is ONLY
- *   used by PrioritizedNode. This is never zero, which guarantees that an initialized 
+ *   used by PrioritizedNode. This is never zero, which guarantees that an initialized
  *   PrioritizedNode is never zero... except for the start node in one edge case.
- * - parentClockDir: The clock-direction index (2-12) of the parent tile, relative to this tile. We
+ * - [parentClockDir]: The clock-direction index (2-12) of the parent tile, relative to this tile. We
  *   use 14 to represent "no parent tile" (such as for the root node). Since the values are always
- *   even, we do not store the last bit, so this only takes 3 bits. This is never zero, which 
+ *   even, we do not store the last bit, so this only takes 3 bits. This is never zero, which
  *   guarantees that an initialized RouteNode is never zero.
- * - canMoveTo: True if the unit can end turn on the tile, or it's multiple turns away.
- * - padding: In a RouteNode, the other remaining 12 bits of underestimatedTotal just hold zeroes, 
+ * - [canMoveTo]: True if the unit can end turn on the tile, or it's multiple turns away.
+ * - `padding`: In a RouteNode, the other remaining 12 bits of underestimatedTotal just hold zeroes,
  *   for now.
- * - damagingTiles: How many tiles that cause end-turn damage have been crossed to reach this tile.
+ * - [damagingTiles]: How many tiles that cause end-turn damage have been crossed to reach this tile.
  *   This is the absolute highest priority field, so it goes in the most significant bits. So very
  *   long routes that do not take damage are prioritized over shorter routes that take damage,
  *   emulating prior behavior, while also allowing cache reuse.  We only store up to 3 damaging
  *   tiles, so this takes 2 bits.
- * - sign bit: Zero.  We *could* use it for values, but then we'd have to handle negative values
+ * - `sign bit`: Zero.  We *could* use it for values, but then we'd have to handle negative values
  *   in the comparison, which might involve negation and other complexity when reading other
  *   fields. Far safer and eaiser and faster to just keep it zero.
- * 
+ *
  * Tiles that cannot be pathed to at all store the maximum value in all fields except
  * zeroBasedIndex.
  */
@@ -99,17 +99,16 @@ value class RouteNode(val bits: Long=0L) {
         parentTile: Tile,
         moveTo: Boolean,
         damagingTiles: Int,
-    ):
-        this(
-            toTileIdxBits(tile) or
-                toRelationshipLevelBits(relationshipLevel) or
-                toPbmMoveThisTurnBits(pauseBeforeMountainMove) or
-                toMoveThisTurnBits(moveThisTurn) or
-                toTurnsBits(turns) or
-                toParentClockDirBits(tile, parentTile) or
-                toMoveToBits(moveTo) or
-                toDamagingTilesBits(damagingTiles)
-        ) {
+    ) : this(
+        toTileIdxBits(tile) or
+            toRelationshipLevelBits(relationshipLevel) or
+            toPbmMoveThisTurnBits(pauseBeforeMountainMove) or
+            toMoveThisTurnBits(moveThisTurn) or
+            toTurnsBits(turns) or
+            toParentClockDirBits(tile, parentTile) or
+            toMoveToBits(moveTo) or
+            toDamagingTilesBits(damagingTiles)
+    ) {
         require(tile.zeroBasedIndex < tile.tileMap.tileList.size) { "tileList ${tile.zeroBasedIndex} exceeds max ${tile.tileMap.tileList.size}" }
         require(tile.tileMap.tileList.size <= TILE_IDX_LO_MASK) { "tileList ${tile.tileMap.tileList.size} exceeds max $TILE_IDX_LO_MASK" }
         require(pauseBeforeMountainMove >= 0) { "pauseBeforeMountainMoveThisTurn $pbmMoveThisTurn must be positive" }
@@ -127,7 +126,7 @@ value class RouteNode(val bits: Long=0L) {
     @Readonly
     fun tile(tileMap: TileMap): Tile = tileMap.tileList[tileIdx]
 
-    val relationshipLevelBits: Long get() {require(initialized); return ((bits shr RELATIONSHIP_LEVEL_OFFSET) and RELATIONSHIP_LEVEL_LO_MASK) }
+    private val relationshipLevelBits: Long get() {require(initialized); return ((bits shr RELATIONSHIP_LEVEL_OFFSET) and RELATIONSHIP_LEVEL_LO_MASK) }
     val relationshipLevel: RelationshipLevel get() = RelationshipLevel.entries[MAX_RELATIONSHIP_LEVEL - relationshipLevelBits.toInt()]
 
     val pbmMoveThisTurn: FixedPointMovement get() {
@@ -152,7 +151,7 @@ value class RouteNode(val bits: Long=0L) {
         if (idx == NO_PARENT_TILE_VALUE) return tile(tileMap)
         return tileMap.getClockPositionNeighborTile(tile(tileMap), idx)!!
     }
-    
+
     val canMoveTo: Boolean get() { require(initialized); return (bits and MOVE_TO_HI_MASK) == MOVE_TO_HI_MASK}
 
     val damagingTiles: Int get() { require(initialized); return ((bits shr DAMAGE_TILES_OFFSET) and DAMAGE_TILES_LO_MASK).toInt() }
@@ -160,15 +159,15 @@ value class RouteNode(val bits: Long=0L) {
     // parentClockDir can never be 0, so all zeroes means uninitialized
     val initialized: Boolean get() = bits != 0L
 
-    val isNoPathingNode: Boolean get() = pbmMoveThisTurn.bits == PBM_MOVE_THIS_TURN_LO_MASK.toInt()
+    internal val isNoPathingNode: Boolean get() = pbmMoveThisTurn.bits == PBM_MOVE_THIS_TURN_LO_MASK.toInt()
 
     @Readonly
     override fun toString() = "RouteNode[tile=$tileIdx, turns=$turns, moveUsedThisTurn=$moveUsedThisTurn]"
     @Readonly
-    fun toString(tileMap: TileMap) = "RouteNode[tile=${tile(tileMap)} turns=$turns, moveThisTurn=$moveUsedThisTurn]"
+    fun toString(tileMap: TileMap) = "RouteNode[tile=${tile(tileMap)}, turns=$turns, moveThisTurn=$moveUsedThisTurn]"
 
     companion object {
-        // bits 0-19 (20b = 1048576tiles) are the zeroBasedIndex of this tile (radius 500, or approx 1170x896) 
+        // bits 0-19 (20b = 1048576tiles) are the zeroBasedIndex of this tile (radius 500, or approx 1170x896)
         internal const val TILE_IDX_OFFSET = 0
         internal const val TILE_IDX_BIT_COUNT = 20
         internal const val TILE_IDX_LO_MASK = (0x1L shl TILE_IDX_BIT_COUNT) - 1L
@@ -196,7 +195,7 @@ value class RouteNode(val bits: Long=0L) {
         private const val TURNS_LO_MASK = (0x1L shl TURNS_BIT_COUNT) - 1L
         const val MAX_TURNS = TURNS_LO_MASK.toInt()
         const val MAX_VALID_TURNS = MAX_TURNS - 1
-        // [PrioritizedNode] bits 47-60 (14b) are the underestimated total movement from the initial tile toward the target. 
+        // [PrioritizedNode] bits 47-60 (14b) are the underestimated total movement from the initial tile toward the target.
         internal const val UNDERESTIMATED_TOTAL_OFFSET = TURNS_OFFSET + TURNS_BIT_COUNT
         internal const val UNDERESTIMATED_TOTAL_BIT_COUNT = 14
         internal const val UNDERESTIMATED_TOTAL_LO_MASK = (0x1L shl  UNDERESTIMATED_TOTAL_BIT_COUNT) - 1L
@@ -208,7 +207,7 @@ value class RouteNode(val bits: Long=0L) {
         private const val PARENT_TILE_LO_MASK = (0x1L shl PARENT_TILE_BIT_COUNT) - 1L
         private const val NO_PARENT_TILE_BITS = 7L
         private const val NO_PARENT_TILE_VALUE = 14
-        // [RouteNode] bit 50 (1b = 2values) tracks if we can we can "move to" a tile.
+        // [RouteNode] bit 50 (1b = 2values) tracks if we can "move to" a tile.
         // Aka either we can path through it, or it contains an enemy.
         private const val MOVE_TO_OFFSET = PARENT_TILE_OFFSET + PARENT_TILE_BIT_COUNT
         private const val MOVE_TO_BIT_COUNT = 1
@@ -220,7 +219,6 @@ value class RouteNode(val bits: Long=0L) {
         private const val DAMAGE_TILES_BIT_COUNT = 2
         private const val DAMAGE_TILES_LO_MASK = (0x1L shl DAMAGE_TILES_BIT_COUNT) -1L
         internal const val MAX_DAMAGING_TILES = DAMAGE_TILES_LO_MASK.toInt()
-
 
         @Readonly
         private fun toParentClockDirBits(tile: Tile, parentTile: Tile): Long
@@ -306,7 +304,7 @@ value class FixedPointMovement private constructor(val bits: Int) {
 
         @Pure fun fpmFromFixedPointBits(bits: Int) = FixedPointMovement(bits)
         @Pure fun fpmFromMovement(move: Int) = FixedPointMovement((move * MOVE_SPEED_BASE))
-        @Pure fun fpmFromMovement(move: Float): FixedPointMovement { // rounding HALF_UP 
+        @Pure fun fpmFromMovement(move: Float): FixedPointMovement { // rounding HALF_UP
             val plusOneBit = (move * (MOVE_SPEED_BASE * 2)).toInt()
             return FixedPointMovement((plusOneBit shr 1) + (plusOneBit and 1))
         }
@@ -320,57 +318,50 @@ data class PathingMapCacheKey(
     val startingPoint: HexCoord,
     val moveRemaining: FixedPointMovement,
     val fullMove: FixedPointMovement,
-)
+) {
+    override fun toString() = "$startingPoint/$moveRemaining/$fullMove"
+}
 
+/**
+ *  @property key The key for this cache. If the key no longer matches, then the cache is invalid
+ *  @property nodesNeedingNeighbors Frontier list of the tiles to be checked.
+ *            In exceptional cases, a node already calculated may be left here, and recalculated again later.
+ *            Bitset used to minimize memory allocations
+ *  @property addedNeighborNodes A BitSet to track which tiles have already been checked.
+ *            This helps avoid redundant calculations and ensures each tile is processed only once.
+ *            Bitset used to minimize memory allocations
+ *  @property routeNodes A map where each tile reached during the search points to its parent tile.
+ *            This map is used to reconstruct the path once the destination is reached.
+ *            Theoretically, this can be replaced with three separate arrays for each field, eliminating
+ *            the separate allocations per-node, but it's unclear if the performance is worth the complexity.
+ */
 @InternalState
 internal class PathingMapCache private constructor(
-    /**
-     * The key for this cache. If the key no longer matches, then the cache is invalid
-     */
     internal val key: PathingMapCacheKey,
-
-    /**
-     * Frontier list of the tiles to be checked.
-     *
-     * In exceptional cases, a node already calculated may be left here, and recalculated again
-     * later.
-     *
-     * Bitset used to minimize memory allocations
-     */
     internal val nodesNeedingNeighbors: BitSet,
-    /**
-     * A BitSet to track which tiles have already been checked.
-     * This helps avoid redundant calculations and ensures each tile is processed only once.
-     *
-     * Bitset used to minimize memory allocations
-     */
     internal val addedNeighborNodes: BitSet,
-    /**
-     * A map where each tile reached during the search points to its parent tile.
-     * This map is used to reconstruct the path once the destination is reached.
-     *
-     * Theoretically, this can be replaced with three separate arrays for each field, eliminiating
-     * the separate allocations per-node, but it's unclear if the performance is worth the
-     * complexity.
-     */
     internal val routeNodes: LongArray,  // Actually Array<RouteNode>
 ) {
     internal val tilesSameTurn: PathsToTilesWithinTurn = PathsToTilesWithinTurn()
-        
+
+    /** Creates an empty [PathingMapCache], using [tileMap] only for allocating the arrays to the proper size */
     constructor(key: PathingMapCacheKey, tileMap: TileMap) : this(
         key,
         BitSet(tileMap.tileList.size),
         BitSet(tileMap.tileList.size),
         LongArray(tileMap.tileList.size)
     )
-    
+
+    @Readonly
     fun isCacheValid(latestKey: PathingMapCacheKey) = key == latestKey
-    
-    /*
+
+    /**
      * Returns a mutable fork for pathfinding
-     * 
-     * This uses the same routeNodes, but copies of the frontier bitsets. It does not set tilesSameTurn.
+     *
+     * This uses the same [routeNodes], but copies of the frontier bitsets. It does not set [tilesSameTurn].
+     * @see mergePathfindingFork
      */
+    @Readonly
     fun forkForPathfinding(): PathingMapCache {
         synchronized(addedNeighborNodes) {
             val codesNeedingNeighborsCopy: BitSet = nodesNeedingNeighbors.clone() as BitSet
@@ -378,9 +369,14 @@ internal class PathingMapCache private constructor(
             return PathingMapCache(key, codesNeedingNeighborsCopy, addedNeighborNodesCopy, routeNodes)
         }
     }
-    
+
+    /**
+     * Merges a fork created with [forkForPathfinding], modifying [addedNeighborNodes]
+     * and [nodesNeedingNeighbors]. Also mutates `update.nodesNeedingNeighbors`, meaning the fork
+     * should be discarded.
+     */
     fun mergePathfindingFork(update: PathingMapCache) {
-        require(key == update.key && routeNodes === routeNodes)
+        require(key == update.key && routeNodes === update.routeNodes)
         // now merge the pathfinder's tilesChecked and tilesToCheck back into the shared PathingData
         // again using a synchronized block not just for thread-safety, but also to ensure atomicity
         synchronized(addedNeighborNodes) {
@@ -390,7 +386,7 @@ internal class PathingMapCache private constructor(
             nodesNeedingNeighbors.andNot(update.addedNeighborNodes)
 
             // For tiles that were queued but not yet calculated, add them to nodesNeedingNeighbors.
-            // When a tile incurs taking damage, a later tile can replace it's data with a less
+            // When a tile incurs taking damage, a later tile can replace its data with a less
             // damaging route. In edge cases, this can cause a tile to be queued a second time.
             // Since tiles can be queued multiple times, they can be both queued (at higher damage)
             // and already calculated (at lower damage). We have to skip over tiles already calculated
@@ -414,7 +410,7 @@ internal class PathingMapCache private constructor(
         val width = tileMap.tileMatrix.size
         val xs = BitSet(width)
         val ys = BitSet(height)
-        routeTiles.forEach { 
+        routeTiles.forEach {
             xs.set(it.position.x - tileMap.leftX)
             ys.set(height -it.position.y + tileMap.bottomY) // invert the ys to easily iterate from positive to negative
         }
@@ -466,5 +462,5 @@ internal class PathingMapCache private constructor(
         }
     }
 
-    override fun toString() = "${javaClass.simpleName}[key=${key.startingPoint}/${key.moveRemaining}/${key.fullMove} nodesNeedingNeighbors=${nodesNeedingNeighbors.cardinality()} addedNeighborNodes=${addedNeighborNodes.cardinality()} routeNodes=${routeNodes.size} tilesSameTurn=${tilesSameTurn.size}"
+    override fun toString() = "${javaClass.simpleName}[key=$key nodesNeedingNeighbors=${nodesNeedingNeighbors.cardinality()} addedNeighborNodes=${addedNeighborNodes.cardinality()} routeNodes=${routeNodes.size} tilesSameTurn=${tilesSameTurn.size}]"
 }
