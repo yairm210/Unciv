@@ -199,7 +199,7 @@ class Terrain : RulesetStatsObject() {
             "Rough terrain" -> isRough
             "Natural Wonder" -> type == TerrainType.NaturalWonder
             "Terrain Feature" -> type == TerrainType.TerrainFeature
-            else -> when(filter){ // non-constants
+            else -> when(filter) { // non-constants
                 name -> true
                 type.name -> true
                 else -> false

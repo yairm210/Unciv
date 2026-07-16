@@ -424,7 +424,7 @@ class Tile : IsPartOfGameInfoSerialization {
         return civInfo.isAtWarWith(tileOwner)
     }
 
-    @Readonly fun isRoughTerrain() = allTerrains.any { it.isRough}
+    @Readonly fun isRoughTerrain() = allTerrains.any { it.isRough }
 
     @Transient
     internal var stateThisTile: GameContext = GameContext.EmptyState
@@ -591,10 +591,10 @@ class Tile : IsPartOfGameInfoSerialization {
             resource -> observingCiv == null || observingCiv.canSeeResource(tileResource)
 
             else -> {
-                val owner = getOwner()
                 if (allTerrains.any { it.matchesFilter(filter, stateThisTile, false) }) return true
-                if (owner != null && owner.matchesFilter(filter, stateThisTile, false)) return true
 
+                val owner = getOwner()
+                if (owner != null && owner.matchesFilter(filter, stateThisTile, false)) return true
 
                 // Checks 'luxury resource', 'strategic resource' and 'bonus resource' - only those that are visible of course
                 // not using canSeeResource as observingCiv is often not passed in,
