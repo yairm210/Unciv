@@ -195,6 +195,7 @@ class Terrain : RulesetStatsObject() {
         return when (filter) {
             "all", "All" -> true
             "Terrain" -> true
+            Constants.impassable -> impassable
             "Open terrain" -> !isRough
             "Rough terrain" -> isRough
             "Natural Wonder" -> type == TerrainType.NaturalWonder
