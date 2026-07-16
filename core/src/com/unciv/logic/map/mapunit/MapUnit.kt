@@ -504,14 +504,14 @@ class MapUnit : IsPartOfGameInfoSerialization {
         isEmbarked() -> 0 // embarked units can't heal
         health >= 100 -> 0 // No need to heal if at max health
         hasUnique(UniqueType.HealOnlyByPillaging, checkCivInfoUniques = true) -> 0
-        else -> rankTileForHealing(getTile())
+        else -> rankTileForHealing(getTile(), noTerrainDamage = true)
     }
 
     @Readonly fun canHealInCurrentTile() = getHealAmountForCurrentTile() > 0
 
     /** Returns the health points [MapUnit] will receive if healing on [tile] */
     @Readonly
-    fun rankTileForHealing(tile: Tile): Int {
+    fun rankTileForHealing(tile: Tile, noTerrainDamage: Boolean = false): Int {
         val isFriendlyTerritory = tile.isFriendlyTerritory(civ)
 
         var healing = when {
@@ -542,11 +542,12 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
 
         val maxAdjacentHealingBonus = currentTile.neighbors
-                .flatMap { it.getUnits() }.filter { it.civ == civ }
-                .map { it.adjacentHealingBonus() }.maxOrNull()
+            .flatMap { it.getUnits() }.filter { it.civ == civ }
+            .maxOfOrNull { it.adjacentHealingBonus() }
         if (maxAdjacentHealingBonus != null)
             healing += maxAdjacentHealingBonus
 
+        if (noTerrainDamage) return healing
         healing -= getDamageFromTerrain(tile)
 
         return healing
