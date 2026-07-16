@@ -13,6 +13,7 @@ import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stats
+import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 
@@ -158,7 +159,8 @@ class TileImprovementFunctions(val tile: Tile) {
      *  Verifies not to allow land improvements on water and vice versa.
      */
     @Readonly
-    private fun extendedDomainCheck(improvement: TileImprovement): Boolean {
+    @VisibleForTesting
+    fun extendedDomainCheck(improvement: TileImprovement): Boolean {
         // Don't check when there's no terrain and CanOnlyImproveResource is the only reason allowing the improvement
         if (improvement.terrainsCanBeBuiltOn.isEmpty()) return true
         // Resolve all terrainsCanBeBuiltOn entries to a TerrainType, using `occursOn` for TerrainFeatures
