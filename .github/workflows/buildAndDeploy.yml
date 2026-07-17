@@ -127,7 +127,11 @@ jobs:
         shell: bash
         run: |
           mkdir whatsNewDirectory
-          echo "${{needs.get-release-body.outputs.release_body}}" > whatsNewDirectory/whatsnew-en-US
+          body="${{needs.get-release-body.outputs.release_body}}"
+          while [ ${#body} -gt 500 ]; do
+            body="${body%$'\n'*}"
+          done
+          echo "$body" > whatsNewDirectory/whatsnew-en-US
           for attempt in 1 2 3; do
             ./gradlew :android:bundleRelease :android:assembleRelease && break
             echo "Attempt $attempt failed, retrying in 5s..."
