@@ -867,7 +867,7 @@ With some exceptions, most sounds are from FreeSound.org. The sounds are either 
     -   [Fighter Jet Aircraft Fly by (synthesised)](https://freesound.org/people/Headphaze/sounds/347795/) by Headphaze (CC0)
     -   [Machine Gun 001 - triple shot](https://freesound.org/people/pgi/sounds/212600/) by pgi (CC0)
 - Excerpt from [Tanks Shooting](https://freesound.org/people/qubodup/sounds/189344/) by qubodup for tankshot and shipCannonVolley (CC0)
-- "torpedo" is made by the Unciv team using Audacity from altering and combining
+- "torpedo" is made by the Unciv team using Audacity by altering and combining
     -   [Torpedo launch underwater](https://freesound.org/people/jobro/sounds/35530/) by jobro (CC BY 3.0)
     -   [Nearby explosion with debris.wav](https://freesound.org/people/juskiddink/sounds/108641/) by juskiddink (CC BY 4.0)
 - [elephant 44](https://freesound.org/people/y89312/sounds/139875/) by y89312 for Naruesan's Elephant sound (CC BY 3.0)
