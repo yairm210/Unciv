@@ -940,6 +940,12 @@ enum class UniqueType(
         docDescription = "Works only with promotions that are valid for the unit's type - or for promotions that do not specify any."),  // Not used in Vanilla
     FreeStatBuildings("Provides the cheapest [stat] building in your first [positiveAmount] cities for free", UniqueTarget.Triggerable),  // used in Policy
     FreeSpecificBuildings("Provides a [buildingName] in your first [positiveAmount] cities for free", UniqueTarget.Triggerable),  // used in Policy
+
+    OneTimeReduceCityFlag("Remove [amount] turns of [cityFlag] [cityFilter]", UniqueTarget.UnitTriggerable,
+        docDescription = "Not able to remove a flag entirely, only next-turn can do that.\n" +
+            "The target city will always be the one owning the unit's tile, cityFilter only limits when the action is available.\n" +
+            "As unit action, the icon is UnitActionIcons/Remove <cityFlag>, and not included in the base game."),
+
     TriggerEvent("Triggers a [event] event", UniqueTarget.Triggerable),
     MarkTutorialComplete("Mark tutorial [comment] complete", UniqueTarget.Triggerable, flags = UniqueFlag.setOfHiddenNoConditionals),
     PlaySound("Play [comment] sound", UniqueTarget.Triggerable, flags = UniqueFlag.setOfHiddenToUsers,

@@ -18,6 +18,7 @@ import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
+import com.unciv.models.ruleset.unique.UniqueTriggerExecutors
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.fillPlaceholders
@@ -256,6 +257,7 @@ object UnitActionsFromUniques {
                         stat
                     )
                 }
+                UniqueType.OneTimeReduceCityFlag -> UniqueTriggerExecutors.getReduceCityFlagActionText(unique, unit)
                 UniqueType.TriggerEvent -> unique.params[0]
                 else -> unique.text.removeConditionals()
             }

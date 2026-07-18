@@ -40,10 +40,14 @@ import java.util.EnumSet
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.roundToInt
 
-enum class CityFlags {
-    WeLoveTheKing,
-    ResourceDemand,
-    Resistance
+enum class CityFlags(val label: String) {
+    WeLoveTheKing("We Love The King Day"),
+    ResourceDemand("Demands Resource"),
+    Resistance("Resistance"),
+    ;
+    companion object {
+        fun safeValueOf(label: String) = entries.firstOrNull { it.label == label }
+    }
 }
 
 
@@ -258,7 +262,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
             }
 
     @Readonly fun hasFlag(flag: CityFlags) = flagsCountdown.containsKey(flag.name)
-    @Readonly fun getFlag(flag: CityFlags) = flagsCountdown[flag.name]!!
+    @Readonly fun getFlag(flag: CityFlags) = flagsCountdown[flag.name] ?: 0
 
     @Readonly fun isWeLoveTheKingDayActive() = hasFlag(CityFlags.WeLoveTheKing)
     @Readonly fun isInResistance() = hasFlag(CityFlags.Resistance)

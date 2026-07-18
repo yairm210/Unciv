@@ -298,6 +298,17 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
     Uniques that have immediate, one-time effects on a unit.They can be added to units (on unit, unit type, or promotion) to grant them the ability to trigger this effect as an action, which can be modified with UnitActionModifier and UnitTriggerCondition conditionals.
 
+??? example  "Remove [amount] turns of [cityFlag] [cityFilter]"
+	Not able to remove a flag entirely, only next-turn can do that.
+
+	The target city will always be the one owning the unit's tile, cityFilter only limits when the action is available.
+
+	As unit action, the icon is UnitActionIcons/Remove &lt;cityFlag&gt;, and not included in the base game.
+
+	Example: "Remove [3] turns of [Resistance] [in all cities]"
+
+	Applicable to: UnitTriggerable
+
 ??? example  "[unitTriggerTarget] heals [positiveAmount] HP"
 	Example: "[This Unit] heals [3] HP"
 
@@ -4244,6 +4255,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[belief]: The name of any belief.
 *[beliefType]: 'Pantheon', 'Follower', 'Founder' or 'Enhancer'
 *[buildingName]: The name of any building.
+*[cityFlag]: The name of a city flag (countdown).
 *[civWideStat]: All the following stats have civ-wide fields: `Gold`, `Science`, `Culture`, `Faith`.
 *[combatantFilter]: This indicates a combatant, which can either be a unit or a city (when bombarding). Must either be `City` or a `mapUnitFilter`.
 *[costOrStrength]: `Cost` or `Strength`.

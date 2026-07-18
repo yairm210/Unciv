@@ -2,6 +2,7 @@ package com.unciv.models.ruleset.unique
 
 import com.unciv.Constants
 import com.unciv.logic.MultiFilter
+import com.unciv.logic.city.CityFlags
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Ruleset
@@ -274,6 +275,12 @@ enum class UniqueParameterType(
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = getErrorSeverityForFilter(parameterText, ruleset)
     },
+
+    /** e.g. [UniqueType.OneTimeReduceCityFlag]  */
+    CityFlag("cityFlag", "Resistance", "The name of a city flag (countdown)") {
+        override val staticKnownValues = CityFlags.entries.mapTo(mutableSetOf()) { it.label }
+    },
+
 
     /** Used by [BuildingFilter] and e.g. [UniqueType.ConditionalCityWithBuilding] */
     BuildingName("buildingName", "Library", "The name of any building") {

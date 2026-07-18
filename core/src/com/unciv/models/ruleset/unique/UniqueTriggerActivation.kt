@@ -1448,12 +1448,19 @@ object UniqueTriggerActivation {
                 }
             }
 
+            UniqueType.OneTimeReduceCityFlag -> {
+                val (city, flag, amount) = UniqueTriggerExecutors.canReduceCityFlag(civInfo, unique, unit) ?: return null
+                return {
+                    UniqueTriggerExecutors.reduceCityFlag(city, flag, amount)
+                }
+            }
+
             else -> return null
         }
     }
 
     @Readonly
-    private fun getNotificationText(notification: String?, triggerNotificationText: String?, effectNotificationText: String): String? {
+    internal fun getNotificationText(notification: String?, triggerNotificationText: String?, effectNotificationText: String): String? {
         return if (!notification.isNullOrEmpty()) notification
         else if (triggerNotificationText != null)
         {
