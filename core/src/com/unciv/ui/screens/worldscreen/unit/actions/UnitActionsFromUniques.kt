@@ -193,7 +193,7 @@ object UnitActionsFromUniques {
     }
 
     // Instead of Withdrawing, stand your ground!
-    // Different than Fortify
+    // Different from Fortify
     internal fun getGuardActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
         val unique = unit.getMatchingUniques(UniqueType.WithdrawsBeforeMeleeCombat).firstOrNull() ?: return emptySequence()
         val useFrequency = getUseFrequency(unit, unique, 0f)
@@ -362,7 +362,7 @@ object UnitActionsFromUniques {
                             && unit.hasMovement()
                             && tile.improvementFunctions.canBuildImprovement(improvement, unit.cache.state)
                             // Next test is to prevent interfering with UniqueType.CreatesOneImprovement -
-                            // not pretty, but users *can* remove the building from the city queue an thus clear this:
+                            // not pretty, but users *can* remove the building from the city queue and thus clear this:
                             && !tile.isMarkedForCreatesOneImprovement()
                             && UnitActionModifiers.canActivateSideEffects(unit, unique)
                     }

@@ -221,13 +221,13 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     @Readonly
     fun getLandAttackPath(destination: City, maxTurns: Int = PathingMap.MAX_VALID_TURNS): List<Tile>? {
-        @LocalState val pathingCache = landAttackPathing.getOrPut(destination.civ, {PathingMap.createLandAttackPathingMap(civ, centerTile, destination.civ)})
+        @LocalState val pathingCache = landAttackPathing.getOrPut(destination.civ) { PathingMap.createLandAttackPathingMap(civ, centerTile, destination.civ) }
         return pathingCache.getShortestPath(destination.getCenterTile(), maxTurns)
 
     }
     @Readonly
     fun getAmphibiousAttackPath(destination: City, maxTurns: Int = PathingMap.MAX_VALID_TURNS): List<Tile>? {
-        @LocalState val pathingCache = amphibiousAttackPathing.getOrPut(destination.civ, { PathingMap.createAmphibiousAttackPathingMap(civ, centerTile, destination.civ) })
+        @LocalState val pathingCache = amphibiousAttackPathing.getOrPut(destination.civ) { PathingMap.createAmphibiousAttackPathingMap(civ, centerTile, destination.civ) }
         return pathingCache.getShortestPath(destination.getCenterTile(), maxTurns)
     }
 
@@ -526,7 +526,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         val tile = getCenterTile()
         return when {
             construction.isCivilian() -> tile.civilianUnit == null
-            construction.movesLikeAirUnits -> return true // Dealt with in MapUnit.getRejectionReasons
+            construction.movesLikeAirUnits -> true // Dealt with in MapUnit.getRejectionReasons
             else -> tile.militaryUnit == null
         }
     }
@@ -688,7 +688,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         triggerFilter: (Unique) -> Boolean = { true },
         includeCivUniques: Boolean = true): Sequence<Unique> {
         if (includeCivUniques) {
-            return civ.getTriggeredUniques(trigger, gameContext, triggerFilter).asSequence() +
+            return civ.getTriggeredUniques(trigger, gameContext, triggerFilter) +
                 getLocalTriggeredUniques(trigger, gameContext, triggerFilter)
         }
         else {

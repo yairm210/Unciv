@@ -397,7 +397,7 @@ enum class UniqueType(
     ///////////////////////////////////////// region 04 UNIT UNIQUES /////////////////////////////////////////
 
     // Unit action uniques
-    // Unit actions should look like: "Can {action description}, to allow them to be combined with modifiers
+    // Unit actions should look like: "Can {action description}", to allow them to be combined with modifiers
 
     FoundCity("Founds a new city", UniqueTarget.UnitAction),
     FoundPuppetCity("Founds a new puppet city", UniqueTarget.UnitAction),

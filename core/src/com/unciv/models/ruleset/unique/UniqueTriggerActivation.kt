@@ -58,8 +58,11 @@ object UniqueTriggerActivation {
             notification = notification, triggerNotificationText = triggerNotificationText)
     }
 
-    /** @return whether an action was successfully performed
-     * Assumes that conditional check has already been performed */
+    /**
+     *  Fetch [getTriggerFunction] and execute it immediately, if any
+     *  - Assumes that conditional check has already been performed
+     *  @return whether an action was successfully performed
+     */
     fun triggerUnique(
         unique: Unique,
         civInfo: Civilization,
@@ -73,10 +76,18 @@ object UniqueTriggerActivation {
         return function.invoke()
     }
 
-    /** @return The action to be performed if possible, else null
-     * This is so the unit actions can be displayed as "disabled" if they won't actually do anything
-     * Even if the action itself is performable, there are still cases where it can fail -
-     *   for example unit placement - which is why the action itself needs to return Boolean to indicate success */
+    /**
+     *  Get a "trigger function" for [unique], performing any availability checks that can be done ahead of time.
+     *
+     *  This is so the unit actions can be displayed as "disabled" if they won't actually do anything.
+     *
+     *  Even if the action itself is performable, there are still cases where it can fail -
+     *  for example unit placement - which is why the action itself needs to return Boolean to indicate success.
+     *
+     *  ***Note***: Place longer "executors" (the actual stuff performed by the returned function) in [UniqueTriggerExecutors]!
+     *
+     *  @return The action to be performed if possible, else null
+     */
     fun getTriggerFunction(
         unique: Unique,
         civInfo: Civilization,
@@ -184,8 +195,7 @@ object UniqueTriggerActivation {
                 if (civUnit.isCityFounder() && civInfo.isOneCityChallenger())
                     return null
 
-                val limit = civUnit.getMatchingUniques(UniqueType.MaxNumberBuildable)
-                    .map { it.params[0].toInt() }.minOrNull()
+                val limit = civUnit.getMatchingUniques(UniqueType.MaxNumberBuildable).minOfOrNull { it.params[0].toInt() }
                 if (limit != null && limit <= civInfo.units.getCivUnits().count { it.name == civUnit.name })
                     return null
 
@@ -196,7 +206,7 @@ object UniqueTriggerActivation {
                             civInfo.units.addUnit(civUnit, chosenCity) ?: return false
                         // Else set the unit at the given tile
                         tile != null -> civInfo.units.placeUnitNearTile(tile.position, civUnit) ?: return false
-                        // Else set unit unit near other units if we have no cities
+                        // Else set unit near other units if we have no cities
                         civInfo.units.getCivUnits().any() ->
                             civInfo.units.placeUnitNearTile(civInfo.units.getCivUnits().first().currentTile.position, civUnit) ?: return false
 
@@ -225,8 +235,7 @@ object UniqueTriggerActivation {
                 if (civUnit.isCityFounder() && civInfo.isOneCityChallenger())
                     return null
 
-                val limit = civUnit.getMatchingUniques(UniqueType.MaxNumberBuildable)
-                    .map { it.params[0].toInt() }.minOrNull()
+                val limit = civUnit.getMatchingUniques(UniqueType.MaxNumberBuildable).minOfOrNull { it.params[0].toInt() }
                 val unitCount = civInfo.units.getCivUnits().count { it.name == civUnit.name }
                 val amountFromTriggerable = unique.params[0].toInt()
                 val actualAmount = when {
@@ -283,7 +292,7 @@ object UniqueTriggerActivation {
                     val placedUnit = when {
                         // Else set the unit at the given tile
                         tile != null -> civInfo.gameInfo.tileMap.placeUnitNearTile(tile.position,baseUnit,barbarians) ?: return false
-                        // Else set unit unit near other units if we have no cities
+                        // Else set unit near other units if we have no cities
                         civInfo.units.getCivUnits().any() ->
                             civInfo.gameInfo.tileMap.placeUnitNearTile(civInfo.units.getCivUnits().first().currentTile.position,baseUnit,barbarians) ?: return false
 
@@ -312,8 +321,7 @@ object UniqueTriggerActivation {
                 val civUnit = civInfo.getEquivalentUnit(baseUnit)
                 if (civUnit.isCityFounder() && civInfo.isOneCityChallenger())
                     return null
-                val limit = civUnit.getMatchingUniques(UniqueType.MaxNumberBuildable)
-                    .map { it.params[0].toInt() }.minOrNull()
+                val limit = civUnit.getMatchingUniques(UniqueType.MaxNumberBuildable).minOfOrNull { it.params[0].toInt() }
                 val unitCount = civInfo.units.getCivUnits().count { it.name == civUnit.name }
                 val amountFromTriggerable = unique.params[0].toInt()
                 val actualAmount = when {
@@ -330,7 +338,7 @@ object UniqueTriggerActivation {
                         val placedUnit = when {
                             // Else set the unit at the given tile
                             tile != null -> civInfo.gameInfo.tileMap.placeUnitNearTile(tile.position,baseUnit,barbarians) ?: return false
-                            // Else set unit unit near other units if we have no cities
+                            // Else set unit near other units if we have no cities
                             civInfo.units.getCivUnits().any() ->
                                 civInfo.gameInfo.tileMap.placeUnitNearTile(civInfo.units.getCivUnits().first().currentTile.position,baseUnit,barbarians) ?: return false
 
@@ -1355,8 +1363,7 @@ object UniqueTriggerActivation {
 
                 val citiesWithAdjacentTiles = tilesToTakeOver.asSequence()
                     .flatMap { it.neighbors + it }
-                    .map { it.owningCity }
-                    .filterNotNull()
+                    .mapNotNull { it.owningCity }
                     .filter { it.civ == civInfo }
                     .toSet()
 
