@@ -371,7 +371,7 @@ object UniqueTriggerActivation {
 
 
                 fun placeUnit(): Boolean {
-                    val rng = (unit?.cache?.state ?: civInfo.state).stateBasedRandom("UniqueTriggerActivation.getTriggerFunction") 
+                    val rng = (unit?.cache?.state ?: civInfo.state).stateBasedRandom("UniqueTriggerActivation.getTriggerFunction")
                     val placingTile =
                         tile ?: civInfo.cities.random(rng).getCenterTile()
                     val placedUnit = civInfo.units.placeUnitNearTile(placingTile.position, civUnit.name)
@@ -1409,7 +1409,7 @@ object UniqueTriggerActivation {
                         it.getMatchingUniques(UniqueType.Unavailable, GameContext.IgnoreConditionals)
                             .none { unique -> unique.conditionalsApply(unit.cache.state) }
                     }
-                    .flatMap { group -> 
+                    .flatMap { group ->
                         // Grab only names that haven't been taken
                         group.unitNames.filter {
                             name -> name !in civInfo.gameInfo.unitNamesTaken

@@ -56,7 +56,7 @@ enum class UniqueParameterType(
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) =
             parameterText.getInvariantSeverityUnless { toIntOrNull()?.let { it > 0 } == true }
     },
-    
+
     NonNegativeNumber("nonNegativeAmount", "3", "This indicates a non-negative whole number, larger than or equal to zero, a '+' sign is optional") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) =
             parameterText.getInvariantSeverityUnless { toIntOrNull()?.let { it >= 0 } == true }
@@ -513,7 +513,7 @@ enum class UniqueParameterType(
     Belief("belief", "God of War", "The name of any belief") {
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.beliefs.keys
     },
-    
+
     /**Used by [UniqueType.ConditionalCityReligion]*/
     ReligionFilter("religionFilter", "major") {
         override val staticKnownValues = setOf("any", "major", "enhanced", "your", "foreign", "enemy")
@@ -736,7 +736,7 @@ enum class UniqueParameterType(
 
     /** Get a list of possible values [TranslationFileWriter] should include as translatable string
      *  that are not recognized from other json sources */
-    @Readonly 
+    @Readonly
     open fun getTranslationWriterStringsForOutput(): Set<String> = staticKnownValues
 
 

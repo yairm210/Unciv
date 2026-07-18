@@ -59,7 +59,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     @Transient
     lateinit var tilesInRange: HashSet<Tile>
-    
+
     @Transient var state = GameContext.EmptyState
 
     @Transient
@@ -85,7 +85,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     @Transient  // CityStats has no serializable fields
     var cityStats = CityStats(this)
-    
+
     var resourceStockpiles = Counter<String>()
 
     /** All tiles that this city controls */
@@ -102,14 +102,14 @@ class City : IsPartOfGameInfoSerialization, INamed {
     var hasSoldBuildingThisTurn = false
     var isPuppet = false
     var shouldReassignPopulation = false  // flag so that on startTurn() we reassign population
-    
+
     var unitShouldUseSavedPromotion = HashMap<String, Boolean>()
-    
+
     var unitToPromotions = HashMap<String, UnitPromotions>()
 
     /** Neighboring explored cities, in radius of 12 tiles */
     @delegate:Transient
-    val neighboringCities: List<City> by lazy { 
+    val neighboringCities: List<City> by lazy {
         civ.gameInfo.getCities().filter { it != this && it.getCenterTile().isExplored(civ) && it.getCenterTile().aerialDistanceTo(getCenterTile()) <= 12 }.toList()
     }
 
@@ -119,7 +119,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     /**
      * Civ object for the original founder of this city
-     * 
+     *
      * Setting this also sets its backing serialization string ``foundingCiv``
      * */
     @Transient
@@ -152,7 +152,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     @Transient @Cache private val landAttackPathing = ConcurrentHashMap<Civilization, PathingMap>()
     @Transient @Cache private val amphibiousAttackPathing = ConcurrentHashMap<Civilization, PathingMap>()
     @Transient @Cache private lateinit var potentialRoadPathing: PathingMap
-    
+
 
     /** Persisted connected-to-capital (by any medium) to allow "disconnected" notifications after loading */
     var connectedToCapitalStatus = false
@@ -204,7 +204,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     @Readonly fun isCapital(): Boolean = cityConstructions.builtBuildingUniqueMap.hasUnique(UniqueType.IndicatesCapital, state)
     @Readonly fun isCoastal(): Boolean = centerTile.isAdjacentToCoast()
     @Readonly fun isNaval(): Boolean = centerTile.isWater || isCoastal()
-    
+
     @Readonly fun getBombardRange(): Int = civ.gameInfo.ruleset.modOptions.constants.baseCityBombardRange
     @Readonly fun getWorkRange(): Int = civ.gameInfo.ruleset.modOptions.constants.cityWorkRange
     @Readonly fun getExpandRange(): Int = civ.gameInfo.ruleset.modOptions.constants.cityExpandRange
@@ -218,7 +218,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         val mediumTypes = civ.cache.citiesConnectedToCapitalToMediums[this] ?: return false
         return connectionTypePredicate(mediumTypes)
     }
-    
+
     @Readonly
     fun getLandAttackPath(destination: City, maxTurns: Int = PathingMap.MAX_VALID_TURNS): List<Tile>? {
         @LocalState val pathingCache = landAttackPathing.getOrPut(destination.civ, {PathingMap.createLandAttackPathingMap(civ, centerTile, destination.civ)})
@@ -298,7 +298,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         Stat.Food -> population.foodStored += amount
         else -> civ.addStat(stat, amount)
     }
-    
+
     @Readonly
     fun getGameResource(gameResource: GameResource): Int = when (gameResource){
         is TileResource -> getAvailableResourceAmount(gameResource)
@@ -319,7 +319,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
             else -> civ.addGameResource(stat, amount)
         }
     }
-    
+
     @Readonly
     fun getStatReserve(stat: Stat): Int = when (stat) {
         Stat.Production -> cityConstructions.getWorkDone(cityConstructions.getCurrentConstruction().name)
@@ -383,7 +383,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     }
 
     fun setFlag(flag: CityFlags, amount: Int, adjustWithGameSpeed: Boolean = false) {
-        flagsCountdown[flag.name] = 
+        flagsCountdown[flag.name] =
             if (adjustWithGameSpeed) (amount * civ.gameInfo.speed.modifier).roundToInt()
             else amount
     }
@@ -520,7 +520,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         population.autoAssignPopulation() // also updates city stats
         civ.cache.updateCivResources() // this building could be a resource-requiring one
     }
-    
+
     @Readonly
     fun canPlaceNewUnit(construction: BaseUnit): Boolean {
         val tile = getCenterTile()
@@ -671,7 +671,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         forEachLocalMatchingUnique(uniqueType, gameContext, op)
         civ.forEachMatchingUnique(uniqueType, gameContext, op)
     }
-    
+
     fun clearCaches() {
         landAttackPathing.clear()
         amphibiousAttackPathing.clear()
@@ -746,7 +746,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     }
 
     //endregion
-    
+
     companion object {
         const val NO_ID = "00000000-0000-0000-0000-000000000000"
         fun pseudoRandomId(civ: Civilization) = pseudoRandomUuid(GameContext(civ).stateBasedRandom("City.Id", civ.cities.size)).toString()

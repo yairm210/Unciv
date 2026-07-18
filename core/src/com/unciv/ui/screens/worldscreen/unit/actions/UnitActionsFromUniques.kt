@@ -45,7 +45,7 @@ object UnitActionsFromUniques {
     internal fun getFoundCityAction(unit: MapUnit, tile: Tile): UnitAction? {
         // FoundPuppetCity is to found a puppet city for modding.
         val unique = UnitActionModifiers.getUsableUnitActionUniques(unit,
-            UniqueType.FoundCity).firstOrNull() ?: 
+            UniqueType.FoundCity).firstOrNull() ?:
             UnitActionModifiers.getUsableUnitActionUniques(unit,
             UniqueType.FoundPuppetCity).firstOrNull() ?: return null
 
@@ -206,9 +206,9 @@ object UnitActionsFromUniques {
                 title = title
             ))
         }
-        
+
         if (!unit.hasMovement()) return emptySequence()
-        
+
         return sequenceOf(UnitAction(UnitActionType.Guard,
             useFrequency = useFrequency,
             action = {
@@ -450,7 +450,7 @@ object UnitActionsFromUniques {
                     if (newUnit == null) {
                         val resurrectedUnit =
                             civInfo.units.placeUnitNearTile(unitTile.position, unit.baseUnit, unit.id, copiedFrom = unit)!!
-                        
+
                     } else { // Managed to upgrade
                         // have to handle movement manually because we killed the old unit
                         // a .destroy() unit has 0 movement
