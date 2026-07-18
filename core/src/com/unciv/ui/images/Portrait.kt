@@ -55,7 +55,7 @@ open class Portrait(val type: Type, val imageName: String, val size: Float, val 
     val pathPortrait = "${type.directory}Portraits/$imageName"
     val pathPortraitFallback by lazy { "${type.directory}Portraits/Fallback" }
     val pathIcon = "${type.directory}Icons/$imageName"
-    val pathIconFallback by lazy { "${type.directory}Icons/Fallback" }
+    open val pathIconFallback by lazy { "${type.directory}Icons/Fallback" }
 
     open fun getDefaultInnerBackgroundTint(): Color { return Color.WHITE.cpy() }
     open fun getDefaultOuterBackgroundTint(): Color { return Color.BLACK.cpy() }
@@ -209,6 +209,7 @@ class PortraitReligion(name: String, size: Float) : Portrait(Type.Religion, name
 
 class PortraitUnitAction(name: String, size: Float) : Portrait(Type.UnitAction, name, size) {
     override fun getDefaultImageTint(): Color = ImageGetter.CHARCOAL
+    override val pathIconFallback get() = "${type.directory}Icons/Star"
 }
 
 class PortraitImprovement(name: String, size: Float, dim: Boolean = false, isPillaged: Boolean = false) : Portrait(Type.Improvement, name, size) {
