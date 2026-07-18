@@ -3,6 +3,7 @@ package com.unciv.ui.images
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.Layout
@@ -76,7 +77,9 @@ open class Portrait(val type: Type, val imageName: String, val size: Float, val 
         this.setSize(size + borderSize, size + borderSize)
 
         background.center(this)
+        background.touchable = Touchable.disabled
         image.center(this)
+        image.touchable = Touchable.disabled
 
         this.addActor(background)
         this.addActor(image)
