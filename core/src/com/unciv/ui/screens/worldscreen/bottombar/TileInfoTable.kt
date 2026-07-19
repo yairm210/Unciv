@@ -75,6 +75,7 @@ class TileInfoTable(private val worldScreen: WorldScreen) : Table(BaseScreen.ski
         addBorderAllowOpacity(1f, Color.WHITE)
 
         addActor(indicator)
+        isVisible = true
     }
 
     internal fun setPosition() {
