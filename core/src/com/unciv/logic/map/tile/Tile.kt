@@ -424,7 +424,7 @@ class Tile : IsPartOfGameInfoSerialization {
         return civInfo.isAtWarWith(tileOwner)
     }
 
-    @Readonly fun isRoughTerrain() = allTerrains.any { it.isRough}
+    @Readonly fun isRoughTerrain() = allTerrains.any { it.isRough }
 
     @Transient
     internal var stateThisTile: GameContext = GameContext.EmptyState
@@ -571,7 +571,7 @@ class Tile : IsPartOfGameInfoSerialization {
             "All", "all" -> return true
             "Water" -> return isWater
             "Land" -> return isLand
-            Constants.coastal -> return _isAdjacentToCoast
+            Constants.coastal -> return isAdjacentToCoast()
             Constants.river -> return isAdjacentToRiver()
             "Unowned" -> return getOwner() == null
             "your" -> return observingCiv != null && getOwner() == observingCiv
@@ -581,7 +581,7 @@ class Tile : IsPartOfGameInfoSerialization {
             "resource" -> return observingCiv != null && observingCiv.canSeeResource(tileResource)
             "Water resource" -> return isWater && observingCiv != null && observingCiv.canSeeResource(tileResource)
             "Featureless" -> return terrainFeatures.isEmpty()
-            "Open terrain" -> return allTerrains.all { !it.isRough} // special case - if *one* terrain is open, we don't care, we need *all*
+            "Open terrain" -> return allTerrains.all { !it.isRough } // special case - if *one* terrain is open, we don't care, we need *all*
             Constants.freshWaterFilter ->
                 return isAdjacentTo(Constants.freshWater, observingCiv)
         }
@@ -591,10 +591,10 @@ class Tile : IsPartOfGameInfoSerialization {
             resource -> observingCiv == null || observingCiv.canSeeResource(tileResource)
 
             else -> {
-                val owner = getOwner()
                 if (allTerrains.any { it.matchesFilter(filter, stateThisTile, false) }) return true
-                if (owner != null && owner.matchesFilter(filter, stateThisTile, false)) return true
 
+                val owner = getOwner()
+                if (owner != null && owner.matchesFilter(filter, stateThisTile, false)) return true
 
                 // Checks 'luxury resource', 'strategic resource' and 'bonus resource' - only those that are visible of course
                 // not using canSeeResource as observingCiv is often not passed in,
@@ -615,7 +615,7 @@ class Tile : IsPartOfGameInfoSerialization {
         }
     }
 
-    @Readonly fun isAdjacentToCoast() = _isAdjacentToCoast
+    @Readonly fun isAdjacentToCoast() = isLand && _isAdjacentToCoast
 
     @Readonly fun getViewableTilesList(distance: Int): List<Tile> = tileMap.getViewableTiles(position, distance)
     @Deprecated(message = "forEachTileInDistance is faster. If not viable, then this can still be used",

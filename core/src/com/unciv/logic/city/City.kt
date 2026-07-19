@@ -204,7 +204,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     @Readonly fun isCapital(): Boolean = cityConstructions.builtBuildingUniqueMap.hasUnique(UniqueType.IndicatesCapital, state)
     @Readonly fun isCoastal(): Boolean = centerTile.isAdjacentToCoast()
     @Readonly fun isNaval(): Boolean = centerTile.isWater || isCoastal()
-    
+
     @Readonly fun getBombardRange(): Int = civ.gameInfo.ruleset.modOptions.constants.baseCityBombardRange
     @Readonly fun getWorkRange(): Int = civ.gameInfo.ruleset.modOptions.constants.cityWorkRange
     @Readonly fun getExpandRange(): Int = civ.gameInfo.ruleset.modOptions.constants.cityExpandRange
@@ -218,7 +218,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         val mediumTypes = civ.cache.citiesConnectedToCapitalToMediums[this] ?: return false
         return connectionTypePredicate(mediumTypes)
     }
-    
+
     @Readonly
     fun getLandAttackPath(destination: City, maxTurns: Int = PathingMap.MAX_VALID_TURNS): List<Tile>? {
         @LocalState val pathingCache = landAttackPathing.getOrPut(destination.civ, {PathingMap.createLandAttackPathingMap(civ, centerTile, destination.civ)})

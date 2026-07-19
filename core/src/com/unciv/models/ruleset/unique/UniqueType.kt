@@ -655,7 +655,11 @@ enum class UniqueType(
 
     FreshWater(Constants.freshWater, UniqueTarget.Terrain),
     RoughTerrain("Rough terrain", UniqueTarget.Terrain),
-    CoastalWater("Coastal Water", UniqueTarget.Terrain),
+    CoastalWater("Coastal Water", UniqueTarget.Terrain, docDescription =
+        "Marks water tiles as Coast - all other water tiles count as Ocean. These distinctions are relevant e.g. for map generator or the ability to navigate here.\n" +
+        "Note that terrain filters do not recognize this distinction, filtering for \"Coast\" or \"Ocean\" will only look for a terrain of that name.\n" +
+        "Also note that for compatibility reasons, terrains named \"Coast\" are assuned to have this Unique even if it's missing. This may be removed in a future version.\n" +
+        "A tile marked this way marks adjacent land tiles as \"Coastal\", so they fulfill the terrain filter, and cities built there can build ships, Harbor, etc."),
 
     ExcludedFromMapEditor("Excluded from map editor", UniqueTarget.Terrain, UniqueTarget.Improvement, UniqueTarget.Resource, UniqueTarget.Nation, flags = UniqueFlag.setOfHiddenToUsers),
 
