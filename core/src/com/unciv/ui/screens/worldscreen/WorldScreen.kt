@@ -97,6 +97,10 @@ class WorldScreen(
     /** Indicates it's the player's ([viewingCiv]) turn */
     var isPlayersTurn = viewingCiv.isCurrentPlayer()
         internal set     // only this class is allowed to make changes
+    
+    /** Indicates that a game failed to upload, and needs to be uploaded */
+    var failedUpload = false
+        internal set
 
     /** Selected civilization, used in spectator and replay mode, equals viewingCiv in ordinary games */
     var selectedCiv = viewingCiv
@@ -645,7 +649,7 @@ class WorldScreen(
                         }
                     }
 
-                    this@WorldScreen.isPlayersTurn = true // Since we couldn't push the new game clone, then it's like we never clicked the "next turn" button
+                    this@WorldScreen.failedUpload = true // Since we couldn't push the new game clone, then we need to try again
                     this@WorldScreen.shouldUpdate = true
                     return@runOnNonDaemonThreadPool
                 }
