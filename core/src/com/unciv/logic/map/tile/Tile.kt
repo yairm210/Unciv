@@ -74,6 +74,8 @@ class Tile : IsPartOfGameInfoSerialization {
             turnsToImprovement = (turnsToImprovement - 1).coerceAtLeast(0)
             return turnsToImprovement > 0
         }
+        @Readonly
+        fun clone() = ImprovementQueueEntry(improvement, turnsToImprovement)
     }
     internal val improvementQueue = ArrayList<ImprovementQueueEntry>(1)
 
@@ -241,7 +243,7 @@ class Tile : IsPartOfGameInfoSerialization {
         toReturn.resourceAmount = resourceAmount
         toReturn.improvement = improvement
         @LocalState val cloneImprovementQueue = toReturn.improvementQueue
-        cloneImprovementQueue.addAll(improvementQueue)
+        cloneImprovementQueue.addAll(improvementQueue.map { it.clone() })
         toReturn.improvementIsPillaged = improvementIsPillaged
         toReturn.roadStatus = roadStatus
         toReturn.roadIsPillaged = roadIsPillaged
