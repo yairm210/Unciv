@@ -24,7 +24,7 @@ Flag Icons made by [Freepik](https://www.flaticon.com/authors/freepik) from [www
 
 New Unciv logo made by u-ndefined on Discord
 
-Base tile icons for the "Fantasy Hex" tileset belong to CuddlyClover @ https://cuddlyclover.itch.io/fantasy-hex-tiles with a few additions by various contributors
+The base tile icons for the "Fantasy Hex" tileset were created CuddlyClover at <https://cuddlyclover.itch.io/fantasy-hex-tiles> with a few additions by various contributors, licensed CC BY 4.0.
 
 Unless otherwise specified, all the following are from [the Noun Project](https://thenounproject.com) either licenced under CC BY 3.0 or released into the Public Domain.
 
