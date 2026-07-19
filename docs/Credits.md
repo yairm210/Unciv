@@ -8,13 +8,10 @@ The works listed in this document fall under various licenses. Here’s a list o
 * CC BY 3.0: [Creative Commons Attribution 3.0 Unported](https://creativecommons.org/licenses/by/3.0/)
 * CC BY 4.0: [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/)
 * CC BY-SA 4.0 [Creative Commons Attribution-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-sa/4.0/)
-* CC BY-NC 3.0: [Creative Commons Attribution-NonCommercial 3.0 Unported](https://creativecommons.org/licenses/by-nc/3.0/)
-* CC BY-NC 4.0: [Creative Commons Attribution-NonCommercial 4.0 International](https://creativecommons.org/licenses/by-nc/4.0/)
 * Public domain: The work has been released into the public domain.
 * Unknown license: Unfortunately, the license this work was released under got lost to history.
 
-Please note that CC BY-NC 3.0 and CC BY-NC 4.0 are **non-free licenses** and incompatible with free software.
-Unknown licenses are also incompatible with free software.
+Please note that having an unknown license is incompatible with free software.
 
 ## Icon Credits
 
@@ -203,7 +200,7 @@ By Basil:
 
 ### HexaRealm
 
-Unless otherwise specified, Tile improvements and units, as well as the terrains and improvements for HexaRealm tileset, are made by The Bucketeer / @GeneralWadaling and are licenced under a Creative Commons license (but we forgot *which* Creative Commons license exactly, we only know it’s a license with version 3.0).
+Unless otherwise specified, Tile improvements and units, as well as the terrains and improvements for HexaRealm tileset, are made by The Bucketeer / @GeneralWadaling and are licenced under an unknown Creative Commons license (we only know it has version 3.0, but we don’t know *which* license specifically).
 
 
 HexaRealm tileset images by legacymtgsalvationuser69544 [here](https://github.com/legacymtgsalvationuser69544/Edges-Tileset):
@@ -832,14 +829,14 @@ HexaRealm tileset images by legacymtgsalvationuser69544 [here](https://github.co
 
 ## Sound credits
 
-With some exceptions, most sounds are from FreeSound.org. The sounds are either licensed CC0/Public Domain, CC BY, CC BY-NC or under an unknown license:
+With some exceptions, most sounds are from FreeSound.org. The sounds are either licensed CC0/Public Domain, CC BY 3.0 or CC BY 4.0:
 
 - [Soft two-fingered snap](https://freesound.org/people/EathanMarkson/sounds/388958/) By EathanMarkson as 'click' for most clicks (CC0)
 - [Pencil1](https://freesound.org/people/stijn/sounds/43673/) By stijn as 'paper' for opening and closing the tech picker (CC0)
 - [SawInOut01](https://freesound.org/people/kingof_thelab/sounds/340243/) By kingof_thelab for construction picking? (CC BY 3.0)
 - [Chain Snare #1](https://freesound.org/people/lovesbody/sounds/322079/) By lovesbody as 'fortify' (CC BY 4.0)
 - [Level up](https://freesound.org/people/Marregheriti/sounds/266100/) By Marregheriti as 'upgrade' for upgrading units (CC0)
-- [levelup](https://freesound.org/people/Seidhepriest/sounds/382915/) By Seidhepriest as 'chimes' for special actions (free tech, build city, hurry wonder etc.) (CC BY-NC 4.0)
+- [Level up](https://freesound.org/people/Bastianhallo/sounds/682633/) By Bastianhallo as 'chimes' for special actions (free tech, build city, hurry wonder etc.) (CC0)
 - [Coin](https://freesound.org/people/TheDJoe93/sounds/97373/) By TheDJoe93 as 'coin' for purchasing tiles and constructions (CC0)
 - [fast simple chop 1](https://freesound.org/people/dave.des/sounds/127196/) By dave.dev as 'whoosh' for moving units around, also in edited form to produce the 'swap units' sound. (CC0)
 - [Military kick](https://freesound.org/people/Dodgy%20C/sounds/72070/) By Dodgy C as 'promote' for unit promotions (CC BY 3.0)
@@ -850,7 +847,6 @@ With some exceptions, most sounds are from FreeSound.org. The sounds are either 
 - [Crossbow Firing](https://freesound.org/people/GameWithBepis/sounds/561475/) by GameWithBepis as 'crossbow' for crossbow attacks (CC0)
 - [Metal hit slide](https://freesound.org/people/orginaljun/sounds/149102/) by orginaljun as 'nonmetalhit' for pre-metal melee sounds (CC BY 4.0)
 - [wpn 1 generic](https://freesound.org/people/SlavicMagic/sounds/446016/) By SlavicMagic as 'metalhit' for metal melee sounds (CC0)
-- [snorting horse](https://freesound.org/people/soundslikewillem/sounds/418427/) By soundslikewillem as part of 'horse' for mounted unit attack sounds (CC BY-NC 4.0)
 - [Horse's whinny](https://freesound.org/people/Kubuzz/sounds/347036/) By Kubuzz as part of 'horse' for mounted unit attack sounds (CC0)
 - [machine gun 001 - loop](https://freesound.org/people/pgi/sounds/212602/) By pgi as 'machinegun' for machine gun attack sound (CC0)
 - [uzzi_full_single](https://freesound.org/people/Deganoth/sounds/348685/) By Deganoth as 'shot' for bullet attacks (CC BY 4.0)
@@ -862,19 +858,19 @@ With some exceptions, most sounds are from FreeSound.org. The sounds are either 
 - [Short Choir](https://freesound.org/people/Breviceps/sounds/444491/) by Breviceps as 'choir' for free great person pick (CC0)
 - [Death Robot! Robotic scream](https://freesound.org/people/vultraz168/sounds/334660/) by vultraz168 for Giant Death Robot Attack (CC0)
 - [ceremonial cannon fire](https://freesound.org/people/DylanSmithSound/sounds/274826/) by DylanSmithSound for cannon, shipCannonVolley and cavalry (CC BY 4.0)
-- [artillery fire](https://freesound.org/people/Tomashevsky/sounds/476664/) by Tomashevsky for artillery (CC BY-NC 3.0)
-- [20mm cannons](https://freesound.org/people/Piotr123/sounds/551534/) by Piotr123 for ship guns (unknown license)
-- "bombing" is made by the Unciv team using Audacity from
+- [Incoming Artillery Strike Cinematic Explosion](https://freesound.org/people/EvanBoyerman/sounds/530886/) by EvanBoyerman for artillery (changes were made) (CC BY 3.0)
+- [Cannon5.wav](https://freesound.org/people/Isaac200000/sounds/184651/) by Isaac200000 for shipguns (changes were made) (CC0)
+- "bombing" is made by the Unciv team using Audacity by altering and combining
     -   [lancaster bomber](https://freesound.org/people/confusion_music/sounds/103439/) by confusion_music - aircraft (CC BY 4.0)
-    -   [Artillery Explosion (Close) (Mixed)](https://freesound.org/people/EFlexMusic/sounds/388528/) by EFlexMusic - impact (CC BY-NC 3.0)
+    -   [custom_artillery_booming_explosive_impact_sounds](https://freesound.org/people/Artninja/sounds/750825/) by Artninja - impact (CC BY 4.0)
     -   [SFX Hit drop/bomb effect 5](https://freesound.org/people/old_waveplay/sounds/187502/) by old_waveplay - bass (CC0)
 - "jetgun" for Jet Fighter attack is made by the Unciv team using Audacity from
     -   [Fighter Jet Aircraft Fly by (synthesised)](https://freesound.org/people/Headphaze/sounds/347795/) by Headphaze (CC0)
     -   [Machine Gun 001 - triple shot](https://freesound.org/people/pgi/sounds/212600/) by pgi (CC0)
 - Excerpt from [Tanks Shooting](https://freesound.org/people/qubodup/sounds/189344/) by qubodup for tankshot and shipCannonVolley (CC0)
-- "torpedo" is made by the Unciv team using Audacity from
+- "torpedo" is made by the Unciv team using Audacity by altering and combining
     -   [Torpedo launch underwater](https://freesound.org/people/jobro/sounds/35530/) by jobro (CC BY 3.0)
-    -   [Artillery Explosion (Close) (Mixed)](https://freesound.org/people/EFlexMusic/sounds/388528/) by EFlexMusic (CC BY-NC 3.0)
+    -   [Nearby explosion with debris.wav](https://freesound.org/people/juskiddink/sounds/108641/) by juskiddink (CC BY 4.0)
 - [elephant 44](https://freesound.org/people/y89312/sounds/139875/) by y89312 for Naruesan's Elephant sound (CC BY 3.0)
 - Excerpt from [Missile Strike](https://freesound.org/people/BaDoink/sounds/570690/) by BaDoink for guided missile (CC0)
 - Excerpt from [FireBurning_v2.wav](https://freesound.org/people/pcaeldries/sounds/30322/) by pcaeldries for 'remove heresy' action of inquisitor (CC BY 4.0)
