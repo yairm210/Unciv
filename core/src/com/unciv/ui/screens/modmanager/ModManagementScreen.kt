@@ -20,6 +20,7 @@ import com.unciv.logic.github.GithubAPI
 import com.unciv.logic.github.GithubAPI.downloadAndExtract
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.addSeparator
@@ -517,6 +518,8 @@ class ModManagementScreen private constructor(
                         ToastPopup(msg, this@ModManagementScreen, 4000L)
                     }
 
+                    if (RulesetCache[repoName]?.modOptions?.hasUnique(UniqueType.ModIsAudioVisualOnly) == true)
+                        game.settings.visualMods.add(repoName)
                     updateInstalledModUIData(repoName)
                     refreshInstalledModTable()
                     lastSelectedButton?.let { syncOnlineSelected(repoName, it) }
