@@ -2612,28 +2612,28 @@ them in other Uniques.</p>
 </li>
 <li>Or the filter is a constant string choosing a derived test:<ul>
 <li><code>All</code>, <code>all</code></li>
-<li><code>Terrain</code></li>
+<li><code>Terrain</code> (same as "all" in this context, can help making uniques more readable)</li>
 <li><code>Water</code>, <code>Land</code></li>
-<li><code>Coastal</code> (at least one direct neighbor is a coast)</li>
+<li><code>Coastal</code> (<em>Land</em> with least one direct neighbor being a coast - see <a href="../uniques/#terrain-uniques">"Coastal Water"</a> unique)</li>
 <li><code>River</code> (as in all 'river on tile' contexts, it means 'adjacent to a river on at least one side')</li>
-<li><code>Open terrain</code>, <code>Rough terrain</code> (note all terrain not having the rough unique is counted as open)</li>
-<li><code>Friendly Land</code>, <code>Friendly</code> - land belonging to you, or other civs with open borders to you</li>
-<li><code>Foreign Land</code> - any land that isn't friendly land</li>
-<li><code>Enemy Land</code>, <code>Enemy</code> - any land belonging to a civ you are at war with</li>
-<li><code>your</code> - land belonging to you</li>
-<li><code>Unowned</code> - land that is not owned by any civ</li>
+<li><code>Open terrain</code>, <code>Rough terrain</code> (note all terrain not having the <a href="../uniques/#terrain-uniques">"Rough terrain"</a> unique is counted as open)</li>
 <li><code>Water resource</code>, <code>Strategic resource</code>, <code>Luxury resource</code>, <code>Bonus resource</code>, <code>resource</code></li>
 <li><code>Natural Wonder</code> (as opposed to above which means testing for a specific Natural Wonder by name, this tests for any of them)</li>
-<li><code>Featureless</code></li>
-<li><code>Fresh Water</code></li>
+<li><code>Terrain Feature</code> (having any terrain feature)</li>
+<li><code>Featureless</code> (having no terrain feature)</li>
+<li><code>Fresh Water</code> ("River" filter, or adjacent to a tile with the "Fresh water" unique, like Oasis. Note the important case distinction: with "w" the filter will match the Oasis by matching the Unique, with "W" it will not match the Oasis but its neighboring tiles)</li>
 <li><code>non-fresh water</code></li>
-<li><code>Impassible</code></li>
+<li><code>Impassable</code></li>
+<li><code>Friendly Land</code>, <code>Friendly</code> - terrain (despite the name this includes water tiles) belonging to you, or other civs with open borders to you</li>
+<li><code>Foreign Land</code> - any terrain that isn't friendly terrain</li>
+<li><code>Enemy Land</code>, <code>Enemy</code> - any terrain belonging to a civ you are at war with</li>
+<li><code>your</code> - terrain belonging to you</li>
+<li><code>Unowned</code> - terrain that is not owned by any civ</li>
 </ul>
 </li>
 </ul>
 <p>Please note all of these are <em>case-sensitive</em>.</p>
 <p>Note: Resource filters depend on whether a viewing civ is known in the context where the filter runs. Water and specific tests require a viewing civ, and if the resource needs a tech to be visible, that tech to be researched by the viewing civ. The other resource category tests can succeed without a known viewing civ only for resources not requiring any tech. So - test your mod!</p>
-<p>So for instance, the unique "[stats] from [tileFilter] tiles [cityFilter]" can match several cases:</p>
 <h2 id="tilefilter">tileFilter</h2>
 <p>Allowed values:</p>
 <ul>

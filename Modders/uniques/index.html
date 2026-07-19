@@ -5278,6 +5278,10 @@
 </details>
 <details class="example">
 <summary>Coastal Water</summary>
+<p>Marks water tiles as Coast - all other water tiles count as Ocean. These distinctions are relevant e.g. for map generator or the ability to navigate here.</p>
+<p>Note that terrain filters do not recognize this distinction, filtering for "Coast" or "Ocean" will only look for a terrain of that name.</p>
+<p>Also note that for compatibility reasons, terrains named "Coast" are assuned to have this Unique even if it's missing. This may be removed in a future version.</p>
+<p>A tile marked this way marks adjacent land tiles as "Coastal", so they fulfill the terrain filter, and cities built there can build ships, Harbor, etc.</p>
 <p>Applicable to: Terrain</p>
 </details>
 <details class="example">
