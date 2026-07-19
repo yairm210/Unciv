@@ -40,4 +40,6 @@ internal abstract class OptionsPopupTab(
     override fun activated(index: Int, caption: String, pager: TabbedPager) {
         if (!isInitialized) lateInitialize()
     }
+
+    open fun subSelect(select: String?) {}
 }

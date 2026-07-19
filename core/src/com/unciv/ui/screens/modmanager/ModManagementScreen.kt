@@ -43,6 +43,8 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
+import com.unciv.ui.popups.options.OptionsPopup
+import com.unciv.ui.popups.options.OptionsPopupPages
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
@@ -607,6 +609,12 @@ class ModManagementScreen private constructor(
             if (optionsManager.sortInstalled == SortType.Status)
                 refreshInstalledModTable()
         }
+
+        val checkModButton = "Check [${cleanModName(modInfo.name)}]".toTextButton()
+        checkModButton.onClick {
+            OptionsPopup(this, OptionsPopupPages.ModCheck, subSelect = mod.name).open()
+        }
+        modActionTable.add(checkModButton).row()
 
         val updateModButton = modActionTable.addUpdateModButton(modInfo) ?: return
         updateModButton.onClick {

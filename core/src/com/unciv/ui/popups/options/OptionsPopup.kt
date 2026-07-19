@@ -18,7 +18,8 @@ class OptionsPopup(
     screen: BaseScreen,
     private val selectPage: OptionsPopupPages = defaultPage,
     withDebug: Boolean = false,
-    private val onClose: () -> Unit = {}
+    private val onClose: () -> Unit = {},
+    private val subSelect: String? = null
 ) : Popup(screen.stage, /** [TabbedPager] handles scrolling */ scrollable = Scrollability.None), OptionsPopupHelpers {
 
     val game = screen.game
@@ -84,6 +85,8 @@ class OptionsPopup(
     override fun setVisible(visible: Boolean) {
         super.setVisible(visible)
         if (!visible) return
-        if (tabs.activePage < 0) tabs.selectPage(selectPage)
+        if (tabs.activePage >= 0) return
+        pageIndex[selectPage]?.subSelect(subSelect)
+        tabs.selectPage(selectPage.ordinal)
     }
 }

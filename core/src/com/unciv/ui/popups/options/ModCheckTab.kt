@@ -97,6 +97,10 @@ internal class ModCheckTab(
         add(modCheckResultTable)
     }
 
+    override fun subSelect(select: String?) {
+        searchModsTextField.text = select
+    }
+
     private fun runAction() {
         if (modCheckFirstRun) runModChecker()
         else runModChecker(modCheckBaseSelect!!.selected.value)
@@ -133,7 +137,9 @@ internal class ModCheckTab(
 
         val openedExpanderTitles = modResultTables
             .filterIsInstance<ExpanderTab>()
-            .filter { it.isOpen }.map { it.title }.toSet()
+            .filter { it.isOpen }.mapTo(mutableSetOf()) { it.title }
+        if (searchModsTextField.text in RulesetCache.keys)
+            openedExpanderTitles.add(searchModsTextField.text)
 
         modCheckResultTable.clear()
         modResultTables.clear()
