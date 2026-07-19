@@ -23,7 +23,6 @@ import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
-import kotlin.random.Random
 
 /**
  * Damage calculations according to civ v wiki and https://steamcommunity.com/sharedfiles/filedetails/?id=170194443
@@ -120,13 +119,15 @@ object Battle {
             if (attacker.isDefeated()) return interceptDamage
         } else interceptDamage = DamageDealt.None
 
-        if (hasWithdrawnFromMeelee(attacker, defender, attackedTile)) return DamageDealt.None
+        if (hasWithdrawnFromMelee(attacker, defender, attackedTile)) return DamageDealt.None
 
         val isAlreadyDefeatedCity = defender is CityCombatant && defender.isDefeated()
 
+        val extraRangedAttackDamage = tryExtraRangedAttack(attacker, defender, attackedTile)
+
         triggerCombatUniques(attacker, defender, attackedTile)
 
-        val damageDealt = takeDamage(attacker, defender)
+        val damageDealt = takeDamage(attacker, defender) + extraRangedAttackDamage
 
         // check if unit is captured by the attacker (prize ships unique)
         // As ravignir clarified in issue #4374, this only works for aggressor
@@ -767,7 +768,7 @@ object Battle {
         }
     }
     
-    private fun hasWithdrawnFromMeelee(attacker: ICombatant, defender: ICombatant, attackedTile: Tile): Boolean {
+    private fun hasWithdrawnFromMelee(attacker: ICombatant, defender: ICombatant, attackedTile: Tile): Boolean {
         return (attacker is MapUnitCombatant && attacker.isMelee() && defender is MapUnitCombatant
                 && defender.unit.hasUnique(UniqueType.WithdrawsBeforeMeleeCombat, gameContext = GameContext(
             civInfo = defender.getCivInfo(),
@@ -835,6 +836,45 @@ object Battle {
                 LocationAction(attackedTile.position, attacker.getTile().position),
                 NotificationCategory.War, attacker.unit.baseUnit.name,
                 NotificationIcon.War)
+        }
+    }
+
+    private fun tryExtraRangedAttack(attacker: ICombatant, defender: ICombatant, attackedTile: Tile): DamageDealt {
+        if (attacker !is MapUnitCombatant) return DamageDealt.None
+        if (defender !is MapUnitCombatant) return DamageDealt.None
+        if (defender.isCivilian()) return DamageDealt.None
+
+        var damageDealt = DamageDealt.None
+        for (unique in attacker.unit.getMatchingUniques(UniqueType.ExtraRangedAttack)) {
+            val baseRangedStrengthForExtraAttack = (attacker.unit.baseUnit.strength * 
+                unique.params[0].toFloat() / 100).toInt()
+            val fakeAttacker = FakeUnitForExtraRangedAttack(attacker, baseRangedStrengthForExtraAttack)
+            triggerCombatUniques(fakeAttacker, defender, attackedTile)
+
+            damageDealt +=  takeDamage(fakeAttacker, defender)
+
+            //handleCityDefeated() // bonus attack should not trigger vs cities
+            triggerPostKillingUniques(defender, fakeAttacker, attackedTile)
+            triggerDamageUniquesForUnit(attacker, defender, attackedTile, CombatAction.Attack)
+            addXp(attacker, 2, defender)
+            addXp(defender, 2, attacker)
+        }
+        return damageDealt
+    }
+    /** This has all the properties and methods of [mapUnitCombatant] (via delegation)
+     *  **except** for [isRanged] and [getAttackingStrength]
+     */
+    internal class FakeUnitForExtraRangedAttack(val mapUnitCombatant: MapUnitCombatant, val baseRangedStrength: Int) : ICombatant by mapUnitCombatant {
+        override fun getAttackingStrength(defender: ICombatant?): Int {
+            val state = GameContext(this, defender, this.getTile(), CombatAction.Attack)
+            val extraStrength =
+                mapUnitCombatant.unit.getMatchingUniques(UniqueType.StrengthAmount, state)
+                    .sumOf { it.params[0].toInt() }
+            return baseRangedStrength + extraStrength // Is always ranged
+        }
+
+        override fun isRanged(): Boolean {
+            return true
         }
     }
 }

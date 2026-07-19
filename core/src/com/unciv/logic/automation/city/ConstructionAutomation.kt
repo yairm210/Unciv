@@ -56,21 +56,17 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         return false
     }
 
-    private val disabledAutoAssignConstructions: Set<String> =
-        if (civInfo.isHuman()) GUI.getSettings().disabledAutoAssignConstructions
-        else emptySet()
-
     private val buildableBuildings = hashMapOf<String, Boolean>()
     private val buildableUnits = hashMapOf<String, Boolean>()
     private val buildings = city.getRuleset().buildings.values.asSequence()
-        .filterNot { it.name in disabledAutoAssignConstructions || shouldAvoidConstruction(it) }
+        .filterNot { (civInfo.isHuman() && it.name in city.disabledConstructions) || shouldAvoidConstruction(it) }
 
     private val nonWonders = buildings.filterNot { it.isAnyWonder() }
         .filterNot { buildableBuildings[it.name] == false } // if we already know that this building can't be built here then don't even consider it
 
     private val units = city.getRuleset().units.values.asSequence()
         .filterNot { buildableUnits[it.name] == false || // if we already know that this unit can't be built here then don't even consider it
-            it.name in disabledAutoAssignConstructions || shouldAvoidConstruction(it) }
+            (civInfo.isHuman() && it.name in city.disabledConstructions) || shouldAvoidConstruction(it) }
 
     private val civUnits = civInfo.units.getCivUnits()
     private val militaryUnits = civUnits.count { it.baseUnit.isMilitary }

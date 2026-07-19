@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.tile.TileDescription
+import com.unciv.ui.objectdescriptions.TileDescription
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.addBorderAllowOpacity
 import com.unciv.ui.components.extensions.darken

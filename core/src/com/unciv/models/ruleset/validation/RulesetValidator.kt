@@ -493,6 +493,10 @@ open class RulesetValidator protected constructor(
 
         if (unit.isMilitary && unit.strength == 0)  // Should only match ranged units with 0 strength
             lines.add("${unit.name} is a military unit but has no assigned strength!", sourceObject = unit)
+
+        val pixelUnitTexturePattern = Regex("TileSets/[^/]+/Units/${unit.name}")
+        if (unit.civilopediaText.any { it.extraImage.matches(pixelUnitTexturePattern) })
+            lines.add("Unit ${unit.name} includes the unit's UnitSet art in civilopediaText, which is superseded by the \"Size of Unitset art in Civilopedia\" option", RulesetErrorSeverity.WarningOptionsOnly, unit)
     }
 
     protected open fun addUnitTypeErrors(lines: RulesetErrorList) {

@@ -15,26 +15,13 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import com.unciv.testing.GdxTestRunner
-import com.unciv.testing.RedirectOutput
-import com.unciv.testing.RedirectPolicy
 import com.unciv.testing.TestGame
 import com.unciv.testing.runTestParcours
+import java.lang.reflect.Modifier
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.lang.reflect.Modifier
-import kotlin.reflect.full.declaredFunctions
-import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.hasAnnotation
-
-// TODO better coverage:
-//      - Each modifier using UniqueParameterType.Countable
-
-@Retention(AnnotationRetention.RUNTIME)
-@Target(AnnotationTarget.FUNCTION)
-@Suppress("unused") // The parameter *is* used in `testAllCountablesAreCovered`
-internal annotation class CoversCountable(vararg val countable: Countables)
 
 @RunWith(GdxTestRunner::class)
 class CountableTests {
@@ -111,20 +98,6 @@ class CountableTests {
             }
         }
         assertEquals("failure count", 0, fails)
-    }
-
-    @Test
-    @RedirectOutput(RedirectPolicy.Show)
-    fun testAllCountablesAreCovered() {
-        val actual = CountableTests::class.declaredFunctions.asSequence()
-            .plus(ExpressionTests::class.declaredFunctions)
-            .mapNotNull { it.findAnnotation<CoversCountable>() }
-            .flatMap { it.countable.asIterable() }
-            .toSet()
-        val expected = Countables.entries.filterNot { it::class.hasAnnotation<Deprecated>() }.toSet()
-        if (actual == expected) return
-        val missing = (expected - actual).sorted() // by ordinal ergo source order
-        println("Every Countable should be covered by a unit test.\nMissing: $missing")
     }
 
     @Test
@@ -253,7 +226,6 @@ class CountableTests {
 
     //region Coverage for specific Countables
     @Test
-    @CoversCountable(Countables.TileResources) // Just barely
     fun testPerCountableForGlobalAndLocalResources() {
         setupModdedGame()
         // one coal provided locally
@@ -267,7 +239,6 @@ class CountableTests {
     }
 
     @Test
-    @CoversCountable(Countables.StatOrResourcePerTurn)
     fun testStatOrResourcePerTurn() {
         setupModdedGame()
         city.cityConstructions.addBuilding(game.createBuilding(
@@ -288,7 +259,6 @@ class CountableTests {
     }
 
     @Test
-    @CoversCountable(Countables.Stats)
     fun testStatsCountables() {
         setupModdedGame()
         fun verifyStats(context: GameContext) {
@@ -313,7 +283,6 @@ class CountableTests {
     }
 
     @Test
-    @CoversCountable(Countables.OwnedTiles)
     fun testOwnedTilesCountable() {
         setupModdedGame()
         UniqueTriggerActivation.triggerUnique(Unique("Turn this tile into a [Coast] tile"), civ, tile = game.tileMap[-3,0])
@@ -335,7 +304,6 @@ class CountableTests {
     }
 
     @Test
-    @CoversCountable(Countables.FilteredCities)
     fun testFilteredCitiesCountable() {
         setupModdedGame()
         UniqueTriggerActivation.triggerUnique(Unique("Turn this tile into a [Coast] tile"), civ, tile = game.tileMap[-3,0])
@@ -355,7 +323,6 @@ class CountableTests {
     }
 
     @Test
-    @CoversCountable(Countables.FilteredBuildings, Countables.FilteredBuildingsByCivs)
     fun testFilteredBuildingsCountable () {
         setupModdedGame(withCiv = false)
         val building = game.createBuilding("Ancestor Tree") // That's a filtering Unique, not the building name 
@@ -405,7 +372,6 @@ class CountableTests {
     }
 
     @Test
-    @CoversCountable(Countables.PolicyBranches, Countables.FilteredPolicies, Countables.FilteredPoliciesByCivs)
     fun testPoliciesCountables() {
         setupModdedGame()
         civ.policies.run {
@@ -450,7 +416,6 @@ class CountableTests {
     }
 
     @Test
-    @CoversCountable(Countables.EraNumber)
     fun testEraNumberCountable() {
         setupModdedGame()
         val context = GameContext(civ)
@@ -467,7 +432,6 @@ class CountableTests {
     }
 
     @Test
-    @CoversCountable(Countables.Integer, Countables.Turns, Countables.Year, Countables.Expression)
     fun testTimeCountables() {
         setupModdedGame()
         val context = GameContext(civ)
@@ -483,7 +447,6 @@ class CountableTests {
     }
 
     @Test
-    @CoversCountable(Countables.GameSpeedModifier)
     fun testSpeedModifierCountable() {
         setupModdedGame()
         val context = GameContext(civ)

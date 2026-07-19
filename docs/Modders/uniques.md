@@ -208,6 +208,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
+??? example  "Add [resource] to this tile"
+	Example: "Add [Iron] to this tile"
+
+	Applicable to: Triggerable
+
 ??? example  "Remove [resourceFilter] resources from this tile"
 	Example: "Remove [Strategic] resources from this tile"
 
@@ -2169,6 +2174,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, Unit
 
+??? example  "Before engaging in combat performs an extra ranged attack with [amount]% of melee combat strength"
+	Example: "Before engaging in combat performs an extra ranged attack with [3]% of melee combat strength"
+
+	Applicable to: Unit
+
 ??? example  "[relativeAmount]% Spread Religion Strength"
 	Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%
 
@@ -2825,6 +2835,14 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Terrain
 
 ??? example  "Coastal Water"
+	Marks water tiles as Coast - all other water tiles count as Ocean. These distinctions are relevant e.g. for map generator or the ability to navigate here.
+
+	Note that terrain filters do not recognize this distinction, filtering for "Coast" or "Ocean" will only look for a terrain of that name.
+
+	Also note that for compatibility reasons, terrains named "Coast" are assuned to have this Unique even if it's missing. This may be removed in a future version.
+
+	A tile marked this way marks adjacent land tiles as "Coastal", so they fulfill the terrain filter, and cities built there can build ships, Harbor, etc.
+
 	Applicable to: Terrain
 
 ??? example  "Excluded from map editor"

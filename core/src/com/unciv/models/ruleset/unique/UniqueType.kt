@@ -444,6 +444,7 @@ enum class UniqueType(
     Range("[amount] Range", UniqueTarget.Unit, UniqueTarget.Global),
     AirInterceptionRange("[relativeAmount] Air Interception Range", UniqueTarget.Unit, UniqueTarget.Global),
     Heal("[amount] HP when healing", UniqueTarget.Unit, UniqueTarget.Global),
+    ExtraRangedAttack("Before engaging in combat performs an extra ranged attack with [amount]% of melee combat strength", UniqueTarget.Unit),
 
     SpreadReligionStrength("[relativeAmount]% Spread Religion Strength", UniqueTarget.Unit, UniqueTarget.Global,
         docDescription = MULTIPLICATIVE_BONUS_EXPLANATION),
@@ -654,7 +655,11 @@ enum class UniqueType(
 
     FreshWater(Constants.freshWater, UniqueTarget.Terrain),
     RoughTerrain("Rough terrain", UniqueTarget.Terrain),
-    CoastalWater("Coastal Water", UniqueTarget.Terrain),
+    CoastalWater("Coastal Water", UniqueTarget.Terrain, docDescription =
+        "Marks water tiles as Coast - all other water tiles count as Ocean. These distinctions are relevant e.g. for map generator or the ability to navigate here.\n" +
+        "Note that terrain filters do not recognize this distinction, filtering for \"Coast\" or \"Ocean\" will only look for a terrain of that name.\n" +
+        "Also note that for compatibility reasons, terrains named \"Coast\" are assuned to have this Unique even if it's missing. This may be removed in a future version.\n" +
+        "A tile marked this way marks adjacent land tiles as \"Coastal\", so they fulfill the terrain filter, and cities built there can build ships, Harbor, etc."),
 
     ExcludedFromMapEditor("Excluded from map editor", UniqueTarget.Terrain, UniqueTarget.Improvement, UniqueTarget.Resource, UniqueTarget.Nation, flags = UniqueFlag.setOfHiddenToUsers),
 
@@ -932,7 +937,7 @@ enum class UniqueType(
     FreePromotion("This Promotion is free", UniqueTarget.Promotion),
 
     OneTimeChangeTerrain("Turn this tile into a [terrainName] tile", UniqueTarget.Triggerable),
-
+    OneTimeAddResource("Add [resource] to this tile", UniqueTarget.Triggerable),
     OneTimeRemoveResourcesFromTile("Remove [resourceFilter] resources from this tile", UniqueTarget.Triggerable),
     OneTimeRemoveImprovementsFromTile("Remove [improvementFilter] improvements from this tile", UniqueTarget.Triggerable),
 

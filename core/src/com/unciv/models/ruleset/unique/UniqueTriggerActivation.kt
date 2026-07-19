@@ -281,8 +281,10 @@ object UniqueTriggerActivation {
                 }
                 return { placeUnits() }
             }
+
             UniqueType.OneTimeRebel -> {
-                val barbarians = civInfo.gameInfo.getBarbarianCivilization()
+                val barbarians = civInfo.gameInfo.getCivilizationOrNull(Constants.barbarians)
+                    ?: return null // Barbs can be deselected as new-game option
                 val unitName = unique.params[0]
                 val baseUnit = ruleset.units[unitName] ?: return null
                 val civUnit = civInfo.getEquivalentUnit(baseUnit)
@@ -313,9 +315,9 @@ object UniqueTriggerActivation {
                 }
                 return { placeUnit() }
             }
-
             UniqueType.OneTimeAmountRebels -> {
-                val barbarians = civInfo.gameInfo.getBarbarianCivilization()
+                val barbarians = civInfo.gameInfo.getCivilizationOrNull(Constants.barbarians)
+                    ?: return null // Barbs can be deselected as new-game option
                 val unitName = unique.params[1]
                 val baseUnit = ruleset.units[unitName] ?: return null
                 val civUnit = civInfo.getEquivalentUnit(baseUnit)
@@ -364,6 +366,7 @@ object UniqueTriggerActivation {
                 }
                 return { placeUnits() }
             }
+
             UniqueType.OneTimeFreeUnitRuins -> {
                 val unitName = unique.params[0]
                 val baseUnit = ruleset.units[unitName] ?: return null
@@ -376,7 +379,6 @@ object UniqueTriggerActivation {
                          } ?: return null
                     civUnit = civInfo.getEquivalentUnit(replacementUnit.name)
                 }
-
 
                 fun placeUnit(): Boolean {
                     val rng = (unit?.cache?.state ?: civInfo.state).stateBasedRandom("UniqueTriggerActivation.getTriggerFunction")
@@ -1345,7 +1347,26 @@ object UniqueTriggerActivation {
                     true
                 }
             }
-
+            UniqueType.OneTimeAddResource -> {
+                if (tile == null) return null
+                val resourceName = unique.params[0]
+                val resource = ruleset.tileResources[resourceName] ?: return null
+                if (resource.terrainsCanBeFoundOn.none { it == tile.baseTerrain || tile.terrainFeatures.contains(it) }) return null
+                return {
+                    // Remove the original resources
+                    if (tile.tileResource != null) {
+                        tile.tileResource = null
+                        tile.resourceAmount = 0
+                    }
+                    
+                    // Same deal as the place resource command
+                    tile.setTileResource(resource, majorDeposit = false)
+                    tile.getOwner()?.cache?.updateCivResources()
+                    TileNormalizer.normalizeToRuleset(tile, ruleset)
+                    true
+                }
+            }
+            
             UniqueType.OneTimeTakeOverTilesInRadius -> {
                 if (tile == null) return null
                 if (civInfo.cities.isEmpty()) return null

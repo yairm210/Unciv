@@ -1,17 +1,23 @@
 //  Taken from https://github.com/TomGrill/gdx-testing
 package com.unciv.logic.map
 
+import com.unciv.Constants
 import com.unciv.logic.city.City
 import com.unciv.logic.city.City.Companion.NO_ID
 import com.unciv.logic.city.City.Companion.pseudoRandomId
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.RoadStatus
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.tile.TerrainType
+import com.unciv.models.ruleset.tile.TileImprovement
+import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stats
 import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.TestCase
 import com.unciv.testing.TestGame
+import com.unciv.testing.runTestParcours
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -72,26 +78,58 @@ class TileImprovementConstructionTests {
 
     @Test
     fun allResourceImprovementsCanBeBuilt() {
+        testResourceImprovements("Improvements improving a resource can be built on that resource as long as the domain matches -", wrongDomain = false)
+    }
 
-        for (improvement in testGame.ruleset.tileImprovements.values) {
-            val tile = tileMap[1,1]
-            tile.tileResource = testGame.ruleset.tileResources.values
-                .firstOrNull { it.isImprovedBy(improvement.name) }
-            if (tile.tileResource == null) continue
-            // If this improvement requires additional conditions to be true,
-            // its too complex to handle all of them, so just skip it and hope its fine
-            if (improvement.hasUnique(UniqueType.CanOnlyBeBuiltOnTile, GameContext.IgnoreConditionals)) continue
+    @Test
+    fun resourceImprovementsOnWrongDomainCannotBeBuilt() {
+        testResourceImprovements("Improvements improving a resource cannot be built on that resource when the domain does not match -", wrongDomain = true)
+    }
 
+    private fun testResourceImprovements(title: String, wrongDomain: Boolean) {
+        val landTile = tileMap[1,1]
+        val coastTile = tileMap[1,2]
+        coastTile.baseTerrain = Constants.coast
+        coastTile.setTransients()
+        coastTile.setOwningCity(city) // Yes ownership is tested
+
+        val items: Array<TestCase<Pair<TileImprovement, TileResource>, Boolean>> =
+            testGame.ruleset.tileImprovements.values
+            .flatMap { improvement ->
+                // Test all combinations - e.g. both Oil well and Offshore Platform for Oil
+                testGame.ruleset.tileResources.values
+                    .filter { it.isImprovedBy(improvement.name) }
+                    .map { improvement to it }
+            }
+            .map { TestCase(it, !wrongDomain) }
+            .toTypedArray()
+
+        fun testImprovement(improvement: TileImprovement, tileResource: TileResource, tile: Tile): Boolean {
+            tile.tileResource = tileResource
             tile.setTransients()
-            val canBeBuilt = tile.improvementFunctions.canBuildImprovement(improvement, civInfo.state)
-            Assert.assertTrue(improvement.name, canBeBuilt)
+            return tile.improvementFunctions.canBuildImprovement(improvement, civInfo.state)
         }
+        fun testImprovement(improvement: TileImprovement, tileResource: TileResource): Boolean {
+            // This relies on our builtin rulesets not using more complex filter in these uniques
+            val landOK = landTile.improvementFunctions.extendedDomainCheck(improvement) &&
+                improvement.getMatchingUniques(UniqueType.CanOnlyBeBuiltOnTile).all { it.params[0] == "Land" } &&
+                improvement.getMatchingUniques(UniqueType.CannotBuildOnTile).none { it.params[0] == "Land" }
+            val coastOK = coastTile.improvementFunctions.extendedDomainCheck(improvement) &&
+                improvement.getMatchingUniques(UniqueType.CanOnlyBeBuiltOnTile).all { it.params[0] == "Water" } &&
+                improvement.getMatchingUniques(UniqueType.CannotBuildOnTile).none { it.params[0] == "Water" }
+            if (wrongDomain && landOK && coastOK) return false // Can't test wrong domain as the improvement has CanOnlyImproveResource which always ignores domain
+            if (landOK != wrongDomain && !testImprovement(improvement, tileResource, landTile)) return false
+            if (coastOK != wrongDomain && !testImprovement(improvement, tileResource, coastTile)) return false
+            return true
+        }
+
+        runTestParcours(title, *items) { testImprovement(it.first, it.second) }
     }
 
     @Test
     fun coastalImprovementsCanBeBuilt() {
         val coastTile = tileMap[1,2]
-        coastTile.baseTerrain = "Coast"
+        coastTile.baseTerrain = Constants.coast
         coastTile.setTransients()
 
         val coastalTile = tileMap[1,1]

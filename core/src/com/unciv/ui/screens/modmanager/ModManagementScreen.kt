@@ -20,6 +20,7 @@ import com.unciv.logic.github.GithubAPI
 import com.unciv.logic.github.GithubAPI.downloadAndExtract
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.addSeparator
@@ -43,6 +44,8 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
+import com.unciv.ui.popups.options.OptionsPopup
+import com.unciv.ui.popups.options.OptionsPopupPages
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
@@ -80,6 +83,12 @@ class ModManagementScreen private constructor(
         fun cleanModName(modName: String): String = modName.replace("   ", " - ")
     }
 
+    private class ModsScrollPane(widget: Actor?) : AutoScrollPane(widget, skin, "mods-scroll") {
+        init {
+            setupFadeScrollBars(3f, 3f) // Let them fade away, but more slowly than default (1, 1)
+        }
+    }
+
     // Since we're `RecreateOnResize`, preserve the portrait/landscape mode for our lifetime
     private val isPortrait: Boolean
 
@@ -90,13 +99,13 @@ class ModManagementScreen private constructor(
 
     // Left column (in landscape, portrait stacks them within expanders)
     private val installedModsTable = Table().apply { defaults().pad(10f) }
-    private val scrollInstalledMods = AutoScrollPane(installedModsTable)
+    private val scrollInstalledMods = ModsScrollPane(installedModsTable)
     // Center column
     private val onlineModsTable = Table().apply { defaults().pad(10f) }
-    private val scrollOnlineMods = AutoScrollPane(onlineModsTable)
+    private val scrollOnlineMods = ModsScrollPane(onlineModsTable)
     // Right column
     private val modActionTable = ModInfoAndActionPane()
-    private val scrollActionTable = AutoScrollPane(modActionTable)
+    private val scrollActionTable = ModsScrollPane(modActionTable)
     // Manager providing the Widget floating top right in landscape mode, stacked expander in portrait
     private val optionsManager = ModManagementOptions(this)
 
@@ -509,6 +518,8 @@ class ModManagementScreen private constructor(
                         ToastPopup(msg, this@ModManagementScreen, 4000L)
                     }
 
+                    if (RulesetCache[repoName]?.modOptions?.hasUnique(UniqueType.ModIsAudioVisualOnly) == true)
+                        game.settings.visualMods.add(repoName)
                     updateInstalledModUIData(repoName)
                     refreshInstalledModTable()
                     lastSelectedButton?.let { syncOnlineSelected(repoName, it) }
@@ -601,6 +612,12 @@ class ModManagementScreen private constructor(
             if (optionsManager.sortInstalled == SortType.Status)
                 refreshInstalledModTable()
         }
+
+        val checkModButton = "Check [${cleanModName(modInfo.name)}]".toTextButton()
+        checkModButton.onClick {
+            OptionsPopup(this, OptionsPopupPages.ModCheck, subSelect = mod.name).open()
+        }
+        modActionTable.add(checkModButton).row()
 
         val updateModButton = modActionTable.addUpdateModButton(modInfo) ?: return
         updateModButton.onClick {

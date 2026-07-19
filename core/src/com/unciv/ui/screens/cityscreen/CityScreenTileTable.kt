@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.tile.TileDescription
+import com.unciv.ui.objectdescriptions.TileDescription
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.audio.SoundPlayer
