@@ -1,19 +1,5 @@
 ## 4.21.2
 
-fix: mod checker misses recursive citywide-resource countable in <for every [resource]> - By mvanhorn
-
-By SomeTroglodyte:
-- chore: Move TileDescription to com.unciv.ui.objectdescriptions 
-- Allow pixel unit art option and modded extraImages for units to coexist 
-- Fix crash when requesting a TFW run then closing the Options before it's done. 
-- chore: Remove no-assert tests 
-- Prettify the city-state diplomacy page when a CS has _many_ protectors 
-- Button to check a Mod directly from the Mod manager screen 
-- Politics overview "Ball of Yarn" makeover 
-- Make no-barbarians games ignore OneTimeRebel and OneTimeAmountRebels triggereables 
-- New city overview column: Majority Religion 
-- Fix RekMod Moai can be built on water tiles with a resource 
-
 Disable constructions per city/game instead of client wide - By unciv-loof
 
 Replace -NC sounds with libre ones - By Wuzzy2
@@ -21,6 +7,17 @@ Replace -NC sounds with libre ones - By Wuzzy2
 Add [Resource] to tile. (Credit to Robloach) - By chenxing61
 
 Implement impi unique extra ranged attack - By O-spin
+
+Mod checker locates recursive citywide-resource countable in <for every [resource]> - By mvanhorn
+
+By SomeTroglodyte:
+- Button to check a Mod directly from the Mod manager screen
+- Politics overview "Ball of Yarn" makeover
+- New city overview column: Majority Religion
+- Allow pixel unit art option and modded extraImages for units to coexist
+- Make no-barbarians games ignore OneTimeRebel and OneTimeAmountRebels triggereables
+- Fix RekMod Moai can be built on water tiles with a resource
+- Prettify the city-state diplomacy page when a CS has _many_ protectors
 
 ## 4.21.1
 
