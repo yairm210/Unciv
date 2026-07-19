@@ -471,7 +471,10 @@ object UnitActionsFromUniques {
 
     internal fun getBuildingImprovementsActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
         if (!unit.cache.hasUniqueToBuildImprovements) return emptySequence()
-        val unique = unit.getMatchingUniques(UniqueType.BuildImprovements).first()
+        // Conditional uniques (e.g. <when above [0] [Stockpile]>) may no longer apply even though
+        // the cache flag was set true - use firstOrNull to avoid NoSuchElementException (#15114)
+        val unique = unit.getMatchingUniques(UniqueType.BuildImprovements).firstOrNull()
+            ?: return emptySequence()
 
         val couldConstruct = unit.hasMovement()
             && !tile.isCityCenter()
@@ -521,7 +524,8 @@ object UnitActionsFromUniques {
         val tile = unit.getTile()
         if (tile.isCityCenter()) return null
         if (!tile.isPillaged()) return null
-        val unique = unit.getMatchingUniques(UniqueType.BuildImprovements).first()
+        val unique = unit.getMatchingUniques(UniqueType.BuildImprovements).firstOrNull()
+            ?: return null
 
         val couldConstruct = unit.hasMovement()
             && !tile.isCityCenter() && tile.improvementInProgress != Constants.repair

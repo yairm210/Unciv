@@ -83,6 +83,15 @@ class City : IsPartOfGameInfoSerialization, INamed {
     var religion = CityReligionManager()
     var espionage = CityEspionageManager()
 
+    /** Effect: moved to disabled section in cosntruction list, and not built during automation */
+    var disabledConstructions = HashSet<String>()
+        private set
+    fun resetDisabledConstructions() {
+        disabledConstructions.clear()
+        if (civ.isHuman())
+            disabledConstructions.addAll(civ.disabledCityConstructions)
+    }
+
     @Transient  // CityStats has no serializable fields
     var cityStats = CityStats(this)
     
@@ -170,6 +179,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         toReturn.cityConstructions = cityConstructions.clone()
         toReturn.expansion = expansion.clone()
         toReturn.religion = religion.clone()
+        toReturn.disabledConstructions.addAll(disabledConstructions)
         toReturn.tiles = tiles
         toReturn.workedTiles = workedTiles
         toReturn.lockedTiles = lockedTiles
@@ -177,6 +187,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         toReturn.isBeingRazed = isBeingRazed
         toReturn.attackedThisTurn = attackedThisTurn
         toReturn.foundingCiv = foundingCiv
+        toReturn.previousOwner = previousOwner
         toReturn.turnAcquired = turnAcquired
         toReturn.isPuppet = isPuppet
         toReturn.isOriginalCapital = isOriginalCapital
@@ -203,7 +214,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
     @Readonly fun isCapital(): Boolean = cityConstructions.builtBuildingUniqueMap.hasUnique(UniqueType.IndicatesCapital, state)
     @Readonly fun isCoastal(): Boolean = centerTile.isAdjacentToCoast()
     @Readonly fun isNaval(): Boolean = centerTile.isWater || isCoastal()
-    
+
     @Readonly fun getBombardRange(): Int = civ.gameInfo.ruleset.modOptions.constants.baseCityBombardRange
     @Readonly fun getWorkRange(): Int = civ.gameInfo.ruleset.modOptions.constants.cityWorkRange
     @Readonly fun getExpandRange(): Int = civ.gameInfo.ruleset.modOptions.constants.cityExpandRange
@@ -217,7 +228,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         val mediumTypes = civ.cache.citiesConnectedToCapitalToMediums[this] ?: return false
         return connectionTypePredicate(mediumTypes)
     }
-    
+
     @Readonly
     fun getLandAttackPath(destination: City, maxTurns: Int = PathingMap.MAX_VALID_TURNS): List<Tile>? {
         @LocalState val pathingCache = landAttackPathing.getOrPut(destination.civ, {PathingMap.createLandAttackPathingMap(civ, centerTile, destination.civ)})
@@ -272,28 +283,9 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     @Readonly fun getRuleset() = civ.gameInfo.ruleset
 
-    @Readonly fun getResourcesGeneratedByCity(resourceModifier: (TileResource) -> Float = ::getResourceModifier) = CityResources.getResourcesGeneratedByCity(this, resourceModifier)
+    @Readonly fun getResourcesGeneratedByCity() = CityResources.getResourcesGeneratedByCity(this)
     @Readonly fun getAvailableResourceAmount(resourceName: String) = CityResources.getAvailableResourceAmount(this, resourceName)
     @Readonly fun getAvailableResourceAmount(resource: TileResource) = CityResources.getAvailableResourceAmount(this, resource)
-
-    /**
-     * Returns the resource production modifier as a multiplier.
-     *
-     * For example: 1.0f means no change, 2.0f results in double production.
-     *
-     * @param resource The resource for which to calculate the modifier.
-     * @return The production modifier as a multiplier.
-     */
-    @Readonly
-    fun getResourceModifier(resource: TileResource): Float {
-        var finalModifier = 1f
-
-        for (unique in getMatchingUniques(UniqueType.PercentResourceProduction))
-            if (resource.matchesFilter(unique.params[1], state))
-                finalModifier += unique.params[0].toFloat() / 100f
-
-        return finalModifier
-    }
 
     @Readonly fun isGrowing() = foodForNextTurn() > 0
     @Readonly fun isStarving() = foodForNextTurn() < 0

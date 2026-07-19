@@ -42,8 +42,8 @@ private const val MOD_CHECK_WITHOUT_BASE = "-none-"
 private const val MOD_CHECK_DYNAMIC_BASE = "-declared requirements-"
 
 internal class ModCheckTab(
-    val screen: BaseScreen
-) : Table(), TabbedPager.IPageExtensions {
+    optionsPopup: OptionsPopup,
+) : OptionsPopupTab(optionsPopup) {
     private val fixedContent = Table()
 
     // marker for automatic first run on selecting the tab
@@ -97,6 +97,10 @@ internal class ModCheckTab(
         add(modCheckResultTable)
     }
 
+    override fun subSelect(select: String?) {
+        searchModsTextField.text = select
+    }
+
     private fun runAction() {
         if (modCheckFirstRun) runModChecker()
         else runModChecker(modCheckBaseSelect!!.selected.value)
@@ -133,7 +137,9 @@ internal class ModCheckTab(
 
         val openedExpanderTitles = modResultTables
             .filterIsInstance<ExpanderTab>()
-            .filter { it.isOpen }.map { it.title }.toSet()
+            .filter { it.isOpen }.mapTo(mutableSetOf()) { it.title }
+        if (searchModsTextField.text in RulesetCache.keys)
+            openedExpanderTitles.add(searchModsTextField.text)
 
         modCheckResultTable.clear()
         modResultTables.clear()
@@ -268,11 +274,11 @@ internal class ModCheckTab(
             openUniqueBuilderButton.onClick { openUniqueBuilder(combinedRuleset) }
             it.add(openUniqueBuilderButton).row()
 
-            if (severity != RulesetErrorSeverity.OK && mod.folderLocation != null) {
+            if (game.screen != null && severity != RulesetErrorSeverity.OK && mod.folderLocation != null) {
                 val replaceableUniques = UniqueAutoUpdater.getDeprecatedReplaceableUniques(mod, combinedRuleset)
                 if (replaceableUniques.isNotEmpty())
                     it.add("Autoupdate mod uniques".toTextButton()
-                        .onClick { autoUpdateUniques(screen, mod, replaceableUniques) }).row()
+                        .onClick { autoUpdateUniques(game.screen!!, mod, replaceableUniques) }).row()
             }
             for (line in modLinks) {
                 val label = Label(line.text, BaseScreen.skin)

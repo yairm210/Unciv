@@ -38,6 +38,24 @@ object MarkupRenderer {
     ): Table {
         val skin = BaseScreen.skin
         val table = Table(skin).apply { defaults().pad(padding).align(Align.left) }
+        renderTo(table, lines, labelWidth, iconDisplay, linkAction)
+        return table
+    }
+
+    /**
+     *  Render [formatted][FormattedLine] [content][lines] into an existing [table].
+     *
+     *  @param labelWidth       Available width needed for wrapping labels and [centered][FormattedLine.centered] attribute.
+     *  @param iconDisplay      Flag to omit link or all images (but not linking itself if linkAction is supplied)
+     *  @param linkAction       Delegate to call for internal links. Leave null to suppress linking.
+     */
+    fun renderTo(
+        table: Table,
+        lines: Iterable<FormattedLine>,
+        labelWidth: Float = 0f,
+        iconDisplay: FormattedLine.IconDisplay = FormattedLine.IconDisplay.All,
+        linkAction: ((id: String) -> Unit)? = null
+    ) {
         for (line in lines) {
             if (line.isEmpty()) {
                 table.add().padTop(emptyLineHeight).row()
@@ -66,6 +84,6 @@ object MarkupRenderer {
             else
                 table.add(actor).width(labelWidth).align(line.align).row()
         }
-        return table.apply { pack() }
+        table.pack()
     }
 }

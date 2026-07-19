@@ -1,0 +1,11 @@
+By unciv-loof:
+- Cap force bonus from AdditionalAttacks based on movement points 
+- Fix German unique ability 
+- Fix force calculation when measuring military presence near border 
+
+Make "Barbarian encampment" improvement moddable - By SomeTroglodyte
+
+By BobbyCobby:
+- Clearer mod update icon
+
+Fix map preview crash when changing rulesets - By Angais

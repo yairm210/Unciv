@@ -1,16 +1,29 @@
 # Credits
 
+## License summary
+
+The works listed in this document fall under various licenses. Here’s a list of licenses or legal conditions that works have been released under:
+
+* CC0: [Creative Commons Zero 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0/)
+* CC BY 3.0: [Creative Commons Attribution 3.0 Unported](https://creativecommons.org/licenses/by/3.0/)
+* CC BY 4.0: [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/)
+* CC BY-SA 4.0 [Creative Commons Attribution-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-sa/4.0/)
+* Public domain: The work has been released into the public domain.
+* Unknown license: Unfortunately, the license this work was released under got lost to history.
+
+Please note that having an unknown license is incompatible with free software.
+
 ## Icon Credits
 
-Flag Icons made by [Freepik](https://www.flaticon.com/authors/freepik) from [www.flaticon.com](https://www.flaticon.com) and licensed by Creative Commons 3.0, except for:
+Flag Icons made by [Freepik](https://www.flaticon.com/authors/freepik) from [www.flaticon.com](https://www.flaticon.com) and licensed under CC BY 3.0, except for:
 
--   [Bangladeshi flag] InkScaped by touhidurrr licensed under CC-BY-SA 4.0. Original SVG, [here.](https://github.com/touhidurrr/artworks/blob/4cd5db12ac1a042ed82a515fed35d1a4971b5e9b/Bangladeshi%20Flag%20Circular.svg)
+-   [Bangladeshi flag] InkScaped by touhidurrr licensed under CC BY-SA 4.0. Original SVG, [here.](https://github.com/touhidurrr/artworks/blob/4cd5db12ac1a042ed82a515fed35d1a4971b5e9b/Bangladeshi%20Flag%20Circular.svg)
 -   [Catalan flag] by J0anJosep licensed under Public Domain
--   [Rusyn flag] gimped from the wikipedia flag [Flag of Pannonian Rusyns](https://en.wikipedia.org/wiki/File:Flag_of_Rusyns_in_Serbia.svg) (CC-BY-SA 4.0)
--   [Latin flag] made from [wikipedia entry for SPQR](https://en.wikipedia.org/wiki/SPQR#/media/File:Roman_SPQR_banner.svg), Creative Commons Attribution 3.0 Unported
--   [Zulu flag] made from [wikipedia entry for the Z flag](https://en.wikipedia.org/wiki/Z_flag#/media/File:ICS_Zulu.svg): public domain
--   [Galician flag] made from [wikipedia asset for the civil flag of Galicia](https://en.wikipedia.org/wiki/File:Flag_of_Galicia_(civil).svg): public domain
--   [Hindi flag] made from [wikipedia asset for India's flag](https://en.wikipedia.org/w/index.php?curid=23473510): public domain
+-   [Rusyn flag] gimped from the wikipedia flag [Flag of Pannonian Rusyns](https://en.wikipedia.org/wiki/File:Flag_of_Rusyns_in_Serbia.svg) (CC BY-SA 4.0)
+-   [Latin flag] made from [wikipedia entry for SPQR](https://en.wikipedia.org/wiki/SPQR#/media/File:Roman_SPQR_banner.svg) (CC BY 3.0)
+-   [Zulu flag] made from [wikipedia entry for the Z flag](https://en.wikipedia.org/wiki/Z_flag#/media/File:ICS_Zulu.svg): (public domain)
+-   [Galician flag] made from [wikipedia asset for the civil flag of Galicia](https://en.wikipedia.org/wiki/File:Flag_of_Galicia_(civil).svg): (public domain)
+-   [Hindi flag] made from [wikipedia asset for India's flag](https://en.wikipedia.org/w/index.php?curid=23473510): (public domain)
 
 New Unciv logo made by u-ndefined on Discord
 
@@ -18,7 +31,7 @@ Base tile icons for the "Fantasy Hex" tileset belong to CuddlyClover @ https://c
 
 Promotional trailer for Steam and other storefronts made by [letstalkaboutdune](https://github.com/letstalkaboutdune)
 
-Unless otherwise specified, all the following are from [the Noun Project](https://thenounproject.com) licenced under either Creative Commons or Public Domain
+Unless otherwise specified, all the following are from [the Noun Project](https://thenounproject.com) either licenced under CC BY 3.0 or released into the Public Domain.
 
 ### Stat icons
 
@@ -165,7 +178,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 
 ### Units - AbsoluteUnits unitset images
 
-Unless otherwise specified, units for the [AbsoluteUnits unitset](https://github.com/letstalkaboutdune/AbsoluteUnits) are made by [letstalkaboutdune](https://github.com/letstalkaboutdune) and are licensed under Creative Commons Attribution 4.0 International
+Unless otherwise specified, units for the [AbsoluteUnits unitset](https://github.com/letstalkaboutdune/AbsoluteUnits) are made by [letstalkaboutdune](https://github.com/letstalkaboutdune) and are licensed under CC BY 4.0
 
 Barbarian variants by Pelo, made for [Playable Barbarians](https://github.com/Jaba583/Playable-Barbarians):
 
@@ -187,7 +200,7 @@ By Basil:
 
 ### HexaRealm
 
-Unless otherwise specified, Tile improvements and units, as well as the terrains and improvements for HexaRealm tileset, are made by The Bucketeer / @GeneralWadaling and are licenced under Creative Commons 3.0
+Unless otherwise specified, Tile improvements and units, as well as the terrains and improvements for HexaRealm tileset, are made by The Bucketeer / @GeneralWadaling and are licenced under an unknown Creative Commons license (we only know it has version 3.0, but we don’t know *which* license specifically).
 
 
 HexaRealm tileset images by legacymtgsalvationuser69544 [here](https://github.com/legacymtgsalvationuser69544/Edges-Tileset):
@@ -701,6 +714,7 @@ HexaRealm tileset images by legacymtgsalvationuser69544 [here](https://github.co
 -   [praying](https://thenounproject.com/icon/praying/886367/) by Gan Khoon Lay for Follower
 -   [Hero](https://thenounproject.com/icon/preacher/195465/) by Andrew J. Young for Founder
 -   [yell](https://thenounproject.com/icon/yell/4159889/) by Adrien Coquet for Enhancer
+-   [halo](https://thenounproject.com/icon/halo-4406022/) by Bilal Hussain for Holy city indicator (city overview): Public domain
 
 ### Others
 
@@ -793,7 +807,8 @@ HexaRealm tileset images by legacymtgsalvationuser69544 [here](https://github.co
 - Spy hideout is gimped from [hide](https://thenounproject.com/icon/hide-8013/) by Luis Prado and the one listed for Spy
 - [hold](https://thenounproject.com/icon/hold-222516/) by icon 54 as long-press indicator
 - [right click](https://thenounproject.com/icon/right-click-8250175/) by Lewen Design
-
+- [Download](https://thenounproject.com/icon/download-8259347/) by icelloid for mod update available (mod manager), cropped
+- [personality](https://thenounproject.com/icon/personality-7778661/) by Adrien Coquet for Civilopedia category
 
 ### Main menu
 
@@ -814,74 +829,69 @@ HexaRealm tileset images by legacymtgsalvationuser69544 [here](https://github.co
 
 ## Sound credits
 
-Sounds are from FreeSound.org unless otherwise noted and are either Creative Commons or Public Domain unless otherwise noted
+With some exceptions, most sounds are from FreeSound.org. The sounds are either licensed CC0/Public Domain, CC BY 3.0 or CC BY 4.0:
 
-- [Soft two-fingered snap](https://freesound.org/people/EathanMarkson/sounds/388958/) By EathanMarkson as 'click' for most clicks
-- [Pencil1](https://freesound.org/people/stijn/sounds/43673/) By stijn as 'paper' for opening and closing the tech picker
-- [SawInOut01](https://freesound.org/people/kingof_thelab/sounds/340243/) By kingof_thelab for construction picking?
-- [Chain Snare #1](https://freesound.org/people/lovesbody/sounds/322079/) By lovesbody as 'fortify'
-- [Level up](https://freesound.org/people/Marregheriti/sounds/266100/) By Marregheriti as 'upgrade' for upgrading units
-- [levelup](https://freesound.org/people/Seidhepriest/sounds/382915/) By Seidhepriest as 'chimes' for special actions (free tech, build city, hurry wonder etc.)
-- [Coin](https://freesound.org/people/TheDJoe93/sounds/97373/) By TheDJoe93 as 'coin' for purchasing tiles and constructions
-- [fast simple chop 1](https://freesound.org/people/dave.des/sounds/127196/) By dave.dev as 'whoosh' for moving units around, also in edited form to produce the 'swap units' sound.
-- [Military kick](https://freesound.org/people/Dodgy%20C/sounds/72070/) By Dodgy C as 'promote' for unit promotions
-- [Tank reload](https://freesound.org/people/KieranKeegan/sounds/418882/) By KieranKeegan as 'setup' for siege unit setup
-- [Scribble_short](https://freesound.org/people/waldram/sounds/257518/) By waldram as 'policy' for adopting policies
-- [Hit Impact](https://freesound.org/people/Mrguff/sounds/369711/) by Mrguff as 'throw' for catapult & trebuchet attacks
-- [Arrow Impact](https://pixabay.com/sound-effects/arrow-impact-87260/) by Twisted Euphoria on Pixabay as 'arrow' for arrow attacks (Pixabay License)
-- [Crossbow Firing](https://pixabay.com/sound-effects/crossbow-firing-95020/) by GameWithBepis on Pixabay as 'crossbow' for crossbow attacks (Pixabay License)
-- [Metal hit slide](https://freesound.org/people/orginaljun/sounds/149102/) by orginaljun as 'nonmetalhit' for pre-metal melee sounds
-- [wpn 1 generic](https://pixabay.com/sound-effects/wpn-1-generic-100027/) By SlavicMagic on Pixabay as 'metalhit' for metal melee sounds (Pixabay License)
-- [snorting horse](https://freesound.org/people/soundslikewillem/sounds/418427/) By soundslikewillem as part of 'horse' for mounted unit attack sounds
-- [Horse's whinny](https://freesound.org/people/Kubuzz/sounds/347036/) By Kubuzz as part of 'horse' for mounted unit attack sounds
-- [machine gun 001 - loop](https://freesound.org/people/pgi/sounds/212602/) By pgi as 'machinegun' for machine gun attack sound
-- [uzzi_full_single](https://freesound.org/people/Deganoth/sounds/348685/) By Deganoth as 'shot' for bullet attacks
-- [Grenade Launcher 2](https://soundbible.com/2140-Grenade-Launcher-2.html) By Daniel Simon as city bombard sound (CC Attribution 3.0 license)
-- [Woosh](https://soundbible.com/2068-Woosh.html) by Mark DiAngelo as 'slider' sound (CC Attribution 3.0 license)
-- [Large wooden wagon](https://freesound.org/people/craigsmith/sounds/675230/) by Craig Smith as 'connect road' sound
-- [Tornado-Siren-II](https://soundbible.com/1937-Tornado-Siren-II.html) by Delilah as part of 'nuke' sound (CC Attribution 3.0 license)
-- [Explosion-Ultra-Bass](https://soundbible.com/1807-Explosion-Ultra-Bass.html) by Mark DiAngelo as part of 'nuke' sound (CC Attribution 3.0 license)
-- [Short Choir](https://freesound.org/people/Breviceps/sounds/444491/) by Breviceps as 'choir' for free great person pick
-- [Death Robot! Robotic scream](https://freesound.org/people/vultraz168/sounds/334660/) by vultraz168 for Giant Death Robot Attack (CC0 1.0 Universal license)
-- [ceremonial cannon fire](https://freesound.org/people/DylanSmithSound/sounds/274826/) by DylanSmithSound for cannon, shipCannonVolley and cavalry
-- [artillery fire](https://freesound.org/people/Tomashevsky/sounds/476664/) by Tomashevsky for artillery
-- [20mm cannons](https://freesound.org/people/Piotr123/sounds/551534/) by Piotr123 for ship guns
-- "bombing" is made by the Unciv team using Audacity from
-    -   [lancaster bomber](https://freesound.org/people/confusion_music/sounds/103439/) by confusion_music - aircraft
-    -   [Artillery Explosion (Close) (Mixed)](https://freesound.org/people/EFlexMusic/sounds/388528/) by EFlexMusic - impact
-    -   [SFX Hit drop/bomb effect 5](https://freesound.org/people/old_waveplay/sounds/187502/) by old_waveplay - bass
+- [Soft two-fingered snap](https://freesound.org/people/EathanMarkson/sounds/388958/) By EathanMarkson as 'click' for most clicks (CC0)
+- [Pencil1](https://freesound.org/people/stijn/sounds/43673/) By stijn as 'paper' for opening and closing the tech picker (CC0)
+- [SawInOut01](https://freesound.org/people/kingof_thelab/sounds/340243/) By kingof_thelab for construction picking? (CC BY 3.0)
+- [Chain Snare #1](https://freesound.org/people/lovesbody/sounds/322079/) By lovesbody as 'fortify' (CC BY 4.0)
+- [Level up](https://freesound.org/people/Marregheriti/sounds/266100/) By Marregheriti as 'upgrade' for upgrading units (CC0)
+- [Level up](https://freesound.org/people/Bastianhallo/sounds/682633/) By Bastianhallo as 'chimes' for special actions (free tech, build city, hurry wonder etc.) (CC0)
+- [Coin](https://freesound.org/people/TheDJoe93/sounds/97373/) By TheDJoe93 as 'coin' for purchasing tiles and constructions (CC0)
+- [fast simple chop 1](https://freesound.org/people/dave.des/sounds/127196/) By dave.dev as 'whoosh' for moving units around, also in edited form to produce the 'swap units' sound. (CC0)
+- [Military kick](https://freesound.org/people/Dodgy%20C/sounds/72070/) By Dodgy C as 'promote' for unit promotions (CC BY 3.0)
+- [Tank reload](https://freesound.org/people/KieranKeegan/sounds/418882/) By KieranKeegan as 'setup' for siege unit setup (CC0)
+- [Scribble_short](https://freesound.org/people/waldram/sounds/257518/) By waldram as 'policy' for adopting policies (CC0)
+- [Hit Impact](https://freesound.org/people/Mrguff/sounds/369711/) by Mrguff as 'throw' for catapult & trebuchet attacks (CC0)
+- [Arrow Impact](https://freesound.org/people/Twisted_Euphoria/sounds/205938/) by Twisted Euphoria as 'arrow' for arrow attacks (CC0)
+- [Crossbow Firing](https://freesound.org/people/GameWithBepis/sounds/561475/) by GameWithBepis as 'crossbow' for crossbow attacks (CC0)
+- [Metal hit slide](https://freesound.org/people/orginaljun/sounds/149102/) by orginaljun as 'nonmetalhit' for pre-metal melee sounds (CC BY 4.0)
+- [wpn 1 generic](https://freesound.org/people/SlavicMagic/sounds/446016/) By SlavicMagic as 'metalhit' for metal melee sounds (CC0)
+- [Horse's whinny](https://freesound.org/people/Kubuzz/sounds/347036/) By Kubuzz as part of 'horse' for mounted unit attack sounds (CC0)
+- [machine gun 001 - loop](https://freesound.org/people/pgi/sounds/212602/) By pgi as 'machinegun' for machine gun attack sound (CC0)
+- [uzzi_full_single](https://freesound.org/people/Deganoth/sounds/348685/) By Deganoth as 'shot' for bullet attacks (CC BY 4.0)
+- [Grenade Launcher 2](https://soundbible.com/2140-Grenade-Launcher-2.html) By Daniel Simon as city bombard sound (CC BY 3.0)
+- [Woosh](https://soundbible.com/2068-Woosh.html) by Mark DiAngelo as 'slider' sound (CC BY 3.0)
+- [Large wooden wagon](https://freesound.org/people/craigsmith/sounds/675230/) by Craig Smith as 'connect road' sound (CC0)
+- [Tornado-Siren-II](https://soundbible.com/1937-Tornado-Siren-II.html) by Delilah as part of 'nuke' sound (CC BY 3.0)
+- [Explosion-Ultra-Bass](https://soundbible.com/1807-Explosion-Ultra-Bass.html) by Mark DiAngelo as part of 'nuke' sound (CC BY 3.0)
+- [Short Choir](https://freesound.org/people/Breviceps/sounds/444491/) by Breviceps as 'choir' for free great person pick (CC0)
+- [Death Robot! Robotic scream](https://freesound.org/people/vultraz168/sounds/334660/) by vultraz168 for Giant Death Robot Attack (CC0)
+- [ceremonial cannon fire](https://freesound.org/people/DylanSmithSound/sounds/274826/) by DylanSmithSound for cannon, shipCannonVolley and cavalry (CC BY 4.0)
+- [Incoming Artillery Strike Cinematic Explosion](https://freesound.org/people/EvanBoyerman/sounds/530886/) by EvanBoyerman for artillery (changes were made) (CC BY 3.0)
+- [Cannon5.wav](https://freesound.org/people/Isaac200000/sounds/184651/) by Isaac200000 for shipguns (changes were made) (CC0)
+- "bombing" is made by the Unciv team using Audacity by altering and combining
+    -   [lancaster bomber](https://freesound.org/people/confusion_music/sounds/103439/) by confusion_music - aircraft (CC BY 4.0)
+    -   [custom_artillery_booming_explosive_impact_sounds](https://freesound.org/people/Artninja/sounds/750825/) by Artninja - impact (CC BY 4.0)
+    -   [SFX Hit drop/bomb effect 5](https://freesound.org/people/old_waveplay/sounds/187502/) by old_waveplay - bass (CC0)
 - "jetgun" for Jet Fighter attack is made by the Unciv team using Audacity from
-    -   [Fighter Jet Aircraft Fly by (synthesised)](https://freesound.org/people/Headphaze/sounds/347795/) by Headphaze
-    -   [Machine Gun 001 - triple shot](https://freesound.org/people/pgi/sounds/212600/) by pgi
-- Excerpt from [Tanks Shooting](https://freesound.org/people/qubodup/sounds/189344/) by qubodup for tankshot and shipCannonVolley
-- "torpedo" is made by the Unciv team using Audacity from
-    -   [Torpedo launch underwater](https://freesound.org/people/jobro/sounds/35530/) by jobro
-    -   [Artillery Explosion (Close) (Mixed)](https://freesound.org/people/EFlexMusic/sounds/388528/) by EFlexMusic
-- [elephant 44](https://freesound.org/people/y89312/sounds/139875/) by y89312 for Naruesan's Elephant sound
-- Excerpt from [Missile Strike](https://freesound.org/people/BaDoink/sounds/570690/) by BaDoink for guided missile
-- Excerpt from [FireBurning_v2.wav](https://freesound.org/people/pcaeldries/sounds/30322/) by pcaeldries for 'remove heresy' action of inquisitor ([License](http://creativecommons.org/licenses/by/3.0/))
-- [Up Chime 2](https://freesound.org/people/FoolBoyMedia/sounds/352666/) by FoolBoyMedia for notifications
-- [dingaling](https://freesound.org/people/morrisjm/sounds/268756/) by morrisjm (based on [Calling_Bell_02.wav](https://freesound.org/people/RSilveira_88/sounds/216306/) by RSilveira_88) for notifications
+    -   [Fighter Jet Aircraft Fly by (synthesised)](https://freesound.org/people/Headphaze/sounds/347795/) by Headphaze (CC0)
+    -   [Machine Gun 001 - triple shot](https://freesound.org/people/pgi/sounds/212600/) by pgi (CC0)
+- Excerpt from [Tanks Shooting](https://freesound.org/people/qubodup/sounds/189344/) by qubodup for tankshot and shipCannonVolley (CC0)
+- "torpedo" is made by the Unciv team using Audacity by altering and combining
+    -   [Torpedo launch underwater](https://freesound.org/people/jobro/sounds/35530/) by jobro (CC BY 3.0)
+    -   [Nearby explosion with debris.wav](https://freesound.org/people/juskiddink/sounds/108641/) by juskiddink (CC BY 4.0)
+- [elephant 44](https://freesound.org/people/y89312/sounds/139875/) by y89312 for Naruesan's Elephant sound (CC BY 3.0)
+- Excerpt from [Missile Strike](https://freesound.org/people/BaDoink/sounds/570690/) by BaDoink for guided missile (CC0)
+- Excerpt from [FireBurning_v2.wav](https://freesound.org/people/pcaeldries/sounds/30322/) by pcaeldries for 'remove heresy' action of inquisitor (CC BY 4.0)
+- [Up Chime 2](https://freesound.org/people/FoolBoyMedia/sounds/352666/) by FoolBoyMedia for notifications (CC BY 4.0)
+- [dingaling](https://freesound.org/people/morrisjm/sounds/268756/) by morrisjm (based on [Calling_Bell_02.wav](https://freesound.org/people/RSilveira_88/sounds/216306/) by RSilveira_88) for notifications (CC BY 4.0)
 - City ambience sounds made by Unciv Team using Audacity from CC0 sounds and
-    -   [Street Musician Playing Renaissance Melody on Glockenspiel](https://freesound.org/people/_MC5_/sounds/542107/) by MC5 for Renaissance city sound
-    -   [Ambience, Machine Factory](https://freesound.org/people/InspectorJ/sounds/385943/) by InspectorJ for Industrial city sound
-    -   [Rock_Hammer_Chisel_01](https://freesound.org/people/dheming/sounds/240981/#) by dheming for Ancient city sound
-    -   [Future City ambience](https://freesound.org/people/bolkmar/sounds/502896/) by bolkmar for Future city sound
-    -   [Jingle_Achievement](https://freesound.org/people/LittleRobotSoundFactory/sounds/270404/) by LittleRobotSoundFactory for We Love The King sound
+    -   [Street Musician Playing Renaissance Melody on Glockenspiel](https://freesound.org/people/_MC5_/sounds/542107/) by MC5 for Renaissance city sound (CC BY 4.0)
+    -   [Ambience, Machine Factory](https://freesound.org/people/InspectorJ/sounds/385943/) by InspectorJ for Industrial city sound (CC BY 4.0)
+    -   [Rock_Hammer_Chisel_01](https://freesound.org/people/dheming/sounds/240981/#) by dheming for Ancient city sound (CC BY 4.0)
+    -   [Future City ambience](https://freesound.org/people/bolkmar/sounds/502896/) by bolkmar for Future city sound (CC BY 4.0)
+    -   [Jingle_Achievement](https://freesound.org/people/LittleRobotSoundFactory/sounds/270404/) by LittleRobotSoundFactory for We Love The King sound (CC BY 4.0)
 
 ## Music
 
-The following music is from https://filmmusic.io
-"[Thatched Villagers](https://incompetech.filmmusic.io/song/4481-thatched-villagers)" by Kevin MacLeod (https://incompetech.com)
+The following music is from https://filmmusic.io:
+
+- "[Thatched Villagers](https://incompetech.filmmusic.io/song/4481-thatched-villagers)" by Kevin MacLeod (https://incompetech.com) (CC BY 4.0)
 
 ## Trailer audio
 
-The following audio is from https://pixabay.com/ [Pixabay License](https://pixabay.com/service/terms/#license)
--   [Beyond New Horizons - Free Epic Viking Medieval Soundtrack](https://pixabay.com/music/main-title-beyond-new-horizons-free-epic-viking-medieval-soundtrack-22081/) by GioeleFazzeri for background music
--   [Beep 6](https://pixabay.com/sound-effects/beep-6-96243/) by Eponn for beep in Cross-Platform Play section
--   [Cinematic Boom](https://pixabay.com/sound-effects/cinematic-boom-6872/) by Rizzard for final boom
--   [Cymbal Swell 2](https://pixabay.com/sound-effects/cymbal-swell-2-74766/) by rubberduckie for cymbal swells
--   [hit of orchestral cymbals and bass drum](https://pixabay.com/sound-effects/hit-of-orchestral-cymbals-and-bass-drum-14471/) by Selector for intro crash
+Unciv has released a Unciv Gameplay Trailer video separately, not part of this repository. See `Credits_trailer.md` for credits and details for that video.
 
 ## Visual effects
 

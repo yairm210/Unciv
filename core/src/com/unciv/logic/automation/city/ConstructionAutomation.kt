@@ -56,21 +56,17 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         return false
     }
 
-    private val disabledAutoAssignConstructions: Set<String> =
-        if (civInfo.isHuman()) GUI.getSettings().disabledAutoAssignConstructions
-        else emptySet()
-
     private val buildableBuildings = hashMapOf<String, Boolean>()
     private val buildableUnits = hashMapOf<String, Boolean>()
     private val buildings = city.getRuleset().buildings.values.asSequence()
-        .filterNot { it.name in disabledAutoAssignConstructions || shouldAvoidConstruction(it) }
+        .filterNot { (civInfo.isHuman() && it.name in city.disabledConstructions) || shouldAvoidConstruction(it) }
 
     private val nonWonders = buildings.filterNot { it.isAnyWonder() }
         .filterNot { buildableBuildings[it.name] == false } // if we already know that this building can't be built here then don't even consider it
 
     private val units = city.getRuleset().units.values.asSequence()
         .filterNot { buildableUnits[it.name] == false || // if we already know that this unit can't be built here then don't even consider it
-            it.name in disabledAutoAssignConstructions || shouldAvoidConstruction(it) }
+            (civInfo.isHuman() && it.name in city.disabledConstructions) || shouldAvoidConstruction(it) }
 
     private val civUnits = civInfo.units.getCivUnits()
     private val militaryUnits = civUnits.count { it.baseUnit.isMilitary }
@@ -129,11 +125,11 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             if (relativeCostEffectiveness.isEmpty()) { // choose one of the special constructions instead
                 // add science!
                 when {
-                    PerpetualConstruction.science.isBuildable(cityConstructions) && !allTechsAreResearched -> PerpetualConstruction.science
-                    PerpetualConstruction.gold.isBuildable(cityConstructions) -> PerpetualConstruction.gold
-                    PerpetualConstruction.culture.isBuildable(cityConstructions) && !civInfo.policies.allPoliciesAdopted(true) -> PerpetualConstruction.culture
-                    PerpetualConstruction.faith.isBuildable(cityConstructions) -> PerpetualConstruction.faith
-                    else -> PerpetualConstruction.idle
+                    PerpetualConstruction.Science.isBuildable(cityConstructions) && !allTechsAreResearched -> PerpetualConstruction.Science
+                    PerpetualConstruction.Gold.isBuildable(cityConstructions) -> PerpetualConstruction.Gold
+                    PerpetualConstruction.Culture.isBuildable(cityConstructions) && !civInfo.policies.allPoliciesAdopted(true) -> PerpetualConstruction.Culture
+                    PerpetualConstruction.Faith.isBuildable(cityConstructions) -> PerpetualConstruction.Faith
+                    else -> PerpetualConstruction.Idle
                 }
             } else { relativeCostEffectiveness.maxBy { (it.choiceModifier / it.remainingWork.coerceAtLeast(1)).coerceAtLeast(0f) }.choice }
             //TODO: All bad things are build anyways at the moment, maybe let's stop doing that and chose perpetual construction instead

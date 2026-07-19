@@ -45,7 +45,7 @@ import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.popups.closeAllPopups
 import com.unciv.ui.popups.hasOpenPopups
-import com.unciv.ui.popups.options.aboutTab
+import com.unciv.ui.popups.options.AboutTab
 import com.unciv.ui.popups.popups
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
@@ -246,7 +246,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         versionTable.touchable = Touchable.enabled
         versionTable.onClick {
             val popup = Popup(stage)
-            popup.add(aboutTab()).row()
+            popup.add(AboutTab.asTable()).row()
             popup.addCloseButton()
             popup.open()
         }

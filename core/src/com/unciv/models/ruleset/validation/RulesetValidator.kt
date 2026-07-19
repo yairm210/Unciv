@@ -19,8 +19,6 @@ import com.unciv.models.ruleset.RulesetFile
 import com.unciv.models.ruleset.RulesetName
 import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.nation.Nation
-import com.unciv.models.ruleset.nation.getContrastRatio
-import com.unciv.models.ruleset.nation.getRelativeLuminance
 import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
@@ -35,6 +33,8 @@ import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stats
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.tilesets.TileSetConfig
+import com.unciv.ui.components.extensions.getContrastRatio
+import com.unciv.ui.components.extensions.getRelativeLuminance
 import com.unciv.ui.images.AtlasPreview
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.Portrait
@@ -368,8 +368,7 @@ open class RulesetValidator protected constructor(
 
     protected open fun addPersonalityErrors(lines: RulesetErrorList) {
         for (personality in ruleset.personalities.values) {
-            if (personality.uniques.isNotEmpty())
-                lines.add("Personality Uniques are not supported", RulesetErrorSeverity.Warning, personality)
+            uniqueValidator.checkUniques(personality, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
         }
     }
 
@@ -494,6 +493,10 @@ open class RulesetValidator protected constructor(
 
         if (unit.isMilitary && unit.strength == 0)  // Should only match ranged units with 0 strength
             lines.add("${unit.name} is a military unit but has no assigned strength!", sourceObject = unit)
+
+        val pixelUnitTexturePattern = Regex("TileSets/[^/]+/Units/${unit.name}")
+        if (unit.civilopediaText.any { it.extraImage.matches(pixelUnitTexturePattern) })
+            lines.add("Unit ${unit.name} includes the unit's UnitSet art in civilopediaText, which is superseded by the \"Size of Unitset art in Civilopedia\" option", RulesetErrorSeverity.WarningOptionsOnly, unit)
     }
 
     protected open fun addUnitTypeErrors(lines: RulesetErrorList) {
@@ -637,8 +640,8 @@ open class RulesetValidator protected constructor(
     private data class SuggestedColors(val innerColor: Color, val outerColor: Color)
 
     private fun getSuggestedColors(innerColor: Color, outerColor: Color): SuggestedColors {
-        val innerColorLuminance = getRelativeLuminance(innerColor)
-        val outerColorLuminance = getRelativeLuminance(outerColor)
+        val innerColorLuminance = innerColor.getRelativeLuminance()
+        val outerColorLuminance = outerColor.getRelativeLuminance()
 
         val innerLerpColor: Color
         val outerLerpColor: Color

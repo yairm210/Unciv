@@ -73,12 +73,13 @@ class DiplomacyScreen(
         background = skinStrings.getUiBackground("DiplomacyScreen/RightSide", tintColor = highlightColor)
     }
 
+    private val splitPane = SplitPaneCenteringLeftSide()
+
     private val closeButton = getCloseButton(closeButtonSize) { game.popScreen() }
 
     internal fun isNotPlayersTurn() = !GUI.isAllowedChangeState()
 
     init {
-        val splitPane = SplitPaneCenteringLeftSide()
         // In cramped conditions, start the left side with enough width for nation icon and padding, but allow it to get squeezed until just the icon fits.
         // (and SplitPane will squeeze even beyond the minWidth our left side supplies - when the right side has a conflicting minWidth, then both get squeezed).
         splitPane.splitAmount = 0.2f.coerceAtLeast(leftSideScroll.prefWidth / stage.width)
@@ -400,7 +401,15 @@ class DiplomacyScreen(
      *  _Caller is responsible to not exceed this **including its own padding**_
      */
     // Note breaking the rule above will squeeze the leftSideScroll to the left - cumulatively.
-    internal fun getTradeColumnsWidth() = (stage.width * 0.8f - 3f) / 2  // 3 for SplitPane handle
+    internal fun getTradeColumnsWidth() = rightSideWidth() / 2
+
+    /** Recommended Cell width for wrappable Labels spanning the right side, e.g. city-state protectors */
+    internal fun rightSideLabelWidth() = rightSideWidth() - 40f
+
+    private fun rightSideWidth(): Float {
+        splitPane.validate() // Ensure rightSideTable is sized
+        return rightSideTable.width
+    }
 
     override fun resize(width: Int, height: Int) {
         super.resize(width, height)

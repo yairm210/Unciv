@@ -2,10 +2,12 @@ package com.unciv.models.ruleset.unique
 
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
+import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tech.Era
 import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tech.Technology
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.INamed
 import com.unciv.ui.components.extensions.toPercent
 import yairm210.purity.annotations.Readonly
@@ -120,6 +122,18 @@ interface IHasUniques : INamed {
         var weight = 1f
         for (unique in getMatchingUniques(UniqueType.AiChoiceWeight, gameContext))
             weight *= unique.params[0].toPercent()
+
+        // TODO We should have an IHasMatchesFilter?
+        if (this !is BaseUnit && this !is Building) return weight
+        val personality = gameContext.civInfo?.getPersonality() ?: return weight
+
+        for (unique in personality.getMatchingUniques(UniqueType.PersonalityAiWeight, gameContext)) {
+            val factor = unique.params[0].toPercent()
+            when (this) {
+                is BaseUnit if matchesFilter(unique.params[1], gameContext) -> weight *= factor
+                is Building if matchesFilter(unique.params[1], gameContext) -> weight *= factor
+            }
+        }
         return weight
     }
 

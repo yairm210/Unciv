@@ -36,6 +36,7 @@ import com.unciv.ui.popups.AuthPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.popups.hasOpenPopups
+import com.unciv.ui.popups.options.OptionsPopupPages
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.cityscreen.CityScreen
 import com.unciv.ui.screens.devconsole.DevConsolePopup
@@ -261,7 +262,7 @@ class WorldScreen(
     override fun getCivilopediaRuleset() = gameInfo.ruleset
 
     // Handle disabling and re-enabling WASD listener while Options are open
-    override fun openOptionsPopup(startingPage: Int, withDebug: Boolean, onClose: () -> Unit) {
+    override fun openOptionsPopup(startingPage: OptionsPopupPages, withDebug: Boolean, onClose: () -> Unit) {
         val oldListener = stage.root.listeners.filterIsInstance<KeyboardPanningListener>().firstOrNull()
         if (oldListener != null) {
             stage.removeListener(oldListener)

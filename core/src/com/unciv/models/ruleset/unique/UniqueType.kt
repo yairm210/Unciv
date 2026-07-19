@@ -444,6 +444,7 @@ enum class UniqueType(
     Range("[amount] Range", UniqueTarget.Unit, UniqueTarget.Global),
     AirInterceptionRange("[relativeAmount] Air Interception Range", UniqueTarget.Unit, UniqueTarget.Global),
     Heal("[amount] HP when healing", UniqueTarget.Unit, UniqueTarget.Global),
+    ExtraRangedAttack("Before engaging in combat performs an extra ranged attack with [amount]% of melee combat strength", UniqueTarget.Unit),
 
     SpreadReligionStrength("[relativeAmount]% Spread Religion Strength", UniqueTarget.Unit, UniqueTarget.Global,
         docDescription = MULTIPLICATIVE_BONUS_EXPLANATION),
@@ -617,7 +618,7 @@ enum class UniqueType(
     TerrainGrantsPromotion("Grants [promotion] ([comment]) to adjacent [mapUnitFilter] units for the rest of the game", UniqueTarget.Terrain),
     GrantsCityStrength("[amount] Strength for cities built on this terrain", UniqueTarget.Terrain),
     ProductionBonusWhenRemoved("Provides a one-time bonus of [stats] to the closest city when cut down", UniqueTarget.Terrain, flags = setOf(UniqueFlag.AcceptsSpeedModifier, UniqueFlag.AcceptsGameProgressModifier)),
-    Vegetation("Vegetation", UniqueTarget.Terrain, UniqueTarget.Improvement, flags = UniqueFlag.setOfHiddenToUsers),  // Improvement included because use as tileFilter works
+    Vegetation("Vegetation", UniqueTarget.Terrain, UniqueTarget.Improvement),  // Improvement included because use as tileFilter works
 
 
     TileProvidesYieldWithoutPopulation("Tile provides yield without assigned population", UniqueTarget.Terrain, UniqueTarget.Improvement),
@@ -654,7 +655,11 @@ enum class UniqueType(
 
     FreshWater(Constants.freshWater, UniqueTarget.Terrain),
     RoughTerrain("Rough terrain", UniqueTarget.Terrain),
-    CoastalWater("Coastal Water", UniqueTarget.Terrain),
+    CoastalWater("Coastal Water", UniqueTarget.Terrain, docDescription =
+        "Marks water tiles as Coast - all other water tiles count as Ocean. These distinctions are relevant e.g. for map generator or the ability to navigate here.\n" +
+        "Note that terrain filters do not recognize this distinction, filtering for \"Coast\" or \"Ocean\" will only look for a terrain of that name.\n" +
+        "Also note that for compatibility reasons, terrains named \"Coast\" are assuned to have this Unique even if it's missing. This may be removed in a future version.\n" +
+        "A tile marked this way marks adjacent land tiles as \"Coastal\", so they fulfill the terrain filter, and cities built there can build ships, Harbor, etc."),
 
     ExcludedFromMapEditor("Excluded from map editor", UniqueTarget.Terrain, UniqueTarget.Improvement, UniqueTarget.Resource, UniqueTarget.Nation, flags = UniqueFlag.setOfHiddenToUsers),
 
@@ -705,6 +710,8 @@ enum class UniqueType(
 
     GreatImprovement("Great Improvement", UniqueTarget.Improvement),
     IsAncientRuinsEquivalent("Provides a random bonus when entered", UniqueTarget.Improvement),
+    IsBarbarianCampEquivalent("Marks a barbarian camp", UniqueTarget.Improvement, flags = UniqueFlag.setOfHiddenToUsers,
+        docDescription = "When several barbarian camp improvements are available, each new camp chooses one randomly."),
 
     Unpillagable("Unpillagable", UniqueTarget.Improvement),
     PillageYieldRandom("Pillaging this improvement yields approximately [stats]", UniqueTarget.Improvement, flags = setOf(UniqueFlag.AcceptsSpeedModifier, UniqueFlag.AcceptsGameProgressModifier)),
@@ -721,6 +728,8 @@ enum class UniqueType(
     /////////////////////////////////// region 07 PERSONALITY UNIQUES ////////////////////////////////////////
 
     WillNotBuild("Will not build [baseUnitFilter/buildingFilter]", UniqueTarget.Personality),
+    PersonalityAiWeight("[relativeAmount]% weight to [baseUnitFilter/buildingFilter] for AI decisions", UniqueTarget.Personality,
+        flags = UniqueFlag.setOfHiddenToUsers),
     //endregion
 
     ///////////////////////////////////////// region 08 CONDITIONALS /////////////////////////////////////////
@@ -814,7 +823,7 @@ enum class UniqueType(
     ConditionalCityWithBuilding("in cities with a [buildingFilter]", UniqueTarget.Conditional),
     ConditionalCityWithoutBuilding("in cities without a [buildingFilter]", UniqueTarget.Conditional),
     ConditionalPopulationFilter("in cities with at least [positiveAmount] [populationFilter]", UniqueTarget.Conditional),
-    ConditionalExactPopulationFilter("in cities with [positiveAmount] [populationFilter]", UniqueTarget.Conditional),
+    ConditionalExactPopulationFilter("in cities with [nonNegativeAmount] [populationFilter]", UniqueTarget.Conditional),
     ConditionalBetweenPopulationFilter("in cities with between [amount] and [amount] [populationFilter]", UniqueTarget.Conditional,
         docDescription = "'Between' is inclusive - so 'between 1 and 5' includes 1 and 5."),
     ConditionalBelowPopulationFilter("in cities with less than [amount] [populationFilter]", UniqueTarget.Conditional),
@@ -837,7 +846,7 @@ enum class UniqueType(
     ConditionalAboveHP("when above [positiveAmount] HP", UniqueTarget.Conditional),
     ConditionalBelowHP("when below [positiveAmount] HP", UniqueTarget.Conditional),
     ConditionalBelowMovement("when below [positiveAmount] movement", UniqueTarget.Conditional),
-    ConditionalAboveMovement("when above [positiveAmount] movement", UniqueTarget.Conditional),
+    ConditionalAboveMovement("when above [nonNegativeAmount] movement", UniqueTarget.Conditional),
     ConditionalHasNotUsedOtherActions("if it hasn't used other actions yet", UniqueTarget.Conditional),
     ConditionalStackedWithUnit("when stacked with a [mapUnitFilter] unit", UniqueTarget.Conditional),
     ConditionalNotStackedWithUnit("when not stacked with a [mapUnitFilter] unit", UniqueTarget.Conditional),
@@ -928,7 +937,7 @@ enum class UniqueType(
     FreePromotion("This Promotion is free", UniqueTarget.Promotion),
 
     OneTimeChangeTerrain("Turn this tile into a [terrainName] tile", UniqueTarget.Triggerable),
-
+    OneTimeAddResource("Add [resource] to this tile", UniqueTarget.Triggerable),
     OneTimeRemoveResourcesFromTile("Remove [resourceFilter] resources from this tile", UniqueTarget.Triggerable),
     OneTimeRemoveImprovementsFromTile("Remove [improvementFilter] improvements from this tile", UniqueTarget.Triggerable),
 

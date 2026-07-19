@@ -1,19 +1,23 @@
-package com.unciv.logic.map.tile
+package com.unciv.ui.objectdescriptions
 
 import com.unciv.Constants
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.tile.RoadStatus
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toStringSigned
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.utils.DebugUtils
+import kotlin.collections.get
 
 object TileDescription {
 
     /** Get info on a selected tile, used on WorldScreen (right side above minimap), CityScreen or MapEditorViewTab. */
-    fun toMarkup(tile: Tile, viewingCiv: Civilization?, hideUnits: Boolean = false, spyCity: City? = null): ArrayList<FormattedLine> {        val lineList = ArrayList<FormattedLine>()
+    fun toMarkup(tile: Tile, viewingCiv: Civilization?, hideUnits: Boolean = false, spyCity: City? = null): ArrayList<FormattedLine> {
+        val lineList = ArrayList<FormattedLine>()
         val isViewableToPlayer = viewingCiv == null || DebugUtils.VISIBLE_MAP
                 || viewingCiv.viewableTiles.contains(tile)
 
@@ -26,33 +30,39 @@ object TileDescription {
                 lineList += city.cityConstructions.getProductionMarkup(tile.ruleset)
         }
 
-        lineList += FormattedLine(tile.baseTerrain, link="Terrain/${tile.baseTerrain}")
+        lineList += FormattedLine(tile.baseTerrain, link = "Terrain/${tile.baseTerrain}")
         for (terrainFeature in tile.terrainFeatures)
-            lineList += FormattedLine(terrainFeature, link="Terrain/$terrainFeature")
+            lineList += FormattedLine(terrainFeature, link = "Terrain/$terrainFeature")
+
         val resource = tile.tileResource
         if (resource != null && (viewingCiv == null || viewingCiv.canSeeResource(resource)))
             lineList += if (resource.resourceType == ResourceType.Strategic)
-                FormattedLine("{${tile.resource}} (${tile.resourceAmount})", link="Resource/${tile.resource}")
+                FormattedLine("{${tile.resource}} (${tile.resourceAmount})", link = "Resource/${tile.resource}")
             else
-                FormattedLine(resource.name, link="Resource/${resource.name}")
+                FormattedLine(resource.name, link = "Resource/${resource.name}")
+
         if (viewingCiv != null && viewingCiv.canSeeResource(resource)) {
-            val resourceImprovement = resource.getImprovements().firstOrNull { tile.improvementFunctions.canBuildImprovement(tile.ruleset.tileImprovements[it]!!, viewingCiv.state) }
-            val tileImprovement = tile.ruleset.tileImprovements[resourceImprovement]
+            val tileImprovement = resource.getImprovements()
+                .mapNotNull { tile.ruleset.tileImprovements[it] }
+                .firstOrNull { tile.improvementFunctions.canBuildImprovement(it, viewingCiv.state) }
             if (tileImprovement?.techRequired != null
                     && !viewingCiv.tech.isResearched(tileImprovement.techRequired!!)) {
                 lineList += FormattedLine(
                     "Requires [${tileImprovement.techRequired}]",
-                    link="Technology/${tileImprovement.techRequired}",
-                    color= "#FAA"
+                    link = "Technology/${tileImprovement.techRequired}",
+                    color = "#FAA"
                 )
             }
         }
+
         if (tile.naturalWonder != null)
-            lineList += FormattedLine(tile.naturalWonder!!, link="Terrain/${tile.naturalWonder}")
+            lineList += FormattedLine(tile.naturalWonder!!, link = "Terrain/${tile.naturalWonder}")
+
         if (tile.roadStatus !== RoadStatus.None && !tile.isCityCenter()) {
             val pillageText = if (tile.roadIsPillaged) " (Pillaged!)" else ""
             lineList += FormattedLine("[${tile.roadStatus.name}]$pillageText", link = "Improvement/${tile.roadStatus.name}")
         }
+
         val shownImprovement = tile.getShownImprovement(viewingCiv)
         if (shownImprovement != null) {
             val pillageText = if (tile.improvementIsPillaged) " (Pillaged!)" else ""
@@ -63,17 +73,19 @@ object TileDescription {
             // Negative turnsToImprovement is used for UniqueType.CreatesOneImprovement
             val line = "{${tile.improvementInProgress}}" +
                     if (tile.turnsToImprovement > 0) " - ${tile.turnsToImprovement}${Fonts.turn}" else " ({Under construction})"
-            lineList += FormattedLine(line, link="Improvement/${tile.improvementInProgress}")
+            lineList += FormattedLine(line, link = "Improvement/${tile.improvementInProgress}")
         }
 
         if (tile.civilianUnit != null && isViewableToPlayer && !hideUnits)
-            lineList += FormattedLine(tile.civilianUnit!!.name.tr() + " - " + tile.civilianUnit!!.civ.civName.tr(),
-                link="Unit/${tile.civilianUnit!!.name}")
+            lineList += FormattedLine(
+                tile.civilianUnit!!.name.tr() + " - " + tile.civilianUnit!!.civ.civName.tr(),
+                link = "Unit/${tile.civilianUnit!!.name}"
+            )
         if (tile.militaryUnit != null && isViewableToPlayer && !hideUnits && (viewingCiv == null || !tile.militaryUnit!!.isInvisible(viewingCiv))) {
             val milUnitString = tile.militaryUnit!!.name.tr() +
                     (if (tile.militaryUnit!!.health < 100) "(" + tile.militaryUnit!!.health + ")" else "") +
                     " - " + tile.militaryUnit!!.civ.civName.tr()
-            lineList += FormattedLine(milUnitString, link="Unit/${tile.militaryUnit!!.name}")
+            lineList += FormattedLine(milUnitString, link = "Unit/${tile.militaryUnit!!.name}")
         }
 
         val defenceBonus = tile.getDefensiveBonus()
@@ -81,6 +93,7 @@ object TileDescription {
             val defencePercentString = (defenceBonus * 100).toInt().toStringSigned() + "%"
             lineList += FormattedLine("[$defencePercentString] to unit defence")
         }
+
         if (tile.isImpassible()) lineList += FormattedLine(Constants.impassable)
         if (tile.isLand && tile.isAdjacentTo(Constants.freshWater)) lineList += FormattedLine(Constants.freshWater)
 

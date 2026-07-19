@@ -9,7 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.DragListener
 import com.badlogic.gdx.utils.Align
 import com.unciv.GUI
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.tile.TileDescription
+import com.unciv.ui.objectdescriptions.TileDescription
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.addBorderAllowOpacity

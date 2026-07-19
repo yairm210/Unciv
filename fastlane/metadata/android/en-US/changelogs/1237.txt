@@ -1,0 +1,18 @@
+fix: mod checker misses recursive citywide-resource countable in <for every [resource]> - By mvanhorn
+
+Disable constructions per city/game instead of client wide - By unciv-loof
+
+Replace -NC sounds with libre ones - By Wuzzy2
+
+Add [Resource] to tile. (Credit to Robloach) - By chenxing61
+
+Implement impi unique extra ranged attack - By O-spin
+
+By SomeTroglodyte:
+- Button to check a Mod directly from the Mod manager screen
+- Politics overview "Ball of Yarn" makeover
+- New city overview column: Majority Religion
+- Allow pixel unit art option and modded extraImages for units to coexist
+- Make no-barbarians games ignore OneTimeRebel and OneTimeAmountRebels triggereables
+- Fix RekMod Moai can be built on water tiles with a resource
+- Prettify the city-state diplomacy page when a CS has _many_ protectors

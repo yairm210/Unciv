@@ -16,6 +16,7 @@ import com.unciv.models.Spy
 import com.unciv.models.SpyAction
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.SmallButtonStyle
+import com.unciv.ui.components.extensions.addCapitalIndicator
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.extensions.toLabel
@@ -262,17 +263,8 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
             return ImageGetter.getImage("OtherIcons/Hideout").apply { setSize(33f) }
 
         val icon = ImageGetter.getNationPortrait(civ.nation, 30f)
-        if (!isCapital() || civ.isCityState) return icon
-
-        icon.addActor(ImageGetter.getImage("OtherIcons/Capital").apply {
-            color = Color.BLACK.cpy().apply { a = 0.4f }
-            setSize(22f)
-            setPosition(29f, 27f, Align.center)
-        })
-        icon.addActor(ImageGetter.getImage("OtherIcons/Capital").apply {
-            setSize(18f)
-            setPosition(28f, 28f, Align.center)
-        })
+        if (isCapital() && !civ.isCityState)
+            icon.addCapitalIndicator()
         return icon
     }
     //endregion

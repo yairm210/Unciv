@@ -7,11 +7,13 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.managers.ImprovementFunctions
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stats
+import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 
@@ -146,10 +148,35 @@ class TileImprovementFunctions(val tile: Tile) {
                     && tile.isAdjacentTo(Constants.freshWater) -> true
 
             // I don't particularly like this check, but it is required to build mines on non-hill resources
-            resourceIsVisible && tile.tileResource!!.isImprovedBy(improvement.name) -> true
+            resourceIsVisible && tile.tileResource!!.isImprovedBy(improvement.name)
+                && extendedDomainCheck(improvement) -> true
             // No reason this improvement should be built here, so can't build it
             else -> false
         }
+    }
+
+    /** Helper for the "build mines on non-hill resources" branch above:
+     *  Verifies not to allow land improvements on water and vice versa.
+     */
+    @Readonly
+    @VisibleForTesting
+    fun extendedDomainCheck(improvement: TileImprovement): Boolean {
+        // Don't check when there's no terrain and CanOnlyImproveResource is the only reason allowing the improvement
+        if (improvement.terrainsCanBeBuiltOn.isEmpty()) return true
+        // Resolve all terrainsCanBeBuiltOn entries to a TerrainType, using `occursOn` for TerrainFeatures
+        val allowedTypes = mutableSetOf<TerrainType>()
+        for (canBuildOn in improvement.terrainsCanBeBuiltOn) {
+            val type = TerrainType.entries.firstOrNull { it.name == canBuildOn }
+            if (type != null) allowedTypes += type
+            val terrain = tile.ruleset.terrains[canBuildOn] ?: continue
+            allowedTypes += terrain.type
+            for (occursOn in terrain.occursOn) {
+                val baseTerrain = tile.ruleset.terrains[occursOn] ?: continue
+                allowedTypes += baseTerrain.type
+            }
+        }
+        return tile.isLand && TerrainType.Land in allowedTypes ||
+            tile.isWater && TerrainType.Water in allowedTypes
     }
 
     fun setImprovement(
@@ -188,15 +215,16 @@ class TileImprovementFunctions(val tile: Tile) {
         }
 
         if (improvement == null) {
-            val wasEncampment = tile.improvement == Constants.barbarianEncampment
+            val wasEncampment = tile.isBarbarianEncampment()
             tile.improvementIsPillaged = false
             tile.setImprovementBasic(null)
             updateVisibility()
             updateCity()
             if (!wasEncampment) return
             // Any barbarian encampment cleared outside MapUnit.clearEncampment should obsolete ClearBarbarianCamp quests
-            for (cityState in tile.tileMap.gameInfo.getAliveCityStates())
-                cityState.questManager.handleObsoleteGlobalQuests()
+            if (tile.tileMap.hasGameInfo()) // guard against removing encampments in map editor
+                for (cityState in tile.tileMap.gameInfo.getAliveCityStates())
+                    cityState.questManager.handleObsoleteGlobalQuests()
             return
         }
 
@@ -252,13 +280,6 @@ class TileImprovementFunctions(val tile: Tile) {
         unit: MapUnit? = null
     ) {
         val gameContext = GameContext(civ, unit = unit, tile = tile)
-        
-        for (unique in improvement.getMatchingUniques(UniqueType.CostsResources, gameContext)) {
-            val resource = tile.ruleset.tileResources[unique.params[1]] ?: continue
-            var amount = unique.params[0].toInt()
-            if (unique.isModifiedByGameSpeed()) amount = (amount * civ.gameInfo.speed.modifier).toInt()
-            civ.gainStockpiledResource(resource, -amount)
-        }
 
         for (unique in improvement.uniqueObjects) {
             if (unique.hasTriggerConditional() || !unique.conditionalsApply(gameContext)) continue

@@ -292,7 +292,7 @@ class UniqueValidator(val ruleset: Ruleset) {
         if (unique.type in resourceUniques)
             for ((index, param) in modifier.params.withIndex()){
                 if (ruleset.tileResources[param]?.isCityWide != true) continue
-                if (unique.type!!.parameterTypeMap.getOrNull(index)?.contains(UniqueParameterType.Countable) != true) continue
+                if (modifier.type.parameterTypeMap.getOrNull(index)?.contains(UniqueParameterType.Countable) != true) continue
 
                 rulesetErrors.add(
                     "$prefix contains the modifier \"${modifier.text}\"," +

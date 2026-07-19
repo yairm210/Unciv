@@ -38,6 +38,10 @@ class ResourceSupplyList(
     @Readonly fun sumBy(resource: TileResource) =
         asSequence().filter { it.resource == resource }.sumOf { it.amount }
 
+    @Readonly
+    fun origins(): List<String> =
+        asSequence().map { it.origin }.distinct().toList()
+
     /**
      *  Add [element] unless one for [resource][ResourceSupply.resource]/[origin][ResourceSupply.origin] already exists,
      *  in which case the amounts are added up. Ensures the list contains no entries with [amount][ResourceSupply.amount] 0 unless [keepZeroAmounts] is on.
@@ -98,33 +102,6 @@ class ResourceSupplyList(
     fun sumByResource(newOrigin: String) = ResourceSupplyList(keepZeroAmounts).addByResource(this, newOrigin)
 
     /**
-     * Applies the given modifiers list to the resource supplies.
-     *
-     * @param resourceModifiers The list of resource modifiers to apply to the supply list.
-     */
-    fun applyModifiers(resourceModifiers: Map<String, Float>) {
-        for ((resourceName, modifier) in resourceModifiers) {
-            if (modifier == 1f) continue
-            for (resourceSupply in this) {
-                if (resourceSupply.resource.name == resourceName) {
-                    resourceSupply.amount = (resourceSupply.amount.toFloat() * modifier).toInt()
-                }
-            }
-        }
-    }
-
-    /**
-     * Applies the given modifier function to the resource supplies.
-     */
-    fun applyModifiers(resourceModifier: (TileResource) -> Float) {
-        for (resourceSupply in this) {
-            val modifier = resourceModifier(resourceSupply.resource)
-            if (modifier == 1f) continue
-            resourceSupply.amount = (resourceSupply.amount.toFloat() * modifier).toInt()
-        }
-    }
-
-    /**
      *  Remove all entries from a specific [origin]
      *  @return `this`, allowing chaining
      */
@@ -132,6 +109,15 @@ class ResourceSupplyList(
         // The filter creates a separate list so the iteration does not modify concurrently
         filter { it.origin == origin }.forEach { remove(it) }
         return this
+    }
+
+    /** Multiply each entry's amount by its resource's modifier, if one exists. */
+    fun applyModifiers(modifiers: Map<String, Float>) {
+        if (modifiers.isEmpty()) return
+        for (resourceSupply in this) {
+            val modifier = modifiers[resourceSupply.resource.name] ?: continue
+            resourceSupply.amount = (resourceSupply.amount.toFloat() * modifier).toInt()
+        }
     }
 
     companion object {

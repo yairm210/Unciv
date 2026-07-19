@@ -215,7 +215,8 @@ object BaseUnitDescriptions {
      */
     // Note: By popular request (this is a simple variant of one of the ideas in #10175)
     private fun ArrayList<FormattedLine>.addPixelUnitImage(baseUnit: BaseUnit) {
-        if (baseUnit.civilopediaText.any { it.extraImage.isNotEmpty() }) return
+        val pixelUnitTexturePattern = Regex("TileSets/[^/]+/Units/${baseUnit.name}")
+        if (baseUnit.civilopediaText.any { it.extraImage.matches(pixelUnitTexturePattern) }) return
         val settings = GUI.getSettings()
         if (settings.unitSet.isNullOrEmpty() || settings.pediaUnitArtSize < 1f) return
         val imageName = "TileSets/${settings.unitSet}/Units/${baseUnit.name}"
@@ -225,7 +226,6 @@ object BaseUnitDescriptions {
     }
 
     @Suppress("RemoveExplicitTypeArguments")  // for faster IDE - inferring sequence types can be slow
-    
     fun UnitType.getUnitTypeCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         @Readonly
         fun getDomainLines() = sequence<FormattedLine> {

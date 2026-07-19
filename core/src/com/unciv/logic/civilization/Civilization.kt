@@ -195,6 +195,13 @@ class Civilization : IsPartOfGameInfoSerialization {
     var cities = listOf<City>()
     var citiesCreated = 0
 
+    /**
+     * Constructions (e.g. buildings) that will be disabled when a new city is founded
+     * They are moved to the "Disabled" section in the build menu, and will not be built during automation.
+     */
+    var disabledCityConstructions = HashSet<String>()
+        private set
+
     // Limit camera within explored region
     var exploredRegion = ExploredRegion()
 
@@ -302,6 +309,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.proximity.putAll(proximity)
         toReturn.cities = cities.map { it.clone() }
         toReturn.neutralRoads = neutralRoads
+        toReturn.disabledCityConstructions.addAll(disabledCityConstructions)
         toReturn.exploredRegion = exploredRegion.clone()
         toReturn.lastSeenImprovement.putAll(lastSeenImprovement)
         toReturn.leaderTitle = leaderTitle
