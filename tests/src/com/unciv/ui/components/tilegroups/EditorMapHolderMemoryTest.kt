@@ -13,6 +13,7 @@ import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.images.ImageGetter
 import org.junit.Assert
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -58,6 +59,7 @@ class EditorMapHolderMemoryTest {
     }
 
     @Test
+    @Ignore("Cannot fail, it's a measurement tool to run locally.")
     @RedirectOutput(RedirectPolicy.Show)
     fun tileGroupMemoryBreakdown() {
         testGame.makeRectangularMap(100, 100)
