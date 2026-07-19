@@ -717,6 +717,7 @@ HexaRealm tileset images by legacymtgsalvationuser69544 [here](https://github.co
 -   [praying](https://thenounproject.com/icon/praying/886367/) by Gan Khoon Lay for Follower
 -   [Hero](https://thenounproject.com/icon/preacher/195465/) by Andrew J. Young for Founder
 -   [yell](https://thenounproject.com/icon/yell/4159889/) by Adrien Coquet for Enhancer
+-   [halo](https://thenounproject.com/icon/halo-4406022/) by Bilal Hussain for Holy city indicator (city overview): Public domain
 
 ### Others
 
