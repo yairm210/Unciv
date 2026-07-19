@@ -100,7 +100,7 @@ class WorldScreen(
     
     /** Indicates that a game failed to upload, and needs to be uploaded */
     var failedUpload = false
-        internal set
+        private set
 
     /** Selected civilization, used in spectator and replay mode, equals viewingCiv in ordinary games */
     var selectedCiv = viewingCiv
