@@ -80,6 +80,12 @@ class ModManagementScreen private constructor(
         fun cleanModName(modName: String): String = modName.replace("   ", " - ")
     }
 
+    private class ModsScrollPane(widget: Actor?) : AutoScrollPane(widget, skin, "mods-scroll") {
+        init {
+            setupFadeScrollBars(3f, 3f) // Let them fade away, but more slowly than default (1, 1)
+        }
+    }
+
     // Since we're `RecreateOnResize`, preserve the portrait/landscape mode for our lifetime
     private val isPortrait: Boolean
 
@@ -90,13 +96,13 @@ class ModManagementScreen private constructor(
 
     // Left column (in landscape, portrait stacks them within expanders)
     private val installedModsTable = Table().apply { defaults().pad(10f) }
-    private val scrollInstalledMods = AutoScrollPane(installedModsTable)
+    private val scrollInstalledMods = ModsScrollPane(installedModsTable)
     // Center column
     private val onlineModsTable = Table().apply { defaults().pad(10f) }
-    private val scrollOnlineMods = AutoScrollPane(onlineModsTable)
+    private val scrollOnlineMods = ModsScrollPane(onlineModsTable)
     // Right column
     private val modActionTable = ModInfoAndActionPane()
-    private val scrollActionTable = AutoScrollPane(modActionTable)
+    private val scrollActionTable = ModsScrollPane(modActionTable)
     // Manager providing the Widget floating top right in landscape mode, stacked expander in portrait
     private val optionsManager = ModManagementOptions(this)
 
