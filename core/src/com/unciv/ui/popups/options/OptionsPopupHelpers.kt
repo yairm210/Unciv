@@ -60,8 +60,8 @@ internal interface OptionsPopupHelpers {
      */
     val rightWidgetMinWidth: Float
 
-    /** Access the active page number of the TabbedPager in [OptionsPopup] */
-    val activePage: Int
+    /** Access the active page of the TabbedPager in [OptionsPopup] */
+    val activePage: OptionsPopupPages
 
 
     /**

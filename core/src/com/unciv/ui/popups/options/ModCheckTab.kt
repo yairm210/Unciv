@@ -42,8 +42,8 @@ private const val MOD_CHECK_WITHOUT_BASE = "-none-"
 private const val MOD_CHECK_DYNAMIC_BASE = "-declared requirements-"
 
 internal class ModCheckTab(
-    val screen: BaseScreen
-) : Table(), TabbedPager.IPageExtensions {
+    optionsPopup: OptionsPopup,
+) : OptionsPopupTab(optionsPopup) {
     private val fixedContent = Table()
 
     // marker for automatic first run on selecting the tab
@@ -268,11 +268,11 @@ internal class ModCheckTab(
             openUniqueBuilderButton.onClick { openUniqueBuilder(combinedRuleset) }
             it.add(openUniqueBuilderButton).row()
 
-            if (severity != RulesetErrorSeverity.OK && mod.folderLocation != null) {
+            if (game.screen != null && severity != RulesetErrorSeverity.OK && mod.folderLocation != null) {
                 val replaceableUniques = UniqueAutoUpdater.getDeprecatedReplaceableUniques(mod, combinedRuleset)
                 if (replaceableUniques.isNotEmpty())
                     it.add("Autoupdate mod uniques".toTextButton()
-                        .onClick { autoUpdateUniques(screen, mod, replaceableUniques) }).row()
+                        .onClick { autoUpdateUniques(game.screen!!, mod, replaceableUniques) }).row()
             }
             for (line in modLinks) {
                 val label = Label(line.text, BaseScreen.skin)
