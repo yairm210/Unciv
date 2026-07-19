@@ -26,8 +26,6 @@ New Unciv logo made by u-ndefined on Discord
 
 Base tile icons for the "Fantasy Hex" tileset belong to CuddlyClover @ https://cuddlyclover.itch.io/fantasy-hex-tiles with a few additions by various contributors
 
-Promotional trailer for Steam and other storefronts made by [letstalkaboutdune](https://github.com/letstalkaboutdune)
-
 Unless otherwise specified, all the following are from [the Noun Project](https://thenounproject.com) either licenced under CC BY 3.0 or released into the Public Domain.
 
 ### Stat icons
@@ -886,7 +884,7 @@ The following music is from https://filmmusic.io:
 
 - "[Thatched Villagers](https://incompetech.filmmusic.io/song/4481-thatched-villagers)" by Kevin MacLeod (https://incompetech.com) (CC BY 4.0)
 
-## Trailer audio
+## Trailer video
 
 Unciv has released a Unciv Gameplay Trailer video separately, not part of this repository. See `Credits_trailer.md` for credits and details for that video.
 

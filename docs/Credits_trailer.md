@@ -1,6 +1,11 @@
-# Trailer Audio Credits
+# Trailer Video Credits
 
-These are the audio credits for the Unciv Gameplay Trailer video. This video as well as all its sound files are released *separately* from the main game repository.
+The promotional trailer for Steam and other storefronts was made by [letstalkaboutdune](https://github.com/letstalkaboutdune).
+This video was released *separately* from the main game repository.
+
+## Audio credits
+
+These are the audio credits for the Unciv Gameplay Trailer video. All its sound files are released *separately* from the main game repository.
 
 The following track and sound effects are used for the Unciv Gameplay Trailer video (license name in brackets):
 
