@@ -167,6 +167,12 @@ private class UncivServerRunner : CliktCommand() {
         help = "Multiplayer file's folder"
     ).default("MultiplayerFiles")
 
+    private val assets by option(
+        "-assets",
+        envvar = "UncivServerAssets",
+        help = "Path to Unciv assets (must contain jsons/ and optionally mods/) for authoritative actions"
+    ).default("../android/assets")
+
     private val authV1Enabled by option(
         "-a", "-auth",
         envvar = "UncivServerAuth",
@@ -192,6 +198,12 @@ private class UncivServerRunner : CliktCommand() {
             authVersion = if (authV1Enabled) 1 else 0,
             chatVersion = if (chatV1Enabled) 1 else 0,
         )
+        System.err.println("UncivServer assets path for authoritative engine: $assets")
+        try {
+            ServerUncivEngine.init(assets)
+        } catch (ex: Exception) {
+            System.err.println("Warning: could not pre-init Unciv engine: ${ex.message}")
+        }
         serverRun(port, folder)
     }
 
@@ -309,7 +321,7 @@ private class UncivServerRunner : CliktCommand() {
                         }
                         if (file.exists()) {
                             val existing = withContext(Dispatchers.IO) { file.readText() }
-                            if (AuthoritativeSaveVerify.isForbiddenMidTurnPut(existing, incoming)) {
+                            if (ServerUncivEngine.isForbiddenMidTurnPut(existing, incoming)) {
                                 return@put call.respond(
                                     HttpStatusCode.Conflict,
                                     "Mid-turn overwrite rejected: use POST /files/{file}/action for unit actions"
@@ -335,23 +347,26 @@ private class UncivServerRunner : CliktCommand() {
 
                         val body = call.receiveText()
                         val payload = try {
-                            Json.decodeFromString(AuthoritativeSaveVerify.UnitActionPayload.serializer(), body)
+                            Json.decodeFromString(ServerUncivEngine.UnitActionPayload.serializer(), body)
                         } catch (ex: Exception) {
                             return@post call.respond(HttpStatusCode.BadRequest, "Invalid action JSON: ${ex.message}")
                         }
 
-                        val result = synchronized(fileName.intern()) {
+                        val (newSave, error) = synchronized(fileName.intern()) {
                             val existing = file.readText()
-                            val error = AuthoritativeSaveVerify.verifyAction(existing, payload)
-                            if (error != null) error
+                            val result = ServerUncivEngine.applyAction(existing, payload)
+                            if (result.second != null) result
                             else {
-                                file.writeText(payload.newGameData)
-                                null
+                                file.writeText(result.first!!)
+                                result
                             }
                         }
-                        if (result != null) return@post call.respond(HttpStatusCode.Conflict, result)
-                        call.application.log.info("Authoritative action accepted: $fileName unit=${payload.unitId} ${payload.type}")
-                        call.respond(HttpStatusCode.OK)
+                        if (error != null) return@post call.respond(HttpStatusCode.Conflict, error)
+                        call.application.log.info(
+                            "Authoritative action applied: $fileName unit=${payload.unitId} ${payload.type}"
+                        )
+                        // Return the new canonical save so the client can stay in sync (esp. combat RNG)
+                        call.respondText(newSave!!)
                     }
 
                     get("/files/{fileName}") {

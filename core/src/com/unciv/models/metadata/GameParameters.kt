@@ -32,7 +32,8 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
     var espionageEnabled = false
     /**
      * Online multiplayer: unit moves/attacks are committed only after the custom UncivServer
-     * accepts an action payload (prevents mid-turn reload scam). Requires a server that implements POST /files/{id}/action.
+     * applies it with Unciv logic and returns the new save (Evgeny's model; prevents mid-turn scam).
+     * Requires UncivServer with POST /files/{id}/action and game assets on the server.
      */
     var serverAuthoritativeUnitActions = false
     var noStartBias = false

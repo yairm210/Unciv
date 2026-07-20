@@ -134,6 +134,12 @@ project(":server") {
         "implementation"(rootProject.libs.logback)
         "implementation"(rootProject.libs.clikt)
 
+        // Server-authoritative unit actions: apply Unciv logic to saves
+        "implementation"(project(":core"))
+        "implementation"(rootProject.libs.coroutines.core)
+        "implementation"(rootProject.libs.gdx.backend.headless)
+        "implementation"(rootProject.libs.mockito)
+
         // clikt somehow needs this
         "api"(rootProject.libs.bundles.jna)
     }

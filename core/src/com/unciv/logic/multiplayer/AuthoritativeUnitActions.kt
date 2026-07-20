@@ -2,7 +2,6 @@ package com.unciv.logic.multiplayer
 
 import com.badlogic.gdx.Net
 import com.unciv.UncivGame
-import com.unciv.logic.GameInfo
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.multiplayer.storage.SimpleHttp
@@ -12,54 +11,62 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 /**
- * Client helper for [com.unciv.models.metadata.GameParameters.serverAuthoritativeUnitActions]:
- * apply the action on a clone, send it to UncivServer POST /files/{id}/action, commit only on HTTP 200.
+ * Evgeny's model: client sends a small action JSON; UncivServer applies it to the canonical save
+ * and returns the new save. The client must not commit the action locally until HTTP 200.
  */
 object AuthoritativeUnitActions {
 
-    fun isEnabled(gameInfo: GameInfo): Boolean =
+    fun isEnabled(gameInfo: com.unciv.logic.GameInfo): Boolean =
         gameInfo.gameParameters.isOnlineMultiplayer
             && gameInfo.gameParameters.serverAuthoritativeUnitActions
 
     /**
-     * Build a zipped save of [gameAfterAction] and POST the action to the configured UncivServer.
-     * @return null on success, otherwise an error message
+     * Ask the server to apply the action. On success returns the new gzipped save body.
+     * On failure returns null and [errorOut] is set.
      */
-    suspend fun commitAction(
-        gameAfterAction: GameInfo,
+    suspend fun requestAction(
+        gameId: String,
         type: String,
         unit: MapUnit,
-        fromX: Int,
-        fromY: Int,
-        toX: Int,
-        toY: Int,
+        fromX: Float,
+        fromY: Float,
+        toX: Float,
+        toY: Float,
+        errorOut: (String) -> Unit = {},
     ): String? = withContext(Dispatchers.IO) {
-        val zipped = UncivFiles.gameInfoToString(gameAfterAction, forceZip = true, updateChecksum = true)
-        // Keep JSON field names identical to UncivServer's UnitActionPayload (kotlinx.serialization)
         val body = buildString {
             append("{\"type\":\"").append(type).append("\",")
             append("\"unitId\":").append(unit.id).append(',')
-            append("\"fromX\":").append(fromX).append(',')
-            append("\"fromY\":").append(fromY).append(',')
-            append("\"toX\":").append(toX).append(',')
-            append("\"toY\":").append(toY).append(',')
-            append("\"newGameData\":\"").append(zipped).append("\"}")
+            append("\"fromX\":").append(fromX.toInt()).append(',')
+            append("\"fromY\":").append(fromY.toInt()).append(',')
+            append("\"toX\":").append(toX.toInt()).append(',')
+            append("\"toY\":").append(toY.toInt()).append('}')
         }
         val server = UncivGame.Current.onlineMultiplayer.multiplayerServer
-        server.fileStorage() // ensure auth header is applied for UncivServer
-        val url = "${server.getServerUrl().trimEnd('/')}/files/${gameAfterAction.gameId}/action"
+        val url = "${server.getServerUrl().trimEnd('/')}/files/$gameId/action"
+        var newSave: String? = null
         var error: String? = "No response"
         SimpleHttp.sendRequest(
             Net.HttpMethods.POST,
             url,
             body,
-            timeout = 30000,
+            timeout = 60000,
             header = UncivServerFileStorage.authHeader
         ) { success, result, code ->
-            error = if (success && code == 200) null
-            else "Server rejected action (${code}): $result"
+            if (success && code == 200 && result.isNotBlank()) {
+                newSave = result
+                error = null
+            } else {
+                error = "Server rejected action (${code}): $result"
+            }
         }
-        if (error != null) Log.debug("Authoritative action failed: %s", error)
-        error
+        if (error != null) {
+            Log.debug("Authoritative action failed: %s", error)
+            errorOut(error!!)
+        }
+        newSave
     }
+
+    fun loadReturnedSave(zippedSave: String) =
+        UncivFiles.gameInfoFromString(zippedSave)
 }

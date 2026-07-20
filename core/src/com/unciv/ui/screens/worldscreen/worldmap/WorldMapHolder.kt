@@ -259,6 +259,34 @@ class WorldMapHolder(
                     .firstOrNull { it.tileToAttack == tile }
             if (unit.canAttack() && attackableTile != null) {
                 /** ****** Right-click Attack ****** */
+                if (AuthoritativeUnitActions.isEnabled(worldScreen.gameInfo)) {
+                    val from = unit.currentTile.position
+                    val to = tile.position
+                    Concurrency.run("AuthAttack") {
+                        var errMsg = "Server-authoritative attack failed"
+                        val newSave = runBlocking {
+                            AuthoritativeUnitActions.requestAction(
+                                worldScreen.gameInfo.gameId, "attack", unit,
+                                from.x, from.y, to.x, to.y
+                            ) { errMsg = it }
+                        }
+                        launchOnGLThread {
+                            if (newSave == null) {
+                                ToastPopup(errMsg, worldScreen)
+                                return@launchOnGLThread
+                            }
+                            try {
+                                val newGame = AuthoritativeUnitActions.loadReturnedSave(newSave)
+                                newGame.isUpToDate = true
+                                worldScreen.game.loadGame(newGame)
+                            } catch (ex: Exception) {
+                                Log.error("Failed to load authoritative save after attack", ex)
+                                ToastPopup("Failed to load server save after attack", worldScreen)
+                            }
+                        }
+                    }
+                    return
+                }
                 val attacker = MapUnitCombatant(unit)
                 if (!Battle.movePreparingAttack(attacker, attackableTile)) return
                 if (!SoundPlayer.play(UncivSound(attacker.getName())))
@@ -319,48 +347,39 @@ class WorldMapHolder(
             worldScreen.recordUndoCheckpoint()
 
             if (AuthoritativeUnitActions.isEnabled(worldScreen.gameInfo)) {
-                try {
-                    val clone = worldScreen.gameInfo.clone()
-                    clone.setTransients()
-                    val cloneUnit = clone.civilizations.asSequence()
-                        .flatMap { it.units.getCivUnits() }
-                        .firstOrNull { it.id == selectedUnit.id }
-                    if (cloneUnit == null) {
-                        launchOnGLThread {
-                            ToastPopup("Could not prepare server-authoritative move", worldScreen)
-                            removeUnitActionOverlay()
-                        }
-                        return@run
-                    }
-                    val from = cloneUnit.currentTile.position
-                    val cloneDest = clone.tileMap[tileToMoveTo.position]
-                    cloneUnit.movement.moveToTile(cloneDest)
-                    if (cloneUnit.currentTile.position == from) {
-                        launchOnGLThread { removeUnitActionOverlay() }
-                        return@run
-                    }
-                    val to = cloneUnit.currentTile.position
-                    val error = runBlocking {
-                        AuthoritativeUnitActions.commitAction(
-                            clone, "move", selectedUnit,
-                            from.x, from.y, to.x, to.y
-                        )
-                    }
-                    if (error != null) {
-                        launchOnGLThread {
-                            ToastPopup(error, worldScreen)
-                            removeUnitActionOverlay()
-                        }
-                        return@run
-                    }
-                } catch (ex: Exception) {
-                    Log.error("Authoritative move failed", ex)
+                val from = selectedUnit.currentTile.position
+                val to = tileToMoveTo.position
+                var errMsg = "Server-authoritative move failed"
+                val newSave = runBlocking {
+                    AuthoritativeUnitActions.requestAction(
+                        worldScreen.gameInfo.gameId,
+                        "move",
+                        selectedUnit,
+                        from.x, from.y, to.x, to.y
+                    ) { errMsg = it }
+                }
+                if (newSave == null) {
                     launchOnGLThread {
-                        ToastPopup("Server-authoritative move failed", worldScreen)
+                        ToastPopup(errMsg, worldScreen)
                         removeUnitActionOverlay()
                     }
                     return@run
                 }
+                // Server already applied the move; keep local UI in sync via returned save
+                try {
+                    val newGame = AuthoritativeUnitActions.loadReturnedSave(newSave)
+                    newGame.isUpToDate = true
+                    launchOnGLThread {
+                        worldScreen.game.loadGame(newGame)
+                    }
+                } catch (ex: Exception) {
+                    Log.error("Failed to load authoritative save", ex)
+                    launchOnGLThread {
+                        ToastPopup("Failed to load server save after move", worldScreen)
+                        removeUnitActionOverlay()
+                    }
+                }
+                return@run
             }
 
             launchOnGLThread {
