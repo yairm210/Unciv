@@ -214,12 +214,18 @@ object TranslationFileWriter {
             // This is so we don't add the same keys twice if we have the same value in both Vanilla and G&K
             val existingTranslationKeys = HashSet<String>()
 
+            // When treating a Mod, ensure we don't delete their work for missing json-generated keys
+            val oldTranslationsForLanguage = mutableSetOf<String>()
+            if (baseTranslations != null)
+                for (tr in translations)
+                    if (language in tr.value) oldTranslationsForLanguage.add(tr.key)
+
             for (line in linesToTranslate) {
                 if (!line.contains(" = ")) {
                     // small hack to insert empty lines
-                    if (line.startsWith(specialNewLineCode)) {
+                    if (line.startsWith(specialNewLineCode))
                         stringBuilder.appendLine()
-                    } else // copy as-is
+                    else // copy as-is
                         stringBuilder.appendLine(line)
                     continue
                 }
@@ -232,6 +238,7 @@ object TranslationFileWriter {
 
                 if (existingTranslationKeys.contains(hashMapKey)) continue // don't add it twice
                 existingTranslationKeys.add(hashMapKey)
+                oldTranslationsForLanguage.remove(hashMapKey)
 
                 fun incrementCountOfTranslatableLines() {
                     // count translatable lines only once
@@ -285,10 +292,28 @@ object TranslationFileWriter {
 
             countOfTranslatedLines[language] = translationsOfThisLanguage
 
-            val fileWriter = getFileHandle(modFolder, languageFileLocation.format(language))
+            val file = getFileHandle(modFolder, languageFileLocation.format(language))
+
+            // Ensure we don't lose any modder's work that is missing templates
+            if (oldTranslationsForLanguage.isNotEmpty()) {
+                stringBuilder.appendLine()
+                stringBuilder.appendLine("#################### Possibly unused ####################")
+                stringBuilder.appendLine("# These were found in the original translation file, but not as required translation from the json scan.")
+                stringBuilder.appendLine()
+                val oldTranslations = TranslationFileReader.read(file)
+                val oldEntriesWithHashKey = oldTranslations.entries
+                    .associateBy {
+                        it.key.replace(pointyBraceRegex, "").replace(squareBraceRegex, "[]")
+                    }
+                for ((hashKey, entry) in oldEntriesWithHashKey) {
+                    if (hashKey !in oldTranslationsForLanguage) continue
+                    stringBuilder.appendTranslation(entry.key, entry.value)
+                }
+            }
+
             // Any time you have more than 3 line breaks, make it 3
             val finalFileText = stringBuilder.toString().replace(Regex("\n{4,}"),"\n\n\n")
-            fileWriter.writeString(finalFileText, false, TranslationFileReader.charset)
+            file.writeString(finalFileText, false, TranslationFileReader.charset)
         }
 
         // Calculate the percentages of translations
