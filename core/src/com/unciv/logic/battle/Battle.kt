@@ -154,12 +154,12 @@ object Battle {
         // Exploring units surviving an attack should "wake up"
         if (!defender.isDefeated() && defender is MapUnitCombatant && defender.unit.isExploring())
             defender.unit.action = null
-        
+
         //Aoe attack
         if (attacker is MapUnitCombatant && (attacker.unit.hasUnique(UniqueType.AoeDegradeAttack) || attacker.unit.hasUnique(UniqueType.AoeFlatAttack))) {
             applyAoeAttack(attacker, defender)
         }
-        
+
         if (attacker is MapUnitCombatant) {
             if (attacker.unit.hasUnique(UniqueType.SelfDestructs))
                 attacker.unit.destroy()
@@ -240,7 +240,7 @@ object Battle {
             }
         }
     }
-    
+
     private fun triggerPostKillingUniques(
         defender: ICombatant,
         attacker: ICombatant,
