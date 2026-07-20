@@ -130,6 +130,7 @@ class GameOptionsTable(
             it.addOneCityChallengeCheckbox()
             it.addNuclearWeaponsCheckbox()
             it.addEnableEspionageCheckbox()
+            it.addServerAuthoritativeUnitActionsCheckbox()
             it.addNoStartBiasCheckbox()
             it.addRandomPlayersCheckbox()
             it.addRandomCityStatesCheckbox()
@@ -210,6 +211,10 @@ class GameOptionsTable(
     private fun Table.addEnableEspionageCheckbox() =
         addCheckbox("Enable Espionage", gameParameters.espionageEnabled)
         { gameParameters.espionageEnabled = it }
+
+    private fun Table.addServerAuthoritativeUnitActionsCheckbox() =
+        addCheckbox("Server-authoritative unit actions", gameParameters.serverAuthoritativeUnitActions)
+        { gameParameters.serverAuthoritativeUnitActions = it }
 
     private fun Table.addRandomNationsPoolCheckbox() {
         randomNationsPoolCheckbox = addCheckbox(

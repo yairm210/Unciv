@@ -20,6 +20,7 @@ import com.unciv.logic.map.*
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.movement.UnitMovement
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.multiplayer.AuthoritativeUnitActions
 import com.unciv.models.Spy
 import com.unciv.models.UncivSound
 import com.unciv.ui.audio.SoundPlayer
@@ -36,6 +37,7 @@ import com.unciv.ui.components.tilegroups.WorldTileGroup
 import com.unciv.ui.components.tilegroups.citybutton.CityButton
 import com.unciv.ui.components.widgets.UnitIconGroup
 import com.unciv.ui.components.widgets.ZoomableScrollPane
+import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.UncivStage
 import com.unciv.ui.screens.worldscreen.UndoHandler.Companion.recordUndoCheckpoint
 import com.unciv.ui.screens.worldscreen.WorldScreen
@@ -43,6 +45,7 @@ import com.unciv.ui.screens.worldscreen.bottombar.BattleTableHelpers.battleAnima
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import com.unciv.utils.launchOnGLThread
+import kotlinx.coroutines.runBlocking
 import yairm210.purity.annotations.Readonly
 import java.lang.Float.max
 
@@ -314,6 +317,51 @@ class WorldMapHolder(
 
 
             worldScreen.recordUndoCheckpoint()
+
+            if (AuthoritativeUnitActions.isEnabled(worldScreen.gameInfo)) {
+                try {
+                    val clone = worldScreen.gameInfo.clone()
+                    clone.setTransients()
+                    val cloneUnit = clone.civilizations.asSequence()
+                        .flatMap { it.units.getCivUnits() }
+                        .firstOrNull { it.id == selectedUnit.id }
+                    if (cloneUnit == null) {
+                        launchOnGLThread {
+                            ToastPopup("Could not prepare server-authoritative move", worldScreen)
+                            removeUnitActionOverlay()
+                        }
+                        return@run
+                    }
+                    val from = cloneUnit.currentTile.position
+                    val cloneDest = clone.tileMap[tileToMoveTo.position]
+                    cloneUnit.movement.moveToTile(cloneDest)
+                    if (cloneUnit.currentTile.position == from) {
+                        launchOnGLThread { removeUnitActionOverlay() }
+                        return@run
+                    }
+                    val to = cloneUnit.currentTile.position
+                    val error = runBlocking {
+                        AuthoritativeUnitActions.commitAction(
+                            clone, "move", selectedUnit,
+                            from.x, from.y, to.x, to.y
+                        )
+                    }
+                    if (error != null) {
+                        launchOnGLThread {
+                            ToastPopup(error, worldScreen)
+                            removeUnitActionOverlay()
+                        }
+                        return@run
+                    }
+                } catch (ex: Exception) {
+                    Log.error("Authoritative move failed", ex)
+                    launchOnGLThread {
+                        ToastPopup("Server-authoritative move failed", worldScreen)
+                        removeUnitActionOverlay()
+                    }
+                    return@run
+                }
+            }
 
             launchOnGLThread {
                 try {

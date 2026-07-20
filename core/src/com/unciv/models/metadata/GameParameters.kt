@@ -30,6 +30,11 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
     var godMode = false
     var nuclearWeaponsEnabled = true
     var espionageEnabled = false
+    /**
+     * Online multiplayer: unit moves/attacks are committed only after the custom UncivServer
+     * accepts an action payload (prevents mid-turn reload scam). Requires a server that implements POST /files/{id}/action.
+     */
+    var serverAuthoritativeUnitActions = false
     var noStartBias = false
     var shufflePlayerOrder = false
 
@@ -90,6 +95,7 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
         // godMode intentionally reset on clone
         parameters.nuclearWeaponsEnabled = nuclearWeaponsEnabled
         parameters.espionageEnabled = espionageEnabled
+        parameters.serverAuthoritativeUnitActions = serverAuthoritativeUnitActions
         parameters.noStartBias = noStartBias
         parameters.shufflePlayerOrder = shufflePlayerOrder
         parameters.victoryTypes = ArrayList(victoryTypes)
@@ -118,6 +124,7 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
             if (randomNumberOfCityStates) yield("Random number of City-States: $minNumberOfCityStates..$maxNumberOfCityStates")
             else yield("$numberOfCityStates CS")
             if (isOnlineMultiplayer) yield("Online Multiplayer")
+            if (serverAuthoritativeUnitActions) yield("Auth unit actions")
             if (noBarbarians) yield("No barbs")
             if (ragingBarbarians) yield("Raging barbs")
             if (oneCityChallenge) yield("OCC")

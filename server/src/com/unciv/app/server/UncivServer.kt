@@ -304,13 +304,56 @@ private class UncivServerRunner : CliktCommand() {
                         val file = File(fileFolderName, fileName)
                         if (!validateGameAccess(file, authInfo)) return@put call.respond(HttpStatusCode.Unauthorized)
 
-                        withContext(Dispatchers.IO) {
-                            file.outputStream().use {
-                                call.request.receiveChannel().toInputStream().copyTo(it)
+                        val incoming = withContext(Dispatchers.IO) {
+                            call.request.receiveChannel().toInputStream().readBytes().toString(Charsets.UTF_8)
+                        }
+                        if (file.exists()) {
+                            val existing = withContext(Dispatchers.IO) { file.readText() }
+                            if (AuthoritativeSaveVerify.isForbiddenMidTurnPut(existing, incoming)) {
+                                return@put call.respond(
+                                    HttpStatusCode.Conflict,
+                                    "Mid-turn overwrite rejected: use POST /files/{file}/action for unit actions"
+                                )
                             }
+                        }
+                        withContext(Dispatchers.IO) {
+                            file.writeText(incoming)
                         }
                         call.respond(HttpStatusCode.OK)
                     }
+
+                    post("/files/{fileName}/action") {
+                        val fileName = call.parameters["fileName"] ?: return@post call.respond(
+                            HttpStatusCode.BadRequest, "Missing filename!"
+                        )
+                        val authInfo = call.principal<BasicAuthInfo>() ?: return@post call.respond(
+                            HttpStatusCode.BadRequest, "Possibly malformed authentication header!"
+                        )
+                        val file = File(fileFolderName, fileName)
+                        if (!file.exists()) return@post call.respond(HttpStatusCode.NotFound, "File does not exist")
+                        if (!validateGameAccess(file, authInfo)) return@post call.respond(HttpStatusCode.Unauthorized)
+
+                        val body = call.receiveText()
+                        val payload = try {
+                            Json.decodeFromString(AuthoritativeSaveVerify.UnitActionPayload.serializer(), body)
+                        } catch (ex: Exception) {
+                            return@post call.respond(HttpStatusCode.BadRequest, "Invalid action JSON: ${ex.message}")
+                        }
+
+                        val result = synchronized(fileName.intern()) {
+                            val existing = file.readText()
+                            val error = AuthoritativeSaveVerify.verifyAction(existing, payload)
+                            if (error != null) error
+                            else {
+                                file.writeText(payload.newGameData)
+                                null
+                            }
+                        }
+                        if (result != null) return@post call.respond(HttpStatusCode.Conflict, result)
+                        call.application.log.info("Authoritative action accepted: $fileName unit=${payload.unitId} ${payload.type}")
+                        call.respond(HttpStatusCode.OK)
+                    }
+
                     get("/files/{fileName}") {
                         val fileName = call.parameters["fileName"] ?: return@get call.respond(
                             HttpStatusCode.BadRequest, "Missing filename!"
