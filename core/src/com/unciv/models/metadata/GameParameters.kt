@@ -30,6 +30,8 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
     var godMode = false
     var nuclearWeaponsEnabled = true
     var espionageEnabled = false
+    /** When true, AI civilizations cannot train city-founder units (Settlers). */
+    var noAiSettlers = false
     var noStartBias = false
     var shufflePlayerOrder = false
 
@@ -90,6 +92,7 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
         // godMode intentionally reset on clone
         parameters.nuclearWeaponsEnabled = nuclearWeaponsEnabled
         parameters.espionageEnabled = espionageEnabled
+        parameters.noAiSettlers = noAiSettlers
         parameters.noStartBias = noStartBias
         parameters.shufflePlayerOrder = shufflePlayerOrder
         parameters.victoryTypes = ArrayList(victoryTypes)
@@ -122,6 +125,8 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
             if (ragingBarbarians) yield("Raging barbs")
             if (oneCityChallenge) yield("OCC")
             if (!nuclearWeaponsEnabled) yield("No nukes")
+            if (espionageEnabled) yield("Espionage")
+            if (noAiSettlers) yield("No AI settlers")
             if (godMode) yield("God mode")
             yield("Enabled Victories: " + victoryTypes.joinToString())
             yield(baseRuleset)

@@ -261,6 +261,11 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if ((civ.isCityState || civ.isOneCityChallenger()) && hasUnique(UniqueType.FoundCity, GameContext.IgnoreConditionals))
             yield(RejectionReasonType.NoSettlerForOneCityPlayers.toInstance())
 
+        if (civ.isAI() && civ.gameInfo.gameParameters.noAiSettlers
+            && (hasUnique(UniqueType.FoundCity, GameContext.IgnoreConditionals)
+                || hasUnique(UniqueType.FoundPuppetCity, GameContext.IgnoreConditionals)))
+            yield(RejectionReasonType.NoSettlerForAI.toInstance())
+
         if (getMatchingUniques(UniqueType.MaxNumberBuildable, stateForConditionals).any {
                 civ.civConstructions.countConstructedObjects(this@BaseUnit) >= it.params[0].toInt()
             })
