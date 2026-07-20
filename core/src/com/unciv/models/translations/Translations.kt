@@ -88,8 +88,10 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
         return get(text, language, activeMods)?.get(language) ?: default
     }
 
-    /** Get all languages present in `this`, used for [TranslationFileWriter] and `TranslationTests` */
-    fun getLanguages() = linkedSetOf<String>().apply {
+    /** Get all languages present in `this`, used for [TranslationFileWriter] and `TranslationTests`
+     *  * Note: No deterministic order. If a client needs that, remap to LanguageCode order or something.
+     */
+    fun getLanguages(): Set<String> = hashSetOf<String>().apply {
             for (entry in values)
                 for (languageName in entry.keys)
                     add(languageName)
