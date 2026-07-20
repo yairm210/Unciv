@@ -219,6 +219,7 @@ class RejectionReason(val type: RejectionReasonType,
             RejectionReasonType.RequiresTech,
             RejectionReasonType.NoSettlerForOneCityPlayers,
             RejectionReasonType.NoSettlerForAI,
+            RejectionReasonType.NoWonderForAI,
             RejectionReasonType.WaterUnitsInCoastalCities,
         )
     }
@@ -276,6 +277,7 @@ enum class RejectionReasonType(val shouldShow: Boolean, val errorMessage: String
 
     NoSettlerForOneCityPlayers(false, "No settlers for city-states or one-city challengers"),
     NoSettlerForAI(false, "No settlers for AI civilizations"),
+    NoWonderForAI(false, "No world wonders for AI civilizations"),
     NoPlaceToPutUnit(true, "No space to place this unit");
 
     val defaultInstance by lazy { RejectionReason(this, errorMessage, shouldShow) }

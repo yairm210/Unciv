@@ -130,7 +130,17 @@ class GameOptionsTable(
             it.addOneCityChallengeCheckbox()
             it.addNuclearWeaponsCheckbox()
             it.addEnableEspionageCheckbox()
+            it.addAiAlwaysAcceptsWhitePeaceCheckbox()
+            it.addNoAiLiberationCheckbox()
+            it.addNoAiCongressVotesCheckbox()
+            it.addNoAiTradesWithHumansCheckbox()
+            it.addNoAiFoundReligionCheckbox()
+            it.addNoAiSpreadReligionToCityStatesCheckbox()
+            it.addNoAiSpreadReligionToHumansCheckbox()
+            it.addNoAiCityStateCoupsCheckbox()
+            it.addNoAiWorldWondersCheckbox()
             it.addNoAiSettlersCheckbox()
+            it.addNoXpFromAiCheckbox()
             it.addNoStartBiasCheckbox()
             it.addRandomPlayersCheckbox()
             it.addRandomCityStatesCheckbox()
@@ -212,9 +222,49 @@ class GameOptionsTable(
         addCheckbox("Enable Espionage", gameParameters.espionageEnabled)
         { gameParameters.espionageEnabled = it }
 
+    private fun Table.addAiAlwaysAcceptsWhitePeaceCheckbox() =
+        addCheckbox("AI Always Accepts White Peace", gameParameters.aiAlwaysAcceptsWhitePeace)
+        { gameParameters.aiAlwaysAcceptsWhitePeace = it }
+
+    private fun Table.addNoAiLiberationCheckbox() =
+        addCheckbox("No AI Liberation", gameParameters.noAiLiberation)
+        { gameParameters.noAiLiberation = it }
+
+    private fun Table.addNoAiCongressVotesCheckbox() =
+        addCheckbox("No AI Congress Votes", gameParameters.noAiCongressVotes)
+        { gameParameters.noAiCongressVotes = it }
+
+    private fun Table.addNoAiTradesWithHumansCheckbox() =
+        addCheckbox("No AI Trades With Humans", gameParameters.noAiTradesWithHumans)
+        { gameParameters.noAiTradesWithHumans = it }
+
+    private fun Table.addNoAiFoundReligionCheckbox() =
+        addCheckbox("No AI Found Religion", gameParameters.noAiFoundReligion)
+        { gameParameters.noAiFoundReligion = it }
+
+    private fun Table.addNoAiSpreadReligionToCityStatesCheckbox() =
+        addCheckbox("No AI Religion Spread To City-States", gameParameters.noAiSpreadReligionToCityStates)
+        { gameParameters.noAiSpreadReligionToCityStates = it }
+
+    private fun Table.addNoAiSpreadReligionToHumansCheckbox() =
+        addCheckbox("No AI Religion Spread To Humans", gameParameters.noAiSpreadReligionToHumans)
+        { gameParameters.noAiSpreadReligionToHumans = it }
+
+    private fun Table.addNoAiCityStateCoupsCheckbox() =
+        addCheckbox("No AI City-State Coups", gameParameters.noAiCityStateCoups)
+        { gameParameters.noAiCityStateCoups = it }
+
+    private fun Table.addNoAiWorldWondersCheckbox() =
+        addCheckbox("No AI World Wonders", gameParameters.noAiWorldWonders)
+        { gameParameters.noAiWorldWonders = it }
+
     private fun Table.addNoAiSettlersCheckbox() =
         addCheckbox("No AI Settlers", gameParameters.noAiSettlers)
         { gameParameters.noAiSettlers = it }
+
+    private fun Table.addNoXpFromAiCheckbox() =
+        addCheckbox("No XP From AI", gameParameters.noXpFromAi)
+        { gameParameters.noXpFromAi = it }
 
     private fun Table.addRandomNationsPoolCheckbox() {
         randomNationsPoolCheckbox = addCheckbox(

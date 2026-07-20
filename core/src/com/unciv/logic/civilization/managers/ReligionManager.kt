@@ -299,6 +299,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         if (religionState >= ReligionState.Religion) return false // Already created a major religion
 
         if (!civInfo.isMajorCiv()) return false // Only major civs may use religion
+        if (civInfo.isAI() && civInfo.gameInfo.gameParameters.noAiFoundReligion) return false
 
         if (remainingFoundableReligions() == 0)
             return false // Too bad, too many religions have already been founded
@@ -521,6 +522,12 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         if (missionary.currentTile.owningCity?.religion?.getMajorityReligion()?.name == missionary.religion)
             return false
         if (missionary.getTile().getCity()!!.religion.isProtectedByInquisitor(missionary.religion)) return false
+        if (civInfo.isAI()) {
+            val owner = missionary.getTile().getOwner()!!
+            val params = civInfo.gameInfo.gameParameters
+            if (params.noAiSpreadReligionToCityStates && owner.isCityState) return false
+            if (params.noAiSpreadReligionToHumans && owner.isHuman()) return false
+        }
         return true
     }
 
