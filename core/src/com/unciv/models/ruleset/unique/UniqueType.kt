@@ -1092,6 +1092,23 @@ enum class UniqueType(
     AllowRazeCapital("Allow raze capital", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
     AllowRazeHolyCity("Allow raze holy city", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
 
+    // AI restriction ModOptions (enable via extension mod ModOptions.json uniques)
+    AiAlwaysAcceptsWhitePeace("AI always accepts white peace", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
+    AiCitiesCannotBeLiberated("AI cities cannot be liberated", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals,
+        docDescription = "Applies to major AI civilizations only. City-States can still be liberated."),
+    AiCannotVoteInWorldCongress("AI cannot vote in World Congress", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
+    AiCannotTradeWithHumans("AI cannot trade with human players", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals,
+        docDescription = "Peace treaties between AI and humans are still allowed."),
+    AiCannotFoundReligion("AI cannot found a religion", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
+    AiCannotSpreadReligionToCityStates("AI cannot spread religion to City-States", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
+    AiCannotSpreadReligionToHumans("AI cannot spread religion to human players", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
+    AiCannotCoupCityStates("AI cannot coup City-States", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
+    AiCannotBuildWorldWonders("AI cannot build World Wonders", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
+    AiCannotTrainSettlers("AI cannot train settlers", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals,
+        docDescription = "Blocks AI from training or receiving free city-founder units. Starting settlers for the capital are unchanged."),
+    NoXpFromFightingAi("No XP from fighting AI", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals,
+        docDescription = "No combat XP from fighting major AI civilizations. Barbarians and City-States are unaffected."),
+
     SuppressWarnings("Suppress warning [validationWarning]", *UniqueTarget.CanIncludeSuppression, flags = UniqueFlag.setOfHiddenNoConditionals, docDescription = Suppression.uniqueDocDescription),
 
     // Declarative Mod compatibility (see [ModCompatibility]):

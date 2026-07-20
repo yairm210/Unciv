@@ -437,7 +437,7 @@ object ReligionAutomation {
     }
 
     private fun foundReligion(civInfo: Civilization) {
-        if (civInfo.gameInfo.gameParameters.noAiFoundReligion) return
+        if (civInfo.gameInfo.ruleset.modOptions.hasUnique(UniqueType.AiCannotFoundReligion)) return
         if (civInfo.religionManager.religionState != ReligionState.FoundingReligion) return
         val rng = civInfo.state.stateBasedRandom("ReligionAutomation.foundReligion")
         val usedReligions = civInfo.gameInfo.religions.values.mapTo(mutableSetOf()) { it.name }

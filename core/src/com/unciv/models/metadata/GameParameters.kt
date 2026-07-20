@@ -33,30 +33,6 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
     var noStartBias = false
     var shufflePlayerOrder = false
 
-    // --- AI restrictions (Lekmod-style multiplayer options) ---
-    /** AI always accepts a white peace (peace treaty without cities). */
-    var aiAlwaysAcceptsWhitePeace = false
-    /** Cities cannot be liberated back to AI civilizations. */
-    var noAiLiberation = false
-    /** AI civilizations do not vote in the World Congress / diplomatic victory. */
-    var noAiCongressVotes = false
-    /** AI cannot trade with human players (peace treaties still allowed). */
-    var noAiTradesWithHumans = false
-    /** AI cannot found a religion. */
-    var noAiFoundReligion = false
-    /** AI missionaries will not spread religion to City-States. */
-    var noAiSpreadReligionToCityStates = false
-    /** AI missionaries will not spread religion to human-owned cities. */
-    var noAiSpreadReligionToHumans = false
-    /** AI cannot stage coups in City-States. */
-    var noAiCityStateCoups = false
-    /** AI cannot build World Wonders. */
-    var noAiWorldWonders = false
-    /** AI civilizations cannot train city-founder units (Settlers). */
-    var noAiSettlers = false
-    /** Human units gain no XP from fighting AI (non-barbarian) combatants. */
-    var noXpFromAi = false
-
     var victoryTypes: ArrayList<String> = arrayListOf()
     var startingEra = "Ancient era"
 
@@ -116,17 +92,6 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
         parameters.espionageEnabled = espionageEnabled
         parameters.noStartBias = noStartBias
         parameters.shufflePlayerOrder = shufflePlayerOrder
-        parameters.aiAlwaysAcceptsWhitePeace = aiAlwaysAcceptsWhitePeace
-        parameters.noAiLiberation = noAiLiberation
-        parameters.noAiCongressVotes = noAiCongressVotes
-        parameters.noAiTradesWithHumans = noAiTradesWithHumans
-        parameters.noAiFoundReligion = noAiFoundReligion
-        parameters.noAiSpreadReligionToCityStates = noAiSpreadReligionToCityStates
-        parameters.noAiSpreadReligionToHumans = noAiSpreadReligionToHumans
-        parameters.noAiCityStateCoups = noAiCityStateCoups
-        parameters.noAiWorldWonders = noAiWorldWonders
-        parameters.noAiSettlers = noAiSettlers
-        parameters.noXpFromAi = noXpFromAi
         parameters.victoryTypes = ArrayList(victoryTypes)
         parameters.startingEra = startingEra
         parameters.showCivilizationStats = showCivilizationStats
@@ -157,18 +122,6 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
             if (ragingBarbarians) yield("Raging barbs")
             if (oneCityChallenge) yield("OCC")
             if (!nuclearWeaponsEnabled) yield("No nukes")
-            if (espionageEnabled) yield("Espionage")
-            if (aiAlwaysAcceptsWhitePeace) yield("AI white peace")
-            if (noAiLiberation) yield("No AI liberation")
-            if (noAiCongressVotes) yield("No AI congress votes")
-            if (noAiTradesWithHumans) yield("No AI-human trades")
-            if (noAiFoundReligion) yield("No AI religion")
-            if (noAiSpreadReligionToCityStates) yield("No AI religion→CS")
-            if (noAiSpreadReligionToHumans) yield("No AI religion→humans")
-            if (noAiCityStateCoups) yield("No AI coups")
-            if (noAiWorldWonders) yield("No AI wonders")
-            if (noAiSettlers) yield("No AI settlers")
-            if (noXpFromAi) yield("No XP from AI")
             if (godMode) yield("God mode")
             yield("Enabled Victories: " + victoryTypes.joinToString())
             yield(baseRuleset)

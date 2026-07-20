@@ -209,7 +209,7 @@ class CityConquestFunctions(val city: City) {
 
         val foundingCiv = city.foundingCivObject!!
         if (foundingCiv.isMajorCiv() && foundingCiv.isAI()
-            && conqueringCiv.gameInfo.gameParameters.noAiLiberation) {
+            && conqueringCiv.gameInfo.ruleset.modOptions.hasUnique(UniqueType.AiCitiesCannotBeLiberated)) {
             this.puppetCity(conqueringCiv)
             return
         }

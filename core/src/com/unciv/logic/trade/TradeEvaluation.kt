@@ -34,7 +34,7 @@ class TradeEvaluation {
             return false
         }
 
-        if (offerer.gameInfo.gameParameters.noAiTradesWithHumans
+        if (offerer.gameInfo.ruleset.modOptions.hasUnique(UniqueType.AiCannotTradeWithHumans)
             && isAiHumanTrade(offerer, tradePartner)
             && !trade.isPeaceTreaty())
             return false
@@ -106,7 +106,7 @@ class TradeEvaluation {
 
     @Readonly
     fun isTradeAcceptable(trade: Trade, evaluator: Civilization, tradePartner: Civilization): Boolean {
-        if (evaluator.gameInfo.gameParameters.aiAlwaysAcceptsWhitePeace
+        if (evaluator.gameInfo.ruleset.modOptions.hasUnique(UniqueType.AiAlwaysAcceptsWhitePeace)
             && evaluator.isAI()
             && isWhitePeace(trade))
             return true
@@ -115,7 +115,7 @@ class TradeEvaluation {
 
     @Readonly
     fun getTradeAcceptability(trade: Trade, evaluator: Civilization, tradePartner: Civilization, includeDiplomaticGifts:Boolean = false): Int {
-        if (evaluator.gameInfo.gameParameters.aiAlwaysAcceptsWhitePeace
+        if (evaluator.gameInfo.ruleset.modOptions.hasUnique(UniqueType.AiAlwaysAcceptsWhitePeace)
             && evaluator.isAI()
             && isWhitePeace(trade))
             return 1
@@ -523,7 +523,7 @@ class TradeEvaluation {
 
     @Readonly
     fun evaluatePeaceCostForThem(ourCiv: Civilization, otherCiv: Civilization): Int {
-        if (ourCiv.gameInfo.gameParameters.aiAlwaysAcceptsWhitePeace && ourCiv.isAI())
+        if (ourCiv.gameInfo.ruleset.modOptions.hasUnique(UniqueType.AiAlwaysAcceptsWhitePeace) && ourCiv.isAI())
             return 0
         val ourCombatStrength = ourCiv.getStatForRanking(RankingType.Force)
         val theirCombatStrength = otherCiv.getStatForRanking(RankingType.Force)
