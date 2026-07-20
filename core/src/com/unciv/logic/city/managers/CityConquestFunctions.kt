@@ -203,6 +203,11 @@ class CityConquestFunctions(val city: City) {
         }
 
         val foundingCiv = city.foundingCivObject!!
+        if (foundingCiv.isMajorCiv() && foundingCiv.isAI()
+            && conqueringCiv.gameInfo.gameParameters.noAiLiberation) {
+            this.puppetCity(conqueringCiv)
+            return
+        }
         if (foundingCiv.isDefeated()) { // resurrected civ
             for (diploManager in foundingCiv.diplomacy.values) {
                 if (diploManager.diplomaticStatus == DiplomaticStatus.War)

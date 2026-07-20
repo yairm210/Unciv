@@ -987,6 +987,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         // Does not need checks for Barbarians or dead civs because the callers already ensure that
         // (NextTurnAutomation.tryVoteForDiplomaticVictory and NextTurnAction.WorldCongressVote)
         !isSpectator()
+        && !(isAI() && gameInfo.gameParameters.noAiCongressVotes)
         && getTurnsTillNextDiplomaticVote() == 0
         && civID !in gameInfo.diplomaticVictoryVotesCast.keys
         // Only vote if there is someone to vote for, may happen in one-more-turn mode

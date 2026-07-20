@@ -387,6 +387,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
         // World Wonders
         if (isWonder) {
+            if (civ.isAI() && civ.gameInfo.gameParameters.noAiWorldWonders)
+                yield(RejectionReasonType.NoWonderForAI.toInstance())
             if (civ.gameInfo.getCities().any { it.cityConstructions.isBuilt(name) })
                 yield(RejectionReasonType.WonderAlreadyBuilt.toInstance())
         }

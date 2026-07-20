@@ -599,11 +599,14 @@ object Battle {
     internal fun addXp(thisCombatant: ICombatant, amount: Int, otherCombatant: ICombatant) {
         if (thisCombatant !is MapUnitCombatant) return
         val civ = thisCombatant.getCivInfo()
-        val otherIsBarbarian = otherCombatant.getCivInfo().isBarbarian
+        val otherCiv = otherCombatant.getCivInfo()
+        val otherIsBarbarian = otherCiv.isBarbarian
         val promotions = thisCombatant.unit.promotions
         val modConstants = civ.gameInfo.ruleset.modOptions.constants
 
         if (otherIsBarbarian && promotions.totalXpProduced() >= modConstants.maxXPfromBarbarians)
+            return
+        if (civ.gameInfo.gameParameters.noXpFromAi && otherCiv.isAI() && otherCiv.isMajorCiv())
             return
         val unitCouldAlreadyPromote = promotions.canBePromoted()
 
