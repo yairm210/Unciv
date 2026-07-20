@@ -24,9 +24,9 @@ object ReligiousUnitAutomation {
         
         @Readonly
         fun isValidSpreadReligionTarget(city: City): Boolean {
-            val params = unit.civ.gameInfo.gameParameters
-            if (params.noAiSpreadReligionToCityStates && city.civ.isCityState) return false
-            if (params.noAiSpreadReligionToHumans && city.civ.isHuman()) return false
+            val mods = unit.civ.gameInfo.ruleset.modOptions
+            if (mods.hasUnique(UniqueType.AiCannotSpreadReligionToCityStates) && city.civ.isCityState) return false
+            if (mods.hasUnique(UniqueType.AiCannotSpreadReligionToHumans) && city.civ.isHuman()) return false
             val diplomacyManager = unit.civ.getDiplomacyManager(city.civ)
             if (diplomacyManager?.hasFlag(DiplomacyFlags.AgreedToNotSpreadReligion) == true){
                 // See NextTurnAutomation - these are the conditions under which AI agrees to religious demands
@@ -161,7 +161,7 @@ object ReligiousUnitAutomation {
 
 
     fun foundReligion(unit: MapUnit) {
-        if (unit.civ.gameInfo.gameParameters.noAiFoundReligion) return
+        if (unit.civ.gameInfo.ruleset.modOptions.hasUnique(UniqueType.AiCannotFoundReligion)) return
         val cityToFoundReligionAt =
             if (unit.getTile().isCityCenter() && !unit.getTile().owningCity!!.isHolyCity()) unit.getTile().owningCity
             else unit.civ.cities.firstOrNull {

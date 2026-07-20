@@ -22,7 +22,7 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
     val currentTrade = Trade()
 
     init {
-        val onlyPeaceWithHumans = ourCivilization.gameInfo.gameParameters.noAiTradesWithHumans
+        val onlyPeaceWithHumans = ourCivilization.gameInfo.ruleset.modOptions.hasUnique(UniqueType.AiCannotTradeWithHumans)
             && ((ourCivilization.isAI() && otherCivilization.isHuman())
                 || (ourCivilization.isHuman() && otherCivilization.isAI()))
 
@@ -46,7 +46,7 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
         val offers = TradeOffersList()
         if (civInfo.isCityState || otherCiv.isCityState) return offers
 
-        val onlyPeaceWithHumans = civInfo.gameInfo.gameParameters.noAiTradesWithHumans
+        val onlyPeaceWithHumans = civInfo.gameInfo.ruleset.modOptions.hasUnique(UniqueType.AiCannotTradeWithHumans)
             && ((civInfo.isAI() && otherCiv.isHuman()) || (civInfo.isHuman() && otherCiv.isAI()))
         
         if (civInfo.isAtWarWith(otherCiv))

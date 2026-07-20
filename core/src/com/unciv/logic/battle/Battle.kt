@@ -606,7 +606,8 @@ object Battle {
 
         if (otherIsBarbarian && promotions.totalXpProduced() >= modConstants.maxXPfromBarbarians)
             return
-        if (civ.gameInfo.gameParameters.noXpFromAi && otherCiv.isAI() && otherCiv.isMajorCiv())
+        if (civ.gameInfo.ruleset.modOptions.hasUnique(UniqueType.NoXpFromFightingAi)
+            && otherCiv.isAI() && otherCiv.isMajorCiv())
             return
         val unitCouldAlreadyPromote = promotions.canBePromoted()
 
