@@ -1036,9 +1036,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global
 
 ??? example  "Cities are razed [amount] times as fast"
+	When applied to a unit, it works when the unit belongs to the same civ and is present in the razing city or a neighbor tile
+
 	Example: "Cities are razed [3] times as fast"
 
-	Applicable to: Global
+	Applicable to: Global, Unit
 
 ??? example  "Receive a tech boost when scientific buildings/wonders are built in capital"
 	Applicable to: Global
@@ -1980,6 +1982,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	This unique's effect can be modified with &lt;(modified by game speed)&gt;
 
 	Applicable to: Building, Unit, Improvement
+
+??? example  "Cities are razed [amount] times as fast"
+	When applied to a unit, it works when the unit belongs to the same civ and is present in the razing city or a neighbor tile
+
+	Example: "Cities are razed [3] times as fast"
+
+	Applicable to: Global, Unit
 
 ??? example  "Unbuildable"
 	Blocks from being built, possibly by conditional. However it can still appear in the menu and be bought with other means such as Gold or Faith

@@ -297,7 +297,8 @@ enum class UniqueType(
     MayBuyConstructionsInPuppets("May buy items in puppet cities", UniqueTarget.Global),
     MayNotAnnexCities("May not annex cities", UniqueTarget.Global),
     BorrowsCityNames("\"Borrows\" city names from other civilizations in the game", UniqueTarget.Global),
-    CitiesAreRazedXTimesFaster("Cities are razed [amount] times as fast", UniqueTarget.Global),
+    CitiesAreRazedXTimesFaster("Cities are razed [amount] times as fast", UniqueTarget.Global, UniqueTarget.Unit,
+        docDescription = "When applied to a unit, it works when the unit belongs to the same civ and is present in the razing city or a neighbor tile"),
 
     TechBoostWhenScientificBuildingsBuiltInCapital("Receive a tech boost when scientific buildings/wonders are built in capital", UniqueTarget.Global),
     ResearchableMultipleTimes("Can be continually researched", UniqueTarget.Tech),
