@@ -618,8 +618,6 @@ object TranslationFileWriter {
 
         fun submitTypedUnique(unique: Unique) {
             require(unique.type != null)
-            if (unique.type == UniqueType.Comment && unique.params[0] == "[+10]% growth [in all cities]")
-                Unit
             for ((index, typeList) in unique.type.parameterTypeMap.withIndex()) {
                 if (typeList.none { it in translatableUniqueParameterTypes }) continue
                 // Unknown/Comment parameter contents better be offered to translators too
