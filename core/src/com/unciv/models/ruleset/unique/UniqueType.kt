@@ -439,7 +439,7 @@ enum class UniqueType(
                 "Damage formula: Damage = (1 - (distance / radius)) * baseDamage"),
     DamageSelfInAOE("Takes [relativeAmount]% damage from own area attacks", UniqueTarget.Unit, 
         docDescription = "This unit takes damage from its own area attacks when it is in range, 100 = 100% damage."),
-   
+
     NoDefensiveTerrainBonus("No defensive terrain bonus", UniqueTarget.Unit, UniqueTarget.Global),
     NoDefensiveTerrainPenalty("No defensive terrain penalty", UniqueTarget.Unit, UniqueTarget.Global),
     NoDamagePenaltyWoundedUnits("No damage penalty for wounded units", UniqueTarget.Unit, UniqueTarget.Global),
