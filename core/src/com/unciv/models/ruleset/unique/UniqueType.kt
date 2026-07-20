@@ -1092,7 +1092,10 @@ enum class UniqueType(
     AllowRazeCapital("Allow raze capital", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
     AllowRazeHolyCity("Allow raze holy city", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
     DisableUndo("Disable undo", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals,
-        docDescription = "Disables the in-game Undo button and undo checkpoints. Useful for multiplayer to prevent undoing moves within a turn."),
+        docDescription = "Disables the in-game Undo button and undo checkpoints. " +
+            "In online multiplayer, also uploads mid-turn progress to the server after actions " +
+            "and forces loading from the server (not a local mid-turn copy), so players cannot " +
+            "undo moves by rejoining the game."),
 
     SuppressWarnings("Suppress warning [validationWarning]", *UniqueTarget.CanIncludeSuppression, flags = UniqueFlag.setOfHiddenNoConditionals, docDescription = Suppression.uniqueDocDescription),
 

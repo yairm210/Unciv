@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.multiplayer.MultiplayerTurnIntegrity
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.UpgradeUnitAction
@@ -200,6 +201,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         // so you need less clicks/touches to do things, but once we do an action with the new unit, we want to close this
         // overlay, since the user definitely wants to interact with the new unit.
         worldScreen.mapHolder.removeUnitActionOverlay()
+        MultiplayerTurnIntegrity.scheduleUpload(worldScreen)
         if (!UncivGame.Current.settings.autoUnitCycle) return
         if (unit.isDestroyed || 
             unitAction.type.isSkippingToNextUnit && (!unit.isMoving() || !unit.hasMovement()))
