@@ -735,8 +735,9 @@ enum class UniqueParameterType(
     open fun isTranslationWriterGuess(parameterText: String, ruleset: Ruleset): Boolean =
         getErrorSeverity(parameterText, ruleset) == null
 
-    /** Get a list of possible values [TranslationFileWriter] should include as translatable string
-     *  that are not recognized from other json sources */
+    /** Get a list of possible values [TranslationFileWriter] should include as translatable string that are not recognized from other json sources.
+     *  * Meant for base rulesets and called by TFW _only_ for base ruleset translation generation.
+     */
     @Readonly 
     open fun getTranslationWriterStringsForOutput(): Set<String> = staticKnownValues
 

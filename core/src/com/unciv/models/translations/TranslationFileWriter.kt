@@ -191,6 +191,7 @@ object TranslationFileWriter {
         TranslationFileReader.readTemplates { addAll(it) }
     }
 
+    /** Only for Base ruleset scanning */
     private fun MutableList<String>.collectUniqueSystemLines() {
         add("\n\n#################### Lines from Unique Types #######################\n")
         for (uniqueType in UniqueType.entries) {
