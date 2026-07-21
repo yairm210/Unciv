@@ -60,6 +60,7 @@ object TranslationFileWriter {
 
     private const val specialNewLineCode = "# This is an empty line "
     private const val languageFileLocation = "jsons/translations/%s.properties"
+    private const val backupFileLocation = "jsons/translations/%s.properties.bak"
     private const val shortDescriptionKey = "Fastlane_short_description"
     private const val shortDescriptionFile = "short_description.txt"
     private const val fullDescriptionKey = "Fastlane_full_description"
@@ -80,7 +81,7 @@ object TranslationFileWriter {
     private fun defaultFileFilter(file: File) = file.name.endsWith(".json", true)
 
     //region Update translation files
-    fun writeNewTranslationFiles(modSelection: String): String {
+    fun writeNewTranslationFiles(modSelection: String, backup: Boolean): String {
         val allSelected = modSelection == "All mods"
         val baseSelected = allSelected || BaseRuleset.entries.any { it.fullName == modSelection }
 
@@ -100,7 +101,7 @@ object TranslationFileWriter {
 
             fun processMod(modName: String, modTranslations: Translations) {
                 val modFolder = UncivGame.Current.files.getModFolder(modName)
-                val modPercentages = generateTranslationFiles(modTranslations, modFolder, translations)
+                val modPercentages = generateTranslationFiles(modTranslations, modFolder, translations, backup)
                 writeLanguagePercentages(modPercentages, modFolder)  // unused by the game but maybe helpful for the mod developer
             }
             if (allSelected) {
@@ -146,12 +147,14 @@ object TranslationFileWriter {
      * @param translations Result of Translations().readAllLanguagesTranslation(), base or mod-specific
      * @param modFolder Points to the mod root folder when processing a mod
      * @param baseTranslations For a mod, pass the base translations here so strings already existing there can be seen
+     * @param backup Whether to back up the old files
      * @return A map with the percentages of translated lines per language
      */
     private fun generateTranslationFiles(
         translations: Translations,
         modFolder: FileHandle? = null,
-        baseTranslations: Translations? = null
+        baseTranslations: Translations? = null,
+        backup: Boolean = false
     ): HashMap<String, Int> {
         val linesToTranslate = ArrayList<String>((translations.size * empiricLinesToKeysFactor).roundToInt())
         val fileNameToGeneratedStrings: Map<String, Set<String>>
@@ -177,7 +180,7 @@ object TranslationFileWriter {
         val countOfTranslatedLines = HashMap<String, Int>()
         for (language in languages) {
             countOfTranslatedLines[language] =
-                writeLanguageFile(language, parsedLines, translations, baseTranslations, modFolder)
+                writeLanguageFile(language, parsedLines, translations, baseTranslations, modFolder, backup)
         }
 
         // Calculate the percentages of translations
@@ -355,7 +358,8 @@ object TranslationFileWriter {
         parsedLines: List<ParsedLine>,
         translations: Translations,
         baseTranslations: Translations?,
-        modFolder: FileHandle?
+        modFolder: FileHandle?,
+        backup: Boolean
     ): Int {
         var translationsOfThisLanguage = 0
         val stringBuilder = StringBuilder(parsedLines.size * 40) // rough average line length, avoids resizing too often
@@ -398,6 +402,13 @@ object TranslationFileWriter {
 
         // Any time you have more than 3 line breaks, make it 3
         val finalFileText = stringBuilder.toString().replace(multipleNewlinesRegex, "\n\n\n")
+
+        if (backup) {
+            // Mod files get a backup
+            val backup = getFileHandle(modFolder, backupFileLocation.format(language))
+            if (backup.exists()) backup.delete()
+            file.moveTo(backup)
+        }
         file.writeString(finalFileText, false, TranslationFileReader.charset)
 
         return translationsOfThisLanguage
