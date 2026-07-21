@@ -985,6 +985,14 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
+??? example  "All your cities convert to your religion when a religion is founded"
+	Applicable to: Global
+
+??? example  "No natural religion spread from your cities to foreign cities"
+	Passive religious pressure from this civilization's cities does not affect foreign cities. Missionaries are unaffected.
+
+	Applicable to: Global
+
 ??? example  "[relativeAmount]% Natural religion spread [cityFilter]"
 	Multiple bonuses stack multiplicatively: +50% + +50% = x1.5 * x1.5 = +125%
 

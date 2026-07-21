@@ -118,6 +118,15 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
         updateNumberOfFollowers()
     }
 
+    /** Sets overwhelming pressure so [religionName] becomes the city's majority religion.
+
+    Выставляет давление так, что [religionName] становится большинством в городе.
+    */
+    fun adoptReligionAsMajority(religionName: String) {
+        clearAllPressures()
+        addPressure(religionName, maxOf(100, city.population.population * 500))
+    }
+
     fun updatePressureOnPopulationChange(populationChangeAmount: Int) {
         val majorityReligion =
             if (getMajorityReligionName() != null) getMajorityReligionName()!!
@@ -335,6 +344,10 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
 
     @Readonly
     private fun pressureAmountToAdjacentCities(pressuredCity: City): Int {
+        if (city.civ.hasUnique(UniqueType.NoNaturalReligionSpreadToForeignCities)
+                && pressuredCity.civ != city.civ)
+            return 0
+
         var pressure = pressureFromAdjacentCities.toFloat()
 
         // Follower beliefs of this religion
