@@ -1020,6 +1020,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
+??? example  "[amount] level(s) for counter-intelligence spies [cityFilter]"
+	Example: "[1] level(s) for counter-intelligence spies [in this city]"
+
+	Temporary effective rank bonus for spies doing Counter-intelligence in a matching city. Does not permanently level the spy. Stacks additively, capped by maxSpyRank.
+
+	Applicable to: Global
+
 ??? example  "Triggers victory"
 	Applicable to: Global
 

@@ -283,6 +283,9 @@ enum class UniqueType(
     SpyEffectiveness("[relativeAmount]% spy effectiveness [cityFilter]", UniqueTarget.Global),
     EnemySpyEffectiveness("[relativeAmount]% enemy spy effectiveness [cityFilter]", UniqueTarget.Global),
     SpyStartingLevel("New spies start with [amount] level(s)", UniqueTarget.Global),
+    CounterIntelligenceSpyRankBonus("[amount] level(s) for counter-intelligence spies [cityFilter]", UniqueTarget.Global,
+        docDescription = "Temporary effective rank bonus for spies doing Counter-intelligence in a matching city. " +
+            "Does not permanently level the spy. Stacks additively, capped by maxSpyRank."),
 
     /// Things you get at the start of the game
     StartingTech("Starting tech", UniqueTarget.Tech),

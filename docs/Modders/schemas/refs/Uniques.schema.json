@@ -145,6 +145,7 @@
       "[relativeAmount]% spy effectiveness [cityFilter]",
       "[relativeAmount]% enemy spy effectiveness [cityFilter]",
       "New spies start with [amount] level(s)",
+      "[amount] level(s) for counter-intelligence spies [cityFilter]",
       "Starting tech",
       "Starts with [tech]",
       "Starts with [policy] adopted",
