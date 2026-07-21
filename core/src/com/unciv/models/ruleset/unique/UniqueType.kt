@@ -277,6 +277,8 @@ enum class UniqueType(
         docDescription = MULTIPLICATIVE_BONUS_EXPLANATION),
     ReligionSpreadDistance("Religion naturally spreads to cities [amount] tiles away", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     MayNotGenerateGreatProphet("May not generate great prophet equivalents naturally", UniqueTarget.Global),
+    MayNotFoundReligion("May not found a religion", UniqueTarget.Global),
+    CannotSpreadReligionTo("Cannot spread religion to [civFilter] Civilizations", UniqueTarget.Global),
     FaithCostOfGreatProphetChange("[relativeAmount]% Faith cost of generating Great Prophet equivalents", UniqueTarget.Global),
 
     /// Espionage
@@ -299,6 +301,14 @@ enum class UniqueType(
     /// Misc.
     MayBuyConstructionsInPuppets("May buy items in puppet cities", UniqueTarget.Global),
     MayNotAnnexCities("May not annex cities", UniqueTarget.Global),
+    CitiesCannotBeLiberated("Cities cannot be liberated", UniqueTarget.Global,
+        docDescription = "Typically used with <for [AI player] Civilizations>. City-States can still be liberated unless they match the conditional."),
+    AlwaysAcceptsWhitePeace("Always accepts white peace", UniqueTarget.Global),
+    CannotVoteInWorldCongress("Cannot vote in World Congress", UniqueTarget.Global),
+    CannotTradeWith("Cannot trade with [civFilter] Civilizations", UniqueTarget.Global,
+        docDescription = "Peace treaties are still allowed. Typically used with <for [AI player] Civilizations>."),
+    CannotCoup("Cannot coup [civFilter] Civilizations", UniqueTarget.Global),
+    NoXpFromFighting("No XP from fighting [civFilter] Civilizations", UniqueTarget.Global),
     BorrowsCityNames("\"Borrows\" city names from other civilizations in the game", UniqueTarget.Global),
     CitiesAreRazedXTimesFaster("Cities are razed [amount] times as fast", UniqueTarget.Global),
 
@@ -1091,23 +1101,6 @@ enum class UniqueType(
         docDescription = "In this case, 'starting era' means the first defined Era in the entire ruleset."),
     AllowRazeCapital("Allow raze capital", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
     AllowRazeHolyCity("Allow raze holy city", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
-
-    // AI restriction ModOptions (enable via extension mod ModOptions.json uniques)
-    AiAlwaysAcceptsWhitePeace("AI always accepts white peace", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
-    AiCitiesCannotBeLiberated("AI cities cannot be liberated", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals,
-        docDescription = "Applies to major AI civilizations only. City-States can still be liberated."),
-    AiCannotVoteInWorldCongress("AI cannot vote in World Congress", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
-    AiCannotTradeWithHumans("AI cannot trade with human players", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals,
-        docDescription = "Peace treaties between AI and humans are still allowed."),
-    AiCannotFoundReligion("AI cannot found a religion", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
-    AiCannotSpreadReligionToCityStates("AI cannot spread religion to City-States", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
-    AiCannotSpreadReligionToHumans("AI cannot spread religion to human players", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
-    AiCannotCoupCityStates("AI cannot coup City-States", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
-    AiCannotBuildWorldWonders("AI cannot build World Wonders", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
-    AiCannotTrainSettlers("AI cannot train settlers", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals,
-        docDescription = "Blocks AI from training or receiving free city-founder units. Starting settlers for the capital are unchanged."),
-    NoXpFromFightingAi("No XP from fighting AI", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals,
-        docDescription = "No combat XP from fighting major AI civilizations. Barbarians and City-States are unaffected."),
 
     SuppressWarnings("Suppress warning [validationWarning]", *UniqueTarget.CanIncludeSuppression, flags = UniqueFlag.setOfHiddenNoConditionals, docDescription = Suppression.uniqueDocDescription),
 

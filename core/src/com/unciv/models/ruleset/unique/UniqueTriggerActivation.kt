@@ -181,7 +181,7 @@ object UniqueTriggerActivation {
                 val unitName = unique.params[0]
                 val baseUnit = ruleset.units[unitName] ?: return null
                 val civUnit = civInfo.getEquivalentUnit(baseUnit)
-                if (civUnit.isCityFounder() && (civInfo.isOneCityChallenger() || civInfo.isAI() && civInfo.gameInfo.ruleset.modOptions.hasUnique(UniqueType.AiCannotTrainSettlers)))
+                if (civUnit.isCityFounder() && (civInfo.isOneCityChallenger() || !civUnit.isBuildable(civInfo)))
                     return null
 
                 val limit = civUnit.getMatchingUniques(UniqueType.MaxNumberBuildable)
@@ -222,7 +222,7 @@ object UniqueTriggerActivation {
                 val unitName = unique.params[1]
                 val baseUnit = ruleset.units[unitName] ?: return null
                 val civUnit = civInfo.getEquivalentUnit(baseUnit)
-                if (civUnit.isCityFounder() && (civInfo.isOneCityChallenger() || civInfo.isAI() && civInfo.gameInfo.ruleset.modOptions.hasUnique(UniqueType.AiCannotTrainSettlers)))
+                if (civUnit.isCityFounder() && (civInfo.isOneCityChallenger() || !civUnit.isBuildable(civInfo)))
                     return null
 
                 val limit = civUnit.getMatchingUniques(UniqueType.MaxNumberBuildable)
@@ -279,7 +279,7 @@ object UniqueTriggerActivation {
                 val unitName = unique.params[0]
                 val baseUnit = ruleset.units[unitName] ?: return null
                 val civUnit = civInfo.getEquivalentUnit(baseUnit)
-                if (civUnit.isCityFounder() && (civInfo.isOneCityChallenger() || civInfo.isAI() && civInfo.gameInfo.ruleset.modOptions.hasUnique(UniqueType.AiCannotTrainSettlers)))
+                if (civUnit.isCityFounder() && (civInfo.isOneCityChallenger() || !civUnit.isBuildable(civInfo)))
                     return null
                 fun placeUnit(): Boolean {
                     val placedUnit = when {
@@ -312,7 +312,7 @@ object UniqueTriggerActivation {
                 val unitName = unique.params[1]
                 val baseUnit = ruleset.units[unitName] ?: return null
                 val civUnit = civInfo.getEquivalentUnit(baseUnit)
-                if (civUnit.isCityFounder() && (civInfo.isOneCityChallenger() || civInfo.isAI() && civInfo.gameInfo.ruleset.modOptions.hasUnique(UniqueType.AiCannotTrainSettlers)))
+                if (civUnit.isCityFounder() && (civInfo.isOneCityChallenger() || !civUnit.isBuildable(civInfo)))
                     return null
                 val limit = civUnit.getMatchingUniques(UniqueType.MaxNumberBuildable)
                     .map { it.params[0].toInt() }.minOrNull()
@@ -363,7 +363,7 @@ object UniqueTriggerActivation {
                 val unitName = unique.params[0]
                 val baseUnit = ruleset.units[unitName] ?: return null
                 var civUnit = civInfo.getEquivalentUnit(baseUnit)
-                if (civUnit.isCityFounder() && (civInfo.isOneCityChallenger() || civInfo.isAI() && civInfo.gameInfo.ruleset.modOptions.hasUnique(UniqueType.AiCannotTrainSettlers))) {
+                if (civUnit.isCityFounder() && (civInfo.isOneCityChallenger() || !civUnit.isBuildable(civInfo))) {
                      val replacementUnit = ruleset.units.values
                          .firstOrNull {
                              it.getMatchingUniques(UniqueType.BuildImprovements, GameContext.IgnoreConditionals)

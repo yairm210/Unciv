@@ -22,11 +22,13 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
     val currentTrade = Trade()
 
     init {
-        val onlyPeaceWithHumans = ourCivilization.gameInfo.ruleset.modOptions.hasUnique(UniqueType.AiCannotTradeWithHumans)
-            && ((ourCivilization.isAI() && otherCivilization.isHuman())
-                || (ourCivilization.isHuman() && otherCivilization.isAI()))
+        val onlyPeaceTrade = ourCivilization.getMatchingUniques(UniqueType.CannotTradeWith).any {
+            otherCivilization.matchesFilter(it.params[0])
+        } || otherCivilization.getMatchingUniques(UniqueType.CannotTradeWith).any {
+            ourCivilization.matchesFilter(it.params[0])
+        }
 
-        if (!onlyPeaceWithHumans) {
+        if (!onlyPeaceTrade) {
             // Embassy trade availability depends solely on our ability to trade it
             val embassyOffer = TradeOffer(Constants.acceptEmbassy, TradeOfferType.Embassy, speed = ourCivilization.gameInfo.speed)
             if (ourCivilization.diplomacyFunctions.canEstablishEmbassyWith(otherCivilization))
@@ -46,13 +48,16 @@ class TradeLogic(val ourCivilization: Civilization, val otherCivilization: Civil
         val offers = TradeOffersList()
         if (civInfo.isCityState || otherCiv.isCityState) return offers
 
-        val onlyPeaceWithHumans = civInfo.gameInfo.ruleset.modOptions.hasUnique(UniqueType.AiCannotTradeWithHumans)
-            && ((civInfo.isAI() && otherCiv.isHuman()) || (civInfo.isHuman() && otherCiv.isAI()))
+        val onlyPeaceTrade = civInfo.getMatchingUniques(UniqueType.CannotTradeWith).any {
+            otherCiv.matchesFilter(it.params[0])
+        } || otherCiv.getMatchingUniques(UniqueType.CannotTradeWith).any {
+            civInfo.matchesFilter(it.params[0])
+        }
         
         if (civInfo.isAtWarWith(otherCiv))
             offers.add(TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty, speed = civInfo.gameInfo.speed))
 
-        if (onlyPeaceWithHumans) return offers
+        if (onlyPeaceTrade) return offers
 
         if (civInfo.diplomacyFunctions.meetsEmbassyRequirementFor(otherCiv)
             && !otherCiv.getDiplomacyManager(civInfo)!!.hasOpenBorders

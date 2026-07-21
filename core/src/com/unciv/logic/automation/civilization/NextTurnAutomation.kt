@@ -592,7 +592,6 @@ object NextTurnAutomation {
         val personality = civInfo.getPersonality()
         if (civInfo.isCityState) return
         if (civInfo.isOneCityChallenger()) return
-        if (civInfo.gameInfo.ruleset.modOptions.hasUnique(UniqueType.AiCannotTrainSettlers)) return
         if (civInfo.cities.none()) return
         if (civInfo.getHappiness() <= civInfo.cities.size) return
         if (CivilianUnitAutomation.isLateGame(civInfo)){

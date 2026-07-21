@@ -263,7 +263,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
 
     @Readonly fun canDoCoup(): Boolean = getCityOrNull() != null && getCity().civ.isCityState && isSetUp()
             && getCity().civ.allyCiv != civInfo
-            && !(civInfo.isAI() && civInfo.gameInfo.ruleset.modOptions.hasUnique(UniqueType.AiCannotCoupCityStates))
+            && civInfo.getMatchingUniques(UniqueType.CannotCoup).none { getCity().civ.matchesFilter(it.params[0]) }
 
     /**
      * Initiates a coup if this spies civ is not the ally of the city-state.

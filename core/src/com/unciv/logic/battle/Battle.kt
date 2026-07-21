@@ -606,12 +606,12 @@ object Battle {
 
         if (otherIsBarbarian && promotions.totalXpProduced() >= modConstants.maxXPfromBarbarians)
             return
-        if (civ.gameInfo.ruleset.modOptions.hasUnique(UniqueType.NoXpFromFightingAi)
-            && otherCiv.isAI() && otherCiv.isMajorCiv())
+        val gameContext = GameContext(civInfo = civ, ourCombatant = thisCombatant, theirCombatant = otherCombatant)
+        if (civ.getMatchingUniques(UniqueType.NoXpFromFighting, gameContext).any {
+                otherCiv.matchesFilter(it.params[0])
+            })
             return
         val unitCouldAlreadyPromote = promotions.canBePromoted()
-
-        val gameContext = GameContext(civInfo = civ, ourCombatant = thisCombatant, theirCombatant = otherCombatant)
 
         val baseXP = amount + thisCombatant
             .getMatchingUniques(UniqueType.FlatXPGain, gameContext, true)

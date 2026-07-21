@@ -34,8 +34,8 @@ class TradeEvaluation {
             return false
         }
 
-        if (offerer.gameInfo.ruleset.modOptions.hasUnique(UniqueType.AiCannotTradeWithHumans)
-            && isAiHumanTrade(offerer, tradePartner)
+        if ((offerer.getMatchingUniques(UniqueType.CannotTradeWith).any { tradePartner.matchesFilter(it.params[0]) }
+            || tradePartner.getMatchingUniques(UniqueType.CannotTradeWith).any { offerer.matchesFilter(it.params[0]) })
             && !trade.isPeaceTreaty())
             return false
         
@@ -106,8 +106,7 @@ class TradeEvaluation {
 
     @Readonly
     fun isTradeAcceptable(trade: Trade, evaluator: Civilization, tradePartner: Civilization): Boolean {
-        if (evaluator.gameInfo.ruleset.modOptions.hasUnique(UniqueType.AiAlwaysAcceptsWhitePeace)
-            && evaluator.isAI()
+        if (evaluator.hasUnique(UniqueType.AlwaysAcceptsWhitePeace)
             && isWhitePeace(trade))
             return true
         return getTradeAcceptability(trade, evaluator, tradePartner, true) >= 0
@@ -115,8 +114,7 @@ class TradeEvaluation {
 
     @Readonly
     fun getTradeAcceptability(trade: Trade, evaluator: Civilization, tradePartner: Civilization, includeDiplomaticGifts:Boolean = false): Int {
-        if (evaluator.gameInfo.ruleset.modOptions.hasUnique(UniqueType.AiAlwaysAcceptsWhitePeace)
-            && evaluator.isAI()
+        if (evaluator.hasUnique(UniqueType.AlwaysAcceptsWhitePeace)
             && isWhitePeace(trade))
             return 1
 
@@ -523,7 +521,7 @@ class TradeEvaluation {
 
     @Readonly
     fun evaluatePeaceCostForThem(ourCiv: Civilization, otherCiv: Civilization): Int {
-        if (ourCiv.gameInfo.ruleset.modOptions.hasUnique(UniqueType.AiAlwaysAcceptsWhitePeace) && ourCiv.isAI())
+        if (ourCiv.hasUnique(UniqueType.AlwaysAcceptsWhitePeace))
             return 0
         val ourCombatStrength = ourCiv.getStatForRanking(RankingType.Force)
         val theirCombatStrength = otherCiv.getStatForRanking(RankingType.Force)
@@ -574,10 +572,6 @@ class TradeEvaluation {
             ?: return 0
         return unique.params[0].toInt()
     }
-
-    @Readonly
-    private fun isAiHumanTrade(a: Civilization, b: Civilization) =
-        (a.isAI() && b.isHuman()) || (a.isHuman() && b.isAI())
 
     /** Peace treaty with no other offers on either side. */
     @Readonly

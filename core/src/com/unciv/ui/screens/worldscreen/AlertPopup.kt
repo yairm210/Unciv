@@ -206,8 +206,8 @@ class AlertPopup(
         if (city.foundingCivObject != null
                 && city.civ != city.foundingCivObject // can't liberate if the city actually belongs to those guys
                 && conqueringCiv != city.foundingCivObject // or belongs originally to us
-                && !(city.foundingCivObject!!.isMajorCiv() && city.foundingCivObject!!.isAI()
-                    && gameInfo.ruleset.modOptions.hasUnique(UniqueType.AiCitiesCannotBeLiberated))) {
+                && !(city.foundingCivObject!!.isMajorCiv()
+                    && city.foundingCivObject!!.hasUnique(UniqueType.CitiesCannotBeLiberated))) {
             addLiberateOption(city, conqueringCiv)
             addSeparator()
         }
@@ -248,8 +248,8 @@ class AlertPopup(
         val conqueringCiv = gameInfo.getCurrentPlayerCivilization()
 
         if (!conqueringCiv.isAtWarWith(city.foundingCivObject!!)
-            && !(city.foundingCivObject!!.isMajorCiv() && city.foundingCivObject!!.isAI()
-                && gameInfo.ruleset.modOptions.hasUnique(UniqueType.AiCitiesCannotBeLiberated))) {
+            && !(city.foundingCivObject!!.isMajorCiv()
+                && city.foundingCivObject!!.hasUnique(UniqueType.CitiesCannotBeLiberated))) {
             addLiberateOption(city, conqueringCiv)
             addSeparator()
         }
