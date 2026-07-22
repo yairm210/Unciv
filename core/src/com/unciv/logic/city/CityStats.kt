@@ -372,7 +372,9 @@ class CityStats(val city: City) {
 
     // needs to be a separate function because we need to know the global happiness state
     // in order to determine how much food is produced in a city!
-    fun updateCityHappiness(statsFromBuildings: StatTreeNode) {
+    fun updateCityHappiness(statsFromBuildings: StatTreeNode,
+                            statsFromSpecialists: Stats = getStatsFromSpecialists(city.population.getNewSpecialists()),
+                            statsFromUniquesBySource: StatTreeNode = getStatsFromUniquesBySource()) {
         val civInfo = city.civ
         val newHappinessList = LinkedHashMap<String, Float>()
         // This calculation seems weird to me.
@@ -412,16 +414,14 @@ class CityStats(val city: City) {
 
         if (hasExtraAnnexUnhappiness()) newHappinessList["Occupied City"] = -2f //annexed city
 
-        val happinessFromSpecialists =
-            getStatsFromSpecialists(city.population.getNewSpecialists()).happiness.toInt()
-                .toFloat()
+        val happinessFromSpecialists = statsFromSpecialists.happiness.toInt().toFloat()
         if (happinessFromSpecialists > 0) newHappinessList["Specialists"] = happinessFromSpecialists
 
         newHappinessList["Buildings"] = statsFromBuildings.totalStats.happiness.toInt().toFloat()
 
         newHappinessList["Tile yields"] = statsFromTiles.happiness
 
-        val happinessBySource = getStatsFromUniquesBySource()
+        val happinessBySource = statsFromUniquesBySource
         for ((source, stats) in happinessBySource.children)
             if (stats.totalStats.happiness != 0f) {
                 if (!newHappinessList.containsKey(source)) newHappinessList[source] = 0f
@@ -433,7 +433,8 @@ class CityStats(val city: City) {
         happinessList = newHappinessList
     }
 
-    private fun updateBaseStatList(statsFromBuildings: StatTreeNode) {
+    private fun updateBaseStatList(statsFromBuildings: StatTreeNode, statsFromSpecialists: Stats,
+                                   statsFromUniquesBySource: StatTreeNode) {
         val newBaseStatTree = StatTreeNode()
 
         // We don't edit the existing baseStatList directly, in order to avoid concurrency exceptions
@@ -444,15 +445,14 @@ class CityStats(val city: City) {
             production = city.population.getFreePopulation().toFloat()
         ), "Population")
         newBaseStatList["Tile yields"] = statsFromTiles
-        newBaseStatList["Specialists"] =
-            getStatsFromSpecialists(city.population.getNewSpecialists())
+        newBaseStatList["Specialists"] = statsFromSpecialists
         newBaseStatList["Trade routes"] = getStatsFromTradeRoute()
         newBaseStatTree.children["Buildings"] = statsFromBuildings
 
         for ((source, stats) in newBaseStatList)
             newBaseStatTree.addStats(stats, source)
 
-        newBaseStatTree.add(getStatsFromUniquesBySource())
+        newBaseStatTree.add(statsFromUniquesBySource)
         baseStatTree = newBaseStatTree
     }
     
@@ -493,8 +493,13 @@ class CityStats(val city: City) {
         // We need to compute Tile yields before happiness
 
         val statsFromBuildings = city.cityConstructions.getStats() // this is performance heavy, so calculate once
-        updateBaseStatList(statsFromBuildings)
-        updateCityHappiness(statsFromBuildings)
+        // Also performance-heavy, and previously computed twice with identical inputs (once inside
+        // updateBaseStatList, once inside updateCityHappiness) - only baseStatTree is assigned between
+        // the two, and neither reads it. Compute once and pass down.
+        val statsFromSpecialists = getStatsFromSpecialists(city.population.getNewSpecialists())
+        val statsFromUniquesBySource = getStatsFromUniquesBySource()
+        updateBaseStatList(statsFromBuildings, statsFromSpecialists, statsFromUniquesBySource)
+        updateCityHappiness(statsFromBuildings, statsFromSpecialists, statsFromUniquesBySource)
         updateStatPercentBonusList(currentConstruction)
 
         updateFinalStatList(currentConstruction, calculateGrowthModifiers) // again, we don't edit the existing currentCityStats directly, in order to avoid concurrency exceptions
