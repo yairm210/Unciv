@@ -30,6 +30,15 @@ class AndroidFont : FontImplementation {
     private val paint: Paint = getPaintInstance()
     private var currentFontFamily: String? = null
 
+    /** Scratch Paint used both to test glyph coverage (via [Paint.hasGlyph]) and, when the
+     *  configured font lacks a glyph, to actually render the substituted fallback glyph.
+     *  Kept entirely separate from [paint] so the primary/configured font's state - which
+     *  the public [getMetrics] override reads, e.g. for line-height layout - is never
+     *  touched by fallback handling. */
+    private val fallbackPaint: Paint = getPaintInstance().apply {
+        typeface = Typeface.DEFAULT
+    }
+
     private fun getPaintInstance() = Paint().apply {
         isAntiAlias = true
         strokeWidth = 0f
@@ -82,17 +91,23 @@ class AndroidFont : FontImplementation {
         if (!name.startsWith("$family-")) return Int.MAX_VALUE
         if (style.weight == FontStyle.FONT_WEIGHT_NORMAL && style.slant == FontStyle.FONT_SLANT_UPRIGHT) return 1
         return 2 +
-                abs(style.weight - FontStyle.FONT_WEIGHT_NORMAL) / 100 +
-                abs(style.slant - FontStyle.FONT_SLANT_UPRIGHT)
+            abs(style.weight - FontStyle.FONT_WEIGHT_NORMAL) / 100 +
+            abs(style.slant - FontStyle.FONT_SLANT_UPRIGHT)
     }
 
-    override fun getFontSize(): Int {
-        return paint.textSize.toInt()
-    }
+    override fun getFontSize() = paint.textSize.toInt()
 
     override fun getCharPixmap(symbolString: String): Pixmap {
-        val metric = getMetrics()  // Use our interpretation instead of paint.fontMetrics because it fixes some bad metrics
-        var width = paint.measureText(symbolString).toInt()
+        return if (useFallbackFor(symbolString)) {
+            fallbackPaint.textSize = paint.textSize
+            renderPixmap(symbolString, fallbackPaint, getFallbackMetrics())
+        } else {
+            renderPixmap(symbolString, paint, getMetrics())
+        }
+    }
+
+    private fun renderPixmap(symbolString: String, renderPaint: Paint, metric: FontMetricsCommon): Pixmap {
+        var width = renderPaint.measureText(symbolString).toInt()
         var height = ceil(metric.height).toInt()
         if (width == 0) {
             height = getFontSize()
@@ -101,7 +116,7 @@ class AndroidFont : FontImplementation {
 
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
-        canvas.drawText(symbolString, 0f, metric.leading + metric.ascent + 1f, paint)
+        canvas.drawText(symbolString, 0f, metric.leading + metric.ascent + 1f, renderPaint)
 
         val pixmap = Pixmap(width, height, Pixmap.Format.RGBA8888)
         val data = IntArray(width * height)
@@ -113,6 +128,23 @@ class AndroidFont : FontImplementation {
         }
         bitmap.recycle()
         return pixmap
+    }
+
+    /**
+     * Tests whether a symbol should fall back to [Typeface.DEFAULT] rendering.
+     *
+     * On API<23, we can't test and say "no fallback".
+     * Order: configured font -> plain system default -> give up (tofu).
+     * The "system default" tier covers the case of a mod font deliberately scoped
+     * to only a few special glyphs, which needs somewhere to fall back to for the
+     * ordinary Latin/UI text it was never meant to cover.
+     */
+    private fun useFallbackFor(symbolString: String): Boolean {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
+            return false // Can't test coverage pre-23; accept possible tofu on old devices.
+        if (paint.hasGlyph(symbolString)) return false
+        if (paint.typeface === Typeface.DEFAULT) return false
+        return fallbackPaint.hasGlyph(symbolString)
     }
 
     override fun getSystemFonts(): Sequence<FontFamilyData> {
@@ -147,39 +179,48 @@ class AndroidFont : FontImplementation {
             .map { FontFamilyData(it, it) }
     }
 
-    override fun getMetrics(): FontMetricsCommon {
-        val ascent = -paint.fontMetrics.ascent  // invert to get distance
-        val descent = paint.fontMetrics.descent
-        val top = -paint.fontMetrics.top  // invert to get distance
-        val bottom = paint.fontMetrics.bottom
+    override fun getMetrics() =
+        computeMetrics(paint.fontMetrics)
+
+    /** Metrics for the fallback typeface, used only while rendering a substituted glyph.
+     *  Relies on fallbackPaint already being configured with the Typeface and size.
+     */
+    private fun getFallbackMetrics() =
+        computeMetrics(fallbackPaint.fontMetrics)
+
+    // Corrections: Some Android fonts report bullshit
+    // Examples: "ComingSoon" and "NotoSansSymbols" fonts on Android "S"
+    // See https://github.com/yairm210/Unciv/issues/10308
+
+    // Hardcode values for the worst of them - I've seen NotoSansSymbols returning (42.4, 11.1, 68.1, 11.1),
+    // or (53.4, 14.6, 117.7, 28.8): looks off, or (53.4, 14.6, 53.4, -11.1) - top below ascent
+    // By discarding and re-instantiating our Paint instance on every setFontFamily you can get Noto to almost,
+    // but not quite, report exclusively the "off" metrics. Curiously, soft start (Unciv exited through its own dialog,
+    // but not removed from android's "recents list") or hard start (dev-tools kill, reinstall or swipe out of recents)
+    // do seem to have an effect on the metrics reported by Noto (and only by Noto), though I haven't been able to
+    // prove a reliable pattern. These hardcoded values are empiric.
+    private fun computeMetrics(rawMetrics: Paint.FontMetrics): FontMetricsCommon {
+        val ascent = -rawMetrics.ascent  // invert to get distance
+        val descent = rawMetrics.descent
+        val top = -rawMetrics.top  // invert to get distance
+        val bottom = rawMetrics.bottom
         val height = top + bottom
         val leading = top - ascent
         val ascentDescentHeight = ascent + descent
 
-        // Corrections: Some Android fonts report bullshit
-        // Examples: "ComingSoon" and "NotoSansSymbols" fonts on Android "S"
-        // See https://github.com/yairm210/Unciv/issues/10308
-
-        // Hardcode values for the worst of them - I've seen NotoSansSymbols returning (42.4, 11.1, 68.1, 11.1),
-        // or (53.4, 14.6, 117.7, 28.8): looks off, or (53.4, 14.6, 53.4, -11.1) - top below ascent
-        // By discarding and re-instantiating our Paint instance on every setFontFamily you can get Noto to almost,
-        // but not quite, report exclusively the "off" metrics. Curiously, soft start (Unciv exited through its own dialog,
-        // but not removed from android's "recents list") or hard start (dev-tools kill, reinstall or swipe out of recents)
-        // do seem to have an effect on the metrics reported by Noto (and only by Noto), though I haven't been able to
-        // prove a reliable pattern. These hardcoded values are empiric.
         if (currentFontFamily == "NotoSansSymbols")
             return FontMetricsCommon(53.4f, 14.6f, 100f, 33f)
 
         if (height >= 1.02f * ascentDescentHeight)
-            // maximum dimensions at least 2% larger than recommended ascender top to descender bottom distance:
-            // looks sensible, keep those metrics
+        // maximum dimensions at least 2% larger than recommended ascender top to descender bottom distance:
+        // looks sensible, keep those metrics
             return FontMetricsCommon(ascent, descent, height, leading)
 
         // When recommended size equals maximum size...
         if (height >= 0.98f * ascentDescentHeight)
-            // "ComingSoon" reports top==ascent and bottom==descent: give it some room.
-            // Note: It still looks way off with all virtual leading at the top, but that's unavoidable -
-            // it **really has** those monster descenders (the 'y') and you gotta put them somewhere.
+        // "ComingSoon" reports top==ascent and bottom==descent: give it some room.
+        // Note: It still looks way off with all virtual leading at the top, but that's unavoidable -
+        // it **really has** those monster descenders (the 'y') and you gotta put them somewhere.
             return FontMetricsCommon(ascent, descent, ascentDescentHeight * 1.25f, ascentDescentHeight * 0.25f)
 
         // recommended size bigger than maximum size - O|O - swap inner and outer metrics
