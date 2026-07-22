@@ -1085,6 +1085,10 @@ enum class UniqueType(
         docDescription = "In this case, 'starting era' means the first defined Era in the entire ruleset."),
     AllowRazeCapital("Allow raze capital", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
     AllowRazeHolyCity("Allow raze holy city", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
+    GreatPersonPointsAccumulatePerCity("Great Person points accumulate per city", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals,
+        docDescription = "Civ5-style: each city has its own Great Person point counters; when a city reaches the threshold, " +
+            "the Great Person is born in that city. The points required for the next Great Person of that type still increase empire-wide. " +
+            "Without this unique, points accumulate in one civilization-wide pool (current Unciv default)."),
 
     SuppressWarnings("Suppress warning [validationWarning]", *UniqueTarget.CanIncludeSuppression, flags = UniqueFlag.setOfHiddenNoConditionals, docDescription = Suppression.uniqueDocDescription),
 

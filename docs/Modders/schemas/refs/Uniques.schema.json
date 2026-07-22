@@ -145,6 +145,7 @@
       "[relativeAmount]% spy effectiveness [cityFilter]",
       "[relativeAmount]% enemy spy effectiveness [cityFilter]",
       "New spies start with [amount] level(s)",
+      "Great Person points accumulate per city",
       "Starting tech",
       "Starts with [tech]",
       "Starts with [policy] adopted",

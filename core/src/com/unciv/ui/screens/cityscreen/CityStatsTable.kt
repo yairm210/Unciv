@@ -370,7 +370,9 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
                 .left().padBottom(4f).padRight(5f)
             info.add("{$greatPersonName} (+$gppPerTurn)".toLabel(hideIcons = true)).left().padBottom(4f).expandX().row()
 
-            val gppCurrent = city.civ.greatPeople.greatPersonPointsCounter[greatPersonName]
+            val gppCurrent = if (city.civ.greatPeople.usesPerCityGreatPersonProgress())
+                city.greatPersonPointsCounter[greatPersonName]
+            else city.civ.greatPeople.greatPersonPointsCounter[greatPersonName]
             val gppNeeded = city.civ.greatPeople.getPointsRequiredForGreatPerson(greatPersonName)
 
             val percent = gppCurrent / gppNeeded.toFloat()

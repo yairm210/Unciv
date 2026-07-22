@@ -97,6 +97,12 @@ class City : IsPartOfGameInfoSerialization, INamed {
     
     var resourceStockpiles = Counter<String>()
 
+    /**
+     * Per-city Great Person point progress when ModOptions unique
+     * [UniqueType.GreatPersonPointsAccumulatePerCity] is enabled. Unused in default empire-wide mode.
+     */
+    var greatPersonPointsCounter = Counter<String>()
+
     /** All tiles that this city controls */
     var tiles = HashSet<HexCoord>()
 
@@ -184,6 +190,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         toReturn.workedTiles = workedTiles
         toReturn.lockedTiles = lockedTiles
         toReturn.resourceStockpiles = resourceStockpiles.clone()
+        toReturn.greatPersonPointsCounter = greatPersonPointsCounter.clone()
         toReturn.isBeingRazed = isBeingRazed
         toReturn.attackedThisTurn = attackedThisTurn
         toReturn.foundingCiv = foundingCiv

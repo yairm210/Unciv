@@ -57,6 +57,16 @@ class TurnManager(val civInfo: Civilization) {
                     civInfo.units.addUnit(greatPerson)
                 greatPerson = civInfo.greatPeople.getNewGreatPerson()
             }
+            if (civInfo.greatPeople.usesPerCityGreatPersonProgress()) {
+                for (city in civInfo.cities) {
+                    var cityGreatPerson = civInfo.greatPeople.getNewGreatPersonFromCity(city)
+                    while (cityGreatPerson != null) {
+                        if (civInfo.gameInfo.ruleset.units.containsKey(cityGreatPerson))
+                            civInfo.units.addUnit(cityGreatPerson, city)
+                        cityGreatPerson = civInfo.greatPeople.getNewGreatPersonFromCity(city)
+                    }
+                }
+            }
             civInfo.religionManager.startTurn()
             if (civInfo.isLongCountActive())
                 MayaCalendar.startTurnForMaya(civInfo)
