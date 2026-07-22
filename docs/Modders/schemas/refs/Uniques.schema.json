@@ -146,6 +146,7 @@
       "[relativeAmount]% enemy spy effectiveness [cityFilter]",
       "New spies start with [amount] level(s)",
       "Spies in [cityFilter] cities act as though they have [relativeAmount] levels for [spyAction]",
+      "Enemy spies steal [relativeAmount]% of a technology in [cityFilter] when counter-intelligence is active",
       "Starting tech",
       "Starts with [tech]",
       "Starts with [policy] adopted",
