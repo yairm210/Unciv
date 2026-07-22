@@ -564,6 +564,7 @@ object NextTurnAutomation {
             && city.population.population > 9
             && !city.isInResistance()
             && !civInfo.hasUnique(UniqueType.MayNotAnnexCities)
+            && civInfo.getHappiness() >= 5 // live happiness - statsForNextTurn is stale mid-turn, so a multi-city conquest wave would otherwise annex several puppets against a pre-conquest reading
             && civInfo.stats.statsForNextTurn.happiness > city.population.population * 2 - 8 // don't go below -10 happiness due to annexing
 
     fun automateCities(civInfo: Civilization) {
