@@ -1,3 +1,26 @@
+## 4.21.3
+
+Fixed mosque of djenne not working until industrial age
+
+Fix 'Gain [amount]-[amount] [stat]' excluding the upper bound and crashing on equal bounds - By Angais
+
+By SomeTroglodyte:
+- Fix "on losing unit" triggers running when a new unit can't be placed 
+- Allow limited conditionals on UniqueType.HiddenFromCivilopedia 
+- Catch load from custom location exceptions 
+- Fix the tile info "needs tech" line 
+
+By Fanfblrik:
+- Add unique for temporary counter-intelligence spy rank from buildings 
+- Don't wipe city-state relations on liberation; Civ5 liberator influence 
+- Freeze Demographics rankings to turn-start snapshots 
+
+fix: deep-copy of Tile was in fact not deep - By cy-elec
+
+By WhoIsJohannes:
+- Four AI improvements: parallel settlers, expansion un-latch, research agreements, annex guard 
+- Performance: three behavior-preserving hot-path optimizations 
+
 ## 4.21.2
 
 Disable constructions per city/game instead of client wide - By unciv-loof
