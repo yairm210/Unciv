@@ -2,10 +2,12 @@ package com.unciv.ui.screens.pickerscreens
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.GUI
@@ -43,8 +45,8 @@ class TechPickerScreen(
     private var selectedTech: Technology? = null
     private var civTech: TechManager = civInfo.tech
     private var tempTechsToResearch: ArrayList<String>
-    private var lines = NonTransformGroup()
-    private var orderIndicators = NonTransformGroup()
+    private var lines = NonTransformGroup().apply { touchable = Touchable.disabled }
+    private var orderIndicators = NonTransformGroup().apply { touchable = Touchable.disabled }
     private var eraLabels = ArrayList<Label>()
 
     /** We need this to be a separate table, and NOT the topTable, because *inhales*
@@ -55,7 +57,23 @@ class TechPickerScreen(
      *  leaving us the juicy small tech tree right in the center.
      */
     private val techTable = object : Table(){
-        override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
+        private val childCullingArea = Rectangle()
+
+        override fun draw(batch: Batch?, parentAlpha: Float) {
+            val parentTable = parent as? Table
+            val parentCulling = parentTable?.cullingArea
+            if (parentCulling == null) {
+                cullingArea = null
+            } else {
+                val cell = parentTable.getCell(this)
+                val offsetX = cell?.actorX ?: 0f
+                val offsetY = cell?.actorY ?: 0f
+                childCullingArea.set(parentCulling.x - offsetX, parentCulling.y - offsetY,
+                    parentCulling.width, parentCulling.height)
+                cullingArea = childCullingArea
+            }
+            super.draw(batch, parentAlpha)
+        }
     }
 
     // All these are to counter performance problems when updating buttons for all techs.
@@ -351,6 +369,8 @@ class TechPickerScreen(
 
         lines.children.filter { it.color == currentTechColor && it.color != Color.WHITE.cpy() }
             .forEach { it.toFront() }
+
+        lines.setSize(techTable.width, techTable.height)
     }
 
     private fun addOrderIndicators() {
@@ -370,6 +390,7 @@ class TechPickerScreen(
             }
         }
         orderIndicators.toFront()
+        orderIndicators.setSize(techTable.width, techTable.height)
     }
 
     private fun selectTechnology(tech: Technology?, queue: Boolean = false, center: Boolean = false, switchFromWorldScreen: Boolean = true) {
