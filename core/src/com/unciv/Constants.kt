@@ -11,7 +11,10 @@ object Constants {
     const val impassable = "Impassable"
     const val ocean = "Ocean"
 
-    /** The "Coast" _terrain_ */
+    /** The "Coast" _terrain_
+     *  @see com.unciv.models.ruleset.tile.Terrain.isCoast
+     */
+    @Deprecated("By PR #15123, except for tests. Remove use in Terrain and this deprecation after a grace period.")
     const val coast = "Coast"
     /** The "Coastal" terrain _filter_ */
     const val coastal = "Coastal"
