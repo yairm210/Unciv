@@ -2,7 +2,6 @@ package com.unciv.ui.screens.pickerscreens
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
@@ -57,21 +56,8 @@ class TechPickerScreen(
      *  leaving us the juicy small tech tree right in the center.
      */
     private val techTable = object : Table(){
-        private val childCullingArea = Rectangle()
-
         override fun draw(batch: Batch?, parentAlpha: Float) {
-            val parentTable = parent as? Table
-            val parentCulling = parentTable?.cullingArea
-            if (parentCulling == null) {
-                cullingArea = null
-            } else {
-                val cell = parentTable.getCell(this)
-                val offsetX = cell?.actorX ?: 0f
-                val offsetY = cell?.actorY ?: 0f
-                childCullingArea.set(parentCulling.x - offsetX, parentCulling.y - offsetY,
-                    parentCulling.width, parentCulling.height)
-                cullingArea = childCullingArea
-            }
+            cullingArea = topTable.cullingArea
             super.draw(batch, parentAlpha)
         }
     }
