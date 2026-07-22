@@ -1020,6 +1020,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
+??? example  "Spies in [cityFilter] cities act as though they have [relativeAmount] levels for [spyAction]"
+	Example: "Spies in [in this city] cities act as though they have [+1] levels for [Counter-intelligence]"
+
+	Temporary effective rank change ([relativeAmount] added to rank, e.g. +1) for spies doing the given action in a matching city. Does not permanently level the spy. Stacks additively, capped by maxSpyRank.
+
+	Applicable to: Global
+
 ??? example  "Triggers victory"
 	Applicable to: Global
 
