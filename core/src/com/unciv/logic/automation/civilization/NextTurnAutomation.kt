@@ -620,7 +620,13 @@ object NextTurnAutomation {
                         .none { unique -> it.matchesFilter(unique.params[0], civInfo.state) } }
         if (settlerUnits.isEmpty()) return
 
-        if (civInfo.units.getCivUnits().count { it.isMilitary() } < civInfo.cities.size) return // We need someone to defend them first
+        // The "defend them first" gate permanently latches peaceful, happy civs at ~4 cities. Bypass it when
+        // we clearly have room to expand safely: at peace, ample happiness, still early, and in a game with
+        // other major civs whose presence deters an opportunistic attack (this is a bad idea in a 1v1 duel).
+        val hasSlackToExpandSafely = !civInfo.isAtWar() && civInfo.getHappiness() >= 8 && civInfo.gameInfo.turns < 150
+            && civInfo.gameInfo.civilizations.count { it.isMajorCiv() && it.isAlive() } >= 3
+        if (civInfo.units.getCivUnits().count { it.isMilitary() } < civInfo.cities.size && !hasSlackToExpandSafely)
+            return // We need someone to defend them first
 
         val bestCity = civInfo.cities
             .filterNot { it.isPuppet || it.population.population < 3 }
