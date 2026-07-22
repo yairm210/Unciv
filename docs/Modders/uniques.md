@@ -1021,9 +1021,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global
 
 ??? example  "Spies in [cityFilter] cities act as though they have [relativeAmount] levels for [spyAction]"
-	Example: "Spies in [in this city] cities act as though they have [+1] levels for [Counter-intelligence]"
-
 	Temporary effective rank change ([relativeAmount] added to rank, e.g. +1) for spies doing the given action in a matching city. Does not permanently level the spy. Stacks additively, capped by maxSpyRank.
+
+	Example: "Spies in [in all cities] cities act as though they have [+20] levels for [Counter-intelligence]"
 
 	Applicable to: Global
 
@@ -1263,6 +1263,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Nation, Terrain, Improvement, Resource
 
 ??? example  "Will not be displayed in Civilopedia"
+	Supports conditionals that need only a Game as context and nothing else.
+
+	Most conditionals require at least a Civilization and will **not** work.
+
+	Note that when Civilopedia runs from main menu, conditionals will be ignored.
+
 	This unique is automatically hidden from users.
 
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
@@ -1325,6 +1331,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, EventChoice
 
 ??? example  "Will not be displayed in Civilopedia"
+	Supports conditionals that need only a Game as context and nothing else.
+
+	Most conditionals require at least a Civilization and will **not** work.
+
+	Note that when Civilopedia runs from main menu, conditionals will be ignored.
+
 	This unique is automatically hidden from users.
 
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
@@ -1355,6 +1367,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, EventChoice
 
 ??? example  "Will not be displayed in Civilopedia"
+	Supports conditionals that need only a Game as context and nothing else.
+
+	Most conditionals require at least a Civilization and will **not** work.
+
+	Note that when Civilopedia runs from main menu, conditionals will be ignored.
+
 	This unique is automatically hidden from users.
 
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
@@ -1404,6 +1422,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, EventChoice
 
 ??? example  "Will not be displayed in Civilopedia"
+	Supports conditionals that need only a Game as context and nothing else.
+
+	Most conditionals require at least a Civilization and will **not** work.
+
+	Note that when Civilopedia runs from main menu, conditionals will be ignored.
+
 	This unique is automatically hidden from users.
 
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
@@ -1695,6 +1719,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, EventChoice
 
 ??? example  "Will not be displayed in Civilopedia"
+	Supports conditionals that need only a Game as context and nothing else.
+
+	Most conditionals require at least a Civilization and will **not** work.
+
+	Note that when Civilopedia runs from main menu, conditionals will be ignored.
+
 	This unique is automatically hidden from users.
 
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
@@ -1890,6 +1920,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, EventChoice
 
 ??? example  "Will not be displayed in Civilopedia"
+	Supports conditionals that need only a Game as context and nothing else.
+
+	Most conditionals require at least a Civilization and will **not** work.
+
+	Note that when Civilopedia runs from main menu, conditionals will be ignored.
+
 	This unique is automatically hidden from users.
 
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
@@ -2532,6 +2568,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Unit
 
 ??? example  "Will not be displayed in Civilopedia"
+	Supports conditionals that need only a Game as context and nothing else.
+
+	Most conditionals require at least a Civilization and will **not** work.
+
+	Note that when Civilopedia runs from main menu, conditionals will be ignored.
+
 	This unique is automatically hidden from users.
 
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
@@ -2550,6 +2592,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ## UnitType uniques
 ??? example  "Will not be displayed in Civilopedia"
+	Supports conditionals that need only a Game as context and nothing else.
+
+	Most conditionals require at least a Civilization and will **not** work.
+
+	Note that when Civilopedia runs from main menu, conditionals will be ignored.
+
 	This unique is automatically hidden from users.
 
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
@@ -2591,6 +2639,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, EventChoice
 
 ??? example  "Will not be displayed in Civilopedia"
+	Supports conditionals that need only a Game as context and nothing else.
+
+	Most conditionals require at least a Civilization and will **not** work.
+
+	Note that when Civilopedia runs from main menu, conditionals will be ignored.
+
 	This unique is automatically hidden from users.
 
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
@@ -2847,6 +2901,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Nation, Terrain, Improvement, Resource
 
 ??? example  "Will not be displayed in Civilopedia"
+	Supports conditionals that need only a Game as context and nothing else.
+
+	Most conditionals require at least a Civilization and will **not** work.
+
+	Note that when Civilopedia runs from main menu, conditionals will be ignored.
+
 	This unique is automatically hidden from users.
 
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
@@ -3055,6 +3115,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Improvement
 
 ??? example  "Will not be displayed in Civilopedia"
+	Supports conditionals that need only a Game as context and nothing else.
+
+	Most conditionals require at least a Civilization and will **not** work.
+
+	Note that when Civilopedia runs from main menu, conditionals will be ignored.
+
 	This unique is automatically hidden from users.
 
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
@@ -3186,6 +3252,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Resource
 
 ??? example  "Will not be displayed in Civilopedia"
+	Supports conditionals that need only a Game as context and nothing else.
+
+	Most conditionals require at least a Civilization and will **not** work.
+
+	Note that when Civilopedia runs from main menu, conditionals will be ignored.
+
 	This unique is automatically hidden from users.
 
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
@@ -3219,6 +3291,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Ruins
 
 ??? example  "Will not be displayed in Civilopedia"
+	Supports conditionals that need only a Game as context and nothing else.
+
+	Most conditionals require at least a Civilization and will **not** work.
+
+	Note that when Civilopedia runs from main menu, conditionals will be ignored.
+
 	This unique is automatically hidden from users.
 
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
@@ -3236,6 +3314,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
     Speed uniques will be treated as part of GlobalUniques for the Speed selected in a game
 
 ??? example  "Will not be displayed in Civilopedia"
+	Supports conditionals that need only a Game as context and nothing else.
+
+	Most conditionals require at least a Civilization and will **not** work.
+
+	Note that when Civilopedia runs from main menu, conditionals will be ignored.
+
 	This unique is automatically hidden from users.
 
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
@@ -3264,6 +3348,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
     Difficulty uniques will be treated as part of GlobalUniques for the Difficulty selected in a game
 
 ??? example  "Will not be displayed in Civilopedia"
+	Supports conditionals that need only a Game as context and nothing else.
+
+	Most conditionals require at least a Civilization and will **not** work.
+
+	Note that when Civilopedia runs from main menu, conditionals will be ignored.
+
 	This unique is automatically hidden from users.
 
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
@@ -3414,6 +3504,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, EventChoice
 
 ??? example  "Will not be displayed in Civilopedia"
+	Supports conditionals that need only a Game as context and nothing else.
+
+	Most conditionals require at least a Civilization and will **not** work.
+
+	Note that when Civilopedia runs from main menu, conditionals will be ignored.
+
 	This unique is automatically hidden from users.
 
 	Applicable to: Nation, Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Difficulty, EventChoice
@@ -4295,6 +4391,7 @@ There is a conversion affecting dashes and leading/trailing blanks. Please make 
 *[resourceFilter]: A resource name, type, 'all', or a Stat listed in the resource's improvementStats.
 *[specialist]: The name of any specialist.
 *[speed]: The name of any speed.
+*[spyAction]: A spy action display name, e.g. `Counter-intelligence`, `Stealing Tech`.
 *[stat]: This is one of the 7 major stats in the game - `Gold`, `Science`, `Production`, `Food`, `Happiness`, `Culture` and `Faith`. Note that the stat names need to be capitalized!
 *[stats]: For example: `+2 Production, +3 Food`. Note that the stat names need to be capitalized!
 *[stockpile]: The name of any stockpiled resource.
