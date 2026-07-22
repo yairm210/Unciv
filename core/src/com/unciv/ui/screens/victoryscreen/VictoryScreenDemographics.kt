@@ -2,11 +2,13 @@ package com.unciv.ui.screens.victoryscreen
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
+import com.unciv.logic.civilization.Civilization
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import kotlin.math.roundToInt
+import yairm210.purity.annotations.Readonly
 
 class VictoryScreenDemographics(
     worldScreen: WorldScreen
@@ -30,8 +32,10 @@ class VictoryScreenDemographics(
             add(rankLabel.name.toLabel())
 
             for (category in RankingType.entries) {
+                // Use turn-start snapshots so mid-turn army/economy changes cannot be used to
+                // probe Best/Worst values of other civilizations (see linked issue).
                 val aliveMajorCivsSorted = majorCivs.filter { it.isAlive() || it == playerCiv }
-                    .map { VictoryScreen.CivWithStat(it, category) }
+                    .map { VictoryScreen.CivWithStat(it, it.getStatForDemographics(category)) }
                     .sortedByDescending { it.value }
 
                 fun addRankCivGroup(civEntry: VictoryScreen.CivWithStat) {
@@ -48,6 +52,17 @@ class VictoryScreenDemographics(
                 }
             }
         }
+    }
+
+    /**
+     * Ranking value frozen at that civilization's last turn-start recording in [Civilization.statsHistory].
+     * Falls back to a live value only when no history exists yet (e.g. very early game).
+     */
+    @Readonly
+    private fun Civilization.getStatForDemographics(category: RankingType): Int {
+        val history = statsHistory
+        val snapshot = history[gameInfo.turns] ?: history.maxByOrNull { it.key }?.value
+        return snapshot?.get(category) ?: getStatForRanking(category)
     }
 
     private fun buildDemographicsHeaders() {
