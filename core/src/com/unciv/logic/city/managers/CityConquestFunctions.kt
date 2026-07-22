@@ -31,6 +31,11 @@ import kotlin.random.Random
 
 /** Helper class for containing 200 lines of "how to move cities between civs" */
 class CityConquestFunctions(val city: City) {
+    companion object {
+        const val MINOR_FRIENDSHIP_AT_WAR = -60f
+        const val MINOR_LIBERATION_FRIENDSHIP = 105f
+    }
+
     private val tileBasedRandom = Random(city.getCenterTile().position.hashCode())
 
     @Readonly
@@ -203,22 +208,6 @@ class CityConquestFunctions(val city: City) {
         }
 
         val foundingCiv = city.foundingCivObject!!
-        if (foundingCiv.isDefeated()) { // resurrected civ
-            for (diploManager in foundingCiv.diplomacy.values) {
-                if (diploManager.diplomaticStatus == DiplomaticStatus.War)
-                    diploManager.makePeace()
-
-                // Clear all diplomatic flags and modifiers to prevent asymmetry after resurrection
-                // The defeated civ's flags were frozen while other civs' flags continued to expire
-                // Perhaps some of this needs more dedicated treatment but it's a pretty rare case anyway
-                //   so I think starting from scratch is a good way to go 
-                diploManager.flagsCountdown.clear()
-                diploManager.otherCivDiplomacy().flagsCountdown.clear()
-                diploManager.diplomaticModifiers.clear()
-                diploManager.otherCivDiplomacy().diplomaticModifiers.clear()
-            }
-        }
-
         val oldCiv = city.civ
 
         diplomaticRepercussionsForLiberatingCity(conqueringCiv, oldCiv)
@@ -262,6 +251,22 @@ class CityConquestFunctions(val city: City) {
         val respectForLiberatingOurCity = 10f + percentageOfCivPopulationInThatCity.roundToInt()
 
         if (foundingCiv.isMajorCiv()) {
+            if (foundingCiv.isDefeated()) { // resurrected civ
+                for (diploManager in foundingCiv.diplomacy.values) {
+                    if (diploManager.diplomaticStatus == DiplomaticStatus.War)
+                        diploManager.makePeace()
+
+                    // Clear all diplomatic flags and modifiers to prevent asymmetry after resurrection
+                    // The defeated civ's flags were frozen while other civs' flags continued to expire
+                    // Perhaps some of this needs more dedicated treatment but it's a pretty rare case anyway
+                    //   so I think starting from scratch is a good way to go 
+                    diploManager.flagsCountdown.clear()
+                    diploManager.otherCivDiplomacy().flagsCountdown.clear()
+                    diploManager.diplomaticModifiers.clear()
+                    diploManager.otherCivDiplomacy().diplomaticModifiers.clear()
+                }
+            }
+
             // In order to get "plus points" in Diplomacy, you have to establish diplomatic relations if you haven't yet
             foundingCiv.getDiplomacyManagerOrMeet(conqueringCiv)
                 .addModifier(DiplomaticModifiers.CapturedOurCities, respectForLiberatingOurCity)
@@ -269,8 +274,17 @@ class CityConquestFunctions(val city: City) {
             openBordersTrade.currentTrade.ourOffers.add(TradeOffer(Constants.openBorders, TradeOfferType.Agreement, speed = conqueringCiv.gameInfo.speed))
             openBordersTrade.acceptTrade(false)
         } else {
-            foundingCiv.getDiplomacyManagerOrMeet(conqueringCiv).setInfluence(90f)
             // Liberating a city state gives a large amount of influence, and peace
+            // as per discussion in #15226 
+            val maxOtherInfluence = foundingCiv.diplomacy.values
+                .filter { it.otherCiv != conqueringCiv && it.otherCiv.isMajorCiv() && it.otherCiv.isAlive() }
+                .fold(MINOR_FRIENDSHIP_AT_WAR) { a, b -> a.coerceAtLeast(b.getInfluence()) }
+            val diplomacy = foundingCiv.getDiplomacyManagerOrMeet(conqueringCiv)
+            val liberatorOldInfluence = diplomacy.getInfluence()
+            val liberatorNewInfluence = maxOtherInfluence.coerceAtLeast(liberatorOldInfluence)
+                .plus(MINOR_LIBERATION_FRIENDSHIP)
+                .coerceAtLeast(60f)  // TODO that should be a const val, hardcoded in several places
+            diplomacy.setInfluence(liberatorNewInfluence)
             if (foundingCiv.isAtWarWith(conqueringCiv)) {
                 val tradeLogic = TradeLogic(foundingCiv, conqueringCiv)
                 tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty, speed = conqueringCiv.gameInfo.speed))
