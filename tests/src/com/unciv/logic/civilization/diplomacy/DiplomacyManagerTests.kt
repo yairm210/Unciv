@@ -382,4 +382,46 @@ class DiplomacyManagerTests {
         assertEquals(expectedSciencePerTurnCivA * turns, b.tech.scienceFromResearchAgreements)
     }
 
+    @Test
+    fun `liberating city-state keeps third-party influence and applies Civ5 liberator formula`() {
+        // given — CS with varied influence; capture then liberate (resurrection)
+        val cityState = addCiv(cityStateType = "Militaristic")
+        val liberator = addCiv()
+        val conqueror = addCiv()
+        val ally = addCiv()
+        val rival = addCiv()
+
+        meet(liberator, cityState)
+        meet(conqueror, cityState)
+        meet(ally, cityState)
+        meet(rival, cityState)
+        meet(liberator, conqueror)
+        meet(liberator, ally)
+        meet(liberator, rival)
+
+        testGame.gameInfo.currentPlayerCiv = addCiv()
+        testGame.gameInfo.currentPlayer = testGame.gameInfo.currentPlayerCiv.civID
+
+        val csCity = testGame.addCity(cityState, testGame.getTile(HexCoord.Zero), initialPopulation = 2)
+        cityState.getDiplomacyManager(ally)!!.setInfluence(93f)
+        cityState.getDiplomacyManager(rival)!!.setInfluence(-20f)
+        cityState.getDiplomacyManager(liberator)!!.setInfluence(19f)
+
+        csCity.puppetCity(conqueror)
+        assertTrue(cityState.isDefeated())
+        assertEquals(93f, cityState.getDiplomacyManager(ally)!!.getInfluence(), 0.01f)
+        assertEquals(-20f, cityState.getDiplomacyManager(rival)!!.getInfluence(), 0.01f)
+
+        // when
+        csCity.liberateCity(liberator)
+
+        // then — third parties unchanged (no full diplo wipe); liberator gets Civ5-style bonus
+        assertFalse(cityState.isDefeated())
+        assertEquals(cityState, csCity.civ)
+        assertEquals(93f, cityState.getDiplomacyManager(ally)!!.getInfluence(), 0.01f)
+        assertEquals(-20f, cityState.getDiplomacyManager(rival)!!.getInfluence(), 0.01f)
+        // max(max(-60, 93, -20), 19) + 105 = 93 + 105 = 198
+        assertEquals(198f, cityState.getDiplomacyManager(liberator)!!.getInfluence(), 0.01f)
+    }
+
 }
