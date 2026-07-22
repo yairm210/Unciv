@@ -1,6 +1,5 @@
 package com.unciv.logic.civilization
 
-import com.unciv.models.ruleset.ModOptions
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
@@ -25,13 +24,7 @@ class GreatPersonPerCityTests {
     }
 
     private fun enablePerCityGreatPersonProgress() {
-        val old = testGame.ruleset.modOptions
-        val newOpts = ModOptions()
-        newOpts.isBaseRuleset = old.isBaseRuleset
-        newOpts.constants.merge(old.constants)
-        newOpts.uniques.addAll(old.uniques)
-        newOpts.uniques.add(UniqueType.GreatPersonPointsAccumulatePerCity.text)
-        testGame.ruleset.modOptions = newOpts
+        testGame.ruleset.modOptions.uniques.add(UniqueType.GreatPersonPointsAccumulatePerCity.text)
     }
 
     @Test
