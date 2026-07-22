@@ -258,10 +258,9 @@ object DiplomacyAutomation {
         }.sortedByDescending { it.stats.statsForNextTurn.science }
 
         for (otherCiv in civsThatWeCanSignResearchAgreementWith) {
-            val rng = civInfo.getDiplomacyManager(otherCiv)!!.state.stateBasedRandom("DiplomacyAutomation.offerResearchAgreement")
-            // Default setting is 5, this will be changed according to different civ.
-            if ((1..10).random(getRandom(civInfo, otherCiv, "research agreement"))
-                <= 5 * civInfo.getPersonality().scaledFocus(PersonalityValue.Science)) continue
+            // Always offer a research agreement we can sign - previously this was skipped ~50% of the time
+            // by a random roll. A mutual RA is a free, balanced deal that raises the other civ's opinion of
+            // us (so we get attacked less), on top of the shared science, so there is no reason to decline.
             val tradeLogic = TradeLogic(civInfo, otherCiv)
             val cost = civInfo.diplomacyFunctions.getResearchAgreementCost(otherCiv)
             val tradeOffer = TradeOffer(Constants.researchAgreement, TradeOfferType.Treaty, cost, civInfo.gameInfo.speed)

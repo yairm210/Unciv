@@ -509,6 +509,13 @@ enum class UniqueParameterType(
         override val staticKnownValues = BeliefType.entries.map { it.name }.toSet()
     },
 
+    /** Used by [UniqueType.CounterIntelligenceSpyRankBonus], matches [com.unciv.models.SpyAction.displayString] */
+    SpyAction("spyAction", "Counter-intelligence", "A spy action display name, e.g. `Counter-intelligence`, `Stealing Tech`",
+        severityDefault = UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+    ) {
+        override val staticKnownValues = com.unciv.models.SpyAction.entries.map { it.displayString }.toSet()
+    },
+
     /** unused at the moment with vanilla rulesets */
     Belief("belief", "God of War", "The name of any belief") {
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.beliefs.keys
