@@ -678,7 +678,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
                 tile.neighbors.filter { unit.movement.canPassThrough(it) }
 
         // both the civ name and actual civ need to be in here in order to calculate the canMoveTo...Darn
-        unit.assignOwner(civInfo, false)
+        unit.assignOwner(civInfo, updateCivInfo = false)
         // remember our first owner
         unit.originalOwner = civInfo.civID
 
@@ -724,7 +724,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         }
 
         if (unitToPlaceTile == null) {
-            civInfo.units.removeUnit(unit) // since we added it to the civ units in the previous assignOwner
+            civInfo.units.removeUnit(unit, updateCivInfo = false) // since we added it to the civ units in the previous assignOwner
             return null // we didn't actually create a unit...
         }
 

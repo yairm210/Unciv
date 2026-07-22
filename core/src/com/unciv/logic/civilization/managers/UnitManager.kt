@@ -174,12 +174,13 @@ class UnitManager(val civInfo: Civilization) {
         }
     }
 
-    fun removeUnit(mapUnit: MapUnit) {
+    fun removeUnit(mapUnit: MapUnit, updateCivInfo: Boolean = true) {
         // See comment in addUnit().
         val newList = getCivUnitsStartingAtNextDue().toMutableList()
         newList.remove(mapUnit)
         unitList = newList
         nextPotentiallyDueAt = 0
+        if (!updateCivInfo) return
 
         civInfo.updateStatsForNextTurn() // unit upkeep
         if (mapUnit.getResourceRequirementsPerTurn().isNotEmpty())

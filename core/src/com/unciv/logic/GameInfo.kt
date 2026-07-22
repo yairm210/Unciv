@@ -31,6 +31,7 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.Speed
 import com.unciv.models.ruleset.nation.Difficulty
 import com.unciv.models.ruleset.tile.TileResource
+import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
@@ -40,12 +41,14 @@ import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.utils.DebugUtils
 import com.unciv.utils.debug
 import com.unciv.utils.pseudoRandomUuid
+import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.Readonly
 import java.security.MessageDigest
 import java.security.SecureRandom
 import java.time.Duration
 import java.time.Instant
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 
 
 /**
@@ -147,6 +150,17 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
     @Transient
     private lateinit var difficultyObject: Difficulty // Since this is static game-wide, and was taking a large part of nextTurn
+
+    /** [IHasUniques.isUnavailableBySettings] is a pure function of game-start constants (game parameters,
+     *  starting era, mod options) - it cannot change during a game - yet it is re-evaluated per building/unit
+     *  on every construction-candidacy check ([getRejectionReasons]). Memoize it per rule object.
+     *  ConcurrentHashMap because rejection reasons are queried from both the game thread and the render thread. */
+    @Transient @Cache
+    private val settingsUnavailability = ConcurrentHashMap<IHasUniques, Boolean>()
+
+    @Readonly
+    fun isUnavailableBySettingsCached(obj: IHasUniques): Boolean =
+        settingsUnavailability.computeIfAbsent(obj) { it.isUnavailableBySettings(this) }
 
     @Transient
     lateinit var speed: Speed
