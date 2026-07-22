@@ -37,14 +37,14 @@ class CityConquestFunctions(val city: City) {
     private fun getGoldForCapturingCity(conqueringCiv: Civilization): Int {
         val baseGold = 20 + 10 * city.population.population + tileBasedRandom.nextInt(40)
         val turnModifier = max(0, min(50, city.civ.gameInfo.turns - city.turnAcquired)) / 50f
-        
+
         var cityModifier = 1f
-        for (unique in city.getMatchingUniques(UniqueType.GoldFromCapturingCity, city.state)) {
+        city.forEachMatchingUnique(UniqueType.GoldFromCapturingCity, city.state) { unique ->
             cityModifier *= unique.params[0].toPercent()
         }
 
         var conqueringCivModifier = 1f
-        for (unique in conqueringCiv.getMatchingUniques(UniqueType.GoldFromEncampmentsAndCities, conqueringCiv.state)) {
+        conqueringCiv.forEachMatchingUnique(UniqueType.GoldFromEncampmentsAndCities, conqueringCiv.state) { unique ->
             conqueringCivModifier *= unique.params[0].toPercent()
         }
 
@@ -155,7 +155,7 @@ class CityConquestFunctions(val city: City) {
         makePuppet()
         city.cityStats.update()
     }
-    
+
     private fun makePuppet(){
         city.isPuppet = true
         // The city could be producing something that puppets shouldn't, like units
@@ -258,19 +258,19 @@ class CityConquestFunctions(val city: City) {
     private fun diplomaticRepercussionsForLiberatingCity(conqueringCiv: Civilization, conqueredCiv: Civilization) {
         val foundingCiv = city.foundingCivObject!!
         val percentageOfCivPopulationInThatCity = city.population.population *
-                100f / (foundingCiv.cities.sumOf { it.population.population } + city.population.population)
+            100f / (foundingCiv.cities.sumOf { it.population.population } + city.population.population)
         val respectForLiberatingOurCity = 10f + percentageOfCivPopulationInThatCity.roundToInt()
 
         if (foundingCiv.isMajorCiv()) {
             // In order to get "plus points" in Diplomacy, you have to establish diplomatic relations if you haven't yet
             foundingCiv.getDiplomacyManagerOrMeet(conqueringCiv)
-                    .addModifier(DiplomaticModifiers.CapturedOurCities, respectForLiberatingOurCity)
+                .addModifier(DiplomaticModifiers.CapturedOurCities, respectForLiberatingOurCity)
             val openBordersTrade = TradeLogic(foundingCiv, conqueringCiv)
             openBordersTrade.currentTrade.ourOffers.add(TradeOffer(Constants.openBorders, TradeOfferType.Agreement, speed = conqueringCiv.gameInfo.speed))
             openBordersTrade.acceptTrade(false)
         } else {
-            //Liberating a city state gives a large amount of influence, and peace
             foundingCiv.getDiplomacyManagerOrMeet(conqueringCiv).setInfluence(90f)
+            // Liberating a city state gives a large amount of influence, and peace
             if (foundingCiv.isAtWarWith(conqueringCiv)) {
                 val tradeLogic = TradeLogic(foundingCiv, conqueringCiv)
                 tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty, speed = conqueringCiv.gameInfo.speed))
@@ -282,7 +282,7 @@ class CityConquestFunctions(val city: City) {
         val otherCivsRespectForLiberating = (respectForLiberatingOurCity / 10).roundToInt().toFloat()
         for (thirdPartyCiv in conqueringCiv.getKnownCivs().filter { it.isMajorCiv() && it != conqueredCiv }) {
             thirdPartyCiv.getDiplomacyManager(conqueringCiv)!!
-                    .addModifier(DiplomaticModifiers.LiberatedCity, otherCivsRespectForLiberating) // Cool, keep at at! =D
+                .addModifier(DiplomaticModifiers.LiberatedCity, otherCivsRespectForLiberating) // Cool, keep at it! =D
         }
     }
 
@@ -353,7 +353,7 @@ class CityConquestFunctions(val city: City) {
         city.getTiles().forEach { tile ->
             tile.history.recordTakeOwnership(tile)
         }
-        
+
         city.resetDisabledConstructions()
 
         newCiv.cache.updateOurTiles()
