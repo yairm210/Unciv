@@ -575,6 +575,8 @@ enum class UniqueType(
     GPPointPool("Is part of Great Person group [comment]", UniqueTarget.Unit,
         docDescription = "Great people in the same group increase teach other's costs when gained. Gaining one will make all others in the same group cost more GPP."),
 
+    ChooseRuinReward("May choose the Ancient Ruin discovery reward", UniqueTarget.Unit, UniqueTarget.Global,
+        docDescription = "Allows the Unit to choose a reward from ruins. Limits: The chosen reward is blocked for 2 turns for the civ."),
     //endregion
 
     ///////////////////////////////////////// region 05 UNIT ACTION MODIFIERS /////////////////////////////////////////
@@ -975,6 +977,9 @@ enum class UniqueType(
     OneTimeUnitLoseStatus("[unitTriggerTarget] loses the [promotion] status", UniqueTarget.UnitTriggerable),
     OneTimeUnitDestroyed("[unitTriggerTarget] is destroyed", UniqueTarget.UnitTriggerable),
     OneTimeUnitGetsName("[unitTriggerTarget] gets a name from the [unitNameGroup] group", UniqueTarget.UnitTriggerable),
+    OneTimeUnitGiveRuinReward("[unitTriggerTarget] chooses [ruinReward]", UniqueTarget.UnitTriggerable,
+        docDescription = "Used in conjunction with \"May choose the Ancient Ruin discovery reward\", but works directly too. Just as any ruin reward, the choice becomes unavailable for the civ for two turns."),
+
     //endregion
 
 
@@ -1045,6 +1050,7 @@ enum class UniqueType(
         UniqueTarget.FounderBelief,
         UniqueTarget.Policy,
         UniqueTarget.Promotion,
+        UniqueTarget.Ruins,
         UniqueTarget.Tech,
         flags = UniqueFlag.setOfHiddenToUsers),
 
