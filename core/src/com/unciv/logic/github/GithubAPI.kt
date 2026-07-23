@@ -434,7 +434,8 @@ object GithubAPI {
              * See: https://github.com/yairm210/Unciv/blob/1cb3f94d36009719b63f6d8e9d2e49c1bd594a8f/core/src/com/unciv/logic/github/Github.kt#L197-L216
              */
             when {
-                resp.status == HttpStatusCode.NotFound -> return@execute resp
+                resp.status == HttpStatusCode.NotFound ->
+                    throw UncivShowableException("Mod archive not found")
 
                 (resp.status == HttpStatusCode.Forbidden) &&
                     resp.headers["CF-RAY"] != null && resp.headers["cf-mitigated"].orEmpty() == "challenge" ->
