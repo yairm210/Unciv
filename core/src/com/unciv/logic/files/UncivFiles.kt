@@ -29,7 +29,7 @@ import com.unciv.utils.debug
 import kotlinx.coroutines.Job
 import java.io.Writer
 
-private const val SAVE_FILES_FOLDER = "SaveFiles"
+const val SAVE_FILES_FOLDER = "SaveFiles"
 private const val MULTIPLAYER_FILES_FOLDER = "MultiplayerGames"
 private const val AUTOSAVE_FILE_NAME = "Autosave"
 const val SETTINGS_FILE_NAME = "GameSettings.json"
