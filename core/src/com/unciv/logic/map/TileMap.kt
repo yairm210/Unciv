@@ -122,6 +122,10 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     /** Continent ID to Continent size */
     val continentSizes = HashMap<Int, Int>()
 
+    @Transient
+    /** Continent IDs sorted by size descending */
+    val continentsSortedBySize = ArrayList<Int>()
+
     //endregion
     //region Constructors
 
@@ -864,6 +868,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         if (mode == AssignContinentsMode.Clear) {
             values.forEach { it.clearContinent() }
             continentSizes.clear()
+            continentsSortedBySize.clear()
             return
         }
 
@@ -874,7 +879,10 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
                 if (continent == -1) continue
                 continentSizes[continent] = 1 + (continentSizes[continent] ?: 0)
             }
-            if (continentSizes.isNotEmpty()) return
+            if (continentSizes.isNotEmpty()) {
+                updateContinentsSortedBySize()
+                return
+            }
         }
 
         var landTiles = values.filter { it.isLand && !it.isImpassible() }
@@ -896,6 +904,12 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             currentContinent++
             landTiles = landTiles.filter { it !in continent }
         }
+        updateContinentsSortedBySize()
+    }
+
+    private fun updateContinentsSortedBySize() {
+        continentsSortedBySize.clear()
+        continentsSortedBySize.addAll(continentSizes.entries.sortedByDescending { it.value }.map { it.key })
     }
     //endregion
 

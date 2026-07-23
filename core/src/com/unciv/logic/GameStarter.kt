@@ -531,13 +531,12 @@ class GameStarter private constructor(
         // We want to  distribute starting locations fairly, and thus not place anybody on a small island
         // - unless necessary. Old code would only consider landmasses >= 20 tiles.
         // Instead, take continents until >=90% total area or everybody can get their own island
-        val orderedContinents = tileMap.continentSizes.asSequence().sortedByDescending { it.value }.toList()
         val totalArea = tileMap.continentSizes.values.sum()
         var candidateArea = 0
         val candidateContinents = HashSet<Int>()
-        for ((index, continentSize) in orderedContinents.withIndex()) {
-            candidateArea += continentSize.value
-            candidateContinents.add(continentSize.key)
+        for ((index, continentId) in tileMap.continentsSortedBySize.withIndex()) {
+            candidateArea += tileMap.continentSizes[continentId]!!
+            candidateContinents.add(continentId)
             if (candidateArea >= totalArea * 0.9f) break
             if (index >= civCount) break
         }

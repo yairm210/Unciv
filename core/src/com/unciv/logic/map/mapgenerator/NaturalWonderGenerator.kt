@@ -185,10 +185,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
             val continentsRelevant = naturalWonderOrTerrainFeature.hasUnique(UniqueType.NaturalWonderLargerLandmass) ||
                     naturalWonderOrTerrainFeature.hasUnique(UniqueType.NaturalWonderSmallerLandmass)
             val sortedContinents = if (continentsRelevant)
-                tile.tileMap.continentSizes.asSequence()
-                    .sortedByDescending { it.value }
-                    .map { it.key }
-                    .toList()
+                tile.tileMap.continentsSortedBySize
             else listOf()
 
             return naturalWonderOrTerrainFeature.uniqueObjects.all { unique ->
