@@ -277,6 +277,8 @@ enum class UniqueType(
         docDescription = MULTIPLICATIVE_BONUS_EXPLANATION),
     ReligionSpreadDistance("Religion naturally spreads to cities [amount] tiles away", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     MayNotGenerateGreatProphet("May not generate great prophet equivalents naturally", UniqueTarget.Global),
+    MayNotFoundReligion("May not found a religion", UniqueTarget.Global),
+    CannotSpreadReligionTo("Cannot spread religion to [civFilter] Civilizations", UniqueTarget.Global),
     FaithCostOfGreatProphetChange("[relativeAmount]% Faith cost of generating Great Prophet equivalents", UniqueTarget.Global),
 
     /// Espionage
@@ -299,6 +301,14 @@ enum class UniqueType(
     /// Misc.
     MayBuyConstructionsInPuppets("May buy items in puppet cities", UniqueTarget.Global),
     MayNotAnnexCities("May not annex cities", UniqueTarget.Global),
+    CitiesCannotBeLiberated("Cities cannot be liberated", UniqueTarget.Global,
+        docDescription = "Typically used with <for [AI player] Civilizations>. City-States can still be liberated unless they match the conditional."),
+    AlwaysAcceptsWhitePeace("Always accepts white peace", UniqueTarget.Global),
+    CannotVoteInWorldCongress("Cannot vote in World Congress", UniqueTarget.Global),
+    CannotTradeWith("Cannot trade with [civFilter] Civilizations", UniqueTarget.Global,
+        docDescription = "Peace treaties are still allowed. Typically used with <for [AI player] Civilizations>."),
+    CannotCoup("Cannot coup [civFilter] Civilizations", UniqueTarget.Global),
+    NoXpFromFighting("No XP from fighting [civFilter] Civilizations", UniqueTarget.Global),
     BorrowsCityNames("\"Borrows\" city names from other civilizations in the game", UniqueTarget.Global),
     CitiesAreRazedXTimesFaster("Cities are razed [amount] times as fast", UniqueTarget.Global),
 
