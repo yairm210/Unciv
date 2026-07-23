@@ -3419,6 +3419,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: ModOptions
 
+??? example  "Great Person points accumulate per city"
+	Civ5-style: each city has its own Great Person point counters; when a city reaches the threshold, the Great Person is born in that city. The points required for the next Great Person of that type still increase empire-wide. Without this unique, points accumulate in one civilization-wide pool (current Unciv default).
+
+	This unique does not support conditionals.
+
+	Applicable to: ModOptions
+
 ??? example  "Suppress warning [validationWarning]"
 	Allows suppressing specific validation warnings. Errors, deprecation warnings, or warnings about untyped and non-filtering uniques should be heeded, not suppressed, and are therefore not accepted. Note that this can be used in ModOptions, in the uniques a warning is about, or as modifier on the unique triggering a warning - but you still need to be specific. Even in the modifier case you will need to specify a sufficiently selective portion of the warning text as parameter.
 
