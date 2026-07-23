@@ -481,6 +481,9 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         holyCity.religion.religionThisIsTheHolyCityOf = newReligion.name
         holyCity.religion.addPressure(name, holyCity.population.population * 500)
 
+        if (civInfo.hasUnique(UniqueType.ConvertAllCitiesWhenReligionFounded))
+            convertAllOwnCitiesToReligion(name)
+
         foundingCityId = null
         shouldChoosePantheonBelief = false
 
@@ -501,6 +504,12 @@ class ReligionManager : IsPartOfGameInfoSerialization {
             else civ.addNotification("[An unknown civilization] has founded [$displayName]!",
                 ReligionAction(name), Notification.NotificationCategory.Religion, NotificationIcon.Faith)
         }
+    }
+
+    /** Converts every owned city to [religionName] when the civ has the matching unique. */
+    private fun convertAllOwnCitiesToReligion(religionName: String) {
+        for (city in civInfo.cities)
+            city.religion.adoptReligionAsMajority(religionName)
     }
 
     @Readonly

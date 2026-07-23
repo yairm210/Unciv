@@ -138,6 +138,8 @@
       "May choose [amount] additional [beliefType] beliefs when [foundingOrEnhancing] a religion",
       "May choose [amount] additional belief(s) of any type when [foundingOrEnhancing] a religion",
       "[stats] when a city adopts this religion for the first time",
+      "All your cities convert to your religion when a religion is founded",
+      "No natural religion spread from your cities to foreign cities",
       "[relativeAmount]% Natural religion spread [cityFilter]",
       "Religion naturally spreads to cities [amount] tiles away",
       "May not generate great prophet equivalents naturally",
