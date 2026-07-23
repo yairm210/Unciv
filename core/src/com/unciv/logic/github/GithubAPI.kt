@@ -97,12 +97,16 @@ object GithubAPI {
         block()
     }
 
-    /** Format a download URL for a branch archive */
+    /** Format a download URL for a branch archive.
+     *  [branch] can be a commit hash, in which case the proper archive URL for that commit looks a bit different.
+     */
     // URL format see: https://docs.github.com/en/repositories/working-with-files/using-files/downloading-source-code-archives#source-code-archive-urls
     // Note: https://api.github.com/repos/owner/mod/zipball would be an alternative. Its response is a redirect, but our lib follows that and delivers the zip just fine.
     // Problems with the latter: Internal zip structure different, finalDestinationName would need a patch. Plus, normal URL escaping for owner/reponame does not work.
     @Pure
-    internal fun getUrlForBranchZip(gitRepoUrl: String, branch: String) = "$gitRepoUrl/archive/refs/heads/$branch.zip"
+    internal fun getUrlForBranchZip(gitRepoUrl: String, branch: String) =
+        if (branch.length == 40 && branch.all { it.isHex() }) "$gitRepoUrl/archive/$branch.zip"
+        else "$gitRepoUrl/archive/refs/heads/$branch.zip"
 
     /** Format a download URL for a release archive */
     @Readonly
@@ -600,9 +604,6 @@ object GithubAPI {
 
     @Pure
     private fun choosePrettierName(folderName: String, defaultModName: String): String {
-        // kotlin's isHexLetter and isAsciiDigit are private
-        @Pure
-        fun Char.isHex() = ((this - '0') and 0xFFFF) < 10 || ((this - 'A') and 0xFFDF) < 6
         // Special case for specific commit (getting an older point-in-time version of a mod) zips
         if (defaultModName.all { it.isHex() } && folderName.endsWith(defaultModName)) {
             return folderName.removeSuffix(defaultModName).removeSuffix("-")
@@ -618,4 +619,8 @@ object GithubAPI {
             return defaultModName.removeSuffix("-main").removeSuffix("-master")
         return folderName
     }
+
+    // kotlin's isHexLetter and isAsciiDigit are private
+    @Pure
+    private fun Char.isHex() = ((this - '0') and 0xFFFF) < 10 || ((this - 'A') and 0xFFDF) < 6
 }
