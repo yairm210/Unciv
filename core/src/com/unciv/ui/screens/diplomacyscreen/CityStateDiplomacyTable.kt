@@ -421,7 +421,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         diplomacyTable.add("At least 0 to take gold, at least 30 and size 4 city for worker".toLabel()).row()
         diplomacyTable.addSeparator()
 
-        val demandGoldButton = "Take [${otherCiv.cityStateFunctions.goldGainedByTribute()}] gold (-15 Influence)".toTextButton()
+        val demandGoldButton = "Take [${otherCiv.cityStateFunctions.goldGainedByTribute()}] gold ([${DiplomacyManager.TRIBUTE_GOLD_INFLUENCE.toInt()}] Influence)".toTextButton()
         demandGoldButton.onClick {
             otherCiv.cityStateFunctions.tributeGold(viewingCiv)
             diplomacyScreen.rightSideTable.clear()
@@ -430,7 +430,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         diplomacyTable.add(demandGoldButton).row()
         if (otherCiv.cityStateFunctions.getTributeWillingness(viewingCiv, demandingWorker = false) < 0)   demandGoldButton.disable()
 
-        val demandWorkerButton = "Take worker (-50 Influence)".toTextButton()
+        val demandWorkerButton = "Take worker ([${DiplomacyManager.TRIBUTE_WORKER_INFLUENCE.toInt()}] Influence)".toTextButton()
         demandWorkerButton.onClick {
             otherCiv.cityStateFunctions.tributeWorker(viewingCiv)
             diplomacyScreen.rightSideTable.clear()

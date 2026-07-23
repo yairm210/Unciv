@@ -513,7 +513,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         if (!civInfo.isCityState) throw Exception("You can only demand gold from City-States!")
         val goldAmount = goldGainedByTribute()
         demandingCiv.addGold(goldAmount)
-        civInfo.getDiplomacyManager(demandingCiv)!!.addInfluence(-15f)
+        civInfo.getDiplomacyManager(demandingCiv)!!.addInfluence(DiplomacyManager.TRIBUTE_GOLD_INFLUENCE)
         cityStateBullied(demandingCiv)
         civInfo.addFlag(CivFlags.RecentlyBullied.name, 20)
     }
@@ -529,7 +529,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         if (buildableWorkerLikeUnits.isEmpty()) return  // Bad luck?
         demandingCiv.units.placeUnitNearTile(civInfo.getCapital()!!.location.toHexCoord(), buildableWorkerLikeUnits.values.random(rng))
 
-        civInfo.getDiplomacyManager(demandingCiv)!!.addInfluence(-50f)
+        civInfo.getDiplomacyManager(demandingCiv)!!.addInfluence(DiplomacyManager.TRIBUTE_WORKER_INFLUENCE)
         cityStateBullied(demandingCiv)
         civInfo.addFlag(CivFlags.RecentlyBullied.name, 20)
     }

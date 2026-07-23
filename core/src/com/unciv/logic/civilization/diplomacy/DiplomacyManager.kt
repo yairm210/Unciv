@@ -180,6 +180,10 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         const val WARY_OF_RESTING_POINT = -20f
         /** AI election-rigging soft cap: skip CS if already allied and influence is at least this. */
         const val RIG_ELECTION_INFLUENCE_CAP = 150f
+        /** Influence change when demanding gold tribute from a city-state. */
+        const val TRIBUTE_GOLD_INFLUENCE = -15f
+        /** Influence change when demanding a worker from a city-state. */
+        const val TRIBUTE_WORKER_INFLUENCE = -50f
         /**
          * Smoothing period used in denounce automation, before adjusting for game speed etc.
          * Higher values make denunciations more likely.
