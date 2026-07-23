@@ -51,8 +51,8 @@ class NextTurnButton(
             }
         }
 
-        isEnabled = nextTurnAction.getText(worldScreen) == "AutoPlay" ||
-            (!worldScreen.hasOpenPopups() && worldScreen.isPlayersTurn && !worldScreen.waitingForAutosave && !worldScreen.isNextTurnUpdateRunning())
+        isEnabled = nextTurnAction.getText(worldScreen) == "AutoPlay"
+            || ((worldScreen.isPlayersTurn || worldScreen.failedUpload) && !worldScreen.waitingForAutosave && !worldScreen.isNextTurnUpdateRunning())
         if (isEnabled) {
             addTooltip(KeyboardBinding.NextTurn)
         } else {
