@@ -18,6 +18,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.UncivStage
 import com.unciv.utils.Concurrency
 import com.unciv.utils.isUUID
+import games.rednblack.miniaudio.MiniAudio
 import java.util.Locale
 
 class AndroidGame(private val activity: Activity) : UncivGame() {
@@ -89,6 +90,10 @@ class AndroidGame(private val activity: Activity) : UncivGame() {
     }
 
     fun isInitializedProxy() = super.isInitialized
+
+    override fun initAudio(miniAudio: MiniAudio) {
+        miniAudio.setupAndroid(activity.applicationContext.assets)
+    }
 
     override fun getGcCount(): Int = 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) Debug.getRuntimeStat("art.gc.gc-count").toInt() else 0
