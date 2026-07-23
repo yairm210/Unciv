@@ -774,6 +774,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
+??? example  "[countable] Culture cost of adopting new Policies"
+	Example: "[1000] Culture cost of adopting new Policies"
+
+	Applicable to: Global
+
 ??? example  "Each city founded increases Science cost of Technologies [relativeAmount]% less than normal"
 	Example: "Each city founded increases Science cost of Technologies [+20]% less than normal"
 
@@ -1002,6 +1007,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "[relativeAmount]% Faith cost of generating Great Prophet equivalents"
 	Example: "[+20]% Faith cost of generating Great Prophet equivalents"
+
+	Applicable to: Global
+
+??? example  "[countable] Faith cost of generating Great Prophet equivalents"
+	Example: "[1000] Faith cost of generating Great Prophet equivalents"
+
+	Applicable to: Global
+
+??? example  "[countable]% chance of generating Great Prophet equivalents every turn"
+	Example: "[1000]% chance of generating Great Prophet equivalents every turn"
 
 	Applicable to: Global
 

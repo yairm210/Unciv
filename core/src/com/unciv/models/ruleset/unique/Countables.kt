@@ -148,6 +148,20 @@ enum class Countables(
             (ruleset.unitTypes.keys + ruleset.units.keys).map { "[$it] Units" }.toSet()
     },
 
+    GreatPersonsSpawned("[greatPerson] Spawned", shortDocumentation = "Total great persons spawned") {
+        override fun eval(parameterText: String, gameContext: GameContext): Int? {
+            val filter = parameterText.getPlaceholderParameters()[0]
+            val prophetUnit = gameContext.civInfo?.religionManager?.getGreatProphetEquivalent()
+            if (filter == prophetUnit?.name) return gameContext.civInfo.civConstructions.boughtItemsWithIncreasingPrice[prophetUnit.name]
+            return gameContext.civInfo?.greatPeople?.greatPersonsSpawned?.get(filter)
+        }
+
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) =
+            ruleset.units.filter { it.value.isGreatPerson }.keys
+
+        override val example = "[Great Prophet] Spawned"
+    },
+
     Carried("Carried [mapUnitFilter] units", shortDocumentation = "The number of units being carried by this unit") {
         override val documentationStrings = listOf("Only counts transported units matching the filter. For use with 'when number of' conditionals.")
         override val example: String = "Carried [Air] units"
