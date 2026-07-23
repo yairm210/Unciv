@@ -103,6 +103,22 @@ class UniqueErrorTests {
     }
 
     @Test
+    fun testOneTimeGainStatAcceptsCivWideStats() {
+        val errors = validateUnique("Gain 10 Gold")
+        Assert.assertEquals(RulesetErrorSeverity.OK, errors.getFinalSeverity())
+    }
+
+    @Test
+    fun testOneTimeGainStatWarnsForNonCivWideStats() {
+        assertOnlyCivWideStatsWarning("Gain 10 Food", "Food")
+    }
+
+    @Test
+    fun testOneTimeGainStatRangeWarnsForNonCivWideStats() {
+        assertOnlyCivWideStatsWarning("Gain 5-10 Production", "Production")
+    }
+
+    @Test
     fun testEducatedEliteGreatPersonGifting() {
         // set up game
         var failures = 0
@@ -156,5 +172,18 @@ class UniqueErrorTests {
         else
             println("GP unit gifted: $unit")
         Assert.assertEquals(0, failures)
+    }
+
+    private fun validateUnique(uniqueText: String) = run {
+        RulesetCache.loadRulesets(noMods = true)
+        val ruleset = RulesetCache.getVanillaRuleset()
+        UniqueValidator(ruleset).checkUnique(Unique(uniqueText), false, null)
+    }
+
+    private fun assertOnlyCivWideStatsWarning(uniqueText: String, statName: String) {
+        val warning = validateUnique(uniqueText)
+            .single { it.text.contains("only civ-wide stats") }
+        Assert.assertEquals(RulesetErrorSeverity.Warning, warning.errorSeverityToReport)
+        Assert.assertTrue(warning.text.contains(statName))
     }
 }
