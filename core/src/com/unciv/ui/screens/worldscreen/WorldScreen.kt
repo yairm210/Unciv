@@ -447,7 +447,7 @@ class WorldScreen(
                             viewingCiv.tradeRequests.remove(tradeRequest)
 
                     if (viewingCiv.tradeRequests.isNotEmpty()) // if a valid one still exists
-                        TradePopup(this).open()
+                        TradePopup(this)
                 }
             }
         }
