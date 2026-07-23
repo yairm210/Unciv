@@ -454,7 +454,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         else if (recentBullying != null && recentBullying > 0)
             modifiers["Recently paid tribute"] = -40
         if (civInfo.getDiplomacyManager(demandingCiv)!!.getInfluence() < DiplomacyManager.UNFORGIVABLE_INFLUENCE)
-            modifiers["Influence below -30"] = -300
+            modifiers["Influence below [${DiplomacyManager.UNFORGIVABLE_INFLUENCE.toInt()}]"] = -300
 
         // Slight optimization, we don't do the expensive stuff if we have no chance of getting a >= 0 result
         if (!requireWholeList && modifiers.values.sum() < -200)
