@@ -18,6 +18,12 @@ import org.junit.runner.RunWith
 
 @RunWith(GdxTestRunner::class)
 class UniqueErrorTests {
+    private fun validateUnique(uniqueText: String) =
+        UniqueValidator(RulesetCache.getVanillaRuleset()).checkUnique(Unique(uniqueText), false, null)
+
+    private fun hasUnacceptableModifierWarning(uniqueText: String): Boolean =
+        validateUnique(uniqueText).any { it.text.contains("which is not an acceptable modifier for this unique") }
+
     @Test
     fun testMultipleUniqueTypesSameText() {
         val textToUniqueType = HashMap<String, UniqueType>()
@@ -100,6 +106,30 @@ class UniqueErrorTests {
         val uniqueWithSourceObject = Unique(uniqueText, sourceObjectType = UniqueTarget.Promotion)
         val errorListCorrectUniqueContainer = UniqueValidator(ruleset).checkUnique(uniqueWithSourceObject, false, null)
         assert(errorListCorrectUniqueContainer.getFinalSeverity() == RulesetErrorSeverity.OK)
+    }
+
+    @Test
+    fun testCommentUniqueAcceptsConditionalTextAsDisplayOnly() {
+        RulesetCache.loadRulesets(noMods = true)
+        val uniqueText = "Comment [Adopt [Feudalism] <upon entering the [Medieval era]>]"
+
+        Assert.assertFalse(hasUnacceptableModifierWarning(uniqueText))
+    }
+
+    @Test
+    fun testPlainCommentUniqueHasNoValidationWarnings() {
+        RulesetCache.loadRulesets(noMods = true)
+        val uniqueText = "Comment [Plain display text]"
+
+        Assert.assertEquals(RulesetErrorSeverity.OK, validateUnique(uniqueText).getFinalSeverity())
+    }
+
+    @Test
+    fun testNonCommentUniqueStillRejectsUnacceptableModifier() {
+        RulesetCache.loadRulesets(noMods = true)
+        val uniqueText = "Blocks line-of-sight from tiles at same elevation <upon entering the [Medieval era]>"
+
+        Assert.assertTrue(hasUnacceptableModifierWarning(uniqueText))
     }
 
     @Test
