@@ -32,9 +32,6 @@ import kotlin.random.Random
 
 /** Helper class for containing 200 lines of "how to move cities between civs" */
 class CityConquestFunctions(val city: City) {
-    companion object {
-        const val MINOR_LIBERATION_FRIENDSHIP = 105f
-    }
 
     private val tileBasedRandom = Random(city.getCenterTile().position.hashCode())
 
@@ -282,7 +279,7 @@ class CityConquestFunctions(val city: City) {
             val diplomacy = foundingCiv.getDiplomacyManagerOrMeet(conqueringCiv)
             val liberatorOldInfluence = diplomacy.getInfluence()
             val liberatorNewInfluence = maxOtherInfluence.coerceAtLeast(liberatorOldInfluence)
-                .plus(MINOR_LIBERATION_FRIENDSHIP)
+                .plus(DiplomacyManager.LIBERATION_INFLUENCE)
                 .coerceAtLeast(DiplomacyManager.ALLY_INFLUENCE)
             diplomacy.setInfluence(liberatorNewInfluence)
             if (foundingCiv.isAtWarWith(conqueringCiv)) {

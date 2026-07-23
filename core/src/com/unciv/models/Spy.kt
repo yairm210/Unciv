@@ -5,6 +5,7 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.*
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.managers.EspionageManager
 import com.unciv.logic.map.HexCoord
@@ -331,7 +332,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         // Influence difference should always be a positive value
         var influenceDifference: Float = if (cityState.allyCiv != null)
             cityState.getDiplomacyManager(cityState.allyCiv!!)!!.getInfluence()
-        else 60f
+        else DiplomacyManager.ALLY_INFLUENCE
         influenceDifference -= cityState.getDiplomacyManager(civInfo)!!.getInfluence()
         successPercentage -= influenceDifference / 2f
 

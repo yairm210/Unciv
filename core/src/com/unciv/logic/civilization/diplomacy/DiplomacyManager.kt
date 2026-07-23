@@ -172,6 +172,14 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         const val FRIEND_INFLUENCE = 30f
         /** City-state influence at or above this can be [RelationshipLevel.Ally] (if highest). */
         const val ALLY_INFLUENCE = 60f
+        /** Influence bonus when liberating a city-state (added on top of max/other influence). */
+        const val LIBERATION_INFLUENCE = 105f
+        /** Resting-point bonus while pledged as Protector of a city-state. */
+        const val PROTECTOR_RESTING_POINT = 10f
+        /** Resting-point penalty while the [DiplomacyFlags.WaryOf] flag is set. */
+        const val WARY_OF_RESTING_POINT = -20f
+        /** AI election-rigging soft cap: skip CS if already allied and influence is at least this. */
+        const val RIG_ELECTION_INFLUENCE_CAP = 150f
         /**
          * Smoothing period used in denounce automation, before adjusting for game speed etc.
          * Higher values make denunciations more likely.
@@ -490,9 +498,9 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
                 if (otherCiv.religionManager.religion?.name == civInfo.getCapital()!!.religion.getMajorityReligionName())
                     restingPoint += unique.params[0].toInt()
 
-        if (diplomaticStatus == DiplomaticStatus.Protector) restingPoint += 10
+        if (diplomaticStatus == DiplomaticStatus.Protector) restingPoint += PROTECTOR_RESTING_POINT
 
-        if (hasFlag(DiplomacyFlags.WaryOf)) restingPoint -= 20
+        if (hasFlag(DiplomacyFlags.WaryOf)) restingPoint += WARY_OF_RESTING_POINT
 
         return restingPoint
     }
