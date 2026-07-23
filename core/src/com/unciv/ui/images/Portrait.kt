@@ -3,6 +3,7 @@ package com.unciv.ui.images
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.Layout
@@ -54,7 +55,7 @@ open class Portrait(val type: Type, val imageName: String, val size: Float, val 
     val pathPortrait = "${type.directory}Portraits/$imageName"
     val pathPortraitFallback by lazy { "${type.directory}Portraits/Fallback" }
     val pathIcon = "${type.directory}Icons/$imageName"
-    val pathIconFallback by lazy { "${type.directory}Icons/Fallback" }
+    open val pathIconFallback by lazy { "${type.directory}Icons/Fallback" }
 
     open fun getDefaultInnerBackgroundTint(): Color { return Color.WHITE.cpy() }
     open fun getDefaultOuterBackgroundTint(): Color { return Color.BLACK.cpy() }
@@ -76,7 +77,9 @@ open class Portrait(val type: Type, val imageName: String, val size: Float, val 
         this.setSize(size + borderSize, size + borderSize)
 
         background.center(this)
+        background.touchable = Touchable.disabled
         image.center(this)
+        image.touchable = Touchable.disabled
 
         this.addActor(background)
         this.addActor(image)
@@ -96,7 +99,7 @@ open class Portrait(val type: Type, val imageName: String, val size: Float, val 
             else -> getDefaultImage().apply { color = getDefaultImageTint() }
         }
     }
-    
+
     // Overridable so portraits can use circle images from their texture to minimize texture swapping
     protected open fun getCircleImage() = ImageGetter.getCircle()
 
@@ -107,10 +110,10 @@ open class Portrait(val type: Type, val imageName: String, val size: Float, val 
             val backgroundImage = ImageGetter.getImage("${type.directory}Portraits/Background")
             val ratioW = image.width / backgroundImage.width
             val ratioH = image.height / backgroundImage.height
-            image.setSize((size + borderSize)*ratioW, (size + borderSize)*ratioH)
+            image.setSize((size + borderSize) * ratioW, (size + borderSize) * ratioH)
             return backgroundImage.toGroup(size + borderSize)
         } else {
-            image.setSize(size*0.75f, size*0.75f)
+            image.setSize(size * 0.75f, size * 0.75f)
 
             val bg = object: Group(){
                 init { apply { isTransform = false } }
@@ -206,6 +209,7 @@ class PortraitReligion(name: String, size: Float) : Portrait(Type.Religion, name
 
 class PortraitUnitAction(name: String, size: Float) : Portrait(Type.UnitAction, name, size) {
     override fun getDefaultImageTint(): Color = ImageGetter.CHARCOAL
+    override val pathIconFallback get() = "${type.directory}Icons/Star"
 }
 
 class PortraitImprovement(name: String, size: Float, dim: Boolean = false, isPillaged: Boolean = false) : Portrait(Type.Improvement, name, size) {
@@ -222,7 +226,7 @@ class PortraitImprovement(name: String, size: Float, dim: Boolean = false, isPil
             addActor(pillagedIcon)
         }
     }
-    
+
     override fun getCircleImage() = ImageGetter.getImage("ImprovementIcons/Circle")
 
     private fun getColorFromStats(stats: Stats): Color {
@@ -238,7 +242,7 @@ class PortraitImprovement(name: String, size: Float, dim: Boolean = false, isPil
         return Color.WHITE
     }
 
-    override fun draw(batch: Batch?, parentAlpha: Float) = 
+    override fun draw(batch: Batch?, parentAlpha: Float) =
         super.draw(batch, parentAlpha)
 }
 
@@ -257,7 +261,7 @@ class PortraitNation(name: String, size: Float) : Portrait(Type.Nation, name, si
         }
     }
 
-    override fun getDefaultInnerBackgroundTint(): Color = 
+    override fun getDefaultInnerBackgroundTint(): Color =
         ruleset.nations[imageName]?.getOuterColor() ?: ImageGetter.CHARCOAL
 
     override fun getDefaultOuterBackgroundTint(): Color = getDefaultImageTint()
@@ -300,7 +304,7 @@ class PortraitPromotion(name: String, size: Float) : Portrait(Type.Promotion, na
             else -> ImageGetter.getImage(pathIconFallback)
         }
     }
-    
+
     override fun getDefaultImageTint(): Color = ruleset.unitPromotions[imageName]?.innerColorObject
         ?: defaultInnerColor
     override fun getDefaultOuterBackgroundTint(): Color = getDefaultImageTint()

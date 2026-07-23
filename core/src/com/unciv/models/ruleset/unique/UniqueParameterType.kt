@@ -2,6 +2,7 @@ package com.unciv.models.ruleset.unique
 
 import com.unciv.Constants
 import com.unciv.logic.MultiFilter
+import com.unciv.logic.city.CityFlags
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Ruleset
@@ -56,7 +57,7 @@ enum class UniqueParameterType(
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) =
             parameterText.getInvariantSeverityUnless { toIntOrNull()?.let { it > 0 } == true }
     },
-    
+
     NonNegativeNumber("nonNegativeAmount", "3", "This indicates a non-negative whole number, larger than or equal to zero, a '+' sign is optional") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) =
             parameterText.getInvariantSeverityUnless { toIntOrNull()?.let { it >= 0 } == true }
@@ -274,6 +275,12 @@ enum class UniqueParameterType(
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = getErrorSeverityForFilter(parameterText, ruleset)
     },
+
+    /** e.g. [UniqueType.OneTimeReduceCityFlag]  */
+    CityFlag("cityFlag", "Resistance", "The name of a city flag (countdown)") {
+        override val staticKnownValues = CityFlags.entries.mapTo(mutableSetOf()) { it.label }
+    },
+
 
     /** Used by [BuildingFilter] and e.g. [UniqueType.ConditionalCityWithBuilding] */
     BuildingName("buildingName", "Library", "The name of any building") {
@@ -520,7 +527,7 @@ enum class UniqueParameterType(
     Belief("belief", "God of War", "The name of any belief") {
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.beliefs.keys
     },
-    
+
     /**Used by [UniqueType.ConditionalCityReligion]*/
     ReligionFilter("religionFilter", "major") {
         override val staticKnownValues = setOf("any", "major", "enhanced", "your", "foreign", "enemy")
@@ -674,7 +681,7 @@ enum class UniqueParameterType(
         override fun getTranslationWriterStringsForOutput() = scanExistingValues(this)
     },
 
-    /** Used in [GetLeaderTitle], and validates a [leaderName] is provided. */
+    /** Used in [UniqueType.GetLeaderTitle], and validates a `leaderName` is provided. */
     LeaderTitle("leaderTitle", "Sovereign [leaderName] the Great", "Provides a leader title that includes the leader's name in parameters.", "Leader Title") {
         override fun isKnownValue(parameterText: String, ruleset: Ruleset) = parameterText.hasPlaceholderParameters()
         override fun getTranslationWriterStringsForOutput() = scanExistingValues(this)
@@ -743,7 +750,7 @@ enum class UniqueParameterType(
 
     /** Get a list of possible values [TranslationFileWriter] should include as translatable string
      *  that are not recognized from other json sources */
-    @Readonly 
+    @Readonly
     open fun getTranslationWriterStringsForOutput(): Set<String> = staticKnownValues
 
 

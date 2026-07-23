@@ -18,6 +18,7 @@ import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
+import com.unciv.models.ruleset.unique.UniqueTriggerExecutors
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.fillPlaceholders
@@ -45,7 +46,7 @@ object UnitActionsFromUniques {
     internal fun getFoundCityAction(unit: MapUnit, tile: Tile): UnitAction? {
         // FoundPuppetCity is to found a puppet city for modding.
         val unique = UnitActionModifiers.getUsableUnitActionUniques(unit,
-            UniqueType.FoundCity).firstOrNull() ?: 
+            UniqueType.FoundCity).firstOrNull() ?:
             UnitActionModifiers.getUsableUnitActionUniques(unit,
             UniqueType.FoundPuppetCity).firstOrNull() ?: return null
 
@@ -193,7 +194,7 @@ object UnitActionsFromUniques {
     }
 
     // Instead of Withdrawing, stand your ground!
-    // Different than Fortify
+    // Different from Fortify
     internal fun getGuardActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
         val unique = unit.getMatchingUniques(UniqueType.WithdrawsBeforeMeleeCombat).firstOrNull() ?: return emptySequence()
         val useFrequency = getUseFrequency(unit, unique, 0f)
@@ -206,9 +207,9 @@ object UnitActionsFromUniques {
                 title = title
             ))
         }
-        
+
         if (!unit.hasMovement()) return emptySequence()
-        
+
         return sequenceOf(UnitAction(UnitActionType.Guard,
             useFrequency = useFrequency,
             action = {
@@ -256,6 +257,7 @@ object UnitActionsFromUniques {
                         stat
                     )
                 }
+                UniqueType.OneTimeReduceCityFlag -> UniqueTriggerExecutors.getReduceCityFlagActionText(unique, unit)
                 UniqueType.TriggerEvent -> unique.params[0]
                 else -> unique.text.removeConditionals()
             }
@@ -362,7 +364,7 @@ object UnitActionsFromUniques {
                             && unit.hasMovement()
                             && tile.improvementFunctions.canBuildImprovement(improvement, unit.cache.state)
                             // Next test is to prevent interfering with UniqueType.CreatesOneImprovement -
-                            // not pretty, but users *can* remove the building from the city queue an thus clear this:
+                            // not pretty, but users *can* remove the building from the city queue and thus clear this:
                             && !tile.isMarkedForCreatesOneImprovement()
                             && UnitActionModifiers.canActivateSideEffects(unit, unique)
                     }
@@ -450,7 +452,7 @@ object UnitActionsFromUniques {
                     if (newUnit == null) {
                         val resurrectedUnit =
                             civInfo.units.placeUnitNearTile(unitTile.position, unit.baseUnit, unit.id, copiedFrom = unit)!!
-                        
+
                     } else { // Managed to upgrade
                         // have to handle movement manually because we killed the old unit
                         // a .destroy() unit has 0 movement
