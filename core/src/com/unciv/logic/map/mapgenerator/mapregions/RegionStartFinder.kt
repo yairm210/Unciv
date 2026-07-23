@@ -23,7 +23,7 @@ object RegionStartFinder {
 
     /** Attempts to find a good start close to the center of [region]. Calls setRegionStart with the position*/
     internal fun findStart(region: Region, tileData: TileDataMap) {
-        val fallbackTiles = HashSet<HexCoord>()
+        val fallbackTiles = HashSet<Tile>()
         // Priority: 1. Adjacent to river, 2. Adjacent to coast or fresh water, 3. Other.
 
         // First check center rect, then middle. Only check the outer area if no good sites found
@@ -42,30 +42,30 @@ object RegionStartFinder {
         findFallbackPosition(fallbackTiles, tileData, region)
     }
 
-    private fun findGoodPosition(centerTiles: Set<Tile>, region: Region, tileData: TileDataMap, fallbackTiles: HashSet<HexCoord>): Boolean {
-        val riverTiles = HashSet<HexCoord>()
-        val wetTiles = HashSet<HexCoord>()
-        val dryTiles = HashSet<HexCoord>()
+    private fun findGoodPosition(centerTiles: Set<Tile>, region: Region, tileData: TileDataMap, fallbackTiles: HashSet<Tile>): Boolean {
+        val riverTiles = HashSet<Tile>()
+        val wetTiles = HashSet<Tile>()
+        val dryTiles = HashSet<Tile>()
         for (tile in centerTiles) {
-            if (tileData[tile.position]!!.isTwoFromCoast)
+            if (tileData[tile]!!.isTwoFromCoast)
                 continue // Don't even consider tiles two from coast
             if (region.continentID != -1 && region.continentID != tile.getContinent())
                 continue // Wrong continent
             if (tile.isLand && !tile.isImpassible()) {
                 evaluateTileForStart(tile, tileData)
                 if (tile.isAdjacentToRiver())
-                    riverTiles.add(tile.position)
+                    riverTiles.add(tile)
                 else if (tile.isAdjacentToCoast() || tile.isAdjacentTo(Constants.freshWater))
-                    wetTiles.add(tile.position)
+                    wetTiles.add(tile)
                 else
-                    dryTiles.add(tile.position)
+                    dryTiles.add(tile)
             }
         }
         // Did we find a good start position?
         for (list in sequenceOf(riverTiles, wetTiles, dryTiles)) {
             if (list.any { tileData[it]!!.isGoodStart }) {
                 setRegionStart(region, list
-                    .filter { tileData[it]!!.isGoodStart }.maxByOrNull { tileData[it]!!.startScore }!!, tileData)
+                    .filter { tileData[it]!!.isGoodStart }.maxByOrNull { tileData[it]!!.startScore }!!.position, tileData)
                 return true
             }
             if (list.isNotEmpty()) // Save the best not-good-enough spots for later fallback
@@ -79,15 +79,15 @@ object RegionStartFinder {
         outerDonut: Sequence<Tile>,
         region: Region,
         tileData: TileDataMap,
-        fallbackTiles: HashSet<HexCoord>
+        fallbackTiles: HashSet<Tile>
     ): Boolean {
-        val dryTiles = HashSet<HexCoord>()
+        val dryTiles = HashSet<Tile>()
         for (tile in outerDonut) {
             if (region.continentID != -1 && region.continentID != tile.getContinent())
                 continue // Wrong continent
             if (tile.isLand && !tile.isImpassible()) {
                 evaluateTileForStart(tile, tileData)
-                dryTiles.add(tile.position)
+                dryTiles.add(tile)
             }
         }
         // Were any of them good?
@@ -98,15 +98,12 @@ object RegionStartFinder {
                 .minByOrNull {
                 (region.tileMap.getIfTileExistsOrNull(center.x.roundToInt(), center.y.roundToInt())
                     ?: region.tileMap.values.first())
-                    .aerialDistanceTo(
-                        region.tileMap.getIfTileExistsOrNull(it.x, it.y)
-                            ?: region.tileMap.values.first()
-                    )
+                    .aerialDistanceTo(it)
             }!!
-            
+
             setRegionStart(
                 region,
-                closestToCenter,
+                closestToCenter.position,
                 tileData
             )
             return true
@@ -117,14 +114,14 @@ object RegionStartFinder {
     }
 
     private fun findFallbackPosition(
-        fallbackTiles: HashSet<HexCoord>,
+        fallbackTiles: HashSet<Tile>,
         tileData: TileDataMap,
         region: Region
     ) {
         // Fallback time. Just pick the one with best score
         val fallbackPosition = fallbackTiles.maxByOrNull { tileData[it]!!.startScore }
         if (fallbackPosition != null) {
-            setRegionStart(region, fallbackPosition, tileData)
+            setRegionStart(region, fallbackPosition.position, tileData)
             return
         }
 
@@ -159,7 +156,7 @@ object RegionStartFinder {
     /** Evaluates a tile for starting position, setting isGoodStart and startScore in
      *  MapGenTileData. Assumes that all tiles have corresponding MapGenTileData. */
     private fun evaluateTileForStart(tile: Tile, tileData: TileDataMap) {
-        val localData = tileData[tile.position]!!
+        val localData = tileData[tile]!!
 
         var totalFood = 0
         var totalProd = 0
@@ -174,7 +171,7 @@ object RegionStartFinder {
         for (ring in 1..3) {
             // Sum up the values for this ring
             for (outerTile in tile.getTilesAtDistance(ring)) {
-                val outerTileData = tileData[outerTile.position]!!
+                val outerTileData = tileData[outerTile]!!
                 if (outerTileData.isJunk)
                     totalJunk++
                 else {
@@ -229,7 +226,7 @@ object RegionStartFinder {
         region.startPosition = position
 
         for ((ring, penalty) in closeStartPenaltyForRing) {
-            for (outerTile in region.tileMap[position].getTilesAtDistance(ring).map { it.position })
+            for (outerTile in region.tileMap[position].getTilesAtDistance(ring))
                 tileData[outerTile]!!.addCloseStartPenalty(penalty)
         }
     }

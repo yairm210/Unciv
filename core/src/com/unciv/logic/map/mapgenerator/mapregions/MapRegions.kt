@@ -3,7 +3,6 @@ package com.unciv.logic.map.mapgenerator.mapregions
 import com.badlogic.gdx.math.Rectangle
 import com.unciv.Constants
 import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapgenerator.mapregions.MapRegions.BiasTypes.PositiveFallback
@@ -21,23 +20,29 @@ import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.utils.Log
 import com.unciv.utils.Tag
+import yairm210.purity.annotations.Readonly
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.random.Random
 
-class TileDataMap : HashMap<HexCoord, MapGenTileData>() {
+class TileDataMap(size: Int) {
+    private val data = arrayOfNulls<MapGenTileData>(size)
+    val size: Int get() = data.size
+
+    @Readonly operator fun get(tile: Tile): MapGenTileData? = data[tile.zeroBasedIndex]
+    operator fun set(tile: Tile, value: MapGenTileData) { data[tile.zeroBasedIndex] = value }
 
     /** Adds numbers to tileData in a similar way to closeStartPenalty, but for different types */
     fun placeImpact(type: MapRegions.ImpactType, tile: Tile, radius: Int) {
         // Epicenter
-        this[tile.position]!!.impacts[type] = 99
+        this[tile]!!.impacts[type] = 99
         if (radius <= 0) return
 
         for (ring in 1..radius) {
             val ringValue = radius - ring + 1
             for (outerTile in tile.getTilesAtDistance(ring)) {
-                val data = this[outerTile.position]!!
+                val data = this[outerTile]!!
                 if (data.impacts.containsKey(type))
                     data.impacts[type] = min(50, max(ringValue, data.impacts[type]!!) + 2)
                 else
@@ -84,7 +89,7 @@ class MapRegions (val ruleset: Ruleset) {
     }
 
     private val regions = ArrayList<Region>()
-    private val tileData = TileDataMap()
+    private lateinit var tileData: TileDataMap
     
 
     /** Creates [numRegions] number of balanced regions for civ starting locations. */
@@ -235,9 +240,10 @@ class MapRegions (val ruleset: Ruleset) {
         assignRegionTypes()
 
         // Generate tile data for all tiles
+        tileData = TileDataMap(tileMap.values.size)
         for (tile in tileMap.values) {
             val newData = MapGenTileData(tile, regions.firstOrNull { it.tiles.contains(tile) }, ruleset)
-            tileData[tile.position] = newData
+            tileData[tile] = newData
         }
 
         // Sort regions by fertility so the worse regions get to pick first

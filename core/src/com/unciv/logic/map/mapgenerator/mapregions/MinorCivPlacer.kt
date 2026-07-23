@@ -215,7 +215,7 @@ object MinorCivPlacer {
             val rng = GameContext(gameInfo = tileMap.gameInfo).stateBasedRandom("MinorCivPlcer.tryPlaceMinorCivsInTiles")
             val chosenTile = tileList.random(rng)
             tileList.remove(chosenTile)
-            val data = tileData[chosenTile.position]!!
+            val data = tileData[chosenTile]!!
             // If the randomly chosen tile is too close to a player or a city state, discard it
             if (data.impacts.containsKey(MapRegions.ImpactType.MinorCiv))
                 continue
@@ -228,7 +228,7 @@ object MinorCivPlacer {
 
     @Readonly
     private fun canPlaceMinorCiv(tile: Tile, tileData: TileDataMap) = !tile.isWater && !tile.isImpassible() &&
-        !tileData[tile.position]!!.isJunk &&
+        !tileData[tile]!!.isJunk &&
         tile.getBaseTerrain().getMatchingUniques(UniqueType.HasQuality).none { it.params[0] == "Undesirable" } && // So we don't get snow hills
         tile.neighbors.count() == 6 // Avoid map edges
 
