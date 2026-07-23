@@ -20,6 +20,7 @@ import com.unciv.logic.map.*
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.movement.UnitMovement
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.multiplayer.MultiplayerTurnIntegrity
 import com.unciv.models.Spy
 import com.unciv.models.UncivSound
 import com.unciv.ui.audio.SoundPlayer
@@ -354,6 +355,8 @@ class WorldMapHolder(
 
                     if (UncivGame.Current.settings.autoUnitCycle && !selectedUnit.hasMovement())
                         worldScreen.switchToNextUnit()
+
+                    MultiplayerTurnIntegrity.scheduleUpload(worldScreen)
 
                 } catch (ex: Exception) {
                     Log.error("Exception in moveUnitToTargetTile", ex)
