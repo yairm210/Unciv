@@ -9,9 +9,6 @@ The works listed in this document fall under various licenses. Here’s a list o
 * CC BY 4.0: [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/)
 * CC BY-SA 4.0 [Creative Commons Attribution-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-sa/4.0/)
 * Public domain: The work has been released into the public domain.
-* Unknown license: Unfortunately, the license this work was released under got lost to history.
-
-Please note that having an unknown license is incompatible with free software.
 
 ## Icon Credits
 
@@ -27,9 +24,7 @@ Flag Icons made by [Freepik](https://www.flaticon.com/authors/freepik) from [www
 
 New Unciv logo made by u-ndefined on Discord
 
-Base tile icons for the "Fantasy Hex" tileset belong to CuddlyClover @ https://cuddlyclover.itch.io/fantasy-hex-tiles with a few additions by various contributors
-
-Promotional trailer for Steam and other storefronts made by [letstalkaboutdune](https://github.com/letstalkaboutdune)
+The base tile icons for the "Fantasy Hex" tileset were created CuddlyClover at <https://cuddlyclover.itch.io/fantasy-hex-tiles> with a few additions by various contributors, licensed CC BY 4.0.
 
 Unless otherwise specified, all the following are from [the Noun Project](https://thenounproject.com) either licenced under CC BY 3.0 or released into the Public Domain.
 
@@ -200,7 +195,7 @@ By Basil:
 
 ### HexaRealm
 
-Unless otherwise specified, Tile improvements and units, as well as the terrains and improvements for HexaRealm tileset, are made by The Bucketeer / @GeneralWadaling and are licenced under an unknown Creative Commons license (we only know it has version 3.0, but we don’t know *which* license specifically).
+Unless otherwise specified, tile improvements and units, as well as the terrains and improvements for HexaRealm tileset, are made by The Bucketeer / @GeneralWadaling and are licenced under CC BY-SA 3.0.
 
 
 HexaRealm tileset images by legacymtgsalvationuser69544 [here](https://github.com/legacymtgsalvationuser69544/Edges-Tileset):
@@ -889,7 +884,7 @@ The following music is from https://filmmusic.io:
 
 - "[Thatched Villagers](https://incompetech.filmmusic.io/song/4481-thatched-villagers)" by Kevin MacLeod (https://incompetech.com) (CC BY 4.0)
 
-## Trailer audio
+## Trailer video
 
 Unciv has released a Unciv Gameplay Trailer video separately, not part of this repository. See `Credits_trailer.md` for credits and details for that video.
 
