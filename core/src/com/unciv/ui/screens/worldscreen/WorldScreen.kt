@@ -20,6 +20,7 @@ import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.TutorialTrigger
+import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Event
 import com.unciv.models.ruleset.tile.ResourceType
@@ -53,6 +54,8 @@ import com.unciv.ui.screens.worldscreen.bottombar.BattleTable
 import com.unciv.ui.screens.worldscreen.bottombar.TileInfoTable
 import com.unciv.ui.screens.worldscreen.chat.ChatButton
 import com.unciv.ui.screens.worldscreen.mainmenu.WorldScreenMusicPopup
+import com.unciv.ui.screens.worldscreen.minimap.MapOverlayToggleButton
+import com.unciv.ui.screens.worldscreen.minimap.Minimap
 import com.unciv.ui.screens.worldscreen.minimap.MinimapHolder
 import com.unciv.ui.screens.worldscreen.status.AutoPlayStatusButton
 import com.unciv.ui.screens.worldscreen.status.MultiplayerStatusButton
@@ -61,6 +64,10 @@ import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.ui.screens.worldscreen.status.SmallUnitButton
 import com.unciv.ui.screens.worldscreen.status.StatusButtons
 import com.unciv.ui.screens.worldscreen.topbar.WorldScreenTopBar
+import com.unciv.ui.screens.worldscreen.topbar.WorldScreenTopBar.OverviewAndSupplyTable
+import com.unciv.ui.screens.worldscreen.topbar.WorldScreenTopBar.SelectedCivilizationTable
+import com.unciv.ui.screens.worldscreen.topbar.WorldScreenTopBarResources
+import com.unciv.ui.screens.worldscreen.topbar.WorldScreenTopBarStats
 import com.unciv.ui.screens.worldscreen.unit.AutoPlay
 import com.unciv.ui.screens.worldscreen.unit.UnitTable
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsTable
@@ -77,6 +84,35 @@ import kotlinx.coroutines.coroutineScope
 import yairm210.purity.annotations.Readonly
 import java.util.Timer
 import kotlin.concurrent.timer
+
+
+/**
+ *  Layout overview
+ *  # CENTER
+ *  -   [WorldMapHolder]: Center / background
+ *  # TOP
+ *  -   [WorldScreenTopBar]: Top
+ *      -   [WorldScreenTopBarStats]
+ *      -   [WorldScreenTopBarResources]
+ *      -   [SelectedCivilizationTable] ... [OverviewAndSupplyTable]
+ *  -   `tutorialTaskTable`: on-demand, top center just below WorldScreenTopBarResources
+ *  # LEFT
+ *  -   [TechPolicyDiplomacyButtons]: Upper left
+ *  -   [ChatButton]: Left just below Tech & co
+ *  -   [UnitActionsTable]: Left just above Unit, dynamic height, tries to squeeze between Tech & Unit
+ *  -   [UnitTable]: Bottom left corner, displays what is selected (Unit or City)
+ *  # BOTTOM
+ *  -   [BattleTable]: Bottom center, only on demand
+ *  -   [TileInfoTable]: either here just to the left of the Minimap/toggle buttons, or dragged to the RIGHT
+ *  # RIGHT
+ *  -   [StatusButtons] contains [NextTurnButton], [AutoPlayStatusButton], [MultiplayerStatusButton], [SmallUnitButton] (Skip/Cycle):
+ *      dynamically switches to vertical to avoid collision with TechPolicyDiplomacyButtons
+ *  -   [NotificationsScroll]: Z-order **below** all other elements, can extend the whole right side,
+ *      but tries to ensure the entire content can be scrolled between StatusButtons and TileInfoTable/Minimap.
+ *  -   [TileInfoTable]: either here just above the Minimap, or dragged to the BOTTOM
+ *  -   [MinimapHolder] contains the actual [Minimap] and the five [MapOverlayToggleButton]s
+ *  -   [ZoomButtonPair]: optional, just to the left of MinimapHolder
+ */
 
 /**
  * Do not create this screen without seriously thinking about the implications: this is the single most memory-intensive class in the application.
@@ -382,8 +418,7 @@ class WorldScreen(
             if (fogOfWar) bottomTileInfoTable.selectedCiv = selectedCiv
             else bottomTileInfoTable.selectedCiv = viewingCiv
             bottomTileInfoTable.updateTileTable(mapHolder.selectedTile)
-            bottomTileInfoTable.x = stage.width - bottomTileInfoTable.width
-            bottomTileInfoTable.y = if (game.settings.showMinimap) minimapWrapper.height + 5f else 0f
+            bottomTileInfoTable.setPosition()
 
             battleTable.update()
 
@@ -455,8 +490,12 @@ class WorldScreen(
         updateGameplayButtons()
 
         val coveredNotificationsTop = stage.height - statusButtons.y
-        val coveredNotificationsBottom = (bottomTileInfoTable.height + bottomTileInfoTable.y)
-//                (if (game.settings.showMinimap) minimapWrapper.height else 0f)
+        val coveredNotificationsBottom = when {
+            game.settings.tileInfoPosition == GameSettings.WidgetPosition.Right ->
+                bottomTileInfoTable.height + bottomTileInfoTable.y
+            game.settings.showMinimap -> minimapWrapper.height
+            else -> 0f
+        }
         notificationsScroll.update(viewingCiv.notifications, coveredNotificationsTop, coveredNotificationsBottom)
 
         val posZoomFromRight = if (game.settings.showMinimap) minimapWrapper.width
