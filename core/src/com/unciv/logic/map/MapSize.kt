@@ -2,6 +2,8 @@ package com.unciv.logic.map
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import yairm210.purity.annotations.Readonly
+import kotlin.math.max
+import kotlin.reflect.KProperty1
 
 
 /**
@@ -26,21 +28,48 @@ class MapSize private constructor(
     var radius: Int,
     var width: Int,
     var height: Int,
+    private var techCostMultiplier: Float?,
+    private var techCostPerCityModifier: Float?,
+    private var policyCostPerCityModifier: Float?
 ) : IsPartOfGameInfoSerialization {
+    
+    @Readonly fun getTechCostMultiplier(): Float = techCostMultiplier
+        ?: getPredefinedOrNextSmaller().techCostMultiplier
+
+    @Readonly fun getTechCostPerCityModifier(): Float = techCostPerCityModifier
+        ?: getPredefinedOrNextSmaller().techCostMultiplier
+
+    @Readonly fun getPolicyCostPerCityModifier(): Float = policyCostPerCityModifier
+        ?: getPredefinedOrNextSmaller().techCostMultiplier
 
     /** Needed for Json parsing */
     @Suppress("unused")
-    private constructor() : this("", 0, 0, 0)
+    private constructor() : this("", 0, 0, 0,
+        null, null, null)
 
-    constructor(size: Predefined) : this(size.name, size.radius, size.width, size.height)
+    constructor(predefined: Predefined) : this(
+        predefined.name, predefined.radius, predefined.width, predefined.height,
+        predefined.techCostMultiplier,
+        predefined.techCostPerCityModifier,
+        predefined.policyCostPerCityModifier
+    )
 
     constructor(name: String) : this(Predefined.safeValueOf(name))
 
-    constructor(radius: Int) : this(custom, radius, 0, 0) {
+    /** Android Studio incorrectly claims it is unused... */
+    @Suppress("unused")
+    private constructor(radius: Int, width: Int, height: Int) : this(
+        custom, radius, width, height,
+        inferPredefinedProperty(radius, Predefined::techCostMultiplier),
+        inferPredefinedProperty(radius, Predefined::techCostPerCityModifier),
+        inferPredefinedProperty(radius, Predefined::policyCostPerCityModifier)
+    )
+    
+    constructor(radius: Int) : this(radius, 0, 0) {
         setNewRadius(radius)
     }
 
-    constructor(width: Int, height: Int) : this(custom, HexMath.getEquivalentHexagonalRadius(width, height), width, height)
+    constructor(width: Int, height: Int) : this(HexMath.getEquivalentHexagonalRadius(width, height), width, height)
 
     /** Predefined Map Sizes, their name can appear in json only as copy in MapSize */
     enum class Predefined(
@@ -82,9 +111,38 @@ class MapSize private constructor(
         val Large get() = MapSize(Predefined.Large)
         val Huge get() = MapSize(Predefined.Huge)
         fun names() = Predefined.entries.map { it.name }
+
+        /**
+         * Retrieves, interpolates or extrapolates a value for this map size.
+         * @param prop Any of [techCostMultiplier], [techCostPerCityModifier] or [policyCostPerCityModifier]
+         * @return Linear interpoation for radiuses between two predefined map sizes.
+         * Linear extrapolation for radiuses outside the range of predefined map sizes.
+         * (!) Minimum 0 for all inferred values.
+         */
+        private fun inferPredefinedProperty(
+            radius: Int,
+            prop: KProperty1<Predefined, Float>
+        ): Float {
+            val entries = Predefined.entries.sortedBy { it.radius }
+            require(entries.isNotEmpty()) { "Where did all the predefined map sizes go?" }
+            if (entries.size == 1)
+                return prop.get(entries.first())
+            fun interpolate(a: Predefined, b: Predefined): Float {
+                val growthRate = (prop.get(b) - prop.get(a)) / (b.radius - a.radius)
+                return max(0f, prop.get(a) + growthRate * (radius - a.radius))
+            }
+            for (i in 1..entries.size-1) {
+                if (radius > entries[i].radius)
+                    continue
+                // interpolate (or extrapolate) using the current and previous Predefined map size
+                return interpolate(entries[i-1], entries[i])
+            }
+            // if radius is greater than the last entry, we extrapolate using the last two
+            return interpolate(entries[entries.size-2], entries.last())
+        }
     }
 
-    fun clone() = MapSize(name, radius, width, height)
+    fun clone() = MapSize(name, radius, width, height, techCostMultiplier, techCostPerCityModifier, policyCostPerCityModifier)
 
     @Readonly
     fun getPredefinedOrNextSmaller(): Predefined {
