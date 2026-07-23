@@ -18,10 +18,15 @@ import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.battle.Nuke
 import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.multiplayer.AuthoritativeUnitActions
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.SoundPlayer
+import com.unciv.ui.popups.ToastPopup
+import com.unciv.utils.Concurrency
+import com.unciv.utils.Log
+import com.unciv.utils.launchOnGLThread
 import com.unciv.ui.components.extensions.addBorderAllowOpacity
 import com.unciv.ui.components.extensions.addRoundCloseButton
 import com.unciv.ui.components.extensions.addSeparator
@@ -348,6 +353,39 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
         defender: ICombatant,
         attackableTile: AttackableTile
     ) {
+        if (attacker is MapUnitCombatant && AuthoritativeUnitActions.isEnabled(worldScreen.gameInfo)) {
+            val unit = attacker.unit
+            val from = unit.currentTile.position
+            val to = attackableTile.tileToAttack.position
+            worldScreen.mapHolder.removeUnitActionOverlay()
+            worldScreen.clearUndoCheckpoints()
+            Concurrency.run("AuthAttackBtn") {
+                var errMsg = "Server-authoritative attack failed"
+                val newSave = kotlinx.coroutines.runBlocking {
+                    AuthoritativeUnitActions.requestAction(
+                        worldScreen.gameInfo.gameId, "attack", unit,
+                        from.x, from.y, to.x, to.y
+                    ) { errMsg = it }
+                }
+                launchOnGLThread {
+                    if (newSave == null) {
+                        ToastPopup(errMsg, worldScreen)
+                        return@launchOnGLThread
+                    }
+                    try {
+                        val newGame = AuthoritativeUnitActions.loadReturnedSave(newSave)
+                        newGame.isUpToDate = true
+                        worldScreen.game.loadGame(newGame)
+                    } catch (ex: Exception) {
+                        Log.error("Failed to load authoritative save after attack", ex)
+                        ToastPopup("Failed to load server save after attack", worldScreen)
+                    }
+                }
+            }
+            hide()
+            return
+        }
+
         val canStillAttack = Battle.movePreparingAttack(attacker, attackableTile)
         worldScreen.mapHolder.removeUnitActionOverlay() // the overlay was one of attacking
         // There was a direct worldScreen.update() call here, removing its 'private' but not the comment justifying the modifier.
