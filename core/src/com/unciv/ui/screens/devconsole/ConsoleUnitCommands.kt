@@ -1,7 +1,9 @@
 package com.unciv.ui.screens.devconsole
 
+import com.unciv.models.UnitActionType
 import com.unciv.ui.screens.devconsole.CliInput.Companion.getAutocompleteString
 import com.unciv.ui.screens.devconsole.CliInput.Companion.orEmpty
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 
 internal class ConsoleUnitCommands : ConsoleCommandNode {
     override val subcommands = hashMapOf<String, ConsoleCommand>(
@@ -89,5 +91,21 @@ internal class ConsoleUnitCommands : ConsoleCommandNode {
         },
 
         "activatetrigger" to ConsoleTriggerAction("unit"),
+
+        "action" to object : ConsoleAction("unit action <unitAction>", { console, params ->
+            val actionType = params[0].enumValue<UnitActionType>()
+            val unit = console.getSelectedUnit()
+            if (UnitActions.invokeUnitAction(unit, actionType)) DevConsoleResponse.OK
+            else DevConsoleResponse.error("$unit did not perform $actionType successfully")
+        }) {
+            override fun autocomplete(console: DevConsolePopup, params: List<CliInput>): String? {
+                val unit = console.getSelectedUnit()
+                val options = UnitActions.getUnitActions(unit)
+                    .filter { it.type != UnitActionType.TriggerUnique }
+                    .map { it.type.name }
+                    .asIterable()
+                return getAutocompleteString(params.lastOrNull().orEmpty(), options, console)
+            }
+        },
     )
 }
