@@ -286,6 +286,13 @@ enum class UniqueType(
     CounterIntelligenceSpyRankBonus("Spies in [cityFilter] cities act as though they have [relativeAmount] levels for [spyAction]", UniqueTarget.Global,
         docDescription = "Temporary effective rank change ([relativeAmount] added to rank, e.g. +1) for spies doing the given action in a matching city. " +
             "Does not permanently level the spy. Stacks additively, capped by maxSpyRank."),
+    ReducedTechStealWithCounterIntelligence(
+        "Enemy spies steal [relativeAmount]% of a technology in [cityFilter] when counter-intelligence is active",
+        UniqueTarget.Global,
+        docDescription = "When a defending counter-intelligence spy is present in a matching city, a successful steal " +
+            "grants research progress equal to [relativeAmount]% of the tech cost instead of the full technology. " +
+            "Example: [50]% for half. Stacks multiplicatively across matching uniques. Without this unique, steals remain full technology."
+    ),
 
     /// Things you get at the start of the game
     StartingTech("Starting tech", UniqueTarget.Tech),

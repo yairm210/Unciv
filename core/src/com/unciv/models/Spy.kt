@@ -12,6 +12,7 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import yairm210.purity.annotations.Readonly
 import kotlin.math.ceil
+import kotlin.math.roundToInt
 import kotlin.random.Random
 
 
@@ -225,6 +226,10 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         val defendingSpy = city.civ.espionageManager.getSpyAssignedToCity(city)
         spyResult += defendingSpy?.getSkillModifierPercent() ?: 0
 
+        val stealPercent = if (stolenTech != null && spyResult < 200)
+            getSuccessfulStealPercent(city, defendingSpy) else 100
+        val stoleFullTech = stealPercent >= 100
+
         val detectionString = when {
             spyResult >= 200 -> { // The spy was killed in the attempt (should be able to happen even if there's nothing to steal?)
                 if (defendingSpy == null) "A spy from [${civInfo.civName}] was found and killed trying to steal Technology in [$city]!"
@@ -232,15 +237,18 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
             }
             stolenTech == null -> null // Nothing to steal
             spyResult < 0 -> null // Not detected
-            spyResult < 100 -> "An unidentified spy stole the Technology [$stolenTech] from [$city]!"
-            else -> "A spy from [${civInfo.civName}] stole the Technology [$stolenTech] from [$city]!"
+            spyResult < 100 -> if (stoleFullTech)
+                "An unidentified spy stole the Technology [$stolenTech] from [$city]!"
+                else "An unidentified spy stole research towards [$stolenTech] from [$city]!"
+            else -> if (stoleFullTech)
+                "A spy from [${civInfo.civName}] stole the Technology [$stolenTech] from [$city]!"
+                else "A spy from [${civInfo.civName}] stole research towards [$stolenTech] from [$city]!"
         }
         if (detectionString != null)
             // Not using Spy.addNotification, shouldn't open the espionage screen
             otherCiv.addNotification(detectionString, city.location, NotificationCategory.Espionage, NotificationIcon.Spy)
         if (spyResult < 200 && stolenTech != null) {
-            civInfo.tech.addTechnology(stolenTech)
-            addNotification("Your spy [$name] stole the Technology [$stolenTech] from [$city]!")
+            applySuccessfulSteal(stolenTech, city, stealPercent)
             levelUpSpy()
         }
 
@@ -254,7 +262,53 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
 
         if (spyResult >= 100) demandToNotBeSpiedOn(otherCiv)
     }
-    
+
+    /**
+     * Applies a successful tech steal. Full technology by default; if [stealPercent] is below 100,
+     * grants research progress equal to that percent of the tech cost instead.
+     */
+    private fun applySuccessfulSteal(stolenTech: String, city: City, stealPercent: Int) {
+        if (stealPercent >= 100) {
+            civInfo.tech.addTechnology(stolenTech)
+            addNotification("Your spy [$name] stole the Technology [$stolenTech] from [$city]!")
+            return
+        }
+
+        val scienceGain = (civInfo.tech.costOfTech(stolenTech) * stealPercent / 100f).roundToInt()
+        if (scienceGain <= 0) {
+            addNotification("Your spy [$name] failed to extract useful technology from [$city]!")
+            return
+        }
+
+        civInfo.tech.techsInProgress[stolenTech] = civInfo.tech.researchOfTech(stolenTech) + scienceGain
+        if (civInfo.tech.researchOfTech(stolenTech) >= civInfo.tech.costOfTech(stolenTech)) {
+            civInfo.tech.addTechnology(stolenTech)
+            addNotification("Your spy [$name] stole the Technology [$stolenTech] from [$city]!")
+        } else {
+            addNotification("Your spy [$name] stole [$scienceGain] Science towards [$stolenTech] from [$city]!")
+        }
+    }
+
+    /**
+     * Percent of tech cost granted on a successful steal when reduced-steal uniques apply.
+     * Returns 100 when there is no defending spy or no matching unique.
+     */
+    @Readonly
+    private fun getSuccessfulStealPercent(city: City, defendingSpy: Spy?): Int {
+        if (defendingSpy == null) return 100
+        val uniques = city.getMatchingUniques(
+            UniqueType.ReducedTechStealWithCounterIntelligence,
+            city.state,
+            includeCivUniques = true
+        ).filter { city.matchesFilter(it.params[1], viewingCiv = city.civ) }
+        if (uniques.none()) return 100
+
+        var factor = 1f
+        for (unique in uniques)
+            factor *= unique.params[0].toFloat() / 100f
+        return (factor * 100f).roundToInt().coerceIn(0, 100)
+    }
+
     private fun demandToNotBeSpiedOn(otherCiv: Civilization) {
         val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(civInfo)!!
         otherCivDiplomacyManager.addModifier(DiplomaticModifiers.SpiedOnUs, -15f)
