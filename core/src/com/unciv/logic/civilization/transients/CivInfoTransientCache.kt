@@ -8,6 +8,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.Proximity
+import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.transients.CapitalConnectionsFinder.CapitalConnectionMedium
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.MapShape
@@ -331,7 +332,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
             if (!cityState.isCityState || cityState.isDefeated()) continue
             val uniqueMap = when {
                 cityState.allyCiv == civInfo -> cityState.cityStateType.allyBonusUniqueMap
-                cityState.getDiplomacyManager(civInfo)!!.getInfluence() >= 30 -> cityState.cityStateType.friendBonusUniqueMap
+                cityState.getDiplomacyManager(civInfo)!!.getInfluence() >= DiplomacyManager.FRIEND_INFLUENCE -> cityState.cityStateType.friendBonusUniqueMap
                 else -> continue
             }
             newMaps.add(uniqueMap)

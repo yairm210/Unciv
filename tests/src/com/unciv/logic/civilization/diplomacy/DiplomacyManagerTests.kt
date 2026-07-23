@@ -236,7 +236,7 @@ class DiplomacyManagerTests {
 
         // then
         assertTrue(cityState.getDiplomacyManager(a)!!.isRelationshipLevelEQ(RelationshipLevel.Unforgivable))
-        assertEquals(-60f, cityState.getDiplomacyManager(a)!!.getInfluence())
+        assertEquals(DiplomacyManager.MINIMUM_INFLUENCE, cityState.getDiplomacyManager(a)!!.getInfluence())
     }
 
     @Test

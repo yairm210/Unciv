@@ -157,9 +157,10 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
 
         val nextLevelString = when {
             atWar -> ""
-            otherCivDiplomacyManager.getInfluence().toInt() < 30 -> "Reach 30 for friendship."
+            otherCivDiplomacyManager.getInfluence() < DiplomacyManager.FRIEND_INFLUENCE ->
+                "Reach [${DiplomacyManager.FRIEND_INFLUENCE.toInt()}] for friendship."
             ally == viewingCiv -> ""
-            else -> "Reach highest influence above 60 for alliance."
+            else -> "Reach highest influence above [${DiplomacyManager.ALLY_INFLUENCE.toInt()}] for alliance."
         }
         diplomacyTable.add(diplomacyScreen.getRelationshipTable(otherCivDiplomacyManager)).row()
         if (nextLevelString.isNotEmpty()) {
@@ -307,7 +308,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         }
 
 
-        if (diplomacyScreen.isNotPlayersTurn() || otherCivDiplomacyManager.getInfluence() < 60)
+        if (diplomacyScreen.isNotPlayersTurn() || otherCivDiplomacyManager.getInfluence() < DiplomacyManager.ALLY_INFLUENCE)
             improveTileButton.disable()
         return improveTileButton
     }
@@ -420,7 +421,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         diplomacyTable.add("At least 0 to take gold, at least 30 and size 4 city for worker".toLabel()).row()
         diplomacyTable.addSeparator()
 
-        val demandGoldButton = "Take [${otherCiv.cityStateFunctions.goldGainedByTribute()}] gold (-15 Influence)".toTextButton()
+        val demandGoldButton = "Take [${otherCiv.cityStateFunctions.goldGainedByTribute()}] gold ([${DiplomacyManager.TRIBUTE_GOLD_INFLUENCE.toInt()}] Influence)".toTextButton()
         demandGoldButton.onClick {
             otherCiv.cityStateFunctions.tributeGold(viewingCiv)
             diplomacyScreen.rightSideTable.clear()
@@ -429,7 +430,7 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         diplomacyTable.add(demandGoldButton).row()
         if (otherCiv.cityStateFunctions.getTributeWillingness(viewingCiv, demandingWorker = false) < 0)   demandGoldButton.disable()
 
-        val demandWorkerButton = "Take worker (-50 Influence)".toTextButton()
+        val demandWorkerButton = "Take worker ([${DiplomacyManager.TRIBUTE_WORKER_INFLUENCE.toInt()}] Influence)".toTextButton()
         demandWorkerButton.onClick {
             otherCiv.cityStateFunctions.tributeWorker(viewingCiv)
             diplomacyScreen.rightSideTable.clear()

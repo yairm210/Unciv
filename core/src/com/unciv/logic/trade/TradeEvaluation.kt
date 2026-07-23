@@ -7,6 +7,7 @@ import com.unciv.logic.automation.civilization.DeclareWarPlanEvaluator
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.tile.Tile
@@ -244,7 +245,7 @@ class TradeEvaluation {
                     val allyCiv = thirdCiv.allyCiv
                     if (allyCiv != null && allyCiv == civInfo) {
                         // TODO: More sophisticated formula needed, a reverse of [CityStateFunctions.influenceGainedByGift]
-                        val surplusInfluence = (thirdCiv.getDiplomacyManager(civInfo)!!.getInfluence() - 60).coerceAtLeast(0f)
+                        val surplusInfluence = (thirdCiv.getDiplomacyManager(civInfo)!!.getInfluence() - DiplomacyManager.ALLY_INFLUENCE).coerceAtLeast(0f)
                         return (surplusInfluence * 15).toInt()
                     }
                 }
