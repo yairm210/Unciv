@@ -99,19 +99,21 @@ open class TileGroup(
         layerOverlay.hideCrosshair()
         layerOverlay.hideGoodCityLocationIndicator()
 
-        // Show all layers by default
-        setAllLayersVisible(true)
-
         // Do not update layers if tile is not explored by viewing player
         if (viewingCiv != null && !(isForceVisible || viewingCiv.hasExplored(tile))) {
-            reset()
-            // If tile has explored neighbors - reveal layers partially
-            if (tile.neighbors.none { viewingCiv.hasExplored(it) })
-                // Else - hide all layers
+            if (tile.neighbors.none { viewingCiv.hasExplored(it) }) {
+                // No explored neighbors - hide all layers
                 setAllLayersVisible(false)
-            else layerOverlay.setUnexplored(viewingCiv)
+            } else {
+                // Has explored neighbors - reveal layers partially
+                setAllLayersVisible(true) // visible, but...
+                reset() // ...may not contain much
+                layerOverlay.setUnexplored(viewingCiv)
+            }
             return
         }
+
+        setAllLayersVisible(true)
 
         removeMissingModReferences()
 
