@@ -168,16 +168,18 @@ internal class AdvancedTab(
     }
 
     private fun addFontFamilySelect() {
+        // What both java.awt.Font.createFont and android.graphics.Typeface.createFromFile support:
+        val supportedExtensions = setOf("ttf", "otf")
+
         /** Build provider for [addAsyncSelectBox]: per-mod scan */
         @Suppress("NewApi")
         fun loadModFonts(mod: Path) = flow {
-            kotlin.io.path.fileVisitor {  }
             if (!mod.isDirectory()) return@flow
             val fontsPath = mod.resolve("fonts")
             if (!fontsPath.exists() || !fontsPath.isDirectory()) return@flow
             java.nio.file.Files.list(fontsPath).use { stream->
                 for (file in stream) {
-                    if (file.extension.lowercase() != "ttf") continue
+                    if (file.extension.lowercase() !in supportedExtensions) continue
                     emit(FontFamilyData(
                         "${file.nameWithoutExtension} (${mod.name})",
                         file.nameWithoutExtension,
