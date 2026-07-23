@@ -164,8 +164,14 @@ enum class DiplomaticModifiers(val text: String) {
 class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
     companion object {
-        /** The value city-state influence can't go below */
+        /** The value city-state influence can't go below (also applied while at war). */
         const val MINIMUM_INFLUENCE = -60f
+        /** City-state influence at or below this is [RelationshipLevel.Unforgivable]. */
+        const val UNFORGIVABLE_INFLUENCE = -30f
+        /** City-state influence at or above this is at least [RelationshipLevel.Friend]. */
+        const val FRIEND_INFLUENCE = 30f
+        /** City-state influence at or above this can be [RelationshipLevel.Ally] (if highest). */
+        const val ALLY_INFLUENCE = 60f
         /**
          * Smoothing period used in denounce automation, before adjusting for game speed etc.
          * Higher values make denunciations more likely.
@@ -321,7 +327,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
     /** Related to [relationshipLevel], this compares with a specific outcome.
      *
-     *  It is cheap unless you ask such that Neutral / Afraid on a CityState need to be distinguished and influence is currently in 0 until 30.
+     *  It is cheap unless you ask such that Neutral / Afraid on a CityState need to be distinguished and influence is currently in 0 until [FRIEND_INFLUENCE].
      *  Thus it can be far cheaper than first retrieving [relationshipLevel] and then comparing.
      *
      *  Readability shortcuts: [isRelationshipLevelEQ], [isRelationshipLevelGE], [isRelationshipLevelGT], [isRelationshipLevelLE], [isRelationshipLevelLT]
@@ -336,13 +342,13 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         return when(level) {
             RelationshipLevel.Afraid -> when {
                 comparesAs < 0 -> getInfluence() < 0
-                comparesAs > 0 -> getInfluence() >= 30 || relationshipLevel() > level
-                else -> getInfluence().let { it >= 0 && it < 30 } && relationshipLevel() == level
+                comparesAs > 0 -> getInfluence() >= FRIEND_INFLUENCE || relationshipLevel() > level
+                else -> getInfluence().let { it >= 0 && it < FRIEND_INFLUENCE } && relationshipLevel() == level
             }
             RelationshipLevel.Neutral -> when {
                 comparesAs < 0 -> getInfluence() < 0 || relationshipLevel() < level
-                comparesAs > 0 -> getInfluence() >= 30
-                else -> getInfluence().let { it >= 0 && it < 30 } && relationshipLevel() == level
+                comparesAs > 0 -> getInfluence() >= FRIEND_INFLUENCE
+                else -> getInfluence().let { it >= 0 && it < FRIEND_INFLUENCE } && relationshipLevel() == level
             }
             else ->
                 // Outside the potentially expensive questions, do it the easy way
@@ -370,7 +376,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             if (level == RelationshipLevel.Unforgivable) true
             else compareRelationshipLevel(level + -1, 1)
 
-    /** Careful: Cheap unless this is a CityState and influence is in 0 until 30,
+    /** Careful: Cheap unless this is a CityState and influence is in 0 until [FRIEND_INFLUENCE],
      *  where the distinction Neutral/Afraid gets expensive.
      *  @see compareRelationshipLevel
      *  @see relationshipIgnoreAfraid
@@ -395,10 +401,10 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             return otherCivDiplomacy().relationshipLevel()
 
         if (civInfo.isCityState) return when {
-            getInfluence() <= -30 -> RelationshipLevel.Unforgivable  // getInfluence tests isAtWarWith
+            getInfluence() <= UNFORGIVABLE_INFLUENCE -> RelationshipLevel.Unforgivable  // getInfluence tests isAtWarWith
             getInfluence() < 0 -> RelationshipLevel.Enemy
-            getInfluence() >= 60 && civInfo.allyCiv == otherCiv -> RelationshipLevel.Ally
-            getInfluence() >= 30 -> RelationshipLevel.Friend
+            getInfluence() >= ALLY_INFLUENCE && civInfo.allyCiv == otherCiv -> RelationshipLevel.Ally
+            getInfluence() >= FRIEND_INFLUENCE -> RelationshipLevel.Friend
             else -> RelationshipLevel.Neutral
         }
 
@@ -437,8 +443,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             val dropPerTurn = getCityStateInfluenceDegrade()
             return when {
                 dropPerTurn == 0f -> 0
-                isRelationshipLevelEQ(RelationshipLevel.Ally) -> ceil((getInfluence() - 60f) / dropPerTurn).toInt() + 1
-                isRelationshipLevelEQ(RelationshipLevel.Friend) -> ceil((getInfluence() - 30f) / dropPerTurn).toInt() + 1
+                isRelationshipLevelEQ(RelationshipLevel.Ally) -> ceil((getInfluence() - ALLY_INFLUENCE) / dropPerTurn).toInt() + 1
+                isRelationshipLevelEQ(RelationshipLevel.Friend) -> ceil((getInfluence() - FRIEND_INFLUENCE) / dropPerTurn).toInt() + 1
                 else -> 0
             }
         }

@@ -292,7 +292,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         val maxInfluence = civInfo.diplomacy
             .filter { it.value.otherCiv.isMajorCiv() && !it.value.otherCiv.isDefeated() }
             .maxByOrNull { it.value.getInfluence() }
-        if (maxInfluence != null && maxInfluence.value.getInfluence() >= 60) {
+        if (maxInfluence != null && maxInfluence.value.getInfluence() >= DiplomacyManager.ALLY_INFLUENCE) {
             newAlly = maxInfluence.value.otherCiv
         }
 
@@ -453,7 +453,7 @@ class CityStateFunctions(val civInfo: Civilization) {
             modifiers["Very recently paid tribute"] = -300
         else if (recentBullying != null && recentBullying > 0)
             modifiers["Recently paid tribute"] = -40
-        if (civInfo.getDiplomacyManager(demandingCiv)!!.getInfluence() < -30)
+        if (civInfo.getDiplomacyManager(demandingCiv)!!.getInfluence() < DiplomacyManager.UNFORGIVABLE_INFLUENCE)
             modifiers["Influence below -30"] = -300
 
         // Slight optimization, we don't do the expensive stuff if we have no chance of getting a >= 0 result

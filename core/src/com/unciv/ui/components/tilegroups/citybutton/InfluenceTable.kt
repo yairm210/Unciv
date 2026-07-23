@@ -3,6 +3,7 @@ package com.unciv.ui.components.tilegroups.citybutton
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -25,7 +26,10 @@ class InfluenceTable(
             "WorldScreen/CityButton/InfluenceBar",
             tintColor = ImageGetter.CHARCOAL)
 
-        val normalizedInfluence = influence.coerceIn(-60f, 60f) / 30f
+        val normalizedInfluence = influence.coerceIn(
+            DiplomacyManager.MINIMUM_INFLUENCE,
+            DiplomacyManager.ALLY_INFLUENCE
+        ) / DiplomacyManager.FRIEND_INFLUENCE
 
         val color = when (relationshipLevel) {
             RelationshipLevel.Unforgivable -> Color.RED
