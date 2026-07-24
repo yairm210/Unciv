@@ -72,9 +72,11 @@ object SpecificUnitAutomation {
     }
 
     fun automateSettlerActions(unit: MapUnit, dangerousTiles: HashSet<Tile>) {
-        // Civ5 HomelandAI PlotFirstTurnSettlerMoves: city-states found in place on their start tile
-        // instead of wandering for a slightly better site (Unciv's major-civ settler search).
-        if (unit.civ.isCityState && unit.civ.cities.isEmpty()) {
+        // Opt-in: city-states found in place on their start tile (Civ5 PlotFirstTurnSettlerMoves),
+        // instead of Unciv's major-civ-style wander for a slightly better site.
+        if (unit.civ.isCityState && unit.civ.cities.isEmpty()
+            && unit.civ.gameInfo.ruleset.modOptions.hasUnique(UniqueType.CityStatesFoundFirstCityInPlace)
+        ) {
             val foundHere = UnitActionsFromUniques.getFoundCityAction(unit, unit.getTile())
             if (foundHere?.action != null && unit.hasMovement()) {
                 foundHere.action.invoke()
