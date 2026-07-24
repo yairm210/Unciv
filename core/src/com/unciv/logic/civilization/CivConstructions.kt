@@ -6,6 +6,7 @@ import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.unique.GameContext
+import com.unciv.models.ruleset.unique.UniqueTriggerActivationLimiter
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
@@ -163,13 +164,14 @@ class CivConstructions : IsPartOfGameInfoSerialization {
             val freeBuildingUniques = (freeBuildingsFromCiv + freeBuildingsFromCity)
                 .filter { city.matchesFilter(it.params[1]) && it.conditionalsApply(city.state)
                     && !it.hasTriggerConditional() }
-            
+
             // When adding a building, the list of applicable free buildings can change! Hence, toList()
             for (unique in freeBuildingUniques.toList()) {
                 val freeBuilding = city.civ.getEquivalentBuilding(unique.params[0])
                 city.cityConstructions.freeBuildingsProvidedFromThisCity.addToMapOfSets(city.id, freeBuilding.name)
 
                 if (city.cityConstructions.containsBuildingOrEquivalent(freeBuilding.name)) continue
+                UniqueTriggerActivationLimiter.add(unique)
                 city.cityConstructions.completeConstruction(freeBuilding)
             }
 
