@@ -21,6 +21,7 @@ import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Event
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.tile.TileResource
+import com.unciv.models.ruleset.unique.UniqueTriggerActivationLimiter.wrapRecursionLimiter
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.fillPlaceholders
@@ -35,6 +36,8 @@ import java.util.EnumSet
 import yairm210.purity.annotations.Readonly
 import kotlin.math.roundToInt
 import kotlin.random.Random
+
+typealias TriggerFunction = (() -> Boolean)?
 
 // Buildings, techs, policies, ancient ruins and promotions can have 'triggered' effects
 object UniqueTriggerActivation {
@@ -85,7 +88,18 @@ object UniqueTriggerActivation {
         tile: Tile? = city?.getCenterTile() ?: unit?.currentTile,
         notification: String? = null,
         triggerNotificationText: String? = null
-    ): (()->Boolean)? {
+    ): TriggerFunction = getTriggerFunctionUnguarded(unique, civInfo, city, unit, tile, notification, triggerNotificationText)
+        .wrapRecursionLimiter(unique)
+
+    private fun getTriggerFunctionUnguarded(
+        unique: Unique,
+        civInfo: Civilization,
+        city: City?,
+        unit: MapUnit?,
+        tile: Tile?,
+        notification: String?,
+        triggerNotificationText: String?
+    ): TriggerFunction {
 
         val relevantCity by lazy {
             city?: tile?.getCity()
@@ -1480,7 +1494,7 @@ object UniqueTriggerActivation {
         else null
     }
 
-    private fun getOneTimeChangeRiverTriggerFunction(tile: Tile): (()->Boolean)? {
+    private fun getOneTimeChangeRiverTriggerFunction(tile: Tile): TriggerFunction {
         if (tile.neighbors.none { it.isLand && !tile.isConnectedByRiver(it) })
             return null  // no place for another river
         return { RiverGenerator.continueRiverOn(tile) }
