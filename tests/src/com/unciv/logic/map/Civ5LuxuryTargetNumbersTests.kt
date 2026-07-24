@@ -95,32 +95,28 @@ class Civ5LuxuryTargetNumbersTests {
     }
 
     @Test
-    fun civ5BonusFrequencyMatchesAssignStartingPlots() {
-        assertEquals(0.65f, Civ5LuxuryTargetNumbers.civ5BonusFrequencyMultiplier(MapResourceSetting.default))
-        assertEquals(0.35f, Civ5LuxuryTargetNumbers.civ5BonusFrequencyMultiplier(MapResourceSetting.abundant))
-        assertEquals(1f, Civ5LuxuryTargetNumbers.civ5BonusFrequencyMultiplier(MapResourceSetting.sparse))
-    }
-
-    @Test
     fun bonusPercentModifierIncreasesDensity() {
         val base = Civ5LuxuryTargetNumbers.effectiveBonusFrequencyMultiplier(
-            MapResourceSetting.default, useCiv5 = true, percentModifier = 1f
+            MapResourceSetting.default, percentModifier = 1f
         )
         val denser = Civ5LuxuryTargetNumbers.effectiveBonusFrequencyMultiplier(
-            MapResourceSetting.default, useCiv5 = true, percentModifier = 1.5f
+            MapResourceSetting.default, percentModifier = 1.5f
         )
-        assertEquals(0.65f, base)
+        assertEquals(1f, base)
         assertTrue(denser < base)
-        assertEquals(0.65f / 1.5f, denser, 0.0001f)
+        assertEquals(1f / 1.5f, denser, 0.0001f)
     }
 
     @Test
-    fun withoutCiv5UsesUncivMapResourceSettingMultiplier() {
+    fun civ5UniqueDoesNotOverrideUncivBonusFrequency() {
+        // Civ5 absolute bonus_multiplier must not be used; Unciv MapResources stays baseline.
         assertEquals(
             MapResourceSetting.abundant.bonusFrequencyMultiplier,
-            Civ5LuxuryTargetNumbers.effectiveBonusFrequencyMultiplier(
-                MapResourceSetting.abundant, useCiv5 = false
-            )
+            Civ5LuxuryTargetNumbers.effectiveBonusFrequencyMultiplier(MapResourceSetting.abundant)
+        )
+        assertEquals(
+            MapResourceSetting.default.bonusFrequencyMultiplier,
+            Civ5LuxuryTargetNumbers.effectiveBonusFrequencyMultiplier(MapResourceSetting.default)
         )
     }
 }

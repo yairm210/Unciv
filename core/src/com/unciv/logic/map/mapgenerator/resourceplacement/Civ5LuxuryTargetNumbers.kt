@@ -8,11 +8,15 @@ import kotlin.math.max
 import kotlin.math.min
 
 /**
- * Civ5 AssignStartingPlots resource-density tables (BNW / Lekmap values).
+ * Civ5 AssignStartingPlots luxury-density tables (BNW / Lekmap values).
  * Used when ModOptions has [UniqueType.Civ5StyleMapResourceGeneration].
  *
  * Regional luxury tables are indexed by major-civ count 1..22 (index 0 unused),
  * matching Lua `target_list[iNumCivs]`.
+ *
+ * Bonus/strategic placement keeps Unciv [MapResourceSetting.bonusFrequencyMultiplier];
+ * Civ5 absolute `bonus_multiplier` values are denser than Unciv's JSON frequencies expect
+ * and overfill maps when applied wholesale.
  */
 object Civ5LuxuryTargetNumbers {
 
@@ -24,25 +28,14 @@ object Civ5LuxuryTargetNumbers {
     }
 
     /**
-     * Civ5 `bonus_multiplier` for PlaceStrategicAndBonusResources.
-     * Lower → denser placement (multiplies frequency / "tiles per resource").
-     */
-    fun civ5BonusFrequencyMultiplier(setting: MapResourceSetting): Float = when (setting) {
-        MapResourceSetting.sparse -> 1f // Civ5 setting 1
-        MapResourceSetting.abundant -> 0.35f // Civ5 setting 8
-        else -> 0.65f // Civ5 default (~setting 5)
-    }
-
-    /**
      * Effective tiles-per-resource multiplier for bonus and minor strategic placement.
-     * [percentModifier] > 1 means denser (more resources), matching ModOptions `[relativeAmount]% …`.
+     * Always based on Unciv [MapResourceSetting]; [percentModifier] > 1 means denser.
      */
     fun effectiveBonusFrequencyMultiplier(
         setting: MapResourceSetting,
-        useCiv5: Boolean,
         percentModifier: Float = 1f,
     ): Float {
-        val base = if (useCiv5) civ5BonusFrequencyMultiplier(setting) else setting.bonusFrequencyMultiplier
+        val base = setting.bonusFrequencyMultiplier
         val scaled = if (percentModifier <= 0f) base else base / percentModifier
         return scaled.coerceAtLeast(0.05f)
     }

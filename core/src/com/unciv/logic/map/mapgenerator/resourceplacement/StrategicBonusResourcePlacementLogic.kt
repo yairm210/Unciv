@@ -47,14 +47,13 @@ object StrategicBonusResourcePlacementLogic {
                     it.hasUnique(UniqueType.MinorDepositWeighting)
         }
 
-        // Determines number tiles per resource (lower → denser). Opt-in Civ5 multipliers + % unique.
+        // Determines number tiles per resource (lower → denser). Optional ModOptions % unique only.
         val resourceSetting = tileMap.mapParameters.getMapResources()
-        val useCiv5 = ruleset.modOptions.hasUnique(UniqueType.Civ5StyleMapResourceGeneration)
         val bonusPercent = Civ5LuxuryTargetNumbers.mapGenPercentModifier(
             ruleset, UniqueType.BonusStrategicMapGenModifier
         )
         val bonusMultiplier = Civ5LuxuryTargetNumbers.effectiveBonusFrequencyMultiplier(
-            resourceSetting, useCiv5, bonusPercent
+            resourceSetting, bonusPercent
         )
         val landList = ArrayList<Tile>() // For minor deposits
 
