@@ -1,5 +1,6 @@
 package com.unciv.ui.screens.mainmenuscreen
 
+import com.unciv.Constants
 import com.unciv.logic.HolidayDates
 import com.unciv.logic.HolidayDates.Holidays
 import com.unciv.logic.map.MapParameters
@@ -70,7 +71,7 @@ object EasterEggRulesets {
         faith = 9f
         occursOn.addAll(listOf("Grassland", "Plains", "Desert"))
         uniques.add("Must be adjacent to [0] [Coast] tiles")
-        turnsInto = "Mountain"
+        turnsInto = Constants.mountain
         impassable = true
         unbuildable = true
         weight = 999999

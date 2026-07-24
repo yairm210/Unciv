@@ -1306,12 +1306,12 @@ object UniqueTriggerActivation {
                 if (!tileImprovement.matchesFilter(improvementFilter)) return null
                 return {
                     // Don't remove the improvement if we're just removing the roads
-                    if (improvementFilter != "All Road") {
+                    if (improvementFilter != Constants.allRoad) {
                         tile.removeImprovement()
                     }
 
                     // Remove the roads if desired
-                    if (improvementFilter == "All" || improvementFilter == "All Road") {
+                    if (improvementFilter == "All" || improvementFilter == Constants.allRoad) {
                         tile.removeRoad()
                     }
                     true

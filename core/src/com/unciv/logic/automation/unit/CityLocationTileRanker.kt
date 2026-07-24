@@ -1,5 +1,6 @@
 package com.unciv.logic.automation.unit
 
+import com.unciv.Constants
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
@@ -93,7 +94,7 @@ object CityLocationTileRanker {
 
         val onCoast = newCityTile.isAdjacentToCoast()
         val onHill = newCityTile.isHill()
-        val isNextToMountain = newCityTile.isAdjacentTo("Mountain")
+        val isNextToMountain = newCityTile.isAdjacentTo(Constants.mountain)
         // Only count a luxury resource that we don't have yet as unique once
         val newUniqueLuxuryResources = HashSet<TileResource>()
 
