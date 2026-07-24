@@ -302,4 +302,18 @@ class UnitMovementTests {
         Assert.assertTrue("Payload must be teleported to the same tile",
             unit.currentTile == payload.currentTile)
     }
+
+    @Test
+    fun `cannot board a carrier when the tile already has another military unit`() {
+        val carrierTile = testGame.tileMap[1,1]
+        val carrier = testGame.addUnit("Carrier", civInfo, carrierTile)
+        val existingMilitaryUnit = testGame.addUnit("Warrior", civInfo, carrierTile)
+        val payload = testGame.addUnit("Fighter", civInfo, testGame.tileMap[0,1])
+
+        Assert.assertNotNull(existingMilitaryUnit.currentTile.militaryUnit)
+        Assert.assertTrue("Carrier should be carried in air units when the military slot is occupied",
+            carrier.currentTile.airUnits.contains(carrier))
+        Assert.assertFalse("Payload should not be able to board the carrier on a tile with an occupied military slot",
+            payload.movement.canMoveTo(carrierTile))
+    }
 }

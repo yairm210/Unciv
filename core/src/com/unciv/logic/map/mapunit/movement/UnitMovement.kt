@@ -672,9 +672,11 @@ class UnitMovement(val unit: MapUnit) {
             && !unit.getOtherEscortUnit()!!.movement.canMoveTo(tile, assumeCanPassThrough, allowSwap, includeOtherEscortUnit = false))
             return CannotMoveToReason.EscortCannotMove
 
-        // Allow boarding carriers: if the tile contains a friendly unit that can transport this unit, allow entry
+        // Allow boarding carriers only when the destination's military/civilian slots are otherwise empty
         val carrierOnTile = tile.getUnits().firstOrNull { it.owner == unit.owner && it.canTransport(unit) }
-        if (carrierOnTile != null && !tile.isCityCenter())
+        val hasConflictingOccupiedSlot = (tile.militaryUnit != null && tile.militaryUnit != carrierOnTile)
+                || tile.civilianUnit != null
+        if (carrierOnTile != null && !tile.isCityCenter() && !hasConflictingOccupiedSlot)
             return null
 
         val tileIsEmpty = if (unit.isCivilian())

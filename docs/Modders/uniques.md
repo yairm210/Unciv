@@ -2163,11 +2163,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Unit
 
-??? example  "Carried units disembark when attacking"
-	Carried non-air units need to disembark when attacking.
-
-	Applicable to: Unit
-
 ??? example  "[relativeAmount]% chance to intercept air attacks"
 	Example: "[+20]% chance to intercept air attacks"
 
