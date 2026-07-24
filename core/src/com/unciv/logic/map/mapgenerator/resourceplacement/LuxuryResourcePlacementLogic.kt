@@ -185,8 +185,10 @@ object LuxuryResourcePlacementLogic {
         placeLuxuriesAtMajorCivStartLocations(regions, tileMap, ruleset, tileData, randomLuxuries)
         placeLuxuriesAtMinorCivStartLocations(tileMap, ruleset, regions, randomLuxuries, cityStateLuxuries, tileData)
         addRegionalLuxuries(tileData, regions, tileMap, ruleset)
-        addRandomLuxuries(randomLuxuries, tileData, tileMap, regions, ruleset)
 
+        // Count luxuries before random top-up / second-type starts (Civ5 world target excludes those).
+        val luxuriesPlacedBeforeRandom = countLuxuryTiles(tileMap, ruleset)
+        addRandomLuxuries(randomLuxuries, tileData, tileMap, regions, ruleset, luxuriesPlacedBeforeRandom)
 
         val specialLuxuries = ruleset.tileResources.values.filter {
             it.resourceType == ResourceType.Luxury &&
@@ -267,19 +269,53 @@ object LuxuryResourcePlacementLogic {
         tileData: TileDataMap,
         tileMap: TileMap,
         regions: ArrayList<Region>,
-        ruleset: Ruleset
+        ruleset: Ruleset,
+        luxuriesPlacedBeforeRandom: Int,
     ) {
         if (randomLuxuries.isEmpty()) return
         val rng = GameContext(gameInfo = tileMap.gameInfo).stateBasedRandom("LuxuryResourcePlacementLogic.addRandomLuxuries")
-        var targetRandomLuxuries = tileData.size.toFloat().pow(0.45f).toInt() // Approximately
-        targetRandomLuxuries *= tileMap.mapParameters.getMapResources().randomLuxuriesPercent
-        targetRandomLuxuries /= 100
-        targetRandomLuxuries += rng.nextInt(regions.size) // Add random number based on number of civs
-        val minimumRandomLuxuries = tileData.size.toFloat().pow(0.2f).toInt() // Approximately
+        val useCiv5Targets = ruleset.modOptions.hasUnique(UniqueType.Civ5StyleWorldLuxuryTargets)
+        val worldPercent = mapGenPercentModifier(ruleset, UniqueType.WorldLuxuryTargetMapGenModifier)
+
+        val targetRandomLuxuries: Int
+        val minimumRandomLuxuries: Int
+        if (useCiv5Targets) {
+            val (worldTotal, loopMin) = Civ5LuxuryTargetNumbers.worldTarget(
+                tileMap.mapParameters.mapSize,
+                tileMap.mapParameters.getMapResources(),
+                worldPercent,
+            )
+            val extraVariance = if (regions.isEmpty()) 0 else rng.nextInt(regions.size)
+            targetRandomLuxuries = Civ5LuxuryTargetNumbers.randomTopUpTarget(
+                worldTotal, luxuriesPlacedBeforeRandom, extraVariance
+            )
+            minimumRandomLuxuries = loopMin
+        } else {
+            var legacyTarget = tileData.size.toFloat().pow(0.45f).toInt() // Approximately
+            legacyTarget *= tileMap.mapParameters.getMapResources().randomLuxuriesPercent
+            legacyTarget /= 100
+            legacyTarget += rng.nextInt(regions.size) // Add random number based on number of civs
+            // World-% modifier only applies to Civ5-style targets; leave legacy path unchanged.
+            targetRandomLuxuries = legacyTarget
+            minimumRandomLuxuries = tileData.size.toFloat().pow(0.2f).toInt() // Approximately
+        }
+
+        if (targetRandomLuxuries <= 0) return
+
         val worldTiles = tileMap.values.asSequence().shuffled()
-        for ((index, luxury) in randomLuxuries.shuffled().withIndex()) {
-            val targetForThisLuxury = if (randomLuxuries.size > 8) targetRandomLuxuries / 10
-            else {
+        val shuffledTypes = randomLuxuries.shuffled()
+        for ((index, luxury) in shuffledTypes.withIndex()) {
+            val targetForThisLuxury = if (useCiv5Targets) {
+                Civ5LuxuryTargetNumbers.targetForRandomLuxuryType(
+                    index,
+                    shuffledTypes.size,
+                    targetRandomLuxuries,
+                    minimumRandomLuxuries,
+                    MapRegions.randomLuxuryRatios,
+                )
+            } else if (randomLuxuries.size > 8) {
+                targetRandomLuxuries / 10
+            } else {
                 val minimum = max(3, minimumRandomLuxuries - index)
                 max(
                     minimum,
@@ -305,11 +341,25 @@ object LuxuryResourcePlacementLogic {
         tileMap: TileMap,
         ruleset: Ruleset
     ) {
-        val idealCivsForMapSize = max(2, tileData.size / 500)
-        var regionTargetNumber =
-            (tileData.size / 600) - (0.3f * abs(regions.size - idealCivsForMapSize)).toInt()
-        regionTargetNumber += tileMap.mapParameters.getMapResources().regionalLuxuriesDelta
-        regionTargetNumber = max(1, regionTargetNumber)
+        val regionalPercent = mapGenPercentModifier(ruleset, UniqueType.RegionalLuxuriesMapGenModifier)
+        val useCiv5Targets = ruleset.modOptions.hasUnique(UniqueType.Civ5StyleWorldLuxuryTargets)
+
+        val regionTargetNumber = if (useCiv5Targets) {
+            Civ5LuxuryTargetNumbers.regionalTarget(
+                tileMap.mapParameters.mapSize,
+                regions.size,
+                tileMap.mapParameters.getMapResources(),
+                regionalPercent,
+            )
+        } else {
+            val idealCivsForMapSize = max(2, tileData.size / 500)
+            var target =
+                (tileData.size / 600) - (0.3f * abs(regions.size - idealCivsForMapSize)).toInt()
+            target += tileMap.mapParameters.getMapResources().regionalLuxuriesDelta
+            target = (target * regionalPercent + 0.5f).toInt()
+            max(1, target)
+        }
+
         for (region in regions) {
             val resource = ruleset.tileResources[region.luxury] ?: continue
             fun Tile.isShoreOfContinent(continent: Int) =
@@ -330,6 +380,20 @@ object LuxuryResourcePlacementLogic {
                 2
             )
         }
+    }
+
+    @Readonly
+    private fun countLuxuryTiles(tileMap: TileMap, ruleset: Ruleset): Int =
+        tileMap.values.count { tile ->
+            val resourceName = tile.resource ?: return@count false
+            ruleset.tileResources[resourceName]?.resourceType == ResourceType.Luxury
+        }
+
+    /** Returns multiplier from a ModOptions `[relativeAmount]% …` unique, default 1. */
+    @Readonly
+    private fun mapGenPercentModifier(ruleset: Ruleset, type: UniqueType): Float {
+        val unique = ruleset.modOptions.getMatchingUniques(type).firstOrNull() ?: return 1f
+        return unique.params[0].toFloat() / 100f
     }
 
     private fun placeLuxuriesAtMinorCivStartLocations(
