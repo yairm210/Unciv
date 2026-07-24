@@ -72,6 +72,19 @@ object SpecificUnitAutomation {
     }
 
     fun automateSettlerActions(unit: MapUnit, dangerousTiles: HashSet<Tile>) {
+        // Opt-in: city-states found in place on their start tile (Civ5 PlotFirstTurnSettlerMoves),
+        // instead of Unciv's major-civ-style wander for a slightly better site.
+        if (unit.civ.isCityState && unit.civ.cities.isEmpty()
+            && unit.civ.gameInfo.ruleset.modOptions.hasUnique(UniqueType.CityStatesFoundFirstCityInPlace)
+        ) {
+            val foundHere = UnitActionsFromUniques.getFoundCityAction(unit, unit.getTile())
+            if (foundHere?.action != null && unit.hasMovement()) {
+                foundHere.action.invoke()
+                return
+            }
+            // Cannot found here (blocked / invalid) — fall through to normal search.
+        }
+
         // If we don't have any cities, we are probably at the start of the game with only one settler
         // If we are at the start of the game lets spend a maximum of 3 turns to settle our first city
         // As our turns progress lets shrink the area that we look at to make sure that we stay on target
