@@ -578,7 +578,13 @@ object NextTurnAutomation {
         for (city in civInfo.cities) {
             if (shouldAnnexCity(civInfo, city)) city.annexCity()
 
-            if (city.health < city.getMaxHealth() || civHasSignificantlyWeakerMilitaryThanEnemies) {
+            // A city mid-spaceship-part stays on it during the empire-wide military push: parts are
+            // civilian units, so tryTrainMilitaryUnit's "already training military" guard doesn't protect
+            // them, and the weaker-military condition re-fires every turn of a long war — repeatedly
+            // knocking the civ off its own win condition. A city actually under attack still drops
+            // everything for defenses.
+            val onSpaceshipPart = city.cityConstructions.getCurrentConstruction().name in civInfo.gameInfo.spaceResources
+            if (city.health < city.getMaxHealth() || (civHasSignificantlyWeakerMilitaryThanEnemies && !onSpaceshipPart)) {
                 Automation.tryTrainMilitaryUnit(city) // need defenses if city is under attack
                 if (city.cityConstructions.constructionQueue.isNotEmpty())
                     continue // found a unit to build so move on
