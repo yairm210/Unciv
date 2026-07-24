@@ -4,7 +4,7 @@ import com.unciv.utils.Log
 import org.jetbrains.annotations.VisibleForTesting
 
 object UniqueTriggerActivationLimiter {
-    var maxTriggerRecursionDepth = 42 // var and public to allow making it a ModConstant later
+    var maxTriggerRecursionDepth = 100 // var and public to allow making it a ModConstant later
 
     /** Tracker for triggers - used in two ways:
      *  - A TriggerFunction is wrapped so the triggering Unique is added for the duration of the actual invoke and removed afterwards
