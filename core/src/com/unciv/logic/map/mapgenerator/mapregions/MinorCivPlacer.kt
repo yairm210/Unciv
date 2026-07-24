@@ -90,7 +90,10 @@ object MinorCivPlacer {
             (3 * civs.size * numUninhabitedTiles) / (numInhabitedTiles + numUninhabitedTiles)
         val maxByRatio = (civs.size + 1) / 2
         val targetForUninhabited = min(maxByRatio, maxByUninhabited)
-        val civsToAssign = unassignedCivs.take(targetForUninhabited)
+        // Prefer Maritime / Coast-bias CS for wilderness slots (often coastal).
+        val coastalFirst = unassignedCivs.filter { prefersCoastalStart(it) } +
+            unassignedCivs.filterNot { prefersCoastalStart(it) }
+        val civsToAssign = coastalFirst.take(targetForUninhabited)
         unassignedCivs.removeAll(civsToAssign)
         civAssignedToUninhabited.addAll(civsToAssign)
     }
@@ -149,7 +152,7 @@ object MinorCivPlacer {
         }
     }
 
-    /** Actually placee the minor civs, after they have been sorted into groups and assigned to regions */
+    /** Actually place the minor civs, after they have been sorted into groups and assigned to regions */
     private fun placeAssignedMinorCivs(
         civAssignedToUninhabited: ArrayList<Civilization>,
         tileMap: TileMap,
@@ -207,23 +210,48 @@ object MinorCivPlacer {
         return unassignedCivs
     }
 
-    /** Attempts to randomly place civs from [civsToPlace] in tiles from [tileList]. Assumes that
+    /** Attempts to place civs from [civsToPlace] in tiles from [tileList]. Assumes that
      *  [tileList] is pre-vetted and only contains habitable land tiles.
+     *  Maritime / Coast-bias city-states are placed first and prefer coastal tiles (Civ5 AssignStartingPlots).
      *  Will modify both [civsToPlace] and [tileList] as it goes! */
-    private fun tryPlaceMinorCivsInTiles(civsToPlace: MutableList<Civilization>, tileMap: TileMap, tileList: MutableList<Tile>, tileData: TileDataMap, ruleset: Ruleset) {
+    private fun tryPlaceMinorCivsInTiles(
+        civsToPlace: MutableList<Civilization>,
+        tileMap: TileMap,
+        tileList: MutableList<Tile>,
+        tileData: TileDataMap,
+        ruleset: Ruleset
+    ) {
+        // Coastal-preferring CS first so hinterland types do not consume scarce coastal tiles.
+        val ordered = civsToPlace.sortedByDescending { prefersCoastalStart(it) }.toMutableList()
+        civsToPlace.clear()
+        civsToPlace.addAll(ordered)
+
         while (tileList.isNotEmpty() && civsToPlace.isNotEmpty()) {
             val rng = GameContext(gameInfo = tileMap.gameInfo).stateBasedRandom("MinorCivPlcer.tryPlaceMinorCivsInTiles")
-            val chosenTile = tileList.random(rng)
+            val civToAdd = civsToPlace.first()
+            val pool = if (prefersCoastalStart(civToAdd)) {
+                val coastal = tileList.filter { it.isAdjacentToCoast() }
+                if (coastal.isNotEmpty()) coastal else tileList
+            } else tileList
+
+            val chosenTile = pool.random(rng)
             tileList.remove(chosenTile)
             val data = tileData[chosenTile]!!
             // If the randomly chosen tile is too close to a player or a city state, discard it
             if (data.impacts.containsKey(MapRegions.ImpactType.MinorCiv))
                 continue
             // Otherwise, go ahead and place the minor civ
-            val civToAdd = civsToPlace.first()
             civsToPlace.remove(civToAdd)
             placeMinorCiv(civToAdd, tileMap, chosenTile, tileData, ruleset)
         }
+    }
+
+    /** Maritime (food) city-states and any CS with Coast startBias prefer coastal starts, matching Civ5. */
+    @Readonly
+    fun prefersCoastalStart(civ: Civilization): Boolean {
+        val nation = civ.nation
+        if ("Coast" in nation.startBias) return true
+        return nation.cityStateType == "Maritime"
     }
 
     @Readonly
