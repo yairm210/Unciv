@@ -275,37 +275,31 @@ object LuxuryResourcePlacementLogic {
     ) {
         if (randomLuxuries.isEmpty()) return
         val rng = GameContext(gameInfo = tileMap.gameInfo).stateBasedRandom("LuxuryResourcePlacementLogic.addRandomLuxuries")
-        val useCiv5Targets = ruleset.modOptions.hasUnique(UniqueType.Civ5StyleMapResourceGeneration)
 
-        val targetRandomLuxuries: Int
-        val minimumRandomLuxuries: Int
-        if (useCiv5Targets) {
-            val (worldTotal, loopMin) = civ5WorldTarget(
+        var legacyTarget = tileData.size.toFloat().pow(0.45f).toInt() // Approximately
+        legacyTarget *= tileMap.mapParameters.getMapResources().randomLuxuriesPercent
+        legacyTarget /= 100
+        legacyTarget += rng.nextInt(regions.size) // Add random number based on number of civs
+        val minimumRandomLuxuries = tileData.size.toFloat().pow(0.2f).toInt() // Approximately
+
+        val targetRandomLuxuries = if (ruleset.modOptions.hasUnique(UniqueType.Civ5StyleWorldLuxuryTargets)) {
+            val (worldTotal, _) = civ5WorldTarget(
                 tileMap.mapParameters.mapSize,
                 tileMap.mapParameters.getMapResources(),
             )
             val extraVariance = if (regions.isEmpty()) 0 else rng.nextInt(regions.size)
-            targetRandomLuxuries = max(0, worldTotal + extraVariance - luxuriesPlacedBeforeRandom)
-            minimumRandomLuxuries = loopMin
+            val deficit = max(0, worldTotal + extraVariance - luxuriesPlacedBeforeRandom)
+            // Floor only: never place fewer random luxuries than Unciv's default formula.
+            max(legacyTarget, deficit)
         } else {
-            var legacyTarget = tileData.size.toFloat().pow(0.45f).toInt() // Approximately
-            legacyTarget *= tileMap.mapParameters.getMapResources().randomLuxuriesPercent
-            legacyTarget /= 100
-            legacyTarget += rng.nextInt(regions.size) // Add random number based on number of civs
-            targetRandomLuxuries = legacyTarget
-            minimumRandomLuxuries = tileData.size.toFloat().pow(0.2f).toInt() // Approximately
+            legacyTarget
         }
 
         if (targetRandomLuxuries <= 0) return
 
         val worldTiles = tileMap.values.asSequence().shuffled()
-        val shuffledTypes = randomLuxuries.shuffled()
-        for ((index, luxury) in shuffledTypes.withIndex()) {
-            val targetForThisLuxury = if (useCiv5Targets) {
-                civ5TargetForRandomLuxuryType(
-                    index, shuffledTypes.size, targetRandomLuxuries, minimumRandomLuxuries
-                )
-            } else if (randomLuxuries.size > 8) {
+        for ((index, luxury) in randomLuxuries.shuffled().withIndex()) {
+            val targetForThisLuxury = if (randomLuxuries.size > 8) {
                 targetRandomLuxuries / 10
             } else {
                 val minimum = max(3, minimumRandomLuxuries - index)
@@ -333,21 +327,11 @@ object LuxuryResourcePlacementLogic {
         tileMap: TileMap,
         ruleset: Ruleset
     ) {
-        val useCiv5Targets = ruleset.modOptions.hasUnique(UniqueType.Civ5StyleMapResourceGeneration)
-
-        val regionTargetNumber = if (useCiv5Targets) {
-            civ5RegionalTarget(
-                tileMap.mapParameters.mapSize,
-                regions.size,
-                tileMap.mapParameters.getMapResources(),
-            )
-        } else {
-            val idealCivsForMapSize = max(2, tileData.size / 500)
-            var target =
-                (tileData.size / 600) - (0.3f * abs(regions.size - idealCivsForMapSize)).toInt()
-            target += tileMap.mapParameters.getMapResources().regionalLuxuriesDelta
-            max(1, target)
-        }
+        val idealCivsForMapSize = max(2, tileData.size / 500)
+        var regionTargetNumber =
+            (tileData.size / 600) - (0.3f * abs(regions.size - idealCivsForMapSize)).toInt()
+        regionTargetNumber += tileMap.mapParameters.getMapResources().regionalLuxuriesDelta
+        regionTargetNumber = max(1, regionTargetNumber)
 
         for (region in regions) {
             val resource = ruleset.tileResources[region.luxury] ?: continue
@@ -462,23 +446,7 @@ object LuxuryResourcePlacementLogic {
         }
     }
 
-    // region Civ5 AssignStartingPlots tables (BNW / Lekmap)
-
-    fun civ5RegionalTarget(mapSize: MapSize, civCount: Int, setting: MapResourceSetting): Int {
-        val table = when (mapSize.getPredefinedOrNextSmaller()) {
-            MapSize.Predefined.Tiny -> intArrayOf(0, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
-            MapSize.Predefined.Small -> intArrayOf(0, 3, 3, 3, 4, 4, 4, 3, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
-            MapSize.Predefined.Medium -> intArrayOf(0, 3, 3, 4, 4, 5, 5, 6, 5, 5, 4, 4, 3, 3, 2, 2, 1, 1, 1, 1, 1, 1)
-            MapSize.Predefined.Large -> intArrayOf(0, 3, 4, 4, 5, 5, 5, 6, 6, 7, 6, 6, 5, 5, 4, 4, 3, 3, 2, 2, 2, 2)
-            MapSize.Predefined.Huge -> intArrayOf(0, 4, 5, 5, 6, 6, 6, 6, 7, 7, 7, 8, 7, 7, 6, 6, 5, 5, 4, 4, 3, 3)
-        }
-        val delta = when (setting) {
-            MapResourceSetting.sparse -> -2
-            MapResourceSetting.abundant -> 2
-            else -> 0
-        }
-        return max(1, table[civCount.coerceIn(1, table.lastIndex)] + delta)
-    }
+    // region Civ5 AssignStartingPlots world luxury totals
 
     /** @return Pair(worldTotalTarget, loopMinimum) from Civ5 GetWorldLuxuryTargetNumbers */
     fun civ5WorldTarget(mapSize: MapSize, setting: MapResourceSetting): Pair<Int, Int> {
@@ -494,17 +462,6 @@ object LuxuryResourcePlacementLogic {
             MapResourceSetting.abundant -> abundant
             else -> standard
         }
-    }
-
-    private fun civ5TargetForRandomLuxuryType(
-        index: Int, typeCount: Int, totalRandomTarget: Int, loopMin: Int
-    ): Int {
-        if (typeCount <= 0) return 0
-        val ratios = MapRegions.randomLuxuryRatios[typeCount]
-        if (ratios == null || typeCount > 8) return max(loopMin, (totalRandomTarget + 9) / 10)
-        val minimum = max(3, loopMin - index)
-        val share = (totalRandomTarget * ratios[min(index, ratios.lastIndex)] + 0.5f).toInt()
-        return max(minimum, share)
     }
 
     // endregion

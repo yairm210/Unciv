@@ -5,17 +5,8 @@ import com.unciv.logic.map.mapgenerator.resourceplacement.LuxuryResourcePlacemen
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-/** Spot-checks Civ5 AssignStartingPlots tables behind `Civ5-style map resource generation`. */
-class Civ5MapResourceGenerationTests {
-
-    @Test
-    fun hugeAbundantRegionalTargetMatchesCiv5() {
-        // Civ5 Huge table for 10 civs is 7, Abundant +2 → 9
-        assertEquals(
-            9,
-            LuxuryResourcePlacementLogic.civ5RegionalTarget(MapSize.Huge, 10, MapResourceSetting.abundant)
-        )
-    }
+/** Spot-checks Civ5 world luxury totals behind `Civ5-style world luxury targets`. */
+class Civ5WorldLuxuryTargetTests {
 
     @Test
     fun mediumDefaultWorldTargetMatchesCiv5Standard() {
@@ -23,6 +14,15 @@ class Civ5MapResourceGenerationTests {
             MapSize.Medium, MapResourceSetting.default
         )
         assertEquals(60, total)
+        assertEquals(5, loopMin)
+    }
+
+    @Test
+    fun largeDefaultWorldTargetIs88() {
+        val (total, loopMin) = LuxuryResourcePlacementLogic.civ5WorldTarget(
+            MapSize.Large, MapResourceSetting.default
+        )
+        assertEquals(88, total)
         assertEquals(5, loopMin)
     }
 
