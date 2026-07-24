@@ -39,8 +39,9 @@ object NationDescriptions {
         }
         textList += FormattedLine()
 
-        if (startBias.isNotEmpty()) {
-            startBias.withIndex().forEach {
+        val effectiveStartBias = getStartBias(ruleset)
+        if (effectiveStartBias.isNotEmpty()) {
+            effectiveStartBias.withIndex().forEach {
                 // can be "Avoid []"
                 val link = if ('[' !in it.value) it.value
                 else squareBraceRegex.find(it.value)!!.groups[1]!!.value

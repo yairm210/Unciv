@@ -29,6 +29,16 @@
         "title": "Ally Bonus Uniques",
         "description": "List of unique abilities granted to major civilizations when allied to city state"
       },
+      "startBias": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "examples": ["Avoid [Tundra]", "Avoid [Desert]", "Coast", "Grassland"]
+        },
+        "uniqueItems": true,
+        "title": "Start Bias",
+        "description": "Types of tiles where every city-state of this type is more likely to start. Merged with any per-nation startBias."
+      },
       "color": {
         "$ref": "refs/Color.schema.json",
         "description": "RGB color of text in civilopedia",
