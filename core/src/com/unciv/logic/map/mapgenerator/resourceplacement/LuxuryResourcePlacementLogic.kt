@@ -187,7 +187,7 @@ object LuxuryResourcePlacementLogic {
         placeLuxuriesAtMinorCivStartLocations(tileMap, ruleset, regions, randomLuxuries, cityStateLuxuries, tileData)
         addRegionalLuxuries(tileData, regions, tileMap, ruleset)
 
-        // Count luxuries before random top-up / second-type starts (Civ5 world target excludes those).
+        // Count luxuries before random top-up / second-type starts so a ModConstants floor can top up the deficit.
         val luxuriesPlacedBeforeRandom = countLuxuryTiles(tileMap, ruleset)
         addRandomLuxuries(randomLuxuries, tileData, tileMap, regions, ruleset, luxuriesPlacedBeforeRandom)
 
@@ -275,20 +275,18 @@ object LuxuryResourcePlacementLogic {
     ) {
         if (randomLuxuries.isEmpty()) return
         val rng = GameContext(gameInfo = tileMap.gameInfo).stateBasedRandom("LuxuryResourcePlacementLogic.addRandomLuxuries")
+        val resourceSetting = tileMap.mapParameters.getMapResources()
 
         var legacyTarget = tileData.size.toFloat().pow(0.45f).toInt() // Approximately
-        legacyTarget *= tileMap.mapParameters.getMapResources().randomLuxuriesPercent
+        legacyTarget *= resourceSetting.randomLuxuriesPercent
         legacyTarget /= 100
         legacyTarget += rng.nextInt(regions.size) // Add random number based on number of civs
         val minimumRandomLuxuries = tileData.size.toFloat().pow(0.2f).toInt() // Approximately
 
-        val targetRandomLuxuries = if (ruleset.modOptions.hasUnique(UniqueType.Civ5StyleWorldLuxuryTargets)) {
-            val (worldTotal, _) = civ5WorldTarget(
-                tileMap.mapParameters.mapSize,
-                tileMap.mapParameters.getMapResources(),
-            )
+        val worldFloor = resolveMinimumWorldLuxuryFloor(ruleset, tileMap.mapParameters.mapSize, resourceSetting)
+        val targetRandomLuxuries = if (worldFloor > 0) {
             val extraVariance = if (regions.isEmpty()) 0 else rng.nextInt(regions.size)
-            val deficit = max(0, worldTotal + extraVariance - luxuriesPlacedBeforeRandom)
+            val deficit = max(0, worldFloor + extraVariance - luxuriesPlacedBeforeRandom)
             // Floor only: never place fewer random luxuries than Unciv's default formula.
             max(legacyTarget, deficit)
         } else {
@@ -446,22 +444,25 @@ object LuxuryResourcePlacementLogic {
         }
     }
 
-    // region Civ5 AssignStartingPlots world luxury totals
+    // region Optional world luxury floor (ModConstants)
 
-    /** @return Pair(worldTotalTarget, loopMinimum) from Civ5 GetWorldLuxuryTargetNumbers */
-    fun civ5WorldTarget(mapSize: MapSize, setting: MapResourceSetting): Pair<Int, Int> {
-        val (sparse, standard, abundant) = when (mapSize.getPredefinedOrNextSmaller()) {
-            MapSize.Predefined.Tiny -> Triple(24 to 4, 35 to 4, 40 to 4)
-            MapSize.Predefined.Small -> Triple(36 to 4, 60 to 5, 80 to 5)
-            MapSize.Predefined.Medium -> Triple(48 to 5, 60 to 5, 80 to 5)
-            MapSize.Predefined.Large -> Triple(60 to 5, 88 to 5, 100 to 5)
-            MapSize.Predefined.Huge -> Triple(76 to 6, 112 to 6, 128 to 6)
+    /** Resolves optional world luxury floor from ModConstants; 0 means disabled. Custom sizes use [MapSize.getPredefinedOrNextSmaller]. */
+    @Readonly
+    fun resolveMinimumWorldLuxuryFloor(
+        ruleset: Ruleset,
+        mapSize: MapSize,
+        setting: MapResourceSetting,
+    ): Int {
+        val constants = ruleset.modOptions.constants
+        val base = when (mapSize.getPredefinedOrNextSmaller()) {
+            MapSize.Predefined.Tiny -> constants.minimumWorldLuxuriesTiny
+            MapSize.Predefined.Small -> constants.minimumWorldLuxuriesSmall
+            MapSize.Predefined.Medium -> constants.minimumWorldLuxuriesMedium
+            MapSize.Predefined.Large -> constants.minimumWorldLuxuriesLarge
+            MapSize.Predefined.Huge -> constants.minimumWorldLuxuriesHuge
         }
-        return when (setting) {
-            MapResourceSetting.sparse -> sparse
-            MapResourceSetting.abundant -> abundant
-            else -> standard
-        }
+        if (base <= 0) return 0
+        return (base * setting.randomLuxuriesPercent) / 100
     }
 
     // endregion

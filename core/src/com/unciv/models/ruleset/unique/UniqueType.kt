@@ -1092,10 +1092,6 @@ enum class UniqueType(
     AllowRazeCapital("Allow raze capital", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
     AllowRazeHolyCity("Allow raze holy city", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
 
-    Civ5StyleWorldLuxuryTargets("Civ5-style world luxury targets", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals,
-        docDescription = "Tops up random luxuries during map generation so the map total reaches at least the Civ5 AssignStartingPlots world target. " +
-            "Never places fewer random luxuries than Unciv's default formula. Does not change regional, bonus, or strategic placement."),
-
     SuppressWarnings("Suppress warning [validationWarning]", *UniqueTarget.CanIncludeSuppression, flags = UniqueFlag.setOfHiddenNoConditionals, docDescription = Suppression.uniqueDocDescription),
 
     // Declarative Mod compatibility (see [ModCompatibility]):

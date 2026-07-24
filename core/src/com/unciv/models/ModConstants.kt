@@ -94,6 +94,16 @@ class ModConstants {
     var minRiverLength = 5
     var maxRiverLength = 666  // Do not set to less than the maximal map radius
 
+    // LuxuryResourcePlacementLogic: optional floor for total luxuries before random top-up.
+    // 0 = disabled (Unciv default tiles^0.45 formula only). When > 0 for the map size bucket
+    // (custom sizes use MapSize.getPredefinedOrNextSmaller), random luxuries use
+    // max(legacy, max(0, floor - alreadyPlaced)). Sparse/Abundant scale via MapResourceSetting.randomLuxuriesPercent.
+    var minimumWorldLuxuriesTiny = 0
+    var minimumWorldLuxuriesSmall = 0
+    var minimumWorldLuxuriesMedium = 0
+    var minimumWorldLuxuriesLarge = 0
+    var minimumWorldLuxuriesHuge = 0
+
     // Factors in formula for Maximum Number of foundable Religions
     var religionLimitBase = 1
     var religionLimitMultiplier = 0.5f
