@@ -274,8 +274,8 @@ object LuxuryResourcePlacementLogic {
     ) {
         if (randomLuxuries.isEmpty()) return
         val rng = GameContext(gameInfo = tileMap.gameInfo).stateBasedRandom("LuxuryResourcePlacementLogic.addRandomLuxuries")
-        val useCiv5Targets = ruleset.modOptions.hasUnique(UniqueType.Civ5StyleWorldLuxuryTargets)
-        val worldPercent = mapGenPercentModifier(ruleset, UniqueType.WorldLuxuryTargetMapGenModifier)
+        val useCiv5Targets = ruleset.modOptions.hasUnique(UniqueType.Civ5StyleMapResourceGeneration)
+        val worldPercent = Civ5LuxuryTargetNumbers.mapGenPercentModifier(ruleset, UniqueType.WorldLuxuryTargetMapGenModifier)
 
         val targetRandomLuxuries: Int
         val minimumRandomLuxuries: Int
@@ -341,8 +341,8 @@ object LuxuryResourcePlacementLogic {
         tileMap: TileMap,
         ruleset: Ruleset
     ) {
-        val regionalPercent = mapGenPercentModifier(ruleset, UniqueType.RegionalLuxuriesMapGenModifier)
-        val useCiv5Targets = ruleset.modOptions.hasUnique(UniqueType.Civ5StyleWorldLuxuryTargets)
+        val regionalPercent = Civ5LuxuryTargetNumbers.mapGenPercentModifier(ruleset, UniqueType.RegionalLuxuriesMapGenModifier)
+        val useCiv5Targets = ruleset.modOptions.hasUnique(UniqueType.Civ5StyleMapResourceGeneration)
 
         val regionTargetNumber = if (useCiv5Targets) {
             Civ5LuxuryTargetNumbers.regionalTarget(
@@ -388,13 +388,6 @@ object LuxuryResourcePlacementLogic {
             val resourceName = tile.resource ?: return@count false
             ruleset.tileResources[resourceName]?.resourceType == ResourceType.Luxury
         }
-
-    /** Returns multiplier from a ModOptions `[relativeAmount]% …` unique, default 1. */
-    @Readonly
-    private fun mapGenPercentModifier(ruleset: Ruleset, type: UniqueType): Float {
-        val unique = ruleset.modOptions.getMatchingUniques(type).firstOrNull() ?: return 1f
-        return unique.params[0].toFloat() / 100f
-    }
 
     private fun placeLuxuriesAtMinorCivStartLocations(
         tileMap: TileMap,

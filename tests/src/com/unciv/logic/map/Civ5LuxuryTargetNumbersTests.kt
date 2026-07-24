@@ -93,4 +93,34 @@ class Civ5LuxuryTargetNumbersTests {
         assertEquals(14, first)
         assertTrue(first >= 5)
     }
+
+    @Test
+    fun civ5BonusFrequencyMatchesAssignStartingPlots() {
+        assertEquals(0.65f, Civ5LuxuryTargetNumbers.civ5BonusFrequencyMultiplier(MapResourceSetting.default))
+        assertEquals(0.35f, Civ5LuxuryTargetNumbers.civ5BonusFrequencyMultiplier(MapResourceSetting.abundant))
+        assertEquals(1f, Civ5LuxuryTargetNumbers.civ5BonusFrequencyMultiplier(MapResourceSetting.sparse))
+    }
+
+    @Test
+    fun bonusPercentModifierIncreasesDensity() {
+        val base = Civ5LuxuryTargetNumbers.effectiveBonusFrequencyMultiplier(
+            MapResourceSetting.default, useCiv5 = true, percentModifier = 1f
+        )
+        val denser = Civ5LuxuryTargetNumbers.effectiveBonusFrequencyMultiplier(
+            MapResourceSetting.default, useCiv5 = true, percentModifier = 1.5f
+        )
+        assertEquals(0.65f, base)
+        assertTrue(denser < base)
+        assertEquals(0.65f / 1.5f, denser, 0.0001f)
+    }
+
+    @Test
+    fun withoutCiv5UsesUncivMapResourceSettingMultiplier() {
+        assertEquals(
+            MapResourceSetting.abundant.bonusFrequencyMultiplier,
+            Civ5LuxuryTargetNumbers.effectiveBonusFrequencyMultiplier(
+                MapResourceSetting.abundant, useCiv5 = false
+            )
+        )
+    }
 }
