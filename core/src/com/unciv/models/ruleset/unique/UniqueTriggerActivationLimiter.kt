@@ -1,6 +1,7 @@
 package com.unciv.models.ruleset.unique
 
 import com.unciv.utils.Log
+import org.jetbrains.annotations.VisibleForTesting
 
 object UniqueTriggerActivationLimiter {
     var maxTriggerRecursionDepth = 42 // var and public to allow making it a ModConstant later
@@ -17,9 +18,14 @@ object UniqueTriggerActivationLimiter {
      */
     private val displayLog = ArrayDeque<Unique>()
 
+    /** For debugging and unit tests */
+    @VisibleForTesting
+    var maxDepth = 0
+
     fun clear() {
         recursionLog.clear()
         displayLog.clear()
+        maxDepth = 0
     }
 
     fun add(unique: Unique) {
@@ -27,6 +33,7 @@ object UniqueTriggerActivationLimiter {
             throw InfiniteRecursionException()
         recursionLog.addLast(unique)
         displayLog.addLast(unique)
+        maxDepth = maxDepth.coerceAtLeast(recursionLog.size)
         Log.debug("Added %s (depth %d)", unique.text, recursionLog.size)
     }
 
