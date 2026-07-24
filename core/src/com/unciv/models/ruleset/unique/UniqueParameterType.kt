@@ -346,7 +346,7 @@ enum class UniqueParameterType(
 
     /** Implemented by [Tile.matchesFilter][com.unciv.logic.map.tile.Tile.matchesFilter] */
     TileFilter("tileFilter", "Farm", "Anything that can be used either in an improvementFilter or in a terrainFilter can be used here, plus 'unimproved'", "Tile Filters") {
-        override val staticKnownValues = setOf("unimproved", "improved", "worked", "pillaged", "All Road", "Great Improvement")
+        override val staticKnownValues = setOf("unimproved", "improved", "worked", "pillaged", Constants.allRoad, "Great Improvement")
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = getErrorSeverityForFilter(parameterText, ruleset)
 
@@ -447,8 +447,8 @@ enum class UniqueParameterType(
     },
 
     /** Implemented by [TileImprovement.matchesFilter][com.unciv.models.ruleset.tile.TileImprovement.matchesFilter] */
-    ImprovementFilter("improvementFilter", "All Road", null, "Improvement Filters") {
-        override val staticKnownValues = setOf("Improvement", "All Road", "Great Improvement", "Great") + Constants.all
+    ImprovementFilter("improvementFilter", Constants.allRoad, null, "Improvement Filters") {
+        override val staticKnownValues = setOf("Improvement", Constants.allRoad, "Great Improvement", "Great") + Constants.all
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = getErrorSeverityForFilter(parameterText, ruleset)
 

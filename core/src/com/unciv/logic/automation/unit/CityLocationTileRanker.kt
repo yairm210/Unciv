@@ -1,5 +1,6 @@
 package com.unciv.logic.automation.unit
 
+import com.unciv.Constants
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
@@ -93,7 +94,10 @@ object CityLocationTileRanker {
 
         val onCoast = newCityTile.isAdjacentToCoast()
         val onHill = newCityTile.isHill()
-        val isNextToMountain = newCityTile.isAdjacentTo("Mountain")
+        val isNextToMountain = newCityTile.isAdjacentTo(Constants.mountain)
+        val unImprovable = newCityTile.getTerrainMatchingUniques(UniqueType.RestrictedBuildableImprovements)
+            .any { it.params[0] == Constants.allRoad }
+
         // Only count a luxury resource that we don't have yet as unique once
         val newUniqueLuxuryResources = HashSet<TileResource>()
 
@@ -105,7 +109,8 @@ object CityLocationTileRanker {
         // This bonus for settling on river is a bit outsized for the importance, but otherwise they have a habit of settling 1 tile away
         if (newCityTile.isAdjacentToRiver()) tileValue += 20
         // We want to found the city on an oasis because it can't be improved otherwise
-        if (newCityTile.terrainHasUnique(UniqueType.Unbuildable)) tileValue += 3
+        if (unImprovable) tileValue += 3
+
         val resource = newCityTile.tileResource
         if (civ.canSeeResource(resource)) {
             tileValue -= 4
@@ -120,12 +125,12 @@ object CityLocationTileRanker {
 
         var tiles = 0
         for (i in 0..2) {
-                //Ideally, we shouldn't really count the center tile, as it's converted into 1 production 2 food anyways with special cases treated above, but doing so can lead to AI moving settler back and forth until forever
-                for (nearbyTile in newCityTile.getTilesAtDistance(i)) {
-                    tiles++
-                    tileValue += rankTile(nearbyTile, civ, onCoast, newUniqueLuxuryResources, baseTileMap) * (3f / (i + 1))
-                    //Tiles close to the city can be worked more quickly, and thus should gain higher weight.
-                }
+            //Ideally, we shouldn't really count the center tile, as it's converted into 1 production 2 food anyways with special cases treated above, but doing so can lead to AI moving settler back and forth until forever
+            for (nearbyTile in newCityTile.getTilesAtDistance(i)) {
+                tiles++
+                tileValue += rankTile(nearbyTile, civ, onCoast, newUniqueLuxuryResources, baseTileMap) * (3f / (i + 1))
+                //Tiles close to the city can be worked more quickly, and thus should gain higher weight.
+            }
         }
 
         // Placing cities on the edge of the map is bad, we can't even build improvements on them!
