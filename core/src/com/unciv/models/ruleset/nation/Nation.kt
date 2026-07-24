@@ -108,7 +108,7 @@ class Nation : RulesetObject() {
     @Readonly
     fun getStartBias(ruleset: Ruleset): List<String> {
         val typeName = cityStateType ?: return startBias
-        val typeBias = ruleset.cityStateTypes[typeName]?.startBias.orEmpty()
+        val typeBias = ruleset.cityStateTypes[typeName]?.startBias ?: emptyList()
         if (typeBias.isEmpty()) return startBias
         if (startBias.isEmpty()) return typeBias
         return (startBias + typeBias).distinct()
