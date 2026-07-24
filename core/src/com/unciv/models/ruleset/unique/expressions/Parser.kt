@@ -22,7 +22,7 @@ import yairm210.purity.annotations.Readonly
  *  - Non-Alphanumeric tokens are always one character (ie needs work to support `<=` and similar operators).
  *  - Numeric constants do not support scientific notation.
  *  - Alphanumeric identifiers (can be matched with simple countables or function names) can _only_ contain letters and digits as defined by  defined by unicode properties, and '_'.
- *  - Functions with arity > 1 aren't supported. No parameter lists with comma - in fact, functions are just implemented as infix operators.
+ *  - Functions support comma-separated arguments, e.g., max(a, b, c).
  *  - Only prefix Unary operators, e.g. no standard factorial notation.
  */
 object Parser {
@@ -57,6 +57,7 @@ object Parser {
     class MissingOperand(position: Int) : SyntaxError("Missing operand", position)
     class InvalidConstant(position: Int, text: String) : SyntaxError("Invalid constant: $text", position)
     class UnknownIdentifier(position: Int, text: String) : ParsingError("Unknown identifier: \"$text\"", position)
+    class InvalidFunctionArity(position: Int, functionName: String, expected: String, actual: Int) : ParsingError("Function $functionName at position $position should get $expected arguments, got $actual", position)
     class EmptyExpression : ParsingError("Empty expression", 0)
     //endregion
 
@@ -108,6 +109,39 @@ object Parser {
             return Node.UnaryOperation(operator, fetchOperand())
         }
 
+        private fun handleFunction(function: Operator.Function): Node {
+            val functionPosition = currentPosition
+            next() // consume function name
+            expect(Parentheses.Opening)
+            next() // consume '('
+
+            val arguments = mutableListOf<Node>()
+            // Parse first argument
+            arguments.add(expression())
+
+            // Parse additional arguments separated by commas
+            while (currentToken == Tokenizer.Comma) {
+                next() // consume ','
+                arguments.add(expression())
+            }
+
+            expect(Parentheses.Closing)
+            next() // consume ')'
+
+            // Check arity range
+            if (arguments.size !in function.arityRange) {
+                val expectedRange = function.arityRange
+                val expectedDesc = when {
+                    expectedRange.last == Int.MAX_VALUE -> "${expectedRange.first} arguments and up"
+                    expectedRange.first == expectedRange.last -> "${expectedRange.first} argument${if (expectedRange.first == 1) "" else "s"}"
+                    else -> "${expectedRange.first}-${expectedRange.last} arguments"
+                }
+                throw InvalidFunctionArity(functionPosition, function.symbol, expectedDesc, arguments.size)
+            }
+
+            return Node.FunctionCall(function, arguments)
+        }
+
         /**
          * EXAMPLE 1 - 1+2*3
          * We first build the '1' node in the initial fetchOperand().
@@ -149,6 +183,8 @@ object Parser {
             if (currentToken == StartToken) next()
             if (currentToken.canBeUnary()) {
                 return handleUnary()
+            } else if (currentToken is Operator.Function) {
+                return handleFunction(currentToken as Operator.Function)
             } else if (currentToken == Parentheses.Opening) {
                 next()
                 val node = expression()

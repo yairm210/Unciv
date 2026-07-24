@@ -222,7 +222,7 @@ class MapEditorViewTab(
             }
         }
 
-        if (tile.resource != null && (tile.resourceAmount > 0 || tile.tileResource.resourceType == ResourceType.Strategic)) {
+        if (tile.tileResource != null && (tile.resourceAmount > 0 || tile.tileResource?.resourceType == ResourceType.Strategic)) {
             renderedInfo.addSeparator(Color.GRAY)
             renderedInfo.add(Table().apply {
                 add("Resource abundance".toLabel(alignment = Align.left)).left().growX()

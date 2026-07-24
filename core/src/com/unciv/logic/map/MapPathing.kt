@@ -16,7 +16,7 @@ object MapPathing {
      */
     @Suppress("UNUSED_PARAMETER") // While `from` is unused, this function should stay close to the signatures expected by the AStar and getPath `heuristic` parameter.
     @Readonly
-    private fun roadPreferredMovementCost(civ: Civilization, from: Tile, to: Tile): Float{
+    internal fun roadPreferredMovementCost(civ: Civilization, from: Tile, to: Tile): Float{
         // hasRoadConnection accounts for civs that treat jungle/forest as roads
         // Ignore road over river penalties.
         if ((to.hasRoadConnection(civ, false) || to.hasRailroadConnection(false)))

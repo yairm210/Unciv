@@ -938,7 +938,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         // The state also needs to be valid for uniques to see the cached version
         cache.state = GameContext(this)
         // The improvement may get removed if it has ruins effects or is a barbarian camp, and will still be needed if removed
-        val improvement = tile.improvement
+        val improvement = tile.tileImprovement
 
 
         // To allow triggering on barb camps and ruins, must happen before entering them
@@ -946,10 +946,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
         for (triggeredUnique in triggeredUniques)
             UniqueTriggerActivation.triggerUnique(triggeredUnique, this)
 
-        if (civ.isMajorCiv() && tile.getTileImprovement()?.isAncientRuinsEquivalent(cache.state) == true) {
+        if (civ.isMajorCiv() && improvement?.isAncientRuinsEquivalent(cache.state) == true) {
             getAncientRuinBonus(tile)
         }
-        if (improvement == Constants.barbarianEncampment && !civ.isBarbarian)
+        if (improvement?.name == Constants.barbarianEncampment && !civ.isBarbarian)
             clearEncampment(tile)
         // Check whether any civilians without military units are there.
         // Keep in mind that putInTile(), which calls this method,
@@ -975,10 +975,12 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun putInTile(tile: Tile) {
         when {
             // Allow transported units to be placed even if they couldn't 'move' there normally
-            !isTransported && !movement.canMoveTo(tile) ->
-                throw IllegalStateException("Unit $name of ${civ.civID} at $currentTile can't be put in tile $tile," +
-                        " reason: ${movement.getCannotMoveToReason(tile)}")
-
+            !isTransported && !movement.canMoveTo(tile) -> {
+                val currentTile = if (hasTile()) currentTile else null
+                throw IllegalStateException(
+                    "Unit $name of ${civ.civID} at $currentTile can't be put in tile $tile, reason: ${movement.getCannotMoveToReason(tile)}"
+                )
+            }
             baseUnit.movesLikeAirUnits || isTransported -> {
                 tile.airUnits.add(this)
             }
@@ -1040,8 +1042,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
         var goldGained =
                 civ.getDifficulty().clearBarbarianCampReward * civ.gameInfo.speed.goldCostModifier
-        if (civ.hasUnique(UniqueType.TripleGoldFromEncampmentsAndCities))
-            goldGained *= 3f
         
         for (unique in civ.getMatchingUniques(UniqueType.GoldFromEncampmentsAndCities, cache.state)) {
             goldGained *= unique.params[0].toPercent()

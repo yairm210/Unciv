@@ -76,7 +76,7 @@ object MinorCivPlacer {
             if (!canPlaceMinorCiv(tile, tileData)) continue
             val continent = tile.getContinent()
             if (continent in uninhabitedContinents) {
-                if (tile.isCoastalTile())
+                if (tile.isAdjacentToCoast())
                     uninhabitedCoastal.add(tile)
                 else
                     uninhabitedHinterland.add(tile)

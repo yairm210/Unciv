@@ -1,6 +1,7 @@
 package com.unciv.logic.automation.unit
 
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.TurnManager
@@ -24,6 +25,7 @@ internal class WorkerAutomationTest {
 
     @Before
     fun setUp() {
+        UncivGame.Current.settings.useAStarPathfinding = true
         testGame.makeHexagonalMap(7)
         civInfo = testGame.addCiv()
         workerAutomation = WorkerAutomation(civInfo, 3)
@@ -40,8 +42,8 @@ internal class WorkerAutomationTest {
         testGame.addCity(civInfo, testGame.tileMap[0,0])
 
         val currentTile = testGame.tileMap[1,1] // owned by city
-        currentTile.improvement = "Farm" // Set existing improvement
-        currentTile.resource = "Iron" // This tile also has a resource needs to be enabled by a building a Mine
+        currentTile.setImprovementBasic("Farm") // Set existing improvement
+        currentTile.setTileResource("Iron") // This tile also has a resource needs to be enabled by a building a Mine
 
         val mapUnit = testGame.addUnit("Worker", civInfo, currentTile)
 
@@ -67,7 +69,7 @@ internal class WorkerAutomationTest {
         val currentTile = testGame.tileMap[1,1]
         currentTile.addTerrainFeature("Hill")
         currentTile.addTerrainFeature("Forest")
-        currentTile.resource = "Citrus"
+        currentTile.setTileResource("Citrus")
         currentTile.resourceAmount = 1
 
         val mapUnit = testGame.addUnit("Worker", civInfo, currentTile)
@@ -94,7 +96,7 @@ internal class WorkerAutomationTest {
         city.workedTiles.add(currentTile.position)
 
         currentTile.baseTerrain = Constants.grassland
-        currentTile.resource = "Iron"
+        currentTile.setTileResource("Iron")
 
         val mapUnit = testGame.addUnit("Worker", civInfo, currentTile)
 
@@ -123,7 +125,7 @@ internal class WorkerAutomationTest {
         val currentTile = testGame.tileMap[1,1]
         currentTile.baseTerrain = Constants.grassland
         currentTile.addTerrainFeature(Constants.hill)
-        currentTile.resource = "Gold Ore"
+        currentTile.setTileResource("Gold Ore")
 
         val mapUnit = testGame.addUnit("Worker", civInfo, currentTile)
 
@@ -271,6 +273,12 @@ internal class WorkerAutomationTest {
 
         val city1 = testGame.addCity(civInfo, testGame.tileMap[3,3])
         val city2 = testGame.addCity(civInfo, testGame.tileMap[-3,-3])
+        // preexisting road along half, just to complicate things
+        testGame.tileMap[3,3].setRoadStatus(RoadStatus.Railroad, civInfo)
+        testGame.tileMap[2,2].setRoadStatus(RoadStatus.Railroad, civInfo)
+        testGame.tileMap[1,1].setRoadStatus(RoadStatus.Railroad, civInfo)
+        testGame.tileMap[0,0].setRoadStatus(RoadStatus.Railroad, civInfo)
+        //testGame.tileMap[1,1].setRoadStatus(RoadStatus.Railroad, civInfo)
         val cities = listOf(city1, city2)
         civInfo.addGold(100000000)
         for (city in cities) {
@@ -336,7 +344,7 @@ internal class WorkerAutomationTest {
         testGame.addCity(civInfo, testGame.tileMap[0,0])
 
         val currentTile = testGame.tileMap[1,1] // owned by city
-        currentTile.resource = "Iron" // This tile also has a resource needs to be enabled by a building a Mine
+        currentTile.setTileResource("Iron") // This tile also has a resource needs to be enabled by a building a Mine
         currentTile.setImprovement("Mine")
         currentTile.setPillaged()
 

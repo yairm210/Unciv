@@ -6,7 +6,6 @@ import com.unciv.logic.city.CityStats
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.TileMap
-import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.INonPerpetualConstruction
@@ -396,7 +395,9 @@ object Automation {
     @Readonly
     private fun improvementIsRemovable(city: City, tile: Tile): Boolean {
         val gameContext = GameContext(city.civ, city, tile = tile)
-        return (tile.getTileImprovement()?.hasUnique(UniqueType.AutomatedUnitsWillNotReplace, gameContext) == false  && tile.getTileImprovement()?.hasUnique(UniqueType.Irremovable, gameContext) == false)
+        val improvement = tile.tileImprovement ?: return false
+        return !improvement.hasUnique(UniqueType.AutomatedUnitsWillNotReplace, gameContext) &&
+            !improvement.hasUnique(UniqueType.Irremovable, gameContext)
     }
 
     /** Support [UniqueType.CreatesOneImprovement] unique - find best tile for placement automation */
@@ -405,7 +406,7 @@ object Automation {
         val localUniqueCache = LocalUniqueCache()
         val civ = city.civ
         return city.getTiles().filter {
-            (it.getTileImprovement() == null || improvementIsRemovable(city, it))
+            (it.tileImprovement == null || improvementIsRemovable(city, it))
                 && it.improvementFunctions.canBuildImprovement(improvement, city.state)
         }.maxByOrNull { 
             // Needs to take into account future improvement layouts, and better placement of citadel-like improvements
@@ -427,8 +428,8 @@ object Automation {
         var rank = rankStatsValue(stats, civInfo)
         if (tile.improvement == null) rank += 0.5f // improvement potential!
         if (tile.isPillaged()) rank += 0.6f
-        if (tile.hasViewableResource(civInfo)) {
-            val resource = tile.tileResource
+        val resource = tile.tileResource
+        if (civInfo.canSeeResource(resource)) {
             if (resource.resourceType != ResourceType.Bonus) rank += 1f // for usage
             if (tile.improvement == null) rank += 1f // improvement potential - resources give lots when improved!
             if (tile.isPillaged()) rank += 1.1f // even better, repair is faster
@@ -452,8 +453,9 @@ object Automation {
         var score = distance * 100
 
         // Resources are good: less points
-        if (tile.hasViewableResource(city.civ)) {
-            if (tile.tileResource.resourceType != ResourceType.Bonus) score -= 105
+        val resource = tile.tileResource
+        if (city.civ.canSeeResource(resource)) {
+            if (resource.resourceType != ResourceType.Bonus) score -= 105
             else if (distance <= city.getWorkRange()) score -= 104
         } else {
             // Water tiles without resources aren't great unless they're Atolls
@@ -469,20 +471,27 @@ object Automation {
 
         // Check if we get access to better tiles from this tile
         var adjacentNaturalWonder = false
+        var isContested = false
 
-        for (adjacentTile in tile.neighbors.filter { it.getOwner() == null }) {
+        for (adjacentTile in tile.neighbors.filter { city.civ.hasExplored(it) && it.getOwner() != city.civ  }) {
+            // the neighbor tile is owned by another civ
+            if (adjacentTile.getOwner() != null) {
+                isContested = true
+                continue
+            }
+            // the neighbor tile is not owned by anyone
             val adjacentDistance = city.getCenterTile().aerialDistanceTo(adjacentTile)
-            if (adjacentTile.hasViewableResource(city.civ) &&
-                (adjacentDistance < city.getWorkRange() ||
-                    adjacentTile.tileResource.resourceType != ResourceType.Bonus
-                )
+            val adjacentResource = adjacentTile.tileResource
+            if (city.civ.canSeeResource(adjacentResource) &&
+                (adjacentDistance <= city.getWorkRange() || adjacentResource.resourceType != ResourceType.Bonus)
             ) score -= 1
             if (adjacentTile.naturalWonder != null) {
-                if (adjacentDistance < city.getWorkRange()) adjacentNaturalWonder = true
+                if (adjacentDistance <= city.getWorkRange()) adjacentNaturalWonder = true
                 score -= 1
             }
         }
         if (adjacentNaturalWonder) score -= 1
+        if (isContested) score -= 1
 
         // Tiles not adjacent to owned land are very hard to acquire
         if (tile.neighbors.none { it.getCity() != null && it.getCity()!!.id == city.id })

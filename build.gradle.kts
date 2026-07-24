@@ -41,7 +41,7 @@ plugins {
     kotlin("multiplatform") version kotlinVersion
     kotlin("plugin.serialization") version kotlinVersion
     id("io.gitlab.arturbosch.detekt") version "1.23.8"
-    id("io.github.yairm210.purity-plugin") version "1.3.2" apply false
+    id("io.github.yairm210.purity-plugin") version "1.3.3" apply false
 }
 
 allprojects {
@@ -67,8 +67,13 @@ allprojects {
             "com.badlogic.gdx.files.FileHandle.isDirectory",
             "com.badlogic.gdx.files.FileHandle.isFile",
             "com.badlogic.gdx.files.FileHandle.name",
-            
+
+            "java.util.stream.StreamSupport.longStream",
+            "java.util.stream.LongStream.parallel",
             "kotlin.sequences.shuffled",
+            "kotlin.LongArray.get",
+            "kotlin.LongArray.iterator",
+            "kotlin.collections.copyInto",
         )
         wellKnownPureClasses = setOf(
         )
@@ -183,7 +188,7 @@ project(":core") {
         "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
         "implementation"("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
 
-        "implementation"("io.github.yairm210:purity-annotations:1.3.0")
+        "implementation"("io.github.yairm210:purity-annotations:1.3.4")
 
         "implementation"("io.ktor:ktor-client-core:$ktorVersion")
         "implementation"("io.ktor:ktor-client-cio:$ktorVersion")

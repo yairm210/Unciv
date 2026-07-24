@@ -151,8 +151,8 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
             "your" -> return civ == foundingCiv
             "foreign" -> return civ != null && civ != foundingCiv
             "enemy" -> {
-                val known = civ != null && civ.knows(foundingCiv)
-                return known && civ!!.isAtWarWith(foundingCiv)
+                if (civ == null) return false
+                return civ.knows(foundingCiv) && civ.isAtWarWith(foundingCiv)
             }
             else -> {
                 if (filter == name) return true

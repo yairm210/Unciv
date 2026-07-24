@@ -89,7 +89,7 @@ class DiplomacyManagerTests {
     }
 
     @Test
-    fun `should change opinion when denuncing`() {
+    fun `should change opinion when denouncing`() {
         // given
         meet(a, b)
 
@@ -100,8 +100,12 @@ class DiplomacyManagerTests {
         val aOpinionOfB = a.getDiplomacyManager(b)!!.opinionOfOtherCiv()
         val bOpinionOfA = b.getDiplomacyManager(a)!!.opinionOfOtherCiv()
 
-        assertEquals(-35f, aOpinionOfB)
-        assertEquals(-35f, bOpinionOfA)
+        // B is upset that A denounced them
+        assertEquals(DiplomacyManager.INITIAL_OPINION_CHANGE_WHEN_DENOUNCED, bOpinionOfA)
+     
+        // A denounces B because A already dislikes B
+        // denouncing simply reflects that - it does not change their opinion further
+        assertEquals(0f, aOpinionOfB)
     }
 
     @Test

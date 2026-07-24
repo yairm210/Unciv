@@ -369,6 +369,7 @@ object GameStarter {
             if (civ.isMajorCiv() || civ.isSpectator()) {
                 civ.playerType = player.playerType
                 civ.playerId = player.playerId
+                civ.playerMinutesBeforeForceResign = newGameParameters.minutesUntilForceResign
             }
             else if (!civ.cityStateFunctions.initCityState(ruleset, newGameParameters.startingEra, usedMajorCivs))
                 continue
@@ -414,9 +415,7 @@ object GameStarter {
 
     private fun removeAncientRuinsNearStartingLocation(startingLocation: Tile) {
         for (tile in startingLocation.getTilesInDistance(3)) {
-            if (tile.improvement != null
-                && tile.getTileImprovement()!!.isAncientRuinsEquivalent()
-            ) {
+            if (tile.tileImprovement != null && tile.tileImprovement!!.isAncientRuinsEquivalent()) {
                 tile.removeImprovement() // Remove ancient ruins in immediate vicinity
             }
         }

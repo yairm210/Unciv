@@ -65,7 +65,7 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         val shouldShowImprovement = shownImprovement != null && UncivGame.Current.settings.showPixelImprovements
 
         val shouldShowResource = UncivGame.Current.settings.showPixelImprovements && tile.resource != null &&
-                (isForceVisible || viewingCiv == null || tile.hasViewableResource(viewingCiv))
+                (isForceVisible || viewingCiv == null || viewingCiv.canSeeResource(tile.tileResource))
 
         val resourceAndImprovementSequence = sequence {
             if (shouldShowResource)  yield(tile.resource!!)

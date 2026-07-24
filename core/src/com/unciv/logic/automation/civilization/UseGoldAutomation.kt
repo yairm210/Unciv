@@ -119,8 +119,8 @@ object UseGoldAutomation {
     private fun getHighlyDesirableTilesToCityMap(civInfo: Civilization): SortedMap<Tile, MutableSet<City>> {
         val highlyDesirableTiles: SortedMap<Tile, MutableSet<City>> = TreeMap(
             compareByDescending<Tile?> { it?.naturalWonder != null }
-                .thenByDescending { it?.resource != null && it.tileResource.resourceType == ResourceType.Luxury }
-                .thenByDescending { it?.resource != null && it.tileResource.resourceType == ResourceType.Strategic }
+                .thenByDescending { it?.tileResource?.resourceType == ResourceType.Luxury }
+                .thenByDescending { it?.tileResource?.resourceType == ResourceType.Strategic }
                 // This is necessary, so that the map keeps Tiles with the same resource as two
                 // separate entries.
                 .thenBy { it.hashCode() }
@@ -147,10 +147,12 @@ object UseGoldAutomation {
 
         @Readonly fun hasNaturalWonder() = it.naturalWonder != null
 
-        @Readonly  fun hasLuxury() =
-            it.hasViewableResource(civInfo)
-                && it.tileResource.resourceType == ResourceType.Luxury
-                && civInfo.getResourceAmount(it.resource!!) < 2 // At 2 or more, we haven't been able to trade it away for another duplicate...
+        @Readonly  fun hasLuxury(): Boolean {
+            val resource = it.tileResource
+            return civInfo.canSeeResource(resource) &&
+                resource.resourceType == ResourceType.Luxury &&
+                civInfo.getResourceAmount(resource) < 2 // At 2 or more, we haven't been able to trade it away for another duplicate...
+        }
 
         @Readonly fun hasHighYields(): Boolean {
             val tileStats = it.stats.getTileStats(civInfo)

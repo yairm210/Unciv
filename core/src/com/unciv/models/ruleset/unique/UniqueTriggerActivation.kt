@@ -677,6 +677,40 @@ object UniqueTriggerActivation {
                 }
             }
 
+            UniqueType.OneTimeSetStockpile -> {
+                val resourceName = unique.params[0]
+                val resource = ruleset.getGameResource(resourceName) ?: return null
+                if (resource is TileResource && !resource.isStockpiled) return null
+
+                val gameContext = GameContext(civInfo, city)
+                val countableResult = Countables.getCountableAmount(unique.params[1], gameContext) ?: return null
+
+                return {
+                    var amountRequired = countableResult
+                    if (unique.isModifiedByGameSpeed()) {
+                        amountRequired = if (resource is Stat) (amountRequired * civInfo.gameInfo.speed.statCostModifiers[resource]!!).roundToInt()
+                        else (amountRequired * civInfo.gameInfo.speed.modifier).roundToInt()
+                    }
+                    if (city != null){
+                        val currentAmount = city.getGameResource(resource)
+                        val missingAmount = amountRequired - currentAmount
+                        city.addGameResource(resource, missingAmount)
+                    }
+                    else {
+                        val currentAmount = civInfo.getGameResource(resource)
+                        val missingAmount = amountRequired - currentAmount
+                        civInfo.addGameResource(resource, missingAmount)
+                    }
+
+                    val notificationText = getNotificationText(
+                        notification, triggerNotificationText,
+                        "[$resourceName] has been set to [$amountRequired]"
+                    )
+                    if (notificationText != null)
+                        civInfo.addNotification(notificationText, NotificationCategory.General, resourceName)
+                    true
+                }
+            }
             UniqueType.UnitsGainPromotion -> {
                 val filter = unique.params[0]
                 val promotionName = unique.params[1]
@@ -1084,8 +1118,8 @@ object UniqueTriggerActivation {
                     for (applicableCity in applicableCities) {
                         val buildingsToRemove = applicableCity.cityConstructions.getBuiltBuildings().filter {
                             it.matchesFilter(unique.params[0], applicableCity.state)
-                        }.toSet()
-                        applicableCity.cityConstructions.removeBuildings(buildingsToRemove)
+                        }
+                        for (building in buildingsToRemove) applicableCity.cityConstructions.removeBuilding(building)
                     }
                     if (notification != null)
                         civInfo.addNotification(
@@ -1232,11 +1266,11 @@ object UniqueTriggerActivation {
 
             UniqueType.OneTimeRemoveResourcesFromTile -> {
                 if (tile == null) return null
-                if (tile.resource == null) return null
+                val resource = tile.tileResource ?: return null
                 val resourceFilter = unique.params[0]
-                if (!tile.tileResource.matchesFilter(resourceFilter)) return null
+                if (!resource.matchesFilter(resourceFilter)) return null
                 return {
-                    tile.resource = null
+                    tile.tileResource = null
                     tile.resourceAmount = 0
                     true
                 }
@@ -1244,7 +1278,7 @@ object UniqueTriggerActivation {
 
             UniqueType.OneTimeRemoveImprovementsFromTile -> {
                 if (tile == null) return null
-                val tileImprovement = tile.getTileImprovement() ?: return null
+                val tileImprovement = tile.tileImprovement ?: return null
                 val improvementFilter = unique.params[0]
                 if (!tileImprovement.matchesFilter(improvementFilter)) return null
                 return {

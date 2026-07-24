@@ -104,7 +104,7 @@ internal class DebugTab(
         val ownedTiles = tileMap.values.asSequence().filter { it.getOwner() == getCurrentPlayerCivilization() }
         val resourceTypes = ruleset.tileResources.values.asSequence().filter { it.resourceType == ResourceType.Strategic }
         for ((tile, resource) in ownedTiles zip resourceTypes) {
-            tile.resource = resource.name
+            tile.tileResource = resource
             tile.resourceAmount = 999
             // Debug option, so if it crashes on this that's relatively fine
             // If this becomes a problem, check if such an improvement exists and otherwise plop down a great improvement or so

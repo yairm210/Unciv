@@ -3,6 +3,8 @@ package com.unciv.uniques
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.HexCoord
 import com.unciv.models.ruleset.BeliefType
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
@@ -10,6 +12,7 @@ import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
+import kotlin.math.roundToInt
 
 
 @RunWith(GdxTestRunner::class)
@@ -72,7 +75,7 @@ class ResourceTests {
     @Test
     fun testTileProvidesResourceOnlyWithRequiredTech() {
         val tile = game.tileMap[1,1]
-        tile.resource = "Coal"
+        tile.setTileResource("Coal")
         tile.resourceAmount = 1
         tile.setImprovement("Mine")
 
@@ -88,7 +91,7 @@ class ResourceTests {
     @Test
     fun testTileDoesNotProvideResourceWithPillagedImprovement() {
         val tile = game.tileMap[1,1]
-        tile.resource = "Coal"
+        tile.setTileResource("Coal")
         tile.resourceAmount = 1
         tile.setImprovement("Mine")
 
@@ -105,7 +108,7 @@ class ResourceTests {
     fun testImprovementProvidesResourceEvenWithoutTech() {
         val tile = game.tileMap[1,1]
         val improvement = game.createTileImprovement("Provides [1] [Coal]", "Consumes [1] [Silver]")
-        tile.setImprovement(improvement.name, civInfo)
+        tile.setImprovement(improvement, civInfo)
         Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 1)
         Assert.assertTrue(civInfo.getCivResourcesByName()["Silver"] == -1)
     }
@@ -115,7 +118,7 @@ class ResourceTests {
     fun testImprovementProvidesResourceWithUniqueBonuses() {
         val tile = game.tileMap[1,1]
         val improvement = game.createTileImprovement("Provides [1] [Coal]")
-        tile.setImprovement(improvement.name, civInfo)
+        tile.setImprovement(improvement, civInfo)
         Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 1)
 
         val doubleCoal = game.createBuilding("[+100]% [Coal] resource production")
@@ -145,12 +148,12 @@ class ResourceTests {
         civInfo.tech.addTechnology("Mining")
 
         val tile = game.getTile(1,1)
-        tile.resource = "Iron"
+        tile.setTileResource("Iron")
         tile.resourceAmount = 4
-        tile.improvement = "Mine"
+        tile.setImprovementBasic("Mine")
 
         // when
-        val cityResources = city.getResourcesGeneratedByCity(city.getResourceModifiers())
+        val cityResources = city.getResourcesGeneratedByCity()
 
         // then
         assertEquals(1, cityResources.size)
@@ -182,7 +185,7 @@ class ResourceTests {
     @Test
     fun `should handle StatPercentFromObjectToResource with a improvementFilter`() {
         val tile = game.tileMap[1,1]
-        tile.resource = "Wheat"
+        tile.setTileResource("Wheat")
         tile.resourceAmount = 1
         tile.setImprovement("Farm")
         city.population.addPopulation(5) // Add population, since the tile needs to be worked
@@ -294,10 +297,10 @@ class ResourceTests {
         game.getTile(1,1).addTerrainFeature("Oasis")
 
         // when
-        game.getTile(1,1).setImprovement(resourceImprovement.name)
+        game.getTile(1,1).setImprovement(resourceImprovement)
 
         // then
-        val resourceAmountInCapital = city.getAvailableResourceAmount(resource.name)
+        val resourceAmountInCapital = city.getAvailableResourceAmount(resource)
         assert(resourceAmountInCapital == 0)
     }
 
@@ -331,5 +334,23 @@ class ResourceTests {
         val building = game.createBuilding("Instantly provides [2] [${resource.name}]")
         city.cityConstructions.addBuilding(building)
         assert(consumingBuilding.isBuildable(city.cityConstructions))
+    }
+
+    @Test
+    fun `Set stockpile to countable`() {
+        // given
+        val resource = game.createResource(UniqueType.Stockpiled.text)
+        val building = game.createBuilding("Instantly provides [2] [${resource.name}]")
+        city.cityConstructions.addBuilding(building)
+        assertEquals(2, civInfo.getCivResourcesByName()[resource.name])
+
+        // when
+        UniqueTriggerActivation.triggerUnique(
+            Unique("Set [${resource.name}] to [1+1]"),
+            civInfo
+        )
+
+        // then
+        assertEquals(2, civInfo.getCivResourcesByName()[resource.name])
     }
 }

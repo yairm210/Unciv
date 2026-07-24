@@ -32,7 +32,55 @@ jobs:
         run: ./gradlew classes
 
       - name: Run code checks
-        run: ./gradlew check
+        id: run_checks
+        continue-on-error: true
+        run: |
+          ./gradlew check 2>&1 | tee check_output.log
+          echo "check_exit_code=${PIPESTATUS[0]}" >> $GITHUB_OUTPUT
 
-      - name: Run unit tests
-        run: ./gradlew --no-build-cache cleanTest test tests:test
+      - name: Extract test failures
+        if: steps.run_checks.outputs.check_exit_code != '0'
+        id: extract_failures
+        run: |
+          # Extract relevant failure information from check output
+          FAILURE_CONTENT=$(awk '/FAILED|STANDARD_OUT/{p=1} p{print} /^[[:space:]]*$/ && p{p=0}' check_output.log | head -100)
+
+          # Save to file and create GitHub output
+          echo "$FAILURE_CONTENT" > test_failures.txt
+
+          # Create multiline output for GitHub
+          echo "failures<<EOF" >> $GITHUB_OUTPUT
+          echo "$FAILURE_CONTENT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Comment test failures on PR
+        if: steps.run_checks.outputs.check_exit_code != '0' && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.ACTIONS_ACCESS_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const failures = fs.readFileSync('test_failures.txt', 'utf8');
+            const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+
+            const body = `## ❌ Test Failures Detected
+
+            The following tests failed in this PR:
+
+            \`\`\`
+            ${failures}
+            \`\`\`
+
+            [View full test output](${runUrl})
+            `;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: body
+            });
+
+      - name: Fail workflow if checks failed
+        if: steps.run_checks.outputs.check_exit_code != '0'
+        run: exit 1

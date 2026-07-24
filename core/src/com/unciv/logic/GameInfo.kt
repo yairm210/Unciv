@@ -28,6 +28,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.Speed
 import com.unciv.models.ruleset.nation.Difficulty
+import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
@@ -39,6 +40,9 @@ import com.unciv.utils.DebugUtils
 import com.unciv.utils.debug
 import yairm210.purity.annotations.Readonly
 import java.security.MessageDigest
+import java.time.Duration
+import java.time.Instant
+import java.util.UUID
 import java.util.*
 
 
@@ -287,6 +291,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     private fun createTemporarySpectatorCiv(playerId: String) = Civilization(Constants.spectator).also {
         it.playerType = PlayerType.Human
         it.playerId = playerId
+        it.playerMinutesBeforeForceResign = gameParameters.minutesUntilForceResign
         civilizations.add(it)
         it.gameInfo = this
         it.setNationTransient()
@@ -331,11 +336,17 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     fun isSimulation(): Boolean = turns < DebugUtils.SIMULATE_UNTIL_TURN
             || turns < simulateMaxTurns && simulateUntilWin
 
-    fun nextTurn(progressBar: NextTurnProgress? = null) {
+    /**
+     *  Advance a turn, running automation for AI players, stopping for human players
+     *  @param progressBar Optional reference to UI widget either provided by [WorldScreen.nextTurn][com.unciv.ui.screens.worldscreen.WorldScreen.nextTurn] or `null` when simulating
+     *  @param shouldGainTime on a multiplayer game, if true, makes the player who's turn is ended recover time to play before risking to get forced to resign, 'false' by default 
+     */
+    fun nextTurn(progressBar: NextTurnProgress? = null, shouldGainTime: Boolean = false) {
 
         var player = currentPlayerCiv
         var playerIndex = civilizations.indexOf(player)
 
+        if (gameParameters.isOnlineMultiplayer) updateMinutesBeforeForceResign(player, shouldGainTime)
         // We rotate Players in cycle: 1,2...N,1,2...
         fun setNextPlayer() {
             playerIndex = (playerIndex + 1) % civilizations.size
@@ -437,6 +448,16 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         // This would belong at the end of TurnManager.startTurn, but needs to come after notifyOfCloseEnemyUnits
         player.notificationCountAtStartTurn = player.notifications.size
     }
+    
+    private fun updateMinutesBeforeForceResign(player: Civilization, shouldGainTime: Boolean) {
+            // Update remaining time before the player who's turn is ending can be forced to resign
+            val turnStart: Instant  = Instant.ofEpochMilli(currentTurnStartTime)
+            val timeUsed = Duration.between(turnStart, Instant.now()).toMinutes().toInt()
+            val timeRegained = if (shouldGainTime) gameParameters.minutesRecoveredPerTurn else 0
+            val rawNewTime = player.playerMinutesBeforeForceResign + timeUsed - timeRegained
+            val maxNewTime = gameParameters.minutesUntilForceResign
+            player.playerMinutesBeforeForceResign = rawNewTime.coerceIn(0, maxNewTime)
+    }
 
     private fun notifyOfCloseEnemyUnits(thisPlayer: Civilization) {
         val viewableInvisibleTiles = thisPlayer.viewableInvisibleUnitsTiles.map { it.position }
@@ -533,6 +554,24 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         civInfo.notifications.add(notification)
         return true
     }
+    /** Generate and show a notification pointing out resources.
+     *  Used by [addTechnology][TechManager.addTechnology] and [ResourcesOverviewTab][com.unciv.ui.screens.overviewscreen.ResourcesOverviewTab]
+     * @param maxDistance from next City, 0 removes distance limitation.
+     * @param filter optional tile filter predicate, e.g. to exclude foreign territory.
+     * @return `false` if no resources were found and no notification was added.
+     * @see getExploredResourcesNotification
+     */
+    fun notifyExploredResources(
+        civInfo: Civilization,
+        resource: TileResource,
+        maxDistance: Int = Int.MAX_VALUE,
+        filter: (Tile) -> Boolean = { true }
+    ): Boolean {
+        val notification = getExploredResourcesNotification(civInfo, resource, maxDistance, filter)
+            ?: return false
+        civInfo.notifications.add(notification)
+        return true
+    }
 
     /** Generate a notification pointing out resources. Only researched Resources are considered.
      * @param maxDistance from next City, default removes distance limitation.
@@ -546,11 +585,23 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         maxDistance: Int = Int.MAX_VALUE,
         filter: (Tile) -> Boolean = { true }
     ): Notification? {
+        val resource = ruleset.tileResources[resourceName]
+        return getExploredResourcesNotification(civ, resource, maxDistance, filter)
+    }
 
-        val resource = ruleset.tileResources[resourceName] ?: return null
-        if (!civ.tech.isRevealed(resource)) {
-            return null
-        }
+    /** Generate a notification pointing out resources. Only researched Resources are considered.
+     * @param maxDistance from next City, default removes distance limitation.
+     * @param filter optional tile filter predicate, e.g. to exclude foreign territory.
+     * @return `null` if no resources were found, otherwise a Notification instance.
+     * @see notifyExploredResources
+     */
+    fun getExploredResourcesNotification(
+        civ: Civilization,
+        resource: TileResource?,
+        maxDistance: Int = Int.MAX_VALUE,
+        filter: (Tile) -> Boolean = { true }
+    ): Notification? {
+        if (!civ.canSeeResource(resource)) return null
 
         data class CityTileAndDistance(val city: City, val tile: Tile, val distance: Int)
 
@@ -562,16 +613,16 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         // All sources of the resource on the map, using a city-state's capital center tile for the CityStateOnlyResource types
         val exploredRevealTiles: Sequence<Tile> =
-                if (ruleset.tileResources[resourceName]!!.hasUnique(UniqueType.CityStateOnlyResource)) {
+                if (resource.hasUnique(UniqueType.CityStateOnlyResource)) {
                     // Look for matching mercantile CS centers
                     getAliveCityStates()
                         .asSequence()
-                        .filter { it.cityStateResource == resourceName }
+                        .filter { it.cityStateResource == resource.name }
                         .map { it.getCapital()!!.getCenterTile() }
                 } else {
                     tileMap.values
                         .asSequence()
-                        .filter { it.resource == resourceName }
+                        .filter { it.tileResource == resource }
                 }
 
         // Apply all filters to the above collection and sort them by distance to closest city
@@ -600,11 +651,11 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         val positionsCount = positions.count()
         val text = if (positionsCount == 1)
-            "[$resourceName] revealed near [${chosenCity.name}]"
+            "[${resource.name}] revealed near [${chosenCity.name}]"
         else
-            "[$positionsCount] sources of [$resourceName] revealed, e.g. near [${chosenCity.name}]"
+            "[$positionsCount] sources of [${resource.name}] revealed, e.g. near [${chosenCity.name}]"
 
-        return Notification(text, arrayOf("ResourceIcons/$resourceName"),
+        return Notification(text, arrayOf("ResourceIcons/${resource.name}"),
             LocationAction(positions.map { it }).asIterable(), NotificationCategory.General)
     }
 
