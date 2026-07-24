@@ -258,7 +258,10 @@ object MotivationToAttackAutomation {
     private fun getDefensivePactAlliesScore(otherCiv: Civilization, civInfo: Civilization, baseForce: Float, ourCombatStrength: Float): Float {
         var theirAlliesValue = 0f
         for (thirdCiv in otherCiv.diplomacy.values.filter { it.hasFlag(DiplomacyFlags.DefensivePact) && it.otherCiv != civInfo }) {
-            val thirdCivCombatStrengthRatio = (otherCiv.getStatForRanking(RankingType.Force).toFloat() + baseForce) / ourCombatStrength
+            // The deterrence value of a defensive-pact ALLY must be computed from the ally's force, not
+            // the target's own (previously a weak civ with a strong protector deterred nobody, while a
+            // strong civ's weak ally counted as if it were mighty).
+            val thirdCivCombatStrengthRatio = (thirdCiv.otherCiv.getStatForRanking(RankingType.Force).toFloat() + baseForce) / ourCombatStrength
             theirAlliesValue += when {
                 thirdCivCombatStrengthRatio > 5 -> -15f
                 thirdCivCombatStrengthRatio > 2.5 -> -10f
