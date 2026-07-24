@@ -101,6 +101,19 @@ class Nation : RulesetObject() {
     val isBarbarian by lazy { name == Constants.barbarians }
     val isSpectator by lazy { name == Constants.spectator }
 
+    /**
+     * Nation [startBias] plus, for city-states, [CityStateType.startBias] from [ruleset].
+     * Type biases apply to every city-state of that type; per-nation biases are kept as well.
+     */
+    @Readonly
+    fun getStartBias(ruleset: Ruleset): List<String> {
+        val typeName = cityStateType ?: return startBias
+        val typeBias = ruleset.cityStateTypes[typeName]?.startBias ?: emptyList()
+        if (typeBias.isEmpty()) return startBias
+        if (startBias.isEmpty()) return typeBias
+        return (startBias + typeBias).distinct()
+    }
+
     // This is its own transient because we'll need to check this for every tile-to-tile movement which is harsh
     @Transient
     var forestsAndJunglesAreRoads = false

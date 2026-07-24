@@ -17,6 +17,9 @@ class CityStateType: INamed {
     private fun ArrayList<String>.toUniqueMap() =
         UniqueMap(asSequence().map { Unique(it, sourceObjectType = UniqueTarget.CityState, sourceObjectName = name) })
 
+    /** Same semantics as [Nation.startBias], applied to every city-state of this type. */
+    var startBias = ArrayList<String>()
+
     var color: List<Int> = listOf(255,255,255)
     private val colorObject by lazy { colorFromRGB(color) }
     @Readonly fun getColor() = colorObject
