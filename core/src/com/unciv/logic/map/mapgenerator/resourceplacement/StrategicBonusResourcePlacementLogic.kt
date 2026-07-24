@@ -1,6 +1,7 @@
 package com.unciv.logic.map.mapgenerator.resourceplacement
 
 import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.mapgenerator.MapResourceSetting
 import com.unciv.logic.map.mapgenerator.mapregions.*
 import com.unciv.logic.map.mapgenerator.mapregions.MapRegions.Companion.baseMinorDepositFrequency
 import com.unciv.logic.map.mapgenerator.mapregions.MapRegions.ImpactType
@@ -47,14 +48,15 @@ object StrategicBonusResourcePlacementLogic {
                     it.hasUnique(UniqueType.MinorDepositWeighting)
         }
 
-        // Determines number tiles per resource (lower → denser). Optional ModOptions % unique only.
+        // Lower → denser. With Civ5-style unique, use AssignStartingPlots bonus_multiplier values.
         val resourceSetting = tileMap.mapParameters.getMapResources()
-        val bonusPercent = Civ5LuxuryTargetNumbers.mapGenPercentModifier(
-            ruleset, UniqueType.BonusStrategicMapGenModifier
-        )
-        val bonusMultiplier = Civ5LuxuryTargetNumbers.effectiveBonusFrequencyMultiplier(
-            resourceSetting, bonusPercent
-        )
+        val bonusMultiplier = if (ruleset.modOptions.hasUnique(UniqueType.Civ5StyleMapResourceGeneration))
+            when (resourceSetting) {
+                MapResourceSetting.sparse -> 1f
+                MapResourceSetting.abundant -> 0.35f
+                else -> 0.65f
+            }
+        else resourceSetting.bonusFrequencyMultiplier
         val landList = ArrayList<Tile>() // For minor deposits
 
         /** Maps resource uniques for determining frequency/weighting/size to relevant tiles  */ 

@@ -1093,16 +1093,8 @@ enum class UniqueType(
     AllowRazeHolyCity("Allow raze holy city", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
 
     Civ5StyleMapResourceGeneration("Civ5-style map resource generation", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals,
-        docDescription = "Uses Civ5 AssignStartingPlots regional luxury tables and tops up random luxuries to a world target. " +
-            "Does not change Unciv's default bonus/strategic frequency multipliers (those stay on MapResources). " +
-            "Without this unique, Unciv's default luxury formulas are used."),
-    RegionalLuxuriesMapGenModifier("[relativeAmount]% regional luxuries during map generation", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals,
-        docDescription = "Multiplies regional luxury placement counts during map generation. Stacks with Civ5-style map resource generation when that unique is present."),
-    WorldLuxuryTargetMapGenModifier("[relativeAmount]% world luxury target during map generation", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals,
-        docDescription = "Multiplies the world luxury target used when topping up random luxuries. Only has effect together with Civ5-style map resource generation."),
-    BonusStrategicMapGenModifier("[relativeAmount]% bonus and strategic resources during map generation", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals,
-        docDescription = "Increases bonus and minor strategic density by dividing Unciv's MapResources tiles-per-resource frequency. " +
-            "Independent of Civ5-style map resource generation."),
+        docDescription = "Uses Civ5 AssignStartingPlots resource density: regional luxury tables, random luxuries topped up to a world target, " +
+            "and Civ5 bonus_multiplier for bonus resources / minor strategic deposits. Without this unique, Unciv's default formulas are used."),
 
     SuppressWarnings("Suppress warning [validationWarning]", *UniqueTarget.CanIncludeSuppression, flags = UniqueFlag.setOfHiddenNoConditionals, docDescription = Suppression.uniqueDocDescription),
 
