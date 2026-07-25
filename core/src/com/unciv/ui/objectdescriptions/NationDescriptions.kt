@@ -41,15 +41,15 @@ object NationDescriptions {
 
         val effectiveStartBias = getStartBias(ruleset)
         if (effectiveStartBias.isNotEmpty()) {
-            effectiveStartBias.withIndex().forEach {
+            for ((index, bias) in effectiveStartBias.withIndex()) {
                 // can be "Avoid []"
-                val link = if ('[' !in it.value) it.value
-                else squareBraceRegex.find(it.value)!!.groups[1]!!.value
+                val link = if ('[' !in bias) bias
+                else squareBraceRegex.find(bias)!!.groups[1]!!.value
                 textList += FormattedLine(
-                    (if (it.index == 0) "[Start bias:] " else "") + it.value.tr(),  // extra tr because tr cannot nest {[]}
+                    (if (index == 0) "[Start bias:] " else "") + bias.tr(),  // extra tr because tr cannot nest {[]}
                     link = "Terrain/$link",
-                    indent = if (it.index == 0) 0 else 1,
-                    iconCrossed = it.value.startsWith("Avoid "))
+                    indent = if (index == 0) 0 else 1,
+                    iconCrossed = bias.startsWith("Avoid "))
             }
             textList += FormattedLine()
         }
