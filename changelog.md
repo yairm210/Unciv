@@ -1,3 +1,35 @@
+## 4.21.4
+
+chore(perf): More individual overrides for perf measurement
+
+perf(cpu): Reduce map lag by 30% on mostly unexplored maps by eliminating "show all then hide all" for unexplored tiles
+
+perf(cpu): Reduce map generation latency by 10% for large maps by caching sorted continents
+
+perf(cpu): Reduce map generation latency by 10% for large maps by changing using correct data structures
+
+perf(cpu): Reduce map generation latency by 40% for large maps by changing hashmap lookup to array using tile zero index
+
+By Fanfblrik:
+- City-states found first city in place by default (opt-out unique) 
+- Start bias unique (Maritime Coast via CityStateType uniques) 
+
+By WhoIsJohannes:
+- Fix two AI evaluation bugs: inverted WLTKD luxury priority, defensive-pact ally force using wrong civ 
+- Fix two AI spaceship-race bugs: dead space-resource reserve, war push overwriting parts 
+
+By SomeTroglodyte:
+- Ruleset validator: Warn about potential infinite loops Free building -> Remove building 
+- Allow specific commit links in "Download mod from URL" 
+
+perf: improve fps in technology picker screen by adding culling - By shwwwa
+
+By Angais:
+- Fix city-state wary probability bound 
+- Fix join-war penalty clamp 
+
+Document exact license of HexaRealm and Fantasy Hex - By Wuzzy2
+
 ## 4.21.3
 
 Fixed mosque of djenne not working until industrial age
