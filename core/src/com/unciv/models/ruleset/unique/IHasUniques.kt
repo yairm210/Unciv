@@ -193,7 +193,7 @@ interface IHasUniques : INamed {
         gameInfo: GameInfo?,
         ruleset: Ruleset? = null
     ): Boolean {
-        if (hasUnique(UniqueType.HiddenFromCivilopedia)) return true
+        if (hasUnique(UniqueType.HiddenFromCivilopedia, GameContext(gameInfo = gameInfo))) return true
         if (gameInfo != null && isUnavailableBySettings(gameInfo)) return true
         if (gameInfo == null && ruleset != null) {
             /* No game is loaded, but we know the Ruleset. This happens when opening Civilopedia from MainMenuScreen right after launch.

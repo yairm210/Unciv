@@ -3,15 +3,16 @@ package com.unciv.ui.objectdescriptions
 import com.unciv.Constants
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.tile.ImprovementBuildingProblem
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toStringSigned
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.utils.DebugUtils
-import kotlin.collections.get
 
 object TileDescription {
 
@@ -41,19 +42,8 @@ object TileDescription {
             else
                 FormattedLine(resource.name, link = "Resource/${resource.name}")
 
-        if (viewingCiv != null && viewingCiv.canSeeResource(resource)) {
-            val tileImprovement = resource.getImprovements()
-                .mapNotNull { tile.ruleset.tileImprovements[it] }
-                .firstOrNull { tile.improvementFunctions.canBuildImprovement(it, viewingCiv.state) }
-            if (tileImprovement?.techRequired != null
-                    && !viewingCiv.tech.isResearched(tileImprovement.techRequired!!)) {
-                lineList += FormattedLine(
-                    "Requires [${tileImprovement.techRequired}]",
-                    link = "Technology/${tileImprovement.techRequired}",
-                    color = "#FAA"
-                )
-            }
-        }
+        if (viewingCiv != null && viewingCiv.canSeeResource(resource))
+            addNeedsResearchLine(lineList, tile, viewingCiv, resource)
 
         if (tile.naturalWonder != null)
             lineList += FormattedLine(tile.naturalWonder!!, link = "Terrain/${tile.naturalWonder}")
@@ -100,4 +90,29 @@ object TileDescription {
         return lineList
     }
 
+    private fun addNeedsResearchLine(lineList: ArrayList<FormattedLine>, tile: Tile, viewingCiv: Civilization, resource: TileResource) {
+        val tileImprovements = resource.getImprovements()
+            .mapNotNull { tile.ruleset.tileImprovements[it] }
+        if (tileImprovements.any { tile.improvementFunctions.canBuildImprovement(it, viewingCiv.state) })
+            return
+
+        val researchableImprovements = tileImprovements.filter { improvement ->
+            tile.improvementFunctions.getImprovementBuildingProblems(improvement, viewingCiv.state)
+                .filterNot { it == ImprovementBuildingProblem.OutsideBorders }
+                .run { any() && all { it == ImprovementBuildingProblem.MissingTech } }
+        }
+        if (researchableImprovements.isEmpty()) return
+
+        val techRequired = researchableImprovements
+            .mapNotNull { viewingCiv.gameInfo.ruleset.technologies[it.techRequired] }
+            .filterNot { viewingCiv.tech.isResearched(it.name) }
+            .minByOrNull { it.cost }
+            ?: return
+
+        lineList += FormattedLine(
+            "Requires [${techRequired.name}]",
+            link = techRequired.makeLink(),
+            color = "#FAA"
+        )
+    }
 }

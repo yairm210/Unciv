@@ -286,11 +286,20 @@ enum class UniqueType(
     SpyEffectiveness("[relativeAmount]% spy effectiveness [cityFilter]", UniqueTarget.Global),
     EnemySpyEffectiveness("[relativeAmount]% enemy spy effectiveness [cityFilter]", UniqueTarget.Global),
     SpyStartingLevel("New spies start with [amount] level(s)", UniqueTarget.Global),
+    CounterIntelligenceSpyRankBonus("Spies in [cityFilter] cities act as though they have [relativeAmount] levels for [spyAction]", UniqueTarget.Global,
+        docDescription = "Temporary effective rank change ([relativeAmount] added to rank, e.g. +1) for spies doing the given action in a matching city. " +
+            "Does not permanently level the spy. Stacks additively, capped by maxSpyRank."),
 
     /// Things you get at the start of the game
     StartingTech("Starting tech", UniqueTarget.Tech),
     StartsWithTech("Starts with [tech]", UniqueTarget.Nation),
     StartsWithPolicy("Starts with [policy] adopted", UniqueTarget.Nation),
+    StartBias("Start bias [terrainFilter]", UniqueTarget.Nation, UniqueTarget.CityState,
+        docDescription = "Same effect as a Nation startBias field entry. Merged with the startBias field " +
+            "and, for city-states, with matching uniques on their CityStateType. " +
+            "Conditionals run against GameInfo only during map generation / start placement " +
+            "(no Civilization — it may be only partially initialized). " +
+            "Do not use conditionals that require tiles, cities, or units."),
 
     /// Victory
     TriggersVictory("Triggers victory", UniqueTarget.Global),
@@ -1047,7 +1056,7 @@ enum class UniqueType(
         UniqueTarget.Promotion,
         UniqueTarget.Tech,
         flags = UniqueFlag.setOfHiddenToUsers),
-    
+
     UnitActionPriority("with [amount] priority",
         UniqueTarget.UnitActionModifier,
         UniqueTarget.MetaModifier, // Can also be applied to UniqueTarget.Triggerable
@@ -1057,18 +1066,21 @@ enum class UniqueType(
         "A Rare case is > 100 if a button is something like add in capital, promote or something, " +
         "we need to inform the player that taking the action is an option."),
 
-    HiddenFromCivilopedia("Will not be displayed in Civilopedia", *UniqueTarget.Displayable, flags = UniqueFlag.setOfHiddenToUsers),
+    HiddenFromCivilopedia("Will not be displayed in Civilopedia", *UniqueTarget.Displayable, flags = UniqueFlag.setOfHiddenToUsers,
+        docDescription = "Supports conditionals that need only a Game as context and nothing else.\n" +
+            "Most conditionals require at least a Civilization and will **not** work.\n" +
+            "Note that when Civilopedia runs from main menu, conditionals will be ignored."),
     ShowsWhenUnbuilable("Shown while unbuilable", UniqueTarget.Building, UniqueTarget.Unit, flags = UniqueFlag.setOfHiddenToUsers),
     ModifierHiddenFromUsers("hidden from users", UniqueTarget.MetaModifier),
     WillNotBeChosenForNewGames("Will not be chosen for new games", UniqueTarget.Nation),
-    
+
     ForEveryCountable("for every [countable]", UniqueTarget.MetaModifier,
         docDescription = "Works for positive numbers only"),
     ForEveryAdjacentTile("for every adjacent [tileFilter]", UniqueTarget.MetaModifier,
         docDescription = "Works for positive numbers only"),
     ForEveryAmountCountable("for every [positiveAmount] [countable]", UniqueTarget.MetaModifier,
         docDescription = "Works for positive numbers only"),
-    
+
     ModifiedByGameSpeed("(modified by game speed)", UniqueTarget.MetaModifier,
         docDescription = "Can only be applied to certain uniques, see details of each unique for specifics"),
     ModifiedByGameProgress("(modified by game progress up to [relativeAmount]%)", UniqueTarget.MetaModifier,
@@ -1088,6 +1100,13 @@ enum class UniqueType(
         docDescription = "In this case, 'starting era' means the first defined Era in the entire ruleset."),
     AllowRazeCapital("Allow raze capital", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
     AllowRazeHolyCity("Allow raze holy city", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
+    CityStatesSearchForFirstCitySite(
+        "City-states search for first city location",
+        UniqueTarget.ModOptions,
+        flags = UniqueFlag.setOfNoConditionals,
+        docDescription = "By default, city-state settlers with no cities yet found on their current tile when valid " +
+            "(predetermined map-gen / editor start). With this unique they use the same nearby-site search as major civs.",
+    ),
 
     SuppressWarnings("Suppress warning [validationWarning]", *UniqueTarget.CanIncludeSuppression, flags = UniqueFlag.setOfHiddenNoConditionals, docDescription = Suppression.uniqueDocDescription),
 

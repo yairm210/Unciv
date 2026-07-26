@@ -123,8 +123,8 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
     private fun addSpyToSelectionTable(spy: Spy) {
         // "Spy" column
         spySelectionTable.add(spy.name.toLabel(hideIcons = true))
-        // "Rank" column
-        spySelectionTable.add(spy.rank.toLabel())
+        // "Rank" column — show effective rank (includes counter-intel building bonuses)
+        spySelectionTable.add(spy.getEffectiveRank().toLabel())
         // icon column
         val spyLocation = spy.getCityOrNull()
         spySelectionTable.add(spyLocation.getIcon()).padRight(5f)
@@ -212,17 +212,19 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
             else -> Color.GOLD
         }
 
+        val displayRank = spy.getEffectiveRank()
+
         // If we have 10 or more ranks, display them with a bigger star
-        if (spy.rank >= 10) {
+        if (displayRank >= 10) {
             val star = ImageGetter.getImage("OtherIcons/Star")
-            star.color = getColor(spy.rank / 10)
+            star.color = getColor(displayRank / 10)
             add(star).size(20f).pad(3f)
         }
 
-        val color = getColor(spy.rank)
+        val color = getColor(displayRank)
         val starTable = Table()
         // Create a grid of up to 9 stars
-        repeat(spy.rank % 10) {
+        repeat(displayRank % 10) {
             val star = ImageGetter.getImage("OtherIcons/Star")
             star.color = color
             starTable.add(star).size(8f).pad(1f)
