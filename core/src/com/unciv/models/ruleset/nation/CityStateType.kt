@@ -14,11 +14,13 @@ class CityStateType: INamed {
     val friendBonusUniqueMap by lazy { friendBonusUniques.toUniqueMap() }
     var allyBonusUniques = ArrayList<String>()
     val allyBonusUniqueMap by lazy { allyBonusUniques.toUniqueMap() }
+
+    /** Type-wide uniques (e.g. [UniqueType.StartBias]), applied to every city-state of this type. */
+    var uniques = ArrayList<String>()
+    val uniqueMap by lazy { uniques.toUniqueMap() }
+
     private fun ArrayList<String>.toUniqueMap() =
         UniqueMap(asSequence().map { Unique(it, sourceObjectType = UniqueTarget.CityState, sourceObjectName = name) })
-
-    /** Same semantics as [Nation.startBias], applied to every city-state of this type. */
-    var startBias = ArrayList<String>()
 
     var color: List<Int> = listOf(255,255,255)
     private val colorObject by lazy { colorFromRGB(color) }

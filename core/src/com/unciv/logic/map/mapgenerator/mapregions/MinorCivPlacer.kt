@@ -247,7 +247,7 @@ object MinorCivPlacer {
     /** True when nation or city-state type start bias includes Coast. */
     @Readonly
     fun prefersCoastalStart(civ: Civilization, ruleset: Ruleset): Boolean =
-        "Coast" in civ.nation.getStartBias(ruleset)
+        "Coast" in civ.nation.getStartBias(ruleset, GameContext(civ))
 
     @Readonly
     private fun canPlaceMinorCiv(tile: Tile, tileData: TileDataMap) = !tile.isWater && !tile.isImpassible() &&

@@ -102,16 +102,25 @@ class Nation : RulesetObject() {
     val isSpectator by lazy { name == Constants.spectator }
 
     /**
-     * Nation [startBias] plus, for city-states, [CityStateType.startBias] from [ruleset].
-     * Type biases apply to every city-state of that type; per-nation biases are kept as well.
+     * Effective start biases: Nation [startBias] field, plus [UniqueType.StartBias] uniques on the
+     * nation, plus (for city-states) [UniqueType.StartBias] on their [CityStateType].
+     *
+     * Conditionals are evaluated with [gameContext] — pass [GameContext] for the civ when available,
+     * otherwise [GameContext] with gameInfo / [GameContext.IgnoreConditionals] during early map gen.
      */
     @Readonly
-    fun getStartBias(ruleset: Ruleset): List<String> {
-        val typeName = cityStateType ?: return startBias
-        val typeBias = ruleset.cityStateTypes[typeName]?.startBias ?: emptyList()
-        if (typeBias.isEmpty()) return startBias
-        if (startBias.isEmpty()) return typeBias
-        return (startBias + typeBias).distinct()
+    fun getStartBias(ruleset: Ruleset, gameContext: GameContext = GameContext.IgnoreConditionals): List<String> {
+        val result = LinkedHashSet<String>()
+        result.addAll(startBias)
+        for (unique in uniqueMap.getMatchingUniques(UniqueType.StartBias, gameContext)) {
+            result.add(unique.params[0])
+        }
+        val typeName = cityStateType ?: return result.toList()
+        val type = ruleset.cityStateTypes[typeName] ?: return result.toList()
+        for (unique in type.uniqueMap.getMatchingUniques(UniqueType.StartBias, gameContext)) {
+            result.add(unique.params[0])
+        }
+        return result.toList()
     }
 
     // This is its own transient because we'll need to check this for every tile-to-tile movement which is harsh
