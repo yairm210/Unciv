@@ -1096,7 +1096,7 @@ enum class UniqueType(
         UniqueTarget.ModOptions,
         flags = UniqueFlag.setOfNoConditionals,
         docDescription = "By default, city-state settlers with no cities yet found on their current tile when valid " +
-            "(Civ5 HomelandAI / predetermined start). With this unique they use the same nearby-site search as major civs.",
+            "(predetermined map-gen / editor start). With this unique they use the same nearby-site search as major civs.",
     ),
 
     SuppressWarnings("Suppress warning [validationWarning]", *UniqueTarget.CanIncludeSuppression, flags = UniqueFlag.setOfHiddenNoConditionals, docDescription = Suppression.uniqueDocDescription),

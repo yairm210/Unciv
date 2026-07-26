@@ -72,8 +72,8 @@ object SpecificUnitAutomation {
     }
 
     fun automateSettlerActions(unit: MapUnit, dangerousTiles: HashSet<Tile>) {
-        // City-state starts are predetermined by map gen / editor — trust that tile by default
-        // (Civ5 PlotFirstTurnSettlerMoves). Mods can opt out via CityStatesSearchForFirstCitySite.
+        // City-state starts are predetermined by map gen / editor — trust that tile by default.
+        // Mods can opt out via CityStatesSearchForFirstCitySite.
         if (unit.civ.isCityState && unit.civ.cities.isEmpty()
             && !unit.civ.gameInfo.ruleset.modOptions.hasUnique(UniqueType.CityStatesSearchForFirstCitySite)
         ) {
