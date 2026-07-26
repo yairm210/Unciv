@@ -2536,7 +2536,7 @@
 <td>startBias</td>
 <td>List of strings</td>
 <td>empty</td>
-<td>Zero or more of: <a href="../../Unique-parameters/#terrainfilter">terrainFilter</a> or "Avoid [terrainFilter]". [^S]</td>
+<td>Zero or more of: <a href="../../Unique-parameters/#terrainfilter">terrainFilter</a> or "Avoid [terrainFilter]". Also merged with <code>Start bias [terrainFilter]</code> uniques on the nation and (for city-states) on their CityStateType. [^S]</td>
 </tr>
 <tr>
 <td>preferredVictoryType</td>
@@ -2818,6 +2818,12 @@ Cultured, Maritime, Mercantile, Militaristic, Religious.</p>
 <td>List of Strings</td>
 <td>empty</td>
 <td>List of <a href="../../uniques/">unique abilities</a> granted to  major civilizations when allied to city state</td>
+</tr>
+<tr>
+<td>uniques</td>
+<td>List of Strings</td>
+<td>empty</td>
+<td>Type-wide <a href="../../uniques/">uniques</a> for every city-state of this type (e.g. <code>Start bias [Coast]</code>)</td>
 </tr>
 <tr>
 <td>color</td>
