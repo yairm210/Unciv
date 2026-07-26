@@ -1,5 +1,6 @@
 package com.unciv.logic.map
 
+import com.unciv.Constants
 import com.unciv.logic.map.mapgenerator.mapregions.MinorCivPlacer
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.RulesetCache
@@ -83,5 +84,22 @@ class CityStateTypeStartBiasTests {
 
         val civ = game.addCiv(nation)
         Assert.assertTrue(MinorCivPlacer.prefersCoastalStart(civ, ruleset))
+    }
+
+    @Test
+    fun `filterTilesByStartBias keeps Hill and drops Avoid Snow`() {
+        val game = TestGame()
+        game.makeHexagonalMap(2, Constants.grassland)
+        // Distance 2 so Avoid [Snow] on the hill tile does not see the snow neighbor.
+        val hillTile = game.setTileTerrainAndFeatures(HexCoord.Zero, Constants.grassland, Constants.hill)
+        val snowTile = game.setTileTerrain(HexCoord(2, 0), Constants.snow)
+
+        val tiles = listOf(hillTile, snowTile)
+        val hillOnly = MinorCivPlacer.filterTilesByStartBias(tiles, listOf("Hill"))
+        Assert.assertEquals(listOf(hillTile), hillOnly)
+
+        val avoidSnow = MinorCivPlacer.filterTilesByStartBias(tiles, listOf("Avoid [Snow]"))
+        Assert.assertEquals(listOf(hillTile), avoidSnow)
+        Assert.assertFalse(avoidSnow.contains(snowTile))
     }
 }

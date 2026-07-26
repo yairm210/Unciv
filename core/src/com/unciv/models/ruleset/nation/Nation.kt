@@ -141,7 +141,8 @@ class Nation : RulesetObject() {
         for (unique in uniqueMap.getMatchingUniques(UniqueType.StartBias, gameContext)) {
             result.add(unique.params[0])
         }
-        val type = ruleset.cityStateTypes[cityStateType] ?: return result
+        val typeName = cityStateType ?: return result
+        val type = ruleset.cityStateTypes[typeName] ?: return result
         for (unique in type.uniqueMap.getMatchingUniques(UniqueType.StartBias, gameContext)) {
             result.add(unique.params[0])
         }
