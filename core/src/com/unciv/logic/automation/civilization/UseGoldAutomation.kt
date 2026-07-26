@@ -31,6 +31,7 @@ object UseGoldAutomation {
             val statBuyCost = construction.getStatBuyCost(city, Stat.Gold) ?: continue
             if (!city.cityConstructions.isConstructionPurchaseAllowed(construction, Stat.Gold, statBuyCost)) continue
             if (civ.gold < statBuyCost || construction.hurryCostModifier > 10) continue // Don't buy things that are more expensive than they need to be
+            if (city.cityConstructions.getWorkDone(construction.name) > 0) continue // Don't buy things we're close to finishing anyways (may waste the invested production)
             city.cityConstructions.purchaseConstruction(construction, 0, true)
         }
 
