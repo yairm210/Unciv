@@ -32,6 +32,7 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
     var mayaLimitedFreeGP = 0
     /** Remaining candidates for maya ability - whenever empty refilled from all GP, starts out empty */
     var longCountGPPool = HashSet<String>()
+    var greatPersonsSpawned = Counter<String>() // Total great persons spawned
 
     fun clone(): GreatPersonManager {
         val toReturn = GreatPersonManager()
@@ -68,6 +69,7 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
             }
             val requiredPoints = pointsForNextGreatGeneralCounter[unit]
             if (value > requiredPoints) {
+                greatPersonsSpawned.add(unit,1)
                 greatGeneralPointsCounter[unit] -= requiredPoints
                 pointsForNextGreatGeneralCounter[unit] += 50
                 return unit
@@ -77,6 +79,7 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
         for ((greatPerson, value) in greatPersonPointsCounter) {
             val requiredPoints = getPointsRequiredForGreatPerson(greatPerson)
             if (value >= requiredPoints) {
+                greatPersonsSpawned.add(greatPerson,1)
                 greatPersonPointsCounter.add(greatPerson, -requiredPoints)
                 pointsForNextGreatPersonCounter[getPoolKey(greatPerson)] *= 2
                 return greatPerson

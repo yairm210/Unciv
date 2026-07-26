@@ -5,6 +5,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Policy.PolicyBranchType
 import com.unciv.models.ruleset.PolicyBranch
+import com.unciv.models.ruleset.unique.Countables
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
@@ -172,7 +173,11 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         val worldSizeModifier = civInfo.gameInfo.tileMap.mapParameters.mapSize.getPredefinedOrNextSmaller().policyCostPerCityModifier
         var cityModifier = worldSizeModifier * (civInfo.cities.count { !it.isPuppet } - 1)
 
-        for (unique in civInfo.getMatchingUniques(UniqueType.LessPolicyCostFromCities)) cityModifier *= 1 - unique.params[0].toFloat() / 100
+        for (unique in civInfo.getMatchingUniques(UniqueType.PolicyCost)) {
+            val countableVal = Countables.getCountableAmount(unique.params[0], civInfo.state)
+            if (countableVal != null) policyCultureCost = countableVal.toDouble()
+            }
+        for (unique in civInfo.getMatchingUniques(UniqueType.LessPolicyCostFromCities)) cityModifier *= 1 - unique.params[0].toFloat() / 100 
         for (unique in civInfo.getMatchingUniques(UniqueType.LessPolicyCost)) policyCultureCost *= unique.params[0].toPercent()
         if (civInfo.isHuman()) policyCultureCost *= civInfo.getDifficulty().policyCostModifier
         policyCultureCost *= civInfo.gameInfo.speed.cultureCostModifier
