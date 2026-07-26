@@ -1247,6 +1247,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Nation
 
+??? example  "Start bias [terrainFilter]"
+	Same effect as a Nation startBias field entry. Merged with the startBias field and, for city-states, with matching uniques on their CityStateType. Conditionals run against GameInfo only during map generation / start placement (no Civilization — it may be only partially initialized). Do not use conditionals that require tiles, cities, or units.
+
+	Example: "Start bias [Fresh Water]"
+
+	Applicable to: Nation, CityState
+
 ??? example  "All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel."
 	Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.
 
@@ -3374,6 +3381,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Provides a unique luxury"
 	Applicable to: CityState
 
+??? example  "Start bias [terrainFilter]"
+	Same effect as a Nation startBias field entry. Merged with the startBias field and, for city-states, with matching uniques on their CityStateType. Conditionals run against GameInfo only during map generation / start placement (no Civilization — it may be only partially initialized). Do not use conditionals that require tiles, cities, or units.
+
+	Example: "Start bias [Fresh Water]"
+
+	Applicable to: Nation, CityState
+
 ## ModOptions uniques
 ??? example  "Diplomatic relationships cannot change"
 	This unique does not support conditionals.
@@ -3421,6 +3435,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Great Person points accumulate per city"
 	Civ5-style: each city has its own Great Person point counters; when a city reaches the threshold, the Great Person is born in that city. The points required for the next Great Person of that type still increase empire-wide. Without this unique, points accumulate in one civilization-wide pool (current Unciv default).
+
+	This unique does not support conditionals.
+
+	Applicable to: ModOptions
+
+??? example  "City-states search for first city location"
+	By default, city-state settlers with no cities yet found on their current tile when valid (predetermined map-gen / editor start). With this unique they use the same nearby-site search as major civs.
 
 	This unique does not support conditionals.
 

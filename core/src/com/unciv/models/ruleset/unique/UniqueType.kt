@@ -291,6 +291,12 @@ enum class UniqueType(
     StartingTech("Starting tech", UniqueTarget.Tech),
     StartsWithTech("Starts with [tech]", UniqueTarget.Nation),
     StartsWithPolicy("Starts with [policy] adopted", UniqueTarget.Nation),
+    StartBias("Start bias [terrainFilter]", UniqueTarget.Nation, UniqueTarget.CityState,
+        docDescription = "Same effect as a Nation startBias field entry. Merged with the startBias field " +
+            "and, for city-states, with matching uniques on their CityStateType. " +
+            "Conditionals run against GameInfo only during map generation / start placement " +
+            "(no Civilization — it may be only partially initialized). " +
+            "Do not use conditionals that require tiles, cities, or units."),
 
     /// Victory
     TriggersVictory("Triggers victory", UniqueTarget.Global),
@@ -1095,6 +1101,13 @@ enum class UniqueType(
         docDescription = "BNW-style: each city has its own Great Person point counters; when a city reaches the threshold, " +
             "the Great Person is born in that city. The points required for the next Great Person of that type still increase empire-wide. " +
             "Without this unique, points accumulate in one civilization-wide pool (current Unciv default)."),
+    CityStatesSearchForFirstCitySite(
+        "City-states search for first city location",
+        UniqueTarget.ModOptions,
+        flags = UniqueFlag.setOfNoConditionals,
+        docDescription = "By default, city-state settlers with no cities yet found on their current tile when valid " +
+            "(predetermined map-gen / editor start). With this unique they use the same nearby-site search as major civs.",
+    ),
 
     SuppressWarnings("Suppress warning [validationWarning]", *UniqueTarget.CanIncludeSuppression, flags = UniqueFlag.setOfHiddenNoConditionals, docDescription = Suppression.uniqueDocDescription),
 
