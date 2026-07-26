@@ -783,8 +783,6 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         spaceResources.addAll(ruleset.buildings.values.filter { it.hasUnique(UniqueType.SpaceshipPart) }
             .flatMap { it.getResourceRequirementsPerTurn().keys })
         // Spaceship parts are UNITS in the base ruleset (SS Booster etc., each requiring Aluminum).
-        // Without harvesting unit requirements too, the resource half of this set is empty in vanilla,
-        // which silently deadens freeUpSpaceResources and Automation's space-resource reserve.
         spaceResources.addAll(ruleset.units.values.filter { it.hasUnique(UniqueType.SpaceshipPart) }
             .flatMap { it.getResourceRequirementsPerTurn().keys })
         spaceResources.addAll(ruleset.victories.values.flatMap { it.requiredSpaceshipParts })
