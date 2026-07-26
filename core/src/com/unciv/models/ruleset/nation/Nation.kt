@@ -101,28 +101,6 @@ class Nation : RulesetObject() {
     val isBarbarian by lazy { name == Constants.barbarians }
     val isSpectator by lazy { name == Constants.spectator }
 
-    /**
-     * Effective start biases: Nation [startBias] field, plus [UniqueType.StartBias] uniques on the
-     * nation, plus (for city-states) [UniqueType.StartBias] on their [CityStateType].
-     *
-     * Conditionals are evaluated with [gameContext] — pass [GameContext] for the civ when available,
-     * otherwise [GameContext] with gameInfo / [GameContext.IgnoreConditionals] during early map gen.
-     */
-    @Readonly
-    fun getStartBias(ruleset: Ruleset, gameContext: GameContext = GameContext.IgnoreConditionals): List<String> {
-        val result = LinkedHashSet<String>()
-        result.addAll(startBias)
-        for (unique in uniqueMap.getMatchingUniques(UniqueType.StartBias, gameContext)) {
-            result.add(unique.params[0])
-        }
-        val typeName = cityStateType ?: return result.toList()
-        val type = ruleset.cityStateTypes[typeName] ?: return result.toList()
-        for (unique in type.uniqueMap.getMatchingUniques(UniqueType.StartBias, gameContext)) {
-            result.add(unique.params[0])
-        }
-        return result.toList()
-    }
-
     // This is its own transient because we'll need to check this for every tile-to-tile movement which is harsh
     @Transient
     var forestsAndJunglesAreRoads = false
@@ -143,6 +121,26 @@ class Nation : RulesetObject() {
         ignoreHillMovementCost = uniqueMap.hasUnique(UniqueType.IgnoreHillMovementCost)
     }
 
+    /**
+     * Effective start biases: Nation [startBias] field, plus [UniqueType.StartBias] uniques on the
+     * nation, plus (for city-states) [UniqueType.StartBias] on their [CityStateType].
+     *
+     * Conditionals are evaluated with [gameContext] — pass [GameContext] for the civ when available,
+     * otherwise [GameContext] with gameInfo / [GameContext.IgnoreConditionals] during early map gen.
+     */
+    @Readonly
+    fun getStartBias(ruleset: Ruleset, gameContext: GameContext = GameContext.IgnoreConditionals): Collection<String> {
+        val result = LinkedHashSet<String>()
+        result.addAll(startBias)
+        for (unique in uniqueMap.getMatchingUniques(UniqueType.StartBias, gameContext)) {
+            result.add(unique.params[0])
+        }
+        val type = ruleset.cityStateTypes[cityStateType] ?: return result
+        for (unique in type.uniqueMap.getMatchingUniques(UniqueType.StartBias, gameContext)) {
+            result.add(unique.params[0])
+        }
+        return result
+    }
 
     override fun makeLink() = "Nation/$name"
     override fun getSortGroup(ruleset: Ruleset) = when {

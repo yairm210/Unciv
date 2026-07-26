@@ -6,6 +6,8 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.translations.equalsPlaceholderText
+import com.unciv.models.translations.getPlaceholderParameters
 import yairm210.purity.annotations.Readonly
 import kotlin.math.min
 
@@ -215,21 +217,27 @@ object MinorCivPlacer {
     /**
      *  Attempts to place civs from [civsToPlace] in tiles from [tileList]. Assumes that
      *  [tileList] is pre-vetted and only contains habitable land tiles.
-     *  City-states with a Coast start bias (nation or [CityStateType]) prefer coastal tiles.
+     *  Respects start biases (nation field + StartBias uniques on nation / [CityStateType]),
+     *  including `Avoid [terrainFilter]`, same idea as [com.unciv.logic.GameStarter] major placement.
      *  Will modify both [civsToPlace] and [tileList] as it goes!
      */
     private fun tryPlaceMinorCivsInTiles(civsToPlace: MutableList<Civilization>, tileMap: TileMap, tileList: MutableList<Tile>, tileData: TileDataMap, ruleset: Ruleset) {
-        // Coastal-preferring CS first so hinterland types do not consume scarce coastal tiles.
-        val ordered = civsToPlace.sortedByDescending { prefersCoastalStart(it, ruleset) }.toMutableList()
+        // More constrained biases (and coastal) first so they do not lose scarce matching tiles.
+        val ordered = civsToPlace.sortedWith(
+            compareByDescending<Civilization> {
+                it.nation.getStartBias(ruleset, it.getGameContextForStartBias()).size
+            }.thenByDescending { prefersCoastalStart(it, ruleset) }
+        ).toMutableList()
         civsToPlace.clear()
         civsToPlace.addAll(ordered)
 
         while (tileList.isNotEmpty() && civsToPlace.isNotEmpty()) {
             val civToAdd = civsToPlace.first()
-            val pool = if (prefersCoastalStart(civToAdd, ruleset)) {
-                val coastal = tileList.filter { it.isAdjacentToCoast() }
-                if (coastal.isNotEmpty()) coastal else tileList
-            } else tileList
+            val preferred = filterTilesByStartBias(
+                tileList,
+                civToAdd.nation.getStartBias(ruleset, civToAdd.getGameContextForStartBias())
+            )
+            val pool = preferred.ifEmpty { tileList }
 
             val rng = GameContext(gameInfo = tileMap.gameInfo).stateBasedRandom("MinorCivPlcer.tryPlaceMinorCivsInTiles")
             val chosenTile = pool.random(rng)
@@ -242,6 +250,26 @@ object MinorCivPlacer {
             civsToPlace.remove(civToAdd)
             placeMinorCiv(civToAdd, tileMap, chosenTile, tileData, ruleset)
         }
+    }
+
+    /** Prefer tiles matching positive start biases; drop tiles matching `Avoid [filter]`. */
+    @Readonly
+    fun filterTilesByStartBias(tiles: List<Tile>, startBiases: Collection<String>): List<Tile> {
+        var preferred = tiles
+        for (startBias in startBiases) {
+            preferred = when {
+                startBias.equalsPlaceholderText("Avoid []") -> {
+                    val tileToAvoid = startBias.getPlaceholderParameters()[0]
+                    preferred.filter { tile ->
+                        tile.getTilesInDistance(1).none { it.matchesTerrainFilter(tileToAvoid, null) }
+                    }
+                }
+                else -> preferred.filter { tile ->
+                    tile.getTilesInDistance(1).any { it.matchesTerrainFilter(startBias, null) }
+                }
+            }
+        }
+        return preferred
     }
 
     /** True when nation or city-state type start bias includes Coast. */

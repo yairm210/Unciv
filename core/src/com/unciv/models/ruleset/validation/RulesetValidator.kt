@@ -171,6 +171,7 @@ open class RulesetValidator protected constructor(
                     if (reportRulesetSpecificErrors) UniqueValidator.allParameterSeverities else UniqueValidator.extensionModParameterSeverities)
                 lines.addAll(errors)
             }
+            uniqueValidator.checkUniques(cityStateType, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
         }
     }
 

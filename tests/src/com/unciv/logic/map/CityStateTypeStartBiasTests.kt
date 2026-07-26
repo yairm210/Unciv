@@ -49,7 +49,7 @@ class CityStateTypeStartBiasTests {
         }
 
         val bias = nation.getStartBias(ruleset)
-        Assert.assertEquals(listOf("Grassland", "Coast"), bias)
+        Assert.assertEquals(listOf("Grassland", "Coast"), bias.toList())
     }
 
     @Test
@@ -61,7 +61,7 @@ class CityStateTypeStartBiasTests {
             uniques = arrayListOf("Start bias [Coast]")
         }
         val bias = nation.getStartBias(ruleset)
-        Assert.assertEquals(listOf("Hills", "Coast"), bias)
+        Assert.assertEquals(listOf("Hills", "Coast"), bias.toList())
     }
 
     @Test
