@@ -70,7 +70,7 @@ abstract class TileLayer(val tileGroup: TileGroup, val size: Float) {
      */
     fun Image.setHexagonSize(scale: Float? = null, tileLocal: Boolean = false): Image {
         this.setSize(tileGroup.hexagonImageWidth, this.height * tileGroup.hexagonImageWidth / this.width)
-        this.setOrigin(tileGroup.hexagonImageOrigin.first, tileGroup.hexagonImageOrigin.second)
+        this.setOrigin(tileGroup.hexagonImageOriginX, tileGroup.hexagonImageOriginY)
         val baseX = if (tileLocal) 0f else tileX
         val baseY = if (tileLocal) 0f else tileY
         this.x = baseX + tileGroup.hexagonImagePosition.first

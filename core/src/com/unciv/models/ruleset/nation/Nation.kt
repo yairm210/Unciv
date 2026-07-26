@@ -16,22 +16,9 @@ import com.unciv.ui.objectdescriptions.NationDescriptions.getCivilopediaTextLine
 import yairm210.purity.annotations.Readonly
 
 class Nation : RulesetObject() {
+    // region Serialized fields
     var leaderName = ""
-
-    /**
-     * Retrieves a display name for the nation's leader, considering the provided title (untranslated).
-     *
-     * @param [title] Optional title to apply to the leader. For example: `[leaderName] the Great`
-     */
-    @Readonly fun getLeaderDisplayName(title: String = ""): String = when {
-        isCityState || isSpectator -> name
-        title.isEmpty() -> "[$leaderName] of [$name]"
-        else -> "[${title.fillPlaceholders(leaderName)}] of [$name]"
-    }
-
     val style = ""
-    @Readonly fun getStyleOrCivName() = style.ifEmpty { name }
-
     var cityStateType: String? = null
     var preferredVictoryType: String = Constants.neutralVictoryType
 
@@ -84,22 +71,14 @@ class Nation : RulesetObject() {
     var favoredReligion: String? = null
 
     var cities: ArrayList<String> = arrayListOf()
+    // endregion
 
-    override fun getUniqueTarget() = UniqueTarget.Nation
-
+    // region Transients
     @Transient
-    private var outerColorObject:ImmutableColor = ImmutableColor(Color.WHITE) // Not lateinit for unit tests
-    fun getOuterColor(): ImmutableColor = outerColorObject
+    private var outerColorObject: ImmutableColor = ImmutableColor(Color.WHITE) // Not lateinit for unit tests
 
     @Transient
     private var innerColorObject: ImmutableColor = ImmutableColor(Color.BLACK) // Not lateinit for unit tests
-
-    fun getInnerColor(): ImmutableColor = innerColorObject
-
-    val isCityState by lazy { cityStateType != null }
-    val isMajorCiv by lazy { !isBarbarian && !isCityState && !isSpectator }
-    val isBarbarian by lazy { name == Constants.barbarians }
-    val isSpectator by lazy { name == Constants.spectator }
 
     // This is its own transient because we'll need to check this for every tile-to-tile movement which is harsh
     @Transient
@@ -108,6 +87,67 @@ class Nation : RulesetObject() {
     // Same for Inca unique
     @Transient
     var ignoreHillMovementCost = false
+
+    val isCityState by lazy { cityStateType != null }
+    val isMajorCiv by lazy { !isBarbarian && !isCityState && !isSpectator }
+    val isBarbarian by lazy { name == Constants.barbarians }
+    val isSpectator by lazy { name == Constants.spectator }
+    // endregion
+
+    // region Overrides
+    override fun getUniqueTarget() = UniqueTarget.Nation
+    override fun makeLink() = "Nation/$name"
+    override fun getSortGroup(ruleset: Ruleset) = when {
+        isCityState -> 1
+        isBarbarian -> 9
+        else -> 0
+    }
+    override fun getSubCategory(ruleset: Ruleset): String? = when {
+        isCityState -> "City-States"
+        isBarbarian -> "Other"
+        else -> "Civilizations"
+    }
+    override fun getCivilopediaTextLines(ruleset: Ruleset) = getCivilopediaTextLinesImpl(ruleset)
+    // endregion
+
+    // region API
+    /**
+     * Retrieves a display name for the nation's leader, considering the provided title (untranslated).
+     *
+     * @param [title] Optional title to apply to the leader. For example: `[leaderName] the Great`
+     */
+    @Readonly fun getLeaderDisplayName(title: String = ""): String = when {
+        isCityState || isSpectator -> name
+        title.isEmpty() -> "[$leaderName] of [$name]"
+        else -> "[${title.fillPlaceholders(leaderName)}] of [$name]"
+    }
+
+    @Readonly fun getStyleOrCivName() = style.ifEmpty { name }
+
+    fun getOuterColor(): ImmutableColor = outerColorObject
+    fun getInnerColor(): ImmutableColor = innerColorObject
+
+    /**
+     * Effective start biases: Nation [startBias] field, plus [UniqueType.StartBias] uniques on the
+     * nation, plus (for city-states) [UniqueType.StartBias] on their [CityStateType].
+     *
+     * Conditionals use [gameContext] — callers should pass GameInfo-only context (or
+     * [GameContext.IgnoreConditionals]), not a partially initialized [com.unciv.logic.civilization.Civilization].
+     */
+    @Readonly
+    fun getStartBias(ruleset: Ruleset, gameContext: GameContext = GameContext.IgnoreConditionals): Collection<String> {
+        val result = LinkedHashSet<String>()
+        result.addAll(startBias)
+        for (unique in uniqueMap.getMatchingUniques(UniqueType.StartBias, gameContext)) {
+            result.add(unique.params[0])
+        }
+        val typeName = cityStateType ?: return result
+        val type = ruleset.cityStateTypes[typeName] ?: return result
+        for (unique in type.uniqueMap.getMatchingUniques(UniqueType.StartBias, gameContext)) {
+            result.add(unique.params[0])
+        }
+        return result
+    }
 
     fun setTransients() {
         fun safeColorFromRGB(rgb: List<Int>) = ImmutableColor(if (rgb.size >= 3) colorFromRGB(rgb) else Color.PURPLE)
@@ -121,21 +161,6 @@ class Nation : RulesetObject() {
         ignoreHillMovementCost = uniqueMap.hasUnique(UniqueType.IgnoreHillMovementCost)
     }
 
-
-    override fun makeLink() = "Nation/$name"
-    override fun getSortGroup(ruleset: Ruleset) = when {
-        isCityState -> 1
-        isBarbarian -> 9
-        else -> 0
-    }
-    override fun getSubCategory(ruleset: Ruleset): String? = when {
-        isCityState -> "City-States"
-        isBarbarian -> "Other"
-        else -> "Civilizations"
-    }
-
-    override fun getCivilopediaTextLines(ruleset: Ruleset) = getCivilopediaTextLinesImpl(ruleset)
-
     @Readonly
     fun matchesFilter(filter: String, state: GameContext? = null, multiFilter: Boolean = true): Boolean {
         // Todo: Add 'multifilter=false' option to Multifilter itself to cut down on duplicate code
@@ -148,7 +173,9 @@ class Nation : RulesetObject() {
             state != null && hasTagUnique(filter, state) ||
             state == null && hasTagUnique(filter)
     }
+    // endregion
 
+    // region Helpers
     @Readonly
     private fun matchesSingleFilter(filter: String): Boolean {
         // All cases are compile-time constants, for performance
@@ -159,4 +186,5 @@ class Nation : RulesetObject() {
             else -> filter == name
         }
     }
+    // endregion
 }

@@ -72,6 +72,15 @@ class Civilization : IsPartOfGameInfoSerialization {
     @Transient
     lateinit var gameInfo: GameInfo
 
+    /** Context for [UniqueType.StartBias] during map gen / start placement.
+     *  Passes [GameInfo] only — never this [Civilization], which may be only partially initialized.
+     *  Conditionals that need tiles/cities/units are therefore unsupported here.
+     */
+    @Readonly
+    fun getGameContextForStartBias() =
+        if (this::gameInfo.isInitialized) GameContext(gameInfo = gameInfo)
+        else GameContext.IgnoreConditionals
+
     @Transient
     lateinit var nation: Nation
     

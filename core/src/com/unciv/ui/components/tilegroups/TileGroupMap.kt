@@ -110,8 +110,8 @@ class TileGroupMap<T: TileGroup>(
 
         val numberOfTilegroups = tileGroups.count()
 
-        val terrainMapLayer     = TileMapLayer<TileLayerTerrain>(numberOfTilegroups)
-        val featureMapLayer     = TileMapLayer<TileLayerFeatures>(numberOfTilegroups)
+        val terrainMapLayer     = TerrainMapLayer(numberOfTilegroups)
+        val featureMapLayer     = FeaturesMapLayer(numberOfTilegroups)
         val borderMapLayer      = TileMapLayer<TileLayerBorders>(numberOfTilegroups)
         val resourceMapLayer    = TileMapLayer<TileLayerResource>(numberOfTilegroups, actable = true)
         val improvementMapLayer = TileMapLayer<TileLayerImprovement>(numberOfTilegroups, actable = true)
