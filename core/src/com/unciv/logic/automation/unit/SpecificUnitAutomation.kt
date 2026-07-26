@@ -72,9 +72,11 @@ object SpecificUnitAutomation {
     }
 
     fun automateSettlerActions(unit: MapUnit, dangerousTiles: HashSet<Tile>) {
-        // City-state starts are predetermined by map gen / editor — trust that tile
-        // (Civ5 PlotFirstTurnSettlerMoves). Do not wander for a slightly better site.
-        if (unit.civ.isCityState && unit.civ.cities.isEmpty()) {
+        // City-state starts are predetermined by map gen / editor — trust that tile by default
+        // (Civ5 PlotFirstTurnSettlerMoves). Mods can opt out via CityStatesSearchForFirstCitySite.
+        if (unit.civ.isCityState && unit.civ.cities.isEmpty()
+            && !unit.civ.gameInfo.ruleset.modOptions.hasUnique(UniqueType.CityStatesSearchForFirstCitySite)
+        ) {
             val foundHere = UnitActionsFromUniques.getFoundCityAction(unit, unit.getTile())
             if (foundHere?.action != null && unit.hasMovement()) {
                 foundHere.action.invoke()
