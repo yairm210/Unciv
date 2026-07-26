@@ -565,7 +565,7 @@ class GameStarter private constructor(
     private fun getCivsOrderedByAvailableLocations(civs: List<Civilization>): List<Civilization> {
         return civs.shuffled()   // Order should be random since it determines who gets best start
             .sortedBy { civ ->
-                val startBias = civ.nation.getStartBias(ruleset, GameContext(civ))
+                val startBias = civ.nation.getStartBias(ruleset, civ.getGameContextForStartBias())
                 when {
                     civ.civID in tileMap.startingLocationsByNation -> 1 // harshest requirements
                     startBias.any { it in tileMap.naturalWonders } && !gameSetupInfo.gameParameters.noStartBias -> 2
@@ -638,7 +638,7 @@ class GameStarter private constructor(
         if (gameSetupInfo.gameParameters.noStartBias) {
             return freeTiles.random(rng)
         }
-        val startBiases = civ.nation.getStartBias(ruleset, GameContext(civ))
+        val startBiases = civ.nation.getStartBias(ruleset, civ.getGameContextForStartBias())
         if (startBiases.any { it in tileMap.naturalWonders }) {
             // startPref wants Natural wonder neighbor: Rare and very likely to be outside getDistanceFromEdge
             val wonderNeighbor = tileMap.values.asSequence()

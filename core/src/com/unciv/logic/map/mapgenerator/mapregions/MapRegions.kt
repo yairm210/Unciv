@@ -255,7 +255,7 @@ class MapRegions (val ruleset: Ruleset) {
         }
 
         val civBiases = civilizations.associateWith {
-            ruleset.nations[it.civName]!!.getStartBias(ruleset, GameContext(it))
+            ruleset.nations[it.civName]!!.getStartBias(ruleset, it.getGameContextForStartBias())
         }
         // This ensures each civ can only be in one of the buckets
         val civsByBiasType = civBiases.entries.groupBy(
@@ -424,7 +424,7 @@ class MapRegions (val ruleset: Ruleset) {
         if (Log.backend.isRelease()) return
 
         val logCiv = {
-            val bias = ruleset.nations[civ.civName]!!.getStartBias(ruleset, GameContext(civ))
+            val bias = ruleset.nations[civ.civName]!!.getStartBias(ruleset, civ.getGameContextForStartBias())
             civ.civName + " " + bias.joinToString(",", "(", ")")
         }
         val msg = if (success) "(%s): %s to %s"
