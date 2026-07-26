@@ -131,8 +131,8 @@ class Nation : RulesetObject() {
      * Effective start biases: Nation [startBias] field, plus [UniqueType.StartBias] uniques on the
      * nation, plus (for city-states) [UniqueType.StartBias] on their [CityStateType].
      *
-     * Conditionals are evaluated with [gameContext] — pass [GameContext] for the civ when available,
-     * otherwise [GameContext] with gameInfo / [GameContext.IgnoreConditionals] during early map gen.
+     * Conditionals use [gameContext] — callers should pass GameInfo-only context (or
+     * [GameContext.IgnoreConditionals]), not a partially initialized [com.unciv.logic.civilization.Civilization].
      */
     @Readonly
     fun getStartBias(ruleset: Ruleset, gameContext: GameContext = GameContext.IgnoreConditionals): Collection<String> {
