@@ -74,10 +74,9 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     /** Safe context for start-bias uniques (civ may lack [gameInfo] during early map gen). */
     @Readonly
-    fun getGameContextForStartBias(): GameContext {
-        if (!this::gameInfo.isInitialized) return GameContext.IgnoreConditionals
-        return GameContext(this)
-    }
+    fun getGameContextForStartBias() =
+        if (this::gameInfo.isInitialized) GameContext(this)
+        else GameContext.IgnoreConditionals
 
     @Transient
     lateinit var nation: Nation
