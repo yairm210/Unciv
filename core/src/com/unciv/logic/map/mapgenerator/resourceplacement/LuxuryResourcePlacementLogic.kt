@@ -277,21 +277,22 @@ object LuxuryResourcePlacementLogic {
         val rng = GameContext(gameInfo = tileMap.gameInfo).stateBasedRandom("LuxuryResourcePlacementLogic.addRandomLuxuries")
         val resourceSetting = tileMap.mapParameters.getMapResources()
 
-        var legacyTarget = tileData.size.toFloat().pow(0.45f).toInt() // Approximately
-        legacyTarget *= resourceSetting.randomLuxuriesPercent
-        legacyTarget /= 100
-        legacyTarget += rng.nextInt(regions.size) // Add random number based on number of civs
+        var legacyBase = tileData.size.toFloat().pow(0.45f).toInt() // Approximately
+        legacyBase *= resourceSetting.randomLuxuriesPercent
+        legacyBase /= 100
+        // Draw civ variance once so enabling a soft floor does not desync later shuffles vs floor=0.
+        val civVariance = if (regions.isEmpty()) 0 else rng.nextInt(regions.size)
         val minimumRandomLuxuries = tileData.size.toFloat().pow(0.2f).toInt() // Approximately
 
         val worldFloor = resolveMinimumWorldLuxuryFloor(ruleset, tileMap.mapParameters.mapSize, resourceSetting)
-        val targetRandomLuxuries = if (worldFloor > 0) {
-            val extraVariance = if (regions.isEmpty()) 0 else rng.nextInt(regions.size)
-            val deficit = max(0, worldFloor + extraVariance - luxuriesPlacedBeforeRandom)
-            // Floor only: never place fewer random luxuries than Unciv's default formula.
-            max(legacyTarget, deficit)
-        } else {
-            legacyTarget
-        }
+        // Soft top-up of the *random-phase target* only — tryAddingResourceToTiles is best-effort,
+        // so final map luxury counts are not guaranteed to reach [worldFloor].
+        val targetRandomLuxuries = resolveRandomLuxuryPlacementTarget(
+            legacyBaseWithoutCivVariance = legacyBase,
+            civVariance = civVariance,
+            worldFloor = worldFloor,
+            luxuriesPlacedBeforeRandom = luxuriesPlacedBeforeRandom,
+        )
 
         if (targetRandomLuxuries <= 0) return
 
@@ -446,7 +447,33 @@ object LuxuryResourcePlacementLogic {
 
     // region Optional world luxury floor (ModConstants)
 
-    /** Resolves optional world luxury floor from ModConstants; 0 means disabled. Custom sizes use [MapSize.getPredefinedOrNextSmaller]. */
+    /**
+     * Soft random-phase luxury target: [legacyBaseWithoutCivVariance] + [civVariance], optionally
+     * raised to cover `worldFloor + civVariance - alreadyPlaced` when [worldFloor] > 0.
+     * Uses the same [civVariance] for both sides — do not draw a second RNG value when the floor is on.
+     */
+    @Readonly
+    fun resolveRandomLuxuryPlacementTarget(
+        legacyBaseWithoutCivVariance: Int,
+        civVariance: Int,
+        worldFloor: Int,
+        luxuriesPlacedBeforeRandom: Int,
+    ): Int {
+        val legacyTarget = legacyBaseWithoutCivVariance + civVariance
+        if (worldFloor <= 0) return legacyTarget
+        val deficit = max(0, worldFloor + civVariance - luxuriesPlacedBeforeRandom)
+        return max(legacyTarget, deficit)
+    }
+
+    /**
+     * Resolves optional ModConstants world luxury floor; `0` means disabled.
+     * Custom sizes use [MapSize.getPredefinedOrNextSmaller].
+     *
+     * This value feeds a **soft** bump of the random-luxury placement target only
+     * (`max(legacyTarget, floor − alreadyPlaced)`). It does not hard-guarantee final
+     * tile counts, and is unused on the map-editor [com.unciv.logic.map.mapgenerator.MapGenerator]
+     * `spreadResources` path (no civilizations).
+     */
     @Readonly
     fun resolveMinimumWorldLuxuryFloor(
         ruleset: Ruleset,
