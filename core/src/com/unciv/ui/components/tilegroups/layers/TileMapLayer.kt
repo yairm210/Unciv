@@ -1,5 +1,7 @@
 package com.unciv.ui.components.tilegroups.layers
 
+import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
 
@@ -10,7 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
  *  short-circuit [hit] and [act] at the layer boundary instead of iterating every tile actor:
  *  non-interactive layers have [touchable] = [Touchable.disabled] so [hit] returns null without
  *  recursing into N children; [act] is suppressed unless [actable] is true. */
-class TileMapLayer<T : TileLayer>(
+open class TileMapLayer<T : TileLayer>(
     initialCapacity: Int,
     private val actable: Boolean = false,
     touchable: Boolean = false,
@@ -33,4 +35,19 @@ class TileMapLayer<T : TileLayer>(
     override fun act(delta: Float) {
         if (actable) super.act(delta)
     }
+    override fun draw(batch: Batch, parentAlpha: Float) = super.draw(batch, parentAlpha)
+    override fun hit(x: Float, y: Float, touchable: Boolean): Actor? = super.hit(x, y, touchable)
+}
+
+// individual inheritors for perf data only
+class TerrainMapLayer(initialCapacity: Int, actable: Boolean = false, touchable: Boolean = false):
+    TileMapLayer<TileLayerTerrain>(initialCapacity, actable, touchable) {
+    override fun act(delta: Float) = super.act(delta)
+    override fun draw(batch: Batch, parentAlpha: Float) = super.draw(batch, parentAlpha)
+}
+
+class FeaturesMapLayer(initialCapacity: Int, actable: Boolean = false, touchable: Boolean = false):
+    TileMapLayer<TileLayerFeatures>(initialCapacity, actable, touchable) {
+    override fun act(delta: Float) = super.act(delta)
+    override fun draw(batch: Batch, parentAlpha: Float) = super.draw(batch, parentAlpha)
 }

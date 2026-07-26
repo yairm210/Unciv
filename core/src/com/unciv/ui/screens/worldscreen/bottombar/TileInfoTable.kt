@@ -1,6 +1,7 @@
 package com.unciv.ui.screens.worldscreen.bottombar
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
@@ -67,4 +68,6 @@ class TileInfoTable(private val worldScreen: WorldScreen) : Table(BaseScreen.ski
         }
         return table
     }
+
+    override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
 }

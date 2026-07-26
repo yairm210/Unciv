@@ -782,6 +782,9 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         spaceResources.clear()
         spaceResources.addAll(ruleset.buildings.values.filter { it.hasUnique(UniqueType.SpaceshipPart) }
             .flatMap { it.getResourceRequirementsPerTurn().keys })
+        // Spaceship parts are UNITS in the base ruleset (SS Booster etc., each requiring Aluminum).
+        spaceResources.addAll(ruleset.units.values.filter { it.hasUnique(UniqueType.SpaceshipPart) }
+            .flatMap { it.getResourceRequirementsPerTurn().keys })
         spaceResources.addAll(ruleset.victories.values.flatMap { it.requiredSpaceshipParts })
 
         barbarians.setTransients(this)

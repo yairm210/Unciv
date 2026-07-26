@@ -578,7 +578,9 @@ object NextTurnAutomation {
         for (city in civInfo.cities) {
             if (shouldAnnexCity(civInfo, city)) city.annexCity()
 
-            if (city.health < city.getMaxHealth() || civHasSignificantlyWeakerMilitaryThanEnemies) {
+            // Don't pull a city off a spaceship part it's already building for the military push (only if actually attacked)
+            val onSpaceshipPart = city.cityConstructions.getCurrentConstruction().name in civInfo.gameInfo.spaceResources
+            if (city.health < city.getMaxHealth() || (civHasSignificantlyWeakerMilitaryThanEnemies && !onSpaceshipPart)) {
                 Automation.tryTrainMilitaryUnit(city) // need defenses if city is under attack
                 if (city.cityConstructions.constructionQueue.isNotEmpty())
                     continue // found a unit to build so move on

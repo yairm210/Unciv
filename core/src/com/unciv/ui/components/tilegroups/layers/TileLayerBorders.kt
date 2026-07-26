@@ -145,5 +145,4 @@ class TileLayerBorders(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
     override fun doUpdate(viewingCiv: Civilization?) {
         updateBorders()
     }
-
 }
