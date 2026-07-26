@@ -291,6 +291,12 @@ enum class UniqueType(
     StartingTech("Starting tech", UniqueTarget.Tech),
     StartsWithTech("Starts with [tech]", UniqueTarget.Nation),
     StartsWithPolicy("Starts with [policy] adopted", UniqueTarget.Nation),
+    StartBias("Start bias [terrainFilter]", UniqueTarget.Nation, UniqueTarget.CityState,
+        docDescription = "Same effect as a Nation startBias field entry. Merged with the startBias field " +
+            "and, for city-states, with matching uniques on their CityStateType. " +
+            "Conditionals run against GameInfo only during map generation / start placement " +
+            "(no Civilization — it may be only partially initialized). " +
+            "Do not use conditionals that require tiles, cities, or units."),
 
     /// Victory
     TriggersVictory("Triggers victory", UniqueTarget.Global),

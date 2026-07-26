@@ -62,7 +62,7 @@ Each nation has the following structure:
 | leaderName              | String                                                              | none     | Omit only for city states! If you want LeaderPortraits, the image file names must match exactly, including case                                 |
 | style                   | String                                                              | none     | Modifier appended to pixel unit image names                                                                                                     |
 | cityStateType           | String                                                              | none     | Distinguishes major civilizations from city states (must be in [CityStateTypes.json](#citystatetypesjson))                                      |
-| startBias               | List of strings                                                     | empty    | Zero or more of: [terrainFilter](../Unique-parameters.md#terrainfilter) or "Avoid [terrainFilter]". [^S]                                        |
+| startBias               | List of strings                                                     | empty    | Zero or more of: [terrainFilter](../Unique-parameters.md#terrainfilter) or "Avoid [terrainFilter]". Also merged with `Start bias [terrainFilter]` uniques on the nation and (for city-states) on their CityStateType. [^S] |
 | preferredVictoryType    | String                                                              | Neutral  | The victory type major civilizations will pursue (need not be specified in [VictoryTypes.json](5-Miscellaneous-JSON-files.md#victorytypesjson)) |
 | personality             | String                                                              | none     | The name of the personality specified in [Personalities.json](#personalitiesjson) [^P]                                                          |
 | favoredReligion         | String                                                              | none     | The religion major civilization will choose if available when founding a religion. Must be in [Religions.json](#religionsjson)                  |
@@ -175,6 +175,7 @@ Each city state type has the following structure:
 | name               | String                                                              | Required        |                                                                                                            |
 | friendBonusUniques | List of Strings                                                     | empty           | List of [unique abilities](../uniques.md) granted to major civilizations when friends with this city state |
 | allyBonusUniques   | List of Strings                                                     | empty           | List of [unique abilities](../uniques.md) granted to  major civilizations when allied to city state        |
+| uniques            | List of Strings                                                     | empty           | Type-wide [uniques](../uniques.md) for every city-state of this type (e.g. `Start bias [Coast]`)            |
 | color              | [List of 3× Integer](5-Miscellaneous-JSON-files.md#rgb-colors-list) | [255, 255, 255] | RGB color of text in civilopedia                                                                           |
 
 ## Policies.json
