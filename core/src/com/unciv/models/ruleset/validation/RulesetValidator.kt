@@ -33,6 +33,7 @@ import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stats
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.tilesets.TileSetConfig
+import com.unciv.models.translations.fillPlaceholders
 import com.unciv.ui.components.extensions.getContrastRatio
 import com.unciv.ui.components.extensions.getRelativeLuminance
 import com.unciv.ui.images.AtlasPreview
@@ -123,6 +124,7 @@ open class RulesetValidator protected constructor(
         addEventErrors(lines)
         addCityStateTypeErrors(lines)
 
+        checkFreeBuildingPossibleRecursions(lines)
         addTranslationNameCollisionWarnings(lines)
         addEmptyNamesErrors(lines)
 
@@ -848,4 +850,50 @@ open class RulesetValidator protected constructor(
         }
     }
 
+    private fun checkFreeBuildingPossibleRecursions(lines: RulesetErrorList) {
+        fun <K, V> Sequence<Pair<K, V>>.groupByPair() =
+            groupBy({ it.first }, { it.second })
+        fun getBuildingIndex(type: UniqueType): Map<String, List<Unique>> =
+            ruleset.allUniques()
+            .filter { it.type == type }
+            .map { it.params[0] to it }
+            .groupByPair()
+        fun List<Unique>.displayUniques(): String =
+            joinToString {
+                "\"${it.text}\"" +
+                    if (it.sourceObjectType == null) ""
+                    else " on ${it.getSourceNameForUser()} \"${it.sourceObjectName}\""
+            }
+        val suppressorKey = "is both granted free and could possibly be removed by triggers"
+        fun getSuppressor() =
+            UniqueType.SuppressWarnings.placeholderText.fillPlaceholders(suppressorKey)
+
+        // Map of building **names** that are granted free via triggerable anywhere to a List of source Uniques
+        val allFreeBuildings = getBuildingIndex(UniqueType.GainFreeBuildings)
+        // Map of building **filters** that are removed via triggerable anywhere to a List of source Uniques
+        val allRemovals = getBuildingIndex(UniqueType.RemoveBuilding)
+        // Possible sources of infinite recursion: Map of buildingName to a list of all possibly removing Uniques
+        val possibleRecursions = allFreeBuildings.keys.asSequence()
+            .map { name -> name to ruleset.buildings[name]!! }
+            .flatMap { (name, building) ->
+                allRemovals.keys.flatMap { filter ->
+                    // Double flatMap since more than one filter can match the building, and we want all removal Uniques in a single List
+                    allRemovals[filter]!!.mapNotNull {
+                        if (building.matchesFilter(filter)) name to it else null
+                    }
+                }
+            }
+            .groupByPair()
+
+        // Output
+        for ((buildingName, removals) in possibleRecursions) {
+            val grants = allFreeBuildings[buildingName]!!
+            val text = "Building \"$buildingName\" $suppressorKey.\n" +
+                "This can lead to infinite recursion if care is not taken that conditionals are mutually exclusive.\n" +
+                "Grants: ${grants.displayUniques()},\n" +
+                "Possible removals: ${removals.displayUniques()}\n" +
+                "If you're *SURE* this is safe, add the unique \"${getSuppressor()}\" to the building."
+            lines.add(text, RulesetErrorSeverity.WarningOptionsOnly, ruleset.buildings[buildingName], grants.firstOrNull() )
+        }
+    }
 }
