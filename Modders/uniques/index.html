@@ -3699,6 +3699,12 @@
 <p>Applicable to: Nation</p>
 </details>
 <details class="example">
+<summary>Start bias [terrainFilter]</summary>
+<p>Same effect as a Nation startBias field entry. Merged with the startBias field and, for city-states, with matching uniques on their CityStateType. Conditionals run against GameInfo only during map generation / start placement (no Civilization — it may be only partially initialized). Do not use conditionals that require tiles, cities, or units.</p>
+<p>Example: "Start bias [Fresh Water]"</p>
+<p>Applicable to: Nation, CityState</p>
+</details>
+<details class="example">
 <summary>All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel.</summary>
 <p>Due to performance considerations, this unique is cached, thus conditionals that may change within a turn may not work.</p>
 <p>Applicable to: Nation</p>
@@ -5759,6 +5765,12 @@
 <summary>Provides a unique luxury</summary>
 <p>Applicable to: CityState</p>
 </details>
+<details class="example">
+<summary>Start bias [terrainFilter]</summary>
+<p>Same effect as a Nation startBias field entry. Merged with the startBias field and, for city-states, with matching uniques on their CityStateType. Conditionals run against GameInfo only during map generation / start placement (no Civilization — it may be only partially initialized). Do not use conditionals that require tiles, cities, or units.</p>
+<p>Example: "Start bias [Fresh Water]"</p>
+<p>Applicable to: Nation, CityState</p>
+</details>
 <h2 id="modoptions-uniques">ModOptions uniques</h2>
 <details class="example">
 <summary>Diplomatic relationships cannot change</summary>
@@ -5799,6 +5811,12 @@
 </details>
 <details class="example">
 <summary>Allow raze holy city</summary>
+<p>This unique does not support conditionals.</p>
+<p>Applicable to: ModOptions</p>
+</details>
+<details class="example">
+<summary>City-states search for first city location</summary>
+<p>By default, city-state settlers with no cities yet found on their current tile when valid (predetermined map-gen / editor start). With this unique they use the same nearby-site search as major civs.</p>
 <p>This unique does not support conditionals.</p>
 <p>Applicable to: ModOptions</p>
 </details>
