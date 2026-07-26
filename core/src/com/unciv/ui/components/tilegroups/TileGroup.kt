@@ -30,8 +30,9 @@ open class TileGroup(
      * Honestly, I got these numbers empirically by printing `.x` and `.y` after `.center()`, and I'm not totally
      * clear on the stack of transformations that makes them work. But they are still exact ratios, AFAICT. */
     val hexagonImageWidth = groupSize * 1.5f
-    val hexagonImageOrigin = Pair(hexagonImageWidth / 2f, sqrt((hexagonImageWidth / 2f).pow(2) - (hexagonImageWidth / 4f).pow(2)))
-    val hexagonImagePosition = Pair(-hexagonImageOrigin.first / 3f, -hexagonImageOrigin.second / 4f)
+    val hexagonImageOriginX = hexagonImageWidth / 2f
+    val hexagonImageOriginY = sqrt((hexagonImageWidth / 2f).pow(2) - (hexagonImageWidth / 4f).pow(2))
+    val hexagonImagePosition = Pair(-hexagonImageOriginX / 3f, -hexagonImageOriginY / 4f)
 
     var isForceVisible = DebugUtils.VISIBLE_MAP
     var isForMapEditorIcon = false
