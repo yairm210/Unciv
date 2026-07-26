@@ -60,12 +60,23 @@ object NationDescriptions {
         return textList
     }
 
-    @Readonly
     private fun Nation.getCityStateInfo(ruleset: Ruleset): List<FormattedLine> {
         val textList = ArrayList<FormattedLine>()
 
         val cityStateType = ruleset.cityStateTypes[cityStateType]!!
         textList += FormattedLine("{Type}: {${cityStateType.name}}", header = 4, color = "#"+cityStateType.getColor().toString())
+
+        // CityStateType is a RulesetObject but has no Civilopedia category — surface its text/uniques on the CS Nation page.
+        if (cityStateType.civilopediaText.isNotEmpty()) {
+            textList += FormattedLine()
+            textList += cityStateType.civilopediaText
+        }
+        cityStateType.uniquesToCivilopediaTextLines(
+            textList,
+            leadingSeparator = { yield(FormattedLine()) },
+            // Start bias is already listed via Nation.getStartBias below
+            exclude = { type == UniqueType.StartBias }
+        )
 
         var showResources = false
 
