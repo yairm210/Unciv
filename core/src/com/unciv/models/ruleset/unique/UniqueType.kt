@@ -1097,6 +1097,13 @@ enum class UniqueType(
         docDescription = "In this case, 'starting era' means the first defined Era in the entire ruleset."),
     AllowRazeCapital("Allow raze capital", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
     AllowRazeHolyCity("Allow raze holy city", UniqueTarget.ModOptions, flags = UniqueFlag.setOfNoConditionals),
+    CityStatesSearchForFirstCitySite(
+        "City-states search for first city location",
+        UniqueTarget.ModOptions,
+        flags = UniqueFlag.setOfNoConditionals,
+        docDescription = "By default, city-state settlers with no cities yet found on their current tile when valid " +
+            "(predetermined map-gen / editor start). With this unique they use the same nearby-site search as major civs.",
+    ),
 
     SuppressWarnings("Suppress warning [validationWarning]", *UniqueTarget.CanIncludeSuppression, flags = UniqueFlag.setOfHiddenNoConditionals, docDescription = Suppression.uniqueDocDescription),
 
