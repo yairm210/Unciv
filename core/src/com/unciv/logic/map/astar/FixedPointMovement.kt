@@ -47,9 +47,9 @@ value class FixedPointMovement private constructor(val bits: Int) {
     override fun toString() = toFloat().toString()
 
     companion object {
-        const val MOVE_SPEED_BASE = 30
+        private const val MOVE_SPEED_BASE = 30
         val FPM_ZERO = FixedPointMovement(0)
-        val FPM_POINT_FIVE = FixedPointMovement(MOVE_SPEED_BASE/2)
+        val FPM_POINT_FIVE = FixedPointMovement(MOVE_SPEED_BASE / 2)
         val FPM_ONE = FixedPointMovement(MOVE_SPEED_BASE)
 
         @Pure

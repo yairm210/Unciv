@@ -161,7 +161,7 @@ class PathingMap private constructor(
         val targetNode = RouteNode(cache.routeNodes[destination.zeroBasedIndex])
         if (!targetNode.initialized  && !cache.nodesNeedingNeighbors.isEmpty) {
             if (VERBOSE_PATHFINDING_LOGS == cache.key.startingPoint || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
-                Log.debug("#getShortestPath(${destination.position}) calculcating for $debugMapType $debugId")
+                Log.debug("#getShortestPath(${destination.position}) calculating for $debugMapType $debugId")
             aStarStepUntilDestination(cache, destination, maxTurns)
         }
         val bestTarget =  RouteNode(cache.routeNodes[destination.zeroBasedIndex])
@@ -216,7 +216,7 @@ class PathingMap private constructor(
         // include enemies we would otherwise reach this turn.
         if (!cache.nodesNeedingNeighbors.isEmpty) {
             if (VERBOSE_PATHFINDING_LOGS == cache.key.startingPoint || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
-                Log.debug("#getMovementToTilesAtPosition calculcating for $debugMapType $debugId")
+                Log.debug("#getMovementToTilesAtPosition calculating for $debugMapType $debugId")
             bfsStepUntilDestination(cache, { _,node -> node.turns>0 && node.canMoveTo }, 1)
         }
         getTilesSameTurn(cache)
@@ -299,7 +299,7 @@ class PathingMap private constructor(
             }
         }
         if (VERBOSE_PATHFINDING_LOGS == cache.key.startingPoint || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
-            Log.debug("#getMovementToTilesAtPosition calculcated tilesSameTurn=${tilesSameTurn.map {it.key.position}} for $debugMapType $debugId")
+            Log.debug("#getMovementToTilesAtPosition calculated tilesSameTurn=${tilesSameTurn.map {it.key.position}} for $debugMapType $debugId")
     }
 
     @VisibleForTesting

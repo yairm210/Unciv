@@ -129,12 +129,12 @@ internal class AStarPathfinder(
         if (currentNode.moveUsedThisTurn < fpmFullMovement  && thisTurnPassThroughOrSafeEndTurn) {
             // if we can move to the next tile, and then either end our turn safely or move away, then we do so.
             if (PathingMap.VERBOSE_PATHFINDING_LOGS == startingPoint || PathingMap.VERBOSE_PATHFINDING_LOGS == PathingMap.ALWAYS_LOG)
-                Log.debug("#calculateAndQueue ${currentTile.position} queing ${neighborTile.position} for same turn, for $debugMapType $debugId")
+                Log.debug("#calculateAndQueue ${currentTile.position} queuing ${neighborTile.position} for same turn, for $debugMapType $debugId")
             return RouteNode(neighborTile, relationship, newMountainMovement, newUsedMovement, currentNode.turns,  currentTile, canMoveTo, damagingTiles)
         } else if (currentNode.endTurnWithoutMoreDamage && currentNode.canMoveTo && nextTurnPassThroughOrEndTurn) {
             // If we can safely end our turn on the current tile, and then either end our turn or move away, then we do so.
             if (PathingMap.VERBOSE_PATHFINDING_LOGS == startingPoint || PathingMap.VERBOSE_PATHFINDING_LOGS == PathingMap.ALWAYS_LOG)
-                Log.debug("#calculateAndQueue ${currentTile.position} queing ${neighborTile.position} for next turn, for $debugMapType $debugId ($canMoveTo)")
+                Log.debug("#calculateAndQueue ${currentTile.position} queuing ${neighborTile.position} for next turn, for $debugMapType $debugId ($canMoveTo)")
             return RouteNode(neighborTile, relationship, newMountainMovement, cost, currentNode.turns + 1, currentTile, canMoveTo, damagingTiles)
         } else if (currentNode.endTurnWithoutMoreDamage && currentNode.canMoveTo && !canMoveTo) {
             // Cannot end our turn on the next tile, nor pass through it. Possibly because it's occupied by a unit.
@@ -150,7 +150,7 @@ internal class AStarPathfinder(
             // If we could have moved here if we'd paused before entering mountains, then
             // pretend we paused before entering the mountains.
             if (PathingMap.VERBOSE_PATHFINDING_LOGS == startingPoint || PathingMap.VERBOSE_PATHFINDING_LOGS == PathingMap.ALWAYS_LOG)
-                Log.debug("#calculateAndQueue ${currentTile.position} queing ${neighborTile.position} with retroactive pause before mountains, for $debugMapType $debugId ($canMoveTo)")
+                Log.debug("#calculateAndQueue ${currentTile.position} queuing ${neighborTile.position} with retroactive pause before mountains, for $debugMapType $debugId ($canMoveTo)")
             return RouteNode(neighborTile, relationship, newMountainMovement, newMountainMovement, currentNode.turns + 1, currentTile, canMoveTo, damagingTiles)
         } else {
             // Ending our turn here takes damage. We'll add the neighbor tile, but the damage
@@ -159,7 +159,7 @@ internal class AStarPathfinder(
             // which is the ONLY scenario where a tile can get recalculated.
             val newDamageTiles = (damagingTiles + endTurnThereDamage).coerceAtMost(RouteNode.MAX_DAMAGING_TILES)
             if (PathingMap.VERBOSE_PATHFINDING_LOGS == startingPoint || PathingMap.VERBOSE_PATHFINDING_LOGS == PathingMap.ALWAYS_LOG)
-                Log.debug("#calculateAndQueue ${currentTile.position} queing ${neighborTile.position} with taking damage, for $debugMapType $debugId ($canMoveTo)")
+                Log.debug("#calculateAndQueue ${currentTile.position} queuing ${neighborTile.position} with taking damage, for $debugMapType $debugId ($canMoveTo)")
             return RouteNode(neighborTile, relationship, cost, cost, currentNode.turns + 1, currentTile, canMoveTo, newDamageTiles)
         }
     }
