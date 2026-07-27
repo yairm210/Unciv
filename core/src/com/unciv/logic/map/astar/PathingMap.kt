@@ -414,7 +414,7 @@ class PathingMap private constructor(
         /** You can temporarily set this to a tile position, e.g. a unit's, or to [ALWAYS_LOG],
          *  to enable verbose logging for that thing's pathfinding or for everything */
         @VisibleForTesting
-        val VERBOSE_PATHFINDING_LOGS: HexCoord = NEVER_LOG
+        var VERBOSE_PATHFINDING_LOGS: HexCoord = NEVER_LOG
 
         @Readonly
         fun createUnitPathingMap(

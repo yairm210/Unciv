@@ -1,9 +1,13 @@
 package com.unciv.logic.map
 
+import com.badlogic.gdx.files.FileHandle
+import com.unciv.UncivGame
+import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.astar.PathingMap.Companion.NEVER_LOG
 import com.unciv.logic.map.astar.PathingMap.Companion.VERBOSE_PATHFINDING_LOGS
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.map.astar.FixedPointMovement.Companion.fpmFromMovement
 import com.unciv.logic.map.astar.FixedPointMovement.Companion.fpmFromFixedPointBits
 import com.unciv.logic.map.astar.PathingMap
@@ -11,13 +15,17 @@ import com.unciv.logic.map.astar.PrioritizedNode
 import com.unciv.logic.map.astar.RouteNode
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.RedirectOutput
+import com.unciv.testing.RedirectPolicy
 import com.unciv.testing.TestGame
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.io.File
 
 
 @RunWith(GdxTestRunner::class)
@@ -35,12 +43,12 @@ class PathingMapTest {
         for (i in 0 until 100)
             testGame.tileMap.tileList[i].setExplored(civInfo, true)
     }
-    
+
     @Test // This only exists to reduce how often we accidentally push with verbose logging enabled
     fun verbose_pathing_logs_disabled() {
         assertEquals(VERBOSE_PATHFINDING_LOGS, NEVER_LOG)
     }
-    
+
     @Test
     fun bitsInRouteNodeRoundTrip() {
         testGame.makeHexagonalMap(209) //209 is smallest radius that uses all bits in tile index
@@ -346,5 +354,53 @@ class PathingMapTest {
         assertEquals(expected, attackableTiles.map {it.position})
         // And affirm full recalculation using cached tiles has same result.
         assertEquals(expected, pathing.bfsAllMatchingTilesThisTurn { tile, _ -> tile.civilianUnit?.civ == civInfo}.map {it.position})
+    }
+
+    private companion object {
+        const val TestModName = "Pathing-Test"
+        const val TestSaveResource = "SaveFiles/Pathing-Test"
+        const val TestUnitID = 134
+        const val TestUnitName = "Redcoat"
+        const val TestUnitCiv = "England"
+        val ExpectedStartPos = HexCoord(6, 0)
+        val ExpectedEndPosAStar = HexCoord(8, 4)
+        val ExpectedEndPosClassic = HexCoord(0, -4)
+    }
+
+    @Test
+    @RedirectOutput(RedirectPolicy.Show)
+    fun `issue #15165 - Crash with Can't reach tile`() {
+        runAutomateUnitMovesOnSave(true, ExpectedEndPosAStar)
+    }
+
+    @Test
+    fun `issue #15165 - Was fine with classic pathfinding`() {
+        runAutomateUnitMovesOnSave(false, ExpectedEndPosClassic)
+    }
+
+    fun runAutomateUnitMovesOnSave(astar: Boolean, endPos: HexCoord) {
+        val modUrl = javaClass.classLoader.getResource("mods/$TestModName")
+            ?: error("Test mod not found")
+        val modFile = FileHandle(File(modUrl.toURI()))
+        val errorLines = mutableListOf<String>()
+        val mod = RulesetCache.loadSingleRuleset(modFile, errorLines)
+            ?: error("Could not load Test mod")
+        RulesetCache[TestModName] = mod
+
+        val saveData = javaClass.classLoader.getResourceAsStream(TestSaveResource)
+            ?.bufferedReader()?.readText()
+            ?: error("Could not load Test save")
+        val game = UncivFiles.gameInfoFromString(saveData)
+
+        val unit = game.getCivilization(TestUnitCiv).units.getUnitById(TestUnitID)
+            ?: error("Test unit not found in save")
+        assertEquals(TestUnitName, unit.name)
+        assertEquals(ExpectedStartPos, unit.currentTile.position)
+
+        UncivGame.Current.settings.useAStarPathfinding = astar
+        VERBOSE_PATHFINDING_LOGS = ExpectedStartPos
+
+        UnitAutomation.automateUnitMoves(unit)
+        assertEquals(endPos, unit.currentTile.position)
     }
 }
