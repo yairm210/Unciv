@@ -1,16 +1,18 @@
 package com.unciv.logic.map
 
 import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.map.PathingMap.Companion.NEVER_LOG
-import com.unciv.logic.map.PathingMap.Companion.VERBOSE_PATHFINDING_LOGS
+import com.unciv.logic.map.astar.PathingMap.Companion.NEVER_LOG
+import com.unciv.logic.map.astar.PathingMap.Companion.VERBOSE_PATHFINDING_LOGS
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
-import com.unciv.logic.map.FixedPointMovement.Companion.fpmFromMovement
-import com.unciv.logic.map.FixedPointMovement.Companion.fpmFromFixedPointBits
+import com.unciv.logic.map.astar.FixedPointMovement.Companion.fpmFromMovement
+import com.unciv.logic.map.astar.FixedPointMovement.Companion.fpmFromFixedPointBits
+import com.unciv.logic.map.astar.PathingMap
+import com.unciv.logic.map.astar.PrioritizedNode
+import com.unciv.logic.map.astar.RouteNode
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
-import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Before
