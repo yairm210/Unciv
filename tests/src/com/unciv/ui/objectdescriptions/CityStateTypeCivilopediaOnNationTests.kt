@@ -61,4 +61,18 @@ class CityStateTypeCivilopediaOnNationTests {
             texts.any { it.contains("Coast") }
         )
     }
+
+    @Test
+    fun `city-state nation civilopedia has no separator before start bias`() {
+        val ruleset = RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!.clone()
+        val nation = ruleset.nations.values.first { it.isCityState && it.cityStateType == "Maritime" }
+
+        val lines = nation.getCivilopediaTextLines(ruleset)
+        val startBiasIndex = lines.indexOfFirst { it.text.contains("Start bias") }
+        Assert.assertTrue("Expected start bias on Maritime CS page", startBiasIndex > 0)
+        Assert.assertFalse(
+            "Start bias should follow a blank line, not a separator (match major-civ layout)",
+            lines[startBiasIndex - 1].separator
+        )
+    }
 }

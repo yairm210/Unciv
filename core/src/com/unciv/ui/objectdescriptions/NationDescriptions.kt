@@ -91,7 +91,7 @@ object NationDescriptions {
             textList += FormattedLine()
             textList += FormattedLine("{$header} ")
             for (unique in bonuses) {
-                textList += FormattedLine(unique, indent = 1)
+                textList += FormattedLine(unique)
                 if (unique.type == UniqueType.CityStateUniqueLuxury) showResources = true
             }
         }
@@ -111,7 +111,6 @@ object NationDescriptions {
                 }
             }
         }
-        textList += FormattedLine(separator = true)
 
         // personality is not a nation property, it gets assigned to the civ randomly
         return textList
