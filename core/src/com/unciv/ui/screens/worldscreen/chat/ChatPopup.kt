@@ -17,6 +17,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.coerceLightnessAtLeast
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.ColorMarkupLabel
 import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
@@ -124,18 +125,30 @@ class ChatPopup(
         suffix: String? = null,
         scroll: Boolean = true
     ) {
-        val line = Label(
-            "${senderCivName.tr()}${if (suffix != null) " [${suffix.tr()}]" else ""}: ${message.tr()}",
-            skin
-        ).apply {
-            wrap = true
+        val civNameColor =
+            civChatColorsMap[senderCivName]
+                ?: worldScreen.gameInfo.getCivilizationOrNull(senderCivName)?.nation?.getOuterColor()
+                ?: Color.BLACK
+        val nameColor = civNameColor.coerceLightnessAtLeast(CIVNAME_COLOR_MIN_LIGHTNESS)
 
-            val civNameColor =
-                civChatColorsMap[senderCivName]
-                    ?: worldScreen.gameInfo.getCivilizationOrNull(senderCivName)?.nation?.getOuterColor()
-                    ?: Color.BLACK
-
-            color = civNameColor.coerceLightnessAtLeast(CIVNAME_COLOR_MIN_LIGHTNESS)
+        // System/Server: keep the whole line in their dedicated color (unchanged).
+        // Player messages: nation-colored name + white body for readability.
+        val line: Label = if (senderCivName in civChatColorsMap) {
+            Label(
+                "${senderCivName.tr()}${if (suffix != null) " [${suffix.tr()}]" else ""}: ${message.tr()}",
+                skin
+            ).apply {
+                wrap = true
+                color = nameColor
+            }
+        } else {
+            val nameMarkup = "#" + nameColor.toString().substring(0, 6)
+            val suffixPart = if (suffix != null) " [$suffix]" else ""
+            // «» → Gdx markup after translation (see ColorMarkupLabel)
+            ColorMarkupLabel(
+                "«$nameMarkup»$senderCivName$suffixPart:«WHITE» $message",
+                defaultColor = Color.WHITE
+            ).apply { wrap = true }
         }
 
         chatTable.add(line).row()
