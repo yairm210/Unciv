@@ -11,6 +11,7 @@ import com.unciv.models.translations.squareBraceRegex
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toHexColor
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import yairm210.purity.annotations.Mutated
 import yairm210.purity.annotations.Readonly
 import kotlin.collections.get
 
@@ -104,7 +105,11 @@ object NationDescriptions {
         return textList
     }
 
-    private fun Nation.appendStartBiasLines(textList: MutableList<FormattedLine>, ruleset: Ruleset) {
+    @Readonly
+    private fun Nation.appendStartBiasLines(
+        @Mutated textList: MutableList<FormattedLine>,
+        ruleset: Ruleset,
+    ) {
         val effectiveStartBias = getStartBias(ruleset)
         if (effectiveStartBias.isEmpty()) return
         for ((index, bias) in effectiveStartBias.withIndex()) {
