@@ -41,6 +41,12 @@ internal class MultiplayerTab(
             mpSettings::statusButtonInSinglePlayer, updateWorld = true
         )
 
+        addCheckbox("Save chat history on this device", mpSettings::saveChatHistory)
+        add(
+            "Chat messages are stored only on your device. They are not uploaded to the multiplayer server."
+                .toLabel(Color.GRAY)
+        ).colspan(2).left().padBottom(10f).row()
+
         addSeparator()
 
         val curRefreshSelect = RefreshSelectOptions(

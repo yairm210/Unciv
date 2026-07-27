@@ -389,6 +389,8 @@ class GameSettings {
         var turnCheckerEnabled = true
         var turnCheckerPersistentNotificationEnabled = true
         var turnCheckerDelay: Duration = Duration.ofMinutes(5)
+        /** When true, multiplayer chat is stored under MultiplayerChat/ on this device only. */
+        var saveChatHistory = false
         var statusButtonInSinglePlayer = false
         var currentGameRefreshDelay: Duration = Duration.ofSeconds(10)
         var allGameRefreshDelay: Duration = Duration.ofMinutes(5)

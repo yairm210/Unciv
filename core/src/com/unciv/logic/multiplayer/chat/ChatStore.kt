@@ -9,13 +9,16 @@ import java.util.LinkedList
 import java.util.Queue
 import java.util.UUID
 
-data class Chat(
+class Chat(
     val gameId: UUID,
+    loadedMessages: List<Pair<String, String>>? = null,
 ) {
     var unreadCount = 0
 
     // <civName, message> pairs
-    private val messages: MutableList<Pair<String, String>> = mutableListOf(INITIAL_MESSAGE)
+    private val messages: MutableList<Pair<String, String>> =
+        if (loadedMessages.isNullOrEmpty()) mutableListOf(INITIAL_MESSAGE)
+        else loadedMessages.toMutableList()
 
     val length: Int get() = messages.size
 
@@ -37,6 +40,11 @@ data class Chat(
      */
     fun addMessage(civName: String, message: String) {
         messages.add(Pair(civName, message))
+        ChatHistoryPersistence.saveMessages(gameId, messages)
+    }
+
+    fun persist() {
+        ChatHistoryPersistence.saveMessages(gameId, messages)
     }
 
     fun forEachMessage(action: (String, String) -> Unit) {
@@ -65,17 +73,25 @@ object ChatStore {
      */
     private var globalMessages: Queue<Pair<String, String>> = LinkedList()
 
-    fun getChatByGameId(gameId: UUID): Chat = gameIdToChat.getOrPut(gameId) { Chat(gameId) }
+    fun getChatByGameId(gameId: UUID): Chat = gameIdToChat.getOrPut(gameId) {
+        Chat(gameId, ChatHistoryPersistence.loadMessages(gameId))
+    }
     fun getChatByGameId(gameId: String): Chat = getChatByGameId(UUID.fromString(gameId))
 
     fun getGameIds() = gameIdToChat.keys.map { uuid -> uuid.toString() }
 
-    /**
-     * Clears chat by triggering a garbage collection.
-     */
+    /** Flush in-memory chats to disk (when the setting is on), then drop RAM state. */
     fun clear() {
-        gameIdToChat = mutableMapOf()
+        flushAll()
+        gameIdToChat = synchronizedMap(mutableMapOf())
         globalMessages = LinkedList()
+    }
+
+    fun flushAll() {
+        if (!ChatHistoryPersistence.isEnabled()) return
+        for (chat in gameIdToChat.values) {
+            chat.persist()
+        }
     }
 
     fun relayChatMessage(incomingChatMsg: Response.Chat) {
