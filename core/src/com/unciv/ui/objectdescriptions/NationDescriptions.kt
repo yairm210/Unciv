@@ -52,7 +52,6 @@ object NationDescriptions {
                     iconCrossed = bias.startsWith("Avoid ")
                 )
             }
-            textList += FormattedLine()
         }
         textList += getUniqueBuildingsText(ruleset)
         textList += getUniqueUnitsText(ruleset)
