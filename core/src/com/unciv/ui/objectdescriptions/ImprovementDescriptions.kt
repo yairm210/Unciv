@@ -178,13 +178,15 @@ object ImprovementDescriptions {
         return lines.joinToString("\n")
     }
 
-    fun getShortDescription(improvement: TileImprovement) = sequence {
+    fun getShortDescription(improvement: TileImprovement, ruleset: Ruleset) = sequence {
         if (improvement.terrainsCanBeBuiltOn.isNotEmpty()) {
             improvement.terrainsCanBeBuiltOn.withIndex().forEach {
+                // Filters like "Land" are not Terrain objects — linking them leaves a dead icon column.
                 yield(
                     FormattedLine(
                         if (it.index == 0) "{Can be built on} {${it.value}}" else "or [${it.value}]",
-                        link = "Terrain/${it.value}", indent = if (it.index == 0) 1 else 2
+                        link = ruleset.terrains[it.value]?.makeLink() ?: "",
+                        indent = if (it.index == 0) 1 else 2
                     )
                 )
             }

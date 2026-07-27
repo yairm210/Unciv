@@ -43,14 +43,12 @@ object NationDescriptions {
         if (effectiveStartBias.isNotEmpty()) {
             textList += FormattedLine("[Start bias:]")
             for (bias in effectiveStartBias) {
-                // Pass raw bias (not .tr()): FormattedLine translates with hideIcons when link icons exist.
-                // indent=1 aligns text to the right of the link+terrain icon pair (see FormattedLine indentOneAtNumIcons).
+                val terrainName = startBiasTerrainName(bias)
                 textList += FormattedLine(
-                    bias,
-                    link = "Terrain/${startBiasTerrainName(bias)}",
-                    indent = 1,
-                    iconCrossed = bias.startsWith("Avoid ")
-                )
+                    bias,  // translated in render with hideIcons=true (no duplicate terrain icons in text)
+                    link = "Terrain/$terrainName",
+                    iconCrossed = bias.startsWith("Avoid "),
+                    fixedIconColumns = true)
             }
         }
         textList += getUniqueBuildingsText(ruleset)
@@ -166,7 +164,7 @@ object NationDescriptions {
             } else if (improvement.replaces != null) {
                 yield(FormattedLine("Replaces [${improvement.replaces}], which is not found in the ruleset!", indent = 1))
             } else {
-                yieldAll(improvement.getShortDecription())
+                yieldAll(improvement.getShortDecription(ruleset))
             }
         }
     }

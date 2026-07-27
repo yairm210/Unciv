@@ -18,6 +18,8 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.validation.RulesetValidator
+import com.unciv.ui.components.NonTransformGroup
+import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.getReadonlyPixmap
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.widgets.ColorMarkupLabel
@@ -77,7 +79,9 @@ class FormattedLine (
     /** Centers the line (and turns off wrap) */
     val centered: Boolean = false,
     /** Paint a red X over the [icon] or [link] image */
-    val iconCrossed: Boolean = false
+    val iconCrossed: Boolean = false,
+    /** UI-only: nation start-bias terrain rows — fixed link + terrain columns. Not used in mod JSON. */
+    val fixedIconColumns: Boolean = false
 ) {
     // Note: This gets directly deserialized by Json - please keep all attributes meant to be read
     // from json in the primary constructor parameters above. Everything else should be a fun(),
@@ -289,6 +293,9 @@ class FormattedLine (
             size == Int.MIN_VALUE -> Constants.defaultFontSize
             else -> size
         }
+        if (fixedIconColumns)
+            return renderStartBiasLine(labelWidth, iconDisplay, fontSize)
+
         val labelColor = if (starred) defaultColor else displayColor
 
         val table = Table(BaseScreen.skin)
@@ -308,7 +315,7 @@ class FormattedLine (
         }
         if (textToDisplay.isNotEmpty()) {
             val usedWidth = iconCount * (iconSize + iconPad)
-            val indentWidth = when {
+            var indentWidth = when {
                 centered -> -usedWidth
                 indent == 0 && iconCount == 0 -> 0f
                 indent == 0 -> iconPad
@@ -316,24 +323,108 @@ class FormattedLine (
                 else -> (indent-1) * indentPad +
                         indentOneAtNumIcons * (minIconSize + iconPad) + iconPad - usedWidth
             }
-            val label = if ('«' in textToDisplay)
-                ColorMarkupLabel(textToDisplay, fontSize, hideIcons = iconCount != 0)
-            else
-                textToDisplay.toLabel(labelColor, fontSize, hideIcons = iconCount != 0)
-            label.wrap = !centered && labelWidth > 0f
-            label.setAlignment(align)
-            if (labelWidth == 0f)
-                table.add(label)
-                    .padLeft(indentWidth.coerceAtLeast(0f))
-                    .padRight((-indentWidth).coerceAtLeast(0f))
-                    .align(align)
-            else
-                table.add(label)
-                    .width(labelWidth - usedWidth - indentWidth)
-                    .padLeft(indentWidth)
-                    .align(align)
+            // Sub-line with link + object icon, but object missing (e.g. Terrain/Land) — no dead column before text
+            if (indent > 0 && iconCount == 1 && linkType == LinkType.Internal && iconToDisplay.isNotEmpty())
+                indentWidth = iconPad
+            addTextCell(table, labelWidth, fontSize, labelColor, indentWidth = indentWidth, hideIcons = iconCount != 0, usedWidth = usedWidth)
         }
         return table
+    }
+
+    /** Start-bias block only: header + Avoid/normal terrain rows share the same icon grid and text column. */
+    private fun renderStartBiasLine(labelWidth: Float, iconDisplay: IconDisplay, fontSize: Int): Actor {
+        val labelColor = displayColor
+        val iconSize = max(minIconSize, fontSize * 1.5f)
+        val columnWidth = iconSize + iconPad
+        val iconAreaWidth = 2 * columnWidth
+
+        val showLink = linkType != LinkType.None && iconDisplay == IconDisplay.All
+        val objectIcon = when {
+            icon.isNotEmpty() -> icon
+            linkType == LinkType.Internal -> link
+            else -> ""
+        }
+
+        val table = Table(BaseScreen.skin)
+
+        if (showLink)
+            table.add(ImageGetter.getImage(linkImage)).size(iconSize).width(columnWidth).height(iconSize).align(Align.center)
+        else
+            table.add().width(columnWidth).height(iconSize)
+
+        addStartBiasIconColumn(table, objectIcon, iconSize, columnWidth, iconDisplay, iconCrossed)
+
+        if (textToDisplay.isNotEmpty()) {
+            val label = if ('«' in textToDisplay)
+                ColorMarkupLabel(textToDisplay, fontSize, hideIcons = true)
+            else
+                textToDisplay.toLabel(labelColor, fontSize, hideIcons = true)
+            label.wrap = !centered && labelWidth > 0f
+            label.setAlignment(Align.left)
+            if (labelWidth == 0f)
+                table.add(label).minHeight(iconSize).padLeft(iconPad).align(Align.left)
+            else
+                table.add(label)
+                    .minHeight(iconSize)
+                    .width(labelWidth - iconAreaWidth - iconPad)
+                    .padLeft(iconPad)
+                    .align(Align.left)
+        }
+        return table
+    }
+
+    private fun addStartBiasIconColumn(table: Table, objectIcon: String, iconSize: Float, columnWidth: Float, iconDisplay: IconDisplay, crossed: Boolean) {
+        if (objectIcon.isEmpty() || iconDisplay == IconDisplay.None) {
+            table.add().width(columnWidth).height(iconSize)
+            return
+        }
+        val parts = objectIcon.split('/', limit = 2)
+        if (parts.size != 2) {
+            table.add().width(columnWidth).height(iconSize)
+            return
+        }
+        val category = CivilopediaCategories.fromLink(parts[0])
+        val image = category?.getImage?.invoke(parts[1], iconSize)
+        if (image == null) {
+            table.add().width(columnWidth).height(iconSize)
+            return
+        }
+        val actor = if (crossed) ImageGetter.getCrossedImage(image, iconSize) else wrapFixedSizeIcon(image, iconSize)
+        table.add(actor).width(columnWidth).height(iconSize).align(Align.center)
+    }
+
+    /** Same footprint for every terrain tile icon (Coast, Hill, Jungle, …) in the start-bias grid. */
+    private fun wrapFixedSizeIcon(actor: Actor, iconSize: Float): Actor = NonTransformGroup().apply {
+        setSize(iconSize, iconSize)
+        actor.center(this)
+        addActor(actor)
+    }
+
+    private fun addTextCell(
+        table: Table,
+        labelWidth: Float,
+        fontSize: Int,
+        labelColor: Color,
+        indentWidth: Float = 0f,
+        hideIcons: Boolean = false,
+        usedWidth: Float = 0f
+    ) {
+        val label = if ('«' in textToDisplay)
+            ColorMarkupLabel(textToDisplay, fontSize, hideIcons = hideIcons)
+        else
+            textToDisplay.toLabel(labelColor, fontSize, hideIcons = hideIcons)
+        label.wrap = !centered && labelWidth > 0f
+        label.setAlignment(align)
+        if (labelWidth == 0f)
+            table.add(label)
+                .padLeft(indentWidth.coerceAtLeast(0f))
+                .padRight((-indentWidth).coerceAtLeast(0f))
+                .align(align)
+        else
+            table.add(label)
+                .width(labelWidth - usedWidth - indentWidth)
+                .padLeft(indentWidth)
+                .align(align)
     }
 
     private fun renderExtraImage(labelWidth: Float): Table {
@@ -363,7 +454,7 @@ class FormattedLine (
     /** Place a RuleSet object icon.
      * @return 1 if successful for easy counting
      */
-    private fun renderIcon(table: Table, iconToDisplay: String, iconSize: Float): Int {
+    private fun renderIcon(table: Table, iconToDisplay: String, iconSize: Float, crossed: Boolean = iconCrossed): Int {
         // prerequisites: iconToDisplay has form "category/name", category can be mapped to
         // a `CivilopediaCategories`, and that knows how to get an Image.
         if (iconToDisplay.isEmpty()) return 0
@@ -372,7 +463,7 @@ class FormattedLine (
         val category = CivilopediaCategories.fromLink(parts[0]) ?: return 0
         val image = category.getImage?.invoke(parts[1], iconSize) ?: return 0
 
-        if (iconCrossed) {
+        if (crossed) {
             table.add(ImageGetter.getCrossedImage(image, iconSize)).size(iconSize).padRight(iconPad)
         } else {
             table.add(image).size(iconSize).padRight(iconPad)
