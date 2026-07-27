@@ -375,24 +375,25 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         val lakeTerrains = terrainConditions.filter { it.isFreshwater && !it.rareFeature && it.terrain.type == TerrainType.Water }
         if (lakeTerrains.isNotEmpty()) {
             //define lakes
-            val waterTiles = map.values.filter { it.isWater }.toMutableList()
+            val waterTiles = map.values.filter { it.isWater }.toHashSet()
 
-            val tilesInArea = ArrayList<Tile>()
-            val tilesToCheck = ArrayList<Tile>()
+            val tilesInArea = HashSet<Tile>()
+            val tilesToCheck = ArrayDeque<Tile>()
 
             val maxLakeSize = ruleset.modOptions.constants.maxLakeSize
 
             while (waterTiles.isNotEmpty()) {
-                val initialWaterTile = waterTiles.removeAt(0)
+                val initialWaterTile = waterTiles.first()
+                waterTiles.remove(initialWaterTile)
                 tilesInArea += initialWaterTile
                 tilesToCheck += initialWaterTile
 
                 // Floodfill to cluster water tiles
                 while (tilesToCheck.isNotEmpty()) {
-                    val tileWeAreChecking = tilesToCheck.removeAt(0)
+                    val tileWeAreChecking = tilesToCheck.removeFirst()
                     for (vector in tileWeAreChecking.neighbors){
-                        if (tilesInArea.contains(vector)) continue
-                        if (!waterTiles.contains(vector)) continue
+                        if (vector in tilesInArea) continue
+                        if (vector !in waterTiles) continue
                         tilesInArea += vector
                         tilesToCheck += vector
                         waterTiles -= vector

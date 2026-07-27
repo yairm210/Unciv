@@ -212,6 +212,8 @@ class ReligionManager : IsPartOfGameInfoSerialization {
                     else civInfo.getCapital() // default to capital
                 }
             val prophet = civInfo.units.addUnit(prophetUnit, birthCity) ?: return
+            if (birthCity != null) // e.g. mosque of djenne bonuses
+                prophetUnit.addConstructionBonuses(prophet, birthCity.cityConstructions)
             prophet.religion = religion!!.name
             storedFaith -= prophetCost
             civInfo.civConstructions.boughtItemsWithIncreasingPrice.add(prophetUnit.name, 1)

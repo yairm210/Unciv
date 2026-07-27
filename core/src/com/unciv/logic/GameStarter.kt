@@ -531,13 +531,12 @@ class GameStarter private constructor(
         // We want to  distribute starting locations fairly, and thus not place anybody on a small island
         // - unless necessary. Old code would only consider landmasses >= 20 tiles.
         // Instead, take continents until >=90% total area or everybody can get their own island
-        val orderedContinents = tileMap.continentSizes.asSequence().sortedByDescending { it.value }.toList()
         val totalArea = tileMap.continentSizes.values.sum()
         var candidateArea = 0
         val candidateContinents = HashSet<Int>()
-        for ((index, continentSize) in orderedContinents.withIndex()) {
-            candidateArea += continentSize.value
-            candidateContinents.add(continentSize.key)
+        for ((index, continentId) in tileMap.continentsSortedBySize.withIndex()) {
+            candidateArea += tileMap.continentSizes[continentId]!!
+            candidateContinents.add(continentId)
             if (candidateArea >= totalArea * 0.9f) break
             if (index >= civCount) break
         }
@@ -566,11 +565,12 @@ class GameStarter private constructor(
     private fun getCivsOrderedByAvailableLocations(civs: List<Civilization>): List<Civilization> {
         return civs.shuffled()   // Order should be random since it determines who gets best start
             .sortedBy { civ ->
+                val startBias = civ.nation.getStartBias(ruleset, civ.getGameContextForStartBias())
                 when {
                     civ.civID in tileMap.startingLocationsByNation -> 1 // harshest requirements
-                    civ.nation.startBias.any { it in tileMap.naturalWonders } && !gameSetupInfo.gameParameters.noStartBias -> 2
-                    civ.nation.startBias.contains(Constants.tundra) && !gameSetupInfo.gameParameters.noStartBias -> 3    // Tundra starts are hard to find, so let's do them first
-                    civ.nation.startBias.isNotEmpty() && !gameSetupInfo.gameParameters.noStartBias -> 4 // less harsh
+                    startBias.any { it in tileMap.naturalWonders } && !gameSetupInfo.gameParameters.noStartBias -> 2
+                    startBias.contains(Constants.tundra) && !gameSetupInfo.gameParameters.noStartBias -> 3    // Tundra starts are hard to find, so let's do them first
+                    startBias.isNotEmpty() && !gameSetupInfo.gameParameters.noStartBias -> 4 // less harsh
                     else -> 5  // no requirements
                 }
             }.sortedByDescending { it.isHuman() } // More important for humans to get their start biases!
@@ -638,17 +638,18 @@ class GameStarter private constructor(
         if (gameSetupInfo.gameParameters.noStartBias) {
             return freeTiles.random(rng)
         }
-        if (civ.nation.startBias.any { it in tileMap.naturalWonders }) {
+        val startBiases = civ.nation.getStartBias(ruleset, civ.getGameContextForStartBias())
+        if (startBiases.any { it in tileMap.naturalWonders }) {
             // startPref wants Natural wonder neighbor: Rare and very likely to be outside getDistanceFromEdge
             val wonderNeighbor = tileMap.values.asSequence()
-                .filter { it.isNaturalWonder() && it.naturalWonder!! in civ.nation.startBias }
+                .filter { it.isNaturalWonder() && it.naturalWonder!! in startBiases }
                 .sortedByDescending { startScores[it] }
                 .firstOrNull()
             if (wonderNeighbor != null) return wonderNeighbor
         }
 
         var preferredTiles = freeTiles.toList()
-        for (startBias in civ.nation.startBias) {
+        for (startBias in startBiases) {
             preferredTiles = when {
                 startBias.equalsPlaceholderText("Avoid []") -> {
                     val tileToAvoid = startBias.getPlaceholderParameters()[0]

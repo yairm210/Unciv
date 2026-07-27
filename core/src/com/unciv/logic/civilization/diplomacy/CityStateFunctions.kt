@@ -699,7 +699,7 @@ class CityStateFunctions(val civInfo: Civilization) {
             if (cityState.isAtWarWith(attacker))
                 probability += 50
 
-            if (rng.nextInt(100) <= probability) {
+            if (rng.nextInt(100) < probability) {
                 cityState.getDiplomacyManager(attacker)!!.becomeWary()
             }
         }

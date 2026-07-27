@@ -159,17 +159,17 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
                     if (!unique.conditionalsApply(state)) continue
                     val convertTo = unique.params[0]
                     if (tile.baseTerrain == convertTo || convertTo in tile.terrainFeatures) continue
-                    val convertToTerrain = location.ruleset.terrains[convertTo]!!
+                    val convertToTerrain = location.ruleset.terrains[convertTo]
+                        ?: continue
                     if (convertToTerrain.hasUnique(UniqueType.FreshWater) && tile.isAdjacentToCoast()) continue
-                    val terrainObject = location.ruleset.terrains[convertTo] ?: continue
-                    if (terrainObject.type == TerrainType.TerrainFeature && tile.baseTerrain !in terrainObject.occursOn) continue
-                    if (convertTo == Constants.coast)
+                    if (convertToTerrain.type == TerrainType.TerrainFeature && tile.baseTerrain !in convertToTerrain.occursOn) continue
+                    if (convertToTerrain.hasUnique(UniqueType.CoastalWater))
                         removeLakesNextToFutureCoast(location, tile)
-                    if (terrainObject.type.isBaseTerrain) {
+                    if (convertToTerrain.type.isBaseTerrain) {
                         clearTile(tile)
-                        tile.setBaseTerrain(terrainObject)
+                        tile.setBaseTerrain(convertToTerrain)
                     }
-                    if (terrainObject.type == TerrainType.TerrainFeature) {
+                    if (convertToTerrain.type == TerrainType.TerrainFeature) {
                         clearTile(tile, tile.terrainFeatures)
                         tile.addTerrainFeature(convertTo)
                     }
@@ -185,10 +185,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
             val continentsRelevant = naturalWonderOrTerrainFeature.hasUnique(UniqueType.NaturalWonderLargerLandmass) ||
                     naturalWonderOrTerrainFeature.hasUnique(UniqueType.NaturalWonderSmallerLandmass)
             val sortedContinents = if (continentsRelevant)
-                tile.tileMap.continentSizes.asSequence()
-                    .sortedByDescending { it.value }
-                    .map { it.key }
-                    .toList()
+                tile.tileMap.continentsSortedBySize
             else listOf()
 
             return naturalWonderOrTerrainFeature.uniqueObjects.all { unique ->
