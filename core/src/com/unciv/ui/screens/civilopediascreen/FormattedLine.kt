@@ -18,8 +18,6 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.validation.RulesetValidator
-import com.unciv.ui.components.NonTransformGroup
-import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.getReadonlyPixmap
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.widgets.ColorMarkupLabel
@@ -310,7 +308,7 @@ class FormattedLine (
         }
         if (textToDisplay.isNotEmpty()) {
             val usedWidth = iconCount * (iconSize + iconPad)
-            var indentWidth = when {
+            val indentWidth = when {
                 centered -> -usedWidth
                 indent == 0 && iconCount == 0 -> 0f
                 indent == 0 -> iconPad
@@ -318,9 +316,6 @@ class FormattedLine (
                 else -> (indent-1) * indentPad +
                         indentOneAtNumIcons * (minIconSize + iconPad) + iconPad - usedWidth
             }
-            // Link present but object icon missing (e.g. Terrain/Land): do not reserve a dead second column.
-            if (indent > 0 && iconCount == 1 && linkType == LinkType.Internal && iconToDisplay.isNotEmpty())
-                indentWidth = iconPad
             val label = if ('«' in textToDisplay)
                 ColorMarkupLabel(textToDisplay, fontSize, hideIcons = iconCount != 0)
             else
@@ -377,17 +372,11 @@ class FormattedLine (
         val category = CivilopediaCategories.fromLink(parts[0]) ?: return 0
         val image = category.getImage?.invoke(parts[1], iconSize) ?: return 0
 
-        // Same fixed footprint for normal and crossed icons (terrain hexes vary intrinsically).
-        val actor: Actor = if (iconCrossed) {
-            ImageGetter.getCrossedImage(image, iconSize)
+        if (iconCrossed) {
+            table.add(ImageGetter.getCrossedImage(image, iconSize)).size(iconSize).padRight(iconPad)
         } else {
-            NonTransformGroup().apply {
-                setSize(iconSize, iconSize)
-                image.center(this)
-                addActor(image)
-            }
+            table.add(image).size(iconSize).padRight(iconPad)
         }
-        table.add(actor).size(iconSize).padRight(iconPad)
         return 1
     }
 

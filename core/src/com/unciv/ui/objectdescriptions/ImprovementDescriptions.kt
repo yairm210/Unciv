@@ -70,12 +70,20 @@ object ImprovementDescriptions {
             textList += FormattedLine()
             if (improvement.terrainsCanBeBuiltOn.size == 1) {
                 with (improvement.terrainsCanBeBuiltOn.first()) {
-                    textList += FormattedLine("{Can be built on} {$this}", link="Terrain/$this")
+                    // Filters like "Land" are not Terrain objects — no icon/link (avoids a dead icon column).
+                    textList += FormattedLine(
+                        "{Can be built on} {$this}",
+                        link = ruleset.terrains[this]?.makeLink() ?: ""
+                    )
                 }
             } else {
                 textList += FormattedLine("{Can be built on}:")
                 improvement.terrainsCanBeBuiltOn.forEach {
-                    textList += FormattedLine(it, link="Terrain/$it", indent=1)
+                    textList += FormattedLine(
+                        it,
+                        link = ruleset.terrains[it]?.makeLink() ?: "",
+                        indent = 1
+                    )
                 }
             }
         }
