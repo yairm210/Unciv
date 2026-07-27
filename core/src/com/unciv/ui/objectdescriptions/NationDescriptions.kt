@@ -43,12 +43,12 @@ object NationDescriptions {
         if (effectiveStartBias.isNotEmpty()) {
             textList += FormattedLine("[Start bias:]")
             for (bias in effectiveStartBias) {
-                val terrainName = startBiasTerrainName(bias)
+                // Raw bias (not .tr()): FormattedLine translates with hideIcons when icons exist.
                 textList += FormattedLine(
-                    bias,  // translated in render with hideIcons=true (no duplicate terrain icons in text)
-                    link = "Terrain/$terrainName",
-                    iconCrossed = bias.startsWith("Avoid "),
-                    fixedIconColumns = true)
+                    bias,
+                    link = "Terrain/${startBiasTerrainName(bias)}",
+                    iconCrossed = bias.startsWith("Avoid ")
+                )
             }
         }
         textList += getUniqueBuildingsText(ruleset)
