@@ -11,9 +11,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
+import com.unciv.logic.GameInfo
 import com.unciv.logic.multiplayer.chat.Chat
 import com.unciv.logic.multiplayer.chat.ChatStore
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.extensions.coerceLightnessAtLeast
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.ColorMarkupLabel
@@ -29,10 +31,69 @@ private val civChatColorsMap = mapOf<String, Color>(
     "Server" to Color.GRAY,
 )
 
+/** Builds one chat bubble: white cloud, nation-colored name, black body, untinted icons. */
+fun createChatMessageBubble(
+    gameInfo: GameInfo,
+    senderCivName: String,
+    message: String,
+    suffix: String? = null,
+): Table {
+    val bubble = Table().apply {
+        background = BaseScreen.skinStrings.getUiBackground(
+            "WorldScreen/ChatMessage",
+            BaseScreen.skinStrings.roundedEdgeRectangleShape,
+            Color.WHITE
+        )
+        pad(8f, 10f, 8f, 10f)
+    }
+
+    if (senderCivName in civChatColorsMap) {
+        val line = Label(
+            "${senderCivName.tr()}${if (suffix != null) " [${suffix.tr()}]" else ""}: ${message.tr()}",
+            BaseScreen.skin
+        ).apply {
+            wrap = true
+            setAlignment(Align.left)
+            color = civChatColorsMap.getValue(senderCivName)
+        }
+        bubble.add(line).growX().left()
+        return bubble
+    }
+
+    val civNameColor =
+        gameInfo.getCivilizationOrNull(senderCivName)?.nation?.getOuterColor()
+            ?: Color.BLACK
+    val nameColor = civNameColor.coerceLightnessAtLeast(ChatPopup.CIVNAME_COLOR_MIN_LIGHTNESS)
+    val suffixPart = if (suffix != null) " ({$suffix})" else ""
+
+    // Separate labels: nation-colored name + black body; WHITE symbols = untinted glyphs
+    val nameLabel = ColorMarkupLabel(
+        "{$senderCivName}$suffixPart:",
+        textColor = nameColor,
+        symbolColor = Color.WHITE
+    ).apply { setAlignment(Align.left) }
+    val messageLabel = ColorMarkupLabel(
+        " {$message}",
+        textColor = Color.BLACK,
+        symbolColor = Color.WHITE
+    ).apply {
+        wrap = true
+        setAlignment(Align.left)
+    }
+    bubble.add(nameLabel).left().top()
+    bubble.add(messageLabel).growX().left().top()
+    return bubble
+}
+
 class ChatPopup(
     val chat: Chat,
     private val worldScreen: WorldScreen,
 ) : Popup(screen = worldScreen, scrollable = Scrollability.None) {
+    companion object {
+        // Keep nation name readable on the white bubble (not too dark).
+        const val CIVNAME_COLOR_MIN_LIGHTNESS = 0.55f
+    }
+
     private val chatTable = Table(skin)
     private val scrollPane = ScrollPane(chatTable, skin)
     private val messageField = UncivTextField(hint = "Type something...")
@@ -120,40 +181,9 @@ class ChatPopup(
         suffix: String? = null,
         scroll: Boolean = true
     ) {
-        val bubble = Table().apply {
-            background = BaseScreen.skinStrings.getUiBackground(
-                "WorldScreen/ChatMessage",
-                BaseScreen.skinStrings.roundedEdgeRectangleShape,
-                Color.WHITE
-            )
-            pad(8f, 10f, 8f, 10f)
-        }
-
-        val line: Label = if (senderCivName in civChatColorsMap) {
-            // System / Server — dark text on white cloud
-            Label(
-                "${senderCivName.tr()}${if (suffix != null) " [${suffix.tr()}]" else ""}: ${message.tr()}",
-                skin
-            ).apply {
-                wrap = true
-                setAlignment(Align.left)
-                color = civChatColorsMap.getValue(senderCivName)
-            }
-        } else {
-            val suffixPart = if (suffix != null) " ({$suffix})" else ""
-            // {} so .tr() still inserts nation icons; WHITE symbols = untinted Civilopedia-like glyphs
-            ColorMarkupLabel(
-                "{$senderCivName}$suffixPart: {$message}",
-                textColor = Color.BLACK,
-                symbolColor = Color.WHITE
-            ).apply {
-                wrap = true
-                setAlignment(Align.left)
-            }
-        }
-
-        bubble.add(line).growX().left()
-        chatTable.add(bubble).growX().left().row()
+        chatTable.add(
+            createChatMessageBubble(worldScreen.gameInfo, senderCivName, message, suffix)
+        ).growX().left().row()
         if (scroll) scrollToBottom()
     }
 
