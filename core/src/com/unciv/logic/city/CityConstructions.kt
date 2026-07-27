@@ -639,9 +639,10 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             civ.cache.updateHasActiveEnemyMovementPenalty()
 
         /**
-         * The Korean unique apparently gives the same tech boost as a [research agreement](https://civilization.fandom.com/wiki/Diplomacy_(Civ5)#Research_Agreement).
+         * The [Korean unique](https://civilization.fandom.com/wiki/Korean_(Civ5)#Strategy) gives the same tech boost as a [research agreement](https://civilization.fandom.com/wiki/Diplomacy_(Civ5)#Research_Agreement).
          * We use Vanilla / G&K logic as it is more straightforward.
-         * The tech boost is half of the median cost of the civ's researchable techs.
+         * It is unclear whether RA modifiers should apply.
+         * For now, the tech boost is half of the median cost of our researchable techs.
          */
         fun applyKoreanUnique() {
             if (! building.isStatRelated(Stat.Science, city)) return
