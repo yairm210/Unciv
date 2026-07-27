@@ -5,6 +5,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.event.EventBus
+import com.unciv.logic.multiplayer.chat.ChatStore
 import com.unciv.utils.debug
 import yairm210.purity.annotations.Readonly
 import java.time.Instant
@@ -40,9 +41,13 @@ class MultiplayerFiles {
         files.deleteSave(fileHandle)
 
         val game = savedGames[fileHandle] ?: return
+        val gameId = game.preview?.gameId
 
-        debug("Deleting game %s with id %s", fileHandle.name(), game.preview?.gameId)
+        debug("Deleting game %s with id %s", fileHandle.name(), gameId)
         savedGames.remove(game.fileHandle)
+        if (!gameId.isNullOrBlank()) {
+            ChatStore.deleteGameHistory(gameId)
+        }
     }
 
     internal fun addGame(newGame: GameInfo) {

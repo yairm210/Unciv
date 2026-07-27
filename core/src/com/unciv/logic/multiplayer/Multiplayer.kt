@@ -12,6 +12,7 @@ import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.logic.multiplayer.storage.MultiplayerFileNotFoundException
 import com.unciv.logic.multiplayer.storage.MultiplayerServer
+import com.unciv.logic.multiplayer.chat.ChatStore
 import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.components.extensions.isLargerThan
 import com.unciv.utils.Dispatcher
@@ -159,6 +160,7 @@ class Multiplayer {
         }
 
         val playerCiv = gameInfo.getCivilization(playerCivName)
+        val wasLocalPlayer = playerCiv.playerId == UncivGame.Current.settings.multiplayer.getUserId()
 
         //Set civ info to AI
         playerCiv.playerType = PlayerType.AI
@@ -181,6 +183,7 @@ class Multiplayer {
 
         multiplayerServer.uploadGame(gameInfo, withPreview = true)
         game.updatePreview(gameInfo.asPreview())
+        if (wasLocalPlayer) ChatStore.deleteGameHistory(gameInfo.gameId)
         return ""
     }
 

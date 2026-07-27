@@ -43,7 +43,7 @@ internal class MultiplayerTab(
 
         addCheckbox("Save chat history on this device", mpSettings::saveChatHistory)
         add(
-            "Chat messages are stored only on your device. They are not uploaded to the multiplayer server."
+            "Chat for each game is stored only on this device (by game id). It is not uploaded to the multiplayer server."
                 .toLabel(Color.GRAY)
         ).colspan(2).left().padBottom(10f).row()
 

@@ -11,16 +11,26 @@ import java.util.UUID
 
 class Chat(
     val gameId: UUID,
-    loadedMessages: List<Pair<String, String>>? = null,
-) {
+    loadedMessages: List<Line>? = null,
+) : Iterable<Chat.Line> {
     var unreadCount = 0
 
-    // <civName, message> pairs
-    private val messages: MutableList<Pair<String, String>> =
+    /**
+     * One chat row. [toCivName] is reserved for private messages (protocol v2); null = public.
+     * Defaults exist so Gdx Json can deserialize persisted history.
+     */
+    data class Line(
+        var sender: String = "",
+        var text: String = "",
+        var toCivName: String? = null,
+    )
+
+    private val messages: MutableList<Line> =
         if (loadedMessages.isNullOrEmpty()) mutableListOf(INITIAL_MESSAGE)
         else loadedMessages.toMutableList()
 
-    val length: Int get() = messages.size
+    val size: Int get() = messages.size
+    override fun iterator() = messages.iterator()
 
     /**
      * Only requests a message to be sent.
@@ -38,8 +48,8 @@ class Chat(
     /**
      * Although public, this should only be called when a ChatMessageReceivedEvent is received once.
      */
-    fun addMessage(civName: String, message: String) {
-        messages.add(Pair(civName, message))
+    fun addMessage(civName: String, message: String, toCivName: String? = null) {
+        messages.add(Line(civName, message, toCivName))
         ChatHistoryPersistence.saveMessages(gameId, messages)
     }
 
@@ -47,14 +57,8 @@ class Chat(
         ChatHistoryPersistence.saveMessages(gameId, messages)
     }
 
-    fun forEachMessage(action: (String, String) -> Unit) {
-        for ((civName, message) in messages) {
-            action(civName, message)
-        }
-    }
-
     companion object {
-        val INITIAL_MESSAGE = "System" to "Welcome to Chat!"
+        val INITIAL_MESSAGE = Line("System", "Welcome to Chat!")
     }
 }
 
@@ -94,9 +98,16 @@ object ChatStore {
         }
     }
 
+    /** Drop local history file and in-memory chat for a finished, abandoned, or deleted game. */
+    fun deleteGameHistory(gameId: String) {
+        val uuid = gameId.toUUIDOrNull() ?: return
+        gameIdToChat.remove(uuid)
+        ChatHistoryPersistence.deleteForGame(uuid)
+    }
+
     fun relayChatMessage(incomingChatMsg: Response.Chat) {
         Gdx.app.postRunnable {
-            if (incomingChatMsg.gameId == null || incomingChatMsg.gameId.isBlank()) {
+            if (incomingChatMsg.gameId.isNullOrBlank()) {
                 relayGlobalMessage(incomingChatMsg.message, incomingChatMsg.civName)
             } else {
                 val gameId = try {
