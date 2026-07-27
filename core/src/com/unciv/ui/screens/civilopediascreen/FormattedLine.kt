@@ -187,21 +187,18 @@ class FormattedLine (
         const val indentPad = 30f
         /** Where indent==1 will be, measured as icon count */
         const val indentOneAtNumIcons = 2
-        /** Reserved inline icon slots per civilopedia line (link, object, star) so text columns align. */
-        const val iconColumnCount = 3
+        /** Reserved inline icon slots per civilopedia line (link, object) so text columns align. */
+        const val iconColumnCount = 2
 
         /** Width of one reserved icon column for a given [iconSize]. */
         fun iconColumnWidth(iconSize: Float) = iconSize + iconPad
 
-        /** Extra space before icon columns for [indent] > 0. */
-        fun leadingIndent(indent: Int, iconColumnWidth: Float): Float {
-            if (indent <= 0) return 0f
-            return (indent - 1) * indentPad + indentOneAtNumIcons * iconColumnWidth
-        }
-
         /** Distance from the line's left edge to where [text] starts (fixed icon grid). */
-        fun textColumnOffset(indent: Int, iconColumnWidth: Float): Float =
-            leadingIndent(indent, iconColumnWidth) + iconColumnCount * iconColumnWidth + iconPad
+        fun textColumnOffset(iconColumnWidth: Float): Float =
+            iconColumnCount * iconColumnWidth + iconPad
+
+        /** Text offset for sub-lines that have no link/object icons (indent only). */
+        fun sublineTextOffset(indent: Int) = indent * indentPad
 
         private var rulesetCachedInNameMap: Ruleset? = null
         // Cache to quickly match Categories to names. Takes a few ms to build on a slower desktop and will use just a few 10k bytes.
@@ -306,7 +303,7 @@ class FormattedLine (
             size == Int.MIN_VALUE -> Constants.defaultFontSize
             else -> size
         }
-        if (header > 0 || centered)
+        if (header > 0 || centered || starred)
             return renderFlowingLine(labelWidth, iconDisplay, fontSize)
 
         return renderFixedIconColumns(labelWidth, iconDisplay, fontSize)
@@ -347,42 +344,50 @@ class FormattedLine (
         return table
     }
 
-    /** Normal civilopedia lines: fixed link / object / star columns so text always starts at the same x. */
+    /** Normal civilopedia lines: fixed link + object columns so text always starts at the same x. */
     private fun renderFixedIconColumns(labelWidth: Float, iconDisplay: IconDisplay, fontSize: Int): Actor {
         val labelColor = if (starred) defaultColor else displayColor
-        val table = Table(BaseScreen.skin)
-        table.defaults().align(Align.left)
-
         val iconSize = max(minIconSize, fontSize * 1.5f)
         val columnWidth = iconColumnWidth(iconSize)
-        val leading = leadingIndent(indent, columnWidth)
-        if (leading > 0f)
-            table.add().width(leading)
 
-        if (linkType != LinkType.None && iconDisplay == IconDisplay.All)
-            table.add(ImageGetter.getImage(linkImage)).size(iconSize).padRight(iconPad)
-        else
-            table.add().size(iconSize).padRight(iconPad)
-
+        val showLink = linkType != LinkType.None && iconDisplay == IconDisplay.All
         val objectIcon = when {
             icon.isNotEmpty() -> icon
             linkType == LinkType.Internal -> link
             else -> ""
         }
+        val showObject = objectIcon.isNotEmpty() && iconDisplay != IconDisplay.None
+        val hasInlineIcons = showLink || showObject
+
+        // Sub-lines without icons keep the old simple indent (e.g. stat comparisons), not the icon grid.
+        if (indent > 0 && !hasInlineIcons)
+            return renderSublineText(labelWidth, fontSize, labelColor)
+
+        val table = Table(BaseScreen.skin)
+        table.defaults().align(Align.left)
+
+        if (showLink)
+            table.add(ImageGetter.getImage(linkImage)).size(iconSize).padRight(iconPad)
+        else
+            table.add().size(iconSize).padRight(iconPad)
+
         addObjectIconCell(table, objectIcon, iconSize, iconDisplay, iconCrossed)
 
-        if (starred) {
-            val image = ImageGetter.getImage(starImage)
-            image.color = displayColor
-            table.add(image).size(iconSize).padRight(iconPad)
-        } else {
-            table.add().size(iconSize).padRight(iconPad)
-        }
-
         if (textToDisplay.isNotEmpty()) {
-            val iconAreaWidth = leading + iconColumnCount * columnWidth
+            val iconAreaWidth = iconColumnCount * columnWidth
             addTextCell(table, labelWidth, fontSize, labelColor, hideIcons = true, indentWidth = iconPad, usedWidth = iconAreaWidth)
         }
+        return table
+    }
+
+    private fun renderSublineText(labelWidth: Float, fontSize: Int, labelColor: Color): Actor {
+        val table = Table(BaseScreen.skin)
+        table.defaults().align(Align.left)
+        val leading = sublineTextOffset(indent)
+        if (leading > 0f)
+            table.add().width(leading)
+        if (textToDisplay.isNotEmpty())
+            addTextCell(table, labelWidth, fontSize, labelColor, hideIcons = false, usedWidth = leading)
         return table
     }
 
