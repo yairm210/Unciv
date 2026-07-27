@@ -41,17 +41,15 @@ object NationDescriptions {
 
         val effectiveStartBias = getStartBias(ruleset)
         if (effectiveStartBias.isNotEmpty()) {
-            for ((index, bias) in effectiveStartBias.withIndex()) {
-                // can be "Avoid []"
-                val link = if ('[' !in bias) bias
-                else squareBraceRegex.find(bias)!!.groups[1]!!.value
+            textList += FormattedLine("[Start bias:]")
+            for (bias in effectiveStartBias) {
+                val terrainName = startBiasTerrainName(bias)
                 textList += FormattedLine(
-                    (if (index == 0) "[Start bias:] " else "") + bias.tr(),  // extra tr because tr cannot nest {[]}
-                    link = "Terrain/$link",
-                    indent = if (index == 0) 0 else 1,
-                    iconCrossed = bias.startsWith("Avoid "))
+                    bias,  // translated in render with hideIcons=true (no duplicate terrain icons in text)
+                    link = "Terrain/$terrainName",
+                    iconCrossed = bias.startsWith("Avoid "),
+                    fixedIconColumns = true)
             }
-            textList += FormattedLine()
         }
         textList += getUniqueBuildingsText(ruleset)
         textList += getUniqueUnitsText(ruleset)
@@ -218,5 +216,12 @@ object NationDescriptions {
         for ((name, value) in priorities) {
             add(FormattedLine("[$name]: [$value]", indent = 1))
         }
+    }
+
+    /** Terrain name for a Civilopedia link — plain, [bracketed], or `Avoid …` start-bias entry. */
+    private fun startBiasTerrainName(bias: String): String {
+        val inner = if (bias.startsWith("Avoid ")) bias.removePrefix("Avoid ").trim() else bias
+        if ('[' !in inner) return inner
+        return squareBraceRegex.find(inner)!!.groups[1]!!.value
     }
 }
