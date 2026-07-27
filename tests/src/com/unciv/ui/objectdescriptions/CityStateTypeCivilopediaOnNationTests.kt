@@ -74,5 +74,9 @@ class CityStateTypeCivilopediaOnNationTests {
             "Start bias should follow a blank line, not a separator (match major-civ layout)",
             lines[startBiasIndex - 1].separator
         )
+        Assert.assertTrue(
+            "CS start bias should use inline icons only (no link column), aligned with friend/ally bonuses",
+            lines[startBiasIndex].link.isEmpty()
+        )
     }
 }

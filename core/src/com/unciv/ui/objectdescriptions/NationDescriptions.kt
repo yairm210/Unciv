@@ -35,25 +35,15 @@ object NationDescriptions {
             textList += FormattedLine("{$uniqueName}:", header = 4)
         if (uniqueText != "") {
             textList += FormattedLine(uniqueText, indent = 1)
-        } else {
+        } else if (!isCityState) {
             uniquesToCivilopediaTextLines(textList, leadingSeparator = null)
         }
-        textList += FormattedLine()
-
-        val effectiveStartBias = getStartBias(ruleset)
-        if (effectiveStartBias.isNotEmpty()) {
-            for ((index, bias) in effectiveStartBias.withIndex()) {
-                // can be "Avoid []"
-                val link = if ('[' !in bias) bias
-                else squareBraceRegex.find(bias)!!.groups[1]!!.value
-                textList += FormattedLine(
-                    (if (index == 0) "[Start bias:] " else "") + bias.tr(),  // extra tr because tr cannot nest {[]}
-                    link = "Terrain/$link",
-                    indent = if (index == 0) 0 else 1,
-                    iconCrossed = bias.startsWith("Avoid "))
-            }
+        if (!isCityState)
             textList += FormattedLine()
-        }
+
+        if (!isCityState)
+            appendStartBiasLines(textList, ruleset, useLinkIcons = true)
+
         textList += getUniqueBuildingsText(ruleset)
         textList += getUniqueUnitsText(ruleset)
         textList += getUniqueImprovementsText(ruleset)
@@ -112,8 +102,29 @@ object NationDescriptions {
             }
         }
 
+        // CS friend/ally bonuses use inline icons only (no link column); match that for start bias here.
+        appendStartBiasLines(textList, ruleset, useLinkIcons = false)
+
         // personality is not a nation property, it gets assigned to the civ randomly
         return textList
+    }
+
+    private fun Nation.appendStartBiasLines(textList: MutableList<FormattedLine>, ruleset: Ruleset, useLinkIcons: Boolean) {
+        val effectiveStartBias = getStartBias(ruleset)
+        if (effectiveStartBias.isEmpty()) return
+        textList += FormattedLine()
+        for ((index, bias) in effectiveStartBias.withIndex()) {
+            // can be "Avoid []"
+            val link = if ('[' !in bias) bias
+            else squareBraceRegex.find(bias)!!.groups[1]!!.value
+            textList += FormattedLine(
+                (if (index == 0) "[Start bias:] " else "") + bias.tr(),  // extra tr because tr cannot nest {[]}
+                link = if (useLinkIcons) "Terrain/$link" else "",
+                indent = if (index == 0) 0 else 1,
+                iconCrossed = useLinkIcons && bias.startsWith("Avoid ")
+            )
+        }
+        textList += FormattedLine()
     }
 
     private fun Nation.getUniqueBuildingsText(ruleset: Ruleset) = sequence {
