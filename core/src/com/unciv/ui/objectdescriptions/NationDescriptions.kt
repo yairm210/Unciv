@@ -38,11 +38,9 @@ object NationDescriptions {
         } else if (!isCityState) {
             uniquesToCivilopediaTextLines(textList, leadingSeparator = null)
         }
-        if (!isCityState)
-            textList += FormattedLine()
+        textList += FormattedLine()
 
-        if (!isCityState)
-            appendStartBiasLines(textList, ruleset, useLinkIcons = true)
+        appendStartBiasLines(textList, ruleset)
 
         textList += getUniqueBuildingsText(ruleset)
         textList += getUniqueUnitsText(ruleset)
@@ -81,7 +79,7 @@ object NationDescriptions {
             textList += FormattedLine()
             textList += FormattedLine("{$header} ")
             for (unique in bonuses) {
-                textList += FormattedLine(unique)
+                textList += FormattedLine(unique, indent = 1)
                 if (unique.type == UniqueType.CityStateUniqueLuxury) showResources = true
             }
         }
@@ -102,26 +100,22 @@ object NationDescriptions {
             }
         }
 
-        // CS friend/ally bonuses use inline icons only (no link column); match that for start bias here.
-        appendStartBiasLines(textList, ruleset, useLinkIcons = false)
-
         // personality is not a nation property, it gets assigned to the civ randomly
         return textList
     }
 
-    private fun Nation.appendStartBiasLines(textList: MutableList<FormattedLine>, ruleset: Ruleset, useLinkIcons: Boolean) {
+    private fun Nation.appendStartBiasLines(textList: MutableList<FormattedLine>, ruleset: Ruleset) {
         val effectiveStartBias = getStartBias(ruleset)
         if (effectiveStartBias.isEmpty()) return
-        textList += FormattedLine()
         for ((index, bias) in effectiveStartBias.withIndex()) {
             // can be "Avoid []"
             val link = if ('[' !in bias) bias
             else squareBraceRegex.find(bias)!!.groups[1]!!.value
             textList += FormattedLine(
                 (if (index == 0) "[Start bias:] " else "") + bias.tr(),  // extra tr because tr cannot nest {[]}
-                link = if (useLinkIcons) "Terrain/$link" else "",
+                link = "Terrain/$link",
                 indent = if (index == 0) 0 else 1,
-                iconCrossed = useLinkIcons && bias.startsWith("Avoid ")
+                iconCrossed = bias.startsWith("Avoid ")
             )
         }
         textList += FormattedLine()
