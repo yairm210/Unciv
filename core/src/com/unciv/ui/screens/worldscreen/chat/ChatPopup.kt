@@ -14,37 +14,32 @@ import com.unciv.UncivGame
 import com.unciv.logic.multiplayer.chat.Chat
 import com.unciv.logic.multiplayer.chat.ChatStore
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.extensions.coerceLightnessAtLeast
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.ColorMarkupLabel
 import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
 
 private val civChatColorsMap = mapOf<String, Color>(
-    "System" to Color.WHITE,
-    "Server" to Color.DARK_GRAY,
+    "System" to Color.DARK_GRAY,
+    "Server" to Color.GRAY,
 )
 
 class ChatPopup(
     val chat: Chat,
     private val worldScreen: WorldScreen,
 ) : Popup(screen = worldScreen, scrollable = Scrollability.None) {
-    companion object {
-        // the percentage of the minimum lightness allowed for a civName
-        const val CIVNAME_COLOR_MIN_LIGHTNESS = 0.55f
-    }
-
     private val chatTable = Table(skin)
     private val scrollPane = ScrollPane(chatTable, skin)
     private val messageField = UncivTextField(hint = "Type something...")
 
     init {
         ChatStore.chatPopup = this
-        chatTable.defaults().growX().pad(5f).left()
+        chatTable.defaults().growX().pad(4f).left()
 
         /**
          * Layout:
@@ -125,37 +120,40 @@ class ChatPopup(
         suffix: String? = null,
         scroll: Boolean = true
     ) {
-        val civNameColor =
-            civChatColorsMap[senderCivName]
-                ?: worldScreen.gameInfo.getCivilizationOrNull(senderCivName)?.nation?.getOuterColor()
-                ?: Color.BLACK
-        val nameColor = civNameColor.coerceLightnessAtLeast(CIVNAME_COLOR_MIN_LIGHTNESS)
+        val bubble = Table().apply {
+            background = BaseScreen.skinStrings.getUiBackground(
+                "WorldScreen/ChatMessage",
+                BaseScreen.skinStrings.roundedEdgeRectangleShape,
+                Color.WHITE
+            )
+            pad(8f, 10f, 8f, 10f)
+        }
 
-        // System/Server: keep the whole line in their dedicated color (unchanged).
-        // Player messages: nation-colored name + white body for readability.
         val line: Label = if (senderCivName in civChatColorsMap) {
+            // System / Server — dark text on white cloud
             Label(
                 "${senderCivName.tr()}${if (suffix != null) " [${suffix.tr()}]" else ""}: ${message.tr()}",
                 skin
             ).apply {
                 wrap = true
                 setAlignment(Align.left)
-                color = nameColor
+                color = civChatColorsMap.getValue(senderCivName)
             }
         } else {
-            val nameMarkup = "#" + nameColor.toString().substring(0, 6)
-            val suffixPart = if (suffix != null) " [$suffix]" else ""
-            // «» → Gdx markup after translation (see ColorMarkupLabel)
+            val suffixPart = if (suffix != null) " ({$suffix})" else ""
+            // {} so .tr() still inserts nation icons; WHITE symbols = untinted Civilopedia-like glyphs
             ColorMarkupLabel(
-                "«$nameMarkup»$senderCivName$suffixPart:«WHITE» $message",
-                defaultColor = Color.WHITE
+                "{$senderCivName}$suffixPart: {$message}",
+                textColor = Color.BLACK,
+                symbolColor = Color.WHITE
             ).apply {
                 wrap = true
                 setAlignment(Align.left)
             }
         }
 
-        chatTable.add(line).growX().left().row()
+        bubble.add(line).growX().left()
+        chatTable.add(bubble).growX().left().row()
         if (scroll) scrollToBottom()
     }
 
