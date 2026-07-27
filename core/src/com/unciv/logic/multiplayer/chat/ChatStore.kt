@@ -9,13 +9,21 @@ import java.util.LinkedList
 import java.util.Queue
 import java.util.UUID
 
-data class Chat(
+data class ChatMessageEntry(
+    val civName: String,
+    val message: String,
+    /** Null for public chat; set for private messages. */
+    val toCivName: String? = null,
+)
+
+class Chat(
     val gameId: UUID,
 ) {
     var unreadCount = 0
 
-    // <civName, message> pairs
-    private val messages: MutableList<Pair<String, String>> = mutableListOf(INITIAL_MESSAGE)
+    private val messages: MutableList<ChatMessageEntry> = mutableListOf(
+        ChatMessageEntry(INITIAL_MESSAGE.first, INITIAL_MESSAGE.second)
+    )
 
     val length: Int get() = messages.size
 
@@ -26,22 +34,29 @@ data class Chat(
      *
      * The server will relay it back if a delivery was acknowledged and that is when we should display it.
      */
-    fun requestMessageSend(civName: String, message: String) {
+    fun requestMessageSend(
+        civName: String,
+        message: String,
+        toPlayerId: String? = null,
+        toCivName: String? = null,
+    ) {
         Gdx.app.postRunnable {
-            ChatWebSocket.requestMessageSend(Message.Chat(civName, message, gameId.toString()))
+            ChatWebSocket.requestMessageSend(
+                Message.Chat(civName, message, gameId.toString(), toPlayerId, toCivName)
+            )
         }
     }
 
     /**
      * Although public, this should only be called when a ChatMessageReceivedEvent is received once.
      */
-    fun addMessage(civName: String, message: String) {
-        messages.add(Pair(civName, message))
+    fun addMessage(civName: String, message: String, toCivName: String? = null) {
+        messages.add(ChatMessageEntry(civName, message, toCivName))
     }
 
-    fun forEachMessage(action: (String, String) -> Unit) {
-        for ((civName, message) in messages) {
-            action(civName, message)
+    fun forEachMessage(action: (ChatMessageEntry) -> Unit) {
+        for (entry in messages) {
+            action(entry)
         }
     }
 
@@ -91,9 +106,13 @@ object ChatStore {
                 }
 
                 val chat = chatPopup?.chat ?: getChatByGameId(gameId)
-                chat.addMessage(incomingChatMsg.civName, incomingChatMsg.message)
+                chat.addMessage(incomingChatMsg.civName, incomingChatMsg.message, incomingChatMsg.toCivName)
                 if (gameId.equals(chatPopup?.chat?.gameId)) {
-                    chatPopup?.addMessage(incomingChatMsg.civName, incomingChatMsg.message)
+                    chatPopup?.addMessage(
+                        incomingChatMsg.civName,
+                        incomingChatMsg.message,
+                        toCivName = incomingChatMsg.toCivName,
+                    )
                 }
 
                 if (chatPopup == null && incomingChatMsg.civName != "System") {

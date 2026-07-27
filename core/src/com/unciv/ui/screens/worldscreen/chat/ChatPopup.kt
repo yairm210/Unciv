@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
@@ -15,6 +16,7 @@ import com.unciv.logic.multiplayer.chat.Chat
 import com.unciv.logic.multiplayer.chat.ChatStore
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.coerceLightnessAtLeast
+import com.unciv.ui.components.extensions.setItems
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.UncivTextField
@@ -28,6 +30,14 @@ private val civChatColorsMap = mapOf<String, Color>(
     "Server" to Color.DARK_GRAY,
 )
 
+private class ChatRecipient(
+    val displayName: String,
+    val playerId: String?,
+    val civName: String?,
+) {
+    override fun toString() = displayName.tr()
+}
+
 class ChatPopup(
     val chat: Chat,
     private val worldScreen: WorldScreen,
@@ -35,11 +45,14 @@ class ChatPopup(
     companion object {
         // the percentage of the minimum lightness allowed for a civName
         const val CIVNAME_COLOR_MIN_LIGHTNESS = 0.55f
+        /** Server chat protocol version that supports private messages. */
+        const val PRIVATE_MESSAGE_CHAT_VERSION = 2
     }
 
     private val chatTable = Table(skin)
     private val scrollPane = ScrollPane(chatTable, skin)
     private val messageField = UncivTextField(hint = "Type something...")
+    private var recipientSelect: SelectBox<ChatRecipient>? = null
 
     init {
         ChatStore.chatPopup = this
@@ -49,6 +62,7 @@ class ChatPopup(
          * Layout:
          * |  ChatHeader | CloseButton |
          * |  ChatTable (colSpan = 2)  |
+         * | RecipientSelect (optional, colSpan = 2) |
          * | MessageField | SendButton |
          */
 
@@ -77,6 +91,18 @@ class ChatPopup(
             .size(0.5f * worldScreen.stage.width, 0.5f * worldScreen.stage.height)
             .expand().fill().row()
 
+        if (supportsPrivateMessages()) {
+            val recipients = buildRecipientOptions()
+            if (recipients.size > 1) {
+                val select = SelectBox<ChatRecipient>(skin)
+                select.setItems(recipients)
+                select.selected = recipients.first()
+                recipientSelect = select
+                add("To:".toLabel()).left().padLeft(5f)
+                add(select).expandX().fillX().padBottom(5f).row()
+            }
+        }
+
         // Input: | MessageField | SendButton |
         add(messageField).expandX().fillX()
         val sendButton = Button(skin)
@@ -99,35 +125,68 @@ class ChatPopup(
         })
     }
 
-    fun sendMessage() {
-        val message = messageField.text.trim()
+    private fun supportsPrivateMessages(): Boolean =
+        UncivGame.Current.onlineMultiplayer.multiplayerServer.getFeatureSet().chatVersion >=
+            PRIVATE_MESSAGE_CHAT_VERSION
 
+    private fun ownCivNameAndId(): Pair<String, String?> {
         val userId = UncivGame.Current.settings.multiplayer.getUserId()
         val currentPlayerCiv = worldScreen.gameInfo.currentPlayerCiv
-        val civName = if (currentPlayerCiv.playerId == userId) {
-            currentPlayerCiv.civID
-        } else {
-            // what do I do if someone is a spectator?
-            worldScreen.gameInfo.civilizations.firstOrNull { civ -> civ.playerId == userId }?.civID
-                ?: "Unknown"
+        if (currentPlayerCiv.playerId == userId) {
+            return currentPlayerCiv.civID to userId
+        }
+        val ownCiv = worldScreen.gameInfo.civilizations.firstOrNull { civ -> civ.playerId == userId }
+        return (ownCiv?.civID ?: "Unknown") to ownCiv?.playerId
+    }
+
+    private fun buildRecipientOptions(): List<ChatRecipient> {
+        val (ownCivName, ownPlayerId) = ownCivNameAndId()
+        if (ownCivName == "Unknown" || ownPlayerId.isNullOrBlank()) {
+            return listOf(ChatRecipient("Everyone", null, null))
         }
 
-        if (message.isNotEmpty()) {
-            chat.requestMessageSend(civName, message)
-            messageField.setText("")
+        val options = mutableListOf(ChatRecipient("Everyone", null, null))
+        for (civ in worldScreen.gameInfo.civilizations) {
+            if (!civ.isMajorCiv()) continue
+            if (!civ.isHuman()) continue
+            if (civ.playerId.isBlank()) continue
+            if (civ.playerId == ownPlayerId) continue
+            options.add(ChatRecipient(civ.civID, civ.playerId, civ.civID))
         }
+        return options
+    }
+
+    fun sendMessage() {
+        val message = messageField.text.trim()
+        if (message.isEmpty()) return
+
+        val (civName, _) = ownCivNameAndId()
+        val recipient = recipientSelect?.selected
+        chat.requestMessageSend(
+            civName = civName,
+            message = message,
+            toPlayerId = recipient?.playerId,
+            toCivName = recipient?.civName,
+        )
+        messageField.setText("")
     }
 
     fun addMessage(
         senderCivName: String,
         message: String,
         suffix: String? = null,
+        toCivName: String? = null,
         scroll: Boolean = true
     ) {
-        val line = Label(
-            "${senderCivName.tr()}${if (suffix != null) " [${suffix.tr()}]" else ""}: ${message.tr()}",
-            skin
-        ).apply {
+        val namePart = buildString {
+            append(senderCivName.tr())
+            if (suffix != null) append(" [${suffix.tr()}]")
+            if (toCivName != null) append(" → ${toCivName.tr()}")
+            append(": ")
+            append(message.tr())
+        }
+
+        val line = Label(namePart, skin).apply {
             wrap = true
 
             val civNameColor =
@@ -144,8 +203,8 @@ class ChatPopup(
 
     private fun populateChat() {
         chatTable.clearChildren()
-        chat.forEachMessage { civName, message ->
-            addMessage(civName, message)
+        chat.forEachMessage { entry ->
+            addMessage(entry.civName, entry.message, toCivName = entry.toCivName)
         }
         ChatStore.pollGlobalMessages { civName, message ->
             addMessage(civName, message, suffix = "one time")
