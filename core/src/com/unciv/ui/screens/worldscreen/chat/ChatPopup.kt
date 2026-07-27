@@ -44,7 +44,7 @@ class ChatPopup(
 
     init {
         ChatStore.chatPopup = this
-        chatTable.defaults().growX().pad(5f).center()
+        chatTable.defaults().growX().pad(5f).left()
 
         /**
          * Layout:
@@ -139,6 +139,7 @@ class ChatPopup(
                 skin
             ).apply {
                 wrap = true
+                setAlignment(Align.left)
                 color = nameColor
             }
         } else {
@@ -148,10 +149,13 @@ class ChatPopup(
             ColorMarkupLabel(
                 "«$nameMarkup»$senderCivName$suffixPart:«WHITE» $message",
                 defaultColor = Color.WHITE
-            ).apply { wrap = true }
+            ).apply {
+                wrap = true
+                setAlignment(Align.left)
+            }
         }
 
-        chatTable.add(line).row()
+        chatTable.add(line).growX().left().row()
         if (scroll) scrollToBottom()
     }
 
