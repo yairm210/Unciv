@@ -323,7 +323,7 @@ class FormattedLine (
                 else -> (indent-1) * indentPad +
                         indentOneAtNumIcons * (minIconSize + iconPad) + iconPad - usedWidth
             }
-            // Sub-line with link + object icon, but object missing (e.g. Terrain/Land) — no dead column before text
+            // indent-1 reserves a second icon column only when that icon actually rendered (link+object rows stay aligned)
             if (indent > 0 && iconCount == 1 && linkType == LinkType.Internal && iconToDisplay.isNotEmpty())
                 indentWidth = iconPad
             addTextCell(table, labelWidth, fontSize, labelColor, indentWidth = indentWidth, hideIcons = iconCount != 0, usedWidth = usedWidth)
