@@ -19,7 +19,6 @@ import com.unciv.ui.components.extensions.getContrastRatio
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.ColorMarkupLabel
-import com.unciv.ui.components.widgets.ShadowedLabel
 import com.unciv.ui.components.widgets.UncivTextField
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
@@ -32,7 +31,19 @@ private val civChatColorsMap = mapOf<String, Color>(
     "Server" to Color.GRAY,
 )
 
-/** Builds one chat bubble: white cloud, nation-colored name, black body. */
+/** Darken [color] until contrast vs white is usable (pale nation outerColors). */
+private fun readableOnWhite(color: Color, minContrast: Double = 3.0): Color {
+    if (getContrastRatio(Color.WHITE, color) >= minContrast) return color
+    val result = color.cpy()
+    for (step in 1..12) {
+        result.mul(0.85f)
+        result.a = 1f
+        if (getContrastRatio(Color.WHITE, result) >= minContrast) return result
+    }
+    return Color.DARK_GRAY
+}
+
+/** Builds one chat bubble: white cloud, nation-colored name, black body, untinted icons. */
 fun createChatMessageBubble(
     gameInfo: GameInfo,
     senderCivName: String,
@@ -64,20 +75,15 @@ fun createChatMessageBubble(
     val civNameColor =
         gameInfo.getCivilizationOrNull(senderCivName)?.nation?.getOuterColor()
             ?: Color.BLACK
+    val nameColor = readableOnWhite(civNameColor)
     val suffixPart = if (suffix != null) " ({$suffix})" else ""
 
-    // ShadowedLabel keeps low-contrast nation colors readable on white.
-    // Shadow offset scales with contrast — same idea as ball-of-yarn legend line width.
-    val contrast = getContrastRatio(Color.WHITE, civNameColor).toFloat().coerceAtLeast(1f)
-    val shadowOffset = ChatPopup.NAME_SHADOW_OFFSET_MIN +
-        (ChatPopup.NAME_SHADOW_OFFSET_MAX - ChatPopup.NAME_SHADOW_OFFSET_MIN) / contrast
-    val nameLabel = ShadowedLabel(
+    // Separate labels: nation-colored name + black body; WHITE symbols = untinted glyphs
+    val nameLabel = ColorMarkupLabel(
         "{$senderCivName}$suffixPart:",
-        labelColor = civNameColor,
-        shadowColor = ImageGetter.CHARCOAL,
-        hideIcons = false,
-        shadowOffset = shadowOffset
-    )
+        textColor = nameColor,
+        symbolColor = Color.WHITE
+    ).apply { setAlignment(Align.left) }
     val messageLabel = ColorMarkupLabel(
         " {$message}",
         textColor = Color.BLACK,
@@ -95,12 +101,6 @@ class ChatPopup(
     val chat: Chat,
     private val worldScreen: WorldScreen,
 ) : Popup(screen = worldScreen, scrollable = Scrollability.None) {
-    companion object {
-        // Contrast-dependent shadow (see GlobalPoliticsDiagramGroup legend lines).
-        const val NAME_SHADOW_OFFSET_MIN = 1f
-        const val NAME_SHADOW_OFFSET_MAX = 2.5f
-    }
-
     private val chatTable = Table(skin)
     private val scrollPane = ScrollPane(chatTable, skin)
     private val messageField = UncivTextField(hint = "Type something...")
