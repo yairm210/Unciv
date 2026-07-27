@@ -102,6 +102,16 @@ fun colorFromHex(hexColor: Int): Color {
 /** Create a new [Color] instance from r/g/b given as Integers in the range 0..255 in the form of a 3-element List [rgb] */
 @Readonly fun colorFromRGB(rgb: List<Int>) = colorFromRGB(rgb[0], rgb[1], rgb[2])
 
+/**
+ *  GDX [Color.toString] is RRGGBBAA; Civilopedia / markup usually want `#` + RGB (6 hex digits).
+ *  When [includeAlpha] is true, or alpha is not opaque, returns `#` + full RRGGBBAA.
+ */
+@Readonly
+fun Color.toHexColor(includeAlpha: Boolean = false): String {
+    if (includeAlpha || a < 1f) return "#" + toString()
+    return "#" + toString().substring(0, 6)
+}
+
 /** Linearly interpolates between this [Color] and [BLACK][ImageGetter.CHARCOAL] by [t] which is in the range [[0,1]].
  * The result is returned as a new instance. */
 fun Color.darken(t: Float): Color = Color(this).lerp(Color.BLACK, t)

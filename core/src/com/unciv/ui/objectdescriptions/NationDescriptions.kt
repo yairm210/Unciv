@@ -9,6 +9,7 @@ import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.squareBraceRegex
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.extensions.toHexColor
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import yairm210.purity.annotations.Readonly
 import kotlin.collections.get
@@ -60,11 +61,13 @@ object NationDescriptions {
         return textList
     }
 
+    // Not @Readonly: mutates via uniquesToCivilopediaTextLines / local list.
+    // Prefer FormattedLineListBuilder (#15015) once that lands.
     private fun Nation.getCityStateInfo(ruleset: Ruleset): List<FormattedLine> {
         val textList = ArrayList<FormattedLine>()
 
         val cityStateType = ruleset.cityStateTypes[cityStateType]!!
-        textList += FormattedLine("{Type}: {${cityStateType.name}}", header = 4, color = "#"+cityStateType.getColor().toString())
+        textList += FormattedLine("{Type}: {${cityStateType.name}}", header = 4, color = cityStateType.getColor().toHexColor())
 
         // CityStateType is a RulesetObject but has no Civilopedia category — surface its text/uniques on the CS Nation page.
         if (cityStateType.civilopediaText.isNotEmpty()) {
