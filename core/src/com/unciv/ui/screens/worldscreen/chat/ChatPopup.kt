@@ -31,19 +31,25 @@ private val civChatColorsMap = mapOf<String, Color>(
     "Server" to Color.GRAY,
 )
 
-/** Darken [color] until contrast vs white is usable (pale nation outerColors). */
-private fun readableOnWhite(color: Color, minContrast: Double = 3.0): Color {
-    if (getContrastRatio(Color.WHITE, color) >= minContrast) return color
+/** Soft parchment bubble — opaque white was too harsh on dark UI. */
+private val chatBubbleBackground = Color(0.90f, 0.88f, 0.82f, 0.88f)
+
+/** Opaque stand-in for contrast checks (alpha ignored by [getContrastRatio]). */
+private val chatBubbleContrastBackground = Color(0.90f, 0.88f, 0.82f, 1f)
+
+/** Darken [color] until contrast vs bubble background is usable (pale nation outerColors). */
+private fun readableOnBubble(color: Color, minContrast: Double = 3.0): Color {
+    if (getContrastRatio(chatBubbleContrastBackground, color) >= minContrast) return color
     val result = color.cpy()
     for (step in 1..12) {
         result.mul(0.85f)
         result.a = 1f
-        if (getContrastRatio(Color.WHITE, result) >= minContrast) return result
+        if (getContrastRatio(chatBubbleContrastBackground, result) >= minContrast) return result
     }
     return Color.DARK_GRAY
 }
 
-/** Builds one chat bubble: white cloud, nation-colored name, black body, untinted icons. */
+/** Builds one chat bubble: soft cloud, nation-colored name, black body, untinted icons. */
 fun createChatMessageBubble(
     gameInfo: GameInfo,
     senderCivName: String,
@@ -54,7 +60,7 @@ fun createChatMessageBubble(
         background = BaseScreen.skinStrings.getUiBackground(
             "WorldScreen/ChatMessage",
             BaseScreen.skinStrings.roundedEdgeRectangleShape,
-            Color.WHITE
+            chatBubbleBackground
         )
         pad(8f, 10f, 8f, 10f)
     }
@@ -75,7 +81,7 @@ fun createChatMessageBubble(
     val civNameColor =
         gameInfo.getCivilizationOrNull(senderCivName)?.nation?.getOuterColor()
             ?: Color.BLACK
-    val nameColor = readableOnWhite(civNameColor)
+    val nameColor = readableOnBubble(civNameColor)
     val suffixPart = if (suffix != null) " ({$suffix})" else ""
 
     // Separate labels: nation-colored name + black body; WHITE symbols = untinted glyphs
