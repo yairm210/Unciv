@@ -217,7 +217,9 @@ class PathingMap private constructor(
         if (!cache.nodesNeedingNeighbors.isEmpty) {
             if (VERBOSE_PATHFINDING_LOGS == cache.key.startingPoint || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
                 Log.debug("#getMovementToTilesAtPosition calculating for $debugMapType $debugId")
-            bfsStepUntilDestination(cache, { _,node -> node.turns>0 && node.canMoveTo }, 1)
+            // We need _all_ tiles reachable in this turn, so we mustn't give this an early-exit predicate
+            // - because any hit will abort the bfs, so there can be no completeness guarantee
+            bfsStepUntilDestination(cache, { _, _ -> false }, 1)
         }
         getTilesSameTurn(cache)
         return tilesSameTurn
