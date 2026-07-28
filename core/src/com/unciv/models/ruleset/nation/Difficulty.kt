@@ -6,6 +6,7 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.objectdescriptions.FormattedLineListBuilder.Companion.buildCivilopediaText
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import yairm210.purity.annotations.Readonly
 
 class Difficulty : RulesetObject() {
@@ -49,23 +50,23 @@ class Difficulty : RulesetObject() {
     override fun getSortGroup(ruleset: Ruleset) = ruleset.difficulties.keys.indexOf(name)
 
     @Readonly
-    override fun getCivilopediaTextLines(ruleset: Ruleset) = buildCivilopediaText {
+    override fun getCivilopediaTextLines(ruleset: Ruleset) = buildCivilopediaText(defaults = FormattedLine(indent = 1)) {
         fun Float.toPercent() = (this * 100).toInt()
 
-        add("Player settings", header = 3)
-        add("{Base happiness}: $baseHappiness ${Fonts.happiness}", indent = 1)
-        add("{Extra happiness per luxury}: ${extraHappinessPerLuxury.toInt()} ${Fonts.happiness}", indent = 1)
-        add("{Research cost modifier}: ${researchCostModifier.toPercent()}% ${Fonts.science}", indent = 1)
-        add("{Unit cost modifier}: ${unitCostModifier.toPercent()}% ${Fonts.production}", indent = 1)
-        add("{Building cost modifier}: ${buildingCostModifier.toPercent()}% ${Fonts.production}", indent = 1)
-        add("{Policy cost modifier}: ${policyCostModifier.toPercent()}% ${Fonts.culture}", indent = 1)
-        add("{Unhappiness modifier}: ${unhappinessModifier.toPercent()}%", indent = 1)
-        add("{Bonus vs. Barbarians}: ${barbarianBonus.toPercent()}% ${Fonts.strength}", indent = 1)
-        add("{Barbarian spawning delay}: $barbarianSpawnDelay", indent = 1)
+        add("Player settings", header = 3, indent = 0)
+        add("{Base happiness}: $baseHappiness ${Fonts.happiness}")
+        add("{Extra happiness per luxury}: ${extraHappinessPerLuxury.toInt()} ${Fonts.happiness}")
+        add("{Research cost modifier}: ${researchCostModifier.toPercent()}% ${Fonts.science}")
+        add("{Unit cost modifier}: ${unitCostModifier.toPercent()}% ${Fonts.production}")
+        add("{Building cost modifier}: ${buildingCostModifier.toPercent()}% ${Fonts.production}")
+        add("{Policy cost modifier}: ${policyCostModifier.toPercent()}% ${Fonts.culture}")
+        add("{Unhappiness modifier}: ${unhappinessModifier.toPercent()}%")
+        add("{Bonus vs. Barbarians}: ${barbarianBonus.toPercent()}% ${Fonts.strength}")
+        add("{Barbarian spawning delay}: $barbarianSpawnDelay")
 
         if (playerBonusStartingUnits.isNotEmpty()) {
             space()
-            add("{Bonus starting units}:", indent = 1)
+            add("{Bonus starting units}:")
             playerBonusStartingUnits.groupBy { it }.map {
                 it.key to it.value.size     // name to Pair.first and count to Pair.second
             }.forEach {
@@ -75,26 +76,26 @@ class Difficulty : RulesetObject() {
         }
 
         space()
-        add("AI settings", header = 3)
-        add("{AI difficulty level}: {$aiDifficultyLevel}", indent = 1)
-        add("{AI city growth modifier}: ${aiCityGrowthModifier.toPercent()}% ${Fonts.food}", indent = 1)
-        add("{AI unit cost modifier}: ${aiUnitCostModifier.toPercent()}% ${Fonts.production}", indent = 1)
-        add("{AI building cost modifier}: ${aiBuildingCostModifier.toPercent()}% ${Fonts.production}", indent = 1)
-        add("{AI wonder cost modifier}: ${aiWonderCostModifier.toPercent()}% ${Fonts.production}", indent = 1)
-        add("{AI building maintenance modifier}: ${aiBuildingMaintenanceModifier.toPercent()}% ${Fonts.gold}", indent = 1)
-        add("{AI unit maintenance modifier}: ${aiUnitMaintenanceModifier.toPercent()}% ${Fonts.gold}", indent = 1)
-        add("{AI unhappiness modifier}: ${aiUnhappinessModifier.toPercent()}%", indent = 1)
+        add("AI settings", header = 3, indent = 0)
+        add("{AI difficulty level}: {$aiDifficultyLevel}")
+        add("{AI city growth modifier}: ${aiCityGrowthModifier.toPercent()}% ${Fonts.food}")
+        add("{AI unit cost modifier}: ${aiUnitCostModifier.toPercent()}% ${Fonts.production}")
+        add("{AI building cost modifier}: ${aiBuildingCostModifier.toPercent()}% ${Fonts.production}")
+        add("{AI wonder cost modifier}: ${aiWonderCostModifier.toPercent()}% ${Fonts.production}")
+        add("{AI building maintenance modifier}: ${aiBuildingMaintenanceModifier.toPercent()}% ${Fonts.gold}")
+        add("{AI unit maintenance modifier}: ${aiUnitMaintenanceModifier.toPercent()}% ${Fonts.gold}")
+        add("{AI unhappiness modifier}: ${aiUnhappinessModifier.toPercent()}%")
 
         if (aiFreeTechs.isNotEmpty()) {
             space()
-            add("{AI free techs}:", indent = 1)
+            add("{AI free techs}:")
             aiFreeTechs.forEach {
                 add(it, link = "Technology/$it", indent = 2)
             }
         }
         if (aiMajorCivBonusStartingUnits.isNotEmpty()) {
             space()
-            add("{Major AI civilization bonus starting units}:", indent = 1)
+            add("{Major AI civilization bonus starting units}:")
             aiMajorCivBonusStartingUnits.groupBy { it }.map {
                 it.key to it.value.size
             }.forEach {
@@ -103,7 +104,7 @@ class Difficulty : RulesetObject() {
         }
         if (aiCityStateBonusStartingUnits.isNotEmpty()) {
             space()
-            add("{City state bonus starting units}:", indent = 1)
+            add("{City state bonus starting units}:")
             aiCityStateBonusStartingUnits.groupBy { it }.map {
                 it.key to it.value.size
             }.forEach {
@@ -111,11 +112,11 @@ class Difficulty : RulesetObject() {
             }
         }
 
+        defaults(FormattedLine())
         space()
         add("{Turns until barbarians enter player tiles}: $turnBarbariansCanEnterPlayerTiles ${Fonts.turn}")
         add("{Gold reward for clearing barbarian camps}: $clearBarbarianCampReward ${Fonts.gold}")
 
         addUniques()
     }
-
 }
