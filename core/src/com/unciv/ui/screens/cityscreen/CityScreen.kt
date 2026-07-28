@@ -141,7 +141,7 @@ class CityScreen(
     // val should be OK as buying tiles is what changes this, and that would re-create the whole CityScreen
     private val nextTileToOwn = cityView.chooseNewTileToOwn()
 
-    private var cityAmbiencePlayer: CityAmbiencePlayer?  = ambiencePlayer ?: CityAmbiencePlayer(city)
+    private var cityAmbiencePlayer: CityAmbiencePlayer?  = ambiencePlayer ?: CityAmbiencePlayer(cityView)
 
     /** Particle effects for WLTK day decoration */
     private val isWLTKday = cityView.isWeLoveTheKingDayActive()
@@ -285,12 +285,12 @@ class CityScreen(
                 /** Support for [UniqueType.CreatesOneImprovement] */
                 tileGroup.tile == selectedQueueEntryTargetTile ->
                     tileGroup.layerMisc.addHexOutline(Color.BROWN)
-                pickTileData != null && tileGroup.tile.getCity() == city && tileGroup.tile in city.tilesInRange ->
+                pickTileData != null && tileGroup.tile.getCity() == city && tileGroup.tile in cityView.tilesInRange ->
                     getPickImprovementColor(tileGroup.tile).run {
                         tileGroup.layerMisc.addHexOutline(first.cpy().apply { this.a = second }) }
             }
 
-            if (fireworks != null && tileGroup.tile.position == city.location)
+            if (fireworks != null && tileGroup.tile.position == cityView.location)
                 fireworks.setActorBounds(tileGroup)
         }
     }
@@ -380,8 +380,8 @@ class CityScreen(
 
         val tilesToUnwrap = mutableSetOf<CityTileGroup>()
         for (tileGroup in tileGroups) {
-            val xDifference = city.getCenterTile().position.x - tileGroup.tile.position.x
-            val yDifference = city.getCenterTile().position.y - tileGroup.tile.position.y
+            val xDifference = cityView.centerTile().tile.position.x - tileGroup.tile.position.x
+            val yDifference = cityView.centerTile().tile.position.y - tileGroup.tile.position.y
             //if difference is bigger than the expansion range the tileGroup we are looking for is on the other side of the map
             if (xDifference > viewRange || xDifference < -viewRange || yDifference > viewRange || yDifference < -viewRange) {
                 //so we want to unwrap its position
@@ -538,7 +538,7 @@ class CityScreen(
     fun exit() {
         val newScreen = game.popScreen()
         if (newScreen is WorldScreen) {
-            newScreen.mapHolder.setCenterPosition(city.location.toHexCoord(), immediately = true)
+            newScreen.mapHolder.setCenterPosition(cityView.location.toHexCoord(), immediately = true)
             newScreen.bottomUnitTable.selectUnit()
         }
     }

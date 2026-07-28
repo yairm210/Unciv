@@ -2,6 +2,7 @@ package com.unciv.view
 
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityFlags
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.city.CityFocus
 import com.unciv.logic.city.CityResources
 import com.unciv.logic.city.GreatPersonPointsBreakdown
@@ -26,6 +27,8 @@ import yairm210.purity.annotations.Readonly
 /** View of a [City] from the perspective of [viewer]. UI should use this and not city directly. */
 class CityView(internal val city: City, internal val viewer: Civilization) {
     val name: String get() = city.name
+    val location: HexCoord get() = city.location
+    val tilesInRange: Set<Tile> get() = city.tilesInRange
 
     @Readonly fun civ(): CivView = CivView(city.civ, viewer)
     @Readonly fun centerTile(): TileView = TileView(city.getCenterTile(), viewer)
@@ -93,6 +96,7 @@ class CityView(internal val city: City, internal val viewer: Civilization) {
     @Readonly fun hasSoldBuildingThisTurn(): Boolean = city.hasSoldBuildingThisTurn
     @Readonly fun isGodModeEnabled(): Boolean = city.civ.gameInfo.gameParameters.godMode
     @Readonly fun getUnitShouldUseSavedPromotion(baseUnit: String): Boolean? = city.unitShouldUseSavedPromotion[baseUnit]
+    @Readonly fun getCityAmbienceSound(): String = city.civ.getEra().citySound
     @Readonly fun isBeingRazed(): Boolean = city.isBeingRazed
     @Readonly fun canBeDestroyed(): Boolean = city.canBeDestroyed()
     @Readonly fun getExpandRange(): Int = city.getExpandRange()
