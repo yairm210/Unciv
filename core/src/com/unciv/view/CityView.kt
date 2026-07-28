@@ -85,6 +85,13 @@ class CityView(internal val city: City, internal val viewer: Civilization) {
         construction.getStockpiledResourceRequirements(city.state)
     @Readonly fun getConstructionProductionCost(construction: INonPerpetualConstruction): Int =
         construction.getProductionCost(city.civ, city)
+    @Readonly fun getUnitDescription(unit: BaseUnit): String = unit.getDescription(city)
+    @Readonly fun getBuildingDescription(building: Building): String = building.getDescription(city, true)
+    @Readonly fun getConversionRate(statConversion: PerpetualConstruction.StatConversion): Int = statConversion.getConversionRate(city)
+    @Readonly fun getGoldForSellingBuilding(buildingName: String): Int = city.getGoldForSellingBuilding(buildingName)
+    @Readonly fun hasSoldBuildingThisTurn(): Boolean = city.hasSoldBuildingThisTurn
+    @Readonly fun isGodModeEnabled(): Boolean = city.civ.gameInfo.gameParameters.godMode
+    @Readonly fun getUnitShouldUseSavedPromotion(baseUnit: String): Boolean? = city.unitShouldUseSavedPromotion[baseUnit]
 
     // Resources/misc
     @Readonly fun getResourceStockpiles(): Counter<String> = city.resourceStockpiles
@@ -139,6 +146,16 @@ class CityView(internal val city: City, internal val viewer: Civilization) {
     }
     fun updateTileStats() = city.cityStats.updateTileStats()
 
+    fun trySetUnitShouldUseSavedPromotion(baseUnit: String, value: Boolean): Boolean {
+        if (!canChangeState()) return false
+        city.unitShouldUseSavedPromotion[baseUnit] = value
+        return true
+    }
+    fun trySellBuilding(construction: Building): Boolean {
+        if (!canChangeState()) return false
+        city.sellBuilding(construction)
+        return true
+    }
     fun tryReassignPopulation(): Boolean {
         if (!canChangeState()) return false
         city.reassignPopulation()

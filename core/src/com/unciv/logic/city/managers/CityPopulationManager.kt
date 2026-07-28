@@ -27,7 +27,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
 
     val specialistAllocations = Counter<String>()
 
-    fun getNewSpecialists() = specialistAllocations 
+    @Readonly fun getNewSpecialists() = specialistAllocations 
 
 
     //region pure functions
