@@ -2,7 +2,6 @@ package com.unciv.logic.map
 
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.UncivGame
-import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.astar.PathingMap.Companion.NEVER_LOG
 import com.unciv.logic.map.astar.PathingMap.Companion.VERBOSE_PATHFINDING_LOGS
@@ -17,11 +16,10 @@ import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.testing.GdxTestRunner
-import com.unciv.testing.RedirectOutput
-import com.unciv.testing.RedirectPolicy
 import com.unciv.testing.TestGame
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -224,12 +222,14 @@ class PathingMapTest {
         assertEquals(path.toString(), 18, path.size)
 //        assertNotEquals(path.toString(), path.firstEntry(), path.lastEntry())
         assertEquals("""
-        -2     -1     +0     +1     +2    
-  +2     /      /     1/1.0  0/2.0  0/2.0 
-  +1     /     0/2.0  0/2.0  0/1.0  0/2.0 
-  +0    0/2.0  0/1.0  0/0.0S 0/1.0  0/2.0 
-  -1    0/2.0  0/1.0  0/1.0  0/2.0   /    
-  -2    0/2.0  0/2.0  0/2.0   /      /    
+        -3     -2     -1     +0     +1     +2     +3    
+  +3     /      /      /      /     1/1.0  1/1.0  1/1.0 
+  +2     /      /     1/1.0  1/1.0  0/2.0  0/2.0  1/1.0 
+  +1     /     1/1.0  0/2.0  0/2.0  0/1.0  0/2.0  1/1.0 
+  +0    1/1.0  0/2.0  0/1.0  0/0.0S 0/1.0  0/2.0  1/1.0 
+  -1    1/1.0  0/2.0  0/1.0  0/1.0  0/2.0  1/1.0   /    
+  -2    1/1.0  0/2.0  0/2.0  0/2.0  1/1.0   /      /    
+  -3    1/1.0  1/1.0  1/1.0  1/1.0   /      /      /    
 """, pathing.toDebugString())
         // And affirm cache
         assertEquals(path, pathing.getMovementToTilesAtPosition())
@@ -363,22 +363,20 @@ class PathingMapTest {
         const val TestUnitName = "Redcoat"
         const val TestUnitCiv = "England"
         val ExpectedStartPos = HexCoord(6, 0)
-        val ExpectedEndPosAStar = HexCoord(8, 4)
-        val ExpectedEndPosClassic = HexCoord(0, -4)
+        val TargetPos = HexCoord(8, 4)
     }
 
     @Test
-    @RedirectOutput(RedirectPolicy.Show)
     fun `issue #15165 - Crash with Can't reach tile`() {
-        runAutomateUnitMovesOnSave(true, ExpectedEndPosAStar)
+        runAutomateUnitMovesOnSave(true)
     }
 
     @Test
     fun `issue #15165 - Was fine with classic pathfinding`() {
-        runAutomateUnitMovesOnSave(false, ExpectedEndPosClassic)
+        runAutomateUnitMovesOnSave(false)
     }
 
-    fun runAutomateUnitMovesOnSave(astar: Boolean, endPos: HexCoord) {
+    fun runAutomateUnitMovesOnSave(astar: Boolean) {
         val modUrl = javaClass.classLoader.getResource("mods/$TestModName")
             ?: error("Test mod not found")
         val modFile = FileHandle(File(modUrl.toURI()))
@@ -398,9 +396,17 @@ class PathingMapTest {
         assertEquals(ExpectedStartPos, unit.currentTile.position)
 
         UncivGame.Current.settings.useAStarPathfinding = astar
-        VERBOSE_PATHFINDING_LOGS = ExpectedStartPos
 
-        UnitAutomation.automateUnitMoves(unit)
-        assertEquals(endPos, unit.currentTile.position)
+        // VERBOSE_PATHFINDING_LOGS = ExpectedStartPos // Activate for debug info
+        // For intricate debugging, one could call `UnitAutomation.automateUnitMoves(unit)` here - too dependent on AI redesign
+
+        // The original issue code path had one PathingMap.getMovementToTilesAtPosition eval,
+        // incomplete due to early exit, then tryHeadTowardsEnemyCity using getShortestPath would
+        // fill in the actual PathingMap but keep the cached PathingMap.tilesSameTurn, then
+        // headTowardsEnemyCity would ask getMovementToTilesAtPosition again and find the destination
+        // returned by getShortestPath missing. Emulate only the first part here:
+        val reachableMap = unit.movement.getDistanceToTiles()
+        val targetTile = reachableMap.keys.firstOrNull { it.position == TargetPos }
+        assertTrue("$unit should be able to reach $TargetPos in one turn", targetTile != null)
     }
 }
