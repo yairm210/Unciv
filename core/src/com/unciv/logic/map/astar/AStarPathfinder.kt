@@ -117,50 +117,62 @@ internal class AStarPathfinder(
         val newUsedMovement = (currentNode.moveUsedThisTurn + cost).coerceAtMost(fpmFullMovement)
         val canMoveTo = currentNode.turns > 0 || moveToPredicate(neighborTile)
         val endTurnThereDamage = endTurnDamage(neighborTile).coerceAtMost(1)
-        val newMountainMovement =
-            (if (currentNode.endTurnWithoutMoreDamage && endTurnThereDamage > 0) cost // first entering mountains
-            else if (!currentNode.endTurnWithoutMoreDamage && endTurnThereDamage > 0) currentNode.pbmMoveThisTurn + cost
-            else FixedPointMovement.FPM_ZERO // ignored in this case
-                ).coerceAtMost(fpmFullMovement)
+        val newMountainMovement = when {
+                currentNode.endTurnWithoutMoreDamage && endTurnThereDamage > 0 -> cost // first entering mountains
+                !currentNode.endTurnWithoutMoreDamage && endTurnThereDamage > 0 -> currentNode.pbmMoveThisTurn + cost
+                else -> FixedPointMovement.FPM_ZERO // ignored in this case
+            }.coerceAtMost(fpmFullMovement)
         val thisTurnPassThroughOrSafeEndTurn = (newUsedMovement < fpmFullMovement) || (canMoveTo && endTurnThereDamage == 0)
         val nextTurnPassThroughOrEndTurn = (newUsedMovement < fpmFullMovement) || canMoveTo
         val relationship = relationshipLevel(neighborTile)
 
+        fun log(verb: String, context: String) {
+            if (PathingMap.VERBOSE_PATHFINDING_LOGS != startingPoint && PathingMap.VERBOSE_PATHFINDING_LOGS != PathingMap.ALWAYS_LOG) return
+            // Use printf style formatting, not kotlin templates, late vs. early, potentially wasted evaluation
+            Log.debug(
+                "#calculateAndQueue %s %s %s %s, for %s %s (%s)",
+                currentTile.position, verb, neighborTile.position, context,
+                debugMapType, debugId, canMoveTo
+            )
+        }
+        fun newNode(
+            pauseBeforeMountainMove: FixedPointMovement, moveThisTurn: FixedPointMovement,
+            turnDelta: Int, newDamagingTiles: Int = damagingTiles
+        ) = RouteNode(
+            neighborTile, relationship, pauseBeforeMountainMove, moveThisTurn,
+            currentNode.turns + turnDelta,  currentTile, canMoveTo, newDamagingTiles
+        )
+
         if (currentNode.moveUsedThisTurn < fpmFullMovement  && thisTurnPassThroughOrSafeEndTurn) {
             // if we can move to the next tile, and then either end our turn safely or move away, then we do so.
-            if (PathingMap.VERBOSE_PATHFINDING_LOGS == startingPoint || PathingMap.VERBOSE_PATHFINDING_LOGS == PathingMap.ALWAYS_LOG)
-                Log.debug("#calculateAndQueue ${currentTile.position} queuing ${neighborTile.position} for same turn, for $debugMapType $debugId")
-            return RouteNode(neighborTile, relationship, newMountainMovement, newUsedMovement, currentNode.turns,  currentTile, canMoveTo, damagingTiles)
+            log("queuing", "for same turn")
+            return newNode(newMountainMovement, newUsedMovement, 0)
         } else if (currentNode.endTurnWithoutMoreDamage && currentNode.canMoveTo && nextTurnPassThroughOrEndTurn) {
             // If we can safely end our turn on the current tile, and then either end our turn or move away, then we do so.
-            if (PathingMap.VERBOSE_PATHFINDING_LOGS == startingPoint || PathingMap.VERBOSE_PATHFINDING_LOGS == PathingMap.ALWAYS_LOG)
-                Log.debug("#calculateAndQueue ${currentTile.position} queuing ${neighborTile.position} for next turn, for $debugMapType $debugId ($canMoveTo)")
-            return RouteNode(neighborTile, relationship, newMountainMovement, cost, currentNode.turns + 1, currentTile, canMoveTo, damagingTiles)
+            log("queuing", "for next turn")
+            return newNode(newMountainMovement, cost, 1) // TODO suspicious: dropping accumulated movement?
         } else if (currentNode.endTurnWithoutMoreDamage && currentNode.canMoveTo && !canMoveTo) {
             // Cannot end our turn on the next tile, nor pass through it. Possibly because it's occupied by a unit.
             // Classic #getDistanceToTiles requires we populate the node, so populate it, but do not return it.
-            if (PathingMap.VERBOSE_PATHFINDING_LOGS == startingPoint || PathingMap.VERBOSE_PATHFINDING_LOGS == PathingMap.ALWAYS_LOG)
-                Log.debug("#calculateAndQueue ${currentTile.position} stubbing ${neighborTile.position} as occupied, for $debugMapType $debugId (false)")
-            val occupiedNode =  RouteNode(neighborTile, relationship, newMountainMovement, cost, currentNode.turns+1, currentTile, canMoveTo, damagingTiles)
+            log("stubbing", "as occupied")
+            val occupiedNode = newNode(newMountainMovement, cost, 1) // TODO suspicious: dropping accumulated movement?
             routeNodes[neighborTile.zeroBasedIndex] = occupiedNode.bits
             cache.addedNeighborNodes.set(neighborTile.zeroBasedIndex)
-            cache.addedNeighborNodes.clear(neighborTile.zeroBasedIndex)
+            cache.addedNeighborNodes.clear(neighborTile.zeroBasedIndex) // TODO invalidates the set - meant to have different indexes?
             return null
         } else if (currentNode.pbmMoveThisTurn < fpmFullMovement) {
             // If we could have moved here if we'd paused before entering mountains, then
             // pretend we paused before entering the mountains.
-            if (PathingMap.VERBOSE_PATHFINDING_LOGS == startingPoint || PathingMap.VERBOSE_PATHFINDING_LOGS == PathingMap.ALWAYS_LOG)
-                Log.debug("#calculateAndQueue ${currentTile.position} queuing ${neighborTile.position} with retroactive pause before mountains, for $debugMapType $debugId ($canMoveTo)")
-            return RouteNode(neighborTile, relationship, newMountainMovement, newMountainMovement, currentNode.turns + 1, currentTile, canMoveTo, damagingTiles)
+            log("queuing", "with retroactive pause before mountains")
+            return newNode(newMountainMovement, newMountainMovement, 1)
         } else {
             // Ending our turn here takes damage. We'll add the neighbor tile, but the damage
-            // means it's neighbors will be calculated at a super low priority.
+            // means its neighbors will be calculated at a super low priority.
             // In the meantime, another tile might find a route here that doesn't require taking damage,
             // which is the ONLY scenario where a tile can get recalculated.
             val newDamageTiles = (damagingTiles + endTurnThereDamage).coerceAtMost(RouteNode.MAX_DAMAGING_TILES)
-            if (PathingMap.VERBOSE_PATHFINDING_LOGS == startingPoint || PathingMap.VERBOSE_PATHFINDING_LOGS == PathingMap.ALWAYS_LOG)
-                Log.debug("#calculateAndQueue ${currentTile.position} queuing ${neighborTile.position} with taking damage, for $debugMapType $debugId ($canMoveTo)")
-            return RouteNode(neighborTile, relationship, cost, cost, currentNode.turns + 1, currentTile, canMoveTo, newDamageTiles)
+            log("queuing", "with taking damage")
+            return newNode(cost, cost, 1, newDamageTiles) // TODO suspicious: dropping accumulated movement?
         }
     }
 
