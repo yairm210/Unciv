@@ -14,7 +14,10 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.multiplayer.chat.Chat
 import com.unciv.logic.multiplayer.chat.ChatStore
+import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.extensions.brighten
+import com.unciv.ui.components.extensions.coerceLightnessAtLeast
 import com.unciv.ui.components.extensions.getContrastRatio
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.onClick
@@ -26,44 +29,62 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
 
-private val civChatColorsMap = mapOf<String, Color>(
-    "System" to Color.DARK_GRAY,
-    "Server" to Color.GRAY,
+private val civChatColorsMap = mapOf(
+    "System" to Color.WHITE,
+    "Server" to Color.LIGHT_GRAY,
 )
 
-/** Soft parchment bubble — opaque white was too harsh on dark UI. */
-private val chatBubbleBackground = Color(0.90f, 0.88f, 0.82f, 0.88f)
+/** Approximate Popup InnerTable tone — for nation-name contrast checks. */
+private val chatPanelBackground = Color.DARK_GRAY
 
-/** Opaque stand-in for contrast checks (alpha ignored by [getContrastRatio]). */
-private val chatBubbleContrastBackground = Color(0.90f, 0.88f, 0.82f, 1f)
+private const val NAME_MIN_CONTRAST = 3.0
+private const val NAME_LIGHTEN = 0.18f
+private const val NAME_MIN_LIGHTNESS = 0.55f
 
-/** Darken [color] until contrast vs bubble background is usable (pale nation outerColors). */
-private fun readableOnBubble(color: Color, minContrast: Double = 3.0): Color {
-    if (getContrastRatio(chatBubbleContrastBackground, color) >= minContrast) return color
-    val result = color.cpy()
-    for (step in 1..12) {
-        result.mul(0.85f)
-        result.a = 1f
-        if (getContrastRatio(chatBubbleContrastBackground, result) >= minContrast) return result
-    }
-    return Color.DARK_GRAY
+private fun isTooCloseToWhite(color: Color): Boolean =
+    color.r > 0.82f && color.g > 0.82f && color.b > 0.82f
+
+private fun fallbackColorForName(name: String): Color {
+    val hue = ((name.hashCode() % 360) + 360) % 360
+    return Color().fromHsv(hue.toFloat(), 0.70f, 0.95f)
 }
 
-/** Builds one chat bubble: soft cloud, nation-colored name, black body, untinted icons. */
-fun createChatMessageBubble(
+/**
+ * Readable nation color on the dark chat panel.
+ * Prefer outer, then inner; skip near-white (body is white); else a stable hash hue.
+ */
+private fun pickNationNameColor(nation: Nation?, senderName: String): Color {
+    val candidates = buildList {
+        if (nation != null) {
+            add(nation.getOuterColor())
+            add(nation.getInnerColor())
+        }
+    }
+
+    for (color in candidates) {
+        if (isTooCloseToWhite(color)) continue
+        if (getContrastRatio(chatPanelBackground, color) < NAME_MIN_CONTRAST) continue
+        return color.brighten(NAME_LIGHTEN).apply { a = 1f }
+    }
+    for (color in candidates) {
+        if (isTooCloseToWhite(color)) continue
+        return color.coerceLightnessAtLeast(NAME_MIN_LIGHTNESS).apply { a = 1f }
+    }
+    return fallbackColorForName(senderName)
+}
+
+private fun resolveNation(gameInfo: GameInfo, senderCivName: String): Nation? =
+    gameInfo.getCivilizationOrNull(senderCivName)?.nation
+        ?: gameInfo.ruleset.nations[senderCivName]
+
+/** One chat line: no bubble — nation-colored name + white body. */
+fun createChatMessageLine(
     gameInfo: GameInfo,
     senderCivName: String,
     message: String,
     suffix: String? = null,
 ): Table {
-    val bubble = Table().apply {
-        background = BaseScreen.skinStrings.getUiBackground(
-            "WorldScreen/ChatMessage",
-            BaseScreen.skinStrings.roundedEdgeRectangleShape,
-            chatBubbleBackground
-        )
-        pad(8f, 10f, 8f, 10f)
-    }
+    val row = Table()
 
     if (senderCivName in civChatColorsMap) {
         val line = Label(
@@ -74,33 +95,22 @@ fun createChatMessageBubble(
             setAlignment(Align.left)
             color = civChatColorsMap.getValue(senderCivName)
         }
-        bubble.add(line).growX().left()
-        return bubble
+        row.add(line).growX().left()
+        return row
     }
 
-    val civNameColor =
-        gameInfo.getCivilizationOrNull(senderCivName)?.nation?.getOuterColor()
-            ?: Color.BLACK
-    val nameColor = readableOnBubble(civNameColor)
+    val nameColor = pickNationNameColor(resolveNation(gameInfo, senderCivName), senderCivName)
     val suffixPart = if (suffix != null) " ({$suffix})" else ""
-
-    // Separate labels: nation-colored name + black body; WHITE symbols = untinted glyphs
-    val nameLabel = ColorMarkupLabel(
-        "{$senderCivName}$suffixPart:",
-        textColor = nameColor,
-        symbolColor = Color.WHITE
-    ).apply { setAlignment(Align.left) }
-    val messageLabel = ColorMarkupLabel(
-        " {$message}",
-        textColor = Color.BLACK,
-        symbolColor = Color.WHITE
+    val nameMarkup = "#" + nameColor.toString().substring(0, 6)
+    val line = ColorMarkupLabel(
+        "«$nameMarkup»{$senderCivName}$suffixPart:«WHITE» $message",
+        defaultColor = Color.WHITE
     ).apply {
         wrap = true
         setAlignment(Align.left)
     }
-    bubble.add(nameLabel).left().top()
-    bubble.add(messageLabel).growX().left().top()
-    return bubble
+    row.add(line).growX().left()
+    return row
 }
 
 class ChatPopup(
@@ -113,7 +123,7 @@ class ChatPopup(
 
     init {
         ChatStore.chatPopup = this
-        chatTable.defaults().growX().pad(4f).left()
+        chatTable.defaults().growX().pad(5f).left()
 
         /**
          * Layout:
@@ -122,7 +132,6 @@ class ChatPopup(
          * | MessageField | SendButton |
          */
 
-        // Header: |  ChatHeader | CloseButton  |
         val chatHeader = Table(skin)
         val chatLabel = "Chat".toLabel(fontSize = 30, alignment = Align.center)
         val chatIcon = ImageGetter.getImage("OtherIcons/Chat")
@@ -140,23 +149,19 @@ class ChatPopup(
                 }
         ).size(chatLabel.height * 1.3f).right().row()
 
-        // Chat: |  ChatTable (colSpan = 2)  |
         scrollPane.setFadeScrollBars(false)
         scrollPane.setScrollingDisabled(true, false)
         add(scrollPane).colspan(2)
             .size(0.5f * worldScreen.stage.width, 0.5f * worldScreen.stage.height)
             .expand().fill().row()
 
-        // Input: | MessageField | SendButton |
         add(messageField).expandX().fillX()
         val sendButton = Button(skin)
         sendButton.add(ImageGetter.getImage("OtherIcons/Send"))
         add(sendButton).size(messageField.height * 1.2f, messageField.height).padLeft(1f).row()
 
-        // populate previous chats
         populateChat()
 
-        // Send button logic (for demo, just adds to UI)
         sendButton.onClick { sendMessage() }
 
         messageField.addListener(object : InputListener() {
@@ -195,7 +200,7 @@ class ChatPopup(
         scroll: Boolean = true
     ) {
         chatTable.add(
-            createChatMessageBubble(worldScreen.gameInfo, senderCivName, message, suffix)
+            createChatMessageLine(worldScreen.gameInfo, senderCivName, message, suffix)
         ).growX().left().row()
         if (scroll) scrollToBottom()
     }
