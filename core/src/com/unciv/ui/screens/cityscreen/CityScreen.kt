@@ -42,6 +42,7 @@ import com.unciv.ui.popups.closeAllPopups
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.worldscreen.WorldScreen
+import com.unciv.view.CityView
 import kotlin.math.max
 
 class CityScreen(
@@ -74,6 +75,8 @@ class CityScreen(
 
     /** Toggles or adds/removes all state changing buttons */
     val canChangeState = GUI.isAllowedChangeState() && !isSpying
+
+    val cityView: CityView = CityView(city, selectedCiv)
 
     // Clockwise from the top-left
 
@@ -408,11 +411,10 @@ class CityScreen(
         // Cycling as: Not-worked -> Worked  -> Not-worked
         if (tileGroup.tileState == CityTileState.WORKABLE) {
             if (!tile.providesYield() && city.population.getFreePopulation() > 0) {
-                city.workedTiles.add(tile.position)
+                city.workTile(tile)
                 game.settings.addCompletedTutorialTask("Reassign worked tiles")
             } else {
-                city.workedTiles.remove(tile.position)
-                city.lockedTiles.remove(tile.position)
+                city.stopWorkingTile(tile)
             }
             city.cityStats.update()
             update()
@@ -462,7 +464,7 @@ class CityScreen(
             tileWorkedIconOnClick(tileGroup, city)
 
         if (tile.isWorked())
-            city.lockedTiles.add(tile.position)
+            city.lockTile(tile)
 
         update()
     }
