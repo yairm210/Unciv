@@ -1,0 +1,123 @@
+package com.unciv.view
+
+import com.unciv.logic.city.City
+import com.unciv.logic.city.CityFlags
+import com.unciv.logic.city.CityFocus
+import com.unciv.logic.city.CityResources
+import com.unciv.logic.city.GreatPersonPointsBreakdown
+import com.unciv.logic.city.managers.CityReligionManager
+import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.tile.Tile
+import com.unciv.models.Counter
+import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.tile.ResourceSupplyList
+import com.unciv.models.ruleset.unique.GameContext
+import com.unciv.models.stats.Stats
+import yairm210.purity.annotations.Readonly
+
+/** View of a [City] from the perspective of [viewer]. UI should use this and not city directly. */
+class CityView(internal val city: City, internal val viewer: Civilization) {
+    val name: String get() = city.name
+
+    @Readonly fun civ(): CivView = CivView(city.civ, viewer)
+    @Readonly fun centerTile(): TileView = TileView(city.getCenterTile(), viewer)
+    @Readonly fun getTiles(): Sequence<TileView> = city.getTiles().map { TileView(it, viewer) }
+    @Readonly fun tileView(tile: Tile): TileView = TileView(tile, viewer)
+
+    @Readonly fun getWorkRange(): Int = city.getWorkRange()
+    @Readonly fun isWorked(tileView: TileView): Boolean = city.isWorked(tileView.tile)
+    @Readonly fun canBuyTile(tileView: TileView): Boolean = city.expansion.canBuyTile(tileView.tile)
+    @Readonly fun getGoldCostOfTile(tileView: TileView, extraTiles: Int = 0): Int =
+        city.expansion.getGoldCostOfTile(tileView.tile, extraTiles)
+    @Readonly fun isSameCivAs(other: CityView): Boolean = city.civ === other.city.civ
+
+    // Population
+    @Readonly fun getFreePopulation(): Int = city.population.getFreePopulation()
+    @Readonly fun getPopulationCount(): Int = city.population.population
+    @Readonly fun getFoodStored(): Int = city.population.foodStored
+    @Readonly fun getFoodToNextPopulation(): Int = city.population.getFoodToNextPopulation()
+    @Readonly fun getMaxSpecialists(): Counter<String> = city.population.getMaxSpecialists()
+    @Readonly fun getNewSpecialists(): Counter<String> = city.population.getNewSpecialists()
+    @Readonly fun getNumTurnsToStarvation(): Int? = city.population.getNumTurnsToStarvation()
+    @Readonly fun getNumTurnsToNewPopulation(): Int? = city.population.getNumTurnsToNewPopulation()
+
+    // City state
+    @Readonly fun getNumberOfFollowers(): Counter<String> = city.religion.getNumberOfFollowers()
+    @Readonly fun religion(): CityReligionManager = city.religion
+    @Readonly fun isStarving(): Boolean = city.isStarving()
+    @Readonly fun isGrowing(): Boolean = city.isGrowing()
+    @Readonly fun isInResistance(): Boolean = city.isInResistance()
+    @Readonly fun isWeLoveTheKingDayActive(): Boolean = city.isWeLoveTheKingDayActive()
+    val demandedResource: String get() = city.demandedResource
+    @Readonly fun getFlag(flag: CityFlags): Int = city.getFlag(flag)
+    @Readonly fun getCityFocus(): CityFocus = city.getCityFocus()
+    @Readonly fun getState(): GameContext = city.state
+
+    // Stats
+    @Readonly fun getCurrentCityStats(): Stats = city.cityStats.currentCityStats
+    @Readonly fun getHappinessList(): Map<String, Float> = city.cityStats.happinessList
+
+    // Expansion
+    @Readonly fun hasChoosableTiles(): Boolean = city.expansion.getChoosableTiles().any()
+    @Readonly fun getCultureToNextTile(): Int = city.expansion.getCultureToNextTile()
+    @Readonly fun getCultureStored(): Int = city.expansion.cultureStored
+
+    // Constructions
+    @Readonly fun currentConstructionName(): String = city.cityConstructions.currentConstructionName()
+    @Readonly fun getBuiltBuildings(): Sequence<Building> = city.cityConstructions.getBuiltBuildings()
+
+    // Resources/misc
+    @Readonly fun getResourceStockpiles(): Counter<String> = city.resourceStockpiles
+    @Readonly fun getCityResourcesAvailableToCity(): ResourceSupplyList = CityResources.getCityResourcesAvailableToCity(city)
+    @Readonly fun getGreatPersonPointsBreakdown(): GreatPersonPointsBreakdown = GreatPersonPointsBreakdown(city)
+    /** GPP progress for this city screen: city counter if per-city mode, else empire. */
+    @Readonly fun getGreatPersonPointsProgress(name: String): Int =
+        if (city.civ.greatPeople.usesPerCityGreatPersonProgress())
+            city.greatPersonPointsCounter[name]
+        else
+            city.civ.greatPeople.greatPersonPointsCounter[name]
+    @Readonly fun getRuleset(): Ruleset = city.getRuleset()
+    @Readonly fun getBuildingStats(building: Building): Stats = building.getStats(city)
+
+    // ACTIONS
+    private fun canChangeState() = city.civ === viewer && viewer.isCurrentPlayer()
+
+    fun tryLockTile(tileView: TileView): Boolean {
+        if (!canChangeState()) return false
+        if (!isWorked(tileView)) return false
+        return city.lockTile(tileView.tile)
+    }
+    fun tryUnlockTile(tileView: TileView): Boolean {
+        if (!canChangeState()) return false
+        return city.unlockTile(tileView.tile)
+    }
+    fun tryBuyTile(tileView: TileView): Boolean {
+        if (!canChangeState()) return false
+        if (!city.expansion.canBuyTile(tileView.tile)) return false
+        city.expansion.buyTile(tileView.tile)
+        return true
+    }
+    fun tryWorkTile(tileView: TileView): Boolean {
+        if (!canChangeState()) return false
+        return city.workTile(tileView.tile)
+    }
+    fun tryStopWorkingTile(tileView: TileView): Boolean {
+        if (!canChangeState()) return false
+        return city.stopWorkingTile(tileView.tile)
+    }
+    fun tryReassignPopulation(): Boolean {
+        if (!canChangeState()) return false
+        city.reassignPopulation()
+        return true
+    }
+    fun trySetCityFocus(focus: CityFocus): Boolean {
+        if (!canChangeState()) return false
+        city.setCityFocus(focus)
+        city.reassignPopulation()
+        return true
+    }
+
+    override fun equals(other: Any?) = other is CityView && city === other.city
+    override fun hashCode() = city.hashCode()
+}
