@@ -1,9 +1,11 @@
 package com.unciv.view
 
 import com.unciv.logic.city.CityConstructions
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.IConstruction
 import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.RejectionReason
+import com.unciv.models.ruleset.tile.TileImprovement
 import yairm210.purity.annotations.Readonly
 
 class CityConstructionsView(internal val cityConstructions: CityConstructions) {
@@ -20,4 +22,8 @@ class CityConstructionsView(internal val cityConstructions: CityConstructions) {
     @Readonly fun shouldBeDisplayed(construction: IConstruction): Boolean = construction.shouldBeDisplayed(cityConstructions)
     @Readonly fun getRejectionReasons(construction: INonPerpetualConstruction): Sequence<RejectionReason> = construction.getRejectionReasons(cityConstructions)
     @Readonly fun isBuildable(construction: IConstruction): Boolean = construction.isBuildable(cityConstructions)
+    @Readonly fun canPlaceCreateOneImprovementOn(improvement: TileImprovement, tile: Tile): Boolean =
+        cityConstructions.canPlaceCreateOneImprovementOn(improvement, tile)
+    @Readonly fun getTileForImprovement(improvementName: String): Tile? =
+        cityConstructions.getTileForImprovement(improvementName)
 }

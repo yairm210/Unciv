@@ -139,12 +139,12 @@ class CityScreen(
         set(value) { constructionsTable.selectedQueueEntry = value }
     /** Cached city.expansion.chooseNewTileToOwn() */
     // val should be OK as buying tiles is what changes this, and that would re-create the whole CityScreen
-    private val nextTileToOwn = city.expansion.chooseNewTileToOwn()
+    private val nextTileToOwn = cityView.chooseNewTileToOwn()
 
     private var cityAmbiencePlayer: CityAmbiencePlayer?  = ambiencePlayer ?: CityAmbiencePlayer(city)
 
     /** Particle effects for WLTK day decoration */
-    private val isWLTKday = city.isWeLoveTheKingDayActive()
+    private val isWLTKday = cityView.isWeLoveTheKingDayActive()
     private val fireworks: ParticleEffectMapFireworks?
     internal var pauseFireworks = false
 
@@ -182,7 +182,7 @@ class CityScreen(
 
     internal fun update() {
         // Recalculate Stats
-        city.cityStats.update()
+        cityView.updateCityStats()
 
         constructionsTable.isVisible = !isSpying
         constructionsTable.update(selectedConstruction)
@@ -241,7 +241,7 @@ class CityScreen(
     }
 
     fun canCityBeChanged(): Boolean {
-        return canChangeState && !city.isPuppet
+        return canChangeState && !cityView.isPuppet()
     }
 
     private fun updateTileGroups() {
@@ -263,7 +263,7 @@ class CityScreen(
             val improvementToPlace = pickTileData!!.improvement
             return when {
                 tile.isMarkedForCreatesOneImprovement() -> Color.BROWN to 0.7f
-                !city.cityConstructions.canPlaceCreateOneImprovementOn(improvementToPlace, tile) -> Color.RED to 0.4f
+                !cityView.constructions.canPlaceCreateOneImprovementOn(improvementToPlace, tile) -> Color.RED to 0.4f
                 isExistingImprovementValuable(tile) -> Color.ORANGE to 0.5f
                 tile.improvement != null -> Color.YELLOW to 0.6f
                 tile.turnsToImprovement > 0 -> Color.YELLOW to 0.6f
@@ -306,21 +306,21 @@ class CityScreen(
             addWltkIcon("OtherIcons/WLTK 1") { color = Color.FIREBRICK }.padRight(10f)
         }
 
-        val canAnnex = !city.civ.hasUnique(UniqueType.MayNotAnnexCities)
-        if (city.isPuppet && canAnnex) {
+        val canAnnex = !cityView.civ().hasUnique(UniqueType.MayNotAnnexCities)
+        if (cityView.isPuppet() && canAnnex) {
             val annexCityButton = "Annex city".toTextButton()
             annexCityButton.labelCell.pad(10f)
             annexCityButton.onClick {
-                city.annexCity()
+                cityView.tryAnnexCity()
                 update()
             }
             if (!canChangeState) annexCityButton.disable()
             razeCityButtonHolder.add(annexCityButton) //.colspan(cityPickerTable.columns)
-        } else if (!city.isBeingRazed) {
+        } else if (!cityView.isBeingRazed()) {
             val razeCityButton = "Raze city".toTextButton()
             razeCityButton.labelCell.pad(10f)
-            razeCityButton.onClick { city.isBeingRazed = true; update() }
-            if (!canChangeState || !city.canBeDestroyed() || !canAnnex) {
+            razeCityButton.onClick { cityView.trySetRazing(true); update() }
+            if (!canChangeState || !cityView.canBeDestroyed() || !canAnnex) {
                 razeCityButton.disable()
             }
 
@@ -328,7 +328,7 @@ class CityScreen(
         } else {
             val stopRazingCityButton = "Stop razing city".toTextButton()
             stopRazingCityButton.labelCell.pad(10f)
-            stopRazingCityButton.onClick { city.isBeingRazed = false; update() }
+            stopRazingCityButton.onClick { cityView.trySetRazing(false); update() }
             if (!canChangeState) stopRazingCityButton.disable()
             razeCityButtonHolder.add(stopRazingCityButton) //.colspan(cityPickerTable.columns)
         }
@@ -362,19 +362,19 @@ class CityScreen(
     }
 
     private fun addTiles() {
-        val viewRange = max(city.getExpandRange(), city.getWorkRange())
+        val viewRange = max(cityView.getExpandRange(), cityView.getWorkRange())
         val tileSetStrings = TileSetStrings(city.civ.gameInfo.ruleset, game.settings)
-        val cityTileGroups = city.getCenterTile().getTilesInDistance(viewRange)
+        val cityTileGroups = cityView.centerTile().tile.getTilesInDistance(viewRange)
                 .filter { selectedCiv.hasExplored(it) }
                 .map { CityTileGroup(city, it, tileSetStrings, false, isSpying) }
 
         for (tileGroup in cityTileGroups) {
-            tileGroup.onClick { tileGroupOnClick(tileGroup, city) }
+            tileGroup.onClick { tileGroupOnClick(tileGroup) }
             tileGroup.layerMisc.onWorkedIconClick = {
-                tileWorkedIconOnClick(tileGroup, city)
-                tileGroupOnClick(tileGroup, city)
+                tileWorkedIconOnClick(tileGroup)
+                tileGroupOnClick(tileGroup)
             }
-            tileGroup.layerMisc.onWorkedIconDoubleClick = { tileWorkedIconDoubleClick(tileGroup, city) }
+            tileGroup.layerMisc.onWorkedIconDoubleClick = { tileWorkedIconDoubleClick(tileGroup) }
             tileGroups.add(tileGroup)
         }
 
@@ -403,20 +403,20 @@ class CityScreen(
     // We contain a map...
     override fun getShortcutDispatcherVetoer() = KeyShortcutDispatcherVeto.createTileGroupMapDispatcherVetoer()
 
-    private fun tileWorkedIconOnClick(tileGroup: CityTileGroup, city: City) {
+    private fun tileWorkedIconOnClick(tileGroup: CityTileGroup) {
 
-        if (!canChangeState || city.isPuppet) return
+        if (!canChangeState || cityView.isPuppet()) return
         val tile = tileGroup.tile
 
         // Cycling as: Not-worked -> Worked  -> Not-worked
         if (tileGroup.tileState == CityTileState.WORKABLE) {
-            if (!tile.providesYield() && city.population.getFreePopulation() > 0) {
-                city.workTile(tile)
+            if (!tile.providesYield() && cityView.getFreePopulation() > 0) {
+                cityView.tryWorkTile(cityView.tileView(tile))
                 game.settings.addCompletedTutorialTask("Reassign worked tiles")
             } else {
-                city.stopWorkingTile(tile)
+                cityView.tryStopWorkingTile(cityView.tileView(tile))
             }
-            city.cityStats.update()
+            cityView.updateCityStats()
             update()
 
         } else if (tileGroup.tileState == CityTileState.PURCHASABLE) {
@@ -431,13 +431,13 @@ class CityScreen(
      */
     internal fun askToBuyTile(selectedTile: Tile) {
         // These checks are redundant for the onClick action, but not for the keyboard binding
-        if (!canChangeState || !city.expansion.canBuyTile(selectedTile)) return
-        val goldCostOfTile = city.expansion.getGoldCostOfTile(selectedTile)
-        if (!city.civ.hasStatToBuy(Stat.Gold, goldCostOfTile)) return
+        if (!canChangeState || !cityView.canBuyTile(cityView.tileView(selectedTile))) return
+        val goldCostOfTile = cityView.getGoldCostOfTile(cityView.tileView(selectedTile))
+        if (!cityView.civ().hasStatToBuy(Stat.Gold, goldCostOfTile)) return
 
         closeAllPopups()
 
-        val purchasePrompt = "Currently you have [${city.civ.gold}] [Gold].".tr() + "\n\n" +
+        val purchasePrompt = "Currently you have [${cityView.civ().gold}] [Gold].".tr() + "\n\n" +
             "Would you like to purchase [Tile] for [$goldCostOfTile] [${Stat.Gold.character}]?".tr()
         ConfirmPopup(
             this,
@@ -447,30 +447,30 @@ class CityScreen(
             restoreDefault = { update() }
         ) {
             SoundPlayer.play(UncivSound.Coin)
-            city.expansion.buyTile(selectedTile)
+            cityView.tryBuyTile(cityView.tileView(selectedTile))
             // preselect the next tile on city screen rebuild so bulk buying can go faster
-            UncivGame.Current.replaceCurrentScreen(CityScreen(city, initSelectedTile = city.expansion.chooseNewTileToOwn()))
+            UncivGame.Current.replaceCurrentScreen(CityScreen(city, initSelectedTile = cityView.chooseNewTileToOwn()))
         }.open()
     }
 
 
-    private fun tileWorkedIconDoubleClick(tileGroup: CityTileGroup, city: City) {
-        if (!canChangeState || city.isPuppet || tileGroup.tileState != CityTileState.WORKABLE) return
+    private fun tileWorkedIconDoubleClick(tileGroup: CityTileGroup) {
+        if (!canChangeState || cityView.isPuppet() || tileGroup.tileState != CityTileState.WORKABLE) return
         val tile = tileGroup.tile
 
         // Double-click should lead to locked tiles - both for unworked AND worked tiles
 
         if (!tile.isWorked()) // If not worked, try to work it first
-            tileWorkedIconOnClick(tileGroup, city)
+            tileWorkedIconOnClick(tileGroup)
 
         if (tile.isWorked())
-            city.lockTile(tile)
+            cityView.tryLockTile(cityView.tileView(tile))
 
         update()
     }
 
-    private fun tileGroupOnClick(tileGroup: CityTileGroup, city: City) {
-        if (city.isPuppet) return
+    private fun tileGroupOnClick(tileGroup: CityTileGroup) {
+        if (cityView.isPuppet()) return
         val tileInfo = tileGroup.tile
 
         /** [UniqueType.CreatesOneImprovement] support - select tile for improvement */
@@ -478,12 +478,12 @@ class CityScreen(
             val pickTileData = this.pickTileData!!
             this.pickTileData = null
             val improvement = pickTileData.improvement
-            if (city.cityConstructions.canPlaceCreateOneImprovementOn(improvement, tileInfo)) {
-                
+            if (cityView.constructions.canPlaceCreateOneImprovementOn(improvement, tileInfo)) {
+
                 if (pickTileData.isBuying) {
                     BuyButtonFactory(this).askToBuyConstruction(pickTileData.building, pickTileData.buyStat, tileInfo)
                 } else {
-                    city.cityConstructions.addToQueue(pickTileData.building, tile = tileInfo)
+                    cityView.tryAddToQueueWithTile(pickTileData.building, tileInfo)
                 }
             }
             update()
@@ -495,21 +495,20 @@ class CityScreen(
     }
 
     /** Convenience shortcut to [CivConstructions.hasFreeBuilding][com.unciv.logic.civilization.CivConstructions.hasFreeBuilding], nothing more */
-    internal fun hasFreeBuilding(building: Building) =
-        city.civ.civConstructions.hasFreeBuilding(city, building)
+    internal fun hasFreeBuilding(building: Building) = cityView.hasFreeBuilding(building)
 
     fun selectConstructionFromQueue(index: Int) {
-        selectConstruction(city.cityConstructions.constructionQueue[index])
+        selectConstruction(cityView.constructions.constructionQueue[index])
     }
     fun selectConstruction(name: String) {
-        selectConstruction(city.cityConstructions.getConstruction(name))
+        selectConstruction(cityView.constructions.getConstruction(name))
     }
     fun selectConstruction(newConstruction: IConstruction) {
         selectedConstruction = newConstruction
         if (newConstruction is Building && newConstruction.hasCreateOneImprovementUnique()) {
-            val improvement = newConstruction.getImprovementToCreate(city.getRuleset(), city.civ)
+            val improvement = cityView.getImprovementToCreate(newConstruction)
             selectedQueueEntryTargetTile = if (improvement == null) null
-                else city.cityConstructions.getTileForImprovement(improvement.name)
+                else cityView.constructions.getTileForImprovement(improvement.name)
         } else {
             selectedQueueEntryTargetTile = null
             pickTileData = null
@@ -525,7 +524,7 @@ class CityScreen(
     fun clearSelection() = selectTile(null)
 
     fun startPickTileForCreatesOneImprovement(construction: Building, stat: Stat, isBuying: Boolean) {
-        val improvement = construction.getImprovementToCreate(city.getRuleset(), city.civ) ?: return
+        val improvement = cityView.getImprovementToCreate(construction) ?: return
         pickTileData = PickTileForImprovementData(construction, improvement, isBuying, stat)
         updateTileGroups()
         ToastPopup("Please select a tile for this building's [${improvement.name}]", this)

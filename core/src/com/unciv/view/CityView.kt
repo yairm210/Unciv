@@ -15,6 +15,7 @@ import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceSupplyList
+import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -92,6 +93,14 @@ class CityView(internal val city: City, internal val viewer: Civilization) {
     @Readonly fun hasSoldBuildingThisTurn(): Boolean = city.hasSoldBuildingThisTurn
     @Readonly fun isGodModeEnabled(): Boolean = city.civ.gameInfo.gameParameters.godMode
     @Readonly fun getUnitShouldUseSavedPromotion(baseUnit: String): Boolean? = city.unitShouldUseSavedPromotion[baseUnit]
+    @Readonly fun isBeingRazed(): Boolean = city.isBeingRazed
+    @Readonly fun canBeDestroyed(): Boolean = city.canBeDestroyed()
+    @Readonly fun getExpandRange(): Int = city.getExpandRange()
+    @Readonly fun chooseNewTileToOwn(): Tile? = city.expansion.chooseNewTileToOwn()
+    @Readonly fun getImprovementToCreate(construction: Building): TileImprovement? =
+        construction.getImprovementToCreate(city.getRuleset(), city.civ)
+    @Readonly fun hasFreeBuilding(building: Building): Boolean =
+        city.civ.civConstructions.hasFreeBuilding(city, building)
 
     // Resources/misc
     @Readonly fun getResourceStockpiles(): Counter<String> = city.resourceStockpiles
@@ -146,6 +155,22 @@ class CityView(internal val city: City, internal val viewer: Civilization) {
     }
     fun updateTileStats() = city.cityStats.updateTileStats()
 
+    fun updateCityStats() = city.cityStats.update()
+    fun tryAnnexCity(): Boolean {
+        if (!canChangeState()) return false
+        city.annexCity()
+        return true
+    }
+    fun trySetRazing(raze: Boolean): Boolean {
+        if (!canChangeState()) return false
+        city.isBeingRazed = raze
+        return true
+    }
+    fun tryAddToQueueWithTile(construction: IConstruction, tile: Tile): Boolean {
+        if (!canChangeState()) return false
+        city.cityConstructions.addToQueue(construction, tile = tile)
+        return true
+    }
     fun trySetUnitShouldUseSavedPromotion(baseUnit: String, value: Boolean): Boolean {
         if (!canChangeState()) return false
         city.unitShouldUseSavedPromotion[baseUnit] = value
