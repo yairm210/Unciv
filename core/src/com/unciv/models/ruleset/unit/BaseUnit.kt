@@ -95,7 +95,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     /** Generate description as multi-line string for CityScreen addSelectedConstructionTable
      * @param city Supplies civInfo to show available resources after resource requirements */
-    fun getDescription(city: City): String = BaseUnitDescriptions.getDescription(this, city)
+    @Readonly fun getDescription(city: City): String = BaseUnitDescriptions.getDescription(this, city)
 
     override fun makeLink() = "Unit/$name"
 

@@ -32,6 +32,7 @@ import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.SubStat
 import com.unciv.utils.pseudoRandomUuid
+import com.unciv.utils.withItem
 import com.unciv.utils.withoutItem
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.LocalState
@@ -376,6 +377,29 @@ class City : IsPartOfGameInfoSerialization, INamed {
     //endregion
 
     //region state-changing functions
+    fun lockTile(tile: Tile): Boolean {
+        require(isWorked(tile)) { "Cannot lock tile ${tile.position} — not worked by $name" }
+        return lockedTiles.add(tile.position)
+    }
+    fun unlockTile(tile: Tile): Boolean = lockedTiles.remove(tile.position)
+
+    fun workTile(tile: Tile): Boolean {
+        require(getWorkableTiles().contains(tile)) { "Tile ${tile.position} is not workable by $name" }
+        if (isWorked(tile)) return false
+        workedTiles = workedTiles.withItem(tile.position)
+        return true
+    }
+    fun stopWorkingTile(tile: Tile): Boolean {
+        if (!isWorked(tile)) return false
+        unlockTile(tile)
+        workedTiles = workedTiles.withoutItem(tile.position)
+        return true
+    }
+    fun clearWorkedTiles() {
+        workedTiles = hashSetOf()
+        lockedTiles.clear()
+    }
+
     fun setTransients(civInfo: Civilization) {
         this.civ = civInfo
         this.id = if (id != NO_ID) id else pseudoRandomId(civ)
