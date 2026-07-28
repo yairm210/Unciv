@@ -644,9 +644,9 @@ class CityConstructions : IsPartOfGameInfoSerialization {
          * It is unclear whether RA modifiers should apply. For now, they do not.
          */
         fun applyKoreanUnique() {
-            if (! building.isStatRelated(Stat.Science, city)) return
-            if (! civ.hasUnique(UniqueType.TechBoostWhenScientificBuildingsBuiltInCapital)) return
-            if (! city.isCapital()) return
+            if (!building.isStatRelated(Stat.Science, city)) return
+            if (!civ.hasUnique(UniqueType.TechBoostWhenScientificBuildingsBuiltInCapital)) return
+            if (!city.isCapital()) return
             val availableTechCosts = city.getRuleset().technologies.values
                 .filter { civ.tech.canBeResearched(it.name) }
                 .map { civ.tech.costOfTech(it.name) }
