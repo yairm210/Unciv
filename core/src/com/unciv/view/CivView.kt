@@ -29,4 +29,8 @@ class CivView(internal val civ: Civilization, internal val viewer: Civilization)
     @Readonly fun getImprovementBuildingProblems(improvement: TileImprovement, tile: Tile): Sequence<ImprovementBuildingProblem> =
         tile.improvementFunctions.getImprovementBuildingProblems(improvement, civ.state)
     @Readonly fun technologyByName(name: String?): Technology? = civ.gameInfo.ruleset.technologies[name]
+
+    @Readonly fun isReligionEnabled(): Boolean = civ.gameInfo.isReligionEnabled()
+    @Readonly fun getGreatPersonPoints(name: String): Int = civ.greatPeople.greatPersonPointsCounter[name]
+    @Readonly fun getPointsRequiredForGreatPerson(name: String): Int = civ.greatPeople.getPointsRequiredForGreatPerson(name)
 }
