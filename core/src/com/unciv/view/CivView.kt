@@ -32,5 +32,5 @@ class CivView(internal val civ: Civilization, internal val viewer: Civilization)
 
     @Readonly fun isReligionEnabled(): Boolean = civ.gameInfo.isReligionEnabled()
     @Readonly fun getGreatPersonPoints(name: String): Int = civ.greatPeople.greatPersonPointsCounter[name]
-    @Readonly fun getPointsRequiredForGreatPerson(name: String): Int = civ.greatPeople.getPointsRequiredForGreatPerson(name)
+    fun getPointsRequiredForGreatPerson(name: String): Int = civ.greatPeople.getPointsRequiredForGreatPerson(name)
 }

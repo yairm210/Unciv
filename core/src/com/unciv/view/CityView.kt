@@ -10,9 +10,15 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.IConstruction
+import com.unciv.models.ruleset.INonPerpetualConstruction
+import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.unique.GameContext
+import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import yairm210.purity.annotations.Readonly
 
@@ -64,8 +70,21 @@ class CityView(internal val city: City, internal val viewer: Civilization) {
     @Readonly fun getCultureStored(): Int = city.expansion.cultureStored
 
     // Constructions
+    val constructions: CityConstructionsView get() = CityConstructionsView(city.cityConstructions)
     @Readonly fun currentConstructionName(): String = city.cityConstructions.currentConstructionName()
     @Readonly fun getBuiltBuildings(): Sequence<Building> = city.cityConstructions.getBuiltBuildings()
+    @Readonly fun isPuppet(): Boolean = city.isPuppet
+    @Readonly fun hasMatchingUnique(uniqueType: UniqueType): Boolean = city.getMatchingUniques(uniqueType).any()
+    @Readonly fun getDisabledConstructions(): Set<String> = city.disabledConstructions
+    @Readonly fun isStatRelated(stat: Stat, building: Building): Boolean = building.isStatRelated(stat, city)
+    @Readonly fun getProductionTooltip(construction: PerpetualConstruction): String = construction.getProductionTooltip(city)
+    @Readonly fun getResourceRequirementsPerTurn(construction: IConstruction): Counter<String> =
+        if (construction is BaseUnit) construction.getResourceRequirementsPerTurn(city.civ.state)
+        else construction.getResourceRequirementsPerTurn(city.state)
+    @Readonly fun getStockpiledResourceRequirements(construction: IConstruction): Counter<String> =
+        construction.getStockpiledResourceRequirements(city.state)
+    @Readonly fun getConstructionProductionCost(construction: INonPerpetualConstruction): Int =
+        construction.getProductionCost(city.civ, city)
 
     // Resources/misc
     @Readonly fun getResourceStockpiles(): Counter<String> = city.resourceStockpiles
@@ -100,6 +119,26 @@ class CityView(internal val city: City, internal val viewer: Civilization) {
         if (!canChangeState()) return false
         return city.stopWorkingTile(tileView.tile)
     }
+    fun tryAddToQueue(name: String): Boolean {
+        if (!canChangeState()) return false
+        city.cityConstructions.addToQueue(name)
+        return true
+    }
+    fun tryRemoveFromQueue(index: Int, automatic: Boolean): Boolean {
+        if (!canChangeState()) return false
+        city.cityConstructions.removeFromQueue(index, automatic)
+        return true
+    }
+    fun tryRaisePriority(index: Int): Int? {
+        if (!canChangeState()) return null
+        return city.cityConstructions.raisePriority(index)
+    }
+    fun tryLowerPriority(index: Int): Int? {
+        if (!canChangeState()) return null
+        return city.cityConstructions.lowerPriority(index)
+    }
+    fun updateTileStats() = city.cityStats.updateTileStats()
+
     fun tryReassignPopulation(): Boolean {
         if (!canChangeState()) return false
         city.reassignPopulation()
