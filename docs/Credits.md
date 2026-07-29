@@ -22,7 +22,7 @@ Flag Icons made by [Freepik](https://www.flaticon.com/authors/freepik) from [www
 -   [Galician flag] made from [wikipedia asset for the civil flag of Galicia](https://en.wikipedia.org/wiki/File:Flag_of_Galicia_(civil).svg): (public domain)
 -   [Hindi flag] made from [wikipedia asset for India's flag](https://en.wikipedia.org/w/index.php?curid=23473510): (public domain)
 
-Unciv logo (e.g. `extraImages/Icons/Unciv icon v6.png`, `android/assets/ExtraImages/Icons/Unciv128.png` and likely other files) by yairm210 and u-ndefine, licensed under CC BY 4.0. This logo includes the following icons:
+Unciv logo (e.g. `extraImages/Icons/Unciv icon v6.png`, `android/assets/ExtraImages/Icons/Unciv128.png` and other files) by yairm210 and u-ndefine, licensed under CC BY 4.0. This logo includes the following icons:
 - [Gear](https://thenounproject.com/term/gear/29368) by Alex Bickov (CC BY 3.0)
 - [Apple](https://thenounproject.com/term/apple/1139396) by Pedro Gonçalves (CC BY 3.0)
 - [gold](https://thenounproject.com/term/gold/25438) by Eliricon (CC BY 3.0)
