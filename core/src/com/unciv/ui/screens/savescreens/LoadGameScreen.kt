@@ -136,20 +136,31 @@ class LoadGameScreen : LoadOrSaveScreen() {
 
     private fun Table.addLoadFromCustomLocationButton() {
         val loadFromCustomLocationButton = loadFromCustomLocation.toTextButton()
-        loadFromCustomLocationButton.onClick {
+        loadFromCustomLocationButton.onActivation {
             errorLabel.isVisible = false
             loadFromCustomLocationButton.setText(Constants.loading.tr())
             loadFromCustomLocationButton.disable()
+            fun revertButton() {
+                loadFromCustomLocationButton.setText(loadFromCustomLocation.tr())
+                loadFromCustomLocationButton.enable()
+            }
             Concurrency.run(loadFromCustomLocation) {
                 game.files.loadGameFromCustomLocation(
-                    {
-                        Concurrency.run { game.loadGame(it, callFromLoadScreen = true) }
+                    onLoaded = { loadedGame ->
+                        Concurrency.run {
+                            try {
+                                game.loadGame(loadedGame, callFromLoadScreen = true)
+                            } catch (ex: Exception) {
+                                launchOnGLThread { handleLoadGameException(ex, "Could not load game from custom location!") }
+                            } finally {
+                                launchOnGLThread { revertButton() }
+                            }
+                        }
                     },
-                    {
-                        if (it !is PlatformSaverLoader.Cancelled)
-                            handleLoadGameException(it, "Could not load game from custom location!")
-                        loadFromCustomLocationButton.setText(loadFromCustomLocation.tr())
-                        loadFromCustomLocationButton.enable()
+                    onError = { ex ->
+                        if (ex !is PlatformSaverLoader.Cancelled)
+                            handleLoadGameException(ex, "Could not load game from custom location!")
+                        revertButton()
                     }
                 )
             }

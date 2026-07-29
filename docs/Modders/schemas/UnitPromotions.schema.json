@@ -21,7 +21,7 @@
       },
       "prerequisites": {
         "title": "Prerequisites",
-        "description": "Prerequisite promotions that are required prior to being able to get the active one.",
+        "description": "Alternative prerequisite promotions. At least one listed promotion is required prior to being able to get the active one.",
         "type": "array",
         "items": {
           "type": "string",

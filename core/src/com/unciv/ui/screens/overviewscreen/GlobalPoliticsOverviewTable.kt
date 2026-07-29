@@ -168,7 +168,7 @@ class GlobalPoliticsOverviewTable(
         for (wonder in allWorldWonders) {
             if (wonder.civ == civ) {
                 val wonderName = wonder.name.toLabel()
-                if (wonder.location != null) {
+                if (wonder.location != null && wonder.location.isVisible(viewingPlayer)) {
                     wonderName.onClick {
                         val worldScreen = UncivGame.Current.resetToWorldScreen()
                         worldScreen.mapHolder.setCenterPosition(wonder.location.position)

@@ -26,7 +26,6 @@ import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
-import kotlin.math.abs
 import kotlin.random.Random
 
 @RunWith(GdxTestRunner::class)
@@ -114,6 +113,7 @@ class BasicTests {
         ) { baseRuleset: BaseRuleset ->
             val ruleset = RulesetCache[baseRuleset.fullName]!!
             val modCheck = ruleset.getErrorList()
+            println(modCheck.getErrorText(unfiltered = true))
             modCheck.isNotOK()
         }
     }
@@ -123,13 +123,11 @@ class BasicTests {
         var noUnknownParameters = true
         for (uniqueType in UniqueType.entries) {
             if (uniqueType.getDeprecationAnnotation() != null) continue
-            for (entry in uniqueType.parameterTypeMap.withIndex()) {
-                for (paramType in entry.value) {
-                    if (paramType == UniqueParameterType.Unknown) {
-                        val badParam = uniqueType.text.getPlaceholderParameters()[entry.index]
-                        println("${uniqueType.name} param[${entry.index}] type \"$badParam\" is unknown")
-                        noUnknownParameters = false
-                    }
+            val actualParameters = uniqueType.text.getPlaceholderParameters()
+            for ((index, parameterName) in actualParameters.withIndex()) {
+                if (uniqueType.parameterTypeMap[index].isEmpty()) {
+                    println("${uniqueType.name} param[${index}] type \"$parameterName\" is unknown")
+                    noUnknownParameters = false
                 }
             }
         }
@@ -340,7 +338,7 @@ class BasicTests {
             val stat = Stat.entries[random.nextInt(statCount)]
             stats.add(stat, stats.times(4)[stat])
             stats.timesInPlace(0.8f)
-            if (abs(stats.values.maxOrNull()!!) > 1000000f)
+            if (stats.max() > 1000000f)
                 stats.timesInPlace(0.1f)
         }
         return stats

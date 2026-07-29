@@ -11,7 +11,6 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.MapPathing
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.Spy
-import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.colorFromRGB
 
@@ -27,9 +26,8 @@ object WorldMapTileUpdater {
         }
 
         // General update of all tiles
-        val uniqueCache = LocalUniqueCache(true)
         for (tileGroup in tileGroups.values)
-            tileGroup.update(viewingCiv, uniqueCache)
+            tileGroup.update(viewingCiv)
 
         // Update tiles according to selected unit/city
         val unitTable = worldScreen.bottomUnitTable
@@ -77,11 +75,13 @@ object WorldMapTileUpdater {
                 // Fade out population icons
                 group.layerMisc.dimPopulation(true)
 
-                val shownImprovement = group.tile.getShownImprovement(unit.civ)
+                val shownImprovementName = group.tile.getShownImprovement(unit.civ)
+                val shownImprovement = unit.civ.gameInfo.ruleset.tileImprovements[shownImprovementName]
 
                 // Fade out improvement icons (but not barb camps or ruins)
-                if (shownImprovement != null && shownImprovement != Constants.barbarianEncampment
-                    && !unit.civ.gameInfo.ruleset.tileImprovements[shownImprovement]!!.isAncientRuinsEquivalent(unit.cache.state))
+                if (shownImprovement != null &&
+                    !shownImprovement.isBarbarianCampEquivalent(group.tile.stateThisTile) &&
+                    !shownImprovement.isAncientRuinsEquivalent(unit.cache.state))
                     group.layerImprovement.dimImprovement(true)
             }
         }

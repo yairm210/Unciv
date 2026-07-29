@@ -246,7 +246,8 @@ class PlayerPickerTable(
         add(errorLabel).pad(5f).row()
 
         fun onPlayerIdTextUpdated() {
-            if (IdChecker.checkAndReturnPlayerUuid(playerIdTextField.text)?.isUUID() ?: false) {
+            val friend = IdChecker.checkAndReturnPlayerUuid(playerIdTextField.text)
+            if (friend?.playerID?.isUUID() ?: false) {
                 player.playerId = playerIdTextField.text.trim()
                 errorLabel.apply {
                     setText("✔") // U+2714 heavy checkmark

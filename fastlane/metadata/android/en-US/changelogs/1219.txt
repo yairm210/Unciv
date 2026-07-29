@@ -1,0 +1,5 @@
+Rendering improvements for large maps
+
+Bugfix for military presence check - By unciv-loof
+
+"cannot build xx buildings" unique - By chenxing61

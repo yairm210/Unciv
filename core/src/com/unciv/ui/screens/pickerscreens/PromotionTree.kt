@@ -200,6 +200,6 @@ class PromotionTree(val unit: MapUnit) {
     // These exist to allow future optimization - this is safe, but more than actually needed
     fun getMaxRows() = nodes.size
     fun getMaxColumns() = nodes.values.maxOfOrNull {
-            it.promotion.row.coerceAtLeast(it.depth + 1)
+            it.promotion.row.coerceAtLeast(it.depth) + it.levels
         } ?: 0 // nodes can be empty (civilians with statuses)
 }

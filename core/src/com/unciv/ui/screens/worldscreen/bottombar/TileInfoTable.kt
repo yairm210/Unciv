@@ -1,11 +1,12 @@
 package com.unciv.ui.screens.worldscreen.bottombar
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.tile.TileDescription
+import com.unciv.ui.objectdescriptions.TileDescription
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.addBorderAllowOpacity
 import com.unciv.ui.components.extensions.darken
@@ -17,6 +18,7 @@ import com.unciv.ui.screens.civilopediascreen.FormattedLine.IconDisplay
 import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.utils.DebugUtils
+import com.unciv.view.CivView
 
 class TileInfoTable(private val worldScreen: WorldScreen) : Table(BaseScreen.skin) {
     var selectedCiv = worldScreen.selectedCiv
@@ -34,7 +36,7 @@ class TileInfoTable(private val worldScreen: WorldScreen) : Table(BaseScreen.ski
 
         if (tile != null && (DebugUtils.VISIBLE_MAP || selectedCiv.hasExplored(tile)) ) {
             add(getStatsTable(tile)).left().row()
-            add(MarkupRenderer.render(TileDescription.toMarkup(tile, selectedCiv), padding = 0f, iconDisplay = IconDisplay.None) {
+            add(MarkupRenderer.render(TileDescription.toMarkup(tile, CivView(selectedCiv, selectedCiv)), padding = 0f, iconDisplay = IconDisplay.None) {
                 worldScreen.openCivilopedia(it)
             } ).padTop(5f).row()
             if (DebugUtils.VISIBLE_MAP) add(tile.position.toPrettyString().toLabel()).colspan(2).pad(5f)
@@ -67,4 +69,6 @@ class TileInfoTable(private val worldScreen: WorldScreen) : Table(BaseScreen.ski
         }
         return table
     }
+
+    override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
 }

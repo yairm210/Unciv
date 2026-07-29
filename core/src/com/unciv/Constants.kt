@@ -11,7 +11,10 @@ object Constants {
     const val impassable = "Impassable"
     const val ocean = "Ocean"
 
-    /** The "Coast" _terrain_ */
+    /** The "Coast" _terrain_
+     *  @see com.unciv.models.ruleset.tile.Terrain.isCoast
+     */
+    @Deprecated("By PR #15123, except for tests. Remove use in Terrain and this deprecation after a grace period.")
     const val coast = "Coast"
     /** The "Coastal" terrain _filter_ */
     const val coastal = "Coastal"
@@ -90,6 +93,8 @@ object Constants {
 
     const val barbarians = "Barbarians"
     const val spectator = "Spectator"
+    const val humanPlayer = "Human player"
+    const val aiPlayer = "AI player"
 
     const val embarked = "Embarked"
     const val wounded = "Wounded"
@@ -124,7 +129,7 @@ object Constants {
 
     const val defaultFontSize = 18
     const val headingFontSize = 24
-    const val smallerHeadingFontSize = 21
+    const val smallerHeadingFontSize = 20
 
     /** URL to the root of the Unciv repository, including trailing slash */
     // Note: Should the project move, this covers external links, but not comments e.g. mentioning issues

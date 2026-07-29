@@ -47,11 +47,9 @@ abstract class IndependentMiniMap(
     protected open fun includeTileFilter(tile: Tile): Boolean = true
 
     private fun createReplayMap(tileSize: Float): List<MinimapTile> {
-        @Suppress("EmptyFunctionBlock")
-        val doNothing = fun() {}
         val tiles = ArrayList<MinimapTile>(tileMap.values.size)
         for (tile in tileMap.values.filter(::includeTileFilter) ) {
-            val minimapTile = MinimapTile(tile, tileSize, doNothing)
+            val minimapTile = MinimapTile(tile, tileSize)
             minimapTile.updateColor(false, null)
             tiles.add(minimapTile)
         }

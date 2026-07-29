@@ -4,7 +4,10 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.translations.equalsPlaceholderText
+import com.unciv.models.translations.getPlaceholderParameters
 import yairm210.purity.annotations.Readonly
 import kotlin.math.min
 
@@ -35,7 +38,8 @@ object MinorCivPlacer {
                 uninhabitedHinterland,
                 civs,
                 unassignedCivs,
-                civAssignedToUninhabited
+                civAssignedToUninhabited,
+                ruleset
             )
         }
 
@@ -63,7 +67,8 @@ object MinorCivPlacer {
         uninhabitedHinterland: ArrayList<Tile>,
         civs: List<Civilization>,
         unassignedCivs: MutableList<Civilization>,
-        civAssignedToUninhabited: ArrayList<Civilization>
+        civAssignedToUninhabited: ArrayList<Civilization>,
+        ruleset: Ruleset
     ) {
         val uninhabitedContinents = tileMap.continentSizes.filter {
             it.value >= 4 && // Don't bother with tiny islands
@@ -89,7 +94,10 @@ object MinorCivPlacer {
             (3 * civs.size * numUninhabitedTiles) / (numInhabitedTiles + numUninhabitedTiles)
         val maxByRatio = (civs.size + 1) / 2
         val targetForUninhabited = min(maxByRatio, maxByUninhabited)
-        val civsToAssign = unassignedCivs.take(targetForUninhabited)
+        // Prefer Coast-bias CS for wilderness slots (often coastal).
+        val ordered = unassignedCivs.filter { prefersCoastalStart(it, ruleset) } +
+            unassignedCivs.filterNot { prefersCoastalStart(it, ruleset) }
+        val civsToAssign = ordered.take(targetForUninhabited)
         unassignedCivs.removeAll(civsToAssign)
         civAssignedToUninhabited.addAll(civsToAssign)
     }
@@ -168,7 +176,8 @@ object MinorCivPlacer {
         )
         // Fallback to a random region for civs that couldn't be placed in the wilderness
         for (unplacedCiv in civAssignedToUninhabited) {
-            regions.random().assignedMinorCivs.add(unplacedCiv)
+            val rng = unplacedCiv.state.stateBasedRandom("MinorCivPlacer.placeAssignedMinorCivs")
+            regions.random(rng).assignedMinorCivs.add(unplacedCiv)
         }
 
         // Now place the ones assigned to specific regions.
@@ -205,27 +214,72 @@ object MinorCivPlacer {
         return unassignedCivs
     }
 
-    /** Attempts to randomly place civs from [civsToPlace] in tiles from [tileList]. Assumes that
+    /**
+     *  Attempts to place civs from [civsToPlace] in tiles from [tileList]. Assumes that
      *  [tileList] is pre-vetted and only contains habitable land tiles.
-     *  Will modify both [civsToPlace] and [tileList] as it goes! */
+     *  Respects start biases (nation field + StartBias uniques on nation / [CityStateType]),
+     *  including `Avoid [terrainFilter]`, same idea as [com.unciv.logic.GameStarter] major placement.
+     *  Will modify both [civsToPlace] and [tileList] as it goes!
+     */
     private fun tryPlaceMinorCivsInTiles(civsToPlace: MutableList<Civilization>, tileMap: TileMap, tileList: MutableList<Tile>, tileData: TileDataMap, ruleset: Ruleset) {
+        // More constrained biases (and coastal) first so they do not lose scarce matching tiles.
+        val ordered = civsToPlace.sortedWith(
+            compareByDescending<Civilization> {
+                it.nation.getStartBias(ruleset, it.getGameContextForStartBias()).size
+            }.thenByDescending { prefersCoastalStart(it, ruleset) }
+        ).toMutableList()
+        civsToPlace.clear()
+        civsToPlace.addAll(ordered)
+
         while (tileList.isNotEmpty() && civsToPlace.isNotEmpty()) {
-            val chosenTile = tileList.random()
+            val civToAdd = civsToPlace.first()
+            val preferred = filterTilesByStartBias(
+                tileList,
+                civToAdd.nation.getStartBias(ruleset, civToAdd.getGameContextForStartBias())
+            )
+            val pool = preferred.ifEmpty { tileList }
+
+            val rng = GameContext(gameInfo = tileMap.gameInfo).stateBasedRandom("MinorCivPlcer.tryPlaceMinorCivsInTiles")
+            val chosenTile = pool.random(rng)
             tileList.remove(chosenTile)
-            val data = tileData[chosenTile.position]!!
+            val data = tileData[chosenTile]!!
             // If the randomly chosen tile is too close to a player or a city state, discard it
             if (data.impacts.containsKey(MapRegions.ImpactType.MinorCiv))
                 continue
             // Otherwise, go ahead and place the minor civ
-            val civToAdd = civsToPlace.first()
             civsToPlace.remove(civToAdd)
             placeMinorCiv(civToAdd, tileMap, chosenTile, tileData, ruleset)
         }
     }
 
+    /** Prefer tiles matching positive start biases; drop tiles matching `Avoid [filter]`. */
+    @Readonly
+    fun filterTilesByStartBias(tiles: List<Tile>, startBiases: Collection<String>): List<Tile> {
+        var preferred = tiles
+        for (startBias in startBiases) {
+            preferred = when {
+                startBias.equalsPlaceholderText("Avoid []") -> {
+                    val tileToAvoid = startBias.getPlaceholderParameters()[0]
+                    preferred.filter { tile ->
+                        tile.getTilesInDistance(1).none { it.matchesTerrainFilter(tileToAvoid, null) }
+                    }
+                }
+                else -> preferred.filter { tile ->
+                    tile.getTilesInDistance(1).any { it.matchesTerrainFilter(startBias, null) }
+                }
+            }
+        }
+        return preferred
+    }
+
+    /** True when nation or city-state type start bias includes Coast. */
+    @Readonly
+    fun prefersCoastalStart(civ: Civilization, ruleset: Ruleset): Boolean =
+        "Coast" in civ.nation.getStartBias(ruleset, civ.getGameContextForStartBias())
+
     @Readonly
     private fun canPlaceMinorCiv(tile: Tile, tileData: TileDataMap) = !tile.isWater && !tile.isImpassible() &&
-        !tileData[tile.position]!!.isJunk &&
+        !tileData[tile]!!.isJunk &&
         tile.getBaseTerrain().getMatchingUniques(UniqueType.HasQuality).none { it.params[0] == "Undesirable" } && // So we don't get snow hills
         tile.neighbors.count() == 6 // Avoid map edges
 

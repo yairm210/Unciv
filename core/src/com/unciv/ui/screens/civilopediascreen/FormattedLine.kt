@@ -16,6 +16,7 @@ import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.validation.RulesetValidator
 import com.unciv.ui.components.extensions.getReadonlyPixmap
 import com.unciv.ui.components.extensions.toLabel
@@ -192,6 +193,9 @@ class FormattedLine (
         // Helper for constructor(Unique)
         private fun getUniqueLink(unique: Unique): String {
             val ruleSet = getCurrentRuleset()
+            val explicitLinks = unique.getModifiers(UniqueType.CivilopediaLink)
+            if (explicitLinks.isNotEmpty())
+                return explicitLinks.first().params[0]
             if (allObjectNamesCategoryMap == null || rulesetCachedInNameMap !== ruleSet)
                 allObjectNamesCategoryMap = initNamesCategoryMap(ruleSet)
             for (parameter in unique.params + unique.modifiers.flatMap { it.params }) {

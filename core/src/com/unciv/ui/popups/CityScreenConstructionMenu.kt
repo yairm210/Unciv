@@ -3,7 +3,6 @@ package com.unciv.ui.popups
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.GUI
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
 import com.unciv.models.ruleset.Building
@@ -29,7 +28,7 @@ class CityScreenConstructionMenu(
     private val city: City,
     private val construction: IConstruction,
     private val onButtonClicked: () -> Unit
-) : AnimatedMenuPopup(stage, getActorTopRight(positionNextTo)) {
+) : AnimatedMenuPopup(stage, positionNextTo) {
 
     // These are only readability shorteners
     private val cityConstructions = city.cityConstructions
@@ -50,9 +49,6 @@ class CityScreenConstructionMenu(
         candidateCities().map { it.cityConstructions }.any(predicate)
     @Readonly private fun forAllCities(action: (CityConstructions) -> Unit) =
         candidateCities().map { it.cityConstructions }.forEach(action)
-
-    private val settings = GUI.getSettings()
-    private val disabledAutoAssignConstructions = settings.disabledAutoAssignConstructions
 
     init {
         closeListeners.add {
@@ -75,9 +71,13 @@ class CityScreenConstructionMenu(
         if (canRemoveAllQueues())
             table.add(getButton("Remove from the queue in all cities", KeyboardBinding.RemoveConstructionAll, ::removeAllQueues)).row()
         if (canDisable())
-            table.add(getButton("Disable", KeyboardBinding.BuildDisabled, ::disableEntry)).row()
+            table.add(getButton("Disable in this city", KeyboardBinding.BuildDisabled, ::disableEntry)).row()
+        if (canDisableAll())
+            table.add(getButton("Disable in all cities", KeyboardBinding.None, ::disableEntryInAllCities)).row()
         if (canEnable())
-            table.add(getButton("Enable", KeyboardBinding.BuildDisabled, ::enableEntry)).row()
+            table.add(getButton("Enable in this city", KeyboardBinding.BuildDisabled, ::enableEntry)).row()
+        if (canEnableAll())
+            table.add(getButton("Enable in all cities", KeyboardBinding.None, ::enableEntryInAllCities)).row()
         return table.takeUnless { it.cells.isEmpty }
     }
 
@@ -104,13 +104,13 @@ class CityScreenConstructionMenu(
     private fun canAddQueueTop() = construction !is PerpetualConstruction &&
         cityConstructions.canAddToQueue(construction)
             && !isConstructionImprovementCreationBuilding()
-    
+
     private fun addQueueTop() = cityConstructions.addToQueue(construction, addToTop = true)
 
     @Readonly
     private fun canAddAllQueues() = allCitiesEntryValid {
         it.canAddToQueue(construction)
-                && !isConstructionImprovementCreationBuilding() 
+                && !isConstructionImprovementCreationBuilding()
         // A Perpetual that is already queued can still be added says canAddToQueue, but here we don't want to count that
                 && !(construction is PerpetualConstruction && it.isBeingConstructedOrEnqueued(constructionName))
     }
@@ -121,7 +121,7 @@ class CityScreenConstructionMenu(
         allCitiesEntryValid {
             (it.canAddToQueue(construction) && !isConstructionImprovementCreationBuilding())
                     || it.isEnqueuedForLater(constructionName) }
-    
+
     private fun addAllQueuesTop() = forAllCities {
         val index = it.constructionQueue.indexOf(constructionName)
         if (index > 0)
@@ -133,16 +133,41 @@ class CityScreenConstructionMenu(
     @Readonly private fun canRemoveAllQueues() = allCitiesEntryValid { it.isBeingConstructedOrEnqueued(constructionName) }
     private fun removeAllQueues() = forAllCities { it.removeAllByName(constructionName) }
 
-    @Readonly private fun canDisable() = constructionName !in disabledAutoAssignConstructions &&
-        construction != PerpetualConstruction.idle
+    @Readonly private fun canDisable() = constructionName !in city.disabledConstructions 
+        && construction != PerpetualConstruction.Idle
+    
+    @Readonly private fun canDisableAll() =
+        constructionName !in city.civ.disabledCityConstructions
+        && construction != PerpetualConstruction.Idle
+
+    /**
+     * One-time effect: disables the construction in this city only.
+     */
     private fun disableEntry() {
-        disabledAutoAssignConstructions.add(constructionName)
-        settings.save()
+        city.disabledConstructions.add(constructionName)
     }
 
-    @Readonly private fun canEnable() = constructionName in disabledAutoAssignConstructions
+    /**
+     * One-time effect: disables this construction in all cities.
+     * Persistent effect: disabled in newly founded cities.
+     */
+    private fun disableEntryInAllCities() {
+        city.civ.cities.forEach { it.disabledConstructions.add(constructionName) }
+        city.civ.disabledCityConstructions.add(constructionName)
+    }
+
+    @Readonly private fun canEnable() = constructionName in city.disabledConstructions
+    
+    @Readonly private fun canEnableAll() = constructionName in city.civ.disabledCityConstructions
+
+    /** Similar to [disableEntry] */
     private fun enableEntry() {
-        disabledAutoAssignConstructions.remove(constructionName)
-        settings.save()
+        city.disabledConstructions.remove(constructionName)
+    }
+
+    /** Similar to [disableEntryInAllCities] */
+    private fun enableEntryInAllCities() {
+        city.civ.cities.forEach { it.disabledConstructions.remove(constructionName) }
+        city.civ.disabledCityConstructions.remove(constructionName)
     }
 }

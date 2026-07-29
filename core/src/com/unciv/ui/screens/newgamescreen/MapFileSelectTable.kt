@@ -18,6 +18,7 @@ import com.unciv.logic.map.TileMap
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.nation.Nation
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.SmallButtonStyle
@@ -261,6 +262,7 @@ class MapFileSelectTable(
         newGameScreen.gameSetupInfo.gameParameters.baseRuleset = mapMods.first.firstOrNull()
             ?: selection.mapPreview.mapParameters.baseRuleset
         val success = newGameScreen.tryUpdateRuleset(updateUI = true)
+        val rng = GameContext().stateBasedRandom("MapFileSelectTable.onFileSelectBoxChange", System.currentTimeMillis().toInt())
 
         if (success) {
             mapNations = selection.mapPreview.getDeclaredNations()
@@ -269,7 +271,7 @@ class MapFileSelectTable(
                 .toList()
             mapHumanPick = selection.mapPreview.getNationsForHumanPlayer()
                 .filter { newGameScreen.ruleset.nations[it]?.isMajorCiv == true }
-                .toList().randomOrNull()
+                .toList().randomOrNull(rng)
         } else {
             mapNations = emptyList()
             mapHumanPick = null

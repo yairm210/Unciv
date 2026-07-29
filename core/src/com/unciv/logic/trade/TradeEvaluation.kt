@@ -356,10 +356,12 @@ class TradeEvaluation {
         when (offer.type) {
             TradeOfferType.Embassy -> {
                 val tradePartnerDiplo = civInfo.getDiplomacyManager(tradePartner)!!
-                if (tradePartnerDiplo.isRelationshipLevelLE(RelationshipLevel.Enemy)) return Int.MIN_VALUE
-                else if (tradePartnerDiplo.isRelationshipLevelLE(RelationshipLevel.Competitor))
-                    return (60 * civInfo.gameInfo.speed.goldCostModifier).toInt()
-                return (30 * civInfo.gameInfo.speed.goldCostModifier).toInt() // 30 is Civ V default (on standard only?)
+                val baseSellCost = when {
+                    tradePartnerDiplo.isRelationshipLevelLE(RelationshipLevel.Enemy) -> 300 // arbitrarily chosen
+                    tradePartnerDiplo.isRelationshipLevelLE(RelationshipLevel.Competitor) -> 60
+                    else -> 30 // 30 is Civ V default (on standard only?)
+                }
+                return (baseSellCost * civInfo.gameInfo.speed.goldCostModifier).toInt()
             }
             TradeOfferType.Gold -> return offer.amount
             TradeOfferType.Gold_Per_Turn -> return offer.amount * offer.duration * 4/5

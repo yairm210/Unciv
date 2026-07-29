@@ -9,6 +9,7 @@ import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.images.ImageGetter
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.utils.hashOf
 
 
 /** Unit Actions - class - carries dynamic data and actual execution.
@@ -52,6 +53,7 @@ open class UnitAction(
                     UniqueType.OneTimeRevealEntireMap, UniqueType.OneTimeRevealSpecificMapTiles, UniqueType.OneTimeRevealCrudeMap -> ImageGetter.getUnitActionPortrait("Explore", size)
                     UniqueType.OneTimeConsumeResources, UniqueType.OneTimeProvideResources, UniqueType.OneTimeGainResource -> ImageGetter.getResourcePortrait(associatedUnique.params[1], size)
                     UniqueType.OneTimeChangeTerrain -> ImageGetter.getUnitActionPortrait("Transform", size)
+                    UniqueType.OneTimeAddResource -> ImageGetter.getResourcePortrait(associatedUnique.params[0], size)
                     UniqueType.OneTimeRemoveResourcesFromTile, UniqueType.OneTimeRemoveImprovementsFromTile -> ImageGetter.getUnitActionPortrait("Pillage", size)
                     UniqueType.OneTimeGainPopulation, UniqueType.OneTimeGainPopulationRandomCity -> ImageGetter.getStatIcon("Population", size)
                     UniqueType.OneTimeGainStat -> ImageGetter.getStatIcon(associatedUnique.params[1], size)
@@ -89,12 +91,7 @@ open class UnitAction(
         return true
     }
 
-    override fun hashCode(): Int {
-        var result = type.hashCode()
-        result = 31 * result + isCurrentAction.hashCode()
-        result = 31 * result + (action?.hashCode() ?: 0)
-        return result
-    }
+    override fun hashCode(): Int = hashOf(type.hashCode(), isCurrentAction.hashCode(), action.hashCode())
 
     override fun toString(): String {
         return "UnitAction(type=$type, title='$title', isCurrentAction=$isCurrentAction)"

@@ -6,6 +6,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.worldscreen.bottombar.BattleTable
@@ -201,6 +202,7 @@ object Nuke {
         // https://www.carlsguides.com/strategy/civilization5/units/aircraft-nukes.ph
         // Testing done by Ravignir
         // original source code: GenerateNuclearExplosionDamage(), ApplyNuclearExplosionDamage()
+        val tileContext = attacker.unit.cache.state.copy(tile = tile)
 
         var damageModifierFromMissingResource = 1f
         val civResources = attacker.getCivInfo().getCivResourcesByName()
@@ -215,22 +217,25 @@ object Nuke {
         // Damage city and reduce its population
         val city = tile.getCity()
         if (city != null && tile.position.toHexCoord() == city.location.toHexCoord()) {
+            val attackContext = GameContext(attacker.getCivInfo(), ourCombatant = attacker, theirCombatant = CityCombatant(city), tile = tile)
             buildingModifier = city.getAggregateModifier(UniqueType.GarrisonDamageFromNukes)
-            doNukeExplosionDamageToCity(city, nukeStrength, damageModifierFromMissingResource)
+            doNukeExplosionDamageToCity(city, nukeStrength, damageModifierFromMissingResource, attackContext)
             Battle.postBattleNotifications(attacker, CityCombatant(city), city.getCenterTile())
             Battle.destroyIfDefeated(city.civ, attacker.getCivInfo(), city.location.toHexCoord())
         }
 
         // Damage and/or destroy units on the tile
         for (unit in tile.getUnits().toList()) { // toList so if it's destroyed there's no concurrent modification
+            val defender = MapUnitCombatant(unit)
+            val attackContext = GameContext(attacker.getCivInfo(), ourCombatant = attacker, theirCombatant = defender, tile = tile)
+            val rng = attackContext.stateBasedRandom("Nuke.doNukeExplosionForTile")
             val damage = (when {
                 isGroundZero || nukeStrength >= 2 -> 100
                 // The following constants are NUKE_UNIT_DAMAGE_BASE / NUKE_UNIT_DAMAGE_RAND_1 / NUKE_UNIT_DAMAGE_RAND_2 in Civ5
-                nukeStrength == 1 -> 30 + Random.Default.nextInt(40) + Random.Default.nextInt(40)
+                nukeStrength == 1 -> 30 + rng.nextInt(40) + rng.nextInt(40)
                 // Level 0 does not exist in Civ5 (it treats units same as level 2)
-                else -> 20 + Random.Default.nextInt(30)
+                else -> 20 + rng.nextInt(30)
             } * buildingModifier * damageModifierFromMissingResource + 1f.ulp).toInt()
-            val defender = MapUnitCombatant(unit)
             if (unit.isCivilian()) {
                 if (unit.health - damage <= 40) unit.destroy()  // Civ5: NUKE_NON_COMBAT_DEATH_THRESHOLD = 60
             } else {
@@ -243,18 +248,19 @@ object Nuke {
         // Pillage improvements, pillage roads, add fallout
         if (tile.isCityCenter()) return  // Never touch city centers - if they survived
 
+        val tileRng = tileContext.stateBasedRandom("Nuke.doExplosionForTile")
         if (tile.terrainHasUnique(UniqueType.DestroyableByNukesChance)) {
             // Note: Safe from concurrent modification exceptions only because removeTerrainFeature
             // *replaces* terrainFeatureObjects and the loop will continue on the old one
             for (terrainFeature in tile.terrainFeatureObjects) {
                 for (unique in terrainFeature.getMatchingUniques(UniqueType.DestroyableByNukesChance)) {
                     val chance = unique.params[0].toFloat() / 100f
-                    if (!(chance > 0f && isGroundZero) && Random.Default.nextFloat() >= chance) continue
+                    if (!(chance > 0f && isGroundZero) && tileRng.nextFloat() >= chance) continue
                     tile.removeTerrainFeature(terrainFeature.name)
                     applyPillageAndFallout(tile)
                 }
             }
-        } else if (isGroundZero || Random.Default.nextFloat() < 0.5f) {  // Civ5: NUKE_FALLOUT_PROB
+        } else if (isGroundZero || tileRng.nextFloat() < 0.5f) {  // Civ5: NUKE_FALLOUT_PROB
             applyPillageAndFallout(tile)
         }
     }
@@ -272,7 +278,7 @@ object Nuke {
     }
 
     /** @return the "protection" modifier from buildings (Bomb Shelter, UniqueType.PopulationLossFromNukes) */
-    private fun doNukeExplosionDamageToCity(targetedCity: City, nukeStrength: Int, damageModifierFromMissingResource: Float) {
+    private fun doNukeExplosionDamageToCity(targetedCity: City, nukeStrength: Int, damageModifierFromMissingResource: Float, context: GameContext) {
         // Original Capitals must be protected, `canBeDestroyed` is responsible for that check.
         // The `justCaptured = true` parameter is what allows other Capitals to suffer normally.
         if ((nukeStrength > 2 || nukeStrength > 1 && targetedCity.population.population < 5)
@@ -282,6 +288,7 @@ object Nuke {
         }
 
         val cityCombatant = CityCombatant(targetedCity)
+        val rng = context.stateBasedRandom("Nuke.doNukeExplosionDamageToCity")
         cityCombatant.takeDamage((cityCombatant.getHealth() * 0.5f * damageModifierFromMissingResource).toInt())
 
         // Difference to original: Civ5 rounds population loss down twice - before and after bomb shelters
@@ -290,8 +297,8 @@ object Nuke {
                 targetedCity.getAggregateModifier(UniqueType.PopulationLossFromNukes) *
                 when (nukeStrength) {
                     0 -> 0f
-                    1 -> (30 + Random.Default.nextInt(20) + Random.Default.nextInt(20)) / 100f
-                    2 -> (60 + Random.Default.nextInt(10) + Random.Default.nextInt(10)) / 100f
+                    1 -> (30 + rng.nextInt(20) + rng.nextInt(20)) / 100f
+                    2 -> (60 + rng.nextInt(10) + rng.nextInt(10)) / 100f
                     else -> 1f  // hypothetical nukeStrength 3 -> always to 1 pop
                 }
             ).toInt()

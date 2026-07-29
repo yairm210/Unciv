@@ -5,10 +5,14 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.UniqueType
+import kotlin.math.E
 import kotlin.math.abs
+import kotlin.math.atan2
+import kotlin.math.hypot
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
+import kotlin.math.sin
 import kotlin.math.sqrt
 
 class MapLandmassGenerator(
@@ -56,7 +60,9 @@ class MapLandmassGenerator(
             MapType.perlin -> createPerlin()
             MapType.fractal -> createFractal()
             MapType.lakes -> createLakes()
+            MapType.boreal -> createBoreal()
             MapType.smallContinents -> createSmallContinents()
+            MapType.spiral -> createSpiral()
         }
 
         if (tileMap.mapParameters.shape == MapShape.flatEarth) {
@@ -138,6 +144,82 @@ class MapLandmassGenerator(
 
                 spawnLandOrWater(tile, elevation)
             }
+        }
+    }
+
+    /**
+     * A large region that is all tundra and well forested.
+     * 
+     * Implemented based on screenshot from Civ V: https://i.imgur.com/L63zfv6.jpeg
+     * 
+     * Notes:
+     * - The bottom ~80% is fairly homogenous, with a mix of snow, tundra, plains (when river converts tundra), and a few lakes/small oceans.
+     * - There is a band of ocean with ice at the very top.
+     * - There is more vegetation and mountains than default.
+     */
+    private fun createBoreal() {
+        // There are two layers of noise
+        // The fine noise layer affects lake formation and has no impact on overall elevation
+        // The broad layer impacts the coastline and can cause small oceans to spawn inland
+        val lakesSeed = randomness.RNG.nextInt().toDouble()
+        val broadNoiseSeed = randomness.RNG.nextInt().toDouble() // wavy coast in the north
+        
+        // Lake frequency is not affected by map size, important for rivers
+        val lakesScale = 5.0
+        // The broad noise layer scales sublinearly with map size (relatively less noisy on smaller maps)
+        val broadNoiseScale = 3.0 * sqrt(tileMap.mapParameters.mapSize.radius.toDouble())
+        
+        for (tile in tileMap.values) {
+            // In range -1.0 to +1.0
+            val latitude =
+                if (tileMap.mapParameters.shape == MapShape.flatEarth)
+                    // North is at the edges instead of at the top
+                    2 * MapGenerator.getTileRadius(tile, tileMap) - 1 
+                else
+                    tile.latitude.toDouble() / tileMap.maxLatitude
+            // Elevation declines faster and faster towards the north
+            val southElevation = 0.15
+            val northElevation = -0.4
+            val b = 4
+            var elevation = southElevation + (northElevation - southElevation) * E.pow(b * latitude - b)
+            
+            // The threshold ensures small lakes and rivers spawn irrespective of water level (map parameter)
+            val lakeThreshold = 0.43
+            val shouldSpawnLake = getRidgedPerlinNoise(tile, lakesSeed, scale=lakesScale) > lakeThreshold
+            if (shouldSpawnLake)
+                elevation -= 0.5
+            
+            val broadLayerImpact = 0.55
+            elevation += broadLayerImpact * randomness.getPerlinNoise(tile, broadNoiseSeed, scale=broadNoiseScale)
+            spawnLandOrWater(tile, elevation)
+        }
+    }
+    
+    private fun createSpiral() {
+        val elevationSeed = randomness.RNG.nextInt().toDouble()
+        val radius = tileMap.mapParameters.mapSize.radius.toDouble()
+        val flipX = if (randomness.RNG.nextBoolean()) -1 else 1
+        val flipY = if (randomness.RNG.nextBoolean()) -1 else 1
+        val coordinateDivisor = tileMap.width // prevent stretching of spiral
+        
+        // config
+        val spinFactor = 4.5 * sqrt(radius) // how quickly the spiral spins
+        val noiseScale = 0.5 * sqrt(radius) // lower means more grainy noise
+        
+        for (tile in tileMap.values) {
+            val coordinate = HexMath.hex2WorldCoords(tile.position)
+            val x = coordinate.x / coordinateDivisor * flipX
+            val y = coordinate.y / coordinateDivisor * flipY
+            
+            // spiral function with output range -1 to +1
+            var elevation = sin(atan2(y, x) - spinFactor * hypot(x, y))
+            
+            // config
+            elevation *= 0.25 // adjust range
+            elevation += 0.15 // water level
+            elevation += 0.18 * randomness.getPerlinNoise(tile, elevationSeed, scale=noiseScale)
+            
+            spawnLandOrWater(tile, elevation)
         }
     }
 
@@ -388,13 +470,19 @@ class MapLandmassGenerator(
 
         var elevationOffset = 0.0
 
-        val xdistanceratio = abs(x) / maxX
-        val ydistanceratio = abs(y) / maxY
+        val xdistanceratio = abs(x).toDouble() / maxX
+        val ydistanceratio = abs(y).toDouble() / maxY
+
         if (tileMap.mapParameters.shape == MapShape.hexagonal || tileMap.mapParameters.shape == MapShape.flatEarth) {
             val startdropoffratio = 0.8 // distance from center at which we start decreasing elevation linearly
-            val xdrsquared = xdistanceratio * xdistanceratio
-            val ydrsquared = ydistanceratio * ydistanceratio
-            val distancefromcenter = sqrt((xdrsquared+ydrsquared).toFloat())
+
+            // On wrapping maps, we must NOT reduce elevation at the East/West edges, otherwise
+            // land will never span across the map seam. 
+            // We ignore the horizontal (X) ratio and only apply the ocean drop-off to the
+            // North/South (Y) poles.
+            val distancefromcenter = if (tileMap.mapParameters.worldWrap && tileMap.mapParameters.shape == MapShape.hexagonal) ydistanceratio
+            else sqrt(xdistanceratio * xdistanceratio + ydistanceratio * ydistanceratio)
+
             var distanceoffset = 0.0
             if (distancefromcenter > startdropoffratio) {
                 val dropoffdistance = distancefromcenter - startdropoffratio
@@ -407,7 +495,8 @@ class MapLandmassGenerator(
             var xoffset = 0.0
 
             val xstartdropoffratio = 0.8
-            if (xdistanceratio > xstartdropoffratio) {
+            // Only force oceans on the left/right edges of rectangular maps if the world is NOT wrapping.
+            if (!tileMap.mapParameters.worldWrap && xdistanceratio > xstartdropoffratio) {
                 val xdropoffdistance = xdistanceratio - xstartdropoffratio
                 val xnormalizationdivisor = 1.0 - xstartdropoffratio // for normalizing to [0;1] range
                 xoffset = xdropoffdistance / xnormalizationdivisor
@@ -437,8 +526,7 @@ class MapLandmassGenerator(
                                      persistence: Double = 0.5,
                                      lacunarity: Double = 2.0,
                                      scale: Double = 10.0): Double {
-        val worldCoords = HexMath.hex2WorldCoords(tile.position)
-        return Perlin.ridgedNoise3d(worldCoords.x.toDouble(), worldCoords.y.toDouble(), seed, nOctaves, persistence, lacunarity, scale)
+        return randomness.getNoise(tile, seed, nOctaves, persistence, lacunarity, scale, Perlin::ridgedNoise3d)
     }
     
     /** Returns lon at lat "percentile from center" - numbers between 0.0-0.1 */

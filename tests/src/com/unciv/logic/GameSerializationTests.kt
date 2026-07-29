@@ -89,11 +89,7 @@ class GameSerializationTests {
 
     @Test
     fun canSerializeGame() {
-        val json = try {
-            json().toJson(game)
-        } catch (_: Exception) {
-            ""
-        }
+        val json = json().toJson(game)
         Assert.assertTrue("This test will only pass when a game can be serialized", json.isNotEmpty())
     }
 
@@ -105,12 +101,7 @@ class GameSerializationTests {
             setDeprecated(classSynchronizedLazyImpl, "lock", true)  // this is the culprit as kotlin initializes it to `this@SynchronizedLazyImpl`
         }
 
-        val json = try {
-            jsonSerializer.toJson(game)
-        } catch (ex: Throwable) {
-            Log.error("Failed to serialize game", ex)
-            return
-        }
+        val json =  jsonSerializer.toJson(game)
 
         val pattern = """\{(\w+)\\${'$'}delegate:\{class:kotlin.SynchronizedLazyImpl,"""
         val matches = Regex(pattern).findAll(json)

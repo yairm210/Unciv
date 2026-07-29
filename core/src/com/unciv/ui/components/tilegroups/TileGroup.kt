@@ -2,10 +2,8 @@ package com.unciv.ui.components.tilegroups
 
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
-import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.ui.components.tilegroups.layers.*
 import com.unciv.utils.DebugUtils
 import kotlin.math.pow
@@ -23,7 +21,7 @@ open class TileGroup(
         3) Borders
         4) Misc: improvements, resources, yields, citizens, arrows, starting locations (editor)
         5) Unit Arts
-        6) Overlay: 
+        6) Overlay:
         7) Unit Flags
         8) City Button
     */
@@ -32,8 +30,9 @@ open class TileGroup(
      * Honestly, I got these numbers empirically by printing `.x` and `.y` after `.center()`, and I'm not totally
      * clear on the stack of transformations that makes them work. But they are still exact ratios, AFAICT. */
     val hexagonImageWidth = groupSize * 1.5f
-    val hexagonImageOrigin = Pair(hexagonImageWidth / 2f, sqrt((hexagonImageWidth / 2f).pow(2) - (hexagonImageWidth / 4f).pow(2)))
-    val hexagonImagePosition = Pair(-hexagonImageOrigin.first / 3f, -hexagonImageOrigin.second / 4f)
+    val hexagonImageOriginX = hexagonImageWidth / 2f
+    val hexagonImageOriginY = sqrt((hexagonImageWidth / 2f).pow(2) - (hexagonImageWidth / 4f).pow(2))
+    val hexagonImagePosition = Pair(-hexagonImageOriginX / 3f, -hexagonImageOriginY / 4f)
 
     var isForceVisible = DebugUtils.VISIBLE_MAP
     var isForMapEditorIcon = false
@@ -49,7 +48,7 @@ open class TileGroup(
     @Suppress("LeakingThis") val layerUnitArt = TileLayerUnitSprite(this, groupSize)
     @Suppress("LeakingThis") val layerUnitFlag = TileLayerUnitFlag(this, groupSize)
     @Suppress("LeakingThis") val layerCityButton = TileLayerCityButton(this, groupSize)
-    
+
     private val allLayers = listOf(
         layerTerrain,
         layerFeatures, // includes roads
@@ -67,9 +66,8 @@ open class TileGroup(
     init {
         this.setSize(groupSize, groupSize)
         this.isTransform = false // Cannot be a NonTransformGroup as this causes font-rendered terrain to be upside-down
-
-        for (layer in allLayers) this.addActor(layer)
-
+        // Layers are registered into TileMapLayer containers in TileGroupMap; they are not
+        // scene-graph children of this Group (only this Group itself lives in tileGroupLayer).
         layerTerrain.update(null)
     }
 
@@ -79,13 +77,13 @@ open class TileGroup(
             || viewingCiv.viewableTiles.contains(tile)
             || viewingCiv.isSpectator()
 
-    private fun reset(localUniqueCache: LocalUniqueCache) {
+    private fun reset() {
         layerTerrain.reset()
         layerBorders.reset()
         layerMisc.reset()
         layerResource.reset()
         layerImprovement.reset()
-        layerYield.reset(localUniqueCache)
+        layerYield.reset()
         layerOverlay.reset()
         layerUnitArt.reset()
         layerUnitFlag.reset()
@@ -95,42 +93,32 @@ open class TileGroup(
         for (layer in allLayers) layer.isVisible = isVisible
     }
 
-    open fun update(
-            viewingCiv: Civilization? = null,
-            localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)) {
+    open fun update(viewingCiv: Civilization? = null) {
         layerMisc.removeHexOutline()
         layerMisc.hideTerrainOverlay()
         layerOverlay.hideHighlight()
         layerOverlay.hideCrosshair()
         layerOverlay.hideGoodCityLocationIndicator()
-        
-        val wasPreviouslyVisible = layerTerrain.isVisible
-        
-        // Show all layers by default
-        setAllLayersVisible(true)
 
         // Do not update layers if tile is not explored by viewing player
         if (viewingCiv != null && !(isForceVisible || viewingCiv.hasExplored(tile))) {
-            reset(localUniqueCache)
-            // If tile has explored neighbors - reveal layers partially
-            if (tile.neighbors.none { viewingCiv.hasExplored(it) })
-                // Else - hide all layers
+            if (tile.neighbors.none { viewingCiv.hasExplored(it) }) {
+                // No explored neighbors - hide all layers
                 setAllLayersVisible(false)
-            else layerOverlay.setUnexplored(viewingCiv)
+            } else {
+                // Has explored neighbors - reveal layers partially
+                setAllLayersVisible(true) // visible, but...
+                reset() // ...may not contain much
+                layerOverlay.setUnexplored(viewingCiv)
+            }
             return
         }
 
+        setAllLayersVisible(true)
+
         removeMissingModReferences()
-        
-        for (layer in allLayers) layer.update(viewingCiv, localUniqueCache)
-        
-        if (!wasPreviouslyVisible){ // newly revealed tile!
-            layerTerrain.parent.addAction( 
-                Actions.sequence(
-                    Actions.targeting(layerTerrain, Actions.alpha(0f)),
-                    Actions.targeting(layerTerrain, Actions.fadeIn(0.5f)),
-                ))
-        }
+
+        for (layer in allLayers) layer.update(viewingCiv)
     }
 
     private fun removeMissingModReferences() {

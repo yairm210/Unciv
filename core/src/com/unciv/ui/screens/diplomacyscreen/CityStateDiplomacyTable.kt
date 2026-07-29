@@ -11,7 +11,7 @@ import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.*
-import com.unciv.logic.civilization.managers.AssignedQuest
+import com.unciv.logic.civilization.managers.quests.AssignedQuest
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeOfferType
@@ -147,7 +147,10 @@ class CityStateDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
                     newProtectors.add(protector.civName.tr())
             }
             val protectorString = "{Protected by}: " + newProtectors.joinToString(", ")
-            diplomacyTable.add(protectorString.toLabel()).row()
+            diplomacyTable.add(protectorString.toLabel().apply {
+                wrap = true
+                setAlignment(Align.center)
+            }).width(diplomacyScreen.rightSideLabelWidth()).row()
         }
 
         val atWar = otherCiv.isAtWarWith(viewingCiv)

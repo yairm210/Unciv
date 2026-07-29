@@ -71,7 +71,7 @@
 				"name": "Writing",
 				"row": 3,
 				"prerequisites": ["Pottery"],
-				"uniques": ["Enables Open Borders agreements"],
+				"uniques": ["Enables Open Borders agreements <Civilopedia link [Tutorials/Open Borders]>"],
 				"quote": "'He who destroys a good book kills reason itself.' - John Milton"
 			},
 			{
@@ -119,7 +119,7 @@
 				"name": "Philosophy",
 				"row": 3,
 				"prerequisites": ["Writing"],
-				"uniques": ["Enables Research agreements"],
+				"uniques": ["Enables Research agreements <Civilopedia link [Tutorials/Research Agreements]>"],
 				"quote": "'There is only one good, knowledge, and one evil, ignorance.' - Socrates"
 			},
 			{
@@ -214,7 +214,7 @@
 				"name": "Chivalry",
 				"row": 5,
 				"prerequisites": ["Civil Service","Currency","Horseback Riding"],
-                "uniques": ["Enables Defensive Pacts"],
+                "uniques": ["Enables Defensive Pacts <Civilopedia link [Tutorials/Defensive Pacts]>"],
 				"quote": "'Whoso pulleth out this sword of this stone and anvil, is rightwise king born of all England.' - Malory"
 			},
 			{

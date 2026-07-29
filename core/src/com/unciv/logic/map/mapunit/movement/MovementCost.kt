@@ -1,6 +1,7 @@
 package com.unciv.logic.map.mapunit.movement
 
 import com.unciv.Constants
+import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.MapUnitCache
@@ -19,7 +20,7 @@ object MovementCost {
         to: Tile,
         considerZoneOfControl: Boolean = true,
         includeEscortUnit: Boolean = true,
-    ): Float {
+    ): Float = timeThis("MovementCost.getMovementCostBetweenAdjacentTilesEscort")  {
         val movementCost = if (includeEscortUnit && unit.isEscorting()) {
             maxOf(getMovementCostBetweenAdjacentTiles(unit, from, to, considerZoneOfControl),
                 getMovementCostBetweenAdjacentTiles(unit.getOtherEscortUnit()!!, from, to, considerZoneOfControl))

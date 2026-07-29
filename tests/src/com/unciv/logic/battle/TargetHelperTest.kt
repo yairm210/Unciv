@@ -1,6 +1,7 @@
 package com.unciv.logic.battle
 
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.HexCoord
 import com.unciv.testing.GdxTestRunner
@@ -17,12 +18,13 @@ class TargetHelperTest {
     private lateinit var defenderCiv: Civilization
 
     private var defaultWarriorMovePoints = 2f
-    private var defaultArcherMovePoints = 2f
+    private var movementLeftAfterMovingToAttackTile = 2f
 
     private val testGame = TestGame()
 
     @Before
     fun setUp() {
+        UncivGame.Current.settings.useAStarPathfinding = true
         testGame.makeHexagonalMap(6)
         attackerCiv = testGame.addCiv()
         defenderCiv = testGame.addCiv()
@@ -132,7 +134,7 @@ class TargetHelperTest {
         val attackerTile = testGame.getTile(HexCoord.Zero)
         val attackedTile = testGame.getTile(1,0)
         val attackerUnit = testGame.addUnit("Archer", attackerCiv, attackerTile)
-        attackerUnit.currentMovement = defaultArcherMovePoints
+        attackerUnit.currentMovement = movementLeftAfterMovingToAttackTile
         testGame.addUnit("Warrior", defenderCiv, attackedTile)
 
         /*  _____         _____         _____
@@ -161,29 +163,29 @@ class TargetHelperTest {
         val attackableEnemyWithoutMoving = attackableEnemies[0]
         assertEquals(attackerTile, attackableEnemyWithoutMoving.tileToAttackFrom)
         assertEquals(attackedTile, attackableEnemyWithoutMoving.tileToAttack)
-        assertEquals(defaultArcherMovePoints, attackableEnemyWithoutMoving.movementLeftAfterMovingToAttackTile)
+        assertEquals(movementLeftAfterMovingToAttackTile, attackableEnemyWithoutMoving.movementLeftAfterMovingToAttackTile)
         val attackableEnemyMovingDown = attackableEnemies[1]
         assertEquals(testGame.getTile(-1,-1), attackableEnemyMovingDown.tileToAttackFrom)
         assertEquals(attackedTile, attackableEnemyMovingDown.tileToAttack)
-        assertEquals(defaultArcherMovePoints - 1, attackableEnemyMovingDown.movementLeftAfterMovingToAttackTile)
+        assertEquals(movementLeftAfterMovingToAttackTile - 1, attackableEnemyMovingDown.movementLeftAfterMovingToAttackTile)
         val attackableEnemyMovingUpRigth = attackableEnemies[2]
         assertEquals(testGame.getTile(0,1), attackableEnemyMovingUpRigth.tileToAttackFrom)
         assertEquals(attackedTile, attackableEnemyMovingUpRigth.tileToAttack)
-        assertEquals(defaultArcherMovePoints - 1, attackableEnemyMovingUpRigth.movementLeftAfterMovingToAttackTile)
+        assertEquals(movementLeftAfterMovingToAttackTile - 1, attackableEnemyMovingUpRigth.movementLeftAfterMovingToAttackTile)
         val attackableEnemyMovingDownLeft = attackableEnemies[3]
         assertEquals(testGame.getTile(-1,0), attackableEnemyMovingDownLeft.tileToAttackFrom)
         assertEquals(attackedTile, attackableEnemyMovingDownLeft.tileToAttack)
-        assertEquals(defaultArcherMovePoints - 1, attackableEnemyMovingDownLeft.movementLeftAfterMovingToAttackTile)
+        assertEquals(movementLeftAfterMovingToAttackTile - 1, attackableEnemyMovingDownLeft.movementLeftAfterMovingToAttackTile)
     }
 
     @Test
     fun `should get attackable tiles when ranged already in range to enemy unit`() {
         // given
-        val attackerTile = testGame.getTile(-1,0)
-        val attackedTile = testGame.getTile(1,0)
-        val attackerUnit = testGame.addUnit("Archer", attackerCiv, attackerTile)
-        attackerUnit.currentMovement = defaultArcherMovePoints
-        testGame.addUnit("Warrior", defenderCiv, attackedTile)
+        val tileToAttackFrom = testGame.getTile(-1,0)
+        val tileToAttack = testGame.getTile(1,0)
+        val attackerUnit = testGame.addUnit("Archer", attackerCiv, tileToAttackFrom)
+        attackerUnit.currentMovement = movementLeftAfterMovingToAttackTile
+        val combatant = MapUnitCombatant(testGame.addUnit("Warrior", defenderCiv, tileToAttack))
 
         /*  _____         _____         _____
         *  /     \       /     \       /     \          Legend:
@@ -208,22 +210,10 @@ class TargetHelperTest {
 
         // then
         assertEquals(4, attackableEnemies.toList().size)
-        val attackableEnemyWithoutMoving = attackableEnemies[0]
-        assertEquals(attackerTile, attackableEnemyWithoutMoving.tileToAttackFrom)
-        assertEquals(attackedTile, attackableEnemyWithoutMoving.tileToAttack)
-        assertEquals(defaultArcherMovePoints, attackableEnemyWithoutMoving.movementLeftAfterMovingToAttackTile)
-        val attackableEnemyMovingUp = attackableEnemies[1]
-        assertEquals(testGame.getTile(0,1), attackableEnemyMovingUp.tileToAttackFrom)
-        assertEquals(attackedTile, attackableEnemyMovingUp.tileToAttack)
-        assertEquals(defaultArcherMovePoints - 1, attackableEnemyMovingUp.movementLeftAfterMovingToAttackTile)
-        val attackableEnemyMovingDownLeft = attackableEnemies[2]
-        assertEquals(testGame.getTile(-1,-1), attackableEnemyMovingDownLeft.tileToAttackFrom)
-        assertEquals(attackedTile, attackableEnemyMovingDownLeft.tileToAttack)
-        assertEquals(defaultArcherMovePoints - 1, attackableEnemyMovingDownLeft.movementLeftAfterMovingToAttackTile)
-        val attackableEnemyMovingUpLeft = attackableEnemies[3]
-        assertEquals(testGame.getTile(HexCoord.Zero), attackableEnemyMovingUpLeft.tileToAttackFrom)
-        assertEquals(attackedTile, attackableEnemyMovingUpLeft.tileToAttack)
-        assertEquals(defaultArcherMovePoints - 1, attackableEnemyMovingUpLeft.movementLeftAfterMovingToAttackTile)
+        assertEquals(AttackableTile(tileToAttackFrom, tileToAttack, movementLeftAfterMovingToAttackTile, combatant), attackableEnemies[0])
+        assertTrue(attackableEnemies.contains(AttackableTile(testGame.getTile(0,1), tileToAttack, movementLeftAfterMovingToAttackTile-1, combatant)))
+        assertTrue(attackableEnemies.contains(AttackableTile(testGame.getTile(-1,-1), tileToAttack, movementLeftAfterMovingToAttackTile-1, combatant)))
+        assertTrue(attackableEnemies.contains(AttackableTile(testGame.getTile(HexCoord.Zero), tileToAttack, movementLeftAfterMovingToAttackTile-1, combatant)))
     }
 
     @Test
@@ -233,7 +223,7 @@ class TargetHelperTest {
         val attackedTile = testGame.getTile(1,0)
         val attackerUnit = testGame.addUnit("Archer", attackerCiv, attackerTile)
         testGame.addUnit("Warrior", attackerCiv, testGame.getTile(0,1)) // otherwise the archer cannot see the enemy warrior
-        attackerUnit.currentMovement = defaultArcherMovePoints
+        attackerUnit.currentMovement = movementLeftAfterMovingToAttackTile
         testGame.addUnit("Warrior", defenderCiv, attackedTile)
 
         /*  _____         _____         _____
@@ -262,7 +252,7 @@ class TargetHelperTest {
         val attackableEnemyMovingThenFiring = attackableEnemies[0]
         assertEquals(testGame.getTile(-1,0), attackableEnemyMovingThenFiring.tileToAttackFrom)
         assertEquals(attackedTile, attackableEnemyMovingThenFiring.tileToAttack)
-        assertEquals(defaultArcherMovePoints - 1, attackableEnemyMovingThenFiring.movementLeftAfterMovingToAttackTile)
+        assertEquals(movementLeftAfterMovingToAttackTile - 1, attackableEnemyMovingThenFiring.movementLeftAfterMovingToAttackTile)
     }
 
     @Test
@@ -271,7 +261,7 @@ class TargetHelperTest {
         val attackerTile = testGame.getTile(-2,0)
         val attackedTile = testGame.getTile(1,0)
         val attackerUnit = testGame.addUnit("Archer", attackerCiv, attackerTile) // two title radius sight -> cannot see enemy warrior
-        attackerUnit.currentMovement = defaultArcherMovePoints
+        attackerUnit.currentMovement = movementLeftAfterMovingToAttackTile
         testGame.addUnit("Warrior", defenderCiv, attackedTile)
 
         /*  _____         _____         _____
@@ -309,7 +299,7 @@ class TargetHelperTest {
         val attackerTile = testGame.getTile(-1,0)
         val attackedTile = testGame.getTile(1,0)
         val attackerUnit = testGame.addUnit("Archer", attackerCiv, attackerTile)
-        attackerUnit.currentMovement = defaultArcherMovePoints
+        attackerUnit.currentMovement = movementLeftAfterMovingToAttackTile
         testGame.addUnit("Warrior", defenderCiv, attackedTile)
 
         /*  _____         _____         _____

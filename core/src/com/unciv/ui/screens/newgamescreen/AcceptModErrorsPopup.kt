@@ -10,14 +10,12 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 internal class AcceptModErrorsPopup(
     screen: BaseScreen,
     modCheckResult: String,
-    restoreDefault: () -> Unit,
     action: () -> Unit
 ) : ConfirmPopup(
     screen,
     question = "",  // do coloured label instead
     confirmText = "Accept",
     isConfirmPositive = false,
-    restoreDefault = restoreDefault,
     action = action
 ) {
     init {

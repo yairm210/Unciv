@@ -1,5 +1,12 @@
 package com.unciv.logic
 
+import com.unciv.logic.multiplayer.FriendList.Friend
+import com.unciv.utils.Log
+import com.unciv.utils.isUUID
+import com.unciv.utils.softRequire
+import io.ktor.http.URLParserException
+import io.ktor.http.Url
+import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Pure
 import java.util.Locale
 import kotlin.math.abs
@@ -23,35 +30,85 @@ import kotlin.math.abs
  * G-2ddb3a34-0699-4126-b7a5-38603e665928-5
  */
 object IdChecker {
+    const val uncivUrlPrefix = "https://yairm210.github.io/Unciv/"
 
     @Pure
-    fun checkAndReturnPlayerUuid(playerId: String): String? {
-        return checkAndReturnUuiId(playerId, "P")
+    fun isGameDeepLink(url: String) = url.startsWith(uncivUrlPrefix + "G/", ignoreCase = true)
+    @Pure
+    fun isFriendDeepLink(url: String) = url.startsWith(uncivUrlPrefix + "P/", ignoreCase = true)
+    
+    @Pure
+    fun checkAndReturnPlayerUuid(playerId: String): Friend? {
+        return checkAndReturnId(playerId, "P")
     }
 
     @Pure
-    fun checkAndReturnGameUuid(gameId: String): String? {
-        return checkAndReturnUuiId(gameId, "G")
+    fun checkAndReturnUuiId(gameId: String): String? {
+        return checkAndReturnId(gameId, "G")?.playerID
+    }
+    
+    @Pure
+    private fun checkAndReturnId(id: String, prefix: String): Friend? {
+        val trimmedId = id.trim(spaceOrWrapperPredicate)
+        return if (trimmedId.startsWith(uncivUrlPrefix, ignoreCase = true))
+            checkAndReturnIdFromUrl(trimmedId, prefix)
+        else checkAndReturnUuiId(trimmedId, prefix)?.let { Friend("", it) }
+    }
+
+    // parses urls like "http://unciv.app/G/G-2ddb3a34-0699-4126-b7a5-38603e665928-2"
+    // or "http://unciv.app/P-2ddb3a34-0699-4126-b7a5-38603e665928-2?name=%C4%90%E1%BA%B7ng"
+    @Pure
+    private fun checkAndReturnIdFromUrl(id: String, prefix: String): Friend? {
+        @LocalState
+        val url = try {
+            Url(id)
+        } catch (e: URLParserException) {
+            Log.error("invalid format for url $id", e)
+            return null
+        }
+        @LocalState
+        val segments = url.segments
+        @LocalState
+        val parameters = url.parameters
+        softRequire(segments.size==3, "url %s should be in \"Unciv\\G\" path", id) ?: return null
+        softRequire(segments[0].equals("Unciv", ignoreCase=true), "%s url %s is not an \"Unciv\" link", id, segments[0]) ?: return null
+        softRequire(segments[1].equals(prefix, ignoreCase=true), "%s url %s has incorrect prefix %s", prefix, id, segments[0]) ?: return null
+        val gameId = checkAndReturnUuiId(segments[2], prefix, id) ?: return null
+        val name = parameters["name"] ?: ""
+        return Friend(name, gameId)
     }
 
     @Pure
-    private fun checkAndReturnUuiId(id: String, prefix: String): String? {
-        val trimmedPlayerId = id.trim()
+    private fun checkAndReturnUuiId(id: String, prefix: String, url:String = id): String? {
+        val trimmedPlayerId = id.trim(spaceOrWrapperPredicate)
         if (trimmedPlayerId.length == 40) { // length of a UUID (36) with pre- and postfix
-            if (!trimmedPlayerId.startsWith(prefix, true))
+            if (!trimmedPlayerId.startsWith(prefix, true)) {
+                Log.error("$prefix uuid $url has incorrect prefix")
                 return null
+            }
 
             val checkDigit = trimmedPlayerId.substring(trimmedPlayerId.lastIndex, trimmedPlayerId.lastIndex + 1)
             // remember, the format is: P-9e37e983-a676-4ecc-800e-ef8ec721a9b9-5
             val shortenedPlayerId = trimmedPlayerId.substring(2, 38)
             val calculatedCheckDigit = getCheckDigit(shortenedPlayerId)
-            if (calculatedCheckDigit == null || calculatedCheckDigit.toString() != checkDigit)
+            if (calculatedCheckDigit == null || calculatedCheckDigit.toString() != checkDigit) {
+                Log.error("$prefix uuid $url has incorrect checkDigit $checkDigit")
                 return null
+            }
 
+            if (!shortenedPlayerId.isUUID()) {
+                Log.error("invalid uuid $url")
+                return null
+            }
             return shortenedPlayerId
         } else if (trimmedPlayerId.length == 36) {
+            if (!trimmedPlayerId.isUUID()) {
+                Log.error("invalid uuid $url")
+                return null
+            }
             return trimmedPlayerId
         }
+        Log.error("$prefix uuid $url has incorrect length")
         return null
     }
 
@@ -112,5 +169,20 @@ object IdChecker {
         // check digit is amount needed to reach next number
         // divisible by ten
         return (10 - (sum % 10)) % 10
+    }
+    
+    private val spaceOrWrapperPredicate: (Char)->Boolean = {
+        // trim spaces, parenthesis, quotation marks, periods, commas, newlines, etc.
+        // We do NOT drop hyphens or connectors.
+        when (Character.getType(it).toByte()) {
+            Character.SPACE_SEPARATOR,
+            Character.START_PUNCTUATION,
+            Character.END_PUNCTUATION,
+            Character.INITIAL_QUOTE_PUNCTUATION,
+            Character.FINAL_QUOTE_PUNCTUATION,
+            Character.OTHER_PUNCTUATION,
+            Character.CONTROL -> true
+            else -> false
+        }
     }
 }

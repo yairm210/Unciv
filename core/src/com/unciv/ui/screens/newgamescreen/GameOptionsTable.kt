@@ -9,12 +9,12 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.PlayerType
-import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.nation.Nation
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
@@ -137,9 +137,16 @@ class GameOptionsTable(
             if (gameParameters.enableRandomNationsPool) {
                 it.addNationsSelectTextButton()
             }
-            it.addShowVictoryStatsCheckbox()
-            if (!gameParameters.showVictoryStats) {
-                it.addShowDemographicsCheckbox()
+            it.addShowCivilizationStatsCheckbox()
+            if (gameParameters.showCivilizationStats == true) {
+                val statsTable = Table().apply {
+                    defaults().growX().left().padLeft(30f).padBottom(10f)
+                    addShowRankingsCheckbox()
+                    addShowChartsCheckbox()
+                    addShowDemographicsCheckbox()
+                    addCensorStatsCheckbox()
+                }
+                it.add(statsTable).left()
             }
         }
         add(expander).pad(10f).row()
@@ -214,17 +221,28 @@ class GameOptionsTable(
         }
     }
 
-    private fun Table.addShowVictoryStatsCheckbox() =
-        addCheckbox("Show victory stats", gameParameters.showVictoryStats)
+    private fun Table.addShowCivilizationStatsCheckbox() =
+        addCheckbox("Show Civilization Stats", gameParameters.showCivilizationStats == true)
         {
-            gameParameters.showVictoryStats = it
-            if (it) gameParameters.showDemographics = false
-            update()  // To show/hide showDemographics checkbox
+            gameParameters.showCivilizationStats = it
+            update()  // To update checkboxTable
         }
 
     private fun Table.addShowDemographicsCheckbox() =
-        addCheckbox("Show demographics", gameParameters.showDemographics)
+        addCheckbox("Show Demographics", gameParameters.showDemographics)
         { gameParameters.showDemographics = it }
+
+    private fun Table.addShowRankingsCheckbox() =
+        addCheckbox("Show Rankings", gameParameters.showRankings)
+        { gameParameters.showRankings = it }
+
+    private fun Table.addShowChartsCheckbox() =
+        addCheckbox("Show Charts", gameParameters.showCharts)
+        { gameParameters.showCharts = it }
+
+    private fun Table.addCensorStatsCheckbox() =
+        addCheckbox("Restrict to own civilization", gameParameters.hideOtherCivilizationStats)
+        { gameParameters.hideOtherCivilizationStats = it }
 
     private fun Table.addNationsSelectTextButton() {
         val button = "Select nations".toTextButton()
@@ -238,7 +256,7 @@ class GameOptionsTable(
             popup.open()
             popup.update()
         }
-        add(button)
+        add(button).row()
     }
 
     private fun numberOfMajorCivs() = ruleset.nations.values.count {
@@ -528,15 +546,6 @@ class GameOptionsTable(
         modCheckboxes.setBaseRuleset(gameParameters.baseRuleset)
     }
 
-    fun resetRuleset() {
-        val rulesetName = BaseRuleset.Civ_V_GnK.fullName
-        gameParameters.baseRuleset = rulesetName
-        modCheckboxes.setBaseRuleset(rulesetName)
-        modCheckboxes.disableAllCheckboxes()
-        baseRulesetSelectBox?.setSelected(rulesetName)
-        reloadRuleset()
-    }
-
     private fun reloadRuleset() {
         ruleset.clear()
         val newRuleset = RulesetCache.getComplexRuleset(gameParameters)
@@ -553,6 +562,8 @@ class GameOptionsTable(
         gameParameters.victoryTypes.removeAll { it !in ruleset.victories.keys }
         if (gameParameters.victoryTypes.isEmpty())
             gameParameters.victoryTypes.addAll(ruleset.victories.keys)
+
+        (previousScreen as? NewGameScreen)?.refreshExampleMap()
     }
 
     private fun getModCheckboxes(isPortrait: Boolean = false): ModCheckboxTable {
@@ -568,11 +579,12 @@ class GameOptionsTable(
         update()
 
         var desiredCiv = ""
+        val rng = GameContext(gameInfo = UncivGame.Current.gameInfo).stateBasedRandom("GameOptionsTable.onChooseMod", mod.hashCode())
         if (gameParameters.mods.contains(mod)) {
             val modNations = RulesetCache[mod]?.nations?.values?.filter { it.isMajorCiv }
 
             if (modNations != null && modNations.any())
-                desiredCiv = modNations.random().name
+                desiredCiv = modNations.random(rng).name
 
             val music = UncivGame.Current.musicController
             if (!music.chooseTrack(mod, MusicMood.Theme, MusicTrackChooserFlags.setSelectNation) && desiredCiv.isNotEmpty())

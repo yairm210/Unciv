@@ -2,14 +2,22 @@ package com.unciv.app
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.work.WorkManager
 import com.badlogic.gdx.backends.android.AndroidApplication
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration
+import com.unciv.logic.IdChecker
 import com.unciv.logic.files.UncivFiles
 import com.unciv.ui.components.fonts.Fonts
+import com.unciv.ui.screens.multiplayerscreens.AddFriendScreen
+import com.unciv.utils.Concurrency.runOnGLThread
+import com.unciv.utils.Dispatcher
 import com.unciv.utils.Display
 import com.unciv.utils.Log
+import com.unciv.utils.launchOnGLThread
 import java.io.File
 import java.lang.Exception
 import kotlinx.coroutines.CoroutineScope
@@ -54,8 +62,31 @@ open class AndroidLauncher : AndroidApplication() {
         game = AndroidGame(this)
         initialize(game, config)
 
+        ViewCompat.setOnApplyWindowInsetsListener(window.decorView, ::insetsListener)
+
+        // can be triggered via `adb shell am start -a android.intent.action.VIEW -d https://unciv.app/g/G-ef0f5e5a-f1db-4a54-9d94-92ca986afe8a-9 com.unciv.app`
+        // or whatever your game id is
         game!!.setDeepLinkedGame(intent)
         game!!.addScreenObscuredListener()
+        processPossibleFriendDeepLink(intent)
+    }
+
+    private fun insetsListener(view: View, insets: WindowInsetsCompat): WindowInsetsCompat {
+        val settings = try {
+            game!!.settings // settings is a lateinit, and this listener *will* be called before it's done
+        } catch (_: Throwable) {
+            UncivFiles.getSettingsForPlatformLaunchers(filesDir.path)
+        }
+
+        // If settings.androidCutout is false, padding is applied
+        if (!settings.androidCutout) {
+            val cutoutInsets = insets.getInsets(WindowInsetsCompat.Type.displayCutout())
+            view.setPadding(cutoutInsets.left, cutoutInsets.top, cutoutInsets.right, cutoutInsets.bottom)
+        } else {
+            view.setPadding(0, 0, 0, 0)
+        }
+
+        return insets
     }
 
     /**
@@ -116,6 +147,19 @@ open class AndroidLauncher : AndroidApplication() {
         if (intent == null)
             return
         game?.setDeepLinkedGame(intent)
+        processPossibleFriendDeepLink(intent)
+    }
+   
+    private fun processPossibleFriendDeepLink(intent: Intent) {
+        // can be triggered via
+        // `adb shell am start -a android.intent.action.VIEW -d https://unciv.app/p/P-63971008-a533-47f6-ad6a-57b616626138-9?name=Yairm210 com.unciv.app`
+        // or whatever your friend id and name are
+        if (intent.data != null && IdChecker.isFriendDeepLink(intent.data.toString())) {
+            val newFriend = IdChecker.checkAndReturnPlayerUuid(intent.data.toString())
+            if (newFriend != null) runOnGLThread {
+                game!!.pushScreen(AddFriendScreen(newFriend.name, newFriend.playerID))
+            }
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

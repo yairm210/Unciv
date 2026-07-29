@@ -15,8 +15,8 @@ import com.unciv.ui.components.extensions.brighten
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
-import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.images.IconTextButton
+import com.unciv.ui.popups.AnimatedMenuPopup.Companion.addContextMenu
 import com.unciv.ui.popups.UnitUpgradeMenu
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import yairm210.purity.annotations.Readonly
@@ -119,7 +119,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
                 // Works because our disable() extension also changes style, and because the normal click is ignored due to unitAction.action being null.
                 button.isDisabled = false
                 button.touchable = Touchable.enabled
-                button.onRightClick {
+                button.addContextMenu {
                     UnitUpgradeMenu(worldScreen.stage, button, unit, unitAction, enable = unitAction.action != null, callbackAfterAnimation = true) {
                         worldScreen.shouldUpdate = true
                     }

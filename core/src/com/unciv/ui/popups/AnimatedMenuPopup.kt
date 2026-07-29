@@ -1,21 +1,30 @@
 package com.unciv.ui.popups
 
+import com.badlogic.gdx.Application
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.utils.Layout
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
+import com.badlogic.gdx.utils.Align
+import com.unciv.UncivGame
+import com.unciv.models.metadata.GameSettings.LongPressIndicatorSetting
 import com.unciv.ui.components.SmallButtonStyle
+import com.unciv.ui.components.UncivTooltip
+import com.unciv.ui.components.UncivTooltip.Companion.getEdgePoint
+import com.unciv.ui.components.extensions.allChildren
+import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.extensions.toTextButton
-import com.unciv.ui.components.input.KeyCharAndCode
-import com.unciv.ui.components.input.KeyboardBinding
-import com.unciv.ui.components.input.keyShortcuts
-import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.*
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Concurrency
 
@@ -34,13 +43,58 @@ import com.unciv.utils.Concurrency
  *  inverting the fade-and-scale-in. Callbacks registered with [Popup.closeListeners] will run before the animation starts.
  *  Use [afterCloseCallback] instead if you need a notification after the animation finishes and the Popup is cleaned up.
  *
- *  @param stage The stage this will be shown on, passed to Popup and used for clamping **`position`**
- *  @param position stage coordinates to show this centered over - clamped so that nothing is clipped outside the [stage]
+ *  Using the new `onRightClick` replacement [addContextMenu], the target actor will receive a decoration symbol over its bottom right,
+ *  permanent on Android but on hover only on desktop.
  */
-open class AnimatedMenuPopup(
-    stage: Stage,
-    position: Vector2
-) : Popup(stage, Scrollability.None) {
+open class AnimatedMenuPopup private constructor (stage: Stage) : Popup(stage, Scrollability.None) {
+    companion object {
+        const val indicatorAndroid = "OtherIcons/ContextMenuAvailableA"
+        private const val indicatorDesktop = "OtherIcons/ContextMenuAvailableD"
+        private const val maxIndicatorSize = 32f
+        // These are partially to take up the "slack" inside the texture
+        // (which is square, but the visual content for the Desktop one has a wide transparent margin)
+        private const val indicatorXOffsetRelativeAndroid = 0.15f
+        private const val indicatorXOffsetRelativeDesktop = 0.35f
+        private val indicatorColor = Color.WHITE
+
+        private fun Actor.getAlignedPosition(align: Int) = localToStageCoordinates(getEdgePoint(align))
+
+        fun Group.addContextMenu(indicatorMinSizeRelative: Float = 0.5f, factory: () -> AnimatedMenuPopup) {
+            Helpers.addIndicator(this, indicatorMinSizeRelative)
+            onRightClick {
+                if (isActive())
+                    factory()
+            }
+        }
+
+        fun Group.adjustContextMenuIndicators() {
+            for (icon in allChildren().filter { it.name == indicatorAndroid }) {
+                Helpers.adjustPosition(icon)
+            }
+        }
+    }
+
+    /** Constructor taking a stage position to center this menu on
+     *  @param stage The stage this will be shown on, passed to Popup and used for clamping **`position`**
+     *  @param position stage coordinates to show this centered over - clamped so that nothing is clipped outside the [stage]
+     */
+    @Suppress("unused") // False positive
+    private constructor(stage: Stage, position: Vector2) : this(stage) {
+        clickBehindToClose = true
+        keyShortcuts.add(KeyCharAndCode.BACK) { close() }
+        innerTable.remove()
+
+        // Decouple the content creation from object initialization so it can access its own fields
+        // (initialization order super->sub - see LeakingThis)
+        Concurrency.runOnGLThread { createAndShow(position) }
+    }
+
+    /** Constructor taking a target Actor for alignment
+     *  @param stage The stage this will be shown on, passed to Popup and used for clamping **`position`**
+     *  @param actor Target [Actor]. This popup will be shown centered relative to it, and it will get a visual indicator.
+     */
+    constructor(stage: Stage, actor: Actor, align: Int = Align.topRight) : this(stage, actor.getAlignedPosition(align))
+
     private val container: Container<Table> = Container()
     private val animationDuration = 0.33f
     private val backgroundColor = (background as NinePatchDrawable).patch.color
@@ -53,13 +107,6 @@ open class AnimatedMenuPopup(
      *  When still `false` in a callback, then ESC/BACK or the click-behind listener closed this. */
     var anyButtonWasClicked = false
         private set
-
-    companion object {
-        /** Get stage coords of an [actor]'s right edge center, to help position an [AnimatedMenuPopup].
-         *  Note the Popup will center over this point.
-         */
-        fun getActorTopRight(actor: Actor): Vector2 = actor.localToStageCoordinates(Vector2(actor.width, actor.height / 2))
-    }
 
     /**
      *  Provides the Popup content.
@@ -77,14 +124,68 @@ open class AnimatedMenuPopup(
         background = BaseScreen.skinStrings.getUiBackground("General/AnimatedMenu", BaseScreen.skinStrings.roundedEdgeRectangleShape, Color.DARK_GRAY)
     }
 
-    init {
-        clickBehindToClose = true
-        keyShortcuts.add(KeyCharAndCode.BACK) { close() }
-        innerTable.remove()
+    /**
+     *  Creates a button - for use in your override of [AnimatedMenuPopup]'s [createContentTable].
+     *
+     *  On activation, it will set [anyButtonWasClicked], call [action], then close the Popup.
+     */
+    fun getButton(text: String, binding: KeyboardBinding, action: () -> Unit) =
+        text.toTextButton(smallButtonStyle).apply {
+            onActivation(binding = binding) {
+                anyButtonWasClicked = true
+                action()
+                close()
+            }
+        }
 
-        // Decouple the content creation from object initialization so it can access its own fields
-        // (initialization order super->sub - see LeakingThis)
-        Concurrency.runOnGLThread { createAndShow(position) }
+
+    private object Helpers {
+        fun addIndicator(actor: Group, indicatorMinSizeRelative: Float) {
+            val setting = UncivGame.Current.settings.showLongPressIndicators
+            if (setting == LongPressIndicatorSetting.Off) return
+            if (setting == LongPressIndicatorSetting.Debug || Gdx.app.type == Application.ApplicationType.Android)
+                addIndicatorAndroid(actor, indicatorMinSizeRelative)
+            else addIndicatorDesktop(actor, indicatorMinSizeRelative)
+        }
+
+        fun adjustPosition(actor: Actor) {
+            val setting = UncivGame.Current.settings.showLongPressIndicators
+            if (setting == LongPressIndicatorSetting.Off) return
+            if (setting != LongPressIndicatorSetting.Debug && Gdx.app.type == Application.ApplicationType.Android) return
+            val x = actor.parent.width + actor.width * indicatorXOffsetRelativeAndroid
+            actor.setPosition(x , 0f, Align.bottomRight)
+        }
+
+        private fun getIndicatorSize(actor: Group, indicatorMinSizeRelative: Float): Float {
+            val actorHeight = (actor as? Layout)?.prefHeight ?: actor.height
+            return maxIndicatorSize.coerceAtMost(actorHeight * indicatorMinSizeRelative)
+        }
+
+        private fun addIndicatorAndroid(actor: Group, indicatorMinSizeRelative: Float) {
+            val icon = ImageGetter.getImage(indicatorAndroid, indicatorColor)
+            icon.name = indicatorAndroid
+            val size = getIndicatorSize(actor, indicatorMinSizeRelative)
+            icon.setSize(size)
+            val x = ((actor as? Layout)?.prefWidth ?: actor.width) + size * indicatorXOffsetRelativeAndroid
+            icon.setPosition(x , 0f, Align.bottomRight)
+            actor.addActor(icon)
+        }
+
+        private fun addIndicatorDesktop(actor: Group, indicatorMinSizeRelative: Float) {
+            val icon = ImageGetter.getImage(indicatorDesktop, indicatorColor)
+            val size = getIndicatorSize(actor, indicatorMinSizeRelative)
+            icon.setSize(size)
+            val offset = size * indicatorXOffsetRelativeDesktop
+            actor.addListener(
+                UncivTooltip(
+                    target = actor,
+                    content = icon,
+                    targetAlign = Align.bottomRight,
+                    tipAlign = Align.bottomRight,
+                    offset = Vector2(offset, 0f)
+                )
+            )
+        }
     }
 
     private fun createAndShow(position: Vector2) {
@@ -147,18 +248,4 @@ open class AnimatedMenuPopup(
             )
         )
     }
-
-    /**
-     *  Creates a button - for use in [AnimatedMenuPopup]'s `contentBuilder` parameter.
-     *
-     *  On activation it will set [anyButtonWasClicked], call [action], then close the Popup.
-     */
-    fun getButton(text: String, binding: KeyboardBinding, action: () -> Unit) =
-        text.toTextButton(smallButtonStyle).apply {
-            onActivation(binding = binding) {
-                anyButtonWasClicked = true
-                action()
-                close()
-            }
-        }
 }

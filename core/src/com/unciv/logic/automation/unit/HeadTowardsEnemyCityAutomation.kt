@@ -1,5 +1,6 @@
 package com.unciv.logic.automation.unit
 
+import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.CityCombatant
@@ -13,7 +14,7 @@ import yairm210.purity.annotations.Readonly
 object HeadTowardsEnemyCityAutomation {
 
     /** @returns whether the unit has taken this action */
-    fun tryHeadTowardsEnemyCity(unit: MapUnit): Boolean {
+    fun tryHeadTowardsEnemyCity(unit: MapUnit): Boolean = timeThis("tryHeadTowardsEnemyCity") {
         if (unit.civ.cities.isEmpty()) return false
 
         // only focus on *attacking* 1 enemy at a time otherwise you'll lose on both fronts

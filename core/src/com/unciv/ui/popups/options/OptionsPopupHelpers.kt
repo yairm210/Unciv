@@ -33,6 +33,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlin.reflect.KMutableProperty0
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  *  Helper library for [OptionsPopup] and its tabs.
@@ -59,8 +60,8 @@ internal interface OptionsPopupHelpers {
      */
     val rightWidgetMinWidth: Float
 
-    /** Access the active page number of the TabbedPager in [OptionsPopup] */
-    val activePage: Int
+    /** Access the active page of the TabbedPager in [OptionsPopup] */
+    val activePage: OptionsPopupPages
 
 
     /**
@@ -319,7 +320,7 @@ internal interface OptionsPopupHelpers {
      */
     fun reopenOptions(force: Boolean = false) {
         Concurrency.run("Reload from options") {
-            delay(if (force) 0 else 100)
+            delay((if (force) 0 else 100).milliseconds)
             withGLContext {
                 val screen = UncivGame.Current.screen ?: return@withGLContext
                 if (force && screen.activePopup is OptionsPopup) screen.activePopup!!.close()

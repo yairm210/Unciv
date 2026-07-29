@@ -1,7 +1,6 @@
 package com.unciv.ui.components.tilegroups.citybutton
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
@@ -181,7 +180,7 @@ internal class CityTable(
         val icon = if (cityConstructions.currentConstructionName().isEmpty()) null
             else ImageGetter.getConstructionPortrait(cityCurrentConstruction.name, 24f)
         val turns = when (cityCurrentConstruction) {
-            PerpetualConstruction.idle -> {
+            PerpetualConstruction.Idle -> {
                 "-"
             }
             is PerpetualConstruction -> {

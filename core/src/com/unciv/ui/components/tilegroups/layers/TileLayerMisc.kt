@@ -1,9 +1,9 @@
 package com.unciv.ui.components.tilegroups.layers
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
@@ -11,10 +11,11 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.toHexCoord
-import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.*
 import com.unciv.ui.components.extensions.*
+import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.input.onDoubleClick
 import com.unciv.ui.components.tilegroups.CityTileGroup
 import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.components.tilegroups.TileSetStrings
@@ -42,60 +43,72 @@ private class MapArrow(val targetTile: Tile, val arrowType: MapArrowType, val st
 }
 
 class TileLayerYield(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, size){
-    private val yields = YieldGroup().apply {
-        // Unlike resource or improvement this is created and added only once,
-        // It's the contents that get updated
-        isVisible = false
-        setOrigin(Align.center)
-        setScale(0.7f)
-        y = tileGroup.height * 0.25f - height / 2
-        // Adding YieldGroup to miscLayerGroup
-        this@TileLayerYield.addActor(this)
+    // Lazily created to avoid allocating YieldGroup for tiles that never display yields.
+    private var yields: YieldGroup? = null
+
+    private fun getOrCreateYields(): YieldGroup {
+        if (yields == null) {
+            yields = YieldGroup().apply {
+                isVisible = false
+                setOrigin(Align.center)
+                setScale(0.7f)
+            }
+            addOwnedActor(yields!!)
+            // Rough initial Y; updateYieldIcon corrects it once height is known after setStats.
+            yields!!.y = tileY + tileGroup.height * 0.25f
+        }
+        return yields!!
     }
-    
-    override fun doUpdate(viewingCiv: Civilization?, localUniqueCache: LocalUniqueCache) {
+
+    override fun doUpdate(viewingCiv: Civilization?) {
         val showTileYields = if (tileGroup is WorldTileGroup) UncivGame.Current.settings.showTileYields else true
-        updateYieldIcon(viewingCiv, showTileYields, localUniqueCache)
+        updateYieldIcon(viewingCiv, showTileYields)
     }
 
     // JN updating display of tile yields
     private fun updateYieldIcon(
         viewingCiv: Civilization?,
         show: Boolean,
-        localUniqueCache: LocalUniqueCache
     ) {
         val effectiveVisible = show &&
                 !tileGroup.isForMapEditorIcon &&  // don't have a map to calc yields
                 !(viewingCiv == null && tileGroup.isForceVisible) // main menu background
 
-        // Hiding yield icons (in order to update)
-        yields.isVisible = false
-        if (effectiveVisible) yields.run {
+        if (!effectiveVisible) {
+            yields?.isVisible = false
+            return
+        }
+
+        val y = getOrCreateYields()
+        y.isVisible = false
+        y.run {
             // Update YieldGroup Icon
             if (tileGroup is CityTileGroup)
-                setStats(tile.stats.getTileStats(tileGroup.city, viewingCiv, localUniqueCache))
+                setStats(tile.stats.getTileStats(tileGroup.city, viewingCiv))
             else
-                setStats(tile.stats.getTileStats(viewingCiv, localUniqueCache))
+                setStats(tile.stats.getTileStats(viewingCiv))
             toFront()
-            centerX(tileGroup)
+            // Centre horizontally; recalculate Y now that height is known after setStats
+            x = tileX + (tileGroup.width - width) / 2
+            this.y = tileY + tileGroup.height * 0.25f - height / 2
             isVisible = true
         }
     }
 
     fun setYieldVisible(isVisible: Boolean) {
-        yields.isVisible = isVisible
+        yields?.isVisible = isVisible
         this.isVisible = isVisible // don't try rendering the layer if there's nothing in it
     }
-    
-    fun dimYields(dim: Boolean) { yields.color.a = if (dim) 0.5f else 1f }
 
-    fun reset(localUniqueCache: LocalUniqueCache) {
-        updateYieldIcon(null, false, localUniqueCache)
+    fun dimYields(dim: Boolean) { yields?.color?.a = if (dim) 0.5f else 1f }
+
+    fun reset() {
+        updateYieldIcon(null, false)
     }
 
-    override fun act(delta: Float) {}
-    override fun hit(x: Float, y: Float, touchable: Boolean): Actor? = null
-    override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
+    override fun determineVisibility() {
+        isVisible = yields?.isVisible == true
+    }
 }
 
 
@@ -119,27 +132,27 @@ class TileLayerResource(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
         if (resourceName != tile.resource || resourceAmount != tile.resourceAmount) {
             resourceName = tile.resource
             resourceAmount = tile.resourceAmount
-            resourceIcon?.remove()
+            resourceIcon?.let { removeOwnedActor(it) }
             resourceIcon = null
         }
 
         // Get a fresh Icon if and only if necessary
         if (resourceName != null && effectiveVisible && resourceIcon == null) {
             val icon = ImageGetter.getResourcePortrait(resourceName!!, 20f, resourceAmount)
-            icon.center(tileGroup)
-            icon.x -= 22 // left
-            icon.y += 10 // top
-            addActor(icon)
+            // Centre on tile, offset left and up
+            icon.x = tileX + (tileGroup.width - icon.width) / 2 - 22f
+            icon.y = tileY + (tileGroup.height - icon.height) / 2 + 10f
+            addOwnedActor(icon)
             resourceIcon = icon
         }
 
         resourceIcon?.isVisible = effectiveVisible
 
 
-        if (resourceIcon!=null){
+        if (resourceIcon != null){
             val isViewable = viewingCiv == null || isViewable(viewingCiv)
             dimResource(!isViewable)
-            
+
             val shouldResourceProvidedBeDisplayed =
                 viewingCiv != null && tile.getOwner() == viewingCiv
                         && tile.providesResources(viewingCiv)
@@ -152,22 +165,22 @@ class TileLayerResource(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
                 blackStar.color = Color.BLACK
                 blackStar.center(group)
                 group.addActor(blackStar)
-                
+
                 val goldStar = ImageGetter.getImage("OtherIcons/Star")
                 goldStar.setSize(10f)
                 goldStar.color = Color.GOLD
                 goldStar.center(group)
                 group.addActor(goldStar)
-                
+
                 // Slightly extruding out from the resource icon
                 group.setPosition(resourceIcon!!.right + 3f, resourceIcon!!.top + 3f, Align.topRight)
-                addActor(group)
-                
+                addOwnedActor(group)
+
                 resourceProvidedIcon = group
             }
-            
+
             if (!shouldResourceProvidedBeDisplayed && resourceProvidedIcon != null){
-                resourceProvidedIcon?.remove()
+                removeOwnedActor(resourceProvidedIcon!!)
                 resourceProvidedIcon = null
             }
             resourceProvidedIcon?.toFront()
@@ -180,8 +193,8 @@ class TileLayerResource(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
     }
 
     fun dimResource(dim: Boolean) { resourceIcon?.color?.a = if (dim) 0.5f else 1f }
-    
-    override fun doUpdate(viewingCiv: Civilization?, localUniqueCache: LocalUniqueCache) {
+
+    override fun doUpdate(viewingCiv: Civilization?) {
         val showResourcesAndImprovements = if (tileGroup is WorldTileGroup)
             UncivGame.Current.settings.showResourcesAndImprovements else true
 
@@ -198,8 +211,8 @@ class TileLayerImprovement(tileGroup: TileGroup, size: Float) : TileLayer(tileGr
     var improvementIcon: Actor? = null
         private set  // Getter public for BattleTable to display as City Combatant
 
-    
-    override fun doUpdate(viewingCiv: Civilization?, localUniqueCache: LocalUniqueCache) {
+
+    override fun doUpdate(viewingCiv: Civilization?) {
         val showResourcesAndImprovements = if (tileGroup is WorldTileGroup)
             UncivGame.Current.settings.showResourcesAndImprovements else true
 
@@ -217,17 +230,17 @@ class TileLayerImprovement(tileGroup: TileGroup, size: Float) : TileLayer(tileGr
 
         if (improvementPlusPillagedID != newImprovementPlusPillagedID) {
             improvementPlusPillagedID = newImprovementPlusPillagedID
-            improvementIcon?.remove()
+            improvementIcon?.let { removeOwnedActor(it) }
             improvementIcon = null
         }
 
         // Get new icon when needed
         if (improvementPlusPillagedID != null && show && improvementIcon == null) {
             val icon = ImageGetter.getImprovementPortrait(improvementToShow!!, isPillaged = tile.improvementIsPillaged)
-            icon.center(tileGroup)
-            icon.x -= 22 // left
-            icon.y -= 12 // bottom
-            addActor(icon)
+            // Centre on tile, offset left and down
+            icon.x = tileX + (tileGroup.width - icon.width) / 2 - 22f
+            icon.y = tileY + (tileGroup.height - icon.height) / 2 - 12f
+            addOwnedActor(icon)
             improvementIcon = icon
         }
 
@@ -245,21 +258,8 @@ class TileLayerImprovement(tileGroup: TileGroup, size: Float) : TileLayer(tileGr
 
 class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, size) {
 
-    // For different unit views, we want to effectively "ignore" the terrain and color it by special view
-    private var terrainOverlay: Image? = ImageGetter.getImage(strings.hexagon).setHexagonSize()
-
-    override fun act(delta: Float) {}
-    override fun hit(x: Float, y: Float, touchable: Boolean): Actor? {
-        return if (workedIcon == null) {
-            null
-        } else {
-            val coords = Vector2(x, y)
-            workedIcon!!.parentToLocalCoordinates(coords)
-            workedIcon!!.hit(coords.x, coords.y, touchable)
-        }
-    }
-
-    override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
+    // Lazily created — only allocated when an overlay color is applied to this tile.
+    private var terrainOverlay: Image? = null
 
     /** Array list of all arrows to draw from this tile on the next update. */
     private val arrowsToDraw = ArrayList<MapArrow>()
@@ -269,12 +269,17 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
 
     private var workedIcon: Actor? = null
 
+    /** Optional click handler attached to the workedIcon when it is added (used by CityScreen). */
+    var onWorkedIconClick: (() -> Unit)? = null
+    /** Optional double-click handler attached to the workedIcon when it is added (used by CityScreen). */
+    var onWorkedIconDoubleClick: (() -> Unit)? = null
+
     private val startingLocationIcons = mutableListOf<Actor>()
 
     private fun clearArrows() {
         for (actorList in arrows.values)
             for (actor in actorList)
-                actor.remove()
+                removeOwnedActor(actor)
         arrows.clear()
     }
 
@@ -299,7 +304,9 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
             }
 
             val arrowImage = arrowToAdd.getImage()
-            arrowImage.moveBy(25f, -5f) // Move to tile center— Y is +25f too, but subtract half the image height. Based on updateRoadImages.
+            arrowImage.touchable = Touchable.disabled
+            // Arrows originate at tile centre (25, -5 in tile-local); offset by tile origin for absolute.
+            arrowImage.setPosition(tileX + 25f, tileY - 5f)
 
             arrowImage.setSize(tileScale * targetDistance, 60f)
             arrowImage.setOrigin(0f, 30f)
@@ -307,7 +314,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
             arrowImage.rotation = targetAngle / Math.PI.toFloat() * 180
 
             arrows[targetTile]!!.add(arrowImage)
-            addActor(arrowImage)
+            addOwnedActor(arrowImage)
             // FIXME: Culled when too large and panned away.
             // https://libgdx.badlogicgames.com/ci/nightlies/docs/api/com/badlogic/gdx/scenes/scene2d/utils/Cullable.html
             // .getCullingArea returns null for both miscLayerGroup and worldMapHolder. Don't know where it's happening. Somewhat rare, and fixing it may have a hefty performance cost.
@@ -322,24 +329,28 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
         // Also remember the main menu background is an EditorMapHolder which we can't distinguish from
         // The actual editor use here.
 
-        startingLocationIcons.forEach { it.remove() }
+        startingLocationIcons.forEach { removeOwnedActor(it) }
         startingLocationIcons.clear()
         if (!show || tileGroup.isForMapEditorIcon)
             return
 
         if (DebugUtils.SHOW_TILE_COORDS) {
             val label = this.tile.position.toVector2().toPrettyString()
+            val tileW = tileGroup.width
+            val tileH = tileGroup.height
             startingLocationIcons.add(label.toLabel(ImageGetter.CHARCOAL.cpy().apply { a = 0.7f }, 14).apply {
-                tileGroup.layerMisc.addActor(this)
+                touchable = Touchable.disabled
                 setOrigin(Align.center)
-                center(tileGroup)
-                moveBy(15.4f, -0.6f)
+                x = tileX + (tileW - width) / 2 + 15.4f
+                y = tileY + (tileH - height) / 2 - 0.6f
+                tileGroup.layerMisc.addOwnedActor(this)
             })
             startingLocationIcons.add(label.toLabel(Color.FIREBRICK, 14).apply {
-                tileGroup.layerMisc.addActor(this)
+                touchable = Touchable.disabled
                 setOrigin(Align.center)
-                center(tileGroup)
-                moveBy(15f, 0f)
+                x = tileX + (tileW - width) / 2 + 15f
+                y = tileY + (tileH - height) / 2
+                tileGroup.layerMisc.addOwnedActor(this)
             })
         }
 
@@ -365,13 +376,14 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
         for (nation in nations.take(3).asReversed()) {
             val newNationIcon =
                     ImageGetter.getNationPortrait(nation.second, 20f)
-            tileGroup.layerMisc.addActor(newNationIcon)
             newNationIcon.run {
+                touchable = Touchable.disabled
                 setSize(20f, 20f)
-                center(tileGroup)
-                moveBy(offsetX, offsetY)
+                x = tileX + (tileGroup.width - 20f) / 2 + offsetX
+                y = tileY + (tileGroup.height - 20f) / 2 + offsetY
                 color = Color.WHITE.cpy().apply { a = 0.6f }
             }
+            tileGroup.layerMisc.addOwnedActor(newNationIcon)
             startingLocationIcons.add(newNationIcon)
             offsetX -= 8f
             offsetY -= 4f
@@ -381,44 +393,51 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
         if (nations.size > 3) {
             // Tons of locations for this tile - display number in red, behind the top three
             startingLocationIcons.add(nations.size.tr().toLabel(ImageGetter.CHARCOAL.cpy().apply { a = 0.7f }, 14).apply {
-                tileGroup.layerMisc.addActor(this)
+                touchable = Touchable.disabled
                 setOrigin(Align.center)
-                center(tileGroup)
-                moveBy(14.4f, -9f)
+                x = tileX + (tileGroup.width - width) / 2 + 14.4f
+                y = tileY + (tileGroup.height - height) / 2 - 9f
+                tileGroup.layerMisc.addOwnedActor(this)
             })
             startingLocationIcons.add(nations.size.tr().toLabel(Color.FIREBRICK, 14).apply {
-                tileGroup.layerMisc.addActor(this)
+                touchable = Touchable.disabled
                 setOrigin(Align.center)
-                center(tileGroup)
-                moveBy(14f, -8.4f)
+                x = tileX + (tileGroup.width - width) / 2 + 14f
+                y = tileY + (tileGroup.height - height) / 2 - 8.4f
+                tileGroup.layerMisc.addOwnedActor(this)
             })
         }
     }
 
 
     fun removeWorkedIcon() {
-        workedIcon?.remove()
+        workedIcon?.let { removeOwnedActor(it) }
         workedIcon = null
         determineVisibility()
     }
 
     fun addWorkedIcon(icon: Actor) {
         workedIcon = icon
-        addActor(workedIcon)
+        onWorkedIconClick?.let { handler -> icon.onClick { handler() } }
+        onWorkedIconDoubleClick?.let { handler -> icon.onDoubleClick(action = { handler() }) }
+        addOwnedActor(workedIcon!!)
         determineVisibility()
     }
 
     fun addHexOutline(color: Color) {
-        hexOutlineIcon?.remove()
-        hexOutlineIcon = ImageGetter.getImage("OtherIcons/HexagonOutline").setHexagonSize(1f)
+        hexOutlineIcon?.let { removeOwnedActor(it) }
+        hexOutlineIcon = ImageGetter.getImage("OtherIcons/HexagonOutline").apply {
+            touchable = Touchable.disabled
+            setHexagonSize(1f)
+        }
         hexOutlineIcon!!.color = color
-        addActor(hexOutlineIcon)
+        addOwnedActor(hexOutlineIcon!!)
         hexOutlineIcon!!.toBack()
         determineVisibility()
     }
 
     fun removeHexOutline() {
-        hexOutlineIcon?.remove()
+        hexOutlineIcon?.let { removeOwnedActor(it) }
         hexOutlineIcon = null
         determineVisibility()
     }
@@ -428,18 +447,21 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
 
     /** Activates a colored semitransparent overlay. [color] is cloned and [alpha] applied. No brightening unlike the overload without explicit alpha! */
     fun overlayTerrain(color: Color, alpha: Float) = overlayTerrainInner(color.cpy().apply { a = alpha })
-    
+
     private fun overlayTerrainInner(color: Color) {
-        if (terrainOverlay == null){
-            terrainOverlay = ImageGetter.getImage(strings.hexagon).setHexagonSize()
-            addActor(terrainOverlay)
+        if (terrainOverlay == null) {
+            terrainOverlay = ImageGetter.getImage(strings.hexagon).apply {
+                touchable = Touchable.disabled
+                setHexagonSize()
+            }
+            addOwnedActor(terrainOverlay!!)
         }
-        terrainOverlay?.color = color
+        terrainOverlay!!.color = color
         determineVisibility()
     }
 
     fun hideTerrainOverlay() {
-        terrainOverlay?.remove()
+        terrainOverlay?.let { removeOwnedActor(it) }
         terrainOverlay = null
         determineVisibility()
     }
@@ -457,7 +479,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
     fun dimPopulation(dim: Boolean) { workedIcon?.color?.a = if (dim) 0.4f else 1f }
 
 
-    override fun doUpdate(viewingCiv: Civilization?, localUniqueCache: LocalUniqueCache) {
+    override fun doUpdate(viewingCiv: Civilization?) {
         if (tileGroup !is WorldTileGroup || DebugUtils.SHOW_TILE_COORDS)
             updateStartingLocationIcon(true)
         updateArrows()

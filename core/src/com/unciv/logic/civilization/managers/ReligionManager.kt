@@ -199,10 +199,10 @@ class ReligionManager : IsPartOfGameInfoSerialization {
 
     private fun generateProphet() {
         val prophetUnit = getGreatProphetEquivalent() ?: return // No prophet units in this mod
+        val prophetCost = faithForNextGreatProphet()
+        val prophetSpawnChance = (5f + storedFaith - prophetCost) / 100f
 
-        val prophetSpawnChange = (5f + storedFaith - faithForNextGreatProphet()) / 100f
-
-        if (Random(civInfo.gameInfo.turns).nextFloat() < prophetSpawnChange) {
+        if (Random(civInfo.gameInfo.turns).nextFloat() < prophetSpawnChance) {
             val birthCity =
                 if (religionState <= ReligionState.Pantheon) civInfo.getCapital()
                 else {
@@ -211,8 +211,10 @@ class ReligionManager : IsPartOfGameInfoSerialization {
                     else civInfo.getCapital() // default to capital
                 }
             val prophet = civInfo.units.addUnit(prophetUnit, birthCity) ?: return
+            if (birthCity != null) // e.g. mosque of djenne bonuses
+                prophetUnit.addConstructionBonuses(prophet, birthCity.cityConstructions)
             prophet.religion = religion!!.name
-            storedFaith -= faithForNextGreatProphet()
+            storedFaith -= prophetCost
             civInfo.civConstructions.boughtItemsWithIncreasingPrice.add(prophetUnit.name, 1)
         }
     }

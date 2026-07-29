@@ -23,17 +23,16 @@ import com.unciv.logic.event.EventBus
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.darken
+import com.unciv.ui.components.extensions.right
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.extensions.top
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.KeyboardBindings
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.widgets.AutoScrollPane
-import com.unciv.ui.popups.Popup.Scrollability.All
-import com.unciv.ui.popups.Popup.Scrollability.None
-import com.unciv.ui.popups.Popup.Scrollability.WithoutButtons
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.UncivStage
 
@@ -65,7 +64,7 @@ open class Popup(
      * @property All Entire content wrapped in an [AutoScrollPane] so it can scroll if larger than maximum dimensions
      * @property WithoutButtons Content separated into scrollable upper part and static lower part containing the buttons
      */
-    enum class Scrollability { None, All, WithoutButtons }
+    enum class Scrollability { None, All, WithoutButtons, DevConsole }
 
     protected val maxPopupWidth = stageToShowOn.width * maxSizePercentage
     protected val maxPopupHeight = stageToShowOn.height * maxSizePercentage
@@ -131,9 +130,10 @@ open class Popup(
         // Set actor name for debugging
         name = javaClass.simpleName
 
-        background = BaseScreen.skinStrings.getUiBackground(
-            "General/Popup/Background",
-            tintColor = Color.GRAY.cpy().apply { a = 0.5f })
+        if (scrollable != Scrollability.DevConsole)
+            background = BaseScreen.skinStrings.getUiBackground(
+                "General/Popup/Background",
+                tintColor = Color.GRAY.cpy().apply { a = 0.5f })
 
         //todo topTable and bottomTable _could_ be separately skinnable - but would need care so rounded edges work
         innerTable.background = BaseScreen.skinStrings.getUiBackground(
@@ -150,7 +150,7 @@ open class Popup(
                 bottomTable = innerTable
                 topTableCell = super.add(innerTable)
             }
-            Scrollability.All -> {
+            Scrollability.All, Scrollability.DevConsole -> {
                 topTable = innerTable
                 bottomTable = innerTable
                 topTableCell = super.add(wrapInScrollPane(innerTable))
@@ -173,7 +173,7 @@ open class Popup(
         topTableCell.maxSize(maxPopupWidth, maxPopupHeight)
 
         isVisible = false
-        touchable = Touchable.enabled
+        touchable = if (scrollable == Scrollability.DevConsole) Touchable.childrenOnly else Touchable.enabled
         // clicking behind gets special treatment
         super.addListener(getBehindClickListener())
         super.setFillParent(true)
@@ -205,19 +205,46 @@ open class Popup(
         pack()
         center(stageToShowOn)
         events.receive(UncivStage.VisibleAreaChanged::class) {
-            fitContentIntoVisibleArea(it.visibleArea)
+            fitOrCenterContentIntoVisibleArea(it.visibleArea)
         }
-        fitContentIntoVisibleArea((stageToShowOn as UncivStage).lastKnownVisibleArea)
+        centerContentIntoVisibleArea(lastKnownVisibleArea())
         if (force || !stageToShowOn.hasOpenPopups()) {
             show()
         }
     }
 
+    private fun Rectangle.isMostOfScreen() =
+        width / stageToShowOn.width > 0.9f && height / stageToShowOn.height > 0.9f
+    private fun lastKnownVisibleArea() = (stageToShowOn as UncivStage).lastKnownVisibleArea
+
+    /** Centers [innerTable] when only status bar and/or system UI limit the [visibleArea],
+     *  otherwise shifts it from center just enough to fit in [visibleArea] plus 5f padding.
+     */
+    protected fun fitOrCenterContentIntoVisibleArea(visibleArea: Rectangle = lastKnownVisibleArea()) =
+        if (visibleArea.isMostOfScreen()) centerContentIntoVisibleArea(visibleArea)
+        else fitContentIntoVisibleArea(visibleArea)
+
     private fun fitContentIntoVisibleArea(visibleArea: Rectangle) {
+        // The content, when centered, has this margin around, padded by 5f
+        val xMargin = (stageToShowOn.width - innerTable.prefWidth) / 2f - 5f
+        val yMargin = (stageToShowOn.height - innerTable.prefHeight) / 2f - 5f
+        val visibleRight = stageToShowOn.width - visibleArea.right
+        val visibleTop = stageToShowOn.height - visibleArea.top
+        // Now push innerTable "out of the way" only if overlapping,
+        // e.g. do nothing to the bottom if visibleArea.y is smaller than the calculated margin
+        // To "push" by a distance X we'll need to pad by 2*X since innerTable is centered
+        padLeft(((visibleArea.x - xMargin) * 2f).coerceIn(0f, visibleArea.width))
+        padBottom(((visibleArea.y - yMargin) * 2f).coerceIn(0f, visibleArea.height))
+        padRight(((visibleRight - xMargin) * 2f).coerceIn(0f, visibleArea.width))
+        padTop(((visibleTop - yMargin) * 2f).coerceIn(0f, visibleArea.height))
+        invalidate()
+    }
+
+    private fun centerContentIntoVisibleArea(visibleArea: Rectangle) {
         padLeft(visibleArea.x)
         padBottom(visibleArea.y)
-        padRight(stageToShowOn.width - visibleArea.x - visibleArea.width)
-        padTop(stageToShowOn.height - visibleArea.y - visibleArea.height)
+        padRight(stageToShowOn.width - visibleArea.right)
+        padTop(stageToShowOn.height - visibleArea.top)
         invalidate()
     }
 

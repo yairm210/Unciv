@@ -34,7 +34,7 @@ internal class SoundTab(
 
     private fun addDownloadMusic() {
         val downloadMusicButton = "Download music".toTextButton()
-        add(downloadMusicButton).colspan(2).row()
+        add(downloadMusicButton).colspan(2).padTop(20f).row()
         val errorTable = Table()
         add(errorTable).colspan(2).row()
 

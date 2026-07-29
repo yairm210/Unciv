@@ -134,6 +134,16 @@ class ThreatManagerTests {
     }
 
     @Test
+    fun `Find tiles with enemy units after extending search`() {
+        val centerTile = testGame.getTile(0,0)
+        testGame.addUnit("Warrior", enemyCiv, testGame.getTile(2,0))
+        testGame.addUnit("Warrior", enemyCiv, testGame.getTile(4,0))
+        assertEquals(1, threatManager.getTilesWithEnemyUnitsInDistance(centerTile, 3).count())
+        // Extending the search must still include the cached closer enemy tile
+        assertEquals(2, threatManager.getTilesWithEnemyUnitsInDistance(centerTile, 5).count())
+    }
+
+    @Test
     fun `Find distance to enemy after find tiles with enemy units`() {
         val centerTile = testGame.getTile(0,0)
         testGame.addUnit("Warrior", enemyCiv, testGame.getTile(3,0))

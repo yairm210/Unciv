@@ -21,6 +21,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
 import com.unciv.utils.DebugUtils
 import java.util.EnumSet
+import com.unciv.logic.automation.Timers.Companion.timeThis
 
 /** CivInfo class was getting too crowded */
 class CivInfoTransientCache(val civInfo: Civilization) {
@@ -44,6 +45,11 @@ class CivInfoTransientCache(val civInfo: Civilization) {
     /** Contains mapping of cities to travel mediums from ALL civilizations connected by trade routes to the capital */
     @Transient
     var citiesConnectedToCapitalToMediums = mapOf<City, EnumSet<CapitalConnectionMedium>>()
+
+    /** Ally/friend city-state bonus UniqueMaps */
+    @Transient
+    var cityStateBonusUniqueMaps: List<UniqueMap> = emptyList()
+        private set
 
     fun updateState() {
         civInfo.state = GameContext(civInfo)
@@ -91,7 +97,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         }
     }
 
-    fun updateSightAndResources() {
+    fun updateSightAndResources():Unit = timeThis("updateSightAndResources") {
         updateViewableTiles()
         updateHasActiveEnemyMovementPenalty()
         updateCivResources()
@@ -168,7 +174,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
     /** Our tiles update pretty infrequently - most 'viewable tile' changes are due to unit movements,
      * which means we can store this separately and use it 'as is' so we don't need to find the neighboring tiles every time
      * a unit moves */
-    fun updateOurTiles() {
+    fun updateOurTiles():Unit = timeThis("CivInfoTransientCache.updateOurTiles")  {
         ourTilesAndNeighboringTiles = civInfo.cities.asSequence()
             .flatMap { it.getTiles() } // our owned tiles, still distinct
             .flatMap { sequenceOf(it) + it.neighbors }
@@ -276,6 +282,9 @@ class CivInfoTransientCache(val civInfo: Civilization) {
                 GameContext(civInfo, tile = tile)
             ))
                 UniqueTriggerActivation.triggerUnique(unique, civInfo, tile=tile, triggerNotificationText = "due to discovering a Natural Wonder")
+
+            // G&K in particular; update the happiness counter in the top bar in the world screen
+            civInfo.updateStatsForNextTurn()
         }
     }
 
@@ -285,7 +294,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
                 civInfo.getMatchingUniques(UniqueType.EnemyUnitsSpendExtraMovement)
     }
 
-    fun updateCitiesConnectedToCapital(initialSetup: Boolean = false) {
+    fun updateCitiesConnectedToCapital(initialSetup: Boolean = false):Unit = timeThis("CivInfoTransientCache.updateCitiesConnectedToCapital") {
         if (civInfo.cities.isEmpty()) return // No cities to connect
 
         val oldConnectedCities = if (initialSetup)
@@ -313,7 +322,25 @@ class CivInfoTransientCache(val civInfo: Civilization) {
             city.connectedToCapitalStatus = city in newConnectedCities
     }
 
-    fun updateCivResources() {
+    private fun updateCityStateBonuses() {
+        if (civInfo.isCityState) return
+        
+        val newMaps = ArrayList<UniqueMap>()
+        for (diplomacyManager in civInfo.diplomacy.values) {
+            val cityState = diplomacyManager.otherCiv
+            if (!cityState.isCityState || cityState.isDefeated()) continue
+            val uniqueMap = when {
+                cityState.allyCiv == civInfo -> cityState.cityStateType.allyBonusUniqueMap
+                cityState.getDiplomacyManager(civInfo)!!.getInfluence() >= 30 -> cityState.cityStateType.friendBonusUniqueMap
+                else -> continue
+            }
+            newMaps.add(uniqueMap)
+        }
+        cityStateBonusUniqueMaps = newMaps
+    }
+
+    fun updateCivResources():Unit = timeThis("CivInfoTransientCache.updateCivResources") {
+        updateCityStateBonuses()
         val newDetailedCivResources = ResourceSupplyList()
         for (city in civInfo.cities) newDetailedCivResources.add(city.getResourcesGeneratedByCity())
 

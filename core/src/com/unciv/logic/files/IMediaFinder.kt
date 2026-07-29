@@ -14,6 +14,7 @@ import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.audio.MusicController
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.images.ImageGetter
+import com.unciv.utils.isRunFromJar
 import kotlin.reflect.full.declaredMemberProperties
 
 /**
@@ -140,8 +141,7 @@ interface IMediaFinder {
         private fun supportedAudioExtensions() = setOf(".mp3", ".ogg", ".wav")   // Per Gdx docs, no aac/m4a
         private fun supportedImageExtensions() = setOf(".png", ".jpg", ".jpeg")
         private fun isRunFromJar(): Boolean =
-            Gdx.app.type == Application.ApplicationType.Desktop &&
-            this::class.java.`package`.specificationVersion != null
+            Gdx.app.type == Application.ApplicationType.Desktop && isRunFromJar(this)
     }
 
     open class Sounds : IMediaFinder {

@@ -82,7 +82,7 @@ internal class ConsoleTriggerAction(
 
             // Validate the found Unique
             val validator = UniqueValidator(console.gameInfo.ruleset)
-            val errors = validator.checkUnique(unique, false, ConsoleRulesetObject(targetType), true)
+            val errors = validator.checkUnique(unique, false, ConsoleRulesetObject(targetType))
             if (!errors.isNotOK()) return unique to errors.getErrorText(true)
 
             // Errors - is deprecation the only problem?

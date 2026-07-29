@@ -13,7 +13,7 @@ class AuthPopup(stage: Stage, private val authSuccessful: ((Boolean) -> Unit)? =
 
     constructor(screen: BaseScreen, authSuccessful: ((Boolean) -> Unit)? = null) : this(screen.stage, authSuccessful)
 
-    private val passwordField: UncivTextField = UncivTextField("Password")
+    private val passwordField: UncivTextField = UncivTextField("Password").apply { isPasswordMode = true }
     private val button: TextButton = "Authenticate".toTextButton()
     private val negativeButtonStyle: TextButton.TextButtonStyle =
         BaseScreen.skin.get("negative", TextButton.TextButtonStyle::class.java)

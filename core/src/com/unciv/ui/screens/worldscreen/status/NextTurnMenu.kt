@@ -9,27 +9,24 @@ import com.unciv.ui.screens.worldscreen.WorldScreen
 
 class NextTurnMenu(
     stage: Stage,
-    positionNextTo: Actor,
-    private val nextTurnButton: NextTurnButton,
+    nextTurnButton: NextTurnButton,
     private val worldScreen: WorldScreen
-) : AnimatedMenuPopup(stage, getActorTopRight(positionNextTo)) {
+) : AnimatedMenuPopup(stage, nextTurnButton) {
 
     init {
         // We need to activate the end turn button again after the menu closes
         afterCloseCallback = { worldScreen.shouldUpdate = true }
     }
-    
+
     override fun createContentTable(): Table {
         val table = super.createContentTable()!!
-        table.add(getButton("Next Turn", KeyboardBinding.NextTurnMenuNextTurn) { 
-            worldScreen.nextTurn() 
+        table.add(getButton("Next Turn", KeyboardBinding.NextTurnMenuNextTurn) {
+            worldScreen.nextTurn()
         }).row()
-        val automateUnitsAction = NextTurnAction.MoveAutomatedUnits
-        if (automateUnitsAction.isChoice(worldScreen))
-            table.add(getButton("Move automated units", KeyboardBinding.NextTurnMenuMoveAutomatedUnits) { 
-                automateUnitsAction.action(worldScreen) 
+        if (NextTurnAction.MoveAutomatedUnits.isChoice(worldScreen))
+            table.add(getButton("Move automated units", KeyboardBinding.NextTurnMenuMoveAutomatedUnits) {
+                NextTurnAction.MoveAutomatedUnits.action(worldScreen)
             }).row()
         return table
     }
 }
-

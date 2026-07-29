@@ -4,6 +4,7 @@ package com.unciv.logic.map.mapunit.movement
 
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.HexCoord
@@ -70,7 +71,7 @@ class UnitMovement(val unit: MapUnit) {
         canPassThroughCache: ArrayList<Boolean?> = ArrayList(),
         movementCostCache: HashMap<Int, Float> = HashMap(),
         includeOtherEscortUnit: Boolean = true
-    ): PathsToTilesWithinTurn {
+    ): PathsToTilesWithinTurn = timeThis("getMovementToTilesAtPosition") {
         if (UncivGame.Current.settings.useAStarPathfinding) {
             if (!considerZoneOfControl) require(includeOtherEscortUnit)
             val pathingMap = if (!considerZoneOfControl) aStarPathingWithoutZoneControl
@@ -91,18 +92,26 @@ class UnitMovement(val unit: MapUnit) {
         if (includeOtherEscortUnit && unit.isEscorting()
             && unit.getOtherEscortUnit()?.currentMovement == 0f) return distanceToTiles
 
+        // Loop-invariant across the whole search: escort state and the usable movement cap never change
+        // during one call, but were recomputed on every edge relaxation below.
+        val usableMovement = if (includeOtherEscortUnit && unit.isEscorting())
+            minOf(unitMovement, unit.getOtherEscortUnit()!!.currentMovement)
+        else unitMovement
+
         var tilesToCheck = listOf(unitTile)
-        
+
         while (tilesToCheck.isNotEmpty()) {
             val updatedTiles = ArrayList<Tile>()
-            for (tileToCheck in tilesToCheck)
+            for (tileToCheck in tilesToCheck) {
+                // Loop-invariant across this tile's neighbors: was looked up twice per neighbor below.
+                val tileToCheckMovement = distanceToTiles[tileToCheck]!!.totalMovement
                 for (neighbor in tileToCheck.neighbors) {
                     // ignore this tile
                     if (tilesToIgnoreBitset != null && tilesToIgnoreBitset.get(neighbor.zeroBasedIndex)) continue // ignore this tile
                     var totalDistanceToTile: Float = when {
                         !neighbor.isExplored(unit.civ) ->
-                            distanceToTiles[tileToCheck]!!.totalMovement + 1f  // If we don't know then we just guess it to be 1.
-                        
+                            tileToCheckMovement + 1f  // If we don't know then we just guess it to be 1.
+
                         !canPassThroughCache.getOrPut(neighbor.zeroBasedIndex){
                             canPassThrough(neighbor)
                         } -> unitMovement // Can't go here.
@@ -114,16 +123,12 @@ class UnitMovement(val unit: MapUnit) {
                             val movementCost = movementCostCache.getOrPut(key) {
                                 MovementCost.getMovementCostBetweenAdjacentTilesEscort(unit, tileToCheck, neighbor, considerZoneOfControl, includeOtherEscortUnit)
                             }
-                            distanceToTiles[tileToCheck]!!.totalMovement + movementCost
+                            tileToCheckMovement + movementCost
                         }
                     }
 
                     val currentBestPath = distanceToTiles[neighbor]
                     if (currentBestPath == null || currentBestPath.totalMovement > totalDistanceToTile) { // this is the new best path
-                        val usableMovement = if (includeOtherEscortUnit && unit.isEscorting())
-                            minOf(unitMovement, unit.getOtherEscortUnit()!!.currentMovement)
-                        else unitMovement
-
                         if (totalDistanceToTile < usableMovement - Constants.minimumMovementEpsilon)  // We can still keep moving from here!
                             updatedTiles += neighbor
                         else
@@ -134,6 +139,7 @@ class UnitMovement(val unit: MapUnit) {
                         distanceToTiles[neighbor] = ParentTileAndTotalMovement(neighbor, tileToCheck, totalDistanceToTile)
                     }
                 }
+            }
 
             tilesToCheck = updatedTiles
         }
@@ -145,8 +151,8 @@ class UnitMovement(val unit: MapUnit) {
      * Does not consider if the [destination] tile can actually be entered, use [canMoveTo] for that.
      * Returns an empty list if there's no way to get to the destination.
      */
-    @Readonly @Suppress("purity")
-    fun getShortestPath(destination: Tile, avoidDamagingTerrain: Boolean = false): List<Tile> {
+    @Readonly
+    fun getShortestPath(destination: Tile, avoidDamagingTerrain: Boolean = false): List<Tile> = timeThis<List<Tile>>("getShortestPath")  {
         if (unit.cache.cannotMove) return listOf()
         if (UncivGame.Current.settings.useAStarPathfinding)
             return aStarPathing.getShortestPath(destination) ?: listOf()
@@ -262,11 +268,12 @@ class UnitMovement(val unit: MapUnit) {
 
             distance++
         }
+        return emptyList()
     }
 
     class UnreachableDestinationException(msg: String) : Exception(msg)
 
-    @Readonly @Suppress("purity")
+    @Readonly
     fun getTileToMoveToThisTurn(finalDestination: Tile): Tile {
         val currentTile = unit.getTile()
         if (currentTile == finalDestination) return currentTile
@@ -381,6 +388,7 @@ class UnitMovement(val unit: MapUnit) {
         // We can't swap with ourself
         if (reachableTile == unit.getTile()) return false
         if (unit.cache.cannotMove) return false
+        if (!unit.hasMovement()) return false  // A* incorrectly reports occupied tiles as reachable when movement==0
 
         // Check whether the tile contains a unit of the same type as us that we own and that can also reach our tile in its current turn.
         // When looking for escort formation swaps, however, the 'other' unit should be taken disregarding this unit's type.
@@ -397,6 +405,7 @@ class UnitMovement(val unit: MapUnit) {
         val ourPosition = unit.getTile()
         if (otherUnit.owner != unit.owner
             || otherUnit.cache.cannotMove  // redundant but faster, line below would cover it too
+            || !otherUnit.hasMovement()  // A* incorrectly reports occupied tiles as reachable when movement==0
             || !otherUnit.movement.canReachInCurrentTurn(ourPosition)) return false
 
         if (!canMoveTo(reachableTile, allowSwap = true)) return false
@@ -464,7 +473,7 @@ class UnitMovement(val unit: MapUnit) {
         else unit.destroy()
     }
 
-    fun moveToTile(destination: Tile, considerZoneOfControl: Boolean = true) {
+    fun moveToTile(destination: Tile, considerZoneOfControl: Boolean = true): Unit = timeThis<Unit>("moveToTile") {
         if (destination == unit.getTile() || unit.isDestroyed) return // already here (or dead)!
         // Reset closestEnemy chache
         val escortUnit = if (unit.isEscorting()) unit.getOtherEscortUnit()!! else null
@@ -989,6 +998,7 @@ class PathfindingCache(private val unit: MapUnit) {
     }
 }
 
+/** Should contain current unit location even when it has no movement */
 class PathsToTilesWithinTurn : LinkedHashMap<Tile, UnitMovement.ParentTileAndTotalMovement>() {
     fun getPathToTile(tile: Tile): List<Tile> {
         if (!containsKey(tile)) {

@@ -1,5 +1,6 @@
 package com.unciv.dev
 
+import com.badlogic.gdx.Application.ApplicationType
 import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application
@@ -34,12 +35,13 @@ import com.unciv.ui.components.widgets.AutoScrollPane
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.ImageWithCustomSize
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.screens.basescreen.SceneDebugMode
 import com.unciv.ui.screens.basescreen.UncivStage
 import com.unciv.utils.toGdxArray
 import java.awt.Font
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
+import kotlin.enums.enumEntries
+import kotlin.reflect.KMutableProperty0
 
 
 /** Creates a basic GDX application that mimics [UncivGame] as closely as possible,
@@ -56,6 +58,7 @@ import java.awt.image.BufferedImage
  *  - The middle mouse button toggles Scene2D debug mode, like the full game offers in the Debug Options.
  */
 object FasterUIDevelopment {
+    var simulateAndroid = false
 
     private val tests: List<IFasterUITester> =
         (
@@ -78,7 +81,11 @@ object FasterUIDevelopment {
             config.setWindowedMode(width, height)
         }
 
-        Lwjgl3Application(UIDevGame(), config)
+        object : Lwjgl3Application(UIDevGame(), config) {
+            override fun getType(): ApplicationType {
+                return if (simulateAndroid) ApplicationType.Android else ApplicationType.Desktop
+            }
+        }
     }
 
     private class UIDevGame : Game() {
@@ -154,18 +161,28 @@ object FasterUIDevelopment {
                 table.add(button).colspan(2).row()
             }
 
-            val select = SelectBox<SceneDebugMode>(skin)
-            select.items = SceneDebugMode.entries.toGdxArray()
-            select.selected = enableSceneDebug
-            select.onChange { enableSceneDebug = select.selected }
-            table.add("Gdx Scene2D debug".toLabel()).left().fillX()
-            table.add(select).minWidth(120f).row()
+            table.addSelectbox("UI Scale", game.settings::screenSize) {
+                game.replaceCurrentScreen(UIDevTestPicker(game, tests))
+            }
+            table.addSelectbox("Gdx Scene2D debug", ::enableSceneDebug)
 
             val scroll = AutoScrollPane(table, skin)
             scroll.setOverscroll(false, false)
             scroll.setFillParent(true)
             stage.addActor(scroll)
             globalShortcuts.add(KeyboardBinding.QuitMainMenu) { game.popScreen(silentQuit = true) }
+        }
+
+        inline fun <reified T: Enum<T>> Table.addSelectbox(text: String, property: KMutableProperty0<T>, crossinline onChange: () -> Unit = {}) {
+            val select = SelectBox<T>(BaseScreen.skin)
+            select.items = enumEntries<T>().toGdxArray()
+            select.selected = property.get()
+            select.onChange {
+                property.set(select.selected)
+                onChange()
+            }
+            add(text.toLabel()).left().fillX()
+            add(select).minWidth(120f).row()
         }
     }
 

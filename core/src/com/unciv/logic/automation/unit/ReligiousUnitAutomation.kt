@@ -86,7 +86,7 @@ object ReligiousUnitAutomation {
         val citiesToProtect = unit.civ.cities.asSequence()
             .filter { it.religion.getMajorityReligion() == civReligion }
             // We only look at cities that are not currently protected or are protected by us
-            .filter { !it.religion.isProtectedByInquisitor() || unit.getTile() in it.getCenterTile().getTilesInDistance(1) }
+            .filter { !it.religion.isProtectedByInquisitor() || unit.getTile() in it.getCenterTile().neighbors }
 
         // cities with most populations will be prioritized by the AI
         val cityToProtect = citiesToProtect.maxByOrNull { it.population.population }

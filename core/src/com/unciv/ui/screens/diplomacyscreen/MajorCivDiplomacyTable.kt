@@ -85,7 +85,7 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
 
         if (otherCiv.isHuman())
             diplomacyTable.add(diplomacyScreen.getHumanRelationshipTable(otherCivDiplomacyManager)).row()
-        else { 
+        else {
             diplomacyTable.add(diplomacyScreen.getRelationshipTable(otherCivDiplomacyManager)).row()
             diplomacyTable.add(getDiplomacyModifiersTable(otherCivDiplomacyManager)).row()
         }
@@ -194,7 +194,7 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
                 promisesTable.add(text.toLabel(Color.LIGHT_GRAY)).row()
             }
         }
-        
+
         return if (promisesTable.cells.isEmpty) null else promisesTable
     }
 
@@ -222,10 +222,13 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         demandsTable.defaults().pad(10f)
 
         val diplomacyManager = viewingCiv.getDiplomacyManager(otherCiv)!!
-        
-        for (demand in Demand.entries){
+
+        for (demand in Demand.entries) {
+            if (!demand.show(viewingCiv))
+                continue
+
             val button = demand.demandText.toTextButton()
-            
+
             if (otherCiv.popupAlerts.any { it.type == demand.demandAlert && it.value == viewingCiv.civID } // Already demanded
                 || diplomacyManager.hasFlag(demand.agreedToDemand)) { // already agreed
                 button.disable()

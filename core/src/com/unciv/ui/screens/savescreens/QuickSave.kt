@@ -109,6 +109,7 @@ object QuickSave {
             } else {
                 try {
                     screen.game.loadGame(savedGame)
+                    loadingPopup.close() // It's no longer on stage, but having an event receiver would keep it alive
                 } catch (_: OutOfMemoryError) {
                     outOfMemory()
                 } catch (ex: Exception) {

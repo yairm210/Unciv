@@ -36,6 +36,7 @@ import com.unciv.ui.screens.diplomacyscreen.LeaderIntroTable
 import com.unciv.ui.screens.victoryscreen.VictoryScreen
 import yairm210.purity.annotations.Readonly
 import java.util.EnumSet
+import kotlin.text.ifEmpty
 
 /**
  * [Popup] communicating events other than trade offers to the player.
@@ -67,6 +68,7 @@ class AlertPopup(
         private const val SEPARATOR_LINE_TO_TEXT_PADDING = 25f
         private val LIGHTER_RED_COLOR = Color(1f, 1/3f, 1/3f, 1f)
         private val LIGHTER_GREEN_COLOR = Color(1/3f, 1f, 1/3f, 1f)
+        private val LIGHTER_ORANGE_COLOR = Color(1f, 2/5f, 0f, 1f)
     }
 
     //region convenience getters
@@ -102,6 +104,7 @@ class AlertPopup(
             AlertType.WarDeclaration -> shouldOpen = addWarDeclaration()
             AlertType.BorderConflict -> shouldOpen = addBorderConflict()
             AlertType.TilesStolen -> shouldOpen = addTilesStolen()
+            AlertType.Denounced -> shouldOpen = addDenouncement()
             
             // demands
             AlertType.DemandToStopSettlingCitiesNear -> shouldOpen = addDemand(Demand.DoNotSettleNearUs)
@@ -110,7 +113,10 @@ class AlertPopup(
             AlertType.ReligionSpreadDespiteOurPromise -> shouldOpen = addDemandViolationNoticed(Demand.DoNotSpreadReligion)
             AlertType.DemandToStopSpyingOnUs -> shouldOpen = addDemand(Demand.DontSpyOnUs)
             AlertType.SpyingOnUsDespiteOurPromise -> shouldOpen = addDemand(Demand.DontSpyOnUs)
-            
+            AlertType.DemandToNotAttackUs -> shouldOpen = addDemand(Demand.DoNotAttackUs)
+            AlertType.AttackedUsDespitePromise -> shouldOpen = addDemandViolationNoticed(Demand.DoNotAttackUs)
+            AlertType.AcceptingDemand -> shouldOpen = addAcceptingDemand()
+            AlertType.RejectingDemand -> shouldOpen = addRejectingDemand()
             
             AlertType.DeclarationOfFriendship -> shouldOpen = addDeclarationOfFriendship()
             AlertType.BulliedProtectedMinor, AlertType.AttackedProtectedMinor, AlertType.AttackedAllyMinor -> 
@@ -266,6 +272,31 @@ class AlertPopup(
         return true
     }
 
+    private fun addDenouncement(): Boolean {
+        val denouncer = getCiv(popupAlert.value)
+        if (denouncer.isDefeated())
+            return false
+        addLeaderName(denouncer)
+        addTopicHeader("DENOUNCEMENT", LIGHTER_ORANGE_COLOR)
+        // normal message unless we are enemies
+        val leaderMessage = if (denouncer.getDiplomacyManager(viewingCiv)!!.isRelationshipLevelGE(RelationshipLevel.Competitor)) {
+            music.playVoice("${denouncer.nation.name}.neutralDenouncing")
+            denouncer.nation.neutralDenouncing.ifEmpty { "You have violated our bond of trust. This is intolerable!" }
+        } else {
+            music.playVoice("${denouncer.nation.name}.hateDenouncing")
+            denouncer.nation.hateDenouncing.ifEmpty { "You are a scourge upon this earth. I denounce you!" }
+        }
+        addGoodSizedLabel(leaderMessage).row()
+        val diplomacy = viewingCiv.getDiplomacyManager(denouncer)!!
+        if (diplomacy.canDeclareWar()) {
+            addCloseButton("THIS MEANS WAR! (Declare war)") {
+                diplomacy.declareWar()
+            }.row()
+        }
+        addCloseButton("Very well.", KeyboardBinding.Cancel).row()
+        return true
+    }
+    
     private fun addDefeated() {
         val civInfo = getCiv(popupAlert.value)
         addLeaderName(civInfo)
@@ -287,10 +318,51 @@ class AlertPopup(
         }.row()
         addCloseButton(demand.refuseDemandText, KeyboardBinding.Cancel) {
             playerDiploManager.refuseDemand(demand)
+            if (demand == Demand.DoNotAttackUs)
+                viewingCiv.getDiplomacyManager(otherciv)!!.declareWar()
         }
         return true
     }
 
+    private fun addAcceptingDemand(): Boolean {
+        val otherCiv = getCiv(popupAlert.value)
+        if (otherCiv.isDefeated())
+            return false
+        addLeaderName(otherCiv)
+        addTopicHeader("ACCEPTING DEMAND", Color.YELLOW)
+        val leaderMessage = otherCiv.nation.acceptingDemand.ifEmpty {
+            "We will comply, but our consent is given grudgingly."
+        }
+        addGoodSizedLabel(leaderMessage).row()
+        music.playVoice("${otherCiv.civName}.acceptingDemand")
+        addCloseButton("Very well.", KeyboardBinding.Cancel)
+        return true
+    }
+    
+    private fun addRejectingDemand(): Boolean {
+        val otherCiv = getCiv(popupAlert.value)
+        if (otherCiv.isDefeated())
+            return false
+        addLeaderName(otherCiv)
+        addTopicHeader("REJECTING DEMAND", LIGHTER_ORANGE_COLOR)
+        val theirDiplomacy = otherCiv.getDiplomacyManager(viewingCiv)!!
+        val leaderMessage = if (theirDiplomacy.isRelationshipLevelGE(RelationshipLevel.Competitor)) {
+            music.playVoice("${otherCiv.nation.name}.neutralRejectingDemand")
+            otherCiv.nation.neutralRejectingDemand.ifEmpty {
+                "Your demands are in poor taste. We shall decide this matter on our own."
+            }
+        } else {
+            music.playVoice("${otherCiv.nation.name}.hateRejectingDemand")
+            otherCiv.nation.hateRejectingDemand.ifEmpty {
+                "Did you really expect us to bend to such brazen demands?"
+            }
+        }
+        addGoodSizedLabel(leaderMessage).row()
+        addCloseButton("You'll pay for this!")
+        addCloseButton("Very well.", KeyboardBinding.Cancel)
+        equalizeLastTwoButtonWidths()
+        return true
+    }
 
     private fun addDiplomaticMarriage() {
         val city = getCity(popupAlert.value)
@@ -427,7 +499,9 @@ class AlertPopup(
         if (civInfo.isDefeated()) return false
         addLeaderName(civInfo)
         addTopicHeader("DECLARATION OF WAR", LIGHTER_RED_COLOR)
-        addGoodSizedLabel(civInfo.nation.declaringWar).row()
+        val leaderMessage = civInfo.nation.declaringWar
+        if (leaderMessage.isNotEmpty())
+            addGoodSizedLabel(leaderMessage).row()
         addCloseButton("You'll pay for this!")
         addCloseButton("Very well.")
         equalizeLastTwoButtonWidths()

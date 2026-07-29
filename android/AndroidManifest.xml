@@ -47,7 +47,24 @@
                     android:scheme="https"
                     android:host="unciv.app"
                     android:path="/multiplayer"
-                />
+                    />
+            </intent-filter>
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SENDTO" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" />
+                <data android:host="yairm210.github.io" />
+                <data android:pathPrefix="/Unciv/G/" />
+                <data android:pathPrefix="/Unciv/g/" />
+                <data android:pathPrefix="/unciv/G/" />
+                <data android:pathPrefix="/unciv/g/" />
+                <data android:pathPrefix="/Unciv/P/" />
+                <data android:pathPrefix="/Unciv/p/" />
+                <data android:pathPrefix="/unciv/P/" />
+                <data android:pathPrefix="/unciv/p/" />
             </intent-filter>
         </activity>
 

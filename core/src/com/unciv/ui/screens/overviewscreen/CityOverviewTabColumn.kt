@@ -24,16 +24,13 @@ import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.city.CityResources
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.ui.components.extensions.addCapitalIndicator
 import kotlin.math.roundToInt
 
 
 /**
  * This defines all behaviour of the [CityOverviewTab] columns through overridable parts
  */
-
-// Note: Using type hints on compareBy where explicitly typing the lambda `it` instead would be prettier.
-// detekt would false-positive the typed `it`, see discussion in: https://github.com/detekt/detekt/pull/6367
-
 enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOverviewScreen> {
     //region Enum Instances
     CityColumn {
@@ -181,8 +178,33 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
         override fun getEntryActor(item: City, iconSize: Float, actionContext: EmpireOverviewScreen) =
             "${getEntryValue(item)}/${item.getMaxHealth()}".toLabel()
         override fun getTotalsActor(items: Iterable<City>) = null  // an intended empty space
-    };
+    },
 
+    Religion {
+        override fun isVisible(gameInfo: GameInfo) = gameInfo.isReligionEnabled()
+        override val headerTip = "Majority Religion"
+        override fun getHeaderActor(iconSize: Float) = getCircledIcon("ReligionIcons/Religion", iconSize)
+        override fun getEntryValue(item: City) = // used only for sorting: followers of our religion
+            item.civ.religionManager.religion?.let { ourReligion ->
+                item.religion.getFollowersOf(ourReligion.name)
+            } ?: 0
+        override fun getEntryActor(item: City, iconSize: Float, actionContext: EmpireOverviewScreen) =
+            item.religion.getMajorityReligion()?.let { cityReligion ->
+                val icon = ImageGetter.getReligionPortrait(cityReligion.name, iconSize * 0.7f)
+                if (item.religion.religionThisIsTheHolyCityOf == cityReligion.name)
+                    icon.addCapitalIndicator(.9f, .5f, .9f, "ReligionIcons/Holy")
+                icon
+            }
+        override fun getTotalsActor(items: Iterable<City>): Actor? {
+            if (items.none()) return null
+            val ourReligion = items.first().civ.religionManager.religion ?: return null
+            val faithfulCitiesCount = items.count { city->
+                city.religion.getMajorityReligion() == ourReligion
+            }
+            return faithfulCitiesCount.toLabel()
+        }
+    },
+    ;
     //endregion
 
     companion object {

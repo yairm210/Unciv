@@ -10,8 +10,8 @@ import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
+import org.junit.Assert
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
@@ -49,9 +49,10 @@ class PathingMapTest {
         val moveThisTurn = fpmFromFixedPointBits((1 shl 8) or 1) //9 bits. value is 257 aka 13.00
         val turns = (1 shl 5) or 1 // 6 bits. value is 33
         val parentTile = testGame.tileMap.getClockPositionNeighborTile(tile, 12)!!
+        val attackRange = (1 shl 4) or 1 // 5 bits. value is 17
         val damagingTiles = 3
         val underestimatedTotal = fpmFromFixedPointBits((1 shl 13) or 1) //15 bits. value is 8193 aka 409.65move
-        val canMoveTo = true       
+        val canMoveTo = true
 
         val node = RouteNode(
             tile,
@@ -83,8 +84,7 @@ class PathingMapTest {
         val reRouteNode = RouteNode(prioritized.bits)
         assertEquals(tile.zeroBasedIndex, reRouteNode.tileIdx)
         assertEquals(tile, reRouteNode.tile(testGame.tileMap))
-        // PrioritizedNode drops parentTile bits
-        //assertEquals(parentTile, reRouteNode.parentTile(testGame.tileMap))
+        // PrioritizedNode drops parentTile
         assertEquals(moveThisTurn, reRouteNode.moveUsedThisTurn)
         assertEquals(pbmMoveThisTurn, reRouteNode.pbmMoveThisTurn)
         assertEquals(turns, reRouteNode.turns)
@@ -214,14 +214,12 @@ class PathingMapTest {
         assertEquals(path.toString(), 18, path.size)
 //        assertNotEquals(path.toString(), path.firstEntry(), path.lastEntry())
         assertEquals("""
-        -3     -2     -1     +0     +1     +2     +3    
-  +3     /      /      /      /     1/1.0  1/1.0  1/1.0 
-  +2     /      /     1/1.0  1/1.0  0/2.0  0/2.0  1/1.0 
-  +1     /     1/1.0  0/2.0  0/2.0  0/1.0  0/2.0  1/1.0 
-  +0    1/1.0  0/2.0  0/1.0  0/0.0S 0/1.0  0/2.0  1/1.0 
-  -1    1/1.0  0/2.0  0/1.0  0/1.0  0/2.0  1/1.0   /    
-  -2    1/1.0  0/2.0  0/2.0  0/2.0  1/1.0   /      /    
-  -3    1/1.0  1/1.0  1/1.0  1/1.0   /      /      /    
+        -2     -1     +0     +1     +2    
+  +2     /      /     1/1.0  0/2.0  0/2.0 
+  +1     /     0/2.0  0/2.0  0/1.0  0/2.0 
+  +0    0/2.0  0/1.0  0/0.0S 0/1.0  0/2.0 
+  -1    0/2.0  0/1.0  0/1.0  0/2.0   /    
+  -2    0/2.0  0/2.0  0/2.0   /      /    
 """, pathing.toDebugString())
         // And affirm cache
         assertEquals(path, pathing.getMovementToTilesAtPosition())
@@ -260,5 +258,91 @@ class PathingMapTest {
         assertNull(path)
         // And affirm cache
         assertEquals(path, pathing.getShortestPath(targetTile))
+    }
+
+    @Test
+    fun getShortestPath_toEveryTile_usesCacheCorrectly() {
+        val baseUnit = testGame.createBaseUnit()
+        baseUnit.movement = 4
+        val unit = testGame.addUnit(baseUnit.name, civInfo, originTile)
+        unit.currentMovement = 4f
+
+        val pathing = PathingMap.createUnitPathingMap(unit)
+        for (targetTile in testGame.tileMap.tileList) {
+            val aerialDistance = originTile.aerialDistanceTo(targetTile)
+            
+            val path = pathing.getShortestPath(targetTile)
+            
+            if (aerialDistance <= 4) {
+                assertEquals(listOf(targetTile), path)
+            } else {
+                assertEquals(2, path!!.size)
+                assertEquals(targetTile, path[1])                
+            }
+        }
+    }
+    
+    @Test
+    fun findMatchingTilesInAttackRange_considersAttackRange() {
+        val evemyCiv = testGame.addBarbarianCiv()
+        // Right side all hills, left side all roads.  A line of enemy warriors just north.
+        for (tile in testGame.tileMap.tileList) {
+            if (tile.position.x > 0) tile.addTerrainFeature("Hill")
+            if (tile.position.x < 0) tile.setRoadStatus(RoadStatus.Road, civInfo)
+            if (tile.position.y == 2) testGame.addUnit("Warrior", evemyCiv, tile)
+        }
+        val baseUnit = testGame.createBaseUnit()
+        baseUnit.movement = 3
+        baseUnit.range = 2
+        val unit = testGame.addUnit(baseUnit.name, civInfo, originTile)
+        unit.currentMovement = 3f
+
+        val pathing = PathingMap.createUnitPathingMap(unit)
+        val attackableTiles = pathing.bfsAllMatchingTiles(1) { tile, _ -> tile.militaryUnit?.civ == evemyCiv}
+        
+        // cant hit enemy at -5,2 because unit would have no movement left.
+        val expected = listOf(
+            HexCoord(-4,2),
+            HexCoord(-3,2),
+            HexCoord(-2,2),
+            HexCoord(-1,2),
+            HexCoord(0,2),
+            HexCoord(1,2),
+            HexCoord(2,2),
+            HexCoord(3,2),
+        )
+        val actual = attackableTiles.map {it.position}.sortedWith { l, r -> if (l.x != r.x) l.x.compareTo(r.x) else l.y.compareTo(r.y) }
+        assertEquals(expected, actual)
+        assertEquals("""
+        -6     -5     -4     -3     -2     -1     +0     +1     +2     +3    
+  +2     /      /     0/17.0* 0/17.0* 0/17.0* 0/17.0* 0/17.0* 0/17.0* 0/17.0* 0/17.0*
+  +1     /     1/0.5  0/3.0  0/2.5  0/2.0  0/1.5  0/1.0  0/2.0  0/3.0  1/2.0 
+  +0    1/0.5  0/3.0  0/2.5  0/2.0  0/1.5  0/1.0  0/0.0S 0/2.0  0/3.0  1/2.0 
+  -1    1/0.5  0/3.0  0/2.5  0/2.0  0/1.5  0/1.0  0/1.0  0/3.0  1/2.0   /    
+  -2    1/0.5  0/3.0  0/2.5  0/2.0  0/1.5  0/1.5  0/2.0  0/3.0  1/2.0   /    
+  -3    1/0.5  0/3.0  0/2.5  0/2.0  0/2.0  0/2.0  0/3.0  1/2.0   /      /    
+  -4    1/0.5  0/3.0  0/2.5  0/2.5  0/2.5  0/2.5  0/3.0  1/2.0   /      /    
+  -5    1/0.5  0/3.0  0/3.0  0/3.0  0/3.0  0/3.0  1/1.0   /      /      /    
+  -6    1/0.5  1/0.5  1/0.5  1/0.5  1/0.5  1/0.5   /      /      /           
+""", pathing.toDebugString())
+        // And affirm full recalculation using cached tiles has same result.
+        val actual2 = attackableTiles.map {it.position}.sortedWith { l, r -> if (l.x != r.x) l.x.compareTo(r.x) else l.y.compareTo(r.y) }
+        assertEquals(expected, actual2)
+    }
+
+    @Test
+    fun findMatchingTilesInAttackRange_considersSelf() {
+        val baseUnit = testGame.createBaseUnit()
+        baseUnit.movement = 1
+        val unit = testGame.addUnit(baseUnit.name, civInfo, originTile)
+        unit.currentMovement = 1f
+
+        val pathing = PathingMap.createUnitPathingMap(unit)
+        val attackableTiles = pathing.bfsAllMatchingTilesThisTurn { tile, _ -> tile.civilianUnit?.civ == civInfo}
+
+        val expected = listOf(HexCoord(0,0))
+        assertEquals(expected, attackableTiles.map {it.position})
+        // And affirm full recalculation using cached tiles has same result.
+        assertEquals(expected, pathing.bfsAllMatchingTilesThisTurn { tile, _ -> tile.civilianUnit?.civ == civInfo}.map {it.position})
     }
 }

@@ -100,9 +100,9 @@
             {"text": "Gold is also very valuable in Diplomacy. You can directly Gift Gold to City-States to gain their favor. Use it to balance a Trade Deal with other Nations. Or demand every last drop after a successful war and your enemy sues for peace."},
             {"text": "Ironically, some may consider Gold to be one of the less important Resources. But it's flexible nature and importance to keep your Nation running makes it a precious thing to pay attention to. After all, everyone loves Gold."},
             {"text": "Not to be confused with the Resource of the same name, Gold Ore", "link": "Resources/Gold Ore"},
-            {"text": "See also: Trade Route", "link": "Tutorials/Trade Route"},
-            {"text": "See also: Golden Age", "link": "Tutorials/Golden Age"},
-            {"text": "See also: Research Agreements", "link": "Tutorials/Research Agreements"}
+            {"text": "See also: [Trade Route]", "link": "Tutorials/Trade Route"},
+            {"text": "See also: [Golden Age]", "link": "Tutorials/Golden Age"},
+            {"text": "See also: [Research Agreements]", "link": "Tutorials/Research Agreements"}
         ]
     },
   {
@@ -153,7 +153,7 @@
           {"text":"Trade Routes are also connected over Water via certain buildings like the Harbor. As long as there is a chain that can reach the Capital, there's a Trade Route. Look for this symbol in Yellow below the City Name to mean you have an active Trade Route to your Capital."},
           {"extraImage":"CityStateIcons/Mercantile","imageSize": 20},
           {"text": "Trade Routes can get broken either by Blockades or by Removing/Pillaging the connecting Road/Railroad chain."},
-          {"text": "See also City Blockade","link": "Tutorials/City Blockade"}
+          {"text": "See also: [City Blockade]","link": "Tutorials/City Blockade"}
       ]
   },
   {
@@ -283,14 +283,19 @@
     {
         "name": "Embassies",
         "category": "Diplomacy",
-        "steps": [
-            "Establishing an embassy in other players' Capital city shows the location of their Capital, likewise other players who establish an embassy in your Capital can see location of your Capital.",
-            "Embassies thus allow Spies to be placed in another players' Capital City if Espionage is enabled.",
-            "Mutual embassies are required to allow trading open borders and to sign Research Agreement and Defensive Pact.",
-            "Declaring war on another player or denouncing them will remove embassies from both players' Capitals. You will have to re-establish them to use their effect.",
-            "Re-establishing an embasy after denounciation from either side becomes available next turn, while re-establishing them when at war requires peacy treaty.",
-            "Be cautious when accepting embassy from other players because they can spy on your capital, or worse may start planning to attack you.",
-            "Embassies are available using the Gods and Kings ruleset."
+        "civilopediaText": [
+            { text: "Establishing an embassy in other players' Capital city shows the location of their Capital, likewise other players who establish an embassy in your Capital can see location of your Capital." },
+            { text: "Embassies thus allow Spies to be placed in another players' Capital City if Espionage is enabled." },
+            { text: "Mutual embassies are required to allow trading open borders and to sign Research Agreement and Defensive Pact." },
+            { text: "Declaring war on another player or denouncing them will remove embassies from both players' Capitals. You will have to re-establish them to use their effect." },
+            { text: "Re-establishing an embassy after denunciation from either side becomes available next turn, while re-establishing them when at war requires a peace treaty." },
+            { text: "Be cautious when accepting embassy from other players because they can spy on your capital, or worse may start planning to attack you." },
+            { text: "Note that before you can offer an embassy, you need the required Technology." },
+            { text: "Embassies are available using the Gods and Kings ruleset." },
+            { text: "See also: [Open Borders]", "link": "Tutorials/Open Borders" },
+            { text: "See also: [Research Agreements]", "link": "Tutorials/Research Agreements" },
+            { text: "See also: [Defensive Pacts]", "link": "Tutorials/Defensive Pacts" },
+            { text: "See also: [Writing]", "link": "Technology/Writing" }
         ]
     },
     {
@@ -302,8 +307,10 @@
             { text: "Open Borders expire depending on game speed and are canceled upon Declaration of War, the closure however takes effect only after war ends and need to be traded again." },
             { text: "You gain diplomatic boost with other AI player if you both have Open Borders to each other" },
             { text: "Be cautious when giving Open Borders because other player may settle a City near your lands in an area you are planning to use, they may also use your territory to attack your friends or City State allies." },
+            { text: "Note that before you can offer or accept open borders, both Nations need the required Technology." },
             { text: "When playing with the Gods and Kings ruleset mutual embassies need to be established before Open Borders can be traded." },
-            { text: "See also: Embassies", "link": "Tutorials/Embassies" }
+            { text: "See also: [Embassies]", "link": "Tutorials/Embassies" },
+            { text: "See also: [Civil Service]", "link": "Technology/Civil Service" }
         ]
     },
   {
@@ -313,8 +320,9 @@
           { text: "In Research Agreements, you and another civilization decide to jointly research technology.\nAt the end of the agreement, you will both receive a 'lump sum' of ⍾Science, which will go towards one of your unresearched technologies." },
           { text: "The amount of ⍾Science you receive at the end is dependent on the ⍾Science generated by your cities and the other civilization's cities during the agreement - the more, the better!" },
           { text: "Note that before you can invest in a research agreement, you must have a Declaraction of Friendship, both Nations need the required Technology, and both Nations need enough Gold on hand for the agreement." },
-          { text: "When playing with the Gods and Kings ruleset mutual embassies need to be established before Research Agreement can be signed." },
-          { text: "See also: Embassies", "link": "Tutorials/Embassies" }
+          { text: "When playing with the Gods and Kings ruleset mutual embassies need to be established before a Research Agreement can be signed." },
+          { text: "See also: [Embassies]", "link": "Tutorials/Embassies" },
+          { text: "See also: [Education]", "link": "Technology/Education" }
       ]
   },
   {
@@ -324,8 +332,10 @@
           { text: "Defensive pacts allow you and another civ to protect one another from aggressors.\nOnce the defensive pact is signed, you will be drawn into their future defensive wars, just as they will be drawn into your future defensive wars. Declaring war on any Civ will remove all of your defensive pacts. You will have to re-sign them to use their effect." },
           { text: "Be cautious when signing defensive pacts because they can bring you into wars that you might not want to be in." },
           { text: "The AI is very careful and will not accept defensive pacts with less than 80 influence." },
-          { text: "When playing with the Gods and Kings ruleset mutual embassies need to be established before Defensive Pact can be signed." },
-          { text: "See also: Embassies", "link": "Tutorials/Embassies" }
+          { text: "Note that before you can sign a defensive pact, you must have a Declaraction of Friendship, and both Nations need the required Technology." },
+          { text: "When playing with the Gods and Kings ruleset mutual embassies need to be established before a Defensive Pact can be signed." },
+          { text: "See also: [Embassies]", "link": "Tutorials/Embassies" },
+          { text: "See also: [Chivalry]", "link": "Technology/Chivalry" }
       ]
   },
   {
@@ -345,7 +355,7 @@
         {"text":"Certain Buildings will also provide Specialist Slots. These slots will show up in the Citizen Management within the City Screen under Specialists. Each slot can be filled with a Citizen which will then become a Specialist."},
         {"text": "Each Specialist will generate a certain amount of yield as indicated to the right of the available slots."},
         {"text": "While these are a great way to specialize the yield production of a City outside of the surrounding Tile Yields, Specialists have an additional value. Each one also generates Great Person Points each turn. With enough of them, a new Great Person will join your Nation."},
-        {"text": "See also Great People","link": "Tutorials/Great People"}
+        {"text": "See also: [Great People]","link": "Tutorials/Great People"}
     ]
   },
   {
@@ -356,7 +366,7 @@
         {"text": "Alternatively, the Great Person points breakdown per city can be viewed in each City Screen (see UI Tips article)."},
         {"text": "Once enough points have been accumulated, a Great Person of that type will be created!\nEach Great Person can construct a certain Great Improvement which gives large yields over time, or immediately consumed to provide a certain bonus now."},
         {"text": "Great Improvements also provide any strategic resources that are under them, so you don't need to worry if resources are revealed underneath your improvements!"},
-        {"text": "See also Specialists","link": "Tutorials/Specialists"}
+        {"text": "See also: [Specialists]","link": "Tutorials/Specialists"}
     ]
   },
   {

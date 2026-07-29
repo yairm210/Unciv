@@ -97,6 +97,7 @@ class CrashScreen(val exception: Throwable) : BaseScreen() {
             **Version:** ${UncivGame.VERSION.toNiceString().prependIndentToOnlyNewLines(subIndent)}
             **Rulesets:** ${RulesetCache.keys.toString().prependIndentToOnlyNewLines(subIndent)}
             **Last Screen:** `$lastScreenType`
+            **A-star pathing enabled:** ${UncivGame.Current.settings.useAStarPathfinding}
 
             --------------------------------
 

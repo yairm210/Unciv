@@ -15,6 +15,8 @@ class LoadingScreen(
     previousScreen: BaseScreen? = null
 ) : BaseScreen() {
     private val screenshot: Texture
+    private var loadingPopup: LoadingPopup? = null
+
     init {
         screenshot = takeScreenshot(previousScreen)
         val image = ImageWithCustomSize(
@@ -32,7 +34,7 @@ class LoadingScreen(
         stage.addAction(Actions.sequence(
             Actions.delay(1000f),
             Actions.run {
-                LoadingPopup(this)
+                loadingPopup = LoadingPopup(this)
             }
         ))
     }
@@ -55,6 +57,8 @@ class LoadingScreen(
 
     override fun dispose() {
         screenshot.dispose()
+        stage.root.clearActions() // super.dispose does that too, but prevent race condition
+        loadingPopup?.close() // Prevent leak due to EventReceiver reference
         super.dispose()
     }
 }

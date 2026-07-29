@@ -17,9 +17,12 @@ import io.ktor.client.statement.request
 import io.ktor.http.*
 import io.ktor.util.network.*
 import java.io.IOException
+import java.security.SecureRandom
 import java.time.Duration
 import java.time.Instant
 import java.util.UUID
+import kotlin.random.Random
+import kotlin.random.asKotlinRandom
 
 /**
  * List of HTTP status codes which are considered to [ApiErrorResponse]s by the specification
@@ -974,7 +977,7 @@ class LobbyApi(private val client: HttpClient, private val authHelper: AuthHelpe
     suspend fun openPrivate(name: String, maxPlayers: Int = DEFAULT_LOBBY_MAX_PLAYERS, suppress: Boolean = false): CreateLobbyResponse? {
         val charset = ('a'..'z') + ('A'..'Z') + ('0'..'9')
         val password = (1..DEFAULT_RANDOM_PASSWORD_LENGTH)
-            .map { charset.random() }
+            .map { charset.random(SecureRandom().asKotlinRandom()) }
             .joinToString("")
         return open(CreateLobbyRequest(name, password, maxPlayers), suppress)
     }

@@ -19,9 +19,7 @@ class PantheonPickerScreen(
         for (belief in ruleset.beliefs.values) {
             if (belief.type != BeliefType.Pantheon) continue
             val beliefButton = getBeliefButton(belief, withTypeLabel = false)
-            if (choosingCiv.religionManager.getReligionWithBelief(belief) == null
-                && belief.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)
-                    .none { !it.conditionalsApply(choosingCiv.state) }) {
+            if (choosingCiv.religionManager.getReligionWithBelief(belief) == null && beliefIsAllowed(belief, choosingCiv)) {
                 beliefButton.onClickSelect(selection, belief) {
                     selectedPantheon = belief
                     pick("Follow [${belief.name}]".tr())
@@ -35,5 +33,13 @@ class PantheonPickerScreen(
         setOKAction("Choose a pantheon") {
             chooseBeliefs(listOf(selectedPantheon!!), useFreeBeliefs = usingFreeBeliefs())
         }
+    }
+    fun beliefIsAllowed(belief: Belief, choosingCiv: Civilization): Boolean {
+        if (belief.getMatchingUniques(UniqueType.OnlyAvailable, GameContext.IgnoreConditionals)
+                .any { !it.conditionalsApply(choosingCiv.state) })
+            return false
+        if (belief.getMatchingUniques(UniqueType.Unavailable, choosingCiv.state).any())
+            return false
+        return true
     }
 }

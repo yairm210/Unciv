@@ -156,7 +156,7 @@ class GlobalUniquesTests {
 
         val tile2 = game.setTileTerrain(HexCoord(0,1), Constants.grassland)
         game.addTileToCity(city, tile2)
-        Assert.assertTrue(tile2.stats.getTileStats(city, civInfo).gold == 4f)
+        Assert.assertEquals(4f, tile2.stats.getTileStats(city, civInfo).gold, 0.005f)
 
         val tile3 = game.setTileTerrainAndFeatures(HexCoord(0,2), Constants.grassland, Constants.forest)
         game.addTileToCity(city, tile3)

@@ -111,7 +111,7 @@ enum class UniqueParameterType(
     /** Implemented by [MapUnit.matchesFilter][com.unciv.logic.map.mapunit.MapUnit.matchesFilter] */
     MapUnitFilter("mapUnitFilter", Constants.wounded, null, "Map Unit Filters") {
         override val staticKnownValues = setOf(Constants.wounded, Constants.barbarians, "Barbarian",
-            "City-State", Constants.embarked, "Non-City")
+            "City-State", Constants.embarked, "Non-City", "other")
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = getErrorSeverityForFilter(parameterText, ruleset)
 
@@ -216,7 +216,7 @@ enum class UniqueParameterType(
 
     /** Implemented by [Civ.matchesFilter][com.unciv.logic.civilization.Civilization.matchesFilter] */
     CivFilter("civFilter", Constants.cityStates) {
-        override val staticKnownValues = setOf("AI player", "Human player", "Open Borders", "Friendly", "Hostile", "Known")
+        override val staticKnownValues = setOf(Constants.aiPlayer, Constants.humanPlayer, "Open Borders", "Friendly", "Hostile", "Known")
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = getErrorSeverityForFilter(parameterText, ruleset)
 
@@ -319,8 +319,8 @@ enum class UniqueParameterType(
             "Terrain",
             Constants.coastal, Constants.river, "Open terrain", "Rough terrain", "Water resource",
             "resource", "Foreign Land", "Foreign", "Friendly Land", "Friendly", "Enemy Land", "Enemy", "your", "Unowned",
-            "Featureless", Constants.freshWaterFilter, "non-fresh water", "Natural Wonder",
-            "Impassable", "Land", "Water"
+            "Terrain Feature", "Featureless", Constants.freshWaterFilter, "non-fresh water", "Natural Wonder",
+            Constants.impassable, "Land", "Water"
         ) + ResourceType.entries.map { it.name + " resource" } + Constants.all
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = getErrorSeverityForFilter(parameterText, ruleset)
@@ -509,6 +509,13 @@ enum class UniqueParameterType(
         override val staticKnownValues = BeliefType.entries.map { it.name }.toSet()
     },
 
+    /** Used by [UniqueType.CounterIntelligenceSpyRankBonus], matches [com.unciv.models.SpyAction.displayString] */
+    SpyAction("spyAction", "Counter-intelligence", "A spy action display name, e.g. `Counter-intelligence`, `Stealing Tech`",
+        severityDefault = UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+    ) {
+        override val staticKnownValues = com.unciv.models.SpyAction.entries.map { it.displayString }.toSet()
+    },
+
     /** unused at the moment with vanilla rulesets */
     Belief("belief", "God of War", "The name of any belief") {
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = ruleset.beliefs.keys
@@ -653,6 +660,14 @@ enum class UniqueParameterType(
         override fun isKnownValue(parameterText: String, ruleset: Ruleset) = Suppression.isValidFilter(parameterText)
     },
 
+    /** For [UniqueType.CivilopediaLink] */
+    CivilopediaLink("pediaLink", "Units/Settler", "A Civilopedia link in the form category/entry", "Unique Specials",
+        severityDefault = UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+    ) {
+        override fun isKnownValue(parameterText: String, ruleset: Ruleset) =
+            parameterText.split('/').run { size == 2 && none { it.isEmpty() } }
+    },
+
     /** Behaves like [Unknown], but states explicitly the parameter is OK and its contents are ignored */
     Comment("comment", "comment", null, "Unique Specials") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = null
@@ -734,23 +749,20 @@ enum class UniqueParameterType(
 
     companion object {
         @Readonly
-        private fun scanExistingValues(type: UniqueParameterType): Set<String> {
-            return BaseRuleset.entries
+        private fun scanExistingValues(type: UniqueParameterType) =
+            BaseRuleset.entries.asSequence()
                 .mapNotNull { RulesetCache[it.fullName] }
-                .map { scanExistingValues(type, it) }
-                .fold(setOf()) { a, b -> a + b }
-        }
+                .flatMap { scanExistingValues(type, it) }
+                .toSet()
         @Readonly
-        private fun scanExistingValues(type: UniqueParameterType, ruleset: Ruleset): Set<String> {
-            val result = mutableSetOf<String>()
+        private fun scanExistingValues(type: UniqueParameterType, ruleset: Ruleset) = sequence {
             for (unique in ruleset.allUniques()) {
                 val parameterMap = unique.type?.parameterTypeMap ?: continue
                 for ((index, param) in unique.params.withIndex()) {
                     if (type !in parameterMap[index]) continue
-                    result += param
+                    yield(param)
                 }
             }
-            return result
         }
 
         /** Emulate legacy behaviour as exactly as possible */

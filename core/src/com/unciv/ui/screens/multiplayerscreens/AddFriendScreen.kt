@@ -15,11 +15,14 @@ import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.utils.isUUID
 
-class AddFriendScreen : PickerScreen() {
+class AddFriendScreen(
+    initialName: String = "",
+    initialID: String = ""
+) : PickerScreen() {
     init {
-        val friendNameTextField = UncivTextField("Please input a name for your friend!")
+        val friendNameTextField = UncivTextField("Please input a name for your friend!", initialName)
         val pastePlayerIDButton = "Paste player ID from clipboard".toTextButton()
-        val playerIDTextField = UncivTextField("Please input a player ID for your friend!")
+        val playerIDTextField = UncivTextField("Please input a player ID for your friend!", initialID)
         val friendlist = FriendList()
 
         topTable.add("Friend name".toLabel()).row()
@@ -45,10 +48,13 @@ class AddFriendScreen : PickerScreen() {
         rightSideButton.setText("Add friend".tr())
         rightSideButton.enable()
         rightSideButton.onClick {
-            if (!(IdChecker.checkAndReturnPlayerUuid(playerIDTextField.text)?.isUUID() ?: false)) {
+            val friend = IdChecker.checkAndReturnPlayerUuid(playerIDTextField.text)
+            if (friend?.playerID?.isUUID() != true) {
                 ToastPopup("Player ID is incorrect", this)
                 return@onClick
             }
+            if (friendNameTextField.text.isEmpty() && friend.name.isNotEmpty())
+                friendNameTextField.text = friend.name
 
             when (friendlist.add(friendNameTextField.text, playerIDTextField.text)) {
                 FriendList.ErrorType.NAME -> ToastPopup("Friend name is already in your friends list!", this)

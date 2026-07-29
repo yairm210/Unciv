@@ -29,6 +29,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Array
 import com.unciv.Constants
+import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.GdxKeyCodeFixes.DEL
 import com.unciv.ui.components.extensions.GdxKeyCodeFixes.toString
@@ -41,9 +42,11 @@ import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.images.Portrait
 import com.unciv.ui.screens.basescreen.BaseScreen
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
+import kotlin.math.pow
 
 /**
  * Collection of extension functions mostly for libGdx widgets
@@ -393,6 +396,28 @@ fun Label.setFontSize(size: Int): Label {
     return this
 }
 
+/** Only if this Label contains [Stat symbols][Stat.fontChars], tweak `fontColor` and `text`
+ *  so that these symbols render normally and not as black outline.
+ *  - **Only makes sense when the font color is very dark**
+ *  - **To be called _after_ translation!**
+ */
+fun Label.removeFontColorFromStatIcons() {
+    if (text.none { it in Stat.fontChars }) return
+    val fontColorMarkup = "[#${style.fontColor.toString().substring(0, 6)}]"
+    val newText = buildString {
+        append(fontColorMarkup)
+        for (char in text) {
+            if (char in Stat.fontChars) {
+                append("[]")
+                append(char)
+                append(fontColorMarkup)
+            } else append(char)
+        }
+    }
+    setFontColor(Color.WHITE)
+    setText(newText)
+}
+
 /** [pack][WidgetGroup.pack] a [WidgetGroup] if its [needsLayout][WidgetGroup.needsLayout] is true.
  *  @return the receiver to allow chaining
  */
@@ -474,7 +499,6 @@ fun Input.areSecretKeysPressed() = isKeyPressed(Input.Keys.SHIFT_RIGHT) &&
  * - This aligns columns only if the tables are arranged vertically with equal X coordinates.
  * - first table determines columns processed, all others must have at least the same column count.
  * - Tables are left as needsLayout==true, so while equal width is ensured, you may have to pack if you want to see the value before this is rendered.
- * - Note: The receiver <Group> isn't actually needed except to make sure the arguments are descendants.
  */
 fun equalizeColumns(vararg tables: Table) {
     for (table in tables) {
@@ -482,7 +506,7 @@ fun equalizeColumns(vararg tables: Table) {
     }
     val columns = tables.first().columns
     check(tables.all { it.columns >= columns }) {
-        "IPageExtensions.equalizeColumns needs all tables to have at least the same number of columns as the first one"
+        "equalizeColumns needs all tables to have at least the same number of columns as the first one"
     }
 
     val widths = (0 until columns)
@@ -494,7 +518,7 @@ fun equalizeColumns(vararg tables: Table) {
             table.cells[column].run {
                 if (actor == null)
                 // Empty cells ignore minWidth, so just doing Table.add() for an empty cell in the top row will break this. Fix!
-                    setActor<Label>("".toLabel())
+                    setActor(neutralActor)
                 else if (Align.isCenterHorizontal(align)) (actor as? Label)?.run {
                     // minWidth acts like fillX, so Labels will fill and then left-align by default. Fix!
                     if (!Align.isCenterHorizontal(labelAlign))
@@ -505,6 +529,7 @@ fun equalizeColumns(vararg tables: Table) {
         table.invalidate()
     }
 }
+private val neutralActor = Actor().apply { touchable = Touchable.disabled }
 
 /** Retrieve a texture Pixmap without reload or ownership transfer, useable for read operations only.
  *
@@ -518,8 +543,69 @@ fun TextureData.getReadonlyPixmap(): Pixmap {
     return field.get(this) as Pixmap
 }
 
-fun <T: Actor>Stack.addInTable(actor: T): Cell<T> {
+fun <T: Actor> Stack.addInTable(actor: T): Cell<T> {
     val table = Table()
     add(table)
     return table.add(actor).grow()
+}
+
+/** Recursively return all children of a Group, depth-first */
+fun Group.allChildren(): Sequence<Actor> = sequence {
+    for (child in children) {
+        if (child is Group) yieldAll(child.allChildren())
+        yield(child)
+    }
+}
+
+/** Adds an indicator icon with shadow on top of a Portrait. The defaults look good on 30f-sized Portraits.
+ *  @receiver A Portrait, already sized
+ *  @param relativeSize This allows scaling the indicator.
+ *  @param shiftXSize This allows scaling the shift towards the right.
+ *  @param shiftYSize This allows scaling the shift towards the top.
+ *  @param indicatorName allows using something other than OtherIcons/Capital
+ */
+fun Portrait.addCapitalIndicator(
+    relativeSize: Float = .546f,
+    shiftXSize: Float = .848f,
+    shiftYSize: Float = shiftXSize,
+    indicatorName: String = "OtherIcons/Capital"
+) {
+    val shiftXSize = this.width * shiftXSize
+    val shiftYSize = this.width * shiftYSize
+    val indicatorSize = this.width * relativeSize
+    addActor(ImageGetter.getImage(indicatorName).apply {
+        color = Color.BLACK.cpy().apply { a = 0.4f }
+        setSize(indicatorSize * 1.2f)
+        setPosition(shiftXSize * 1.04f, shiftYSize * .96f, Align.center)
+    })
+    addActor(ImageGetter.getImage(indicatorName).apply {
+        setSize(indicatorSize)
+        setPosition(shiftXSize, shiftYSize, Align.center)
+    })
+}
+
+/** All defined by https://www.w3.org/TR/WCAG20/#relativeluminancedef */
+@Pure
+fun Color.getRelativeLuminance(): Double {
+    @Pure
+    fun getRelativeChannelLuminance(channel: Float): Double =
+        if (channel < 0.03928) channel / 12.92
+        else ((channel + 0.055) / 1.055).pow(2.4)
+
+    val r = getRelativeChannelLuminance(r)
+    val g = getRelativeChannelLuminance(g)
+    val b = getRelativeChannelLuminance(b)
+
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
+}
+
+/** https://www.w3.org/TR/WCAG20/#contrast-ratiodef */
+@Readonly
+fun getContrastRatio(color1: Color, color2: Color): Double { // ratio can range from 1 to 21
+    val innerColorLuminance = color1.getRelativeLuminance()
+    val outerColorLuminance = color2.getRelativeLuminance()
+
+    return if (innerColorLuminance > outerColorLuminance)
+        (innerColorLuminance + 0.05) / (outerColorLuminance + 0.05)
+    else (outerColorLuminance + 0.05) / (innerColorLuminance + 0.05)
 }

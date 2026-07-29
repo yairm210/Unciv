@@ -146,6 +146,7 @@ class RoadToAutomation(val civInfo: Civilization) {
     /** Conditions for whether it is acceptable to build a road on this tile */
     @Readonly
     fun shouldBuildRoadOnTile(tile: Tile): Boolean {
+        if (tile.isMarkedForCreatesOneImprovement()) return false
         if (tile.roadIsPillaged) return true
         return !tile.isCityCenter() // Can't build road on city tiles
             // Special case for civs that treat forest/jungles as roads (inside their territory). We shouldn't build if railroads aren't unlocked.

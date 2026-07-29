@@ -2,6 +2,7 @@ package com.unciv.logic.civilization.managers
 
 import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.*
 import com.unciv.logic.map.tile.RoadStatus
@@ -151,7 +152,7 @@ class TechManager : IsPartOfGameInfoSerialization {
         }
     }
     
-    @Readonly fun isResearched(techName: String): Boolean = techsResearched.contains(techName)
+    @Readonly fun isResearched(techName: String): Boolean { return techsResearched.contains(techName) }
     @Readonly fun isResearched(construction: INonPerpetualConstruction): Boolean = construction.requiredTechs().all{ requiredTech -> isResearched(requiredTech) }
 
     /** resources which need no research count as researched */

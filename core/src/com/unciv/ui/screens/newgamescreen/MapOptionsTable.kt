@@ -26,7 +26,8 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen) : Table() {
         if (savedMapOptionsTable.isNotEmpty()) mapTypes.add(MapGeneratedMainType.custom)
         if (newGameScreen.game.files.getScenarioFiles().any()) mapTypes.add(MapGeneratedMainType.scenario)
 
-        mapTypeSelectBox = TranslatedSelectBox(mapTypes, MapGeneratedMainType.generated)
+        val initialMapType = mapParameters.type.takeIf { it in mapTypes } ?: MapGeneratedMainType.generated
+        mapTypeSelectBox = TranslatedSelectBox(mapTypes, initialMapType)
 
         fun updateOnMapTypeChange() {
             mapTypeSpecificTable.clear()
@@ -76,5 +77,14 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen) : Table() {
         return scenarioOptionsTable.selectedScenario
     }
 
-    internal fun cancelBackgroundJobs() = savedMapOptionsTable.cancelBackgroundJobs()
+    internal fun cancelBackgroundJobs() {
+        generatedMapOptionsTable.cancelBackgroundJobs()
+        randomMapOptionsTable.cancelBackgroundJobs()
+        savedMapOptionsTable.cancelBackgroundJobs()
+    }
+
+    internal fun refreshExampleMap() {
+        generatedMapOptionsTable.generateExampleMap()
+        randomMapOptionsTable.generateExampleMap()
+    }
 }

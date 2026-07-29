@@ -44,9 +44,11 @@ class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: W
         selectedUnitIsConnectingRoad = false
     }
 
-    override fun update() = selectedUnit?.let { unit ->
+    override fun update() {
+        val unit = selectedUnit ?: return
         // The unit that was selected, was captured. It exists but is no longer ours.
-        val captured = unit.civ != worldScreen.viewingCiv && !worldScreen.viewingCiv.isSpectator()
+        val captured =
+            unit.civ != worldScreen.viewingCiv && !worldScreen.viewingCiv.isSpectator()
         // The unit that was there no longer exists
         val disappeared = unit !in unit.getTile().getUnits()
         if (captured || disappeared) {
@@ -57,7 +59,7 @@ class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: W
 
         // set texts - this is valid even when it's the same unit, because movement points and health change
         // single selected unit
-        if (selectedUnits.size == 1) with(unitTable) { 
+        if (selectedUnits.size == 1) with(unitTable) {
             separator.isVisible = true
             nameLabelText = buildNameLabelText(unit)
             unitNameLabel.clearListeners()
@@ -81,7 +83,8 @@ class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: W
                 descriptionTable.add(Fonts.strength + unit.baseUnit.strength.tr()).padRight(10f)
 
             if (unit.baseUnit.rangedStrength != 0)
-                descriptionTable.add(Fonts.rangedStrength + unit.baseUnit.rangedStrength.tr()).padRight(10f)
+                descriptionTable.add(Fonts.rangedStrength + unit.baseUnit.rangedStrength.tr())
+                    .padRight(10f)
 
             if (unit.baseUnit.isRanged())
                 descriptionTable.add(Fonts.range + unit.getRange().tr()).padRight(10f)
@@ -99,7 +102,9 @@ class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: W
                         worldScreen.game.pushScreen(PromotionPickerScreen(unit))
                     }
                 })
-                descriptionTable.add(unit.promotions.XP.tr() + "/" + unit.promotions.xpForNextPromotion().tr())
+                descriptionTable.add(
+                    unit.promotions.XP.tr() + "/" + unit.promotions.xpForNextPromotion().tr()
+                )
             }
 
             if (unit.baseUnit.religiousStrength > 0) {
@@ -113,13 +118,13 @@ class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: W
             nameLabelText = ""
             descriptionTable.clear()
         }
+    }
 
-    } ?: Unit
-
-    override fun updateWhenNeeded() = selectedUnit?.let { unit ->
+    override fun updateWhenNeeded() {
+        val unit = selectedUnit ?: return
         // single selected unit
         if (selectedUnits.size == 1) with(unitTable) {
-            
+
             unitIconHolder.add(UnitIconGroup(unit, 30f)).pad(5f)
 
             for (promotion in unit.promotions.getPromotions(true))
@@ -129,7 +134,7 @@ class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: W
 
             for (status in unit.statusMap.values) {
                 if (status.uniques.any { it.type == UniqueType.NotShownOnWorldScreen }) continue
-                
+
                 val group = ImageGetter.getPromotionPortrait(status.name)
                 val turnsLeft = "${status.turnsLeft}${Fonts.turn}".toLabel(fontSize = 8)
                     .surroundWithCircle(15f, color = ImageGetter.CHARCOAL)
@@ -151,8 +156,7 @@ class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: W
             for (selectedUnit in selectedUnits)
                 unitTable.unitIconHolder.add(UnitIconGroup(selectedUnit, 30f)).pad(5f)
         }
-        Unit
-    } ?: Unit
+    }
 
     @Readonly
     private fun buildNameLabelText(unit: MapUnit) : String {

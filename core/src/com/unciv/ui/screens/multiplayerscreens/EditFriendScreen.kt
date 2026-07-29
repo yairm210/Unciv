@@ -75,10 +75,14 @@ class EditFriendScreen(selectedFriend: FriendList.Friend) : PickerScreen() {
                 ToastPopup("Player ID already used!", this)
                 return@onClick
             }
-            if (!(IdChecker.checkAndReturnPlayerUuid(playerIDTextField.text)?.isUUID() ?: false)) {
+            val friend = IdChecker.checkAndReturnPlayerUuid(playerIDTextField.text)
+            if (friend?.playerID?.isUUID() != true) {
                 ToastPopup("Player ID is incorrect", this)
                 return@onClick
             }
+            if (friendNameTextField.text.isEmpty() && friend.name.isNotEmpty())
+                friendNameTextField.text = friend.name
+            
             friendlist.edit(selectedFriend, friendNameTextField.text, playerIDTextField.text)
             goBack()
         }

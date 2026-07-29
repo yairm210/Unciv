@@ -7,6 +7,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.files.MapSaver
 import com.unciv.logic.files.UncivFiles
+import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.ui.components.extensions.addSeparator
@@ -25,24 +26,7 @@ internal class DebugTab(
     optionsPopup: OptionsPopup
 ): OptionsPopupTab(optionsPopup) {
     override fun lateInitialize() {
-        if (GUI.isWorldLoaded()) {
-            val simulateButton = "Simulate until turn:".toTextButton()
-            val simulateTextField = UncivTextField.Numeric("Turn", DebugUtils.SIMULATE_UNTIL_TURN, integerOnly = true)
-            val invalidInputLabel = "This is not a valid integer!".toLabel().also { it.isVisible = false }
-            simulateButton.onClick {
-                val simulateUntilTurns = simulateTextField.value?.toInt()
-                if (simulateUntilTurns == null) {
-                    invalidInputLabel.isVisible = true
-                    return@onClick
-                }
-                DebugUtils.SIMULATE_UNTIL_TURN = simulateUntilTurns
-                invalidInputLabel.isVisible = false
-                GUI.getWorldScreen().nextTurn()
-            }
-            add(simulateButton)
-            add(simulateTextField).row()
-            add(invalidInputLabel).colspan(2).row()
-        }
+        if (GUI.isWorldLoaded()) addSimulationControls()
 
         addCheckbox("Supercharged", DebugUtils::SUPERCHARGED)
         addCheckbox("View entire map", DebugUtils::VISIBLE_MAP, updateWorld = true)
@@ -60,6 +44,7 @@ internal class DebugTab(
         addSelectBox("Gdx Scene2D debug", BaseScreen::enableSceneDebug, SceneDebugMode.entries) { _, _ ->
             (stage as UncivStage).setSceneDebugMode()
         }
+        addSelectBox("Show long-press indicators", settings::showLongPressIndicators, GameSettings.LongPressIndicatorSetting.entries)
 
         //TODO This was wrapped then colspan(2) before - look
         addSlider("Unique misspelling threshold", RulesetCache.uniqueMisspellingThreshold, 0.0, 0.5, 0.05) { value, _ ->
@@ -87,6 +72,25 @@ internal class DebugTab(
         addSeparator()
 
         super.lateInitialize()
+    }
+
+    private fun addSimulationControls() {
+        val simulateButton = "Simulate until turn:".toTextButton()
+        val simulateTextField = UncivTextField.Numeric("Turn", DebugUtils.SIMULATE_UNTIL_TURN, integerOnly = true)
+        val invalidInputLabel = "This is not a valid integer!".toLabel().also { it.isVisible = false }
+        simulateButton.onClick {
+            val simulateUntilTurns = simulateTextField.value?.toInt()
+            if (simulateUntilTurns == null) {
+                invalidInputLabel.isVisible = true
+                return@onClick
+            }
+            DebugUtils.SIMULATE_UNTIL_TURN = simulateUntilTurns
+            invalidInputLabel.isVisible = false
+            GUI.getWorldScreen().nextTurn()
+        }
+        add(simulateButton)
+        add(simulateTextField).row()
+        add(invalidInputLabel).colspan(2).row()
     }
 
     private fun GameInfo.unlockAllTechs() {

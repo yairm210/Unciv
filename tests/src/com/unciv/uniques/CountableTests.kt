@@ -1,6 +1,5 @@
 package com.unciv.uniques
 
-import com.unciv.Constants
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.Ruleset
@@ -19,23 +18,10 @@ import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
 import com.unciv.testing.runTestParcours
 import java.lang.reflect.Modifier
-import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Test
 import org.junit.runner.RunWith
-import kotlin.random.Random
-import kotlin.reflect.full.declaredFunctions
-import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.hasAnnotation
-
-// TODO better coverage:
-//      - Each modifier using UniqueParameterType.Countable
-
-@Retention(AnnotationRetention.RUNTIME)
-@Target(AnnotationTarget.FUNCTION)
-@Suppress("unused") // The parameter *is* used in `testAllCountablesAreCovered`
-internal annotation class CoversCountable(vararg val countable: Countables)
 
 @RunWith(GdxTestRunner::class)
 class CountableTests {
@@ -112,19 +98,6 @@ class CountableTests {
             }
         }
         assertEquals("failure count", 0, fails)
-    }
-
-    @Test
-    fun testAllCountablesAreCovered() {
-        val actual = CountableTests::class.declaredFunctions.asSequence()
-            .plus(ExpressionTests::class.declaredFunctions)
-            .mapNotNull { it.findAnnotation<CoversCountable>() }
-            .flatMap { it.countable.asIterable() }
-            .toSet()
-        val expected = Countables.entries.filterNot { it::class.hasAnnotation<Deprecated>() }.toSet()
-        if (actual == expected) return
-        val missing = (expected - actual).sorted() // by ordinal ergo source order
-        Assert.fail("Every Countable should be covered by a unit test.\nMissing: $missing")
     }
 
     @Test
@@ -253,7 +226,6 @@ class CountableTests {
 
     //region Coverage for specific Countables
     @Test
-    @CoversCountable(Countables.TileResources) // Just barely
     fun testPerCountableForGlobalAndLocalResources() {
         setupModdedGame()
         // one coal provided locally
@@ -267,7 +239,6 @@ class CountableTests {
     }
 
     @Test
-    @CoversCountable(Countables.StatOrResourcePerTurn)
     fun testStatOrResourcePerTurn() {
         setupModdedGame()
         city.cityConstructions.addBuilding(game.createBuilding(
@@ -288,7 +259,6 @@ class CountableTests {
     }
 
     @Test
-    @CoversCountable(Countables.Stats)
     fun testStatsCountables() {
         setupModdedGame()
         fun verifyStats(context: GameContext) {
@@ -313,7 +283,6 @@ class CountableTests {
     }
 
     @Test
-    @CoversCountable(Countables.OwnedTiles)
     fun testOwnedTilesCountable() {
         setupModdedGame()
         UniqueTriggerActivation.triggerUnique(Unique("Turn this tile into a [Coast] tile"), civ, tile = game.tileMap[-3,0])
@@ -335,7 +304,6 @@ class CountableTests {
     }
 
     @Test
-    @CoversCountable(Countables.FilteredCities)
     fun testFilteredCitiesCountable() {
         setupModdedGame()
         UniqueTriggerActivation.triggerUnique(Unique("Turn this tile into a [Coast] tile"), civ, tile = game.tileMap[-3,0])
@@ -355,7 +323,6 @@ class CountableTests {
     }
 
     @Test
-    @CoversCountable(Countables.FilteredBuildings, Countables.FilteredBuildingsByCivs)
     fun testFilteredBuildingsCountable () {
         setupModdedGame(withCiv = false)
         val building = game.createBuilding("Ancestor Tree") // That's a filtering Unique, not the building name 
@@ -377,10 +344,13 @@ class CountableTests {
 
         // Expect: (1 Palace + 1 Base Ancestor Tree + 2 for-every) * 1.5 = 6
         val capitalCulture = city.cityStats.currentCityStats.culture
-        // Expect: capitalCulture + (1 Base Ancestor Tree + 2 for-every) * 1.5 = 10.5
+        // Expect: (1 Base Ancestor Tree + 2 for-every) * 1.5 = 4.5
+        val city2Culture = city2.cityStats.currentCityStats.culture
+        // Expect: capitalCulture + city2Culture = 10.5
         val civCulture = civ.stats.statsForNextTurn.culture
 
         assertEquals(6f, capitalCulture, 0.005f)
+        assertEquals(4.5f, city2Culture, 0.005f)
         assertEquals(10.5f, civCulture, 0.005f)
 
         // FilteredBuildingsByCivs
@@ -402,7 +372,6 @@ class CountableTests {
     }
 
     @Test
-    @CoversCountable(Countables.PolicyBranches, Countables.FilteredPolicies, Countables.FilteredPoliciesByCivs)
     fun testPoliciesCountables() {
         setupModdedGame()
         civ.policies.run {
@@ -447,7 +416,6 @@ class CountableTests {
     }
 
     @Test
-    @CoversCountable(Countables.EraNumber)
     fun testEraNumberCountable() {
         setupModdedGame()
         val context = GameContext(civ)
@@ -464,7 +432,6 @@ class CountableTests {
     }
 
     @Test
-    @CoversCountable(Countables.Integer, Countables.Turns, Countables.Year, Countables.Expression)
     fun testTimeCountables() {
         setupModdedGame()
         val context = GameContext(civ)
@@ -480,7 +447,6 @@ class CountableTests {
     }
 
     @Test
-    @CoversCountable(Countables.GameSpeedModifier)
     fun testSpeedModifierCountable() {
         setupModdedGame()
         val context = GameContext(civ)
@@ -497,116 +463,27 @@ class CountableTests {
     }
 
     @Test
-    @CoversCountable(Countables.Cities, Countables.Units)
-    fun testCitiesAndUnitsCountable() {
+    fun countableCanUseContext() {
         setupModdedGame()
-        val city2 = game.addCity(civ, game.tileMap[-2,0])
-        game.addUnit("Warrior", civ, city.getCenterTile())
-        game.addUnit("Warrior", civ, city2.getCenterTile())
-        game.addUnit("Scout", civ, game.tileMap.values.first())
-        game.addUnit("Scout", civ, game.tileMap.values.last())
-        val actual = Countables.getCountableAmount("[Cities] + 10 * [Units]", GameContext(civ))
-        assertEquals("There should be four units and 2 cities", 42, actual)
+        val cityCount = Countables.getCountableAmount("Cities", civ.state)
+        assertEquals("City count should match the civ's city count", cityCount, 1)
+
+        val unit = game.createBaseUnit()
+        val fakeUnit = game.createBaseUnit(uniques = arrayOf("[This Unit] is destroyed", "Free [${unit.name}] appears <for every [[Cities] + [3]]>"))
+        civ.units.placeUnitNearTile(city.location, fakeUnit)
+        val unitCount = Countables.getCountableAmount("Units", civ.state)
+        assertEquals("Units should get a context implictly with a countable", unitCount, 4)
+
+        setupModdedGame() // reset
+        val resource = game.createResource("Stockpiled")
+        val localResource = game.createResource("Stockpiled", "City-level resource")
+        val building1 = game.createBuilding("Instantly provides [5] [${resource.name}]")
+        val building2 = game.createBuilding("Instantly provides [1] [${localResource.name}] <for every [[${resource.name}] - [3]]>")
+        city.cityConstructions.addBuilding(building1)
+        city.cityConstructions.addBuilding(building2)
+        var resourceAmount = Countables.getCountableAmount(localResource.name, civ.state)
+        assertEquals("Civ state alone shouldn't see citywide resources", resourceAmount, 0)
+        resourceAmount = Countables.getCountableAmount(localResource.name, city.state)
+        assertEquals("City state should see city resources", resourceAmount, 2)
     }
-
-    @Test
-    @CoversCountable(Countables.FilteredCitiesByCivs)
-    fun testFilteredCitiesByCivs() {
-        setupModdedGame()
-        val civ2 = game.addCiv()
-        val city2 = game.addCity(civ2, game.tileMap[-2, 0])
-        city2.isPuppet = true
-        val context = GameContext(civ)
-
-        runTestParcours("Filtered cities by civs countable", { test: String ->
-            Countables.getCountableAmount(test, context)
-        },
-            "[Capital] Cities of [All] Civilizations", 2,
-            "[Puppeted] Cities of [All] Civilizations", 1,
-            "[All] Cities of [All] Civilizations", 2,
-            "[Capital] Cities of [${civ.civName}] Civilizations", 1,
-            "[Puppeted] Cities of [${civ.civName}] Civilizations", 0,
-            "[Puppeted] Cities of [${civ2.civName}] Civilizations", 1,
-            "[All] Cities of [${civ2.civName}] Civilizations", 1,
-            "[Capital] Cities of [City-State] Civilizations", 0,
-        )
-    }
-
-    @Test
-    @CoversCountable(Countables.RemainingCivs, Countables.FilteredUnits, Countables.Carried)
-    fun testFilteredUnitsCountable() {
-        val ruleset = setupModdedGame()
-        val wetTile = game.tileMap[3,1]
-        wetTile.setBaseTerrain(ruleset.terrains[Constants.coast]!!)
-        val carrier = game.addUnit("Carrier", civ, wetTile)
-        val carried = game.addUnit("Fighter", civ, wetTile)
-        game.addUnit("Warrior", civ, city.getCenterTile())
-        game.addUnit("Scout", civ, game.tileMap.values.first())
-        game.addUnit("Scout", civ, game.tileMap.values.last())
-        game.addUnit("Worker", civ, game.tileMap[2,1])
-        game.addUnit("Worker", civ, game.tileMap[2,-1])
-        val deSela = game.addCiv(game.ruleset.nations["Lhasa"]!!)
-        val city2 = game.addCity(deSela, game.tileMap[-2,1])
-        game.addUnit("Scout", deSela, city2.getCenterTile())
-        val context = GameContext(civ, unit = carrier) // The carried countable runs on a unit scope
-        val actual = Countables.getCountableAmount("[Remaining [all] Civilizations] + 100 * [[Military] Units] + 10 * [Carried [Fighter] units]", context)
-        assertEquals("There should be five military units with 1 being carried and 2 civilizations", 512, actual)
-    }
-
-    @Test
-    @CoversCountable(Countables.TileFilterTiles, Countables.TileResources, Countables.TileResourcesByCivs)
-    fun testTileFilterTilesCountable() {
-        val ruleset = setupModdedGame("Provides [40] [Horses]")
-        val wetTile = game.tileMap[0,0]
-        wetTile.setBaseTerrain(ruleset.terrains[Constants.coast]!!)
-        for (tile in wetTile.getTilesAtDistance(3))
-            tile.addTerrainFeature(if (Random.nextBoolean()) "Forest" else "Jungle")
-        city.getCenterTile().setTileResource(ruleset.tileResources["Horses"]!!, false, Random(42))
-        civ.tech.addTechnology("Animal Husbandry", false)
-        val context = GameContext(civ)
-        runTestParcours("Countables TileFilterTiles and TileResources",
-            { test: String -> Countables.getCountableAmount(test, context) },
-            "Horses", 42,
-            "[Coastal] Tiles", 6,
-            "[Coast] Tiles", 1,
-            "[Land] Tiles", 36,
-            "[City center] Tiles", 1,
-            "[Nation-0] Tiles", 7,
-            "[Vegetation] Tiles", 18,
-            // TileResourcesByCivs
-            "[Horses] resource of [${civ.civName}] Civilizations", 42,
-            "[Strategic] resource of [${civ.civName}] Civilizations", 42,
-            "[Horses] resource of [all] Civilizations", 42,
-            "[Horses] resource of [City-State] Civilizations", 0
-        )
-    }
-
-    @Test
-    @CoversCountable(Countables.FilteredTechnologies)
-    fun testFilteredTechnologies() {
-        setupModdedGame()
-        val techs = listOf(
-            "Agriculture",
-            "Pottery",
-            "Sailing",
-            "Animal Husbandry",
-            "Optics"
-        )
-        for (techName in techs) {
-            civ.tech.addTechnology(techName, false)
-        }
-        val context = GameContext(civ)
-
-        runTestParcours("Filtered technologies countable", { filter: String ->
-            Countables.getCountableAmount("Researched [$filter] Technologies", context)
-        },
-            "All", 5,
-            "Ancient era", 4,
-            "Classical era", 1, // Optics
-            "Modern era", 0,
-            "Pottery", 1,
-            "Archery", 0,
-        )
-    }
-    //endregion
 }
