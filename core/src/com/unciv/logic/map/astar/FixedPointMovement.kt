@@ -4,8 +4,28 @@ import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Pure
 import kotlin.math.roundToInt
 
+/**
+ * ### Fixed-point movement value (base 30) for pathfinding, avoiding heap allocations.
+ * This class represents movement distances using fixed-point arithmetic with a scaling
+ * base of 30, meaning 1.0f movement = 30 internal units. This allows integer arithmetic
+ * without floating-point overhead during A* pathfinding.
+ *
+ * #### Constraint:
+ * FPM values are constrained to a few bits when packed into routing node structures
+ * (see [RouteNode.pbmMoveThisTurn]: 9 bits, [RouteNode.moveUsedThisTurn]: 9 bits, [PrioritizedNode.underestimatedTotal]: 14 bits).
+ * The internal `bits` field must fit within [0, 16384) for multi-turn movement costs, or [0, 512) for single-turn costs.
+ * Valid multi-turn movement values therefore range from 0.0f to 546.1f, and single-turn ones from 0f to 17.03333f.
+ *
+ * #### Roundtrip Guarantee:
+ * Values that are multiples of 1/30 convert cleanly to Float
+ * and back via [fpmFromMovement] and [toFloat]. Values between multiples round via HALF_UP.
+ *
+ * @property bits The internal fixed-point representation (0 to 16384 exclusive).
+ */
 @JvmInline
 value class FixedPointMovement private constructor(val bits: Int) : Comparable<FixedPointMovement> {
+    // Not all of these are currently used, but are present to ensure correctnes for future usage.
+    // Operator coverage is complete for "fpm" on the left, but intentionally incomplete for Inf/Float on the left.
     @Pure
     operator fun plus(other: FixedPointMovement) = FixedPointMovement(bits + other.bits)
     @Pure
@@ -18,8 +38,6 @@ value class FixedPointMovement private constructor(val bits: Int) : Comparable<F
     operator fun minus(value: Int) = FixedPointMovement(bits - value * MOVE_SPEED_BASE)
     @Pure
     operator fun minus(value: Float) = FixedPointMovement(bits - fpmFromMovement(value).bits)
-    // #times(FixedPointMovement) is currently unused, but implemented here because I'm afraid
-    // someone will implement it later, and forget the division.
     @Pure
     operator fun times(other: FixedPointMovement) = FixedPointMovement((bits.toLong() * other.bits / MOVE_SPEED_BASE).toInt())
     @Pure
@@ -48,7 +66,12 @@ value class FixedPointMovement private constructor(val bits: Int) : Comparable<F
     @Pure
     fun coerceIn(min: FixedPointMovement, max: FixedPointMovement) = FixedPointMovement(bits.coerceIn(min.bits, max.bits))
 
-    override fun toString() = toFloat().toString()
+    /** Debug visualization only */
+    override fun toString(): String {
+        val whole = bits / MOVE_SPEED_BASE
+        val frac = bits % MOVE_SPEED_BASE
+        return if (frac == 0) whole.toString() else "$whole+$frac/30"
+    }
 
     companion object {
         private const val MOVE_SPEED_BASE = 30
