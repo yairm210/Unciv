@@ -691,5 +691,8 @@ class MusicController {
         overlay = null
     }
 
+    fun setOverlayVolume(volume: Float) {
+        overlay?.setVolume(volume)
+    }
     //endregion
 }
