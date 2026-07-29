@@ -34,7 +34,7 @@ Unciv logo (e.g. `extraImages/Icons/Unciv icon v6.png`, `android/assets/ExtraIma
 The following files include the Unciv logo:
 
 - `android/assets/ExtraImages/banner.png` by letstalkaboutdune; includes work by The Bucketeer / @GeneralWadaling (tiles) and yairm210 and u-ndefine (Unciv logo), released under CC BY-SA 3.0
-- `extraImages/Feature graphic - Google Play.png` by letstalkaboutdune; includes the Unciv logo by yairm210 and u-ndefine, released under [UNKNOWN LICENSE, probably CC BY 3.0]
+- `extraImages/Feature graphic - Google Play.png` by letstalkaboutdune; includes the Unciv logo by yairm210 and u-ndefine, released under [UNKNOWN LICENSE, probably non-free]
 
 The base tile icons for the "Fantasy Hex" tileset were created CuddlyClover at <https://cuddlyclover.itch.io/fantasy-hex-tiles> with a few additions by various contributors, licensed CC BY 4.0.
 
