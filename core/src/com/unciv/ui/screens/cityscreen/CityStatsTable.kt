@@ -436,7 +436,7 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
                 }
                 add(icon).size(27f).padRight(3f)
                 val valueToDisplay = if (stat == Stat.Happiness) cityView.getHappinessList().values.sum() else amount
-                add(round(valueToDisplay).toInt().toLabel()).padRight(5f)
+                add((valueToDisplay + 0.5).toInt().toLabel()).padRight(5f)
                 if (cityScreen.isCrampedPortrait() && (expanderIsOpen == null || !expanderIsOpen) && stat == Stat.Gold) {
                     row()
                 }
