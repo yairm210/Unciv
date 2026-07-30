@@ -323,7 +323,9 @@ class CityStateFunctions(val civInfo: Civilization) {
         }
 
         if (oldAlly != null && civInfo.isAlive()) {
-            val text = "We have lost alliance with [${civInfo.civName}]."
+            val text = 
+                if (newAlly != null) "${newAlly.civName} stole our alliance with [${civInfo.civName}]."
+                else "We have lost our alliance with [${civInfo.civName}]."
             oldAlly.addNotification(text,
                 getNotificationActions(),
                 NotificationCategory.Diplomacy, civInfo.civName,
