@@ -26,4 +26,6 @@ class CityConstructionsView(internal val cityConstructions: CityConstructions) {
         cityConstructions.canPlaceCreateOneImprovementOn(improvement, tile)
     @Readonly fun getTileForImprovement(improvementName: String): Tile? =
         cityConstructions.getTileForImprovement(improvementName)
+    @Readonly fun canAddToQueue(construction: IConstruction): Boolean = cityConstructions.canAddToQueue(construction)
+    @Readonly fun isEnqueuedForLater(name: String): Boolean = cityConstructions.isEnqueuedForLater(name)
 }
