@@ -27,7 +27,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import kotlin.random.Random
 
-@RunWith(GdxTestRunner::class)
+@RunWith(BaseTestRunner::class)
 class BasicTests {
 
     lateinit var ruleset: Ruleset

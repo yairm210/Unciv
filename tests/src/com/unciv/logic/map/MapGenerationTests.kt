@@ -3,12 +3,12 @@ package com.unciv.logic.map
 import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.BaseTestRunner
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@RunWith(GdxTestRunner::class)
+@RunWith(BaseTestRunner::class)
 class MapGenerationTests {
     private var ruleSet = Ruleset()
     

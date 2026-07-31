@@ -32,7 +32,7 @@ class EditorMapHolderMemoryTest {
     fun setUp() {
         testGame = TestGame()
         Fonts.fontImplementation = FontDesktop()
-        ImageGetter.setNewRuleset(testGame.ruleset)
+        ImageGetter.setNewRuleset(testGame.ruleset) // Requires GdxTestRunner
         TileSetCache.loadTileSetConfigs()
     }
 
