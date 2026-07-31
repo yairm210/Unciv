@@ -4,8 +4,8 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.unciv.dev.FontDesktop
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.testing.GdxTestRunner
-import com.unciv.testing.MeasureMemory
-import com.unciv.testing.MeasureMemory.toMB
+import com.unciv.testing.MemorySnaphots
+import com.unciv.testing.MemorySnaphots.toMB
 import com.unciv.testing.RedirectOutput
 import com.unciv.testing.RedirectPolicy
 import com.unciv.testing.TestGame
@@ -43,7 +43,7 @@ class EditorMapHolderMemoryTest {
         val tileMap = testGame.tileMap
         val tileSetStrings = TileSetStrings()
 
-        val (tileGroups, allocatedBytes) = MeasureMemory.measure {
+        val (tileGroups, allocatedBytes) = MemorySnaphots.measure {
             tileMap.values.map { TileGroup(it, tileSetStrings) }
         }
 
@@ -68,45 +68,45 @@ class EditorMapHolderMemoryTest {
         val tileSetStrings = TileSetStrings()
 
         // Baseline: full TileGroup
-        val (_, total) = MeasureMemory.measure { tiles.map { TileGroup(it, tileSetStrings) } }
+        val (_, total) = MemorySnaphots.measure { tiles.map { TileGroup(it, tileSetStrings) } }
         val bpt = total / n  // bytes per tile
 
         // Reference: cost of 12 Group objects per tile (TileGroup + the 11 TileLayer Groups that
         // existed BEFORE the flat-layer refactor). After the refactor, TileLayers are plain Kotlin
         // classes, so only TileGroup itself contributes Group overhead.
-        val (_, groups12) = MeasureMemory.measure { (1..n * 12).map { Group() } }
+        val (_, groups12) = MemorySnaphots.measure { (1..n * 12).map { Group() } }
 
         // Reference: cost of a YieldGroup per tile.
         // After the flat-layer refactor, TileLayerYield.yields is lazy — only created for tiles
         // that actually display yields.
-        val (_, yieldGroups) = MeasureMemory.measure { (1..n).map { YieldGroup() } }
+        val (_, yieldGroups) = MemorySnaphots.measure { (1..n).map { YieldGroup() } }
 
         // Reference: cost of one Image per tile.
         // After the flat-layer refactor, TileLayerMisc.terrainOverlay is lazy — only created
         // when an overlay color is applied. whiteDot (getImage(null)) equals any image's size.
-        val (_, images) = MeasureMemory.measure { (1..n).map { ImageGetter.getImage(null) } }
+        val (_, images) = MemorySnaphots.measure { (1..n).map { ImageGetter.getImage(null) } }
 
         // Empty collections created at construction:
         //   TileLayerFeatures.roadImages (HashMap), TileLayerBorders.borderSegments (HashMap),
         //   TileLayerMisc.arrows (HashMap) → 3 HashMaps
-        val (_, hashMaps) = MeasureMemory.measure { (1..n * 3).map { HashMap<Any, Any>() } }
+        val (_, hashMaps) = MemorySnaphots.measure { (1..n * 3).map { HashMap<Any, Any>() } }
 
         //   TileLayerMisc.arrowsToDraw (ArrayList), TileLayerMisc.startingLocationIcons (ArrayList),
         //   TileLayerTerrain.tileBaseImages (ArrayList) → 3 ArrayLists
-        val (_, arrayLists) = MeasureMemory.measure { (1..n * 3).map { ArrayList<Any>() } }
+        val (_, arrayLists) = MemorySnaphots.measure { (1..n * 3).map { ArrayList<Any>() } }
 
         // neighborEdgeDataList in TileLayerTerrain: isolated by comparing per-tile cost on
         // a 1×1 map (0 neighbors → empty sequence, no NeighborEdgeData objects)
         // vs 100×100 map (interior tiles have 6 neighbors → 6 NeighborEdgeData objects each).
         testGame.makeRectangularMap(1, 1)
         val tile1x1 = testGame.tileMap.values.toList()
-        val (_, total1x1) = MeasureMemory.measure { tile1x1.map { TileGroup(it, tileSetStrings) } }
+        val (_, total1x1) = MemorySnaphots.measure { tile1x1.map { TileGroup(it, tileSetStrings) } }
         val neighborEdgeCost = (total / n) - (total1x1 / tile1x1.size)
 
         // Reference: cost of ~10 ownedActors ArrayLists per tile (one per non-terrain layer).
         // After lazy-init, only layerTerrain.ownedActors is created at construction; the other 10
         // layers never add actors during init, so their lists are deferred to first gameplay update.
-        val (_, ownedActorLists10) = MeasureMemory.measure { (1..n * 10).map { ArrayList<Any>() } }
+        val (_, ownedActorLists10) = MemorySnaphots.measure { (1..n * 10).map { ArrayList<Any>() } }
 
         fun Long.pct() = "(${"%4.1f".format(this * 100.0 / bpt)}%)"
 

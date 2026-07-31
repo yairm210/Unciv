@@ -1,6 +1,6 @@
 package com.unciv.testing
 
-object MeasureMemory {
+object MemorySnaphots {
     /** Force GC and return current JVM heap usage in bytes. */
     fun snapshot(): Long {
         System.gc()
