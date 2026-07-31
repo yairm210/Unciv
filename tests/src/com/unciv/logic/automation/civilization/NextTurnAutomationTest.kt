@@ -2,7 +2,6 @@ package com.unciv.logic.automation.civilization
 
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.map.AStar
 import com.unciv.models.metadata.GameSettings.PathfindingAlgorithm
 import com.unciv.models.metadata.GameSettings.PathfindingAlgorithm.ClassicPathfinding
 import com.unciv.models.metadata.GameSettings.PathfindingAlgorithm.AStarPathfinding
@@ -46,7 +45,7 @@ class NextTurnAutomationTest(private val algorithm: PathfindingAlgorithm) {
         // Act
         NextTurnAutomation.automateSettlerEscorting(civInfo)
         assertEquals("settler should not have moved, else test is invalid", testGame.tileMap[0,2], settler.currentTile)
-        
+
         // Assert
         assertEquals("high hp warrior have taken the place of low hp escort of settler", testGame.tileMap[0,2], highHpWarrior.currentTile)
         assertEquals("high hp warrior have taken the place of low hp escort of settler", testGame.tileMap[0,1], lowHpWarrior.currentTile)

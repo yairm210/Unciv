@@ -16,7 +16,6 @@ import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.testing.GdxTestRunner
-import com.unciv.utils.Log
 import com.unciv.utils.debug
 import org.junit.After
 import org.junit.Assert

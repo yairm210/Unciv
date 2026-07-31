@@ -7,9 +7,6 @@ import com.unciv.testing.GdxTestRunner
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.lang.Integer.min
-import kotlin.math.max
-import kotlin.text.get
 
 @RunWith(GdxTestRunner::class)
 class MapGenerationTests {

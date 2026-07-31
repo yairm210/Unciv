@@ -12,7 +12,6 @@ import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
-import kotlin.math.roundToInt
 
 
 @RunWith(GdxTestRunner::class)
