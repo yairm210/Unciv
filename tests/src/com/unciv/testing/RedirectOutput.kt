@@ -3,7 +3,7 @@ package com.unciv.testing
 enum class RedirectPolicy { Show, ShowOnFailure, Discard }
 
 /**
- *  This annotation controls the [GdxTestRunner] feature to redirect and discard console output from tests.
+ *  This annotation controls the [BaseTestRunner] feature to redirect and discard console output from tests.
  *
  *  Settings:
  *  * [RedirectPolicy.Discard]: Output is discarded.
