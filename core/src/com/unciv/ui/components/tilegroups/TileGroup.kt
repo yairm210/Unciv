@@ -2,7 +2,7 @@ package com.unciv.ui.components.tilegroups
 
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.unciv.logic.civilization.Civilization
+import com.unciv.view.CivView
 import com.unciv.logic.map.tile.Tile
 import com.unciv.ui.components.tilegroups.layers.*
 import com.unciv.utils.DebugUtils
@@ -73,8 +73,8 @@ open class TileGroup(
 
     open fun clone() = TileGroup(tile, tileSetStrings)
 
-    fun isViewable(viewingCiv: Civilization) = isForceVisible
-            || viewingCiv.viewableTiles.contains(tile)
+    fun isViewable(viewingCiv: CivView) = isForceVisible
+            || viewingCiv.canSeeTile(tile)
             || viewingCiv.isSpectator()
 
     private fun reset() {
@@ -93,7 +93,7 @@ open class TileGroup(
         for (layer in allLayers) layer.isVisible = isVisible
     }
 
-    open fun update(viewingCiv: Civilization? = null) {
+    open fun update(viewingCiv: CivView? = null) {
         layerMisc.removeHexOutline()
         layerMisc.hideTerrainOverlay()
         layerOverlay.hideHighlight()
