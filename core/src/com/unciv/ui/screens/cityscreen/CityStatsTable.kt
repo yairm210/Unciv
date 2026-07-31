@@ -26,7 +26,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.view.CityView
 import kotlin.math.ceil
-import kotlin.math.round
+import kotlin.math.roundToInt
 
 class CityStatsTable(private val cityScreen: CityScreen) : Table() {
     private val cityView: CityView = cityScreen.cityView
@@ -436,7 +436,7 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
                 }
                 add(icon).size(27f).padRight(3f)
                 val valueToDisplay = if (stat == Stat.Happiness) cityView.getHappinessList().values.sum() else amount
-                add((valueToDisplay + 0.5).toInt().toLabel()).padRight(5f)
+                add((valueToDisplay.roundToInt()).toLabel()).padRight(5f)
                 if (cityScreen.isCrampedPortrait() && (expanderIsOpen == null || !expanderIsOpen) && stat == Stat.Gold) {
                     row()
                 }
