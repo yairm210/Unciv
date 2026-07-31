@@ -43,6 +43,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.view.CityView
+import com.unciv.view.CivView
 import kotlin.math.max
 
 class CityScreen(
@@ -272,7 +273,7 @@ class CityScreen(
         }
 
         for (tileGroup in tileGroups) {
-            tileGroup.update(selectedCiv)
+            tileGroup.update(CivView(selectedCiv, selectedCiv))
             tileGroup.layerMisc.removeHexOutline()
             if (isSpying) continue // the rest is only for own cities
 

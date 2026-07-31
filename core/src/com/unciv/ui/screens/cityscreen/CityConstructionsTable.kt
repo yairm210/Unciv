@@ -336,7 +336,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             availableConstructionsTable.add(Constants.loading.toLabel()).pad(10f)
         }
 
-        Concurrency.run("Construction info gathering - ${cityScreen.city.name}") {
+        Concurrency.run("Construction info gathering - ${cityView.name}") {
             // Since this can be a heavy operation and leads to many ANRs on older phones we put the metadata-gathering in another thread.
             val constructionButtonDTOList = getConstructionButtonDTOs()
             launchOnGLThread {
@@ -450,7 +450,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         if (cityScreen.canCityBeChanged()) {
             table.addContextMenu {
                 selectQueueEntry(constructionQueueIndex) {
-                    CityScreenConstructionMenu(cityScreen.stage, table, cityScreen.city, construction) {
+                    CityScreenConstructionMenu(cityScreen.stage, table, cityView, construction) {
                         cityView.tryReassignPopulation()
                         cityScreen.update()
                     }
@@ -594,7 +594,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 highlightConstructionButton(pickConstructionButton, true, true)
                 cityScreen.updateWithoutConstructionAndMap()
             }
-            CityScreenConstructionMenu(cityScreen.stage, pickConstructionButton, cityScreen.city, construction) {
+            CityScreenConstructionMenu(cityScreen.stage, pickConstructionButton, cityView, construction) {
                 cityView.tryReassignPopulation()
                 cityScreen.update()
             }

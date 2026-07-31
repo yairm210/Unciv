@@ -185,6 +185,30 @@ class CityView(internal val city: City, internal val viewer: Civilization) {
         city.sellBuilding(construction)
         return true
     }
+    fun tryMoveEntryToTop(index: Int) {
+        if (!canChangeState()) return
+        city.cityConstructions.moveEntryToTop(index)
+    }
+    fun tryMoveEntryToEnd(index: Int) {
+        if (!canChangeState()) return
+        city.cityConstructions.moveEntryToEnd(index)
+    }
+    fun tryAddToQueueConstruction(construction: IConstruction, addToTop: Boolean = false) {
+        if (!canChangeState()) return
+        city.cityConstructions.addToQueue(construction, addToTop = addToTop)
+    }
+    fun tryRemoveAllByName(name: String) {
+        if (!canChangeState()) return
+        city.cityConstructions.removeAllByName(name)
+    }
+    fun tryDisableConstruction(name: String) {
+        if (!canChangeState()) return
+        city.disabledConstructions.add(name)
+    }
+    fun tryEnableConstruction(name: String) {
+        if (!canChangeState()) return
+        city.disabledConstructions.remove(name)
+    }
     fun tryReassignPopulation(): Boolean {
         if (!canChangeState()) return false
         city.reassignPopulation()
