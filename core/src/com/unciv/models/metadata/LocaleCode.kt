@@ -7,7 +7,7 @@ import java.text.NumberFormat
 import java.util.Locale
 
 /** Map Unciv language key to Java locale, for the purpose of getting a Collator for sorting.
- *  Can also be used to list all available languages ([getSupportedLanguages]).
+ *  It is also used to list all available languages ([getSupportedLanguages]).
  *  Can translate Java [Locale] to/from an Unciv language as stored in [GameSettings] using [find] followed by [locale] or [languageName] calls.
  *
  *  - Effect depends on the Java libraries and may not always conform to expectations.
@@ -40,6 +40,7 @@ enum class LocaleCode(
     Danish("da-DK", unused = true),
     Dutch("nl-NL"),
     English("en-US"),
+    Esperanto("eo"),
     Estonian("et-EE", unused = true),
     Filipino("fil-PH-u-co-search"),
     Finnish("fi-FI"),
@@ -58,6 +59,7 @@ enum class LocaleCode(
     Lithuanian("lt-LT"),
     Malay("ms-MY"),
     Maltese("mt-MT"),
+    Navajo("nv-US"),
     Norwegian("no-NO"),
     NorwegianNynorsk("nn-NO", unused = true),
     PersianPinglishDIN("fa-IR", languageName = "Persian_(Pinglish-DIN)"), // These might just fall back to default
@@ -73,6 +75,7 @@ enum class LocaleCode(
     Spanish("es-ES"),
     Swedish("sv-SE"),
     Thai("th-TH"),
+    TokiPona("tok", languageName = "Toki_Pona"),
     TraditionalChinese("zh-TW", languageName = "Traditional_Chinese"),
     Turkish("tr-TR"),
     Ukrainian("uk-UA"),

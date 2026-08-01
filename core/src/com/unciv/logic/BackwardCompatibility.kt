@@ -243,10 +243,9 @@ object BackwardCompatibility {
     }
 
     fun GameInfo.ensureUnitIds() {
-        if (lastUnitId == 0) lastUnitId = tileMap.values.asSequence()
-            .flatMap { it.getUnits() }.maxOfOrNull { it.id }?.coerceAtLeast(0) ?: 0
+        ensureLastUnitId()
         for (unit in tileMap.values.flatMap { it.getUnits() }) {
-            if (unit.id == Constants.NO_ID) unit.id = ++lastUnitId
+            if (unit.id == Constants.NO_ID) unit.id = getNextUnitId()
         }
     }
 }

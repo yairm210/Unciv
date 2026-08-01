@@ -123,13 +123,11 @@ class BasicTests {
         var noUnknownParameters = true
         for (uniqueType in UniqueType.entries) {
             if (uniqueType.getDeprecationAnnotation() != null) continue
-            for (entry in uniqueType.parameterTypeMap.withIndex()) {
-                for (paramType in entry.value) {
-                    if (paramType == UniqueParameterType.Unknown) {
-                        val badParam = uniqueType.text.getPlaceholderParameters()[entry.index]
-                        println("${uniqueType.name} param[${entry.index}] type \"$badParam\" is unknown")
-                        noUnknownParameters = false
-                    }
+            val actualParameters = uniqueType.text.getPlaceholderParameters()
+            for ((index, parameterName) in actualParameters.withIndex()) {
+                if (uniqueType.parameterTypeMap[index].isEmpty()) {
+                    println("${uniqueType.name} param[${index}] type \"$parameterName\" is unknown")
+                    noUnknownParameters = false
                 }
             }
         }

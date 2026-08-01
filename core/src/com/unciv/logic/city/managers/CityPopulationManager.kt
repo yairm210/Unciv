@@ -6,7 +6,6 @@ import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
-import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.unique.UniqueType
@@ -28,7 +27,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
 
     val specialistAllocations = Counter<String>()
 
-    fun getNewSpecialists() = specialistAllocations 
+    @Readonly fun getNewSpecialists() = specialistAllocations 
 
 
     //region pure functions
@@ -44,7 +43,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
 
     @Readonly
     fun getFreePopulation(): Int {
-        val workingPopulation = city.workedTiles.size
+        val workingPopulation = city.getWorkedTiles().count()
         return population - workingPopulation - getNumberOfSpecialists()
     }
     
@@ -201,7 +200,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
             //assign population
             if (valueBestTile > valueBestSpecialist) {
                 if (bestTile != null) {
-                    city.workedTiles = city.workedTiles.withItem(bestTile.position)
+                    city.workTile(bestTile)
                     cityStats.food += tileStats[bestTile]!!.food
                 }
             } else if (bestJob != null) {
@@ -212,16 +211,11 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
         city.cityStats.update()
     }
 
-    fun stopWorkingTile(position: HexCoord) {
-        city.workedTiles = city.workedTiles.withoutItem(position)
-        city.lockedTiles.remove(position)
-    }
-
     fun unassignExtraPopulation() {
-        for (tile in city.workedTiles.map { city.tileMap[it] }) {
+        for (tile in city.getWorkedTiles().toList()) {
             if (tile.getOwner() != city.civ || tile.getWorkingCity() != city
                     || tile.aerialDistanceTo(city.getCenterTile()) > city.getWorkRange())
-                city.population.stopWorkingTile(tile.position)
+                city.stopWorkingTile(tile)
         }
 
         // unassign specialists that cannot be (e.g. the city was captured and one of the specialist buildings was destroyed)
@@ -233,15 +227,11 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
 
         while (getFreePopulation() < 0) {
             //evaluate tiles
-            val worstWorkedTile: Tile? = if (city.workedTiles.isEmpty()) null
-            else {
-                city.workedTiles.asSequence()
-                        .map { city.tileMap[it] }
-                        .minByOrNull {
-                            Automation.rankTileForCityWork(it, city)
-                            +(if (it.isLocked()) 10 else 0)
-                        }!!
-            }
+            val worstWorkedTile: Tile? = city.getWorkedTiles()
+                    .minByOrNull {
+                        Automation.rankTileForCityWork(it, city) +
+                            (if (it.isLocked()) 10 else 0)
+                    }
             val valueWorstTile = if (worstWorkedTile == null) 0f
             else Automation.rankTileForCityWork(worstWorkedTile, city)
 
@@ -258,13 +248,13 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
                 worstAutoJob != null && worstWorkedTile != null -> {
                     // choose between removing a specialist and removing a tile
                     if (valueWorstTile < valueWorstSpecialist) {
-                        stopWorkingTile(worstWorkedTile.position)
+                        city.stopWorkingTile(worstWorkedTile)
                     }
                     else
                         specialistAllocations.add(worstAutoJob, -1)
                 }
                 worstAutoJob != null -> specialistAllocations.add(worstAutoJob, -1)
-                worstWorkedTile != null -> stopWorkingTile(worstWorkedTile.position)
+                worstWorkedTile != null -> city.stopWorkingTile(worstWorkedTile)
                 else -> {
                     // It happens when "city.manualSpecialists == true"
                     //  and population goes below the number of specialists, e.g. city is razing.

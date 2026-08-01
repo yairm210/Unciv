@@ -89,7 +89,9 @@ enum class RulesetFile(
     UnitTypes("UnitTypes.json", { unitTypes.values.asSequence() }),
     VictoryTypes("VictoryTypes.json", getINamed = { victories.values.asSequence() }),
     CityStateTypes("CityStateTypes.json", getUniques =
-        { cityStateTypes.values.asSequence().flatMap { it.allyBonusUniqueMap.getAllUniques() + it.friendBonusUniqueMap.getAllUniques() } },
+        { cityStateTypes.values.asSequence().flatMap {
+            it.allyBonusUniqueMap.getAllUniques() + it.friendBonusUniqueMap.getAllUniques() + it.uniqueObjects
+        } },
         getINamed = { cityStateTypes.values.asSequence() }),
     Personalities("Personalities.json", { personalities.values.asSequence() }),
     Events("Events.json", { events.values.asSequence() + events.values.flatMap { it.choices } }),
@@ -362,7 +364,7 @@ class Ruleset {
     @Readonly
     fun allNames(): Sequence<RulesetName> =
         RulesetFile.entries.asSequence().flatMap { it.getNames(this) }.filter { it.name.isNotEmpty() }
-    @Readonly fun allICivilopediaText(): Sequence<ICivilopediaText> = allRulesetObjects() + events.values.flatMap { it.choices }
+    @Readonly fun allICivilopediaText(): Sequence<ICivilopediaText> = allRulesetObjects()
 
     fun load(folderHandle: FileHandle) {
         fun RulesetFile.file() = folderHandle.child(filename)
@@ -575,6 +577,13 @@ class Ruleset {
                     cityStateTypes[cityStateType.name] = CityStateType().apply {
                         name = cityStateType.name
                         color = cityStateType.color
+                        uniques = ArrayList(cityStateType.uniques.filter {
+                            UniqueValidator(this@Ruleset).checkUnique(
+                                Unique(it),
+                                false,
+                                null
+                            ).isEmpty()
+                        })
                         friendBonusUniques = ArrayList(cityStateType.friendBonusUniques.filter {
                             UniqueValidator(this@Ruleset).checkUnique(
                                 Unique(it),

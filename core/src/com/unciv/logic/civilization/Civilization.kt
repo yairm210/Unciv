@@ -72,6 +72,15 @@ class Civilization : IsPartOfGameInfoSerialization {
     @Transient
     lateinit var gameInfo: GameInfo
 
+    /** Context for [UniqueType.StartBias] during map gen / start placement.
+     *  Passes [GameInfo] only — never this [Civilization], which may be only partially initialized.
+     *  Conditionals that need tiles/cities/units are therefore unsupported here.
+     */
+    @Readonly
+    fun getGameContextForStartBias() =
+        if (this::gameInfo.isInitialized) GameContext(gameInfo = gameInfo)
+        else GameContext.IgnoreConditionals
+
     @Transient
     lateinit var nation: Nation
     
@@ -195,6 +204,13 @@ class Civilization : IsPartOfGameInfoSerialization {
     var cities = listOf<City>()
     var citiesCreated = 0
 
+    /**
+     * Constructions (e.g. buildings) that will be disabled when a new city is founded
+     * They are moved to the "Disabled" section in the build menu, and will not be built during automation.
+     */
+    var disabledCityConstructions = HashSet<String>()
+        private set
+
     // Limit camera within explored region
     var exploredRegion = ExploredRegion()
 
@@ -302,6 +318,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.proximity.putAll(proximity)
         toReturn.cities = cities.map { it.clone() }
         toReturn.neutralRoads = neutralRoads
+        toReturn.disabledCityConstructions.addAll(disabledCityConstructions)
         toReturn.exploredRegion = exploredRegion.clone()
         toReturn.lastSeenImprovement.putAll(lastSeenImprovement)
         toReturn.leaderTitle = leaderTitle
@@ -952,9 +969,9 @@ class Civilization : IsPartOfGameInfoSerialization {
 
         // Now that all tile transients have been updated, clean "worked" tiles that are not under the Civ's control
         for (city in cities)
-            for (workedTile in city.workedTiles.toList())
-                if (gameInfo.tileMap[workedTile].getOwner() != this)
-                    city.workedTiles.remove(workedTile)
+            for (tile in city.getWorkedTiles().toList())
+                if (tile.getOwner() != this)
+                    city.stopWorkingTile(tile)
 
         passThroughImpassableUnlocked = passableImpassables.isNotEmpty()
 

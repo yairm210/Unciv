@@ -23,11 +23,7 @@ import com.unciv.ui.components.UncivTooltip.Companion.getEdgePoint
 import com.unciv.ui.components.extensions.allChildren
 import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.extensions.toTextButton
-import com.unciv.ui.components.input.KeyCharAndCode
-import com.unciv.ui.components.input.KeyboardBinding
-import com.unciv.ui.components.input.keyShortcuts
-import com.unciv.ui.components.input.onActivation
-import com.unciv.ui.components.input.onRightClick
+import com.unciv.ui.components.input.*
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Concurrency
@@ -65,7 +61,10 @@ open class AnimatedMenuPopup private constructor (stage: Stage) : Popup(stage, S
 
         fun Group.addContextMenu(indicatorMinSizeRelative: Float = 0.5f, factory: () -> AnimatedMenuPopup) {
             Helpers.addIndicator(this, indicatorMinSizeRelative)
-            onRightClick { factory() }
+            onRightClick {
+                if (isActive())
+                    factory()
+            }
         }
 
         fun Group.adjustContextMenuIndicators() {

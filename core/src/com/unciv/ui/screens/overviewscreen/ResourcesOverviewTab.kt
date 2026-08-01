@@ -42,6 +42,7 @@ class ResourcesOverviewTab(
         private const val iconSize = 50f
         private const val defaultPad = 10f
         private const val tooltipSize = 24f
+        private const val total = "Total" // Used both as label and as invisible pseudo-origin
     }
 
     private fun getTurnImage(vertical: Boolean) =
@@ -74,8 +75,7 @@ class ResourcesOverviewTab(
                 .thenBy(UncivGame.Current.settings.getCollatorFromLocale()) { it.name.tr(hideIcons = true) }
         )
         .toList()
-    private val origins: List<String> = resourceDrilldown.asSequence()
-        .map { it.origin }.distinct().toList()
+    private val origins = resourceDrilldown.origins()
     private val extraOrigins: List<ExtraInfoOrigin> = extraDrilldown.asSequence()
         .mapNotNull { ExtraInfoOrigin.safeValueOf(it.origin) }.distinct().toList()
 
@@ -86,8 +86,7 @@ class ResourcesOverviewTab(
             return tile.countAsUnimproved()
         }
         val amount = get(resource, origin)?.amount ?: return null
-        val label = if (resource.isStockpiled && amount > 0) "+$amount".toLabel()
-            else amount.toLabel()
+        val label = getLabel(resource, origin, amount)
         if (origin == ExtraInfoOrigin.Unimproved.name)
             label.onClick { overviewScreen.showOneTimeNotification(
                 gameInfo.getExploredResourcesNotification(viewingPlayer, resource, filter = ::isAlliedAndUnimproved)
@@ -95,10 +94,25 @@ class ResourcesOverviewTab(
         return label
     }
 
-    private fun ResourceSupplyList.getTotalLabel(resource: TileResource): Label {
-        val total = filter { it.resource == resource }.sumOf { it.amount }
-        return if (resource.isStockpiled && total > 0) "+$total".toLabel()
-        else total.toLabel()
+    private fun ResourceSupplyList.getTotalLabel(resource: TileResource)
+        = getLabel(resource, total, sumBy(resource))
+
+    private fun ResourceSupplyList.getLabel(resource: TileResource, origin: String, amount: Int): Label {
+        val color = if (isDeficit(resource, origin, amount)) Color.RED else Color.WHITE
+        val text = (if (resource.isStockpiled && amount >= 0 && origin != ExtraInfoOrigin.Stockpile.name) "+" else "") + amount.toString()
+        return text.toLabel(color)
+    }
+
+    private fun ResourceSupplyList.getOrZero(resource: TileResource, origin: String) =
+        get(resource, origin)?.amount ?: 0
+
+    private fun ResourceSupplyList.isDeficit(resource: TileResource, origin: String, amount: Int): Boolean {
+        if (resource.isStockpiled && origin != ExtraInfoOrigin.Stockpile.name)
+            return amount < -getOrZero(resource, ExtraInfoOrigin.Stockpile.name) // Negative income won't run into deficit next turn
+        if (origin != total)
+            return amount < 0 && sumBy(resource) < 0 // E.g. units consuming is only bad if overcommitted
+        if (amount != 0) return amount < 0
+        return extraDrilldown.getOrZero(resource, ExtraInfoOrigin.DemandingWLTK.name) > 0
     }
 
     private fun getResourceImage(name: String) =
@@ -107,10 +121,14 @@ class ResourcesOverviewTab(
                 gameInfo.getExploredResourcesNotification(viewingPlayer, name)
             ) }
         }
-    private fun TileResource.getLabel() = name.toLabel(hideIcons = true).apply {
-        onClick {
+    private fun TileResource.getLabel(): Label {
+        val deficit = resourceDrilldown.isDeficit(this, total, resourceDrilldown.sumBy(this))
+        val color = if (deficit) Color.RED else Color.WHITE
+        val label = name.toLabel(color, hideIcons = true)
+        label.onClick {
             overviewScreen.openCivilopedia(makeLink())
         }
+        return label
     }
 
     private enum class ExtraInfoOrigin(
@@ -120,12 +138,14 @@ class ResourcesOverviewTab(
     ) {
         Unimproved("Unimproved", "Unimproved",
             "Number of tiles with this resource\nin your territory, without an\nappropriate improvement to use it"),
-        CelebratingWLKT("We Love The King Day", "WLTK+",
+        CelebratingWLTK("We Love The King Day", "WLTK+",
             "Number of your cities celebrating\n'We Love The King Day' thanks\nto access to this resource"),
         DemandingWLTK("WLTK demand", "WLTK-",
             "Number of your cities\ndemanding this resource for\n'We Love The King Day'"),
-        TradeOffer("Trade offer","Trade offer", "Resources we're offering in trades")
+        TradeOffer("Trade offer","Trade offer", "Resources we're offering in trades"),
+        Stockpile("Stockpiled resources", "Stockpile", "The currently accumulated stockpile amount"),
         ;
+
         companion object {
             fun safeValueOf(name: String) = entries.firstOrNull { it.name == name }
         }
@@ -179,14 +199,13 @@ class ResourcesOverviewTab(
         addSeparator(Color.GRAY).pad(0f, defaultPad)
 
         // One row for the totals
-        add("Total".toLabel()).left()
+        add(total.toLabel()).left()
         for (resource in resources) {
             add(resourceDrilldown.getTotalLabel(resource))
         }
-        
 
         // Separate rows for origins not part of the totals
-        if (extraOrigins.any()) {
+        if (!extraOrigins.isEmpty()) {
             addSeparator()
             for (origin in extraOrigins) {
                 add(origin.horizontalCaption.toLabel().apply {
@@ -196,16 +215,6 @@ class ResourcesOverviewTab(
                     add(extraDrilldown.getLabel(resource, origin.name))
                 }
                 row()
-            }
-        }
-        
-        // A row for stockpiles resources if required
-        if (resources.any { it.isStockpiled }){
-            addSeparator()
-            add("Stockpiled resources".toLabel()).left()
-            for (resource in resources) {
-                if (!resource.isStockpiled) add()
-                else add(viewingPlayer.getResourceAmount(resource).toLabel())
             }
         }
     }
@@ -222,7 +231,7 @@ class ResourcesOverviewTab(
             for (origin in groupedOrigins) {
                 add(origin.key.toLabel())
             }
-            add("Total".toLabel())
+            add(total.toLabel())
             addSeparatorVertical(Color.GRAY).pad(0f)
             for (origin in extraOrigins) {
                 add(origin.verticalCaption.toLabel().apply {
@@ -281,7 +290,7 @@ class ResourcesOverviewTab(
             if (city.demandedResource.isNotEmpty()) {
                 val wltkResource = gameInfo.ruleset.tileResources[city.demandedResource]!!
                 if (city.isWeLoveTheKingDayActive()) {
-                    newResourceSupplyList.add(wltkResource, ExtraInfoOrigin.CelebratingWLKT.name)
+                    newResourceSupplyList.add(wltkResource, ExtraInfoOrigin.CelebratingWLTK.name)
                 } else {
                     newResourceSupplyList.add(wltkResource, ExtraInfoOrigin.DemandingWLTK.name)
                 }
@@ -302,10 +311,18 @@ class ResourcesOverviewTab(
         }
 
         /** Show unlocked **strategic** resources even if you have no access at all */
-        for (resource in viewingPlayer.gameInfo.ruleset.tileResources.values) {
+        for (resource in gameInfo.ruleset.tileResources.values) {
             if (resource.resourceType != ResourceType.Strategic) continue
             if (viewingPlayer.canSeeResource(resource))
                 newResourceSupplyList.add(resource, "No source", 0)
+        }
+
+        // A row for stockpiled resources if required.
+        // Note viewingPlayer.detailedCivResources will NOT include stockpiles if current income is zero.
+        for (resourceName in viewingPlayer.resourceStockpiles.keys) {
+            val resource = gameInfo.ruleset.tileResources[resourceName] ?: continue
+            if (resource.hasUnique(UniqueType.NotShownOnWorldScreen, viewingPlayer.state)) continue
+            newResourceSupplyList.add(resource, ExtraInfoOrigin.Stockpile.name, viewingPlayer.getResourceAmount(resource))
         }
 
         return newResourceSupplyList

@@ -72,6 +72,8 @@ allprojects {
             "io.ktor.http.Url.segments",
             "io.ktor.http.Url.parameters",
             "io.ktor.http.Parameters.get",
+
+            "java.util.BitSet.clone",
         )
         wellKnownPureClasses = setOf(
         )

@@ -58,7 +58,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     override fun makeLink() = if (isAnyWonder()) "Wonder/$name" else "Building/$name"
 
     fun getShortDescription(multiline: Boolean = false, uniqueInclusionFilter: ((Unique) -> Boolean)? = null) = BuildingDescriptions.getShortDescription(this, multiline, uniqueInclusionFilter)
-    fun getDescription(city: City, showAdditionalInfo: Boolean) = BuildingDescriptions.getDescription(this, city, showAdditionalInfo)
+    @Readonly fun getDescription(city: City, showAdditionalInfo: Boolean) = BuildingDescriptions.getDescription(this, city, showAdditionalInfo)
     override fun getCivilopediaTextLines(ruleset: Ruleset) = BuildingDescriptions.getCivilopediaTextLines(this, ruleset)
 
     override fun getSortGroup(ruleset: Ruleset): Int = ruleset.technologies[requiredTech]?.era(ruleset)?.eraNumber ?: 100
@@ -280,7 +280,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (cityConstructions.isBuilt(name))
             yield(RejectionReasonType.AlreadyBuilt.toInstance())
 
-        if (isUnavailableBySettings(civ.gameInfo)) {
+        if (civ.gameInfo.isUnavailableBySettingsCached(this@Building)) {
             // Repeat the starting era test isHiddenBySettings already did to change the RejectionReasonType
             if (isHiddenByStartingEra(civ.gameInfo))
                 yield(RejectionReasonType.WonderDisabledEra.toInstance())

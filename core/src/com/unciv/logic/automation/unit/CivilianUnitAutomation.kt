@@ -20,9 +20,9 @@ object CivilianUnitAutomation {
     fun shouldClearTileForAddInCapitalUnits(unit: MapUnit, tile: Tile) =
         tile.isCityCenter() && tile.getCity()!!.isCapital()
         && !unit.hasUnique(UniqueType.AddInCapital)
-        && unit.civ.units.getCivUnits().any { unit.hasUnique(UniqueType.AddInCapital) }
+        && unit.civ.units.getCivUnits().any { it.hasUnique(UniqueType.AddInCapital) }
 
-    fun automateCivilianUnit(unit: MapUnit, dangerousTiles: HashSet<Tile>) = timeThis<Unit>("automateCivilianUnit") {
+    fun automateCivilianUnit(unit: MapUnit, dangerousTiles: HashSet<Tile>): Unit = timeThis("automateCivilianUnit") {
         // To allow "found city" actions that can only trigger a limited number of times
         
         // Slightly modified getUsableUnitActionUniques() to allow for settlers with *conditional* settling uniques

@@ -45,9 +45,8 @@ object ImprovementFunctions {
                     .any { civInfo.getResourceAmount(it.params[1]) < it.params[0].toInt() })
                 yield(ImprovementBuildingProblem.MissingResources)
 
-            if (improvement.getMatchingUniques(UniqueType.CostsResources)
-                    .any { civInfo.getResourceAmount(it.params[1]) < it.params[0].toInt() *
-                            (if (it.isModifiedByGameSpeed()) civInfo.gameInfo.speed.modifier else 1f) })
+            if (improvement.getStockpiledResourceRequirements(gameContext)
+                    .any { (resourceName, amount) -> civInfo.getResourceAmount(resourceName) < amount })
                 yield(ImprovementBuildingProblem.MissingResources)
             
             if (tile != null) {

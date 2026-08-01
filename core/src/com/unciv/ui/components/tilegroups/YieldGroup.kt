@@ -25,6 +25,7 @@ class YieldGroup : HorizontalGroup() {
                 addActor(getStatIconsTable(stat.name, amount.toInt()))
         }
         pack()
+        setOrigin(Align.center)
     }
 
     private fun getIcon(statName: String) =

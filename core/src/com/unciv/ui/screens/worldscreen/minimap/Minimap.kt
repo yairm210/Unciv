@@ -8,11 +8,11 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
 import com.unciv.ui.components.NonTransformGroup
+import com.unciv.ui.components.input.UncivActorGestureListener
 import com.unciv.ui.images.ClippingImage
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.worldscreen.worldmap.WorldMapHolder
@@ -200,7 +200,7 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
     private fun addClickListener() {
         // Single listener on the Minimap instead of one per MinimapTile - same approach as WorldMapHolder
         val imageToTile = minimapTiles.associateBy { it.image }
-        val listener = object : ActorGestureListener(20f, 0.25f, 1.1f, Int.MAX_VALUE.toFloat()) {
+        val listener = object : UncivActorGestureListener() {
             override fun tap(event: InputEvent?, x: Float, y: Float, count: Int, button: Int) {
                 // tileLayer is at (0,0) with no transform so Minimap coordinates == tileLayer coordinates
                 val image = tileLayer.hit(x, y, true) as? Image ?: return

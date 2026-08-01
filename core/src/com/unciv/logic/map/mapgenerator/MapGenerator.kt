@@ -203,7 +203,8 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
 
         // Region based map generation - not used when generating maps in map editor
         val civilizations = gameInfo?.civilizations
-        if (civilizations?.isNotEmpty() ?: false) {
+        val isMapEditor = civilizations?.isEmpty() ?: true
+        if (! isMapEditor) {
             map.gameInfo = gameInfo
             val regions = MapRegions(ruleset)
             runAndMeasure("generateRegions") {
@@ -227,9 +228,10 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             runAndMeasure("spreadResources") { spreadResources(map) }
         }
         runAndMeasure("spreadAncientRuins") { spreadAncientRuins(map) }
-        
-        mirror(map)
 
+        if (isMapEditor)
+            mirror(map)
+        
         // Map generation may generate incompatible terrain/feature combinations
         for (tile in map.values)
             TileNormalizer.normalizeToRuleset(tile, ruleset)
@@ -237,13 +239,13 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         return map
     }
     
-    private fun flipTopBottom(vector: Vector2): Vector2 = Vector2(-vector.y, -vector.x)
     private fun flipTopBottom(vector: HexCoord): HexCoord = HexCoord.of(-vector.y, -vector.x)
-    private fun flipLeftRight(vector: Vector2): Vector2 = Vector2(vector.y, vector.x)
     private fun flipLeftRight(vector: HexCoord): HexCoord = HexCoord.of(vector.y, vector.x)
 
     private fun mirror(map: TileMap) {
-        fun getMirrorTile(tile: Tile, mirroringType: String): Tile? {
+        val mirroringType = map.mapParameters.mirroring
+        
+        fun getMirrorTile(tile: Tile): Tile? {
             val mirrorTileVector = when (mirroringType) {
                 MirroringType.topbottom -> if (tile.getRow() <= 0) return null else flipTopBottom(tile.position)
                 MirroringType.leftright -> if (tile.getColumn() <= 0) return null else flipLeftRight(tile.position)
@@ -260,17 +262,18 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             return map.getIfTileExistsOrNull(mirrorTileVector.x, mirrorTileVector.y)
         }
         
-        fun copyTile(tile: Tile, mirroringType: String) {
-            val mirrorTile = getMirrorTile(tile, mirroringType) ?: return
+        fun copyTile(tile: Tile) {
+            val mirrorTile = getMirrorTile(tile) ?: return
             
             tile.setBaseTerrain(mirrorTile.getBaseTerrain())
             tile.naturalWonder = mirrorTile.naturalWonder
             tile.setTerrainFeatures(mirrorTile.terrainFeatures)
             tile.tileResource = mirrorTile.tileResource
+            tile.resourceAmount = mirrorTile.resourceAmount
             tile.setImprovementBasic(mirrorTile.tileImprovement)
             
             for (neighbor in tile.neighbors){
-                val neighborMirror = getMirrorTile(neighbor, mirroringType) ?: continue
+                val neighborMirror = getMirrorTile(neighbor) ?: continue
                 if (neighborMirror !in mirrorTile.neighbors) continue // we landed on the edge here
                 tile.setConnectedByRiver(neighbor, mirrorTile.isConnectedByRiver(neighborMirror))
             }
@@ -278,7 +281,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
 
         if (map.mapParameters.mirroring == MirroringType.none) return
         for (tile in map.values) {
-            copyTile(tile, map.mapParameters.mirroring)
+            copyTile(tile)
         }
     }
 
@@ -372,24 +375,25 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         val lakeTerrains = terrainConditions.filter { it.isFreshwater && !it.rareFeature && it.terrain.type == TerrainType.Water }
         if (lakeTerrains.isNotEmpty()) {
             //define lakes
-            val waterTiles = map.values.filter { it.isWater }.toMutableList()
+            val waterTiles = map.values.filter { it.isWater }.toHashSet()
 
-            val tilesInArea = ArrayList<Tile>()
-            val tilesToCheck = ArrayList<Tile>()
+            val tilesInArea = HashSet<Tile>()
+            val tilesToCheck = ArrayDeque<Tile>()
 
             val maxLakeSize = ruleset.modOptions.constants.maxLakeSize
 
             while (waterTiles.isNotEmpty()) {
-                val initialWaterTile = waterTiles.removeAt(0)
+                val initialWaterTile = waterTiles.first()
+                waterTiles.remove(initialWaterTile)
                 tilesInArea += initialWaterTile
                 tilesToCheck += initialWaterTile
 
                 // Floodfill to cluster water tiles
                 while (tilesToCheck.isNotEmpty()) {
-                    val tileWeAreChecking = tilesToCheck.removeAt(0)
+                    val tileWeAreChecking = tilesToCheck.removeFirst()
                     for (vector in tileWeAreChecking.neighbors){
-                        if (tilesInArea.contains(vector)) continue
-                        if (!waterTiles.contains(vector)) continue
+                        if (vector in tilesInArea) continue
+                        if (vector !in waterTiles) continue
                         tilesInArea += vector
                         tilesToCheck += vector
                         waterTiles -= vector
@@ -655,11 +659,11 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             .ifEmpty { terrainFeaturePicker.filter { it.terrain.isOcean} }
         val iceTerrains: List<TerrainOccursRange> = terrainFeaturePicker.filter { it.terrain.isIce }
 
+        if (iceTerrains.isEmpty()) return
+
         if (tileMap.mapParameters.shape == MapShape.flatEarth) {
             spawnFlatEarthIceWalls(tileMap, iceTerrains, oceanTerrains)
         }
-
-        if (iceTerrains.isEmpty()) return
 
         tileMap.setTransients(ruleset)
         val temperatureSeed = randomness.RNG.nextInt().toDouble()

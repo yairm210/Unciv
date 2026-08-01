@@ -1,6 +1,7 @@
 package com.unciv.ui.screens.worldscreen.unit
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
@@ -163,7 +164,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
     fun update() {
         closeButton.isVisible = true
         
-        if (!presenter.shouldBeShown()) summaryPresenter
+        if (!presenter.shouldBeShown()) presenter = summaryPresenter
         presenter.update()
 
         // more efficient to do this check once for both
@@ -275,4 +276,8 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
         fun updateWhenNeeded() {}
         fun shouldBeShown(): Boolean { return true}
     }
+
+    override fun act(delta: Float) = super.act(delta)
+    override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
+    override fun hit(x: Float, y: Float, touchable: Boolean): Actor? = super.hit(x, y, touchable)
 }

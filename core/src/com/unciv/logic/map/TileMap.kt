@@ -122,6 +122,10 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     /** Continent ID to Continent size */
     val continentSizes = HashMap<Int, Int>()
 
+    @Transient
+    /** Continent IDs sorted by size descending */
+    val continentsSortedBySize = ArrayList<Int>()
+
     //endregion
     //region Constructors
 
@@ -678,7 +682,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
                 tile.neighbors.filter { unit.movement.canPassThrough(it) }
 
         // both the civ name and actual civ need to be in here in order to calculate the canMoveTo...Darn
-        unit.assignOwner(civInfo, false)
+        unit.assignOwner(civInfo, updateCivInfo = false)
         // remember our first owner
         unit.originalOwner = civInfo.civID
 
@@ -692,31 +696,39 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         // if it's not suitable, try to find another tile nearby
         if (unitToPlaceTile == null) {
             class TileCandidates(
-                val land: MutableList<Tile> = mutableListOf(),
-                val water: MutableList<Tile> = mutableListOf()
+                val primary: MutableList<Tile> = mutableListOf(),
+                val secondary: MutableList<Tile> = mutableListOf()
             ) {
-                constructor(isRestrictedLandUnit: Boolean, tiles: Sequence<Tile>) : this() {
-                    for (tile in tiles)
-                        if (!isRestrictedLandUnit || tile.isLand) land += tile
-                        else water += tile
+                constructor(isRestrictedLandUnit: Boolean, tiles: Iterable<Tile>) : this() {
+                    if (!isRestrictedLandUnit) {
+                        primary.addAll(tiles)
+                    }
+                    else for (tile in tiles)
+                        if (!isRestrictedLandUnit || tile.isLand) primary += tile
+                        else secondary += tile
                 }
-                val allTiles get() = land.asSequence() + water
+                val allTiles get() = primary.asSequence() + secondary
             }
 
             val isRestrictedLandUnit = unit.baseUnit.isLandUnit && !unit.cache.canMoveOnWater
             var tryCount = 0
-            var potentialCandidates = TileCandidates(isRestrictedLandUnit, getPassableNeighbours(currentTile))
+            val checkedCandidates = mutableSetOf<Tile>()
+            var potentialCandidates = TileCandidates(isRestrictedLandUnit, getPassableNeighbours(currentTile).asIterable())
             while (unitToPlaceTile == null && tryCount++ < 10) {
-                unitToPlaceTile = potentialCandidates.land.firstOrNull { unit.movement.canMoveTo(it) } // Land units should prefer to go into land tiles
-                    ?: potentialCandidates.water.firstOrNull { unit.movement.canMoveTo(it) }
+                unitToPlaceTile = potentialCandidates.primary.firstOrNull { unit.movement.canMoveTo(it) } // Land units should prefer to go into land tiles
+                    ?: potentialCandidates.secondary.firstOrNull { unit.movement.canMoveTo(it) }
                 if (unitToPlaceTile != null) continue
                 // if it's not found yet, let's check their neighbours
-                potentialCandidates = TileCandidates(isRestrictedLandUnit, potentialCandidates.allTiles.flatMap { getPassableNeighbours(it) })
+                checkedCandidates.addAll(potentialCandidates.allTiles)
+                val newCandidates = potentialCandidates.allTiles
+                    .flatMap { getPassableNeighbours(it).filter { it !in checkedCandidates } }
+                    .toSet()
+                potentialCandidates = TileCandidates(isRestrictedLandUnit, newCandidates)
             }
         }
 
         if (unitToPlaceTile == null) {
-            civInfo.units.removeUnit(unit) // since we added it to the civ units in the previous assignOwner
+            civInfo.units.removeUnit(unit, updateCivInfo = false) // since we added it to the civ units in the previous assignOwner
             return null // we didn't actually create a unit...
         }
 
@@ -856,6 +868,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         if (mode == AssignContinentsMode.Clear) {
             values.forEach { it.clearContinent() }
             continentSizes.clear()
+            continentsSortedBySize.clear()
             return
         }
 
@@ -866,7 +879,10 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
                 if (continent == -1) continue
                 continentSizes[continent] = 1 + (continentSizes[continent] ?: 0)
             }
-            if (continentSizes.isNotEmpty()) return
+            if (continentSizes.isNotEmpty()) {
+                updateContinentsSortedBySize()
+                return
+            }
         }
 
         var landTiles = values.filter { it.isLand && !it.isImpassible() }
@@ -888,6 +904,12 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             currentContinent++
             landTiles = landTiles.filter { it !in continent }
         }
+        updateContinentsSortedBySize()
+    }
+
+    private fun updateContinentsSortedBySize() {
+        continentsSortedBySize.clear()
+        continentsSortedBySize.addAll(continentSizes.entries.sortedByDescending { it.value }.map { it.key })
     }
     //endregion
 

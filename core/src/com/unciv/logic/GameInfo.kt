@@ -31,6 +31,7 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.Speed
 import com.unciv.models.ruleset.nation.Difficulty
 import com.unciv.models.ruleset.tile.TileResource
+import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
@@ -40,12 +41,14 @@ import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.utils.DebugUtils
 import com.unciv.utils.debug
 import com.unciv.utils.pseudoRandomUuid
+import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.Readonly
 import java.security.MessageDigest
 import java.security.SecureRandom
 import java.time.Duration
 import java.time.Instant
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 
 
 /**
@@ -113,7 +116,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     var currentTurnStartTime = System.currentTimeMillis()
     var gameId = randomGameId()
     var checksum = ""
-    var lastUnitId = 0
+    private var lastUnitId = 0
 
     var victoryData: VictoryData? = null
 
@@ -147,6 +150,17 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
     @Transient
     private lateinit var difficultyObject: Difficulty // Since this is static game-wide, and was taking a large part of nextTurn
+
+    /** [IHasUniques.isUnavailableBySettings] is a pure function of game-start constants (game parameters,
+     *  starting era, mod options) - it cannot change during a game - yet it is re-evaluated per building/unit
+     *  on every construction-candidacy check ([getRejectionReasons]). Memoize it per rule object.
+     *  ConcurrentHashMap because rejection reasons are queried from both the game thread and the render thread. */
+    @Transient @Cache
+    private val settingsUnavailability = ConcurrentHashMap<IHasUniques, Boolean>()
+
+    @Readonly
+    fun isUnavailableBySettingsCached(obj: IHasUniques): Boolean =
+        settingsUnavailability.computeIfAbsent(obj) { it.isUnavailableBySettings(this) }
 
     @Transient
     lateinit var speed: Speed
@@ -204,6 +218,18 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         toReturn.unitNamesTaken.addAll(unitNamesTaken)
 
         return toReturn
+    }
+
+    @Synchronized // Important - duplicate unit ID's have been observed during debugging.
+    fun getNextUnitId(): Int {
+        return ++lastUnitId
+    }
+
+    /** ***Only*** for [BackwardCompatibility.ensureUnitIds] */
+    fun ensureLastUnitId() {
+        if (lastUnitId != 0) return
+        lastUnitId = tileMap.values.asSequence()
+            .flatMap { it.getUnits() }.maxOfOrNull { it.id }?.coerceAtLeast(0) ?: 0
     }
 
     fun getPlayerToViewAs(): Civilization {
@@ -456,7 +482,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             val turnStart: Instant  = Instant.ofEpochMilli(currentTurnStartTime)
             val timeUsed = Duration.between(turnStart, Instant.now()).toMinutes().toInt()
             val timeRegained = if (shouldGainTime) gameParameters.minutesRecoveredPerTurn else 0
-            val rawNewTime = player.playerMinutesBeforeForceResign + timeUsed - timeRegained
+            val rawNewTime = player.playerMinutesBeforeForceResign - timeUsed + timeRegained
             val maxNewTime = gameParameters.minutesUntilForceResign
             player.playerMinutesBeforeForceResign = rawNewTime.coerceIn(0, maxNewTime)
     }
@@ -755,6 +781,9 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         spaceResources.clear()
         spaceResources.addAll(ruleset.buildings.values.filter { it.hasUnique(UniqueType.SpaceshipPart) }
+            .flatMap { it.getResourceRequirementsPerTurn().keys })
+        // Spaceship parts are UNITS in the base ruleset (SS Booster etc., each requiring Aluminum).
+        spaceResources.addAll(ruleset.units.values.filter { it.hasUnique(UniqueType.SpaceshipPart) }
             .flatMap { it.getResourceRequirementsPerTurn().keys })
         spaceResources.addAll(ruleset.victories.values.flatMap { it.requiredSpaceshipParts })
 

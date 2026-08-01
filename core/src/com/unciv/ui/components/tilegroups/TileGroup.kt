@@ -2,7 +2,7 @@ package com.unciv.ui.components.tilegroups
 
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.unciv.logic.civilization.Civilization
+import com.unciv.view.CivView
 import com.unciv.logic.map.tile.Tile
 import com.unciv.ui.components.tilegroups.layers.*
 import com.unciv.utils.DebugUtils
@@ -30,8 +30,9 @@ open class TileGroup(
      * Honestly, I got these numbers empirically by printing `.x` and `.y` after `.center()`, and I'm not totally
      * clear on the stack of transformations that makes them work. But they are still exact ratios, AFAICT. */
     val hexagonImageWidth = groupSize * 1.5f
-    val hexagonImageOrigin = Pair(hexagonImageWidth / 2f, sqrt((hexagonImageWidth / 2f).pow(2) - (hexagonImageWidth / 4f).pow(2)))
-    val hexagonImagePosition = Pair(-hexagonImageOrigin.first / 3f, -hexagonImageOrigin.second / 4f)
+    val hexagonImageOriginX = hexagonImageWidth / 2f
+    val hexagonImageOriginY = sqrt((hexagonImageWidth / 2f).pow(2) - (hexagonImageWidth / 4f).pow(2))
+    val hexagonImagePosition = Pair(-hexagonImageOriginX / 3f, -hexagonImageOriginY / 4f)
 
     var isForceVisible = DebugUtils.VISIBLE_MAP
     var isForMapEditorIcon = false
@@ -72,8 +73,8 @@ open class TileGroup(
 
     open fun clone() = TileGroup(tile, tileSetStrings)
 
-    fun isViewable(viewingCiv: Civilization) = isForceVisible
-            || viewingCiv.viewableTiles.contains(tile)
+    fun isViewable(viewingCiv: CivView) = isForceVisible
+            || viewingCiv.canSeeTile(tile)
             || viewingCiv.isSpectator()
 
     private fun reset() {
@@ -92,26 +93,28 @@ open class TileGroup(
         for (layer in allLayers) layer.isVisible = isVisible
     }
 
-    open fun update(viewingCiv: Civilization? = null) {
+    open fun update(viewingCiv: CivView? = null) {
         layerMisc.removeHexOutline()
         layerMisc.hideTerrainOverlay()
         layerOverlay.hideHighlight()
         layerOverlay.hideCrosshair()
         layerOverlay.hideGoodCityLocationIndicator()
 
-        // Show all layers by default
-        setAllLayersVisible(true)
-
         // Do not update layers if tile is not explored by viewing player
         if (viewingCiv != null && !(isForceVisible || viewingCiv.hasExplored(tile))) {
-            reset()
-            // If tile has explored neighbors - reveal layers partially
-            if (tile.neighbors.none { viewingCiv.hasExplored(it) })
-                // Else - hide all layers
+            if (tile.neighbors.none { viewingCiv.hasExplored(it) }) {
+                // No explored neighbors - hide all layers
                 setAllLayersVisible(false)
-            else layerOverlay.setUnexplored(viewingCiv)
+            } else {
+                // Has explored neighbors - reveal layers partially
+                setAllLayersVisible(true) // visible, but...
+                reset() // ...may not contain much
+                layerOverlay.setUnexplored(viewingCiv)
+            }
             return
         }
+
+        setAllLayersVisible(true)
 
         removeMissingModReferences()
 

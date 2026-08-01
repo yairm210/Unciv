@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.GameInfo
 import com.unciv.logic.VictoryData
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.metadata.GameSetupInfo
@@ -26,6 +27,7 @@ import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.newgamescreen.NewGameScreen
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
+import yairm210.purity.annotations.Readonly
 import java.util.EnumSet
 
 class VictoryScreen(
@@ -59,20 +61,17 @@ class VictoryScreen(
         },
         Demographics('D', allowAsSecret = true) {
             override fun getContent(parent: VictoryScreen) = VictoryScreenDemographics(parent.worldScreen)
-            override fun isHidden(playerCiv: Civilization): Boolean {
-                if (!playerCiv.gameInfo.gameParameters.showDemographics &&
-                    !UncivGame.Current.settings.useDemographics) return true
-                if (playerCiv.isSpectator()) return false
-                if (!playerCiv.gameInfo.gameParameters.showVictoryStats &&
-                    !playerCiv.gameInfo.gameParameters.showDemographics) return true
-                return false
-            }
+            override fun isHidden(playerCiv: Civilization) =
+                !playerCiv.isSpectator()
+                    && !(playerCiv.gameInfo.gameParameters.showCivilizationStats == true && playerCiv.gameInfo.gameParameters.showDemographics)
+                    && playerCiv.gameInfo.victoryData == null
         },
         Rankings('R', allowAsSecret = true) {
             override fun getContent(parent: VictoryScreen) = VictoryScreenCivRankings(parent.worldScreen)
             override fun isHidden(playerCiv: Civilization) =
-                UncivGame.Current.settings.useDemographics ||
-                (!playerCiv.isSpectator() && !playerCiv.gameInfo.gameParameters.showVictoryStats)
+                !playerCiv.isSpectator()
+                    && !(playerCiv.gameInfo.gameParameters.showCivilizationStats == true && playerCiv.gameInfo.gameParameters.showRankings)
+                    && playerCiv.gameInfo.victoryData == null
         },
         Charts('C') {
             override fun getContent(parent: VictoryScreen) = VictoryScreenCharts(parent.worldScreen)
@@ -80,17 +79,19 @@ class VictoryScreen(
                 if (playerCiv.isSpectator())
                     playerCiv.gameInfo.civilizations.all { it.statsHistory.size < 2 }
                 else
-                    playerCiv.statsHistory.size < 2 || !playerCiv.gameInfo.gameParameters.showVictoryStats
+                    (playerCiv.statsHistory.size < 2
+                        || !(playerCiv.gameInfo.gameParameters.showCivilizationStats == true && playerCiv.gameInfo.gameParameters.showCharts))
+                    && playerCiv.gameInfo.victoryData == null
         },
         Replay('P', allowAsSecret = true) {
             override fun getContent(parent: VictoryScreen) = VictoryScreenReplay(parent.worldScreen)
             override fun isHidden(playerCiv: Civilization) =
                 !playerCiv.isSpectator()
-                        && playerCiv.gameInfo.victoryData == null
-                        && playerCiv.isAlive()
-                        // We show the replay after 5 turns. This is to ensure that the replay
-                        // slider doesn't look weird.
-                        && playerCiv.gameInfo.turns < 5
+                    && playerCiv.gameInfo.victoryData == null
+                    && playerCiv.isAlive()
+                    // We show the replay after 5 turns. This is to ensure that the replay
+                    // slider doesn't look weird.
+                    && playerCiv.gameInfo.turns < 5
         };
         abstract fun getContent(parent: VictoryScreen): Table
         open fun isHidden(playerCiv: Civilization) = false
@@ -210,4 +211,16 @@ class VictoryScreen(
     }
 
     override fun recreate(): BaseScreen = VictoryScreen(worldScreen, tabs.activePage)
+
+    companion object {
+        @Readonly
+        fun canViewCivStats(
+            gameInfo: GameInfo,
+            viewingCiv: Civilization,
+            viewedCiv: Civilization
+        ): Boolean = gameInfo.victoryData != null
+            || viewingCiv.isSpectator()
+            || !gameInfo.gameParameters.hideOtherCivilizationStats
+            || viewedCiv == viewingCiv
+    }
 }

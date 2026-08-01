@@ -1,7 +1,7 @@
 package com.unciv.ui.components.tilegroups.layers
 
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.Civilization
+import com.unciv.view.CivView
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.ui.components.NonTransformGroup
 import com.unciv.ui.components.tilegroups.TileGroup
@@ -21,9 +21,9 @@ class TileLayerUnitSprite(tileGroup: TileGroup, size: Float) : TileLayer(tileGro
 
     fun getSpriteSlot(unit: MapUnit) = if (unit.isCivilian()) civilianSlot else militarySlot
 
-    private fun showMilitaryUnit(viewingCiv: Civilization) = tileGroup.isForceVisible
-            || viewingCiv.viewableInvisibleUnitsTiles.contains(tileGroup.tile)
-            || !tileGroup.tile.hasEnemyInvisibleUnit(viewingCiv)
+    private fun showMilitaryUnit(viewingCiv: CivView) = tileGroup.isForceVisible
+            || viewingCiv.civ.viewableInvisibleUnitsTiles.contains(tileGroup.tile)
+            || !tileGroup.tile.hasEnemyInvisibleUnit(viewingCiv.civ)
 
     private fun updateSlot(currentSlot: UnitSpriteSlot?, unit: MapUnit?, isShown: Boolean): UnitSpriteSlot? {
 
@@ -71,10 +71,10 @@ class TileLayerUnitSprite(tileGroup: TileGroup, size: Float) : TileLayer(tileGro
     }
 
     fun dim() {
-        ownedActors.forEach { it.color.a = 0.5f }
+        forEachOwnedActor { it.color.a = 0.5f }
     }
 
-    override fun doUpdate(viewingCiv: Civilization?) {
+    override fun doUpdate(viewingCiv: CivView?) {
 
         val isPixelUnitsEnabled = UncivGame.Current.settings.showPixelUnits
         val isViewable = viewingCiv == null || isViewable(viewingCiv)

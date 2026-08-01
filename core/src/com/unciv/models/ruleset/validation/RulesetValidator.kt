@@ -19,8 +19,6 @@ import com.unciv.models.ruleset.RulesetFile
 import com.unciv.models.ruleset.RulesetName
 import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.nation.Nation
-import com.unciv.models.ruleset.nation.getContrastRatio
-import com.unciv.models.ruleset.nation.getRelativeLuminance
 import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
@@ -35,6 +33,9 @@ import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stats
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.tilesets.TileSetConfig
+import com.unciv.models.translations.fillPlaceholders
+import com.unciv.ui.components.extensions.getContrastRatio
+import com.unciv.ui.components.extensions.getRelativeLuminance
 import com.unciv.ui.images.AtlasPreview
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.Portrait
@@ -123,6 +124,7 @@ open class RulesetValidator protected constructor(
         addEventErrors(lines)
         addCityStateTypeErrors(lines)
 
+        checkFreeBuildingPossibleRecursions(lines)
         addTranslationNameCollisionWarnings(lines)
         addEmptyNamesErrors(lines)
 
@@ -171,6 +173,7 @@ open class RulesetValidator protected constructor(
                     if (reportRulesetSpecificErrors) UniqueValidator.allParameterSeverities else UniqueValidator.extensionModParameterSeverities)
                 lines.addAll(errors)
             }
+            uniqueValidator.checkUniques(cityStateType, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
         }
     }
 
@@ -368,8 +371,7 @@ open class RulesetValidator protected constructor(
 
     protected open fun addPersonalityErrors(lines: RulesetErrorList) {
         for (personality in ruleset.personalities.values) {
-            if (personality.uniques.isNotEmpty())
-                lines.add("Personality Uniques are not supported", RulesetErrorSeverity.Warning, personality)
+            uniqueValidator.checkUniques(personality, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
         }
     }
 
@@ -494,6 +496,10 @@ open class RulesetValidator protected constructor(
 
         if (unit.isMilitary && unit.strength == 0)  // Should only match ranged units with 0 strength
             lines.add("${unit.name} is a military unit but has no assigned strength!", sourceObject = unit)
+
+        val pixelUnitTexturePattern = Regex("TileSets/[^/]+/Units/${unit.name}")
+        if (unit.civilopediaText.any { it.extraImage.matches(pixelUnitTexturePattern) })
+            lines.add("Unit ${unit.name} includes the unit's UnitSet art in civilopediaText, which is superseded by the \"Size of Unitset art in Civilopedia\" option", RulesetErrorSeverity.WarningOptionsOnly, unit)
     }
 
     protected open fun addUnitTypeErrors(lines: RulesetErrorList) {
@@ -637,8 +643,8 @@ open class RulesetValidator protected constructor(
     private data class SuggestedColors(val innerColor: Color, val outerColor: Color)
 
     private fun getSuggestedColors(innerColor: Color, outerColor: Color): SuggestedColors {
-        val innerColorLuminance = getRelativeLuminance(innerColor)
-        val outerColorLuminance = getRelativeLuminance(outerColor)
+        val innerColorLuminance = innerColor.getRelativeLuminance()
+        val outerColorLuminance = outerColor.getRelativeLuminance()
 
         val innerLerpColor: Color
         val outerLerpColor: Color
@@ -845,4 +851,51 @@ open class RulesetValidator protected constructor(
         }
     }
 
+    private fun checkFreeBuildingPossibleRecursions(lines: RulesetErrorList) {
+        fun <K, V> Sequence<Pair<K, V>>.groupByPair() =
+            groupBy({ it.first }, { it.second })
+        fun getBuildingIndex(type: UniqueType): Map<String, List<Unique>> =
+            ruleset.allUniques()
+            .filter { it.type == type }
+            .map { it.params[0] to it }
+            .groupByPair()
+        fun List<Unique>.displayUniques(): String =
+            joinToString {
+                "\"${it.text}\"" +
+                    if (it.sourceObjectType == null) ""
+                    else " on ${it.getSourceNameForUser()} \"${it.sourceObjectName}\""
+            }
+        val suppressorKey = "is both granted free and could possibly be removed by triggers"
+        fun getSuppressor() =
+            UniqueType.SuppressWarnings.placeholderText.fillPlaceholders(suppressorKey)
+
+        // Map of building **names** that are granted free via triggerable anywhere to a List of source Uniques
+        val allFreeBuildings = getBuildingIndex(UniqueType.GainFreeBuildings)
+        // Map of building **filters** that are removed via triggerable anywhere to a List of source Uniques
+        val allRemovals = getBuildingIndex(UniqueType.RemoveBuilding)
+        // Possible sources of infinite recursion: Map of buildingName to a list of all possibly removing Uniques
+        val possibleRecursions = allFreeBuildings.keys.asSequence()
+            .filter { it in ruleset.buildings } // The names can still be non-existing, which is checked elsewhere
+            .map { name -> name to ruleset.buildings[name]!! }
+            .flatMap { (name, building) ->
+                allRemovals.keys.flatMap { filter ->
+                    // Double flatMap since more than one filter can match the building, and we want all removal Uniques in a single List
+                    allRemovals[filter]!!.mapNotNull {
+                        if (building.matchesFilter(filter)) name to it else null
+                    }
+                }
+            }
+            .groupByPair()
+
+        // Output
+        for ((buildingName, removals) in possibleRecursions) {
+            val grants = allFreeBuildings[buildingName]!!
+            val text = "Building \"$buildingName\" $suppressorKey.\n" +
+                "This can lead to infinite recursion if care is not taken that conditionals are mutually exclusive.\n" +
+                "Grants: ${grants.displayUniques()},\n" +
+                "Possible removals: ${removals.displayUniques()}\n" +
+                "If you're *SURE* this is safe, add the unique \"${getSuppressor()}\" to the building."
+            lines.add(text, RulesetErrorSeverity.WarningOptionsOnly, ruleset.buildings[buildingName], grants.firstOrNull() )
+        }
+    }
 }

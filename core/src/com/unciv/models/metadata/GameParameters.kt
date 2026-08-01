@@ -36,8 +36,20 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
     var victoryTypes: ArrayList<String> = arrayListOf()
     var startingEra = "Ancient era"
 
+    @Deprecated("Since 4.21.0, use showCivilizationStats")
     var showVictoryStats = true
+    // TODO: remove nullable after migration
+    var showCivilizationStats: Boolean? = null
+        get() = field ?: showVictoryStats
+        set(value) {
+            field = value
+            if (value != null)
+                showVictoryStats = value
+        }
     var showDemographics = false
+    var showRankings = true
+    var showCharts = true
+    var hideOtherCivilizationStats = false
 
     // Multiplayer parameters
     var isOnlineMultiplayer = false
@@ -82,8 +94,11 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
         parameters.shufflePlayerOrder = shufflePlayerOrder
         parameters.victoryTypes = ArrayList(victoryTypes)
         parameters.startingEra = startingEra
-        parameters.showVictoryStats = showVictoryStats
+        parameters.showCivilizationStats = showCivilizationStats
         parameters.showDemographics = showDemographics
+        parameters.showRankings = showRankings
+        parameters.showCharts = showCharts
+        parameters.hideOtherCivilizationStats = hideOtherCivilizationStats
         parameters.isOnlineMultiplayer = isOnlineMultiplayer
         parameters.multiplayerServerUrl = multiplayerServerUrl
         parameters.anyoneCanSpectate = anyoneCanSpectate

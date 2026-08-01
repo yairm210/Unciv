@@ -36,7 +36,8 @@ class ImageAttempter<out T: Any>(val scope: T) {
      * @param fileName Function that returns the filename of the image to check. Bound to [scope]. Will not be run if a valid image has already been found. May return `null` to skip this candidate entirely.
      * @return Chainable `this` [ImageAttempter] extended by one check for [fileName]
      */
-    fun tryImage(fileName: T.() -> String?): ImageAttempter<T> {
+    fun tryImage(active: Boolean = true, fileName: T.() -> String?): ImageAttempter<T> {
+        if (!active) return this
         if (!imageFound) {
             val imagePath = fileName.invoke(scope)
             lastTriedFileName = imagePath ?: lastTriedFileName
@@ -54,7 +55,7 @@ class ImageAttempter<out T: Any>(val scope: T) {
      */
     fun tryImages(fileNames: Sequence<T.() -> String?>): ImageAttempter<T> {
         for (fileName in fileNames) {
-            tryImage(fileName)
+            tryImage(fileName = fileName)
         } // *Could* skip calls/break loop if already imageFound. But that means needing an internal guarantee/spec of tryImage being same as no-op when imageFound.
         return this
     }
@@ -69,7 +70,9 @@ class ImageAttempter<out T: Any>(val scope: T) {
      * @param style an optional string to load a civ- or style-specific sprite
      * @return Chainable `this` [ImageAttempter] extended by one or more checks for era-specific images
      * */
-     fun tryEraImage(civInfo: Civilization, locationToCheck: String, style: String?, tileSetStrings: TileSetStrings): ImageAttempter<T> {
+     fun tryEraImage(civInfo: Civilization, locationToCheck: String, style: String?, tileSetStrings: TileSetStrings,
+                     active: Boolean = true): ImageAttempter<T> {
+        if (!active) return this // for easier chaining
         return tryImages(
             (civInfo.getEraNumber() downTo 0).asSequence().map {
                 {

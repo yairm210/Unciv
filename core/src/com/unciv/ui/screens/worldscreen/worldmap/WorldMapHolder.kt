@@ -10,7 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.scenes.scene2d.*
-import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
 import com.unciv.UncivGame
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
@@ -114,7 +113,7 @@ class WorldMapHolder(
 
     private fun addClickListener() {
         // ActivationListener-like listener to allow us to create only one listener for the entire worldmapholder instead of one per tile
-        val listener = object : ActorGestureListener(20f, 0.25f, 1.1f, Int.MAX_VALUE.toFloat()) {
+        val listener = object : UncivActorGestureListener() {
             override fun tap(event: InputEvent?, x: Float, y: Float, count: Int, button: Int) {
                 val child = tileGroupMap.hit(x, y, true) ?: return
 

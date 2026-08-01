@@ -272,23 +272,26 @@ object UniqueTriggerActivation {
                 }
                 return { placeUnits() }
             }
+
             UniqueType.OneTimeRebel -> {
-                val barbarians = civInfo.gameInfo.getBarbarianCivilization()
+                val barbarians = civInfo.gameInfo.getCivilizationOrNull(Constants.barbarians)
+                    ?: return null // Barbs can be deselected as new-game option
                 val unitName = unique.params[0]
                 val baseUnit = ruleset.units[unitName] ?: return null
                 val civUnit = civInfo.getEquivalentUnit(baseUnit)
                 if (civUnit.isCityFounder() && civInfo.isOneCityChallenger())
                     return null
-                fun placeUnit(): Boolean {
-                    val placedUnit = when {
-                        // Else set the unit at the given tile
-                        tile != null -> civInfo.gameInfo.tileMap.placeUnitNearTile(tile.position,baseUnit,barbarians) ?: return false
-                        // Else set unit unit near other units if we have no cities
-                        civInfo.units.getCivUnits().any() ->
-                            civInfo.gameInfo.tileMap.placeUnitNearTile(civInfo.units.getCivUnits().first().currentTile.position,baseUnit,barbarians) ?: return false
 
-                        else -> return false
-                    }
+                // Choose a city as the placement anchor: use the relevant city if available, otherwise the first city
+                val placementCity = relevantCity ?: civInfo.cities.firstOrNull() ?: return null
+
+                fun placeUnit(): Boolean {
+                    val placedUnit = civInfo.gameInfo.tileMap.placeUnitNearTile(
+                        placementCity.getCenterTile().position,
+                        baseUnit,
+                        barbarians
+                    ) ?: return false
+
                     val notificationText = getNotificationText(
                         notification, triggerNotificationText,
                         "[1] [${civUnit.name}] has rebelled against us!"
@@ -304,14 +307,16 @@ object UniqueTriggerActivation {
                 }
                 return { placeUnit() }
             }
-
             UniqueType.OneTimeAmountRebels -> {
-                val barbarians = civInfo.gameInfo.getBarbarianCivilization()
+                val barbarians = civInfo.gameInfo.getCivilizationOrNull(Constants.barbarians)
+                    ?: return null // Barbs can be deselected as new-game option
                 val unitName = unique.params[1]
                 val baseUnit = ruleset.units[unitName] ?: return null
                 val civUnit = civInfo.getEquivalentUnit(baseUnit)
                 if (civUnit.isCityFounder() && civInfo.isOneCityChallenger())
                     return null
+
+                // Existing limit logic (based on the number of similar units the civ already owns)
                 val limit = civUnit.getMatchingUniques(UniqueType.MaxNumberBuildable)
                     .map { it.params[0].toInt() }.minOrNull()
                 val unitCount = civInfo.units.getCivUnits().count { it.name == civUnit.name }
@@ -324,18 +329,17 @@ object UniqueTriggerActivation {
 
                 if (actualAmount <= 0) return null
 
-                fun placeUnits(): Boolean {
-                    val placedUnits: MutableList<MapUnit> = mutableListOf()
-                    repeat(actualAmount) {
-                        val placedUnit = when {
-                            // Else set the unit at the given tile
-                            tile != null -> civInfo.gameInfo.tileMap.placeUnitNearTile(tile.position,baseUnit,barbarians) ?: return false
-                            // Else set unit unit near other units if we have no cities
-                            civInfo.units.getCivUnits().any() ->
-                                civInfo.gameInfo.tileMap.placeUnitNearTile(civInfo.units.getCivUnits().first().currentTile.position,baseUnit,barbarians) ?: return false
+                // Choose a city as the placement anchor
+                val placementCity = relevantCity ?: civInfo.cities.firstOrNull() ?: return null
 
-                            else -> null
-                        }
+                fun placeUnits(): Boolean {
+                    val placedUnits = mutableListOf<MapUnit>()
+                    repeat(actualAmount) {
+                        val placedUnit = civInfo.gameInfo.tileMap.placeUnitNearTile(
+                            placementCity.getCenterTile().position,
+                            baseUnit,
+                            barbarians
+                        )
                         if (placedUnit != null) placedUnits += placedUnit
                     }
                     if (placedUnits.isEmpty()) return false
@@ -356,6 +360,7 @@ object UniqueTriggerActivation {
                 }
                 return { placeUnits() }
             }
+
             UniqueType.OneTimeFreeUnitRuins -> {
                 val unitName = unique.params[0]
                 val baseUnit = ruleset.units[unitName] ?: return null
@@ -368,7 +373,6 @@ object UniqueTriggerActivation {
                          } ?: return null
                     civUnit = civInfo.getEquivalentUnit(replacementUnit.name)
                 }
-
 
                 fun placeUnit(): Boolean {
                     val rng = (unit?.cache?.state ?: civInfo.state).stateBasedRandom("UniqueTriggerActivation.getTriggerFunction") 
@@ -825,7 +829,9 @@ object UniqueTriggerActivation {
                 ) return null
 
 
-                val randomValue = tileBasedRandom.nextInt(unique.params[0].toInt(), unique.params[1].toInt())
+                val firstValue = unique.params[0].toInt()
+                val secondValue = unique.params[1].toInt()
+                val randomValue = (minOf(firstValue, secondValue)..maxOf(firstValue, secondValue)).random(tileBasedRandom)
                 val finalStatAmount = if (unique.isModifiedByGameSpeed()) (randomValue * civInfo.gameInfo.speed.statCostModifiers[stat]!!).roundToInt()
                                             else randomValue
 
@@ -1337,7 +1343,26 @@ object UniqueTriggerActivation {
                     true
                 }
             }
-
+            UniqueType.OneTimeAddResource -> {
+                if (tile == null) return null
+                val resourceName = unique.params[0]
+                val resource = ruleset.tileResources[resourceName] ?: return null
+                if (resource.terrainsCanBeFoundOn.none { it == tile.baseTerrain || tile.terrainFeatures.contains(it) }) return null
+                return {
+                    // Remove the original resources
+                    if (tile.tileResource != null) {
+                        tile.tileResource = null
+                        tile.resourceAmount = 0
+                    }
+                    
+                    // Same deal as the place resource command
+                    tile.setTileResource(resource, majorDeposit = false)
+                    tile.getOwner()?.cache?.updateCivResources()
+                    TileNormalizer.normalizeToRuleset(tile, ruleset)
+                    true
+                }
+            }
+            
             UniqueType.OneTimeTakeOverTilesInRadius -> {
                 if (tile == null) return null
                 if (civInfo.cities.isEmpty()) return null

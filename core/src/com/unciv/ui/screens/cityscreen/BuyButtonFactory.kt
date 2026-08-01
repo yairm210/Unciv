@@ -23,7 +23,6 @@ import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.closeAllPopups
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.screens.cityscreen.BuyButtonFactory.ConfirmBuyPopup
 
 /**
  * This class handles everything related to buying constructions. This includes

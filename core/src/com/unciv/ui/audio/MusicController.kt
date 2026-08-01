@@ -644,13 +644,20 @@ class MusicController {
     /** Play [file], [optionally][fadeIn] fading in to [volume] then looping if [isLooping] is set */
     @Suppress("MemberVisibilityCanBePrivate")  // open to future use
     fun playOverlay(file: FileHandle, volume: Float, isLooping: Boolean, fadeIn: Boolean) {
-        clearOverlay()
-        MusicTrackController(volume, initialFadeVolume = if (fadeIn) 0f else 1f).load(file) {
-            it.music?.isLooping = isLooping
-            it.play()
-            //todo Needs to be called even when no fade desired to correctly set state - Think about changing that
-            it.startFade(MusicTrackController.State.FadeIn)
-            overlay = it
+        // newMusic() is GL-thread-safe (no OpenAL calls), so loading can happen here on any thread.
+        // play() and dispose() make OpenAL calls, so those must run on the GL thread.
+        val controller = MusicTrackController(volume, initialFadeVolume = if (fadeIn) 0f else 1f)
+        controller.load(file) { newOverlay ->
+            val oldOverlay = overlay
+            overlay = null
+            newOverlay.music?.isLooping = isLooping
+            Concurrency.runOnGLThread {
+                oldOverlay?.clear()
+                newOverlay.play()
+                //todo Needs to be called even when no fade desired to correctly set state - Think about changing that
+                newOverlay.startFade(MusicTrackController.State.FadeIn)
+            }
+            overlay = newOverlay
         }
     }
 
