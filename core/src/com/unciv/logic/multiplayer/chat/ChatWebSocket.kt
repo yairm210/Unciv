@@ -41,9 +41,7 @@ sealed class Message {
         val message: String,
         val gameId: String,
         /** Multiplayer player UUID of the recipient; null = broadcast to the game. */
-        val toPlayerId: String? = null,
-        /** Display name of the recipient civ; null for broadcast. */
-        val toCivName: String? = null,
+        val userId: String? = null,
     ) : Message()
 
     @Serializable
@@ -68,8 +66,9 @@ sealed class Response {
         val civName: String,
         val message: String,
         val gameId: String? = null,
-        val toPlayerId: String? = null,
-        val toCivName: String? = null,
+        /** True when this message was delivered as a private message (protocol v2). */
+        @SerialName("private")
+        val isPrivate: Boolean = false,
     ) : Response()
 
     @Serializable

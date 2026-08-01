@@ -54,8 +54,7 @@ sealed class Message {
         val civName: String,
         val message: String,
         val gameId: String,
-        val toPlayerId: String? = null,
-        val toCivName: String? = null,
+        val userId: String? = null,
     ) : Message()
 
     @Serializable
@@ -80,8 +79,8 @@ sealed class Response {
         val civName: String,
         val message: String,
         val gameId: String? = null,
-        val toPlayerId: String? = null,
-        val toCivName: String? = null,
+        @SerialName("private")
+        val isPrivate: Boolean = false,
     ) : Response()
 
     @Serializable
@@ -442,28 +441,32 @@ private class UncivServerRunner : CliktCommand() {
                                             continue
                                         }
 
-                                        val response = Response.Chat(
-                                            civName = message.civName,
-                                            message = message.message,
-                                            gameId = message.gameId,
-                                            toPlayerId = message.toPlayerId,
-                                            toCivName = message.toCivName,
-                                        )
-
-                                        val targetPlayerId = message.toPlayerId?.toUuidOrNull()
-                                        if (message.toPlayerId != null) {
-                                            if (targetPlayerId == null) {
-                                                sendSerialized(Response.Error("Invalid toPlayerId!"))
+                                        val targetUserId = message.userId?.toUuidOrNull()
+                                        if (message.userId != null) {
+                                            if (targetUserId == null) {
+                                                sendSerialized(Response.Error("Invalid userId!"))
                                                 continue
                                             }
                                             wsSessionManager.publishPrivate(
                                                 gameId = gameId,
                                                 senderUserId = authInfo.userId,
-                                                targetUserId = targetPlayerId,
-                                                message = response,
+                                                targetUserId = targetUserId,
+                                                message = Response.Chat(
+                                                    civName = message.civName,
+                                                    message = message.message,
+                                                    gameId = message.gameId,
+                                                    isPrivate = true,
+                                                ),
                                             )
                                         } else {
-                                            wsSessionManager.publish(gameId = gameId, message = response)
+                                            wsSessionManager.publish(
+                                                gameId = gameId,
+                                                message = Response.Chat(
+                                                    civName = message.civName,
+                                                    message = message.message,
+                                                    gameId = message.gameId,
+                                                ),
+                                            )
                                         }
                                     }
 

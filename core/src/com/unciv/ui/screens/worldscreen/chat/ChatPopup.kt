@@ -32,8 +32,7 @@ private val civChatColorsMap = mapOf<String, Color>(
 
 private class ChatRecipient(
     val displayName: String,
-    val playerId: String?,
-    val civName: String?,
+    val userId: String?,
 ) {
     override fun toString() = displayName.tr()
 }
@@ -98,8 +97,11 @@ class ChatPopup(
                 select.setItems(recipients)
                 select.selected = recipients.first()
                 recipientSelect = select
-                add("To:".toLabel()).left().padLeft(5f)
-                add(select).expandX().fillX().padBottom(5f).row()
+                // Keep label + dropdown together on the left (popup is a 2-column table).
+                val toRow = Table(skin)
+                toRow.add("To:".toLabel()).padLeft(5f).padRight(8f)
+                toRow.add(select).minWidth(220f).left()
+                add(toRow).colspan(2).left().padBottom(5f).row()
             }
         }
 
@@ -142,16 +144,16 @@ class ChatPopup(
     private fun buildRecipientOptions(): List<ChatRecipient> {
         val (ownCivName, ownPlayerId) = ownCivNameAndId()
         if (ownCivName == "Unknown" || ownPlayerId.isNullOrBlank()) {
-            return listOf(ChatRecipient("Everyone", null, null))
+            return listOf(ChatRecipient("Everyone", null))
         }
 
-        val options = mutableListOf(ChatRecipient("Everyone", null, null))
+        val options = mutableListOf(ChatRecipient("Everyone", null))
         for (civ in worldScreen.gameInfo.civilizations) {
             if (!civ.isMajorCiv()) continue
             if (!civ.isHuman()) continue
             if (civ.playerId.isBlank()) continue
             if (civ.playerId == ownPlayerId) continue
-            options.add(ChatRecipient(civ.civID, civ.playerId, civ.civID))
+            options.add(ChatRecipient(civ.civID, civ.playerId))
         }
         return options
     }
@@ -165,8 +167,7 @@ class ChatPopup(
         chat.requestMessageSend(
             civName = civName,
             message = message,
-            toPlayerId = recipient?.playerId,
-            toCivName = recipient?.civName,
+            userId = recipient?.userId,
         )
         messageField.setText("")
     }
@@ -175,13 +176,13 @@ class ChatPopup(
         senderCivName: String,
         message: String,
         suffix: String? = null,
-        toCivName: String? = null,
+        isPrivate: Boolean = false,
         scroll: Boolean = true
     ) {
         val namePart = buildString {
             append(senderCivName.tr())
             if (suffix != null) append(" [${suffix.tr()}]")
-            if (toCivName != null) append(" → ${toCivName.tr()}")
+            if (isPrivate) append(" (${"private".tr()})")
             append(": ")
             append(message.tr())
         }
@@ -204,7 +205,7 @@ class ChatPopup(
     private fun populateChat() {
         chatTable.clearChildren()
         chat.forEachMessage { entry ->
-            addMessage(entry.civName, entry.message, toCivName = entry.toCivName)
+            addMessage(entry.civName, entry.message, isPrivate = entry.isPrivate)
         }
         ChatStore.pollGlobalMessages { civName, message ->
             addMessage(civName, message, suffix = "one time")

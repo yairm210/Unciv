@@ -12,8 +12,8 @@ import java.util.UUID
 data class ChatMessageEntry(
     val civName: String,
     val message: String,
-    /** Null for public chat; set for private messages. */
-    val toCivName: String? = null,
+    /** True for private messages (protocol v2); false = public. */
+    val isPrivate: Boolean = false,
 )
 
 class Chat(
@@ -37,12 +37,11 @@ class Chat(
     fun requestMessageSend(
         civName: String,
         message: String,
-        toPlayerId: String? = null,
-        toCivName: String? = null,
+        userId: String? = null,
     ) {
         Gdx.app.postRunnable {
             ChatWebSocket.requestMessageSend(
-                Message.Chat(civName, message, gameId.toString(), toPlayerId, toCivName)
+                Message.Chat(civName, message, gameId.toString(), userId)
             )
         }
     }
@@ -50,8 +49,8 @@ class Chat(
     /**
      * Although public, this should only be called when a ChatMessageReceivedEvent is received once.
      */
-    fun addMessage(civName: String, message: String, toCivName: String? = null) {
-        messages.add(ChatMessageEntry(civName, message, toCivName))
+    fun addMessage(civName: String, message: String, isPrivate: Boolean = false) {
+        messages.add(ChatMessageEntry(civName, message, isPrivate))
     }
 
     fun forEachMessage(action: (ChatMessageEntry) -> Unit) {
@@ -106,12 +105,12 @@ object ChatStore {
                 }
 
                 val chat = chatPopup?.chat ?: getChatByGameId(gameId)
-                chat.addMessage(incomingChatMsg.civName, incomingChatMsg.message, incomingChatMsg.toCivName)
+                chat.addMessage(incomingChatMsg.civName, incomingChatMsg.message, incomingChatMsg.isPrivate)
                 if (gameId.equals(chatPopup?.chat?.gameId)) {
                     chatPopup?.addMessage(
                         incomingChatMsg.civName,
                         incomingChatMsg.message,
-                        toCivName = incomingChatMsg.toCivName,
+                        isPrivate = incomingChatMsg.isPrivate,
                     )
                 }
 
