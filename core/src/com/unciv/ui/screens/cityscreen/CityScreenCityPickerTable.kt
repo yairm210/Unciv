@@ -61,7 +61,7 @@ class CityScreenCityPickerTable(private val cityScreen: CityScreen) : Table() {
                 screen = cityScreen,
                 city = city,
                 actionOnClose = {
-                    cityScreen.game.replaceCurrentScreen(CityScreen(city))
+                    cityScreen.game.replaceCurrentScreen(CityScreen(cityScreen.cityView))
                 }
             )
         }

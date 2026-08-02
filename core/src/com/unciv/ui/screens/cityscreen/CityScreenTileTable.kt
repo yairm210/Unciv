@@ -55,7 +55,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen) : Table() {
         innerTable.pad(5f)
 
         innerTable.add(MarkupRenderer.render(TileDescription.toMarkup(
-            selectedTile,
+            tileView,
             cityView.civ(),
             hideUnits = cityScreen.isSpying,
             spyCity = if (cityScreen.isSpying) cityView else null
@@ -111,7 +111,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen) : Table() {
             val otherCity = tileView.owningCity()
             if (otherCity != null && otherCity != cityView && otherCity.isSameCivAs(cityView) && !cityScreen.isSpying)
                 innerTable.add("Move to city".toTextButton().onClick { cityScreen.game.replaceCurrentScreen(
-                    CityScreen(selectedTile.getCity()!!)
+                    CityScreen(otherCity)
                 ) })
         }
 
@@ -158,7 +158,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen) : Table() {
                     break
             }
             SoundPlayer.play(Stat.Gold.purchaseSound)
-            cityScreen.game.replaceCurrentScreen(CityScreen(city)) // update doesn't redo the tiles
+            cityScreen.game.replaceCurrentScreen(CityScreen(cityView)) // update doesn't redo the tiles
         }
     }
 }

@@ -412,7 +412,7 @@ object NextTurnAutomation {
     private fun automateUnits(civInfo: Civilization) {
         val isAtWar = civInfo.isAtWar()
         val sortedUnits = civInfo.units.getCivUnits().sortedBy { unit -> getUnitPriority(unit, isAtWar) }
-        
+
         val citiesRequiringManualPlacement = civInfo.getKnownCivs().filter { it.isAtWarWith(civInfo) }
             .flatMap { it.cities }
             .filter { it.getCenterTile().getTilesInDistance(4).count { it.militaryUnit?.civ == civInfo } > 4 }
@@ -426,16 +426,16 @@ object NextTurnAutomation {
         }
 
         if (civInfo.cities.isNotEmpty()) automateSettlerEscorting(civInfo)
-        
+
         for (city in citiesRequiringManualPlacement) automateCityConquer(civInfo, city)
-        
+
         for (unit in sortedUnits) {
             // spaceship parts and settlers have already moved
             if (!unit.hasUnique(UniqueType.SpaceshipPart) && !unit.hasUnique(UniqueType.FoundCity)) UnitAutomation.automateUnitMoves(unit)
         }
     }
-    
-    private fun applyPromotions(unit: MapUnit) {
+
+    internal fun applyPromotions(unit: MapUnit) {
         // Restrict Human automated units from promotions via setting
         if (!unit.civ.isAI() && !UncivGame.Current.settings.automatedUnitsChoosePromotions) return
         val rng = unit.cache.state.stateBasedRandom("NextTurnAutomation.automateUnits")

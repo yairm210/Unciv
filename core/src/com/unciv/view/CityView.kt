@@ -9,10 +9,11 @@ import com.unciv.logic.city.GreatPersonPointsBreakdown
 import com.unciv.logic.city.managers.CityReligionManager
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.Religion
+import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IConstruction
-import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceSupplyList
@@ -25,7 +26,11 @@ import com.unciv.models.stats.Stats
 import yairm210.purity.annotations.Readonly
 
 /** View of a [City] from the perspective of [viewer]. UI should use this and not city directly. */
-class CityView(internal val city: City, internal val viewer: Civilization) {
+class CityView(private val city: City, private val civView: CivView) {
+    constructor(city: City, viewer: Civilization) : this(city, CivView(viewer, viewer))
+
+    private val viewer: Civilization = civView.getViewer()
+
     val name: String get() = city.name
     val location: HexCoord get() = city.location
     val tilesInRange: Set<Tile> get() = city.tilesInRange
@@ -36,10 +41,10 @@ class CityView(internal val city: City, internal val viewer: Civilization) {
     @Readonly fun tileView(tile: Tile): TileView = TileView(tile, viewer)
 
     @Readonly fun getWorkRange(): Int = city.getWorkRange()
-    @Readonly fun isWorked(tileView: TileView): Boolean = city.isWorked(tileView.tile)
-    @Readonly fun canBuyTile(tileView: TileView): Boolean = city.expansion.canBuyTile(tileView.tile)
+    @Readonly fun isWorked(tileView: TileView): Boolean = city.isWorked(getTile(tileView))
+    @Readonly fun canBuyTile(tileView: TileView): Boolean = city.expansion.canBuyTile(getTile(tileView))
     @Readonly fun getGoldCostOfTile(tileView: TileView, extraTiles: Int = 0): Int =
-        city.expansion.getGoldCostOfTile(tileView.tile, extraTiles)
+        city.expansion.getGoldCostOfTile(getTile(tileView), extraTiles)
     @Readonly fun isSameCivAs(other: CityView): Boolean = city.civ === other.city.civ
 
     // Population
@@ -113,31 +118,43 @@ class CityView(internal val city: City, internal val viewer: Civilization) {
     @Readonly fun getRuleset(): Ruleset = city.getRuleset()
     @Readonly fun getBuildingStats(building: Building): Stats = building.getStats(city)
 
+    @Readonly fun getStatReserve(stat: Stat): Int = city.getStatReserve(stat)
+    @Readonly fun getMajorityReligion(): Religion? = city.religion.getMajorityReligion()
+    @Readonly fun getYourReligion(): Religion? = civView.getCiv().religionManager.religion
+    @Readonly fun canBePurchasedWithAnyStat(construction: INonPerpetualConstruction): Boolean =
+        construction.canBePurchasedWithAnyStat(city)
+    @Readonly fun canBePurchasedWithStat(construction: INonPerpetualConstruction, stat: Stat): Boolean =
+        construction.canBePurchasedWithStat(city, stat)
+
+    @Readonly fun getCity(): City = city
+    @Readonly private fun getTile(tileView: TileView) = tileView.getTile()
+    @Readonly fun getViewer(): Civilization = viewer
+
     // ACTIONS
     private fun canChangeState() = city.civ === viewer && viewer.isCurrentPlayer()
 
     fun tryLockTile(tileView: TileView): Boolean {
         if (!canChangeState()) return false
         if (!isWorked(tileView)) return false
-        return city.lockTile(tileView.tile)
+        return city.lockTile(getTile(tileView))
     }
     fun tryUnlockTile(tileView: TileView): Boolean {
         if (!canChangeState()) return false
-        return city.unlockTile(tileView.tile)
+        return city.unlockTile(getTile(tileView))
     }
     fun tryBuyTile(tileView: TileView): Boolean {
         if (!canChangeState()) return false
-        if (!city.expansion.canBuyTile(tileView.tile)) return false
-        city.expansion.buyTile(tileView.tile)
+        if (!city.expansion.canBuyTile(getTile(tileView))) return false
+        city.expansion.buyTile(getTile(tileView))
         return true
     }
     fun tryWorkTile(tileView: TileView): Boolean {
         if (!canChangeState()) return false
-        return city.workTile(tileView.tile)
+        return city.workTile(getTile(tileView))
     }
     fun tryStopWorkingTile(tileView: TileView): Boolean {
         if (!canChangeState()) return false
-        return city.stopWorkingTile(tileView.tile)
+        return city.stopWorkingTile(getTile(tileView))
     }
     fun tryAddToQueue(name: String): Boolean {
         if (!canChangeState()) return false

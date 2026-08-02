@@ -2,6 +2,7 @@ package com.unciv.ui.components.tilegroups.layers
 
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.unciv.view.CivView
+import com.unciv.view.TileView
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.ui.images.ImageGetter
@@ -24,14 +25,14 @@ class TileLayerFeatures(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
             return
 
         val tile = tileGroup.tile
-        val isTileVisible = viewingCiv == null || tile.isVisible(viewingCiv!!.civ)
+        val isTileVisible = viewingCiv == null || viewingCiv.canSeeTile(tileGroup.tileView!!)
 
         for (neighbor in tile.neighbors) {
             var roadImage = roadImages[neighbor]
             val currentStatus = roadImage?.roadStatus ?: RoadStatus.None
 
             val roadStatus = when {
-                !isTileVisible && viewingCiv != null && !neighbor.isVisible(viewingCiv.civ) -> RoadStatus.None // don't show roads on non-visible tiles
+                !isTileVisible && !viewingCiv!!.canSeeTile(TileView(neighbor, viewingCiv.getCiv())) -> RoadStatus.None // don't show roads on non-visible tiles
                 tile.roadStatus == RoadStatus.None || neighbor.roadStatus === RoadStatus.None -> RoadStatus.None
                 tile.roadStatus == RoadStatus.Road || neighbor.roadStatus === RoadStatus.Road -> RoadStatus.Road
                 else -> RoadStatus.Railroad
