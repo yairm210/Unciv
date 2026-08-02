@@ -125,7 +125,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     private var cityAIFocus: String = CityFocus.NoFocus.name
     @Readonly fun getCityFocus() = CityFocus.entries.firstOrNull { it.name == cityAIFocus } ?: CityFocus.NoFocus
-    fun setCityFocus(cityFocus: CityFocus){ cityAIFocus = cityFocus.name }
+    fun setCityFocus(cityFocus: CityFocus) { cityAIFocus = cityFocus.name }
 
     /**
      * Civ object for the original founder of this city
@@ -445,11 +445,11 @@ class City : IsPartOfGameInfoSerialization, INamed {
      *
      *  If the next City.startTurn is soon enough, then use [reassignPopulationDeferred] instead.
      */
-    fun reassignPopulation(resetLocked: Boolean = false):Unit = timeThis("reassignPopulation") {
+    fun reassignPopulation(resetLocked: Boolean = false): Unit = timeThis("reassignPopulation") {
         if (resetLocked) {
             workedTiles = hashSetOf()
             lockedTiles = hashSetOf()
-        } else if(cityAIFocus != CityFocus.Manual.name){
+        } else if (cityAIFocus != CityFocus.Manual.name){
             workedTiles = lockedTiles
         }
         if (!manualSpecialists)

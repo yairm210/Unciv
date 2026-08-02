@@ -153,7 +153,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
     }
 
     /** Only assigns free population */
-    internal fun autoAssignPopulation():Unit = timeThis("CityPopulationManager.autoAssignPopulation") {
+    internal fun autoAssignPopulation(): Unit = timeThis("CityPopulationManager.autoAssignPopulation") {
         city.cityStats.update()  // calculate current stats with current assignments
         val freePopulation = getFreePopulation()
         if (freePopulation <= 0) return
@@ -167,12 +167,12 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
         specialistFoodBonus = 2f - specialistFoodBonus
 
         val tilesToEvaluate = city.getWorkableTiles()
-            .filter { !it.isBlockaded() }.toList().asSequence()
+            .filterNot { it.isBlockaded() }.toList().asSequence()
 
         // Calculate stats once - but the *ranking of those stats* is dynamic and depends on what the city needs
         val tileStats = tilesToEvaluate
-                .filterNot { it.providesYield() }
-                .associateWith { it.stats.getTileStats(city, city.civ)}
+            .filterNot { it.providesYield() }
+            .associateWith { it.stats.getTileStats(city, city.civ)}
 
         val maxSpecialists = getMaxSpecialists().asSequence()
 
