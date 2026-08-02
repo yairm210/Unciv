@@ -14,6 +14,9 @@ import com.unciv.ui.components.extensions.getCostsAmountString
 import com.unciv.ui.components.extensions.toStringSigned
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import yairm210.purity.annotations.LocalState
+import yairm210.purity.annotations.Mutated
+import yairm210.purity.annotations.Readonly
 
 object BuildingDescriptions {
     // Note: These are not extension functions for receiver Building because that would mean renaming getCivilopediaTextLines
@@ -40,6 +43,7 @@ object BuildingDescriptions {
     }
 
     /** used in CityScreen (ConstructionInfoTable) */
+    @Readonly
     fun getDescription(building: Building, city: City, showAdditionalInfo: Boolean): String = building.run {
         val stats = getStats(city)
         val translatedLines = ArrayList<String>() // Some translations require special handling
@@ -93,7 +97,8 @@ object BuildingDescriptions {
         return translatedLines.joinToString("\n").trim()
     }
 
-    fun additionalDescription (building: Building, city: City, lines: ArrayList<String>) {
+    @Readonly
+    fun additionalDescription (building: Building, city: City, @Mutated lines: ArrayList<String>) {
         // Inefficient in theory. In practice, buildings seem to have only a small handful of uniques.
         for (unique in building.uniqueObjects) {
             if (unique.type == UniqueType.OnlyAvailable || unique.type == UniqueType.CanOnlyBeBuiltWhen)
@@ -104,7 +109,8 @@ object BuildingDescriptions {
     }
 
     // TODO: Unify with rejection reasons?
-    fun missingCityText (building: String, city: City, filter: String, lines: ArrayList<String>) {
+    @Readonly
+    fun missingCityText (building: String, city: City, filter: String, @Mutated lines: ArrayList<String>) {
         val missingCities = city.civ.cities.filter {
             it.matchesFilter(filter) && !it.cityConstructions.containsBuildingOrEquivalent(building)
         }
@@ -274,13 +280,15 @@ object BuildingDescriptions {
     /**
      * @param filterUniques If provided, include only uniques for which this function returns true.
      */
+    @Readonly
     private fun Building.getUniquesStrings(filterUniques: ((Unique) -> Boolean)? = null) = sequence {
         val tileBonusHashmap = HashMap<String, ArrayList<String>>()
         for (unique in uniqueObjects) if (filterUniques == null || filterUniques(unique)) when {
             unique.type == UniqueType.StatsFromTiles && unique.params[2] == "in this city" -> {
                 val stats = unique.params[0]
                 if (!tileBonusHashmap.containsKey(stats)) tileBonusHashmap[stats] = ArrayList()
-                tileBonusHashmap[stats]!!.add(unique.params[1])
+                @LocalState val statsBonus =tileBonusHashmap[stats]!! 
+                statsBonus.add(unique.params[1])
             }
             else -> yield(unique.getDisplayText())
         }
@@ -296,6 +304,7 @@ object BuildingDescriptions {
     /**
      * @param filterUniques If provided, include only uniques for which this function returns true.
      */
+    @Readonly
     private fun Building.getUniquesStringsWithoutDisablers(filterUniques: ((Unique) -> Boolean)? = null): Sequence<String> = getUniquesStrings {
         !it.isHiddenToUsers()
             && (filterUniques?.invoke(it) ?: true)

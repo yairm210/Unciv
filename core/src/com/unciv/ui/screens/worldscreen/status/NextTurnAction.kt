@@ -18,6 +18,7 @@ import com.unciv.ui.screens.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.screens.pickerscreens.ReligiousBeliefsPickerScreen
 import com.unciv.ui.screens.pickerscreens.TechPickerScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
+import com.unciv.view.CityView
 import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread
 import yairm210.purity.annotations.Readonly
@@ -50,7 +51,7 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
             getCityWithNoProductionSet(worldScreen) != null
         override fun action(worldScreen: WorldScreen) {
             val city = getCityWithNoProductionSet(worldScreen) ?: return
-            worldScreen.game.pushScreen(CityScreen(city))
+            worldScreen.game.pushScreen(CityScreen(CityView(city, worldScreen.selectedCiv)))
         }
     },
     PickTech("Pick a tech", Color.SKY) {

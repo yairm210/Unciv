@@ -92,18 +92,26 @@ class UnitMovement(val unit: MapUnit) {
         if (includeOtherEscortUnit && unit.isEscorting()
             && unit.getOtherEscortUnit()?.currentMovement == 0f) return distanceToTiles
 
+        // Loop-invariant across the whole search: escort state and the usable movement cap never change
+        // during one call, but were recomputed on every edge relaxation below.
+        val usableMovement = if (includeOtherEscortUnit && unit.isEscorting())
+            minOf(unitMovement, unit.getOtherEscortUnit()!!.currentMovement)
+        else unitMovement
+
         var tilesToCheck = listOf(unitTile)
-        
+
         while (tilesToCheck.isNotEmpty()) {
             val updatedTiles = ArrayList<Tile>()
-            for (tileToCheck in tilesToCheck)
+            for (tileToCheck in tilesToCheck) {
+                // Loop-invariant across this tile's neighbors: was looked up twice per neighbor below.
+                val tileToCheckMovement = distanceToTiles[tileToCheck]!!.totalMovement
                 for (neighbor in tileToCheck.neighbors) {
                     // ignore this tile
                     if (tilesToIgnoreBitset != null && tilesToIgnoreBitset.get(neighbor.zeroBasedIndex)) continue // ignore this tile
                     var totalDistanceToTile: Float = when {
                         !neighbor.isExplored(unit.civ) ->
-                            distanceToTiles[tileToCheck]!!.totalMovement + 1f  // If we don't know then we just guess it to be 1.
-                        
+                            tileToCheckMovement + 1f  // If we don't know then we just guess it to be 1.
+
                         !canPassThroughCache.getOrPut(neighbor.zeroBasedIndex){
                             canPassThrough(neighbor)
                         } -> unitMovement // Can't go here.
@@ -115,16 +123,12 @@ class UnitMovement(val unit: MapUnit) {
                             val movementCost = movementCostCache.getOrPut(key) {
                                 MovementCost.getMovementCostBetweenAdjacentTilesEscort(unit, tileToCheck, neighbor, considerZoneOfControl, includeOtherEscortUnit)
                             }
-                            distanceToTiles[tileToCheck]!!.totalMovement + movementCost
+                            tileToCheckMovement + movementCost
                         }
                     }
 
                     val currentBestPath = distanceToTiles[neighbor]
                     if (currentBestPath == null || currentBestPath.totalMovement > totalDistanceToTile) { // this is the new best path
-                        val usableMovement = if (includeOtherEscortUnit && unit.isEscorting())
-                            minOf(unitMovement, unit.getOtherEscortUnit()!!.currentMovement)
-                        else unitMovement
-
                         if (totalDistanceToTile < usableMovement - Constants.minimumMovementEpsilon)  // We can still keep moving from here!
                             updatedTiles += neighbor
                         else
@@ -135,6 +139,7 @@ class UnitMovement(val unit: MapUnit) {
                         distanceToTiles[neighbor] = ParentTileAndTotalMovement(neighbor, tileToCheck, totalDistanceToTile)
                     }
                 }
+            }
 
             tilesToCheck = updatedTiles
         }

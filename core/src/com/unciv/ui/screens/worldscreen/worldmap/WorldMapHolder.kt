@@ -221,7 +221,7 @@ class WorldMapHolder(
                     && unitsInTile.any()
                     && unitsInTile.first().civ.isAtWarWith(worldScreen.viewingCiv)) {
                 // try to select the closest city to bombard this guy
-                unitTable.citySelected(previousSelectedCity)
+                unitTable.citySelected(previousSelectedCity.getCity())
             }
         }
         worldScreen.shouldUpdate = true

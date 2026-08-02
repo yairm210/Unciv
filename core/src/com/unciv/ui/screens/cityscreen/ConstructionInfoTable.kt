@@ -28,6 +28,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
     private val selectedConstructionTable = Table()
     private val buyButtonFactory = BuyButtonFactory(cityScreen)
+    private val cityView get() = cityScreen.cityView
 
     init {
         selectedConstructionTable.background = BaseScreen.skinStrings.getUiBackground(
@@ -56,8 +57,7 @@ class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
     }
 
     private fun updateSelectedConstructionTable(construction: IConstruction) {
-        val city = cityScreen.city
-        val cityConstructions = city.cityConstructions
+        val cityConstructions = cityView.constructions
 
         //val selectedConstructionTable = Table()
         selectedConstructionTable.run {
@@ -75,15 +75,15 @@ class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
             var buildingText = construction.name.tr(hideIcons = true)
             val specialConstruction = PerpetualConstruction.perpetualConstructionsMap[construction.name]
 
-            buildingText += specialConstruction?.getProductionTooltip(city)
+            buildingText += specialConstruction?.let { cityView.getProductionTooltip(it) }
                     ?: cityConstructions.getTurnsToConstructionString(construction)
 
             add(Label(buildingText, BaseScreen.skin)).expandX().row()  // already translated
 
             val description = when (construction) {
-                is BaseUnit -> construction.getDescription(city)
-                is Building -> construction.getDescription(city, true)
-                is StatConversion -> construction.description.replace("[rate]", "[${construction.getConversionRate(city)}]").tr()
+                is BaseUnit -> cityView.getUnitDescription(construction)
+                is Building -> cityView.getBuildingDescription(construction)
+                is StatConversion -> construction.description.replace("[rate]", "[${cityView.getConversionRate(construction)}]").tr()
                 is PerpetualConstruction -> construction.description.tr()
                 else -> ""  // Should never happen
             }
@@ -102,11 +102,13 @@ class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
             }
             if (construction is BaseUnit) {
                 val baseUnit = construction.name
-                val buildUnitWithPromotions = city.unitShouldUseSavedPromotion[baseUnit]
+                val buildUnitWithPromotions = cityView.getUnitShouldUseSavedPromotion(baseUnit)
 
                 if (buildUnitWithPromotions != null) {
                     row()
-                    add("Use default promotions".toCheckBox(buildUnitWithPromotions) {city.unitShouldUseSavedPromotion[baseUnit] = it}).colspan(2).center()
+                    add("Use default promotions".toCheckBox(buildUnitWithPromotions) {
+                        cityView.trySetUnitShouldUseSavedPromotion(baseUnit, it)
+                    }).colspan(2).center()
                 }
             }
         }
@@ -118,7 +120,7 @@ class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
     ) {
         if (construction is Building && construction.isSellable()) {
             selectedConstructionTable.run {
-                val sellAmount = cityScreen.city.getGoldForSellingBuilding(construction.name)
+                val sellAmount = cityView.getGoldForSellingBuilding(construction.name)
                 val sellText = "{Sell} $sellAmount " + Fonts.gold
                 val sellBuildingButton = sellText.toTextButton()
                 row()
@@ -126,9 +128,9 @@ class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
 
                 val isFree = cityScreen.hasFreeBuilding(construction)
                 val enableSell = !isFree &&
-                    !cityScreen.city.isPuppet &&
+                    !cityView.isPuppet() &&
                     cityScreen.canChangeState &&
-                    (!cityScreen.city.hasSoldBuildingThisTurn || cityScreen.city.civ.gameInfo.gameParameters.godMode)
+                    (!cityView.hasSoldBuildingThisTurn() || cityView.isGodModeEnabled())
                 sellBuildingButton.isEnabled = enableSell
                 if (enableSell)
                     sellBuildingButton.onClick(UncivSound.Coin) {
@@ -136,8 +138,8 @@ class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
                         sellBuildingClicked(construction, sellText)
                     }
 
-                if (cityScreen.city.hasSoldBuildingThisTurn && !cityScreen.city.civ.gameInfo.gameParameters.godMode
-                        || cityScreen.city.isPuppet
+                if (cityView.hasSoldBuildingThisTurn() && !cityView.isGodModeEnabled()
+                        || cityView.isPuppet()
                         || !cityScreen.canChangeState)
                     sellBuildingButton.disable()
             }
@@ -160,7 +162,7 @@ class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
     }
 
     private fun sellBuildingConfirmed(construction: Building) {
-        cityScreen.city.sellBuilding(construction)
+        cityView.trySellBuilding(construction)
         cityScreen.clearSelection()
         cityScreen.update()
     }

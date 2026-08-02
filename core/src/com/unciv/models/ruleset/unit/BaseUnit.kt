@@ -95,7 +95,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     /** Generate description as multi-line string for CityScreen addSelectedConstructionTable
      * @param city Supplies civInfo to show available resources after resource requirements */
-    fun getDescription(city: City): String = BaseUnitDescriptions.getDescription(this, city)
+    @Readonly fun getDescription(city: City): String = BaseUnitDescriptions.getDescription(this, city)
 
     override fun makeLink() = "Unit/$name"
 
@@ -252,7 +252,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (civ.cache.uniqueUnits.any { it.replaces == name })
             yield(RejectionReasonType.ReplacedByOurUnique.toInstance("Our unique unit replaces this"))
 
-        if (isUnavailableBySettings(civ.gameInfo))
+        if (civ.gameInfo.isUnavailableBySettingsCached(this@BaseUnit))
             yield(RejectionReasonType.DisabledBySetting.toInstance())
 
         if (hasUnique(UniqueType.Unbuildable, stateForConditionals))

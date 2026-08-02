@@ -182,7 +182,7 @@ class CityStateFunctions(val civInfo: Civilization) {
 
         // Point to the gifted unit, then to the other places mentioned in the message
         val unitAction = sequenceOf(MapUnitAction(placedUnit))
-        val notificationActions = unitAction + LocationAction(city.location, city.location)
+        val notificationActions = unitAction + LocationAction(city.location)
         receivingCiv.addNotification(
             "[${civInfo.civName}] gave us a [${militaryUnit.name}] as gift near [${city.name}]!",
             notificationActions,
@@ -699,7 +699,7 @@ class CityStateFunctions(val civInfo: Civilization) {
             if (cityState.isAtWarWith(attacker))
                 probability += 50
 
-            if (rng.nextInt(100) <= probability) {
+            if (rng.nextInt(100) < probability) {
                 cityState.getDiplomacyManager(attacker)!!.becomeWary()
             }
         }

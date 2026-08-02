@@ -125,7 +125,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
                 && !unitTable.selectedUnit!!.hasUnique(UniqueType.CannotAttack))  // purely cosmetic - hide battle table
                     MapUnitCombatant(unitTable.selectedUnit!!)
         else if (unitTable.selectedCity != null)
-            CityCombatant(unitTable.selectedCity!!)
+            CityCombatant(unitTable.selectedCity!!.getCity())
         else null // no attacker
     }
 
