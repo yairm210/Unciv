@@ -70,6 +70,7 @@ class CityView(private val city: City, private val civView: CivView) {
     val demandedResource: String get() = city.demandedResource
     @Readonly fun getFlag(flag: CityFlags): Int = city.getFlag(flag)
     @Readonly fun getCityFocus(): CityFocus = city.getCityFocus()
+    val avoidGrowth: Boolean get() = city.avoidGrowth
     @Readonly fun getState(): GameContext = city.state
 
     // Stats
@@ -234,8 +235,14 @@ class CityView(private val city: City, private val civView: CivView) {
         if (!canChangeState()) return
         city.disabledConstructions.remove(name)
     }
-    fun tryReassignPopulation(): Boolean {
+    fun tryReassignPopulation(resetLocked: Boolean = false): Boolean {
         if (!canChangeState()) return false
+        city.reassignPopulation(resetLocked)
+        return true
+    }
+    fun tryToggleAvoidGrowth(): Boolean {
+        if (!canChangeState()) return false
+        city.avoidGrowth = !city.avoidGrowth
         city.reassignPopulation()
         return true
     }
