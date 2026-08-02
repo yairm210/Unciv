@@ -1,3 +1,59 @@
+## 4.21.5
+
+View implementation - Change CityScreen to accept CityView as init param - see 
+
+View implementation - BuyButtonFactory - see 
+
+View implementation - Add GameInfo and TileMap views, for View caching to not constantly recreate - see 
+
+View implementation - TileLayerFeatures - see 
+
+View implementation - Separate internal object access (long-term) from external access (temp) - see 
+
+View implementation - TileGroup/TileLayer base - see 
+
+View implementation - CityScreenConstructionMenu, finalizing CityConstructionsView - see 
+
+4.21.4-patch1
+
+View implementation - CityAmbiencePlayer - see 
+
+View implementation - CityScreen - see 
+
+View implementation - ConstructionInfoTable - see 
+
+View implementation - CityConstructionsTable - see 
+
+View implementation - CityStatsTable - see 
+
+Initial View implementation - CityScreenTileTable - see 
+
+refactor: Add lockTile/unlockTile/workTile/stopWorkingTile to City, replace direct workedTiles/lockedTiles mutations
+
+By SomeTroglodyte:
+- Fix console civ remove not recalling spies 
+- Volume slider for voices is now "live" 
+- Individually automated units can get promotions 
+- Linting around CityFocus 
+- Lint gradle script for the unit tests 
+- Fix RulesetValidator exception, regression from  
+
+Fix the rounding of the values in the city ministats - By JPBergsma
+
+By Angais:
+- Fix military unit gift notification locations 
+- Fix open borders vision priority 
+
+By unciv-loof:
+- China UA spelling 
+- Fix spelling of variable name 
+
+Fix missing translatable entry - By Ouaz
+
+By EmperorPinguin:
+- Refine gold usage logic for city constructions 
+- Prevent buying constructions nearing completion 
+
 ## 4.21.4
 
 CPU performance improvements for map lag and map generation latency
