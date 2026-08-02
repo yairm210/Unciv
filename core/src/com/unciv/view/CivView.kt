@@ -10,6 +10,7 @@ import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ImmutableColor
 import com.unciv.models.stats.Stat
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.Readonly
@@ -43,6 +44,8 @@ class CivView(private val civ: Civilization, private val viewer: Civilization) {
     @Readonly fun getPointsRequiredForGreatPerson(name: String): Int = civ.greatPeople.getPointsRequiredForGreatPerson(name)
     @Readonly fun isCivConstructionDisabled(name: String): Boolean = name in civ.disabledCityConstructions
 
+    @Readonly fun getOuterColor(): ImmutableColor = civ.nation.getOuterColor()
+    @Readonly fun getInnerColor(): ImmutableColor = civ.nation.getInnerColor()
     @Readonly fun isSpectator(): Boolean = civ.isSpectator()
     @Readonly fun hasExplored(tileView: TileView): Boolean = civ.hasExplored(tileView.getTile())
 

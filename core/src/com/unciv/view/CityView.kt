@@ -107,6 +107,8 @@ class CityView(private val city: City, private val civView: CivView) {
     @Readonly fun getUnitShouldUseSavedPromotion(baseUnit: String): Boolean? = city.unitShouldUseSavedPromotion[baseUnit]
     @Readonly fun getCityAmbienceSound(): String = city.civ.getEra().citySound
     @Readonly fun isBeingRazed(): Boolean = city.isBeingRazed
+    @Readonly fun isCapital(): Boolean = city.isCapital()
+    @Readonly fun getGarrison(): MapUnitView? = city.getGarrison()?.let { MapUnitView(it, viewer) }
     @Readonly fun canBeDestroyed(): Boolean = city.canBeDestroyed()
     @Readonly fun getExpandRange(): Int = city.getExpandRange()
     @Readonly fun chooseNewTileToOwn(): Tile? = city.expansion.chooseNewTileToOwn()
