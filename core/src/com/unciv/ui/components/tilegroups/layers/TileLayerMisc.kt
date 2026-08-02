@@ -84,9 +84,9 @@ class TileLayerYield(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, s
         y.run {
             // Update YieldGroup Icon
             if (tileGroup is CityTileGroup)
-                setStats(tile.stats.getTileStats(tileGroup.city, viewingCiv?.civ))
+                setStats(tile.stats.getTileStats(tileGroup.city, viewingCiv?.getCiv()))
             else
-                setStats(tile.stats.getTileStats(viewingCiv?.civ))
+                setStats(tile.stats.getTileStats(viewingCiv?.getCiv()))
             toFront()
             // Centre horizontally; recalculate Y now that height is known after setStats
             x = tileX + (tileGroup.width - width) / 2
@@ -154,8 +154,8 @@ class TileLayerResource(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
             dimResource(!isViewable)
 
             val shouldResourceProvidedBeDisplayed =
-                viewingCiv != null && tile.getOwner() === viewingCiv.civ
-                        && tile.providesResources(viewingCiv.civ)
+                viewingCiv != null && tile.getOwner() === viewingCiv.getCiv()
+                        && tile.providesResources(viewingCiv.getCiv())
             if (shouldResourceProvidedBeDisplayed && resourceProvidedIcon == null){
                 val group = NonTransformGroup()
                 group.setSize(12f,12f)

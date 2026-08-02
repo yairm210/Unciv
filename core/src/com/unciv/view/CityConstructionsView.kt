@@ -8,7 +8,7 @@ import com.unciv.models.ruleset.RejectionReason
 import com.unciv.models.ruleset.tile.TileImprovement
 import yairm210.purity.annotations.Readonly
 
-class CityConstructionsView(internal val cityConstructions: CityConstructions) {
+class CityConstructionsView(private val cityConstructions: CityConstructions) {
     val constructionQueue: List<String> get() = cityConstructions.constructionQueue
 
     @Readonly fun currentConstructionName(): String = cityConstructions.currentConstructionName()
@@ -28,4 +28,6 @@ class CityConstructionsView(internal val cityConstructions: CityConstructions) {
         cityConstructions.getTileForImprovement(improvementName)
     @Readonly fun canAddToQueue(construction: IConstruction): Boolean = cityConstructions.canAddToQueue(construction)
     @Readonly fun isEnqueuedForLater(name: String): Boolean = cityConstructions.isEnqueuedForLater(name)
+
+    fun getCityConstructions(): CityConstructions = cityConstructions
 }

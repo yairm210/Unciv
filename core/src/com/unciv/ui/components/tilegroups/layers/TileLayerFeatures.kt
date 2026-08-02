@@ -24,14 +24,14 @@ class TileLayerFeatures(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
             return
 
         val tile = tileGroup.tile
-        val isTileVisible = viewingCiv == null || tile.isVisible(viewingCiv!!.civ)
+        val isTileVisible = viewingCiv == null || tile.isVisible(viewingCiv!!.getCiv())
 
         for (neighbor in tile.neighbors) {
             var roadImage = roadImages[neighbor]
             val currentStatus = roadImage?.roadStatus ?: RoadStatus.None
 
             val roadStatus = when {
-                !isTileVisible && viewingCiv != null && !neighbor.isVisible(viewingCiv.civ) -> RoadStatus.None // don't show roads on non-visible tiles
+                !isTileVisible && viewingCiv != null && !neighbor.isVisible(viewingCiv.getCiv()) -> RoadStatus.None // don't show roads on non-visible tiles
                 tile.roadStatus == RoadStatus.None || neighbor.roadStatus === RoadStatus.None -> RoadStatus.None
                 tile.roadStatus == RoadStatus.Road || neighbor.roadStatus === RoadStatus.Road -> RoadStatus.Road
                 else -> RoadStatus.Railroad

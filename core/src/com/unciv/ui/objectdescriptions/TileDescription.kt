@@ -28,7 +28,7 @@ object TileDescription {
             if (isViewableToPlayer) cityString += " (${city.health})"
             lineList += FormattedLine(cityString)
             if (DebugUtils.VISIBLE_MAP || viewingCiv != null && viewingCiv.isOwnerOf(city)
-                    && (spyCity == null || spyCity.city == city))
+                    && (spyCity == null || spyCity.getCity() == city))
                 lineList += city.cityConstructions.getProductionMarkup(tile.ruleset)
         }
 

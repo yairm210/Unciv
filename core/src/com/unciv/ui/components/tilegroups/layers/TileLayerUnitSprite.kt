@@ -22,8 +22,8 @@ class TileLayerUnitSprite(tileGroup: TileGroup, size: Float) : TileLayer(tileGro
     fun getSpriteSlot(unit: MapUnit) = if (unit.isCivilian()) civilianSlot else militarySlot
 
     private fun showMilitaryUnit(viewingCiv: CivView) = tileGroup.isForceVisible
-            || viewingCiv.civ.viewableInvisibleUnitsTiles.contains(tileGroup.tile)
-            || !tileGroup.tile.hasEnemyInvisibleUnit(viewingCiv.civ)
+            || viewingCiv.getCiv().viewableInvisibleUnitsTiles.contains(tileGroup.tile)
+            || !tileGroup.tile.hasEnemyInvisibleUnit(viewingCiv.getCiv())
 
     private fun updateSlot(currentSlot: UnitSpriteSlot?, unit: MapUnit?, isShown: Boolean): UnitSpriteSlot? {
 

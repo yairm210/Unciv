@@ -365,9 +365,9 @@ class CityScreen(
     private fun addTiles() {
         val viewRange = max(cityView.getExpandRange(), cityView.getWorkRange())
         val tileSetStrings = TileSetStrings(city.civ.gameInfo.ruleset, game.settings)
-        val cityTileGroups = cityView.centerTile().tile.getTilesInDistance(viewRange)
-                .filter { selectedCiv.hasExplored(it) }
-                .map { CityTileGroup(city, it, tileSetStrings, false, isSpying) }
+        val cityTileGroups = cityView.centerTile().getTilesInDistance(viewRange)
+                .filter { selectedCiv.hasExplored(it.getTile()) }
+                .map { CityTileGroup(city, it.getTile(), tileSetStrings, false, isSpying) }
 
         for (tileGroup in cityTileGroups) {
             tileGroup.onClick { tileGroupOnClick(tileGroup) }
@@ -381,8 +381,8 @@ class CityScreen(
 
         val tilesToUnwrap = mutableSetOf<CityTileGroup>()
         for (tileGroup in tileGroups) {
-            val xDifference = cityView.centerTile().tile.position.x - tileGroup.tile.position.x
-            val yDifference = cityView.centerTile().tile.position.y - tileGroup.tile.position.y
+            val xDifference = cityView.centerTile().position().x - tileGroup.tile.position.x
+            val yDifference = cityView.centerTile().position().y - tileGroup.tile.position.y
             //if difference is bigger than the expansion range the tileGroup we are looking for is on the other side of the map
             if (xDifference > viewRange || xDifference < -viewRange || yDifference > viewRange || yDifference < -viewRange) {
                 //so we want to unwrap its position

@@ -13,7 +13,7 @@ import com.unciv.models.stats.Stat
 import yairm210.purity.annotations.Readonly
 
 /** View of a [Civilization] from the perspective of [viewer]. */
-class CivView(internal val civ: Civilization, internal val viewer: Civilization) {
+class CivView(private val civ: Civilization, private val viewer: Civilization) {
     val gold: Int get() = civ.gold
     val tech: TechManagerView get() = TechManagerView(civ.tech)
 
@@ -39,6 +39,9 @@ class CivView(internal val civ: Civilization, internal val viewer: Civilization)
 
     @Readonly fun isSpectator(): Boolean = civ.isSpectator()
     @Readonly fun hasExplored(tile: Tile): Boolean = civ.hasExplored(tile)
+
+    fun getCiv(): Civilization = civ
+    fun getViewer(): Civilization = viewer
 
     fun tryDisableCivConstruction(name: String) {
         civ.cities.forEach { it.disabledConstructions.add(name) }
