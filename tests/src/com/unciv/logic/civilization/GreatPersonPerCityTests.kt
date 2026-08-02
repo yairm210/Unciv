@@ -78,4 +78,49 @@ class GreatPersonPerCityTests {
         civ.greatPeople.greatPersonPointsCounter["Great Artist"] = required
         assertEquals("Great Artist", civ.greatPeople.getNewGreatPerson())
     }
+
+    /**
+     * Multiplayer clients each run start-of-turn GP birth on their own GameInfo copy.
+     * Per-city mode must not introduce client divergence (same counters, spawn tile, costs).
+     */
+    @Test
+    fun `per-city GP birth is deterministic for identical starting states`() {
+        fun runBirthOnce(): String {
+            val localGame = TestGame()
+            localGame.makeHexagonalMap(4)
+            localGame.ruleset.modOptions.uniques.add(UniqueType.GreatPersonPointsAccumulatePerCity.text)
+
+            val civ = localGame.addCiv()
+            localGame.gameInfo.currentPlayerCiv = civ
+            localGame.gameInfo.currentPlayer = civ.civID
+
+            val cityA = localGame.addCity(civ, localGame.getTile(0, 0), initialPopulation = 3)
+            localGame.addCity(civ, localGame.getTile(2, 0), initialPopulation = 3)
+
+            val required = civ.greatPeople.getPointsRequiredForGreatPerson("Great Artist")
+            cityA.greatPersonPointsCounter["Great Artist"] = required
+
+            for (city in civ.cities) {
+                var cityGreatPerson = civ.greatPeople.getNewGreatPersonFromCity(city)
+                while (cityGreatPerson != null) {
+                    if (localGame.ruleset.units.containsKey(cityGreatPerson))
+                        civ.units.addUnit(cityGreatPerson, city)
+                    cityGreatPerson = civ.greatPeople.getNewGreatPersonFromCity(city)
+                }
+            }
+
+            val cityCounters = civ.cities.joinToString(";") { city ->
+                "${city.name}:${city.greatPersonPointsCounter}"
+            }
+            val gpTiles = civ.units.getCivUnits()
+                .filter { it.isGreatPerson() }
+                .map { "${it.name}@${it.currentTile.position}" }
+                .sorted()
+                .joinToString(",")
+            val nextCost = civ.greatPeople.pointsForNextGreatPersonCounter.toString()
+            return "$cityCounters|$gpTiles|$nextCost"
+        }
+
+        assertEquals(runBirthOnce(), runBirthOnce())
+    }
 }
