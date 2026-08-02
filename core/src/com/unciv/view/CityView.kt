@@ -2,6 +2,7 @@ package com.unciv.view
 
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityFlags
+import com.unciv.logic.city.StatTreeNode
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.city.CityFocus
 import com.unciv.logic.city.CityResources
@@ -72,6 +73,9 @@ class CityView(private val city: City, private val civView: CivView) {
     // Stats
     @Readonly fun getCurrentCityStats(): Stats = city.cityStats.currentCityStats
     @Readonly fun getHappinessList(): Map<String, Float> = city.cityStats.happinessList
+    @Readonly fun getBaseStatTree(): StatTreeNode = city.cityStats.baseStatTree
+    @Readonly fun getStatPercentBonusTree(): StatTreeNode = city.cityStats.statPercentBonusTree
+    @Readonly fun getFinalStatList(): Map<String, Stats> = city.cityStats.finalStatList
 
     // Expansion
     @Readonly fun hasChoosableTiles(): Boolean = city.expansion.getChoosableTiles().any()
