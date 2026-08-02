@@ -82,9 +82,11 @@ class City : IsPartOfGameInfoSerialization, INamed {
     var cityConstructions = CityConstructions()
     var expansion = CityExpansionManager()
     var religion = CityReligionManager()
+
+    @Transient // Class carries no persisted fields
     var espionage = CityEspionageManager()
 
-    /** Effect: moved to disabled section in cosntruction list, and not built during automation */
+    /** Effect: moved to disabled section in construction list, and not built during automation */
     var disabledConstructions = HashSet<String>()
         private set
     fun resetDisabledConstructions() {
@@ -95,7 +97,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     @Transient  // CityStats has no serializable fields
     var cityStats = CityStats(this)
-    
+
     var resourceStockpiles = Counter<String>()
 
     /** All tiles that this city controls */
