@@ -29,7 +29,7 @@ import yairm210.purity.annotations.Readonly
 class CityView(private val city: City, private val civView: CivView) {
     constructor(city: City, viewer: Civilization) : this(city, CivView(viewer, viewer))
 
-    private val viewer: Civilization get() = civView.getViewer()
+    private val viewer: Civilization = civView.getViewer()
 
     val name: String get() = city.name
     val location: HexCoord get() = city.location

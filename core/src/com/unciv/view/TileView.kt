@@ -19,6 +19,6 @@ class TileView(private val tile: Tile, private val viewer: Civilization) {
 
     @Readonly fun getTileStats(cityView: CityView): Stats = tile.stats.getTileStats(cityView.getCity(), cityView.getCity().civ)
 
-    fun getTile(): Tile = tile
-    fun getViewer(): Civilization = viewer
+    @Readonly fun getTile(): Tile = tile
+    @Readonly fun getViewer(): Civilization = viewer
 }

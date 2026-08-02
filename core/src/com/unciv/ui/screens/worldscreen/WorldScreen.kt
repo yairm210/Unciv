@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
+import com.unciv.view.CityView
 import com.unciv.view.GameView
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.civilization.Civilization
@@ -277,7 +278,7 @@ class WorldScreen(
         globalShortcuts.add(KeyboardBinding.ViewCapitalCity) {
             val capital = gameInfo.getCurrentPlayerCivilization().getCapital()
             if (capital != null && !mapHolder.setCenterPosition(capital.location.toHexCoord()))
-                game.pushScreen(CityScreen(capital))
+                game.pushScreen(CityScreen(CityView(capital, selectedCiv)))
         }
         globalShortcuts.add(KeyboardBinding.Options) { // Game Options
             openOptionsPopup { nextTurnButton.update() }

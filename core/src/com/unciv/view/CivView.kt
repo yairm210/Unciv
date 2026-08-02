@@ -11,16 +11,17 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
+import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.Readonly
 
 /** View of a [Civilization] from the perspective of [viewer]. */
 class CivView(private val civ: Civilization, private val viewer: Civilization) {
-    private val cityViews = IdentityHashMap<City, CityView>()
+    @Cache private val cityViews = IdentityHashMap<City, CityView>()
 
-    fun getCity(city: City): CityView = cityViews.getOrPut(city) { CityView(city, viewer) }
+    @Readonly fun getCity(city: City): CityView = cityViews.getOrPut(city) { CityView(city, viewer) }
 
     val gold: Int get() = civ.gold
-    val tech: TechManagerView get() = TechManagerView(civ.tech)
+    val tech: TechManagerView = TechManagerView(civ.tech)
 
     @Readonly fun hasStatToBuy(stat: Stat, price: Int): Boolean = civ.hasStatToBuy(stat, price)
     @Readonly fun cities(): List<CityView> = civ.cities.map { getCity(it) }
@@ -45,8 +46,8 @@ class CivView(private val civ: Civilization, private val viewer: Civilization) {
     @Readonly fun isSpectator(): Boolean = civ.isSpectator()
     @Readonly fun hasExplored(tileView: TileView): Boolean = civ.hasExplored(tileView.getTile())
 
-    fun getCiv(): Civilization = civ
-    fun getViewer(): Civilization = viewer
+    @Readonly fun getCiv(): Civilization = civ
+    @Readonly fun getViewer(): Civilization = viewer
 
     fun tryDisableCivConstruction(name: String) {
         civ.cities.forEach { it.disabledConstructions.add(name) }
