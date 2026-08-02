@@ -28,16 +28,17 @@ enum class CityFocus(
     NoFocus("Default", true, null) {
         override fun getStatMultiplier(stat: Stat) = 1f  // actually redundant, but that's two steps to see
     },
+    /** Never clears existing assignments, only assigns new population using default focus, implemented in [City.reassignPopulation] */
     Manual("Manual", true, null) {
         override fun getStatMultiplier(stat: Stat) = 1f
     },
-    FoodFocus("${Stat.Food.character}", true, Stat.Food),
-    ProductionFocus("${Stat.Production.character}", true, Stat.Production),
-    GoldFocus("${Stat.Gold.character}", true, Stat.Gold),
-    ScienceFocus("${Stat.Science.character}", true, Stat.Science),
-    CultureFocus("${Stat.Culture.character}", true, Stat.Culture),
-    HappinessFocus("${Stat.Happiness.character}", false, Stat.Happiness),
-    FaithFocus("${Stat.Faith.character}", true, Stat.Faith),
+    FoodFocus(Stat.Food),
+    ProductionFocus(Stat.Production),
+    GoldFocus(Stat.Gold),
+    ScienceFocus(Stat.Science),
+    CultureFocus(Stat.Culture),
+    HappinessFocus(Stat.Happiness, false),
+    FaithFocus(Stat.Faith),
     GoldGrowthFocus("${Stat.Gold.character} ${Stat.Food.character}", true) {
         override fun getStatMultiplier(stat: Stat) = when (stat) {
             Stat.Gold -> 2f
@@ -56,6 +57,8 @@ enum class CityFocus(
 
     ;
     // endregion Enum values
+
+    constructor(stat: Stat, tableEnabled: Boolean = true) : this("${stat.character}", tableEnabled, stat)
 
     val binding: KeyboardBinding =
         binding ?:
@@ -82,4 +85,3 @@ enum class CityFocus(
         )
     }
 }
-
