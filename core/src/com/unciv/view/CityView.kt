@@ -30,6 +30,8 @@ import yairm210.purity.annotations.Readonly
 class CityView(city: City, private val civView: CivView) : ForeignCityView(city, civView.getViewer()) {
     constructor(city: City, viewer: Civilization) : this(city, CivView(viewer, viewer))
 
+    override fun civ(): CivView = civView
+
     val tilesInRange: Set<Tile> get() = city.tilesInRange
 
     @Readonly fun centerTile(): TileView = TileView(city.getCenterTile(), viewer)
