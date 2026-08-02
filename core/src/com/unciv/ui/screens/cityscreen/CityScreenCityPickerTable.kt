@@ -59,7 +59,7 @@ class CityScreenCityPickerTable(private val cityScreen: CityScreen) : Table() {
         if (cityScreen.canChangeState) currentCityLabel.onClick {
             CityRenamePopup(
                 screen = cityScreen,
-                city = cityView.getCity(),
+                cityView = cityView,
                 actionOnClose = {
                     cityScreen.game.replaceCurrentScreen(CityScreen(cityScreen.cityView))
                 }

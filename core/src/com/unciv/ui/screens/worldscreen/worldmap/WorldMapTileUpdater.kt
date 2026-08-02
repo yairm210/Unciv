@@ -37,7 +37,7 @@ object WorldMapTileUpdater {
                 updateTilesForSelectedSpy(unitTable.selectedSpy!!)
             }
             unitTable.selectedCity != null -> {
-                val city = unitTable.selectedCity!!
+                val city = unitTable.selectedCity!!.getCity()
                 updateBombardableTilesForSelectedCity(city)
                 // We still want to show road paths to the selected city if they are present
                 if (unitTable.selectedUnitIsConnectingRoad) {

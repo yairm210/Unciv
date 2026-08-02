@@ -2,13 +2,12 @@ package com.unciv.view
 
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityFlags
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.city.StatTreeNode
-import com.unciv.logic.map.HexCoord
 import com.unciv.logic.city.CityFocus
 import com.unciv.logic.city.CityResources
 import com.unciv.logic.city.GreatPersonPointsBreakdown
 import com.unciv.logic.city.managers.CityReligionManager
-import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Religion
 import com.unciv.models.ruleset.INonPerpetualConstruction
@@ -26,17 +25,13 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import yairm210.purity.annotations.Readonly
 
-/** View of a [City] from the perspective of [viewer]. UI should use this and not city directly. */
-class CityView(private val city: City, private val civView: CivView) {
+/** View of a [City] from the perspective of [viewer]. UI should use this and not city directly.
+ * This should only be for cities we can see as if we own them - our cities, spied cities, or if we're spectator */
+class CityView(city: City, private val civView: CivView) : ForeignCityView(city, civView.getViewer()) {
     constructor(city: City, viewer: Civilization) : this(city, CivView(viewer, viewer))
 
-    private val viewer: Civilization = civView.getViewer()
-
-    val name: String get() = city.name
-    val location: HexCoord get() = city.location
     val tilesInRange: Set<Tile> get() = city.tilesInRange
 
-    @Readonly fun civ(): CivView = CivView(city.civ, viewer)
     @Readonly fun centerTile(): TileView = TileView(city.getCenterTile(), viewer)
     @Readonly fun getTiles(): Sequence<TileView> = city.getTiles().map { TileView(it, viewer) }
     @Readonly fun tileView(tile: Tile): TileView = TileView(tile, viewer)
@@ -46,8 +41,6 @@ class CityView(private val city: City, private val civView: CivView) {
     @Readonly fun canBuyTile(tileView: TileView): Boolean = city.expansion.canBuyTile(getTile(tileView))
     @Readonly fun getGoldCostOfTile(tileView: TileView, extraTiles: Int = 0): Int =
         city.expansion.getGoldCostOfTile(getTile(tileView), extraTiles)
-    @Readonly fun isSameCivAs(other: CityView): Boolean = city.civ === other.city.civ
-
     // Population
     @Readonly fun getFreePopulation(): Int = city.population.getFreePopulation()
     @Readonly fun getPopulationCount(): Int = city.population.population
@@ -135,9 +128,8 @@ class CityView(private val city: City, private val civView: CivView) {
     @Readonly fun canBePurchasedWithStat(construction: INonPerpetualConstruction, stat: Stat): Boolean =
         construction.canBePurchasedWithStat(city, stat)
 
-    @Readonly fun getCity(): City = city
-    @Readonly private fun getTile(tileView: TileView) = tileView.getTile()
     @Readonly fun getViewer(): Civilization = viewer
+    @Readonly private fun getTile(tileView: TileView) = tileView.getTile()
 
     // ACTIONS
     private fun canChangeState() = city.civ === viewer && viewer.isCurrentPlayer()
@@ -186,6 +178,11 @@ class CityView(private val city: City, private val civView: CivView) {
     fun updateTileStats() = city.cityStats.updateTileStats()
 
     fun updateCityStats() = city.cityStats.update()
+    fun tryRenameCity(name: String): Boolean {
+        if (!canChangeState()) return false
+        city.name = name
+        return true
+    }
     fun tryAnnexCity(): Boolean {
         if (!canChangeState()) return false
         city.annexCity()
@@ -278,6 +275,4 @@ class CityView(private val city: City, private val civView: CivView) {
         return true
     }
 
-    override fun equals(other: Any?) = other is CityView && city === other.city
-    override fun hashCode() = city.hashCode()
 }
