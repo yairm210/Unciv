@@ -28,19 +28,19 @@ object AuthoritativeUnitActions {
         gameId: String,
         type: String,
         unit: MapUnit,
-        fromX: Float,
-        fromY: Float,
-        toX: Float,
-        toY: Float,
+        fromX: Int,
+        fromY: Int,
+        toX: Int,
+        toY: Int,
         errorOut: (String) -> Unit = {},
     ): String? = withContext(Dispatchers.IO) {
         val body = buildString {
             append("{\"type\":\"").append(type).append("\",")
             append("\"unitId\":").append(unit.id).append(',')
-            append("\"fromX\":").append(fromX.toInt()).append(',')
-            append("\"fromY\":").append(fromY.toInt()).append(',')
-            append("\"toX\":").append(toX.toInt()).append(',')
-            append("\"toY\":").append(toY.toInt()).append('}')
+            append("\"fromX\":").append(fromX).append(',')
+            append("\"fromY\":").append(fromY).append(',')
+            append("\"toX\":").append(toX).append(',')
+            append("\"toY\":").append(toY).append('}')
         }
         val server = UncivGame.Current.onlineMultiplayer.multiplayerServer
         val url = "${server.getServerUrl().trimEnd('/')}/files/$gameId/action"

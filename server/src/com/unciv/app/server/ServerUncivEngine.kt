@@ -38,6 +38,8 @@ internal object ServerUncivEngine {
     fun ensureInit() {
         if (initialized) return
 
+        loadGdxNativesIfPresent()
+
         if (Gdx.app == null) {
             val conf = HeadlessApplicationConfiguration()
             HeadlessApplication(object : ApplicationListener {
@@ -73,6 +75,42 @@ internal object ServerUncivEngine {
         initialized = true
     }
 
+    /**
+     * Headless GDX needs `gdx64.dll` (or platform equivalent). Fat UncivServer.jar does not
+     * currently ship natives; allow an explicit load from CWD / java.library.path.
+     */
+    private fun loadGdxNativesIfPresent() {
+        val os = System.getProperty("os.name").lowercase()
+        val libName = when {
+            "windows" in os -> "gdx64.dll"
+            "mac" in os || "darwin" in os -> "libgdx64.dylib"
+            else -> "libgdx64.so"
+        }
+        val searchDirs = mutableListOf(File("."))
+        System.getProperty("java.library.path")
+            ?.split(File.pathSeparator)
+            ?.map { File(it) }
+            ?.let { searchDirs.addAll(it) }
+        // When launched as `java -jar …/UncivServer.jar`, also check beside the jar
+        try {
+            val codeSource = ServerUncivEngine::class.java.protectionDomain?.codeSource?.location
+            if (codeSource != null && codeSource.protocol == "file") {
+                searchDirs.add(File(codeSource.toURI()).parentFile)
+            }
+        } catch (_: Exception) { /* ignore */ }
+
+        for (dir in searchDirs) {
+            val candidate = File(dir, libName)
+            if (!candidate.isFile) continue
+            try {
+                System.load(candidate.absolutePath)
+                return
+            } catch (ex: Throwable) {
+                System.err.println("Failed to System.load(${candidate.absolutePath}): ${ex.message}")
+            }
+        }
+    }
+
     @Serializable
     data class UnitActionPayload(
         /** "move" or "attack" */
@@ -98,8 +136,8 @@ internal object ServerUncivEngine {
             val unit = findUnit(game, payload.unitId)
                 ?: return null to "Unit ${payload.unitId} not found"
             val from = unit.currentTile.position
-            if (from.x.toInt() != payload.fromX || from.y.toInt() != payload.fromY) {
-                return null to "Unit ${payload.unitId} is at (${from.x.toInt()},${from.y.toInt()}), not (${payload.fromX},${payload.fromY})"
+            if (from.x != payload.fromX || from.y != payload.fromY) {
+                return null to "Unit ${payload.unitId} is at (${from.x},${from.y}), not (${payload.fromX},${payload.fromY})"
             }
 
             val toTile = game.tileMap[payload.toX, payload.toY]

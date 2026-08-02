@@ -138,6 +138,8 @@ project(":server") {
         "implementation"(project(":core"))
         "implementation"(rootProject.libs.coroutines.core)
         "implementation"(rootProject.libs.gdx.backend.headless)
+        // Needed at runtime for HeadlessApplication (gdx64.dll / .so / .dylib)
+        "implementation"(gdxNatives("desktop"))
         "implementation"(rootProject.libs.mockito)
 
         // clikt somehow needs this

@@ -52,7 +52,19 @@ tasks.register<Jar>("dist") { // Compiles the jar file
     from(files(sourceSets.main.get().output.resourcesDir))
     from(files(sourceSets.main.get().output.classesDirs))
     // see Laurent1967's comment on https://github.com/libgdx/libgdx/issues/5491
-    from({ configurations.compileClasspath.get().resolve().map { if (it.isDirectory) it else zipTree(it) } })
+    from({
+        configurations.compileClasspath.get().resolve()
+            .filterNot { it.name.contains("gdx-platform") && it.name.contains("natives") }
+            .map { if (it.isDirectory) it else zipTree(it) }
+    })
+    // Headless engine needs platform natives; pack only the shared libs (full natives jar breaks the fat jar)
+    from({
+        configurations.runtimeClasspath.get().resolve()
+            .filter { it.name.contains("gdx-platform") && it.name.contains("natives") }
+            .map { zipTree(it) }
+    }) {
+        include("gdx64.dll", "libgdx64.so", "libgdx64.dylib")
+    }
     archiveFileName.set("UncivServer.jar")
 
     manifest {
