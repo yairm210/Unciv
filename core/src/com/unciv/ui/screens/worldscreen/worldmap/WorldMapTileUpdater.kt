@@ -13,6 +13,7 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.Spy
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.colorFromRGB
+import com.unciv.view.CivView
 
 object WorldMapTileUpdater {
 
@@ -27,7 +28,7 @@ object WorldMapTileUpdater {
 
         // General update of all tiles
         for (tileGroup in tileGroups.values)
-            tileGroup.update(viewingCiv)
+            tileGroup.update(CivView(viewingCiv, viewingCiv))
 
         // Update tiles according to selected unit/city
         val unitTable = worldScreen.bottomUnitTable
@@ -36,7 +37,7 @@ object WorldMapTileUpdater {
                 updateTilesForSelectedSpy(unitTable.selectedSpy!!)
             }
             unitTable.selectedCity != null -> {
-                val city = unitTable.selectedCity!!
+                val city = unitTable.selectedCity!!.getCity()
                 updateBombardableTilesForSelectedCity(city)
                 // We still want to show road paths to the selected city if they are present
                 if (unitTable.selectedUnitIsConnectingRoad) {

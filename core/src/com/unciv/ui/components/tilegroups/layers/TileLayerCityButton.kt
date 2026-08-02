@@ -2,7 +2,7 @@ package com.unciv.ui.components.tilegroups.layers
 
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.unciv.logic.civilization.Civilization
+import com.unciv.view.CivView
 import com.unciv.ui.components.tilegroups.citybutton.CityButton
 import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.components.tilegroups.WorldTileGroup
@@ -37,7 +37,7 @@ class TileLayerCityButton(tileGroup: TileGroup, size: Float) : TileLayer(tileGro
         cityButtonWrapper?.setScale(scale)
     }
 
-    override fun doUpdate(viewingCiv: Civilization?) {
+    override fun doUpdate(viewingCiv: CivView?) {
         if (tileGroup !is WorldTileGroup) return
 
         val city = tile.getCity()
