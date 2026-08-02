@@ -27,10 +27,18 @@ import yairm210.purity.annotations.Readonly
 
 /** View of a [City] from the perspective of [viewer]. UI should use this and not city directly.
  * This should only be for cities we can see as if we own them - our cities, spied cities, or if we're spectator */
-class CityView(city: City, private val civView: CivView) : ForeignCityView(city, civView.getViewer()) {
-    constructor(city: City, viewer: Civilization) : this(city, CivView(viewer, viewer))
+class CityView(city: City, viewer: Civilization) : ForeignCityView(city, viewer) {
+    /** The viewing player's full CivView (always a self-view). For the city's owning civ, use [owningCiv]. */
+    @Readonly fun viewingCiv(): CivView = CivView(viewer, viewer)
 
-    override fun civ(): CivView = civView
+    /** Cities the viewer can page through in CityScreen: own cities normally, or spy-visited cities when spying. */
+    fun getViewableCities(): List<CityView> {
+        val isSpying = city.civ !== viewer && viewer.gameInfo.isEspionageEnabled() && !viewer.isSpectator()
+        return if (isSpying) viewer.espionageManager.getCitiesWithOurSpies()
+            .filter { it.civ != viewer }
+            .map { CityView(it, viewer) }
+        else city.civ.cities.map { CityView(it, viewer) }
+    }
 
     val tilesInRange: Set<Tile> get() = city.tilesInRange
 
@@ -124,13 +132,15 @@ class CityView(city: City, private val civView: CivView) : ForeignCityView(city,
 
     @Readonly fun getStatReserve(stat: Stat): Int = city.getStatReserve(stat)
     @Readonly fun getMajorityReligion(): Religion? = city.religion.getMajorityReligion()
-    @Readonly fun getYourReligion(): Religion? = civView.getCiv().religionManager.religion
+    @Readonly fun getYourReligion(): Religion? = viewer.religionManager.religion
     @Readonly fun canBePurchasedWithAnyStat(construction: INonPerpetualConstruction): Boolean =
         construction.canBePurchasedWithAnyStat(city)
     @Readonly fun canBePurchasedWithStat(construction: INonPerpetualConstruction, stat: Stat): Boolean =
         construction.canBePurchasedWithStat(city, stat)
 
     @Readonly fun getViewer(): Civilization = viewer
+    @Readonly fun isOwnedByViewer(): Boolean = city.civ === viewer
+    @Readonly fun isOwnedTile(tile: Tile): Boolean = tile.getCity() === city
     @Readonly private fun getTile(tileView: TileView) = tileView.getTile()
 
     // ACTIONS

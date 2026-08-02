@@ -84,7 +84,7 @@ class TileLayerYield(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, s
         y.run {
             // Update YieldGroup Icon
             if (tileGroup is CityTileGroup)
-                setStats(tile.stats.getTileStats(tileGroup.city, viewingCiv?.getCiv()))
+                setStats(tile.stats.getTileStats(tileGroup.cityView.getCity(), viewingCiv?.getCiv()))
             else
                 setStats(tile.stats.getTileStats(viewingCiv?.getCiv()))
             toFront()

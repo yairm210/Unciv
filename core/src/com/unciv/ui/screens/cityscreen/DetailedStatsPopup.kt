@@ -68,7 +68,7 @@ class DetailedStatsPopup(
         totalTable.clear()
 
         val cityView = cityScreen.cityView
-        val showFaith = cityView.civ().isReligionEnabled()
+        val showFaith = cityView.viewingCiv().isReligionEnabled()
 
         val stats = when {
             onlyWithStat != null -> listOfNotNull(onlyWithStat)

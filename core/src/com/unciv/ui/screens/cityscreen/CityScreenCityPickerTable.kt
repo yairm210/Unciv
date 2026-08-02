@@ -18,7 +18,7 @@ class CityScreenCityPickerTable(private val cityScreen: CityScreen) : Table() {
 
     fun update() {
         val cityView = cityScreen.cityView
-        val civView = cityView.civ()
+        val civView = cityView.owningCiv()
         background = BaseScreen.skinStrings.getUiBackground("CityScreen/CityPickerTable", BaseScreen.skinStrings.roundedEdgeRectangleShape, civView.getOuterColor())
         clear()
 

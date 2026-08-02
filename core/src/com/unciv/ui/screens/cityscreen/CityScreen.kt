@@ -7,7 +7,6 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
-import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.TutorialTrigger
@@ -63,17 +62,14 @@ class CityScreen(
         const val wltkIconSize = 40f
     }
 
-    internal val city: City get() = cityView.getCity()
     private val selectedCiv: Civilization = cityView.getViewer()
 
-    internal val isSpying = selectedCiv.gameInfo.isEspionageEnabled() && selectedCiv != city.civ && !selectedCiv.isSpectator()
+    internal val isSpying = selectedCiv.gameInfo.isEspionageEnabled() && !cityView.isOwnedByViewer() && !selectedCiv.isSpectator()
 
     /**
      * This is the regular civ city list if we are not spying, if we are spying then it is every foreign city that our spies are in
      */
-    val viewableCities = if (isSpying) selectedCiv.espionageManager.getCitiesWithOurSpies()
-        .filter { it.civ != selectedCiv }
-    else city.civ.cities
+    val viewableCities: List<CityView> = cityView.getViewableCities()
 
     /** Toggles or adds/removes all state changing buttons */
     val canChangeState = GUI.isAllowedChangeState() && !isSpying
@@ -178,7 +174,7 @@ class CityScreen(
         }
     }
 
-    override fun getCivilopediaRuleset() = selectedCiv.gameInfo.ruleset
+    override fun getCivilopediaRuleset() = cityView.getRuleset()
 
     internal fun update() {
         // Recalculate Stats
@@ -247,12 +243,12 @@ class CityScreen(
     private fun updateTileGroups() {
         fun isExistingImprovementValuable(tile: Tile): Boolean {
             val improvement = tile.tileImprovement ?: return false
-            val civInfo = city.civ
+            val civInfo = cityView.owningCiv().getCiv()
 
             val statDiffForNewImprovement = tile.stats.getStatDiffForImprovement(
                 improvement,
                 civInfo,
-                city,
+                cityView.getCity(),
             )
 
             // If stat diff for new improvement is negative/zero utility, current improvement is valuable
@@ -285,7 +281,7 @@ class CityScreen(
                 /** Support for [UniqueType.CreatesOneImprovement] */
                 tileGroup.tile == selectedQueueEntryTargetTile ->
                     tileGroup.layerMisc.addHexOutline(Color.BROWN)
-                pickTileData != null && tileGroup.tile.getCity() == city && tileGroup.tile in cityView.tilesInRange ->
+                pickTileData != null && cityView.isOwnedTile(tileGroup.tile) && tileGroup.tile in cityView.tilesInRange ->
                     getPickImprovementColor(tileGroup.tile).run {
                         tileGroup.layerMisc.addHexOutline(first.cpy().apply { this.a = second }) }
             }
@@ -306,7 +302,7 @@ class CityScreen(
             addWltkIcon("OtherIcons/WLTK 1") { color = Color.FIREBRICK }.padRight(10f)
         }
 
-        val canAnnex = !cityView.civ().hasUnique(UniqueType.MayNotAnnexCities)
+        val canAnnex = !cityView.viewingCiv().hasUnique(UniqueType.MayNotAnnexCities)
         if (cityView.isPuppet() && canAnnex) {
             val annexCityButton = "Annex city".toTextButton()
             annexCityButton.labelCell.pad(10f)
@@ -363,10 +359,10 @@ class CityScreen(
 
     private fun addTiles() {
         val viewRange = max(cityView.getExpandRange(), cityView.getWorkRange())
-        val tileSetStrings = TileSetStrings(city.civ.gameInfo.ruleset, game.settings)
+        val tileSetStrings = TileSetStrings(cityView.getRuleset(), game.settings)
         val cityTileGroups = cityView.centerTile().getTilesInDistance(viewRange)
                 .filter { selectedCiv.hasExplored(it.getTile()) }
-                .map { CityTileGroup(city, it.getTile(), tileSetStrings, false, isSpying) }
+                .map { CityTileGroup(cityView, it.getTile(), tileSetStrings, false, isSpying) }
 
         for (tileGroup in cityTileGroups) {
             tileGroup.onClick { tileGroupOnClick(tileGroup) }
@@ -433,11 +429,11 @@ class CityScreen(
         // These checks are redundant for the onClick action, but not for the keyboard binding
         if (!canChangeState || !cityView.canBuyTile(cityView.tileView(selectedTile))) return
         val goldCostOfTile = cityView.getGoldCostOfTile(cityView.tileView(selectedTile))
-        if (!cityView.civ().hasStatToBuy(Stat.Gold, goldCostOfTile)) return
+        if (!cityView.viewingCiv().hasStatToBuy(Stat.Gold, goldCostOfTile)) return
 
         closeAllPopups()
 
-        val purchasePrompt = "Currently you have [${cityView.civ().gold}] [Gold].".tr() + "\n\n" +
+        val purchasePrompt = "Currently you have [${cityView.viewingCiv().gold}] [Gold].".tr() + "\n\n" +
             "Would you like to purchase [Tile] for [$goldCostOfTile] [${Stat.Gold.character}]?".tr()
         ConfirmPopup(
             this,
@@ -555,9 +551,9 @@ class CityScreen(
 
         val numCities = viewableCities.size
         if (numCities == 0) return
-        val indexOfCity = viewableCities.indexOf(city)
+        val indexOfCity = viewableCities.indexOfFirst { it.getCity() === cityView.getCity() }
         val indexOfNextCity = (indexOfCity + delta + numCities) % numCities
-        val newCityScreen = CityScreen(CityView(viewableCities[indexOfNextCity], selectedCiv), ambiencePlayer = passOnCityAmbiencePlayer())
+        val newCityScreen = CityScreen(viewableCities[indexOfNextCity], ambiencePlayer = passOnCityAmbiencePlayer())
         newCityScreen.mapScrollPane.zoom(mapScrollPane.scaleX) // Retain zoom
         newCityScreen.update()
         game.replaceCurrentScreen(newCityScreen)

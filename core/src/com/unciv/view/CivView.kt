@@ -26,6 +26,7 @@ class CivView(civ: Civilization, viewer: Civilization) : ForeignCivView(civ, vie
     @Readonly fun hasStatToBuy(stat: Stat, price: Int): Boolean = civ.hasStatToBuy(stat, price)
     @Readonly fun cities(): List<CityView> = civ.cities.map { getCity(it) }
 
+
     @Readonly fun canSeeTile(tileView: TileView): Boolean = tileView.getTile().isVisible(civ)
     @Readonly fun canSeeResource(resource: TileResource?): Boolean = civ.canSeeResource(resource)
     @Readonly fun canSeeUnit(unit: MapUnit): Boolean = !unit.isInvisible(civ)

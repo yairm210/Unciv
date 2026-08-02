@@ -19,7 +19,8 @@ open class ForeignCityView(internal open val city: City, internal open val viewe
     @Readonly fun getAttackingStrength(): Int = CityCombatant(city).getAttackingStrength()
     @Readonly fun getCenterTile(): Tile = city.getCenterTile()
     @Readonly fun canBombard(): Boolean = city.canBombard()
-    @Readonly open fun civ(): ForeignCivView = ForeignCivView(city.civ, viewer)
+    /** The owning civ of this city, as visible from [viewer]'s perspective. For the viewing player's full CivView, use [CityView.viewingCiv]. */
+    @Readonly open fun owningCiv(): ForeignCivView = ForeignCivView(city.civ, viewer)
     @Readonly fun isSameCivAs(other: ForeignCityView): Boolean = city.civ === other.city.civ
     @Readonly fun getCity(): City = city
     @Readonly fun getProductionMarkup(): FormattedLine = city.cityConstructions.getProductionMarkup(city.getRuleset())
