@@ -25,7 +25,11 @@ import com.unciv.models.stats.Stats
 import yairm210.purity.annotations.Readonly
 
 /** View of a [City] from the perspective of [viewer]. UI should use this and not city directly. */
-class CityView(private val city: City, private val viewer: Civilization) {
+class CityView(private val city: City, private val civView: CivView) {
+    constructor(city: City, viewer: Civilization) : this(city, CivView(viewer, viewer))
+
+    private val viewer: Civilization get() = civView.getViewer()
+
     val name: String get() = city.name
     val location: HexCoord get() = city.location
     val tilesInRange: Set<Tile> get() = city.tilesInRange

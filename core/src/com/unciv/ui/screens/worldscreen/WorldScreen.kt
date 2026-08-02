@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
+import com.unciv.view.GameView
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
@@ -101,6 +102,9 @@ class WorldScreen(
 
     /** Selected civilization, used in spectator and replay mode, equals viewingCiv in ordinary games */
     var selectedCiv = viewingCiv
+        internal set
+    var gameView = GameView(gameInfo, selectedCiv)
+        internal set
 
     var fogOfWar = true
 
@@ -538,12 +542,17 @@ class WorldScreen(
         tutorialTaskTable.isVisible = true
     }
 
+    fun setSelectedCiv(civ: Civilization) {
+        selectedCiv = civ
+        gameView = GameView(gameInfo, civ)
+    }
+
     private fun updateSelectedCiv() {
-        selectedCiv = when {
+        setSelectedCiv(when {
             bottomUnitTable.selectedUnit != null -> bottomUnitTable.selectedUnit!!.civ
             bottomUnitTable.selectedCity != null -> bottomUnitTable.selectedCity!!.civ
             else -> viewingCiv
-        }
+        })
     }
 
     class RestoreState(
@@ -572,7 +581,7 @@ class WorldScreen(
             mapHolder.updateVisualScroll()
         }
 
-        selectedCiv = gameInfo.getCivilization(restoreState.selectedCivName)
+        setSelectedCiv(gameInfo.getCivilization(restoreState.selectedCivName))
         fogOfWar = restoreState.fogOfWar
     }
 
