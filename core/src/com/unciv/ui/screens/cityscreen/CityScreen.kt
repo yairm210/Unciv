@@ -43,10 +43,11 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.view.CityView
+import com.unciv.view.CivView
 import kotlin.math.max
 
 class CityScreen(
-    internal val city: City,
+    val cityView: CityView,
     initSelectedConstruction: IConstruction? = null,
     initSelectedTile: Tile? = null,
     /** City ambience sound player proxies can be passed from one CityScreen instance to the next
@@ -62,7 +63,8 @@ class CityScreen(
         const val wltkIconSize = 40f
     }
 
-    private val selectedCiv: Civilization = GUI.getWorldScreen().selectedCiv
+    internal val city: City get() = cityView.getCity()
+    private val selectedCiv: Civilization = cityView.getViewer()
 
     internal val isSpying = selectedCiv.gameInfo.isEspionageEnabled() && selectedCiv != city.civ && !selectedCiv.isSpectator()
 
@@ -70,13 +72,11 @@ class CityScreen(
      * This is the regular civ city list if we are not spying, if we are spying then it is every foreign city that our spies are in
      */
     val viewableCities = if (isSpying) selectedCiv.espionageManager.getCitiesWithOurSpies()
-        .filter { it.civ !=  GUI.getWorldScreen().selectedCiv }
+        .filter { it.civ != selectedCiv }
     else city.civ.cities
 
     /** Toggles or adds/removes all state changing buttons */
     val canChangeState = GUI.isAllowedChangeState() && !isSpying
-
-    val cityView: CityView = CityView(city, selectedCiv)
 
     // Clockwise from the top-left
 
@@ -272,7 +272,7 @@ class CityScreen(
         }
 
         for (tileGroup in tileGroups) {
-            tileGroup.update(selectedCiv)
+            tileGroup.update(CivView(selectedCiv, selectedCiv))
             tileGroup.layerMisc.removeHexOutline()
             if (isSpying) continue // the rest is only for own cities
 
@@ -364,9 +364,9 @@ class CityScreen(
     private fun addTiles() {
         val viewRange = max(cityView.getExpandRange(), cityView.getWorkRange())
         val tileSetStrings = TileSetStrings(city.civ.gameInfo.ruleset, game.settings)
-        val cityTileGroups = cityView.centerTile().tile.getTilesInDistance(viewRange)
-                .filter { selectedCiv.hasExplored(it) }
-                .map { CityTileGroup(city, it, tileSetStrings, false, isSpying) }
+        val cityTileGroups = cityView.centerTile().getTilesInDistance(viewRange)
+                .filter { selectedCiv.hasExplored(it.getTile()) }
+                .map { CityTileGroup(city, it.getTile(), tileSetStrings, false, isSpying) }
 
         for (tileGroup in cityTileGroups) {
             tileGroup.onClick { tileGroupOnClick(tileGroup) }
@@ -380,8 +380,8 @@ class CityScreen(
 
         val tilesToUnwrap = mutableSetOf<CityTileGroup>()
         for (tileGroup in tileGroups) {
-            val xDifference = cityView.centerTile().tile.position.x - tileGroup.tile.position.x
-            val yDifference = cityView.centerTile().tile.position.y - tileGroup.tile.position.y
+            val xDifference = cityView.centerTile().position().x - tileGroup.tile.position.x
+            val yDifference = cityView.centerTile().position().y - tileGroup.tile.position.y
             //if difference is bigger than the expansion range the tileGroup we are looking for is on the other side of the map
             if (xDifference > viewRange || xDifference < -viewRange || yDifference > viewRange || yDifference < -viewRange) {
                 //so we want to unwrap its position
@@ -449,7 +449,7 @@ class CityScreen(
             SoundPlayer.play(UncivSound.Coin)
             cityView.tryBuyTile(cityView.tileView(selectedTile))
             // preselect the next tile on city screen rebuild so bulk buying can go faster
-            UncivGame.Current.replaceCurrentScreen(CityScreen(city, initSelectedTile = cityView.chooseNewTileToOwn()))
+            UncivGame.Current.replaceCurrentScreen(CityScreen(cityView, initSelectedTile = cityView.chooseNewTileToOwn()))
         }.open()
     }
 
@@ -557,7 +557,7 @@ class CityScreen(
         if (numCities == 0) return
         val indexOfCity = viewableCities.indexOf(city)
         val indexOfNextCity = (indexOfCity + delta + numCities) % numCities
-        val newCityScreen = CityScreen(viewableCities[indexOfNextCity], ambiencePlayer = passOnCityAmbiencePlayer())
+        val newCityScreen = CityScreen(CityView(viewableCities[indexOfNextCity], selectedCiv), ambiencePlayer = passOnCityAmbiencePlayer())
         newCityScreen.mapScrollPane.zoom(mapScrollPane.scaleX) // Retain zoom
         newCityScreen.update()
         game.replaceCurrentScreen(newCityScreen)
@@ -565,7 +565,7 @@ class CityScreen(
 
     // Don't use passOnCityAmbiencePlayer here - continuing play on the replacement screen would be nice,
     // but the rapid firing of several resize events will get that un-synced, they would no longer stop on leaving.
-    override fun recreate(): BaseScreen = CityScreen(city, selectedConstruction, selectedTile)
+    override fun recreate(): BaseScreen = CityScreen(cityView, selectedConstruction, selectedTile)
 
     override fun dispose() {
         cityAmbiencePlayer?.dispose()

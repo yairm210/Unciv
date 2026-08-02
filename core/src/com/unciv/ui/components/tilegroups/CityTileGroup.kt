@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.Civilization
+import com.unciv.view.CivView
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
@@ -31,8 +31,8 @@ class CityTileGroup(val city: City, tile: Tile, tileSetStrings: TileSetStrings, 
         // layerMisc is no longer a Group actor; touch handling is managed at the TileMapLayer level.
     }
 
-    override fun update(viewingCiv: Civilization?) {
-        super.update(city.civ)
+    override fun update(viewingCiv: CivView?) {
+        super.update(CivView(city.civ, city.civ))
 
         tileState = CityTileState.NONE
 

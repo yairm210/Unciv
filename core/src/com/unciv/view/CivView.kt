@@ -2,6 +2,7 @@ package com.unciv.view
 
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
+import java.util.IdentityHashMap
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.ImprovementBuildingProblem
 import com.unciv.logic.map.tile.Tile
@@ -10,17 +11,22 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
+import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.Readonly
 
 /** View of a [Civilization] from the perspective of [viewer]. */
-class CivView(internal val civ: Civilization, internal val viewer: Civilization) {
+class CivView(private val civ: Civilization, private val viewer: Civilization) {
+    @Cache private val cityViews = IdentityHashMap<City, CityView>()
+
+    @Readonly fun getCity(city: City): CityView = cityViews.getOrPut(city) { CityView(city, viewer) }
+
     val gold: Int get() = civ.gold
-    val tech: TechManagerView get() = TechManagerView(civ.tech)
+    val tech: TechManagerView = TechManagerView(civ.tech)
 
     @Readonly fun hasStatToBuy(stat: Stat, price: Int): Boolean = civ.hasStatToBuy(stat, price)
-    @Readonly fun cities(): List<CityView> = civ.cities.map { CityView(it, viewer) }
+    @Readonly fun cities(): List<CityView> = civ.cities.map { getCity(it) }
 
-    @Readonly fun canSeeTile(tile: Tile): Boolean = tile in civ.viewableTiles
+    @Readonly fun canSeeTile(tileView: TileView): Boolean = tileView.getTile().isVisible(civ)
     @Readonly fun canSeeResource(resource: TileResource?): Boolean = civ.canSeeResource(resource)
     @Readonly fun canSeeUnit(unit: MapUnit): Boolean = !unit.isInvisible(civ)
     @Readonly fun isOwnerOf(city: City): Boolean = civ === city.civ
@@ -35,4 +41,20 @@ class CivView(internal val civ: Civilization, internal val viewer: Civilization)
     @Readonly fun isReligionEnabled(): Boolean = civ.gameInfo.isReligionEnabled()
     @Readonly fun getGreatPersonPoints(name: String): Int = civ.greatPeople.greatPersonPointsCounter[name]
     @Readonly fun getPointsRequiredForGreatPerson(name: String): Int = civ.greatPeople.getPointsRequiredForGreatPerson(name)
+    @Readonly fun isCivConstructionDisabled(name: String): Boolean = name in civ.disabledCityConstructions
+
+    @Readonly fun isSpectator(): Boolean = civ.isSpectator()
+    @Readonly fun hasExplored(tileView: TileView): Boolean = civ.hasExplored(tileView.getTile())
+
+    @Readonly fun getCiv(): Civilization = civ
+    @Readonly fun getViewer(): Civilization = viewer
+
+    fun tryDisableCivConstruction(name: String) {
+        civ.cities.forEach { it.disabledConstructions.add(name) }
+        civ.disabledCityConstructions.add(name)
+    }
+    fun tryEnableCivConstruction(name: String) {
+        civ.cities.forEach { it.disabledConstructions.remove(name) }
+        civ.disabledCityConstructions.remove(name)
+    }
 }

@@ -6,14 +6,19 @@ import com.unciv.models.stats.Stats
 import yairm210.purity.annotations.Readonly
 
 /** View of a [Tile] from the perspective of [viewer]. */
-class TileView(internal val tile: Tile, internal val viewer: Civilization) {
+class TileView(private val tile: Tile, private val viewer: Civilization) {
+    @Readonly fun position() = tile.position
     @Readonly fun owningCity(): CityView? = tile.owningCity?.let { CityView(it, viewer) }
     @Readonly fun getWorkingCity(): CityView? = tile.getWorkingCity()?.let { CityView(it, viewer) }
+    val neighbors: Sequence<TileView> @Readonly get() = tile.neighbors.asSequence().map { TileView(it, viewer) }
     @Readonly fun getTilesInDistance(distance: Int): Sequence<TileView> =
         tile.getTilesInDistance(distance).map { TileView(it, viewer) }
 
     @Readonly fun isCityCenter(): Boolean = tile.isCityCenter()
     @Readonly fun isLocked(): Boolean = tile.isLocked()
 
-    @Readonly fun getTileStats(cityView: CityView): Stats = tile.stats.getTileStats(cityView.city, cityView.city.civ)
+    @Readonly fun getTileStats(cityView: CityView): Stats = tile.stats.getTileStats(cityView.getCity(), cityView.getCity().civ)
+
+    @Readonly fun getTile(): Tile = tile
+    @Readonly fun getViewer(): Civilization = viewer
 }
