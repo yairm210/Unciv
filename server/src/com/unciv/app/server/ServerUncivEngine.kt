@@ -1,25 +1,25 @@
 package com.unciv.app.server
 
-import com.badlogic.gdx.ApplicationListener
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.backends.headless.HeadlessApplication
-import com.badlogic.gdx.backends.headless.HeadlessApplicationConfiguration
-import com.badlogic.gdx.graphics.GL20
 import com.unciv.UncivGame
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.battle.TargetHelper
+import com.unciv.logic.civilization.AlertType
+import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.multiplayer.AuthoritativeActionPayload
+import com.unciv.logic.trade.TradeLogic
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.RulesetCache
-import kotlinx.serialization.Serializable
-import org.mockito.Mockito
 import java.io.File
 
 /**
- * Runs Unciv core headlessly so the multiplayer server can apply unit actions to saves
- * (Evgeny's model: client sends a small action JSON; server mutates the canonical save).
+ * Applies authoritative multiplayer actions to saves using Unciv core logic.
+ *
+ * No Gdx [com.badlogic.gdx.backends.headless.HeadlessApplication]: saves and rulesets load via
+ * [FileHandle] / console-mode paths (see [UncivFiles.getSettingsForPlatformLaunchers]), and action
+ * apply does not need graphics, audio, net, or the headless render thread.
  *
  * Working directory (or [assetsPath]) must contain `jsons/` and optionally `mods/`
  * — same layout as `android/assets`.
@@ -38,29 +38,13 @@ internal object ServerUncivEngine {
     fun ensureInit() {
         if (initialized) return
 
-        loadGdxNativesIfPresent()
-
-        if (Gdx.app == null) {
-            val conf = HeadlessApplicationConfiguration()
-            HeadlessApplication(object : ApplicationListener {
-                override fun create() {}
-                override fun resize(width: Int, height: Int) {}
-                override fun render() {}
-                override fun pause() {}
-                override fun resume() {}
-                override fun dispose() {}
-            }, conf)
-            Gdx.gl = Mockito.mock(GL20::class.java)
-            Gdx.gl20 = Gdx.gl
-        }
-
-        // Relative FileHandle("jsons/...") / FileHandle("mods") resolve against user.dir
         val assetsDir = File(assetsPath).absoluteFile
         if (assetsDir.isDirectory) {
             System.setProperty("user.dir", assetsDir.path)
         }
 
-        UncivGame.Current = UncivGame()
+        // Console mode: RulesetCache uses FileHandle("jsons/...") relative to user.dir, not Gdx.files.
+        UncivGame.Current = UncivGame(isConsoleMode = true)
         UncivGame.Current.settings = GameSettings().apply {
             musicVolume = 0f
             soundEffectsVolume = 0f
@@ -75,57 +59,12 @@ internal object ServerUncivEngine {
         initialized = true
     }
 
-    /**
-     * Headless GDX needs `gdx64.dll` (or platform equivalent). Fat UncivServer.jar does not
-     * currently ship natives; allow an explicit load from CWD / java.library.path.
-     */
-    private fun loadGdxNativesIfPresent() {
-        val os = System.getProperty("os.name").lowercase()
-        val libName = when {
-            "windows" in os -> "gdx64.dll"
-            "mac" in os || "darwin" in os -> "libgdx64.dylib"
-            else -> "libgdx64.so"
-        }
-        val searchDirs = mutableListOf(File("."))
-        System.getProperty("java.library.path")
-            ?.split(File.pathSeparator)
-            ?.map { File(it) }
-            ?.let { searchDirs.addAll(it) }
-        // When launched as `java -jar …/UncivServer.jar`, also check beside the jar
-        try {
-            val codeSource = ServerUncivEngine::class.java.protectionDomain?.codeSource?.location
-            if (codeSource != null && codeSource.protocol == "file") {
-                searchDirs.add(File(codeSource.toURI()).parentFile)
-            }
-        } catch (_: Exception) { /* ignore */ }
-
-        for (dir in searchDirs) {
-            val candidate = File(dir, libName)
-            if (!candidate.isFile) continue
-            try {
-                System.load(candidate.absolutePath)
-                return
-            } catch (ex: Throwable) {
-                System.err.println("Failed to System.load(${candidate.absolutePath}): ${ex.message}")
-            }
-        }
-    }
-
-    @Serializable
-    data class UnitActionPayload(
-        /** "move" or "attack" */
-        val type: String,
-        val unitId: Int,
-        val fromX: Int,
-        val fromY: Int,
-        val toX: Int,
-        val toY: Int,
-    )
+    private val unitActionTypes = setOf("move", "attack", "foundCity")
 
     /**
      * Apply [payload] to [rawSave], return gzipped new save or error message.
      */
-    fun applyAction(rawSave: String, payload: UnitActionPayload): Pair<String?, String?> {
+    fun applyAction(rawSave: String, payload: AuthoritativeActionPayload): Pair<String?, String?> {
         ensureInit()
         return try {
             val game = UncivFiles.gameInfoFromString(rawSave)
@@ -133,40 +72,11 @@ internal object ServerUncivEngine {
                 return null to "Game does not have serverAuthoritativeUnitActions enabled"
             }
 
-            val unit = findUnit(game, payload.unitId)
-                ?: return null to "Unit ${payload.unitId} not found"
-            val from = unit.currentTile.position
-            if (from.x != payload.fromX || from.y != payload.fromY) {
-                return null to "Unit ${payload.unitId} is at (${from.x},${from.y}), not (${payload.fromX},${payload.fromY})"
-            }
-
-            val toTile = game.tileMap[payload.toX, payload.toY]
-
-            when (payload.type) {
-                "move" -> {
-                    try {
-                        unit.movement.moveToTile(toTile)
-                    } catch (ex: Exception) {
-                        return null to "Move failed: ${ex.message}"
-                    }
-                    val newPos = unit.currentTile.position
-                    if (newPos.x == from.x && newPos.y == from.y) {
-                        return null to "Move had no effect"
-                    }
-                }
-                "attack" -> {
-                    val attackable = TargetHelper
-                        .getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
-                        .firstOrNull { it.tileToAttack == toTile }
-                        ?: return null to "No valid attack on (${payload.toX},${payload.toY})"
-                    val attacker = MapUnitCombatant(unit)
-                    if (!Battle.movePreparingAttack(attacker, attackable)) {
-                        return null to "Cannot prepare attack"
-                    }
-                    Battle.attackOrNuke(attacker, attackable)
-                }
-                else -> return null to "Unknown action type '${payload.type}'"
-            }
+            val error = if (payload.type in unitActionTypes)
+                applyUnitAction(game, payload)
+            else
+                applyMidTurnAction(game, payload)
+            if (error != null) return null to error
 
             val zipped = UncivFiles.gameInfoToString(game, forceZip = true, updateChecksum = true)
             zipped to null
@@ -175,21 +85,183 @@ internal object ServerUncivEngine {
         }
     }
 
+    private fun applyUnitAction(game: com.unciv.logic.GameInfo, payload: AuthoritativeActionPayload): String? {
+        val unit = findUnit(game, payload.unitId)
+            ?: return "Unit ${payload.unitId} not found"
+        val from = unit.currentTile.position
+        if (from.x != payload.fromX || from.y != payload.fromY) {
+            return "Unit ${payload.unitId} is at (${from.x},${from.y}), not (${payload.fromX},${payload.fromY})"
+        }
+        val toTile = game.tileMap[payload.toX, payload.toY]
+
+        when (payload.type) {
+            "move" -> {
+                try {
+                    if (!unit.movement.canReach(toTile)) {
+                        return "Cannot reach (${payload.toX},${payload.toY})"
+                    }
+                    val previousTile = unit.currentTile
+                    unit.movement.headTowards(toTile)
+                    if (unit.currentTile == previousTile) {
+                        return "Move had no effect"
+                    }
+                    if (unit.isExploring() || unit.isMoving())
+                        unit.action = null
+                    if (unit.currentTile != toTile) {
+                        unit.action = "moveTo ${toTile.position.x},${toTile.position.y}"
+                    }
+                } catch (ex: Exception) {
+                    return "Move failed: ${ex.message}"
+                }
+            }
+            "attack" -> {
+                val attackable = TargetHelper
+                    .getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
+                    .firstOrNull { it.tileToAttack == toTile }
+                    ?: return "No valid attack on (${payload.toX},${payload.toY})"
+                val attacker = MapUnitCombatant(unit)
+                if (!Battle.movePreparingAttack(attacker, attackable)) {
+                    return "Cannot prepare attack"
+                }
+                Battle.attackOrNuke(attacker, attackable)
+            }
+            "foundCity" -> {
+                if (!unit.baseUnit.isCityFounder()) {
+                    return "Unit ${payload.unitId} cannot found a city"
+                }
+                if (from.x != payload.toX || from.y != payload.toY) {
+                    return "foundCity to-tile must be the settler's tile"
+                }
+                if (!unit.hasMovement() || !unit.currentTile.canBeSettled(unit.civ)) {
+                    return "Cannot found city here"
+                }
+                try {
+                    unit.civ.addCity(unit.currentTile.position, unit)
+                    unit.destroy()
+                } catch (ex: Exception) {
+                    return "Found city failed: ${ex.message}"
+                }
+            }
+            else -> return "Unknown unit action '${payload.type}'"
+        }
+        return null
+    }
+
+    private fun applyMidTurnAction(game: com.unciv.logic.GameInfo, payload: AuthoritativeActionPayload): String? {
+        val civ = game.getCivilization(game.currentPlayer)
+        when (payload.type) {
+            "dismissAlert" -> {
+                val typeName = payload.alertType ?: return "dismissAlert requires alertType"
+                val alertType = try {
+                    AlertType.valueOf(typeName)
+                } catch (_: Exception) {
+                    return "Unknown alertType '$typeName'"
+                }
+                val value = payload.alertValue.orEmpty()
+                civ.popupAlerts.removeAll { it.type == alertType && it.value == value }
+            }
+            "acceptTrade" -> {
+                val requesting = payload.requestingCiv ?: return "acceptTrade requires requestingCiv"
+                val request = civ.tradeRequests.firstOrNull { it.requestingCiv == requesting }
+                    ?: return "Trade request from $requesting not found"
+                val other = game.getCivilization(request.requestingCiv)
+                val tradeLogic = TradeLogic(civ, other)
+                tradeLogic.currentTrade.set(request.trade)
+                tradeLogic.acceptTrade()
+                civ.tradeRequests.remove(request)
+            }
+            "declineTrade" -> {
+                val requesting = payload.requestingCiv ?: return "declineTrade requires requestingCiv"
+                val request = civ.tradeRequests.firstOrNull { it.requestingCiv == requesting }
+                    ?: return "Trade request from $requesting not found"
+                request.decline(civ)
+                civ.tradeRequests.remove(request)
+            }
+            "dismissTrade" -> {
+                val requesting = payload.requestingCiv ?: return "dismissTrade requires requestingCiv"
+                civ.tradeRequests.removeAll { it.requestingCiv == requesting }
+            }
+            "setProduction" -> {
+                val cityId = payload.cityId ?: return "setProduction requires cityId"
+                val queue = payload.constructionQueue ?: return "setProduction requires constructionQueue"
+                val city = civ.cities.firstOrNull { it.id == cityId }
+                    ?: return "City $cityId not found"
+                city.cityConstructions.constructionQueue.clear()
+                city.cityConstructions.constructionQueue.addAll(queue)
+                city.cityConstructions.currentConstructionIsUserSet = payload.currentConstructionIsUserSet
+            }
+            "chooseBeliefs" -> {
+                val beliefNames = payload.beliefNames ?: return "chooseBeliefs requires beliefNames"
+                if (beliefNames.isEmpty()) return "chooseBeliefs requires at least one belief"
+                val religionName = payload.religionName
+                val religionDisplayName = payload.religionDisplayName
+                if (religionName != null && religionDisplayName != null
+                    && civ.religionManager.religionState == ReligionState.FoundingReligion
+                ) {
+                    try {
+                        civ.religionManager.foundReligion(religionDisplayName, religionName)
+                    } catch (ex: Exception) {
+                        return "Found religion failed: ${ex.message}"
+                    }
+                }
+                val beliefs = ArrayList<com.unciv.models.ruleset.Belief>(beliefNames.size)
+                for (name in beliefNames) {
+                    val belief = game.ruleset.beliefs[name]
+                        ?: return "Unknown belief '$name'"
+                    beliefs.add(belief)
+                }
+                try {
+                    civ.religionManager.chooseBeliefs(beliefs, useFreeBeliefs = payload.useFreeBeliefs)
+                } catch (ex: Exception) {
+                    return "chooseBeliefs failed: ${ex.message}"
+                }
+            }
+            else -> return "Unknown action type '${payload.type}'"
+        }
+        return null
+    }
+
     private fun findUnit(game: com.unciv.logic.GameInfo, unitId: Int): MapUnit? =
         game.civilizations.asSequence()
             .flatMap { it.units.getCivUnits() }
             .firstOrNull { it.id == unitId }
 
-    /** Quick check without full engine: authoritative flag + same turn/player PUT ban. */
+    /**
+     * Mid-turn PUT is allowed for non-movement state. Rejected only when an existing unit's tile
+     * changed without going through POST /action.
+     */
     fun isForbiddenMidTurnPut(oldRaw: String, newRaw: String): Boolean {
         return try {
             ensureInit()
             val oldGame = UncivFiles.gameInfoFromString(oldRaw)
             if (!oldGame.gameParameters.serverAuthoritativeUnitActions) return false
             val newGame = UncivFiles.gameInfoFromString(newRaw)
-            oldGame.turns == newGame.turns && oldGame.currentPlayer == newGame.currentPlayer
+            if (oldGame.turns != newGame.turns || oldGame.currentPlayer != newGame.currentPlayer)
+                return false
+            hasIllicitUnitRelocations(oldGame, newGame)
         } catch (_: Exception) {
             false
         }
+    }
+
+    private fun hasIllicitUnitRelocations(
+        oldGame: com.unciv.logic.GameInfo,
+        newGame: com.unciv.logic.GameInfo,
+    ): Boolean {
+        val oldPositions = HashMap<Int, Pair<Int, Int>>()
+        for (civ in oldGame.civilizations) {
+            for (unit in civ.units.getCivUnits()) {
+                val pos = unit.currentTile.position
+                oldPositions[unit.id] = pos.x to pos.y
+            }
+        }
+        for (civ in newGame.civilizations) {
+            for (unit in civ.units.getCivUnits()) {
+                val oldPos = oldPositions[unit.id] ?: continue
+                val pos = unit.currentTile.position
+                if (oldPos.first != pos.x || oldPos.second != pos.y) return true
+            }
+        }
+        return false
     }
 }

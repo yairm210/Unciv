@@ -57,14 +57,6 @@ tasks.register<Jar>("dist") { // Compiles the jar file
             .filterNot { it.name.contains("gdx-platform") && it.name.contains("natives") }
             .map { if (it.isDirectory) it else zipTree(it) }
     })
-    // Headless engine needs platform natives; pack only the shared libs (full natives jar breaks the fat jar)
-    from({
-        configurations.runtimeClasspath.get().resolve()
-            .filter { it.name.contains("gdx-platform") && it.name.contains("natives") }
-            .map { zipTree(it) }
-    }) {
-        include("gdx64.dll", "libgdx64.so", "libgdx64.dylib")
-    }
     archiveFileName.set("UncivServer.jar")
 
     manifest {

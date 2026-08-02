@@ -13,6 +13,7 @@ import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
+import com.unciv.logic.multiplayer.AuthoritativeUnitActions
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IConstruction
@@ -681,6 +682,21 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         cityScreen.city.reassignPopulation()
         cityScreen.update()
         cityScreen.game.settings.addCompletedTutorialTask("Pick construction")
+        syncProductionToServerIfNeeded()
+    }
+
+    /** Persist production queue via POST /action so unit-move reloads keep the player's picks. */
+    private fun syncProductionToServerIfNeeded() {
+        val gameInfo = cityScreen.city.civ.gameInfo
+        if (!AuthoritativeUnitActions.isEnabled(gameInfo)) return
+        val city = cityScreen.city
+        val gameId = gameInfo.gameId
+        val cityId = city.id
+        val queue = city.cityConstructions.constructionQueue.toList()
+        val userSet = city.cityConstructions.currentConstructionIsUserSet
+        Concurrency.run("AuthSetProduction") {
+            AuthoritativeUnitActions.requestSetProduction(gameId, cityId, queue, userSet)
+        }
     }
 
     private fun getConstructionSound(construction: IConstruction): UncivSound {
@@ -716,6 +732,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             //cityScreen.updateWithoutConstructionAndMap()
             updateQueueAndButtons(cityScreen.selectedConstruction)
             ensureQueueEntryVisible()  // Not passing current button info - already outdated, our parent is already removed from the stage hierarchy and replaced
+            syncProductionToServerIfNeeded()
         }
         if (selectedQueueEntry == constructionQueueIndex) {
             button.keyShortcuts.add(binding)  // This binds without automatic tooltip
@@ -742,6 +759,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             // Select next entry in list if available.
             // If the last one was deleted, select the new last one.
             selectQueueEntry(constructionQueueIndex.coerceAtMost(city.cityConstructions.constructionQueue.lastIndex)) { }
+            syncProductionToServerIfNeeded()
         }
         return tab
     }

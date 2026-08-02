@@ -31,7 +31,10 @@ class PantheonPickerScreen(
         }
 
         setOKAction("Choose a pantheon") {
-            chooseBeliefs(listOf(selectedPantheon!!), useFreeBeliefs = usingFreeBeliefs())
+            val belief = selectedPantheon!!
+            val useFree = usingFreeBeliefs()
+            chooseBeliefs(listOf(belief), useFreeBeliefs = useFree)
+            syncBeliefsToServer(listOf(belief.name), useFree)
         }
     }
     fun beliefIsAllowed(belief: Belief, choosingCiv: Civilization): Boolean {

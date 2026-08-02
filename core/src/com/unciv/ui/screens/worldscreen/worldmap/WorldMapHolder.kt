@@ -273,11 +273,21 @@ class WorldMapHolder(
                         launchOnGLThread {
                             if (newSave == null) {
                                 ToastPopup(errMsg, worldScreen)
+                                val resync = runBlocking {
+                                    AuthoritativeUnitActions.resyncSaveIfDesynced(worldScreen.gameInfo.gameId, errMsg)
+                                }
+                                if (resync != null) {
+                                    try {
+                                        worldScreen.game.loadGame(AuthoritativeUnitActions.loadReturnedSave(resync))
+                                        ToastPopup("Refreshed from server — try again", worldScreen)
+                                    } catch (ex: Exception) {
+                                        Log.error("Failed to resync after failed attack", ex)
+                                    }
+                                }
                                 return@launchOnGLThread
                             }
                             try {
                                 val newGame = AuthoritativeUnitActions.loadReturnedSave(newSave)
-                                newGame.isUpToDate = true
                                 worldScreen.game.loadGame(newGame)
                             } catch (ex: Exception) {
                                 Log.error("Failed to load authoritative save after attack", ex)
@@ -347,8 +357,10 @@ class WorldMapHolder(
             worldScreen.recordUndoCheckpoint()
 
             if (AuthoritativeUnitActions.isEnabled(worldScreen.gameInfo)) {
+                // Send the final intended tile; the server headTowards's one step (and may
+                // queue moveTo), matching local multi-turn move behavior.
                 val from = selectedUnit.currentTile.position
-                val to = tileToMoveTo.position
+                val to = targetTile.position
                 var errMsg = "Server-authoritative move failed"
                 val newSave = runBlocking {
                     AuthoritativeUnitActions.requestAction(
@@ -359,16 +371,26 @@ class WorldMapHolder(
                     ) { errMsg = it }
                 }
                 if (newSave == null) {
+                    val resync = runBlocking {
+                        AuthoritativeUnitActions.resyncSaveIfDesynced(worldScreen.gameInfo.gameId, errMsg)
+                    }
                     launchOnGLThread {
                         ToastPopup(errMsg, worldScreen)
                         removeUnitActionOverlay()
+                        if (resync != null) {
+                            try {
+                                worldScreen.game.loadGame(AuthoritativeUnitActions.loadReturnedSave(resync))
+                                ToastPopup("Refreshed from server — try the move again", worldScreen)
+                            } catch (ex: Exception) {
+                                Log.error("Failed to resync after failed move", ex)
+                            }
+                        }
                     }
                     return@run
                 }
                 // Server already applied the move; keep local UI in sync via returned save
                 try {
                     val newGame = AuthoritativeUnitActions.loadReturnedSave(newSave)
-                    newGame.isUpToDate = true
                     launchOnGLThread {
                         worldScreen.game.loadGame(newGame)
                     }

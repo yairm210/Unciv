@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.multiplayer.AuthoritativeUnitActions
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Policy
@@ -644,6 +645,7 @@ class PolicyPickerScreen(
                     "Are you sure you want to adopt [${branch.name}]?",
                     "Adopt", true, action = {
                         viewingCiv.policies.adopt(branch, false)
+                        AuthoritativeUnitActions.scheduleMidTurnSync()
                         game.replaceCurrentScreen(recreate())
                     }
                 ).open(force = true)
@@ -667,6 +669,7 @@ class PolicyPickerScreen(
         if (!policy.isPickable(viewingCiv, canChangeState)) return
 
         viewingCiv.policies.adopt(policy)
+        AuthoritativeUnitActions.scheduleMidTurnSync()
 
         // If we've moved to another screen in the meantime (great person pick, victory screen) ignore this
         // update policies

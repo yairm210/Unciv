@@ -134,13 +134,11 @@ project(":server") {
         "implementation"(rootProject.libs.logback)
         "implementation"(rootProject.libs.clikt)
 
-        // Server-authoritative unit actions: apply Unciv logic to saves
+        // Server-authoritative actions: apply Unciv logic to saves (no Gdx HeadlessApplication)
         "implementation"(project(":core"))
         "implementation"(rootProject.libs.coroutines.core)
-        "implementation"(rootProject.libs.gdx.backend.headless)
-        // Needed at runtime for HeadlessApplication (gdx64.dll / .so / .dylib)
-        "implementation"(gdxNatives("desktop"))
-        "implementation"(rootProject.libs.mockito)
+        // Needed to compile against UncivGame : Game; no backend/natives — FileHandle + console rulesets suffice
+        "implementation"(rootProject.libs.gdx)
 
         // clikt somehow needs this
         "api"(rootProject.libs.bundles.jna)

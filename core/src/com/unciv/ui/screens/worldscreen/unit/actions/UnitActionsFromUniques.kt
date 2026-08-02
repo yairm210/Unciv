@@ -11,6 +11,7 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.ImprovementBuildingProblem
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.multiplayer.AuthoritativeUnitActions
 import com.unciv.models.Counter
 import com.unciv.models.UncivSound
 import com.unciv.models.UnitAction
@@ -25,8 +26,13 @@ import com.unciv.models.translations.removeConditionals
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.popups.ConfirmPopup
+import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionModifiers.getUseFrequency
+import com.unciv.utils.Concurrency
+import com.unciv.utils.Log
+import com.unciv.utils.launchOnGLThread
+import kotlinx.coroutines.runBlocking
 import yairm210.purity.annotations.Readonly
 
 @Suppress("UNUSED_PARAMETER") // These methods are used as references in UnitActions.actionTypeToFunctions and need identical signature
@@ -60,18 +66,50 @@ object UnitActionsFromUniques {
         val hasActionModifiers = unique.modifiers.any { it.type?.targetTypes?.contains(
             UniqueTarget.UnitActionModifier
         ) == true }
-        val foundAction = {
+        val foundAction: () -> Unit = {
             if (unit.civ.playerType != PlayerType.AI)
                 UncivGame.Current.settings.addCompletedTutorialTask("Found city")
-            // Get the city to be able to change it into puppet, for modding.
-            val city = unit.civ.addCity(tile.position, unit)
 
-            if (hasActionModifiers) UnitActionModifiers.activateSideEffects(unit, unique)
-            else unit.destroy()
-            GUI.setUpdateWorldOnNextRender() // Set manually, since this could be triggered from the ConfirmPopup and not from the UnitActionsTable
-            // If unit has FoundPuppetCity make it into a puppet city.
-            if (unique.type == UniqueType.FoundPuppetCity) {
-                city.isPuppet = true
+            val gameInfo = unit.civ.gameInfo
+            if (AuthoritativeUnitActions.isEnabled(gameInfo)) {
+                val from = unit.currentTile.position
+                Concurrency.run("AuthFoundCity") {
+                    var errMsg = "Server-authoritative found city failed"
+                    val newSave = runBlocking {
+                        AuthoritativeUnitActions.requestAction(
+                            gameInfo.gameId, "foundCity", unit,
+                            from.x, from.y, from.x, from.y
+                        ) { errMsg = it }
+                    }
+                    launchOnGLThread {
+                        if (newSave == null) {
+                            ToastPopup(errMsg, GUI.getWorldScreen())
+                            return@launchOnGLThread
+                        }
+                        try {
+                            val newGame = AuthoritativeUnitActions.loadReturnedSave(newSave)
+                            UncivGame.Current.loadGame(newGame)
+                        } catch (ex: Exception) {
+                            Log.error("Failed to load authoritative save after found city", ex)
+                            ToastPopup(
+                                "Failed to load server save after founding city",
+                                GUI.getWorldScreen()
+                            )
+                        }
+                    }
+                }
+                Unit
+            } else {
+                // Get the city to be able to change it into puppet, for modding.
+                val city = unit.civ.addCity(tile.position, unit)
+
+                if (hasActionModifiers) UnitActionModifiers.activateSideEffects(unit, unique)
+                else unit.destroy()
+                GUI.setUpdateWorldOnNextRender() // Set manually, since this could be triggered from the ConfirmPopup and not from the UnitActionsTable
+                // If unit has FoundPuppetCity make it into a puppet city.
+                if (unique.type == UniqueType.FoundPuppetCity) {
+                    city.isPuppet = true
+                }
             }
         }
 

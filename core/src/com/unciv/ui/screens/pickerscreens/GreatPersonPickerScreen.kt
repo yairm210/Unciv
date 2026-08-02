@@ -2,6 +2,7 @@ package com.unciv.ui.screens.pickerscreens
 
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.multiplayer.AuthoritativeUnitActions
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
@@ -52,6 +53,7 @@ class GreatPersonPickerScreen(val worldScreen: WorldScreen, val civInfo: Civiliz
             civInfo.greatPeople.mayaLimitedFreeGP--
             civInfo.greatPeople.longCountGPPool.remove(theChosenOne!!.name)
         }
+        AuthoritativeUnitActions.scheduleMidTurnSync()
         UncivGame.Current.popScreen()
     }
 }

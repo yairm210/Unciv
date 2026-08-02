@@ -7,6 +7,7 @@ import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.int
 import com.github.ajalt.clikt.parameters.types.restrictTo
+import com.unciv.logic.multiplayer.AuthoritativeActionPayload
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.*
 import io.ktor.serialization.kotlinx.json.*
@@ -324,7 +325,7 @@ private class UncivServerRunner : CliktCommand() {
                             if (ServerUncivEngine.isForbiddenMidTurnPut(existing, incoming)) {
                                 return@put call.respond(
                                     HttpStatusCode.Conflict,
-                                    "Mid-turn overwrite rejected: use POST /files/{file}/action for unit actions"
+                                    "Mid-turn overwrite rejected: unit positions changed without POST /files/{file}/action"
                                 )
                             }
                         }
@@ -347,7 +348,10 @@ private class UncivServerRunner : CliktCommand() {
 
                         val body = call.receiveText()
                         val payload = try {
-                            Json.decodeFromString(ServerUncivEngine.UnitActionPayload.serializer(), body)
+                            AuthoritativeActionPayload.json.decodeFromString(
+                                AuthoritativeActionPayload.serializer(),
+                                body
+                            )
                         } catch (ex: Exception) {
                             return@post call.respond(HttpStatusCode.BadRequest, "Invalid action JSON: ${ex.message}")
                         }

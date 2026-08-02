@@ -465,7 +465,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
     }
 
 
-    internal fun foundReligion(displayName: String, name: String) {
+    fun foundReligion(displayName: String, name: String) {
         val newReligion = Religion(name, civInfo.gameInfo, civInfo)
         newReligion.displayName = displayName
         if (religion != null) {

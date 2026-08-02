@@ -77,9 +77,19 @@ class ReligiousBeliefsPickerScreen (
             if (pickIconAndName) "Choose a Religion"
             else "Enhance [${currentReligion.getReligionDisplayName()}]"
         ) {
-            if (civInfo.religionManager.religionState == ReligionState.FoundingReligion)
-                civInfo.religionManager.foundReligion(displayName!!, religionName!!)
-            chooseBeliefs(beliefsToChoose.map { it.belief!! }, usingFreeBeliefs())
+            val founding = civInfo.religionManager.religionState == ReligionState.FoundingReligion
+            val foundDisplay = if (founding) displayName!! else null
+            val foundName = if (founding) religionName!! else null
+            if (founding) civInfo.religionManager.foundReligion(foundDisplay!!, foundName!!)
+            val beliefs = beliefsToChoose.map { it.belief!! }
+            val useFree = usingFreeBeliefs()
+            chooseBeliefs(beliefs, useFree)
+            syncBeliefsToServer(
+                beliefs.map { it.name },
+                useFree,
+                religionName = foundName,
+                religionDisplayName = foundDisplay,
+            )
         }
     }
 

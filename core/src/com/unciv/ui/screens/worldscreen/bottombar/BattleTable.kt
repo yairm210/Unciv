@@ -370,11 +370,21 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
                 launchOnGLThread {
                     if (newSave == null) {
                         ToastPopup(errMsg, worldScreen)
+                        val resync = kotlinx.coroutines.runBlocking {
+                            AuthoritativeUnitActions.resyncSaveIfDesynced(worldScreen.gameInfo.gameId, errMsg)
+                        }
+                        if (resync != null) {
+                            try {
+                                worldScreen.game.loadGame(AuthoritativeUnitActions.loadReturnedSave(resync))
+                                ToastPopup("Refreshed from server — try again", worldScreen)
+                            } catch (ex: Exception) {
+                                Log.error("Failed to resync after failed attack", ex)
+                            }
+                        }
                         return@launchOnGLThread
                     }
                     try {
                         val newGame = AuthoritativeUnitActions.loadReturnedSave(newSave)
-                        newGame.isUpToDate = true
                         worldScreen.game.loadGame(newGame)
                     } catch (ex: Exception) {
                         Log.error("Failed to load authoritative save after attack", ex)
