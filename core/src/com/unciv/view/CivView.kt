@@ -30,12 +30,19 @@ class CivView(private val civ: Civilization, private val viewer: Civilization) {
     @Readonly fun canSeeTile(tileView: TileView): Boolean = tileView.getTile().isVisible(civ)
     @Readonly fun canSeeResource(resource: TileResource?): Boolean = civ.canSeeResource(resource)
     @Readonly fun canSeeUnit(unit: MapUnit): Boolean = !unit.isInvisible(civ)
+    @Readonly fun canSeeUnit(unitView: ForeignMapUnitView): Boolean = !unitView.getUnit().isInvisible(civ)
     @Readonly fun isOwnerOf(city: City): Boolean = civ === city.civ
+    @Readonly fun isOwnerOf(cityView: ForeignCityView): Boolean = civ === cityView.getCity().civ
     @Readonly fun getShownImprovementOn(tile: Tile): String? = tile.getShownImprovement(civ)
+    fun getShownImprovementOn(tileView: TileView): String? = tileView.getTile().getShownImprovement(civ)
     @Readonly fun canBuildImprovementOn(improvement: TileImprovement, tile: Tile): Boolean =
         tile.improvementFunctions.canBuildImprovement(improvement, civ.state)
+    @Readonly fun canBuildImprovementOn(improvement: TileImprovement, tileView: TileView): Boolean =
+        tileView.getTile().improvementFunctions.canBuildImprovement(improvement, civ.state)
     @Readonly fun getImprovementBuildingProblems(improvement: TileImprovement, tile: Tile): Sequence<ImprovementBuildingProblem> =
         tile.improvementFunctions.getImprovementBuildingProblems(improvement, civ.state)
+    @Readonly fun getImprovementBuildingProblems(improvement: TileImprovement, tileView: TileView): Sequence<ImprovementBuildingProblem> =
+        tileView.getTile().improvementFunctions.getImprovementBuildingProblems(improvement, civ.state)
     @Readonly fun technologyByName(name: String?): Technology? = civ.gameInfo.ruleset.technologies[name]
 
     @Readonly fun hasUnique(type: UniqueType): Boolean = civ.hasUnique(type)

@@ -5,7 +5,8 @@ import com.unciv.logic.map.mapunit.MapUnit
 import yairm210.purity.annotations.Readonly
 
 /** View of a [MapUnit] from the perspective of [viewer]. */
-class MapUnitView(private val unit: MapUnit, private val viewer: Civilization) {
-    @Readonly fun getUnit(): MapUnit = unit
+class MapUnitView(unit: MapUnit, private val civView: CivView) : ForeignMapUnitView(unit, civView.getViewer()) {
+    constructor(unit: MapUnit, viewer: Civilization) : this(unit, CivView(viewer, viewer))
+
     @Readonly fun getViewer(): Civilization = viewer
 }

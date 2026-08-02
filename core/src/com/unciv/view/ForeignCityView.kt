@@ -5,6 +5,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.tile.Tile
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import yairm210.purity.annotations.Readonly
 
 /** Should contain information that should be knowable to us about foreign cities. Superclass of [CityView]. */
@@ -21,6 +22,7 @@ open class ForeignCityView(internal open val city: City, internal open val viewe
     @Readonly fun civ(): CivView = CivView(city.civ, viewer)
     @Readonly fun isSameCivAs(other: ForeignCityView): Boolean = city.civ === other.city.civ
     @Readonly fun getCity(): City = city
+    @Readonly fun getProductionMarkup(): FormattedLine = city.cityConstructions.getProductionMarkup(city.getRuleset())
 
     override fun equals(other: Any?) = other is ForeignCityView && city === other.city
     override fun hashCode() = city.hashCode()
