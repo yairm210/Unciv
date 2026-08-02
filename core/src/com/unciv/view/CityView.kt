@@ -9,10 +9,11 @@ import com.unciv.logic.city.GreatPersonPointsBreakdown
 import com.unciv.logic.city.managers.CityReligionManager
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.Religion
+import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IConstruction
-import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceSupplyList
@@ -116,6 +117,14 @@ class CityView(private val city: City, private val civView: CivView) {
     @Readonly fun getGreatPersonPointsBreakdown(): GreatPersonPointsBreakdown = GreatPersonPointsBreakdown(city)
     @Readonly fun getRuleset(): Ruleset = city.getRuleset()
     @Readonly fun getBuildingStats(building: Building): Stats = building.getStats(city)
+
+    @Readonly fun getStatReserve(stat: Stat): Int = city.getStatReserve(stat)
+    @Readonly fun getMajorityReligion(): Religion? = city.religion.getMajorityReligion()
+    @Readonly fun getYourReligion(): Religion? = civView.getCiv().religionManager.religion
+    @Readonly fun canBePurchasedWithAnyStat(construction: INonPerpetualConstruction): Boolean =
+        construction.canBePurchasedWithAnyStat(city)
+    @Readonly fun canBePurchasedWithStat(construction: INonPerpetualConstruction, stat: Stat): Boolean =
+        construction.canBePurchasedWithStat(city, stat)
 
     @Readonly fun getCity(): City = city
     @Readonly private fun getTile(tileView: TileView) = tileView.getTile()
