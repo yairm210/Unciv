@@ -107,4 +107,15 @@ class EspionageManager : IsPartOfGameInfoSerialization {
     fun removeAllSpies() {
         spyList.forEach { it.moveTo(null) }
     }
+
+    /**
+     * Recalls all spies stationed in any of [otherCiv]'s cities to the hideout.
+     *
+     * Called when [otherCiv] is destroyed via console [`civ remove`][com.unciv.ui.screens.devconsole.ConsoleCivCommands].
+     */
+    internal fun recallAllSpiesFrom(otherCiv: Civilization) {
+        val toRecall = spyList.filter { it.getCityOrNull() in otherCiv.cities }
+        for (spy in toRecall)
+            spy.moveTo(null)
+    }
 }
