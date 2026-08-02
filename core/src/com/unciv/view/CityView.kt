@@ -55,8 +55,10 @@ class CityView(private val city: City, private val civView: CivView) {
     @Readonly fun getFoodToNextPopulation(): Int = city.population.getFoodToNextPopulation()
     @Readonly fun getMaxSpecialists(): Counter<String> = city.population.getMaxSpecialists()
     @Readonly fun getNewSpecialists(): Counter<String> = city.population.getNewSpecialists()
+    val manualSpecialists: Boolean get() = city.manualSpecialists
     @Readonly fun getNumTurnsToStarvation(): Int? = city.population.getNumTurnsToStarvation()
     @Readonly fun getNumTurnsToNewPopulation(): Int? = city.population.getNumTurnsToNewPopulation()
+    @Readonly fun getStatsOfSpecialist(specialistName: String): Stats = city.cityStats.getStatsOfSpecialist(specialistName)
 
     // City state
     @Readonly fun getNumberOfFollowers(): Counter<String> = city.religion.getNumberOfFollowers()
@@ -235,6 +237,31 @@ class CityView(private val city: City, private val civView: CivView) {
     fun tryReassignPopulation(): Boolean {
         if (!canChangeState()) return false
         city.reassignPopulation()
+        return true
+    }
+    fun tryEnableManualSpecialists(): Boolean {
+        if (!canChangeState()) return false
+        city.manualSpecialists = true
+        return true
+    }
+    fun tryDisableManualSpecialists(): Boolean {
+        if (!canChangeState()) return false
+        city.manualSpecialists = false
+        city.reassignPopulation()
+        return true
+    }
+    fun tryAssignSpecialist(specialistName: String): Boolean {
+        if (!canChangeState()) return false
+        city.population.specialistAllocations.add(specialistName, 1)
+        city.manualSpecialists = true
+        city.cityStats.update()
+        return true
+    }
+    fun tryUnassignSpecialist(specialistName: String): Boolean {
+        if (!canChangeState()) return false
+        city.population.specialistAllocations.add(specialistName, -1)
+        city.manualSpecialists = true
+        city.cityStats.update()
         return true
     }
     fun trySetCityFocus(focus: CityFocus): Boolean {

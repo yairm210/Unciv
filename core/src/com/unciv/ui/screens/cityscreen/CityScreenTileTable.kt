@@ -29,7 +29,6 @@ import kotlin.math.roundToInt
 
 class CityScreenTileTable(private val cityScreen: CityScreen) : Table() {
     private val innerTable = Table()
-    val city = cityScreen.city
     val cityView: CityView = cityScreen.cityView
 
     init {
