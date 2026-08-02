@@ -3,6 +3,7 @@ package com.unciv.ui.components.tilegroups
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.unciv.view.CivView
+import com.unciv.view.TileView
 import com.unciv.logic.map.tile.Tile
 import com.unciv.ui.components.tilegroups.layers.*
 import com.unciv.utils.DebugUtils
@@ -36,6 +37,9 @@ open class TileGroup(
 
     var isForceVisible = DebugUtils.VISIBLE_MAP
     var isForMapEditorIcon = false
+
+    var tileView: TileView? = null
+        private set
 
     @Suppress("LeakingThis") val layerTerrain = TileLayerTerrain(this, groupSize)
     @Suppress("LeakingThis") val layerFeatures = TileLayerFeatures(this, groupSize)
@@ -74,7 +78,7 @@ open class TileGroup(
     open fun clone() = TileGroup(tile, tileSetStrings)
 
     fun isViewable(viewingCiv: CivView) = isForceVisible
-            || viewingCiv.canSeeTile(tile)
+            || viewingCiv.canSeeTile(tileView ?: TileView(tile, viewingCiv.getCiv()))
             || viewingCiv.isSpectator()
 
     private fun reset() {
@@ -94,6 +98,13 @@ open class TileGroup(
     }
 
     open fun update(viewingCiv: CivView? = null) {
+        if (viewingCiv == null) {
+            tileView = null
+        } else {
+            val civ = viewingCiv.getCiv()
+            if (tileView?.getTile() !== tile || tileView?.getViewer() !== civ)
+                tileView = TileView(tile, civ)
+        }
         layerMisc.removeHexOutline()
         layerMisc.hideTerrainOverlay()
         layerOverlay.hideHighlight()
@@ -101,8 +112,8 @@ open class TileGroup(
         layerOverlay.hideGoodCityLocationIndicator()
 
         // Do not update layers if tile is not explored by viewing player
-        if (viewingCiv != null && !(isForceVisible || viewingCiv.hasExplored(tile))) {
-            if (tile.neighbors.none { viewingCiv.hasExplored(it) }) {
+        if (viewingCiv != null && !(isForceVisible || viewingCiv.hasExplored(tileView!!))) {
+            if (tileView!!.neighbors.none { viewingCiv.hasExplored(it) }) {
                 // No explored neighbors - hide all layers
                 setAllLayersVisible(false)
             } else {

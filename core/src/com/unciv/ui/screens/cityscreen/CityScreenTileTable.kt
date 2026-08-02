@@ -55,7 +55,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen) : Table() {
         innerTable.pad(5f)
 
         innerTable.add(MarkupRenderer.render(TileDescription.toMarkup(
-            selectedTile,
+            tileView,
             cityView.civ(),
             hideUnits = cityScreen.isSpying,
             spyCity = if (cityScreen.isSpying) cityView else null

@@ -91,7 +91,7 @@ class TileLayerOverlay(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
     }
 
     fun setUnexplored(viewingCiv: CivView) {
-        val unexploredShouldBeVisible = !viewingCiv.hasExplored(tile)
+        val unexploredShouldBeVisible = !viewingCiv.hasExplored(tileGroup.tileView!!)
         val unexploredIsVisible = unexplored != null
         if (unexploredIsVisible && !unexploredShouldBeVisible) {
             removeOwnedActor(unexplored!!)

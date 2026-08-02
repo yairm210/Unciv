@@ -20,7 +20,7 @@ class CivView(private val civ: Civilization, private val viewer: Civilization) {
     @Readonly fun hasStatToBuy(stat: Stat, price: Int): Boolean = civ.hasStatToBuy(stat, price)
     @Readonly fun cities(): List<CityView> = civ.cities.map { CityView(it, viewer) }
 
-    @Readonly fun canSeeTile(tile: Tile): Boolean = tile in civ.viewableTiles
+    @Readonly fun canSeeTile(tileView: TileView): Boolean = tileView.getTile().isVisible(civ)
     @Readonly fun canSeeResource(resource: TileResource?): Boolean = civ.canSeeResource(resource)
     @Readonly fun canSeeUnit(unit: MapUnit): Boolean = !unit.isInvisible(civ)
     @Readonly fun isOwnerOf(city: City): Boolean = civ === city.civ
@@ -38,7 +38,7 @@ class CivView(private val civ: Civilization, private val viewer: Civilization) {
     @Readonly fun isCivConstructionDisabled(name: String): Boolean = name in civ.disabledCityConstructions
 
     @Readonly fun isSpectator(): Boolean = civ.isSpectator()
-    @Readonly fun hasExplored(tile: Tile): Boolean = civ.hasExplored(tile)
+    @Readonly fun hasExplored(tileView: TileView): Boolean = civ.hasExplored(tileView.getTile())
 
     fun getCiv(): Civilization = civ
     fun getViewer(): Civilization = viewer

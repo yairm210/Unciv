@@ -10,6 +10,7 @@ class TileView(private val tile: Tile, private val viewer: Civilization) {
     @Readonly fun position() = tile.position
     @Readonly fun owningCity(): CityView? = tile.owningCity?.let { CityView(it, viewer) }
     @Readonly fun getWorkingCity(): CityView? = tile.getWorkingCity()?.let { CityView(it, viewer) }
+    val neighbors: Sequence<TileView> @Readonly get() = tile.neighbors.asSequence().map { TileView(it, viewer) }
     @Readonly fun getTilesInDistance(distance: Int): Sequence<TileView> =
         tile.getTilesInDistance(distance).map { TileView(it, viewer) }
 

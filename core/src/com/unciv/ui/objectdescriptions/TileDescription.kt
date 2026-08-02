@@ -13,14 +13,16 @@ import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.utils.DebugUtils
 import com.unciv.view.CityView
 import com.unciv.view.CivView
+import com.unciv.view.TileView
 
 object TileDescription {
 
     /** Get info on a selected tile, used on WorldScreen (right side above minimap), CityScreen or MapEditorViewTab. */
-    fun toMarkup(tile: Tile, viewingCiv: CivView?, hideUnits: Boolean = false, spyCity: CityView? = null): ArrayList<FormattedLine> {
+    fun toMarkup(tileView: TileView, viewingCiv: CivView?, hideUnits: Boolean = false, spyCity: CityView? = null): ArrayList<FormattedLine> {
+        val tile = tileView.getTile()
         val lineList = ArrayList<FormattedLine>()
         val isViewableToPlayer = viewingCiv == null || DebugUtils.VISIBLE_MAP
-                || viewingCiv.canSeeTile(tile)
+                || viewingCiv.canSeeTile(tileView)
 
         if (tile.isCityCenter()) {
             val city = tile.getCity()!!
