@@ -2,7 +2,8 @@ package com.unciv.ui.components.tilegroups
 
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.unciv.logic.civilization.Civilization
+import com.unciv.view.CivView
+import com.unciv.view.TileView
 import com.unciv.logic.map.tile.Tile
 import com.unciv.ui.components.tilegroups.layers.*
 import com.unciv.utils.DebugUtils
@@ -10,10 +11,16 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 open class TileGroup(
-    var tile: Tile,
+    tileView: TileView,
     val tileSetStrings: TileSetStrings,
     groupSize: Float = TileGroupMap.groupSize + 4
 ) : Group() {
+
+    var tile: Tile = tileView.getTile()
+
+    /** A var because if we're spectator, the viewing civ can change as we select different civs to view as */
+    var tileView: TileView = tileView
+        private set
     /*
         Layers (reordered in TileGroupMap):
         1) Terrain
@@ -71,10 +78,10 @@ open class TileGroup(
         layerTerrain.update(null)
     }
 
-    open fun clone() = TileGroup(tile, tileSetStrings)
+    open fun clone() = TileGroup(tileView, tileSetStrings)
 
-    fun isViewable(viewingCiv: Civilization) = isForceVisible
-            || viewingCiv.viewableTiles.contains(tile)
+    fun isViewable(viewingCiv: CivView) = isForceVisible
+            || viewingCiv.canSeeTile(tileView)
             || viewingCiv.isSpectator()
 
     private fun reset() {
@@ -93,7 +100,14 @@ open class TileGroup(
         for (layer in allLayers) layer.isVisible = isVisible
     }
 
-    open fun update(viewingCiv: Civilization? = null) {
+    open fun update(viewingCiv: CivView? = null) {
+        if (viewingCiv == null) {
+            tileView = TileView(tile, null)
+        } else {
+            val civ = viewingCiv.getCiv()
+            if (tileView.getTile() !== tile || tileView.getViewer() !== civ)
+                tileView = TileView(tile, civ)
+        }
         layerMisc.removeHexOutline()
         layerMisc.hideTerrainOverlay()
         layerOverlay.hideHighlight()
@@ -101,8 +115,8 @@ open class TileGroup(
         layerOverlay.hideGoodCityLocationIndicator()
 
         // Do not update layers if tile is not explored by viewing player
-        if (viewingCiv != null && !(isForceVisible || viewingCiv.hasExplored(tile))) {
-            if (tile.neighbors.none { viewingCiv.hasExplored(it) }) {
+        if (viewingCiv != null && !(isForceVisible || viewingCiv.hasExplored(tileView))) {
+            if (tileView.neighbors.none { viewingCiv.hasExplored(it) }) {
                 // No explored neighbors - hide all layers
                 setAllLayersVisible(false)
             } else {

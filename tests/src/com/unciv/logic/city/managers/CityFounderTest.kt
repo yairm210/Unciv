@@ -136,12 +136,14 @@ class CityFounderTest {
 
         // when
         val city = cityFounder.foundCity(civ, HexCoord.Zero)
-        city.workedTiles = hashSetOf(HexCoord(1,0))
-        city.lockedTiles = hashSetOf(HexCoord(1,0))
+        city.clearWorkedTiles()
+        val tile10 = city.tileMap[HexCoord(1,0)]
+        city.workTile(tile10)
+        city.lockTile(tile10)
         city.cityStats.update()
 
         // then
-        assertFalse(city.workedTiles.contains(city.getCenterTile().position)) // no pop required
+        assertFalse(city.isWorked(city.getCenterTile())) // no pop required
         assertEquals(2.0f, city.cityStats.statsFromTiles.production)
     }
 

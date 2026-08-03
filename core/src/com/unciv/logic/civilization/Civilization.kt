@@ -969,9 +969,9 @@ class Civilization : IsPartOfGameInfoSerialization {
 
         // Now that all tile transients have been updated, clean "worked" tiles that are not under the Civ's control
         for (city in cities)
-            for (workedTile in city.workedTiles.toList())
-                if (gameInfo.tileMap[workedTile].getOwner() != this)
-                    city.workedTiles.remove(workedTile)
+            for (tile in city.getWorkedTiles().toList())
+                if (tile.getOwner() != this)
+                    city.stopWorkingTile(tile)
 
         passThroughImpassableUnlocked = passableImpassables.isNotEmpty()
 

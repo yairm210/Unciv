@@ -18,6 +18,8 @@ import com.unciv.ui.screens.civilopediascreen.FormattedLine.IconDisplay
 import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.utils.DebugUtils
+import com.unciv.view.CivView
+import com.unciv.view.TileView
 
 class TileInfoTable(private val worldScreen: WorldScreen) : Table(BaseScreen.skin) {
     var selectedCiv = worldScreen.selectedCiv
@@ -35,7 +37,7 @@ class TileInfoTable(private val worldScreen: WorldScreen) : Table(BaseScreen.ski
 
         if (tile != null && (DebugUtils.VISIBLE_MAP || selectedCiv.hasExplored(tile)) ) {
             add(getStatsTable(tile)).left().row()
-            add(MarkupRenderer.render(TileDescription.toMarkup(tile, selectedCiv), padding = 0f, iconDisplay = IconDisplay.None) {
+            add(MarkupRenderer.render(TileDescription.toMarkup(TileView(tile, selectedCiv), CivView(selectedCiv, selectedCiv)), padding = 0f, iconDisplay = IconDisplay.None) {
                 worldScreen.openCivilopedia(it)
             } ).padTop(5f).row()
             if (DebugUtils.VISIBLE_MAP) add(tile.position.toPrettyString().toLabel()).colspan(2).pad(5f)

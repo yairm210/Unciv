@@ -93,8 +93,8 @@ internal class WorkerAutomationTest {
         val currentTile = testGame.tileMap[1,1]
         val city = testGame.addCity(civInfo, testGame.tileMap[0,0])
         // Currently worked tile is prioritized for worker actions
-        city.workedTiles.clear()
-        city.workedTiles.add(currentTile.position)
+        city.clearWorkedTiles()
+        city.workTile(currentTile)
 
         currentTile.baseTerrain = Constants.grassland
         currentTile.setTileResource("Iron")

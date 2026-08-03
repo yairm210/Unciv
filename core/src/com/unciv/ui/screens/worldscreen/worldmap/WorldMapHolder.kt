@@ -21,6 +21,7 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.movement.UnitMovement
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.multiplayer.MultiplayerTurnIntegrity
+import com.unciv.view.TileView
 import com.unciv.models.Spy
 import com.unciv.models.UncivSound
 import com.unciv.ui.audio.SoundPlayer
@@ -100,7 +101,7 @@ class WorldMapHolder(
     internal fun addTiles() {
         val tileSetStrings = TileSetStrings(worldScreen.gameInfo.ruleset, worldScreen.game.settings)
         currentTileSetStrings = tileSetStrings
-        val tileGroupsNew = tileMap.values.map { WorldTileGroup(it, tileSetStrings) }
+        val tileGroupsNew = tileMap.values.map { WorldTileGroup(TileView(it, null), tileSetStrings) }
         tileGroupMap = TileGroupMap(this, tileGroupsNew, continuousScrollingX)
 
         for (tileGroup in tileGroupsNew) tileGroups[tileGroup.tile] = tileGroup
@@ -219,7 +220,7 @@ class WorldMapHolder(
                     && unitsInTile.any()
                     && unitsInTile.first().civ.isAtWarWith(worldScreen.viewingCiv)) {
                 // try to select the closest city to bombard this guy
-                unitTable.citySelected(previousSelectedCity)
+                unitTable.citySelected(previousSelectedCity.getCity())
             }
         }
         worldScreen.shouldUpdate = true
