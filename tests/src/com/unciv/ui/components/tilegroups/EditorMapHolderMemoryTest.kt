@@ -11,6 +11,7 @@ import com.unciv.testing.RedirectPolicy
 import com.unciv.testing.TestGame
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.images.ImageGetter
+import com.unciv.view.TileView
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Ignore
@@ -44,7 +45,7 @@ class EditorMapHolderMemoryTest {
         val tileSetStrings = TileSetStrings()
 
         val (tileGroups, allocatedBytes) = MeasureMemory.measure {
-            tileMap.values.map { TileGroup(it, tileSetStrings) }
+            tileMap.values.map { TileGroup(TileView(it, null), tileSetStrings) }
         }
 
         val tileCount = tileGroups.size
@@ -68,7 +69,7 @@ class EditorMapHolderMemoryTest {
         val tileSetStrings = TileSetStrings()
 
         // Baseline: full TileGroup
-        val (_, total) = MeasureMemory.measure { tiles.map { TileGroup(it, tileSetStrings) } }
+        val (_, total) = MeasureMemory.measure { tiles.map { TileGroup(TileView(it, null), tileSetStrings) } }
         val bpt = total / n  // bytes per tile
 
         // Reference: cost of 12 Group objects per tile (TileGroup + the 11 TileLayer Groups that
@@ -100,7 +101,7 @@ class EditorMapHolderMemoryTest {
         // vs 100×100 map (interior tiles have 6 neighbors → 6 NeighborEdgeData objects each).
         testGame.makeRectangularMap(1, 1)
         val tile1x1 = testGame.tileMap.values.toList()
-        val (_, total1x1) = MeasureMemory.measure { tile1x1.map { TileGroup(it, tileSetStrings) } }
+        val (_, total1x1) = MeasureMemory.measure { tile1x1.map { TileGroup(TileView(it, null), tileSetStrings) } }
         val neighborEdgeCost = (total / n) - (total1x1 / tile1x1.size)
 
         // Reference: cost of ~10 ownedActors ArrayLists per tile (one per non-terrain layer).
