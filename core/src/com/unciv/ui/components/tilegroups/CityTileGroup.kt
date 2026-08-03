@@ -4,9 +4,9 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
-import com.unciv.logic.city.City
-import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.map.tile.Tile
+import com.unciv.view.CityView
+import com.unciv.view.CivView
+import com.unciv.view.TileView
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
@@ -23,7 +23,7 @@ enum class CityTileState {
     BLOCKADED
 }
 
-class CityTileGroup(val city: City, tile: Tile, tileSetStrings: TileSetStrings, private val nightMode: Boolean, private val isSpying: Boolean = false) : TileGroup(tile, tileSetStrings) {
+class CityTileGroup(val cityView: CityView, tileView: TileView, tileSetStrings: TileSetStrings, private val nightMode: Boolean, private val isSpying: Boolean = false) : TileGroup(tileView, tileSetStrings) {
 
     var tileState = CityTileState.NONE
 
@@ -31,8 +31,9 @@ class CityTileGroup(val city: City, tile: Tile, tileSetStrings: TileSetStrings, 
         // layerMisc is no longer a Group actor; touch handling is managed at the TileMapLayer level.
     }
 
-    override fun update(viewingCiv: Civilization?) {
-        super.update(city.civ)
+    override fun update(viewingCiv: CivView?) {
+        val tileView = cityView.tileView(tile)
+        super.update(cityView.viewingCiv())
 
         tileState = CityTileState.NONE
 
@@ -51,15 +52,15 @@ class CityTileGroup(val city: City, tile: Tile, tileSetStrings: TileSetStrings, 
         when {
 
             // Does not belong to us
-            tile.getOwner() != city.civ -> {
+            tileView.owningCity()?.isSameCivAs(cityView) != true -> {
                 setDimmed(0.6f)
                 layerYield.setYieldVisible(UncivGame.Current.settings.showTileYields)
                 layerYield.dimYields(true)
 
                 // Can be purchased in principle? Add icon.
-                if (city.expansion.canBuyTile(tile)) {
+                if (cityView.canBuyTile(tileView)) {
 
-                    val price = city.expansion.getGoldCostOfTile(tile)
+                    val price = cityView.getGoldCostOfTile(tileView)
                     val label = price.tr().toLabel(fontSize = 9, alignment = Align.center)
                     val image = ImageGetter.getImage("TileIcons/Buy")
                     icon = image.toGroup(26f).apply { isTransform = false }
@@ -67,7 +68,7 @@ class CityTileGroup(val city: City, tile: Tile, tileSetStrings: TileSetStrings, 
                     label.y -= 15f
 
                     // Can be purchased now?
-                    if (!city.civ.hasStatToBuy(Stat.Gold, price)) {
+                    if (!cityView.viewingCiv().hasStatToBuy(Stat.Gold, price)) {
                         image.color = Color.WHITE.darken(0.5f)
                         label.setFontColor(Color.RED)
                     } else {
@@ -77,32 +78,32 @@ class CityTileGroup(val city: City, tile: Tile, tileSetStrings: TileSetStrings, 
             }
 
             // Out of city range
-            tile !in city.tilesInRange -> {
+            tile !in cityView.tilesInRange -> {
                 setDimmed(1f)
                 layerYield.dimYields(true)
             }
 
             // Worked by another city
-            tile.isWorked() && tile.getWorkingCity() != city -> {
+            tileView.isWorked() && tileView.getWorkingCity() != cityView -> {
                 setDimmed(1f)
                 layerYield.dimYields(true)
             }
 
             // City Center
-            tile.isCityCenter() -> {
+            tileView.isCityCenter() -> {
                 icon = ImageGetter.getImage("TileIcons/CityCenter")
                 // Night mode does not apply to the city tile itself
                 layerYield.dimYields(false)
             }
 
             // Does not provide yields
-            tile.stats.getTileStats(city, city.civ).isEmpty() -> {
+            tileView.getTileStats(cityView.viewingCiv(), cityView).isEmpty() -> {
                 // Do nothing except night-mode dimming
                 setUndimmed()
             }
 
             // Blockaded
-            tile.isBlockaded() -> {
+            tileView.isBlockaded() -> {
                 icon = ImageGetter.getImage("TileIcons/Blockaded")
                 tileState = CityTileState.BLOCKADED
                 setUndimmed()
@@ -110,7 +111,7 @@ class CityTileGroup(val city: City, tile: Tile, tileSetStrings: TileSetStrings, 
             }
 
             // Locked
-            tile.isLocked() -> {
+            tileView.isLocked() -> {
                 icon = ImageGetter.getImage("TileIcons/Locked")
                 tileState = CityTileState.WORKABLE
                 setUndimmed()
@@ -118,7 +119,7 @@ class CityTileGroup(val city: City, tile: Tile, tileSetStrings: TileSetStrings, 
             }
 
             // Worked
-            tile.isWorked() -> {
+            tileView.isWorked() -> {
                 icon = ImageGetter.getImage("TileIcons/Worked")
                 tileState = CityTileState.WORKABLE
                 setUndimmed()
@@ -126,7 +127,7 @@ class CityTileGroup(val city: City, tile: Tile, tileSetStrings: TileSetStrings, 
             }
 
             // Provides yield without worker assigned (isWorked already tested above)
-            tile.providesYield() -> {
+            tileView.providesYield() -> {
                 // defaults are OK
                 setUndimmed()
             }

@@ -875,6 +875,7 @@ open class RulesetValidator protected constructor(
         val allRemovals = getBuildingIndex(UniqueType.RemoveBuilding)
         // Possible sources of infinite recursion: Map of buildingName to a list of all possibly removing Uniques
         val possibleRecursions = allFreeBuildings.keys.asSequence()
+            .filter { it in ruleset.buildings } // The names can still be non-existing, which is checked elsewhere
             .map { name -> name to ruleset.buildings[name]!! }
             .flatMap { (name, building) ->
                 allRemovals.keys.flatMap { filter ->

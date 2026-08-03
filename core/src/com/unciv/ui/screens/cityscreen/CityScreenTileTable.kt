@@ -29,7 +29,6 @@ import kotlin.math.roundToInt
 
 class CityScreenTileTable(private val cityScreen: CityScreen) : Table() {
     private val innerTable = Table()
-    val city = cityScreen.city
     val cityView: CityView = cityScreen.cityView
 
     init {
@@ -51,12 +50,12 @@ class CityScreenTileTable(private val cityScreen: CityScreen) : Table() {
         innerTable.clearChildren()
 
         val tileView = cityView.tileView(selectedTile)
-        val stats = tileView.getTileStats(cityView)
+        val stats = tileView.getTileStats(cityView.viewingCiv(), cityView)
         innerTable.pad(5f)
 
         innerTable.add(MarkupRenderer.render(TileDescription.toMarkup(
-            selectedTile,
-            cityView.civ(),
+            tileView,
+            cityView.viewingCiv(),
             hideUnits = cityScreen.isSpying,
             spyCity = if (cityScreen.isSpying) cityView else null
         ), iconDisplay = IconDisplay.None) {
@@ -73,7 +72,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen) : Table() {
                 cityScreen.askToBuyTile(selectedTile)
             }
             buyTileButton.addContextMenu { TileBuyMenu(buyTileButton) }
-            buyTileButton.isEnabled = cityScreen.canChangeState && cityView.civ().hasStatToBuy(Stat.Gold, goldCostOfTile)
+            buyTileButton.isEnabled = cityScreen.canChangeState && cityView.viewingCiv().hasStatToBuy(Stat.Gold, goldCostOfTile)
             innerTable.add(buyTileButton).padTop(5f).row()
         }
 
@@ -111,7 +110,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen) : Table() {
             val otherCity = tileView.owningCity()
             if (otherCity != null && otherCity != cityView && otherCity.isSameCivAs(cityView) && !cityScreen.isSpying)
                 innerTable.add("Move to city".toTextButton().onClick { cityScreen.game.replaceCurrentScreen(
-                    CityScreen(selectedTile.getCity()!!)
+                    CityScreen(CityView(otherCity.getCity(), cityView.getViewer()))
                 ) })
         }
 
@@ -135,14 +134,14 @@ class CityScreenTileTable(private val cityScreen: CityScreen) : Table() {
             val counts = IntArray(maxRing + 1) { countBuyableInRing(it) }
             if (counts.sum() < 2) return null
             return super.createContentTable()!!.apply {
-                add("Currently you have [${cityView.civ().gold}] [Gold].".toLabel(alignment = Align.center)).growX().row()
+                add("Currently you have [${cityView.viewingCiv().gold}] [Gold].".toLabel(alignment = Align.center)).growX().row()
                 for (ring in 0..maxRing) {
                     val count = counts[ring]
                     if (count == 0 || ring > 0 && count == counts[ring - 1]) continue
                     val cost = getRingCost(ring)
                     val text = "Buy [$count] tiles in ring [$ring] for [$cost][${Stat.Gold.character}]"
                     val button = getButton(text, KeyboardBinding.None) { buyRing(ring) }
-                    button.isDisabled = cost > cityView.civ().gold
+                    button.isDisabled = cost > cityView.viewingCiv().gold
                     add(button).row()
                 }
             }
@@ -158,7 +157,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen) : Table() {
                     break
             }
             SoundPlayer.play(Stat.Gold.purchaseSound)
-            cityScreen.game.replaceCurrentScreen(CityScreen(city)) // update doesn't redo the tiles
+            cityScreen.game.replaceCurrentScreen(CityScreen(cityView)) // update doesn't redo the tiles
         }
     }
 }

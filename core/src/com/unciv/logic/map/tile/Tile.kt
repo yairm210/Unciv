@@ -114,7 +114,10 @@ class Tile : IsPartOfGameInfoSerialization {
     // This is for performance - since we access the neighbors of a tile ALL THE TIME,
     // and the neighbors of a tile never change, it's much more efficient to save the list once and for all!
     @delegate:Transient
-    val neighbors: Sequence<Tile> by lazy { getTilesAtDistance(1).toList().asSequence() }
+    val neighbors: Sequence<Tile> by lazy {
+        if (!isTilemapInitialized()) emptySequence()
+        else getTilesAtDistance(1).toList().asSequence()
+    }
     // We have to .toList() so that the values are stored together once for caching,
     // and the toSequence so that aggregations (like neighbors.flatMap{it.units} don't take up their own space
 
@@ -837,7 +840,7 @@ class Tile : IsPartOfGameInfoSerialization {
 
     /** Will be false if this is a "fake tile" - either created for calculation purposes,
      * or to display how things look e.g. in Civilopedia  */
-    fun isTilemapInitialized() = ::tileMap.isInitialized
+    @Readonly fun isTilemapInitialized() = ::tileMap.isInitialized
 
     //endregion
     //region state-changing functions

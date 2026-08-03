@@ -1,3 +1,20 @@
+## 4.21.5
+
+By SomeTroglodyte:
+- Fix console civ removal not recalling spies 
+- Volume slider for voices is now "live" 
+- Individually automated units can get promotions 
+
+Fix the rounding of the values in the city ministats - By JPBergsma (new contributor!)
+
+By Angais:
+- Fix military unit gift notification locations 
+- Fix open borders vision priority 
+
+By EmperorPinguin:
+- AI Refine gold usage logic for constructions 
+- Prevent buying constructions nearing completion
+
 ## 4.21.4
 
 CPU performance improvements for map lag and map generation latency

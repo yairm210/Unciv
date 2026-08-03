@@ -1,21 +1,22 @@
 package com.unciv.ui.screens.worldscreen.unit.presenter
 
-import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.City
 import com.unciv.logic.map.HexCoord
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.screens.pickerscreens.CityRenamePopup
 import com.unciv.ui.screens.worldscreen.unit.UnitTable
+import com.unciv.view.CityView
+import com.unciv.view.ForeignCityView
 
 class CityPresenter(private val unitTable: UnitTable, private val unitPresenter: UnitPresenter) : UnitTable.Presenter {
 
-    var selectedCity : City? = null
+    var selectedCity: ForeignCityView? = null
 
     override val position: HexCoord?
         get() = selectedCity?.location
 
-    fun selectCity(city: City) : Boolean {
+    fun selectCity(city: City): Boolean {
         // If the last selected unit connecting a road, keep it selected. Otherwise, clear.
         unitPresenter.apply {
             if (selectedUnitIsConnectingRoad) {
@@ -25,8 +26,8 @@ class CityPresenter(private val unitTable: UnitTable, private val unitPresenter:
                 selectUnit()
             }
         }
-        if (city == selectedCity) return false
-        selectedCity = city
+        if (city === selectedCity?.getCity()) return false
+        selectedCity = ForeignCityView(city, unitTable.worldScreen.selectedCiv)
         return true
     }
 
@@ -34,7 +35,7 @@ class CityPresenter(private val unitTable: UnitTable, private val unitPresenter:
         separator.isVisible = true
         val city = selectedCity!!
         var nameLabelText = city.name.tr()
-        if (city.health < city.getMaxHealth()) nameLabelText += " (${city.health.tr()})"
+        if (city.getHealth() < city.getMaxHealth()) nameLabelText += " (${city.getHealth().tr()})"
 
         if (!unitNameLabel.text.equalsString(nameLabelText)) {
             unitNameLabel.setText(nameLabelText)
@@ -43,7 +44,7 @@ class CityPresenter(private val unitTable: UnitTable, private val unitPresenter:
                 if (!worldScreen.canChangeState) return@onClick
                 CityRenamePopup(
                     screen = worldScreen,
-                    city = city,
+                    cityView = CityView(city.getCity(), worldScreen.selectedCiv),
                     actionOnClose = {
                         unitNameLabel.setText(city.name.tr())
                         worldScreen.shouldUpdate = true
@@ -54,9 +55,9 @@ class CityPresenter(private val unitTable: UnitTable, private val unitPresenter:
         descriptionTable.clear()
         descriptionTable.defaults().pad(2f).padRight(5f)
         descriptionTable.add("Strength".tr())
-        descriptionTable.add(CityCombatant(city).getDefendingStrength().tr()).row()
+        descriptionTable.add(city.getDefendingStrength().tr()).row()
         descriptionTable.add("Bombard strength".tr())
-        descriptionTable.add(CityCombatant(city).getAttackingStrength().tr()).row()
+        descriptionTable.add(city.getAttackingStrength().tr()).row()
 
         shouldUpdate = true
 

@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.Civilization
+import com.unciv.view.CivView
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.toHexCoord
@@ -60,14 +60,14 @@ class TileLayerYield(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, s
         return yields!!
     }
 
-    override fun doUpdate(viewingCiv: Civilization?) {
+    override fun doUpdate(viewingCiv: CivView?) {
         val showTileYields = if (tileGroup is WorldTileGroup) UncivGame.Current.settings.showTileYields else true
         updateYieldIcon(viewingCiv, showTileYields)
     }
 
     // JN updating display of tile yields
     private fun updateYieldIcon(
-        viewingCiv: Civilization?,
+        viewingCiv: CivView?,
         show: Boolean,
     ) {
         val effectiveVisible = show &&
@@ -84,9 +84,9 @@ class TileLayerYield(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, s
         y.run {
             // Update YieldGroup Icon
             if (tileGroup is CityTileGroup)
-                setStats(tile.stats.getTileStats(tileGroup.city, viewingCiv))
+                setStats(tileGroup.tileView.getTileStats(viewingCiv, tileGroup.cityView))
             else
-                setStats(tile.stats.getTileStats(viewingCiv))
+                setStats(tileGroup.tileView.getTileStats(viewingCiv))
             toFront()
             // Centre horizontally; recalculate Y now that height is known after setStats
             x = tileX + (tileGroup.width - width) / 2
@@ -119,19 +119,15 @@ class TileLayerResource(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
     private var resourceIcon: Actor? = null
     private var resourceProvidedIcon: Actor? = null
 
-    private fun updateResourceIcon(viewingCiv: Civilization?, show: Boolean) {
+    private fun updateResourceIcon(viewingCiv: CivView?, showResourceIcon: Boolean) {
+        val tileView = tileGroup.tileView
         // This could change on any turn, since resources need certain techs to reveal them
-        val effectiveVisible = when {
-            tileGroup.isForceVisible -> show
-            show && viewingCiv == null -> true
-            show && viewingCiv?.canSeeResource(tile.tileResource) == true -> true
-            else -> false
-        }
+        val effectiveVisible = showResourceIcon && (tileGroup.isForceVisible || tileView.getViewableResource(viewingCiv) != null)
 
         // If resource has changed (e.g. tech researched) - force new icon next time it's needed
-        if (resourceName != tile.resource || resourceAmount != tile.resourceAmount) {
-            resourceName = tile.resource
-            resourceAmount = tile.resourceAmount
+        if (resourceName != tileView.resource || resourceAmount != tileView.resourceAmount) {
+            resourceName = tileView.resource
+            resourceAmount = tileView.resourceAmount
             resourceIcon?.let { removeOwnedActor(it) }
             resourceIcon = null
         }
@@ -154,8 +150,8 @@ class TileLayerResource(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
             dimResource(!isViewable)
 
             val shouldResourceProvidedBeDisplayed =
-                viewingCiv != null && tile.getOwner() == viewingCiv
-                        && tile.providesResources(viewingCiv)
+                viewingCiv != null && tileView.getOwner()?.civName == viewingCiv.civName
+                        && tileView.providesResources(viewingCiv)
             if (shouldResourceProvidedBeDisplayed && resourceProvidedIcon == null){
                 val group = NonTransformGroup()
                 group.setSize(12f,12f)
@@ -194,7 +190,7 @@ class TileLayerResource(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
 
     fun dimResource(dim: Boolean) { resourceIcon?.color?.a = if (dim) 0.5f else 1f }
 
-    override fun doUpdate(viewingCiv: Civilization?) {
+    override fun doUpdate(viewingCiv: CivView?) {
         val showResourcesAndImprovements = if (tileGroup is WorldTileGroup)
             UncivGame.Current.settings.showResourcesAndImprovements else true
 
@@ -212,7 +208,7 @@ class TileLayerImprovement(tileGroup: TileGroup, size: Float) : TileLayer(tileGr
         private set  // Getter public for BattleTable to display as City Combatant
 
 
-    override fun doUpdate(viewingCiv: Civilization?) {
+    override fun doUpdate(viewingCiv: CivView?) {
         val showResourcesAndImprovements = if (tileGroup is WorldTileGroup)
             UncivGame.Current.settings.showResourcesAndImprovements else true
 
@@ -221,11 +217,12 @@ class TileLayerImprovement(tileGroup: TileGroup, size: Float) : TileLayer(tileGr
 
     fun dimImprovement(dim: Boolean) { improvementIcon?.color?.a = if (dim) 0.5f else 1f }
 
-    private fun updateImprovementIcon(viewingCiv: Civilization?, show: Boolean) {
+    private fun updateImprovementIcon(viewingCiv: CivView?, show: Boolean) {
+        val tileView = tileGroup.tileView
         // If improvement has changed, force new icon next time it is needed
-        val improvementToShow = tile.getShownImprovement(viewingCiv)
+        val improvementToShow = viewingCiv?.getShownImprovementOn(tileView)
         val newImprovementPlusPillagedID = if (improvementToShow==null) null
-        else if (tile.improvementIsPillaged) "$improvementToShow-Pillaged"
+        else if (tileView.improvementIsPillaged) "$improvementToShow-Pillaged"
         else improvementToShow
 
         if (improvementPlusPillagedID != newImprovementPlusPillagedID) {
@@ -236,7 +233,7 @@ class TileLayerImprovement(tileGroup: TileGroup, size: Float) : TileLayer(tileGr
 
         // Get new icon when needed
         if (improvementPlusPillagedID != null && show && improvementIcon == null) {
-            val icon = ImageGetter.getImprovementPortrait(improvementToShow!!, isPillaged = tile.improvementIsPillaged)
+            val icon = ImageGetter.getImprovementPortrait(improvementToShow!!, isPillaged = tileView.improvementIsPillaged)
             // Centre on tile, offset left and down
             icon.x = tileX + (tileGroup.width - icon.width) / 2 - 22f
             icon.y = tileY + (tileGroup.height - icon.height) / 2 - 12f
@@ -335,7 +332,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
             return
 
         if (DebugUtils.SHOW_TILE_COORDS) {
-            val label = this.tile.position.toVector2().toPrettyString()
+            val label = tileGroup.tileView.position().toPrettyString()
             val tileW = tileGroup.width
             val tileH = tileGroup.height
             startingLocationIcons.add(label.toLabel(ImageGetter.CHARCOAL.cpy().apply { a = 0.7f }, 14).apply {
@@ -479,7 +476,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
     fun dimPopulation(dim: Boolean) { workedIcon?.color?.a = if (dim) 0.4f else 1f }
 
 
-    override fun doUpdate(viewingCiv: Civilization?) {
+    override fun doUpdate(viewingCiv: CivView?) {
         if (tileGroup !is WorldTileGroup || DebugUtils.SHOW_TILE_COORDS)
             updateStartingLocationIcon(true)
         updateArrows()

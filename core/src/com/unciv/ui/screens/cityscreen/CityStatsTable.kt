@@ -26,7 +26,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.view.CityView
 import kotlin.math.ceil
-import kotlin.math.round
+import kotlin.math.roundToInt
 
 class CityStatsTable(private val cityScreen: CityScreen) : Table() {
     private val cityView: CityView = cityScreen.cityView
@@ -98,7 +98,7 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
         if (!cityView.getMaxSpecialists().isEmpty()) {
             addSpecialistInfo()
         }
-        if (cityView.getNumberOfFollowers().isNotEmpty() && cityView.civ().isReligionEnabled())
+        if (cityView.getNumberOfFollowers().isNotEmpty() && cityView.viewingCiv().isReligionEnabled())
             addReligionInfo()
 
         addBuildingsInfo()
@@ -371,8 +371,8 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
                 .left().padBottom(4f).padRight(5f)
             info.add("{$greatPersonName} (+$gppPerTurn)".toLabel(hideIcons = true)).left().padBottom(4f).expandX().row()
 
-            val gppCurrent = cityView.civ().getGreatPersonPoints(greatPersonName)
-            val gppNeeded = cityView.civ().getPointsRequiredForGreatPerson(greatPersonName)
+            val gppCurrent = cityView.viewingCiv().getGreatPersonPoints(greatPersonName)
+            val gppNeeded = cityView.viewingCiv().getPointsRequiredForGreatPerson(greatPersonName)
 
             val percent = gppCurrent / gppNeeded.toFloat()
 
@@ -418,7 +418,7 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
             val selected = BaseScreen.skin.getColor("selection")
             for (stat in Stat.entries) {
                 val amount = cityView.getCurrentCityStats()[stat]
-                if (stat == Stat.Faith && !cityView.civ().isReligionEnabled()) continue
+                if (stat == Stat.Faith && !cityView.viewingCiv().isReligionEnabled()) continue
                 val icon = Table()
                 val focus = CityFocus.safeValueOf(stat)
                 val toggledFocus = if (focus == cityView.getCityFocus()) {
@@ -436,7 +436,7 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
                 }
                 add(icon).size(27f).padRight(3f)
                 val valueToDisplay = if (stat == Stat.Happiness) cityView.getHappinessList().values.sum() else amount
-                add(round(valueToDisplay).toInt().toLabel()).padRight(5f)
+                add((valueToDisplay.roundToInt()).toLabel()).padRight(5f)
                 if (cityScreen.isCrampedPortrait() && (expanderIsOpen == null || !expanderIsOpen) && stat == Stat.Gold) {
                     row()
                 }
