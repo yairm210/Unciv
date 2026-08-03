@@ -48,6 +48,21 @@ tasks.register<JavaExec>("debug") {
     debug = true
 }
 
+tasks.register<JavaExec>("runMcpAgent") {
+    // Must stay quiet: this process speaks MCP JSON-RPC over stdio, so nothing but
+    // protocol traffic may reach stdout (all Unciv logging goes to stderr).
+    dependsOn(tasks.getByName("classes"))
+    mainClass.set("com.unciv.app.desktop.mcp.McpAgentLauncher")
+    classpath = sourceSets.main.get().runtimeClasspath
+    standardInput = System.`in`
+    workingDir = assetsDir
+    isIgnoreExitValue = true
+    // Auth calls go through java.net.HttpURLConnection (SimpleHttp.kt), which consults the JVM's
+    // system ProxySelector - on some macOS setups that throws "Failed to select a proxy" for any
+    // URL, localhost included. This process never needs a proxy, so skip system lookup entirely.
+    systemProperty("java.net.useSystemProxies", "false")
+}
+
 tasks.register<Jar>("dist") { // Compiles the jar file
     dependsOn(tasks.getByName("classes"))
 

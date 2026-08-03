@@ -73,6 +73,9 @@ object UnitActions {
             addUnmappedUnitActions(unit)             // No mapped getter: Enumerate all...
         }.filter { it.type == unitActionType }       // ...and take ones matching the type.
 
+    /** Action types with a directly-callable, headless-safe provider (no [GUI] use during enumeration) - see [getUnitActions] with a [UnitActionType]. */
+    val mappedActionTypes: Set<UnitActionType> get() = actionTypeToFunctions.keys
+
     private val actionTypeToFunctions = linkedMapOf<UnitActionType, (unit: MapUnit, tile: Tile) -> Sequence<UnitAction>>(
         // Determined by unit uniques
         UnitActionType.Transform to UnitActionsFromUniques::getTransformActions,
