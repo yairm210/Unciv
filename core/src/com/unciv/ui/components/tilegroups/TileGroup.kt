@@ -16,11 +16,11 @@ open class TileGroup(
     groupSize: Float = TileGroupMap.groupSize + 4
 ) : Group() {
 
-    var tile: Tile = tileView.getTile()
-
     /** A var because if we're spectator, the viewing civ can change as we select different civs to view as */
     var tileView: TileView = tileView
         private set
+
+    val tile: Tile get() = tileView.getTile()
     /*
         Layers (reordered in TileGroupMap):
         1) Terrain
@@ -105,7 +105,7 @@ open class TileGroup(
             tileView = TileView(tile, null)
         } else {
             val civ = viewingCiv.getCiv()
-            if (tileView.getTile() !== tile || tileView.getViewer() !== civ)
+            if (tileView.getViewer() !== civ)
                 tileView = TileView(tile, civ)
         }
         layerMisc.removeHexOutline()
@@ -136,8 +136,8 @@ open class TileGroup(
     }
 
     private fun removeMissingModReferences() {
-        for (unit in tile.getUnits())
-            if (!tile.ruleset.nations.containsKey(unit.owner)) unit.removeFromTile()
+        for (unit in tileView.getTile().getUnits())
+            if (!tileView.getRuleset().nations.containsKey(unit.owner)) unit.removeFromTile()
     }
 
     override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }

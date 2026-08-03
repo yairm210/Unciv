@@ -4,6 +4,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.stats.Stats
 import yairm210.purity.annotations.Readonly
@@ -44,7 +45,14 @@ class TileView(private val tile: Tile, private val viewer: Civilization?) {
     val civilianUnit: ForeignMapUnitView? get() = tile.civilianUnit?.let { u -> viewer?.let { v -> ForeignMapUnitView(u, v) } }
     val militaryUnit: ForeignMapUnitView? get() = tile.militaryUnit?.let { u -> viewer?.let { v -> ForeignMapUnitView(u, v) } }
     val isLand: Boolean get() = tile.isLand
-    @Readonly fun getRuleset(): Ruleset = tile.ruleset
+    val hasBottomRightRiver: Boolean get() = tile.hasBottomRightRiver
+    val hasBottomRiver: Boolean get() = tile.hasBottomRiver
+    val hasBottomLeftRiver: Boolean get() = tile.hasBottomLeftRiver
+    @Readonly fun isPillaged(): Boolean = tile.isPillaged()
+    @Readonly fun getBaseTerrain(): Terrain = tile.getBaseTerrain()
+    @Readonly fun getOwner(): Civilization? = tile.getOwner()
+    // I'm not sure this should be part of the API, perhaps replace usages
+@Readonly fun getRuleset(): Ruleset = tile.ruleset
 
     @Readonly fun getTileStats(cityView: CityView): Stats = tile.stats.getTileStats(cityView.getCity(), cityView.getCity().civ)
 
