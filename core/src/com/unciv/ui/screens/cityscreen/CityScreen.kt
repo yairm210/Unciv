@@ -362,7 +362,7 @@ class CityScreen(
         val tileSetStrings = TileSetStrings(cityView.getRuleset(), game.settings)
         val cityTileGroups = cityView.centerTile().getTilesInDistance(viewRange)
                 .filter { selectedCiv.hasExplored(it.getTile()) }
-                .map { CityTileGroup(cityView, it.getTile(), tileSetStrings, false, isSpying) }
+                .map { CityTileGroup(cityView, it, tileSetStrings, false, isSpying) }
 
         for (tileGroup in cityTileGroups) {
             tileGroup.onClick { tileGroupOnClick(tileGroup) }

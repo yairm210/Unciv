@@ -11,10 +11,16 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 open class TileGroup(
-    var tile: Tile,
+    tileView: TileView,
     val tileSetStrings: TileSetStrings,
     groupSize: Float = TileGroupMap.groupSize + 4
 ) : Group() {
+
+    var tile: Tile = tileView.getTile()
+
+    /** A var because if we're spectator, the viewing civ can change as we select different civs to view as */
+    var tileView: TileView = tileView
+        private set
     /*
         Layers (reordered in TileGroupMap):
         1) Terrain
@@ -37,9 +43,6 @@ open class TileGroup(
 
     var isForceVisible = DebugUtils.VISIBLE_MAP
     var isForMapEditorIcon = false
-
-    var tileView: TileView? = null
-        private set
 
     @Suppress("LeakingThis") val layerTerrain = TileLayerTerrain(this, groupSize)
     @Suppress("LeakingThis") val layerFeatures = TileLayerFeatures(this, groupSize)
@@ -75,10 +78,10 @@ open class TileGroup(
         layerTerrain.update(null)
     }
 
-    open fun clone() = TileGroup(tile, tileSetStrings)
+    open fun clone() = TileGroup(tileView, tileSetStrings)
 
     fun isViewable(viewingCiv: CivView) = isForceVisible
-            || viewingCiv.canSeeTile(tileView ?: TileView(tile, viewingCiv.getCiv()))
+            || viewingCiv.canSeeTile(tileView)
             || viewingCiv.isSpectator()
 
     private fun reset() {
@@ -99,10 +102,10 @@ open class TileGroup(
 
     open fun update(viewingCiv: CivView? = null) {
         if (viewingCiv == null) {
-            tileView = null
+            tileView = TileView(tile, null)
         } else {
             val civ = viewingCiv.getCiv()
-            if (tileView?.getTile() !== tile || tileView?.getViewer() !== civ)
+            if (tileView.getTile() !== tile || tileView.getViewer() !== civ)
                 tileView = TileView(tile, civ)
         }
         layerMisc.removeHexOutline()
@@ -112,8 +115,8 @@ open class TileGroup(
         layerOverlay.hideGoodCityLocationIndicator()
 
         // Do not update layers if tile is not explored by viewing player
-        if (viewingCiv != null && !(isForceVisible || viewingCiv.hasExplored(tileView!!))) {
-            if (tileView!!.neighbors.none { viewingCiv.hasExplored(it) }) {
+        if (viewingCiv != null && !(isForceVisible || viewingCiv.hasExplored(tileView))) {
+            if (tileView.neighbors.none { viewingCiv.hasExplored(it) }) {
                 // No explored neighbors - hide all layers
                 setAllLayersVisible(false)
             } else {
