@@ -2,7 +2,6 @@ package com.unciv.ui.components.tilegroups.layers
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.unciv.Constants
 import com.unciv.view.CivView
 import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.images.ImageGetter
@@ -91,7 +90,7 @@ class TileLayerOverlay(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
     }
 
     fun setUnexplored(viewingCiv: CivView) {
-        val unexploredShouldBeVisible = !viewingCiv.hasExplored(tileGroup.tileView!!)
+        val unexploredShouldBeVisible = !viewingCiv.hasExplored(tileGroup.tileView)
         val unexploredIsVisible = unexplored != null
         if (unexploredIsVisible && !unexploredShouldBeVisible) {
             removeOwnedActor(unexplored!!)

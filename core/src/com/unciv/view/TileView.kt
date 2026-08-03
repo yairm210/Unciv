@@ -8,11 +8,11 @@ import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.stats.Stats
 import yairm210.purity.annotations.Readonly
 
-/** View of a [Tile] from the perspective of [viewer]. */
-class TileView(private val tile: Tile, private val viewer: Civilization) {
+/** View of a [Tile] from the perspective of [viewer]. [viewer] may be null for display-only contexts (map editor, Civilopedia). */
+class TileView(private val tile: Tile, private val viewer: Civilization?) {
     @Readonly fun position() = tile.position
-    @Readonly fun owningCity(): ForeignCityView? = tile.owningCity?.let { ForeignCityView(it, viewer) }
-    @Readonly fun getWorkingCity(): ForeignCityView? = tile.getWorkingCity()?.let { ForeignCityView(it, viewer) }
+    @Readonly fun owningCity(): ForeignCityView? = tile.owningCity?.let { c -> viewer?.let { v -> ForeignCityView(c, v) } }
+    @Readonly fun getWorkingCity(): ForeignCityView? = tile.getWorkingCity()?.let { c -> viewer?.let { v -> ForeignCityView(c, v) } }
     val neighbors: Sequence<TileView> @Readonly get() = tile.neighbors.map { TileView(it, viewer) }
     @Readonly fun getTilesInDistance(distance: Int): Sequence<TileView> =
         tile.getTilesInDistance(distance).map { TileView(it, viewer) }
@@ -41,13 +41,13 @@ class TileView(private val tile: Tile, private val viewer: Civilization) {
     val improvementIsPillaged: Boolean get() = tile.improvementIsPillaged
     val improvementInProgress: String? get() = tile.improvementInProgress
     val turnsToImprovement: Int get() = tile.turnsToImprovement
-    val civilianUnit: ForeignMapUnitView? get() = tile.civilianUnit?.let { ForeignMapUnitView(it, viewer) }
-    val militaryUnit: ForeignMapUnitView? get() = tile.militaryUnit?.let { ForeignMapUnitView(it, viewer) }
+    val civilianUnit: ForeignMapUnitView? get() = tile.civilianUnit?.let { u -> viewer?.let { v -> ForeignMapUnitView(u, v) } }
+    val militaryUnit: ForeignMapUnitView? get() = tile.militaryUnit?.let { u -> viewer?.let { v -> ForeignMapUnitView(u, v) } }
     val isLand: Boolean get() = tile.isLand
     @Readonly fun getRuleset(): Ruleset = tile.ruleset
 
     @Readonly fun getTileStats(cityView: CityView): Stats = tile.stats.getTileStats(cityView.getCity(), cityView.getCity().civ)
 
     @Readonly fun getTile(): Tile = tile
-    @Readonly fun getViewer(): Civilization = viewer
+    @Readonly fun getViewer(): Civilization? = viewer
 }
