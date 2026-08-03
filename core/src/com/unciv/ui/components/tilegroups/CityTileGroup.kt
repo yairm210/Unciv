@@ -97,7 +97,7 @@ class CityTileGroup(val cityView: CityView, tileView: TileView, tileSetStrings: 
             }
 
             // Does not provide yields
-            tileView.getTileStats(cityView).isEmpty() -> {
+            tileView.getTileStats(cityView.viewingCiv(), cityView).isEmpty() -> {
                 // Do nothing except night-mode dimming
                 setUndimmed()
             }

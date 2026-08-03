@@ -50,7 +50,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen) : Table() {
         innerTable.clearChildren()
 
         val tileView = cityView.tileView(selectedTile)
-        val stats = tileView.getTileStats(cityView)
+        val stats = tileView.getTileStats(cityView.viewingCiv(), cityView)
         innerTable.pad(5f)
 
         innerTable.add(MarkupRenderer.render(TileDescription.toMarkup(
