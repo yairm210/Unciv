@@ -24,9 +24,14 @@ class TileView(private val tile: Tile,
         if (viewer == null) return null
         return ForeignCityView(city, viewer)
     }
-    val neighbors: Sequence<TileView> @Readonly get() = tile.neighbors.map { TileView(it, viewer) }
+    val neighbors: Sequence<TileView> @Readonly get() =
+        tile.neighbors
+            .filter { viewer == null || it.isExplored(viewer) }
+            .map { TileView(it, viewer) }
     @Readonly fun getTilesInDistance(distance: Int): Sequence<TileView> =
-        tile.getTilesInDistance(distance).map { TileView(it, viewer) }
+        tile.getTilesInDistance(distance)
+            .filter { viewer == null || it.isExplored(viewer) }
+            .map { TileView(it, viewer) }
 
     @Readonly fun isCityCenter(): Boolean = tile.isCityCenter()
     @Readonly fun isWorked(): Boolean = tile.isWorked()
@@ -82,6 +87,14 @@ class TileView(private val tile: Tile,
         return tile.stats.getTileStats(city, viewingCiv?.getCiv())
     }
     @Readonly fun providesResources(viewingCiv: CivView): Boolean = tile.providesResources(viewingCiv.getCiv())
+
+    @Readonly fun getTileMap(): TileMapView? {
+        val v = viewer ?: return null
+        return TileMapView(tile.tileMap, v)
+    }
+
+    override fun equals(other: Any?) = other is TileView && other.tile === tile
+    override fun hashCode() = tile.hashCode()
 
     @Readonly fun getTile(): Tile = tile
     @Readonly fun getViewer(): Civilization? = viewer
