@@ -36,6 +36,9 @@ object McpAgentLauncher {
         UncivGame.Current.settings = GameSettings().apply {
             showTutorials = false
             turnsBetweenAutosaves = 10000
+            // Default 5 (GameSettings.notificationsLogMaxTurns) drops history if the agent goes
+            // more than 5 turns between calls to get_events(sinceMyLastTurn=true).
+            notificationsLogMaxTurns = 50
         }
 
         // Loading logs go through println (e.g. RulesetCache's "Loaded N rulesets" banner);
