@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.GameInfo
 import com.unciv.logic.MissingModsException
 import com.unciv.logic.MissingNationException
 import com.unciv.logic.UncivShowableException
@@ -93,12 +94,7 @@ class LoadGameScreen : LoadOrSaveScreen() {
             try {
                 // This is what can lead to ANRs - reading the file and setting the transients, that's why this is in another thread
                 val loadedGame = game.files.loadGameFromFile(saveGameFile)
-                if (MultiplayerTurnIntegrity.mustDownloadFromServer(loadedGame)) {
-                    // Never load a local mid-turn snapshot when integrity mode is on
-                    game.onlineMultiplayer.downloadGame(loadedGame.gameId)
-                } else {
-                    game.loadGame(loadedGame, callFromLoadScreen = true)
-                }
+                loadGamePreferringServer(loadedGame)
             } catch (notAPlayer: UncivShowableException) {
                 launchOnGLThread {
                     val (message) = getLoadExceptionMessage(notAPlayer)
@@ -114,6 +110,14 @@ class LoadGameScreen : LoadOrSaveScreen() {
         }
     }
 
+    /** Never load a local mid-turn snapshot when Disable undo integrity mode is on. */
+    private suspend fun loadGamePreferringServer(loadedGame: GameInfo) {
+        if (MultiplayerTurnIntegrity.mustDownloadFromServer(loadedGame))
+            game.onlineMultiplayer.downloadGame(loadedGame.gameId)
+        else
+            game.loadGame(loadedGame, callFromLoadScreen = true)
+    }
+
     private fun getLoadFromClipboardButton(): TextButton {
         val pasteButton = loadFromClipboard.toTextButton()
         pasteButton.onActivation {
@@ -124,10 +128,7 @@ class LoadGameScreen : LoadOrSaveScreen() {
                 try {
                     val clipboardContentsString = Gdx.app.clipboard.contents.trim()
                     val loadedGame = UncivFiles.gameInfoFromString(clipboardContentsString)
-                    if (MultiplayerTurnIntegrity.mustDownloadFromServer(loadedGame))
-                        game.onlineMultiplayer.downloadGame(loadedGame.gameId)
-                    else
-                        game.loadGame(loadedGame, callFromLoadScreen = true)
+                    loadGamePreferringServer(loadedGame)
                 } catch (ex: Exception) {
                     launchOnGLThread { handleLoadGameException(ex, "Could not load game from clipboard!") }
                 } finally {
@@ -159,10 +160,7 @@ class LoadGameScreen : LoadOrSaveScreen() {
                     onLoaded = { loadedGame ->
                         Concurrency.run {
                             try {
-                                if (MultiplayerTurnIntegrity.mustDownloadFromServer(loadedGame))
-                                    game.onlineMultiplayer.downloadGame(loadedGame.gameId)
-                                else
-                                    game.loadGame(loadedGame, callFromLoadScreen = true)
+                                loadGamePreferringServer(loadedGame)
                             } catch (ex: Exception) {
                                 launchOnGLThread { handleLoadGameException(ex, "Could not load game from custom location!") }
                             } finally {
