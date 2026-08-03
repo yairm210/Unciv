@@ -51,20 +51,20 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
 
         val tileView = tileGroup.tileView
 
-        val shownImprovement = viewingCiv?.getShownImprovementOn(tileView)
-        val shouldShowImprovement = shownImprovement != null && UncivGame.Current.settings.showPixelImprovements
+        val shownImprovement = if (!UncivGame.Current.settings.showPixelImprovements) null 
+            else viewingCiv?.getShownImprovementOn(tileView)
 
-        val viewableResource = if (UncivGame.Current.settings.showPixelImprovements)
-            tileView.getViewableResource(if (isForceVisible) null else viewingCiv) else null
+        val viewableResource = if (!UncivGame.Current.settings.showPixelImprovements) null
+            else tileView.getViewableResource(if (isForceVisible) null else viewingCiv)
 
-        val resourceAndImprovementSequence = if (viewableResource == null && !shouldShowImprovement)
+        val resourceAndImprovementSequence = if (viewableResource == null && shownImprovement == null)
             emptySequence()
         else sequence {
             if (viewableResource != null)  yield(viewableResource.name)
-            if (shouldShowImprovement) {
+            if (shownImprovement != null) {
                 if (usePillagedImprovementImage(tileView, viewingCiv))
                     yield("$shownImprovement-Pillaged")
-                else yield(shownImprovement!!)
+                else yield(shownImprovement)
             }
         }
 

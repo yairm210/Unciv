@@ -34,7 +34,7 @@ class CivView(civ: Civilization, viewer: Civilization) : ForeignCivView(civ, vie
     @Readonly fun isOwnerOf(city: City): Boolean = civ === city.civ
     @Readonly fun isOwnerOf(cityView: ForeignCityView): Boolean = civ === cityView.getCity().civ
     @Readonly fun getShownImprovementOn(tile: Tile): String? = tile.getShownImprovement(civ)
-    fun getShownImprovementOn(tileView: TileView): String? = tileView.getTile().getShownImprovement(civ)
+    @Readonly fun getShownImprovementOn(tileView: TileView): String? = tileView.getTile().getShownImprovement(civ)
     @Readonly fun canBuildImprovementOn(improvement: TileImprovement, tile: Tile): Boolean =
         tile.improvementFunctions.canBuildImprovement(improvement, civ.state)
     @Readonly fun canBuildImprovementOn(improvement: TileImprovement, tileView: TileView): Boolean =
