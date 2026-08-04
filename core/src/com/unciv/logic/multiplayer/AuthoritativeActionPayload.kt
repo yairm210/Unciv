@@ -7,7 +7,8 @@ import kotlinx.serialization.json.Json
  * POST /files/{gameId}/action body — shared by client encode and UncivServer decode.
  *
  * Unit: move | attack | foundCity
- * Mid-turn: dismissAlert | acceptTrade | declineTrade | dismissTrade | setProduction | chooseBeliefs
+ * Mid-turn: dismissAlert | acceptTrade | declineTrade | dismissTrade | setProduction |
+ * chooseBeliefs | adoptPolicy | chooseGreatPerson
  */
 @Serializable
 data class AuthoritativeActionPayload(
@@ -31,6 +32,12 @@ data class AuthoritativeActionPayload(
     val useFreeBeliefs: Boolean = false,
     val religionName: String? = null,
     val religionDisplayName: String? = null,
+    /** adoptPolicy */
+    val policyName: String? = null,
+    val branchCompletion: Boolean = false,
+    /** chooseGreatPerson */
+    val greatPersonUnitName: String? = null,
+    val mayaLimited: Boolean = false,
 ) {
     companion object {
         /** encodeDefaults so false flags (e.g. currentConstructionIsUserSet) are not dropped. */

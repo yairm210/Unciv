@@ -216,6 +216,38 @@ internal object ServerUncivEngine {
                     return "chooseBeliefs failed: ${ex.message}"
                 }
             }
+            "adoptPolicy" -> {
+                val policyName = payload.policyName ?: return "adoptPolicy requires policyName"
+                val policy = game.ruleset.policies[policyName]
+                    ?: return "Unknown policy '$policyName'"
+                try {
+                    civ.policies.adopt(policy, branchCompletion = payload.branchCompletion)
+                } catch (ex: Exception) {
+                    return "adoptPolicy failed: ${ex.message}"
+                }
+            }
+            "chooseGreatPerson" -> {
+                val unitName = payload.greatPersonUnitName
+                    ?: return "chooseGreatPerson requires greatPersonUnitName"
+                if (civ.greatPeople.freeGreatPeople <= 0)
+                    return "No free great person to choose"
+                val unit = game.ruleset.units[unitName]
+                    ?: return "Unknown unit '$unitName'"
+                if (payload.mayaLimited && unitName !in civ.greatPeople.longCountGPPool)
+                    return "Unit '$unitName' not in Maya long-count pool"
+                val capital = civ.getCapital()
+                    ?: return "No capital to place great person"
+                try {
+                    civ.units.addUnit(unit, capital)
+                    civ.greatPeople.freeGreatPeople--
+                    if (payload.mayaLimited) {
+                        civ.greatPeople.mayaLimitedFreeGP--
+                        civ.greatPeople.longCountGPPool.remove(unitName)
+                    }
+                } catch (ex: Exception) {
+                    return "chooseGreatPerson failed: ${ex.message}"
+                }
+            }
             else -> return "Unknown action type '${payload.type}'"
         }
         return null

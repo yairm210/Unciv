@@ -22,8 +22,8 @@ import kotlinx.coroutines.withContext
  * Mid-turn decisions (alerts, trades, production) also go through POST /action so the server
  * stays canonical. [applyLocalPlayerMidTurnState] remains a safety net if a race loses a sync.
  *
- * [scheduleMidTurnSync] is a fallback PUT for mid-turn state not yet covered by /action
- * (policies, great people, …). Prefer dedicated action types when available.
+ * [scheduleMidTurnSync] is a fallback PUT for mid-turn state not yet covered by /action.
+ * Prefer dedicated action types when available.
  */
 object AuthoritativeUnitActions {
 
@@ -239,6 +239,36 @@ object AuthoritativeUnitActions {
             useFreeBeliefs = useFreeBeliefs,
             religionName = religionName,
             religionDisplayName = religionDisplayName,
+        ),
+        errorOut
+    )
+
+    suspend fun requestAdoptPolicy(
+        gameId: String,
+        policyName: String,
+        branchCompletion: Boolean = false,
+        errorOut: (String) -> Unit = {},
+    ): String? = postAction(
+        gameId,
+        AuthoritativeActionPayload(
+            type = "adoptPolicy",
+            policyName = policyName,
+            branchCompletion = branchCompletion,
+        ),
+        errorOut
+    )
+
+    suspend fun requestChooseGreatPerson(
+        gameId: String,
+        unitName: String,
+        mayaLimited: Boolean = false,
+        errorOut: (String) -> Unit = {},
+    ): String? = postAction(
+        gameId,
+        AuthoritativeActionPayload(
+            type = "chooseGreatPerson",
+            greatPersonUnitName = unitName,
+            mayaLimited = mayaLimited,
         ),
         errorOut
     )
