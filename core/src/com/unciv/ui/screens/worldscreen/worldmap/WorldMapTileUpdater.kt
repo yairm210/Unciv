@@ -1,13 +1,11 @@
 package com.unciv.ui.screens.worldscreen.worldmap
 
 import com.badlogic.gdx.graphics.Color
-import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.unit.CityLocationTileRanker
 import com.unciv.logic.battle.AttackableTile
 import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.MapPathing
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.Spy
@@ -17,7 +15,8 @@ import com.unciv.view.CivView
 
 object WorldMapTileUpdater {
 
-     fun WorldMapHolder.updateTiles(viewingCiv: Civilization) {
+     fun WorldMapHolder.updateTiles(civView: CivView) {
+        val viewingCiv = civView.getCiv()
 
         if (isMapRevealEnabled(viewingCiv)) {
             // Only needs to be done once - this is so the minimap will also be revealed
@@ -28,7 +27,7 @@ object WorldMapTileUpdater {
 
         // General update of all tiles
         for (tileGroup in tileGroups.values)
-            tileGroup.update(CivView(viewingCiv, viewingCiv))
+            tileGroup.update(civView)
 
         // Update tiles according to selected unit/city
         val unitTable = worldScreen.bottomUnitTable

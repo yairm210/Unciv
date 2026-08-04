@@ -19,7 +19,6 @@ import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.cityscreen.CityReligionInfoTable
 import com.unciv.ui.screens.cityscreen.CityScreen
-import com.unciv.view.CityView
 import com.unciv.view.ForeignCityView
 import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
 import com.unciv.utils.DebugUtils
@@ -180,7 +179,7 @@ class CityButton(val cityView: ForeignCityView, private val tileGroup: TileGroup
                 || viewingPlayer.isSpectator()
                 || belongsToViewingCiv() && !tileGroup.tileView.hasAirUnit(unitTable.selectedUnit)
             if (canEnterCity)
-                GUI.pushScreen(CityScreen(CityView(cityView.getCity(), GUI.getWorldScreen().selectedCiv)))
+                GUI.pushScreen(CityScreen(GUI.getWorldScreen().gameView.getCityView(cityView.getCity())))
             else if (cityView.isKnownTo(viewingPlayer))
                 foreignCityInfoPopup()
         }
@@ -244,7 +243,7 @@ class CityButton(val cityView: ForeignCityView, private val tileGroup: TileGroup
             if (cityView.isReligionEnabled())
                 add(CityReligionInfoTable(cityView.getReligionManager(), true)).colspan(3).row()
             addOKButton("Diplomacy") { openDiplomacy() }
-            if (espionageVisible) addButton("View") { GUI.pushScreen(CityScreen(CityView(cityView.getCity(), GUI.getWorldScreen().selectedCiv))) }
+            if (espionageVisible) addButton("View") { GUI.pushScreen(CityScreen(GUI.getWorldScreen().gameView.getCityView(cityView.getCity()))) }
             add().expandX()
             addCloseButton {
                 GUI.getWorldScreen().run { nextTurnButton.update() }
