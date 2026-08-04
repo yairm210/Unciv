@@ -33,7 +33,7 @@ class TileInfoTable(private val worldScreen: WorldScreen) : Table(BaseScreen.ski
         private const val attentionKey = "Tile info draggable get attention"
     }
 
-    var selectedCiv = worldScreen.selectedCiv
+    var civView: CivView = worldScreen.gameView.civView
     var position by worldScreen.game.settings::tileInfoPosition
     val indicator = ImageGetter.getImage("OtherIcons/Increase")
     val attentionAnimation = attentionKey !in worldScreen.game.settings.tutorialsShown
@@ -56,7 +56,7 @@ class TileInfoTable(private val worldScreen: WorldScreen) : Table(BaseScreen.ski
 
     internal fun updateTileTable(tile: Tile?) {
         clearChildren()
-        if (tile == null || !(DebugUtils.VISIBLE_MAP || selectedCiv.hasExplored(tile))) {
+        if (tile == null || !(DebugUtils.VISIBLE_MAP || civView.getCiv().hasExplored(tile))) {
             isVisible = false
             return
         }
@@ -64,12 +64,12 @@ class TileInfoTable(private val worldScreen: WorldScreen) : Table(BaseScreen.ski
         pad(5f)
 
         add(getStatsTable(tile)).left().row()
-        add(MarkupRenderer.render(TileDescription.toMarkup(TileView(tile, selectedCiv), CivView(selectedCiv, selectedCiv)), padding = 0f, iconDisplay = IconDisplay.None) {
+        add(MarkupRenderer.render(TileDescription.toMarkup(TileView(tile, civView.getCiv(), civView.spectatorMode), civView), padding = 0f, iconDisplay = IconDisplay.None) {
             worldScreen.openCivilopedia(it)
         } ).padTop(5f).row()
         if (DebugUtils.VISIBLE_MAP) add(tile.position.toPrettyString().toLabel()).colspan(2).pad(5f).row()
         if (DebugUtils.SHOW_TILE_IMAGE_LOCATIONS){
-            val imagesString = "Images: " + worldScreen.mapHolder.tileGroups[tile]!!.layerTerrain.tileBaseImages.joinToString{"\n"+it.name}
+            val imagesString = "Images: " + worldScreen.mapHolder.tileGroups[tile]!!.layerTerrain.tileBaseImages.joinToString { "\n" + it.name }
             add(imagesString.toLabel())
         }
 
@@ -111,14 +111,14 @@ class TileInfoTable(private val worldScreen: WorldScreen) : Table(BaseScreen.ski
         val table = Table()
         table.defaults().pad(2f)
 
-        for ((key, value) in tile.stats.getTileStats(selectedCiv)) {
+        for ((key, value) in tile.stats.getTileStats(civView.getCiv())) {
             table.add((key.character + value.toInt().toString()).toLabel())
                 .align(Align.left).padRight(5f)
         }
         table.touchable = Touchable.enabled
         table.onClick {
             Popup(worldScreen).apply {
-                for ((name, stats) in tile.stats.getTileStatsBreakdown(tile.getCity(), selectedCiv))
+                for ((name, stats) in tile.stats.getTileStatsBreakdown(tile.getCity(), civView.getCiv()))
                     add("${name.tr()}: {${stats.clone()}}".toLabel()).row()
                 addCloseButton()
             }.open()

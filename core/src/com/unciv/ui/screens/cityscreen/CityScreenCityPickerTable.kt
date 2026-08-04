@@ -17,15 +17,15 @@ import com.unciv.ui.screens.pickerscreens.CityRenamePopup
 class CityScreenCityPickerTable(private val cityScreen: CityScreen) : Table() {
 
     fun update() {
-        val city = cityScreen.city
-        val civInfo = city.civ
-        background = BaseScreen.skinStrings.getUiBackground("CityScreen/CityPickerTable", BaseScreen.skinStrings.roundedEdgeRectangleShape, civInfo.nation.getOuterColor())
+        val cityView = cityScreen.cityView
+        val civView = cityView.owningCiv()
+        background = BaseScreen.skinStrings.getUiBackground("CityScreen/CityPickerTable", BaseScreen.skinStrings.roundedEdgeRectangleShape, civView.getOuterColor())
         clear()
 
         if (cityScreen.viewableCities.size > 1) {
             val prevCityButton = Table() // so we get a wider clickable area than just the image itself
             val image = ImageGetter.getImage("OtherIcons/BackArrow")
-            image.color = civInfo.nation.getInnerColor()
+            image.color = civView.getInnerColor()
             prevCityButton.add(image).size(25f).pad(10f)
             prevCityButton.touchable = Touchable.enabled
             prevCityButton.onClick { cityScreen.page(-1) }
@@ -34,32 +34,32 @@ class CityScreenCityPickerTable(private val cityScreen: CityScreen) : Table() {
 
         val cityNameTable = Table()
 
-        if (city.isBeingRazed) {
+        if (cityView.isBeingRazed()) {
             val fireImage = ImageGetter.getImage("OtherIcons/Fire")
             cityNameTable.add(fireImage).size(20f).padRight(5f)
         }
 
-        if (city.isPuppet) {
+        if (cityView.isPuppet()) {
             val starImage = ImageGetter.getImage("OtherIcons/Puppet").apply { color = Color.LIGHT_GRAY }
             cityNameTable.add(starImage).size(20f).padRight(5f)
         }
 
-        if (city.isInResistance()) {
+        if (cityView.isInResistance()) {
             val resistanceImage = ImageGetter.getImage("StatIcons/Resistance")
             cityNameTable.add(resistanceImage).size(20f).padRight(5f)
         }
 
-        if (city.isCapital()) {
+        if (cityView.isCapital()) {
             val starImage = ImageGetter.getImage("OtherIcons/Star").apply { color = Color.LIGHT_GRAY }
             cityNameTable.add(starImage).size(20f).padRight(5f)
         }
 
-        val currentCityLabel = city.name
-            .toLabel(fontSize = 30, fontColor = civInfo.nation.getInnerColor(), hideIcons = true)
+        val currentCityLabel = cityView.name
+            .toLabel(fontSize = 30, fontColor = civView.getInnerColor(), hideIcons = true)
         if (cityScreen.canChangeState) currentCityLabel.onClick {
             CityRenamePopup(
                 screen = cityScreen,
-                city = city,
+                cityView = cityView,
                 actionOnClose = {
                     cityScreen.game.replaceCurrentScreen(CityScreen(cityScreen.cityView))
                 }
@@ -68,14 +68,14 @@ class CityScreenCityPickerTable(private val cityScreen: CityScreen) : Table() {
 
         currentCityLabel.setEllipsis(true)
         cityNameTable.add(currentCityLabel).minWidth(0f).padTopDescent()
-        
-        val currentCityPop = city.run { " (${population.population})" }
-            .toLabel(fontSize = 30, fontColor = civInfo.nation.getInnerColor(), hideIcons = true)
+
+        val currentCityPop = " (${cityView.getPopulationCount()})"
+            .toLabel(fontSize = 30, fontColor = civView.getInnerColor(), hideIcons = true)
         cityNameTable.add(currentCityPop).padTopDescent()
 
-        val garrison = city.getGarrison()
+        val garrison = cityView.getGarrison()
         if (garrison != null) {
-            cityNameTable.add(UnitIconGroup(garrison, 30f)).padLeft(5f)
+            cityNameTable.add(UnitIconGroup(garrison.getUnit(), 30f)).padLeft(5f)
         }
 
         val width = if (cityScreen.isCrampedPortrait()) stage.width / 3 else stage.width / 4
@@ -87,7 +87,7 @@ class CityScreenCityPickerTable(private val cityScreen: CityScreen) : Table() {
             image.setSize(25f, 25f)
             image.setOrigin(Align.center)
             image.rotation = 180f
-            image.color = civInfo.nation.getInnerColor()
+            image.color = civView.getInnerColor()
             nextCityButton.add(image).size(25f).pad(10f)
             nextCityButton.touchable = Touchable.enabled
             nextCityButton.onClick { cityScreen.page(1) }

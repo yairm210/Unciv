@@ -3,13 +3,13 @@ package com.unciv.ui.components.tilegroups
 import com.badlogic.gdx.graphics.Color
 import com.unciv.UncivGame
 import com.unciv.view.CivView
-import com.unciv.logic.map.tile.Tile
+import com.unciv.view.TileView
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.components.extensions.darken
 
 
-class WorldTileGroup(tile: Tile, tileSetStrings: TileSetStrings)
-    : TileGroup(tile,tileSetStrings) {
+class WorldTileGroup(tileView: TileView, tileSetStrings: TileSetStrings)
+    : TileGroup(tileView, tileSetStrings) {
 
     override fun update(viewingCiv: CivView?) {
         super.update(viewingCiv)
@@ -44,5 +44,5 @@ class WorldTileGroup(tile: Tile, tileSetStrings: TileSetStrings)
         }
     }
 
-    override fun clone(): WorldTileGroup = WorldTileGroup(tile , tileSetStrings)
+    override fun clone(): WorldTileGroup = WorldTileGroup(TileView(tile, null), tileSetStrings)
 }

@@ -275,6 +275,9 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     @Readonly fun isWeLoveTheKingDayActive() = hasFlag(CityFlags.WeLoveTheKing)
     @Readonly fun isInResistance() = hasFlag(CityFlags.Resistance)
+    /** Returns true if [viewingCiv] has full visibility into this city: either they own it, or have a set-up spy inside. */
+    @Readonly fun isFullyVisible(viewingCiv: Civilization): Boolean =
+        civ === viewingCiv || viewingCiv.espionageManager.getSpiesInCity(this).any { it.isSetUp() }
     @Readonly
     fun isBlockaded(): Boolean {
         // Coastal cities are blocked if every adjacent water tile is blocked

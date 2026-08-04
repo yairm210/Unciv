@@ -8,7 +8,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
-import com.unciv.view.CityView
+import com.unciv.view.CivView
 import com.unciv.view.GameView
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.civilization.Civilization
@@ -140,7 +140,8 @@ class WorldScreen(
     /** Selected civilization, used in spectator and replay mode, equals viewingCiv in ordinary games */
     var selectedCiv = viewingCiv
         internal set
-    var gameView = GameView(gameInfo, selectedCiv)
+    /** This is the *base view* from which all other views are derived */
+    var gameView = GameView(gameInfo, selectedCiv, spectatorMode = viewingCiv.isSpectator())
         internal set
 
     var fogOfWar = true
@@ -314,7 +315,7 @@ class WorldScreen(
         globalShortcuts.add(KeyboardBinding.ViewCapitalCity) {
             val capital = gameInfo.getCurrentPlayerCivilization().getCapital()
             if (capital != null && !mapHolder.setCenterPosition(capital.location.toHexCoord()))
-                game.pushScreen(CityScreen(CityView(capital, selectedCiv)))
+                game.pushScreen(CityScreen(gameView.getCityView(capital)))
         }
         globalShortcuts.add(KeyboardBinding.Options) { // Game Options
             openOptionsPopup { nextTurnButton.update() }
@@ -420,8 +421,8 @@ class WorldScreen(
             if (fogOfWar) minimapWrapper.update(selectedCiv)
             else minimapWrapper.update(viewingCiv)
 
-            if (fogOfWar) bottomTileInfoTable.selectedCiv = selectedCiv
-            else bottomTileInfoTable.selectedCiv = viewingCiv
+            if (fogOfWar) bottomTileInfoTable.civView = gameView.civView
+            else bottomTileInfoTable.civView = CivView(viewingCiv, viewingCiv)
             bottomTileInfoTable.updateTileTable(mapHolder.selectedTile)
             bottomTileInfoTable.setPosition()
 
@@ -449,8 +450,8 @@ class WorldScreen(
         // it doesn't update the explored tiles of the civ... need to think about that harder
         // it causes a bug when we move a unit to an unexplored tile (for instance a cavalry unit which can move far)
 
-        if (fogOfWar) mapHolder.updateTiles(selectedCiv)
-        else mapHolder.updateTiles(viewingCiv)
+        if (fogOfWar) mapHolder.updateTiles(gameView.civView)
+        else mapHolder.updateTiles(CivView(viewingCiv, viewingCiv))
 
         topBar.update(selectedCiv)
         if (tutorialTaskTable.isVisible)
@@ -584,13 +585,13 @@ class WorldScreen(
 
     fun setSelectedCiv(civ: Civilization) {
         selectedCiv = civ
-        gameView = GameView(gameInfo, civ)
+        gameView = GameView(gameInfo, civ, viewingCiv.isSpectator())
     }
 
     private fun updateSelectedCiv() {
         setSelectedCiv(when {
             bottomUnitTable.selectedUnit != null -> bottomUnitTable.selectedUnit!!.civ
-            bottomUnitTable.selectedCity != null -> bottomUnitTable.selectedCity!!.civ
+            bottomUnitTable.selectedCity != null -> bottomUnitTable.selectedCity!!.owningCiv().getCiv()
             else -> viewingCiv
         })
     }

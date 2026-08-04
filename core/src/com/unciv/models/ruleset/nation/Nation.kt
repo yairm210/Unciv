@@ -124,8 +124,8 @@ class Nation : RulesetObject() {
 
     @Readonly fun getStyleOrCivName() = style.ifEmpty { name }
 
-    fun getOuterColor(): ImmutableColor = outerColorObject
-    fun getInnerColor(): ImmutableColor = innerColorObject
+    @Readonly fun getOuterColor(): ImmutableColor = outerColorObject
+    @Readonly fun getInnerColor(): ImmutableColor = innerColorObject
 
     /**
      * Effective start biases: Nation [startBias] field, plus [UniqueType.StartBias] uniques on the

@@ -6,7 +6,6 @@ import com.badlogic.gdx.utils.JsonValue
 import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.City
-import com.unciv.view.CityView
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.ui.components.MayaCalendar
@@ -73,7 +72,7 @@ class CityAction(private val city: HexCoord = HexCoord.Zero) : NotificationActio
         val cityObject = worldScreen.mapHolder.tileMap[city].getCity()
             ?: return
         if (cityObject.civ == worldScreen.viewingCiv)
-            worldScreen.game.pushScreen(CityScreen(CityView(cityObject, worldScreen.selectedCiv)))
+            worldScreen.game.pushScreen(CityScreen(worldScreen.gameView.getCityView(cityObject)))
     }
     companion object {
         fun withLocation(city: City) = listOf(LocationAction(city.location), CityAction(city.location))
