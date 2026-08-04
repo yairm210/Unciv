@@ -61,7 +61,7 @@ class CityScreen(
         const val wltkIconSize = 40f
     }
 
-    private val selectedCiv: Civilization = cityView.getViewer()
+    private val selectedCiv: Civilization = cityView.viewer
 
     internal val isSpying = selectedCiv.gameInfo.isEspionageEnabled() && !cityView.isOwnedByViewer() && !selectedCiv.isSpectator()
 

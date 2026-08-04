@@ -138,7 +138,7 @@ class CityView(city: City, viewer: Civilization, spectatorMode: Boolean = false)
     @Readonly fun canBePurchasedWithStat(construction: INonPerpetualConstruction, stat: Stat): Boolean =
         construction.canBePurchasedWithStat(city, stat)
 
-    @Readonly fun getViewer(): Civilization = viewer
+    // getViewer() would clash with public `viewer` from ForeignCityView (same JVM signature).
     @Readonly fun isOwnedByViewer(): Boolean = city.civ === viewer
     @Readonly fun isOwnedTile(tile: Tile): Boolean = tile.getCity() === city
     @Readonly private fun getTile(tileView: TileView) = tileView.getTile()
