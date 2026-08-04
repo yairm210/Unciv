@@ -444,7 +444,7 @@ class MapEditorEditRiversTab(
     private fun Tile.makeTileGroup(): TileGroup {
         ruleset = this@MapEditorEditRiversTab.ruleset
         setTerrainTransients()
-        return TileGroup(TileView(this, null), TileSetStrings(ruleset, UncivGame.Current.settings), iconSize * 36f/54f).apply {
+        return TileGroup(TileView.forSingleTile(this), TileSetStrings(ruleset, UncivGame.Current.settings), iconSize * 36f/54f).apply {
             isForceVisible = true
             isForMapEditorIcon = true
             update()

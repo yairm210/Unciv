@@ -50,7 +50,7 @@ class TileLayerBorders(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         if (tileOwner == null)
             return
 
-        val tileMapView = tileView.getTileMap() ?: return
+        val tileMapView = tileView.getTileMap()
 
         // Setup new borders
         val civOuterColor = tileOwner.getOuterColor()

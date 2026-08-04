@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.tile.Tile
+import com.unciv.view.TileMapView
 import com.unciv.view.TileView
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.toHexCoord
@@ -75,7 +76,8 @@ class EditorMapHolder(
         val tileSetStrings =
             if (editorScreen != null) TileSetStrings(editorScreen.ruleset, editorScreen.game.settings)
             else TileSetStrings()
-        val daTileGroups = tileMap.values.map { TileGroup(TileView(it, null), tileSetStrings) }
+        val noViewTileMapView = TileMapView(tileMap, null)
+        val daTileGroups = tileMap.values.map { TileGroup(noViewTileMapView.getTile(it), tileSetStrings) }
 
         tileGroupMap = TileGroupMap(this, daTileGroups, continuousScrollingX)
         actor = tileGroupMap
