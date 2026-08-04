@@ -8,7 +8,6 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
-import com.unciv.view.CivView
 import com.unciv.view.GameView
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.civilization.Civilization
@@ -386,7 +385,7 @@ class WorldScreen(
             else minimapWrapper.update(viewingCiv)
 
             if (fogOfWar) bottomTileInfoTable.civView = gameView.civView
-            else bottomTileInfoTable.civView = CivView(viewingCiv, viewingCiv)
+            else bottomTileInfoTable.civView = gameView.civView
             bottomTileInfoTable.updateTileTable(mapHolder.selectedTile)
             bottomTileInfoTable.x = stage.width - bottomTileInfoTable.width
             bottomTileInfoTable.y = if (game.settings.showMinimap) minimapWrapper.height + 5f else 0f
@@ -416,7 +415,7 @@ class WorldScreen(
         // it causes a bug when we move a unit to an unexplored tile (for instance a cavalry unit which can move far)
 
         if (fogOfWar) mapHolder.updateTiles(gameView.civView)
-        else mapHolder.updateTiles(CivView(viewingCiv, viewingCiv))
+        else mapHolder.updateTiles(gameView.civView)
 
         topBar.update(selectedCiv)
         if (tutorialTaskTable.isVisible)

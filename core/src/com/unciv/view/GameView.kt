@@ -6,11 +6,11 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 
 /** View of a [GameInfo] from the perspective of [viewer]. */
-class GameView(gameInfo: GameInfo, private val viewer: Civilization, val spectatorMode: Boolean = false) {
-    val civView: CivView = CivView(viewer, viewer, spectatorMode)
-    val tileMapView: TileMapView = TileMapView(gameInfo.tileMap, viewer, spectatorMode)
+class GameView(gameInfo: GameInfo, internal val viewer: Civilization, val spectatorMode: Boolean = false) {
+    val civView: CivView = CivView(viewer, viewer, spectatorMode, this)
+    val tileMapView: TileMapView = TileMapView(gameInfo.tileMap, viewer, spectatorMode, this)
 
     fun getTile(tile: Tile): TileView = tileMapView.getTile(tile)
     fun getCityView(city: City): CityView = civView.getCity(city)
-    fun getForeignCityView(city: City): ForeignCityView = ForeignCityView(city, viewer, spectatorMode)
+    fun getForeignCityView(city: City): ForeignCityView = ForeignCityView(city, viewer, spectatorMode, civView)
 }

@@ -3,6 +3,7 @@ package com.unciv.ui.components.tilegroups
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.unciv.view.CivView
+import com.unciv.view.TileMapView
 import com.unciv.view.TileView
 import com.unciv.logic.map.tile.Tile
 import com.unciv.ui.components.tilegroups.layers.*
@@ -102,11 +103,12 @@ open class TileGroup(
 
     open fun update(viewingCiv: CivView? = null) {
         if (viewingCiv == null) {
-            tileView = TileView(tile, null)
+            if (tileView.getViewer() != null)
+                tileView = TileMapView(tile.tileMap, null).getTile(tile)
         } else {
-            val civ = viewingCiv.getCiv()
-            if (tileView.getViewer() !== civ)
-                tileView = TileView(tile, civ)
+            val newTileMapView = viewingCiv.gameView.tileMapView
+            if (tileView.tileMapView !== newTileMapView)
+                tileView = newTileMapView.getTile(tile)
         }
         layerMisc.removeHexOutline()
         layerMisc.hideTerrainOverlay()

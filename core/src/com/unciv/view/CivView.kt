@@ -13,11 +13,14 @@ import com.unciv.models.stats.Stat
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.Readonly
 
-/** View of a [Civilization] from the perspective of [viewer]. */
-class CivView(civ: Civilization, viewer: Civilization, spectatorMode: Boolean = false) : ForeignCivView(civ, viewer, spectatorMode) {
+/** View of a [Civilization] from the perspective of [viewer] via [gameView]. */
+class CivView(civ: Civilization,
+              viewer: Civilization,
+              spectatorMode: Boolean = false,
+              val gameView: GameView) : ForeignCivView(civ, viewer, spectatorMode) {
     @Cache private val cityViews = IdentityHashMap<City, CityView>()
 
-    @Readonly fun getCity(city: City): CityView = cityViews.getOrPut(city) { CityView(city, viewer, spectatorMode) }
+    @Readonly fun getCity(city: City): CityView = cityViews.getOrPut(city) { CityView(city, viewer, spectatorMode, this) }
 
     val gold: Int get() = civ.gold
     val tech: TechManagerView = TechManagerView(civ.tech)
@@ -31,7 +34,6 @@ class CivView(civ: Civilization, viewer: Civilization, spectatorMode: Boolean = 
     @Readonly fun canSeeUnit(unitView: ForeignMapUnitView): Boolean = !unitView.getUnit().isInvisible(civ)
     @Readonly fun isOwnerOf(city: City): Boolean = civ === city.civ
     @Readonly fun isOwnerOf(cityView: ForeignCityView): Boolean = civ === cityView.getCity().civ
-    @Readonly fun getShownImprovementOn(tile: Tile): String? = tile.getShownImprovement(civ)
     @Readonly fun getShownImprovementOn(tileView: TileView): String? = tileView.getTile().getShownImprovement(civ)
     @Readonly fun canBuildImprovementOn(improvement: TileImprovement, tileView: TileView): Boolean =
         tileView.getTile().improvementFunctions.canBuildImprovement(improvement, civ.state)
