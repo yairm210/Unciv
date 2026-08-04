@@ -14,10 +14,10 @@ import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.Readonly
 
 /** View of a [Civilization] from the perspective of [viewer]. */
-class CivView(civ: Civilization, viewer: Civilization) : ForeignCivView(civ, viewer) {
+class CivView(civ: Civilization, viewer: Civilization, spectatorMode: Boolean = false) : ForeignCivView(civ, viewer, spectatorMode) {
     @Cache private val cityViews = IdentityHashMap<City, CityView>()
 
-    @Readonly fun getCity(city: City): CityView = cityViews.getOrPut(city) { CityView(city, viewer) }
+    @Readonly fun getCity(city: City): CityView = cityViews.getOrPut(city) { CityView(city, viewer, spectatorMode) }
 
     val gold: Int get() = civ.gold
     val tech: TechManagerView = TechManagerView(civ.tech)

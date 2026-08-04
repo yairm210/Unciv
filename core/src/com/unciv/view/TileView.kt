@@ -11,28 +11,29 @@ import com.unciv.models.stats.Stats
 import yairm210.purity.annotations.Readonly
 
 /** View of a [Tile] from the perspective of [viewer]. [viewer] may be null for display-only contexts (map editor, Civilopedia). */
-class TileView(private val tile: Tile, 
+class TileView(private val tile: Tile,
                /** special, in that tiles can be seen from map editor or civilopedia, in which case there is no viewing civ */
-               private val viewer: Civilization?) {
+               private val viewer: Civilization?,
+               val spectatorMode: Boolean = false) {
     @Readonly fun position() = tile.position
     @Readonly fun owningCity(): ForeignCityView? {
         val city = tile.owningCity ?: return null
         if (viewer == null) return null
-        return ForeignCityView(city, viewer)
+        return ForeignCityView(city, viewer, spectatorMode)
     }
     @Readonly fun getWorkingCity(): ForeignCityView? {
         val city = tile.getWorkingCity() ?: return null
         if (viewer == null) return null
-        return ForeignCityView(city, viewer)
+        return ForeignCityView(city, viewer, spectatorMode)
     }
     val neighbors: Sequence<TileView> @Readonly get() =
         tile.neighbors
             .filter { viewer == null || it.isExplored(viewer) }
-            .map { TileView(it, viewer) }
+            .map { TileView(it, viewer, spectatorMode) }
     @Readonly fun getTilesInDistance(distance: Int): Sequence<TileView> =
         tile.getTilesInDistance(distance)
             .filter { viewer == null || it.isExplored(viewer) }
-            .map { TileView(it, viewer) }
+            .map { TileView(it, viewer, spectatorMode) }
 
     @Readonly fun isCityCenter(): Boolean = tile.isCityCenter()
     @Readonly fun isWorked(): Boolean = tile.isWorked()
@@ -79,7 +80,7 @@ class TileView(private val tile: Tile,
     @Readonly fun getOwner(): ForeignCivView? {
         val owner = tile.getOwner() ?: return null
         if (viewer == null) return null
-        return ForeignCivView(owner, viewer)
+        return ForeignCivView(owner, viewer, spectatorMode)
     }
     @Readonly fun getRuleset(): Ruleset = tile.ruleset
 
@@ -96,7 +97,7 @@ class TileView(private val tile: Tile,
 
     @Readonly fun getTileMap(): TileMapView? {
         val v = viewer ?: return null
-        return TileMapView(tile.tileMap, v)
+        return TileMapView(tile.tileMap, v, spectatorMode)
     }
 
     override fun equals(other: Any?) = other is TileView && other.tile === tile

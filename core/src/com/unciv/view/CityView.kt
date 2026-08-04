@@ -27,24 +27,24 @@ import yairm210.purity.annotations.Readonly
 
 /** View of a [City] from the perspective of [viewer]. UI should use this and not city directly.
  * This should only be for cities we can see as if we own them - our cities, spied cities, or if we're spectator */
-class CityView(city: City, viewer: Civilization) : ForeignCityView(city, viewer) {
+class CityView(city: City, viewer: Civilization, spectatorMode: Boolean = false) : ForeignCityView(city, viewer, spectatorMode) {
     /** The viewing player's full CivView (always a self-view). For the city's owning civ, use [owningCiv]. */
-    @Readonly fun viewingCiv(): CivView = CivView(viewer, viewer)
+    @Readonly fun viewingCiv(): CivView = CivView(viewer, viewer, spectatorMode)
 
     /** Cities the viewer can page through in CityScreen: own cities normally, or spy-visited cities when spying. */
     @Readonly fun getViewableCities(): List<CityView> {
         val isSpying = city.civ !== viewer && viewer.gameInfo.isEspionageEnabled() && !viewer.isSpectator()
         return if (isSpying) viewer.espionageManager.getCitiesWithOurSpies()
             .filter { it.civ != viewer }
-            .map { CityView(it, viewer) }
-        else city.civ.cities.map { CityView(it, viewer) }
+            .map { CityView(it, viewer, spectatorMode) }
+        else city.civ.cities.map { CityView(it, viewer, spectatorMode) }
     }
 
     val tilesInRange: Set<Tile> get() = city.tilesInRange
 
-    @Readonly fun centerTile(): TileView = TileView(city.getCenterTile(), viewer)
-    @Readonly fun getTiles(): Sequence<TileView> = city.getTiles().map { TileView(it, viewer) }
-    @Readonly fun tileView(tile: Tile): TileView = TileView(tile, viewer)
+    @Readonly fun centerTile(): TileView = TileView(city.getCenterTile(), viewer, spectatorMode)
+    @Readonly fun getTiles(): Sequence<TileView> = city.getTiles().map { TileView(it, viewer, spectatorMode) }
+    @Readonly fun tileView(tile: Tile): TileView = TileView(tile, viewer, spectatorMode)
 
     @Readonly fun getWorkRange(): Int = city.getWorkRange()
     @Readonly fun isWorked(tileView: TileView): Boolean = city.isWorked(getTile(tileView))
