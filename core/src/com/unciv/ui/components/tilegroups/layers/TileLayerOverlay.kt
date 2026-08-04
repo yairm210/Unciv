@@ -84,8 +84,9 @@ class TileLayerOverlay(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
 
         setUnexplored(viewingCiv)
 
-        val improvement = tile.ruleset.tileImprovements[viewingCiv.getShownImprovementOn(tile)]
-        if (improvement?.isBarbarianCampEquivalent(tile.stateThisTile) == true && tile.isExplored(viewingCiv.getCiv()))
+        val tileView = tileGroup.tileView
+        val improvement = tileView.getRuleset().tileImprovements[viewingCiv.getShownImprovementOn(tileView)]
+        if (improvement?.isBarbarianCampEquivalent() == true && viewingCiv.hasExplored(tileView))
             showHighlight(Color.RED)
     }
 

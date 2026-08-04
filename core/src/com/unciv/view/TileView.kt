@@ -1,6 +1,8 @@
 package com.unciv.view
 
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
@@ -9,29 +11,30 @@ import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.stats.Stats
 import yairm210.purity.annotations.Readonly
 
-/** View of a [Tile] from the perspective of [viewer]. [viewer] may be null for display-only contexts (map editor, Civilopedia). */
-class TileView(private val tile: Tile, 
-               /** special, in that tiles can be seen from map editor or civilopedia, in which case there is no viewing civ */
-               private val viewer: Civilization?) {
+/** View of a [Tile] from the perspective of [viewer] via [tileMapView]. */
+class TileView internal constructor(private val tile: Tile, val tileMapView: TileMapView,
+               private val viewer: Civilization?,
+               private val spectatorMode: Boolean = false) {
+
     @Readonly fun position() = tile.position
     @Readonly fun owningCity(): ForeignCityView? {
         val city = tile.owningCity ?: return null
         if (viewer == null) return null
-        return ForeignCityView(city, viewer)
+        return ForeignCityView(city, viewer, spectatorMode, tileMapView.gameView?.civView)
     }
     @Readonly fun getWorkingCity(): ForeignCityView? {
         val city = tile.getWorkingCity() ?: return null
         if (viewer == null) return null
-        return ForeignCityView(city, viewer)
+        return ForeignCityView(city, viewer, spectatorMode, tileMapView.gameView?.civView)
     }
     val neighbors: Sequence<TileView> @Readonly get() =
         tile.neighbors
             .filter { viewer == null || it.isExplored(viewer) }
-            .map { TileView(it, viewer) }
+            .map { tileMapView.getTile(it) }
     @Readonly fun getTilesInDistance(distance: Int): Sequence<TileView> =
         tile.getTilesInDistance(distance)
             .filter { viewer == null || it.isExplored(viewer) }
-            .map { TileView(it, viewer) }
+            .map { tileMapView.getTile(it) }
 
     @Readonly fun isCityCenter(): Boolean = tile.isCityCenter()
     @Readonly fun isWorked(): Boolean = tile.isWorked()
@@ -78,7 +81,7 @@ class TileView(private val tile: Tile,
     @Readonly fun getOwner(): ForeignCivView? {
         val owner = tile.getOwner() ?: return null
         if (viewer == null) return null
-        return ForeignCivView(owner, viewer)
+        return ForeignCivView(owner, viewer, spectatorMode)
     }
     @Readonly fun getRuleset(): Ruleset = tile.ruleset
 
@@ -88,14 +91,24 @@ class TileView(private val tile: Tile,
     }
     @Readonly fun providesResources(viewingCiv: CivView): Boolean = tile.providesResources(viewingCiv.getCiv())
 
-    @Readonly fun getTileMap(): TileMapView? {
-        val v = viewer ?: return null
-        return TileMapView(tile.tileMap, v)
-    }
+    fun hasAirUnits(): Boolean = tile.airUnits.isNotEmpty()
+    val airUnitCount: Int get() = tile.airUnits.size
+    fun hasAirUnit(unit: MapUnit?): Boolean = tile.airUnits.contains(unit)
+    @Readonly fun hasEnemyInvisibleUnit(viewingCiv: Civilization): Boolean = tile.hasEnemyInvisibleUnit(viewingCiv)
+
+    @Readonly fun getTileMap(): TileMapView = tileMapView
 
     override fun equals(other: Any?) = other is TileView && other.tile === tile
     override fun hashCode() = tile.hashCode()
 
     @Readonly fun getTile(): Tile = tile
     @Readonly fun getViewer(): Civilization? = viewer
+
+    companion object {
+        /** For icon/preview rendering of a single tile that has no backing [TileMap]. */
+        fun forSingleTile(tile: Tile): TileView {
+            val tileMap = TileMap(1).also { it.tileList.add(tile) }
+            return TileMapView(tileMap, null, false).getTile(tile)
+        }
+    }
 }

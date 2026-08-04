@@ -32,7 +32,7 @@ class TileLayerFeatures(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
             val currentStatus = roadImage?.roadStatus ?: RoadStatus.None
 
             val roadStatus = when {
-                !isTileVisible && !viewingCiv.canSeeTile(TileView(neighbor, viewingCiv.getCiv())) -> RoadStatus.None // don't show roads on non-visible tiles
+                !isTileVisible && !viewingCiv.canSeeTile(viewingCiv.gameView.tileMapView.getTile(neighbor)) -> RoadStatus.None // don't show roads on non-visible tiles
                 tile.roadStatus == RoadStatus.None || neighbor.roadStatus === RoadStatus.None -> RoadStatus.None
                 tile.roadStatus == RoadStatus.Road || neighbor.roadStatus === RoadStatus.Road -> RoadStatus.Road
                 else -> RoadStatus.Railroad
