@@ -370,6 +370,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: UnitTriggerable
 
+??? example  "[unitTriggerTarget] chooses [ruinReward]"
+	Used in conjunction with "May choose the Ancient Ruin discovery reward", but works directly too. Just as any ruin reward, the choice becomes unavailable for the civ for two turns.
+
+	Example: "[This Unit] chooses [a stash of gold]"
+
+	Applicable to: UnitTriggerable
+
 ## Global uniques
 !!! note ""
 
@@ -1236,6 +1243,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, Unit
 
+??? example  "May choose the Ancient Ruin discovery reward"
+	Allows the Unit to choose a reward from ruins. Limits: The chosen reward is blocked for 2 turns for the civ.
+
+	Applicable to: Global, Unit
+
 ## Nation uniques
 ??? example  "Starts with [tech]"
 	Example: "Starts with [Agriculture]"
@@ -1335,7 +1347,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	This unique is automatically hidden from users.
 
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, EventChoice
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, Ruins, EventChoice
 
 ??? example  "Will not be displayed in Civilopedia"
 	Supports conditionals that need only a Game as context and nothing else.
@@ -1371,7 +1383,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	This unique is automatically hidden from users.
 
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, EventChoice
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, Ruins, EventChoice
 
 ??? example  "Will not be displayed in Civilopedia"
 	Supports conditionals that need only a Game as context and nothing else.
@@ -1426,7 +1438,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	This unique is automatically hidden from users.
 
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, EventChoice
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, Ruins, EventChoice
 
 ??? example  "Will not be displayed in Civilopedia"
 	Supports conditionals that need only a Game as context and nothing else.
@@ -1723,7 +1735,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	This unique is automatically hidden from users.
 
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, EventChoice
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, Ruins, EventChoice
 
 ??? example  "Will not be displayed in Civilopedia"
 	Supports conditionals that need only a Game as context and nothing else.
@@ -1924,7 +1936,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	This unique is automatically hidden from users.
 
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, EventChoice
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, Ruins, EventChoice
 
 ??? example  "Will not be displayed in Civilopedia"
 	Supports conditionals that need only a Game as context and nothing else.
@@ -2574,6 +2586,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Unit
 
+??? example  "May choose the Ancient Ruin discovery reward"
+	Allows the Unit to choose a reward from ruins. Limits: The chosen reward is blocked for 2 turns for the civ.
+
+	Applicable to: Global, Unit
+
 ??? example  "Will not be displayed in Civilopedia"
 	Supports conditionals that need only a Game as context and nothing else.
 
@@ -2643,7 +2660,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	This unique is automatically hidden from users.
 
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, EventChoice
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, Ruins, EventChoice
 
 ??? example  "Will not be displayed in Civilopedia"
 	Supports conditionals that need only a Game as context and nothing else.
@@ -3297,6 +3314,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Ruins
 
+??? example  "[relativeAmount]% weight to this choice for AI decisions"
+	Example: "[+20]% weight to this choice for AI decisions"
+
+	This unique is automatically hidden from users.
+
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, Ruins, EventChoice
+
 ??? example  "Will not be displayed in Civilopedia"
 	Supports conditionals that need only a Game as context and nothing else.
 
@@ -3522,7 +3546,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	This unique is automatically hidden from users.
 
-	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, EventChoice
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Promotion, Ruins, EventChoice
 
 ??? example  "Will not be displayed in Civilopedia"
 	Supports conditionals that need only a Game as context and nothing else.
@@ -4410,6 +4434,7 @@ There is a conversion affecting dashes and leading/trailing blanks. Please make 
 *[relativeAmount]: This indicates a number, usually with a + or - sign, such as `+25` (this kind of parameter is often followed by '%' which is nevertheless not part of the value).
 *[resource]: The name of any resource.
 *[resourceFilter]: A resource name, type, 'all', or a Stat listed in the resource's improvementStats.
+*[ruinReward]: The name of an entry in Ruins.json.
 *[specialist]: The name of any specialist.
 *[speed]: The name of any speed.
 *[spyAction]: A spy action display name, e.g. `Counter-intelligence`, `Stealing Tech`.
