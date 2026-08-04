@@ -1,6 +1,7 @@
 package com.unciv.view
 
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
@@ -87,6 +88,11 @@ class TileView(private val tile: Tile,
         return tile.stats.getTileStats(city, viewingCiv?.getCiv())
     }
     @Readonly fun providesResources(viewingCiv: CivView): Boolean = tile.providesResources(viewingCiv.getCiv())
+
+    fun hasAirUnits(): Boolean = tile.airUnits.isNotEmpty()
+    val airUnitCount: Int get() = tile.airUnits.size
+    fun hasAirUnit(unit: MapUnit?): Boolean = tile.airUnits.contains(unit)
+    @Readonly fun hasEnemyInvisibleUnit(viewingCiv: Civilization): Boolean = tile.hasEnemyInvisibleUnit(viewingCiv)
 
     @Readonly fun getTileMap(): TileMapView? {
         val v = viewer ?: return null
