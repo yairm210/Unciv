@@ -16,13 +16,13 @@ class Chat(
     var unreadCount = 0
 
     /**
-     * One chat row. [toCivName] is reserved for private messages (protocol v2); null = public.
-     * Defaults exist so Gdx Json can deserialize persisted history.
+     * One chat row. [isPrivate] matches protocol v2 inbound `private: true` (see #15291);
+     * false = public. Defaults exist so Gdx Json can deserialize persisted history.
      */
     data class Line(
         var sender: String = "",
         var text: String = "",
-        var toCivName: String? = null,
+        var isPrivate: Boolean = false,
     )
 
     private val messages: MutableList<Line> =
@@ -48,8 +48,8 @@ class Chat(
     /**
      * Although public, this should only be called when a ChatMessageReceivedEvent is received once.
      */
-    fun addMessage(civName: String, message: String, toCivName: String? = null) {
-        messages.add(Line(civName, message, toCivName))
+    fun addMessage(civName: String, message: String, isPrivate: Boolean = false) {
+        messages.add(Line(civName, message, isPrivate))
         ChatHistoryPersistence.saveMessages(gameId, messages)
     }
 

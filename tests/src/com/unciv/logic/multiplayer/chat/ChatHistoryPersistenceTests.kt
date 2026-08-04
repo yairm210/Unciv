@@ -20,7 +20,7 @@ class ChatHistoryPersistenceTests {
             Chat.Line("System", "Welcome to Chat!"),
             Chat.Line("Rome", "hello"),
             Chat.Line("Egypt", "hi there"),
-            Chat.Line("Rome", "psst", toCivName = "Egypt"),
+            Chat.Line("Rome", "psst", isPrivate = true),
         )
 
         ChatHistoryPersistence.writeTo(file, messages)
@@ -31,7 +31,7 @@ class ChatHistoryPersistenceTests {
         for (i in messages.indices) {
             assertEquals(messages[i].sender, loaded[i].sender)
             assertEquals(messages[i].text, loaded[i].text)
-            assertEquals(messages[i].toCivName, loaded[i].toCivName)
+            assertEquals(messages[i].isPrivate, loaded[i].isPrivate)
         }
 
         dir.deleteDirectory()
