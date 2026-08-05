@@ -55,7 +55,7 @@ class CityButton(val cityView: ForeignCityView, private val tileGroup: TileGroup
     private var isButtonMoved = false
     private var isViewable = true
 
-    val viewingPlayer = cityView.viewer
+    val viewingPlayer = cityView.getViewingCiv()
 
     @Readonly private fun belongsToViewingCiv() = cityView.belongsTo(viewingPlayer)
 
