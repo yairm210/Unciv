@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "unciv": {
+      "command": "./desktop/mcp-agent.sh"
+    }
+  }
+}

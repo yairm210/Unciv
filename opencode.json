@@ -3,7 +3,7 @@
   "mcp": {
     "unciv": {
       "type": "local",
-      "command": ["./gradlew", "-q", ":desktop:runMcpAgent"],
+      "command": ["./desktop/mcp-agent.sh"],
       "enabled": true
     }
   }
