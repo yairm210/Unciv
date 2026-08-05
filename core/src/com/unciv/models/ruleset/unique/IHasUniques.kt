@@ -56,10 +56,51 @@ interface IHasUniques : INamed {
     @Readonly
     fun forEachMatchingUnique(uniqueType: UniqueType, gameContext: GameContext, op: (unique: Unique)->Unit)
         = uniqueMap.forEachMatchingUnique(uniqueType, gameContext, op)
+    
+    /** Folds [accumulate] over every unique matching [uniqueType], starting from [initial]. Useful for e.g. summing up bonuses.
+     *  Not `inline` - interface members are virtual/open and Kotlin disallows `inline` on virtual members - so the accumulator
+     *  is held in a dedicated object's field rather than a captured `var`, to avoid the compiler boxing that `var` into a Ref. */
+    @Readonly
+    fun <T> accumulateForEachMatchingUnique(uniqueType: UniqueType, gameContext: GameContext, initial: T, accumulate: (T, Unique) -> T): T {
+        // interface methods can't be `inline`, so we make an accumulator object to reduce allocations
+        val accumulator = object : (Unique) -> Unit {
+            var acc = initial
+            @Suppress("OVERRIDE_BY_INLINE")
+            override inline fun invoke(unique: Unique) { acc = accumulate(acc, unique) }
+        }
+        forEachMatchingUnique(uniqueType, gameContext, accumulator)
+        return accumulator.acc
+    }
+
+    @Readonly
+    fun firstMatchingUniqueOrNull(uniqueType: UniqueType, gameContext: GameContext, filter:(Unique)->Boolean, predicate: (unique: Unique)->Boolean): Unique?
+        = uniqueMap.firstMatchingUniqueOrNull(uniqueType, gameContext, filter, predicate)
+    @Readonly
+    fun firstMatchingUniqueOrNull(uniqueType: UniqueType, gameContext: GameContext, predicate: (unique: Unique)->Boolean): Unique?
+        = uniqueMap.firstMatchingUniqueOrNull(uniqueType, gameContext, predicate)
+
+    @Readonly
+    fun hasMatchingUnique(uniqueType: UniqueType, gameContext: GameContext, filter: (unique: Unique)->Boolean, predicate: (unique: Unique)->Boolean): Boolean
+        = firstMatchingUniqueOrNull(uniqueType, gameContext, filter, predicate) != null
+    @Readonly
+    fun hasMatchingUnique(uniqueType: UniqueType, gameContext: GameContext = GameContext.EmptyState, predicate: (unique: Unique)->Boolean = { true }): Boolean
+        = firstMatchingUniqueOrNull(uniqueType, gameContext, predicate) != null
 
     @Readonly
     fun getMatchingTagUniques(uniqueTag: String, state: GameContext = GameContext.EmptyState) =
         uniqueMap.getMatchingTagUniques(uniqueTag, state)
+
+    /** @return A freshly allocated [List] snapshot of the uniques matching [uniqueType], for cases that need to mutate
+     *  [uniques] (or otherwise cannot use a live view) while iterating the result. */
+    @Readonly
+    fun getMatchingUniquesSnapshot(uniqueType: UniqueType, state: GameContext = GameContext.EmptyState) =
+        uniqueMap.getMatchingUniquesSnapshot(uniqueType, state)
+
+    /** @return A freshly allocated [List] snapshot of the uniques matching [uniqueTag], for cases that need to mutate
+     *  [uniques] (or otherwise cannot use a live view) while iterating the result. */
+    @Readonly
+    fun getMatchingTagUniquesSnapshot(uniqueTag: String, state: GameContext = GameContext.EmptyState) =
+        uniqueMap.getMatchingTagUniquesSnapshot(uniqueTag, state)
 
     @Readonly
     fun hasUnique(uniqueType: UniqueType, state: GameContext? = null) =

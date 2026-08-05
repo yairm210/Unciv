@@ -136,7 +136,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun hasTile() = ::currentTile.isInitialized
 
     @Transient
-    private var tempUniquesMap = UniqueMap()
+    @PublishedApi internal var tempUniquesMap = UniqueMap()
 
     @Transient
     /** Temp map excluding unit uniques*/
@@ -325,37 +325,127 @@ class MapUnit : IsPartOfGameInfoSerialization {
             yieldAll(civ.getMatchingUniques(uniqueType, gameContext))
     }
 
+    /** @return A freshly allocated [List] snapshot of the uniques matching [uniqueType], for cases that need to mutate
+     *  this unit's uniques (or otherwise cannot use a live view) while iterating the result. */
     @Readonly
-    fun forEachMatchingUnique(uniqueType: UniqueType, gameContext: GameContext = cache.state, op: (Unique)->Unit)
-        = forEachMatchingUnique(uniqueType, gameContext, checkCivInfoUniques = false, op)
-    @Readonly
-    fun forEachMatchingUnique(
-        uniqueType: UniqueType,
-        gameContext: GameContext = cache.state,
-        checkCivInfoUniques: Boolean,
-        op: (Unique)->Unit,
-    ) {
-        tempUniquesMap.forEachMatchingUnique(uniqueType, gameContext, op)
-        if (checkCivInfoUniques)
-            civ.forEachMatchingUnique(uniqueType, gameContext, op)
-    }
-
-    @Readonly
-    fun hasUnique(
+    fun getMatchingUniquesSnapshot(
         uniqueType: UniqueType,
         gameContext: GameContext = cache.state,
         checkCivInfoUniques: Boolean = false
-    ): Boolean {
-        return getMatchingUniques(uniqueType, gameContext, checkCivInfoUniques).any()
+    ): List<Unique> {
+        val list = ArrayList<Unique>()
+        forEachMatchingUnique(uniqueType, gameContext) { list.add(it) }
+        if (checkCivInfoUniques)
+            civ.forEachMatchingUnique(uniqueType, gameContext) { list.add(it) }
+        return list
     }
 
     @Readonly
-    fun getTriggeredUniques(
+    inline fun forEachMatchingUnique(uniqueType: UniqueType, gameContext: GameContext = cache.state, crossinline op: (Unique)->Unit)
+        = forEachMatchingUnique(uniqueType, gameContext, checkCivInfoUniques = false, op)
+    @Readonly
+    inline fun forEachMatchingUnique(
+        uniqueType: UniqueType,
+        gameContext: GameContext = cache.state,
+        checkCivInfoUniques: Boolean,
+        crossinline op: (Unique)->Unit,
+    )
+        = firstMatchingUniqueOrNull(uniqueType, gameContext, checkCivInfoUniques) { op(it); false }
+    /** Folds [accumulate] over every unique matching [uniqueType], starting from [initial]. Useful for e.g. summing up bonuses. */
+    @Readonly
+    inline fun <T> accumulateForEachMatchingUnique(uniqueType: UniqueType, gameContext: GameContext = cache.state, initial: T, crossinline accumulate: (T, Unique) -> T): T
+        = accumulateForEachMatchingUnique(uniqueType, gameContext, checkCivInfoUniques = false, initial, accumulate)
+    @Readonly
+    inline fun <T> accumulateForEachMatchingUnique(
+        uniqueType: UniqueType,
+        gameContext: GameContext = cache.state,
+        checkCivInfoUniques: Boolean,
+        initial: T,
+        crossinline accumulate: (T, Unique) -> T
+    ): T {
+        var acc = initial
+        forEachMatchingUnique(uniqueType, gameContext, checkCivInfoUniques) { acc = accumulate(acc, it) }
+        return acc
+    }
+
+    /** @return the unique matching [uniqueType] for which [selector] returns the highest value, or null if [selector] returns null for
+     *  every matching unique (useful to combine filtering and comparison in one step) or there are no matching uniques at all. */
+    @Readonly
+    inline fun maxByMatchingUnique(uniqueType: UniqueType, gameContext: GameContext = cache.state, crossinline selector: (Unique) -> Float?): Unique? {
+        var best: Unique? = null
+        var bestValue = Float.NEGATIVE_INFINITY
+        forEachMatchingUnique(uniqueType, gameContext) { unique ->
+            val value = selector(unique) ?: return@forEachMatchingUnique
+            if (value > bestValue) {
+                best = unique
+                bestValue = value
+            }
+        }
+        return best
+    }
+
+    @Readonly
+    inline fun firstMatchingUniqueOrNull(uniqueType: UniqueType, gameContext: GameContext = cache.state, noinline predicate: (Unique)->Boolean): Unique?
+        = firstMatchingUniqueOrNull(uniqueType, gameContext, checkCivInfoUniques = false, predicate)
+    @Readonly
+    fun firstMatchingUniqueOrNull(
+        uniqueType: UniqueType,
+        gameContext: GameContext = cache.state,
+        checkCivInfoUniques: Boolean,
+        predicate: (Unique)->Boolean,
+    ): Unique? {
+        val r = tempUniquesMap.firstMatchingUniqueOrNull(uniqueType, gameContext, predicate)?.let { return it }
+        if (r != null) return r
+        if (checkCivInfoUniques)
+            return civ.firstMatchingUniqueOrNull(uniqueType, gameContext, predicate)
+        return null
+    }
+
+    @Readonly
+    inline fun hasUnique(
+        uniqueType: UniqueType,
+        gameContext: GameContext = cache.state,
+        checkCivInfoUniques: Boolean = false,
+        noinline predicate: (Unique)->Boolean = {true}
+    ): Boolean {
+        return firstMatchingUniqueOrNull(uniqueType, gameContext, checkCivInfoUniques, predicate) != null
+    }
+
+    @Readonly
+    inline fun hasMatchingUnique(uniqueType: UniqueType, gameContext: GameContext = cache.state, noinline predicate: (Unique)->Boolean) =
+        hasUnique(uniqueType, gameContext, checkCivInfoUniques = false, predicate)
+
+    @Readonly
+    inline fun getTriggeredUniques(
         trigger: UniqueType,
         gameContext: GameContext = cache.state,
-        triggerFilter: (Unique) -> Boolean = { true }
+        noinline triggerFilter: (Unique) -> Boolean = { true }
     ): Sequence<Unique> {
         return tempUniquesMap.getTriggeredUniques(trigger, gameContext, triggerFilter)
+    }
+
+    @Readonly
+    inline fun forEachTriggeredUnique(
+        trigger: UniqueType,
+        gameContext: GameContext = cache.state,
+        crossinline triggerFilter: (Unique) -> Boolean = { true },
+        crossinline op: (Unique) -> Unit
+    ) {
+        tempUniquesMap.forEachTriggeredUnique(trigger, gameContext, triggerFilter, op)
+    }
+
+    /** @return a stable snapshot List of triggered uniques - unlike [forEachTriggeredUnique], safe to keep iterating
+     *  while triggering mutations to this unit's own uniques (which would otherwise risk a ConcurrentModificationException,
+     *  since [tempUniquesMap] is iterated live by [forEachTriggeredUnique]). */
+    @Readonly
+    inline fun getTriggeredUniquesSnapshot(
+        trigger: UniqueType,
+        gameContext: GameContext = cache.state,
+        crossinline triggerFilter: (Unique) -> Boolean = { true }
+    ): List<Unique> {
+        val list = ArrayList<Unique>()
+        forEachTriggeredUnique(trigger, gameContext, triggerFilter) { list.add(it) }
+        return list
     }
 
 
