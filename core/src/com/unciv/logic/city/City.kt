@@ -297,7 +297,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     @Readonly
     fun containsBuildingUnique(uniqueType: UniqueType, state: GameContext = this.state) =
-        cityConstructions.builtBuildingUniqueMap.getMatchingUniques(uniqueType, state).any()
+        cityConstructions.builtBuildingUniqueMap.firstMatchingUniqueOrNull(uniqueType, state) { true } != null
 
     @Readonly fun getGreatPersonPercentageBonus() = GreatPersonPointsBreakdown.getGreatPersonPercentageBonus(this)
     @Readonly fun getGreatPersonPoints() = GreatPersonPointsBreakdown(this).sum()
@@ -646,25 +646,46 @@ class City : IsPartOfGameInfoSerialization, INamed {
     }
 
     @Readonly
-    fun forEachMatchingUnique(uniqueType: UniqueType, op: (unique: Unique)->Unit)
-        = forEachMatchingUnique(uniqueType, state, true, op)
+    fun firstMatchingUniqueOrNull(uniqueType: UniqueType, predicate: (unique: Unique)->Boolean): Unique?
+        = firstMatchingUniqueOrNull(uniqueType, state, true, predicate)
     @Readonly
-    fun forEachMatchingUnique(uniqueType: UniqueType, gameContext: GameContext, op: (unique: Unique)->Unit)
-        = forEachMatchingUnique(uniqueType, gameContext, true, op)
+    fun firstMatchingUniqueOrNull(uniqueType: UniqueType, gameContext: GameContext, predicate: (unique: Unique)->Boolean): Unique?
+        = firstMatchingUniqueOrNull(uniqueType, gameContext, true, predicate)
     @Readonly
-    fun forEachMatchingUnique(
+    fun firstMatchingUniqueOrNull(
         uniqueType: UniqueType,
         gameContext: GameContext = state,
         includeCivUniques: Boolean,
-        op: (unique: Unique)->Unit,
-    ) {
+        predicate: (unique: Unique)->Boolean,
+    ): Unique? {
         if (includeCivUniques) {
-            civ.forEachMatchingUnique(uniqueType, gameContext, op)
-            forEachLocalMatchingUnique(uniqueType, gameContext, op)
+            return civ.firstMatchingUniqueOrNull(uniqueType, gameContext, predicate)
+                ?: firstLocalMatchingUniqueOrNull(uniqueType, gameContext, predicate)
         } else {
-            cityConstructions.builtBuildingUniqueMap.forEachMatchingUnique(uniqueType, state, isTimedUniqueFilter, op)
-            religion.forEachMatchingUnique(uniqueType, state, isTimedUniqueFilter, op)
+            return cityConstructions.builtBuildingUniqueMap.firstMatchingUniqueOrNull(uniqueType, state, isTimedUniqueFilter, predicate)
+                ?: religion.firstMatchingUniqueOrNull(uniqueType, state, isTimedUniqueFilter, predicate)
         }
+    }
+
+    @Readonly
+    fun forEachMatchingUnique(uniqueType: UniqueType, op: (unique: Unique)->Unit) {
+        firstMatchingUniqueOrNull(uniqueType, state, true) {op(it); false}
+    }
+    @Readonly
+    fun forEachMatchingUnique(uniqueType: UniqueType, gameContext: GameContext, op: (unique: Unique)->Unit) {
+        firstMatchingUniqueOrNull(uniqueType, gameContext, true) {op(it); false}
+    }
+    @Readonly
+    fun forEachMatchingUnique(uniqueType: UniqueType, gameContext: GameContext = state, includeCivUniques: Boolean, op: (unique: Unique)->Unit) {
+        firstMatchingUniqueOrNull(uniqueType, gameContext, includeCivUniques) {op(it); false}
+    }
+
+    /** Folds [accumulate] over every unique matching [uniqueType], starting from [initial]. Useful for e.g. summing up bonuses. */
+    @Readonly
+    inline fun <T> accumulateForEachMatchingUnique(uniqueType: UniqueType, gameContext: GameContext = state, initial: T, crossinline accumulate: (T, Unique) -> T): T {
+        var acc = initial
+        forEachMatchingUnique(uniqueType, gameContext) { acc = accumulate(acc, it) }
+        return acc
     }
 
     // Uniques special to this city
@@ -680,9 +701,13 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     // Uniques special to this city
     @Readonly
-    fun forEachLocalMatchingUnique(uniqueType: UniqueType, gameContext: GameContext = state, op: (unique: Unique)->Unit) {
-        cityConstructions.builtBuildingUniqueMap.forEachMatchingUnique(uniqueType, gameContext, isLocalUniqueFilter, op)
-        religion.forEachMatchingUnique(uniqueType, gameContext, op)
+    inline fun firstLocalMatchingUniqueOrNull(uniqueType: UniqueType, gameContext: GameContext = state, crossinline predicate: (unique: Unique)->Boolean): Unique?
+        = cityConstructions.builtBuildingUniqueMap.firstMatchingUniqueOrNull(uniqueType, gameContext, isLocalUniqueFilter, predicate)
+        ?: religion.firstMatchingUniqueOrNull(uniqueType, gameContext, predicate)
+
+    @Readonly
+    inline fun forEachLocalMatchingUnique(uniqueType: UniqueType, gameContext: GameContext = state, crossinline op: (unique: Unique)->Unit) {
+        firstLocalMatchingUniqueOrNull(uniqueType, gameContext, {op(it); false })
     }
 
     // Uniques coming from this city, but that should be provided globally
@@ -699,11 +724,15 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     // Uniques coming from this city, but that should be provided globally
     @Readonly
-    fun forEachMatchingUniqueWithNonLocalEffects(uniqueType: UniqueType, gameContext: GameContext, op: (unique: Unique)->Unit)
-        = cityConstructions.builtBuildingUniqueMap.forEachMatchingUnique(uniqueType, gameContext, nonLocalUniqueFilter, op)
+    inline fun firstMatchingUniqueWithNonLocalEffectsOrNull(uniqueType: UniqueType, gameContext: GameContext, crossinline predicate: (unique: Unique)->Boolean): Unique?
+        = cityConstructions.builtBuildingUniqueMap.firstMatchingUniqueOrNull(uniqueType, gameContext, nonLocalUniqueFilter, predicate)
+    @Readonly
+    inline fun forEachMatchingUniqueWithNonLocalEffects(uniqueType: UniqueType, gameContext: GameContext, crossinline op: (unique: Unique)->Unit)
+        = firstMatchingUniqueWithNonLocalEffectsOrNull(uniqueType, gameContext) { op(it); false }
 
     // All uniques affecting this city: both local uniques and civ uniques.
     // This replaces LocalUniqueCache#forCityGetMatchingUniques
+    // Not inline: civ.forEachMatchingUnique is itself not inline (3+ inner calls)
     @Readonly
     fun forEachAffectingMatchingUnique(uniqueType: UniqueType, gameContext: GameContext = state, op: (unique: Unique)->Unit) {
         forEachLocalMatchingUnique(uniqueType, gameContext, op)
@@ -739,23 +768,53 @@ class City : IsPartOfGameInfoSerialization, INamed {
     }
 
     @Readonly
+    fun hasMatchingUnique(uniqueType: UniqueType, predicate: (unique: Unique)->Boolean)
+        = firstMatchingUniqueOrNull(uniqueType, state, true, predicate) != null
+    @Readonly
+    fun hasMatchingUnique(uniqueType: UniqueType, gameContext: GameContext, includeCivUniques: Boolean = true, predicate: (unique: Unique)->Boolean = {true})
+        = firstMatchingUniqueOrNull(uniqueType, gameContext, includeCivUniques, predicate) != null
+
+    @Readonly
+    fun firstTriggeredUniqueOrNull(
+        trigger: UniqueType,
+        gameContext: GameContext = state,
+        triggerFilter: (Unique) -> Boolean = { true },
+        includeCivUniques: Boolean = true,
+        predicate: (Unique) -> Boolean): Unique? {
+        if (includeCivUniques) {
+            return civ.firstTriggeredUniqueOrNull(trigger, gameContext, triggerFilter, predicate)
+                ?: firstLocalTriggeredUniqueOrNull(trigger, gameContext, triggerFilter, predicate)
+        }
+        else {
+            fun filter(unique: Unique): Boolean  =
+                unique.getModifiers(trigger).any(triggerFilter) && unique.conditionalsApply(gameContext)
+            return cityConstructions.builtBuildingUniqueMap.firstUniqueOrNull(::filter, predicate)
+                ?: religion.firstUniqueOrNull(::filter, predicate)
+        }
+    }
+
+    // Not inline: firstTriggeredUniqueOrNull delegates to 3+ inner calls and has local functions
+    @Readonly
     fun forEachTriggeredUnique(
         trigger: UniqueType,
         gameContext: GameContext = state,
         triggerFilter: (Unique) -> Boolean = { true },
         includeCivUniques: Boolean = true,
         op: (Unique) -> Unit) {
-        if (includeCivUniques) {
-            civ.forEachTriggeredUnique(trigger, gameContext, triggerFilter, op)
-            forEachLocalTriggeredUnique(trigger, gameContext, triggerFilter, op)
-        }
-        else {
-            fun filter(unique: Unique): Boolean  =
-                unique.getModifiers(trigger).any(triggerFilter) && unique.conditionalsApply(gameContext)
-            fun multipliedOp(unique: Unique) = unique.forEachMultiplied(gameContext, op)
-            cityConstructions.builtBuildingUniqueMap.forEachUnique(::filter, ::multipliedOp)
-            religion.forEachUnique(::filter, ::multipliedOp)
-        }
+        firstTriggeredUniqueOrNull(trigger, gameContext, triggerFilter, includeCivUniques) {op(it); false}
+    }
+
+    /** @return A freshly allocated [List] snapshot of the triggered uniques, for cases that need to trigger uniques
+     *  that may mutate this city's own uniques (or otherwise cannot use a live view) while iterating the result. */
+    @Readonly
+    fun getTriggeredUniquesSnapshot(
+        trigger: UniqueType,
+        gameContext: GameContext = state,
+        triggerFilter: (Unique) -> Boolean = { true },
+        includeCivUniques: Boolean = true): List<Unique> {
+        val list = ArrayList<Unique>()
+        forEachTriggeredUnique(trigger, gameContext, triggerFilter, includeCivUniques) { list.add(it) }
+        return list
     }
 
     @Readonly
@@ -768,6 +827,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         }.flatMap { it.getMultiplied(gameContext) }
     }
 
+    // Not inline: the canonical firstLocalTriggeredUniqueOrNull below uses local functions, which inline functions can't contain
     @Readonly
     fun forEachLocalTriggeredUnique(trigger: UniqueType, gameContext: GameContext = state, op: (Unique)->Unit)
         = forEachLocalTriggeredUnique(trigger, gameContext, {true}, op)
@@ -775,12 +835,21 @@ class City : IsPartOfGameInfoSerialization, INamed {
     // UniqueMap lacks a way to iterate over all Uniques without allocations, so this is not *dramatically* faster than getLocalTriggeredUniques
     fun forEachLocalTriggeredUnique(trigger: UniqueType, gameContext: GameContext = state,
                                  triggerFilter: (Unique) -> Boolean, op: (Unique)->Unit) {
+        firstLocalTriggeredUniqueOrNull(trigger, gameContext, triggerFilter) {op(it); false}
+    }
+    @Readonly
+    fun firstLocalTriggeredUniqueOrNull(trigger: UniqueType, gameContext: GameContext = state, predicate: (Unique)->Boolean): Unique?
+        = firstLocalTriggeredUniqueOrNull(trigger, gameContext, {true}, predicate)
+    @Readonly
+    // UniqueMap lacks a way to iterate over all Uniques without allocations, so this is not *dramatically* faster than getLocalTriggeredUniques
+    fun firstLocalTriggeredUniqueOrNull(trigger: UniqueType, gameContext: GameContext = state,
+                                    triggerFilter: (Unique) -> Boolean, predicate: (Unique)->Boolean): Unique? {
         fun uniqueFilter(unique: Unique): Boolean
             = unique.getModifiers(trigger).any(triggerFilter) && unique.conditionalsApply(gameContext)
         fun buildingFilter(unique: Unique): Boolean
             = unique.isLocalEffect && uniqueFilter(unique)
-        cityConstructions.builtBuildingUniqueMap.forEachUnique(::buildingFilter, op)
-        religion.forEachUnique(::uniqueFilter, op)
+        return cityConstructions.builtBuildingUniqueMap.firstUniqueOrNull(::buildingFilter, predicate)
+            ?: religion.firstUniqueOrNull(::uniqueFilter, predicate)
     }
 
     //endregion

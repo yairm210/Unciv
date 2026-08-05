@@ -288,6 +288,36 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
                     }
                 }.filterNotNull()
 
+    /** @return All tiles in a hexagon of radius [distance], including the tile at [origin] and all up to [distance] steps away, as a
+     *  freshly allocated [List] snapshot that will not change if the map is mutated afterwards.
+     *  Respects map edges and world wrap. */
+    @Readonly
+    fun getTilesInDistanceSnapshot(origin: HexCoord, distance: Int): List<Tile> {
+        val list = ArrayList<Tile>()
+        forEachTileInDistance(origin, distance) { list.add(it) }
+        return list
+    }
+
+    /** @return All tiles in a hexagonal ring around [origin] with the distances in [range], as a freshly allocated [List] snapshot
+     *  that will not change if the map is mutated afterwards. Excludes the [origin] tile unless [range] starts at 0.
+     *  Respects map edges and world wrap. */
+    @Readonly
+    fun getTilesInDistanceRangeSnapshot(origin: HexCoord, range: IntRange): List<Tile> {
+        val list = ArrayList<Tile>()
+        forEachTileInDistanceRange(origin, range) { list.add(it) }
+        return list
+    }
+
+    /** @return All tiles in a hexagonal ring 1 tile wide around [origin] with the [distance], as a freshly allocated [List] snapshot
+     *  that will not change if the map is mutated afterwards. Contains the [origin] if and only if [distance] is <= 0.
+     *  Respects map edges and world wrap. */
+    @Readonly
+    fun getTilesAtDistanceSnapshot(origin: HexCoord, distance: Int): List<Tile> {
+        val list = ArrayList<Tile>()
+        forEachTileAtDistance(origin, distance) { list.add(it) }
+        return list
+    }
+
     /** @return All tiles in a hexagon of radius [distance], including the tile at [origin] and all up to [distance] steps away.
      *  Respects map edges and world wrap. */
     @Readonly
@@ -297,6 +327,47 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     fun forEachTileInDistance(origin: HexCoord, distance: Int, filter: (Tile)->Boolean, op: (Tile)->Unit) {
         for (i in 0..distance)
             forEachTileAtDistance(origin, i, filter, op)
+    }
+
+    /** @return The first tile in a hexagon of radius [distance] (including the tile at [origin]) for which [predicate] returns true, or null if none does.
+     *  Respects map edges and world wrap. */
+    @Readonly
+    fun firstTileInDistanceOrNull(origin: HexCoord, distance: Int, predicate: (Tile)->Boolean): Tile?
+        = firstTileInDistanceOrNull(origin, distance, {true}, predicate)
+    @Readonly
+    fun firstTileInDistanceOrNull(origin: HexCoord, distance: Int, filter: (Tile)->Boolean, predicate: (Tile)->Boolean): Tile? {
+        for (i in 0..distance) {
+            val result = firstTileAtDistanceOrNull(origin, i, filter, predicate)
+            if (result != null) return result
+        }
+        return null
+    }
+
+    /** @return Whether any tile in a hexagon of radius [distance] (including the tile at [origin]) matches [predicate].
+     *  Respects map edges and world wrap. */
+    @Readonly
+    fun anyTileInDistance(origin: HexCoord, distance: Int, predicate: (Tile)->Boolean): Boolean
+        = firstTileInDistanceOrNull(origin, distance, predicate) != null
+    @Readonly
+    fun anyTileInDistance(origin: HexCoord, distance: Int, filter: (Tile)->Boolean, predicate: (Tile)->Boolean): Boolean
+        = firstTileInDistanceOrNull(origin, distance, filter, predicate) != null
+
+    /** @return The number of tiles in a hexagon of radius [distance] (including the tile at [origin]) that match [predicate].
+     *  Respects map edges and world wrap. */
+    @Readonly
+    fun countTilesInDistance(origin: HexCoord, distance: Int, predicate: (Tile)->Boolean): Int {
+        var count = 0
+        forEachTileInDistance(origin, distance) { if (predicate(it)) count++ }
+        return count
+    }
+
+    /** Folds [accumulate] over every tile in a hexagon of radius [distance] (including the tile at [origin]), starting from [initial].
+     *  Useful for e.g. collecting matching tiles into a list/set/map without a separate forEach+add step. */
+    @Readonly
+    fun <T> accumulateForEachTileInDistance(origin: HexCoord, distance: Int, initial: T, accumulate: (T, Tile) -> T): T {
+        var acc = initial
+        forEachTileInDistance(origin, distance) { acc = accumulate(acc, it) }
+        return acc
     }
 
     /** @return All tiles in a hexagonal ring around [origin] with the distances in [range]. Excludes the [origin] tile unless [range] starts at 0.
@@ -310,6 +381,21 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             forEachTileAtDistance(origin, i, filter, op)
     }
 
+    /** @return The tile in a hexagonal ring around [origin] with the distances in [range] with the highest [selector] value, paired with that value,
+     *  or null if there are no tiles in range. Respects map edges and world wrap. */
+    fun <R : Comparable<R>> maxTileInDistanceRange(origin: HexCoord, range: IntRange, selector: (Tile)->R): Pair<Tile, R>? {
+        var bestTile: Tile? = null
+        var bestValue: R? = null
+        forEachTileInDistanceRange(origin, range) {
+            val value = selector(it)
+            if (bestValue == null || value > bestValue!!) {
+                bestTile = it
+                bestValue = value
+            }
+        }
+        return if (bestTile != null) bestTile to bestValue!! else null
+    }
+
     /** @return All tiles in a hexagonal ring 1 tile wide around [origin] with the [distance]. Contains the [origin] if and only if [distance] is <= 0.
      *  Respects map edges and world wrap. */
     @Readonly
@@ -317,13 +403,22 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         = forEachTileAtDistance(origin, distance, {true}, op)
     @Readonly
     fun forEachTileAtDistance(origin: HexCoord, distance: Int, filter: (Tile)->Boolean, op: (Tile)->Unit) {
+         firstTileAtDistanceOrNull(origin, distance, filter) { op(it); false }
+    }
+
+    /** @return The first tile in a hexagonal ring 1 tile wide around [origin] with the [distance], for which [predicate] returns true, or null if none does.
+     *  Respects map edges and world wrap. */
+    @Readonly
+    fun firstTileAtDistanceOrNull(origin: HexCoord, distance: Int, predicate: (Tile)->Boolean): Tile?
+        = firstTileAtDistanceOrNull(origin, distance, {true}, predicate)
+    @Readonly
+    fun firstTileAtDistanceOrNull(origin: HexCoord, distance: Int, filter: (Tile)->Boolean, predicate: (Tile)->Boolean): Tile? {
         if (distance <= 0) {
             val tile = get(origin)
-            if (filter(tile)) op(tile)
+            if (filter(tile) && predicate(tile)) return tile
         } else if (distance == 1) {
             for (tile in get(origin).neighbors) {
-                if (filter(tile))
-                    op(tile)
+                if (filter(tile) && predicate(tile)) return tile
             }
         } else {
             val centerX = origin.x
@@ -336,30 +431,37 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             var tile: Tile?
             repeat (distance) { // From 6 to 8
                 tile = getIfTileExistsOrNull(currentX, currentY)
-                if (tile != null && filter(tile)) op(tile)
-                // We want to get the tile on the other side of the clock,
-                // so if we're at current = origin-delta we want to get to origin+delta.
-                // The simplest way to do this is 2*origin - current = 2*origin- (origin - delta) = origin+delta
+                if (tile != null && filter(tile) && predicate(tile)) return tile
                 tile = getIfTileExistsOrNull(2 * centerX - currentX, 2 * centerY - currentY)
-                if (tile != null && filter(tile)) op(tile)
+                if (tile != null && filter(tile) && predicate(tile)) return tile
                 currentX += 1 // we're going upwards to the left, towards 8 o'clock
             }
             repeat (distance) { // 8 to 10
                 tile = getIfTileExistsOrNull(currentX, currentY)
-                if (tile != null && filter(tile)) op(tile)
+                if (tile != null && filter(tile) && predicate(tile)) return tile
                 tile = getIfTileExistsOrNull(2 * centerX - currentX, 2 * centerY - currentY)
-                if (tile != null && filter(tile)) op(tile)
+                if (tile != null && filter(tile) && predicate(tile)) return tile
                 currentX += 1
                 currentY += 1 // we're going up the left side of the hexagon so we're going "up" - +1,+1
             }
             repeat (distance) { // 10 to 12
                 tile = getIfTileExistsOrNull(currentX, currentY)
-                if (tile != null && filter(tile)) op(tile)
+                if (tile != null && filter(tile) && predicate(tile)) return tile
                 tile = getIfTileExistsOrNull(2 * centerX - currentX, 2 * centerY - currentY)
-                if (tile != null && filter(tile)) op(tile)
+                if (tile != null && filter(tile) && predicate(tile)) return tile
                 currentY += 1 // we're going up the top left side of the hexagon so we're heading "up and to the right"
             }
         }
+        return null
+    }
+
+    /** @return The number of tiles in a hexagonal ring 1 tile wide around [origin] with the [distance] that match [predicate].
+     *  Respects map edges and world wrap. */
+    @Readonly
+    fun countTilesAtDistance(origin: HexCoord, distance: Int, predicate: (Tile)->Boolean): Int {
+        var count = 0
+        forEachTileAtDistance(origin, distance) { if (predicate(it)) count++ }
+        return count
     }
 
     /** @return all tiles within [rectangle], respecting world edges and wrap.
