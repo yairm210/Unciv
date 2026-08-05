@@ -1,12 +1,14 @@
 package com.unciv.app.desktop.mcp
 
 import com.unciv.logic.GameInfo
+import com.unciv.logic.battle.Battle
+import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.Notification
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
-import com.unciv.models.UnitActionType
+import com.unciv.logic.trade.TradeOffer
 import com.unciv.ui.screens.victoryscreen.RankingType
 import com.unciv.ui.screens.victoryscreen.VictoryScreen
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
@@ -100,6 +102,20 @@ class GameStateView(private val visibility: VisibilityMode) {
                 put("movementLeft", unit.currentMovement)
                 putJsonArray("availableActions") {
                     availableActions(unit).forEach { add(JsonPrimitive(it)) }
+                }
+                // Valid names for promote_unit - the agent otherwise has to guess.
+                putJsonArray("availablePromotions") {
+                    unit.promotions.getAvailablePromotions().forEach { add(JsonPrimitive(it.name)) }
+                }
+                // Valid (x, y) targets for attack - the agent otherwise has to probe blindly.
+                if (unit.canAttack()) putJsonArray("attackableTiles") {
+                    for (target in TargetHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())) {
+                        add(buildJsonObject {
+                            put("x", target.tileToAttack.position.x)
+                            put("y", target.tileToAttack.position.y)
+                            put("defender", Battle.getMapCombatantOfTile(target.tileToAttack)?.getName())
+                        })
+                    }
                 }
             })
         }
@@ -203,6 +219,29 @@ class GameStateView(private val visibility: VisibilityMode) {
         }
     }
 
+    /** Trade requests and popup alerts a human would see and answer via the respond_to_trade/resolve_alert tools. */
+    fun pendingDecisions(agentCiv: Civilization): JsonObject = buildJsonObject {
+        putJsonArray("tradeRequests") {
+            for (request in agentCiv.tradeRequests) {
+                add(buildJsonObject {
+                    put("requestingCiv", agentCiv.gameInfo.getCivilizationOrNull(request.requestingCiv)?.civName ?: request.requestingCiv)
+                    // Naming from TradeRequest's own doc: "their" offers are what's offered to us, "our" offers are what's wanted from us.
+                    putJsonArray("offeredToUs") { request.trade.theirOffers.forEach { add(tradeOfferJson(it)) } }
+                    putJsonArray("wantedFromUs") { request.trade.ourOffers.forEach { add(tradeOfferJson(it)) } }
+                })
+            }
+        }
+        putJsonArray("alerts") {
+            agentCiv.popupAlerts.forEachIndexed { index, alert ->
+                add(buildJsonObject {
+                    put("index", index)
+                    put("type", alert.type.name)
+                    put("value", alert.value)
+                })
+            }
+        }
+    }
+
     /** Turn-start snapshot for [type], falling back to latest snapshot then live (as demographics does). */
     private fun statSnapshot(civ: Civilization, type: RankingType, gameInfo: GameInfo): Int {
         val snap = civ.statsHistory[gameInfo.turns] ?: civ.statsHistory.maxByOrNull { it.key }?.value
@@ -213,9 +252,10 @@ class GameStateView(private val visibility: VisibilityMode) {
         if (visibility == VisibilityMode.RESTRICTED && !tile.isExplored(agentCiv)) return null
         val visible = visibility == VisibilityMode.FULL || tile.isVisible(agentCiv)
         return buildJsonObject {
-            put("position", positionOf(tile))
+            put("x", tile.position.x)
+            put("y", tile.position.y)
             put("baseTerrain", tile.baseTerrain)
-            put("improvement", tile.getShownImprovement(agentCiv))
+            tile.getShownImprovement(agentCiv)?.let { put("improvement", it) }
             put("visible", visible)
             // A human remembers enemy cities they've seen even under fog: name, pop, religion, capital,
             // owner, defensive strength (CityButton.update / CityTable). Health only when the tile is
@@ -231,8 +271,8 @@ class GameStateView(private val visibility: VisibilityMode) {
                 if (visible) put("health", city.health)
             }
             if (visible) {
-                put("resource", tile.resource)
-                put("owningCity", tile.getCity()?.name)
+                tile.resource?.let { put("resource", it) }
+                city?.let { put("owningCity", it.name) }
                 tile.civilianUnit?.let { put("civilianUnit", it.name) }
                 tile.militaryUnit?.let { put("militaryUnit", it.name) }
             }
@@ -240,27 +280,12 @@ class GameStateView(private val visibility: VisibilityMode) {
     }
 
     /**
-     * [UnitActions.getUnitActions] (no type arg) enumerates every action provider, including
-     * addEscortAction/addSwapAction, which eagerly call [com.unciv.GUI.getWorldScreen] even
-     * though we're headless - that's an instant NPE, every time, for every land/sea unit.
-     * So instead of that enumerator, list only what's headless-safe to check:
-     * - mapped action types (FoundCity, ConstructImprovement, ...) via the type-filtered
-     *   overload, which invokes just that one provider - except ConnectRoad, which *also*
-     *   eagerly touches the world screen (for units that can build roads).
-     * - the common unmapped verbs (Fortify/Sleep/Explore/Automate), whose real availability
-     *   we derive from the same unit-state checks their GUI actions use internally, since
-     *   asking the crashing enumerator isn't an option.
+     * [UnitActions.getUnitActions] enumerates every action provider - addEscortAction/
+     * addSwapAction (the two that used to call [com.unciv.GUI.getWorldScreen] eagerly during
+     * enumeration) now guard on [com.unciv.GUI.isWorldLoaded], so this is headless-safe.
      */
-    private fun availableActions(unit: MapUnit): List<String> = buildList {
-        for (type in UnitActions.mappedActionTypes) {
-            if (type == UnitActionType.ConnectRoad) continue
-            if (UnitActions.getUnitActions(unit, type).any { it.action != null }) add(type.name)
-        }
-        if (unit.canFortify() && unit.hasMovement()) add(UnitActionType.Fortify.name)
-        if (!unit.isFortified() && !unit.canFortify() && !unit.isGuarding() && unit.hasMovement()) add(UnitActionType.Sleep.name)
-        if (!unit.baseUnit.movesLikeAirUnits && !unit.isExploring()) add(UnitActionType.Explore.name)
-        if (!unit.isAutomated() && unit.hasMovement()) add(UnitActionType.Automate.name)
-    }
+    private fun availableActions(unit: MapUnit): List<String> =
+        UnitActions.getUnitActions(unit).filter { it.action != null }.map { it.type.name }.distinct().toList()
 
     private fun notificationToJson(notification: Notification): JsonElement = buildJsonObject {
         put("text", notification.text)
@@ -271,4 +296,11 @@ class GameStateView(private val visibility: VisibilityMode) {
         put("x", tile.position.x)
         put("y", tile.position.y)
     }
+}
+
+/** Shared by [GameStateView.pendingDecisions] and UncivMcpServer's get_trade_options tool. */
+fun tradeOfferJson(offer: TradeOffer): JsonObject = buildJsonObject {
+    put("type", offer.type.name)
+    put("name", offer.name)
+    put("amount", offer.amount)
 }

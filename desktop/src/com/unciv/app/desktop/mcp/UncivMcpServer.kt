@@ -2,8 +2,16 @@ package com.unciv.app.desktop.mcp
 
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
-import com.unciv.logic.automation.unit.UnitAutomation
+import com.unciv.logic.battle.Battle
+import com.unciv.logic.battle.CityCombatant
+import com.unciv.logic.battle.MapUnitCombatant
+import com.unciv.logic.battle.TargetHelper
+import com.unciv.logic.civilization.AlertType
+import com.unciv.logic.civilization.NotificationCategory
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.civilization.diplomacy.Demand
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.city.CityFocus
 import com.unciv.logic.map.mapunit.MapUnit
@@ -15,6 +23,11 @@ import com.unciv.logic.multiplayer.isUsersTurn
 import com.unciv.logic.multiplayer.storage.AuthStatus
 import com.unciv.logic.multiplayer.storage.MultiplayerServer
 import com.unciv.logic.multiplayer.storage.UncivServerFileStorage
+import com.unciv.logic.trade.TradeLogic
+import com.unciv.logic.trade.TradeOffer
+import com.unciv.logic.trade.TradeOfferType
+import com.unciv.logic.trade.TradeOffersList
+import com.unciv.logic.trade.TradeRequest
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.stats.Stat
@@ -26,6 +39,7 @@ import io.modelcontextprotocol.kotlin.sdk.types.Implementation
 import io.modelcontextprotocol.kotlin.sdk.types.ServerCapabilities
 import io.modelcontextprotocol.kotlin.sdk.types.TextContent
 import io.modelcontextprotocol.kotlin.sdk.types.ToolSchema
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.buildJsonObject
@@ -37,9 +51,9 @@ import kotlinx.serialization.json.putJsonObject
 
 /**
  * MCP tool surface for the LLM counterparty. One [Server] per process, one connected game.
- * Each tool re-downloads the [GameInfo] fresh from the multiplayer server before mutating it,
- * mirroring [com.unciv.logic.multiplayer.Multiplayer.skipCurrentPlayerTurn] - see the plan doc
- * for why we never cache a GameInfo across calls or clone before nextTurn().
+ * Unciv multiplayer is strictly turn-based - while it's our turn nothing else can write the
+ * save - so [GameInfo] is downloaded once and held in [GameConnection.heldGame] for the rest
+ * of the turn (see [holdGame]); [Server.registerEndTurn] is the only tool that uploads.
  */
 class UncivMcpServer {
     private var connection: GameConnection? = null
@@ -55,6 +69,10 @@ class UncivMcpServer {
         /** Index into ChatStore.Chat.messagesSince up to which get_events has already returned
          *  chat messages - so repeated calls don't re-show the same lines. */
         var lastChatIndex: Int = 0
+        /** Held while it's our turn - nothing else can write the save then. Flushed by end_turn.
+         *  ponytail: lost on process death; the server still holds the pre-turn state, so the
+         *  failure is "agent didn't move", never a corrupt save. Add a periodic flush if that bites. */
+        var heldGame: GameInfo? = null
     }
 
     val server: Server = Server(
@@ -154,7 +172,10 @@ class UncivMcpServer {
             }
             val civName = civ.civName
 
-            connection = GameConnection(gameId, civName, visibility)
+            val conn = GameConnection(gameId, civName, visibility)
+            // Don't report ChatStore's seeded INITIAL_MESSAGE as a real first chat line.
+            conn.lastChatIndex = ChatStore.getChatByGameId(gameId).length
+            connection = conn
             ChatWebSocket.requestMessageSend(Message.Join(listOf(gameId)))
 
             textResult("Connected to game $gameId as $civName")
@@ -182,13 +203,14 @@ class UncivMcpServer {
             description = "End the agent's turn, advancing the game (auto-plays any AI civs) until the next human's turn.",
         ) {
             val conn = requireConnection()
-            val multiplayerServer = MultiplayerServer()
-            val gameInfo = multiplayerServer.tryDownloadGame(conn.gameId)
+            val gameInfo = holdGame(conn)
             if (gameInfo.currentPlayer != conn.civId) {
+                conn.heldGame = null
                 return@addTool errorResult("It is not ${conn.civId}'s turn (current: ${gameInfo.currentPlayer})")
             }
             gameInfo.nextTurn()
-            multiplayerServer.uploadGame(gameInfo, withPreview = true)
+            MultiplayerServer().uploadGame(gameInfo, withPreview = true)
+            conn.heldGame = null
             textResult("Turn ended. Now turn ${gameInfo.turns}, current player: ${gameInfo.currentPlayer}")
         }
     }
@@ -278,6 +300,36 @@ class UncivMcpServer {
         ) {
             withGame { gameInfo, civ, view -> jsonResult(view.civIntel(civ, gameInfo)) }
         }
+
+        addTool(
+            name = "get_pending_decisions",
+            description = "Trade requests and alerts (demands, declarations of friendship, and informational events) " +
+                "raised by other civs that need a response. Use respond_to_trade / resolve_alert to answer them.",
+        ) {
+            withGame { gameInfo, civ, view -> jsonResult(view.pendingDecisions(civ)) }
+        }
+
+        addTool(
+            name = "get_trade_options",
+            description = "What can be offered to, and asked of, a civilization in a trade - resource/gold amounts are the maximum tradable. " +
+                "Use the (type, name) pairs from here in propose_trade.",
+            inputSchema = ToolSchema(
+                properties = buildJsonObject { putJsonObject("targetCivName") { put("type", "string") } },
+                required = listOf("targetCivName"),
+            ),
+        ) { request ->
+            val targetCivName = request.arguments?.get("targetCivName")?.jsonPrimitive?.content
+                ?: return@addTool errorResult("targetCivName required")
+            withGame { gameInfo, civ, view ->
+                val target = gameInfo.getCivilizationOrNull(targetCivName)
+                    ?: return@withGame errorResult(unknownCivError(gameInfo, targetCivName))
+                val tradeLogic = TradeLogic(civ, target)
+                jsonResult(buildJsonObject {
+                    putJsonArray("weCanOffer") { tradeLogic.ourAvailableOffers.forEach { add(tradeOfferJson(it)) } }
+                    putJsonArray("weCanRequest") { tradeLogic.theirAvailableOffers.forEach { add(tradeOfferJson(it)) } }
+                })
+            }
+        }
     }
 
     private fun Server.registerActionTools() {
@@ -360,8 +412,64 @@ class UncivMcpServer {
         }
 
         addTool(
+            name = "attack",
+            description = "Attack an enemy unit or city, moving into range first if needed. " +
+                "Use the attackableTiles on get_units' units for valid (x, y) targets.",
+            inputSchema = ToolSchema(
+                properties = buildJsonObject {
+                    putJsonObject("unitId") { put("type", "integer") }
+                    putJsonObject("x") { put("type", "integer"); put("description", "Position of the tile to attack, not the tile to attack from") }
+                    putJsonObject("y") { put("type", "integer") }
+                },
+                required = listOf("unitId", "x", "y"),
+            ),
+        ) { request ->
+            val args = request.arguments ?: return@addTool errorResult("Missing arguments")
+            val unitId = args["unitId"]?.jsonPrimitive?.int ?: return@addTool errorResult("unitId required")
+            val x = args["x"]?.jsonPrimitive?.int ?: return@addTool errorResult("x required")
+            val y = args["y"]?.jsonPrimitive?.int ?: return@addTool errorResult("y required")
+            mutateGame { gameInfo, civ ->
+                val unit = civ.units.getCivUnits().firstOrNull { it.id == unitId }
+                    ?: return@mutateGame errorResult(unknownUnitError(civ, unitId))
+                if (!unit.canAttack()) return@mutateGame errorResult("Unit $unitId can't attack right now")
+                val targets = TargetHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
+                val target = targets.firstOrNull { it.tileToAttack.position.x == x && it.tileToAttack.position.y == y }
+                    ?: return@mutateGame errorResult("No attackable target at ($x, $y) for unit $unitId; valid: " +
+                        targets.joinToString { "(${it.tileToAttack.position.x}, ${it.tileToAttack.position.y})" })
+                Battle.moveAndAttack(MapUnitCombatant(unit), target)
+                null
+            }
+        }
+
+        addTool(
+            name = "bombard",
+            description = "Bombard the strongest attackable enemy in range from a city (cities with a garrison and enough population can bombard without a unit).",
+            inputSchema = ToolSchema(
+                properties = buildJsonObject { putJsonObject("cityName") { put("type", "string") } },
+                required = listOf("cityName"),
+            ),
+        ) { request ->
+            val cityName = request.arguments?.get("cityName")?.jsonPrimitive?.content
+                ?: return@addTool errorResult("cityName required")
+            mutateGame { gameInfo, civ ->
+                val city = civ.cities.firstOrNull { it.name == cityName }
+                    ?: return@mutateGame errorResult(unknownCityError(civ, cityName))
+                if (!city.canBombard()) return@mutateGame errorResult("$cityName can't bombard right now (already attacked, or no target in range)")
+                val targets = TargetHelper.getBombardableTiles(city)
+                    .mapNotNull { Battle.getMapCombatantOfTile(it) }
+                    .filterNot { it is MapUnitCombatant && it.isCivilian() }
+                    .toList()
+                if (targets.isEmpty()) return@mutateGame errorResult("No bombardable target in range of $cityName")
+                val target = targets.maxByOrNull { com.unciv.logic.battle.BattleDamage.calculateDamageToDefender(CityCombatant(city), it) }!!
+                Battle.attack(CityCombatant(city), target)
+                null
+            }
+        }
+
+        addTool(
             name = "unit_action",
-            description = "Invoke a named unit action (e.g. FoundCity, Fortify, Sleep, Explore, Upgrade, ConstructImprovement) on a unit.",
+            description = "Invoke a named unit action (e.g. FoundCity, Fortify, Sleep, Explore, Upgrade, DisbandUnit, ConstructImprovement) on a unit. " +
+                "Use promote_unit for Promote - it needs a promotion name.",
             inputSchema = ToolSchema(
                 properties = buildJsonObject {
                     putJsonObject("unitId") { put("type", "integer") }
@@ -378,42 +486,51 @@ class UncivMcpServer {
             mutateGame { gameInfo, civ ->
                 val unit: MapUnit = civ.units.getCivUnits().firstOrNull { it.id == unitId }
                     ?: return@mutateGame errorResult(unknownUnitError(civ, unitId))
-                // Fortify/Sleep/Explore/Automate aren't in UnitActions' mapped-provider table, so
-                // invokeUnitAction would fall back to enumerating every provider - including
-                // addEscortAction/addSwapAction, which crash headless (see GameStateView.units()).
-                // Mutate the same unit state their GUI actions do, directly, instead.
+                // Promote/DisbandUnit/Skip's real actions open a screen or popup - GUI calls that
+                // stay crashy headless even with GUI.isWorldLoaded() guards, since there's no
+                // world screen to open them on at all. Handle their headless-equivalent directly;
+                // everything else is a plain, pure mutation invokeUnitAction can run as-is.
                 when (actionType) {
-                    UnitActionType.Fortify -> {
-                        if (!unit.canFortify() || !unit.hasMovement()) return@mutateGame errorResult("Unit $unitId can't fortify right now")
-                        unit.fortify()
+                    UnitActionType.Promote -> return@mutateGame errorResult("Use promote_unit to promote unit $unitId (needs a promotion name)")
+                    UnitActionType.DisbandUnit -> {
+                        if (!unit.hasMovement()) return@mutateGame errorResult("Unit $unitId can't disband right now")
+                        unit.disband()
+                        unit.civ.updateStatsForNextTurn()
                     }
-                    UnitActionType.Sleep -> {
-                        if (unit.isFortified() || unit.canFortify() || unit.isGuarding() || !unit.hasMovement())
-                            return@mutateGame errorResult("Unit $unitId can't sleep right now")
-                        unit.action = UnitActionType.Sleep.value
-                    }
-                    UnitActionType.Explore -> {
-                        if (unit.baseUnit.movesLikeAirUnits) return@mutateGame errorResult("Air units can't explore")
-                        unit.action = UnitActionType.Explore.value
-                        if (unit.hasMovement()) UnitAutomation.automatedExplore(unit)
-                    }
-                    UnitActionType.Automate -> {
-                        if (!unit.hasMovement()) return@mutateGame errorResult("Unit $unitId can't automate right now")
-                        unit.automated = true
-                        UnitAutomation.automateUnitMoves(unit)
+                    UnitActionType.Skip -> {
+                        if (!unit.hasMovement()) return@mutateGame errorResult("Unit $unitId can't skip right now")
+                        unit.due = !unit.due
                     }
                     else -> {
-                        // Mapped types (FoundCity, ConstructImprovement, ...) are headless-safe.
-                        // Any other unmapped type would still hit the enumerator crash - catch it
-                        // rather than let the whole call NPE.
-                        val invoked = try {
-                            UnitActions.invokeUnitAction(unit, actionType)
-                        } catch (e: Exception) {
-                            return@mutateGame errorResult("Action $actionName isn't supported for unit $unitId in a headless session")
-                        }
-                        if (!invoked) return@mutateGame errorResult("Action $actionName is not available for unit $unitId right now")
+                        if (!UnitActions.invokeUnitAction(unit, actionType))
+                            return@mutateGame errorResult("Action $actionName is not available for unit $unitId right now")
                     }
                 }
+                null
+            }
+        }
+
+        addTool(
+            name = "promote_unit",
+            description = "Apply a promotion to a unit (spends accumulated XP).",
+            inputSchema = ToolSchema(
+                properties = buildJsonObject {
+                    putJsonObject("unitId") { put("type", "integer") }
+                    putJsonObject("promotionName") { put("type", "string") }
+                },
+                required = listOf("unitId", "promotionName"),
+            ),
+        ) { request ->
+            val args = request.arguments ?: return@addTool errorResult("Missing arguments")
+            val unitId = args["unitId"]?.jsonPrimitive?.int ?: return@addTool errorResult("unitId required")
+            val promotionName = args["promotionName"]?.jsonPrimitive?.content ?: return@addTool errorResult("promotionName required")
+            mutateGame { gameInfo, civ ->
+                val unit: MapUnit = civ.units.getCivUnits().firstOrNull { it.id == unitId }
+                    ?: return@mutateGame errorResult(unknownUnitError(civ, unitId))
+                val available = unit.promotions.getAvailablePromotions().map { it.name }.toList()
+                if (promotionName !in available)
+                    return@mutateGame errorResult("$promotionName is not available for unit $unitId; valid: $available")
+                unit.promotions.addPromotion(promotionName)
                 null
             }
         }
@@ -580,7 +697,141 @@ class UncivMcpServer {
                 null
             }
         }
+
+        addTool(
+            name = "respond_to_trade",
+            description = "Accept or decline a pending trade request from get_pending_decisions.",
+            inputSchema = ToolSchema(
+                properties = buildJsonObject {
+                    putJsonObject("requestingCivName") { put("type", "string") }
+                    putJsonObject("accept") { put("type", "boolean") }
+                },
+                required = listOf("requestingCivName", "accept"),
+            ),
+        ) { request ->
+            val args = request.arguments ?: return@addTool errorResult("Missing arguments")
+            val requestingCivName = args["requestingCivName"]?.jsonPrimitive?.content ?: return@addTool errorResult("requestingCivName required")
+            val accept = args["accept"]?.jsonPrimitive?.boolean ?: return@addTool errorResult("accept required")
+            mutateGame { gameInfo, civ ->
+                val requestingCiv = gameInfo.getCivilizationOrNull(requestingCivName)
+                    ?: return@mutateGame errorResult(unknownCivError(gameInfo, requestingCivName))
+                val tradeRequest = civ.tradeRequests.firstOrNull { it.requestingCiv == requestingCiv.civID }
+                    ?: return@mutateGame errorResult("No pending trade request from $requestingCivName")
+                // Mirrors TradePopup's Sounds-good/Not-this-time buttons, including the notification the human sees.
+                if (accept) {
+                    val tradeLogic = TradeLogic(civ, requestingCiv)
+                    tradeLogic.currentTrade.set(tradeRequest.trade)
+                    tradeLogic.acceptTrade()
+                    requestingCiv.addNotification("[${civ.civName}] has accepted your trade request", NotificationCategory.Trade, civ.civName, NotificationIcon.Trade)
+                } else {
+                    tradeRequest.decline(civ)
+                    requestingCiv.addNotification("[${civ.civName}] has denied your trade request", NotificationCategory.Trade, civ.civName, NotificationIcon.Trade)
+                }
+                civ.tradeRequests.remove(tradeRequest)
+                null
+            }
+        }
+
+        addTool(
+            name = "propose_trade",
+            description = "Propose a trade to a civilization: ourOffers is what we give, theirOffers is what we want back. " +
+                "Each offer is {type, name, amount} using (type, name) pairs from get_trade_options; amount only matters for Gold/Gold_Per_Turn/resources.",
+            inputSchema = ToolSchema(
+                properties = buildJsonObject {
+                    putJsonObject("targetCivName") { put("type", "string") }
+                    putJsonObject("ourOffers") { put("type", "array") }
+                    putJsonObject("theirOffers") { put("type", "array") }
+                },
+                required = listOf("targetCivName", "ourOffers", "theirOffers"),
+            ),
+        ) { request ->
+            val args = request.arguments ?: return@addTool errorResult("Missing arguments")
+            val targetCivName = args["targetCivName"]?.jsonPrimitive?.content ?: return@addTool errorResult("targetCivName required")
+            val ourOffersArg = args["ourOffers"] as? JsonArray ?: return@addTool errorResult("ourOffers required (array of {type, name, amount})")
+            val theirOffersArg = args["theirOffers"] as? JsonArray ?: return@addTool errorResult("theirOffers required (array of {type, name, amount})")
+            val ourSpecs = ourOffersArg.map { it as JsonObject }
+            val theirSpecs = theirOffersArg.map { it as JsonObject }
+            mutateGame { gameInfo, civ ->
+                val target = gameInfo.getCivilizationOrNull(targetCivName)
+                    ?: return@mutateGame errorResult(unknownCivError(gameInfo, targetCivName))
+                if (target == civ) return@mutateGame errorResult("Cannot target your own civilization")
+                val tradeLogic = TradeLogic(civ, target)
+
+                fun resolveOffer(spec: JsonObject, available: TradeOffersList): TradeOffer {
+                    val type = spec["type"]?.jsonPrimitive?.content
+                        ?: throw OfferError("Each offer needs a type")
+                    val name = spec["name"]?.jsonPrimitive?.content
+                        ?: throw OfferError("Each offer needs a name")
+                    val offerType = runCatching { TradeOfferType.valueOf(type) }.getOrNull()
+                        ?: throw OfferError("Unknown offer type $type")
+                    val avail = available.firstOrNull { it.type == offerType && it.name == name }
+                        ?: throw OfferError("$type $name is not available; call get_trade_options for valid entries")
+                    if (avail.type.numberType == TradeOfferType.TradeTypeNumberType.None) return avail.copy()
+                    val amount = spec["amount"]?.jsonPrimitive?.int ?: avail.amount
+                    if (amount !in 1..avail.amount) throw OfferError("$type $name amount must be between 1 and ${avail.amount}")
+                    return avail.copy(amount = amount)
+                }
+
+                try {
+                    ourSpecs.forEach { tradeLogic.currentTrade.ourOffers.add(resolveOffer(it, tradeLogic.ourAvailableOffers)) }
+                    theirSpecs.forEach { tradeLogic.currentTrade.theirOffers.add(resolveOffer(it, tradeLogic.theirAvailableOffers)) }
+                } catch (e: OfferError) {
+                    return@mutateGame errorResult(e.message!!)
+                }
+
+                // From the recipient's perspective their "their offers" are our "our offers" - see TradeTable's offer button.
+                target.tradeRequests.add(TradeRequest(civ.civID, tradeLogic.currentTrade.reverse()))
+                null
+            }
+        }
+
+        addTool(
+            name = "resolve_alert",
+            description = "Respond to a pending alert from get_pending_decisions by its index. accept matters only for " +
+                "demands (DemandToStopSettlingCitiesNear, DemandToStopSpreadingReligion, DemandToStopSpyingOnUs, " +
+                "DemandToNotAttackUs) and DeclarationOfFriendship; other alert types are purely informational and just get dismissed.",
+            inputSchema = ToolSchema(
+                properties = buildJsonObject {
+                    putJsonObject("index") { put("type", "integer") }
+                    putJsonObject("accept") { put("type", "boolean"); put("description", "Default true") }
+                },
+                required = listOf("index"),
+            ),
+        ) { request ->
+            val index = request.arguments?.get("index")?.jsonPrimitive?.int ?: return@addTool errorResult("index required")
+            val accept = request.arguments?.get("accept")?.jsonPrimitive?.boolean ?: true
+            mutateGame { gameInfo, civ ->
+                if (index !in civ.popupAlerts.indices)
+                    return@mutateGame errorResult("index $index out of range (${civ.popupAlerts.size} pending alerts)")
+                val alert = civ.popupAlerts[index]
+                val otherCiv = gameInfo.getCivilizationOrNull(alert.value)
+                val diplo = otherCiv?.let { civ.getDiplomacyManager(it) }
+                val demand = when (alert.type) {
+                    AlertType.DemandToStopSettlingCitiesNear -> Demand.DoNotSettleNearUs
+                    AlertType.DemandToStopSpreadingReligion -> Demand.DoNotSpreadReligion
+                    AlertType.DemandToStopSpyingOnUs -> Demand.DontSpyOnUs
+                    AlertType.DemandToNotAttackUs -> Demand.DoNotAttackUs
+                    else -> null
+                }
+                // Mirrors AlertPopup's addDemand/addDeclarationOfFriendship button actions; everything
+                // else (wonder built, tech researched, first contact, ...) has no state to apply - dismissing is the whole response.
+                if (demand != null && diplo != null) {
+                    if (accept) diplo.agreeToDemand(demand)
+                    else {
+                        diplo.refuseDemand(demand)
+                        if (demand == Demand.DoNotAttackUs) diplo.declareWar()
+                    }
+                } else if (alert.type == AlertType.DeclarationOfFriendship && diplo != null) {
+                    if (accept) diplo.signDeclarationOfFriendship()
+                    else diplo.otherCivDiplomacy().setFlag(DiplomacyFlags.DeclinedDeclarationOfFriendship, 20)
+                }
+                civ.popupAlerts.removeAt(index)
+                null
+            }
+        }
     }
+
+    private class OfferError(message: String) : Exception(message)
 
     private fun Server.registerChat() {
         addTool(
@@ -599,31 +850,39 @@ class UncivMcpServer {
         }
     }
 
-    /** Read-only helper: download, look up the agent's civ, hand it to [block]. */
+    /** Downloads and holds [GameInfo] for the rest of the turn, or returns the held copy - see
+     *  [GameConnection.heldGame]. Only holds if it's actually our turn; a stale download when
+     *  it isn't just gets re-fetched next call instead of being cached. */
+    private suspend fun holdGame(conn: GameConnection): GameInfo {
+        conn.heldGame?.let { return it }
+        val gameInfo = MultiplayerServer().tryDownloadGame(conn.gameId)
+        if (gameInfo.currentPlayer == conn.civId) conn.heldGame = gameInfo
+        return gameInfo
+    }
+
+    /** Read-only helper: use the held game (downloading it if needed), look up the agent's civ, hand it to [block]. */
     private suspend fun withGame(block: (GameInfo, com.unciv.logic.civilization.Civilization, GameStateView) -> CallToolResult): CallToolResult {
         val conn = requireConnection()
-        val gameInfo = MultiplayerServer().tryDownloadGame(conn.gameId)
+        val gameInfo = holdGame(conn)
         val civ = gameInfo.getCivilizationOrNull(conn.civId)
             ?: return errorResult("Civilization ${conn.civId} not found in game")
         return block(gameInfo, civ, GameStateView(conn.visibility))
     }
 
     /**
-     * Mutate-and-upload helper for act tools: download fresh, apply [block], upload without
-     * calling nextTurn() (only end_turn advances the game). [block] returns an error result to
-     * short-circuit, or null on success.
+     * Mutate helper for act tools: use the held game, apply [block], keep holding it - only
+     * end_turn uploads. [block] returns an error result to short-circuit, or null on success.
      */
     private suspend fun mutateGame(block: (GameInfo, com.unciv.logic.civilization.Civilization) -> CallToolResult?): CallToolResult {
         val conn = requireConnection()
-        val multiplayerServer = MultiplayerServer()
-        val gameInfo = multiplayerServer.tryDownloadGame(conn.gameId)
+        val gameInfo = holdGame(conn)
         val civ = gameInfo.getCivilizationOrNull(conn.civId)
             ?: return errorResult("Civilization ${conn.civId} not found in game")
         if (gameInfo.currentPlayer != conn.civId) {
+            conn.heldGame = null
             return errorResult("It is not ${conn.civId}'s turn (current: ${gameInfo.currentPlayer})")
         }
         block(gameInfo, civ)?.let { return it }
-        multiplayerServer.uploadGame(gameInfo, withPreview = true)
         return textResult("Applied")
     }
 }

@@ -73,9 +73,6 @@ object UnitActions {
             addUnmappedUnitActions(unit)             // No mapped getter: Enumerate all...
         }.filter { it.type == unitActionType }       // ...and take ones matching the type.
 
-    /** Action types with a directly-callable, headless-safe provider (no [GUI] use during enumeration) - see [getUnitActions] with a [UnitActionType]. */
-    val mappedActionTypes: Set<UnitActionType> get() = actionTypeToFunctions.keys
-
     private val actionTypeToFunctions = linkedMapOf<UnitActionType, (unit: MapUnit, tile: Tile) -> Sequence<UnitAction>>(
         // Determined by unit uniques
         UnitActionType.Transform to UnitActionsFromUniques::getTransformActions,
@@ -176,6 +173,8 @@ object UnitActions {
     private suspend fun SequenceScope<UnitAction>.addEscortAction(unit: MapUnit) {
         // Air units cannot escort
         if (unit.baseUnit.movesLikeAirUnits) return
+        // Depends on which units are selected in the world screen - nothing to check headless.
+        if (!GUI.isWorldLoaded()) return
 
         val worldScreen = GUI.getWorldScreen()
         val selectedUnits = worldScreen.bottomUnitTable.selectedUnits
@@ -215,6 +214,8 @@ object UnitActions {
         // have the visual bug that the tile overlays for the eligible swap locations are drawn for
         // /all/ selected units instead of only the first one. This could be fixed, but again,
         // swapping makes little sense for multiselect anyway.
+        // Depends on which units are selected in the world screen - nothing to check headless.
+        if (!GUI.isWorldLoaded()) return
         val worldScreen = GUI.getWorldScreen()
         if (worldScreen.bottomUnitTable.selectedUnits.size > 1) return
         // Only show the swap action if there is at least one possible swap movement
