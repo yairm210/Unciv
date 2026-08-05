@@ -18,6 +18,15 @@ import org.junit.runner.RunWith
 
 @RunWith(GdxTestRunner::class)
 class UniqueErrorTests {
+    private fun validateUnique(uniqueText: String) =
+        UniqueValidator(RulesetCache.getVanillaRuleset()).checkUnique(Unique(uniqueText), false, null)
+
+    private fun hasUnacceptableModifierWarning(uniqueText: String): Boolean =
+        validateUnique(uniqueText).any { it.text.contains("which is not an acceptable modifier for this unique") }
+
+    private fun commentAngleBracketWarnings(uniqueText: String) =
+        validateUnique(uniqueText).filter { it.text.contains("is a Comment containing") }
+
     @Test
     fun testMultipleUniqueTypesSameText() {
         val textToUniqueType = HashMap<String, UniqueType>()
@@ -100,6 +109,47 @@ class UniqueErrorTests {
         val uniqueWithSourceObject = Unique(uniqueText, sourceObjectType = UniqueTarget.Promotion)
         val errorListCorrectUniqueContainer = UniqueValidator(ruleset).checkUnique(uniqueWithSourceObject, false, null)
         assert(errorListCorrectUniqueContainer.getFinalSeverity() == RulesetErrorSeverity.OK)
+    }
+
+    @Test
+    fun testCommentUniqueWithAngleBracketsWarnsOnceInsteadOfPerModifier() {
+        RulesetCache.loadRulesets(noMods = true)
+        val uniqueText = "Comment [Adopt [Feudalism] <upon entering the [Medieval era]>]"
+
+        // The text inside a Comment is display-only, so it must not be validated as a modifier...
+        Assert.assertFalse(hasUnacceptableModifierWarning(uniqueText))
+
+        // ...but the modder still needs to know the `<...>` is parsed out and dropped from display,
+        // so exactly one warning fires, carrying both likely causes.
+        val warnings = commentAngleBracketWarnings(uniqueText)
+        Assert.assertEquals(1, warnings.size)
+        Assert.assertTrue(warnings.single().text.contains("removed from the displayed text"))
+        Assert.assertTrue(warnings.single().text.contains("use nested [] instead"))
+    }
+
+    @Test
+    fun testCommentUniqueWithMultipleAngleBracketsStillWarnsOnce() {
+        RulesetCache.loadRulesets(noMods = true)
+        val uniqueText = "Comment [see <one> and <two>]"
+
+        Assert.assertEquals(1, commentAngleBracketWarnings(uniqueText).size)
+    }
+
+    @Test
+    fun testPlainCommentUniqueHasNoValidationWarnings() {
+        RulesetCache.loadRulesets(noMods = true)
+        val uniqueText = "Comment [Plain display text]"
+
+        Assert.assertEquals(RulesetErrorSeverity.OK, validateUnique(uniqueText).getFinalSeverity())
+        Assert.assertTrue(commentAngleBracketWarnings(uniqueText).isEmpty())
+    }
+
+    @Test
+    fun testNonCommentUniqueStillRejectsUnacceptableModifier() {
+        RulesetCache.loadRulesets(noMods = true)
+        val uniqueText = "Blocks line-of-sight from tiles at same elevation <upon entering the [Medieval era]>"
+
+        Assert.assertTrue(hasUnacceptableModifierWarning(uniqueText))
     }
 
     @Test
