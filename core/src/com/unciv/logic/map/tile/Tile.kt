@@ -1205,6 +1205,16 @@ class Tile : IsPartOfGameInfoSerialization {
 
             if (player.playerType == PlayerType.Human)
                 player.exploredRegion.checkTilePosition(position, explorerPosition)
+
+            // Setup teammates share exploration permanently
+            if (player.teamId > 0 && player.isMajorCiv()) {
+                for (teammate in player.getTeammates()) {
+                    if (exploredBy.contains(teammate.civID)) continue
+                    exploredBy = exploredBy.withItem(teammate.civID)
+                    if (teammate.playerType == PlayerType.Human)
+                        teammate.exploredRegion.checkTilePosition(position, explorerPosition)
+                }
+            }
         } else {
             exploredBy = exploredBy.withoutItem(player.civID)
         }

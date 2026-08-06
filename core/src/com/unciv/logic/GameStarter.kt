@@ -6,6 +6,7 @@ import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.PopupAlert
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.files.MapSaver
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.TileMap
@@ -122,6 +123,10 @@ class GameStarter private constructor(
             gameInfo.setTransients() // needs to be before placeBarbarianUnit because it depends on the tilemap having its gameInfo set
         }
 
+        runAndMeasure("setupTeams") {
+            setupPermanentTeams()
+        }
+
         runAndMeasure("addCivStartingUnits") {
             addCivStartingUnits()
         }
@@ -169,6 +174,24 @@ class GameStarter private constructor(
             it.playerType == PlayerType.Human && it.nation.startIntroPart1.isNotEmpty()
         }.forEach {
             it.popupAlerts.add(PopupAlert(AlertType.StartIntro, ""))
+        }
+    }
+
+    /** Meet teammates and give permanent Declaration of Friendship. */
+    private fun setupPermanentTeams() {
+        val majors = gameInfo.civilizations.filter { it.isMajorCiv() }
+        for (civ in majors) {
+            for (teammate in civ.getTeammates()) {
+                if (!civ.knows(teammate))
+                    civ.diplomacyFunctions.makeCivilizationsMeet(teammate)
+                val diplo = civ.getDiplomacyManager(teammate) ?: continue
+                if (!diplo.hasFlag(DiplomacyFlags.DeclarationOfFriendship))
+                    diplo.signDeclarationOfFriendship()
+                // Permanent for the whole game — refresh every meet; turns countdown will be re-applied
+                // when teammates re-meet. Cap high enough for any speed.
+                diplo.setFlag(DiplomacyFlags.DeclarationOfFriendship, 9999)
+                diplo.otherCivDiplomacy().setFlag(DiplomacyFlags.DeclarationOfFriendship, 9999)
+            }
         }
     }
 
@@ -307,9 +330,12 @@ class GameStarter private constructor(
             ).mapNotNull {
                 // Resolve random players
                 when {
-                    it.chosenCiv != Constants.random -> Player(ruleset.nations[it.chosenCiv]!!, it.playerType, it.playerId)
-                    presetRandomNationsPool.isNotEmpty() -> Player(presetRandomNationsPool.removeLast(), it.playerType, it.playerId)
-                    randomNationsPool.isNotEmpty() -> Player(randomNationsPool.removeLast(), it.playerType, it.playerId)
+                    it.chosenCiv != Constants.random ->
+                        Player(ruleset.nations[it.chosenCiv]!!, it.playerType, it.playerId, it.teamId)
+                    presetRandomNationsPool.isNotEmpty() ->
+                        Player(presetRandomNationsPool.removeLast(), it.playerType, it.playerId, it.teamId)
+                    randomNationsPool.isNotEmpty() ->
+                        Player(randomNationsPool.removeLast(), it.playerType, it.playerId, it.teamId)
                     else -> null
                 }
             }.toMutableList()
@@ -369,10 +395,19 @@ class GameStarter private constructor(
                 civ.playerType = player.playerType
                 civ.playerId = player.playerId
                 civ.playerMinutesBeforeForceResign = newGameParameters.minutesUntilForceResign
+                if (civ.isMajorCiv())
+                    civ.teamId = player.teamId
             }
             else if (!civ.cityStateFunctions.initCityState(ruleset, newGameParameters.startingEra, usedMajorCivs, rng))
                 continue
             gameInfo.civilizations.add(civ)
+        }
+
+        // Ensure unassigned majors get unique team ids (all-zero would look like one team).
+        val majors = gameInfo.civilizations.filter { it.isMajorCiv() }
+        if (majors.isNotEmpty() && majors.all { it.teamId == 0 }) {
+            for ((index, civ) in majors.withIndex())
+                civ.teamId = index + 1
         }
     }
 

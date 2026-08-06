@@ -26,6 +26,17 @@ class DiplomacyFunctions(val civInfo: Civilization) {
     fun makeCivilizationsMeet(otherCiv: Civilization, warOnContact: Boolean = false) {
         meetCiv(otherCiv, warOnContact)
         otherCiv.diplomacyFunctions.meetCiv(civInfo, warOnContact)
+        if (!warOnContact)
+            establishTeamFriendship(otherCiv)
+    }
+
+    private fun establishTeamFriendship(otherCiv: Civilization) {
+        if (!civInfo.isTeammate(otherCiv)) return
+        val diplo = civInfo.getDiplomacyManager(otherCiv) ?: return
+        if (!diplo.hasFlag(DiplomacyFlags.DeclarationOfFriendship))
+            diplo.signDeclarationOfFriendship()
+        diplo.setFlag(DiplomacyFlags.DeclarationOfFriendship, 9999)
+        diplo.otherCivDiplomacy().setFlag(DiplomacyFlags.DeclarationOfFriendship, 9999)
     }
 
     private fun meetCiv(otherCiv: Civilization, warOnContact: Boolean = false) {
@@ -37,7 +48,6 @@ class DiplomacyFunctions(val civInfo: Civilization) {
 
         if (civInfo.isCurrentPlayer())
             UncivGame.Current.settings.addCompletedTutorialTask("Meet another civilization")
-
 
         if (civInfo.isCityState && otherCiv.isMajorCiv()) {
             if (warOnContact || otherCiv.isMinorCivAggressor()) return // No gift if they are bad people, or we are just about to be at war

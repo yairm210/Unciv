@@ -134,6 +134,11 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     /** Used in online multiplayer for human players */
     var playerId = ""
+    /**
+     * Permanent setup team id. Majors with the same positive [teamId] are teammates
+     * (shared war, fog, friendship). `0` is treated as unassigned until migration / GameStarter.
+     */
+    var teamId: Int = 0
     /** Used in online multiplayer, if a player exceed this time to complete their turn, others can force them to resign*/
     var playerMinutesBeforeForceResign = 3 * 24 * 60
     /** The Civ's gold reserves. Public get, private set - please use [addGold] method to modify. */
@@ -299,6 +304,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.gold = gold
         toReturn.playerType = playerType
         toReturn.playerId = playerId
+        toReturn.teamId = teamId
         toReturn.playerMinutesBeforeForceResign = playerMinutesBeforeForceResign
         toReturn.civName = civName
         toReturn.civID = civID
@@ -829,6 +835,20 @@ class Civilization : IsPartOfGameInfoSerialization {
     @Readonly fun isAtWarWith(otherCiv: Civilization) = diplomacyFunctions.isAtWarWith(otherCiv)
     @Readonly fun isAtWar() = diplomacy.values.any { it.diplomaticStatus == DiplomaticStatus.War && !it.otherCiv.isDefeated() }
     @Readonly fun getCivsAtWarWith() = diplomacy.values.filter { it.diplomaticStatus == DiplomaticStatus.War && !it.otherCiv.isDefeated() }.map { it.otherCiv }
+
+    /** True when both are major civs sharing a positive [teamId]. */
+    @Readonly
+    fun isTeammate(otherCiv: Civilization): Boolean {
+        if (otherCiv === this) return false
+        if (!isMajorCiv() || !otherCiv.isMajorCiv()) return false
+        if (teamId <= 0 || otherCiv.teamId <= 0) return false
+        return teamId == otherCiv.teamId
+    }
+
+    /** Living major-civ teammates (excludes this civ). */
+    @Readonly
+    fun getTeammates(): Sequence<Civilization> =
+        gameInfo.civilizations.asSequence().filter { isTeammate(it) && !it.isDefeated() }
 
 
     /**

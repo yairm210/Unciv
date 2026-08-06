@@ -214,6 +214,13 @@ class CivInfoTransientCache(val civInfo: Civilization) {
 
         newViewableTiles.addAll(civInfo.espionageManager.getTilesVisibleViaSpies())
 
+        // Permanent setup teammates share current vision (after their own units/cities are known).
+        for (teammate in civInfo.getTeammates()) {
+            newViewableTiles.addAll(teammate.viewableTiles)
+            newViewableTiles.addAll(teammate.cities.asSequence().flatMap { it.getTiles() })
+            newViewableTiles.addAll(teammate.units.getCivUnits().flatMap { unit -> unit.viewableTiles })
+        }
+
         civInfo.viewableTiles = newViewableTiles // to avoid concurrent modification problems
     }
 

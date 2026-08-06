@@ -54,14 +54,17 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
             diplomacyTable.add(getTradeButton(otherCiv)).row()
 
 
-            if (!diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship))
+            if (!diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
+                && !viewingCiv.isTeammate(otherCiv)
+            )
                 diplomacyTable.add(getDeclareFriendshipButton(otherCiv)).row()
 
             if (!diplomacyManager.hasFlag(DiplomacyFlags.Denunciation)
                 && !diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
+                && !viewingCiv.isTeammate(otherCiv)
             ) diplomacyTable.add(getDenounceButton(otherCiv, diplomacyManager)).row()
 
-            if (diplomaticRelationshipsCanChange)
+            if (diplomaticRelationshipsCanChange && !viewingCiv.isTeammate(otherCiv))
                 diplomacyTable.add(diplomacyScreen.getDeclareWarButton(diplomacyManager, otherCiv)).row()
 
         } else if (diplomaticRelationshipsCanChange) {

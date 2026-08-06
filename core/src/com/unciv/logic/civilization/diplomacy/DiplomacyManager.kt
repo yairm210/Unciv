@@ -524,6 +524,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     @Readonly
     fun canDeclareWar() = !civInfo.isDefeated() && !otherCiv.isDefeated()
             && turnsToPeaceTreaty() == 0 && diplomaticStatus != DiplomaticStatus.War
+            && !civInfo.isTeammate(otherCiv)
 
     fun declareWar(declareWarReason: DeclareWarReason = DeclareWarReason(WarType.DirectWar)) =
         DeclareWar.declareWar(this, declareWarReason)
