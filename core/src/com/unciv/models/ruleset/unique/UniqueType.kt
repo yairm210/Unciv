@@ -8,6 +8,7 @@ import com.unciv.models.ruleset.validation.Suppression
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import com.unciv.ui.audio.MusicTrackChooserFlags
+import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 
 // I didn't put this in a companion object because APPARENTLY doing that means you can't use it in the init function.
@@ -901,8 +902,22 @@ enum class UniqueType(
     OneTimeProvideResources("Instantly provides [positiveAmount] [stockpiledResource]", UniqueTarget.Triggerable),
     OneTimeSetStockpile("Set [stockpile] to [countable]", UniqueTarget.Triggerable, flags = setOf(UniqueFlag.AcceptsSpeedModifier)),
     OneTimeGainResource("Instantly gain [amount] [stockpile]", UniqueTarget.Triggerable, flags = setOf(UniqueFlag.AcceptsSpeedModifier)),
-    OneTimeGainStat("Gain [amount] [stat]", UniqueTarget.Triggerable, flags = setOf(UniqueFlag.AcceptsSpeedModifier)),
-    OneTimeGainStatRange("Gain [amount]-[amount] [stat]", UniqueTarget.Triggerable, flags = setOf(UniqueFlag.AcceptsSpeedModifier)),
+    OneTimeGainStat("Gain [amount] [stat]", UniqueTarget.Triggerable, flags = setOf(UniqueFlag.AcceptsSpeedModifier)) {
+        /** Only stats with a civ-wide field can actually be granted - see [Stat.statsWithCivWideField]. */
+        override fun parameterTypeMapInitializer(): ArrayList<List<UniqueParameterType>> {
+            @LocalState val map = super.parameterTypeMapInitializer()
+            map[1] = listOf(UniqueParameterType.CivWideStatName)
+            return map
+        }
+    },
+    OneTimeGainStatRange("Gain [amount]-[amount] [stat]", UniqueTarget.Triggerable, flags = setOf(UniqueFlag.AcceptsSpeedModifier)) {
+        /** Only stats with a civ-wide field can actually be granted - see [Stat.statsWithCivWideField]. */
+        override fun parameterTypeMapInitializer(): ArrayList<List<UniqueParameterType>> {
+            @LocalState val map = super.parameterTypeMapInitializer()
+            map[2] = listOf(UniqueParameterType.CivWideStatName)
+            return map
+        }
+    },
     OneTimeGainPantheon("Gain enough Faith for a Pantheon", UniqueTarget.Triggerable),
     OneTimeGainProphet("Gain enough Faith for [positiveAmount]% of a Great Prophet", UniqueTarget.Triggerable),
     OneTimeGainTechPercent("Research [relativeAmount]% of [tech]", UniqueTarget.Triggerable),

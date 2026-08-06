@@ -4,6 +4,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivFlags
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.validation.RulesetErrorSeverity
@@ -104,18 +105,18 @@ class UniqueErrorTests {
 
     @Test
     fun testOneTimeGainStatAcceptsCivWideStats() {
-        val errors = validateUnique("Gain 10 Gold")
+        val errors = validateUnique("Gain [10] [Gold]")
         Assert.assertEquals(RulesetErrorSeverity.OK, errors.getFinalSeverity())
     }
 
     @Test
-    fun testOneTimeGainStatWarnsForNonCivWideStats() {
-        assertOnlyCivWideStatsWarning("Gain 10 Food", "Food")
+    fun testOneTimeGainStatRejectsNonCivWideStats() {
+        assertOnlyCivWideStatsError("Gain [10] [Food]", "Food")
     }
 
     @Test
-    fun testOneTimeGainStatRangeWarnsForNonCivWideStats() {
-        assertOnlyCivWideStatsWarning("Gain 5-10 Production", "Production")
+    fun testOneTimeGainStatRangeRejectsNonCivWideStats() {
+        assertOnlyCivWideStatsError("Gain [5]-[10] [Production]", "Production")
     }
 
     @Test
@@ -180,10 +181,11 @@ class UniqueErrorTests {
         UniqueValidator(ruleset).checkUnique(Unique(uniqueText), false, null)
     }
 
-    private fun assertOnlyCivWideStatsWarning(uniqueText: String, statName: String) {
-        val warning = validateUnique(uniqueText)
-            .single { it.text.contains("only civ-wide stats") }
-        Assert.assertEquals(RulesetErrorSeverity.Warning, warning.errorSeverityToReport)
-        Assert.assertTrue(warning.text.contains(statName))
+    private fun assertOnlyCivWideStatsError(uniqueText: String, statName: String) {
+        val error = validateUnique(uniqueText)
+            .single { it.text.contains(UniqueValidator.whichDoesNotFitParameterType) }
+        Assert.assertEquals(RulesetErrorSeverity.Error, error.errorSeverityToReport)
+        Assert.assertTrue(error.text.contains(statName))
+        Assert.assertTrue(error.text.contains(UniqueParameterType.CivWideStatName.parameterName))
     }
 }
