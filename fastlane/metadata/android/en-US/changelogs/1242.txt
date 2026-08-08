@@ -1,0 +1,59 @@
+
+
+infra test for LLMs to find latency improvements (load game, next turn)
+
+.
+
+perf(cpu): Cityfilter optimization
+
+Disallow XP ruin rewards for civilian units in base rulesets
+
+View implementation - Mass refactor, create all views from an initial GameView, all linking back to source - see 
+
+View implementation - Create all views from an initial GameView - see 
+
+View implementation - Add propagating spectatorMode booleans (currently false everywhere) - see 
+
+View implementation - TileLayerCityButton, CityButton, TileLayerOverlay - see 
+
+Fixed build
+
+View implementation - TileLayerBorders, part 2 - TileView now gets to TileMapView, which includes more navigation functions - see 
+
+View implementation - TileLayerBorders, partial - see 
+
+View implementation - TileLayerMisc - see 
+
+chore: shownImprovement is nullable and respects setting, same as resource
+
+View implementation - TileLayerTerrain - see 
+
+View implementation - tileView as constructor param for TileGroup - see 
+
+View implementation - Separate CityView.viewingCiv() from CityView.owningCiv() - see 
+
+View implementation - GreatPersonPointsBreakdownPopup - see 
+
+View implementation - ForeignCivView - see 
+
+View implementation - ForeignMapUnitView - see 
+
+.
+
+View implementation - Separate CityView (for cities we have access to) and ForeignCityView (for cities we don't) - see 
+
+View implementation - CitizenManagementTable - see 
+
+View implementation - CityScreenTileTable, SpecialistAllocationTable - see 
+
+View implementation - CityScreenCityPickerTable - see 
+
+chore: Test runner overhaul - By SomeTroglodyte
+
+AI: workers take into account future adjacencies for improvements - By EmperorPinguin
+
+Visually indicate failed MP upload - By cy-elec
+
+Chat: nation-colored names, white body - By Fanfblrik
+
+fix: Warn when OneTimeGainStat is used with a non-civ-wide stat (food/production) - By mvanhorn
