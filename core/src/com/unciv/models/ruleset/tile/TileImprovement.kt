@@ -52,7 +52,7 @@ class TileImprovement : RulesetStatsObject() {
     }
 
     fun getDescription(ruleset: Ruleset): String  = ImprovementDescriptions.getDescription(this, ruleset)
-    fun getShortDecription() = ImprovementDescriptions.getShortDescription(this)
+    fun getShortDecription(ruleset: Ruleset) = ImprovementDescriptions.getShortDescription(this, ruleset)
 
     @Readonly fun isGreatImprovement() = hasUnique(UniqueType.GreatImprovement)
     @Readonly fun isRoad() = RoadStatus.entries.any { it != RoadStatus.None && it.name == this.name }

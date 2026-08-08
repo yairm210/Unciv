@@ -70,12 +70,20 @@ object ImprovementDescriptions {
             textList += FormattedLine()
             if (improvement.terrainsCanBeBuiltOn.size == 1) {
                 with (improvement.terrainsCanBeBuiltOn.first()) {
-                    textList += FormattedLine("{Can be built on} {$this}", link="Terrain/$this")
+                    // Filters like "Land" are not Terrain objects — no icon/link (avoids a dead icon column).
+                    textList += FormattedLine(
+                        "{Can be built on} {$this}",
+                        link = ruleset.terrains[this]?.makeLink() ?: ""
+                    )
                 }
             } else {
                 textList += FormattedLine("{Can be built on}:")
                 improvement.terrainsCanBeBuiltOn.forEach {
-                    textList += FormattedLine(it, link="Terrain/$it", indent=1)
+                    textList += FormattedLine(
+                        it,
+                        link = ruleset.terrains[it]?.makeLink() ?: "",
+                        indent = 1
+                    )
                 }
             }
         }
@@ -170,13 +178,15 @@ object ImprovementDescriptions {
         return lines.joinToString("\n")
     }
 
-    fun getShortDescription(improvement: TileImprovement) = sequence {
+    fun getShortDescription(improvement: TileImprovement, ruleset: Ruleset) = sequence {
         if (improvement.terrainsCanBeBuiltOn.isNotEmpty()) {
             improvement.terrainsCanBeBuiltOn.withIndex().forEach {
+                // Filters like "Land" are not Terrain objects — linking them leaves a dead icon column.
                 yield(
                     FormattedLine(
                         if (it.index == 0) "{Can be built on} {${it.value}}" else "or [${it.value}]",
-                        link = "Terrain/${it.value}", indent = if (it.index == 0) 1 else 2
+                        link = ruleset.terrains[it.value]?.makeLink() ?: "",
+                        indent = if (it.index == 0) 1 else 2
                     )
                 )
             }
