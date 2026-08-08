@@ -12,6 +12,7 @@ import com.unciv.models.ruleset.validation.RulesetErrorSeverity
 import com.unciv.models.ruleset.validation.getRelativeTextDistance
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
+import org.jetbrains.annotations.VisibleForTesting
 import java.util.concurrent.ConcurrentHashMap
 
 /** Loading mods is expensive, so let's only do it once and
@@ -79,7 +80,8 @@ object RulesetCache : HashMap<String, Ruleset>() {
         return errorLines
     }
 
-    private fun loadSingleRuleset(modFolder: FileHandle, errorLines: MutableList<String>): Ruleset? {
+    @VisibleForTesting
+    fun loadSingleRuleset(modFolder: FileHandle, errorLines: MutableList<String>): Ruleset? {
         return try {
             val modRuleset = Ruleset()
             modRuleset.name = modFolder.name()
