@@ -12,7 +12,6 @@ import com.unciv.testing.TestGame
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.images.ImageGetter
 import com.unciv.view.TileMapView
-import com.unciv.view.TileView
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Ignore
@@ -46,7 +45,7 @@ class EditorMapHolderMemoryTest {
         val tileMapView = TileMapView(tileMap, viewer = null)
         val tileSetStrings = TileSetStrings()
 
-        val (tileGroups, allocatedBytes) = MeasureMemory.measure {
+        val (tileGroups, allocatedBytes) = MemorySnaphots.measure {
             tileMap.values.map { TileGroup(tileMapView.getTile(it), tileSetStrings) }
         }
 
@@ -72,7 +71,7 @@ class EditorMapHolderMemoryTest {
         val tileMapView = TileMapView(testGame.tileMap, viewer = null)
 
         // Baseline: full TileGroup
-        val (_, total) = MeasureMemory.measure { tiles.map { TileGroup(tileMapView.getTile(it), tileSetStrings) } }
+        val (_, total) = MemorySnaphots.measure { tiles.map { TileGroup(tileMapView.getTile(it), tileSetStrings) } }
         val bpt = total / n  // bytes per tile
 
         // Reference: cost of 12 Group objects per tile (TileGroup + the 11 TileLayer Groups that
@@ -105,7 +104,7 @@ class EditorMapHolderMemoryTest {
         testGame.makeRectangularMap(1, 1)
         val tileMapView1x1 = TileMapView(testGame.tileMap, viewer = null)
         val tile1x1 = testGame.tileMap.values.toList()
-        val (_, total1x1) = MeasureMemory.measure { tile1x1.map { TileGroup(tileMapView1x1.getTile(it), tileSetStrings) } }
+        val (_, total1x1) = MemorySnaphots.measure { tile1x1.map { TileGroup(tileMapView1x1.getTile(it), tileSetStrings) } }
         val neighborEdgeCost = (total / n) - (total1x1 / tile1x1.size)
 
         // Reference: cost of ~10 ownedActors ArrayLists per tile (one per non-terrain layer).
