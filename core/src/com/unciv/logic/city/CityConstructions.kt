@@ -106,7 +106,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     // Why is one of these called 'buildable' and the other 'constructable'?
     @Readonly
-    internal fun getBuildableBuildings(): Sequence<Building> = city.getRuleset().buildings.values
+    fun getBuildableBuildings(): Sequence<Building> = city.getRuleset().buildings.values
         .asSequence().filter { it.isBuildable(this) }
 
     @Readonly

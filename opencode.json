@@ -1,0 +1,10 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "unciv": {
+      "type": "local",
+      "command": ["./desktop/mcp-agent.sh"],
+      "enabled": true
+    }
+  }
+}

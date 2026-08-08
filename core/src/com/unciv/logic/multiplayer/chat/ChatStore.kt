@@ -45,6 +45,10 @@ data class Chat(
         }
     }
 
+    /** Messages recorded from [fromIndex] (inclusive) onward - for consumers that poll incrementally. */
+    fun messagesSince(fromIndex: Int): List<Pair<String, String>> =
+        if (fromIndex >= messages.size) emptyList() else messages.subList(fromIndex, messages.size).toList()
+
     companion object {
         val INITIAL_MESSAGE = "System" to "Welcome to Chat!"
     }

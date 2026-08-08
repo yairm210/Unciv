@@ -120,6 +120,11 @@ project(":desktop") {
 
         // Needed for Windows turn notifiers
         "api"(rootProject.libs.bundles.jna)
+
+        // MCP server for the LLM counterparty agent (McpAgentLauncher)
+        "implementation"(rootProject.libs.mcp.sdk.server)
+        // HeadlessApplication gives McpAgentLauncher a real Gdx.app (Chat/etc. call Gdx.app.postRunnable)
+        "implementation"(rootProject.libs.gdx.backend.headless)
     }
 }
 

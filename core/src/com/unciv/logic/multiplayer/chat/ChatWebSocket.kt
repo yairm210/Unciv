@@ -4,6 +4,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.multiplayer.chat.ChatWebSocket.job
 import com.unciv.logic.multiplayer.chat.ChatWebSocket.start
 import com.unciv.utils.Concurrency
+import com.unciv.utils.Log
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.websocket.*
@@ -147,21 +148,20 @@ object ChatWebSocket {
 
     @OptIn(ExperimentalTime::class)
     private fun handleWebSocketThrowables(t: Throwable) {
-        print("ChatError: ${t.message}. Reconnecting...")
-
         if (reconnectionAttempts == 0) {
             lastRetry = Clock.System.now()
+            Log.debug("ChatError: %s. Reconnecting...", t.message)
             ChatStore.relayGlobalMessage("WebSocket connection closed. Cause: [${t.cause}]")
             if (t.message?.contains("401") == true) {
                 ChatStore.relayGlobalMessage("Authentication issue detected! You have to set a password to use Chat.")
             }
         } else {
             val now = Clock.System.now()
-            print(" (Last retry was ${(now - lastRetry).toString(DurationUnit.SECONDS, 2)} ago)")
+            Log.debug("ChatError: %s. Reconnecting... (Last retry was %s ago)", t.message,
+                (now - lastRetry).toString(DurationUnit.SECONDS, 2))
             lastRetry = now
         }
 
-        println()
         restart(dueToError = true)
     }
 
@@ -179,7 +179,7 @@ object ChatWebSocket {
 
             session!!.runCatching {
                 if (isActive) {
-                    println("ChatLog: Connected to WebSocket.")
+                    Log.debug("ChatLog: Connected to WebSocket.")
                     ChatStore.relayGlobalMessage("Successfully connected to WebSocket server!")
                     resetExponentialBackoff()
                 }
@@ -238,7 +238,7 @@ object ChatWebSocket {
             }
         } else resetExponentialBackoff()
 
-        if (force) println("ChatLog: A force restart seems to be requested!")
+        if (force) Log.debug("ChatLog: A force restart seems to be requested!")
 
         GlobalScope.launch {
             if (!force) {
