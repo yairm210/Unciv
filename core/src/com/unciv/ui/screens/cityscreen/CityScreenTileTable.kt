@@ -110,7 +110,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen) : Table() {
             val otherCity = tileView.owningCity()
             if (otherCity != null && otherCity != cityView && otherCity.isSameCivAs(cityView) && !cityScreen.isSpying)
                 innerTable.add("Move to city".toTextButton().onClick { cityScreen.game.replaceCurrentScreen(
-                    CityScreen(CityView(otherCity.getCity(), cityView.getViewer()))
+                    CityScreen(cityView.civView.getCity(otherCity.getCity()))
                 ) })
         }
 

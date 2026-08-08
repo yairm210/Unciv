@@ -1,9 +1,9 @@
 package com.unciv.ui.components.tilegroups.layers
 
 import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.unciv.logic.map.tile.Tile
 import com.unciv.view.CivView
 import com.unciv.view.ForeignCivView
+import com.unciv.view.TileView
 import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.images.ImageGetter
 import kotlin.math.PI
@@ -18,7 +18,7 @@ class TileLayerBorders(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
     )
 
     private var previousTileOwner: ForeignCivView? = null
-    private val borderSegments = HashMap<Tile, BorderSegment>()
+    private val borderSegments = HashMap<TileView, BorderSegment>()
 
     fun reset() {
         if (borderSegments.isNotEmpty()) {
@@ -30,24 +30,14 @@ class TileLayerBorders(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
     }
 
 
-    /** Returns the left shared neighbor of `this` and [neighbor] (relative to the view direction `this`->[neighbor]), or null if there is no such tile. */
-    private fun Tile.getLeftSharedNeighbor(neighbor: Tile): Tile? {
-        return tileMap.getClockPositionNeighborTile(this,(tileMap.getNeighborTileClockPosition(this, neighbor) - 2) % 12)
-    }
-
-    /** Returns the right shared neighbor of `this` and [neighbor] (relative to the view direction `this`->[neighbor]), or null if there is no such tile. */
-    private fun Tile.getRightSharedNeighbor(neighbor: Tile): Tile? {
-        return tileMap.getClockPositionNeighborTile(this,(tileMap.getNeighborTileClockPosition(this, neighbor) + 2) % 12)
-    }
-
     private fun updateBorders() {
 
         // This is longer than it could be, because of performance -
         // before fixing, about half (!) the time of update() was wasted on
         // removing all the border images and putting them back again!
 
-        val tile = tileGroup.tile
-        val tileOwner = tileGroup.tileView.getOwner()
+        val tileView = tileGroup.tileView
+        val tileOwner = tileView.getOwner()
         val tileOwnerCiv = tileOwner?.getCiv()
 
         // If owner changed - clear previous borders
@@ -60,28 +50,30 @@ class TileLayerBorders(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         if (tileOwner == null)
             return
 
+        val tileMapView = tileView.getTileMap()
+
         // Setup new borders
         val civOuterColor = tileOwner.getOuterColor()
         val civInnerColor = tileOwner.getInnerColor()
-        for (neighbor in tile.neighbors) {
+        for (neighbor in tileView.neighbors) {
             var shouldRemoveBorderSegment = false
             var shouldAddBorderSegment = false
 
             var borderSegmentShouldBeLeftConcave = false
             var borderSegmentShouldBeRightConcave = false
 
-            val neighborOwner = neighbor.getOwner()
-            if (neighborOwner === tileOwnerCiv && borderSegments.containsKey(neighbor)) { // the neighbor used to not belong to us, but now it's ours
+            val neighborOwnerCiv = neighbor.getOwner()?.getCiv()
+            if (neighborOwnerCiv === tileOwnerCiv && borderSegments.containsKey(neighbor)) { // the neighbor used to not belong to us, but now it's ours
                 shouldRemoveBorderSegment = true
             }
-            else if (neighborOwner !== tileOwnerCiv) {
-                val leftSharedNeighbor = tile.getLeftSharedNeighbor(neighbor)
-                val rightSharedNeighbor = tile.getRightSharedNeighbor(neighbor)
+            else if (neighborOwnerCiv !== tileOwnerCiv) {
+                val leftSharedNeighbor = tileMapView.getLeftSharedNeighbor(tileView, neighbor)
+                val rightSharedNeighbor = tileMapView.getRightSharedNeighbor(tileView, neighbor)
 
                 // If a shared neighbor doesn't exist (because it's past a map edge), we act as if it's our tile for border concave/convex-ity purposes.
                 // This is because we do not draw borders against non-existing tiles either.
-                borderSegmentShouldBeLeftConcave = leftSharedNeighbor == null || leftSharedNeighbor.getOwner() === tileOwnerCiv
-                borderSegmentShouldBeRightConcave = rightSharedNeighbor == null || rightSharedNeighbor.getOwner() === tileOwnerCiv
+                borderSegmentShouldBeLeftConcave = leftSharedNeighbor == null || leftSharedNeighbor.getOwner()?.getCiv() === tileOwnerCiv
+                borderSegmentShouldBeRightConcave = rightSharedNeighbor == null || rightSharedNeighbor.getOwner()?.getCiv() === tileOwnerCiv
 
                 if (!borderSegments.containsKey(neighbor)) { // there should be a border here but there isn't
                     shouldAddBorderSegment = true
@@ -117,7 +109,7 @@ class TileLayerBorders(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
                     else -> error("This shouldn't happen?")
                 }
 
-                val relativeWorldPosition = tile.tileMap.getNeighborTilePositionAsWorldCoords(tile, neighbor)
+                val relativeWorldPosition = tileMapView.getNeighborTilePositionAsWorldCoords(tileView, neighbor)
 
                 val sign = if (relativeWorldPosition.x < 0) -1 else 1
                 val angle = sign * (atan(sign * relativeWorldPosition.y / relativeWorldPosition.x) * 180 / PI - 90.0).toFloat()

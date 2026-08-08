@@ -3,6 +3,7 @@ package com.unciv.ui.components.tilegroups
 import com.badlogic.gdx.graphics.Color
 import com.unciv.UncivGame
 import com.unciv.view.CivView
+import com.unciv.view.TileMapView
 import com.unciv.view.TileView
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.components.extensions.darken
@@ -44,5 +45,5 @@ class WorldTileGroup(tileView: TileView, tileSetStrings: TileSetStrings)
         }
     }
 
-    override fun clone(): WorldTileGroup = WorldTileGroup(TileView(tile, null), tileSetStrings)
+    override fun clone(): WorldTileGroup = WorldTileGroup(TileMapView(tile.tileMap, null).getTile(tile), tileSetStrings)
 }

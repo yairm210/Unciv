@@ -42,7 +42,6 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.view.CityView
-import com.unciv.view.CivView
 import kotlin.math.max
 
 class CityScreen(
@@ -62,7 +61,7 @@ class CityScreen(
         const val wltkIconSize = 40f
     }
 
-    private val selectedCiv: Civilization = cityView.getViewer()
+    private val selectedCiv: Civilization = cityView.getViewingCiv()
 
     internal val isSpying = selectedCiv.gameInfo.isEspionageEnabled() && !cityView.isOwnedByViewer() && !selectedCiv.isSpectator()
 
@@ -268,7 +267,7 @@ class CityScreen(
         }
 
         for (tileGroup in tileGroups) {
-            tileGroup.update(CivView(selectedCiv, selectedCiv))
+            tileGroup.update(cityView.viewingCiv())
             tileGroup.layerMisc.removeHexOutline()
             if (isSpying) continue // the rest is only for own cities
 
