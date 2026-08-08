@@ -18,7 +18,7 @@ object DeclareWar {
      *
      * @param declareWarReason Changes what sort of effects the war has depending on how it was initiated.
      * If it was a direct attack put [WarType.DirectWar] for the following effects.
-     * Influence with city states should only be set to -60
+     * Influence with city states should only be set to [DiplomacyManager.MINIMUM_INFLUENCE]
      * when they are attacked directly, not when their ally is attacked.
      * When @indirectCityStateAttack is set to true, we thus don't reset the influence with this city state.
      * Should only ever be set to true for calls originating from within this function.
@@ -67,14 +67,14 @@ object DeclareWar {
         val otherCiv = diplomacyManager.otherCiv
         val otherCivDiplomacy = diplomacyManager.otherCivDiplomacy()
 
-        otherCivDiplomacy.setInfluence(-60f)
+        otherCivDiplomacy.setInfluence(DiplomacyManager.MINIMUM_INFLUENCE)
         civInfo.numMinorCivsAttacked += 1
         otherCiv.cityStateFunctions.cityStateAttacked(civInfo)
 
         // You attacked your own ally, you're a right bastard
         if (otherCiv.allyCiv == civInfo) {
             otherCiv.cityStateFunctions.updateAllyCivForCityState()
-            otherCivDiplomacy.setInfluence(-120f)
+            otherCivDiplomacy.setInfluence(DiplomacyManager.MINIMUM_INFLUENCE * 2) // -120
             for (knownCiv in civInfo.getKnownCivs()) {
                 knownCiv.getDiplomacyManager(civInfo)!!.addModifier(DiplomaticModifiers.BetrayedDeclarationOfFriendship, -10f)
             }

@@ -192,7 +192,7 @@ object NextTurnAutomation {
         else 0
         value += minOf(10, ourInfluence / 10) // don't let this spiral out of control
 
-        if (ourInfluence < 30) {
+        if (ourInfluence < DiplomacyManager.FRIEND_INFLUENCE) {
             // Consider bullying for cash
             value -= 5
         }
@@ -200,7 +200,7 @@ object NextTurnAutomation {
         if (cityState.allyCiv != null && cityState.allyCiv != civInfo) {
             // easier not to compete if a third civ has this locked down
             val thirdCivInfluence = cityState.getDiplomacyManager(cityState.allyCiv!!)!!.getInfluence().toInt()
-            value -= (thirdCivInfluence - 30) / 10
+            value -= (thirdCivInfluence - DiplomacyManager.FRIEND_INFLUENCE.toInt()) / 10
         }
 
         // Bonus for luxury resources we can get from them

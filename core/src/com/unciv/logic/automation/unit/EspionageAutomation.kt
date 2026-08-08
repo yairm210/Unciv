@@ -1,6 +1,7 @@
 package com.unciv.logic.automation.unit
 
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.Spy
 import com.unciv.models.SpyAction
@@ -73,7 +74,7 @@ class EspionageAutomation(val civInfo: Civilization) {
     private fun automateSpyRigElection(spy: Spy): Boolean {
         val cityToMoveTo = cityStatesToRig.flatMap { it.cities }
             .filter { !it.isBeingRazed && spy.canMoveTo(it)
-                    && (it.civ.getDiplomacyManager(civInfo)!!.getInfluence() < 150 || it.civ.allyCiv != civInfo) }
+                    && (it.civ.getDiplomacyManager(civInfo)!!.getInfluence() < DiplomacyManager.RIG_ELECTION_INFLUENCE_CAP || it.civ.allyCiv != civInfo) }
             .maxByOrNull { it.civ.getDiplomacyManager(civInfo)!!.getInfluence() }
         spy.moveTo(cityToMoveTo)
         return cityToMoveTo != null

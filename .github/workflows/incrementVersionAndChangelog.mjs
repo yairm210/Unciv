@@ -1,23 +1,12 @@
 import {Octokit} from "@octokit/rest";
 import fs from "fs";
-import {argv} from "process";
 
-// To be run from the root of the Unciv repo (node .github/workflows/incrementVersionAndChangelog.mjs [authToken] [issueNumber])
+// To be run from the root of the Unciv repo (node .github/workflows/incrementVersionAndChangelog.mjs)
 // Summarizes and adds the summary to the changelog.md file
 // Meant to be run from a Github action as part of the preparation for version rollout
 
-const authToken = argv[2];
-const issueNumber = argv[3] ? Number(argv[3]) : 0;
-
-const repoCoords = { owner: "yairm210", repo: "Unciv" };
-
 //region Executed Code
 (async () => {
-    if (authToken && await versionRolloutHasOpenPr()) {
-        await mergeRemainingTranslations();
-        return;
-    }
-
     const versionAndChangelog = await parseCommits();
     const newVersionString = versionAndChangelog[0]
     const changelogString = versionAndChangelog[1]
@@ -30,46 +19,6 @@ const repoCoords = { owner: "yairm210", repo: "Unciv" };
         updateGameVersion(newVersionString, newAppCodeNumber);
     }
 })();
-//endregion
-
-//region Early-exit: merge remaining translations into existing version_rollout branch
-
-async function versionRolloutHasOpenPr() {
-    const github = new Octokit({ auth: authToken });
-    try {
-        await github.git.getRef({ ...repoCoords, ref: 'heads/version_rollout' });
-    } catch (e) {
-        return false;
-    }
-    const prs = await github.pulls.list({ ...repoCoords, state: 'open', head: repoCoords.owner + ':version_rollout' });
-    return prs.data.length > 0;
-}
-
-async function mergeRemainingTranslations() {
-    console.log("version_rollout branch already has an open PR — merging remaining translation PRs");
-    const github = new Octokit({ auth: authToken });
-    const allOpenPrs = await github.pulls.list({ ...repoCoords, state: 'open' });
-    for (const pr of allOpenPrs.data) {
-        if (pr.labels.some(label => label.name === 'mergeable translation'))
-            await tryMergeTranslationPr(github, pr);
-    }
-    if (issueNumber) {
-        await github.issues.createComment({ ...repoCoords, issue_number: issueNumber,
-            body: 'Merged remaining translation PRs into existing version_rollout branch' });
-    }
-}
-
-async function tryMergeTranslationPr(github, pr) {
-    if (pr.base.ref !== 'version_rollout')
-        await github.pulls.update({ ...repoCoords, pull_number: pr.number, base: 'version_rollout' });
-    try {
-        await github.pulls.merge({ ...repoCoords, pull_number: pr.number, merge_method: 'squash' });
-        console.log("Merged #" + pr.number + ", " + pr.title);
-    } catch (err) {
-        console.log(err);
-    }
-}
-
 //endregion
 
 

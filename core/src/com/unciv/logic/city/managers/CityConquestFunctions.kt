@@ -13,6 +13,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.map.mapunit.UnitPromotions
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
@@ -31,10 +32,6 @@ import kotlin.random.Random
 
 /** Helper class for containing 200 lines of "how to move cities between civs" */
 class CityConquestFunctions(val city: City) {
-    companion object {
-        const val MINOR_FRIENDSHIP_AT_WAR = -60f
-        const val MINOR_LIBERATION_FRIENDSHIP = 105f
-    }
 
     private val tileBasedRandom = Random(city.getCenterTile().position.hashCode())
 
@@ -278,12 +275,12 @@ class CityConquestFunctions(val city: City) {
             // as per discussion in #15226 
             val maxOtherInfluence = foundingCiv.diplomacy.values
                 .filter { it.otherCiv != conqueringCiv && it.otherCiv.isMajorCiv() && it.otherCiv.isAlive() }
-                .fold(MINOR_FRIENDSHIP_AT_WAR) { a, b -> a.coerceAtLeast(b.getInfluence()) }
+                .fold(DiplomacyManager.MINIMUM_INFLUENCE) { a, b -> a.coerceAtLeast(b.getInfluence()) }
             val diplomacy = foundingCiv.getDiplomacyManagerOrMeet(conqueringCiv)
             val liberatorOldInfluence = diplomacy.getInfluence()
             val liberatorNewInfluence = maxOtherInfluence.coerceAtLeast(liberatorOldInfluence)
-                .plus(MINOR_LIBERATION_FRIENDSHIP)
-                .coerceAtLeast(60f)  // TODO that should be a const val, hardcoded in several places
+                .plus(DiplomacyManager.LIBERATION_INFLUENCE)
+                .coerceAtLeast(DiplomacyManager.ALLY_INFLUENCE)
             diplomacy.setInfluence(liberatorNewInfluence)
             if (foundingCiv.isAtWarWith(conqueringCiv)) {
                 val tradeLogic = TradeLogic(foundingCiv, conqueringCiv)

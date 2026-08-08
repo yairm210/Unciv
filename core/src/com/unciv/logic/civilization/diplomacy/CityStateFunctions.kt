@@ -292,7 +292,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         val maxInfluence = civInfo.diplomacy
             .filter { it.value.otherCiv.isMajorCiv() && !it.value.otherCiv.isDefeated() }
             .maxByOrNull { it.value.getInfluence() }
-        if (maxInfluence != null && maxInfluence.value.getInfluence() >= 60) {
+        if (maxInfluence != null && maxInfluence.value.getInfluence() >= DiplomacyManager.ALLY_INFLUENCE) {
             newAlly = maxInfluence.value.otherCiv
         }
 
@@ -453,8 +453,8 @@ class CityStateFunctions(val civInfo: Civilization) {
             modifiers["Very recently paid tribute"] = -300
         else if (recentBullying != null && recentBullying > 0)
             modifiers["Recently paid tribute"] = -40
-        if (civInfo.getDiplomacyManager(demandingCiv)!!.getInfluence() < -30)
-            modifiers["Influence below -30"] = -300
+        if (civInfo.getDiplomacyManager(demandingCiv)!!.getInfluence() < DiplomacyManager.UNFORGIVABLE_INFLUENCE)
+            modifiers["Influence below [${DiplomacyManager.UNFORGIVABLE_INFLUENCE.toInt()}]"] = -300
 
         // Slight optimization, we don't do the expensive stuff if we have no chance of getting a >= 0 result
         if (!requireWholeList && modifiers.values.sum() < -200)
@@ -513,7 +513,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         if (!civInfo.isCityState) throw Exception("You can only demand gold from City-States!")
         val goldAmount = goldGainedByTribute()
         demandingCiv.addGold(goldAmount)
-        civInfo.getDiplomacyManager(demandingCiv)!!.addInfluence(-15f)
+        civInfo.getDiplomacyManager(demandingCiv)!!.addInfluence(DiplomacyManager.TRIBUTE_GOLD_INFLUENCE)
         cityStateBullied(demandingCiv)
         civInfo.addFlag(CivFlags.RecentlyBullied.name, 20)
     }
@@ -529,7 +529,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         if (buildableWorkerLikeUnits.isEmpty()) return  // Bad luck?
         demandingCiv.units.placeUnitNearTile(civInfo.getCapital()!!.location.toHexCoord(), buildableWorkerLikeUnits.values.random(rng))
 
-        civInfo.getDiplomacyManager(demandingCiv)!!.addInfluence(-50f)
+        civInfo.getDiplomacyManager(demandingCiv)!!.addInfluence(DiplomacyManager.TRIBUTE_WORKER_INFLUENCE)
         cityStateBullied(demandingCiv)
         civInfo.addFlag(CivFlags.RecentlyBullied.name, 20)
     }
