@@ -144,9 +144,8 @@ class ChatPopup(
 
     private fun populateChat() {
         chatTable.clearChildren()
-        chat.forEachMessage { civName, message ->
+        for ((civName, message) in chat)
             addMessage(civName, message)
-        }
         ChatStore.pollGlobalMessages { civName, message ->
             addMessage(civName, message, suffix = "one time")
         }

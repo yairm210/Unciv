@@ -189,8 +189,7 @@ object ChatWebSocket {
                 this.sendSerialized(Message.Join(gameIds.toList()))
 
                 while (this.isActive) {
-                    val response = receiveDeserialized<Response>()
-                    when (response) {
+                    when (val response = receiveDeserialized<Response>()) {
                         is Response.Chat -> ChatStore.relayChatMessage(response)
 
                         is Response.Error -> ChatStore.relayGlobalMessage(
