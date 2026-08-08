@@ -18,7 +18,6 @@ import com.unciv.ui.screens.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.screens.pickerscreens.ReligiousBeliefsPickerScreen
 import com.unciv.ui.screens.pickerscreens.TechPickerScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
-import com.unciv.view.CityView
 import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread
 import yairm210.purity.annotations.Readonly
@@ -27,6 +26,12 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
     Default("", ImageGetter.CHARCOAL) {
         override val icon get() = null
         override fun isChoice(worldScreen: WorldScreen) = false
+    },
+    RetryUpload("Retry Upload", Color.RED) {
+        override fun isChoice(worldScreen: WorldScreen) =
+            worldScreen.failedUpload
+        override fun action(worldScreen: WorldScreen) =
+            worldScreen.nextTurn()
     },
     AutoPlay("AutoPlay", Color.WHITE) {
         override fun isChoice(worldScreen: WorldScreen) =
@@ -51,7 +56,7 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
             getCityWithNoProductionSet(worldScreen) != null
         override fun action(worldScreen: WorldScreen) {
             val city = getCityWithNoProductionSet(worldScreen) ?: return
-            worldScreen.game.pushScreen(CityScreen(CityView(city, worldScreen.selectedCiv)))
+            worldScreen.game.pushScreen(CityScreen(worldScreen.gameView.getCityView(city)))
         }
     },
     PickTech("Pick a tech", Color.SKY) {

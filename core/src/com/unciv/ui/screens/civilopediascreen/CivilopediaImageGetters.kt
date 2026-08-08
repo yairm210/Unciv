@@ -49,7 +49,7 @@ internal object CivilopediaImageGetters {
                 tile.baseTerrain = terrain.name
         }
         tile.setTerrainTransients()
-        val group = TileGroup(TileView(tile, null), tileSetStrings ?: TileSetStrings(ruleset, UncivGame.Current.settings),
+        val group = TileGroup(TileView.forSingleTile(tile), tileSetStrings ?: TileSetStrings(ruleset, UncivGame.Current.settings),
                 imageSize * 36f / 54f)  // TileGroup normally spills out of its bounding box
         group.isForceVisible = true
         group.isForMapEditorIcon = true

@@ -3,7 +3,6 @@ package com.unciv.view
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import java.util.IdentityHashMap
-import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.ImprovementBuildingProblem
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.tech.Technology
@@ -14,11 +13,14 @@ import com.unciv.models.stats.Stat
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.Readonly
 
-/** View of a [Civilization] from the perspective of [viewer]. */
-class CivView(civ: Civilization, viewer: Civilization) : ForeignCivView(civ, viewer) {
+/** View of a [Civilization] from the perspective of [viewer] via [gameView]. */
+class CivView(civ: Civilization,
+              viewer: Civilization,
+              spectatorMode: Boolean = false,
+              val gameView: GameView) : ForeignCivView(civ, viewer, spectatorMode) {
     @Cache private val cityViews = IdentityHashMap<City, CityView>()
 
-    @Readonly fun getCity(city: City): CityView = cityViews.getOrPut(city) { CityView(city, viewer) }
+    @Readonly fun getCity(city: City): CityView = cityViews.getOrPut(city) { CityView(city, viewer, spectatorMode, this) }
 
     val gold: Int get() = civ.gold
     val tech: TechManagerView = TechManagerView(civ.tech)
@@ -29,18 +31,12 @@ class CivView(civ: Civilization, viewer: Civilization) : ForeignCivView(civ, vie
 
     @Readonly fun canSeeTile(tileView: TileView): Boolean = tileView.getTile().isVisible(civ)
     @Readonly fun canSeeResource(resource: TileResource?): Boolean = civ.canSeeResource(resource)
-    @Readonly fun canSeeUnit(unit: MapUnit): Boolean = !unit.isInvisible(civ)
     @Readonly fun canSeeUnit(unitView: ForeignMapUnitView): Boolean = !unitView.getUnit().isInvisible(civ)
     @Readonly fun isOwnerOf(city: City): Boolean = civ === city.civ
     @Readonly fun isOwnerOf(cityView: ForeignCityView): Boolean = civ === cityView.getCity().civ
-    @Readonly fun getShownImprovementOn(tile: Tile): String? = tile.getShownImprovement(civ)
     @Readonly fun getShownImprovementOn(tileView: TileView): String? = tileView.getTile().getShownImprovement(civ)
-    @Readonly fun canBuildImprovementOn(improvement: TileImprovement, tile: Tile): Boolean =
-        tile.improvementFunctions.canBuildImprovement(improvement, civ.state)
     @Readonly fun canBuildImprovementOn(improvement: TileImprovement, tileView: TileView): Boolean =
         tileView.getTile().improvementFunctions.canBuildImprovement(improvement, civ.state)
-    @Readonly fun getImprovementBuildingProblems(improvement: TileImprovement, tile: Tile): Sequence<ImprovementBuildingProblem> =
-        tile.improvementFunctions.getImprovementBuildingProblems(improvement, civ.state)
     @Readonly fun getImprovementBuildingProblems(improvement: TileImprovement, tileView: TileView): Sequence<ImprovementBuildingProblem> =
         tileView.getTile().improvementFunctions.getImprovementBuildingProblems(improvement, civ.state)
     @Readonly fun technologyByName(name: String?): Technology? = civ.gameInfo.ruleset.technologies[name]
