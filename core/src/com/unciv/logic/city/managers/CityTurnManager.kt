@@ -145,9 +145,13 @@ class CityTurnManager(val city: City) {
         city.cityConstructions.endTurn(stats)
         city.expansion.nextTurn(stats.culture)
         if (city.isBeingRazed) {
-            val removedPopulation =
-                    1 + city.civ.getMatchingUniques(UniqueType.CitiesAreRazedXTimesFaster)
-                        .sumOf { it.params[0].toInt() - 1 }
+            val neighborUnits = city.getCenterTile()
+                .let { it.neighbors + it }
+                .flatMap { it.getUnits() }
+                .filter { it.civ == city.civ }
+            val razeUniques = city.civ.getMatchingUniques(UniqueType.CitiesAreRazedXTimesFaster) +
+                neighborUnits.flatMap { it.getMatchingUniques(UniqueType.CitiesAreRazedXTimesFaster) }
+            val removedPopulation = 1 + razeUniques.sumOf { it.params[0].toInt() - 1 }
 
             if (city.population.population <= removedPopulation) {
                 city.espionage.removeAllPresentSpies(SpyFleeReason.Other)
