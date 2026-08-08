@@ -44,7 +44,8 @@ class CivView(civ: Civilization,
     @Readonly fun hasUnique(type: UniqueType): Boolean = civ.hasUnique(type)
     @Readonly fun isReligionEnabled(): Boolean = civ.gameInfo.isReligionEnabled()
     @Readonly fun getGreatPersonPoints(name: String): Int = civ.greatPeople.greatPersonPointsCounter[name]
-    @Readonly fun getPointsRequiredForGreatPerson(name: String): Int = civ.greatPeople.getPointsRequiredForGreatPerson(name)
+    // Not @Readonly: GreatPersonManager.getPointsRequiredForGreatPerson may initialize the threshold counter.
+    fun getPointsRequiredForGreatPerson(name: String): Int = civ.greatPeople.getPointsRequiredForGreatPerson(name)
     @Readonly fun isCivConstructionDisabled(name: String): Boolean = name in civ.disabledCityConstructions
 
     @Readonly fun isSpectator(): Boolean = civ.isSpectator()

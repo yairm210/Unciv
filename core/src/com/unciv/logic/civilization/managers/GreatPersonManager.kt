@@ -1,6 +1,7 @@
 package com.unciv.logic.civilization.managers
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.MayaLongCountAction
 import com.unciv.logic.civilization.NotificationCategory
@@ -47,6 +48,11 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
         return toReturn
     }
 
+    /** Civ5-style per-city GPP accumulation when ModOptions unique is present. */
+    @Readonly
+    fun usesPerCityGreatPersonProgress() =
+        civInfo.gameInfo.ruleset.modOptions.hasUnique(UniqueType.GreatPersonPointsAccumulatePerCity)
+
     @Readonly
     private fun getPoolKey(greatPerson: String) = civInfo.getEquivalentUnit(greatPerson)
         .getMatchingUniques(UniqueType.GPPointPool)
@@ -62,7 +68,8 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
         return (pointsForNextGreatPersonCounter[key] * civInfo.gameInfo.speed.modifier).toInt()
     }
 
-    fun getNewGreatPerson(): String? {
+    /** Returns a Great General ready to spawn from empire combat points, if any. */
+    fun getNewGreatGeneral(): String? {
         for ((unit, value) in greatGeneralPointsCounter){
             if (pointsForNextGreatGeneralCounter[unit] == 0) {
                 pointsForNextGreatGeneralCounter[unit] = 200
@@ -74,11 +81,30 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
                 return unit
             }
         }
+        return null
+    }
 
-        for ((greatPerson, value) in greatPersonPointsCounter) {
+    /**
+     * Empire-wide GP progress (default Unciv). Also returns Great Generals.
+     * When [usesPerCityGreatPersonProgress] is on, specialist GP are handled via [getNewGreatPersonFromCity].
+     */
+    fun getNewGreatPerson(): String? {
+        getNewGreatGeneral()?.let { return it }
+
+        if (usesPerCityGreatPersonProgress()) return null
+
+        return consumeGreatPersonFrom(greatPersonPointsCounter)
+    }
+
+    /** Specialist Great Person ready to spawn from a city's own counter (Civ5-like mode). */
+    fun getNewGreatPersonFromCity(city: City): String? =
+        consumeGreatPersonFrom(city.greatPersonPointsCounter)
+
+    private fun consumeGreatPersonFrom(points: Counter<String>): String? {
+        for ((greatPerson, value) in points) {
             val requiredPoints = getPointsRequiredForGreatPerson(greatPerson)
             if (value >= requiredPoints) {
-                greatPersonPointsCounter.add(greatPerson, -requiredPoints)
+                points.add(greatPerson, -requiredPoints)
                 pointsForNextGreatPersonCounter[getPoolKey(greatPerson)] *= 2
                 return greatPerson
             }
@@ -87,7 +113,12 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
     }
 
     fun addGreatPersonPoints() {
-        greatPersonPointsCounter.add(getGreatPersonPointsForNextTurn())
+        if (usesPerCityGreatPersonProgress()) {
+            for (city in civInfo.cities)
+                city.greatPersonPointsCounter.add(city.getGreatPersonPoints())
+        } else {
+            greatPersonPointsCounter.add(getGreatPersonPointsForNextTurn())
+        }
     }
 
     fun triggerMayanGreatPerson() {
@@ -117,6 +148,15 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
         val greatPersonPoints = Counter<String>()
         for (city in civInfo.cities) greatPersonPoints.add(city.getGreatPersonPoints())
         return greatPersonPoints
+    }
+
+    /** Total current GPP progress for UI (empire counter, or sum of city counters). */
+    @Readonly
+    fun getDisplayedGreatPersonPointsCounter(): Counter<String> {
+        if (!usesPerCityGreatPersonProgress()) return greatPersonPointsCounter
+        val total = Counter<String>()
+        for (city in civInfo.cities) total.add(city.greatPersonPointsCounter)
+        return total
     }
 
 }

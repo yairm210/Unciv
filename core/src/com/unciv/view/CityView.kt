@@ -130,6 +130,12 @@ class CityView(city: City,
     @Readonly fun getResourceStockpiles(): Counter<String> = city.resourceStockpiles
     @Readonly fun getCityResourcesAvailableToCity(): ResourceSupplyList = CityResources.getCityResourcesAvailableToCity(city)
     @Readonly fun getGreatPersonPointsBreakdown(): GreatPersonPointsBreakdown = GreatPersonPointsBreakdown(city)
+    /** GPP progress for this city screen: city counter if per-city mode, else empire. */
+    @Readonly fun getGreatPersonPointsProgress(name: String): Int =
+        if (city.civ.greatPeople.usesPerCityGreatPersonProgress())
+            city.greatPersonPointsCounter[name]
+        else
+            city.civ.greatPeople.greatPersonPointsCounter[name]
     @Readonly fun getRuleset(): Ruleset = city.getRuleset()
     @Readonly fun getBuildingStats(building: Building): Stats = building.getStats(city)
 

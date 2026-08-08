@@ -3433,6 +3433,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: ModOptions
 
+??? example  "Great Person points accumulate per city"
+	Civ5-style: each city has its own Great Person point counters; when a city reaches the threshold, the Great Person is born in that city. The points required for the next Great Person of that type still increase empire-wide. Without this unique, points accumulate in one civilization-wide pool (current Unciv default).
+
+	This unique does not support conditionals.
+
+	Applicable to: ModOptions
+
 ??? example  "City-states search for first city location"
 	By default, city-state settlers with no cities yet found on their current tile when valid (predetermined map-gen / editor start). With this unique they use the same nearby-site search as major civs.
 
