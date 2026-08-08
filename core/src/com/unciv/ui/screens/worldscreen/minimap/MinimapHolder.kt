@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
@@ -17,6 +18,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.ui.components.extensions.addInTable
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.widgets.ScalingTableWrapper
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.worldmap.WorldMapHolder
@@ -171,18 +173,19 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
     }
 
     /** @return Layout table for the little green map overlay toggle buttons, show to the left of the minimap. */
-    private fun getToggleIcons(minimapHeight: Float): Table {
-        val toggleIconTable = Table()
+    private fun getToggleIcons(minimapHeight: Float): Group {
+        val toggleIconTable = ScalingTableWrapper()
 
         val availableForPadding = minimapHeight - buttons.sumOf { it.height.toDouble() }.toFloat()
         val paddingBetweenElements = (availableForPadding/3).coerceIn(0f, 5f)
 
-        toggleIconTable.defaults().padTop(paddingBetweenElements)
+        toggleIconTable.defaults().space(paddingBetweenElements)
 
         for (button in buttons) {
             toggleIconTable.add(button).row()
         }
 
+        toggleIconTable.scaleToHeight(minimapHeight)
         return toggleIconTable
     }
 
