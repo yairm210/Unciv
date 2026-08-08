@@ -50,6 +50,7 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
     var showRankings = true
     var showCharts = true
     var hideOtherCivilizationStats = false
+    var showAdditionalRankingTypes = false
 
     // Multiplayer parameters
     var isOnlineMultiplayer = false
@@ -99,6 +100,7 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
         parameters.showRankings = showRankings
         parameters.showCharts = showCharts
         parameters.hideOtherCivilizationStats = hideOtherCivilizationStats
+        parameters.showAdditionalRankingTypes = showAdditionalRankingTypes
         parameters.isOnlineMultiplayer = isOnlineMultiplayer
         parameters.multiplayerServerUrl = multiplayerServerUrl
         parameters.anyoneCanSpectate = anyoneCanSpectate
