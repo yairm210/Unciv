@@ -20,6 +20,7 @@ import com.unciv.logic.map.*
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.movement.UnitMovement
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.multiplayer.AuthoritativeUnitActions
 import com.unciv.models.Spy
 import com.unciv.models.UncivSound
 import com.unciv.ui.audio.SoundPlayer
@@ -36,6 +37,7 @@ import com.unciv.ui.components.tilegroups.WorldTileGroup
 import com.unciv.ui.components.tilegroups.citybutton.CityButton
 import com.unciv.ui.components.widgets.UnitIconGroup
 import com.unciv.ui.components.widgets.ZoomableScrollPane
+import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.UncivStage
 import com.unciv.ui.screens.worldscreen.UndoHandler.Companion.recordUndoCheckpoint
 import com.unciv.ui.screens.worldscreen.WorldScreen
@@ -43,6 +45,7 @@ import com.unciv.ui.screens.worldscreen.bottombar.BattleTableHelpers.battleAnima
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import com.unciv.utils.launchOnGLThread
+import kotlinx.coroutines.runBlocking
 import yairm210.purity.annotations.Readonly
 import java.lang.Float.max
 
@@ -257,6 +260,44 @@ class WorldMapHolder(
                     .firstOrNull { it.tileToAttack == tile }
             if (unit.canAttack() && attackableTile != null) {
                 /** ****** Right-click Attack ****** */
+                if (AuthoritativeUnitActions.isEnabled(worldScreen.gameInfo)) {
+                    val from = unit.currentTile.position
+                    val to = tile.position
+                    Concurrency.run("AuthAttack") {
+                        var errMsg = "Server-authoritative attack failed"
+                        val newSave = runBlocking {
+                            AuthoritativeUnitActions.requestAction(
+                                worldScreen.gameInfo.gameId, "attack", unit,
+                                from.x, from.y, to.x, to.y
+                            ) { errMsg = it }
+                        }
+                        launchOnGLThread {
+                            if (newSave == null) {
+                                ToastPopup(errMsg, worldScreen)
+                                val resync = runBlocking {
+                                    AuthoritativeUnitActions.resyncSaveIfDesynced(worldScreen.gameInfo.gameId, errMsg)
+                                }
+                                if (resync != null) {
+                                    try {
+                                        worldScreen.game.loadGame(AuthoritativeUnitActions.loadReturnedSave(resync))
+                                        ToastPopup("Refreshed from server — try again", worldScreen)
+                                    } catch (ex: Exception) {
+                                        Log.error("Failed to resync after failed attack", ex)
+                                    }
+                                }
+                                return@launchOnGLThread
+                            }
+                            try {
+                                val newGame = AuthoritativeUnitActions.loadReturnedSave(newSave)
+                                worldScreen.game.loadGame(newGame)
+                            } catch (ex: Exception) {
+                                Log.error("Failed to load authoritative save after attack", ex)
+                                ToastPopup("Failed to load server save after attack", worldScreen)
+                            }
+                        }
+                    }
+                    return
+                }
                 val attacker = MapUnitCombatant(unit)
                 if (!Battle.movePreparingAttack(attacker, attackableTile)) return
                 if (!SoundPlayer.play(UncivSound(attacker.getName())))
@@ -315,6 +356,54 @@ class WorldMapHolder(
 
 
             worldScreen.recordUndoCheckpoint()
+
+            if (AuthoritativeUnitActions.isEnabled(worldScreen.gameInfo)) {
+                // Send the final intended tile; the server headTowards's one step (and may
+                // queue moveTo), matching local multi-turn move behavior.
+                val from = selectedUnit.currentTile.position
+                val to = targetTile.position
+                var errMsg = "Server-authoritative move failed"
+                val newSave = runBlocking {
+                    AuthoritativeUnitActions.requestAction(
+                        worldScreen.gameInfo.gameId,
+                        "move",
+                        selectedUnit,
+                        from.x, from.y, to.x, to.y
+                    ) { errMsg = it }
+                }
+                if (newSave == null) {
+                    val resync = runBlocking {
+                        AuthoritativeUnitActions.resyncSaveIfDesynced(worldScreen.gameInfo.gameId, errMsg)
+                    }
+                    launchOnGLThread {
+                        ToastPopup(errMsg, worldScreen)
+                        removeUnitActionOverlay()
+                        if (resync != null) {
+                            try {
+                                worldScreen.game.loadGame(AuthoritativeUnitActions.loadReturnedSave(resync))
+                                ToastPopup("Refreshed from server — try the move again", worldScreen)
+                            } catch (ex: Exception) {
+                                Log.error("Failed to resync after failed move", ex)
+                            }
+                        }
+                    }
+                    return@run
+                }
+                // Server already applied the move; keep local UI in sync via returned save
+                try {
+                    val newGame = AuthoritativeUnitActions.loadReturnedSave(newSave)
+                    launchOnGLThread {
+                        worldScreen.game.loadGame(newGame)
+                    }
+                } catch (ex: Exception) {
+                    Log.error("Failed to load authoritative save", ex)
+                    launchOnGLThread {
+                        ToastPopup("Failed to load server save after move", worldScreen)
+                        removeUnitActionOverlay()
+                    }
+                }
+                return@run
+            }
 
             launchOnGLThread {
                 try {

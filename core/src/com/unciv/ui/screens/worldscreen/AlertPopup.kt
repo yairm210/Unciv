@@ -18,6 +18,7 @@ import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.*
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.multiplayer.AuthoritativeUnitActions
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
@@ -34,6 +35,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.diplomacyscreen.LeaderIntroTable
 import com.unciv.ui.screens.victoryscreen.VictoryScreen
+import com.unciv.utils.Concurrency
 import yairm210.purity.annotations.Readonly
 import java.util.EnumSet
 import kotlin.text.ifEmpty
@@ -676,6 +678,16 @@ class AlertPopup(
 
     override fun close() {
         viewingCiv.popupAlerts.remove(popupAlert)
+        // Authoritative reloads reintroduce server-side popupAlerts; remember + POST /action.
+        if (AuthoritativeUnitActions.isEnabled(gameInfo)) {
+            AuthoritativeUnitActions.rememberDismissedAlert(popupAlert)
+            val gameId = gameInfo.gameId
+            val alertType = popupAlert.type.name
+            val alertValue = popupAlert.value
+            Concurrency.run("AuthDismissAlert") {
+                AuthoritativeUnitActions.requestDismissAlert(gameId, alertType, alertValue)
+            }
+        }
         worldScreen.shouldUpdate = true
         super.close()
     }

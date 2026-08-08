@@ -52,7 +52,11 @@ tasks.register<Jar>("dist") { // Compiles the jar file
     from(files(sourceSets.main.get().output.resourcesDir))
     from(files(sourceSets.main.get().output.classesDirs))
     // see Laurent1967's comment on https://github.com/libgdx/libgdx/issues/5491
-    from({ configurations.compileClasspath.get().resolve().map { if (it.isDirectory) it else zipTree(it) } })
+    from({
+        configurations.compileClasspath.get().resolve()
+            .filterNot { it.name.contains("gdx-platform") && it.name.contains("natives") }
+            .map { if (it.isDirectory) it else zipTree(it) }
+    })
     archiveFileName.set("UncivServer.jar")
 
     manifest {

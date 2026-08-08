@@ -10,6 +10,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.ReligionManager
+import com.unciv.logic.multiplayer.AuthoritativeUnitActions
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
@@ -20,7 +21,10 @@ import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.WrappableLabel
+import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
+import com.unciv.utils.Concurrency
+import com.unciv.utils.launchOnGLThread
 import yairm210.purity.annotations.Readonly
 
 abstract class ReligionPickerScreenCommon(
@@ -67,6 +71,35 @@ abstract class ReligionPickerScreenCommon(
         rightSideButton.onClick(UncivSound.Choir) {
             choosingCiv.religionManager.action()
             UncivGame.Current.popScreen()
+        }
+    }
+
+    /**
+     * After local religion/pantheon apply + popScreen: persist via POST /action and reload
+     * so a later unit move does not wipe the choice from the server save.
+     */
+    protected fun syncBeliefsToServer(
+        beliefNames: List<String>,
+        useFreeBeliefs: Boolean,
+        religionName: String? = null,
+        religionDisplayName: String? = null,
+    ) {
+        if (!AuthoritativeUnitActions.isEnabled(gameInfo)) return
+        val gameId = gameInfo.gameId
+        Concurrency.run("AuthChooseBeliefs") {
+            var errMsg = "Server-authoritative chooseBeliefs failed"
+            val newSave = AuthoritativeUnitActions.requestChooseBeliefs(
+                gameId, beliefNames, useFreeBeliefs, religionName, religionDisplayName
+            ) { errMsg = it }
+            launchOnGLThread {
+                if (newSave == null) {
+                    val screen = UncivGame.Current.screen
+                    if (screen != null) ToastPopup(errMsg, screen)
+                    AuthoritativeUnitActions.scheduleMidTurnSync()
+                    return@launchOnGLThread
+                }
+                UncivGame.Current.loadGame(AuthoritativeUnitActions.loadReturnedSave(newSave))
+            }
         }
     }
 

@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.logic.multiplayer.AuthoritativeUnitActions
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IConstruction
@@ -673,6 +674,22 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         cityView.tryReassignPopulation()
         cityScreen.update()
         cityScreen.game.settings.addCompletedTutorialTask("Pick construction")
+        syncProductionToServerIfNeeded()
+    }
+
+    /** Persist production queue via POST /action so unit-move reloads keep the player's picks. */
+    private fun syncProductionToServerIfNeeded() {
+        val city = cityView.getCity()
+        val gameInfo = city.civ.gameInfo
+        if (!AuthoritativeUnitActions.isEnabled(gameInfo)) return
+        val gameId = gameInfo.gameId
+        val cityId = city.id
+        val constructions = cityView.constructions.getCityConstructions()
+        val queue = constructions.constructionQueue.toList()
+        val userSet = constructions.currentConstructionIsUserSet
+        Concurrency.run("AuthSetProduction") {
+            AuthoritativeUnitActions.requestSetProduction(gameId, cityId, queue, userSet)
+        }
     }
 
     private fun getConstructionSound(construction: IConstruction): UncivSound {
@@ -708,6 +725,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             //cityScreen.updateWithoutConstructionAndMap()
             updateQueueAndButtons(cityScreen.selectedConstruction)
             ensureQueueEntryVisible()  // Not passing current button info - already outdated, our parent is already removed from the stage hierarchy and replaced
+            syncProductionToServerIfNeeded()
         }
         if (selectedQueueEntry == constructionQueueIndex) {
             button.keyShortcuts.add(binding)  // This binds without automatic tooltip
@@ -734,6 +752,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             // Select next entry in list if available.
             // If the last one was deleted, select the new last one.
             selectQueueEntry(constructionQueueIndex.coerceAtMost(cityView.constructions.constructionQueue.lastIndex)) { }
+            syncProductionToServerIfNeeded()
         }
         return tab
     }

@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.multiplayer.AuthoritativeUnitActions
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Policy
@@ -33,8 +34,11 @@ import com.unciv.ui.components.widgets.BorderedTable
 import com.unciv.ui.components.widgets.ColorMarkupLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
+import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
+import com.unciv.utils.Concurrency
+import com.unciv.utils.launchOnGLThread
 import yairm210.purity.annotations.Readonly
 import kotlin.math.abs
 import kotlin.math.ceil
@@ -644,6 +648,7 @@ class PolicyPickerScreen(
                     "Are you sure you want to adopt [${branch.name}]?",
                     "Adopt", true, action = {
                         viewingCiv.policies.adopt(branch, false)
+                        syncAdoptPolicyToServer(branch.name, branchCompletion = false)
                         game.replaceCurrentScreen(recreate())
                     }
                 ).open(force = true)
@@ -667,11 +672,32 @@ class PolicyPickerScreen(
         if (!policy.isPickable(viewingCiv, canChangeState)) return
 
         viewingCiv.policies.adopt(policy)
+        syncAdoptPolicyToServer(policy.name, branchCompletion = false)
 
         // If we've moved to another screen in the meantime (great person pick, victory screen) ignore this
         // update policies
         if (game.screen !is PolicyPickerScreen) game.popScreen()
         else game.replaceCurrentScreen(recreate())
+    }
+
+    private fun syncAdoptPolicyToServer(policyName: String, branchCompletion: Boolean) {
+        if (!AuthoritativeUnitActions.isEnabled(viewingCiv.gameInfo)) return
+        val gameId = viewingCiv.gameInfo.gameId
+        Concurrency.run("AuthAdoptPolicy") {
+            var errMsg = "Server-authoritative adoptPolicy failed"
+            val newSave = AuthoritativeUnitActions.requestAdoptPolicy(
+                gameId, policyName, branchCompletion
+            ) { errMsg = it }
+            launchOnGLThread {
+                if (newSave == null) {
+                    val screen = game.screen
+                    if (screen != null) ToastPopup(errMsg, screen)
+                    AuthoritativeUnitActions.scheduleMidTurnSync()
+                    return@launchOnGLThread
+                }
+                game.loadGame(AuthoritativeUnitActions.loadReturnedSave(newSave))
+            }
+        }
     }
 
     override fun recreate(): BaseScreen {
