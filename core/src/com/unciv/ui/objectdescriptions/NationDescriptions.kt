@@ -9,7 +9,9 @@ import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.squareBraceRegex
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.extensions.toHexColor
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import yairm210.purity.annotations.Mutated
 import yairm210.purity.annotations.Readonly
 import kotlin.collections.get
 
@@ -34,25 +36,13 @@ object NationDescriptions {
             textList += FormattedLine("{$uniqueName}:", header = 4)
         if (uniqueText != "") {
             textList += FormattedLine(uniqueText, indent = 1)
-        } else {
+        } else if (!isCityState) {
             uniquesToCivilopediaTextLines(textList, leadingSeparator = null)
         }
         textList += FormattedLine()
 
-        val effectiveStartBias = getStartBias(ruleset)
-        if (effectiveStartBias.isNotEmpty()) {
-            for ((index, bias) in effectiveStartBias.withIndex()) {
-                // can be "Avoid []"
-                val link = if ('[' !in bias) bias
-                else squareBraceRegex.find(bias)!!.groups[1]!!.value
-                textList += FormattedLine(
-                    (if (index == 0) "[Start bias:] " else "") + bias.tr(),  // extra tr because tr cannot nest {[]}
-                    link = "Terrain/$link",
-                    indent = if (index == 0) 0 else 1,
-                    iconCrossed = bias.startsWith("Avoid "))
-            }
-            textList += FormattedLine()
-        }
+        appendStartBiasLines(textList, ruleset)
+
         textList += getUniqueBuildingsText(ruleset)
         textList += getUniqueUnitsText(ruleset)
         textList += getUniqueImprovementsText(ruleset)
@@ -60,12 +50,25 @@ object NationDescriptions {
         return textList
     }
 
-    @Readonly
+    // Not @Readonly: mutates via uniquesToCivilopediaTextLines / local list.
+    // Prefer FormattedLineListBuilder (#15015) once that lands.
     private fun Nation.getCityStateInfo(ruleset: Ruleset): List<FormattedLine> {
         val textList = ArrayList<FormattedLine>()
 
         val cityStateType = ruleset.cityStateTypes[cityStateType]!!
-        textList += FormattedLine("{Type}: {${cityStateType.name}}", header = 4, color = "#"+cityStateType.getColor().toString())
+        textList += FormattedLine("{Type}: {${cityStateType.name}}", header = 4, color = cityStateType.getColor().toHexColor())
+
+        // CityStateType is a RulesetObject but has no Civilopedia category — surface its text/uniques on the CS Nation page.
+        if (cityStateType.civilopediaText.isNotEmpty()) {
+            textList += FormattedLine()
+            textList += cityStateType.civilopediaText
+        }
+        cityStateType.uniquesToCivilopediaTextLines(
+            textList,
+            leadingSeparator = { yield(FormattedLine()) },
+            // Start bias is already listed via Nation.getStartBias below
+            exclude = { type == UniqueType.StartBias }
+        )
 
         var showResources = false
 
@@ -97,10 +100,30 @@ object NationDescriptions {
                 }
             }
         }
-        textList += FormattedLine(separator = true)
 
         // personality is not a nation property, it gets assigned to the civ randomly
         return textList
+    }
+
+    @Readonly
+    private fun Nation.appendStartBiasLines(
+        @Mutated textList: MutableList<FormattedLine>,
+        ruleset: Ruleset,
+    ) {
+        val effectiveStartBias = getStartBias(ruleset)
+        if (effectiveStartBias.isEmpty()) return
+        for ((index, bias) in effectiveStartBias.withIndex()) {
+            // can be "Avoid []"
+            val link = if ('[' !in bias) bias
+            else squareBraceRegex.find(bias)!!.groups[1]!!.value
+            textList += FormattedLine(
+                (if (index == 0) "[Start bias:] " else "") + bias.tr(),  // extra tr because tr cannot nest {[]}
+                link = "Terrain/$link",
+                indent = if (index == 0) 0 else 1,
+                iconCrossed = bias.startsWith("Avoid ")
+            )
+        }
+        textList += FormattedLine()
     }
 
     private fun Nation.getUniqueBuildingsText(ruleset: Ruleset) = sequence {

@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.unciv.Constants
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.extensions.toHexColor
 import com.unciv.ui.components.fonts.FontRulesetIcons
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -108,8 +109,7 @@ class ColorMarkupLabel private constructor(
         private fun Color.toMarkup(): String {
             val mapEntry = inverseColorMap[this]
             if (mapEntry != null) return mapEntry
-            if (a < 1f) return "#" + toString()
-            return "#" + toString().substring(0,6)
+            return toHexColor()
         }
 
         private fun mapMarkup(text: String, defaultColor: Color, hideIcons: Boolean): String {
