@@ -263,6 +263,12 @@ class Multiplayer {
      */
     suspend fun downloadGame(gameInfo: GameInfo) = coroutineScope {
         val gameId = gameInfo.gameId
+        // With Disable undo, mid-turn progress is uploaded to the server; never prefer a local
+        // copy that only matches turns/currentPlayer (hasLatestGameState ignores mid-turn actions).
+        if (MultiplayerTurnIntegrity.mustDownloadFromServer(gameInfo)) {
+            downloadGame(gameId)
+            return@coroutineScope
+        }
         val preview = multiplayerServer.tryDownloadGamePreview(gameId)
         if (hasLatestGameState(gameInfo, preview)) {
             gameInfo.isUpToDate = true

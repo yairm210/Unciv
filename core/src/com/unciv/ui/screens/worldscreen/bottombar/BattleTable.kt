@@ -18,6 +18,7 @@ import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.battle.Nuke
 import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.multiplayer.MultiplayerTurnIntegrity
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
@@ -364,6 +365,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
 
         worldScreen.battleAnimationDeferred(attacker, damageToAttacker, defender, damageToDefender)
         if (!attacker.canAttack()) hide()
+        MultiplayerTurnIntegrity.scheduleUpload(worldScreen)
     }
 
 
