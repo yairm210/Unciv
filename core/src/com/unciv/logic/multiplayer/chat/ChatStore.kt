@@ -9,13 +9,21 @@ import java.util.LinkedList
 import java.util.Queue
 import java.util.UUID
 
-data class Chat(
+data class ChatMessageEntry(
+    val civName: String,
+    val message: String,
+    /** True for private messages (protocol v2); false = public. */
+    val isPrivate: Boolean = false,
+)
+
+class Chat(
     val gameId: UUID,
 ) {
     var unreadCount = 0
 
-    // <civName, message> pairs
-    private val messages: MutableList<Pair<String, String>> = mutableListOf(INITIAL_MESSAGE)
+    private val messages: MutableList<ChatMessageEntry> = mutableListOf(
+        ChatMessageEntry(INITIAL_MESSAGE.first, INITIAL_MESSAGE.second)
+    )
 
     val length: Int get() = messages.size
 
@@ -26,22 +34,28 @@ data class Chat(
      *
      * The server will relay it back if a delivery was acknowledged and that is when we should display it.
      */
-    fun requestMessageSend(civName: String, message: String) {
+    fun requestMessageSend(
+        civName: String,
+        message: String,
+        userId: String? = null,
+    ) {
         Gdx.app.postRunnable {
-            ChatWebSocket.requestMessageSend(Message.Chat(civName, message, gameId.toString()))
+            ChatWebSocket.requestMessageSend(
+                Message.Chat(civName, message, gameId.toString(), userId)
+            )
         }
     }
 
     /**
      * Although public, this should only be called when a ChatMessageReceivedEvent is received once.
      */
-    fun addMessage(civName: String, message: String) {
-        messages.add(Pair(civName, message))
+    fun addMessage(civName: String, message: String, isPrivate: Boolean = false) {
+        messages.add(ChatMessageEntry(civName, message, isPrivate))
     }
 
-    fun forEachMessage(action: (String, String) -> Unit) {
-        for ((civName, message) in messages) {
-            action(civName, message)
+    fun forEachMessage(action: (ChatMessageEntry) -> Unit) {
+        for (entry in messages) {
+            action(entry)
         }
     }
 
@@ -91,9 +105,13 @@ object ChatStore {
                 }
 
                 val chat = chatPopup?.chat ?: getChatByGameId(gameId)
-                chat.addMessage(incomingChatMsg.civName, incomingChatMsg.message)
+                chat.addMessage(incomingChatMsg.civName, incomingChatMsg.message, incomingChatMsg.isPrivate)
                 if (gameId.equals(chatPopup?.chat?.gameId)) {
-                    chatPopup?.addMessage(incomingChatMsg.civName, incomingChatMsg.message)
+                    chatPopup?.addMessage(
+                        incomingChatMsg.civName,
+                        incomingChatMsg.message,
+                        isPrivate = incomingChatMsg.isPrivate,
+                    )
                 }
 
                 if (chatPopup == null && incomingChatMsg.civName != "System") {

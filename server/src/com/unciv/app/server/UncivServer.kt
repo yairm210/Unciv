@@ -51,7 +51,10 @@ sealed class Message {
     @Serializable
     @SerialName("chat")
     data class Chat(
-        val civName: String, val message: String, val gameId: String
+        val civName: String,
+        val message: String,
+        val gameId: String,
+        val userId: String? = null,
     ) : Message()
 
     @Serializable
@@ -73,7 +76,11 @@ sealed class Response {
     @Serializable
     @SerialName("chat")
     data class Chat(
-        val civName: String, val message: String, val gameId: String? = null
+        val civName: String,
+        val message: String,
+        val gameId: String? = null,
+        @SerialName("private")
+        val isPrivate: Boolean = false,
     ) : Response()
 
     @Serializable
@@ -93,6 +100,11 @@ sealed class Response {
 private class WebSocketSessionManager {
     private val gameId2WSSessions = synchronizedMap(mutableMapOf<Uuid, MutableSet<DefaultWebSocketServerSession>>())
     private val wsSession2GameIds = synchronizedMap(mutableMapOf<DefaultWebSocketServerSession, MutableSet<Uuid>>())
+    private val wsSession2UserId = synchronizedMap(mutableMapOf<DefaultWebSocketServerSession, Uuid>())
+
+    fun registerSession(session: DefaultWebSocketServerSession, userId: Uuid) {
+        wsSession2UserId[session] = userId
+    }
 
     fun isSubscribed(session: DefaultWebSocketServerSession, gameId: Uuid): Boolean =
         gameId2WSSessions.getOrPut(gameId) { synchronizedSet(mutableSetOf()) }.contains(session)
@@ -127,7 +139,27 @@ private class WebSocketSessionManager {
         }
     }
 
+    /** Deliver [message] only to sessions subscribed to [gameId] whose user is sender or target. */
+    suspend fun publishPrivate(
+        gameId: Uuid,
+        senderUserId: Uuid,
+        targetUserId: Uuid,
+        message: Response,
+    ) {
+        val sessions = gameId2WSSessions.getOrPut(gameId) { synchronizedSet(mutableSetOf()) }
+        for (session in sessions) {
+            if (!session.isActive) {
+                sessions.remove(session)
+                continue
+            }
+            val userId = wsSession2UserId[session] ?: continue
+            if (userId != senderUserId && userId != targetUserId) continue
+            session.sendSerialized(message)
+        }
+    }
+
     fun cleanupSession(session: DefaultWebSocketServerSession) {
+        wsSession2UserId.remove(session)
         for (gameId in wsSession2GameIds.remove(session) ?: emptyList()) {
             val gameIds = gameId2WSSessions[gameId] ?: continue
             gameIds.remove(session)
@@ -190,7 +222,7 @@ private class UncivServerRunner : CliktCommand() {
     override fun run() {
         isAliveInfo = IsAliveInfo(
             authVersion = if (authV1Enabled) 1 else 0,
-            chatVersion = if (chatV1Enabled) 1 else 0,
+            chatVersion = if (chatV1Enabled) 2 else 0,
         )
         serverRun(port, folder)
     }
@@ -275,6 +307,7 @@ private class UncivServerRunner : CliktCommand() {
                     // DO NOT OMIT
                     // if omitted the "type" field will be missing from all outgoing messages
                     classDiscriminatorMode = ClassDiscriminatorMode.ALL_JSON_OBJECTS
+                    ignoreUnknownKeys = true
                 })
             }
 
@@ -386,6 +419,8 @@ private class UncivServerRunner : CliktCommand() {
                             return@webSocket close()
                         }
 
+                        wsSessionManager.registerSession(this, authInfo.userId)
+
                         try {
                             while (isActive) {
                                 when (val message = receiveDeserialized<Message>()) {
@@ -401,16 +436,37 @@ private class UncivServerRunner : CliktCommand() {
                                             continue
                                         }
 
-                                        if (wsSessionManager.isSubscribed(this, gameId)) {
-                                            wsSessionManager.publish(
-                                                gameId = gameId, message = Response.Chat(
+                                        if (!wsSessionManager.isSubscribed(this, gameId)) {
+                                            sendSerialized(Response.Error("You are not subscribed to this channel!"))
+                                            continue
+                                        }
+
+                                        val targetUserId = message.userId?.toUuidOrNull()
+                                        if (message.userId != null) {
+                                            if (targetUserId == null) {
+                                                sendSerialized(Response.Error("Invalid userId!"))
+                                                continue
+                                            }
+                                            wsSessionManager.publishPrivate(
+                                                gameId = gameId,
+                                                senderUserId = authInfo.userId,
+                                                targetUserId = targetUserId,
+                                                message = Response.Chat(
                                                     civName = message.civName,
                                                     message = message.message,
                                                     gameId = message.gameId,
-                                                )
+                                                    isPrivate = true,
+                                                ),
                                             )
                                         } else {
-                                            sendSerialized(Response.Error("You are not subscribed to this channel!"))
+                                            wsSessionManager.publish(
+                                                gameId = gameId,
+                                                message = Response.Chat(
+                                                    civName = message.civName,
+                                                    message = message.message,
+                                                    gameId = message.gameId,
+                                                ),
+                                            )
                                         }
                                     }
 

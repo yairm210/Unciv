@@ -37,7 +37,11 @@ sealed class Message {
     @Serializable
     @SerialName("chat")
     data class Chat(
-        val civName: String, val message: String, val gameId: String
+        val civName: String,
+        val message: String,
+        val gameId: String,
+        /** Multiplayer player UUID of the recipient; null = broadcast to the game. */
+        val userId: String? = null,
     ) : Message()
 
     @Serializable
@@ -59,7 +63,12 @@ sealed class Response {
     @Serializable
     @SerialName("chat")
     data class Chat(
-        val civName: String, val message: String, val gameId: String? = null
+        val civName: String,
+        val message: String,
+        val gameId: String? = null,
+        /** True when this message was delivered as a private message (protocol v2). */
+        @SerialName("private")
+        val isPrivate: Boolean = false,
     ) : Response()
 
     @Serializable
@@ -103,6 +112,7 @@ object ChatWebSocket {
                 // DO NOT OMIT
                 // if omitted the "type" field will be missing from all outgoing messages
                 classDiscriminatorMode = ClassDiscriminatorMode.ALL_JSON_OBJECTS
+                ignoreUnknownKeys = true
             })
         }
     }
