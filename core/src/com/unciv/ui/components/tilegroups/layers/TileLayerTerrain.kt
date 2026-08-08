@@ -3,7 +3,8 @@ package com.unciv.ui.components.tilegroups.layers
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.Civilization
+import com.unciv.view.CivView
+import com.unciv.view.TileView
 import com.unciv.logic.map.NeighborDirection
 import com.unciv.logic.map.tile.Tile
 import com.unciv.ui.components.tilegroups.TileGroup
@@ -35,50 +36,50 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         else resourceAndImprovementSequence.map { strings.orFallback { getTile(it) } }.toList()
     }
 
-    private fun usePillagedImprovementImage(tile: Tile, viewingCiv: Civilization?): Boolean {
-        if (!tile.improvementIsPillaged || !UncivGame.Current.settings.showPixelImprovements) return false
-        val shownImprovement = tile.getShownImprovement(viewingCiv) ?: return false
+    private fun usePillagedImprovementImage(tileView: TileView, viewingCiv: CivView?): Boolean {
+        if (!tileView.improvementIsPillaged || !UncivGame.Current.settings.showPixelImprovements) return false
+        val shownImprovement = viewingCiv?.getShownImprovementOn(tileView) ?: return false
         return ImageGetter.imageExists(strings.getTile("$shownImprovement-Pillaged"))
     }
 
-    private fun getTileBaseImageLocations(viewingCiv: Civilization?): List<String> {
+    private fun getTileBaseImageLocations(viewingCiv: CivView?): List<String> {
 
         val isForceVisible = tileGroup.isForceVisible
 
         if (viewingCiv == null && !isForceVisible)
             return strings.hexagonList
 
-        val tile = tileGroup.tile
+        val tileView = tileGroup.tileView
 
-        val shownImprovement = tile.getShownImprovement(viewingCiv)
-        val shouldShowImprovement = shownImprovement != null && UncivGame.Current.settings.showPixelImprovements
+        val shownImprovement = if (!UncivGame.Current.settings.showPixelImprovements) null 
+            else viewingCiv?.getShownImprovementOn(tileView)
 
-        val shouldShowResource = UncivGame.Current.settings.showPixelImprovements && tile.resource != null &&
-                (isForceVisible || viewingCiv == null || viewingCiv.canSeeResource(tile.tileResource))
+        val viewableResource = if (!UncivGame.Current.settings.showPixelImprovements) null
+            else tileView.getViewableResource(if (isForceVisible) null else viewingCiv)
 
-        val resourceAndImprovementSequence = if (!shouldShowResource && !shouldShowImprovement)
+        val resourceAndImprovementSequence = if (viewableResource == null && shownImprovement == null)
             emptySequence()
         else sequence {
-            if (shouldShowResource)  yield(tile.resource!!)
-            if (shouldShowImprovement) {
-                if (usePillagedImprovementImage(tile, viewingCiv))
+            if (viewableResource != null)  yield(viewableResource.name)
+            if (shownImprovement != null) {
+                if (usePillagedImprovementImage(tileView, viewingCiv))
                     yield("$shownImprovement-Pillaged")
-                else yield(shownImprovement!!)
+                else yield(shownImprovement)
             }
         }
 
         val terrainImages = when {
-            tile.naturalWonder != null -> sequenceOf(tile.baseTerrain, tile.naturalWonder!!)
+            tileView.naturalWonder != null -> sequenceOf(tileView.baseTerrain, tileView.naturalWonder!!)
             // very common case, most oceans have nothing else going on
-            tile.terrainFeatures.isEmpty() -> sequenceOf(tile.baseTerrain)
-            else -> sequenceOf(tile.baseTerrain) + tile.terrainFeatures.asSequence()
+            tileView.terrainFeatures.isEmpty() -> sequenceOf(tileView.baseTerrain)
+            else -> sequenceOf(tileView.baseTerrain) + tileView.terrainFeatures.asSequence()
         }
 
         val edgeImages = getEdgeTileLocations()
 
         val allTogether = when {
             resourceAndImprovementSequence.any() -> (terrainImages + resourceAndImprovementSequence).joinToString("+")
-            tile.naturalWonder == null && tile.terrainFeatures.isEmpty() -> tile.baseTerrain // single string
+            tileView.naturalWonder == null && tileView.terrainFeatures.isEmpty() -> tileView.baseTerrain // single string
             else -> terrainImages.joinToString("+")
         }
         val allTogetherLocation = strings.getTile(allTogether)
@@ -99,7 +100,7 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
                 add(allTogetherLocation)
                 addAll(edgeImages)
             }
-            tile.naturalWonder != null -> getNaturalWonderBackupImage(baseHexagon) + edgeImages
+            tileView.naturalWonder != null -> getNaturalWonderBackupImage(baseHexagon) + edgeImages
             else -> baseHexagon.apply {
                 addAll(getTerrainImageLocations(terrainImages))
                 addAll(edgeImages)
@@ -119,20 +120,15 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         var edgeFileNames: List<String> = emptyList()
     }
 
-    private val neighborEdgeDataList: Sequence<NeighborEdgeData> = if (!tile.isTilemapInitialized()) emptySequence()
-        else tile.neighbors.map {
+    private val neighborEdgeDataList: Sequence<NeighborEdgeData> = tile.neighbors.map {
             val clockPosition = tile.tileMap.getNeighborTileClockPosition(tile, it)
             val direction = NeighborDirection.byClockPosition[clockPosition]
             NeighborEdgeData(it, direction)
         }.toList().asSequence()
 
 
-    private fun getEdgeTileLocations(): Sequence<String> {
-        if (!tile.isTilemapInitialized()) // fake tile
-            return emptySequence()
-        return neighborEdgeDataList
-            .flatMap { getMatchingEdges(it) }
-    }
+    private fun getEdgeTileLocations(): Sequence<String> =
+        neighborEdgeDataList.flatMap { getMatchingEdges(it) }
 
     /** See https://yairm210.github.io/Unciv/Modders/Creating-a-custom-tileset/#edge-images */
     private fun getMatchingEdges(neighborEdgeData: NeighborEdgeData): List<String>{
@@ -167,7 +163,7 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         return cachedSequence
     }
 
-    private fun updateTileImage(viewingCiv: Civilization?) {
+    private fun updateTileImage(viewingCiv: CivView?) {
         val tileBaseImageLocations = getTileBaseImageLocations(viewingCiv)
 
         if (tileBaseImageLocations.size == tileImageIdentifiers.size) {
@@ -196,8 +192,8 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
             if (!ImageGetter.imageExists(baseLocation)) continue
 
             val locationToCheck =
-                    if (tileGroup.tile.owningCity != null)
-                        strings.getOwnedTileImageLocation(baseLocation, tileGroup.tile.getOwner()!!)
+                    if (tileGroup.tileView.owningCity() != null)
+                        strings.getOwnedTileImageLocation(baseLocation, tileGroup.tileView.getOwner()!!)
                     else baseLocation
 
             val existingImages = ArrayList<String>()
@@ -210,7 +206,7 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
                 i += 1
             }
             val finalLocation = existingImages.random(
-                Random(tileGroup.tile.position.hashCode() + locationToCheck.hashCode()))
+                Random(tileGroup.tileView.position().hashCode() + locationToCheck.hashCode()))
             val image = ImageGetter.getImage(finalLocation)
             image.name = finalLocation // for debug mode reveal
 
@@ -232,18 +228,18 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         }
     }
 
-    private fun updateTileColor(viewingCiv: Civilization?) {
+    private fun updateTileColor(viewingCiv: CivView?) {
         val isViewable = viewingCiv == null || isViewable(viewingCiv)
-        val tile = tileGroup.tile
-        val colorPillagedTile = isViewable && tile.isPillaged() && !usePillagedImprovementImage(tile, viewingCiv)
+        val tileView = tileGroup.tileView
+        val colorPillagedTile = isViewable && tileView.isPillaged() && !usePillagedImprovementImage(tileView, viewingCiv)
 
         val baseTerrainColor = when {
-            colorPillagedTile && strings.tileSetConfig.useColorAsBaseTerrain -> tile.getBaseTerrain()
+            colorPillagedTile && strings.tileSetConfig.useColorAsBaseTerrain -> tileView.getBaseTerrain()
                 .getColor().lerp(Color.BROWN, 0.6f)
             colorPillagedTile -> Color.WHITE.cpy().lerp(Color.BROWN, 0.6f)
-            strings.tileSetConfig.useColorAsBaseTerrain && !isViewable -> tile.getBaseTerrain()
+            strings.tileSetConfig.useColorAsBaseTerrain && !isViewable -> tileView.getBaseTerrain()
                 .getColor().lerp(strings.tileSetConfig.fogOfWarColor, 0.6f)
-            strings.tileSetConfig.useColorAsBaseTerrain -> tile.getBaseTerrain()
+            strings.tileSetConfig.useColorAsBaseTerrain -> tileView.getBaseTerrain()
                 .getColor()
             !isViewable -> Color.WHITE.cpy().lerp(strings.tileSetConfig.fogOfWarColor, 0.6f)
             else -> Color.WHITE.cpy()
@@ -293,9 +289,9 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         }
     }
 
-    override fun doUpdate(viewingCiv: Civilization?) {
+    override fun doUpdate(viewingCiv: CivView?) {
         updateTileImage(viewingCiv)
-        updateRivers(tileGroup.tile.hasBottomRightRiver, tileGroup.tile.hasBottomRiver, tileGroup.tile.hasBottomLeftRiver)
+        updateRivers(tileGroup.tileView.hasBottomRightRiver, tileGroup.tileView.hasBottomRiver, tileGroup.tileView.hasBottomLeftRiver)
         updateTileColor(viewingCiv)
     }
 
@@ -306,7 +302,7 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
 
     private fun getNaturalWonderBackupImage(baseHexagon: ArrayList<String>): ArrayList<String> =
             if (strings.tileSetConfig.useSummaryImages) baseHexagon.apply { add(strings.naturalWonder) }
-            else baseHexagon.apply { add(strings.orFallback{ getTile(tileGroup.tile.naturalWonder!!) }) }
+            else baseHexagon.apply { add(strings.orFallback{ getTile(tileGroup.tileView.naturalWonder!!) }) }
 
 }
 

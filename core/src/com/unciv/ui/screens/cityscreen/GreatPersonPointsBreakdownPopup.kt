@@ -9,7 +9,7 @@ import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
 class GreatPersonPointsBreakdownPopup(cityScreen: CityScreen, gppBreakdown: GreatPersonPointsBreakdown, greatPerson: String?) : Popup(cityScreen) {
     init {
         val lines = ArrayList<FormattedLine>()
-        val headerText = "«GOLD»{${greatPerson ?: "Great person points"}}«» ({${cityScreen.city.name}})"
+        val headerText = "«GOLD»{${greatPerson ?: "Great person points"}}«» ({${cityScreen.cityView.name}})"
         lines += FormattedLine(headerText, header = 2, centered = true)
         lines += FormattedLine(separator = true)
 

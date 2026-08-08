@@ -7,7 +7,6 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
-import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.TutorialTrigger
@@ -46,7 +45,7 @@ import com.unciv.view.CityView
 import kotlin.math.max
 
 class CityScreen(
-    internal val city: City,
+    val cityView: CityView,
     initSelectedConstruction: IConstruction? = null,
     initSelectedTile: Tile? = null,
     /** City ambience sound player proxies can be passed from one CityScreen instance to the next
@@ -62,21 +61,17 @@ class CityScreen(
         const val wltkIconSize = 40f
     }
 
-    private val selectedCiv: Civilization = GUI.getWorldScreen().selectedCiv
+    private val selectedCiv: Civilization = cityView.getViewingCiv()
 
-    internal val isSpying = selectedCiv.gameInfo.isEspionageEnabled() && selectedCiv != city.civ && !selectedCiv.isSpectator()
+    internal val isSpying = selectedCiv.gameInfo.isEspionageEnabled() && !cityView.isOwnedByViewer() && !selectedCiv.isSpectator()
 
     /**
      * This is the regular civ city list if we are not spying, if we are spying then it is every foreign city that our spies are in
      */
-    val viewableCities = if (isSpying) selectedCiv.espionageManager.getCitiesWithOurSpies()
-        .filter { it.civ !=  GUI.getWorldScreen().selectedCiv }
-    else city.civ.cities
+    val viewableCities: List<CityView> = cityView.getViewableCities()
 
     /** Toggles or adds/removes all state changing buttons */
     val canChangeState = GUI.isAllowedChangeState() && !isSpying
-
-    val cityView: CityView = CityView(city, selectedCiv)
 
     // Clockwise from the top-left
 
@@ -178,7 +173,7 @@ class CityScreen(
         }
     }
 
-    override fun getCivilopediaRuleset() = selectedCiv.gameInfo.ruleset
+    override fun getCivilopediaRuleset() = cityView.getRuleset()
 
     internal fun update() {
         // Recalculate Stats
@@ -247,12 +242,12 @@ class CityScreen(
     private fun updateTileGroups() {
         fun isExistingImprovementValuable(tile: Tile): Boolean {
             val improvement = tile.tileImprovement ?: return false
-            val civInfo = city.civ
+            val civInfo = cityView.owningCiv().getCiv()
 
             val statDiffForNewImprovement = tile.stats.getStatDiffForImprovement(
                 improvement,
                 civInfo,
-                city,
+                cityView.getCity(),
             )
 
             // If stat diff for new improvement is negative/zero utility, current improvement is valuable
@@ -272,7 +267,7 @@ class CityScreen(
         }
 
         for (tileGroup in tileGroups) {
-            tileGroup.update(selectedCiv)
+            tileGroup.update(cityView.viewingCiv())
             tileGroup.layerMisc.removeHexOutline()
             if (isSpying) continue // the rest is only for own cities
 
@@ -285,7 +280,7 @@ class CityScreen(
                 /** Support for [UniqueType.CreatesOneImprovement] */
                 tileGroup.tile == selectedQueueEntryTargetTile ->
                     tileGroup.layerMisc.addHexOutline(Color.BROWN)
-                pickTileData != null && tileGroup.tile.getCity() == city && tileGroup.tile in cityView.tilesInRange ->
+                pickTileData != null && cityView.isOwnedTile(tileGroup.tile) && tileGroup.tile in cityView.tilesInRange ->
                     getPickImprovementColor(tileGroup.tile).run {
                         tileGroup.layerMisc.addHexOutline(first.cpy().apply { this.a = second }) }
             }
@@ -306,7 +301,7 @@ class CityScreen(
             addWltkIcon("OtherIcons/WLTK 1") { color = Color.FIREBRICK }.padRight(10f)
         }
 
-        val canAnnex = !cityView.civ().hasUnique(UniqueType.MayNotAnnexCities)
+        val canAnnex = !cityView.viewingCiv().hasUnique(UniqueType.MayNotAnnexCities)
         if (cityView.isPuppet() && canAnnex) {
             val annexCityButton = "Annex city".toTextButton()
             annexCityButton.labelCell.pad(10f)
@@ -363,10 +358,10 @@ class CityScreen(
 
     private fun addTiles() {
         val viewRange = max(cityView.getExpandRange(), cityView.getWorkRange())
-        val tileSetStrings = TileSetStrings(city.civ.gameInfo.ruleset, game.settings)
-        val cityTileGroups = cityView.centerTile().tile.getTilesInDistance(viewRange)
-                .filter { selectedCiv.hasExplored(it) }
-                .map { CityTileGroup(city, it, tileSetStrings, false, isSpying) }
+        val tileSetStrings = TileSetStrings(cityView.getRuleset(), game.settings)
+        val cityTileGroups = cityView.centerTile().getTilesInDistance(viewRange)
+                .filter { selectedCiv.hasExplored(it.getTile()) }
+                .map { CityTileGroup(cityView, it, tileSetStrings, false, isSpying) }
 
         for (tileGroup in cityTileGroups) {
             tileGroup.onClick { tileGroupOnClick(tileGroup) }
@@ -380,8 +375,8 @@ class CityScreen(
 
         val tilesToUnwrap = mutableSetOf<CityTileGroup>()
         for (tileGroup in tileGroups) {
-            val xDifference = cityView.centerTile().tile.position.x - tileGroup.tile.position.x
-            val yDifference = cityView.centerTile().tile.position.y - tileGroup.tile.position.y
+            val xDifference = cityView.centerTile().position().x - tileGroup.tile.position.x
+            val yDifference = cityView.centerTile().position().y - tileGroup.tile.position.y
             //if difference is bigger than the expansion range the tileGroup we are looking for is on the other side of the map
             if (xDifference > viewRange || xDifference < -viewRange || yDifference > viewRange || yDifference < -viewRange) {
                 //so we want to unwrap its position
@@ -433,11 +428,11 @@ class CityScreen(
         // These checks are redundant for the onClick action, but not for the keyboard binding
         if (!canChangeState || !cityView.canBuyTile(cityView.tileView(selectedTile))) return
         val goldCostOfTile = cityView.getGoldCostOfTile(cityView.tileView(selectedTile))
-        if (!cityView.civ().hasStatToBuy(Stat.Gold, goldCostOfTile)) return
+        if (!cityView.viewingCiv().hasStatToBuy(Stat.Gold, goldCostOfTile)) return
 
         closeAllPopups()
 
-        val purchasePrompt = "Currently you have [${cityView.civ().gold}] [Gold].".tr() + "\n\n" +
+        val purchasePrompt = "Currently you have [${cityView.viewingCiv().gold}] [Gold].".tr() + "\n\n" +
             "Would you like to purchase [Tile] for [$goldCostOfTile] [${Stat.Gold.character}]?".tr()
         ConfirmPopup(
             this,
@@ -449,7 +444,7 @@ class CityScreen(
             SoundPlayer.play(UncivSound.Coin)
             cityView.tryBuyTile(cityView.tileView(selectedTile))
             // preselect the next tile on city screen rebuild so bulk buying can go faster
-            UncivGame.Current.replaceCurrentScreen(CityScreen(city, initSelectedTile = cityView.chooseNewTileToOwn()))
+            UncivGame.Current.replaceCurrentScreen(CityScreen(cityView, initSelectedTile = cityView.chooseNewTileToOwn()))
         }.open()
     }
 
@@ -555,7 +550,7 @@ class CityScreen(
 
         val numCities = viewableCities.size
         if (numCities == 0) return
-        val indexOfCity = viewableCities.indexOf(city)
+        val indexOfCity = viewableCities.indexOfFirst { it.getCity() === cityView.getCity() }
         val indexOfNextCity = (indexOfCity + delta + numCities) % numCities
         val newCityScreen = CityScreen(viewableCities[indexOfNextCity], ambiencePlayer = passOnCityAmbiencePlayer())
         newCityScreen.mapScrollPane.zoom(mapScrollPane.scaleX) // Retain zoom
@@ -565,7 +560,7 @@ class CityScreen(
 
     // Don't use passOnCityAmbiencePlayer here - continuing play on the replacement screen would be nice,
     // but the rapid firing of several resize events will get that un-synced, they would no longer stop on leaving.
-    override fun recreate(): BaseScreen = CityScreen(city, selectedConstruction, selectedTile)
+    override fun recreate(): BaseScreen = CityScreen(cityView, selectedConstruction, selectedTile)
 
     override fun dispose() {
         cityAmbiencePlayer?.dispose()

@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.unciv.UncivGame
 import com.unciv.logic.map.tile.Tile
+import com.unciv.view.TileView
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
@@ -48,7 +49,7 @@ internal object CivilopediaImageGetters {
                 tile.baseTerrain = terrain.name
         }
         tile.setTerrainTransients()
-        val group = TileGroup(tile, tileSetStrings ?: TileSetStrings(ruleset, UncivGame.Current.settings),
+        val group = TileGroup(TileView.forSingleTile(tile), tileSetStrings ?: TileSetStrings(ruleset, UncivGame.Current.settings),
                 imageSize * 36f / 54f)  // TileGroup normally spills out of its bounding box
         group.isForceVisible = true
         group.isForMapEditorIcon = true
