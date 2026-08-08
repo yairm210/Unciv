@@ -214,6 +214,7 @@
       "Can hurry technology research",
       "Can generate a large amount of culture",
       "Can undertake a trade mission with City-State, giving a large sum of gold and [amount] Influence",
+      "Before engaging in combat performs an extra ranged attack with [positiveAmount]% of melee combat strength",
       "Can transform to [unit]",
       "Automation is a primary action",
       "[relativeAmount]% Strength",
