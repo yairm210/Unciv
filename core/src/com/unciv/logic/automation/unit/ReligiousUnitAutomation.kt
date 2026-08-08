@@ -24,6 +24,8 @@ object ReligiousUnitAutomation {
         
         @Readonly
         fun isValidSpreadReligionTarget(city: City): Boolean {
+            if (unit.civ.getMatchingUniques(UniqueType.CannotSpreadReligionTo).any { city.civ.matchesFilter(it.params[0]) })
+                return false
             val diplomacyManager = unit.civ.getDiplomacyManager(city.civ)
             if (diplomacyManager?.hasFlag(DiplomacyFlags.AgreedToNotSpreadReligion) == true){
                 // See NextTurnAutomation - these are the conditions under which AI agrees to religious demands
@@ -158,6 +160,7 @@ object ReligiousUnitAutomation {
 
 
     fun foundReligion(unit: MapUnit) {
+        if (unit.civ.hasUnique(UniqueType.MayNotFoundReligion)) return
         val cityToFoundReligionAt =
             if (unit.getTile().isCityCenter() && !unit.getTile().owningCity!!.isHolyCity()) unit.getTile().owningCity
             else unit.civ.cities.firstOrNull {

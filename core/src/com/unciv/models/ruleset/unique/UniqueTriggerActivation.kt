@@ -181,7 +181,7 @@ object UniqueTriggerActivation {
                 val unitName = unique.params[0]
                 val baseUnit = ruleset.units[unitName] ?: return null
                 val civUnit = civInfo.getEquivalentUnit(baseUnit)
-                if (civUnit.isCityFounder() && civInfo.isOneCityChallenger())
+                if (civUnit.isCityFounder() && (civInfo.isOneCityChallenger() || !civUnit.isBuildable(civInfo)))
                     return null
 
                 val limit = civUnit.getMatchingUniques(UniqueType.MaxNumberBuildable)
@@ -222,7 +222,7 @@ object UniqueTriggerActivation {
                 val unitName = unique.params[1]
                 val baseUnit = ruleset.units[unitName] ?: return null
                 val civUnit = civInfo.getEquivalentUnit(baseUnit)
-                if (civUnit.isCityFounder() && civInfo.isOneCityChallenger())
+                if (civUnit.isCityFounder() && (civInfo.isOneCityChallenger() || !civUnit.isBuildable(civInfo)))
                     return null
 
                 val limit = civUnit.getMatchingUniques(UniqueType.MaxNumberBuildable)
@@ -279,7 +279,7 @@ object UniqueTriggerActivation {
                 val unitName = unique.params[0]
                 val baseUnit = ruleset.units[unitName] ?: return null
                 val civUnit = civInfo.getEquivalentUnit(baseUnit)
-                if (civUnit.isCityFounder() && civInfo.isOneCityChallenger())
+                if (civUnit.isCityFounder() && (civInfo.isOneCityChallenger() || !civUnit.isBuildable(civInfo)))
                     return null
 
                 // Choose a city as the placement anchor: use the relevant city if available, otherwise the first city
@@ -313,7 +313,7 @@ object UniqueTriggerActivation {
                 val unitName = unique.params[1]
                 val baseUnit = ruleset.units[unitName] ?: return null
                 val civUnit = civInfo.getEquivalentUnit(baseUnit)
-                if (civUnit.isCityFounder() && civInfo.isOneCityChallenger())
+                if (civUnit.isCityFounder() && (civInfo.isOneCityChallenger() || !civUnit.isBuildable(civInfo)))
                     return null
 
                 // Existing limit logic (based on the number of similar units the civ already owns)
@@ -365,7 +365,7 @@ object UniqueTriggerActivation {
                 val unitName = unique.params[0]
                 val baseUnit = ruleset.units[unitName] ?: return null
                 var civUnit = civInfo.getEquivalentUnit(baseUnit)
-                if (civUnit.isCityFounder() && civInfo.isOneCityChallenger()) {
+                if (civUnit.isCityFounder() && (civInfo.isOneCityChallenger() || !civUnit.isBuildable(civInfo))) {
                      val replacementUnit = ruleset.units.values
                          .firstOrNull {
                              it.getMatchingUniques(UniqueType.BuildImprovements, GameContext.IgnoreConditionals)
