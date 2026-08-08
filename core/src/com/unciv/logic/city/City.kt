@@ -32,6 +32,7 @@ import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.SubStat
 import com.unciv.utils.pseudoRandomUuid
+import com.unciv.utils.withItem
 import com.unciv.utils.withoutItem
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.LocalState
@@ -81,9 +82,11 @@ class City : IsPartOfGameInfoSerialization, INamed {
     var cityConstructions = CityConstructions()
     var expansion = CityExpansionManager()
     var religion = CityReligionManager()
+
+    @Transient // Class carries no persisted fields
     var espionage = CityEspionageManager()
 
-    /** Effect: moved to disabled section in cosntruction list, and not built during automation */
+    /** Effect: moved to disabled section in construction list, and not built during automation */
     var disabledConstructions = HashSet<String>()
         private set
     fun resetDisabledConstructions() {
@@ -94,7 +97,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     @Transient  // CityStats has no serializable fields
     var cityStats = CityStats(this)
-    
+
     var resourceStockpiles = Counter<String>()
 
     /** All tiles that this city controls */
@@ -124,7 +127,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     private var cityAIFocus: String = CityFocus.NoFocus.name
     @Readonly fun getCityFocus() = CityFocus.entries.firstOrNull { it.name == cityAIFocus } ?: CityFocus.NoFocus
-    fun setCityFocus(cityFocus: CityFocus){ cityAIFocus = cityFocus.name }
+    fun setCityFocus(cityFocus: CityFocus) { cityAIFocus = cityFocus.name }
 
     /**
      * Civ object for the original founder of this city
@@ -272,6 +275,9 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     @Readonly fun isWeLoveTheKingDayActive() = hasFlag(CityFlags.WeLoveTheKing)
     @Readonly fun isInResistance() = hasFlag(CityFlags.Resistance)
+    /** Returns true if [viewingCiv] has full visibility into this city: either they own it, or have a set-up spy inside. */
+    @Readonly fun isFullyVisible(viewingCiv: Civilization): Boolean =
+        civ === viewingCiv || viewingCiv.espionageManager.getSpiesInCity(this).any { it.isSetUp() }
     @Readonly
     fun isBlockaded(): Boolean {
         // Coastal cities are blocked if every adjacent water tile is blocked
@@ -376,6 +382,29 @@ class City : IsPartOfGameInfoSerialization, INamed {
     //endregion
 
     //region state-changing functions
+    fun lockTile(tile: Tile): Boolean {
+        require(isWorked(tile)) { "Cannot lock tile ${tile.position} — not worked by $name" }
+        return lockedTiles.add(tile.position)
+    }
+    fun unlockTile(tile: Tile): Boolean = lockedTiles.remove(tile.position)
+
+    fun workTile(tile: Tile): Boolean {
+        require(getWorkableTiles().contains(tile)) { "Tile ${tile.position} is not workable by $name" }
+        if (isWorked(tile)) return false
+        workedTiles = workedTiles.withItem(tile.position)
+        return true
+    }
+    fun stopWorkingTile(tile: Tile): Boolean {
+        if (!isWorked(tile)) return false
+        unlockTile(tile)
+        workedTiles = workedTiles.withoutItem(tile.position)
+        return true
+    }
+    fun clearWorkedTiles() {
+        workedTiles = hashSetOf()
+        lockedTiles.clear()
+    }
+
     fun setTransients(civInfo: Civilization) {
         this.civ = civInfo
         this.id = if (id != NO_ID) id else pseudoRandomId(civ)
@@ -421,11 +450,11 @@ class City : IsPartOfGameInfoSerialization, INamed {
      *
      *  If the next City.startTurn is soon enough, then use [reassignPopulationDeferred] instead.
      */
-    fun reassignPopulation(resetLocked: Boolean = false):Unit = timeThis("reassignPopulation") {
+    fun reassignPopulation(resetLocked: Boolean = false): Unit = timeThis("reassignPopulation") {
         if (resetLocked) {
             workedTiles = hashSetOf()
             lockedTiles = hashSetOf()
-        } else if(cityAIFocus != CityFocus.Manual.name){
+        } else if (cityAIFocus != CityFocus.Manual.name){
             workedTiles = lockedTiles
         }
         if (!manualSpecialists)
@@ -554,7 +583,9 @@ class City : IsPartOfGameInfoSerialization, INamed {
         return when (filter) {
             "in this city" -> true // Filtered by the way uniques are found
             "in all cities" -> true
-            in Constants.all -> true
+            // more performant than "in Constants.all" - see https://medium.com/@yairm210/kotlin-when-string-optimization-e15c6eea2734
+            Constants.lowercaseAll -> true
+            Constants.uppercaseAll -> true
             "in your cities", "Your" -> viewingCiv == civ
             "in all coastal cities", "Coastal" -> isCoastal()
             "in capital", "Capital" -> isCapital()

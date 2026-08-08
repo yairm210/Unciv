@@ -30,6 +30,7 @@ import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onDoubleClick
 import com.unciv.ui.images.ImageGetter
+import com.unciv.GUI
 import com.unciv.ui.screens.cityscreen.CityScreen
 import kotlin.math.roundToInt
 
@@ -113,7 +114,7 @@ class ImprovementPickerScreen(
         } else if (tile.getOwner()!!.isCurrentPlayer()) {
             val button = tile.getCity()!!.name.toTextButton(hideIcons = true)
             button.onClick {
-                this.game.pushScreen(CityScreen(tile.getCity()!!, null, tile))
+                this.game.pushScreen(CityScreen(GUI.getWorldScreen().gameView.getCityView(tile.getCity()!!), null, tile))
             }
             val label = "Tile owned by [${tile.getOwner()!!.civName}] (You)".toLabel()
             label.onClick { openCivilopedia(tile.getOwner()!!.nation.makeLink()) }

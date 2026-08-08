@@ -501,6 +501,11 @@ class WorkerAutomation(
 
         @LocalState val stats = tile.stats.getStatDiffForImprovement(improvement, civInfo, tile.getCity(), currentTileStats)
 
+         for (unique in improvement.getMatchingUniques(UniqueType.ImprovementStatsForAdjacencies)) {
+                if (unique.params[1] == improvement.name) //for Moai-like improvements, add the yields of future self-adjacencies
+                    stats.add(unique.stats * tile.neighbors.count { (it.tileImprovement != improvement && it.improvementFunctions.canBuildImprovement(improvement, gameContext = civInfo.state)) })
+            }
+
         var isResourceImprovedByNewImprovement = tile.tileResource.let { civInfo.canSeeResource(it) && it.isImprovedBy(improvement.name) }
 
         if (improvement.name.startsWith(Constants.remove)) {

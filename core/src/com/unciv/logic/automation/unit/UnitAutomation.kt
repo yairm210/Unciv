@@ -1,6 +1,6 @@
 package com.unciv.logic.automation.unit
 
-import com.unciv.Constants
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.battle.Battle
@@ -26,6 +26,7 @@ import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 import kotlin.math.ceil
 import yairm210.purity.annotations.Readonly
 import com.unciv.logic.automation.Timers.Companion.timeThis
+import com.unciv.logic.automation.civilization.NextTurnAutomation
 
 object UnitAutomation {
 
@@ -44,8 +45,12 @@ object UnitAutomation {
             return
         }
 
+        val isHumanAndNotAutoplaying =
+            unit.civ.isHuman() && GUI.getWorldScreenIfActive()?.autoPlay?.isAutoPlaying() != true
+        // AI promotes units via NextTurnAutomation.automateUnits
+        if (isHumanAndNotAutoplaying) NextTurnAutomation.applyPromotions(unit)
         // AI upgrades units via UseGoldAutomation in NextTurnAutomation
-        if (unit.civ.isHuman() && tryUpgradeUnit(unit)) return
+        if (isHumanAndNotAutoplaying && tryUpgradeUnit(unit)) return
 
         //This allows for military units with certain civilian abilities to behave as civilians in peace and soldiers in war
         if ((unit.hasUnique(UniqueType.BuildImprovements) || unit.hasUnique(UniqueType.FoundCity) || 

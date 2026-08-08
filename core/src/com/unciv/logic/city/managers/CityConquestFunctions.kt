@@ -315,8 +315,8 @@ class CityConquestFunctions(val city: City) {
         city.previousOwner = oldCiv.civID
 
         // now that the tiles have changed, we need to reassign population
-        for (workedTile in city.workedTiles.filterNot { city.tiles.contains(it) }) {
-            city.population.stopWorkingTile(workedTile)
+        for (tile in city.getWorkedTiles().filter { it.position !in city.tiles }.toList()) {
+            city.stopWorkingTile(tile)
             city.population.autoAssignPopulation()
         }
 

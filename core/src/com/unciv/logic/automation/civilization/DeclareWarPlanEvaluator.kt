@@ -108,7 +108,7 @@ object DeclareWarPlanEvaluator {
             else -> 0.8f
         }
         if (civToJoinForce + civForce < targetForce * multiplier) {
-            motivation -= 20 * (targetForce * multiplier) / (civToJoinForce + civForce).coerceIn(-1000f, 1000f)
+            motivation -= (20 * (targetForce * multiplier) / (civToJoinForce + civForce)).coerceIn(-1000f, 1000f)
         }
 
         return motivation - 15

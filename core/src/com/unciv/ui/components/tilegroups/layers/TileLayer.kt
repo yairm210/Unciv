@@ -2,7 +2,7 @@ package com.unciv.ui.components.tilegroups.layers
 
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.unciv.logic.civilization.Civilization
+import com.unciv.view.CivView
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.ui.components.tilegroups.TileGroup
@@ -70,7 +70,7 @@ abstract class TileLayer(val tileGroup: TileGroup, val size: Float) {
      */
     fun Image.setHexagonSize(scale: Float? = null, tileLocal: Boolean = false): Image {
         this.setSize(tileGroup.hexagonImageWidth, this.height * tileGroup.hexagonImageWidth / this.width)
-        this.setOrigin(tileGroup.hexagonImageOrigin.first, tileGroup.hexagonImageOrigin.second)
+        this.setOrigin(tileGroup.hexagonImageOriginX, tileGroup.hexagonImageOriginY)
         val baseX = if (tileLocal) 0f else tileX
         val baseY = if (tileLocal) 0f else tileY
         this.x = baseX + tileGroup.hexagonImagePosition.first
@@ -79,9 +79,9 @@ abstract class TileLayer(val tileGroup: TileGroup, val size: Float) {
         return this
     }
 
-    fun isViewable(viewingCiv: Civilization) = tileGroup.isViewable(viewingCiv)
+    fun isViewable(viewingCiv: CivView) = tileGroup.isViewable(viewingCiv)
 
-    fun update(viewingCiv: Civilization?) {
+    fun update(viewingCiv: CivView?) {
         doUpdate(viewingCiv)
         determineVisibility()
     }
@@ -90,7 +90,7 @@ abstract class TileLayer(val tileGroup: TileGroup, val size: Float) {
         isVisible = _ownedActors?.isNotEmpty() == true
     }
 
-    protected abstract fun doUpdate(viewingCiv: Civilization?)
+    protected abstract fun doUpdate(viewingCiv: CivView?)
 
     /** Called by TileMapLayer.add() — offsets pre-buffered images from local → absolute coords. */
     internal fun attachTo(mapLayer: TileMapLayer<*>, x: Float, y: Float) {

@@ -1,6 +1,7 @@
 package com.unciv.ui.screens.worldscreen.bottombar
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
@@ -17,9 +18,10 @@ import com.unciv.ui.screens.civilopediascreen.FormattedLine.IconDisplay
 import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.utils.DebugUtils
+import com.unciv.view.CivView
 
 class TileInfoTable(private val worldScreen: WorldScreen) : Table(BaseScreen.skin) {
-    var selectedCiv = worldScreen.selectedCiv
+    var civView: CivView = worldScreen.gameView.civView
 
     init {
         background = BaseScreen.skinStrings.getUiBackground(
@@ -32,9 +34,9 @@ class TileInfoTable(private val worldScreen: WorldScreen) : Table(BaseScreen.ski
         clearChildren()
         pad(5f)
 
-        if (tile != null && (DebugUtils.VISIBLE_MAP || selectedCiv.hasExplored(tile)) ) {
+        if (tile != null && (DebugUtils.VISIBLE_MAP || civView.getCiv().hasExplored(tile)) ) {
             add(getStatsTable(tile)).left().row()
-            add(MarkupRenderer.render(TileDescription.toMarkup(tile, selectedCiv), padding = 0f, iconDisplay = IconDisplay.None) {
+            add(MarkupRenderer.render(TileDescription.toMarkup(civView.gameView.tileMapView.getTile(tile), civView), padding = 0f, iconDisplay = IconDisplay.None) {
                 worldScreen.openCivilopedia(it)
             } ).padTop(5f).row()
             if (DebugUtils.VISIBLE_MAP) add(tile.position.toPrettyString().toLabel()).colspan(2).pad(5f)
@@ -53,18 +55,20 @@ class TileInfoTable(private val worldScreen: WorldScreen) : Table(BaseScreen.ski
         val table = Table()
         table.defaults().pad(2f)
         
-        for ((key, value) in tile.stats.getTileStats(selectedCiv)) {
+        for ((key, value) in tile.stats.getTileStats(civView.getCiv())) {
             table.add((key.character + value.toInt().toString()).toLabel())
                 .align(Align.left).padRight(5f)
         }
         table.touchable = Touchable.enabled
         table.onClick {
             Popup(worldScreen).apply {
-                for ((name, stats) in tile.stats.getTileStatsBreakdown(tile.getCity(), selectedCiv))
+                for ((name, stats) in tile.stats.getTileStatsBreakdown(tile.getCity(), civView.getCiv()))
                     add("${name.tr()}: {${stats.clone()}}".toLabel()).row()
                 addCloseButton()
             }.open()
         }
         return table
     }
+
+    override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
 }
