@@ -1,7 +1,8 @@
 package com.unciv.logic.map.mapgenerator.resourceplacement
 
-import com.unciv.logic.map.mapgenerator.MapResourceSetting
+import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.mapgenerator.MapResourceSetting
 import com.unciv.logic.map.mapgenerator.mapregions.*
 import com.unciv.logic.map.mapgenerator.mapregions.isWaterOnlyResource
 import com.unciv.logic.map.tile.Tile
@@ -185,8 +186,10 @@ object LuxuryResourcePlacementLogic {
         placeLuxuriesAtMajorCivStartLocations(regions, tileMap, ruleset, tileData, randomLuxuries)
         placeLuxuriesAtMinorCivStartLocations(tileMap, ruleset, regions, randomLuxuries, cityStateLuxuries, tileData)
         addRegionalLuxuries(tileData, regions, tileMap, ruleset)
-        addRandomLuxuries(randomLuxuries, tileData, tileMap, regions, ruleset)
 
+        // Count luxuries before random top-up / second-type starts so a ModConstants floor can top up the deficit.
+        val luxuriesPlacedBeforeRandom = countLuxuryTiles(tileMap, ruleset)
+        addRandomLuxuries(randomLuxuries, tileData, tileMap, regions, ruleset, luxuriesPlacedBeforeRandom)
 
         val specialLuxuries = ruleset.tileResources.values.filter {
             it.resourceType == ResourceType.Luxury &&
@@ -267,19 +270,37 @@ object LuxuryResourcePlacementLogic {
         tileData: TileDataMap,
         tileMap: TileMap,
         regions: ArrayList<Region>,
-        ruleset: Ruleset
+        ruleset: Ruleset,
+        luxuriesPlacedBeforeRandom: Int,
     ) {
         if (randomLuxuries.isEmpty()) return
         val rng = GameContext(gameInfo = tileMap.gameInfo).stateBasedRandom("LuxuryResourcePlacementLogic.addRandomLuxuries")
-        var targetRandomLuxuries = tileData.size.toFloat().pow(0.45f).toInt() // Approximately
-        targetRandomLuxuries *= tileMap.mapParameters.getMapResources().randomLuxuriesPercent
-        targetRandomLuxuries /= 100
-        targetRandomLuxuries += rng.nextInt(regions.size) // Add random number based on number of civs
+        val resourceSetting = tileMap.mapParameters.getMapResources()
+
+        var legacyBase = tileData.size.toFloat().pow(0.45f).toInt() // Approximately
+        legacyBase *= resourceSetting.randomLuxuriesPercent
+        legacyBase /= 100
+        // Draw civ variance once so enabling a soft floor does not desync later shuffles vs floor=0.
+        val civVariance = if (regions.isEmpty()) 0 else rng.nextInt(regions.size)
         val minimumRandomLuxuries = tileData.size.toFloat().pow(0.2f).toInt() // Approximately
+
+        val worldFloor = resolveMinimumWorldLuxuryFloor(ruleset, tileMap.mapParameters.mapSize, resourceSetting)
+        // Soft top-up of the *random-phase target* only — tryAddingResourceToTiles is best-effort,
+        // so final map luxury counts are not guaranteed to reach [worldFloor].
+        val targetRandomLuxuries = resolveRandomLuxuryPlacementTarget(
+            legacyBaseWithoutCivVariance = legacyBase,
+            civVariance = civVariance,
+            worldFloor = worldFloor,
+            luxuriesPlacedBeforeRandom = luxuriesPlacedBeforeRandom,
+        )
+
+        if (targetRandomLuxuries <= 0) return
+
         val worldTiles = tileMap.values.asSequence().shuffled()
         for ((index, luxury) in randomLuxuries.shuffled().withIndex()) {
-            val targetForThisLuxury = if (randomLuxuries.size > 8) targetRandomLuxuries / 10
-            else {
+            val targetForThisLuxury = if (randomLuxuries.size > 8) {
+                targetRandomLuxuries / 10
+            } else {
                 val minimum = max(3, minimumRandomLuxuries - index)
                 max(
                     minimum,
@@ -310,6 +331,7 @@ object LuxuryResourcePlacementLogic {
             (tileData.size / 600) - (0.3f * abs(regions.size - idealCivsForMapSize)).toInt()
         regionTargetNumber += tileMap.mapParameters.getMapResources().regionalLuxuriesDelta
         regionTargetNumber = max(1, regionTargetNumber)
+
         for (region in regions) {
             val resource = ruleset.tileResources[region.luxury] ?: continue
             fun Tile.isShoreOfContinent(continent: Int) =
@@ -331,6 +353,13 @@ object LuxuryResourcePlacementLogic {
             )
         }
     }
+
+    @Readonly
+    private fun countLuxuryTiles(tileMap: TileMap, ruleset: Ruleset): Int =
+        tileMap.values.count { tile ->
+            val resourceName = tile.resource ?: return@count false
+            ruleset.tileResources[resourceName]?.resourceType == ResourceType.Luxury
+        }
 
     private fun placeLuxuriesAtMinorCivStartLocations(
         tileMap: TileMap,
@@ -416,4 +445,52 @@ object LuxuryResourcePlacementLogic {
         }
     }
 
+    // region Optional world luxury floor (ModConstants)
+
+    /**
+     * Soft random-phase luxury target: [legacyBaseWithoutCivVariance] + [civVariance], optionally
+     * raised to cover `worldFloor + civVariance - alreadyPlaced` when [worldFloor] > 0.
+     * Uses the same [civVariance] for both sides — do not draw a second RNG value when the floor is on.
+     */
+    @Readonly
+    fun resolveRandomLuxuryPlacementTarget(
+        legacyBaseWithoutCivVariance: Int,
+        civVariance: Int,
+        worldFloor: Int,
+        luxuriesPlacedBeforeRandom: Int,
+    ): Int {
+        val legacyTarget = legacyBaseWithoutCivVariance + civVariance
+        if (worldFloor <= 0) return legacyTarget
+        val deficit = max(0, worldFloor + civVariance - luxuriesPlacedBeforeRandom)
+        return max(legacyTarget, deficit)
+    }
+
+    /**
+     * Resolves optional ModConstants world luxury floor; `0` means disabled.
+     * Custom sizes use [MapSize.getPredefinedOrNextSmaller].
+     *
+     * This value feeds a **soft** bump of the random-luxury placement target only
+     * (`max(legacyTarget, floor − alreadyPlaced)`). It does not hard-guarantee final
+     * tile counts, and is unused on the map-editor [com.unciv.logic.map.mapgenerator.MapGenerator]
+     * `spreadResources` path (no civilizations).
+     */
+    @Readonly
+    fun resolveMinimumWorldLuxuryFloor(
+        ruleset: Ruleset,
+        mapSize: MapSize,
+        setting: MapResourceSetting,
+    ): Int {
+        val constants = ruleset.modOptions.constants
+        val base = when (mapSize.getPredefinedOrNextSmaller()) {
+            MapSize.Predefined.Tiny -> constants.minimumWorldLuxuriesTiny
+            MapSize.Predefined.Small -> constants.minimumWorldLuxuriesSmall
+            MapSize.Predefined.Medium -> constants.minimumWorldLuxuriesMedium
+            MapSize.Predefined.Large -> constants.minimumWorldLuxuriesLarge
+            MapSize.Predefined.Huge -> constants.minimumWorldLuxuriesHuge
+        }
+        if (base <= 0) return 0
+        return (base * setting.randomLuxuriesPercent) / 100
+    }
+
+    // endregion
 }
