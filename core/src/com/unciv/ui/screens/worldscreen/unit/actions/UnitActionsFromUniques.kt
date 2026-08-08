@@ -3,6 +3,7 @@ package com.unciv.ui.screens.worldscreen.unit.actions
 import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.UncivGame
+import com.unciv.logic.MultiFilter
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
@@ -524,8 +525,15 @@ object UnitActionsFromUniques {
         val tile = unit.getTile()
         if (tile.isCityCenter()) return null
         if (!tile.isPillaged()) return null
-        val unique = unit.getMatchingUniques(UniqueType.BuildImprovements).firstOrNull()
-            ?: return null
+        val uniques = unit.getMatchingUniques(UniqueType.BuildImprovements)
+        val improvement = tile.tileImprovement!!
+        val civ = unit.civ
+            if (!uniques.any { unique ->
+            // Engage the MultiFilter on the entire filter, prior to checking the individual filters
+            MultiFilter.multiFilter(unique.params[0], {
+                improvement.matchesFilter(it, tile.stateThisTile) || tile.matchesTerrainFilter(it, civ)
+            })
+        }) return null
 
         val couldConstruct = unit.hasMovement()
             && !tile.isCityCenter() && tile.improvementInProgress != Constants.repair
@@ -535,7 +543,7 @@ object UnitActionsFromUniques {
                 .none { it == ImprovementBuildingProblem.OutsideBorders }
 
         val turnsToBuild = getRepairTurns(unit)
-        val useFrequency = getUseFrequency(unit, unique, 90f)
+        val useFrequency = getUseFrequency(unit, uniques.first(), 90f)
 
         return UnitAction(UnitActionType.Repair, useFrequency,
             title = "${UnitActionType.Repair} [${unit.currentTile.getImprovementToRepair()!!.name}] - [${turnsToBuild}${Fonts.turn}]",
