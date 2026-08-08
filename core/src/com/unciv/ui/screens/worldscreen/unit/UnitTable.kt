@@ -27,6 +27,7 @@ import com.unciv.ui.screens.worldscreen.unit.presenter.CityPresenter
 import com.unciv.ui.screens.worldscreen.unit.presenter.SpyPresenter
 import com.unciv.ui.screens.worldscreen.unit.presenter.SummaryPresenter
 import com.unciv.ui.screens.worldscreen.unit.presenter.UnitPresenter
+import com.unciv.view.ForeignCityView
 import yairm210.purity.annotations.Readonly
 import java.awt.Label
 
@@ -69,7 +70,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
 
     val selectedUnit: MapUnit?
         get() = (presenter as? UnitPresenter)?.selectedUnit
-    val selectedCity: City?
+    val selectedCity: ForeignCityView?
         get() = (presenter as? CityPresenter)?.selectedCity
 
     val selectedSpy: Spy?

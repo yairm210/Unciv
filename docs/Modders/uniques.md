@@ -142,15 +142,15 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
-??? example  "Gain [amount] [stat]"
-	Example: "Gain [3] [Culture]"
+??? example  "Gain [amount] [civWideStat]"
+	Example: "Gain [3] [Gold]"
 
 	This unique's effect can be modified with &lt;(modified by game speed)&gt;
 
 	Applicable to: Triggerable
 
-??? example  "Gain [amount]-[amount] [stat]"
-	Example: "Gain [3]-[3] [Culture]"
+??? example  "Gain [amount]-[amount] [civWideStat]"
+	Example: "Gain [3]-[3] [Gold]"
 
 	This unique's effect can be modified with &lt;(modified by game speed)&gt;
 

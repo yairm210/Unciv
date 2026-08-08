@@ -27,6 +27,12 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
         override val icon get() = null
         override fun isChoice(worldScreen: WorldScreen) = false
     },
+    RetryUpload("Retry Upload", Color.RED) {
+        override fun isChoice(worldScreen: WorldScreen) =
+            worldScreen.failedUpload
+        override fun action(worldScreen: WorldScreen) =
+            worldScreen.nextTurn()
+    },
     AutoPlay("AutoPlay", Color.WHITE) {
         override fun isChoice(worldScreen: WorldScreen) =
             worldScreen.autoPlay.isAutoPlaying()
@@ -50,7 +56,7 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
             getCityWithNoProductionSet(worldScreen) != null
         override fun action(worldScreen: WorldScreen) {
             val city = getCityWithNoProductionSet(worldScreen) ?: return
-            worldScreen.game.pushScreen(CityScreen(city))
+            worldScreen.game.pushScreen(CityScreen(worldScreen.gameView.getCityView(city)))
         }
     },
     PickTech("Pick a tech", Color.SKY) {

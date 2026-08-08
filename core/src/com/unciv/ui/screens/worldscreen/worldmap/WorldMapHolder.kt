@@ -99,7 +99,8 @@ class WorldMapHolder(
     internal fun addTiles() {
         val tileSetStrings = TileSetStrings(worldScreen.gameInfo.ruleset, worldScreen.game.settings)
         currentTileSetStrings = tileSetStrings
-        val tileGroupsNew = tileMap.values.map { WorldTileGroup(it, tileSetStrings) }
+        val tileMapView = worldScreen.gameView.tileMapView
+        val tileGroupsNew = tileMap.values.map { WorldTileGroup(tileMapView.getTile(it), tileSetStrings) }
         tileGroupMap = TileGroupMap(this, tileGroupsNew, continuousScrollingX)
 
         for (tileGroup in tileGroupsNew) tileGroups[tileGroup.tile] = tileGroup
@@ -118,7 +119,7 @@ class WorldMapHolder(
                 val child = tileGroupMap.hit(x, y, true) ?: return
 
                 if (child is CityButton) { // the city button can be below the tilegroup, since it moves down when first clicked
-                    onTileClicked(child.city.getCenterTile())
+                    onTileClicked(child.cityView.getCenterTile())
                     return
                 }
                 if (child is WorldTileGroup) {
@@ -218,7 +219,7 @@ class WorldMapHolder(
                     && unitsInTile.any()
                     && unitsInTile.first().civ.isAtWarWith(worldScreen.viewingCiv)) {
                 // try to select the closest city to bombard this guy
-                unitTable.citySelected(previousSelectedCity)
+                unitTable.citySelected(previousSelectedCity.getCity())
             }
         }
         worldScreen.shouldUpdate = true

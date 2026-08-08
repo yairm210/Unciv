@@ -53,6 +53,7 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
         // An empty string is used to indicate the Unique wasn't found
         .firstOrNull()?.params?.get(0) ?: ""
     
+    @Readonly @Suppress("purity") 
     fun getPointsRequiredForGreatPerson(greatPerson: String): Int {
         val key = getPoolKey(greatPerson)
         if (pointsForNextGreatPersonCounter[key] == 0) {
