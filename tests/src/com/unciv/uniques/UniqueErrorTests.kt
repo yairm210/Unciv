@@ -10,14 +10,14 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.validation.RulesetErrorSeverity
 import com.unciv.models.ruleset.validation.UniqueValidator
 import com.unciv.models.translations.getPlaceholderParameters
-import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 
 
-@RunWith(GdxTestRunner::class)
+@RunWith(BaseTestRunner::class)
 class UniqueErrorTests {
     @Test
     fun testMultipleUniqueTypesSameText() {

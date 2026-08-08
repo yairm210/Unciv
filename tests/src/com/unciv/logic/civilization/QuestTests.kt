@@ -6,7 +6,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.managers.quests.QuestManager
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.QuestName
-import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -15,7 +15,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@RunWith(GdxTestRunner::class)
+@RunWith(BaseTestRunner::class)
 class QuestTests {
     private lateinit var testGame: TestGame
     private lateinit var civ: Civilization

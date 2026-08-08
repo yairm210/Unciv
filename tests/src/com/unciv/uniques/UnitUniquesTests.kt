@@ -7,7 +7,7 @@ import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
-import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
 import com.unciv.ui.screens.pickerscreens.PromotionTree
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
@@ -18,7 +18,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import kotlin.math.roundToInt
 
-@RunWith(GdxTestRunner::class)
+@RunWith(BaseTestRunner::class)
 class UnitUniquesTests {
     private lateinit var game: TestGame
 
