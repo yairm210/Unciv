@@ -248,4 +248,17 @@ object BackwardCompatibility {
             if (unit.id == Constants.NO_ID) unit.id = getNextUnitId()
         }
     }
+
+    /**
+     * Old saves lack [com.unciv.logic.civilization.Civilization.teamId]; missing Int fields
+     * deserialize as `0`. If every major still has `0`, assign unique teams so FFA stays FFA.
+     * Intentional all-on-one-team games use a positive shared id from New Game (not all zeros after starter).
+     */
+    fun GameInfo.migrateTeamIds() {
+        val majors = civilizations.filter { it.isMajorCiv() }
+        if (majors.isEmpty()) return
+        if (!majors.all { it.teamId == 0 }) return
+        for ((index, civ) in majors.withIndex())
+            civ.teamId = index + 1
+    }
 }

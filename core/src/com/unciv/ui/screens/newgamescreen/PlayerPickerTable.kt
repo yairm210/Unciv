@@ -96,6 +96,7 @@ class PlayerPickerTable(
         if (desiredCiv.isNotEmpty()) assignDesiredCiv(desiredCiv)
 
         for (player in gameParameters.players) {
+            ensurePlayerTeamId(player)
             playerListTable.add(getPlayerTable(player)).width(civBlocksWidth).padBottom(20f).row()
         }
 
@@ -118,6 +119,7 @@ class PlayerPickerTable(
                         // Spectators can only be Humans
                         else Player(Constants.spectator, PlayerType.Human).apply { setNationTransient(gameBasics) }
                     } else Player()  // normal: add random AI
+                    ensurePlayerTeamId(player)
                     gameParameters.players.add(player)
                     update()
                 }
@@ -208,6 +210,17 @@ class PlayerPickerTable(
             }
         }
         updatePlayerTypeButtonEnabled()
+
+        ensurePlayerTeamId(player)
+        val teamButton = "Team [${player.teamId}]".toTextButton()
+        playerTable.add(teamButton).width(100f).pad(5f).right()
+        teamButton.isEnabled = !locked && player.chosenCiv != Constants.spectator
+        teamButton.onClick {
+            if (locked || player.chosenCiv == Constants.spectator) return@onClick
+            val maxTeam = gameParameters.players.size.coerceAtLeast(1)
+            player.teamId = if (player.teamId >= maxTeam) 1 else player.teamId + 1
+            update()
+        }
 
         nationTable.onClick {
             if (locked) return@onClick
@@ -315,6 +328,17 @@ class PlayerPickerTable(
     private fun popupFriendPicker(player: Player) {
         FriendSelectionPopup(this, player, previousScreen as BaseScreen).open()
         update()
+    }
+
+    /**
+     * Assign a unique positive [Player.teamId] when still unassigned (`0`).
+     */
+    private fun ensurePlayerTeamId(player: Player) {
+        if (player.teamId > 0) return
+        val used = gameParameters.players.map { it.teamId }.toHashSet()
+        var id = 1
+        while (id in used) id++
+        player.teamId = id
     }
 
     /**

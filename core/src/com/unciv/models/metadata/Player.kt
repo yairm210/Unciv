@@ -9,15 +9,22 @@ import com.unciv.models.ruleset.nation.Nation
 class Player(
     var chosenCiv: String = Constants.random,
     var playerType: PlayerType = PlayerType.AI,
-    var playerId: String = ""
+    var playerId: String = "",
+    /**
+     * Permanent setup team. Players sharing the same positive [teamId] are teammates.
+     * `0` means unassigned (JSON default for old saves / new Player()); New Game / GameStarter
+     * assign unique positive ids when all remain `0`.
+     */
+    var teamId: Int = 0
 ) : IsPartOfGameInfoSerialization {
     constructor() : this(Constants.random, PlayerType.AI, "")
-    constructor(chosenNation: Nation, playerType: PlayerType = PlayerType.AI, playerId: String = ""):
-        this(chosenNation.name, playerType, playerId) {
+    constructor(chosenNation: Nation, playerType: PlayerType = PlayerType.AI, playerId: String = "", teamId: Int = 0):
+        this(chosenNation.name, playerType, playerId, teamId) {
             this.chosenNation = chosenNation 
         }
     @Transient
     lateinit var chosenNation: Nation
+
     fun setNationTransient(ruleset: Ruleset) {
         chosenNation = ruleset.nations[chosenCiv]!!
     }

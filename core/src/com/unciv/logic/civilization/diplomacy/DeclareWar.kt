@@ -140,6 +140,24 @@ object DeclareWar {
                             NotificationCategory.Diplomacy, otherCiv.civName, NotificationIcon.War, allyCiv.civName, civInfo.civName)
                 }
             }
+            WarType.PermanentTeamWar -> {
+                val allyCiv = declareWarReason.allyCiv!!
+                otherCiv.popupAlerts.add(PopupAlert(AlertType.WarDeclaration, civInfo.civName))
+
+                otherCiv.addNotification("[${civInfo.civName}] has joined [${allyCiv.civName}] in the war against us!",
+                    NotificationCategory.Diplomacy, otherCiv.civName, NotificationIcon.War, allyCiv.civName, civInfo.civName)
+
+                civInfo.addNotification("We have joined [${allyCiv.civName}] in the war against [${otherCiv.civName}]!",
+                    NotificationCategory.Diplomacy, otherCiv.civName, NotificationIcon.War, allyCiv.civName, civInfo.civName)
+
+                allyCiv.addNotification("[${civInfo.civName}] has joined us in the war against [${otherCiv.civName}]!",
+                    NotificationCategory.Diplomacy, otherCiv.civName, NotificationIcon.War, allyCiv.civName, civInfo.civName)
+
+                diplomacyManager.getCommonKnownCivsWithSpectators().filterNot { it == allyCiv }.forEach {
+                    it.addNotification("[${civInfo.civName}] has joined [${allyCiv.civName}] in the war against [${otherCiv.civName}]!",
+                        NotificationCategory.Diplomacy, otherCiv.civName, NotificationIcon.War, allyCiv.civName, civInfo.civName)
+                }
+            }
         }
     }
 
@@ -182,6 +200,9 @@ object DeclareWar {
             if (!isOffensiveWar && warType != WarType.DefensivePactWar && !civAtWarWith.isCityState)
                 callInDefensivePactAllies(diplomacyManager)                
             callInCityStateAllies(diplomacyManager)
+            // Both the declarer's and the target's teammates join (Civ5 team war).
+            if (warType != WarType.PermanentTeamWar)
+                callInTeammates(diplomacyManager)
         }
 
         if (diplomacyManager.civInfo.isCityState &&
@@ -355,6 +376,23 @@ object DeclareWar {
             thirdCiv.getDiplomacyManager(civAtWarWith)!!.declareWar(DeclareWarReason(WarType.CityStateAllianceWar, diplomacyManager.civInfo))
         }
     }
+
+    /**
+     * When a major declares war, all living setup-teammates join against the same enemy.
+     * Does not recurse ([WarType.PermanentTeamWar] skips this).
+     */
+    private fun callInTeammates(diplomacyManager: DiplomacyManager) {
+        val civAtWarWith = diplomacyManager.otherCiv
+        val declarer = diplomacyManager.civInfo
+        for (teammate in declarer.getTeammates().toList()) {
+            if (teammate.isAtWarWith(civAtWarWith)) continue
+            if (teammate.isTeammate(civAtWarWith)) continue
+            if (!teammate.knows(civAtWarWith))
+                teammate.diplomacyFunctions.makeCivilizationsMeet(civAtWarWith, warOnContact = true)
+            teammate.getDiplomacyManager(civAtWarWith)!!
+                .declareWar(DeclareWarReason(WarType.PermanentTeamWar, declarer))
+        }
+    }
 }
 
 enum class WarType {
@@ -368,6 +406,8 @@ enum class WarType {
     JoinWar,
     /** Two civilizations are starting a war through a trade. */
     TeamWar,
+    /** A civilization has joined a war because of permanent setup teams. */
+    PermanentTeamWar,
     /** Someone attacked our protected city-state */
     ProtectedCityStateWar,
     /** Someone attacked our allied city-state */
@@ -376,8 +416,8 @@ enum class WarType {
 
 /**
  * Stores the reason for the war. We might want to add justified wars in the future.
- * @param allyCiv If the given [WarType] is [WarType.CityStateAllianceWar], [WarType.DefensivePactWar] or [WarType.JoinWar]
- * the allyCiv needs to be given.
+ * @param allyCiv If the given [WarType] is [WarType.CityStateAllianceWar], [WarType.DefensivePactWar],
+ * [WarType.JoinWar] or [WarType.PermanentTeamWar] the allyCiv needs to be given.
  */
 class DeclareWarReason(val warType: WarType, val allyCiv: Civilization? = null)
 
