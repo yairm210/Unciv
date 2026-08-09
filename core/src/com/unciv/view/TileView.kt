@@ -27,11 +27,11 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
         if (viewer == null) return null
         return ForeignCityView(city, viewer, spectatorMode, tileMapView.gameView?.civView)
     }
-    val neighbors: Sequence<TileView> @Readonly get() =
+    @Readonly fun getVisibleNeighbors(): Sequence<TileView> = 
         tile.neighbors
             .filter { viewer == null || it.isExplored(viewer) }
             .map { tileMapView.getTile(it) }
-    @Readonly fun getTilesInDistance(distance: Int): Sequence<TileView> =
+    @Readonly fun getVisibleTilesInDistance(distance: Int): Sequence<TileView> =
         tile.getTilesInDistance(distance)
             .filter { viewer == null || it.isExplored(viewer) }
             .map { tileMapView.getTile(it) }
