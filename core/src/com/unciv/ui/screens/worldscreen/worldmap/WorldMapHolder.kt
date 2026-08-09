@@ -162,9 +162,6 @@ class WorldMapHolder(
     fun onTileClicked(tileView: TileView) {
         val tile = tileView.getTile()
 
-        if (!worldScreen.gameView.civView.hasExplored(tileView))
-            return // This tile doesn't exist for you
-
         removeUnitActionOverlay()
         selectedTile = tile
         unitMovementPaths.clear()
