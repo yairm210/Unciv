@@ -6,7 +6,6 @@ import java.util.Properties
 
 plugins {
     id("com.android.application")
-    id("kotlin-android")
 }
 
 android {
@@ -64,7 +63,7 @@ android {
         release {
             // If you make this true you get a version of the game that just flat-out doesn't run
             isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             isDebuggable = false
         }
     }
