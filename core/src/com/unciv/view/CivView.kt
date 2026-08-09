@@ -4,7 +4,6 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import java.util.IdentityHashMap
 import com.unciv.logic.map.tile.ImprovementBuildingProblem
-import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
@@ -31,7 +30,6 @@ class CivView(civ: Civilization,
 
     @Readonly fun canSeeTile(tileView: TileView): Boolean = tileView.getTile().isVisible(civ)
     @Readonly fun canSeeResource(resource: TileResource?): Boolean = civ.canSeeResource(resource)
-    @Readonly fun canSeeUnit(unitView: ForeignMapUnitView): Boolean = !unitView.getUnit().isInvisible(civ)
     @Readonly fun isOwnerOf(city: City): Boolean = civ === city.civ
     @Readonly fun isOwnerOf(cityView: ForeignCityView): Boolean = civ === cityView.getCity().civ
     @Readonly fun getShownImprovementOn(tileView: TileView): String? = tileView.getTile().getShownImprovement(civ)

@@ -17,6 +17,8 @@ open class ForeignCivView(internal open val civ: Civilization, internal open val
     @Readonly fun getEraNumber(): Int = civ.getEraNumber()
     @Readonly fun getEraNameAt(index: Int): String = civ.gameInfo.ruleset.eras.keys.elementAt(index)
 
+    @Readonly fun isAtWarWith(other: ForeignCivView): Boolean = civ.isAtWarWith(other.civ)
+
     @Readonly fun getCiv(): Civilization = civ
     @Readonly fun getViewer(): Civilization = viewer
 }

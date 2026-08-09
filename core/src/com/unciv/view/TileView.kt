@@ -60,17 +60,23 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
     val improvementIsPillaged: Boolean get() = tile.improvementIsPillaged
     val improvementInProgress: String? get() = tile.improvementInProgress
     val turnsToImprovement: Int get() = tile.turnsToImprovement
+    @Readonly private fun isVisible(unit: MapUnit): Boolean {
+        if (viewer == null) return false
+        if (!tile.isVisible(viewer)) return false
+        return !unit.isInvisible(viewer) || tile in viewer.viewableInvisibleUnitsTiles
+    }
+
     val civilianUnit: ForeignMapUnitView?
         get() {
             val unit = tile.civilianUnit ?: return null
-            if (viewer == null) return null
-            return ForeignMapUnitView(unit, viewer)
+            if (!isVisible(unit)) return null
+            return ForeignMapUnitView(unit, viewer!!)
         }
     val militaryUnit: ForeignMapUnitView?
         get() {
             val unit = tile.militaryUnit ?: return null
-            if (viewer == null) return null
-            return ForeignMapUnitView(unit, viewer)
+            if (!isVisible(unit)) return null
+            return ForeignMapUnitView(unit, viewer!!)
         }
     val isLand: Boolean get() = tile.isLand
     val hasBottomRightRiver: Boolean get() = tile.hasBottomRightRiver
@@ -91,10 +97,13 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
     }
     @Readonly fun providesResources(viewingCiv: CivView): Boolean = tile.providesResources(viewingCiv.getCiv())
 
-    fun hasAirUnits(): Boolean = tile.airUnits.isNotEmpty()
-    val airUnitCount: Int get() = tile.airUnits.size
-    fun hasAirUnit(unit: MapUnit?): Boolean = tile.airUnits.contains(unit)
-    @Readonly fun hasEnemyInvisibleUnit(viewingCiv: Civilization): Boolean = tile.hasEnemyInvisibleUnit(viewingCiv)
+    @Readonly fun getVisibleUnits(): List<ForeignMapUnitView> {
+        if (viewer == null) return emptyList()
+        return tile.getUnits()
+            .filter { isVisible(it) }
+            .map { ForeignMapUnitView(it, viewer) }
+            .toList()
+    }
 
     @Readonly fun getTileMap(): TileMapView = tileMapView
 

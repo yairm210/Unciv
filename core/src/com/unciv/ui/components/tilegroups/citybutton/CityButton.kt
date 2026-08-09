@@ -69,8 +69,9 @@ class CityButton(val cityView: ForeignCityView, private val tileGroup: TileGroup
         // Top-to-bottom layout
 
         // If any air units in the city - add number indicator
-        if (isCityViewable && tileGroup.tileView.hasAirUnits()) {
-            add(AirUnitTable(cityView.getCity(), tileGroup.tileView.airUnitCount)).padBottom(5f).row()
+        val visibleAirUnits = tileGroup.tileView.getVisibleUnits().filter { it.isAirUnit() }
+        if (isCityViewable && visibleAirUnits.isNotEmpty()) {
+            add(AirUnitTable(cityView.getCity(), visibleAirUnits.size)).padBottom(5f).row()
         }
 
         // Add City strength table
@@ -129,13 +130,13 @@ class CityButton(val cityView: ForeignCityView, private val tileGroup: TileGroup
                     (neighbor.civilianUnit != null) && direction.x == 0 && direction.eq(0, 1) ->
                         insertHiddenUnitMarker(HiddenUnitMarkerPosition.Left)
                     // detect military under the city
-                    (neighbor.militaryUnit != null && !neighbor.hasEnemyInvisibleUnit(viewingPlayer)) && direction.eq(1, 1) ->
+                    neighbor.militaryUnit != null && direction.eq(1, 1) ->
                         insertHiddenUnitMarker(HiddenUnitMarkerPosition.Center)
                     // detect civilian right-below the city
                     (neighbor.civilianUnit != null) && direction.eq(1, 0) ->
                         insertHiddenUnitMarker(HiddenUnitMarkerPosition.Right)
                 }
-            } else if (neighbor.militaryUnit != null && !neighbor.hasEnemyInvisibleUnit(viewingPlayer)) {
+            } else if (neighbor.militaryUnit != null) {
                 when {
                     // detect military left from the city
                     direction.eq(0, 1) ->
@@ -177,7 +178,7 @@ class CityButton(val cityView: ForeignCityView, private val tileGroup: TileGroup
             // if this city belongs to you and you are not iterating though the air units
             val canEnterCity = DebugUtils.VISIBLE_MAP
                 || viewingPlayer.isSpectator()
-                || belongsToViewingCiv() && !tileGroup.tileView.hasAirUnit(unitTable.selectedUnit)
+                || belongsToViewingCiv() && tileGroup.tileView.getVisibleUnits().none { it.getUnit() == unitTable.selectedUnit }
             if (canEnterCity)
                 GUI.pushScreen(CityScreen(GUI.getWorldScreen().gameView.getCityView(cityView.getCity())))
             else if (cityView.isKnownTo(viewingPlayer))
