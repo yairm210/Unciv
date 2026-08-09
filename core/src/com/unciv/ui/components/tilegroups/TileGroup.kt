@@ -132,14 +132,7 @@ open class TileGroup(
 
         setAllLayersVisible(true)
 
-        removeMissingModReferences()
-
         for (layer in allLayers) layer.update(viewingCiv)
-    }
-
-    private fun removeMissingModReferences() {
-        for (unit in tileView.getTile().getUnits())
-            if (!tileView.getRuleset().nations.containsKey(unit.owner)) unit.removeFromTile()
     }
 
     override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
