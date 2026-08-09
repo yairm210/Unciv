@@ -6,7 +6,6 @@ import com.unciv.logic.city.managers.CityReligionManager
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.map.HexCoord
-import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ImmutableColor
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import yairm210.purity.annotations.Readonly
@@ -25,7 +24,11 @@ open class ForeignCityView(internal open val city: City,
     @Readonly fun getMaxHealth(): Int = city.getMaxHealth()
     @Readonly fun getDefendingStrength(): Int = CityCombatant(city).getDefendingStrength()
     @Readonly fun getAttackingStrength(): Int = CityCombatant(city).getAttackingStrength()
-    @Readonly fun getCenterTile(): Tile = city.getCenterTile()
+    @Readonly fun getCenterTile(): TileView {
+        val tile = city.getCenterTile()
+        return civView?.gameView?.tileMapView?.getTile(tile)
+            ?: TileMapView(tile.tileMap, viewer, spectatorMode).getTile(tile)
+    }
     @Readonly fun canBombard(): Boolean = city.canBombard()
     /** The owning civ of this city, as visible from [viewer]'s perspective. For the viewing player's full CivView, use [CityView.viewingCiv]. */
     @Readonly open fun owningCiv(): ForeignCivView = ForeignCivView(city.civ, viewer, spectatorMode)

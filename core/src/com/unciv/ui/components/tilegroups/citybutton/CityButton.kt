@@ -199,7 +199,7 @@ class CityButton(val cityView: ForeignCityView, private val tileGroup: TileGroup
         onRightClick(action = ::enterCityOrInfoPopup)
 
         // when deselected, move city button to its original position
-        if (unitTable.selectedCity != cityView.getCity() && unitTable.selectedUnit?.currentTile != cityView.getCenterTile() && unitTable.selectedSpy == null)
+        if (unitTable.selectedCity != cityView.getCity() && unitTable.selectedUnit?.currentTile != cityView.getCenterTile().getTile() && unitTable.selectedSpy == null)
             moveButtonUp()
     }
 

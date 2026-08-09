@@ -18,7 +18,7 @@ object WorldMapTileUpdater {
      fun WorldMapHolder.updateTiles(civView: CivView) {
         val viewingCiv = civView.getCiv()
 
-        if (isMapRevealEnabled(viewingCiv)) {
+        if (isMapRevealEnabled(civView)) {
             // Only needs to be done once - this is so the minimap will also be revealed
             tileGroups.values.forEach {
                 it.tile.setExplored(viewingCiv, true)
