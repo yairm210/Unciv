@@ -30,9 +30,7 @@ class CivView(civ: Civilization,
 
     @Readonly fun canSeeTile(tileView: TileView): Boolean = tileView.getTile().isVisible(civ)
     @Readonly fun canSeeResource(resource: TileResource?): Boolean = civ.canSeeResource(resource)
-    @Readonly fun isOwnerOf(city: City): Boolean = civ === city.civ
     @Readonly fun isOwnerOf(cityView: ForeignCityView): Boolean = civ === cityView.getCity().civ
-    @Readonly fun getShownImprovementOn(tileView: TileView): String? = tileView.getTile().getShownImprovement(civ)
     @Readonly fun canBuildImprovementOn(improvement: TileImprovement, tileView: TileView): Boolean =
         tileView.getTile().improvementFunctions.canBuildImprovement(improvement, civ.state)
     @Readonly fun getImprovementBuildingProblems(improvement: TileImprovement, tileView: TileView): Sequence<ImprovementBuildingProblem> =

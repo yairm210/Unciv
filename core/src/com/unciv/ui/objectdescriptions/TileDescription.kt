@@ -54,7 +54,7 @@ object TileDescription {
             lineList += FormattedLine("[${tileView.roadStatus.name}]$pillageText", link = "Improvement/${tileView.roadStatus.name}")
         }
 
-        val shownImprovement = viewingCiv?.getShownImprovementOn(tileView) ?: tileView.getShownImprovement()
+        val shownImprovement = tileView.getShownImprovement()
         if (shownImprovement != null) {
             val pillageText = if (tileView.improvementIsPillaged) " (Pillaged!)" else ""
             lineList += FormattedLine("[$shownImprovement]$pillageText", link = "Improvement/$shownImprovement")

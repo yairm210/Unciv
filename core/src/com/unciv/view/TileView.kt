@@ -44,7 +44,7 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
     @Readonly fun isImpassible(): Boolean = tile.isImpassible()
     @Readonly fun isAdjacentTo(terrainFilter: String): Boolean = tile.isAdjacentTo(terrainFilter)
     @Readonly fun getDefensiveBonus(): Float = tile.getDefensiveBonus()
-    @Readonly fun getShownImprovement(): String? = tile.getShownImprovement(null)
+    @Readonly fun getShownImprovement(): String? = tile.getShownImprovement(viewer)
 
     val baseTerrain: String get() = tile.baseTerrain
     val terrainFeatures: List<String> get() = tile.terrainFeatures
