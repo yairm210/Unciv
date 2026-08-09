@@ -79,8 +79,6 @@ open class TileGroup(
         layerTerrain.update(null)
     }
 
-    open fun clone() = TileGroup(tileView, tileSetStrings)
-
     fun isViewable(viewingCiv: CivView) = isForceVisible
             || viewingCiv.canSeeTile(tileView)
             || viewingCiv.isSpectator()
