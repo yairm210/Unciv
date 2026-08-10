@@ -278,8 +278,8 @@ class UnitMovement(val unit: MapUnit) {
         val currentTile = unit.getTile()
         if (currentTile == finalDestination) return currentTile
 
-        // If we can fly, head there directly
-        if ((unit.baseUnit.movesLikeAirUnits || unit.isPreparingParadrop()) && canMoveTo(finalDestination)) return finalDestination
+        // If we can fly / teleport, head there directly
+        if ((unit.baseUnit.movesLikeAirUnits || unit.isPreparingParadrop() || unit.isPreparingAirlift()) && canMoveTo(finalDestination)) return finalDestination
 
         val distanceToTiles = getDistanceToTiles()
 
@@ -339,6 +339,8 @@ class UnitMovement(val unit: MapUnit) {
             unit.currentTile.aerialDistanceTo(destination) <= unit.getMaxMovementForAirUnits()
         unit.isPreparingParadrop() ->
             canParadropOn(destination, unit.currentTile.aerialDistanceTo(destination))
+        unit.isPreparingAirlift() ->
+            canAirliftTo(destination)
         else ->
             specificFunction(destination)  // Note: Could pass destination as implicit closure from outer fun to lambda, but explicit is clearer
     }
@@ -357,6 +359,10 @@ class UnitMovement(val unit: MapUnit) {
                 unit.getTile().getTilesInDistance(unit.cache.paradropDestinationTileFilters.maxOf { it.value } )
                     .filter { unit.movement.canParadropOn(it, it.aerialDistanceTo(unit.getTile())) }
             }
+            unit.isPreparingAirlift() ->
+                unit.civ.cities.asSequence()
+                    .map { it.getCenterTile() }
+                    .filter { canAirliftTo(it) }
             includeOtherEscortUnit && unit.isEscorting() -> {
                     val otherUnitTiles = unit.getOtherEscortUnit()!!.movement.getReachableTilesInCurrentTurn(false).toSet()
                     unit.movement.getDistanceToTiles().filter { otherUnitTiles.contains(it.key) }.keys.asSequence()
@@ -500,6 +506,20 @@ class UnitMovement(val unit: MapUnit) {
             // Is also done for other units, but because we skip everything else, we have to manually check it
             // The reason we skip everything, is that otherwise `getPathToTile()` throws an exception
             // As we can not reach our destination in a single turn
+            if (unit.canGarrison()
+                && (unit.getTile().isCityCenter() || destination.isCityCenter())
+                && unit.civ.hasUnique(UniqueType.UnitsInCitiesNoMaintenance)
+            ) unit.civ.updateStatsForNextTurn()
+            clearPathfindingCache()
+            return
+        }
+
+        if (unit.isPreparingAirlift()) {
+            unit.action = null
+            unit.removeFromTile()
+            unit.putInTile(destination)
+            unit.currentMovement = 0f
+            unit.mostRecentMoveType = UnitMovementMemoryType.UnitTeleported
             if (unit.canGarrison()
                 && (unit.getTile().isCityCenter() || destination.isCityCenter())
                 && unit.civ.hasUnique(UniqueType.UnitsInCitiesNoMaintenance)
@@ -762,6 +782,35 @@ class UnitMovement(val unit: MapUnit) {
         }
 
         return false
+    }
+
+    /** Civ5 Airport airlift: land unit, unmoved, from city with [UniqueType.AllowsAirlift]. */
+    @Readonly
+    fun canAirliftFrom(tile: Tile = unit.getTile()): Boolean {
+        if (!unit.baseUnit.isLandUnit) return false
+        if (unit.hasUnitMovedThisTurn()) return false
+        if (tile.isWater) return false
+        val city = tile.getCity() ?: return false
+        if (!tile.isCityCenter()) return false
+        if (city.civ != unit.civ) return false
+        return city.containsBuildingUnique(UniqueType.AllowsAirlift)
+    }
+
+    /** Destination city for an airlift (Civ5: own airlift city, enterable, no adjacent enemy mil). */
+    @Readonly
+    fun canAirliftTo(destination: Tile): Boolean {
+        if (!unit.isPreparingAirlift() && !canAirliftFrom()) return false
+        if (!destination.isCityCenter()) return false
+        val city = destination.getCity() ?: return false
+        if (city.civ != unit.civ) return false
+        if (destination == unit.getTile()) return false
+        if (!city.containsBuildingUnique(UniqueType.AllowsAirlift)) return false
+        if (!canMoveTo(destination)) return false
+        for (neighbor in destination.neighbors) {
+            val military = neighbor.militaryUnit ?: continue
+            if (unit.civ.isAtWarWith(military.civ)) return false
+        }
+        return true
     }
 
     /**

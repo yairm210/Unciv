@@ -77,6 +77,7 @@ object UnitActions {
         // Determined by unit uniques
         UnitActionType.Transform to UnitActionsFromUniques::getTransformActions,
         UnitActionType.Paradrop to UnitActionsFromUniques::getParadropActions,
+        UnitActionType.Airlift to UnitActionsFromUniques::getAirliftActions,
         UnitActionType.AirSweep to UnitActionsFromUniques::getAirSweepActions,
         UnitActionType.SetUp to UnitActionsFromUniques::getSetupActions,
         UnitActionType.Guard to UnitActionsFromUniques::getGuardActions,

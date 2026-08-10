@@ -297,7 +297,7 @@ class WorldMapHolder(
             var pathToTile: List<Tile>? = null
             try {
                 tileToMoveTo = selectedUnit.movement.getTileToMoveToThisTurn(targetTile)
-                if (!selectedUnit.type.isAirUnit() && !selectedUnit.isPreparingParadrop())
+                if (!selectedUnit.type.isAirUnit() && !selectedUnit.isPreparingParadrop() && !selectedUnit.isPreparingAirlift())
                     pathToTile = selectedUnit.movement.getDistanceToTiles().getPathToTile(tileToMoveTo)
             } catch (ex: Exception) {
                 when (ex) {
@@ -435,7 +435,7 @@ class WorldMapHolder(
                 val turnsToGetThere = if (unit.baseUnit.movesLikeAirUnits) {
                     if (unit.movement.canReach(tile)) 1
                     else 0
-                } else if (unit.isPreparingParadrop()) {
+                } else if (unit.isPreparingParadrop() || unit.isPreparingAirlift()) {
                     if (unit.movement.canReach(tile)) 1
                     else 0
                 } else {

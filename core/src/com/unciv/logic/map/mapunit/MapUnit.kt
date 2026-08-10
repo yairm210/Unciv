@@ -289,6 +289,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     @Readonly fun isAutomatingRoadConnection() = action == UnitActionType.ConnectRoad.value
     @Readonly fun isExploring() = action == UnitActionType.Explore.value
     @Readonly fun isPreparingParadrop() = action == UnitActionType.Paradrop.value
+    @Readonly fun isPreparingAirlift() = action == UnitActionType.Airlift.value
     @Readonly fun isPreparingAirSweep() = action == UnitActionType.AirSweep.value
     @Readonly fun isSetUpForSiege() = action == UnitActionType.SetUp.value
 
@@ -1140,7 +1141,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun actionsOnDeselect() {
-        if (isPreparingParadrop() || isPreparingAirSweep()) action = null
+        if (isPreparingParadrop() || isPreparingAirlift() || isPreparingAirSweep()) action = null
     }
 
     /** Add the current position and the most recent movement type to [movementMemories]. Called once at end and once at start of turn, and at unit creation. */

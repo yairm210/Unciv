@@ -176,6 +176,20 @@ object UnitActionsFromUniques {
         )
     }
 
+    internal fun getAirliftActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
+        if (!unit.movement.canAirliftFrom(tile)) return emptySequence()
+        return sequenceOf(UnitAction(UnitActionType.Airlift,
+            isCurrentAction = unit.isPreparingAirlift(),
+            useFrequency = 55f,
+            action = {
+                if (unit.isPreparingAirlift()) unit.action = null
+                else unit.action = UnitActionType.Airlift.value
+            }.takeIf {
+                !unit.hasUnitMovedThisTurn()
+            })
+        )
+    }
+
     internal fun getAirSweepActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
         val airsweepUnique =
             unit.getMatchingUniques(UniqueType.CanAirsweep).firstOrNull() ?: return emptySequence()

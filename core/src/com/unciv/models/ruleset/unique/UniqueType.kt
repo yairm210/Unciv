@@ -424,6 +424,9 @@ enum class UniqueType(
     RemoveOtherReligions("Removes other religions when spreading religion", UniqueTarget.Unit),
 
     MayParadrop("May Paradrop to [tileFilter] tiles up to [positiveAmount] tiles away", UniqueTarget.Unit),
+    AllowsAirlift("Allows airlifting", UniqueTarget.Building,
+        docDescription = "Land units that have not moved this turn can airlift from this city to another owned city that also Allows airlifting. " +
+            "Consumes all remaining movement. The destination city center must be enterable and must not have an adjacent enemy military unit."),
     CanAirsweep("Can perform Air Sweep", UniqueTarget.Unit),
 
     CanSpeedupConstruction("Can speed up construction of a building", UniqueTarget.Unit),

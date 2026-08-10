@@ -177,6 +177,8 @@ enum class UnitActionType(
         { ImageGetter.getUnitActionPortrait("Pillage") }, false),
     Paradrop("Paradrop",
         { ImageGetter.getUnitActionPortrait("Paradrop") }, false),
+    Airlift("Airlift",
+        { ImageGetter.getUnitActionPortrait("Paradrop") }, false),
     AirSweep("Air Sweep",
         { ImageGetter.getUnitActionPortrait("AirSweep") }, false),
     SetUp("Set up",

@@ -39,7 +39,8 @@ class MoveHereOverlayButtonData(val unitToTurnsToDestination: HashMap<MapUnit, I
 
     private fun getMoveHereButton(worldMapHolder: WorldMapHolder): Group {
         val isParadrop = unitToTurnsToDestination.keys.all { it.isPreparingParadrop() }
-        val image = if (isParadrop)
+        val isAirlift = unitToTurnsToDestination.keys.all { it.isPreparingAirlift() }
+        val image = if (isParadrop || isAirlift)
             ImageGetter.getUnitActionPortrait("Paradrop", buttonSize / 2)
         else ImageGetter.getStatIcon("Movement")
             .apply { color = ImageGetter.CHARCOAL; width = buttonSize / 2; height = buttonSize / 2 }
@@ -47,7 +48,7 @@ class MoveHereOverlayButtonData(val unitToTurnsToDestination: HashMap<MapUnit, I
             .surroundWithCircle(buttonSize - 2, false)
             .surroundWithCircle(buttonSize, false, ImageGetter.CHARCOAL)
 
-        if (!isParadrop) {
+        if (!isParadrop && !isAirlift) {
             val numberCircle = unitToTurnsToDestination.values.maxOrNull()!!.tr().toLabel(fontSize = 14)
                 .apply { setAlignment(Align.center) }
                 .surroundWithCircle(smallerCircleSizes - 2, color = BaseScreen.skinStrings.skinConfig.baseColor.darken(0.3f))

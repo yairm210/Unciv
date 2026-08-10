@@ -33,7 +33,7 @@ class UnitTurnManager(val unit: MapUnit) {
         if ((!unit.hasUnitMovedThisTurn() && unit.attacksThisTurn == 0) || unit.hasUnique(UniqueType.HealsEvenAfterAction))
             healUnit()
 
-        if (unit.isPreparingParadrop() || unit.isPreparingAirSweep())
+        if (unit.isPreparingParadrop() || unit.isPreparingAirlift() || unit.isPreparingAirSweep())
             unit.action = null
 
         if (unit.hasUnique(UniqueType.ReligiousUnit)
