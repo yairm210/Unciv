@@ -315,8 +315,7 @@ object Conditionals {
                     state.relevantTile != null &&
                     state.relevantTile!!.neighbors.any { tile ->
                         tile.getUnits().any {
-                            it != state.relevantUnit &&
-                                it.matchesFilter(conditional.params[0], state = state)
+                            it.matchesFilter(conditional.params[0], state = state)
                         }
                     }
             UniqueType.ConditionalNearUnit ->
