@@ -206,4 +206,34 @@ class UnitUniquesTests {
             promotionNode2.parents.any { it.promotion == promotionBranch2 }
         )
     }
+
+    @Test
+    fun `nation unique grants Faith on promotion using XP countable`() {
+        // LekMOD Ottoman UA: ceil(ExperienceNeeded() / 3) Faith on UnitPromoted
+        game.makeHexagonalMap(1)
+        val civ = game.addCiv(
+            "Gain [ceil([XP required for next promotion] / 3)] [Faith] <upon being promoted>",
+            isPlayer = true
+        )
+        val tile = game.getTile(HexCoord.Zero)
+        game.addCity(civ, tile)
+        val unit = game.addUnit("Warrior", civ, tile)
+
+        val promotion = game.createUnitPromotion()
+        promotion.unitTypes = listOf("Warrior")
+
+        // Cost of first paid promotion is typically 10; after taking it, next cost is 20 → ceil(20/3)=7
+        unit.promotions.XP = 10
+        val faithBefore = civ.religionManager.storedFaith
+        unit.promotions.addPromotion(promotion.name)
+        val faithGained = civ.religionManager.storedFaith - faithBefore
+
+        val expected = kotlin.math.ceil(unit.promotions.xpForNextPromotion() / 3.0).roundToInt()
+        Assert.assertEquals(
+            "Faith on promotion should be ceil(XP for next promo / 3)",
+            expected,
+            faithGained
+        )
+        Assert.assertTrue("Should have gained some Faith", faithGained > 0)
+    }
 }

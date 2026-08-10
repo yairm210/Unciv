@@ -400,6 +400,18 @@ enum class Countables(
             gameContext.civInfo?.getEraNumber()
     },
 
+    XpRequiredForNextPromotion("XP required for next promotion",
+        shortDocumentation = "XP the relevant unit needs for its next promotion") {
+        override val documentationStrings = listOf(
+            "Uses the unit from the GameContext (the unit being promoted when used with `<upon being promoted>`).",
+            "After a non-free promotion is taken, this is the cost of the *following* promotion — matching Civ5 `ExperienceNeeded()` on `UnitPromoted`.",
+        )
+        override fun eval(parameterText: String, gameContext: GameContext): Int? {
+            val unit = gameContext.relevantUnit ?: return null
+            return unit.promotions.xpForNextPromotion()
+        }
+    },
+
     GameSpeedModifier("Speed modifier for [stat]", shortDocumentation = "A game speed modifier for a specific Stat, as percentage") {
         override val documentationStrings = listOf(
             "Chooses an appropriate field from the Speeds.json entry the player has chosen.",

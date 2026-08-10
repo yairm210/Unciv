@@ -81,6 +81,8 @@ internal sealed interface Operator : Tokenizer.Token {
     ) : Function {
         Max("max", 2..Int.MAX_VALUE, { args -> args.maxOrNull() ?: 0.0 }),
         Min("min", 2..Int.MAX_VALUE, { args -> args.minOrNull() ?: 0.0 }),
+        Ceil("ceil", 1..1, { args -> kotlin.math.ceil(args[0]) }),
+        Floor("floor", 1..1, { args -> kotlin.math.floor(args[0]) }),
         ;
         override fun toString() = symbol
     }

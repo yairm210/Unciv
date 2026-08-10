@@ -795,12 +795,11 @@ object UniqueTriggerActivation {
             UniqueType.OneTimeGainStat -> {
                 val stat = Stat.safeValueOf(unique.params[1]) ?: return null
 
-                if (stat !in Stat.statsWithCivWideField
-                    || unique.params[0].toIntOrNull() == null
-                ) return null
+                if (stat !in Stat.statsWithCivWideField) return null
+                val countableAmount = Countables.getCountableAmount(unique.params[0], gameContext) ?: return null
 
                 return {
-                    var statAmount = unique.params[0].toInt()
+                    var statAmount = countableAmount
                     if (unique.isModifiedByGameSpeed()) statAmount = (statAmount * civInfo.gameInfo.speed.statCostModifiers[stat]!!).roundToInt()
 
                     val stats = Stats().add(stat, statAmount.toFloat())

@@ -132,9 +132,14 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
 
             for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponPromotion))
                 UniqueTriggerActivation.triggerUnique(unique, unit)
+            // Nation / Global uniques (e.g. Ottoman-style Faith on promotion)
+            for (unique in unit.civ.getTriggeredUniques(UniqueType.TriggerUponPromotion, unit.cache.state))
+                UniqueTriggerActivation.triggerUnique(unique, unit)
         }
 
         for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponPromotionGain){ it.params[0] == promotionName })
+            UniqueTriggerActivation.triggerUnique(unique, unit)
+        for (unique in unit.civ.getTriggeredUniques(UniqueType.TriggerUponPromotionGain, unit.cache.state) { it.params[0] == promotionName })
             UniqueTriggerActivation.triggerUnique(unique, unit)
 
         if (!promotion.hasUnique(UniqueType.SkipPromotion))
@@ -162,6 +167,8 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
             unit.updateVisibleTiles()
             
             for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponPromotionLoss){ it.params[0] == promotionName })
+                UniqueTriggerActivation.triggerUnique(unique, unit)
+            for (unique in unit.civ.getTriggeredUniques(UniqueType.TriggerUponPromotionLoss, unit.cache.state) { it.params[0] == promotionName })
                 UniqueTriggerActivation.triggerUnique(unique, unit)
         }
     }
