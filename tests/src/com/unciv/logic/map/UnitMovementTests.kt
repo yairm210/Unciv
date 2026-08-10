@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.UnitActionType
 import com.unciv.models.metadata.GameSettings.PathfindingAlgorithm
 import com.unciv.models.metadata.GameSettings.PathfindingAlgorithm.ClassicPathfinding
 import com.unciv.models.metadata.GameSettings.PathfindingAlgorithm.AStarPathfinding
@@ -338,18 +339,24 @@ class UnitMovementTests(private val pathfindingAlgorithm: PathfindingAlgorithm) 
             strength = 1
         }
         val transport = testGame.addUnit(transportBaseUnit.name, civInfo, origin)
-        val payload = testGame.addUnit("Fighter", civInfo, origin)
+        // Freed from the carrier first, so the two real payloads can fill it to capacity below -
+        // a full carrier is exactly the case that used to lose its payloads.
         val untransportedAirUnit = testGame.addUnit("Fighter", civInfo, origin)
         untransportedAirUnit.isTransported = false
+        val payload = testGame.addUnit("Fighter", civInfo, origin)
+        val secondPayload = testGame.addUnit("Fighter", civInfo, origin)
 
         transport.action = UnitActionType.Paradrop.value
         transport.movement.moveToTile(destination)
 
         assertEquals(destination, transport.currentTile)
         assertEquals(destination, payload.currentTile)
+        assertEquals(destination, secondPayload.currentTile)
         assertTrue(payload.isTransported)
+        assertTrue(secondPayload.isTransported)
         assertEquals(UnitMovementMemoryType.UnitTeleported, transport.mostRecentMoveType)
         assertEquals(UnitMovementMemoryType.UnitTeleported, payload.mostRecentMoveType)
+        assertEquals(UnitMovementMemoryType.UnitTeleported, secondPayload.mostRecentMoveType)
         assertEquals(origin, untransportedAirUnit.currentTile)
         assertFalse(untransportedAirUnit.isTransported)
     }

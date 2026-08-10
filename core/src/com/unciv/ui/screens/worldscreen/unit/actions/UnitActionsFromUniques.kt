@@ -452,6 +452,7 @@ object UnitActionsFromUniques {
                             civInfo.units.placeUnitNearTile(unitTile.position, unit.baseUnit, unit.id, copiedFrom = unit)!!
                         
                     } else { // Managed to upgrade
+                        unit.movement.teleportTransportedUnitsTo(unitTile, newUnit.currentTile)
                         // have to handle movement manually because we killed the old unit
                         // a .destroy() unit has 0 movement
                         // and a new one may have less Max Movement

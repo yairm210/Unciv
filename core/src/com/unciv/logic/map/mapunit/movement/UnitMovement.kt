@@ -459,18 +459,29 @@ class UnitMovement(val unit: MapUnit) {
                 unit.action = null
             unit.mostRecentMoveType = UnitMovementMemoryType.UnitTeleported
 
-            // bring along the payloads
-            val payloadUnits = origin.getUnits().filter { it.isTransported && unit.canTransport(it) }.toList()
-            for (payload in payloadUnits) {
-                payload.removeFromTile()
-                payload.putInTile(allowedTile)
-                payload.isTransported = true // restore the flag to not leave the payload in the city
-                payload.mostRecentMoveType = UnitMovementMemoryType.UnitTeleported
-            }
+            teleportTransportedUnitsTo(origin, allowedTile)
         }
         // it's possible that there is no close tile, and all the guy's cities are full.
         // Nothing we can do.
         else unit.destroy()
+    }
+
+    /**
+     * Moves the units [unit] is carrying from [origin] to [destination], keeping them transported.
+     *
+     * Deliberately not [MapUnit.canTransport]: that rejects a unit once the carrier is at capacity,
+     * which is true of every payload already aboard a full carrier. These are not new passengers.
+     */
+    fun teleportTransportedUnitsTo(origin: Tile, destination: Tile) {
+        val payloadUnits = origin.getUnits()
+            .filter { it.isTransported && it.owner == unit.owner && unit.isTransportTypeOf(it) }
+            .toList()
+        for (payload in payloadUnits) {
+            payload.removeFromTile()
+            payload.putInTile(destination)
+            payload.isTransported = true // restore the flag to not leave the payload in the city
+            payload.mostRecentMoveType = UnitMovementMemoryType.UnitTeleported
+        }
     }
 
     fun moveToTile(destination: Tile, considerZoneOfControl: Boolean = true): Unit = timeThis<Unit>("moveToTile") {
@@ -496,13 +507,7 @@ class UnitMovement(val unit: MapUnit) {
             unit.putInTile(destination)
             unit.mostRecentMoveType = UnitMovementMemoryType.UnitTeleported
 
-            val payloadUnits = origin.getUnits().filter { it.isTransported && unit.canTransport(it) }.toList()
-            for (payload in payloadUnits) {
-                payload.removeFromTile()
-                payload.putInTile(destination)
-                payload.isTransported = true
-                payload.mostRecentMoveType = UnitMovementMemoryType.UnitTeleported
-            }
+            teleportTransportedUnitsTo(origin, destination)
 
             unit.useMovementPoints(1f)
             unit.attacksThisTurn += 1

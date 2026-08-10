@@ -10,6 +10,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
+import com.unciv.ui.components.UnitMovementMemoryType
 import com.unciv.ui.screens.pickerscreens.PromotionTree
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsFromUniques
@@ -210,12 +211,13 @@ class UnitUniquesTests {
 
     @Test
     fun `transforming carrier keeps payload`() {
+        game.makeHexagonalMap(1)
         val tile = game.getTile(HexCoord.Zero)
         tile.baseTerrain = Constants.coast
         tile.setTransients()
         val civ = game.addCiv()
         val transformedBaseUnit = game.createBaseUnit(
-            "Aircraft Carrier",
+            "Melee",
             "Can carry [2] [Aircraft] units"
         ).apply {
             movement = 2
@@ -231,13 +233,20 @@ class UnitUniquesTests {
         }
         val original = game.addUnit(originalBaseUnit.name, civ, tile)
         val payload = game.addUnit("Fighter", civ, tile)
+        val secondPayload = game.addUnit("Fighter", civ, tile)
 
-        UnitActionsFromUniques.getTransformActions(original, tile).single().action!!.invoke()
+        Assert.assertTrue(UnitActions.invokeUnitAction(original, UnitActionType.Transform))
 
         val transformed = civ.units.getCivUnits().single { it.baseUnit == transformedBaseUnit }
         Assert.assertTrue(original.isDestroyed)
         Assert.assertFalse(payload.isDestroyed)
         Assert.assertTrue(payload.isTransported)
+        Assert.assertNotEquals(tile, transformed.currentTile)
         Assert.assertEquals(transformed.currentTile, payload.currentTile)
+        Assert.assertEquals(UnitMovementMemoryType.UnitTeleported, payload.mostRecentMoveType)
+        Assert.assertFalse(secondPayload.isDestroyed)
+        Assert.assertTrue(secondPayload.isTransported)
+        Assert.assertEquals(transformed.currentTile, secondPayload.currentTile)
+        Assert.assertEquals(UnitMovementMemoryType.UnitTeleported, secondPayload.mostRecentMoveType)
     }
 }
