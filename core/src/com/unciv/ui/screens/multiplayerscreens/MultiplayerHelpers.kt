@@ -59,7 +59,10 @@ object MultiplayerHelpers {
             if (playerDescriptor != null)
                 playerText += "{ }({$playerDescriptor})"
 
-            descriptionText.appendLine("Current Turn: [$playerText] since [${Duration.between(currentTurnStartTime, Instant.now()).formatShort()}] ago".tr())
+            val currentTurnTime = Duration.between(currentTurnStartTime, Instant.now())
+            val updatedTotalTurnTime = Duration.ofSeconds(currentPlayer.totalTurnTimeSeconds.toLong()) + currentTurnTime
+            val averageTurnTime = updatedTotalTurnTime.dividedBy(currentPlayer.turnsPlayedAsHuman + 1L) // +1 to include current turn and avoid div by 0
+            descriptionText.appendLine("Current Turn: [$playerText] since [${currentTurnTime.formatShort()}] ago (average: [${averageTurnTime.formatShort()}])".tr())
             descriptionText.appendLine("Time to play the turn: [${Duration.ofMinutes(currentPlayer.playerMinutesBeforeForceResign.toLong()).formatShort()}]".tr())
 
             val playerCivName = preview.civilizations
