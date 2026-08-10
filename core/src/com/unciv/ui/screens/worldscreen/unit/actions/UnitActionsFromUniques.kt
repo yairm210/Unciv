@@ -470,7 +470,7 @@ object UnitActionsFromUniques {
                 .filter { it.value > 0 }
                 .joinToString { "${it.value} {${it.key}}".tr() }
 
-            var title = "Transform to [${unitToTransformTo.name}] "
+            var title = UnitActionModifiers.getActionName(unique, "Transform to [${unitToTransformTo.name}] ")
             title += UnitActionModifiers.getSideEffectString(unit, unique, true)
             if (newResourceRequirementsString.isNotEmpty())
                 title += "\n([$newResourceRequirementsString])"

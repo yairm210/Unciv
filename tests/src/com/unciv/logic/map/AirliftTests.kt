@@ -3,6 +3,7 @@ package com.unciv.logic.map
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.UnitActionType
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
@@ -57,7 +58,7 @@ class AirliftTests {
     }
 
     @Test
-    fun `airlift teleports to other airport city and consumes all movement`() {
+    fun `building airlift teleports to other airport city and consumes all movement`() {
         prepareInstantMove(actionName = "Airlift")
         val destination = civ.cities[1].getCenterTile()
         assertTrue(unit.movement.canInstantlyMoveTo(destination))
@@ -67,10 +68,11 @@ class AirliftTests {
         assertEquals(destination.position, unit.getTile().position)
         assertEquals(0f, unit.currentMovement)
         assertFalse(unit.isPreparingParadrop())
+        assertEquals(null, unit.cache.instantMoveActionName)
     }
 
     @Test
-    fun `airlift unavailable without Can instantly move to building at destination`() {
+    fun `building airlift unavailable without Can instantly move to at destination`() {
         val cityCTile = testGame.getTile(0, 3)
         testGame.addCity(civ, cityCTile, replacePalace = true)
         prepareInstantMove(actionName = "Airlift")
@@ -78,14 +80,27 @@ class AirliftTests {
     }
 
     @Test
-    fun `named modifier sets action label`() {
-        val unique = unit.getTile().getCity()!!.cityConstructions.builtBuildingUniqueMap
-            .getMatchingUniques(UniqueType.CanInstantlyMoveTo, unit.cache.state).first()
-        assertEquals("Airlift", UnitActionModifiers.getActionName(unique, "Paradrop"))
+    fun `building unique named Airlift does not allow land paradrop destinations`() {
+        prepareInstantMove(actionName = "Airlift")
+        val landTile = testGame.getTile(1, 1)
+        assertFalse(unit.movement.canInstantlyMoveTo(landTile))
+        assertTrue(unit.movement.canInstantlyMoveTo(civ.cities[1].getCenterTile()))
     }
 
     @Test
-    fun `unit Can instantly move to works without building`() {
+    fun `named applies to FoundCity via actionTextWithSideEffects`() {
+        val unique = Unique(
+            "Founds a new city <named [Establish Colony]> <for [1] movement>",
+            sourceObjectType = com.unciv.models.ruleset.unique.UniqueTarget.Unit
+        )
+        assertEquals("Establish Colony", UnitActionModifiers.getActionName(unique, UnitActionType.FoundCity.value))
+        val title = UnitActionModifiers.actionTextWithSideEffects(UnitActionType.FoundCity.value, unique, unit)
+        assertTrue(title.contains("Establish Colony"))
+        assertFalse(title.contains(UnitActionType.FoundCity.value))
+    }
+
+    @Test
+    fun `unit Can instantly move to works with named Paradrop`() {
         val para = testGame.addDefaultMeleeUnitWithUniques(
             civ,
             testGame.getTile(1, 1),

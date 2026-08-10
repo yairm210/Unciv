@@ -166,9 +166,10 @@ object UnitActionModifiers {
 
     @Readonly
     fun actionTextWithSideEffects(originalText: String, actionUnique: Unique, unit: MapUnit): String {
+        val baseText = getActionName(actionUnique, originalText)
         val sideEffectString = getSideEffectString(unit, actionUnique)
-        if (sideEffectString == "") return originalText
-        else return "{$originalText} $sideEffectString"
+        if (sideEffectString == "") return baseText
+        else return "{$baseText} $sideEffectString"
     }
 
     @Readonly
