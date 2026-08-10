@@ -481,6 +481,11 @@ enum class UniqueType(
     NoDamagePenaltyWoundedUnits("No damage penalty for wounded units", UniqueTarget.Unit, UniqueTarget.Global),
     Uncapturable("Uncapturable", UniqueTarget.Unit),
     WithdrawsBeforeMeleeCombat("Withdraws before melee combat", UniqueTarget.Unit),
+    ForcesEnemyFallbackWhenDealingMoreDamage(
+        "Forces the enemy to fall back when dealing more melee damage", UniqueTarget.Unit,
+        docDescription = "After a melee attack, if this unit dealt more damage than it received and the defender survives, " +
+            "the defender is pushed one tile away (Civ5 Heavy Charge). No effect if there is nowhere to fall back."
+    ),
     CannotCaptureCities("Unable to capture cities", UniqueTarget.Unit, UniqueTarget.Global),
     CannotPillage("Unable to pillage tiles", UniqueTarget.Unit, UniqueTarget.Global),
     
@@ -849,6 +854,9 @@ enum class UniqueType(
     ConditionalVsLargerCiv("when fighting units from a Civilization with more Cities than you", UniqueTarget.Conditional),
     ConditionalAttacking("when attacking", UniqueTarget.Conditional),
     ConditionalDefending("when defending", UniqueTarget.Conditional),
+    ConditionalEnemyCannotFallBack("when the enemy cannot fall back", UniqueTarget.Conditional,
+        docDescription = "Combat only. True when the enemy unit has no valid tile to be pushed into " +
+            "(Civ5 Heavy Charge +50% when defender cannot retreat)."),
     ConditionalFightingInTiles("when fighting in [tileFilter] tiles", UniqueTarget.Conditional),
     ConditionalForeignContinent("on foreign continents", UniqueTarget.Conditional),
     ConditionalAdjacentUnit("when adjacent to a [mapUnitFilter] unit", UniqueTarget.Conditional),

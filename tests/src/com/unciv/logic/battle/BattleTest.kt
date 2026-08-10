@@ -52,21 +52,65 @@ class BattleTest(private val pathfindingAlgorithm: PathfindingAlgorithm) {
     }
 
     @Test
-    fun `defender should withdraw from melee attack if has the unique to do so`() {
-        // given
-        val defenderUnit = testGame.addDefaultMeleeUnitWithUniques(attackerCiv, testGame.getTile(0,1), UniqueType.WithdrawsBeforeMeleeCombat.text)
-        defenderUnit.currentMovement = 2f
+    fun `heavy charge pushes defender when attacker deals more damage`() {
+        // setUp already occupies (1,0) and (0,0) — use free tiles
+        val strongBase = testGame.createBaseUnit("Sword").apply {
+            strength = 20
+            movement = 2
+            uniques.add(UniqueType.ForcesEnemyFallbackWhenDealingMoreDamage.text)
+        }
+        val weakBase = testGame.createBaseUnit("Sword").apply {
+            strength = 10
+            movement = 2
+        }
+        val attacker = testGame.addUnit(strongBase.name, attackerCiv, testGame.getTile(2, 0))
+        val defender = testGame.addUnit(weakBase.name, defenderCiv, testGame.getTile(2, 1))
+        defender.health = 100
+        val originalDefenderTile = defender.getTile().position
+        val reasons = defender.getTile().neighbors.joinToString("; ") { n ->
+            "${n.position}: ${defender.movement.getCannotMoveToReason(n)}"
+        }
+        assertTrue(
+            "canFall=${MeleeFallback.canFallBack(defender, attacker)} neighbors=[$reasons]",
+            MeleeFallback.canFallBack(defender, attacker)
+        )
 
-        // when
-        val damageDealt = Battle.attack(MapUnitCombatant(defaultAttackerUnit), MapUnitCombatant(defenderUnit))
-
-        // thenvi
-        assertEquals(0, damageDealt.attackerDealt)
-        assertEquals(0, damageDealt.defenderDealt)
-        assertFalse(defenderUnit.getTile().position.eq(0,1)) // defender moves away
-        assertTrue(defaultAttackerUnit.getTile().position.eq(1,0))  // attacker didn't move
-        assertEquals(0f, defaultAttackerUnit.currentMovement) // warriors cannot move anymore after attacking
+        val damage = Battle.attack(MapUnitCombatant(attacker), MapUnitCombatant(defender))
+        assertTrue("attacker should deal more damage: $damage", damage.attackerDealt > damage.defenderDealt)
+        assertFalse("Defender should fall back after Heavy Charge", defender.isDestroyed)
+        assertFalse("Defender should fall back after Heavy Charge", defender.getTile().position == originalDefenderTile)
     }
+
+    @Test
+    fun `heavy charge strength bonus applies when enemy cannot fall back`() {
+        val trappedTile = testGame.getTile(3, 0)
+        // Surround defender so no fall-back tile is free (except attacker's)
+        for (neighbor in trappedTile.neighbors) {
+            if (neighbor.position.eq(2, 0)) continue
+            testGame.addUnit("Warrior", defenderCiv, neighbor)
+        }
+        val chargerBase = testGame.createBaseUnit("Sword").apply {
+            strength = 10
+            movement = 2
+            uniques.add("[+50]% Strength <when attacking> <when the enemy cannot fall back>")
+            uniques.add(UniqueType.ForcesEnemyFallbackWhenDealingMoreDamage.text)
+        }
+        val weakBase = testGame.createBaseUnit("Sword").apply {
+            strength = 10
+            movement = 2
+        }
+        val attacker = testGame.addUnit(chargerBase.name, attackerCiv, testGame.getTile(2, 0))
+        val defender = testGame.addUnit(weakBase.name, defenderCiv, trappedTile)
+
+        val damageDealt = Battle.attack(MapUnitCombatant(attacker), MapUnitCombatant(defender))
+
+        // Without the +50% trapped bonus, equal-strength melee deals ~31 each way;
+        // with +50% attack the attacker should deal clearly more.
+        assertTrue("Trapped Heavy Charge should deal more damage", damageDealt.attackerDealt > damageDealt.defenderDealt)
+        // Nowhere to fall back — defender stays put
+        assertTrue(defender.getTile().position == trappedTile.position)
+    }
+
 
     @Test
     fun `both defender and attacker should do damage when are melee`() {

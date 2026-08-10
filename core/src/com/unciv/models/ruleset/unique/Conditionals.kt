@@ -4,6 +4,8 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.battle.CombatAction
+import com.unciv.logic.battle.MapUnitCombatant
+import com.unciv.logic.battle.MeleeFallback
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.ReligionState
@@ -268,6 +270,11 @@ object Conditionals {
                             || state.relevantUnit!!.hasStatus(conditional.params[0]) )
             UniqueType.ConditionalAttacking -> state.combatAction == CombatAction.Attack
             UniqueType.ConditionalDefending -> state.combatAction == CombatAction.Defend
+            UniqueType.ConditionalEnemyCannotFallBack -> {
+                val attacker = (state.ourCombatant as? MapUnitCombatant)?.unit
+                val defender = (state.theirCombatant as? MapUnitCombatant)?.unit
+                attacker != null && defender != null && !MeleeFallback.canFallBack(defender, attacker)
+            }
             UniqueType.ConditionalAboveHP -> state.relevantUnit != null && state.relevantUnit!!.health > conditional.params[0].toInt()
                     || state.ourCombatant != null && state.ourCombatant.getHealth() > conditional.params[0].toInt()
             UniqueType.ConditionalBelowHP -> state.relevantUnit != null && state.relevantUnit!!.health < conditional.params[0].toInt()

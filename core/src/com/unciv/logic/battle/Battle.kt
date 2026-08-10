@@ -129,6 +129,20 @@ object Battle {
 
         val damageDealt = takeDamage(attacker, defender) + extraRangedAttackDamage
 
+        // Civ5 Heavy Charge: push defender if attacker dealt more melee damage
+        if (attacker is MapUnitCombatant && defender is MapUnitCombatant
+            && attacker.isMelee() && !defender.isDefeated()
+            && damageDealt.attackerDealt > damageDealt.defenderDealt
+            && attacker.unit.hasUnique(UniqueType.ForcesEnemyFallbackWhenDealingMoreDamage)
+        ) {
+            if (MeleeFallback.doFallBack(defender.unit, attacker.unit)) {
+                val notification = "[${defender.getName()}] fell back from a [${attacker.getName()}]"
+                val locations = LocationAction(defender.getTile().position, attacker.getTile().position)
+                defender.getCivInfo().addNotification(notification, locations, NotificationCategory.War, defender.getName(), NotificationIcon.War, attacker.getName())
+                attacker.getCivInfo().addNotification(notification, locations, NotificationCategory.War, defender.getName(), NotificationIcon.War, attacker.getName())
+            }
+        }
+
         // check if unit is captured by the attacker (prize ships unique)
         // As ravignir clarified in issue #4374, this only works for aggressor
         val captureMilitaryUnitSuccess = BattleUnitCapture.tryCaptureMilitaryUnit(attacker, defender, attackedTile)
