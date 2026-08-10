@@ -7,6 +7,7 @@ import com.unciv.logic.battle.CombatAction
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.ReligionState
+import com.unciv.models.SpyAction
 import com.unciv.models.ruleset.validation.ModCompatibility
 import com.unciv.models.stats.Stat
 import com.unciv.utils.hashOf
@@ -255,6 +256,11 @@ object Conditionals {
                 checkOnCity { population.getPopulationFilterAmount(conditional.params[1]) < conditional.params[0].toInt() }
             UniqueType.ConditionalWhenGarrisoned ->
                 checkOnCity { getCenterTile().militaryUnit?.canGarrison() == true }
+            UniqueType.ConditionalWhenCounterIntelligence ->
+                checkOnCity {
+                    val spy = civ.espionageManager.getSpyAssignedToCity(this)
+                    spy != null && spy.isAlive() && spy.action == SpyAction.CounterIntelligence
+                }
 
             UniqueType.ConditionalVsCity -> state.theirCombatant?.matchesFilter("City", false) == true
             UniqueType.ConditionalVsUnits,  UniqueType.ConditionalVsCombatant -> state.theirCombatant?.matchesFilter(conditional.params[0]) == true

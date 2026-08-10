@@ -227,7 +227,7 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
         spyResult += defendingSpy?.getSkillModifierPercent() ?: 0
 
         val stealPercent = if (stolenTech != null && spyResult < 200)
-            getSuccessfulStealPercent(city, defendingSpy) else 100
+            getSuccessfulStealPercent(city) else 100
         val stoleFullTech = stealPercent >= 100
 
         val detectionString = when {
@@ -291,13 +291,12 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
 
     /**
      * Percent of tech cost granted on a successful steal when reduced-steal uniques apply.
-     * Returns 100 when there is no defending spy or no matching unique.
+     * Returns 100 when no matching unique (typically gated by `<when counter-intelligence is active>`).
      */
     @Readonly
-    private fun getSuccessfulStealPercent(city: City, defendingSpy: Spy?): Int {
-        if (defendingSpy == null) return 100
+    private fun getSuccessfulStealPercent(city: City): Int {
         val uniques = city.getMatchingUniques(
-            UniqueType.ReducedTechStealWithCounterIntelligence,
+            UniqueType.ReducedTechSteal,
             city.state,
             includeCivUniques = true
         ).filter { city.matchesFilter(it.params[1], viewingCiv = city.civ) }

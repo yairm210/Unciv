@@ -1027,8 +1027,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
-??? example  "Enemy spies steal [relativeAmount]% of a technology in [cityFilter] when counter-intelligence is active"
-	Example: "Enemy spies steal [50]% of a technology in [in this city] when counter-intelligence is active"
+??? example  "Enemy spies steal [relativeAmount]% of a technology in [cityFilter]"
+	Example: "Enemy spies steal [50]% of a technology in [in this city] <when counter-intelligence is active>"
 
 	When a defending counter-intelligence spy is present in a matching city, a successful steal grants research progress equal to [relativeAmount]% of the tech cost instead of the full technology. Example: [50]% for half. Stacks multiplicatively across matching uniques. Without this unique, steals remain full technology.
 
@@ -3866,6 +3866,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;with a garrison&gt;"
+	Applicable to: Conditional
+
+??? example  "&lt;when counter-intelligence is active&gt;"
 	Applicable to: Conditional
 
 ??? example  "&lt;for [mapUnitFilter] units&gt;"
