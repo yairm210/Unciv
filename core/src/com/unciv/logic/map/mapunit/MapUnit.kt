@@ -646,6 +646,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     @Readonly
     private fun matchesSingleFilter(filter: String, state: GameContext = GameContext.EmptyState): Boolean {
+        // Prefer caller-provided state so civFilters like Friendly/Hostile are relative to the querying civ
+        // (e.g. "when adjacent to a [{Friendly} {Melee}] unit"), not this unit's own civ.
+        val filterState = if (state.civInfo != null) state else cache.state
         return when (filter) {
             "other" -> state.unit != this
             Constants.wounded, "wounded units" -> health < 100
@@ -654,9 +657,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
             Constants.embarked -> isEmbarked()
             "Non-City" -> true
             else -> {
-                if (baseUnit.matchesFilter(filter, cache.state, false)) return true
-                if (civ.matchesFilter(filter, cache.state, false)) return true
-                if (nonUnitUniquesMap.hasUnique(filter, cache.state)) return true
+                if (baseUnit.matchesFilter(filter, filterState, false)) return true
+                if (civ.matchesFilter(filter, filterState, false)) return true
+                if (nonUnitUniquesMap.hasUnique(filter, filterState)) return true
                 if (promotions.promotions.contains(filter)) return true
                 if (hasStatus(filter)) return true
                 return false

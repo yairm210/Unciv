@@ -277,10 +277,14 @@ object Conditionals {
             UniqueType.ConditionalHasNotUsedOtherActions ->
                 state.unit == null || // So we get the action as a valid action in BaseUnit.hasUnique()
                     state.unit.abilityToTimesUsed.isEmpty()
-            UniqueType.ConditionalStackedWithUnit -> state.relevantUnit != null && 
-                    state.relevantUnit!!.getTile().getUnits().any { it != state.relevantUnit && it.matchesFilter(conditional.params[0]) }
+            UniqueType.ConditionalStackedWithUnit -> state.relevantUnit != null &&
+                    state.relevantUnit!!.getTile().getUnits().any {
+                        it != state.relevantUnit && it.matchesFilter(conditional.params[0], state = state)
+                    }
             UniqueType.ConditionalNotStackedWithUnit -> state.relevantUnit == null ||
-                    !state.relevantUnit!!.getTile().getUnits().any { it != state.relevantUnit && it.matchesFilter(conditional.params[0]) }
+                    !state.relevantUnit!!.getTile().getUnits().any {
+                        it != state.relevantUnit && it.matchesFilter(conditional.params[0], state = state)
+                    }
 
             UniqueType.ConditionalInTiles ->
                 state.relevantTile?.matchesFilter(conditional.params[0], state.relevantCiv) == true
@@ -307,24 +311,21 @@ object Conditionals {
                     )
             }
             UniqueType.ConditionalAdjacentUnit ->
-                state.relevantCiv != null &&
-                        state.relevantUnit != null &&
-                        state.relevantTile!!.neighbors.any {
-                        it.getUnits().any {
+                state.relevantUnit != null &&
+                    state.relevantTile != null &&
+                    state.relevantTile!!.neighbors.any { tile ->
+                        tile.getUnits().any {
                             it != state.relevantUnit &&
-                                it.civ == state.relevantCiv &&
-                                it.matchesFilter(conditional.params[0])
+                                it.matchesFilter(conditional.params[0], state = state)
                         }
                     }
             UniqueType.ConditionalNearUnit ->
-                state.relevantCiv != null &&
-                    state.relevantUnit != null &&
+                state.relevantUnit != null &&
                     state.relevantTile != null &&
                     state.relevantTile!!.getTilesInDistance(conditional.params[0].toInt()).any { tile ->
                         tile.getUnits().any {
                             it != state.relevantUnit &&
-                                it.civ == state.relevantCiv &&
-                                it.matchesFilter(conditional.params[1])
+                                it.matchesFilter(conditional.params[1], state = state)
                         }
                     }
 

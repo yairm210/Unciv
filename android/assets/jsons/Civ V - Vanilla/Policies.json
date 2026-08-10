@@ -167,7 +167,7 @@
             {
                 "name": "Discipline",
                 "uniques": [
-                    "[+10]% Strength <for [Melee] units> <when adjacent to a [Melee] unit>"
+                    "[+10]% Strength <for [Melee] units> <when adjacent to a [{Friendly} {Melee}] unit>"
                 ],
                 "row": 1,
                 "column": 4
