@@ -212,7 +212,7 @@ class UnitUniquesTests {
         // LekMOD Ottoman UA: ceil(ExperienceNeeded() / 3) Faith on UnitPromoted
         game.makeHexagonalMap(1)
         val civ = game.addCiv(
-            "Gain [ceil([XP required for next promotion] / 3)] [Faith] <upon being promoted>",
+            "Gain [ceil ([XP required for next promotion] / 3)] [Faith] <upon being promoted>",
             isPlayer = true
         )
         val tile = game.getTile(HexCoord.Zero)
