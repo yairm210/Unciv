@@ -199,6 +199,8 @@ enum class UnitActionType(
         { ImageGetter.getUnitActionPortrait("HurryConstruction") }, UncivSound.Chimes),
     ConductTradeMission("{Conduct Trade Mission} (${Fonts.death})",
         { ImageGetter.getUnitActionPortrait("ConductTradeMission") }, UncivSound.Chimes),
+    BuyCityState("{Buy City-State} (${Fonts.death})",
+        { ImageGetter.getUnitActionPortrait("Present") }, UncivSound.Chimes),
     FoundReligion("Found a Religion",
         { ImageGetter.getUnitActionPortrait("FoundReligion") }, UncivSound.Choir),
     TriggerUnique("Trigger unique",

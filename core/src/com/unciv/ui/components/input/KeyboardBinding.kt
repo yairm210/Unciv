@@ -131,6 +131,7 @@ enum class KeyboardBinding(
     HurryWonder(Category.UnitActions, 'g'),
     HurryBuilding(Category.UnitActions,"Hurry Construction", 'g'),
     ConductTradeMission(Category.UnitActions, 'g'),
+    BuyCityState(Category.UnitActions, "Buy City-State", 'g'),
     FoundReligion(Category.UnitActions,"Found a Religion", 'g'),
     TriggerUnique(Category.UnitActions,"Trigger unique", 'g'),
     SpreadReligion(Category.UnitActions, 'g'),

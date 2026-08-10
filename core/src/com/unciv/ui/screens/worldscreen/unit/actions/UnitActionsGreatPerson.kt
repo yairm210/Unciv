@@ -1,7 +1,9 @@
 package com.unciv.ui.screens.worldscreen.unit.actions
 
+import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitAction
@@ -130,6 +132,34 @@ object UnitActionsGreatPerson {
                         NotificationCategory.General, tileOwningCiv.civName, NotificationIcon.Gold, NotificationIcon.Culture)
                     unit.consume()
                 }.takeIf { unit.hasMovement() && canConductTradeMission }
+            ))
+        }
+    }
+
+    internal fun getBuyCityStateActions(unit: MapUnit, tile: Tile) = sequence {
+        val cityState = tile.owningCity?.civ
+        for (unique in UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.CanAnnexOrPuppetCityState)) {
+            val canBuy = cityState != null
+                && cityState != unit.civ
+                && cityState.cityStateFunctions.canBeBoughtByUnit(unit.civ)
+            val useFrequency = getUseFrequency(unit, unique, 70f)
+
+            yield(UnitAction(
+                UnitActionType.BuyCityState, useFrequency,
+                action = {
+                    val cities = cityState!!.cities.toList()
+                    cityState.cityStateFunctions.takeOverByUnit(unit.civ)
+                    UnitActionModifiers.activateSideEffects(unit, unique)
+                    // Human players get a popup that allows them to annex instead of puppet
+                    if (unit.civ.isHuman()) {
+                        for (city in cities)
+                            unit.civ.popupAlerts.add(PopupAlert(AlertType.DiplomaticMarriage, city.id))
+                    }
+                }.takeIf {
+                    unit.hasMovement()
+                        && canBuy
+                        && UnitActionModifiers.canActivateSideEffects(unit, unique)
+                }
             ))
         }
     }

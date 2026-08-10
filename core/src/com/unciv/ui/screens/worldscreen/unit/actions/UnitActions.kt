@@ -89,6 +89,7 @@ object UnitActions {
         UnitActionType.HurryWonder to UnitActionsGreatPerson::getHurryWonderActions,
         UnitActionType.HurryBuilding to UnitActionsGreatPerson::getHurryBuildingActions,
         UnitActionType.ConductTradeMission to UnitActionsGreatPerson::getConductTradeMissionActions,
+        UnitActionType.BuyCityState to UnitActionsGreatPerson::getBuyCityStateActions,
         UnitActionType.FoundReligion to UnitActionsReligion::getFoundReligionActions,
         UnitActionType.EnhanceReligion to UnitActionsReligion::getEnhanceReligionActions,
         UnitActionType.CreateImprovement to UnitActionsFromUniques::getImprovementCreationActions,

@@ -382,12 +382,37 @@ class CityStateFunctions(val civInfo: Civilization) {
 
     }
 
+    /**
+     * Whether [buyer] can take over this City-State by consuming a unit with [UniqueType.CanAnnexOrPuppetCityState]
+     * (e.g. Merchant of Venice).
+     *
+     * Allowed when the City-State is unallied or already allied to [buyer], not at war, and not on marriage cooldown.
+     */
+    @Readonly
+    fun canBeBoughtByUnit(buyer: Civilization): Boolean {
+        return (!civInfo.isDefeated()
+                && civInfo.isCityState
+                && civInfo.cities.any()
+                && !civInfo.isAtWarWith(buyer)
+                && (civInfo.allyCiv == null || civInfo.allyCiv == buyer)
+                && !buyer.getDiplomacyManager(civInfo)!!.hasFlag(DiplomacyFlags.MarriageCooldown))
+    }
+
     fun diplomaticMarriage(otherCiv: Civilization) {
         if (!canBeMarriedBy(otherCiv))  // Just in case
             return
 
         otherCiv.addGold(-getDiplomaticMarriageCost())
+        takeOverCityState(otherCiv)
+    }
 
+    /** Take over this City-State by consuming a unit (no Gold cost). */
+    fun takeOverByUnit(buyer: Civilization) {
+        if (!canBeBoughtByUnit(buyer)) return
+        takeOverCityState(buyer)
+    }
+
+    private fun takeOverCityState(otherCiv: Civilization) {
         val notificationLocation = civInfo.getCapital()!!.location
         otherCiv.addNotification("We have married into the ruling family of [${civInfo.civName}], bringing them under our control.",
             notificationLocation,

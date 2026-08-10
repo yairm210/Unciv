@@ -431,6 +431,7 @@ enum class UniqueType(
     CanHurryResearch("Can hurry technology research", UniqueTarget.Unit),
     CanHurryPolicy("Can generate a large amount of culture", UniqueTarget.Unit),
     CanTradeWithCityStateForGoldAndInfluence("Can undertake a trade mission with City-State, giving a large sum of gold and [amount] Influence", UniqueTarget.Unit),
+    CanAnnexOrPuppetCityState("Can annex or puppet a City-State", UniqueTarget.UnitAction),
     CanTransform("Can transform to [unit]", UniqueTarget.UnitAction,
         docDescription = "By default consumes all movement"),
 
