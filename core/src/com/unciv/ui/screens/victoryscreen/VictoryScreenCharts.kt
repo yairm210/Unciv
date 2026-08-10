@@ -26,8 +26,7 @@ class VictoryScreenCharts(
     private val viewingCiv = worldScreen.viewingCiv
 
     private val rankingTypeSelect = TranslatedSelectBox(
-        RankingType.filteredEntries(gameInfo.gameParameters)
-            .map { it.label },
+        RankingType.filteredEntries(gameInfo.gameParameters).map { it.label },
         rankingType.name
     )
     private val civButtonsTable = Table()
