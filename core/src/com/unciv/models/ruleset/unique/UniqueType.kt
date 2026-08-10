@@ -443,6 +443,10 @@ enum class UniqueType(
     StrengthNearCapital("[relativeAmount]% Strength decreasing with distance from the capital", UniqueTarget.Unit, UniqueTarget.Global),
     FlankAttackBonus("[relativeAmount]% to Flank Attack bonuses", UniqueTarget.Unit, UniqueTarget.Global,
         docDescription = MULTIPLICATIVE_BONUS_EXPLANATION),
+    StrengthForNearbyEnemies("[relativeAmount]% Strength for enemy [mapUnitFilter] units within [positiveAmount] tiles in [tileFilter] tiles", UniqueTarget.Unit,
+        docDescription = "Applies a strength modifier to matching enemy units fighting within the given aerial distance of the unit carrying this unique. " +
+            "Distance 1 is the same as adjacent."),
+    @Deprecated("As of 4.21.6", ReplaceWith("[relativeAmount]% Strength for enemy [mapUnitFilter] units within [1] tiles in [tileFilter] tiles"), DeprecationLevel.WARNING)
     StrengthForAdjacentEnemies("[relativeAmount]% Strength for enemy [mapUnitFilter] units in adjacent [tileFilter] tiles", UniqueTarget.Unit),
     StrengthBonusInRadius("[relativeAmount]% Strength bonus for [mapUnitFilter] units within [amount] tiles", UniqueTarget.Unit),
 

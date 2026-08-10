@@ -114,19 +114,32 @@ object BattleDamage {
         }
 
         //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
-        var adjacentUnits = combatant.getTile().neighbors.flatMap { it.getUnits() }
-        if (enemy.getTile() !in combatant.getTile().neighbors && tileToAttackFrom in combatant.getTile().neighbors
+        // e.g., Maori Warrior / Chile By Reason — strength malus from nearby enemy units carrying the unique
+        val combatantTile = combatant.getTile()
+        val nearbyEnemyCarriers = combatantTile.getTilesInDistance(5)
+            .asSequence()
+            .flatMap { it.getUnits() }
+            .filter { it.civ.isAtWarWith(combatant.getCivInfo()) }
+            .toMutableList()
+        // Preserve prior edge case: include the enemy unit when attacking from an adjacent tile
+        if (enemy.getTile() !in combatantTile.neighbors && tileToAttackFrom in combatantTile.neighbors
             && enemy is MapUnitCombatant
-        )
-            adjacentUnits += sequenceOf(enemy.unit)
+        ) nearbyEnemyCarriers += enemy.unit
 
-        // e.g., Maori Warrior - https://civilization.fandom.com/wiki/Maori_Warrior_(Civ5)
-        val strengthMalus = adjacentUnits.filter { it.civ.isAtWarWith(combatant.getCivInfo()) }
-            .flatMap { it.getMatchingUniques(UniqueType.StrengthForAdjacentEnemies) }
-            .filter { combatant.matchesFilter(it.params[1]) && combatant.getTile().matchesFilter(it.params[2]) }
-            .maxByOrNull { it.params[0] }
+        val strengthMalus = nearbyEnemyCarriers
+            .flatMap { carrier ->
+                val distance = carrier.currentTile.aerialDistanceTo(combatantTile)
+                val fromNearby = carrier.getMatchingUniques(UniqueType.StrengthForNearbyEnemies)
+                    .filter { distance in 1..it.params[2].toInt() }
+                    .filter { combatant.matchesFilter(it.params[1]) && combatantTile.matchesFilter(it.params[3]) }
+                val fromAdjacent = carrier.getMatchingUniques(UniqueType.StrengthForAdjacentEnemies)
+                    .filter { distance == 1 }
+                    .filter { combatant.matchesFilter(it.params[1]) && combatantTile.matchesFilter(it.params[2]) }
+                fromNearby + fromAdjacent
+            }
+            .maxByOrNull { it.params[0].toInt() }
         if (strengthMalus != null) {
-            modifiers.add("Adjacent enemy units", strengthMalus.params[0].toInt())
+            modifiers.add("Nearby enemy units", strengthMalus.params[0].toInt())
         }
         return modifiers
     }

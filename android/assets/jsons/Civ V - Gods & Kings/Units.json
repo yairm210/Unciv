@@ -412,7 +412,7 @@
 		"obsoleteTech": "Chivalry",
 		"promotions": ["Great Generals II"],
 		"uniques": ["Can move after attacking", "No defensive terrain bonus", "[-33]% Strength <vs cities> <when attacking>",
-			"[-10]% Strength for enemy [Military] units in adjacent [All] tiles"],
+			"[-10]% Strength for enemy [Military] units within [1] tiles in [All] tiles"],
 		"hurryCostModifier": 20,
 		"attackSound": "elephant"
 	},

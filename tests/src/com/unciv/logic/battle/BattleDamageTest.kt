@@ -155,4 +155,47 @@ class BattleDamageTest {
         assertTrue(defenceModifiers.isEmpty())
         assertEquals(0, defenceModifiers.sumValues())
     }
+
+    @Test
+    fun `should retrieve nearby enemy strength malus within radius`() {
+        attackerCiv.getDiplomacyManager(defenderCiv)!!.declareWar()
+        defaultDefenderTile.militaryUnit = null
+        val carrierTile = testGame.getTile(3, 1)
+        testGame.addDefaultMeleeUnitWithUniques(
+            defenderCiv,
+            carrierTile,
+            "[-25]% Strength for enemy [Military] units within [2] tiles in [All] tiles"
+        )
+        val adjDefender = testGame.addUnit("Warrior", defenderCiv, defaultDefenderTile)
+
+        val attackModifiers = BattleDamage.getAttackModifiers(
+            MapUnitCombatant(defaultAttackerUnit),
+            MapUnitCombatant(adjDefender),
+            defaultAttackerTile
+        )
+
+        assertEquals(2, defaultAttackerTile.aerialDistanceTo(carrierTile))
+        assertTrue(attackModifiers.containsKey("Nearby enemy units"))
+        assertEquals(-25, attackModifiers["Nearby enemy units"])
+    }
+
+    @Test
+    fun `radius-1 nearby malus applies when adjacent`() {
+        attackerCiv.getDiplomacyManager(defenderCiv)!!.declareWar()
+        defaultDefenderTile.militaryUnit = null
+        val adjacentCarrier = testGame.addDefaultMeleeUnitWithUniques(
+            defenderCiv,
+            defaultDefenderTile,
+            "[-10]% Strength for enemy [Military] units within [1] tiles in [All] tiles"
+        )
+
+        val attackModifiers = BattleDamage.getAttackModifiers(
+            MapUnitCombatant(defaultAttackerUnit),
+            MapUnitCombatant(adjacentCarrier),
+            defaultAttackerTile
+        )
+
+        assertTrue(attackModifiers.containsKey("Nearby enemy units"))
+        assertEquals(-10, attackModifiers["Nearby enemy units"])
+    }
 }
