@@ -458,6 +458,11 @@ enum class UniqueType(
     SpreadReligionStrength("[relativeAmount]% Spread Religion Strength", UniqueTarget.Unit, UniqueTarget.Global,
         docDescription = MULTIPLICATIVE_BONUS_EXPLANATION),
     StatsWhenSpreading("When spreading religion to a city, gain [amount] times the amount of followers of other religions as [stat]", UniqueTarget.Unit, UniqueTarget.Global),
+    StatsWhenConvertingCityMajority(
+        "When spreading religion converts the city's majority religion, gain [stats]",
+        UniqueTarget.Unit, UniqueTarget.Global,
+        docDescription = "Fires only when the spread changes which religion has majority in that city (including converting a city with no majority)."
+    ),
 
     // Attack restrictions
     CanOnlyAttackUnits("Can only attack [combatantFilter] units", UniqueTarget.Unit),
