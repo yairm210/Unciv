@@ -11,6 +11,7 @@ import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
 import yairm210.purity.annotations.Readonly
+import kotlin.math.roundToInt
 
 object MovementCost {
 
@@ -133,7 +134,9 @@ object MovementCost {
             if (!to.matchesFilter(unique.params[1], unit.civ)) continue
             result *= unique.params[0].toPercent()
         }
-        return result
+        // A-Star pathing stores movement in fixed-point base 30 (see PathingMapCache).
+        // Keep costs on that grid after percentage modifiers.
+        return (result * 30f).roundToInt() / 30f
     }
 
     @Readonly
