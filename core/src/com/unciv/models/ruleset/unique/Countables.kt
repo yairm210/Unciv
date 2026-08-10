@@ -307,7 +307,7 @@ enum class Countables(
             return civ.getKnownCivs().count { other ->
                 other.isCityState && other.isAlive() &&
                     other.getDiplomacyManager(civ)!!.isRelationshipLevelEQ(
-                        com.unciv.logic.civilization.diplomacy.RelationshipLevel.Friend
+                        RelationshipLevel.Friend
                     )
             }
         }
@@ -325,7 +325,7 @@ enum class Countables(
             return civ.getKnownCivs().count { other ->
                 other.isCityState && other.isAlive() &&
                     other.getDiplomacyManager(civ)!!.relationshipIgnoreAfraid() ==
-                        com.unciv.logic.civilization.diplomacy.RelationshipLevel.Ally
+                        RelationshipLevel.Ally
             }
         }
     },
