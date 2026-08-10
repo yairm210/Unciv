@@ -250,6 +250,7 @@ enum class UniqueParameterType(
         override val staticKnownValues = setOf(
             "in this city",
             "in all cities",
+            "any", // nicer than "all" in "upon liberating [any] cities"
             "in your cities", "Your",
             "in all coastal cities", "Coastal",
             "in capital", "Capital",

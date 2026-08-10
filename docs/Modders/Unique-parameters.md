@@ -129,7 +129,7 @@ Allowed values:
 cityFilters allow us to choose the range of cities affected by this unique:
 
 - `in this city`
-- `in all cities`, `All`, `all` - Generally applies to all cities owned by the relevant civ
+- `in all cities`, `All`, `all`, `any` - Generally applies to all cities owned by the relevant civ (`any` reads better e.g. in `upon liberating [any] cities`)
 - `in your cities`, `Your`
 - `in all coastal cities`, `Coastal`
 - `in capital`, `Capital`

@@ -586,6 +586,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
             // more performant than "in Constants.all" - see https://medium.com/@yairm210/kotlin-when-string-optimization-e15c6eea2734
             Constants.lowercaseAll -> true
             Constants.uppercaseAll -> true
+            "any" -> true // nicer than "all" in "upon liberating [any] cities"
             "in your cities", "Your" -> viewingCiv == civ
             "in all coastal cities", "Coastal" -> isCoastal()
             "in capital", "Capital" -> isCapital()

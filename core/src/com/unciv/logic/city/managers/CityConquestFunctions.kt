@@ -242,7 +242,8 @@ class CityConquestFunctions(val city: City) {
                 unit.movement.teleportToClosestMoveableTile()
 
         val liberateContext = GameContext(civInfo = conqueringCiv, city = city)
-        for (unique in conqueringCiv.getTriggeredUniques(UniqueType.TriggerUponLiberatingCity, liberateContext))
+        for (unique in conqueringCiv.getTriggeredUniques(UniqueType.TriggerUponLiberatingCity, liberateContext)
+                { city.matchesFilter(it.params[0], conqueringCiv) })
             UniqueTriggerActivation.triggerUnique(unique, conqueringCiv, city)
     }
 
