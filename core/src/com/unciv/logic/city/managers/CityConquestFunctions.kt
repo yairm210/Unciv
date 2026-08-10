@@ -241,7 +241,7 @@ class CityConquestFunctions(val city: City) {
             if (!unit.movement.canPassThrough(unit.currentTile))
                 unit.movement.teleportToClosestMoveableTile()
 
-        val liberateContext = GameContext(conqueringCiv, city)
+        val liberateContext = GameContext(civInfo = conqueringCiv, city = city)
         for (unique in conqueringCiv.getTriggeredUniques(UniqueType.TriggerUponLiberatingCity, liberateContext))
             UniqueTriggerActivation.triggerUnique(unique, conqueringCiv, city)
     }
