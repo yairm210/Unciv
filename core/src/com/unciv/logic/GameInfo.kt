@@ -373,6 +373,13 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         var player = currentPlayerCiv
         var playerIndex = civilizations.indexOf(player)
 
+        if (player.isHuman() && player.isAlive()) {
+            player.totalTurnTimeSeconds +=
+                Duration.between(Instant.ofEpochMilli(currentTurnStartTime), Instant.now())
+                    .toSeconds().toInt()
+            player.turnsPlayedAsHuman++
+        }
+        
         if (gameParameters.isOnlineMultiplayer) updateMinutesBeforeForceResign(player, shouldGainTime)
         // We rotate Players in cycle: 1,2...N,1,2...
         fun setNextPlayer() {
