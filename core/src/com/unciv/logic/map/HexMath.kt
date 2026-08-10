@@ -123,7 +123,7 @@ object HexMath {
                 - longitudinalRadius + referenceLong)
     }
 
-    @Readonly
+    @Pure
     fun hex2WorldCoords(hexCoord: HexCoord): Vector2 {
         // Distance between cells = 2* normal of triangle = 2* (sqrt(3)/2) = sqrt(3)
         val xVector = getVectorByClockHour(10)
@@ -150,10 +150,10 @@ object HexMath {
     }
 
     // Both x - 10 o'clock - and y - 2 o'clock - increase the row by 0.5
-    @Readonly fun getRow(hexCoord: HexCoord): Int = (hexCoord.x + hexCoord.y)/2
+    @Pure fun getRow(hexCoord: HexCoord): Int = (hexCoord.x + hexCoord.y)/2
 
     // y is 2 o'clock - increases column by 1, x in 10 o'clock - decreases by 1
-    @Readonly fun getColumn(hexCoord: HexCoord): Int = hexCoord.y - hexCoord.x
+    @Pure fun getColumn(hexCoord: HexCoord): Int = hexCoord.y - hexCoord.x
 
     @Pure
     fun getTileCoordsFromColumnRow(column: Int, row: Int): HexCoord {
@@ -216,7 +216,7 @@ object HexMath {
             return listOf(origin.cpy())
         }
 
-        @Readonly
+        @Pure
         fun getHexcoordOnOtherSideOfClock(vector: HexCoord): HexCoord =
             origin.times(2).minus(vector)
 

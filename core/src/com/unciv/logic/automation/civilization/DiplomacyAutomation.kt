@@ -278,7 +278,7 @@ object DiplomacyAutomation {
             val ourDiploManager = civInfo.getDiplomacyManager(it)!!
             civInfo.diplomacyFunctions.canSignDefensivePactWith(it)
                 && !ourDiploManager.hasFlag(DiplomacyFlags.DeclinedDefensivePact)
-                && ourDiploManager.opinionOfOtherCiv() < 70f * civInfo.getPersonality().inverseScaledFocus(PersonalityValue.Aggressive)
+                && ourDiploManager.opinionOfOtherCiv() > 70f * civInfo.getPersonality().inverseScaledFocus(PersonalityValue.Aggressive)
                 && !areWeOfferingTrade(civInfo, it, Constants.defensivePact)
         }
 
@@ -357,7 +357,7 @@ object DiplomacyAutomation {
         // Try to have a defensive pact with 1/5 of all civs
         val civsToAllyWith = 0.20f * allAliveCivs * civInfo.getPersonality().scaledFocus(PersonalityValue.Diplomacy)
         // Goes from 0 to -40 as the civ gets more allies, offset by civsToAllyWith
-        motivation -= (40f * (defensivePacts - civsToAllyWith) / (allAliveCivs - civsToAllyWith)).coerceAtMost(0f)
+        motivation -= (40f * (defensivePacts - civsToAllyWith) / (allAliveCivs - civsToAllyWith)).coerceAtLeast(0f)
 
         return motivation > 0
     }
