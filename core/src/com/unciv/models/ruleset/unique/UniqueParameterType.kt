@@ -214,6 +214,14 @@ enum class UniqueParameterType(
         override val staticKnownValues = Stat.statsWithCivWideField.map { it.name }.toSet()
     },
 
+    /** [UniqueType.CityStateRelationshipStats] — City-State Friend / Ally (exact level, not ≥) */
+    CityStateRelationship("relationship", "Friend",
+        "City-State relationship level: `Friend` or `Ally`. Ally bonuses do not also apply Friend bonuses.",
+        severityDefault = UniqueType.UniqueParameterErrorSeverity.RulesetInvariant
+    ) {
+        override val staticKnownValues = setOf("Friend", "Ally")
+    },
+
     /** Implemented by [Civ.matchesFilter][com.unciv.logic.civilization.Civilization.matchesFilter] */
     CivFilter("civFilter", Constants.cityStates) {
         override val staticKnownValues = setOf(Constants.aiPlayer, Constants.humanPlayer, "Open Borders", "Friendly", "Hostile", "Known")

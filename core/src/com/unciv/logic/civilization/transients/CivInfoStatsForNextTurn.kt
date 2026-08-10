@@ -182,18 +182,26 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
         //City-States bonuses
         for (otherCiv in civInfo.getKnownCivs()) {
             if (!otherCiv.isCityState) continue
-            if (otherCiv.getDiplomacyManager(civInfo)!!.relationshipIgnoreAfraid() != RelationshipLevel.Ally)
+            val relationship = otherCiv.getDiplomacyManager(civInfo)!!.relationshipIgnoreAfraid()
+            if (relationship == RelationshipLevel.Ally) {
+                for (unique in civInfo.getMatchingUniques(UniqueType.CityStateStatPercent)) {
+                    val stats = Stats()
+                    stats.add(
+                        Stat.valueOf(unique.params[0]),
+                        otherCiv.stats.statsForNextTurn[Stat.valueOf(unique.params[0])] * unique.params[1].toFloat() / 100f
+                    )
+                    statMap.add(
+                        Constants.cityStates,
+                        stats
+                    )
+                }
+            }
+            if (relationship != RelationshipLevel.Friend && relationship != RelationshipLevel.Ally)
                 continue
-            for (unique in civInfo.getMatchingUniques(UniqueType.CityStateStatPercent)) {
-                val stats = Stats()
-                stats.add(
-                    Stat.valueOf(unique.params[0]),
-                    otherCiv.stats.statsForNextTurn[Stat.valueOf(unique.params[0])] * unique.params[1].toFloat() / 100f
-                )
-                statMap.add(
-                    Constants.cityStates,
-                    stats
-                )
+            val relationshipName = relationship.name // Friend or Ally
+            for (unique in civInfo.getMatchingUniques(UniqueType.CityStateRelationshipStats)) {
+                if (unique.params[1] != relationshipName) continue
+                statMap.add(Constants.cityStates, unique.stats)
             }
         }
 

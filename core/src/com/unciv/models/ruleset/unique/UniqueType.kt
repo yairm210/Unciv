@@ -104,6 +104,11 @@ enum class UniqueType(
     CityStateRestingPoint("Resting point for Influence with City-States is increased by [amount]", UniqueTarget.Global),
 
     CityStateStatPercent("Allied City-States provide [stat] equal to [relativeAmount]% of what they produce for themselves", UniqueTarget.Global),
+    CityStateRelationshipStats(
+        "[stats] from every [relationship] City-State",
+        UniqueTarget.Global,
+        docDescription = "Flat yields per known City-State at that relationship. Use `Friend` or `Ally` (Ally does not also apply Friend). Stack with era conditionals for LekMOD-style Scholasticism."
+    ),
     CityStateResources("[relativeAmount]% resources gifted by City-States",  UniqueTarget.Global),
     CityStateLuxuryHappiness("[relativeAmount]% Happiness from luxury resources gifted by City-States", UniqueTarget.Global),
     CityStateInfluenceRecoversTwiceNormalRate("City-State Influence recovers at twice the normal rate", UniqueTarget.Global),
