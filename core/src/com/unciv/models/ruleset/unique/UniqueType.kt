@@ -1015,6 +1015,7 @@ enum class UniqueType(
     TriggerUponFoundingPantheon("upon founding a Pantheon", UniqueTarget.TriggerCondition),
     TriggerUponFoundingReligion("upon founding a Religion", UniqueTarget.TriggerCondition),
     TriggerUponEnhancingReligion("upon enhancing a Religion", UniqueTarget.TriggerCondition),
+    TriggerUponConvertingCityMajorityReligion("upon converting a city's majority religion", UniqueTarget.TriggerCondition, UniqueTarget.UnitTriggerCondition),
 
     //endregion
 

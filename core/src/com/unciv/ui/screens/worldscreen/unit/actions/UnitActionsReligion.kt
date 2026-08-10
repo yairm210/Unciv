@@ -7,7 +7,9 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueTarget
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.ui.components.extensions.toPercent
@@ -110,6 +112,12 @@ object UnitActionsReligion {
                     city.religion.removeAllPressuresExceptFor(unit.religion!!)
                 
                 val newReligion = city.religion.getMajorityReligion()
+                if (previousReligion != newReligion && newReligion != null && newReligion.name == unit.religion) {
+                    val convertContext = GameContext(civInfo = unit.civ, city = city, unit = unit, tile = tile)
+                    for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponConvertingCityMajorityReligion, convertContext)
+                            + unit.civ.getTriggeredUniques(UniqueType.TriggerUponConvertingCityMajorityReligion, convertContext))
+                        UniqueTriggerActivation.triggerUnique(unique, unit.civ, city = city, unit = unit)
+                }
                 if (previousReligion != newReligion && newReligion != null && city.civ != unit.civ) {
                     city.civ.addNotification("[${unit.civ.civName}]'s [${unit.name}] has converted [${city.name}] to [${newReligion.name}]!", NotificationCategory.Religion)
                 }
