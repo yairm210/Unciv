@@ -135,9 +135,10 @@ object Battle {
             && damageDealt.attackerDealt > damageDealt.defenderDealt
             && attacker.unit.hasUnique(UniqueType.ForcesEnemyFallbackWhenDealingMoreDamage)
         ) {
-            if (MeleeFallback.doFallBack(defender.unit, attacker.unit)) {
+            val toTile = MeleeRetreat.doRetreat(defender.unit, attacker.unit)
+            if (toTile != null) {
                 val notification = "[${defender.getName()}] fell back from a [${attacker.getName()}]"
-                val locations = LocationAction(defender.getTile().position, attacker.getTile().position)
+                val locations = LocationAction(toTile.position, attacker.getTile().position)
                 defender.getCivInfo().addNotification(notification, locations, NotificationCategory.War, defender.getName(), NotificationIcon.War, attacker.getName())
                 attacker.getCivInfo().addNotification(notification, locations, NotificationCategory.War, defender.getName(), NotificationIcon.War, attacker.getName())
             }
@@ -794,39 +795,12 @@ object Battle {
     }
 
     private fun doWithdrawFromMeleeAbility(attacker: MapUnitCombatant, defender: MapUnitCombatant): Boolean {
-        if (defender.unit.isEmbarked()) return false
-        if (defender.unit.cache.cannotMove) return false
-        if (defender.unit.isEscorting()) return false // running away and leaving the escorted unit defeats the purpose of escorting
-        if (defender.unit.isGuarding()) return false // guarding this post and will fight to the death!
-        
-        // Promotions have no effect as per what I could find in available documentation
         val fromTile = defender.getTile()
-        val attackerTile = attacker.getTile()
         val attackContext = GameContext(attacker, defender, fromTile, CombatAction.Defend)
         val rng = attackContext.stateBasedRandom("Battle.doWithdrawFromMeleeAbility")
+        val toTile = MeleeRetreat.doRetreat(defender.unit, attacker.unit, random = rng) ?: return false
 
-        @Readonly
-        fun canNotWithdrawTo(tile: Tile): Boolean { // if the tile is what the defender can't withdraw to, this fun will return true
-           return !defender.unit.movement.canMoveTo(tile)
-                   || defender.isLandUnit() && !tile.isLand // forbid retreat from land to sea - embarked already excluded
-                   || tile.isCityCenter() && tile.getOwner() != defender.getCivInfo() // forbid retreat into the city which doesn't belong to the defender
-        }
-
-        val firstCandidateTiles = fromTile.neighbors.filterNot { it == attackerTile || it in attackerTile.neighbors }
-                .filterNot { canNotWithdrawTo(it) }
-        val secondCandidateTiles = fromTile.neighbors.filter { it in attackerTile.neighbors }
-                .filterNot { canNotWithdrawTo(it) }
-        val toTile: Tile = when {
-            firstCandidateTiles.any() -> firstCandidateTiles.toList().random(rng)
-            secondCandidateTiles.any() -> secondCandidateTiles.toList().random(rng)
-            else -> return false
-        }
-        // Withdraw success: Do it - move defender to toTile for no cost
-        // NOT defender.unit.movement.moveToTile(toTile) - we want a free teleport
-        defender.unit.removeFromTile()
-        defender.unit.putInTile(toTile)
-        defender.unit.mostRecentMoveType = UnitMovementMemoryType.UnitWithdrew
-        // and count 1 attack for attacker but leave it in place
+        // Count 1 attack for attacker but leave it in place
         reduceAttackerMovementPointsAndAttacks(attacker, defender, fromTile)
 
         val attackerName = attacker.getName()

@@ -67,13 +67,7 @@ class BattleTest(private val pathfindingAlgorithm: PathfindingAlgorithm) {
         val defender = testGame.addUnit(weakBase.name, defenderCiv, testGame.getTile(2, 1))
         defender.health = 100
         val originalDefenderTile = defender.getTile().position
-        val reasons = defender.getTile().neighbors.joinToString("; ") { n ->
-            "${n.position}: ${defender.movement.getCannotMoveToReason(n)}"
-        }
-        assertTrue(
-            "canFall=${MeleeFallback.canFallBack(defender, attacker)} neighbors=[$reasons]",
-            MeleeFallback.canFallBack(defender, attacker)
-        )
+        assertTrue(MeleeRetreat.canRetreat(defender, attacker))
 
         val damage = Battle.attack(MapUnitCombatant(attacker), MapUnitCombatant(defender))
         assertTrue("attacker should deal more damage: $damage", damage.attackerDealt > damage.defenderDealt)
