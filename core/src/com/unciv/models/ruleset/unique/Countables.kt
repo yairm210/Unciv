@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset.unique
 
+import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.Countables.Stats
 import com.unciv.models.ruleset.unique.Countables.TileResources
@@ -292,6 +293,41 @@ enum class Countables(
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset): Set<String> =
             UniqueParameterType.CivFilter.getKnownValuesForAutocomplete(ruleset)
                 .map { text.fillPlaceholders(it) }.toSet()
+    },
+
+    FriendCityStates("Friend City-States",
+        shortDocumentation = "City-States at exact Friend relationship with the relevant Civilization"
+    ) {
+        override val documentationStrings = listOf(
+            "Exact Friend only — Ally City-States are not counted.",
+            "Use with `[stats] <for every [Friend City-States]>` (e.g. Scholasticism)."
+        )
+        override fun eval(parameterText: String, gameContext: GameContext): Int? {
+            val civ = gameContext.civInfo ?: return null
+            return civ.getKnownCivs().count { other ->
+                other.isCityState && other.isAlive() &&
+                    other.getDiplomacyManager(civ)!!.isRelationshipLevelEQ(
+                        com.unciv.logic.civilization.diplomacy.RelationshipLevel.Friend
+                    )
+            }
+        }
+    },
+
+    AllyCityStates("Ally City-States",
+        shortDocumentation = "City-States at exact Ally relationship with the relevant Civilization"
+    ) {
+        override val documentationStrings = listOf(
+            "Exact Ally only — Friend City-States are not counted.",
+            "Uses the same Ally check as Allied City-State yield uniques (ignores Afraid)."
+        )
+        override fun eval(parameterText: String, gameContext: GameContext): Int? {
+            val civ = gameContext.civInfo ?: return null
+            return civ.getKnownCivs().count { other ->
+                other.isCityState && other.isAlive() &&
+                    other.getDiplomacyManager(civ)!!.relationshipIgnoreAfraid() ==
+                        com.unciv.logic.civilization.diplomacy.RelationshipLevel.Ally
+            }
+        }
     },
 
     WorkedTilesCity("Worked [tileFilter] Tiles in this city") {
