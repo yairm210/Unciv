@@ -58,7 +58,7 @@ object MovementCost {
 
         // land units will still spend all movement points to embark even with this unique
         if (unit.cache.allTilesCosts1)
-            return 1f
+            return applyTileMovementCostUniques(unit, to, 1f)
 
         val toOwner = to.getOwner()
 
@@ -69,7 +69,7 @@ object MovementCost {
         ) getEnemyMovementPenalty(toOwner, unit) else 0f
 
         if (from.getUnpillagedRoad() == RoadStatus.Railroad && to.getUnpillagedRoad() == RoadStatus.Railroad)
-            return getRoadMovementCost(unit, to, RoadStatus.Railroad.movement) + extraCost
+            return applyTileMovementCostUniques(unit, to, RoadStatus.Railroad.movement) + extraCost
 
         // Each of these two function calls `hasUnique(UniqueType.CityStateTerritoryAlwaysFriendly)`
         // when entering territory of a city state
@@ -81,9 +81,9 @@ object MovementCost {
             from.isAdjacentToRiver() && to.isAdjacentToRiver() && from.isConnectedByRiver(to)
 
         if (areConnectedByRoad && (!areConnectedByRiver || civ.tech.roadsConnectAcrossRivers))
-            return getRoadMovementCost(unit, to, unit.civ.tech.movementSpeedOnRoads) + extraCost
+            return applyTileMovementCostUniques(unit, to, unit.civ.tech.movementSpeedOnRoads) + extraCost
 
-        if (unit.cache.ignoresTerrainCost) return 1f + extraCost
+        if (unit.cache.ignoresTerrainCost) return applyTileMovementCostUniques(unit, to, 1f) + extraCost
         if (areConnectedByRiver) return 100f  // Rivers take the entire turn to cross
 
         // Cities reduce terrain cost to 1
@@ -91,49 +91,49 @@ object MovementCost {
             else to.lastTerrain.movementCost.toFloat()
 
         if (unit.cache.noTerrainMovementUniques)
-            return terrainCost + extraCost
+            return applyTileMovementCostUniques(unit, to, terrainCost) + extraCost
 
         val gameContext = GameContext(unit.civ, unit = unit, tile = to)
 
         if (to.terrainFeatures.any { hasDoubleMovement(unit, it, MapUnitCache.DoubleMovementTerrainTarget.Feature, gameContext) })
-            return terrainCost * 0.5f + extraCost
+            return applyTileMovementCostUniques(unit, to, terrainCost * 0.5f) + extraCost
 
         if (unit.cache.roughTerrainPenalty && to.isRoughTerrain())
             return 100f // units that have to spend all movement in rough terrain, have to spend all movement in rough terrain
         // Placement of this 'if' based on testing, see #4232
 
         if (civ.nation.ignoreHillMovementCost && to.isHill())
-            return 1f + extraCost // usually hills take 2 movements, so here it is 1
+            return applyTileMovementCostUniques(unit, to, 1f) + extraCost // usually hills take 2 movements, so here it is 1
 
         if (unit.cache.noBaseTerrainOrHillDoubleMovementUniques)
-            return terrainCost + extraCost
+            return applyTileMovementCostUniques(unit, to, terrainCost) + extraCost
 
         if (hasDoubleMovement(unit, to.baseTerrain, MapUnitCache.DoubleMovementTerrainTarget.Base, gameContext))
-            return terrainCost * 0.5f + extraCost
+            return applyTileMovementCostUniques(unit, to, terrainCost * 0.5f) + extraCost
         val hillTerrain = to.getHillTerrain()
         if (hillTerrain != null && hasDoubleMovement(unit, hillTerrain.name, MapUnitCache.DoubleMovementTerrainTarget.Hill, gameContext))
-            return terrainCost * 0.5f + extraCost
+            return applyTileMovementCostUniques(unit, to, terrainCost * 0.5f) + extraCost
 
         if (unit.cache.noFilteredDoubleMovementUniques)
-            return terrainCost + extraCost
+            return applyTileMovementCostUniques(unit, to, terrainCost) + extraCost
         if (unit.cache.doubleMovementInTerrain.any {
                 hasDoubleMovement(it.value, MapUnitCache.DoubleMovementTerrainTarget.Filter, gameContext)
                     && to.matchesFilter(it.key)
             })
-            return terrainCost * 0.5f + extraCost
+            return applyTileMovementCostUniques(unit, to, terrainCost * 0.5f) + extraCost
 
-        return terrainCost + extraCost // no road or other movement cost reduction
+        return applyTileMovementCostUniques(unit, to, terrainCost) + extraCost // no road or other movement cost reduction
     }
 
     @Readonly
-    private fun getRoadMovementCost(unit: MapUnit, to: Tile, baseCost: Float): Float {
-        var cost = baseCost
+    private fun applyTileMovementCostUniques(unit: MapUnit, to: Tile, cost: Float): Float {
+        var result = cost
         val gameContext = GameContext(unit.civ, unit = unit, tile = to)
-        for (unique in unit.getMatchingUniques(UniqueType.RoadMovementCost, gameContext, checkCivInfoUniques = true)) {
+        for (unique in unit.getMatchingUniques(UniqueType.TileMovementCost, gameContext, checkCivInfoUniques = true)) {
             if (!to.matchesFilter(unique.params[1], unit.civ)) continue
-            cost *= unique.params[0].toPercent()
+            result *= unique.params[0].toPercent()
         }
-        return cost
+        return result
     }
 
     @Readonly
