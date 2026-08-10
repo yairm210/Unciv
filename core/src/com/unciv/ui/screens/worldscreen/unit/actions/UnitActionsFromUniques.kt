@@ -440,7 +440,7 @@ object UnitActionsFromUniques {
                 associatedUnique = unique,
                 action = {
                     val oldMovement = unit.currentMovement
-                    unit.destroy()
+                    unit.destroy(destroyTransportedUnit = false)
                     val newUnit =
                         civInfo.units.placeUnitNearTile(unitTile.position, unitToTransformTo, unit.id, copiedFrom = unit)
 

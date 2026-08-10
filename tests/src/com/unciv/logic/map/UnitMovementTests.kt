@@ -18,6 +18,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.testing.TestRunnerFactory
 import com.unciv.testing.TestGame
+import com.unciv.ui.components.UnitMovementMemoryType
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -317,6 +318,40 @@ class UnitMovementTests(private val pathfindingAlgorithm: PathfindingAlgorithm) 
             unit.currentTile.position.eq(1, 2))
         assertTrue("Payload must be teleported to the same tile",
             unit.currentTile == payload.currentTile)
+    }
+
+    @Test
+    fun paradroppingTransportKeepsPayload() {
+        val origin = testGame.tileMap[0,0]
+        val destination = testGame.tileMap[1,0]
+        origin.baseTerrain = Constants.coast
+        origin.setTransients()
+        destination.baseTerrain = Constants.coast
+        destination.setTransients()
+
+        val transportBaseUnit = testGame.createBaseUnit(
+            "Aircraft Carrier",
+            "Can carry [2] [Aircraft] units",
+            "May Paradrop to [Water] tiles up to [2] tiles away"
+        ).apply {
+            movement = 2
+            strength = 1
+        }
+        val transport = testGame.addUnit(transportBaseUnit.name, civInfo, origin)
+        val payload = testGame.addUnit("Fighter", civInfo, origin)
+        val untransportedAirUnit = testGame.addUnit("Fighter", civInfo, origin)
+        untransportedAirUnit.isTransported = false
+
+        transport.action = UnitActionType.Paradrop.value
+        transport.movement.moveToTile(destination)
+
+        assertEquals(destination, transport.currentTile)
+        assertEquals(destination, payload.currentTile)
+        assertTrue(payload.isTransported)
+        assertEquals(UnitMovementMemoryType.UnitTeleported, transport.mostRecentMoveType)
+        assertEquals(UnitMovementMemoryType.UnitTeleported, payload.mostRecentMoveType)
+        assertEquals(origin, untransportedAirUnit.currentTile)
+        assertFalse(untransportedAirUnit.isTransported)
     }
     
     @Test

@@ -1,5 +1,6 @@
 package com.unciv.uniques
 
+import com.unciv.Constants
 import com.unciv.json.json
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.UnitTurnManager
@@ -205,5 +206,38 @@ class UnitUniquesTests {
             promotionNode2.parents.any { it.promotion == promotionTestBranchA } &&
             promotionNode2.parents.any { it.promotion == promotionBranch2 }
         )
+    }
+
+    @Test
+    fun `transforming carrier keeps payload`() {
+        val tile = game.getTile(HexCoord.Zero)
+        tile.baseTerrain = Constants.coast
+        tile.setTransients()
+        val civ = game.addCiv()
+        val transformedBaseUnit = game.createBaseUnit(
+            "Aircraft Carrier",
+            "Can carry [2] [Aircraft] units"
+        ).apply {
+            movement = 2
+            strength = 1
+        }
+        val originalBaseUnit = game.createBaseUnit(
+            "Aircraft Carrier",
+            "Can carry [2] [Aircraft] units",
+            "Can transform to [${transformedBaseUnit.name}]"
+        ).apply {
+            movement = 2
+            strength = 1
+        }
+        val original = game.addUnit(originalBaseUnit.name, civ, tile)
+        val payload = game.addUnit("Fighter", civ, tile)
+
+        UnitActionsFromUniques.getTransformActions(original, tile).single().action!!.invoke()
+
+        val transformed = civ.units.getCivUnits().single { it.baseUnit == transformedBaseUnit }
+        Assert.assertTrue(original.isDestroyed)
+        Assert.assertFalse(payload.isDestroyed)
+        Assert.assertTrue(payload.isTransported)
+        Assert.assertEquals(transformed.currentTile, payload.currentTile)
     }
 }

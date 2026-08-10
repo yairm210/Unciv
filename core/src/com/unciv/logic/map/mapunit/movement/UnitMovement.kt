@@ -490,10 +490,20 @@ class UnitMovement(val unit: MapUnit) {
         }
 
         if (unit.isPreparingParadrop()) { // paradropping units move differently
+            val origin = unit.getTile()
             unit.action = null
             unit.removeFromTile()
             unit.putInTile(destination)
             unit.mostRecentMoveType = UnitMovementMemoryType.UnitTeleported
+
+            val payloadUnits = origin.getUnits().filter { it.isTransported && unit.canTransport(it) }.toList()
+            for (payload in payloadUnits) {
+                payload.removeFromTile()
+                payload.putInTile(destination)
+                payload.isTransported = true
+                payload.mostRecentMoveType = UnitMovementMemoryType.UnitTeleported
+            }
+
             unit.useMovementPoints(1f)
             unit.attacksThisTurn += 1
             // Check if unit maintenance changed
