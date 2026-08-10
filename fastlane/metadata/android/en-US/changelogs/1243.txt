@@ -1,42 +1,10 @@
+CPU and memory performance improvements 
 
+ANR Bugfix: Only rebuild the minimap on drag, IF the minimap size actually changed.
 
-chore: Gradle wrapper upgrade - missing from 
+Hopefully solved Android 11/12 notch areas on some phones
 
-Add Android build to verify that gradle changes don't cause Android to be unbuildable
-
-Bugfix: Only rebuild the minimap on drag, IF the minimap size actually changed.
-
-Perhaps solve  - Claude is convinced this is the solution and I don't have a setup to test this, so let's try
-
-chore(google play): increase target SDK to 36
-
-Fix unexplored tiles being unclickable
-
-View implementation - WorldMapHolder - see 
-
-View implementation - TileView.neighbors -> TileView.getVisibleNeighbors() - see 
-
-Fixed improvements not shown in map editor - removed CivView.getShownImprovementOn in favor of TileView.getShownImprovement since there is no civ in map editor
-
-perf(mem): Unify click listener for editor, the way we did for world map and minimap
-
-View implementation - WorldTileGroup - see 
-
-View implementation - TileGroup.tile -> TileGroup.tileView conversions - see 
-
-Remove "remove missing mod references" from tilegroup. Map editor only, really didn't belong there
-
-View implementation - TileLayerUnitFlag, unify "unit is visible to civ" logic - see 
-
-Gradle upgrade 8.11->9.4 and deps (AGP, kotlin) - see  
-
-chore(perf): Individual layer classes for performance debugging
-
-perf(cpu): minor improvement for common func
-
-perf(cpu): Compute city baseline for building stats once instead of per-building - saves 20% of next-turn computation in a save I was sent
-
-4.21.6 changelog better late than never
+Fixed improvements not shown in map editor
 
 By unciv-loof:
 - Display players' average turn times in MP preview 
@@ -45,5 +13,3 @@ By unciv-loof:
 Fixes for AI bugs - By ssamt
 
 fix: preserve carrier payloads during paradrop and transform - By mvanhorn
-
-Fix typo in doc comment - By latent-9
