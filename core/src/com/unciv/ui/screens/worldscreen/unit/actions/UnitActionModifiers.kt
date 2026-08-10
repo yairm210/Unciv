@@ -218,4 +218,11 @@ object UnitActionModifiers {
                 
         return modifier.params[0].toFloat()
     }
+
+    /** Button label from `<named [comment]>`, or [default] if absent. */
+    @Readonly
+    fun getActionName(actionUnique: Unique, default: String): String {
+        val named = actionUnique.getModifiers(UniqueType.UnitActionNamed).firstOrNull() ?: return default
+        return named.params[0]
+    }
 }

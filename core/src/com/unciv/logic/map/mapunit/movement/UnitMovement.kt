@@ -493,6 +493,7 @@ class UnitMovement(val unit: MapUnit) {
         if (unit.isPreparingParadrop()) { // paradrop / airlift — instant teleport
             val matchingUnique = getInstantMoveUniqueFor(destination) ?: return
             unit.action = null
+            unit.cache.instantMoveActionName = null
             unit.removeFromTile()
             unit.putInTile(destination)
             unit.mostRecentMoveType = UnitMovementMemoryType.UnitTeleported

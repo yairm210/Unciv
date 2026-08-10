@@ -427,6 +427,7 @@ enum class UniqueType(
         UniqueTarget.UnitAction, UniqueTarget.Building,
         docDescription = "Teleport to a matching tile within range. Source location is limited with conditionals (e.g. <in [tileFilter] tiles>). " +
             "Default movement cost is 1; use <for all movement> to consume all movement (Civ5 Airport airlift). " +
+            "Use <named [comment]> for the action button label (e.g. Paradrop / Airlift). " +
             "When provided by a Building, only land units can use it, and the destination city must also have a building with this unique."),
     @Deprecated("As of 4.21.6", ReplaceWith("Can instantly move to [tileFilter] tiles up to [positiveAmount] tiles away"), DeprecationLevel.WARNING)
     MayParadropOld("May Paradrop to [tileFilter] tiles up to [positiveAmount] tiles away", UniqueTarget.Unit),
@@ -611,6 +612,8 @@ enum class UniqueType(
     UnitActionLimitedTimes("[positiveAmount] times", UniqueTarget.UnitActionModifier),
     UnitActionExtraLimitedTimes("[nonNegativeAmount] additional time(s)", UniqueTarget.UnitActionModifier),
     UnitActionAfterWhichConsumed("after which this unit is consumed", UniqueTarget.UnitActionModifier),
+    UnitActionNamed("named [comment]", UniqueTarget.UnitActionModifier,
+        docDescription = "Overrides the unit action button label (e.g. Paradrop vs Airlift for the same underlying action)."),
 
     // endregion
 

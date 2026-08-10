@@ -2120,8 +2120,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Unit
 
 ??? example  "Can instantly move to [tileFilter] tiles up to [positiveAmount] tiles away"
-	Example: "Can instantly move to [Land] tiles up to [5] tiles away <in [{Friendly} {Land}] tiles>"
-	Example: "Can instantly move to [{your} {City center}] tiles up to [99] tiles away <in [{your} {City center}] tiles> <for all movement>"
+	Example: "Can instantly move to [Land] tiles up to [5] tiles away <in [{Friendly} {Land}] tiles> <named [Paradrop]>"
+	Example: "Can instantly move to [{your} {City center}] tiles up to [99] tiles away <in [{your} {City center}] tiles> <for all movement> <named [Airlift]>"
 
 	Applicable to: UnitAction, Building
 

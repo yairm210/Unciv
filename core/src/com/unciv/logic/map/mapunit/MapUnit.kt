@@ -1140,7 +1140,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun actionsOnDeselect() {
-        if (isPreparingParadrop() || isPreparingAirSweep()) action = null
+        if (isPreparingParadrop() || isPreparingAirSweep()) {
+            action = null
+            cache.instantMoveActionName = null
+        }
     }
 
     /** Add the current position and the most recent movement type to [movementMemories]. Called once at end and once at start of turn, and at unit creation. */

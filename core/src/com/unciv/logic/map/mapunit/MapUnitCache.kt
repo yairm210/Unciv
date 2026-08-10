@@ -62,6 +62,8 @@ class MapUnitCache(private val mapUnit: MapUnit) {
 
     /** Instant-move (paradrop / airlift) uniques available while preparing — filled by unit action UI. */
     val instantMoveUniques = mutableListOf<Unique>()
+    /** Display name of the active instant-move prepare action (`named [comment]`), if any. */
+    var instantMoveActionName: String? = null
 
     var hasUniqueToBuildImprovements = false    // not canBuildImprovements to avoid confusion
     var hasUniqueToCreateWaterImprovements = false

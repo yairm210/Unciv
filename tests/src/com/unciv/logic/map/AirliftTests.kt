@@ -6,6 +6,7 @@ import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionModifiers
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -21,7 +22,7 @@ class AirliftTests {
 
     private val airportUnique =
         "Can instantly move to [{your} {City center}] tiles up to [99] tiles away " +
-            "<in [{your} {City center}] tiles> <for all movement>"
+            "<in [{your} {City center}] tiles> <for all movement> <named [Airlift]>"
 
     @Before
     fun setUp() {
@@ -36,21 +37,28 @@ class AirliftTests {
         civ.viewableTiles = testGame.tileMap.values.toSet()
     }
 
-    private fun prepareInstantMove(forUnit: MapUnit = unit) {
+    private fun prepareInstantMove(forUnit: MapUnit = unit, actionName: String = UnitActionType.Paradrop.value) {
         forUnit.cache.instantMoveUniques.clear()
-        forUnit.cache.instantMoveUniques += forUnit.getMatchingUniques(UniqueType.CanInstantlyMoveTo, forUnit.cache.state)
-        forUnit.cache.instantMoveUniques += forUnit.getMatchingUniques(UniqueType.MayParadropOld, forUnit.cache.state)
+        val candidates = ArrayList(
+            forUnit.getMatchingUniques(UniqueType.CanInstantlyMoveTo, forUnit.cache.state).toList()
+        )
+        candidates += forUnit.getMatchingUniques(UniqueType.MayParadropOld, forUnit.cache.state)
         val city = forUnit.getTile().getCity()
         if (city != null && city.civ == forUnit.civ && forUnit.baseUnit.isLandUnit) {
-            forUnit.cache.instantMoveUniques += city.cityConstructions.builtBuildingUniqueMap
+            candidates += city.cityConstructions.builtBuildingUniqueMap
                 .getMatchingUniques(UniqueType.CanInstantlyMoveTo, forUnit.cache.state)
         }
+        val filtered = candidates.filter {
+            UnitActionModifiers.getActionName(it, UnitActionType.Paradrop.value) == actionName
+        }
+        forUnit.cache.instantMoveUniques += filtered
+        forUnit.cache.instantMoveActionName = actionName
         forUnit.action = UnitActionType.Paradrop.value
     }
 
     @Test
     fun `airlift teleports to other airport city and consumes all movement`() {
-        prepareInstantMove()
+        prepareInstantMove(actionName = "Airlift")
         val destination = civ.cities[1].getCenterTile()
         assertTrue(unit.movement.canInstantlyMoveTo(destination))
 
@@ -65,8 +73,15 @@ class AirliftTests {
     fun `airlift unavailable without Can instantly move to building at destination`() {
         val cityCTile = testGame.getTile(0, 3)
         testGame.addCity(civ, cityCTile, replacePalace = true)
-        prepareInstantMove()
+        prepareInstantMove(actionName = "Airlift")
         assertFalse(unit.movement.canInstantlyMoveTo(cityCTile))
+    }
+
+    @Test
+    fun `named modifier sets action label`() {
+        val unique = unit.getTile().getCity()!!.cityConstructions.builtBuildingUniqueMap
+            .getMatchingUniques(UniqueType.CanInstantlyMoveTo, unit.cache.state).first()
+        assertEquals("Airlift", UnitActionModifiers.getActionName(unique, "Paradrop"))
     }
 
     @Test
@@ -74,10 +89,10 @@ class AirliftTests {
         val para = testGame.addDefaultMeleeUnitWithUniques(
             civ,
             testGame.getTile(1, 1),
-            "Can instantly move to [Land] tiles up to [5] tiles away <in [{Friendly} {Land}] tiles>"
+            "Can instantly move to [Land] tiles up to [5] tiles away <in [{Friendly} {Land}] tiles> <named [Paradrop]>"
         )
         civ.viewableTiles = testGame.tileMap.values.toSet()
-        prepareInstantMove(para)
+        prepareInstantMove(para, actionName = "Paradrop")
 
         val destination = testGame.getTile(2, 1)
         assertTrue(para.movement.canInstantlyMoveTo(destination))

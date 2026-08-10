@@ -1368,7 +1368,7 @@
 		"strength": 65,
 		"cost": 375,
 		"requiredTech": "Radar",
-		"uniques": ["Can instantly move to [Land] tiles up to [5] tiles away <in [{Friendly} {Land}] tiles>", "Never appears as a Barbarian unit"],
+		"uniques": ["Can instantly move to [Land] tiles up to [5] tiles away <in [{Friendly} {Land}] tiles> <named [Paradrop]>", "Never appears as a Barbarian unit"],
 		"attackSound": "shot"
 		// upgradesTo "XCOM Squad", "No Movement Cost to Pillage" in BNW
 	},
@@ -1676,7 +1676,7 @@
 		"unitType": "Civilian Water",
 		"uniques": [
             // TODO: "[Every adjacent [{Friendly} {Water}] unit] heals [100] HP <by consuming this unit>",
-            "Can instantly move to [{your} {Coastal} {City center}] tiles up to [25] tiles away <in [City center] tiles>", // Change Port
+            "Can instantly move to [{your} {Coastal} {City center}] tiles up to [25] tiles away <in [City center] tiles> <named [Change Port]>", // Change Port
             "[+15]% Strength bonus for [{Military} {Water}] units within [2] tiles",
 			"Can be earned through combat <for [Water] units>",
             "Is part of Great Person group [Admiral]",

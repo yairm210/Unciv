@@ -147,11 +147,11 @@ object UnitActionsFromUniques {
     }
 
     internal fun getParadropActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
-        unit.cache.instantMoveUniques.clear()
+        val allUniques = ArrayList<Unique>()
 
         fun addUnique(unique: Unique) {
             if (!UnitActionModifiers.canActivateSideEffects(unit, unique)) return
-            unit.cache.instantMoveUniques += unique
+            allUniques += unique
         }
 
         for (unique in unit.getMatchingUniques(UniqueType.CanInstantlyMoveTo, unit.cache.state))
@@ -170,22 +170,51 @@ object UnitActionsFromUniques {
             }
         }
 
-        if (unit.cache.instantMoveUniques.isEmpty()) return emptySequence()
-
-        val useFrequency = unit.cache.instantMoveUniques.maxOf { unique ->
-            UnitActionModifiers.getUseFrequency(unit, unique, 60f)
+        if (allUniques.isEmpty()) {
+            unit.cache.instantMoveUniques.clear()
+            unit.cache.instantMoveActionName = null
+            return emptySequence()
         }
 
-        return sequenceOf(UnitAction(UnitActionType.Paradrop,
-            isCurrentAction = unit.isPreparingParadrop(),
-            useFrequency = useFrequency,
-            action = {
-                if (unit.isPreparingParadrop()) unit.action = null
-                else unit.action = UnitActionType.Paradrop.value
-            }.takeIf {
-                !unit.hasUnitMovedThisTurn()
-            })
-        )
+        val defaultName = UnitActionType.Paradrop.value
+        val grouped = allUniques.groupBy { UnitActionModifiers.getActionName(it, defaultName) }
+
+        // Keep only the active named group's uniques while preparing (Paradrop vs Airlift destinations)
+        unit.cache.instantMoveUniques.clear()
+        if (unit.isPreparingParadrop()) {
+            val activeName = unit.cache.instantMoveActionName
+            val activeUniques = if (activeName != null) grouped[activeName] else null
+            if (activeUniques.isNullOrEmpty()) {
+                unit.action = null
+                unit.cache.instantMoveActionName = null
+            } else {
+                unit.cache.instantMoveUniques += activeUniques
+            }
+        }
+
+        return grouped.asSequence().map { (name, uniques) ->
+            val representative = uniques.first()
+            val useFrequency = uniques.maxOf { UnitActionModifiers.getUseFrequency(unit, it, 60f) }
+            UnitAction(
+                UnitActionType.Paradrop,
+                title = UnitActionModifiers.actionTextWithSideEffects(name, representative, unit),
+                isCurrentAction = unit.isPreparingParadrop() && unit.cache.instantMoveActionName == name,
+                useFrequency = useFrequency,
+                associatedUnique = representative,
+                action = {
+                    if (unit.isPreparingParadrop() && unit.cache.instantMoveActionName == name) {
+                        unit.action = null
+                        unit.cache.instantMoveActionName = null
+                        unit.cache.instantMoveUniques.clear()
+                    } else {
+                        unit.cache.instantMoveActionName = name
+                        unit.cache.instantMoveUniques.clear()
+                        unit.cache.instantMoveUniques += uniques
+                        unit.action = UnitActionType.Paradrop.value
+                    }
+                }.takeIf { !unit.hasUnitMovedThisTurn() }
+            )
+        }
     }
 
     internal fun getAirSweepActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
