@@ -29,11 +29,13 @@ data class GameContext(
     val otherCiv: Civilization? = null,
 
     val region: Region? = null,
+    /** Destination tile for teleport / instant-move checks. Not used by [relevantTile] — pass [tile] for source conditionals. */
+    val targetTile: Tile? = null,
     // tile and region do not deduce gameInfo because that field is not set during MapGeneration,
     // and querying if its initialized is non-trivial
     val gameInfo: GameInfo? = (civInfo?.gameInfo) ?: (city?.civ?.gameInfo) ?: (unit?.civ?.gameInfo) ?:
         (ourCombatant?.getCivInfo()?.gameInfo) ?: (theirCombatant?.getCivInfo()?.gameInfo) ?: (attackedTile?.tileMap?.gameInfo) ?:
-        (otherCiv?.gameInfo),
+        (targetTile?.tileMap?.gameInfo) ?: (otherCiv?.gameInfo),
 
     val ignoreConditionals: Boolean = false,
 ) {
@@ -141,6 +143,7 @@ data class GameContext(
             ourCombatant.hash(),
             theirCombatant.hash(),
             attackedTile.hash(),
+            targetTile.hash(),
             combatAction.hash(),
             otherCiv.hash(),
             region.hash(),

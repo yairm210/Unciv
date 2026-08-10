@@ -207,6 +207,7 @@
       "Can be added to [comment] in the Capital",
       "Prevents spreading of religion to the city it is next to",
       "Removes other religions when spreading religion",
+      "Can instantly move to [tileFilter] tiles up to [positiveAmount] tiles away",
       "May Paradrop to [tileFilter] tiles up to [positiveAmount] tiles away",
       "Can perform Air Sweep",
       "Can speed up construction of a building",

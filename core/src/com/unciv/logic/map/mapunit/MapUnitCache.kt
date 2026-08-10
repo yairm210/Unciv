@@ -60,8 +60,8 @@ class MapUnitCache(private val mapUnit: MapUnit) {
     var costToDisembark: Float? = null
     var costToEmbark: Float? = null
 
-    /** A hashmap where the key represents the tileFilter, and the value is how far away the tile could be */
-    val paradropDestinationTileFilters = mutableMapOf<String, Int>()
+    /** Instant-move (paradrop / airlift) uniques available while preparing — filled by unit action UI. */
+    val instantMoveUniques = mutableListOf<Unique>()
 
     var hasUniqueToBuildImprovements = false    // not canBuildImprovements to avoid confusion
     var hasUniqueToCreateWaterImprovements = false

@@ -13,8 +13,11 @@ import com.unciv.logic.map.PathingMap
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.UnitMovementMemoryType
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionModifiers
 import com.unciv.utils.Log
 import com.unciv.utils.getOrPut
 import yairm210.purity.annotations.Cache
@@ -279,7 +282,7 @@ class UnitMovement(val unit: MapUnit) {
         if (currentTile == finalDestination) return currentTile
 
         // If we can fly / teleport, head there directly
-        if ((unit.baseUnit.movesLikeAirUnits || unit.isPreparingParadrop() || unit.isPreparingAirlift()) && canMoveTo(finalDestination)) return finalDestination
+        if ((unit.baseUnit.movesLikeAirUnits || unit.isPreparingParadrop()) && canMoveTo(finalDestination)) return finalDestination
 
         val distanceToTiles = getDistanceToTiles()
 
@@ -338,9 +341,7 @@ class UnitMovement(val unit: MapUnit) {
         unit.baseUnit.movesLikeAirUnits ->
             unit.currentTile.aerialDistanceTo(destination) <= unit.getMaxMovementForAirUnits()
         unit.isPreparingParadrop() ->
-            canParadropOn(destination, unit.currentTile.aerialDistanceTo(destination))
-        unit.isPreparingAirlift() ->
-            canAirliftTo(destination)
+            canInstantlyMoveTo(destination)
         else ->
             specificFunction(destination)  // Note: Could pass destination as implicit closure from outer fun to lambda, but explicit is clearer
     }
@@ -355,14 +356,8 @@ class UnitMovement(val unit: MapUnit) {
             unit.cache.cannotMove -> sequenceOf(unit.getTile())
             unit.baseUnit.movesLikeAirUnits ->
                 unit.getTile().getTilesInDistanceRange(IntRange(1, unit.getMaxMovementForAirUnits()))
-            unit.isPreparingParadrop() -> {
-                unit.getTile().getTilesInDistance(unit.cache.paradropDestinationTileFilters.maxOf { it.value } )
-                    .filter { unit.movement.canParadropOn(it, it.aerialDistanceTo(unit.getTile())) }
-            }
-            unit.isPreparingAirlift() ->
-                unit.civ.cities.asSequence()
-                    .map { it.getCenterTile() }
-                    .filter { canAirliftTo(it) }
+            unit.isPreparingParadrop() ->
+                getInstantMoveReachableTiles()
             includeOtherEscortUnit && unit.isEscorting() -> {
                     val otherUnitTiles = unit.getOtherEscortUnit()!!.movement.getReachableTilesInCurrentTurn(false).toSet()
                     unit.movement.getDistanceToTiles().filter { otherUnitTiles.contains(it.key) }.keys.asSequence()
@@ -495,31 +490,20 @@ class UnitMovement(val unit: MapUnit) {
             return
         }
 
-        if (unit.isPreparingParadrop()) { // paradropping units move differently
+        if (unit.isPreparingParadrop()) { // paradrop / airlift — instant teleport
+            val matchingUnique = getInstantMoveUniqueFor(destination) ?: return
             unit.action = null
             unit.removeFromTile()
             unit.putInTile(destination)
             unit.mostRecentMoveType = UnitMovementMemoryType.UnitTeleported
-            unit.useMovementPoints(1f)
-            unit.attacksThisTurn += 1
+            UnitActionModifiers.activateSideEffects(unit, matchingUnique)
+            // Paradrop (not airlift) counts as an attack so the unit cannot attack again this turn
+            if (!matchingUnique.hasModifier(UniqueType.UnitActionMovementCostAll))
+                unit.attacksThisTurn += 1
             // Check if unit maintenance changed
             // Is also done for other units, but because we skip everything else, we have to manually check it
             // The reason we skip everything, is that otherwise `getPathToTile()` throws an exception
             // As we can not reach our destination in a single turn
-            if (unit.canGarrison()
-                && (unit.getTile().isCityCenter() || destination.isCityCenter())
-                && unit.civ.hasUnique(UniqueType.UnitsInCitiesNoMaintenance)
-            ) unit.civ.updateStatsForNextTurn()
-            clearPathfindingCache()
-            return
-        }
-
-        if (unit.isPreparingAirlift()) {
-            unit.action = null
-            unit.removeFromTile()
-            unit.putInTile(destination)
-            unit.currentMovement = 0f
-            unit.mostRecentMoveType = UnitMovementMemoryType.UnitTeleported
             if (unit.canGarrison()
                 && (unit.getTile().isCityCenter() || destination.isCityCenter())
                 && unit.civ.hasUnique(UniqueType.UnitsInCitiesNoMaintenance)
@@ -767,48 +751,72 @@ class UnitMovement(val unit: MapUnit) {
         return CannotMoveToReason.NoAirUnitTransport
     }
 
-    // Can a paratrooper land at this tile?
+    // Can this unit instantly move (paradrop / airlift) to this tile?
     @Readonly
-    private fun canParadropOn(destination: Tile, distance: Int): Boolean {
-        if (unit.cache.cannotMove) return false
+    fun canInstantlyMoveTo(destination: Tile): Boolean =
+        getInstantMoveUniqueFor(destination) != null
 
+    /** Reachable tiles while preparing an instant move (paradrop / airlift). */
+    @Readonly
+    private fun getInstantMoveReachableTiles(): Sequence<Tile> {
+        val uniques = unit.cache.instantMoveUniques
+        if (uniques.isEmpty()) return emptySequence()
+
+        val hasBuildingSourced = uniques.any { it.sourceObjectType == UniqueTarget.Building }
+        val unitSourced = uniques.filter { it.sourceObjectType != UniqueTarget.Building }
+
+        return sequence {
+            if (unitSourced.isNotEmpty()) {
+                val maxRange = unitSourced.maxOf { it.params[1].toInt() }
+                yieldAll(
+                    unit.getTile().getTilesInDistance(maxRange)
+                        .filter { canInstantlyMoveTo(it) }
+                )
+            }
+            if (hasBuildingSourced) {
+                yieldAll(
+                    unit.civ.cities.asSequence()
+                        .map { it.getCenterTile() }
+                        .filter { canInstantlyMoveTo(it) }
+                )
+            }
+        }.distinct()
+    }
+
+    /** First cached instant-move unique that allows [destination], or null. */
+    @Readonly
+    fun getInstantMoveUniqueFor(destination: Tile): Unique? {
+        if (unit.cache.cannotMove) return null
         // Can only move to tiles within range that are visible and not impassible
-        // Based on some testing done in the base game
-        if (destination.isImpassible() || !unit.civ.viewableTiles.contains(destination)) return false
+        // Based on some testing done in the base game (paradrop)
+        if (destination.isImpassible() || !unit.civ.viewableTiles.contains(destination)) return null
 
-        // The destination is valid if any of the `tileFilters` match, and is within range
-        for ((tileFilter, distanceAllowed) in unit.cache.paradropDestinationTileFilters) {
-            if (distance <= distanceAllowed && destination.matchesFilter(tileFilter, unit.civ)) return true
+        val distance = unit.currentTile.aerialDistanceTo(destination)
+        for (unique in unit.cache.instantMoveUniques) {
+            if (!uniqueAllowsInstantMoveTo(unique, destination, distance)) continue
+            return unique
         }
-
-        return false
+        return null
     }
 
-    /** Civ5 Airport airlift: land unit, unmoved, from city with [UniqueType.AllowsAirlift]. */
     @Readonly
-    fun canAirliftFrom(tile: Tile = unit.getTile()): Boolean {
-        if (!unit.baseUnit.isLandUnit) return false
-        if (unit.hasUnitMovedThisTurn()) return false
-        if (tile.isWater) return false
-        val city = tile.getCity() ?: return false
-        if (!tile.isCityCenter()) return false
-        if (city.civ != unit.civ) return false
-        return city.containsBuildingUnique(UniqueType.AllowsAirlift)
-    }
+    private fun uniqueAllowsInstantMoveTo(unique: Unique, destination: Tile, distance: Int): Boolean {
+        if (distance > unique.params[1].toInt()) return false
+        if (!destination.matchesFilter(unique.params[0], unit.civ)) return false
 
-    /** Destination city for an airlift (Civ5: own airlift city, enterable, no adjacent enemy mil). */
-    @Readonly
-    fun canAirliftTo(destination: Tile): Boolean {
-        if (!unit.isPreparingAirlift() && !canAirliftFrom()) return false
-        if (!destination.isCityCenter()) return false
-        val city = destination.getCity() ?: return false
-        if (city.civ != unit.civ) return false
-        if (destination == unit.getTile()) return false
-        if (!city.containsBuildingUnique(UniqueType.AllowsAirlift)) return false
-        if (!canMoveTo(destination)) return false
-        for (neighbor in destination.neighbors) {
-            val military = neighbor.militaryUnit ?: continue
-            if (unit.civ.isAtWarWith(military.civ)) return false
+        // Building-sourced: Civ5 Airport airlift rules (both cities, land unit, enterable, no adjacent enemy mil)
+        if (unique.sourceObjectType == UniqueTarget.Building) {
+            if (!unit.baseUnit.isLandUnit) return false
+            if (!destination.isCityCenter()) return false
+            val city = destination.getCity() ?: return false
+            if (city.civ != unit.civ) return false
+            if (destination == unit.getTile()) return false
+            if (!city.containsBuildingUnique(UniqueType.CanInstantlyMoveTo)) return false
+            if (!canMoveTo(destination)) return false
+            for (neighbor in destination.neighbors) {
+                val military = neighbor.militaryUnit ?: continue
+                if (unit.civ.isAtWarWith(military.civ)) return false
+            }
         }
         return true
     }

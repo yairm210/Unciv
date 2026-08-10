@@ -16,6 +16,7 @@ import com.unciv.models.UncivSound
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.GameContext
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
@@ -146,44 +147,41 @@ object UnitActionsFromUniques {
     }
 
     internal fun getParadropActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
-        unit.cache.paradropDestinationTileFilters.clear()
+        unit.cache.instantMoveUniques.clear()
 
-        // Retrieve all parardrop uniques, considering the state of the unit
-        val paradropUniques = unit.getMatchingUniques(UniqueType.MayParadrop, unit.cache.state)
-        var useFrequency = 0f
+        fun addUnique(unique: Unique) {
+            if (!UnitActionModifiers.canActivateSideEffects(unit, unique)) return
+            unit.cache.instantMoveUniques += unique
+        }
 
-        // Construct the list of possible destination tile filters, keeping the largest distance
-        for (unique in paradropUniques) {
-            val tileFilter = unique.params[0]
-            val distance = unique.params[1].toInt()
-            val existingDistance = unit.cache.paradropDestinationTileFilters[tileFilter]
-            if (existingDistance == null || distance > existingDistance) {
-                unit.cache.paradropDestinationTileFilters[tileFilter] = distance
-                useFrequency = getUseFrequency(unit, unique, 60f)
+        for (unique in unit.getMatchingUniques(UniqueType.CanInstantlyMoveTo, unit.cache.state))
+            addUnique(unique)
+        for (unique in unit.getMatchingUniques(UniqueType.MayParadropOld, unit.cache.state))
+            addUnique(unique)
+
+        // Building-sourced instant move (Civ5 Airport airlift)
+        if (tile.isCityCenter()) {
+            val city = tile.getCity()
+            if (city != null && city.civ == unit.civ && unit.baseUnit.isLandUnit) {
+                for (unique in city.cityConstructions.builtBuildingUniqueMap
+                    .getMatchingUniques(UniqueType.CanInstantlyMoveTo, unit.cache.state)) {
+                    addUnique(unique)
+                }
             }
         }
-        if (unit.cache.paradropDestinationTileFilters.isEmpty()) return emptySequence()
+
+        if (unit.cache.instantMoveUniques.isEmpty()) return emptySequence()
+
+        val useFrequency = unit.cache.instantMoveUniques.maxOf { unique ->
+            UnitActionModifiers.getUseFrequency(unit, unique, 60f)
+        }
 
         return sequenceOf(UnitAction(UnitActionType.Paradrop,
             isCurrentAction = unit.isPreparingParadrop(),
-            useFrequency = useFrequency, // While it is important to see, it isn't nessesary used a lot
+            useFrequency = useFrequency,
             action = {
                 if (unit.isPreparingParadrop()) unit.action = null
                 else unit.action = UnitActionType.Paradrop.value
-            }.takeIf {
-                !unit.hasUnitMovedThisTurn()
-            })
-        )
-    }
-
-    internal fun getAirliftActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
-        if (!unit.movement.canAirliftFrom(tile)) return emptySequence()
-        return sequenceOf(UnitAction(UnitActionType.Airlift,
-            isCurrentAction = unit.isPreparingAirlift(),
-            useFrequency = 55f,
-            action = {
-                if (unit.isPreparingAirlift()) unit.action = null
-                else unit.action = UnitActionType.Airlift.value
             }.takeIf {
                 !unit.hasUnitMovedThisTurn()
             })

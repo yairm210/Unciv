@@ -423,10 +423,13 @@ enum class UniqueType(
     PreventSpreadingReligion("Prevents spreading of religion to the city it is next to", UniqueTarget.Unit),
     RemoveOtherReligions("Removes other religions when spreading religion", UniqueTarget.Unit),
 
-    MayParadrop("May Paradrop to [tileFilter] tiles up to [positiveAmount] tiles away", UniqueTarget.Unit),
-    AllowsAirlift("Allows airlifting", UniqueTarget.Building,
-        docDescription = "Land units that have not moved this turn can airlift from this city to another owned city that also Allows airlifting. " +
-            "Consumes all remaining movement. The destination city center must be enterable and must not have an adjacent enemy military unit."),
+    CanInstantlyMoveTo("Can instantly move to [tileFilter] tiles up to [positiveAmount] tiles away",
+        UniqueTarget.UnitAction, UniqueTarget.Building,
+        docDescription = "Teleport to a matching tile within range. Source location is limited with conditionals (e.g. <in [tileFilter] tiles>). " +
+            "Default movement cost is 1; use <for all movement> to consume all movement (Civ5 Airport airlift). " +
+            "When provided by a Building, only land units can use it, and the destination city must also have a building with this unique."),
+    @Deprecated("As of 4.21.6", ReplaceWith("Can instantly move to [tileFilter] tiles up to [positiveAmount] tiles away"), DeprecationLevel.WARNING)
+    MayParadropOld("May Paradrop to [tileFilter] tiles up to [positiveAmount] tiles away", UniqueTarget.Unit),
     CanAirsweep("Can perform Air Sweep", UniqueTarget.Unit),
 
     CanSpeedupConstruction("Can speed up construction of a building", UniqueTarget.Unit),

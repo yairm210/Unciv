@@ -122,7 +122,7 @@ object WorldMapTileUpdater {
         }
 
         val isAirUnit = unit.baseUnit.movesLikeAirUnits
-        val moveTileOverlayColor = if (unit.isPreparingParadrop() || unit.isPreparingAirlift()) Color.BLUE else Color.WHITE
+        val moveTileOverlayColor = if (unit.isPreparingParadrop()) Color.BLUE else Color.WHITE
         val tilesInMoveRange = unit.movement.getReachableTilesInCurrentTurn()
         // Prepare special Nuke blast radius display
         val nukeBlastRadius = if (unit.isNuclearWeapon() && selectedTile != null && selectedTile != unit.getTile())

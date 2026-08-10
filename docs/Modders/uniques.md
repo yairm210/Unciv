@@ -2119,6 +2119,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Removes other religions when spreading religion"
 	Applicable to: Unit
 
+??? example  "Can instantly move to [tileFilter] tiles up to [positiveAmount] tiles away"
+	Example: "Can instantly move to [Land] tiles up to [5] tiles away <in [{Friendly} {Land}] tiles>"
+	Example: "Can instantly move to [{your} {City center}] tiles up to [99] tiles away <in [{your} {City center}] tiles> <for all movement>"
+
+	Applicable to: UnitAction, Building
+
 ??? example  "May Paradrop to [tileFilter] tiles up to [positiveAmount] tiles away"
 	Example: "May Paradrop to [Farm] tiles up to [3] tiles away"
 

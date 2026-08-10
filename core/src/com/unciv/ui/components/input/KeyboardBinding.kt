@@ -121,7 +121,6 @@ enum class KeyboardBinding(
     Transform(Category.UnitActions, 'k'),
     Pillage(Category.UnitActions, 'p'),
     Paradrop(Category.UnitActions, 'p'),
-    Airlift(Category.UnitActions, 'l'),
     AirSweep(Category.UnitActions, 'a'),
     SetUp(Category.UnitActions,"Set up", 't'),
     FoundCity(Category.UnitActions,"Found city", 'c'),
