@@ -316,6 +316,17 @@ object Conditionals {
                                 it.matchesFilter(conditional.params[0])
                         }
                     }
+            UniqueType.ConditionalNearUnit ->
+                state.relevantCiv != null &&
+                    state.relevantUnit != null &&
+                    state.relevantTile != null &&
+                    state.relevantTile!!.getTilesInDistance(conditional.params[0].toInt()).any { tile ->
+                        tile.getUnits().any {
+                            it != state.relevantUnit &&
+                                it.civ == state.relevantCiv &&
+                                it.matchesFilter(conditional.params[1])
+                        }
+                    }
 
             UniqueType.ConditionalNeighborTiles ->
                 state.relevantTile != null
