@@ -12,9 +12,11 @@ import yairm210.purity.annotations.Readonly
 object GreatGeneralImplementation {
 
     /**
-     * Determine the "Great General" bonus for [ourUnitCombatant] by searching for units carrying the [UniqueType.StrengthBonusInRadius] in the vicinity.
+     * Determine the "Great General" bonus for [ourUnitCombatant] by searching for same-civ units
+     * carrying a Strength unique with [UniqueType.AffectingUnitsWithinTiles]
+     * (or deprecated [UniqueType.StrengthBonusInRadius]).
      *
-     * Uses [StrengthAura] — same performant carrier-cache path as enemy Strength malus auras.
+     * Uses [StrengthAura] — cached carriers, no tile-radius scan.
      *
      * Used by [BattleDamage.getGeneralModifiers].
      *
@@ -36,21 +38,14 @@ object GreatGeneralImplementation {
         )
 
         val carriers = civInfo.units.getCivUnits().asSequence()
-            .filter { it.cache.hasStrengthBonusInRadiusUnique }
+            .filter { it.cache.hasFriendlyStrengthAuraUnique }
 
-        // Support several GreatGeneralAura uniques on one unit (e.g. +50% radius 1, +25% radius 2).
-        // The "Military" shortcut avoids matchesFilter for the common case.
+        // Support several radius Strength auras on one unit (e.g. +50% radius 1, +25% radius 2).
         val best = StrengthAura.bestAura(
             carriers = carriers,
             targetTile = unit.getTile(),
-            aurasForCarrier = { general ->
-                general.getMatchingUniques(UniqueType.StrengthBonusInRadius, gameContext)
-                    .map { it to (it.params[2].toIntOrNull() ?: 0) }
-            },
-            matchesTarget = { general, unique ->
-                unique.params[1] == "Military" ||
-                    unit.matchesFilter(unique.params[1], state = general.cache.state)
-            }
+            targetUnit = unit,
+            aurasForCarrier = { general -> StrengthAura.friendlyAurasFrom(general, gameContext) },
         ) ?: return Pair("", 0)
 
         if (unit.hasUnique(UniqueType.GreatGeneralProvidesDoubleCombatBonus, checkCivInfoUniques = true)

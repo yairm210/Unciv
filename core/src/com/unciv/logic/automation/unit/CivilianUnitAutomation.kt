@@ -85,7 +85,7 @@ object CivilianUnitAutomation {
 
         //todo this now supports "Great General"-like mod units not combining 'aura' and citadel
         // abilities, but not additional capabilities if automation finds no use for those two
-        if (unit.cache.hasStrengthBonusInRadiusUnique
+        if (unit.cache.hasFriendlyStrengthAuraUnique
             && SpecificUnitAutomation.automateGreatGeneral(unit))
             return
         if (unit.cache.hasCitadelPlacementUnique && SpecificUnitAutomation.automateCitadelPlacer(unit))

@@ -30,8 +30,8 @@ object SpecificUnitAutomation {
 
     fun automateCitadelPlacer(unit: MapUnit): Boolean {
         // Keep at least 2 generals alive
-        if (unit.hasUnique(UniqueType.StrengthBonusInRadius) 
-                && unit.civ.units.getCivUnits().count { it.hasUnique(UniqueType.StrengthBonusInRadius) } < 3) 
+        if (unit.cache.hasFriendlyStrengthAuraUnique
+                && unit.civ.units.getCivUnits().count { it.cache.hasFriendlyStrengthAuraUnique } < 3)
             return false
         // try to revenge and capture their tiles
         val enemyCities = unit.civ.getKnownCivs()

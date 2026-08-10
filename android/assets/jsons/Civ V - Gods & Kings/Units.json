@@ -412,7 +412,7 @@
 		"obsoleteTech": "Chivalry",
 		"promotions": ["Great Generals II"],
 		"uniques": ["Can move after attacking", "No defensive terrain bonus", "[-33]% Strength <vs cities> <when attacking>",
-			"[-10]% Strength for enemy [Military] units within [1] tiles in [All] tiles"],
+			"[-10]% Strength <affecting enemy [Military] units within [1] tiles"],
 		"hurryCostModifier": 20,
 		"attackSound": "elephant"
 	},
@@ -1648,7 +1648,7 @@
 		"name": "Great General",
 		"unitType": "Civilian",
 		"uniques": [
-            "[+15]% Strength bonus for [{Military} {Land}] units within [2] tiles",
+            "[+15]% Strength <affecting [{Military} {Land}] units within [2] tiles",
             "Can instantly construct a [Citadel] improvement <by consuming this unit>",
 			"Can be earned through combat <for [Land] units>",
             "Is part of Great Person group [General]",
@@ -1662,7 +1662,7 @@
 		"uniqueTo": "Mongolia",
 		"replaces": "Great General",
 		"uniques": [
-            "[+15]% Strength bonus for [Military] units within [2] tiles",
+            "[+15]% Strength <affecting [Military] units within [2] tiles",
 			"All adjacent units heal [+15] HP when healing", "[+15] HP when healing",
             "Can instantly construct a [Citadel] improvement <by consuming this unit>",
 			"Can be earned through combat <for [Land] units>",
@@ -1677,7 +1677,7 @@
 		"uniques": [
             // TODO: "[Every adjacent [{Friendly} {Water}] unit] heals [100] HP <by consuming this unit>",
             "May Paradrop to [{your} {Coastal} {City center}] tiles up to [25] tiles away <in [City center] tiles>", // Change Port
-            "[+15]% Strength bonus for [{Military} {Water}] units within [2] tiles",
+            "[+15]% Strength <affecting [{Military} {Water}] units within [2] tiles",
 			"Can be earned through combat <for [Water] units>",
             "Is part of Great Person group [Admiral]",
             "[This Unit] gets a name from the [Admiral] group",

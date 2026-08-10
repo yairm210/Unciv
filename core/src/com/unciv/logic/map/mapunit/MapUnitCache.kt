@@ -66,8 +66,8 @@ class MapUnitCache(private val mapUnit: MapUnit) {
     var hasUniqueToBuildImprovements = false    // not canBuildImprovements to avoid confusion
     var hasUniqueToCreateWaterImprovements = false
 
-    var hasStrengthBonusInRadiusUnique = false
-    var hasStrengthForNearbyEnemiesUnique = false
+    var hasFriendlyStrengthAuraUnique = false
+    var hasEnemyStrengthAuraUnique = false
     var hasCitadelPlacementUnique = false
     
     var state = GameContext.EmptyState
@@ -122,9 +122,13 @@ class MapUnitCache(private val mapUnit: MapUnit) {
 
         canEnterCityStates = mapUnit.hasUnique(UniqueType.CanTradeWithCityStateForGoldAndInfluence)
 
-        hasStrengthBonusInRadiusUnique = mapUnit.hasUnique(UniqueType.StrengthBonusInRadius, GameContext.IgnoreConditionals)
-        hasStrengthForNearbyEnemiesUnique =
-            mapUnit.hasUnique(UniqueType.StrengthForNearbyEnemies, GameContext.IgnoreConditionals) ||
+        hasFriendlyStrengthAuraUnique =
+            mapUnit.getMatchingUniques(UniqueType.Strength, GameContext.IgnoreConditionals)
+                .any { it.hasModifier(UniqueType.AffectingUnitsWithinTiles) } ||
+                mapUnit.hasUnique(UniqueType.StrengthBonusInRadius, GameContext.IgnoreConditionals)
+        hasEnemyStrengthAuraUnique =
+            mapUnit.getMatchingUniques(UniqueType.Strength, GameContext.IgnoreConditionals)
+                .any { it.hasModifier(UniqueType.AffectingEnemyUnitsWithinTiles) } ||
                 mapUnit.hasUnique(UniqueType.StrengthForAdjacentEnemies, GameContext.IgnoreConditionals)
         hasCitadelPlacementUnique = mapUnit.getMatchingUniques(UniqueType.ConstructImprovementInstantly)
             .mapNotNull { mapUnit.civ.gameInfo.ruleset.tileImprovements[it.params[0]] }

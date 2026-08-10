@@ -164,7 +164,7 @@ class BattleDamageTest {
         testGame.addDefaultMeleeUnitWithUniques(
             defenderCiv,
             carrierTile,
-            "[-25]% Strength for enemy [Military] units within [2] tiles in [All] tiles"
+            "[-25]% Strength <affecting enemy [Military] units within [2] tiles>"
         )
         val adjDefender = testGame.addUnit("Warrior", defenderCiv, defaultDefenderTile)
 
@@ -186,7 +186,7 @@ class BattleDamageTest {
         val adjacentCarrier = testGame.addDefaultMeleeUnitWithUniques(
             defenderCiv,
             defaultDefenderTile,
-            "[-10]% Strength for enemy [Military] units within [1] tiles in [All] tiles"
+            "[-10]% Strength <affecting enemy [Military] units within [1] tiles>"
         )
 
         val attackModifiers = BattleDamage.getAttackModifiers(

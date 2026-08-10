@@ -97,6 +97,10 @@ object BattleDamage {
         val modifiers = Counter<String>()
 
         for (unique in combatant.getMatchingUniques(UniqueType.Strength, conditionalState, true)) {
+            // Aura modifiers radiate to nearby units — do not apply to the carrier itself
+            if (unique.hasModifier(UniqueType.AffectingUnitsWithinTiles) ||
+                unique.hasModifier(UniqueType.AffectingEnemyUnitsWithinTiles)
+            ) continue
             modifiers.add(getModifierStringFromUnique(unique), unique.params[0].toInt())
         }
 
