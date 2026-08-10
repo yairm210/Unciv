@@ -9,6 +9,7 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.hasOpenPopups
@@ -326,8 +327,11 @@ object UnitActions {
                 && unit.getMatchingUniques(
                     UniqueType.GainInfluenceWithUnitGiftToCityState,
                     checkCivInfoUniques = true
-                )
-                    .none { unit.matchesFilter(it.params[1]) }
+                ).none { unit.matchesFilter(it.params[1]) }
+                && unit.getMatchingUniques(
+                    UniqueType.GainStatWithUnitGiftToCityState,
+                    checkCivInfoUniques = true
+                ).none { unit.matchesFilter(it.params[2]) }
             ) return@sequence
         }
         // If gifting to major civ they need to be friendly
@@ -352,6 +356,14 @@ object UnitActions {
                             .addInfluence(unique.params[0].toFloat() - 5f)
                         break
                     }
+                }
+
+                for (unique in unit.getMatchingUniques(
+                    UniqueType.GainStatWithUnitGiftToCityState,
+                    checkCivInfoUniques = true
+                )) {
+                    if (!unit.matchesFilter(unique.params[2])) continue
+                    unit.civ.addStat(Stat.valueOf(unique.params[1]), unique.params[0].toInt())
                 }
 
                 recipient.getDiplomacyManager(unit.civ)!!.addInfluence(5f)
