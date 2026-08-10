@@ -8,8 +8,9 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
+import com.unciv.models.ruleset.unique.GameContext
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.hasOpenPopups
@@ -322,16 +323,16 @@ object UnitActions {
 
         if (recipient.isCityState) {
             if (recipient.isAtWarWith(unit.civ)) return@sequence // No gifts to enemy CS
-            // City States only take military units (and units specifically allowed by uniques)
+            // City States only take military units (and units specifically allowed by uniques / gift triggers)
             if (!unit.isMilitary()
                 && unit.getMatchingUniques(
                     UniqueType.GainInfluenceWithUnitGiftToCityState,
                     checkCivInfoUniques = true
                 ).none { unit.matchesFilter(it.params[1]) }
-                && unit.getMatchingUniques(
-                    UniqueType.GainStatWithUnitGiftToCityState,
-                    checkCivInfoUniques = true
-                ).none { unit.matchesFilter(it.params[2]) }
+                && unit.civ.getTriggeredUniques(
+                    UniqueType.TriggerUponGiftingUnitToCityState,
+                    GameContext.IgnoreConditionals
+                ) { unit.matchesFilter(it.params[0]) }.none()
             ) return@sequence
         }
         // If gifting to major civ they need to be friendly
@@ -358,13 +359,12 @@ object UnitActions {
                     }
                 }
 
-                for (unique in unit.getMatchingUniques(
-                    UniqueType.GainStatWithUnitGiftToCityState,
-                    checkCivInfoUniques = true
-                )) {
-                    if (!unit.matchesFilter(unique.params[2])) continue
-                    unit.civ.addStat(Stat.valueOf(unique.params[1]), unique.params[0].toInt())
-                }
+                val giftContext = GameContext(civInfo = unit.civ, unit = unit, tile = tile)
+                for (unique in unit.civ.getTriggeredUniques(
+                    UniqueType.TriggerUponGiftingUnitToCityState,
+                    giftContext
+                ) { unit.matchesFilter(it.params[0]) })
+                    UniqueTriggerActivation.triggerUnique(unique, unit)
 
                 recipient.getDiplomacyManager(unit.civ)!!.addInfluence(5f)
             } else recipient.getDiplomacyManager(unit.civ)!!

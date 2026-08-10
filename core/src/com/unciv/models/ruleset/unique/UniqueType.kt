@@ -260,11 +260,6 @@ enum class UniqueType(
     /// City State Influence
     OtherCivsCityStateRelationsDegradeFaster("Influence of all other civilizations with all city-states degrades [relativeAmount]% faster", UniqueTarget.Global),
     GainInfluenceWithUnitGiftToCityState("Gain [amount] Influence with a [baseUnitFilter] gift to a City-State", UniqueTarget.Global),
-    GainStatWithUnitGiftToCityState(
-        "Gain [amount] [stat] with a [baseUnitFilter] gift to a City-State",
-        UniqueTarget.Global,
-        docDescription = "Grants a civ-wide stockpile stat (Gold, Science, Culture, Faith) when gifting a matching unit to a City-State. Complements the Influence gift unique."
-    ),
     RestingPointOfCityStatesFollowingReligionChange("Resting point for Influence with City-States following this religion [amount]", UniqueTarget.Global),
 
     /// Barbarian Encampments, Pillaging them & Converting Units
@@ -1031,6 +1026,7 @@ enum class UniqueType(
         docDescription = "Can apply triggers to to damaged unit by setting the first parameter to 'Target Unit'"),
     TriggerUponDefeatingUnit("upon defeating a [mapUnitFilter] unit", UniqueTarget.UnitTriggerCondition),
     TriggerUponExpendingUnit("upon expending a [mapUnitFilter] unit", UniqueTarget.TriggerCondition),
+    TriggerUponGiftingUnitToCityState("upon gifting a [mapUnitFilter] unit to a City-State", UniqueTarget.TriggerCondition),
     TriggerUponDefeat("upon being defeated", UniqueTarget.UnitTriggerCondition),
     TriggerUponPromotion("upon being promoted", UniqueTarget.UnitTriggerCondition),
     TriggerUponPromotionGain("upon gaining the [promotion] promotion", UniqueTarget.UnitTriggerCondition),
