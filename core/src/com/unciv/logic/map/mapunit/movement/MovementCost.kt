@@ -9,6 +9,7 @@ import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.ui.components.extensions.toPercent
 import yairm210.purity.annotations.Readonly
 
 object MovementCost {
@@ -68,7 +69,7 @@ object MovementCost {
         ) getEnemyMovementPenalty(toOwner, unit) else 0f
 
         if (from.getUnpillagedRoad() == RoadStatus.Railroad && to.getUnpillagedRoad() == RoadStatus.Railroad)
-            return RoadStatus.Railroad.movement + extraCost
+            return getRoadMovementCost(unit, to, RoadStatus.Railroad.movement) + extraCost
 
         // Each of these two function calls `hasUnique(UniqueType.CityStateTerritoryAlwaysFriendly)`
         // when entering territory of a city state
@@ -80,7 +81,7 @@ object MovementCost {
             from.isAdjacentToRiver() && to.isAdjacentToRiver() && from.isConnectedByRiver(to)
 
         if (areConnectedByRoad && (!areConnectedByRiver || civ.tech.roadsConnectAcrossRivers))
-            return unit.civ.tech.movementSpeedOnRoads + extraCost
+            return getRoadMovementCost(unit, to, unit.civ.tech.movementSpeedOnRoads) + extraCost
 
         if (unit.cache.ignoresTerrainCost) return 1f + extraCost
         if (areConnectedByRiver) return 100f  // Rivers take the entire turn to cross
@@ -122,6 +123,17 @@ object MovementCost {
             return terrainCost * 0.5f + extraCost
 
         return terrainCost + extraCost // no road or other movement cost reduction
+    }
+
+    @Readonly
+    private fun getRoadMovementCost(unit: MapUnit, to: Tile, baseCost: Float): Float {
+        var cost = baseCost
+        val gameContext = GameContext(unit.civ, unit = unit, tile = to)
+        for (unique in unit.getMatchingUniques(UniqueType.RoadMovementCost, gameContext, checkCivInfoUniques = true)) {
+            if (!to.matchesFilter(unique.params[1], unit.civ)) continue
+            cost *= unique.params[0].toPercent()
+        }
+        return cost
     }
 
     @Readonly

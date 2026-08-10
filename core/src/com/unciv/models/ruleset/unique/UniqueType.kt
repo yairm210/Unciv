@@ -159,6 +159,11 @@ enum class UniqueType(
     /// Improvements
     // Should be replaced with moddable improvements when roads become moddable
     RoadMovementSpeed("Improves movement speed on roads",UniqueTarget.Global),
+    RoadMovementCost(
+        "[relativeAmount]% Movement cost on roads in [tileFilter] tiles",
+        UniqueTarget.Unit, UniqueTarget.Global,
+        docDescription = "Multiplicative change to road/railroad movement cost when the destination tile matches the filter (e.g. Franks on Friendly/Unowned roads)."
+    ),
     RoadsConnectAcrossRivers("Roads connect tiles across rivers", UniqueTarget.Global),
     RoadMaintenance("[relativeAmount]% maintenance on road & railroads", UniqueTarget.Global,
         docDescription = MULTIPLICATIVE_BONUS_EXPLANATION),
