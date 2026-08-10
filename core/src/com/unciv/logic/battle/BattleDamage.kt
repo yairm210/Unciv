@@ -35,7 +35,8 @@ object BattleDamage {
     }
 
     @Readonly
-    private fun getGeneralModifiers(combatant: ICombatant, enemy: ICombatant, combatAction: CombatAction, tileToAttackFrom: Tile): Counter<String> {
+    private fun getGeneralModifiers(combatant: ICombatant, enemy: ICombatant, combatAction: CombatAction,
+                                    @Suppress("UNUSED_PARAMETER") tileToAttackFrom: Tile): Counter<String> {
         val modifiers = Counter<String>()
 
         val conditionalState = getGameContext(combatAction, combatant, enemy)
@@ -43,7 +44,7 @@ object BattleDamage {
 
         if (combatant is MapUnitCombatant) {
 
-            val unitUniqueModifiers = getUnitUniqueModifiers(combatant, enemy, conditionalState, tileToAttackFrom)
+            val unitUniqueModifiers = getUnitUniqueModifiers(combatant, conditionalState)
             modifiers.add(unitUniqueModifiers)
 
             val civResources = civInfo.getCivResourcesByName()
@@ -91,8 +92,7 @@ object BattleDamage {
     }
 
     @Readonly
-    private fun getUnitUniqueModifiers(combatant: MapUnitCombatant, enemy: ICombatant, conditionalState: GameContext,
-                                       tileToAttackFrom: Tile): Counter<String> {
+    private fun getUnitUniqueModifiers(combatant: MapUnitCombatant, conditionalState: GameContext): Counter<String> {
         val civInfo = combatant.getCivInfo()
         val modifiers = Counter<String>()
 
@@ -114,19 +114,10 @@ object BattleDamage {
         }
 
         //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
-        var adjacentUnits = combatant.getTile().neighbors.flatMap { it.getUnits() }
-        if (enemy.getTile() !in combatant.getTile().neighbors && tileToAttackFrom in combatant.getTile().neighbors
-            && enemy is MapUnitCombatant
-        )
-            adjacentUnits += sequenceOf(enemy.unit)
-
-        // e.g., Maori Warrior - https://civilization.fandom.com/wiki/Maori_Warrior_(Civ5)
-        val strengthMalus = adjacentUnits.filter { it.civ.isAtWarWith(combatant.getCivInfo()) }
-            .flatMap { it.getMatchingUniques(UniqueType.StrengthForAdjacentEnemies) }
-            .filter { combatant.matchesFilter(it.params[1]) && combatant.getTile().matchesFilter(it.params[2]) }
-            .maxByOrNull { it.params[0] }
+        // e.g., Maori Warrior / Chile By Reason — pull from enemy aura carriers (cached), not tile radius scan
+        val strengthMalus = NearbyEnemyStrength.getStrengthMalus(combatant)
         if (strengthMalus != null) {
-            modifiers.add("Adjacent enemy units", strengthMalus.params[0].toInt())
+            modifiers.add("Nearby enemy units", strengthMalus.params[0].toInt())
         }
         return modifiers
     }
