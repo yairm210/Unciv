@@ -5,24 +5,16 @@ import com.unciv.logic.automation.unit.SpecificUnitAutomation
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.GameContext
-import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import yairm210.purity.annotations.Readonly
 
 
 object GreatGeneralImplementation {
 
-    private data class GeneralBonusData(val general: MapUnit, val radius: Int, val filter: String, val bonus: Int) {
-        constructor(general: MapUnit, unique: Unique) : this(
-            general,
-            radius = unique.params[2].toIntOrNull() ?: 0,
-            filter = unique.params[1],
-            bonus = unique.params[0].toIntOrNull() ?: 0
-        )
-    }
-
     /**
      * Determine the "Great General" bonus for [ourUnitCombatant] by searching for units carrying the [UniqueType.StrengthBonusInRadius] in the vicinity.
+     *
+     * Uses [StrengthAura] — same performant carrier-cache path as enemy Strength malus auras.
      *
      * Used by [BattleDamage.getGeneralModifiers].
      *
@@ -36,29 +28,35 @@ object GreatGeneralImplementation {
     ): Pair<String, Int> {
         val unit = ourUnitCombatant.unit
         val civInfo = ourUnitCombatant.unit.civ
-        val allGenerals = civInfo.units.getCivUnits()
-            .filter { it.cache.hasStrengthBonusInRadiusUnique }
-        if (allGenerals.none()) return Pair("", 0)
+        val gameContext = GameContext(
+            unit.civ,
+            ourCombatant = ourUnitCombatant,
+            theirCombatant = enemy,
+            combatAction = combatAction
+        )
 
-        val greatGeneral = allGenerals
-            .flatMap { general ->
-                general.getMatchingUniques(UniqueType.StrengthBonusInRadius,
-                    GameContext(unit.civ, ourCombatant = ourUnitCombatant, theirCombatant = enemy, combatAction = combatAction))
-                    .map { GeneralBonusData(general, it) }
-            }.filter {
-                // Support the border case when a mod unit has several
-                // GreatGeneralAura uniques (e.g. +50% as radius 1, +25% at radius 2, +5% at radius 3)
-                // The "Military" test is also supported deep down in unit.matchesFilter, a small
-                // optimization for the most common case, as this function is only called for `MapUnitCombatant`s
-                it.general.currentTile.aerialDistanceTo(unit.getTile()) <= it.radius
-                        && (it.filter == "Military" || unit.matchesFilter(it.filter, state = it.general.cache.state))
+        val carriers = civInfo.units.getCivUnits().asSequence()
+            .filter { it.cache.hasStrengthBonusInRadiusUnique }
+
+        // Support several GreatGeneralAura uniques on one unit (e.g. +50% radius 1, +25% radius 2).
+        // The "Military" shortcut avoids matchesFilter for the common case.
+        val best = StrengthAura.bestAura(
+            carriers = carriers,
+            targetTile = unit.getTile(),
+            aurasForCarrier = { general ->
+                general.getMatchingUniques(UniqueType.StrengthBonusInRadius, gameContext)
+                    .map { it to (it.params[2].toIntOrNull() ?: 0) }
+            },
+            matchesTarget = { general, unique ->
+                unique.params[1] == "Military" ||
+                    unit.matchesFilter(unique.params[1], state = general.cache.state)
             }
-        val greatGeneralModifier = greatGeneral.maxByOrNull { it.bonus } ?: return Pair("",0)
+        ) ?: return Pair("", 0)
 
         if (unit.hasUnique(UniqueType.GreatGeneralProvidesDoubleCombatBonus, checkCivInfoUniques = true)
-            && greatGeneralModifier.general.isGreatPersonOfType("War")) // apply only on "true" generals
-            return Pair(greatGeneralModifier.general.name, greatGeneralModifier.bonus * 2)
-        return Pair(greatGeneralModifier.general.name, greatGeneralModifier.bonus)
+            && best.carrier.isGreatPersonOfType("War")) // apply only on "true" generals
+            return Pair(best.carrier.name, best.amount * 2)
+        return Pair(best.carrier.name, best.amount)
     }
 
     /**
@@ -82,7 +80,7 @@ object GreatGeneralImplementation {
             }
 
         val closestReachableEnemyCity = getEnemyCitiesByPriority(general)
-            .firstOrNull { general.movement.canReach(it.getCenterTile()) } 
+            .firstOrNull { general.movement.canReach(it.getCenterTile()) }
         // Send generals to the same place as our units, so they don't get stuck at the wrong side of our empire. Update this when changing global unit movement
 
         val militaryUnitTile = militaryUnitTilesInDistance.maxByOrNull { unitTile ->
