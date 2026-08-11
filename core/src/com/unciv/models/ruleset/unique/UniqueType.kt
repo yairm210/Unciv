@@ -507,7 +507,8 @@ enum class UniqueType(
     CanSeeOverObstacles("Can see over obstacles", UniqueTarget.Unit),
 
     // Carrying
-    CarryAirUnits("Can carry [amount] [mapUnitFilter] units", UniqueTarget.Unit),
+    CarryAirUnits("Can carry [amount] [mapUnitFilter] units", UniqueTarget.Unit,
+        docDescription = "Works for air units and, when the filter matches, land/water units. Non-air cargo uses the same transported slot as air units. Carriers cannot carry other carriers."),
     CarryExtraAirUnits("Can carry [amount] extra [mapUnitFilter] units", UniqueTarget.Unit, UniqueTarget.Building,
         docDescription = "For buildings, supports using `Air` for `mapUnitFilter` to increase city air unit capacity."),
     CannotBeCarriedBy("Cannot be carried by [mapUnitFilter] units", UniqueTarget.Unit),

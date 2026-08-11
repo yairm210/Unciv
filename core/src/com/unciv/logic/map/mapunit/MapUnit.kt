@@ -443,6 +443,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun canAttack(): Boolean {
         if (!hasMovement()) return false
         if (isCivilian()) return false
+        // Air units may attack from a carrier; land/water cargo may not
+        if (isTransported && !baseUnit.movesLikeAirUnits) return false
         return attacksThisTurn < maxAttacksPerTurn()
     }
 
@@ -602,8 +604,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     @Readonly
     fun isTransportTypeOf(mapUnit: MapUnit): Boolean {
-        // Currently, only missiles and airplanes can be carried
-        if (!mapUnit.baseUnit.movesLikeAirUnits) return false
+        // Nested carriers are not supported (cargo would fight the carrier for the military slot)
+        if (mapUnit.hasUnique(UniqueType.CarryAirUnits)) return false
         return getMatchingUniques(UniqueType.CarryAirUnits).any { mapUnit.matchesFilter(it.params[1]) }
     }
 
@@ -1002,11 +1004,26 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 throw IllegalStateException("Unit $name of ${civ.civID} at $currentTile can't be put in tile $tile, reason: ${movement.getCannotMoveToReason(tile)}")
             }
             baseUnit.movesLikeAirUnits -> tile.airUnits.add(this)
-            isCivilian() -> tile.civilianUnit = this
-            else -> tile.militaryUnit = this
+            // Land/water cargo boards the military unit on this tile — never overwrite militaryUnit/civilianUnit
+            tile.militaryUnit != null && tile.militaryUnit !== this && tile.militaryUnit!!.canTransport(this) -> {
+                tile.airUnits.add(this)
+                isTransported = true
+            }
+            isCivilian() -> {
+                if (tile.civilianUnit != null && tile.civilianUnit !== this)
+                    throw IllegalStateException("Unit $name of ${civ.civID} would overwrite civilian on $tile")
+                isTransported = false
+                tile.civilianUnit = this
+            }
+            else -> {
+                if (tile.militaryUnit != null && tile.militaryUnit !== this)
+                    throw IllegalStateException("Unit $name of ${civ.civID} would overwrite military on $tile")
+                isTransported = false
+                tile.militaryUnit = this
+            }
         }
         // this check is here in order to not load the fresh built unit into carrier right after the build
-        if (baseUnit.movesLikeAirUnits){
+        if (baseUnit.movesLikeAirUnits) {
             if (!tile.isCityCenter()) isTransported = true
             else {
                 val currentUntransportedUnits = tile.getUnits().count { it.type.isAirUnit() && !it.isTransported }

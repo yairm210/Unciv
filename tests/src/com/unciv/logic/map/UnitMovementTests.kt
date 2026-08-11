@@ -419,4 +419,103 @@ class UnitMovementTests(private val pathfindingAlgorithm: PathfindingAlgorithm) 
         assertEquals(warrior1, settler2.getOtherEscortUnit())
         assertEquals(warrior2, settler1.getOtherEscortUnit())
     }
+
+    @Test
+    fun landUnitCanBoardCarrierWithoutOverwritingMilitarySlot() {
+        testGame.makeHexagonalMap(3)
+        tile = testGame.tileMap[0, 0]
+        val water = testGame.tileMap[1, 0]
+        water.baseTerrain = Constants.coast
+        water.setTransients()
+
+        val transportBase = testGame.createBaseUnit(
+            "Melee Water",
+            "Can carry [1] [Land] units"
+        ).apply {
+            movement = 4
+            strength = 10
+        }
+        val transport = testGame.addUnit(transportBase.name, civInfo, water)
+        val warrior = testGame.addUnit("Warrior", civInfo, tile)
+
+        assertTrue("Land unit should be allowed to board a matching carrier", warrior.movement.canMoveTo(water))
+        warrior.movement.moveToTile(water)
+
+        assertEquals("Carrier must keep the military slot", transport, water.militaryUnit)
+        assertTrue("Land cargo must be stored as transported", water.airUnits.contains(warrior))
+        assertTrue(warrior.isTransported)
+        assertFalse("Land cargo must not attack while carried", warrior.canAttack())
+    }
+
+    @Test
+    fun landUnitCannotEnterTileOccupiedByNonCarrierMilitary() {
+        val blocker = testGame.addUnit("Warrior", civInfo, tile)
+        val other = testGame.addUnit("Warrior", civInfo, testGame.tileMap[1, 0])
+
+        assertFalse(
+            "Military units must not enter a tile whose military slot is taken by a non-carrier",
+            other.movement.canMoveTo(tile)
+        )
+        assertEquals(blocker, tile.militaryUnit)
+    }
+
+    @Test
+    fun carrierMoveKeepsLandPayload() {
+        testGame.makeHexagonalMap(3)
+        tile = testGame.tileMap[0, 0]
+        val origin = testGame.tileMap[1, 0]
+        origin.baseTerrain = Constants.coast
+        origin.setTransients()
+        val destination = testGame.tileMap[1, 1]
+        destination.baseTerrain = Constants.coast
+        destination.setTransients()
+
+        val transportBase = testGame.createBaseUnit(
+            "Melee Water",
+            "Can carry [1] [Land] units"
+        ).apply {
+            movement = 4
+            strength = 10
+        }
+        val transport = testGame.addUnit(transportBase.name, civInfo, origin)
+        val warrior = testGame.addUnit("Warrior", civInfo, tile)
+        warrior.movement.moveToTile(origin)
+
+        assertTrue(warrior.isTransported)
+        transport.movement.moveToTile(destination)
+
+        assertEquals(destination, transport.currentTile)
+        assertEquals(destination, warrior.currentTile)
+        assertEquals(transport, destination.militaryUnit)
+        assertTrue(warrior.isTransported)
+        assertTrue(destination.airUnits.contains(warrior))
+    }
+
+    @Test
+    fun landCargoReceivesTransferMovementWhileCarried() {
+        testGame.makeHexagonalMap(3)
+        tile = testGame.tileMap[0, 0]
+        val water = testGame.tileMap[1, 0]
+        water.baseTerrain = Constants.coast
+        water.setTransients()
+
+        val transportBase = testGame.createBaseUnit(
+            "Melee Water",
+            "Can carry [1] [Land] units",
+            "Transfer Movement to [Embarked]"
+        ).apply {
+            movement = 5
+            strength = 10
+        }
+        val transport = testGame.addUnit(transportBase.name, civInfo, water)
+        val warrior = testGame.addUnit("Warrior", civInfo, tile)
+        warrior.movement.moveToTile(water)
+
+        assertTrue(warrior.isEmbarked())
+        assertEquals(
+            "Carried embarked land unit should receive Transfer Movement from the carrier",
+            transport.getMaxMovement(),
+            warrior.getMaxMovement()
+        )
+    }
 }
