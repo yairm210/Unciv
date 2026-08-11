@@ -120,7 +120,7 @@ class WorldMapHolder(
                 val child = tileGroupMap.hit(x, y, true) ?: return
 
                 if (child is CityButton) { // the city button can be below the tilegroup, since it moves down when first clicked
-                    onTileClicked(child.cityView.getCenterTile())
+                    onTileClicked(child.foreignCityView.getCenterTile())
                     return
                 }
                 if (child is WorldTileGroup) {
