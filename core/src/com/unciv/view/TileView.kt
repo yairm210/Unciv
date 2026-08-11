@@ -1,5 +1,6 @@
 package com.unciv.view
 
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
@@ -19,13 +20,16 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
     @Readonly fun position() = tile.position
     @Readonly fun owningCity(): ForeignCityView? {
         val city = tile.owningCity ?: return null
-        if (viewer == null) return null
-        return ForeignCityView(city, viewer, spectatorMode, tileMapView.gameView?.civView)
+        return toForeignCityView(city)
     }
     @Readonly fun getWorkingCity(): ForeignCityView? {
         val city = tile.getWorkingCity() ?: return null
-        if (viewer == null) return null
-        return ForeignCityView(city, viewer, spectatorMode, tileMapView.gameView?.civView)
+        return toForeignCityView(city)
+    }
+    @Readonly private fun toForeignCityView(city: City): ForeignCityView? {
+        val viewer = viewer ?: return null
+        val gameView = tileMapView.gameView ?: return null
+        return ForeignCityView(city, viewer, spectatorMode, gameView)
     }
     @Readonly fun getVisibleNeighbors(): Sequence<TileView> = 
         tile.neighbors

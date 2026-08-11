@@ -2,14 +2,12 @@ package com.unciv.view
 
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
-import java.util.IdentityHashMap
 import com.unciv.logic.map.tile.ImprovementBuildingProblem
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
-import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.Readonly
 
 /** View of a [Civilization] from the perspective of [viewer] via [gameView]. */
@@ -17,9 +15,8 @@ class CivView(civ: Civilization,
               viewer: Civilization,
               spectatorMode: Boolean = false,
               val gameView: GameView) : ForeignCivView(civ, viewer, spectatorMode) {
-    @Cache private val cityViews = IdentityHashMap<City, CityView>()
 
-    @Readonly fun getCity(city: City): CityView = cityViews.getOrPut(city) { CityView(city, viewer, spectatorMode, this) }
+    @Readonly fun getCity(city: City): CityView = gameView.getCityView(city)
 
     val gold: Int get() = civ.gold
     val tech: TechManagerView = TechManagerView(civ.tech)

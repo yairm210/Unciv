@@ -14,20 +14,22 @@ import yairm210.purity.annotations.Readonly
 open class ForeignCityView(internal open val city: City,
                            protected val viewer: Civilization,
                            val spectatorMode: Boolean = false,
-                           open val civView: CivView? = null) {
+                           open val gameView: GameView) {
     val name: String get() = city.name
     val location: HexCoord get() = city.location
-    
+
+    /** The owning civ's [CivView], as visible from [viewer]'s perspective. For the viewing player's full CivView, use [CityView.viewingCiv]. */
+    val owningCivView: CivView get() = gameView.getCivView(city.civ)
+
     @Readonly fun getViewingCiv(): Civilization = viewer
-    
+
     @Readonly fun getHealth(): Int = city.health
     @Readonly fun getMaxHealth(): Int = city.getMaxHealth()
     @Readonly fun getDefendingStrength(): Int = CityCombatant(city).getDefendingStrength()
     @Readonly fun getAttackingStrength(): Int = CityCombatant(city).getAttackingStrength()
     @Readonly fun getCenterTile(): TileView {
         val tile = city.getCenterTile()
-        return civView?.gameView?.tileMapView?.getTile(tile)
-            ?: TileMapView(tile.tileMap, viewer, spectatorMode).getTile(tile)
+        return gameView.tileMapView.getTile(tile)
     }
     @Readonly fun canBombard(): Boolean = city.canBombard()
     /** The owning civ of this city, as visible from [viewer]'s perspective. For the viewing player's full CivView, use [CityView.viewingCiv]. */
