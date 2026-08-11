@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.unciv.models.metadata.GameParameters
 import com.unciv.ui.images.ImageGetter
 import yairm210.purity.annotations.Pure
+import yairm210.purity.annotations.Readonly
 
 enum class RankingType(
     label: String?,
@@ -33,6 +34,7 @@ enum class RankingType(
     companion object {
         @Pure fun fromIdForSerialization(char: Char): RankingType? =
                 entries.firstOrNull { it.idForSerialization == char }
-        fun filteredEntries(gameParameters: GameParameters) = entries.filter { it.isVanilla || gameParameters.showAdditionalRankingTypes }
+        @Readonly fun filteredEntries(gameParameters: GameParameters) =
+                entries.filter { it.isVanilla || gameParameters.showAdditionalRankingTypes }
     }
 }
