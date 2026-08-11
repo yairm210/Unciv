@@ -155,7 +155,6 @@ private fun getSdkPath(): String? {
 if (getSdkPath() != null) {
     project(":android") {
         apply(plugin = "com.android.application")
-        apply(plugin = "kotlin-android")
 
         val natives by configurations.creating
 
