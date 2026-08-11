@@ -14,6 +14,7 @@ android {
         getByName("main").apply {
             manifest.srcFile("AndroidManifest.xml")
             java.srcDirs("src")
+            kotlin.srcDirs("src")
             aidl.srcDirs("src")
             renderscript.srcDirs("src")
             res.srcDirs("res")
