@@ -592,7 +592,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         var damageFactor = 1f
         for (unique in getMatchingUniques(UniqueType.DamageFromInterceptionReduced))
             damageFactor *= 1f - unique.params[0].toFloat() / 100f
-        return damageFactor
+        return damageFactor.coerceAtLeast(0f)
     }
 
     @Readonly
