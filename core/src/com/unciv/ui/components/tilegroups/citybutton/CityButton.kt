@@ -192,7 +192,8 @@ class CityButton(val cityView: ForeignCityView, private val tileGroup: TileGroup
                 enterCityOrInfoPopup()
             } else {
                 moveButtonDown()
-                if ((unitTable.selectedUnit == null || !unitTable.selectedUnit!!.hasMovement()) && belongsToViewingCiv())
+                if ((unitTable.selectedUnit == null || !unitTable.selectedUnit!!.hasMovement())
+                        && (belongsToViewingCiv() || viewingPlayer.isSpectator()))
                     unitTable.citySelected(cityView.getCity())
             }
         }
