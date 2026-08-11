@@ -96,5 +96,13 @@ internal class ConsoleCityCommands : ConsoleCommandNode {
             city.cityConstructions.removeBuilding(building)
             DevConsoleResponse.OK
         },
+
+        "makepuppet" to ConsoleAction("city makepuppet") { console, _ ->
+            val city = console.getSelectedCity()
+            city.isPuppet = true
+            // The city could be producing something that puppets shouldn't, like units
+            city.cityConstructions.removeAll()
+            DevConsoleResponse.OK
+        },
     )
 }
