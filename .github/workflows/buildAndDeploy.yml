@@ -156,7 +156,6 @@ jobs:
           releaseFiles: android/build/outputs/bundle/release/Unciv-release.aab
           track: production
           whatsNewDirectory: whatsNewDirectory
-          changesNotSentForReview: true # TEMP for version 4.21.7 patches, to allow GP upload
 
 
       - name: Sign APK for Github upload
