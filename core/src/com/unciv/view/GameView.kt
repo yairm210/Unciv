@@ -11,10 +11,12 @@ class GameView(gameInfo: GameInfo, internal val viewer: Civilization, val specta
     val civView: CivView = CivView(viewer, viewer, spectatorMode, this)
     val tileMapView: TileMapView = TileMapView(gameInfo.tileMap, viewer, spectatorMode, this)
     
-    @Readonly fun getTile(tile: Tile): TileView = tileMapView.getTile(tile)
-    
+    // Navigation
     // These can be cached in the future if we see a need, for now - simplicity
     @Readonly fun getCivView(civ: Civilization): CivView = CivView(civ, viewer, spectatorMode, this)
     @Readonly fun getCityView(city: City): CityView = CityView(city, viewer, spectatorMode, this)
     @Readonly fun getForeignCityView(city: City): ForeignCityView = ForeignCityView(city, viewer, spectatorMode, this)
+
+    // Data retrieval
+    @Readonly fun getTile(tile: Tile): TileView = tileMapView.getTile(tile)
 }

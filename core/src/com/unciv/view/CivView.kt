@@ -16,14 +16,15 @@ class CivView(civ: Civilization,
               spectatorMode: Boolean = false,
               val gameView: GameView) : ForeignCivView(civ, viewer, spectatorMode) {
 
+    // Navigation
     @Readonly fun getCity(city: City): CityView = gameView.getCityView(city)
+    @Readonly fun cities(): List<CityView> = civ.cities.map { getCity(it) }
 
+    // Data retrieval
     val gold: Int get() = civ.gold
     val tech: TechManagerView = TechManagerView(civ.tech)
 
     @Readonly fun hasStatToBuy(stat: Stat, price: Int): Boolean = civ.hasStatToBuy(stat, price)
-    @Readonly fun cities(): List<CityView> = civ.cities.map { getCity(it) }
-
 
     @Readonly fun canSeeTile(tileView: TileView): Boolean = tileView.getTile().isVisible(civ)
     @Readonly fun canSeeResource(resource: TileResource?): Boolean = civ.canSeeResource(resource)
@@ -43,6 +44,7 @@ class CivView(civ: Civilization,
     @Readonly fun isSpectator(): Boolean = civ.isSpectator()
     @Readonly fun hasExplored(tileView: TileView): Boolean = civ.hasExplored(tileView.getTile())
 
+    // Actions
     fun tryDisableCivConstruction(name: String) {
         civ.cities.forEach { it.disabledConstructions.add(name) }
         civ.disabledCityConstructions.add(name)

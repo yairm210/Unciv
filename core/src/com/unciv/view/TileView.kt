@@ -17,7 +17,9 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
                private val viewer: Civilization?,
                private val spectatorMode: Boolean = false) {
 
-    @Readonly fun position() = tile.position
+    // Navigation
+    @Readonly fun getTile(): Tile = tile
+    @Readonly fun getViewer(): Civilization? = viewer
     @Readonly fun owningCity(): ForeignCityView? {
         val city = tile.owningCity ?: return null
         return toForeignCityView(city)
@@ -31,7 +33,39 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
         val gameView = tileMapView.gameView ?: return null
         return ForeignCityView(city, viewer, spectatorMode, gameView)
     }
-    @Readonly fun getVisibleNeighbors(): Sequence<TileView> = 
+    @Readonly fun getOwner(): ForeignCivView? {
+        val owner = tile.getOwner() ?: return null
+        if (viewer == null) return null
+        return ForeignCivView(owner, viewer, spectatorMode)
+    }
+    @Readonly private fun isVisible(unit: MapUnit): Boolean {
+        if (viewer == null) return false
+        if (!tile.isVisible(viewer)) return false
+        return !unit.isInvisible(viewer) || tile in viewer.viewableInvisibleUnitsTiles
+    }
+    val civilianUnit: ForeignMapUnitView?
+        get() {
+            val unit = tile.civilianUnit ?: return null
+            if (!isVisible(unit)) return null
+            return ForeignMapUnitView(unit, viewer!!)
+        }
+    val militaryUnit: ForeignMapUnitView?
+        get() {
+            val unit = tile.militaryUnit ?: return null
+            if (!isVisible(unit)) return null
+            return ForeignMapUnitView(unit, viewer!!)
+        }
+    @Readonly fun getVisibleUnits(): List<ForeignMapUnitView> {
+        if (viewer == null) return emptyList()
+        return tile.getUnits()
+            .filter { isVisible(it) }
+            .map { ForeignMapUnitView(it, viewer) }
+            .toList()
+    }
+
+    // Data retrieval
+    @Readonly fun position() = tile.position
+    @Readonly fun getVisibleNeighbors(): Sequence<TileView> =
         tile.neighbors
             .filter { viewer == null || it.isExplored(viewer) }
             .map { tileMapView.getTile(it) }
@@ -64,35 +98,13 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
     val improvementIsPillaged: Boolean get() = tile.improvementIsPillaged
     val improvementInProgress: String? get() = tile.improvementInProgress
     val turnsToImprovement: Int get() = tile.turnsToImprovement
-    @Readonly private fun isVisible(unit: MapUnit): Boolean {
-        if (viewer == null) return false
-        if (!tile.isVisible(viewer)) return false
-        return !unit.isInvisible(viewer) || tile in viewer.viewableInvisibleUnitsTiles
-    }
 
-    val civilianUnit: ForeignMapUnitView?
-        get() {
-            val unit = tile.civilianUnit ?: return null
-            if (!isVisible(unit)) return null
-            return ForeignMapUnitView(unit, viewer!!)
-        }
-    val militaryUnit: ForeignMapUnitView?
-        get() {
-            val unit = tile.militaryUnit ?: return null
-            if (!isVisible(unit)) return null
-            return ForeignMapUnitView(unit, viewer!!)
-        }
     val isLand: Boolean get() = tile.isLand
     val hasBottomRightRiver: Boolean get() = tile.hasBottomRightRiver
     val hasBottomRiver: Boolean get() = tile.hasBottomRiver
     val hasBottomLeftRiver: Boolean get() = tile.hasBottomLeftRiver
     @Readonly fun isPillaged(): Boolean = tile.isPillaged()
     @Readonly fun getBaseTerrain(): Terrain = tile.getBaseTerrain()
-    @Readonly fun getOwner(): ForeignCivView? {
-        val owner = tile.getOwner() ?: return null
-        if (viewer == null) return null
-        return ForeignCivView(owner, viewer, spectatorMode)
-    }
     @Readonly fun getRuleset(): Ruleset = tile.ruleset
 
     @Readonly fun getTileStats(viewingCiv: CivView?, cityView: CityView? = null): Stats {
@@ -101,21 +113,10 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
     }
     @Readonly fun providesResources(viewingCiv: CivView): Boolean = tile.providesResources(viewingCiv.getCiv())
 
-    @Readonly fun getVisibleUnits(): List<ForeignMapUnitView> {
-        if (viewer == null) return emptyList()
-        return tile.getUnits()
-            .filter { isVisible(it) }
-            .map { ForeignMapUnitView(it, viewer) }
-            .toList()
-    }
-
     @Readonly fun getTileMap(): TileMapView = tileMapView
 
     override fun equals(other: Any?) = other is TileView && other.tile === tile
     override fun hashCode() = tile.hashCode()
-
-    @Readonly fun getTile(): Tile = tile
-    @Readonly fun getViewer(): Civilization? = viewer
 
     companion object {
         /** For icon/preview rendering of a single tile that has no backing [TileMap]. */

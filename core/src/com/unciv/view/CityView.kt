@@ -31,6 +31,7 @@ class CityView(city: City,
                viewer: Civilization,
                spectatorMode: Boolean = false,
                override val gameView: GameView) : ForeignCityView(city, viewer, spectatorMode, gameView) {
+    // Navigation
     /** The viewing player's full CivView (always a self-view). For the city's owning civ, use [owningCiv]. */
     @Readonly fun viewingCiv(): CivView = gameView.civView
 
@@ -43,6 +44,7 @@ class CityView(city: City,
         else city.civ.cities.map { gameView.getCityView(it) }
     }
 
+    // Data retrieval
     val tilesInRange: Set<Tile> get() = city.tilesInRange
 
     @Readonly fun centerTile(): TileView = gameView.tileMapView.getTile(city.getCenterTile())
