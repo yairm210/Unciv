@@ -9,6 +9,7 @@ import com.unciv.ui.components.extensions.isEnabled
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.view.ForeignCivView
 import com.unciv.view.TradeView
 
 class TradeTable(
@@ -17,7 +18,9 @@ class TradeTable(
     diplomacyScreen: DiplomacyScreen
 ): Table(BaseScreen.skin) {
     internal val tradeView = TradeView(civ, otherCivilization)
-    internal val offerColumnsTable = OfferColumnsTable(tradeView, diplomacyScreen , civ, otherCivilization) { onChange() }
+    private val ourCivView = ForeignCivView(civ, civ)
+    private val theirCivView = ForeignCivView(otherCivilization, civ)
+    internal val offerColumnsTable = OfferColumnsTable(tradeView, diplomacyScreen, ourCivView, theirCivView) { onChange() }
     // This is so that after a trade has been traded, we can switch out the offersToDisplay to start anew - this is the easiest way
     private val offerColumnsTableWrapper = Table()
 

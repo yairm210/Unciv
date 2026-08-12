@@ -2,11 +2,14 @@ package com.unciv.view
 
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ImmutableColor
+import com.unciv.models.ruleset.tile.ResourceSupplyList
 import yairm210.purity.annotations.Readonly
 
 /** Should contain information that should be knowable to us about foreign civilizations. Superclass of [CivView]. */
 open class ForeignCivView(internal open val civ: Civilization, internal open val viewer: Civilization, val spectatorMode: Boolean = false) {
     val civName: String get() = civ.civName
+    val gold: Int get() = civ.gold
+    val ruleset = civ.gameInfo.ruleset
 
     // Navigation
     @Readonly fun getCiv(): Civilization = civ
@@ -23,4 +26,8 @@ open class ForeignCivView(internal open val civ: Civilization, internal open val
     @Readonly fun getEraNameAt(index: Int): String = civ.gameInfo.ruleset.eras.keys.elementAt(index)
 
     @Readonly fun isAtWarWith(other: ForeignCivView): Boolean = civ.isAtWarWith(other.civ)
+
+    @Readonly fun getGoldPerTurn(): Int = civ.stats.statsForNextTurn.gold.toInt()
+    @Readonly fun getPerTurnResourcesWithOriginsForTrade(): ResourceSupplyList = civ.getPerTurnResourcesWithOriginsForTrade()
+    @Readonly fun getResearchAgreementCost(other: ForeignCivView): Int = civ.diplomacyFunctions.getResearchAgreementCost(other.civ)
 }

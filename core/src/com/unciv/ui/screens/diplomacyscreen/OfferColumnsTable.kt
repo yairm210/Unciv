@@ -2,7 +2,6 @@ package com.unciv.ui.screens.diplomacyscreen
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
-import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeOffersList
 import com.unciv.logic.trade.TradeOfferType
@@ -12,14 +11,15 @@ import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.AskNumberPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.view.ForeignCivView
 import com.unciv.view.TradeView
 
 /** This is the class that holds the 4 columns of the offers (ours/theirs/ offered/available) in trade */
 class OfferColumnsTable(
     private val tradeView: TradeView,
     private val screen: DiplomacyScreen,
-    private val ourCiv: Civilization,
-    private val theirCiv: Civilization,
+    private val ourCiv: ForeignCivView,
+    private val theirCiv: ForeignCivView,
     private val onChange: () -> Unit
 ): Table(BaseScreen.skin) {
 
@@ -34,11 +34,11 @@ class OfferColumnsTable(
         invert: Boolean,
         list: TradeOffersList,
         counterList: TradeOffersList,
-        civ: Civilization
+        civ: ForeignCivView
     ) {
         when (offer.type) {
             TradeOfferType.Gold -> openGoldSelectionPopup(offer, list, civ.gold)
-            TradeOfferType.Gold_Per_Turn -> openGoldSelectionPopup(offer, list, civ.stats.statsForNextTurn.gold.toInt())
+            TradeOfferType.Gold_Per_Turn -> openGoldSelectionPopup(offer, list, civ.getGoldPerTurn())
             else -> addOffer(if (invert) offer.copy(amount = -offer.amount) else offer, list, counterList)
         }
     }

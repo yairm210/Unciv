@@ -22,7 +22,6 @@ class CivView(civ: Civilization,
     @Readonly fun getTradeView(otherCiv: ForeignCivView): TradeView = TradeView(civ, otherCiv.getCiv())
 
     // Data retrieval
-    val gold: Int get() = civ.gold
     val tech: TechManagerView = TechManagerView(civ.tech)
 
     @Readonly fun hasStatToBuy(stat: Stat, price: Int): Boolean = civ.hasStatToBuy(stat, price)
