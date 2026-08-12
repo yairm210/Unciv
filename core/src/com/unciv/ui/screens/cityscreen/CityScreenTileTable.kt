@@ -110,7 +110,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen) : Table() {
             val otherCity = tileView.owningCity()
             if (otherCity != null && otherCity != cityView && otherCity.isSameCivAs(cityView) && !cityScreen.isSpying)
                 innerTable.add("Move to city".toTextButton().onClick { cityScreen.game.replaceCurrentScreen(
-                    CityScreen(cityView.civView.getCity(otherCity.getCity()))
+                    CityScreen(cityView.gameView.getCityView(otherCity.getCity()))
                 ) })
         }
 
@@ -147,7 +147,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen) : Table() {
             }
         }
 
-        @Readonly private fun getRing(ring: Int) = cityView.centerTile().getTilesInDistance(ring).filter { it.owningCity() == null }
+        @Readonly private fun getRing(ring: Int) = cityView.centerTile().getVisibleTilesInDistance(ring).filter { it.owningCity() == null }
         @Readonly private fun countBuyableInRing(ring: Int) = getRing(ring).count()
         @Readonly private fun getRingCost(ring: Int) = getRing(ring).withIndex()
             .sumOf { cityView.getGoldCostOfTile(it.value, it.index) }

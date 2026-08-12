@@ -285,7 +285,7 @@ class CityScreen(
                         tileGroup.layerMisc.addHexOutline(first.cpy().apply { this.a = second }) }
             }
 
-            if (fireworks != null && tileGroup.tile.position == cityView.location)
+            if (fireworks != null && tileGroup.tileView.position() == cityView.location)
                 fireworks.setActorBounds(tileGroup)
         }
     }
@@ -359,7 +359,7 @@ class CityScreen(
     private fun addTiles() {
         val viewRange = max(cityView.getExpandRange(), cityView.getWorkRange())
         val tileSetStrings = TileSetStrings(cityView.getRuleset(), game.settings)
-        val cityTileGroups = cityView.centerTile().getTilesInDistance(viewRange)
+        val cityTileGroups = cityView.centerTile().getVisibleTilesInDistance(viewRange)
                 .filter { selectedCiv.hasExplored(it.getTile()) }
                 .map { CityTileGroup(cityView, it, tileSetStrings, false, isSpying) }
 
@@ -375,8 +375,8 @@ class CityScreen(
 
         val tilesToUnwrap = mutableSetOf<CityTileGroup>()
         for (tileGroup in tileGroups) {
-            val xDifference = cityView.centerTile().position().x - tileGroup.tile.position.x
-            val yDifference = cityView.centerTile().position().y - tileGroup.tile.position.y
+            val xDifference = cityView.centerTile().position().x - tileGroup.tileView.position().x
+            val yDifference = cityView.centerTile().position().y - tileGroup.tileView.position().y
             //if difference is bigger than the expansion range the tileGroup we are looking for is on the other side of the map
             if (xDifference > viewRange || xDifference < -viewRange || yDifference > viewRange || yDifference < -viewRange) {
                 //so we want to unwrap its position
@@ -401,21 +401,20 @@ class CityScreen(
     private fun tileWorkedIconOnClick(tileGroup: CityTileGroup) {
 
         if (!canChangeState || cityView.isPuppet()) return
-        val tile = tileGroup.tile
 
         // Cycling as: Not-worked -> Worked  -> Not-worked
         if (tileGroup.tileState == CityTileState.WORKABLE) {
-            if (!tile.providesYield() && cityView.getFreePopulation() > 0) {
-                cityView.tryWorkTile(cityView.tileView(tile))
+            if (!tileGroup.tileView.providesYield() && cityView.getFreePopulation() > 0) {
+                cityView.tryWorkTile(tileGroup.tileView)
                 game.settings.addCompletedTutorialTask("Reassign worked tiles")
             } else {
-                cityView.tryStopWorkingTile(cityView.tileView(tile))
+                cityView.tryStopWorkingTile(tileGroup.tileView)
             }
             cityView.updateCityStats()
             update()
 
         } else if (tileGroup.tileState == CityTileState.PURCHASABLE) {
-            askToBuyTile(tile)
+            askToBuyTile(tileGroup.tile)
         }
     }
 
@@ -451,15 +450,14 @@ class CityScreen(
 
     private fun tileWorkedIconDoubleClick(tileGroup: CityTileGroup) {
         if (!canChangeState || cityView.isPuppet() || tileGroup.tileState != CityTileState.WORKABLE) return
-        val tile = tileGroup.tile
 
         // Double-click should lead to locked tiles - both for unworked AND worked tiles
 
-        if (!tile.isWorked()) // If not worked, try to work it first
+        if (!tileGroup.tileView.isWorked()) // If not worked, try to work it first
             tileWorkedIconOnClick(tileGroup)
 
-        if (tile.isWorked())
-            cityView.tryLockTile(cityView.tileView(tile))
+        if (tileGroup.tileView.isWorked())
+            cityView.tryLockTile(tileGroup.tileView)
 
         update()
     }

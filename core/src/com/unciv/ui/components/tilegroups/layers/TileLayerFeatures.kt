@@ -24,7 +24,7 @@ class TileLayerFeatures(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
         if (tileGroup.isForMapEditorIcon)
             return
 
-        val tile = tileGroup.tile
+        val tile = tileGroup.tileView.getTile()
         val isTileVisible = viewingCiv == null || viewingCiv.canSeeTile(tileGroup.tileView)
 
         for (neighbor in tile.neighbors) {

@@ -1,3 +1,35 @@
+## 4.21.7
+
+CPU and memory performance improvements 
+
+ANR Bugfix: Only rebuild the minimap on drag, IF the minimap size actually changed.
+
+Hopefully solved Android 11/12 notch areas on some phones
+
+Fixed improvements not shown in map editor
+
+By unciv-loof:
+- Display players' average turn times in MP preview 
+- Fix Korean tech boost UA 
+
+Fixes for AI bugs - By ssamt
+
+fix: preserve carrier payloads during paradrop and transform - By mvanhorn
+
+## 4.21.6
+
+CPU performance improvements
+
+Disallow XP ruin rewards for civilian units in base rulesets
+
+AI: workers take into account future adjacencies for improvements - By EmperorPinguin
+
+Visually indicate failed MP upload - By cy-elec
+
+Chat: nation-colored names, white body - By Fanfblrik
+
+modding: Warn when OneTimeGainStat is used with a non-civ-wide stat (food/production) - By mvanhorn
+
 ## 4.21.5
 
 By SomeTroglodyte:

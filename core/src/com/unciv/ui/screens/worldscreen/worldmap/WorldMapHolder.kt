@@ -15,7 +15,6 @@ import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.*
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.movement.UnitMovement
@@ -23,6 +22,8 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.multiplayer.AuthoritativeUnitActions
 import com.unciv.models.Spy
 import com.unciv.models.UncivSound
+import com.unciv.view.CivView
+import com.unciv.view.TileView
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.MapArrowType
 import com.unciv.ui.components.MiscArrowTypes
@@ -122,13 +123,13 @@ class WorldMapHolder(
                 val child = tileGroupMap.hit(x, y, true) ?: return
 
                 if (child is CityButton) { // the city button can be below the tilegroup, since it moves down when first clicked
-                    onTileClicked(child.cityView.getCenterTile())
+                    onTileClicked(child.foreignCityView.getCenterTile())
                     return
                 }
                 if (child is WorldTileGroup) {
                     Concurrency.runOnGLThread("Sound") { SoundPlayer.play(UncivSound.Click) }
 
-                    if (button == 0) onTileClicked(child.tile) // Regular click
+                    if (button == 0) onTileClicked(child.tileView) // Regular click
                     else if (button == 1) { // Right button click = move unit to tile
                         if (!UncivGame.Current.settings.longTapMove) return
                         val unit = worldScreen.bottomUnitTable.selectedUnit
@@ -161,11 +162,8 @@ class WorldMapHolder(
         tileGroupMap.addListener(listener)
     }
 
-    fun onTileClicked(tile: Tile) {
-
-        if (!worldScreen.viewingCiv.hasExplored(tile)
-                && tile.neighbors.all { worldScreen.viewingCiv.hasExplored(it) })
-            return // This tile doesn't exist for you
+    fun onTileClicked(tileView: TileView) {
+        val tile = tileView.getTile()
 
         removeUnitActionOverlay()
         selectedTile = tile
@@ -182,8 +180,8 @@ class WorldMapHolder(
             unitTable.tileSelected(tile)
         val newSelectedUnit = unitTable.selectedUnit
 
-        if (previousSelectedCity != null && tile != previousSelectedCity.getCenterTile() && !movingSpyOnMap)
-            tileGroups[previousSelectedCity.getCenterTile()]!!.layerCityButton.moveUp()
+        if (previousSelectedCity != null && tile != previousSelectedCity.getCenterTile().getTile() && !movingSpyOnMap)
+            tileGroups[previousSelectedCity.getCenterTile().getTile()]!!.layerCityButton.moveUp()
 
         if (previousSelectedUnits.isNotEmpty()) {
             val isTileDifferent = previousSelectedUnits.any { it.getTile() != tile }
@@ -218,7 +216,7 @@ class WorldMapHolder(
         if (newSelectedUnit == null || newSelectedUnit.isCivilian()) {
             val unitsInTile = selectedTile!!.getUnits()
             if (previousSelectedCity != null && previousSelectedCity.canBombard()
-                    && selectedTile!!.getTilesInDistance(2).contains(previousSelectedCity.getCenterTile())
+                    && selectedTile!!.getTilesInDistance(2).contains(previousSelectedCity.getCenterTile().getTile())
                     && unitsInTile.any()
                     && unitsInTile.first().civ.isAtWarWith(worldScreen.viewingCiv)) {
                 // try to select the closest city to bombard this guy
@@ -620,10 +618,10 @@ class WorldMapHolder(
 
         val unitList = ArrayList<MapUnit>()
         if (tile.isCityCenter()
-                && (tile.getOwner() == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())) {
+                && (tile.getOwner() == worldScreen.viewingCiv || worldScreen.gameView.civView.isSpectator())) {
             unitList.addAll(tile.getCity()!!.getCenterTile().getUnits())
         } else if (tile.airUnits.isNotEmpty()
-                && (tile.airUnits.first().civ == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())) {
+                && (tile.airUnits.first().civ == worldScreen.viewingCiv || worldScreen.gameView.civView.isSpectator())) {
             unitList.addAll(tile.getUnits())
         }
 
@@ -669,9 +667,12 @@ class WorldMapHolder(
 
     /** Returns true when the civ is a human player defeated in singleplayer game */
     @Readonly
-    fun isMapRevealEnabled(viewingCiv: Civilization) = !viewingCiv.gameInfo.gameParameters.isOnlineMultiplayer
+    fun isMapRevealEnabled(civView: CivView): Boolean {
+        val viewingCiv = civView.getCiv()
+        return !viewingCiv.gameInfo.gameParameters.isOnlineMultiplayer
             && viewingCiv.isCurrentPlayer()
             && viewingCiv.isDefeated()
+    }
 
     /** Clear all arrows to be drawn on the next update. */
     fun resetArrows() {
@@ -806,7 +807,7 @@ class WorldMapHolder(
 
     override fun restrictX(deltaX: Float): Float {
         var result = scrollX - deltaX
-        if (worldScreen.viewingCiv.isSpectator()) return result
+        if (worldScreen.gameView.civView.isSpectator()) return result
 
         val exploredRegion = worldScreen.viewingCiv.exploredRegion
         if (exploredRegion.shouldRecalculateCoords()) exploredRegion.calculateStageCoords(maxX, maxY)
@@ -825,7 +826,7 @@ class WorldMapHolder(
 
     override fun restrictY(deltaY: Float): Float {
         var result = scrollY + deltaY
-        if (worldScreen.viewingCiv.isSpectator()) return result
+        if (worldScreen.gameView.civView.isSpectator()) return result
 
         val exploredRegion = worldScreen.viewingCiv.exploredRegion
         if (exploredRegion.shouldRecalculateCoords()) exploredRegion.calculateStageCoords(maxX, maxY)

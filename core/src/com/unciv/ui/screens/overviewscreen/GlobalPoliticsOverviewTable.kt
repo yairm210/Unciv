@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
@@ -25,6 +26,7 @@ import com.unciv.ui.components.widgets.ColorMarkupLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
+import com.unciv.view.ForeignCivView
 import yairm210.purity.annotations.Readonly
 import kotlin.math.roundToInt
 
@@ -346,7 +348,7 @@ class GlobalPoliticsOverviewTable(
         table.touchable = Touchable.enabled
         table.onClick {
             if (civInfo.isDefeated() || viewingPlayer.isSpectator() || civInfo == viewingPlayer) return@onClick
-            UncivGame.Current.pushScreen(DiplomacyScreen(viewingPlayer, civInfo))
+            UncivGame.Current.pushScreen(DiplomacyScreen(GUI.getWorldScreen().gameView.getCivView(viewingPlayer), ForeignCivView(civInfo, viewingPlayer)))
         }
         return table
     }

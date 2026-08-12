@@ -3,7 +3,9 @@ package com.unciv
 object Constants {
     const val settler = "Settler"
     const val eraSpecificUnit = "Era Starting Unit"
-    val all = setOf("All", "all")
+    const val lowercaseAll = "all"
+    const val uppercaseAll = "All"
+    val all = setOf(uppercaseAll, lowercaseAll)
     const val NO_ID = -1
 
     const val english = "English"

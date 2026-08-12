@@ -19,6 +19,7 @@ import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
 import com.unciv.ui.screens.diplomacyscreen.LeaderIntroTable
 import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread
+import com.unciv.view.ForeignCivView
 import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 import kotlin.math.min
@@ -111,7 +112,7 @@ class TradePopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
         addButton("How about something else...", 'e') {
             val requestingName = tradeRequest.requestingCiv
             close()
-            worldScreen.game.pushScreen(DiplomacyScreen(viewingCiv, requestingCiv, trade))
+            worldScreen.game.pushScreen(DiplomacyScreen(worldScreen.gameView.civView, ForeignCivView(requestingCiv, viewingCiv), trade))
             worldScreen.shouldUpdate = true
             postTradeAction("dismissTrade", requestingName, reloadOnSuccess = false)
         }.row()

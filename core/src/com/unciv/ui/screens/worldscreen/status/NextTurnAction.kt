@@ -27,6 +27,12 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
         override val icon get() = null
         override fun isChoice(worldScreen: WorldScreen) = false
     },
+    RetryUpload("Retry Upload", Color.RED) {
+        override fun isChoice(worldScreen: WorldScreen) =
+            worldScreen.failedUpload
+        override fun action(worldScreen: WorldScreen) =
+            worldScreen.nextTurn()
+    },
     AutoPlay("AutoPlay", Color.WHITE) {
         override fun isChoice(worldScreen: WorldScreen) =
             worldScreen.autoPlay.isAutoPlaying()

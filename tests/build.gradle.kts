@@ -35,6 +35,9 @@ tasks {
         }
 
         jvmArgumentProviders.add(MockitoAgentArgumentProvider(mockitoAgent))
+
+        // Forward latency-test save file path to the test JVM
+        System.getProperty("unciv.nextTurnSaveFile")?.let { systemProperty("unciv.nextTurnSaveFile", it) }
     }
 }
 

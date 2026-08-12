@@ -12,6 +12,10 @@ import yairm210.purity.annotations.Readonly
 class CityConstructionsView(private val cityConstructions: CityConstructions) {
     val constructionQueue: List<String> get() = cityConstructions.constructionQueue
 
+    // Navigation
+    @Readonly fun getCityConstructions(): CityConstructions = cityConstructions
+
+    // Data retrieval
     @Readonly fun currentConstructionName(): String = cityConstructions.currentConstructionName()
     @Readonly fun getConstruction(name: String): IConstruction = cityConstructions.getConstruction(name)
     @Readonly fun isFirstConstructionOfItsKind(index: Int, name: String): Boolean = cityConstructions.isFirstConstructionOfItsKind(index, name)
@@ -40,10 +44,9 @@ class CityConstructionsView(private val cityConstructions: CityConstructions) {
     @Readonly fun isConstructionPurchaseBlockedByUnit(construction: INonPerpetualConstruction): Boolean =
         cityConstructions.isConstructionPurchaseBlockedByUnit(construction)
 
+    // Actions
     fun purchaseConstruction(construction: INonPerpetualConstruction, queuePosition: Int, automatic: Boolean, stat: Stat, tile: Tile?): Boolean =
         cityConstructions.purchaseConstruction(construction, queuePosition, automatic, stat, tile)
     // I'm not convinced this is required, I think the usage should move to the logic rather than the view
     fun chooseNextConstruction() = cityConstructions.chooseNextConstruction()
-
-    fun getCityConstructions(): CityConstructions = cityConstructions
 }

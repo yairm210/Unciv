@@ -10,6 +10,10 @@ open class ForeignMapUnitView(internal open val unit: MapUnit, internal open val
     val civName: String get() = unit.civ.civName
     val health: Int get() = unit.health
 
-    @Readonly fun civ(): ForeignCivView = ForeignCivView(unit.civ, viewer)
+    // Navigation
     @Readonly fun getUnit(): MapUnit = unit
+    @Readonly fun civ(): ForeignCivView = ForeignCivView(unit.civ, viewer)
+
+    // Data retrieval
+    @Readonly fun isAirUnit(): Boolean = unit.baseUnit.isAirUnit()
 }

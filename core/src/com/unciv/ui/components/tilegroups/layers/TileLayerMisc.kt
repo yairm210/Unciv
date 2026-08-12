@@ -212,15 +212,15 @@ class TileLayerImprovement(tileGroup: TileGroup, size: Float) : TileLayer(tileGr
         val showResourcesAndImprovements = if (tileGroup is WorldTileGroup)
             UncivGame.Current.settings.showResourcesAndImprovements else true
 
-        updateImprovementIcon(viewingCiv, showResourcesAndImprovements)
+        updateImprovementIcon(showResourcesAndImprovements)
     }
 
     fun dimImprovement(dim: Boolean) { improvementIcon?.color?.a = if (dim) 0.5f else 1f }
 
-    private fun updateImprovementIcon(viewingCiv: CivView?, show: Boolean) {
+    private fun updateImprovementIcon(show: Boolean) {
         val tileView = tileGroup.tileView
         // If improvement has changed, force new icon next time it is needed
-        val improvementToShow = viewingCiv?.getShownImprovementOn(tileView)
+        val improvementToShow = tileView.getShownImprovement()
         val newImprovementPlusPillagedID = if (improvementToShow==null) null
         else if (tileView.improvementIsPillaged) "$improvementToShow-Pillaged"
         else improvementToShow
@@ -249,7 +249,7 @@ class TileLayerImprovement(tileGroup: TileGroup, size: Float) : TileLayer(tileGr
     }
 
     fun reset() {
-        updateImprovementIcon(null, false)
+        updateImprovementIcon(false)
     }
 }
 

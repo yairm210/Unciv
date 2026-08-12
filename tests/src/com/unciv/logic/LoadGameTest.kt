@@ -5,7 +5,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.files.UncivFiles
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.RedirectOutput
 import com.unciv.testing.RedirectPolicy
 import org.junit.Before
@@ -14,7 +14,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 
-@RunWith(GdxTestRunner::class)
+@RunWith(BaseTestRunner::class)
 class LoadGameTest {
     // Created 2023-08, v4.7.12, vanilla base ruleset, Spectator, 4 AI, 9 CS, startingEra=Information era and advanced to turn 13:
     // Updated 2025-11-23 to remove reliance on backward compatibility
