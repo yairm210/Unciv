@@ -18,6 +18,7 @@ import com.unciv.ui.screens.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.screens.pickerscreens.TechPickerScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
+import com.unciv.view.ForeignCivView
 
 
 /** defines what to do if the user clicks on a notification */
@@ -116,7 +117,7 @@ class DiplomacyAction : NotificationAction {
         if (showTrade && currentCiv.isAtWarWith(otherCiv))
             showTrade = false  // Can't trade right now
 
-        worldScreen.game.pushScreen(DiplomacyScreen(currentCiv, otherCiv, showTrade = showTrade))
+        worldScreen.game.pushScreen(DiplomacyScreen(worldScreen.gameView.getCivView(currentCiv), ForeignCivView(otherCiv, currentCiv), showTrade = showTrade))
     }
 }
 

@@ -228,7 +228,7 @@ class CityButton(val foreignCityView: ForeignCityView, private val tileGroup: Ti
     }
 
     private fun foreignCityInfoPopup() {
-        fun openDiplomacy() = GUI.pushScreen(DiplomacyScreen(viewingPlayer, foreignCityView.owningCiv().getCiv()))
+        fun openDiplomacy() = GUI.pushScreen(DiplomacyScreen(foreignCityView.gameView.civView, foreignCityView.owningCiv()))
 
         val espionageVisible = foreignCityView.isEspionageEnabled()
                 && foreignCityView.spyIsSetUpAtCity(viewingPlayer)

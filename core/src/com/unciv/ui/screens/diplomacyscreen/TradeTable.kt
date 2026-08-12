@@ -2,25 +2,22 @@ package com.unciv.ui.screens.diplomacyscreen
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
-import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.trade.TradeOfferType
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.isEnabled
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.view.CivView
 import com.unciv.view.ForeignCivView
-import com.unciv.view.TradeView
 
 class TradeTable(
-    private val civ: Civilization,
-    private val otherCivilization: Civilization,
+    private val civ: CivView,
+    private val otherCivilization: ForeignCivView,
     diplomacyScreen: DiplomacyScreen
 ): Table(BaseScreen.skin) {
-    internal val tradeView = TradeView(civ, otherCivilization)
-    private val ourCivView = ForeignCivView(civ, civ)
-    private val theirCivView = ForeignCivView(otherCivilization, civ)
-    internal val offerColumnsTable = OfferColumnsTable(tradeView, diplomacyScreen, ourCivView, theirCivView) { onChange() }
+    internal val tradeView = civ.getTradeView(otherCivilization)
+    internal val offerColumnsTable = OfferColumnsTable(tradeView, diplomacyScreen, civ, otherCivilization) { onChange() }
     // This is so that after a trade has been traded, we can switch out the offersToDisplay to start anew - this is the easiest way
     private val offerColumnsTableWrapper = Table()
 
@@ -53,7 +50,7 @@ class TradeTable(
             // If not lets add an extra gold offer to satisfy this.
             // There must be enough gold to add to the offer to satisfy this, otherwise the research agreement button would be disabled
             if (tradeView.ourStagedOffers().any { it.name == Constants.researchAgreement}) {
-                val researchCost = civ.diplomacyFunctions.getResearchAgreementCost(otherCivilization)
+                val researchCost = civ.getResearchAgreementCost(otherCivilization)
                 val currentPlayerOfferedGold = tradeView.ourStagedOffers().firstOrNull { it.type == TradeOfferType.Gold }?.amount ?: 0
                 val otherCivOfferedGold = tradeView.theirStagedOffers().firstOrNull { it.type == TradeOfferType.Gold }?.amount ?: 0
                 val newCurrentPlayerGold = civ.gold + otherCivOfferedGold - researchCost
