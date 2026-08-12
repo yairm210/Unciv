@@ -19,6 +19,7 @@ class CivView(civ: Civilization,
     // Navigation
     @Readonly fun getCity(city: City): CityView = gameView.getCityView(city)
     @Readonly fun cities(): List<CityView> = civ.cities.map { getCity(it) }
+    @Readonly fun getTradeView(otherCiv: ForeignCivView): TradeView = TradeView(civ, otherCiv.getCiv())
 
     // Data retrieval
     val gold: Int get() = civ.gold

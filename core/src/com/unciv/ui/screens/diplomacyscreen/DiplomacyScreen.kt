@@ -96,7 +96,7 @@ class DiplomacyScreen(
             if (showTrade) {
                 val tradeTable = setTrade(selectCiv)
                 if (selectTrade != null)
-                    tradeTable.tradeLogic.currentTrade.set(selectTrade)
+                    tradeTable.tradeView.setStagedTrade(selectTrade)
                 tradeTable.offerColumnsTable.update()
             } else
                 updateRightSide(selectCiv)
