@@ -573,7 +573,7 @@ class Tile : IsPartOfGameInfoSerialization {
         //  see https://yairm210.medium.com/kotlin-when-string-optimization-e15c6eea2734
         when (filter) {
             "Terrain" -> return true
-            "All", "all" -> return true
+            Constants.uppercaseAll, Constants.lowercaseAll -> return true
             "Water" -> return isWater
             "Land" -> return isLand
             Constants.coastal -> return isAdjacentToCoast()
@@ -614,7 +614,7 @@ class Tile : IsPartOfGameInfoSerialization {
 
                 // Now that we know that this resource matches the filter - can the observer see that there's a resource here?
                 if (resourceObject.revealedBy == null) return true  // no need for tech
-                if (observingCiv == null) return false  // can't check tech
+                if (observingCiv == null) return true  // can't check tech, assume visible - consistent with the direct resource-name check above
                 return observingCiv.canSeeResource(resourceObject)
             }
         }
