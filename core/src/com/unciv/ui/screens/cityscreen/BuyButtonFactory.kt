@@ -89,7 +89,7 @@ class BuyButtonFactory(val cityScreen: CityScreen) {
         val cityView = cityScreen.cityView
         val improvement = cityView.getImprovementToCreate(construction)!!
         val tileForImprovement = cityView.constructions.getTileForImprovement(improvement.name)
-        askToBuyConstruction(construction, stat, tileForImprovement)
+        askToBuyConstruction(construction, stat, tileForImprovement?.getTile())
     }
 
     /** Ask whether user wants to buy [construction] for [stat].

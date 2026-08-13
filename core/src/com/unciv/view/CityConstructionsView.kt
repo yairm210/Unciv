@@ -9,7 +9,7 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.stats.Stat
 import yairm210.purity.annotations.Readonly
 
-class CityConstructionsView(private val cityConstructions: CityConstructions) {
+class CityConstructionsView(private val cityConstructions: CityConstructions, private val gameView: GameView) {
     val constructionQueue: List<String> get() = cityConstructions.constructionQueue
 
     // Navigation
@@ -28,8 +28,8 @@ class CityConstructionsView(private val cityConstructions: CityConstructions) {
     
     @Readonly fun canPlaceCreateOneImprovementOn(improvement: TileImprovement, tile: Tile): Boolean =
         cityConstructions.canPlaceCreateOneImprovementOn(improvement, tile)
-    @Readonly fun getTileForImprovement(improvementName: String): Tile? =
-        cityConstructions.getTileForImprovement(improvementName)
+    @Readonly fun getTileForImprovement(improvementName: String): TileView? =
+        cityConstructions.getTileForImprovement(improvementName)?.let { gameView.tileMapView.getTile(it) }
 
     @Readonly fun isQueueFull(): Boolean = cityConstructions.isQueueFull()
     @Readonly fun isBeingConstructedOrEnqueued(name: String): Boolean = cityConstructions.isBeingConstructedOrEnqueued(name)
