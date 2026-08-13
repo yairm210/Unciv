@@ -8,7 +8,7 @@
       
       
       
-        <link rel="canonical" href="https://yairm210.github.io/Unciv/Developers/Simulations/">
+        <link rel="canonical" href="https://yairm210.github.io/Unciv/Developers/Testing-AI-changes/">
       
       
         <link rel="prev" href="../Saved-games-and-transients/">
@@ -1348,10 +1348,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#running-sims" class="md-nav__link">
+  <a href="#running-simulations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Running Sims
+        Running Simulations
       
     </span>
   </a>
@@ -1359,10 +1359,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#configuring-sims" class="md-nav__link">
+  <a href="#configuring-simulations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Configuring Sims
+        Configuring Simulations
       
     </span>
   </a>
@@ -1794,10 +1794,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#running-sims" class="md-nav__link">
+  <a href="#running-simulations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Running Sims
+        Running Simulations
       
     </span>
   </a>
@@ -1805,10 +1805,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#configuring-sims" class="md-nav__link">
+  <a href="#configuring-simulations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Configuring Sims
+        Configuring Simulations
       
     </span>
   </a>
@@ -1852,10 +1852,10 @@
 <p>Set up a custom build configuration.</p>
 <p>Set the working directory to android/assets, just like when running desktop. And use the <code>unciv.desktop.main</code> module.
 <img alt="image" src="../../assets/ConsoleLauncher_Config.png" /></p>
-<h2 id="running-sims">Running Sims</h2>
+<h2 id="running-simulations">Running Simulations</h2>
 <p>Execute the ConsoleLauncher Build Configuration set up above. Results should appear in the Console of the IDE.</p>
-<h2 id="configuring-sims">Configuring Sims</h2>
-<p>Within the <code>desktop\src\ConsoleLauncher.kt</code> file, you can adjust the number of sims to run, which nations to use, etc.</p>
+<h2 id="configuring-simulations">Configuring Simulations</h2>
+<p>Within the <code>desktop\src\ConsoleLauncher.kt</code> file, you can adjust the number of simulations to run, which nations to use, etc.</p>
 <p>Recommend using generic civs with no Uniques. You can see the code add a generic <code>Nation</code> to the <code>ruleset</code> object, and you can key different behavior throughout the code using the Nation Name constant as the control switch.</p>
 <p>You can also adjust the game parameters and map parameters. To get more consistent results, turning off Natural Wonders and Barbarians can help.</p>
 <p>By default the order of players is randomized to make it more fair.</p>
