@@ -476,7 +476,7 @@ class CityScreen(
             if (cityView.constructions.canPlaceCreateOneImprovementOn(improvement, tileInfo)) {
 
                 if (pickTileData.isBuying) {
-                    BuyButtonFactory(this).askToBuyConstruction(pickTileData.building, pickTileData.buyStat, tileInfo.getTile())
+                    BuyButtonFactory(this).askToBuyConstruction(pickTileData.building, pickTileData.buyStat, tileInfo)
                 } else {
                     cityView.tryAddToQueueWithTile(pickTileData.building, tileInfo)
                 }

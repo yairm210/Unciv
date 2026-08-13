@@ -21,7 +21,7 @@ import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.closeAllPopups
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.view.CityView
+import com.unciv.view.TileView
 
 /**
  * This class handles everything related to buying constructions. This includes
@@ -89,7 +89,7 @@ class BuyButtonFactory(val cityScreen: CityScreen) {
         val cityView = cityScreen.cityView
         val improvement = cityView.getImprovementToCreate(construction)!!
         val tileForImprovement = cityView.constructions.getTileForImprovement(improvement.name)
-        askToBuyConstruction(construction, stat, tileForImprovement?.getTile())
+        askToBuyConstruction(construction, stat, tileForImprovement)
     }
 
     /** Ask whether user wants to buy [construction] for [stat].
@@ -100,7 +100,7 @@ class BuyButtonFactory(val cityScreen: CityScreen) {
     fun askToBuyConstruction(
         construction: INonPerpetualConstruction,
         stat: Stat = preferredBuyStat,
-        tile: com.unciv.logic.map.tile.Tile? = null
+        tile: TileView? = null
     ) {
         if (!isConstructionPurchaseShown(construction, stat)) return
         val cityView = cityScreen.cityView
@@ -115,7 +115,7 @@ class BuyButtonFactory(val cityScreen: CityScreen) {
         construction: INonPerpetualConstruction,
         stat: Stat,
         constructionStatBuyCost: Int,
-        tile: com.unciv.logic.map.tile.Tile?
+        tile: TileView?
     ) : Popup(cityScreen.stage) {
         init {
             val cityView = cityScreen.cityView
@@ -161,11 +161,11 @@ class BuyButtonFactory(val cityScreen: CityScreen) {
     private fun purchaseConstruction(
         construction: INonPerpetualConstruction,
         stat: Stat = Stat.Gold,
-        tile: com.unciv.logic.map.tile.Tile? = null
+        tile: TileView? = null
     ) {
         SoundPlayer.play(stat.purchaseSound)
         val cityView = cityScreen.cityView
-        if (!cityView.constructions.purchaseConstruction(construction, cityScreen.selectedQueueEntry, false, stat, tile?.let { cityView.tileView(it) })) {
+        if (!cityView.constructions.purchaseConstruction(construction, cityScreen.selectedQueueEntry, false, stat, tile)) {
             Popup(cityScreen).apply {
                 add("No space available to place [${construction.name}] near [${cityView.name}]".tr()).row()
                 addCloseButton()
