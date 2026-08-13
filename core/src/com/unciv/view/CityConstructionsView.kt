@@ -1,7 +1,6 @@
 package com.unciv.view
 
 import com.unciv.logic.city.CityConstructions
-import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.IConstruction
 import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.RejectionReason
@@ -26,8 +25,8 @@ class CityConstructionsView(private val cityConstructions: CityConstructions, pr
     @Readonly fun getRejectionReasons(construction: INonPerpetualConstruction): Sequence<RejectionReason> = construction.getRejectionReasons(cityConstructions)
     @Readonly fun isBuildable(construction: IConstruction): Boolean = construction.isBuildable(cityConstructions)
     
-    @Readonly fun canPlaceCreateOneImprovementOn(improvement: TileImprovement, tile: Tile): Boolean =
-        cityConstructions.canPlaceCreateOneImprovementOn(improvement, tile)
+    @Readonly fun canPlaceCreateOneImprovementOn(improvement: TileImprovement, tileView: TileView): Boolean =
+        cityConstructions.canPlaceCreateOneImprovementOn(improvement, tileView.getTile())
     @Readonly fun getTileForImprovement(improvementName: String): TileView? =
         cityConstructions.getTileForImprovement(improvementName)?.let { gameView.tileMapView.getTile(it) }
 
@@ -45,8 +44,8 @@ class CityConstructionsView(private val cityConstructions: CityConstructions, pr
         cityConstructions.isConstructionPurchaseBlockedByUnit(construction)
 
     // Actions
-    fun purchaseConstruction(construction: INonPerpetualConstruction, queuePosition: Int, automatic: Boolean, stat: Stat, tile: Tile?): Boolean =
-        cityConstructions.purchaseConstruction(construction, queuePosition, automatic, stat, tile)
+    fun purchaseConstruction(construction: INonPerpetualConstruction, queuePosition: Int, automatic: Boolean, stat: Stat, tileView: TileView?): Boolean =
+        cityConstructions.purchaseConstruction(construction, queuePosition, automatic, stat, tileView?.getTile())
     // I'm not convinced this is required, I think the usage should move to the logic rather than the view
     fun chooseNextConstruction() = cityConstructions.chooseNextConstruction()
 }

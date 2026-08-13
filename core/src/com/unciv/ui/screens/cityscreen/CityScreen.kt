@@ -260,7 +260,7 @@ class CityScreen(
             val improvementToPlace = pickTileData!!.improvement
             return when {
                 tile.isMarkedForCreatesOneImprovement() -> Color.BROWN to 0.7f
-                !cityView.constructions.canPlaceCreateOneImprovementOn(improvementToPlace, tile) -> Color.RED to 0.4f
+                !cityView.constructions.canPlaceCreateOneImprovementOn(improvementToPlace, tileView) -> Color.RED to 0.4f
                 isExistingImprovementValuable(tileView) -> Color.ORANGE to 0.5f
                 tile.improvement != null -> Color.YELLOW to 0.6f
                 tileView.turnsToImprovement > 0 -> Color.YELLOW to 0.6f
@@ -473,7 +473,7 @@ class CityScreen(
             val pickTileData = this.pickTileData!!
             this.pickTileData = null
             val improvement = pickTileData.improvement
-            if (cityView.constructions.canPlaceCreateOneImprovementOn(improvement, tileInfo.getTile())) {
+            if (cityView.constructions.canPlaceCreateOneImprovementOn(improvement, tileInfo)) {
 
                 if (pickTileData.isBuying) {
                     BuyButtonFactory(this).askToBuyConstruction(pickTileData.building, pickTileData.buyStat, tileInfo.getTile())

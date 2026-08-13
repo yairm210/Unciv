@@ -165,7 +165,7 @@ class BuyButtonFactory(val cityScreen: CityScreen) {
     ) {
         SoundPlayer.play(stat.purchaseSound)
         val cityView = cityScreen.cityView
-        if (!cityView.constructions.purchaseConstruction(construction, cityScreen.selectedQueueEntry, false, stat, tile)) {
+        if (!cityView.constructions.purchaseConstruction(construction, cityScreen.selectedQueueEntry, false, stat, tile?.let { cityView.tileView(it) })) {
             Popup(cityScreen).apply {
                 add("No space available to place [${construction.name}] near [${cityView.name}]".tr()).row()
                 addCloseButton()
