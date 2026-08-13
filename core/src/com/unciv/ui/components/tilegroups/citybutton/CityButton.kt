@@ -242,7 +242,7 @@ class CityButton(val foreignCityView: ForeignCityView, private val tileGroup: Ti
             if (foreignCityView.isReligionEnabled())
                 add(CityReligionInfoTable(foreignCityView.getReligionManager(), true)).colspan(3).row()
             addOKButton("Diplomacy") { openDiplomacy() }
-            if (espionageVisible) addButton("View") { GUI.pushScreen(CityScreen(GUI.getWorldScreen().gameView.getCityView(foreignCityView.getCity()))) }
+            if (espionageVisible) addButton("View") { GUI.pushScreen(CityScreen(GUI.getWorldScreen().selectedGameView.getCityView(foreignCityView.getCity()))) }
             add().expandX()
             addCloseButton {
                 GUI.getWorldScreen().run { nextTurnButton.update() }

@@ -348,7 +348,7 @@ class GlobalPoliticsOverviewTable(
         table.touchable = Touchable.enabled
         table.onClick {
             if (civInfo.isDefeated() || viewingPlayer.isSpectator() || civInfo == viewingPlayer) return@onClick
-            UncivGame.Current.pushScreen(DiplomacyScreen(GUI.getWorldScreen().gameView.getCivView(viewingPlayer), ForeignCivView(civInfo, viewingPlayer)))
+            UncivGame.Current.pushScreen(DiplomacyScreen(GUI.getWorldScreen().selectedGameView.getCivView(viewingPlayer), ForeignCivView(civInfo, viewingPlayer)))
         }
         return table
     }

@@ -26,7 +26,7 @@ class CityPresenter(private val unitTable: UnitTable, private val unitPresenter:
             }
         }
         if (city === selectedCity?.getCity()) return false
-        selectedCity = unitTable.worldScreen.gameView.getForeignCityView(city)
+        selectedCity = unitTable.worldScreen.selectedGameView.getForeignCityView(city)
         return true
     }
 
@@ -43,7 +43,7 @@ class CityPresenter(private val unitTable: UnitTable, private val unitPresenter:
                 if (!worldScreen.canChangeState) return@onClick
                 CityRenamePopup(
                     screen = worldScreen,
-                    cityView = worldScreen.gameView.getCityView(city.getCity()),
+                    cityView = worldScreen.selectedGameView.getCityView(city.getCity()),
                     actionOnClose = {
                         unitNameLabel.setText(city.name.tr())
                         worldScreen.shouldUpdate = true
