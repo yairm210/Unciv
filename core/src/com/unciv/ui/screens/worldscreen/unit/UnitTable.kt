@@ -250,12 +250,11 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
         }
 
 
-        val isCitySelected = selectedTile.isCityCenter()
-            && (selectedTile.getOwner() == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())
-            && !selectedUnitIsConnectingRoad
+        val city = selectedTile.getCity()
         when {
             forceSelectUnit != null -> selectUnit(forceSelectUnit)
-            isCitySelected -> citySelected(selectedTile.getCity()!!)
+            city != null && worldScreen.selectedGameView.getForeignCityView(city).canSelectOnMap()
+                    && !selectedUnitIsConnectingRoad -> citySelected(city)
             nextUnit != null -> selectUnit(nextUnit, Gdx.input.isShiftKeyPressed())
             // toggle selection if same unit is clicked again by player
             selectedTile == previouslySelectedUnit?.currentTile -> {
