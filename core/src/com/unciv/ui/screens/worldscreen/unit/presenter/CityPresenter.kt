@@ -41,9 +41,10 @@ class CityPresenter(private val unitTable: UnitTable, private val unitPresenter:
             unitNameLabel.clearListeners()
             unitNameLabel.onClick {
                 if (!worldScreen.canChangeState) return@onClick
+                val cityView = city.tryGetCityView() ?: return@onClick
                 CityRenamePopup(
                     screen = worldScreen,
-                    cityView = worldScreen.gameView.getCityView(city.getCity()),
+                    cityView = cityView,
                     actionOnClose = {
                         unitNameLabel.setText(city.name.tr())
                         worldScreen.shouldUpdate = true

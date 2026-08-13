@@ -281,8 +281,10 @@ class WorldScreen(
         globalShortcuts.add(KeyboardBinding.QuickLoad) { QuickSave.load(this) }
         globalShortcuts.add(KeyboardBinding.ViewCapitalCity) {
             val capital = gameInfo.getCurrentPlayerCivilization().getCapital()
-            if (capital != null && !mapHolder.setCenterPosition(capital.location.toHexCoord()))
-                game.pushScreen(CityScreen(gameView.getCityView(capital)))
+            if (capital != null && !mapHolder.setCenterPosition(capital.location.toHexCoord())) {
+                val cityView = gameView.tryGetCityView(capital) ?: return@add
+                game.pushScreen(CityScreen(cityView))
+            }
         }
         globalShortcuts.add(KeyboardBinding.Options) { // Game Options
             openOptionsPopup { nextTurnButton.update() }
