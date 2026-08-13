@@ -1,3 +1,57 @@
+## 4.21.8
+
+Resolved  - for good this time, hopefully
+
+Hopefully resolved OOM errors on crash screen by not displaying the saved game data
+
+Resolved ANRs from tech picker screen
+
+Resolved ANRs from notification overview screen
+
+Resolved  - When checking tile resource filters in dev console, for resources with revealing tech, assume visible
+
+View implementation - Trade UI step 2 + DiplomacyScreen parameters, gosh we have a lot of ways of getting there - see 
+
+View implementation - Trade UI step 1 - see 
+
+AI "trade for war declaration" reworked to disallow "kamikaze wars" for lots of gold.
+
+Nicer trade overview - clear nation icon, text alignment, no "turns" on open borders
+
+View implementation - Trade API - see 
+
+Resolved  - Add Evasion to stealth bomber so new players / AI don't waste promotions on it
+
+View implementation - Separate view navigation from data gathering functions - see 
+
+View implementation - Unify "can we see city internals" to a single function, ForeignCityView.tryGetCityView - see 
+
+View implementation - CityView gets GameView instead of CivView, since cities are visible from other civs as well - see 
+
+ci: Revert temp "changes not sent to review", hopefully we won't need it again now that 4.21.7-patch2 was accepted
+
+4.21.7-patch2
+
+TEMP Don't send for review to allow upload to google play until we solve this debacle 
+
+4.21.7-patch1
+
+Add kotlin.srcDirs so AGP built-in Kotlin compiles android/src - expect success
+
+Apparently that's the wrong fix, it's expressly disallowed in the new gradle version
+
+Add kotlin-android plugin - expect success in android build
+
+Add check for missing launcher in android - expect failure
+
+Document license of logo files in extraImages - By Wuzzy2
+
+By unciv-loof:
+- Non vanilla ranking types 
+- Hide average turn time until a full turn has been played 
+
+Max players with spectator - By SomeTroglodyte
+
 ## 4.21.7
 
 CPU and memory performance improvements 
