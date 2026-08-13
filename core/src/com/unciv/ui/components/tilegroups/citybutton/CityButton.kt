@@ -21,7 +21,6 @@ import com.unciv.ui.screens.cityscreen.CityReligionInfoTable
 import com.unciv.ui.screens.cityscreen.CityScreen
 import com.unciv.view.ForeignCityView
 import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
-import yairm210.purity.annotations.Readonly
 
 /**
  *  The city "button" with decorations on the WorldScreen map.
@@ -55,8 +54,6 @@ class CityButton(val foreignCityView: ForeignCityView, private val tileGroup: Ti
     private var isViewable = true
 
     val viewingPlayer = foreignCityView.getViewingCiv()
-
-    @Readonly private fun belongsToViewingCiv() = foreignCityView.belongsTo(viewingPlayer)
 
     fun update(isCityViewable: Boolean) {
         val selectedPlayer = GUI.getSelectedPlayer()
@@ -173,8 +170,7 @@ class CityButton(val foreignCityView: ForeignCityView, private val tileGroup: Ti
         touchable = Touchable.childrenOnly
 
         fun enterCityOrInfoPopup() {
-            // second tap on the button will go to the city screen
-            // if this city belongs to you and you are not iterating though the air units
+            // second tap opens CityScreen when we can see internals (own / spy / spectator)
             val cityView = foreignCityView.tryGetCityView()
             val isIteratingUnits = tileGroup.tileView.getVisibleUnits().none { it.getUnit() == unitTable.selectedUnit }
             if (cityView != null && isIteratingUnits)
@@ -190,7 +186,8 @@ class CityButton(val foreignCityView: ForeignCityView, private val tileGroup: Ti
                 enterCityOrInfoPopup()
             } else {
                 moveButtonDown()
-                if ((unitTable.selectedUnit == null || !unitTable.selectedUnit!!.hasMovement()) && belongsToViewingCiv())
+                if ((unitTable.selectedUnit == null || !unitTable.selectedUnit!!.hasMovement())
+                        && foreignCityView.canSelectOnMap())
                     unitTable.citySelected(foreignCityView.getCity())
             }
         }
@@ -242,7 +239,10 @@ class CityButton(val foreignCityView: ForeignCityView, private val tileGroup: Ti
             if (foreignCityView.isReligionEnabled())
                 add(CityReligionInfoTable(foreignCityView.getReligionManager(), true)).colspan(3).row()
             addOKButton("Diplomacy") { openDiplomacy() }
-            if (espionageVisible) addButton("View") { GUI.pushScreen(CityScreen(GUI.getWorldScreen().selectedGameView.getCityView(foreignCityView.getCity()))) }
+            if (espionageVisible) addButton("View") {
+                val cityView = foreignCityView.tryGetCityView() ?: return@addButton
+                GUI.pushScreen(CityScreen(cityView))
+            }
             add().expandX()
             addCloseButton {
                 GUI.getWorldScreen().run { nextTurnButton.update() }

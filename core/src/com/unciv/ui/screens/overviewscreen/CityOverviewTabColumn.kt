@@ -47,7 +47,8 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
         override fun getEntryActor(item: City, iconSize: Float, actionContext: EmpireOverviewScreen) =
                 item.name.toTextButton(hideIcons = true)
                 .onClick {
-                    actionContext.game.pushScreen(CityScreen(GUI.getWorldScreen().selectedGameView.getCityView(item)))
+                    val cityView = GUI.getWorldScreen().selectedGameView.tryGetCityView(item) ?: return@onClick
+                    actionContext.game.pushScreen(CityScreen(cityView))
                 }
         override fun getTotalsActor(items: Iterable<City>) = "{Total} ${items.count()}".toLabel()
     },

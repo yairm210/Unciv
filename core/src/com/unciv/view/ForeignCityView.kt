@@ -27,13 +27,19 @@ open class ForeignCityView(internal open val city: City,
     @Readonly fun getViewingCiv(): Civilization = viewer
     /** The owning civ of this city, as visible from [viewer]'s perspective. For the viewing player's full CivView, use [CityView.viewingCiv]. */
     @Readonly open fun owningCiv(): ForeignCivView = ForeignCivView(city.civ, viewer, spectatorMode)
-    /** Get from a foreign view to an inner view */
+    /** Own / spy / spectator (or debug reveal) — required to construct [CityView]. */
+    @Readonly fun canSeeInternals(): Boolean =
+        viewer.isSpectator() // not posing, actual spectator
+            || city.civ == viewer
+            || spyIsSetUpAtCity(viewer)
+            || DebugUtils.VISIBLE_MAP
+
+    /** Own cities, or any city when spectating — WorldScreen unit-table selection (not spy-view). */
+    @Readonly fun canSelectOnMap(): Boolean = city.civ === viewer || viewer.isSpectator()
+
+    /** Get from a foreign view to an inner view, or null if [canSeeInternals] is false. */
     @Readonly fun tryGetCityView(): CityView? {
-        val canSeeCityData = viewer.isSpectator() // not posing, actual spectator
-                || city.civ == viewer
-                || spyIsSetUpAtCity(viewer)
-                || DebugUtils.VISIBLE_MAP
-        if (!canSeeCityData) return null
+        if (!canSeeInternals()) return null
         return gameView.getCityView(city)
     }
 
