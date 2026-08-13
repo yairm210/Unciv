@@ -97,16 +97,9 @@ internal class ConsoleCityCommands : ConsoleCommandNode {
             DevConsoleResponse.OK
         },
 
-        "makepuppet" to ConsoleAction("city makepuppet") { console, _ ->
+        "setpuppet" to ConsoleAction("city setpuppet <boolean>") { console, params ->
             val city = console.getSelectedCity()
-            city.isPuppet = true
-            // The city could be producing something that puppets shouldn't, like units
-            city.cityConstructions.removeAll()
-            DevConsoleResponse.OK
-        },
-        "unpuppet" to ConsoleAction("city unpuppet") { console, _ ->
-            val city = console.getSelectedCity()
-            city.isPuppet = false
+            city.isPuppet = params.getOrNull(0)?.toBoolean() ?: true
             DevConsoleResponse.OK
         },
     )
