@@ -21,7 +21,7 @@ import com.unciv.utils.DebugUtils
 import com.unciv.view.CivView
 
 class TileInfoTable(private val worldScreen: WorldScreen) : Table(BaseScreen.skin) {
-    var civView: CivView = worldScreen.gameView.civView
+    var civView: CivView = worldScreen.selectedGameView.civView
 
     init {
         background = BaseScreen.skinStrings.getUiBackground(

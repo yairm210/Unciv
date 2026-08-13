@@ -56,7 +56,7 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
             getCityWithNoProductionSet(worldScreen) != null
         override fun action(worldScreen: WorldScreen) {
             val city = getCityWithNoProductionSet(worldScreen) ?: return
-            worldScreen.game.pushScreen(CityScreen(worldScreen.gameView.getCityView(city)))
+            worldScreen.game.pushScreen(CityScreen(worldScreen.selectedGameView.getCityView(city)))
         }
     },
     PickTech("Pick a tech", Color.SKY) {

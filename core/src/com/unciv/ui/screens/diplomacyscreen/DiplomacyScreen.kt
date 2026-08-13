@@ -108,7 +108,7 @@ class DiplomacyScreen(
         }
     }
 
-    override fun getCivilopediaRuleset() = viewingCiv.gameInfo.ruleset
+    override fun getCivilopediaRuleset() = viewingCivView.ruleset
 
     private inner class ScrollPaneWithMinSize : ScrollPane(leftSideTable) {
         // On cramped screens 20% default splitAmount can make the left side smaller than a nation icon.

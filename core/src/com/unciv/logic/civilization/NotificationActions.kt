@@ -73,7 +73,7 @@ class CityAction(private val city: HexCoord = HexCoord.Zero) : NotificationActio
         val cityObject = worldScreen.mapHolder.tileMap[city].getCity()
             ?: return
         if (cityObject.civ == worldScreen.viewingCiv)
-            worldScreen.game.pushScreen(CityScreen(worldScreen.gameView.getCityView(cityObject)))
+            worldScreen.game.pushScreen(CityScreen(worldScreen.selectedGameView.getCityView(cityObject)))
     }
     companion object {
         fun withLocation(city: City) = listOf(LocationAction(city.location), CityAction(city.location))
@@ -117,7 +117,7 @@ class DiplomacyAction : NotificationAction {
         if (showTrade && currentCiv.isAtWarWith(otherCiv))
             showTrade = false  // Can't trade right now
 
-        worldScreen.game.pushScreen(DiplomacyScreen(worldScreen.gameView.getCivView(currentCiv), ForeignCivView(otherCiv, currentCiv), showTrade = showTrade))
+        worldScreen.game.pushScreen(DiplomacyScreen(worldScreen.selectedGameView.getCivView(currentCiv), ForeignCivView(otherCiv, currentCiv), showTrade = showTrade))
     }
 }
 
