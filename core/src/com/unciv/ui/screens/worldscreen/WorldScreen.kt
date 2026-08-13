@@ -259,7 +259,7 @@ class WorldScreen(
     }
 
     fun openEmpireOverview(category: EmpireOverviewCategories? = null, selection: String = "") {
-        game.pushScreen(EmpireOverviewScreen(selectedCiv, category, selection))
+        game.pushScreen(EmpireOverviewScreen(selectedGameView.civView, category, selection))
     }
 
     fun openNewGameScreen() {
