@@ -3,7 +3,6 @@ package com.unciv.ui.screens.overviewscreen
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.GUI
-import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.Notification
 import com.unciv.ui.components.extensions.getCloseButton
 import com.unciv.ui.components.widgets.TabbedPager
@@ -11,9 +10,10 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories.EmpireOverviewTabState
+import com.unciv.view.CivView
 
 class EmpireOverviewScreen(
-    private var viewingPlayer: Civilization,
+    private var viewingPlayer: CivView,
     defaultCategory: EmpireOverviewCategories? = null,
     selection: String = ""
 ) : BaseScreen(), RecreateOnResize {
@@ -31,7 +31,7 @@ class EmpireOverviewScreen(
         super.dispose()
     }
 
-    override fun getCivilopediaRuleset() = viewingPlayer.gameInfo.ruleset
+    override fun getCivilopediaRuleset() = viewingPlayer.ruleset
 
     init {
         val selectCategory = defaultCategory ?: persistState.last

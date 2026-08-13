@@ -84,9 +84,9 @@ class TileLayerYield(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, s
         y.run {
             // Update YieldGroup Icon
             if (tileGroup is CityTileGroup)
-                setStats(tile.stats.getTileStats(tileGroup.cityView.getCity(), viewingCiv?.getCiv()))
+                setStats(tileGroup.tileView.getTileStats(viewingCiv, tileGroup.cityView))
             else
-                setStats(tile.stats.getTileStats(viewingCiv?.getCiv()))
+                setStats(tileGroup.tileView.getTileStats(viewingCiv))
             toFront()
             // Centre horizontally; recalculate Y now that height is known after setStats
             x = tileX + (tileGroup.width - width) / 2
@@ -119,19 +119,15 @@ class TileLayerResource(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
     private var resourceIcon: Actor? = null
     private var resourceProvidedIcon: Actor? = null
 
-    private fun updateResourceIcon(viewingCiv: CivView?, show: Boolean) {
+    private fun updateResourceIcon(viewingCiv: CivView?, showResourceIcon: Boolean) {
+        val tileView = tileGroup.tileView
         // This could change on any turn, since resources need certain techs to reveal them
-        val effectiveVisible = when {
-            tileGroup.isForceVisible -> show
-            show && viewingCiv == null -> true
-            show && viewingCiv?.canSeeResource(tile.tileResource) == true -> true
-            else -> false
-        }
+        val effectiveVisible = showResourceIcon && (tileGroup.isForceVisible || tileView.getViewableResource(viewingCiv) != null)
 
         // If resource has changed (e.g. tech researched) - force new icon next time it's needed
-        if (resourceName != tile.resource || resourceAmount != tile.resourceAmount) {
-            resourceName = tile.resource
-            resourceAmount = tile.resourceAmount
+        if (resourceName != tileView.resource || resourceAmount != tileView.resourceAmount) {
+            resourceName = tileView.resource
+            resourceAmount = tileView.resourceAmount
             resourceIcon?.let { removeOwnedActor(it) }
             resourceIcon = null
         }
@@ -154,8 +150,8 @@ class TileLayerResource(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
             dimResource(!isViewable)
 
             val shouldResourceProvidedBeDisplayed =
-                viewingCiv != null && tile.getOwner() === viewingCiv.getCiv()
-                        && tile.providesResources(viewingCiv.getCiv())
+                viewingCiv != null && tileView.getOwner()?.civName == viewingCiv.civName
+                        && tileView.providesResources(viewingCiv)
             if (shouldResourceProvidedBeDisplayed && resourceProvidedIcon == null){
                 val group = NonTransformGroup()
                 group.setSize(12f,12f)
@@ -216,16 +212,17 @@ class TileLayerImprovement(tileGroup: TileGroup, size: Float) : TileLayer(tileGr
         val showResourcesAndImprovements = if (tileGroup is WorldTileGroup)
             UncivGame.Current.settings.showResourcesAndImprovements else true
 
-        updateImprovementIcon(viewingCiv, showResourcesAndImprovements)
+        updateImprovementIcon(showResourcesAndImprovements)
     }
 
     fun dimImprovement(dim: Boolean) { improvementIcon?.color?.a = if (dim) 0.5f else 1f }
 
-    private fun updateImprovementIcon(viewingCiv: CivView?, show: Boolean) {
+    private fun updateImprovementIcon(show: Boolean) {
+        val tileView = tileGroup.tileView
         // If improvement has changed, force new icon next time it is needed
-        val improvementToShow = viewingCiv?.getShownImprovementOn(tile)
+        val improvementToShow = tileView.getShownImprovement()
         val newImprovementPlusPillagedID = if (improvementToShow==null) null
-        else if (tile.improvementIsPillaged) "$improvementToShow-Pillaged"
+        else if (tileView.improvementIsPillaged) "$improvementToShow-Pillaged"
         else improvementToShow
 
         if (improvementPlusPillagedID != newImprovementPlusPillagedID) {
@@ -236,7 +233,7 @@ class TileLayerImprovement(tileGroup: TileGroup, size: Float) : TileLayer(tileGr
 
         // Get new icon when needed
         if (improvementPlusPillagedID != null && show && improvementIcon == null) {
-            val icon = ImageGetter.getImprovementPortrait(improvementToShow!!, isPillaged = tile.improvementIsPillaged)
+            val icon = ImageGetter.getImprovementPortrait(improvementToShow!!, isPillaged = tileView.improvementIsPillaged)
             // Centre on tile, offset left and down
             icon.x = tileX + (tileGroup.width - icon.width) / 2 - 22f
             icon.y = tileY + (tileGroup.height - icon.height) / 2 - 12f
@@ -252,7 +249,7 @@ class TileLayerImprovement(tileGroup: TileGroup, size: Float) : TileLayer(tileGr
     }
 
     fun reset() {
-        updateImprovementIcon(null, false)
+        updateImprovementIcon(false)
     }
 }
 
@@ -335,7 +332,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
             return
 
         if (DebugUtils.SHOW_TILE_COORDS) {
-            val label = this.tile.position.toVector2().toPrettyString()
+            val label = tileGroup.tileView.position().toPrettyString()
             val tileW = tileGroup.width
             val tileH = tileGroup.height
             startingLocationIcons.add(label.toLabel(ImageGetter.CHARCOAL.cpy().apply { a = 0.7f }, 14).apply {

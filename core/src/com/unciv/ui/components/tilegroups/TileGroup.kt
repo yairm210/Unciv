@@ -3,6 +3,7 @@ package com.unciv.ui.components.tilegroups
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.unciv.view.CivView
+import com.unciv.view.TileMapView
 import com.unciv.view.TileView
 import com.unciv.logic.map.tile.Tile
 import com.unciv.ui.components.tilegroups.layers.*
@@ -11,10 +12,16 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 open class TileGroup(
-    var tile: Tile,
+    tileView: TileView,
     val tileSetStrings: TileSetStrings,
     groupSize: Float = TileGroupMap.groupSize + 4
 ) : Group() {
+
+    /** A var because if we're spectator, the viewing civ can change as we select different civs to view as */
+    var tileView: TileView = tileView
+        private set
+
+    val tile: Tile get() = tileView.getTile()
     /*
         Layers (reordered in TileGroupMap):
         1) Terrain
@@ -37,9 +44,6 @@ open class TileGroup(
 
     var isForceVisible = DebugUtils.VISIBLE_MAP
     var isForMapEditorIcon = false
-
-    var tileView: TileView? = null
-        private set
 
     @Suppress("LeakingThis") val layerTerrain = TileLayerTerrain(this, groupSize)
     @Suppress("LeakingThis") val layerFeatures = TileLayerFeatures(this, groupSize)
@@ -75,10 +79,8 @@ open class TileGroup(
         layerTerrain.update(null)
     }
 
-    open fun clone() = TileGroup(tile, tileSetStrings)
-
     fun isViewable(viewingCiv: CivView) = isForceVisible
-            || viewingCiv.canSeeTile(tileView ?: TileView(tile, viewingCiv.getCiv()))
+            || viewingCiv.canSeeTile(tileView)
             || viewingCiv.isSpectator()
 
     private fun reset() {
@@ -99,11 +101,12 @@ open class TileGroup(
 
     open fun update(viewingCiv: CivView? = null) {
         if (viewingCiv == null) {
-            tileView = null
+            if (tileView.getViewer() != null)
+                tileView = TileMapView(tile.tileMap, null).getTile(tile)
         } else {
-            val civ = viewingCiv.getCiv()
-            if (tileView?.getTile() !== tile || tileView?.getViewer() !== civ)
-                tileView = TileView(tile, civ)
+            val newTileMapView = viewingCiv.gameView.tileMapView
+            if (tileView.tileMapView !== newTileMapView)
+                tileView = newTileMapView.getTile(tile)
         }
         layerMisc.removeHexOutline()
         layerMisc.hideTerrainOverlay()
@@ -112,8 +115,8 @@ open class TileGroup(
         layerOverlay.hideGoodCityLocationIndicator()
 
         // Do not update layers if tile is not explored by viewing player
-        if (viewingCiv != null && !(isForceVisible || viewingCiv.hasExplored(tileView!!))) {
-            if (tileView!!.neighbors.none { viewingCiv.hasExplored(it) }) {
+        if (viewingCiv != null && !(isForceVisible || viewingCiv.hasExplored(tileView))) {
+            if (tileView.getVisibleNeighbors().none()) {
                 // No explored neighbors - hide all layers
                 setAllLayersVisible(false)
             } else {
@@ -127,14 +130,7 @@ open class TileGroup(
 
         setAllLayersVisible(true)
 
-        removeMissingModReferences()
-
         for (layer in allLayers) layer.update(viewingCiv)
-    }
-
-    private fun removeMissingModReferences() {
-        for (unit in tile.getUnits())
-            if (!tile.ruleset.nations.containsKey(unit.owner)) unit.removeFromTile()
     }
 
     override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }

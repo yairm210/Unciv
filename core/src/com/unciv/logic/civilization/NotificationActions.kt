@@ -6,7 +6,6 @@ import com.badlogic.gdx.utils.JsonValue
 import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.City
-import com.unciv.view.CityView
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.ui.components.MayaCalendar
@@ -19,6 +18,7 @@ import com.unciv.ui.screens.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.screens.pickerscreens.TechPickerScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
+import com.unciv.view.ForeignCivView
 
 
 /** defines what to do if the user clicks on a notification */
@@ -73,7 +73,7 @@ class CityAction(private val city: HexCoord = HexCoord.Zero) : NotificationActio
         val cityObject = worldScreen.mapHolder.tileMap[city].getCity()
             ?: return
         if (cityObject.civ == worldScreen.viewingCiv)
-            worldScreen.game.pushScreen(CityScreen(CityView(cityObject, worldScreen.selectedCiv)))
+            worldScreen.game.pushScreen(CityScreen(worldScreen.selectedGameView.getCityView(cityObject)))
     }
     companion object {
         fun withLocation(city: City) = listOf(LocationAction(city.location), CityAction(city.location))
@@ -117,7 +117,7 @@ class DiplomacyAction : NotificationAction {
         if (showTrade && currentCiv.isAtWarWith(otherCiv))
             showTrade = false  // Can't trade right now
 
-        worldScreen.game.pushScreen(DiplomacyScreen(currentCiv, otherCiv, showTrade = showTrade))
+        worldScreen.game.pushScreen(DiplomacyScreen(worldScreen.selectedGameView.getCivView(currentCiv), ForeignCivView(otherCiv, currentCiv), showTrade = showTrade))
     }
 }
 

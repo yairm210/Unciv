@@ -164,7 +164,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
                     if (convertToTerrain.hasUnique(UniqueType.FreshWater) && tile.isAdjacentToCoast()) continue
                     if (convertToTerrain.type == TerrainType.TerrainFeature && tile.baseTerrain !in convertToTerrain.occursOn) continue
                     if (convertToTerrain.hasUnique(UniqueType.CoastalWater))
-                        removeLakesNextToFutureCoast(location, tile)
+                        removeLakesNextToFutureCoast(tile)
                     if (convertToTerrain.type.isBaseTerrain) {
                         clearTile(tile)
                         tile.setBaseTerrain(convertToTerrain)
@@ -226,7 +226,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
         private fun Unique.getIntParam(index: Int) = params[index].toInt()
 
         // location is being converted to a NW, tile is a neighbor to be converted to coast: Ensure that coast won't show invalid rivers or coast touching lakes
-        private fun removeLakesNextToFutureCoast(location: Tile, tile: Tile) {
+        private fun removeLakesNextToFutureCoast(tile: Tile) {
             for (neighbor in tile.neighbors) {
                 // This is so we don't have this tile turn into Coast, and then it's touching a Lake tile.
                 // We just turn the lake tiles into this kind of tile.
@@ -236,7 +236,9 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
                     neighbor.setTerrainTransients()
                 }
             }
-            location.setConnectedByRiver(tile, false)
+            for (neighbor in tile.neighbors) {
+                tile.setConnectedByRiver(neighbor, false)
+            }
         }
 
         /** Implements [UniqueParameterType.SimpleTerrain][com.unciv.models.ruleset.unique.UniqueParameterType.SimpleTerrain] */

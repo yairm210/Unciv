@@ -47,6 +47,7 @@ import kotlin.math.roundToInt
 import kotlin.math.sqrt
 import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.civilization.managers.quests.QuestManager
+import kotlin.text.toFloat
 
 enum class Proximity : IsPartOfGameInfoSerialization {
     None, // ie no cities
@@ -136,6 +137,11 @@ class Civilization : IsPartOfGameInfoSerialization {
     var playerId = ""
     /** Used in online multiplayer, if a player exceed this time to complete their turn, others can force them to resign*/
     var playerMinutesBeforeForceResign = 3 * 24 * 60
+    /** Total number of minutes spent on their turn. Recorded at the end of each turn. */
+    var totalTurnTimeSeconds = 0
+    /** To calculate average turn time, we only count turns when controlled by a human. Additionally, offers backward compatibility. */
+    var turnsPlayedAsHuman = 0
+    
     /** The Civ's gold reserves. Public get, private set - please use [addGold] method to modify. */
     var gold = 0
         private set
@@ -300,6 +306,8 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.playerType = playerType
         toReturn.playerId = playerId
         toReturn.playerMinutesBeforeForceResign = playerMinutesBeforeForceResign
+        toReturn.totalTurnTimeSeconds = totalTurnTimeSeconds
+        toReturn.turnsPlayedAsHuman = turnsPlayedAsHuman
         toReturn.civName = civName
         toReturn.civID = civID
         toReturn.tech = tech.clone()
@@ -863,6 +871,9 @@ class Civilization : IsPartOfGameInfoSerialization {
                 RankingType.Happiness -> getHappiness()
                 RankingType.Technologies -> tech.researchedTechnologies.size
                 RankingType.Culture -> policies.adoptedPolicies.count { !Policy.isBranchCompleteByName(it) }
+            
+                // Non vanilla ranking types
+                RankingType.TilesExplored -> gameInfo.tileMap.values.count { it.isExplored(this) }
         }
     }
 
@@ -1295,6 +1306,8 @@ class CivilizationInfoPreview() {
     var playerType = PlayerType.AI
     var playerId = ""
     var playerMinutesBeforeForceResign = 60*24*3
+    var totalTurnTimeSeconds = 0
+    var turnsPlayedAsHuman = 0
     @Readonly fun isPlayerCivilization() = playerType == PlayerType.Human
 
     /**
@@ -1306,6 +1319,8 @@ class CivilizationInfoPreview() {
         playerType = civilization.playerType
         playerId = civilization.playerId
         playerMinutesBeforeForceResign = civilization.playerMinutesBeforeForceResign
+        totalTurnTimeSeconds = civilization.totalTurnTimeSeconds
+        turnsPlayedAsHuman = civilization.turnsPlayedAsHuman
     }
 }
 

@@ -8,7 +8,6 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
-import com.unciv.view.CityView
 import com.unciv.view.GameView
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.civilization.Civilization
@@ -100,13 +99,29 @@ class WorldScreen(
     /** Indicates it's the player's ([viewingCiv]) turn */
     var isPlayersTurn = viewingCiv.isCurrentPlayer()
         internal set     // only this class is allowed to make changes
+    
+    /** Indicates that a game failed to upload, and needs to be uploaded */
+    var failedUpload = false
+        private set
 
     /** Selected civilization, used in spectator and replay mode, equals viewingCiv in ordinary games */
     var selectedCiv = viewingCiv
         internal set
-    var gameView = GameView(gameInfo, selectedCiv)
+    /** The [selectedCiv]'s perspective. For non-spectators this this equals the viewingGameView.
+     *  Only ever differs from [spectatorGameView] for spectators. */
+    var selectedGameView = GameView(gameInfo, selectedCiv, spectatorMode = viewingCiv.isSpectator())
         internal set
 
+    /** The [viewingCiv]'s own perspective.
+     * This should only ever be used A. for spectators B. when forOfWar is false, for specific UI elements */
+    private val spectatorGameView by lazy {
+        if (!viewingCiv.isSpectator()) throw Exception("Managed to disable fog of war without being spectator?!")
+        GameView(gameInfo, viewingCiv, spectatorMode = true)
+    }  
+    fun getGameViewConsideringForOfWar() = if (fogOfWar) selectedGameView else spectatorGameView    
+
+    /** UI toggle only (spectator mode): whether the map/tile panel should show [selectedGameView]'s
+     *  (fogged) vision or [spectatorGameView]'s (the spectator's own, unrestricted) vision. */
     var fogOfWar = true
 
     /** `true` when it's the player's turn unless he is a spectator */
@@ -244,7 +259,7 @@ class WorldScreen(
     }
 
     fun openEmpireOverview(category: EmpireOverviewCategories? = null, selection: String = "") {
-        game.pushScreen(EmpireOverviewScreen(selectedCiv, category, selection))
+        game.pushScreen(EmpireOverviewScreen(selectedGameView.civView, category, selection))
     }
 
     fun openNewGameScreen() {
@@ -278,7 +293,7 @@ class WorldScreen(
         globalShortcuts.add(KeyboardBinding.ViewCapitalCity) {
             val capital = gameInfo.getCurrentPlayerCivilization().getCapital()
             if (capital != null && !mapHolder.setCenterPosition(capital.location.toHexCoord()))
-                game.pushScreen(CityScreen(CityView(capital, selectedCiv)))
+                game.pushScreen(CityScreen(selectedGameView.getCityView(capital)))
         }
         globalShortcuts.add(KeyboardBinding.Options) { // Game Options
             openOptionsPopup { nextTurnButton.update() }
@@ -381,11 +396,9 @@ class WorldScreen(
 
             updateSelectedCiv()
 
-            if (fogOfWar) minimapWrapper.update(selectedCiv)
-            else minimapWrapper.update(viewingCiv)
-
-            if (fogOfWar) bottomTileInfoTable.selectedCiv = selectedCiv
-            else bottomTileInfoTable.selectedCiv = viewingCiv
+            
+            minimapWrapper.update(getGameViewConsideringForOfWar().viewer)
+            bottomTileInfoTable.civView = getGameViewConsideringForOfWar().civView
             bottomTileInfoTable.updateTileTable(mapHolder.selectedTile)
             bottomTileInfoTable.x = stage.width - bottomTileInfoTable.width
             bottomTileInfoTable.y = if (game.settings.showMinimap) minimapWrapper.height + 5f else 0f
@@ -414,8 +427,7 @@ class WorldScreen(
         // it doesn't update the explored tiles of the civ... need to think about that harder
         // it causes a bug when we move a unit to an unexplored tile (for instance a cavalry unit which can move far)
 
-        if (fogOfWar) mapHolder.updateTiles(selectedCiv)
-        else mapHolder.updateTiles(viewingCiv)
+        mapHolder.updateTiles(getGameViewConsideringForOfWar().civView)
 
         topBar.update(selectedCiv)
         if (tutorialTaskTable.isVisible)
@@ -545,7 +557,7 @@ class WorldScreen(
 
     fun setSelectedCiv(civ: Civilization) {
         selectedCiv = civ
-        gameView = GameView(gameInfo, civ)
+        selectedGameView = GameView(gameInfo, civ, viewingCiv.isSpectator())
     }
 
     private fun updateSelectedCiv() {
@@ -656,7 +668,7 @@ class WorldScreen(
                         }
                     }
 
-                    this@WorldScreen.isPlayersTurn = true // Since we couldn't push the new game clone, then it's like we never clicked the "next turn" button
+                    this@WorldScreen.failedUpload = true // Since we couldn't push the new game clone, then we need to try again
                     this@WorldScreen.shouldUpdate = true
                     return@runOnNonDaemonThreadPool
                 }

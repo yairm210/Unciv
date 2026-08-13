@@ -8,7 +8,6 @@ import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.map.tile.Tile
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Building
@@ -42,13 +41,13 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.view.CityView
-import com.unciv.view.CivView
+import com.unciv.view.TileView
 import kotlin.math.max
 
 class CityScreen(
     val cityView: CityView,
     initSelectedConstruction: IConstruction? = null,
-    initSelectedTile: Tile? = null,
+    initSelectedTile: TileView? = null,
     /** City ambience sound player proxies can be passed from one CityScreen instance to the next
      *  to avoid premature stops or rewinds. Only the fresh CityScreen from WorldScreen or Overview
      *  will instantiate a new CityAmbiencePlayer and start playing. */
@@ -62,7 +61,7 @@ class CityScreen(
         const val wltkIconSize = 40f
     }
 
-    private val selectedCiv: Civilization = cityView.getViewer()
+    private val selectedCiv: Civilization = cityView.getViewingCiv()
 
     internal val isSpying = selectedCiv.gameInfo.isEspionageEnabled() && !cityView.isOwnedByViewer() && !selectedCiv.isSpectator()
 
@@ -124,12 +123,12 @@ class CityScreen(
     // The following fields control what the user selects
     var selectedConstruction: IConstruction? = initSelectedConstruction
         private set
-    var selectedTile: Tile? = initSelectedTile
+    var selectedTile: TileView? = initSelectedTile
         private set
     /** If set, we are waiting for the user to pick a tile for [UniqueType.CreatesOneImprovement] */
     var pickTileData: PickTileForImprovementData? = null
     /** A [Building] with [UniqueType.CreatesOneImprovement] has been selected _in the queue_: show the tile it will place the improvement on */
-    private var selectedQueueEntryTargetTile: Tile? = null
+    private var selectedQueueEntryTargetTile: TileView? = null
     var selectedQueueEntry
         get() = constructionsTable.selectedQueueEntry
         set(value) { constructionsTable.selectedQueueEntry = value }
@@ -191,7 +190,7 @@ class CityScreen(
 
     internal fun updateWithoutConstructionAndMap() {
         // Bottom right: Tile or selected construction info
-        tileTable.update(selectedTile)
+        tileTable.update(selectedTile?.getTile())
         tileTable.setPosition(stage.width - posFromEdge, posFromEdge, Align.bottomRight)
         selectedConstructionTable.update(selectedConstruction)
         selectedConstructionTable.setPosition(stage.width - posFromEdge, posFromEdge, Align.bottomRight)
@@ -241,7 +240,8 @@ class CityScreen(
     }
 
     private fun updateTileGroups() {
-        fun isExistingImprovementValuable(tile: Tile): Boolean {
+        fun isExistingImprovementValuable(tileView: TileView): Boolean {
+            val tile = tileView.getTile()
             val improvement = tile.tileImprovement ?: return false
             val civInfo = cityView.owningCiv().getCiv()
 
@@ -255,20 +255,21 @@ class CityScreen(
             return Automation.rankStatsValue(statDiffForNewImprovement, civInfo) <= 0
         }
 
-        fun getPickImprovementColor(tile: Tile): Pair<Color, Float> {
+        fun getPickImprovementColor(tileView: TileView): Pair<Color, Float> {
+            val tile = tileView.getTile()
             val improvementToPlace = pickTileData!!.improvement
             return when {
                 tile.isMarkedForCreatesOneImprovement() -> Color.BROWN to 0.7f
                 !cityView.constructions.canPlaceCreateOneImprovementOn(improvementToPlace, tile) -> Color.RED to 0.4f
-                isExistingImprovementValuable(tile) -> Color.ORANGE to 0.5f
+                isExistingImprovementValuable(tileView) -> Color.ORANGE to 0.5f
                 tile.improvement != null -> Color.YELLOW to 0.6f
-                tile.turnsToImprovement > 0 -> Color.YELLOW to 0.6f
+                tileView.turnsToImprovement > 0 -> Color.YELLOW to 0.6f
                 else -> Color.GREEN to 0.5f
             }
         }
 
         for (tileGroup in tileGroups) {
-            tileGroup.update(CivView(selectedCiv, selectedCiv))
+            tileGroup.update(cityView.viewingCiv())
             tileGroup.layerMisc.removeHexOutline()
             if (isSpying) continue // the rest is only for own cities
 
@@ -276,17 +277,17 @@ class CityScreen(
                 displayTutorial(TutorialTrigger.CityTileBlockade)
 
             when {
-                tileGroup.tile == nextTileToOwn ->
+                tileGroup.tileView == nextTileToOwn ->
                     tileGroup.layerMisc.addHexOutline(colorFromRGB(200, 20, 220))
                 /** Support for [UniqueType.CreatesOneImprovement] */
-                tileGroup.tile == selectedQueueEntryTargetTile ->
+                tileGroup.tileView == selectedQueueEntryTargetTile ->
                     tileGroup.layerMisc.addHexOutline(Color.BROWN)
                 pickTileData != null && cityView.isOwnedTile(tileGroup.tile) && tileGroup.tile in cityView.tilesInRange ->
-                    getPickImprovementColor(tileGroup.tile).run {
+                    getPickImprovementColor(tileGroup.tileView).run {
                         tileGroup.layerMisc.addHexOutline(first.cpy().apply { this.a = second }) }
             }
 
-            if (fireworks != null && tileGroup.tile.position == cityView.location)
+            if (fireworks != null && tileGroup.tileView.position() == cityView.location)
                 fireworks.setActorBounds(tileGroup)
         }
     }
@@ -360,9 +361,9 @@ class CityScreen(
     private fun addTiles() {
         val viewRange = max(cityView.getExpandRange(), cityView.getWorkRange())
         val tileSetStrings = TileSetStrings(cityView.getRuleset(), game.settings)
-        val cityTileGroups = cityView.centerTile().getTilesInDistance(viewRange)
+        val cityTileGroups = cityView.centerTile().getVisibleTilesInDistance(viewRange)
                 .filter { selectedCiv.hasExplored(it.getTile()) }
-                .map { CityTileGroup(cityView, it.getTile(), tileSetStrings, false, isSpying) }
+                .map { CityTileGroup(cityView, it, tileSetStrings, false, isSpying) }
 
         for (tileGroup in cityTileGroups) {
             tileGroup.onClick { tileGroupOnClick(tileGroup) }
@@ -376,8 +377,8 @@ class CityScreen(
 
         val tilesToUnwrap = mutableSetOf<CityTileGroup>()
         for (tileGroup in tileGroups) {
-            val xDifference = cityView.centerTile().position().x - tileGroup.tile.position.x
-            val yDifference = cityView.centerTile().position().y - tileGroup.tile.position.y
+            val xDifference = cityView.centerTile().position().x - tileGroup.tileView.position().x
+            val yDifference = cityView.centerTile().position().y - tileGroup.tileView.position().y
             //if difference is bigger than the expansion range the tileGroup we are looking for is on the other side of the map
             if (xDifference > viewRange || xDifference < -viewRange || yDifference > viewRange || yDifference < -viewRange) {
                 //so we want to unwrap its position
@@ -402,21 +403,20 @@ class CityScreen(
     private fun tileWorkedIconOnClick(tileGroup: CityTileGroup) {
 
         if (!canChangeState || cityView.isPuppet()) return
-        val tile = tileGroup.tile
 
         // Cycling as: Not-worked -> Worked  -> Not-worked
         if (tileGroup.tileState == CityTileState.WORKABLE) {
-            if (!tile.providesYield() && cityView.getFreePopulation() > 0) {
-                cityView.tryWorkTile(cityView.tileView(tile))
+            if (!tileGroup.tileView.providesYield() && cityView.getFreePopulation() > 0) {
+                cityView.tryWorkTile(tileGroup.tileView)
                 game.settings.addCompletedTutorialTask("Reassign worked tiles")
             } else {
-                cityView.tryStopWorkingTile(cityView.tileView(tile))
+                cityView.tryStopWorkingTile(tileGroup.tileView)
             }
             cityView.updateCityStats()
             update()
 
         } else if (tileGroup.tileState == CityTileState.PURCHASABLE) {
-            askToBuyTile(tile)
+            askToBuyTile(tileGroup.tileView)
         }
     }
 
@@ -425,10 +425,10 @@ class CityScreen(
      * Used from onClick and keyboard dispatch, thus only minimal parameters are passed,
      * and it needs to do all checks and the sound as appropriate.
      */
-    internal fun askToBuyTile(selectedTile: Tile) {
+    internal fun askToBuyTile(selectedTile: TileView) {
         // These checks are redundant for the onClick action, but not for the keyboard binding
-        if (!canChangeState || !cityView.canBuyTile(cityView.tileView(selectedTile))) return
-        val goldCostOfTile = cityView.getGoldCostOfTile(cityView.tileView(selectedTile))
+        if (!canChangeState || !cityView.canBuyTile(selectedTile)) return
+        val goldCostOfTile = cityView.getGoldCostOfTile(selectedTile)
         if (!cityView.viewingCiv().hasStatToBuy(Stat.Gold, goldCostOfTile)) return
 
         closeAllPopups()
@@ -443,7 +443,7 @@ class CityScreen(
             restoreDefault = { update() }
         ) {
             SoundPlayer.play(UncivSound.Coin)
-            cityView.tryBuyTile(cityView.tileView(selectedTile))
+            cityView.tryBuyTile(selectedTile)
             // preselect the next tile on city screen rebuild so bulk buying can go faster
             UncivGame.Current.replaceCurrentScreen(CityScreen(cityView, initSelectedTile = cityView.chooseNewTileToOwn()))
         }.open()
@@ -452,32 +452,31 @@ class CityScreen(
 
     private fun tileWorkedIconDoubleClick(tileGroup: CityTileGroup) {
         if (!canChangeState || cityView.isPuppet() || tileGroup.tileState != CityTileState.WORKABLE) return
-        val tile = tileGroup.tile
 
         // Double-click should lead to locked tiles - both for unworked AND worked tiles
 
-        if (!tile.isWorked()) // If not worked, try to work it first
+        if (!tileGroup.tileView.isWorked()) // If not worked, try to work it first
             tileWorkedIconOnClick(tileGroup)
 
-        if (tile.isWorked())
-            cityView.tryLockTile(cityView.tileView(tile))
+        if (tileGroup.tileView.isWorked())
+            cityView.tryLockTile(tileGroup.tileView)
 
         update()
     }
 
     private fun tileGroupOnClick(tileGroup: CityTileGroup) {
         if (cityView.isPuppet()) return
-        val tileInfo = tileGroup.tile
+        val tileInfo = tileGroup.tileView
 
         /** [UniqueType.CreatesOneImprovement] support - select tile for improvement */
         if (pickTileData != null) {
             val pickTileData = this.pickTileData!!
             this.pickTileData = null
             val improvement = pickTileData.improvement
-            if (cityView.constructions.canPlaceCreateOneImprovementOn(improvement, tileInfo)) {
+            if (cityView.constructions.canPlaceCreateOneImprovementOn(improvement, tileInfo.getTile())) {
 
                 if (pickTileData.isBuying) {
-                    BuyButtonFactory(this).askToBuyConstruction(pickTileData.building, pickTileData.buyStat, tileInfo)
+                    BuyButtonFactory(this).askToBuyConstruction(pickTileData.building, pickTileData.buyStat, tileInfo.getTile())
                 } else {
                     cityView.tryAddToQueueWithTile(pickTileData.building, tileInfo)
                 }
@@ -486,7 +485,7 @@ class CityScreen(
             return
         }
 
-        selectTile(tileInfo)
+        selectTile(tileGroup.tileView)
         update()
     }
 
@@ -511,7 +510,7 @@ class CityScreen(
         }
         selectedTile = null
     }
-    private fun selectTile(newTile: Tile?) {
+    private fun selectTile(newTile: TileView?) {
         selectedConstruction = null
         selectedQueueEntryTargetTile = null
         pickTileData = null

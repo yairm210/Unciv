@@ -6,7 +6,6 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.screens.pickerscreens.CityRenamePopup
 import com.unciv.ui.screens.worldscreen.unit.UnitTable
-import com.unciv.view.CityView
 import com.unciv.view.ForeignCityView
 
 class CityPresenter(private val unitTable: UnitTable, private val unitPresenter: UnitPresenter) : UnitTable.Presenter {
@@ -27,7 +26,7 @@ class CityPresenter(private val unitTable: UnitTable, private val unitPresenter:
             }
         }
         if (city === selectedCity?.getCity()) return false
-        selectedCity = ForeignCityView(city, unitTable.worldScreen.selectedCiv)
+        selectedCity = unitTable.worldScreen.selectedGameView.getForeignCityView(city)
         return true
     }
 
@@ -44,7 +43,7 @@ class CityPresenter(private val unitTable: UnitTable, private val unitPresenter:
                 if (!worldScreen.canChangeState) return@onClick
                 CityRenamePopup(
                     screen = worldScreen,
-                    cityView = CityView(city.getCity(), worldScreen.selectedCiv),
+                    cityView = worldScreen.selectedGameView.getCityView(city.getCity()),
                     actionOnClose = {
                         unitNameLabel.setText(city.name.tr())
                         worldScreen.shouldUpdate = true

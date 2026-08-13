@@ -1,25 +1,25 @@
 package com.unciv.ui.screens.mapeditorscreen
 
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.scenes.scene2d.Action
-import com.badlogic.gdx.scenes.scene2d.EventListener
-import com.badlogic.gdx.scenes.scene2d.InputEvent
-import com.badlogic.gdx.scenes.scene2d.InputListener
-import com.badlogic.gdx.scenes.scene2d.Stage
-import com.badlogic.gdx.scenes.scene2d.Touchable
+import com.badlogic.gdx.scenes.scene2d.*
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.tile.Tile
+import com.unciv.view.TileMapView
+import com.unciv.view.TileView
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.toHexCoord
+import com.unciv.models.UncivSound
+import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.tilegroups.TileGroupMap
 import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.components.tilegroups.TileSetStrings
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.widgets.ZoomableScrollPane
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.screens.basescreen.UncivStage
+import com.unciv.utils.Concurrency
 
 
 /**
@@ -48,6 +48,7 @@ class EditorMapHolder(
         addTiles(parentScreen.stage)
         if (editorScreen != null) {
             addCaptureListener(getDragPaintListener())
+            addClickListener()
             setupZoomPanListeners()
         }
         reloadMaxZoom()
@@ -69,12 +70,25 @@ class EditorMapHolder(
         onZoomStopListener = { setActHit() }
     }
 
+    private fun addClickListener() {
+        val listener = object : ActorGestureListener(20f, 0.25f, 1.1f, Int.MAX_VALUE.toFloat()) {
+            override fun tap(event: InputEvent?, x: Float, y: Float, count: Int, button: Int) {
+                val child = tileGroupMap.hit(x, y, true) ?: return
+                if (child !is TileGroup) return
+                Concurrency.runOnGLThread("Sound") { SoundPlayer.play(UncivSound.Click) }
+                onTileClick(child.tile)
+            }
+        }
+        tileGroupMap.addListener(listener)
+    }
+
     private fun addTiles(stage: Stage) {
 
         val tileSetStrings =
             if (editorScreen != null) TileSetStrings(editorScreen.ruleset, editorScreen.game.settings)
             else TileSetStrings()
-        val daTileGroups = tileMap.values.map { TileGroup(it, tileSetStrings) }
+        val noViewTileMapView = TileMapView(tileMap, null)
+        val daTileGroups = tileMap.values.map { TileGroup(noViewTileMapView.getTile(it), tileSetStrings) }
 
         tileGroupMap = TileGroupMap(this, daTileGroups, continuousScrollingX)
         actor = tileGroupMap
@@ -99,8 +113,6 @@ class EditorMapHolder(
 */
             tileGroup.isForceVisible = true
             tileGroup.update()
-            if (touchable != Touchable.disabled)
-                tileGroup.onClick { onTileClick(tileGroup.tile) }
         }
 
         setSize(stage.width, stage.height)

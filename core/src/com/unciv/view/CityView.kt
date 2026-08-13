@@ -25,26 +25,31 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import yairm210.purity.annotations.Readonly
 
-/** View of a [City] from the perspective of [viewer]. UI should use this and not city directly.
+/** View of a [City] from the perspective of the viewer's [gameView]. UI should use this and not city directly.
  * This should only be for cities we can see as if we own them - our cities, spied cities, or if we're spectator */
-class CityView(city: City, viewer: Civilization) : ForeignCityView(city, viewer) {
+class CityView(city: City,
+               viewer: Civilization,
+               spectatorMode: Boolean = false,
+               override val gameView: GameView) : ForeignCityView(city, viewer, spectatorMode, gameView) {
+    // Navigation
     /** The viewing player's full CivView (always a self-view). For the city's owning civ, use [owningCiv]. */
-    @Readonly fun viewingCiv(): CivView = CivView(viewer, viewer)
+    @Readonly fun viewingCiv(): CivView = gameView.civView
 
     /** Cities the viewer can page through in CityScreen: own cities normally, or spy-visited cities when spying. */
-    fun getViewableCities(): List<CityView> {
+    @Readonly fun getViewableCities(): List<CityView> {
         val isSpying = city.civ !== viewer && viewer.gameInfo.isEspionageEnabled() && !viewer.isSpectator()
         return if (isSpying) viewer.espionageManager.getCitiesWithOurSpies()
             .filter { it.civ != viewer }
-            .map { CityView(it, viewer) }
-        else city.civ.cities.map { CityView(it, viewer) }
+            .map { gameView.getCityView(it) }
+        else city.civ.cities.map { gameView.getCityView(it) }
     }
 
+    // Data retrieval
     val tilesInRange: Set<Tile> get() = city.tilesInRange
 
-    @Readonly fun centerTile(): TileView = TileView(city.getCenterTile(), viewer)
-    @Readonly fun getTiles(): Sequence<TileView> = city.getTiles().map { TileView(it, viewer) }
-    @Readonly fun tileView(tile: Tile): TileView = TileView(tile, viewer)
+    @Readonly fun centerTile(): TileView = gameView.tileMapView.getTile(city.getCenterTile())
+    @Readonly fun getTiles(): Sequence<TileView> = city.getTiles().map { gameView.tileMapView.getTile(it) }
+    @Readonly fun tileView(tile: Tile): TileView = gameView.tileMapView.getTile(tile)
 
     @Readonly fun getWorkRange(): Int = city.getWorkRange()
     @Readonly fun isWorked(tileView: TileView): Boolean = city.isWorked(getTile(tileView))
@@ -89,7 +94,7 @@ class CityView(city: City, viewer: Civilization) : ForeignCityView(city, viewer)
     @Readonly fun getCultureStored(): Int = city.expansion.cultureStored
 
     // Constructions
-    val constructions: CityConstructionsView get() = CityConstructionsView(city.cityConstructions)
+    val constructions: CityConstructionsView get() = CityConstructionsView(city.cityConstructions, gameView)
     @Readonly fun currentConstructionName(): String = city.cityConstructions.currentConstructionName()
     @Readonly fun getBuiltBuildings(): Sequence<Building> = city.cityConstructions.getBuiltBuildings()
     @Readonly fun isPuppet(): Boolean = city.isPuppet
@@ -114,10 +119,10 @@ class CityView(city: City, viewer: Civilization) : ForeignCityView(city, viewer)
     @Readonly fun getCityAmbienceSound(): String = city.civ.getEra().citySound
     @Readonly fun isBeingRazed(): Boolean = city.isBeingRazed
     @Readonly fun isCapital(): Boolean = city.isCapital()
-    @Readonly fun getGarrison(): MapUnitView? = city.getGarrison()?.let { MapUnitView(it, viewer) }
+    @Readonly fun getGarrison(): MapUnitView? = city.getGarrison()?.let { MapUnitView(it, gameView.civView) }
     @Readonly fun canBeDestroyed(): Boolean = city.canBeDestroyed()
     @Readonly fun getExpandRange(): Int = city.getExpandRange()
-    @Readonly fun chooseNewTileToOwn(): Tile? = city.expansion.chooseNewTileToOwn()
+    @Readonly fun chooseNewTileToOwn(): TileView? = city.expansion.chooseNewTileToOwn()?.let { gameView.tileMapView.getTile(it) }
     @Readonly fun getImprovementToCreate(construction: Building): TileImprovement? =
         construction.getImprovementToCreate(city.getRuleset(), city.civ)
     @Readonly fun hasFreeBuilding(building: Building): Boolean =
@@ -144,7 +149,6 @@ class CityView(city: City, viewer: Civilization) : ForeignCityView(city, viewer)
     @Readonly fun canBePurchasedWithStat(construction: INonPerpetualConstruction, stat: Stat): Boolean =
         construction.canBePurchasedWithStat(city, stat)
 
-    @Readonly fun getViewer(): Civilization = viewer
     @Readonly fun isOwnedByViewer(): Boolean = city.civ === viewer
     @Readonly fun isOwnedTile(tile: Tile): Boolean = tile.getCity() === city
     @Readonly private fun getTile(tileView: TileView) = tileView.getTile()
@@ -211,9 +215,9 @@ class CityView(city: City, viewer: Civilization) : ForeignCityView(city, viewer)
         city.isBeingRazed = raze
         return true
     }
-    fun tryAddToQueueWithTile(construction: IConstruction, tile: Tile): Boolean {
+    fun tryAddToQueueWithTile(construction: IConstruction, tileView: TileView): Boolean {
         if (!canChangeState()) return false
-        city.cityConstructions.addToQueue(construction, tile = tile)
+        city.cityConstructions.addToQueue(construction, tile = tileView.getTile())
         return true
     }
     fun trySetUnitShouldUseSavedPromotion(baseUnit: String, value: Boolean): Boolean {

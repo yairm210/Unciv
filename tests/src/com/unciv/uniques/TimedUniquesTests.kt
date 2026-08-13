@@ -5,14 +5,14 @@ import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.civilization.managers.TurnManager
 import com.unciv.logic.map.HexCoord
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 
 
-@RunWith(GdxTestRunner::class)
+@RunWith(BaseTestRunner::class)
 class TimedUniquesTests {
     private val game = TestGame().apply { makeHexagonalMap(2) }
     private val civInfo = game.addCiv()

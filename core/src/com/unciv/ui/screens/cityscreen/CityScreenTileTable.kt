@@ -50,7 +50,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen) : Table() {
         innerTable.clearChildren()
 
         val tileView = cityView.tileView(selectedTile)
-        val stats = tileView.getTileStats(cityView)
+        val stats = tileView.getTileStats(cityView.viewingCiv(), cityView)
         innerTable.pad(5f)
 
         innerTable.add(MarkupRenderer.render(TileDescription.toMarkup(
@@ -69,7 +69,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen) : Table() {
             val buyTileButton = "Buy for [$goldCostOfTile] gold".toTextButton()
             buyTileButton.onActivation(binding = KeyboardBinding.BuyTile) {
                 buyTileButton.disable()
-                cityScreen.askToBuyTile(selectedTile)
+                cityScreen.askToBuyTile(tileView)
             }
             buyTileButton.addContextMenu { TileBuyMenu(buyTileButton) }
             buyTileButton.isEnabled = cityScreen.canChangeState && cityView.viewingCiv().hasStatToBuy(Stat.Gold, goldCostOfTile)
@@ -110,7 +110,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen) : Table() {
             val otherCity = tileView.owningCity()
             if (otherCity != null && otherCity != cityView && otherCity.isSameCivAs(cityView) && !cityScreen.isSpying)
                 innerTable.add("Move to city".toTextButton().onClick { cityScreen.game.replaceCurrentScreen(
-                    CityScreen(CityView(otherCity.getCity(), cityView.getViewer()))
+                    CityScreen(cityView.gameView.getCityView(otherCity.getCity()))
                 ) })
         }
 
@@ -147,7 +147,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen) : Table() {
             }
         }
 
-        @Readonly private fun getRing(ring: Int) = cityView.centerTile().getTilesInDistance(ring).filter { it.owningCity() == null }
+        @Readonly private fun getRing(ring: Int) = cityView.centerTile().getVisibleTilesInDistance(ring).filter { it.owningCity() == null }
         @Readonly private fun countBuyableInRing(ring: Int) = getRing(ring).count()
         @Readonly private fun getRingCost(ring: Int) = getRing(ring).withIndex()
             .sumOf { cityView.getGoldCostOfTile(it.value, it.index) }

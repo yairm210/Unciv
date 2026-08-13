@@ -6,7 +6,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.view.CityView
 import com.unciv.view.CivView
-import com.unciv.logic.map.tile.Tile
+import com.unciv.view.TileView
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
@@ -23,16 +23,11 @@ enum class CityTileState {
     BLOCKADED
 }
 
-class CityTileGroup(val cityView: CityView, tile: Tile, tileSetStrings: TileSetStrings, private val nightMode: Boolean, private val isSpying: Boolean = false) : TileGroup(tile, tileSetStrings) {
+class CityTileGroup(val cityView: CityView, tileView: TileView, tileSetStrings: TileSetStrings, private val nightMode: Boolean, private val isSpying: Boolean = false) : TileGroup(tileView, tileSetStrings) {
 
     var tileState = CityTileState.NONE
 
-    init {
-        // layerMisc is no longer a Group actor; touch handling is managed at the TileMapLayer level.
-    }
-
     override fun update(viewingCiv: CivView?) {
-        val tileView = cityView.tileView(tile)
         super.update(cityView.viewingCiv())
 
         tileState = CityTileState.NONE
@@ -68,7 +63,7 @@ class CityTileGroup(val cityView: CityView, tile: Tile, tileSetStrings: TileSetS
                     label.y -= 15f
 
                     // Can be purchased now?
-                    if (!cityView.viewingCiv().hasStatToBuy(Stat.Gold, price)) {
+                    if (!cityView.owningCivView.hasStatToBuy(Stat.Gold, price)) {
                         image.color = Color.WHITE.darken(0.5f)
                         label.setFontColor(Color.RED)
                     } else {
@@ -97,7 +92,7 @@ class CityTileGroup(val cityView: CityView, tile: Tile, tileSetStrings: TileSetS
             }
 
             // Does not provide yields
-            tileView.getTileStats(cityView).isEmpty() -> {
+            tileView.getTileStats(cityView.viewingCiv(), cityView).isEmpty() -> {
                 // Do nothing except night-mode dimming
                 setUndimmed()
             }
