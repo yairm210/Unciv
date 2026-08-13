@@ -67,7 +67,7 @@ class MoveHereOverlayButtonData(val unitToTurnsToDestination: HashMap<MapUnit, I
         if (unitsThatCanMove.isEmpty()) moveHereButton.color.a = 0.5f
         else {
             moveHereButton.onActivation(UncivSound.Silent) {
-                worldMapHolder.moveUnitToTargetTile(unitsThatCanMove, tile)
+                worldMapHolder.moveUnitToTargetTile(unitsThatCanMove, worldMapHolder.worldScreen.selectedGameView.tileMapView.getTile(tile))
             }
             moveHereButton.keyShortcuts.add(KeyCharAndCode.TAB)
         }
@@ -98,7 +98,7 @@ class SwapWithOverlayButtonData(val unit: MapUnit, val tile: Tile) : OverlayButt
         swapWithButton.addActor(unitIcon)
 
         swapWithButton.onActivation(UncivSound.Silent) {
-            worldMapHolder.swapMoveUnitToTargetTile(unit, tile)
+            worldMapHolder.swapMoveUnitToTargetTile(unit, worldMapHolder.worldScreen.selectedGameView.tileMapView.getTile(tile))
         }
         swapWithButton.keyShortcuts.add(KeyCharAndCode.TAB)
 
