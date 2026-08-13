@@ -31,7 +31,7 @@ class VictoryScreenDemographics(
             row()
             add(rankLabel.name.toLabel())
 
-            for (category in RankingType.entries) {
+            for (category in RankingType.filteredEntries(playerCiv.gameInfo.gameParameters)) {
                 // Use turn-start snapshots so mid-turn army/economy changes cannot be used to
                 // probe Best/Worst values of other civilizations (see linked issue).
                 val aliveMajorCivsSorted = majorCivs.filter { it.isAlive() || it == playerCiv }
@@ -72,7 +72,7 @@ class VictoryScreenDemographics(
         demoLabel.addSeparator().fillX()
         add(demoLabel)
 
-        for (category in RankingType.entries) {
+        for (category in RankingType.filteredEntries(playerCiv.gameInfo.gameParameters)) {
             val headers = Table().apply { defaults().pad(5f) }
             val textAndIcon = Table().apply { defaults() }
             val columnImage = category.getImage()

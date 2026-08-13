@@ -1,12 +1,14 @@
 package com.unciv.ui.screens.overviewscreen
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeOffersList
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 
 class TradesOverviewTab(
@@ -57,12 +59,15 @@ class TradesOverviewTab(
             "OverviewScreen/TradesOverviewTab/OffersTable",
             tintColor = civ.nation.getOuterColor()
         )
-        table.add(civ.civName.toLabel(civ.nation.getInnerColor())).row()
+        val titleTable = Table()
+        titleTable.add(ImageGetter.getNationPortrait(civ.nation, 30f)).padRight(5f)
+        titleTable.add(civ.civName.toLabel(civ.nation.getInnerColor(), hideIcons = true))
+        table.add(titleTable).row()
         table.addSeparator()
         for (offer in offersList) {
             var offerText = offer.getOfferText()
             if (!offerText.contains("\n")) offerText += "\n"
-            table.add(offerText.toLabel(civ.nation.getInnerColor())).row()
+            table.add(offerText.toLabel(civ.nation.getInnerColor(), alignment = Align.center)).row()
         }
         repeat(numberOfOtherSidesOffers - offersList.size) {
             table.add("\n".toLabel())

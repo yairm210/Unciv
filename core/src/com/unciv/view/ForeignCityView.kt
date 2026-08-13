@@ -8,32 +8,46 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.map.HexCoord
 import com.unciv.models.ImmutableColor
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import com.unciv.utils.DebugUtils
 import yairm210.purity.annotations.Readonly
 
 /** Should contain information that should be knowable to us about foreign cities. Superclass of [CityView]. */
 open class ForeignCityView(internal open val city: City,
                            protected val viewer: Civilization,
                            val spectatorMode: Boolean = false,
-                           open val civView: CivView? = null) {
+                           open val gameView: GameView) {
     val name: String get() = city.name
     val location: HexCoord get() = city.location
-    
+
+    /** The owning civ's [CivView], as visible from [viewer]'s perspective. For the viewing player's full CivView, use [CityView.viewingCiv]. */
+    val owningCivView: CivView get() = gameView.getCivView(city.civ)
+
+    // Navigation
+    @Readonly fun getCity(): City = city
     @Readonly fun getViewingCiv(): Civilization = viewer
-    
+    /** The owning civ of this city, as visible from [viewer]'s perspective. For the viewing player's full CivView, use [CityView.viewingCiv]. */
+    @Readonly open fun owningCiv(): ForeignCivView = ForeignCivView(city.civ, viewer, spectatorMode)
+    /** Get from a foreign view to an inner view */
+    @Readonly fun tryGetCityView(): CityView? {
+        val canSeeCityData = viewer.isSpectator() // not posing, actual spectator
+                || city.civ == viewer
+                || spyIsSetUpAtCity(viewer)
+                || DebugUtils.VISIBLE_MAP
+        if (!canSeeCityData) return null
+        return gameView.getCityView(city)
+    }
+
+    // Data retrieval
     @Readonly fun getHealth(): Int = city.health
     @Readonly fun getMaxHealth(): Int = city.getMaxHealth()
     @Readonly fun getDefendingStrength(): Int = CityCombatant(city).getDefendingStrength()
     @Readonly fun getAttackingStrength(): Int = CityCombatant(city).getAttackingStrength()
     @Readonly fun getCenterTile(): TileView {
         val tile = city.getCenterTile()
-        return civView?.gameView?.tileMapView?.getTile(tile)
-            ?: TileMapView(tile.tileMap, viewer, spectatorMode).getTile(tile)
+        return gameView.tileMapView.getTile(tile)
     }
     @Readonly fun canBombard(): Boolean = city.canBombard()
-    /** The owning civ of this city, as visible from [viewer]'s perspective. For the viewing player's full CivView, use [CityView.viewingCiv]. */
-    @Readonly open fun owningCiv(): ForeignCivView = ForeignCivView(city.civ, viewer, spectatorMode)
     @Readonly fun isSameCivAs(other: ForeignCityView): Boolean = city.civ === other.city.civ
-    @Readonly fun getCity(): City = city
     @Readonly fun getProductionMarkup(): FormattedLine = city.cityConstructions.getProductionMarkup(city.getRuleset())
 
     @Readonly fun belongsTo(civ: Civilization): Boolean = city.civ === civ

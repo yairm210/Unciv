@@ -25,29 +25,31 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import yairm210.purity.annotations.Readonly
 
-/** View of a [City] from the perspective of [civView]. UI should use this and not city directly.
+/** View of a [City] from the perspective of the viewer's [gameView]. UI should use this and not city directly.
  * This should only be for cities we can see as if we own them - our cities, spied cities, or if we're spectator */
 class CityView(city: City,
                viewer: Civilization,
                spectatorMode: Boolean = false,
-               override val civView: CivView) : ForeignCityView(city, viewer, spectatorMode, civView) {
+               override val gameView: GameView) : ForeignCityView(city, viewer, spectatorMode, gameView) {
+    // Navigation
     /** The viewing player's full CivView (always a self-view). For the city's owning civ, use [owningCiv]. */
-    @Readonly fun viewingCiv(): CivView = civView
+    @Readonly fun viewingCiv(): CivView = gameView.civView
 
     /** Cities the viewer can page through in CityScreen: own cities normally, or spy-visited cities when spying. */
     @Readonly fun getViewableCities(): List<CityView> {
         val isSpying = city.civ !== viewer && viewer.gameInfo.isEspionageEnabled() && !viewer.isSpectator()
         return if (isSpying) viewer.espionageManager.getCitiesWithOurSpies()
             .filter { it.civ != viewer }
-            .map { civView.getCity(it) }
-        else city.civ.cities.map { civView.getCity(it) }
+            .map { gameView.getCityView(it) }
+        else city.civ.cities.map { gameView.getCityView(it) }
     }
 
+    // Data retrieval
     val tilesInRange: Set<Tile> get() = city.tilesInRange
 
-    @Readonly fun centerTile(): TileView = civView.gameView.tileMapView.getTile(city.getCenterTile())
-    @Readonly fun getTiles(): Sequence<TileView> = city.getTiles().map { civView.gameView.tileMapView.getTile(it) }
-    @Readonly fun tileView(tile: Tile): TileView = civView.gameView.tileMapView.getTile(tile)
+    @Readonly fun centerTile(): TileView = gameView.tileMapView.getTile(city.getCenterTile())
+    @Readonly fun getTiles(): Sequence<TileView> = city.getTiles().map { gameView.tileMapView.getTile(it) }
+    @Readonly fun tileView(tile: Tile): TileView = gameView.tileMapView.getTile(tile)
 
     @Readonly fun getWorkRange(): Int = city.getWorkRange()
     @Readonly fun isWorked(tileView: TileView): Boolean = city.isWorked(getTile(tileView))
@@ -117,7 +119,7 @@ class CityView(city: City,
     @Readonly fun getCityAmbienceSound(): String = city.civ.getEra().citySound
     @Readonly fun isBeingRazed(): Boolean = city.isBeingRazed
     @Readonly fun isCapital(): Boolean = city.isCapital()
-    @Readonly fun getGarrison(): MapUnitView? = city.getGarrison()?.let { MapUnitView(it, civView) }
+    @Readonly fun getGarrison(): MapUnitView? = city.getGarrison()?.let { MapUnitView(it, gameView.civView) }
     @Readonly fun canBeDestroyed(): Boolean = city.canBeDestroyed()
     @Readonly fun getExpandRange(): Int = city.getExpandRange()
     @Readonly fun chooseNewTileToOwn(): Tile? = city.expansion.chooseNewTileToOwn()

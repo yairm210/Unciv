@@ -100,7 +100,7 @@ class WorldMapHolder(
     internal fun addTiles() {
         val tileSetStrings = TileSetStrings(worldScreen.gameInfo.ruleset, worldScreen.game.settings)
         currentTileSetStrings = tileSetStrings
-        val tileMapView = worldScreen.gameView.tileMapView
+        val tileMapView = worldScreen.selectedGameView.tileMapView
         val tileGroupsNew = tileMap.values.map { WorldTileGroup(tileMapView.getTile(it), tileSetStrings) }
         tileGroupMap = TileGroupMap(this, tileGroupsNew, continuousScrollingX)
 
@@ -120,7 +120,7 @@ class WorldMapHolder(
                 val child = tileGroupMap.hit(x, y, true) ?: return
 
                 if (child is CityButton) { // the city button can be below the tilegroup, since it moves down when first clicked
-                    onTileClicked(child.cityView.getCenterTile())
+                    onTileClicked(child.foreignCityView.getCenterTile())
                     return
                 }
                 if (child is WorldTileGroup) {
@@ -529,10 +529,10 @@ class WorldMapHolder(
 
         val unitList = ArrayList<MapUnit>()
         if (tile.isCityCenter()
-                && (tile.getOwner() == worldScreen.viewingCiv || worldScreen.gameView.civView.isSpectator())) {
+                && (tile.getOwner() == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())) {
             unitList.addAll(tile.getCity()!!.getCenterTile().getUnits())
         } else if (tile.airUnits.isNotEmpty()
-                && (tile.airUnits.first().civ == worldScreen.viewingCiv || worldScreen.gameView.civView.isSpectator())) {
+                && (tile.airUnits.first().civ == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())) {
             unitList.addAll(tile.getUnits())
         }
 
@@ -718,7 +718,7 @@ class WorldMapHolder(
 
     override fun restrictX(deltaX: Float): Float {
         var result = scrollX - deltaX
-        if (worldScreen.gameView.civView.isSpectator()) return result
+        if (worldScreen.viewingCiv.isSpectator()) return result
 
         val exploredRegion = worldScreen.viewingCiv.exploredRegion
         if (exploredRegion.shouldRecalculateCoords()) exploredRegion.calculateStageCoords(maxX, maxY)
@@ -737,7 +737,7 @@ class WorldMapHolder(
 
     override fun restrictY(deltaY: Float): Float {
         var result = scrollY + deltaY
-        if (worldScreen.gameView.civView.isSpectator()) return result
+        if (worldScreen.viewingCiv.isSpectator()) return result
 
         val exploredRegion = worldScreen.viewingCiv.exploredRegion
         if (exploredRegion.shouldRecalculateCoords()) exploredRegion.calculateStageCoords(maxX, maxY)

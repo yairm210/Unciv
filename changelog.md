@@ -1,3 +1,23 @@
+## 4.21.8
+
+Fixed rivers on water near Rock of Gibraltar
+
+Resolved OOM errors on crash screen
+
+Resolved ANRs from tech picker and notification overview screens
+
+Fixed checking tile resource filters in dev console, for resources with revealing tech
+
+AI "trade for war declaration" reworked to disallow "kamikaze wars"
+
+Nicer trade overview UI
+
+By unciv-loof:
+- Non vanilla ranking types 
+- Hide average turn time until a full turn has been played 
+
+Max players with spectator - By SomeTroglodyte
+
 ## 4.21.7
 
 CPU and memory performance improvements 
