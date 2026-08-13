@@ -165,7 +165,7 @@ class BuyButtonFactory(val cityScreen: CityScreen) {
     ) {
         SoundPlayer.play(stat.purchaseSound)
         val cityView = cityScreen.cityView
-        if (!cityView.constructions.purchaseConstruction(construction, cityScreen.selectedQueueEntry, false, stat, tile)) {
+        if (!cityView.constructions.purchaseConstruction(construction, cityScreen.selectedQueueEntry, stat, tile)) {
             Popup(cityScreen).apply {
                 add("No space available to place [${construction.name}] near [${cityView.name}]".tr()).row()
                 addCloseButton()
@@ -177,15 +177,12 @@ class BuyButtonFactory(val cityScreen: CityScreen) {
             cityScreen.selectedQueueEntry = -1
             cityScreen.clearSelection()
 
-            // Allow buying next queued or auto-assigned construction right away
-            cityView.constructions.chooseNextConstruction()
             if (cityView.constructions.currentConstructionName().isNotEmpty()) {
                 val newConstruction = cityView.constructions.getCurrentConstruction()
                 if (newConstruction is INonPerpetualConstruction)
                     cityScreen.selectConstruction(newConstruction)
             }
         }
-        cityView.tryReassignPopulation()
         cityScreen.update()
     }
 

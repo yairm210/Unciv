@@ -44,8 +44,6 @@ class CityConstructionsView(private val cityConstructions: CityConstructions, pr
         cityConstructions.isConstructionPurchaseBlockedByUnit(construction)
 
     // Actions
-    fun purchaseConstruction(construction: INonPerpetualConstruction, queuePosition: Int, automatic: Boolean, stat: Stat, tileView: TileView?): Boolean =
-        cityConstructions.purchaseConstruction(construction, queuePosition, automatic, stat, tileView?.getTile())
-    // I'm not convinced this is required, I think the usage should move to the logic rather than the view
-    fun chooseNextConstruction() = cityConstructions.chooseNextConstruction()
+    fun purchaseConstruction(construction: INonPerpetualConstruction, queuePosition: Int, stat: Stat, tileView: TileView?): Boolean =
+        cityConstructions.purchaseConstruction(construction, queuePosition, automatic = false, stat, tileView?.getTile())
 }
