@@ -25,7 +25,7 @@ class VictoryScreenCivRankings(
             .filter { it.isMajorCiv() }
             .filter { targetCiv -> VictoryScreen.canViewCivStats(worldScreen.gameInfo, worldScreen.viewingCiv, targetCiv) }
 
-        for (category in RankingType.entries) {
+        for (category in RankingType.filteredEntries(worldScreen.gameInfo.gameParameters)) {
             val textAndIcon = Table()
             val columnImage = category.getImage()
             if (columnImage != null)

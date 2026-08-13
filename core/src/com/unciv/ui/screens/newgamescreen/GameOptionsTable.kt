@@ -145,6 +145,7 @@ class GameOptionsTable(
                     addShowChartsCheckbox()
                     addShowDemographicsCheckbox()
                     addCensorStatsCheckbox()
+                    addShowAdditionalRankingTypesCheckbox()
                 }
                 it.add(statsTable).left()
             }
@@ -243,6 +244,10 @@ class GameOptionsTable(
     private fun Table.addCensorStatsCheckbox() =
         addCheckbox("Restrict to own civilization", gameParameters.hideOtherCivilizationStats)
         { gameParameters.hideOtherCivilizationStats = it }
+    
+    private fun Table.addShowAdditionalRankingTypesCheckbox() =
+        addCheckbox("Show additional stat types", gameParameters.showAdditionalRankingTypes)
+        { gameParameters.showAdditionalRankingTypes = it }
 
     private fun Table.addNationsSelectTextButton() {
         val button = "Select nations".toTextButton()
