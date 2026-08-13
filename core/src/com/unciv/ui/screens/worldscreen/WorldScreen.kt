@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
+import com.unciv.view.CivView
 import com.unciv.view.GameView
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.civilization.Civilization
@@ -112,6 +113,8 @@ class WorldScreen(
         internal set
 
     var fogOfWar = true
+    /** Cached when spectator FoW is off and a player is selected — [gameView] then belongs to that player. */
+    private var viewingCivGameView: GameView? = null
 
     /** `true` when it's the player's turn unless he is a spectator */
     val canChangeState
@@ -388,8 +391,7 @@ class WorldScreen(
             if (fogOfWar) minimapWrapper.update(selectedCiv)
             else minimapWrapper.update(viewingCiv)
 
-            if (fogOfWar) bottomTileInfoTable.civView = gameView.civView
-            else bottomTileInfoTable.civView = gameView.civView
+            bottomTileInfoTable.civView = civViewForFogOfWar()
             bottomTileInfoTable.updateTileTable(mapHolder.selectedTile)
             bottomTileInfoTable.x = stage.width - bottomTileInfoTable.width
             bottomTileInfoTable.y = if (game.settings.showMinimap) minimapWrapper.height + 5f else 0f
@@ -418,8 +420,7 @@ class WorldScreen(
         // it doesn't update the explored tiles of the civ... need to think about that harder
         // it causes a bug when we move a unit to an unexplored tile (for instance a cavalry unit which can move far)
 
-        if (fogOfWar) mapHolder.updateTiles(gameView.civView)
-        else mapHolder.updateTiles(gameView.civView)
+        mapHolder.updateTiles(civViewForFogOfWar())
 
         topBar.update(selectedCiv)
         if (tutorialTaskTable.isVisible)
@@ -550,6 +551,16 @@ class WorldScreen(
     fun setSelectedCiv(civ: Civilization) {
         selectedCiv = civ
         gameView = GameView(gameInfo, civ, viewingCiv.isSpectator())
+    }
+
+    /** Map and tile-info vision: selected player when FoW is on, spectator civ when off. */
+    private fun civViewForFogOfWar(): CivView {
+        if (fogOfWar || selectedCiv === viewingCiv) return gameView.civView
+        val cached = viewingCivGameView
+        if (cached != null) return cached.civView
+        val created = GameView(gameInfo, viewingCiv, spectatorMode = viewingCiv.isSpectator())
+        viewingCivGameView = created
+        return created.civView
     }
 
     private fun updateSelectedCiv() {
