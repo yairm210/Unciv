@@ -2246,6 +2246,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Must set up to ranged attack"
 	Applicable to: Unit
 
+??? example  "Can melee attack"
+	Allows a ranged unit to also melee attack: attack after moving, deal and take melee damage, and capture cities. Adjacent targets are attacked as melee; more distant targets in range are attacked as ranged. Combine with `Must set up to ranged attack` to require setup only for the ranged attack.
+
+	Applicable to: Unit
+
 ??? example  "Self-destructs when attacking"
 	Applicable to: Unit
 

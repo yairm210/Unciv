@@ -581,4 +581,70 @@ class BattleTest(private val pathfindingAlgorithm: PathfindingAlgorithm) {
         // then
         assertEquals(30, attackerUnit.promotions.XP) // Attacker should get 2 xp from ranged attack but no xp from melee attack
     }
+
+    @Test
+    fun `hybrid unit melee attack deals and takes damage`() {
+        val attackerUnit = addHybridUnit()
+
+        val damageDealt = Battle.attack(
+            MapUnitCombatant(attackerUnit, attackAsRanged = false),
+            MapUnitCombatant(defaultDefenderUnit)
+        )
+
+        assertTrue(damageDealt.attackerDealt > 0)
+        assertTrue(damageDealt.defenderDealt > 0)
+    }
+
+    @Test
+    fun `hybrid unit ranged attack does not take damage`() {
+        val attackerUnit = addHybridUnit()
+
+        val damageDealt = Battle.attack(
+            MapUnitCombatant(attackerUnit, attackAsRanged = true),
+            MapUnitCombatant(defaultDefenderUnit)
+        )
+
+        assertTrue(damageDealt.attackerDealt > 0)
+        assertEquals(0, damageDealt.defenderDealt)
+        assertTrue(attackerUnit.getTile().position.eq(0, 1))
+    }
+
+    @Test
+    fun `hybrid unit melee kill moves onto defender tile`() {
+        val attackerUnit = addHybridUnit()
+        defaultDefenderUnit.health = 1
+
+        Battle.attack(
+            MapUnitCombatant(attackerUnit, attackAsRanged = false),
+            MapUnitCombatant(defaultDefenderUnit)
+        )
+
+        assertTrue(attackerUnit.getTile().position.eq(0, 0))
+        assertTrue(defaultDefenderUnit.isDestroyed)
+    }
+
+    @Test
+    fun `hybrid unit ranged kill stays in place`() {
+        val attackerUnit = addHybridUnit()
+        defaultDefenderUnit.health = 1
+
+        Battle.attack(
+            MapUnitCombatant(attackerUnit, attackAsRanged = true),
+            MapUnitCombatant(defaultDefenderUnit)
+        )
+
+        assertTrue(attackerUnit.getTile().position.eq(0, 1))
+        assertTrue(defaultDefenderUnit.isDestroyed)
+    }
+
+    private fun addHybridUnit(): MapUnit {
+        val baseUnit = testGame.createBaseUnit("Gunpowder", UniqueType.CanMeleeAttack.text)
+        baseUnit.movement = 2
+        baseUnit.strength = 24
+        baseUnit.rangedStrength = 24
+        baseUnit.range = 2
+        val unit = testGame.addUnit(baseUnit.name, attackerCiv, testGame.getTile(0, 1))
+        unit.currentMovement = 2f
+        return unit
+    }
 }

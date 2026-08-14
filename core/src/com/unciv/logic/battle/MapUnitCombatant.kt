@@ -10,7 +10,11 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.UnitType
 import yairm210.purity.annotations.Readonly
 
-class MapUnitCombatant(val unit: MapUnit) : ICombatant {
+class MapUnitCombatant(
+    val unit: MapUnit,
+    /** When set, this combatant is attacking as ranged or melee regardless of [com.unciv.models.ruleset.unit.BaseUnit.isRanged]. */
+    val attackAsRanged: Boolean? = null
+) : ICombatant {
     override fun getHealth(): Int = unit.health
     override fun getMaxHealth() = 100
     override fun getCivInfo(): Civilization = unit.civ
@@ -34,6 +38,9 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
 
 
     override fun takeDamage(damage: Int) = unit.takeDamage(damage)
+
+    @Readonly
+    override fun isRanged(): Boolean = attackAsRanged ?: unit.baseUnit.isRanged()
 
     override fun getAttackingStrength(defender: ICombatant?): Int {
         val state = GameContext(this, defender, this.getTile(), CombatAction.Attack)

@@ -446,6 +446,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return attacksThisTurn < maxAttacksPerTurn()
     }
 
+    /** True if this unit can perform a melee attack (pure melee, or ranged with [UniqueType.CanMeleeAttack]). */
+    @Readonly
+    fun canMeleeAttack() = baseUnit.strength > 0 && (baseUnit.isMelee() || hasUnique(UniqueType.CanMeleeAttack))
+
     @Readonly
     fun getRange(): Int {
         if (baseUnit.isMelee()) return 1

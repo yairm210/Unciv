@@ -488,11 +488,14 @@ object UnitAutomation {
                 unit.getMaxMovement() * CLOSE_ENEMY_TURNS_AWAY_LIMIT
         )
         val closeEnemy = TargetHelper.getAttackableEnemies(unit, unitDistanceToTiles, tilesToCheck = unit.getTile().getTilesInDistance(CLOSE_ENEMY_TILES_AWAY_LIMIT).toList())
-            .filterNot { unit.baseUnit.isRanged() && it.tileToAttack.isCityCenter() && it.tileToAttack.getCity()!!.health == 1 } // occurs fairly often probably because AI dumb
+            .filterNot { it.isRangedAttack && it.tileToAttack.isCityCenter() && it.tileToAttack.getCity()!!.health == 1 } // occurs fairly often probably because AI dumb
             .filter { unit.getDamageFromTerrain(it.tileToAttackFrom) <= 0 }  // Don't attack from a mountain or near enemy citadels
             .filter {
             // Ignore units that would 1-shot you if you attacked
-            BattleDamage.calculateDamageToAttacker(MapUnitCombatant(unit), Battle.getMapCombatantOfTile(it.tileToAttack)!!) < unit.health }
+            BattleDamage.calculateDamageToAttacker(
+                MapUnitCombatant(unit, it.isRangedAttack),
+                Battle.getMapCombatantOfTile(it.tileToAttack)!!
+            ) < unit.health }
             .minByOrNull { it.tileToAttack.aerialDistanceTo(unit.getTile()) }
 
         if (closeEnemy != null) {
@@ -615,7 +618,7 @@ object UnitAutomation {
                 } //Most likely just been captured
 
 
-        if (unit.baseUnit.isRanged()) // ranged units don't harm capturable cities, waste of a turn
+        if (unit.baseUnit.isRanged() && !unit.canMeleeAttack()) // ranged units don't harm capturable cities, waste of a turn
             capturedCities = capturedCities.filterNot { it.health == 1 }
 
         val closestReachableCapturedCity = capturedCities

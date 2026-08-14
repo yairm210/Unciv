@@ -82,14 +82,22 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
             else -> {
                 val defender = tryGetDefender() ?: return hide()
                 if (attacker is CityCombatant && defender is CityCombatant) return hide()
-                val tileToAttackFrom = if (attacker is MapUnitCombatant)
-                    TargetHelper.getAttackableEnemies(
+                val attackableTile = if (attacker is MapUnitCombatant)
+                    TargetHelper.chooseAttackableTileAgainst(
                         attacker.unit,
-                        attacker.unit.movement.getDistanceToTiles()
+                        defender.getTile(),
+                        TargetHelper.getAttackableEnemies(
+                            attacker.unit,
+                            attacker.unit.movement.getDistanceToTiles()
+                        )
                     )
-                        .firstOrNull { it.tileToAttack == defender.getTile() }?.tileToAttackFrom ?: attacker.getTile()
-                else attacker.getTile()
-                simulateBattle(attacker, defender, tileToAttackFrom)
+                else null
+                val tileToAttackFrom = attackableTile?.tileToAttackFrom ?: attacker.getTile()
+                val attackerForSim =
+                    if (attacker is MapUnitCombatant && attackableTile != null)
+                        MapUnitCombatant(attacker.unit, attackableTile.isRangedAttack)
+                    else attacker
+                simulateBattle(attackerForSim, defender, tileToAttackFrom)
             }
         }
 
@@ -314,12 +322,14 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
 
             if (attacker.canAttack()) {
                 if (attacker is MapUnitCombatant) {
-                    attackableTile = TargetHelper
-                        .getAttackableEnemies(
+                    attackableTile = TargetHelper.chooseAttackableTileAgainst(
+                        attacker.unit,
+                        defender.getTile(),
+                        TargetHelper.getAttackableEnemies(
                             attacker.unit,
                             attacker.unit.movement.getDistanceToTiles()
                         )
-                        .firstOrNull { it.tileToAttack == defender.getTile() }
+                    )
                 } else if (attacker is CityCombatant) {
                     val canBombard =
                         TargetHelper.getBombardableTiles(attacker.city).contains(defender.getTile())

@@ -464,6 +464,8 @@ enum class UniqueType(
     CanOnlyAttackTiles("Can only attack [tileFilter] tiles", UniqueTarget.Unit),
     CannotAttack("Cannot attack", UniqueTarget.Unit),
     MustSetUp("Must set up to ranged attack", UniqueTarget.Unit),
+    CanMeleeAttack("Can melee attack", UniqueTarget.Unit,
+        docDescription = "Allows a ranged unit to also melee attack: attack after moving, deal and take melee damage, and capture cities. Adjacent targets are attacked as melee; more distant targets in range are attacked as ranged. Combine with `Must set up to ranged attack` to require setup only for the ranged attack."),
     SelfDestructs("Self-destructs when attacking", UniqueTarget.Unit),
 
     // Attack unrestrictions

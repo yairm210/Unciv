@@ -234,6 +234,7 @@
       "Can only attack [tileFilter] tiles",
       "Cannot attack",
       "Must set up to ranged attack",
+      "Can melee attack",
       "Self-destructs when attacking",
       "Eliminates combat penalty for attacking across a coast",
       "May attack when embarked",

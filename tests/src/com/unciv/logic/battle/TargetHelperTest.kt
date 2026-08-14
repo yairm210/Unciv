@@ -4,6 +4,9 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.HexCoord
+import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.tile.Tile
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert.assertEquals
@@ -210,10 +213,10 @@ class TargetHelperTest {
 
         // then
         assertEquals(4, attackableEnemies.toList().size)
-        assertEquals(AttackableTile(tileToAttackFrom, tileToAttack, movementLeftAfterMovingToAttackTile, combatant), attackableEnemies[0])
-        assertTrue(attackableEnemies.contains(AttackableTile(testGame.getTile(0,1), tileToAttack, movementLeftAfterMovingToAttackTile-1, combatant)))
-        assertTrue(attackableEnemies.contains(AttackableTile(testGame.getTile(-1,-1), tileToAttack, movementLeftAfterMovingToAttackTile-1, combatant)))
-        assertTrue(attackableEnemies.contains(AttackableTile(testGame.getTile(HexCoord.Zero), tileToAttack, movementLeftAfterMovingToAttackTile-1, combatant)))
+        assertEquals(AttackableTile(tileToAttackFrom, tileToAttack, movementLeftAfterMovingToAttackTile, combatant, isRangedAttack = true), attackableEnemies[0])
+        assertTrue(attackableEnemies.contains(AttackableTile(testGame.getTile(0,1), tileToAttack, movementLeftAfterMovingToAttackTile-1, combatant, isRangedAttack = true)))
+        assertTrue(attackableEnemies.contains(AttackableTile(testGame.getTile(-1,-1), tileToAttack, movementLeftAfterMovingToAttackTile-1, combatant, isRangedAttack = true)))
+        assertTrue(attackableEnemies.contains(AttackableTile(testGame.getTile(HexCoord.Zero), tileToAttack, movementLeftAfterMovingToAttackTile-1, combatant, isRangedAttack = true)))
     }
 
     @Test
@@ -339,5 +342,43 @@ class TargetHelperTest {
 
         // then
         assertTrue(attackableEnemies.isEmpty())
+    }
+
+    @Test
+    fun `hybrid unit adjacent attack is melee not ranged`() {
+        val attackerUnit = addHybridUnit(testGame.getTile(HexCoord.Zero))
+        testGame.addUnit("Warrior", defenderCiv, testGame.getTile(1, 0))
+
+        val attackableEnemies = TargetHelper.getAttackableEnemies(attackerUnit, attackerUnit.movement.getDistanceToTiles())
+        val againstAdjacent = attackableEnemies.filter { it.tileToAttack == testGame.getTile(1, 0) }
+
+        assertTrue(againstAdjacent.any { !it.isRangedAttack })
+        assertTrue(againstAdjacent.none { it.isRangedAttack })
+    }
+
+    @Test
+    fun `hybrid unit attacks distant target as ranged`() {
+        val attackerUnit = addHybridUnit(testGame.getTile(-1, 0))
+        testGame.addUnit("Warrior", attackerCiv, testGame.getTile(0, 1)) // vision
+        testGame.addUnit("Warrior", defenderCiv, testGame.getTile(1, 0))
+
+        val attackableEnemies = TargetHelper.getAttackableEnemies(attackerUnit, attackerUnit.movement.getDistanceToTiles())
+        val fromCurrentTile = attackableEnemies.filter {
+            it.tileToAttack == testGame.getTile(1, 0) && it.tileToAttackFrom == attackerUnit.getTile()
+        }
+
+        assertTrue(fromCurrentTile.any { it.isRangedAttack })
+        assertTrue(fromCurrentTile.none { !it.isRangedAttack })
+    }
+
+    private fun addHybridUnit(tile: Tile): MapUnit {
+        val baseUnit = testGame.createBaseUnit("Gunpowder", UniqueType.CanMeleeAttack.text)
+        baseUnit.movement = 2
+        baseUnit.strength = 24
+        baseUnit.rangedStrength = 24
+        baseUnit.range = 2
+        val unit = testGame.addUnit(baseUnit.name, attackerCiv, tile)
+        unit.currentMovement = 2f
+        return unit
     }
 }

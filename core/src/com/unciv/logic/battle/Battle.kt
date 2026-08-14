@@ -65,7 +65,8 @@ object Battle {
         if (combatant == null || combatant.getCivInfo() == attacker.getCivInfo()) return false
         /** Alternatively, maybe we DID reach that tile, but it turned out to be a hill or something,
          * so we expended all of our movement points! */
-        if (attacker.hasUnique(UniqueType.MustSetUp)
+        if (attackableTile.isRangedAttack
+                && attacker.hasUnique(UniqueType.MustSetUp)
                 && !attacker.unit.isSetUpForSiege()
                 && attacker.unit.hasMovement()
         ) {
@@ -92,11 +93,14 @@ object Battle {
      * This is meant to be called only after all prerequisite checks have been done.
      */
     fun attackOrNuke(attacker: ICombatant, attackableTile: AttackableTile): DamageDealt {
-        return if (attacker is MapUnitCombatant && attacker.unit.isNuclearWeapon()) {
-            Nuke.NUKE(attacker, attackableTile.tileToAttack)
+        val attackingCombatant =
+            if (attacker is MapUnitCombatant) MapUnitCombatant(attacker.unit, attackableTile.isRangedAttack)
+            else attacker
+        return if (attackingCombatant is MapUnitCombatant && attackingCombatant.unit.isNuclearWeapon()) {
+            Nuke.NUKE(attackingCombatant, attackableTile.tileToAttack)
             DamageDealt.None
         } else {
-            attack(attacker, getMapCombatantOfTile(attackableTile.tileToAttack)!!)
+            attack(attackingCombatant, getMapCombatantOfTile(attackableTile.tileToAttack)!!)
         }
     }
 

@@ -46,7 +46,7 @@ object HeadTowardsEnemyCityAutomation {
             .asSequence().filterNot { it.value > 10 } // anything 10 tiles away from the target is irrelevant
             .sortedBy { it.value }.map { it.key } // sort the list by closeness to target - least is best!
 
-        if (unit.baseUnit.isRanged()) // ranged units don't harm capturable cities, waste of a turn
+        if (unit.baseUnit.isRanged() && !unit.canMeleeAttack()) // ranged units don't harm capturable cities, waste of a turn
             enemyCitiesByPriority = enemyCitiesByPriority.filterNot { it.health == 1 }
 
         return enemyCitiesByPriority

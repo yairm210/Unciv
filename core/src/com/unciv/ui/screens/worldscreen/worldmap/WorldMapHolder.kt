@@ -251,12 +251,14 @@ class WorldMapHolder(
             /** If we are in unit-swapping mode and didn't find a swap partner, we don't want to move or attack */
         } else {
             // This seems inefficient as the tileToAttack is already known - but the method also calculates tileToAttackFrom
-            val attackableTile = TargetHelper
-                    .getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
-                    .firstOrNull { it.tileToAttack == tile }
+            val attackableTile = TargetHelper.chooseAttackableTileAgainst(
+                    unit,
+                    tile,
+                    TargetHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
+            )
             if (unit.canAttack() && attackableTile != null) {
                 /** ****** Right-click Attack ****** */
-                val attacker = MapUnitCombatant(unit)
+                val attacker = MapUnitCombatant(unit, attackableTile.isRangedAttack)
                 if (!Battle.movePreparingAttack(attacker, attackableTile)) return
                 if (!SoundPlayer.play(UncivSound(attacker.getName())))
                     SoundPlayer.play(attacker.getAttackSound())

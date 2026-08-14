@@ -216,7 +216,7 @@ object WorldMapTileUpdater {
                         .toList()
                 else TargetHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
                     .filter { it.tileToAttack.isVisible(unit.civ) }
-                    .distinctBy { it.tileToAttack }
+                    .let { TargetHelper.preferredAttackableEnemies(unit, it) }
 
             for (attackableTile in attackableTiles) {
                 val tileGroupToAttack = tileGroups[attackableTile.tileToAttack]!!

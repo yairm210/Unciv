@@ -6,7 +6,6 @@ import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.battle.TargetHelper
-import com.unciv.logic.city.City
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
@@ -24,7 +23,7 @@ object BattleHelper {
                 val defender = Battle.getMapCombatantOfTile(it.tileToAttack)
                 unit.hasUnique(UniqueType.SelfDestructs) || (defender != null &&
                 (BattleDamage.calculateDamageToAttacker(
-                    MapUnitCombatant(unit),
+                    MapUnitCombatant(unit, it.isRangedAttack),
                     defender) < unit.health
                     && unit.getDamageFromTerrain(it.tileToAttackFrom) <= 0))
                     // For mounted units it is fine to attack from these tiles, but with current AI movement logic it is not easy to determine if our unit can meaningfully move away after attacking
@@ -34,7 +33,7 @@ object BattleHelper {
         val enemyTileToAttack = chooseAttackTarget(unit, attackableEnemies)
 
         if (enemyTileToAttack != null) {
-            if (enemyTileToAttack.tileToAttack.militaryUnit == null && unit.baseUnit.isRanged()
+            if (enemyTileToAttack.tileToAttack.militaryUnit == null && enemyTileToAttack.isRangedAttack
                 && unit.movement.canMoveTo(enemyTileToAttack.tileToAttack)
                 && distanceToTiles.containsKey(enemyTileToAttack.tileToAttack)) { // Since the 'getAttackableEnemies' could return a tile we attack at range but cannot reach
                 // Ranged units should move to caputre a civilian unit instead of attacking it
@@ -47,14 +46,14 @@ object BattleHelper {
     }
 
     fun tryDisembarkUnitToAttackPosition(unit: MapUnit): Boolean {
-        if (!unit.baseUnit.isMelee() || !unit.baseUnit.isLandUnit || !unit.isEmbarked()) return false
+        if (!unit.canMeleeAttack() || !unit.baseUnit.isLandUnit || !unit.isEmbarked()) return false
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
 
         val attackableEnemiesNextTurn = TargetHelper.getAttackableEnemies(unit, unitDistanceToTiles)
                 // Only take enemies we can fight without dying
                 .filter {
                     BattleDamage.calculateDamageToAttacker(
-                        MapUnitCombatant(unit),
+                        MapUnitCombatant(unit, it.isRangedAttack),
                         Battle.getMapCombatantOfTile(it.tileToAttack)!!
                     ) < unit.health
                 }
@@ -80,7 +79,7 @@ object BattleHelper {
         // We always have to calculate the attack value even if there is only one attackableEnemy
         for (attackableEnemy in attackableEnemies) {
             val tempAttackValue = if (attackableEnemy.tileToAttack.isCityCenter())
-                getCityAttackValue(unit, attackableEnemy.tileToAttack.getCity()!!)
+                getCityAttackValue(unit, attackableEnemy)
             else getUnitAttackValue(unit, attackableEnemy)
             if (tempAttackValue > highestAttackValue) {
                 highestAttackValue = tempAttackValue
@@ -98,11 +97,12 @@ object BattleHelper {
      * Base value is 100(Mele) 110(Ranged) standard deviation is around 80 to 130
      */
     @Readonly
-    private fun getCityAttackValue(attacker: MapUnit, city: City): Int {
-        val attackerUnit = MapUnitCombatant(attacker)
+    private fun getCityAttackValue(attacker: MapUnit, attackTile: AttackableTile): Int {
+        val city = attackTile.tileToAttack.getCity()!!
+        val attackerUnit = MapUnitCombatant(attacker, attackTile.isRangedAttack)
         val cityUnit = CityCombatant(city)
         
-        val canCaptureCity = attacker.baseUnit.isMelee() && !attacker.hasUnique(UniqueType.CannotCaptureCities)
+        val canCaptureCity = !attackTile.isRangedAttack && attacker.canMeleeAttack() && !attacker.hasUnique(UniqueType.CannotCaptureCities)
         if (city.health == 1)
             return if (canCaptureCity) 10000 // Capture the city immediately!
             else 0 // No reason to attack, we won't make any difference
@@ -111,7 +111,7 @@ object BattleHelper {
             return 10000
             
 
-        if (attacker.baseUnit.isMelee()) {
+        if (!attackTile.isRangedAttack) {
             val battleDamage = BattleDamage.calculateDamageToAttacker(attackerUnit, cityUnit)
             if (attacker.health - battleDamage * 2 <= 0 && !attacker.hasUnique(UniqueType.SelfDestructs)) {
                 // The more fiendly units around the city, the more willing we should be to just attack the city
@@ -129,7 +129,7 @@ object BattleHelper {
         // Siege units should really only attack the city
         if (attacker.baseUnit.isProbablySiegeUnit()) attackValue += 100
         // Ranged units don't take damage from the city
-        else if (attacker.baseUnit.isRanged()) attackValue += 10
+        else if (attackTile.isRangedAttack) attackValue += 10
         // Lower health cities have a higher priority to attack ranges from -20 to 30
         attackValue -= (city.health - 60) / 2
 
@@ -160,16 +160,19 @@ object BattleHelper {
         val civilianUnit = attackTile.tileToAttack.civilianUnit
         if (militaryUnit != null) {
             attackValue = 200 - militaryUnit.health + // continuously prioritise lower-health units
-                BattleDamage.calculateDamageToDefender(MapUnitCombatant(attacker), MapUnitCombatant(militaryUnit))
+                BattleDamage.calculateDamageToDefender(
+                    MapUnitCombatant(attacker, attackTile.isRangedAttack),
+                    MapUnitCombatant(militaryUnit)
+                )
         } else if (civilianUnit != null) {
             attackValue = 50
             // Only melee units should really attack/capture civilian units, ranged units may be able to capture by moving
-            if (attacker.baseUnit.isMelee() || attacker.movement.canReachInCurrentTurn(attackTile.tileToAttack)) {
+            if (!attackTile.isRangedAttack || attacker.movement.canReachInCurrentTurn(attackTile.tileToAttack)) {
                 if (civilianUnit.isGreatPerson()) {
                     attackValue += 150
                 }
                 if (civilianUnit.hasUnique(UniqueType.FoundCity, GameContext.IgnoreConditionals)) attackValue += 60
-            } else if (attacker.baseUnit.isRanged() && !civilianUnit.hasUnique(UniqueType.Uncapturable)) {
+            } else if (!civilianUnit.hasUnique(UniqueType.Uncapturable)) {
                 return 10 // Don't shoot civilians that we can capture!
             }
         }
