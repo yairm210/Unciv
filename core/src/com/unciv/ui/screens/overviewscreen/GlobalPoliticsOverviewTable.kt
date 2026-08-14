@@ -108,7 +108,8 @@ class GlobalPoliticsOverviewTable(
     private fun createGlobalPoliticsTable() {
         clear()
 
-        for (civ in sequenceOf(viewingPlayer) + viewingPlayer.diplomacyFunctions.getKnownCivsSorted(includeCityStates = false)) {
+        val civsToShow = if (viewingPlayer.isSpectator()) emptySequence() else sequenceOf(viewingPlayer)
+        for (civ in civsToShow + viewingPlayer.diplomacyFunctions.getKnownCivsSorted(includeCityStates = false)) {
             // We already have a separator under the fixed header, we only need them here between rows.
             // This is also the replacement for calling row() explicitly
             if (cells.size > 0) addSeparator(Color.GRAY)
@@ -280,7 +281,7 @@ class GlobalPoliticsOverviewTable(
             else gameInfo.civilizations.count {
                 !it.isSpectator() && !it.isBarbarian && (persistableData.includeCityStates || !it.isCityState)
             }.tr()
-        undefeatedCivs = listOf(viewingPlayer) +
+        undefeatedCivs = (if (viewingPlayer.isSpectator()) emptyList() else listOf(viewingPlayer)) +
                 viewingPlayer.diplomacyFunctions.getKnownCivsSorted(persistableData.includeCityStates)
         defeatedCivs = viewingPlayer.diplomacyFunctions.getKnownCivsSorted(persistableData.includeCityStates, true)
             .filter { it.isDefeated() }.toList()
@@ -353,11 +354,13 @@ class GlobalPoliticsOverviewTable(
 
     private fun Table.addTitleInfo(columns: Int) {
         add("[$relevantCivsCount] Civilizations in the game".toLabel()).colspan(columns).row()
-        add("Our Civilization:".toLabel()).colspan(columns).left().padLeft(10f).padTop(10f).row()
-        add(getCivMiniTable(viewingPlayer)).left()
-        val scoreText = if (viewingPlayer.isDefeated()) Fonts.death.toString()
-            else viewingPlayer.calculateTotalScore().toInt().tr()
-        add(scoreText.toLabel()).left().row()
+        if (!viewingPlayer.isSpectator()) {
+            add("Our Civilization:".toLabel()).colspan(columns).left().padLeft(10f).padTop(10f).row()
+            add(getCivMiniTable(viewingPlayer)).left()
+            val scoreText = if (viewingPlayer.isDefeated()) Fonts.death.toString()
+                else viewingPlayer.calculateTotalScore().toInt().tr()
+            add(scoreText.toLabel()).left().row()
+        }
         val turnsTillNextDiplomaticVote = viewingPlayer.getTurnsTillNextDiplomaticVote() ?: return
         add("Turns until the next\ndiplomacy victory vote: [$turnsTillNextDiplomaticVote]".toLabel()).colspan(columns).row()
     }
