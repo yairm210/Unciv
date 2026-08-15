@@ -21,7 +21,7 @@ import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.closeAllPopups
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.view.CityView
+import com.unciv.view.TileView
 
 /**
  * This class handles everything related to buying constructions. This includes
@@ -100,7 +100,7 @@ class BuyButtonFactory(val cityScreen: CityScreen) {
     fun askToBuyConstruction(
         construction: INonPerpetualConstruction,
         stat: Stat = preferredBuyStat,
-        tile: com.unciv.logic.map.tile.Tile? = null
+        tile: TileView? = null
     ) {
         if (!isConstructionPurchaseShown(construction, stat)) return
         val cityView = cityScreen.cityView
@@ -115,7 +115,7 @@ class BuyButtonFactory(val cityScreen: CityScreen) {
         construction: INonPerpetualConstruction,
         stat: Stat,
         constructionStatBuyCost: Int,
-        tile: com.unciv.logic.map.tile.Tile?
+        tile: TileView?
     ) : Popup(cityScreen.stage) {
         init {
             val cityView = cityScreen.cityView
@@ -161,11 +161,11 @@ class BuyButtonFactory(val cityScreen: CityScreen) {
     private fun purchaseConstruction(
         construction: INonPerpetualConstruction,
         stat: Stat = Stat.Gold,
-        tile: com.unciv.logic.map.tile.Tile? = null
+        tile: TileView? = null
     ) {
         SoundPlayer.play(stat.purchaseSound)
         val cityView = cityScreen.cityView
-        if (!cityView.constructions.purchaseConstruction(construction, cityScreen.selectedQueueEntry, false, stat, tile)) {
+        if (!cityView.constructions.purchaseConstruction(construction, cityScreen.selectedQueueEntry, stat, tile)) {
             Popup(cityScreen).apply {
                 add("No space available to place [${construction.name}] near [${cityView.name}]".tr()).row()
                 addCloseButton()
@@ -177,15 +177,12 @@ class BuyButtonFactory(val cityScreen: CityScreen) {
             cityScreen.selectedQueueEntry = -1
             cityScreen.clearSelection()
 
-            // Allow buying next queued or auto-assigned construction right away
-            cityView.constructions.chooseNextConstruction()
             if (cityView.constructions.currentConstructionName().isNotEmpty()) {
                 val newConstruction = cityView.constructions.getCurrentConstruction()
                 if (newConstruction is INonPerpetualConstruction)
                     cityScreen.selectConstruction(newConstruction)
             }
         }
-        cityView.tryReassignPopulation()
         cityScreen.update()
     }
 

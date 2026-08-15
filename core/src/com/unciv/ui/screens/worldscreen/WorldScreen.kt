@@ -259,7 +259,7 @@ class WorldScreen(
     }
 
     fun openEmpireOverview(category: EmpireOverviewCategories? = null, selection: String = "") {
-        game.pushScreen(EmpireOverviewScreen(selectedCiv, category, selection))
+        game.pushScreen(EmpireOverviewScreen(selectedGameView.civView, category, selection))
     }
 
     fun openNewGameScreen() {
@@ -399,7 +399,7 @@ class WorldScreen(
             
             minimapWrapper.update(getGameViewConsideringForOfWar().viewer)
             bottomTileInfoTable.civView = getGameViewConsideringForOfWar().civView
-            bottomTileInfoTable.updateTileTable(mapHolder.selectedTile)
+            bottomTileInfoTable.updateTileTable(mapHolder.selectedTile?.getTile())
             bottomTileInfoTable.x = stage.width - bottomTileInfoTable.width
             bottomTileInfoTable.y = if (game.settings.showMinimap) minimapWrapper.height + 5f else 0f
 

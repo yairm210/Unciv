@@ -1,4 +1,4 @@
-# Simulations
+# Testing AI changes
 
 The codebase supports the ability to run automated simulations and compare the results for AI development.
 

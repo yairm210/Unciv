@@ -1,7 +1,6 @@
 package com.unciv.view
 
 import com.unciv.logic.city.CityConstructions
-import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.IConstruction
 import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.RejectionReason
@@ -9,7 +8,7 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.stats.Stat
 import yairm210.purity.annotations.Readonly
 
-class CityConstructionsView(private val cityConstructions: CityConstructions) {
+class CityConstructionsView(private val cityConstructions: CityConstructions, private val gameView: GameView) {
     val constructionQueue: List<String> get() = cityConstructions.constructionQueue
 
     // Navigation
@@ -26,10 +25,10 @@ class CityConstructionsView(private val cityConstructions: CityConstructions) {
     @Readonly fun getRejectionReasons(construction: INonPerpetualConstruction): Sequence<RejectionReason> = construction.getRejectionReasons(cityConstructions)
     @Readonly fun isBuildable(construction: IConstruction): Boolean = construction.isBuildable(cityConstructions)
     
-    @Readonly fun canPlaceCreateOneImprovementOn(improvement: TileImprovement, tile: Tile): Boolean =
-        cityConstructions.canPlaceCreateOneImprovementOn(improvement, tile)
-    @Readonly fun getTileForImprovement(improvementName: String): Tile? =
-        cityConstructions.getTileForImprovement(improvementName)
+    @Readonly fun canPlaceCreateOneImprovementOn(improvement: TileImprovement, tileView: TileView): Boolean =
+        cityConstructions.canPlaceCreateOneImprovementOn(improvement, tileView.getTile())
+    @Readonly fun getTileForImprovement(improvementName: String): TileView? =
+        cityConstructions.getTileForImprovement(improvementName)?.let { gameView.tileMapView.getTile(it) }
 
     @Readonly fun isQueueFull(): Boolean = cityConstructions.isQueueFull()
     @Readonly fun isBeingConstructedOrEnqueued(name: String): Boolean = cityConstructions.isBeingConstructedOrEnqueued(name)
@@ -45,8 +44,6 @@ class CityConstructionsView(private val cityConstructions: CityConstructions) {
         cityConstructions.isConstructionPurchaseBlockedByUnit(construction)
 
     // Actions
-    fun purchaseConstruction(construction: INonPerpetualConstruction, queuePosition: Int, automatic: Boolean, stat: Stat, tile: Tile?): Boolean =
-        cityConstructions.purchaseConstruction(construction, queuePosition, automatic, stat, tile)
-    // I'm not convinced this is required, I think the usage should move to the logic rather than the view
-    fun chooseNextConstruction() = cityConstructions.chooseNextConstruction()
+    fun purchaseConstruction(construction: INonPerpetualConstruction, queuePosition: Int, stat: Stat, tileView: TileView?): Boolean =
+        cityConstructions.purchaseConstruction(construction, queuePosition, automatic = false, stat, tileView?.getTile())
 }

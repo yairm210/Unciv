@@ -69,7 +69,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen) : Table() {
             val buyTileButton = "Buy for [$goldCostOfTile] gold".toTextButton()
             buyTileButton.onActivation(binding = KeyboardBinding.BuyTile) {
                 buyTileButton.disable()
-                cityScreen.askToBuyTile(selectedTile)
+                cityScreen.askToBuyTile(tileView)
             }
             buyTileButton.addContextMenu { TileBuyMenu(buyTileButton) }
             buyTileButton.isEnabled = cityScreen.canChangeState && cityView.viewingCiv().hasStatToBuy(Stat.Gold, goldCostOfTile)

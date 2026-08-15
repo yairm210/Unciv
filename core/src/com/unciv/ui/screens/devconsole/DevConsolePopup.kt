@@ -243,7 +243,7 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen, Scrollability.Dev
     internal fun getCivByNameOrNull(name: CliInput): Civilization? =
         gameInfo.civilizations.firstOrNull { name.equals(it.civID) }
 
-    internal fun getSelectedTile() = screen.mapHolder.selectedTile
+    internal fun getSelectedTile() = screen.mapHolder.selectedTile?.getTile()
         ?: throw ConsoleErrorException("Select tile")
 
     /** Gets city by selected tile */

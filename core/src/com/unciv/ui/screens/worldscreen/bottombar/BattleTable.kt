@@ -69,13 +69,13 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
         when (val attacker = tryGetAttacker()) {
             null -> return hide()
             is MapUnitCombatant if attacker.unit.isNuclearWeapon() -> {
-                val selectedTile = worldScreen.mapHolder.selectedTile
+                val selectedTile = worldScreen.mapHolder.selectedTile?.getTile()
                     ?: return hide() // no selected tile
                 if (selectedTile == attacker.getTile()) return hide() // mayUseNuke would test this again, but not actually seeing the nuke-yourself table just by selecting the nuke is nicer
                 simulateNuke(attacker, selectedTile)
             }
             is MapUnitCombatant if attacker.unit.isPreparingAirSweep() -> {
-                val selectedTile = worldScreen.mapHolder.selectedTile
+                val selectedTile = worldScreen.mapHolder.selectedTile?.getTile()
                     ?: return hide() // no selected tile
                 simulateAirsweep(attacker, selectedTile)
             }
@@ -126,7 +126,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
 
     @Readonly
     private fun tryGetDefender(): ICombatant? {
-        val selectedTile = worldScreen.mapHolder.selectedTile ?: return null // no selected tile
+        val selectedTile = worldScreen.mapHolder.selectedTile?.getTile() ?: return null // no selected tile
         return tryGetDefenderAtTile(selectedTile, false)
     }
 

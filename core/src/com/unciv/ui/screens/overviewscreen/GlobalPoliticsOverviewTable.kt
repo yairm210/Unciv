@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
-import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
@@ -26,12 +25,13 @@ import com.unciv.ui.components.widgets.ColorMarkupLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
+import com.unciv.view.CivView
 import com.unciv.view.ForeignCivView
 import yairm210.purity.annotations.Readonly
 import kotlin.math.roundToInt
 
 class GlobalPoliticsOverviewTable(
-    viewingPlayer: Civilization,
+    viewingPlayer: CivView,
     overviewScreen: EmpireOverviewScreen,
     persistedData: EmpireOverviewTabPersistableData? = null
 ) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
@@ -110,7 +110,7 @@ class GlobalPoliticsOverviewTable(
     private fun createGlobalPoliticsTable() {
         clear()
 
-        for (civ in sequenceOf(viewingPlayer) + viewingPlayer.diplomacyFunctions.getKnownCivsSorted(includeCityStates = false)) {
+        for (civ in sequenceOf(viewingPlayer.getCiv()) + viewingPlayer.getCiv().diplomacyFunctions.getKnownCivsSorted(includeCityStates = false)) {
             // We already have a separator under the fixed header, we only need them here between rows.
             // This is also the replacement for calling row() explicitly
             if (cells.size > 0) addSeparator(Color.GRAY)
@@ -165,12 +165,12 @@ class GlobalPoliticsOverviewTable(
     private fun getWondersOfCivTable(civ: Civilization): Table {
         val wonderTable = Table(skin)
         val wonderInfo = WonderInfo()
-        val allWorldWonders = wonderInfo.collectInfo(viewingPlayer)
+        val allWorldWonders = wonderInfo.collectInfo(viewingPlayer.getCiv())
 
         for (wonder in allWorldWonders) {
             if (wonder.civ == civ) {
                 val wonderName = wonder.name.toLabel()
-                if (wonder.location != null && wonder.location.isVisible(viewingPlayer)) {
+                if (wonder.location != null && wonder.location.isVisible(viewingPlayer.getCiv())) {
                     wonderName.onClick {
                         val worldScreen = UncivGame.Current.resetToWorldScreen()
                         worldScreen.mapHolder.setCenterPosition(wonder.location.position)
@@ -185,7 +185,7 @@ class GlobalPoliticsOverviewTable(
 
     @Readonly
     private fun getCivName(otherciv: Civilization): String {
-        if (viewingPlayer.knows(otherciv) || otherciv == viewingPlayer) {
+        if (viewingPlayer.getCiv().knows(otherciv) || otherciv == viewingPlayer.getCiv()) {
             return otherciv.civName
         }
         return "an unknown civilization"
@@ -194,7 +194,7 @@ class GlobalPoliticsOverviewTable(
     private fun getPoliticsOfCivTable(civ: Civilization): Table {
         val politicsTable = Table(skin)
 
-        if (!viewingPlayer.knows(civ) && civ != viewingPlayer)
+        if (!viewingPlayer.getCiv().knows(civ) && civ != viewingPlayer.getCiv())
             return politicsTable
 
         if (civ.isDefeated()) {
@@ -276,21 +276,21 @@ class GlobalPoliticsOverviewTable(
             add(civTableScroll.addBorder(2f, Color.WHITE)).pad(10f)
         }
 
-        val hideCivsCount = viewingPlayer.shouldHideCivCount() ||
-            persistableData.includeCityStates && viewingPlayer.hideCityStateCount()
+        val hideCivsCount = viewingPlayer.getCiv().shouldHideCivCount() ||
+            persistableData.includeCityStates && viewingPlayer.getCiv().hideCityStateCount()
         relevantCivsCount = if (hideCivsCount) "?"
             else gameInfo.civilizations.count {
                 !it.isSpectator() && !it.isBarbarian && (persistableData.includeCityStates || !it.isCityState)
             }.tr()
-        undefeatedCivs = listOf(viewingPlayer) +
-                viewingPlayer.diplomacyFunctions.getKnownCivsSorted(persistableData.includeCityStates)
-        defeatedCivs = viewingPlayer.diplomacyFunctions.getKnownCivsSorted(persistableData.includeCityStates, true)
+        undefeatedCivs = listOf(viewingPlayer.getCiv()) +
+                viewingPlayer.getCiv().diplomacyFunctions.getKnownCivsSorted(persistableData.includeCityStates)
+        defeatedCivs = viewingPlayer.getCiv().diplomacyFunctions.getKnownCivsSorted(persistableData.includeCityStates, true)
             .filter { it.isDefeated() }.toList()
 
         clear()
         fixedContent.clear()
 
-        showDiplomacyGroup = undefeatedCivs.any { it != viewingPlayer }
+        showDiplomacyGroup = undefeatedCivs.any { it != viewingPlayer.getCiv() }
         updateCivTable(2)
         portraitMode = !showDiplomacyGroup ||
                 civTable.minWidth > overviewScreen.stage.width / 2 ||
@@ -300,6 +300,10 @@ class GlobalPoliticsOverviewTable(
         if (showDiplomacyGroup) {
             val diplomacySize = (overviewScreen.stage.width - (if (portraitMode) 0f else civTable.minWidth))
                 .coerceAtMost(overviewScreen.centerAreaHeight)
+
+            GlobalPoliticsDiagramGroup.Relation.entries // Doing this solves the bug in #15393
+            // I'm still not sure why, it's definitely a compiler bug
+
             val diplomacyGroup = GlobalPoliticsDiagramGroup(undefeatedCivs, diplomacySize)
             table.add(diplomacyGroup).top()
         }
@@ -336,7 +340,7 @@ class GlobalPoliticsOverviewTable(
     private fun updateCivTable(columns: Int) = civTable.apply {
         clear()
         addTitleInfo(columns)
-        addCivsCategory(columns, "alive", undefeatedCivs.filter { it != viewingPlayer })
+        addCivsCategory(columns, "alive", undefeatedCivs.filter { it != viewingPlayer.getCiv() })
         addCivsCategory(columns, "defeated", defeatedCivs)
         layout()
     }
@@ -347,8 +351,8 @@ class GlobalPoliticsOverviewTable(
         table.add(civInfo.civName.toLabel(hideIcons = true)).left().padRight(10f)
         table.touchable = Touchable.enabled
         table.onClick {
-            if (civInfo.isDefeated() || viewingPlayer.isSpectator() || civInfo == viewingPlayer) return@onClick
-            UncivGame.Current.pushScreen(DiplomacyScreen(GUI.getWorldScreen().selectedGameView.getCivView(viewingPlayer), ForeignCivView(civInfo, viewingPlayer)))
+            if (civInfo.isDefeated() || viewingPlayer.isSpectator() || civInfo == viewingPlayer.getCiv()) return@onClick
+            UncivGame.Current.pushScreen(DiplomacyScreen(viewingPlayer, ForeignCivView(civInfo, viewingPlayer.getCiv())))
         }
         return table
     }
@@ -356,11 +360,11 @@ class GlobalPoliticsOverviewTable(
     private fun Table.addTitleInfo(columns: Int) {
         add("[$relevantCivsCount] Civilizations in the game".toLabel()).colspan(columns).row()
         add("Our Civilization:".toLabel()).colspan(columns).left().padLeft(10f).padTop(10f).row()
-        add(getCivMiniTable(viewingPlayer)).left()
-        val scoreText = if (viewingPlayer.isDefeated()) Fonts.death.toString()
-            else viewingPlayer.calculateTotalScore().toInt().tr()
+        add(getCivMiniTable(viewingPlayer.getCiv())).left()
+        val scoreText = if (viewingPlayer.getCiv().isDefeated()) Fonts.death.toString()
+            else viewingPlayer.getCiv().calculateTotalScore().toInt().tr()
         add(scoreText.toLabel()).left().row()
-        val turnsTillNextDiplomaticVote = viewingPlayer.getTurnsTillNextDiplomaticVote() ?: return
+        val turnsTillNextDiplomaticVote = viewingPlayer.getCiv().getTurnsTillNextDiplomaticVote() ?: return
         add("Turns until the next\ndiplomacy victory vote: [$turnsTillNextDiplomaticVote]".toLabel()).colspan(columns).row()
     }
 
