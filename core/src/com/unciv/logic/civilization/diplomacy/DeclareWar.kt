@@ -6,6 +6,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.DiplomacyAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.models.ruleset.nation.PersonalityValue
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
@@ -95,6 +96,8 @@ object DeclareWar {
                 diplomacyManager.getCommonKnownCivsWithSpectators().forEach {
                     it.addNotification("[${civInfo.civName}] has declared war on [${otherCiv.civName}]!",
                         NotificationCategory.Diplomacy, otherCiv.civName, NotificationIcon.War, civInfo.civName)
+                    if (it.playerType == PlayerType.Human)
+                        it.popupAlerts.add(PopupAlert(AlertType.ThirdPartyWar, "${civInfo.civName}@${otherCiv.civName}"))
                 }
             }
             WarType.DefensivePactWar, WarType.CityStateAllianceWar, WarType.JoinWar,
@@ -113,6 +116,8 @@ object DeclareWar {
                 diplomacyManager.getCommonKnownCivsWithSpectators().filterNot { it == allyCiv }.forEach {
                     it.addNotification("[${aggressor.civName}] has joined [${allyCiv.civName}] in the war against [${defender.civName}]!",
                         NotificationCategory.Diplomacy, defender.civName, NotificationIcon.War, allyCiv.civName, aggressor.civName)
+                    if (it.playerType == PlayerType.Human && it != defender && it != aggressor)
+                        it.popupAlerts.add(PopupAlert(AlertType.ThirdPartyWar, "${aggressor.civName}@${defender.civName}"))
                 }
 
                 allyCiv.addNotification("[${aggressor.civName}] has joined us in the war against [${defender.civName}]!",
@@ -138,6 +143,8 @@ object DeclareWar {
                 diplomacyManager.getCommonKnownCivsWithSpectators().filterNot { it == allyCiv }.forEach {
                     it.addNotification("[${civInfo.civName}] and [${allyCiv.civName}] have declared war against [${otherCiv.civName}]!",
                             NotificationCategory.Diplomacy, otherCiv.civName, NotificationIcon.War, allyCiv.civName, civInfo.civName)
+                    if (it.playerType == PlayerType.Human)
+                        it.popupAlerts.add(PopupAlert(AlertType.ThirdPartyWar, "${civInfo.civName}@${otherCiv.civName}"))
                 }
             }
         }

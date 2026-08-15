@@ -39,7 +39,16 @@ enum class AlertType : IsPartOfGameInfoSerialization {
     GameHasBeenWon,
     Event,
     
-    Denounced
+    Denounced,
+
+    /** Third-party war declaration (not involving the viewing civ) */
+    ThirdPartyWar,
+    /** Third-party peace treaty (not involving the viewing civ) */
+    ThirdPartyPeace,
+    /** A rival civ added a spaceship part to their capital */
+    SpaceshipPartAdded,
+    /** A National Wonder is available to build */
+    NationalWonderAvailable,
 }
 
 class PopupAlert : IsPartOfGameInfoSerialization {

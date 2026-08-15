@@ -3,8 +3,10 @@ package com.unciv.ui.screens.worldscreen.unit.actions
 import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.UncivGame
+import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.managers.ImprovementFunctions
 import com.unciv.logic.map.mapunit.MapUnit
@@ -292,6 +294,11 @@ object UnitActionsFromUniques {
             useFrequency = useFrequency,
             action = {
                 unit.civ.victoryManager.currentsSpaceshipParts.add(unit.name, 1)
+                for (otherCiv in unit.civ.gameInfo.civilizations) {
+                    if (otherCiv == unit.civ || otherCiv.playerType != PlayerType.Human) continue
+                    if (otherCiv.knows(unit.civ))
+                        otherCiv.popupAlerts.add(PopupAlert(AlertType.SpaceshipPartAdded, "${unit.civ.civName}@${unit.name}"))
+                }
                 unit.destroy()
             }.takeIf {
                 tile.isCityCenter() && tile.getCity()!!

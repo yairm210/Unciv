@@ -79,6 +79,7 @@ class AlertPopup(
     private val stageHeight get() = worldScreen.stage.height
     @Readonly private fun getCiv(civName: String) = gameInfo.getCivilization(civName)
     @Readonly private fun getCity(cityId: String) = gameInfo.getCities().first { it.id == cityId }
+    private val settings get() = UncivGame.Current.settings
     //endregion
 
     // This redirects all addCloseButton uses with only text and no action to accept the space key
@@ -130,6 +131,10 @@ class AlertPopup(
             AlertType.RecapturedCivilian -> shouldOpen = addRecapturedCivilian()
             AlertType.GameHasBeenWon -> addGameHasBeenWon()
             AlertType.Event -> shouldOpen = addEvent()
+            AlertType.ThirdPartyWar -> shouldOpen = addThirdPartyWar()
+            AlertType.ThirdPartyPeace -> shouldOpen = addThirdPartyPeace()
+            AlertType.SpaceshipPartAdded -> shouldOpen = addSpaceshipPartAdded()
+            AlertType.NationalWonderAvailable -> shouldOpen = addNationalWonderAvailable()
         }
         if (shouldOpen) open()
         else viewingCiv.popupAlerts.remove(popupAlert)
@@ -673,6 +678,50 @@ class AlertPopup(
     }
 
     //endregion
+
+    private fun addThirdPartyWar(): Boolean {
+        if (!settings.alertRivalWarDeclaration) return false
+        val parts = popupAlert.value.split("@")
+        if (parts.size < 2) return false
+        val attacker = getCiv(parts[0])
+        val defender = getCiv(parts[1])
+        if (attacker.isDefeated() || defender.isDefeated()) return false
+        addGoodSizedLabel("[${attacker.civName}] has declared war on [${defender.civName}]!").row()
+        addCloseButton()
+        return true
+    }
+
+    private fun addThirdPartyPeace(): Boolean {
+        if (!settings.alertRivalPeaceTreaty) return false
+        val parts = popupAlert.value.split("@")
+        if (parts.size < 2) return false
+        val civ1 = getCiv(parts[0])
+        val civ2 = getCiv(parts[1])
+        if (civ1.isDefeated() || civ2.isDefeated()) return false
+        addGoodSizedLabel("[${civ1.civName}] and [${civ2.civName}] have signed a Peace Treaty!").row()
+        addCloseButton()
+        return true
+    }
+
+    private fun addNationalWonderAvailable(): Boolean {
+        if (!settings.alertNationalWonderAvailable) return false
+        val buildingName = popupAlert.value
+        addGoodSizedLabel("[${buildingName}] is now available to build!").row()
+        addCloseButton()
+        return true
+    }
+
+    private fun addSpaceshipPartAdded(): Boolean {
+        if (!settings.alertRivalSpaceshipPart) return false
+        val parts = popupAlert.value.split("@")
+        if (parts.size < 2) return false
+        val civInfo = getCiv(parts[0])
+        if (civInfo.isDefeated()) return false
+        val partName = parts[1]
+        addGoodSizedLabel("[${civInfo.civName}] has added [${partName}] to their capital!").row()
+        addCloseButton()
+        return true
+    }
 
     override fun close() {
         viewingCiv.popupAlerts.remove(popupAlert)

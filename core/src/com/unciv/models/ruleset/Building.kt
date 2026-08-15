@@ -5,7 +5,10 @@ import com.unciv.logic.MultiFilter
 import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
+import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.civilization.PopupAlert
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileImprovement
@@ -491,6 +494,11 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
         if (civInfo.gameInfo.spaceResources.contains(name)) {
             civInfo.victoryManager.currentsSpaceshipParts.add(name, 1)
+            for (otherCiv in civInfo.gameInfo.civilizations) {
+                if (otherCiv == civInfo || otherCiv.playerType != PlayerType.Human) continue
+                if (otherCiv.knows(civInfo))
+                    otherCiv.popupAlerts.add(PopupAlert(AlertType.SpaceshipPartAdded, "${civInfo.civName}@${name}"))
+            }
         }
 
         cityConstructions.addBuilding(this)

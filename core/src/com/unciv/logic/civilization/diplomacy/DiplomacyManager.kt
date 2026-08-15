@@ -7,6 +7,7 @@ import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeEvaluation
@@ -634,6 +635,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
                     "[${civInfo.civName}] and [${otherCiv.civName}] have signed a Peace Treaty!",
                     NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCiv.civName
             )
+            if (civ.playerType == PlayerType.Human && civ != civInfo && civ != otherCiv)
+                civ.popupAlerts.add(PopupAlert(AlertType.ThirdPartyPeace, "${civInfo.civName}@${otherCiv.civName}"))
         }
         
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponSigningPeace)) {
