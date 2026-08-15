@@ -63,7 +63,7 @@ class CityTileGroup(val cityView: CityView, tileView: TileView, tileSetStrings: 
                     label.y -= 15f
 
                     // Can be purchased now?
-                    if (!cityView.viewingCiv().hasStatToBuy(Stat.Gold, price)) {
+                    if (!cityView.owningCivView.hasStatToBuy(Stat.Gold, price)) {
                         image.color = Color.WHITE.darken(0.5f)
                         label.setFontColor(Color.RED)
                     } else {

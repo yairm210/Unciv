@@ -25,8 +25,6 @@ import com.unciv.utils.Log
 import com.unciv.utils.hashOf
 import yairm210.purity.annotations.Readonly
 import kotlin.math.abs
-import kotlin.math.max
-import kotlin.math.min
 import kotlin.math.pow
 import kotlin.random.Random
 
@@ -367,7 +365,7 @@ object DiplomacyAutomation {
         if (civInfo.getPersonality()[PersonalityValue.DeclareWar] == 0f) return
         if (civInfo.getHappiness() <= 0) return
 
-        val ourMilitaryUnits = civInfo.units.getCivUnits().filter { !it.isCivilian() }.count()
+        val ourMilitaryUnits = civInfo.units.getCivUnits().count { !it.isCivilian() }
         if (ourMilitaryUnits < civInfo.cities.size) return
         if (ourMilitaryUnits < 4) return  // to stop AI declaring war at the beginning of games when everyone isn't set up well enough
         // For mods we can't check the number of cities, so we will check the population instead.

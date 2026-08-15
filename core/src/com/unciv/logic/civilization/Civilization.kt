@@ -874,6 +874,9 @@ class Civilization : IsPartOfGameInfoSerialization {
                 RankingType.Happiness -> getHappiness()
                 RankingType.Technologies -> tech.researchedTechnologies.size
                 RankingType.Culture -> policies.adoptedPolicies.count { !Policy.isBranchCompleteByName(it) }
+            
+                // Non vanilla ranking types
+                RankingType.TilesExplored -> gameInfo.tileMap.values.count { it.isExplored(this) }
         }
     }
 
