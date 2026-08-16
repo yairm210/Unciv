@@ -38,13 +38,6 @@ android {
         base.archivesName.set("Unciv")
     }
 
-    // necessary for Android Work lib
-    kotlin {
-        compilerOptions {
-            jvmTarget = JvmTarget.JVM_1_8
-        }
-    }
-
     // Had to add this crap for Travis to build, it wanted to sign the app
     // but couldn't create the debug keystore for some reason
 
@@ -83,6 +76,13 @@ android {
     buildFeatures {
         renderScript = true
         aidl = true
+    }
+}
+
+// necessary for Android WorkManager lib, used in MultiplayerTurnCheckWorker
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_1_8
     }
 }
 
