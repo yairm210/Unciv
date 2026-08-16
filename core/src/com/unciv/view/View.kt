@@ -12,7 +12,8 @@ import yairm210.purity.annotations.Readonly
  * - Any *ruleset objects* are fair game - the entire ruleset should be available, AND they should all be readonly anyway (right? right?! oh dear)
  * - Any *game state objects* (Civilization, City, Tile, Unit, etc) should be wrapped in a View, and only exposed to the player via that View
  *    - This applies to function inputs and outputs!
- * - Any data accessed in the UI from the base object directly should be converted to a @Readonly function to get that data
+ * - Any data accessed in the UI from the base object directly should be converted to a @Readonly function (not optional!) to get that data
+ * - Data should use readonly interfaces when possible - e.g. List<thing> instead of ArrayList<thing>
  * - Any state-changing function in the UI should be converted to a boolean-returning "try apply state change" function
  *    - In the future these will also check preconditions of applying this state change, not for now
  * - Retain minimal API - anything the UI can derive from existing calls should not be part of the view
