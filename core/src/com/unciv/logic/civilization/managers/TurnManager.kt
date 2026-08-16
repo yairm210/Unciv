@@ -115,8 +115,6 @@ class TurnManager(val civInfo: Civilization) {
                 "UnitActionIcons/Promote"
             )
         }
-        
-        
 
         updateWinningCiv()
     }
