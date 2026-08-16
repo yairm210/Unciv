@@ -164,7 +164,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
                     if (convertToTerrain.hasUnique(UniqueType.FreshWater) && tile.isAdjacentToCoast()) continue
                     if (convertToTerrain.type == TerrainType.TerrainFeature && tile.baseTerrain !in convertToTerrain.occursOn) continue
                     if (convertToTerrain.hasUnique(UniqueType.CoastalWater))
-                        removeLakesNextToFutureCoast(tile)
+                        removeLakesNextToFutureCoast(tile, convertToTerrain)
                     if (convertToTerrain.type.isBaseTerrain) {
                         clearTile(tile)
                         tile.setBaseTerrain(convertToTerrain)
@@ -226,19 +226,24 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
         private fun Unique.getIntParam(index: Int) = params[index].toInt()
 
         // location is being converted to a NW, tile is a neighbor to be converted to coast: Ensure that coast won't show invalid rivers or coast touching lakes
-        private fun removeLakesNextToFutureCoast(tile: Tile) {
-            for (neighbor in tile.neighbors) {
-                // This is so we don't have this tile turn into Coast, and then it's touching a Lake tile.
-                // We just turn the lake tiles into this kind of tile.
-                if (neighbor.getBaseTerrain().hasUnique(UniqueType.FreshWater)) {
-                    clearTile(neighbor)
-                    neighbor.baseTerrain = tile.baseTerrain
-                    neighbor.setTerrainTransients()
+        private fun removeLakesNextToFutureCoast(tile: Tile, coastTerrain: Terrain) {
+            val futureCoastTiles = hashSetOf(tile)
+            val tilesToCheck = mutableListOf(tile)
+            var index = 0
+            while (index < tilesToCheck.size) {
+                for (neighbor in tilesToCheck[index++].neighbors) {
+                    if (!neighbor.getBaseTerrain().hasUnique(UniqueType.FreshWater)) continue
+                    if (futureCoastTiles.add(neighbor)) tilesToCheck.add(neighbor)
                 }
             }
-            for (neighbor in tile.neighbors) {
-                tile.setConnectedByRiver(neighbor, false)
+
+            for (lake in futureCoastTiles - tile) {
+                clearTile(lake)
+                lake.setBaseTerrain(coastTerrain)
             }
+            for (futureCoast in futureCoastTiles)
+                for (neighbor in futureCoast.neighbors)
+                    futureCoast.setConnectedByRiver(neighbor, false)
         }
 
         /** Implements [UniqueParameterType.SimpleTerrain][com.unciv.models.ruleset.unique.UniqueParameterType.SimpleTerrain] */
