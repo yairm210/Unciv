@@ -11,7 +11,7 @@ import yairm210.purity.annotations.Readonly
 class TileMapView(private val tileMap: TileMap,
                   /** Null in map editor */ viewer: Civilization?,
                   spectatorMode: Boolean = false,
-                  val gameView: GameView? = null) : View(viewer, spectatorMode) {
+                  val gameView: GameView? = null) : View<TileMap>(tileMap, viewer, spectatorMode) {
     @Cache private val tileViews: Array<TileView?> by lazy { arrayOfNulls(tileMap.tileList.size) }
 
     /** Note that since this requires the original Tile, this CAN return tiles that are NOT visible to the viewing civ

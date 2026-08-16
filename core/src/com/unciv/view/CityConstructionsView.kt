@@ -10,7 +10,7 @@ import com.unciv.models.stats.Stat
 import yairm210.purity.annotations.Readonly
 
 class CityConstructionsView(private val cityConstructions: CityConstructions, private val gameView: GameView,
-                             viewer: Civilization, spectatorMode: Boolean = false) : GameBasedView(viewer, spectatorMode) {
+                             viewer: Civilization, spectatorMode: Boolean = false) : GameBasedView<CityConstructions>(cityConstructions, viewer, spectatorMode) {
     val constructionQueue: List<String> get() = cityConstructions.constructionQueue
 
     // Navigation

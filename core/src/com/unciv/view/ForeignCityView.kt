@@ -15,7 +15,7 @@ import yairm210.purity.annotations.Readonly
 open class ForeignCityView(internal open val city: City,
                            viewer: Civilization,
                            spectatorMode: Boolean = false,
-                           open val gameView: GameView) : GameBasedView(viewer, spectatorMode) {
+                           open val gameView: GameView) : GameBasedView<City>(city, viewer, spectatorMode) {
     val name: String get() = city.name
     val location: HexCoord get() = city.location
 

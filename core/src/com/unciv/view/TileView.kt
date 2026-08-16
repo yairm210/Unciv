@@ -15,7 +15,7 @@ import yairm210.purity.annotations.Readonly
 /** View of a [Tile] from the perspective of [viewer] via [tileMapView]. */
 class TileView internal constructor(private val tile: Tile, val tileMapView: TileMapView,
                viewer: Civilization?,
-               spectatorMode: Boolean = false) : View(viewer, spectatorMode) {
+               spectatorMode: Boolean = false) : View<Tile>(tile, viewer, spectatorMode) {
 
     // Navigation
     @Readonly fun getTile(): Tile = tile

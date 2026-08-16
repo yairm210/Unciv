@@ -7,7 +7,7 @@ import com.unciv.logic.map.tile.Tile
 import yairm210.purity.annotations.Readonly
 
 /** View of a [GameInfo] from the perspective of [viewer]. */
-class GameView(gameInfo: GameInfo, viewer: Civilization, spectatorMode: Boolean = false) : GameBasedView(viewer, spectatorMode) {
+class GameView(gameInfo: GameInfo, viewer: Civilization, spectatorMode: Boolean = false) : GameBasedView<GameInfo>(gameInfo, viewer, spectatorMode) {
     val civView: CivView = CivView(viewer, viewer, spectatorMode, this)
     val tileMapView: TileMapView = TileMapView(gameInfo.tileMap, viewer, spectatorMode, this)
     

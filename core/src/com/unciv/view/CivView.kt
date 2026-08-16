@@ -42,7 +42,7 @@ class CivView(civ: Civilization,
     @Readonly fun isCivConstructionDisabled(name: String): Boolean = name in civ.disabledCityConstructions
 
     @Readonly fun isSpectator(): Boolean = civ.isSpectator()
-    @Readonly fun hasExplored(tileView: TileView): Boolean = civ.hasExplored(tileView.getTile())
+    @Readonly fun hasExplored(tileView: TileView): Boolean = civ.hasExplored(tileView.unwrap())
 
     // Actions
     fun tryDisableCivConstruction(name: String) {
