@@ -13,13 +13,12 @@ android {
     sourceSets {
         getByName("main").apply {
             manifest.srcFile("AndroidManifest.xml")
-            java.srcDirs("src")
-            kotlin.srcDirs("src")
-            aidl.srcDirs("src")
-            renderscript.srcDirs("src")
-            res.srcDirs("res")
-            assets.srcDirs("assets")
-            jniLibs.srcDirs("libs")
+            java.directories += "src"
+            kotlin.directories += "src"
+            aidl.directories += "src"
+            res.directories += "res"
+            assets.directories += "assets"
+            jniLibs.directories += "libs"
         }
     }
     packaging {
@@ -36,13 +35,6 @@ android {
         versionName = BuildConfig.appVersion
 
         base.archivesName.set("Unciv")
-    }
-
-    // necessary for Android Work lib
-    kotlin {
-        compilerOptions {
-            jvmTarget = JvmTarget.JVM_1_8
-        }
     }
 
     // Had to add this crap for Travis to build, it wanted to sign the app
@@ -81,8 +73,14 @@ android {
         ignoreAssetsPattern = "!SaveFiles:!fonts:!maps:!music:!mods"
     }
     buildFeatures {
-        renderScript = true
         aidl = true
+    }
+}
+
+// necessary for Android WorkManager lib, used in MultiplayerTurnCheckWorker
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_1_8
     }
 }
 
