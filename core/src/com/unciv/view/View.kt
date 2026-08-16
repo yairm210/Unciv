@@ -13,12 +13,19 @@ import yairm210.purity.annotations.Readonly
  * - Any *game state objects* (Civilization, City, Tile, Unit, etc) should be wrapped in a View, and only exposed to the player via that View
  *    - This applies to function inputs and outputs!
  * - Any data accessed in the UI from the base object directly should be converted to a @Readonly function (not optional!) to get that data
- * - Data should use readonly interfaces when possible - e.g. List<thing> instead of ArrayList<thing>
+ * - Data should use readonly interfaces when possible - e.g. List<thing> instead of ArrayList<thing>, Map<X, Int> instead of Counter<X>, etc
  * - Any state-changing function in the UI should be converted to a boolean-returning "try apply state change" function
  *    - In the future these will also check preconditions of applying this state change, not for now
  * - Retain minimal API - anything the UI can derive from existing calls should not be part of the view
  * */
-open class View<T>(protected val wrapped: T, protected open val viewer: Civilization?, protected val spectatorMode: Boolean = false) {
+open class View<T>(protected val wrapped: T,
+                   /** The civ we're viewing as.
+                    * Spectators can either be viewing as themselves - full view permissions - or as another civ,
+                    * in which case they will "see" only what that civ sees */
+                   protected open val viewer: Civilization?,
+                   /** Indicates whether we are really a spectator, "looking in" to the view of another civ
+                    * In this case we should not be able to execute any state-chaning action */
+                   protected val spectatorMode: Boolean = false) {
     /** Lets any [View] read the wrapped object of any other [View], without exposing [wrapped] itself outside the hierarchy. */
     @Readonly protected fun <U> View<U>.unwrap(): U = wrapped
 }

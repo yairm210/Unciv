@@ -434,6 +434,10 @@ class Civilization : IsPartOfGameInfoSerialization {
     @Readonly fun isSpectator() = nation.isSpectator
     @Readonly fun isAlive(): Boolean = !isDefeated()
 
+    /** A human player who lost in singleplayer keeps playing as a de-facto spectator, and should get the same map visibility */
+    @Readonly fun hasSpectatorVision() = isSpectator()
+        || (isDefeated() && isCurrentPlayer() && !gameInfo.gameParameters.isOnlineMultiplayer)
+
     @delegate:Transient
     val cityStateType: CityStateType by lazy { gameInfo.ruleset.cityStateTypes[nation.cityStateType!!]!! }
     var cityStatePersonality: CityStatePersonality = CityStatePersonality.Neutral
@@ -570,11 +574,6 @@ class Civilization : IsPartOfGameInfoSerialization {
         if (resource.isStockpiled) return resourceStockpiles[resource.name]
         return getCivResourceSupply().firstOrNull { it.resource == resource }?.amount ?: 0
     }
-
-    /** Gets modifiers for ALL resources */
-    @Readonly
-    fun getResourceModifiers(): Map<String, Float> =
-        gameInfo.ruleset.tileResources.values.associate { it.name to getResourceModifier(it) }
 
     /**
      * Returns the resource production modifier as a multiplier.
