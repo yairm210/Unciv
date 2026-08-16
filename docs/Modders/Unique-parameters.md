@@ -371,9 +371,24 @@ Allowed values:
 -   `turns` - Number of turns played
     - Example: `Only available <when number of [turns] is more than [0]>`
     - Always starts at zero irrespective of game speed or start era
+-   `remaining turns` - Number of turns left
+    - Example: `Only available <when number of [remaining turns] is more than [0]>`
+    - Depends on current turn, start era and game speed
 -   `year` - The current year
     - Example: `Only available <when number of [year] is more than [0]>`
     - Depends on game speed or start era, negative for years BC
+-   `start year` - The year the game started
+    - Example: `Only available <when number of [start year] is more than [0]>`
+    - Depends on game speed or start era, negative for years BC
+-   `end year` - The year the game will end
+    - Example: `Only available <when number of [end year] is more than [0]>`
+    - Depends on game speed, negative for years BC
+-   `years passed` - The number of years that have passed since the start of the game
+    - Example: `Only available <when number of [years passed] is more than [0]>`
+    - Depends on start year, game speed, and current year
+-   `years left` - The number of years left until the end of the game
+    - Example: `Only available <when number of [years left] is more than [0]>`
+    - Depends on end year, game speed, and current year
 -   `Cities` - The number of cities the relevant Civilization owns
     - Example: `Only available <when number of [Cities] is more than [0]>`
 -   `Units` - The number of units the relevant Civilization owns

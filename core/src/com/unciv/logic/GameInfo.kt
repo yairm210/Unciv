@@ -15,7 +15,14 @@ import com.unciv.logic.GameInfoPreview.Companion.randomGameId
 import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.automation.civilization.BarbarianManager
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.*
+import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.CivilizationInfoPreview
+import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.MapUnitAction
+import com.unciv.logic.civilization.Notification
+import com.unciv.logic.civilization.NotificationCategory
+import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.managers.TechManager
 import com.unciv.logic.civilization.managers.TurnManager
 import com.unciv.logic.civilization.managers.VictoryManager
@@ -47,7 +54,6 @@ import java.security.MessageDigest
 import java.security.SecureRandom
 import java.time.Duration
 import java.time.Instant
-import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 
@@ -343,8 +349,18 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         val startPercent = ruleset.eras[gameParameters.startingEra]!!.startPercent
         return turns + (totalTurns * startPercent / 100)
     }
+    
+    @Readonly fun getRemainingTurns() = speed.numTotalTurns() - turns
 
     @Readonly fun getYear(turnOffset: Int = 0) = speed.turnToYear(getEquivalentTurn() + turnOffset).toInt()
+    
+    @Readonly fun getStartYear() = speed.turnToYear(0).toInt()
+    
+    @Readonly fun getEndYear() = speed.turnToYear(speed.numTotalTurns()).toInt()
+    
+    @Readonly fun getYearsPassed() = getYear() - getStartYear()
+    
+    @Readonly fun getYearsRemaining() = getEndYear() - getYear()
 
     fun calculateChecksum(): String {
         val oldChecksum = checksum

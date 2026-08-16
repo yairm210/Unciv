@@ -1,8 +1,6 @@
 package com.unciv.models.ruleset.unique
 
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.unique.Countables.Stats
-import com.unciv.models.ruleset.unique.Countables.TileResources
 import com.unciv.models.ruleset.unique.expressions.Expressions
 import com.unciv.models.ruleset.unique.expressions.Operator
 import com.unciv.models.stats.Stat
@@ -12,7 +10,6 @@ import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Cache
-import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 
 /**
@@ -51,10 +48,35 @@ enum class Countables(
         override fun eval(parameterText: String, gameContext: GameContext) =
             gameContext.gameInfo?.turns
     },
+    RemainingTurns("remaining turns", shortDocumentation = "Number of turns left") {
+        override val documentationStrings = listOf("Depends on current turn, start era and game speed")
+        override fun eval(parameterText: String, gameContext: GameContext) =
+            gameContext.gameInfo?.getRemainingTurns()
+    },
     Year("year", shortDocumentation = "The current year") {
         override val documentationStrings = listOf("Depends on game speed or start era, negative for years BC")
         override fun eval(parameterText: String, gameContext: GameContext) =
             gameContext.gameInfo?.getYear(0)
+    },
+    StartYear("start year", shortDocumentation = "The year the game started") {
+        override val documentationStrings = listOf("Depends on game speed or start era, negative for years BC")
+        override fun eval(parameterText: String, gameContext: GameContext) =
+            gameContext.gameInfo?.getStartYear()
+    },
+    EndYear("end year", shortDocumentation = "The year the game will end") {
+        override val documentationStrings = listOf("Depends on game speed, negative for years BC")
+        override fun eval(parameterText: String, gameContext: GameContext) =
+            gameContext.gameInfo?.getEndYear()
+    },
+    YearsPassed("years passed", shortDocumentation = "The number of years that have passed since the start of the game") {
+        override val documentationStrings = listOf("Depends on start year, game speed, and current year")
+        override fun eval(parameterText: String, gameContext: GameContext) =
+            gameContext.gameInfo?.getYearsPassed()
+    },
+    YearsLeft("years left", shortDocumentation = "The number of years left until the end of the game") {
+        override val documentationStrings = listOf("Depends on end year, game speed, and current year")
+        override fun eval(parameterText: String, gameContext: GameContext) =
+            gameContext.gameInfo?.getYearsRemaining()
     },
     Cities("Cities", shortDocumentation = "The number of cities the relevant Civilization owns") {
         override fun eval(parameterText: String, gameContext: GameContext) =
