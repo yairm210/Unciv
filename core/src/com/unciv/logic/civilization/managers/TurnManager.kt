@@ -112,7 +112,7 @@ class TurnManager(val civInfo: Civilization) {
                 "[${promotableUnits.count()}] units can be promoted!",
                 promotableUnits.map { MapUnitAction(it) },
                 NotificationCategory.Units,
-                promotableUnits.first().name
+                "UnitActionIcons/Promote"
             )
         }
         
