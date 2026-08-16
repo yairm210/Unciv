@@ -1,42 +1,14 @@
 ## 4.21.9
 
-Defeated singleplayer players have full map visibility - done in logic layer, as previously, rather than in view layer
+Fix: Defeated singleplayer players again have full map visibility
 
-View implementation - StatsOverviewTab conversion - see 
+Fixed crash ewhen clicking on civ relationships lines
 
-View implementation - docs regarding View design - see 
-
-View implementation - Views access each other's internals via .unwrap(), making internal-access functions e.g. getCiv, getTile, as "should be migrated and removed" - see 
-
-View implementation - Wrapped object shared across views, not accessible from the outside - see 
-
-View implementation - Unified base class for all views - see 
-
-Solve  GlobalPoliticsDiagramGroup crashing bug - not solved the root cause since this is a compiler bug
-
-View implementation - WorldScreen tile to tileview - see 
-
-Logic change - moved some of the purchase process from UI into logic section
-
-View implementation - BuyButtonFactory - see 
-
-View implementation - CityConstructionsView to TileView migration - see 
-
-View implementation - More CityScreen to TileView migration - see 
-
-View implementation - Minor CityView Tile changes - see 
-
-View implementation - Empire overview tabs get view, allows us to migrate each overview separately in the future - see 
-
-View implementation - Unified "fog of war" usage, separated selected game view from "viewer" - see 
-
-chore: Treat Gradle warnings - By SomeTroglodyte
-
-fix: Prevent natural-wonder coast conversion artifacts - By mvanhorn
+Prevent natural-wonder coast conversion artifacts - By mvanhorn
 
 By ssamt:
-- hide spectator in global politics 
-- avoid selling spaceship parts for resource 
+- hide spectator in global politics
+- AI avoid selling spaceship parts for resource
 
 Fix WLTKD demand rewrite mid-celebration - By Fanfblrik
 
