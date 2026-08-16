@@ -94,7 +94,7 @@ class CityView(city: City,
     @Readonly fun getCultureStored(): Int = city.expansion.cultureStored
 
     // Constructions
-    val constructions: CityConstructionsView get() = CityConstructionsView(city.cityConstructions, gameView)
+    val constructions: CityConstructionsView get() = CityConstructionsView(city.cityConstructions, gameView, viewer, spectatorMode)
     @Readonly fun currentConstructionName(): String = city.cityConstructions.currentConstructionName()
     @Readonly fun getBuiltBuildings(): Sequence<Building> = city.cityConstructions.getBuiltBuildings()
     @Readonly fun isPuppet(): Boolean = city.isPuppet

@@ -101,7 +101,7 @@ open class TileGroup(
 
     open fun update(viewingCiv: CivView? = null) {
         if (viewingCiv == null) {
-            if (tileView.getViewer() != null)
+            if (tileView.getCivView() != null)
                 tileView = TileMapView(tile.tileMap, null).getTile(tile)
         } else {
             val newTileMapView = viewingCiv.gameView.tileMapView

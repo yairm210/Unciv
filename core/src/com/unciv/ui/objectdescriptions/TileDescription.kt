@@ -106,7 +106,7 @@ object TileDescription {
 
         val techRequired = researchableImprovements
             .mapNotNull { viewingCiv.technologyByName(it.techRequired) }
-            .filterNot { viewingCiv.tech.isResearched(it.name) }
+            .filterNot { viewingCiv.isResearched(it.name) }
             .minByOrNull { it.cost }
             ?: return
 

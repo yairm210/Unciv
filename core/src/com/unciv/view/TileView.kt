@@ -14,12 +14,12 @@ import yairm210.purity.annotations.Readonly
 
 /** View of a [Tile] from the perspective of [viewer] via [tileMapView]. */
 class TileView internal constructor(private val tile: Tile, val tileMapView: TileMapView,
-               private val viewer: Civilization?,
-               private val spectatorMode: Boolean = false) {
+               viewer: Civilization?,
+               spectatorMode: Boolean = false) : View(viewer, spectatorMode) {
 
     // Navigation
     @Readonly fun getTile(): Tile = tile
-    @Readonly fun getViewer(): Civilization? = viewer
+    @Readonly fun getCivView(): CivView? = tileMapView.gameView?.civView
     @Readonly fun owningCity(): ForeignCityView? {
         val city = tile.owningCity ?: return null
         return toForeignCityView(city)

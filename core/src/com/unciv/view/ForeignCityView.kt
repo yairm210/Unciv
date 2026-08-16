@@ -13,9 +13,9 @@ import yairm210.purity.annotations.Readonly
 
 /** Should contain information that should be knowable to us about foreign cities. Superclass of [CityView]. */
 open class ForeignCityView(internal open val city: City,
-                           protected val viewer: Civilization,
-                           val spectatorMode: Boolean = false,
-                           open val gameView: GameView) {
+                           viewer: Civilization,
+                           spectatorMode: Boolean = false,
+                           open val gameView: GameView) : GameBasedView(viewer, spectatorMode) {
     val name: String get() = city.name
     val location: HexCoord get() = city.location
 

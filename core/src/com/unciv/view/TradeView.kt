@@ -9,7 +9,7 @@ import yairm210.purity.annotations.Readonly
 
 /** View of a trade negotiation between [civ] (always the viewer's own civ) and [otherCiv].
  *  Always built fresh, same as [TradeLogic] itself - staged offers live in this instance only. */
-class TradeView(private val civ: Civilization, private val otherCiv: Civilization) {
+class TradeView(private val civ: Civilization, private val otherCiv: Civilization) : GameBasedView(civ) {
     private val tradeLogic = TradeLogic(civ, otherCiv)
 
     // Data retrieval - lists are the live mutable instances, callers may add/remove offers directly

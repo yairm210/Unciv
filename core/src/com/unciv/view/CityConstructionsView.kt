@@ -1,6 +1,7 @@
 package com.unciv.view
 
 import com.unciv.logic.city.CityConstructions
+import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.IConstruction
 import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.RejectionReason
@@ -8,7 +9,8 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.stats.Stat
 import yairm210.purity.annotations.Readonly
 
-class CityConstructionsView(private val cityConstructions: CityConstructions, private val gameView: GameView) {
+class CityConstructionsView(private val cityConstructions: CityConstructions, private val gameView: GameView,
+                             viewer: Civilization, spectatorMode: Boolean = false) : GameBasedView(viewer, spectatorMode) {
     val constructionQueue: List<String> get() = cityConstructions.constructionQueue
 
     // Navigation

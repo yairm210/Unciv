@@ -397,7 +397,7 @@ class WorldScreen(
             updateSelectedCiv()
 
             
-            minimapWrapper.update(getGameViewConsideringForOfWar().viewer)
+            minimapWrapper.update(getGameViewConsideringForOfWar().civView.getCiv())
             bottomTileInfoTable.civView = getGameViewConsideringForOfWar().civView
             bottomTileInfoTable.updateTileTable(mapHolder.selectedTile?.getTile())
             bottomTileInfoTable.x = stage.width - bottomTileInfoTable.width
