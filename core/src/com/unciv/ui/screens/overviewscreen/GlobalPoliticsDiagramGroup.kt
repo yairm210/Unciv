@@ -51,7 +51,7 @@ class GlobalPoliticsDiagramGroup(
     }
 
     /** Wrapper around [RelationshipLevel], adding War, DefensivePact, and a Z-Order property */
-    sealed class Relation {
+    private sealed class Relation {
         abstract val ordinal: Int
         abstract val label: String
         abstract val color: Color
