@@ -33,18 +33,18 @@ class TileMapView(private val tileMap: TileMap,
     // And add a new function of "get tile by coord" in here :thunk:
     // These are really only used for borders so IDK
     @Readonly fun getLeftSharedNeighbor(tile: TileView, neighbor: TileView): TileView? {
-        val clockPos = tileMap.getNeighborTileClockPosition(tile.getTile(), neighbor.getTile())
-        val n = tileMap.getClockPositionNeighborTile(tile.getTile(), (clockPos - 2) % 12) ?: return null
+        val clockPos = tileMap.getNeighborTileClockPosition(tile.unwrap(), neighbor.unwrap())
+        val n = tileMap.getClockPositionNeighborTile(tile.unwrap(), (clockPos - 2) % 12) ?: return null
         return n.toViewIfExplored()
     }
 
     @Readonly fun getRightSharedNeighbor(tile: TileView, neighbor: TileView): TileView? {
-        val clockPos = tileMap.getNeighborTileClockPosition(tile.getTile(), neighbor.getTile())
-        val n = tileMap.getClockPositionNeighborTile(tile.getTile(), (clockPos + 2) % 12) ?: return null
+        val clockPos = tileMap.getNeighborTileClockPosition(tile.unwrap(), neighbor.unwrap())
+        val n = tileMap.getClockPositionNeighborTile(tile.unwrap(), (clockPos + 2) % 12) ?: return null
         return n.toViewIfExplored()
     }
 
     @Readonly fun getNeighborTilePositionAsWorldCoords(tile: TileView, neighbor: TileView): Vector2 =
-        tileMap.getNeighborTilePositionAsWorldCoords(tile.getTile(), neighbor.getTile())
+        tileMap.getNeighborTilePositionAsWorldCoords(tile.unwrap(), neighbor.unwrap())
 
 }

@@ -19,20 +19,20 @@ class CivView(civ: Civilization,
     // Navigation
     @Readonly fun getCity(city: City): CityView = gameView.getCityView(city)
     @Readonly fun cities(): List<CityView> = civ.cities.map { getCity(it) }
-    @Readonly fun getTradeView(otherCiv: ForeignCivView): TradeView = TradeView(civ, otherCiv.getCiv())
+    @Readonly fun getTradeView(otherCiv: ForeignCivView): TradeView = TradeView(civ, otherCiv.unwrap())
 
     // Data retrieval
     @Readonly fun isResearched(techName: String): Boolean = civ.tech.isResearched(techName)
 
     @Readonly fun hasStatToBuy(stat: Stat, price: Int): Boolean = civ.hasStatToBuy(stat, price)
 
-    @Readonly fun canSeeTile(tileView: TileView): Boolean = tileView.getTile().isVisible(civ)
+    @Readonly fun canSeeTile(tileView: TileView): Boolean = tileView.unwrap().isVisible(civ)
     @Readonly fun canSeeResource(resource: TileResource?): Boolean = civ.canSeeResource(resource)
-    @Readonly fun isOwnerOf(cityView: ForeignCityView): Boolean = civ === cityView.getCity().civ
+    @Readonly fun isOwnerOf(cityView: ForeignCityView): Boolean = civ === cityView.unwrap().civ
     @Readonly fun canBuildImprovementOn(improvement: TileImprovement, tileView: TileView): Boolean =
-        tileView.getTile().improvementFunctions.canBuildImprovement(improvement, civ.state)
+        tileView.unwrap().improvementFunctions.canBuildImprovement(improvement, civ.state)
     @Readonly fun getImprovementBuildingProblems(improvement: TileImprovement, tileView: TileView): Sequence<ImprovementBuildingProblem> =
-        tileView.getTile().improvementFunctions.getImprovementBuildingProblems(improvement, civ.state)
+        tileView.unwrap().improvementFunctions.getImprovementBuildingProblems(improvement, civ.state)
     @Readonly fun technologyByName(name: String?): Technology? = civ.gameInfo.ruleset.technologies[name]
 
     @Readonly fun hasUnique(type: UniqueType): Boolean = civ.hasUnique(type)

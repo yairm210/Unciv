@@ -108,10 +108,10 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
     @Readonly fun getRuleset(): Ruleset = tile.ruleset
 
     @Readonly fun getTileStats(viewingCiv: CivView?, cityView: CityView? = null): Stats {
-        val city = cityView?.getCity() ?: tile.getCity()
-        return tile.stats.getTileStats(city, viewingCiv?.getCiv())
+        val city = cityView?.unwrap() ?: tile.getCity()
+        return tile.stats.getTileStats(city, viewingCiv?.unwrap())
     }
-    @Readonly fun providesResources(viewingCiv: CivView): Boolean = tile.providesResources(viewingCiv.getCiv())
+    @Readonly fun providesResources(viewingCiv: CivView): Boolean = tile.providesResources(viewingCiv.unwrap())
 
     @Readonly fun getTileMap(): TileMapView = tileMapView
 

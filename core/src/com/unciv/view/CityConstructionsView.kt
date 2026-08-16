@@ -28,7 +28,7 @@ class CityConstructionsView(private val cityConstructions: CityConstructions, pr
     @Readonly fun isBuildable(construction: IConstruction): Boolean = construction.isBuildable(cityConstructions)
     
     @Readonly fun canPlaceCreateOneImprovementOn(improvement: TileImprovement, tileView: TileView): Boolean =
-        cityConstructions.canPlaceCreateOneImprovementOn(improvement, tileView.getTile())
+        cityConstructions.canPlaceCreateOneImprovementOn(improvement, tileView.unwrap())
     @Readonly fun getTileForImprovement(improvementName: String): TileView? =
         cityConstructions.getTileForImprovement(improvementName)?.let { gameView.tileMapView.getTile(it) }
 
@@ -47,5 +47,5 @@ class CityConstructionsView(private val cityConstructions: CityConstructions, pr
 
     // Actions
     fun purchaseConstruction(construction: INonPerpetualConstruction, queuePosition: Int, stat: Stat, tileView: TileView?): Boolean =
-        cityConstructions.purchaseConstruction(construction, queuePosition, automatic = false, stat, tileView?.getTile())
+        cityConstructions.purchaseConstruction(construction, queuePosition, automatic = false, stat, tileView?.unwrap())
 }
