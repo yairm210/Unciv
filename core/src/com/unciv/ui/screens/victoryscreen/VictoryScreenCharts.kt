@@ -119,16 +119,11 @@ class VictoryScreenCharts(
                 turn.value.map { (civ, value) -> DataPoint(turn.key, value, civ) }
             }.toMutableList()
 
-        if (dataPoints.isEmpty()) // e.g. spectator on first turn, before any civ has had a chance to have a turn
-            return emptyList()
-
-        // Historical data does not include data for current turn for civs which haven't got their turn yet,
-        // so we append missing stat for current turn to the data for each such civ
-        val pointsByCiv = dataPoints.sortedBy { it.x }.groupBy { it.civ }
-        val actualTurn = dataPoints.maxOf { it.x }
-        for (civ in pointsByCiv.keys.filterNot { it.isDefeated() })
-            if (pointsByCiv[civ]!!.last().x != actualTurn)
-                dataPoints += DataPoint(actualTurn, civ.getStatForRanking(rankingType), civ)
+        // Historical data is recorded at the end of each turn, so we append the live stat for the current turn
+        val currentTurn = gameInfo.turns
+        if (zoomAtX == null || currentTurn in zoomAtX!!)
+            for (civ in dataPoints.map { it.civ }.distinct().filterNot { it.isDefeated() })
+                dataPoints += DataPoint(currentTurn, civ.getStatForRanking(rankingType), civ)
 
         return dataPoints
     }
