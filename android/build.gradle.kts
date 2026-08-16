@@ -13,13 +13,12 @@ android {
     sourceSets {
         getByName("main").apply {
             manifest.srcFile("AndroidManifest.xml")
-            java.srcDirs("src")
-            kotlin.srcDirs("src")
-            aidl.srcDirs("src")
-            renderscript.srcDirs("src")
-            res.srcDirs("res")
-            assets.srcDirs("assets")
-            jniLibs.srcDirs("libs")
+            java.directories += "src"
+            kotlin.directories += "src"
+            aidl.directories += "src"
+            res.directories += "res"
+            assets.directories += "assets"
+            jniLibs.directories += "libs"
         }
     }
     packaging {
@@ -74,7 +73,6 @@ android {
         ignoreAssetsPattern = "!SaveFiles:!fonts:!maps:!music:!mods"
     }
     buildFeatures {
-        renderScript = true
         aidl = true
     }
 }
