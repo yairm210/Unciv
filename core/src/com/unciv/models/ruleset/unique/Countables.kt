@@ -201,10 +201,15 @@ enum class Countables(
         
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val (populationFilter, cityFilter) = parameterText.getPlaceholderParameters()
-            val cities = gameContext.civInfo?.cities ?: return null
-            return cities.asSequence()
-                .filter { it.matchesFilter(cityFilter, gameContext.civInfo) }
-                .sumOf { city -> city.population.getPopulationFilterAmount(populationFilter) }
+
+            if (cityFilter == "in this city" && gameContext.city != null)
+                return gameContext.city.population.getPopulationFilterAmount(populationFilter)
+            else {
+                val cities = gameContext.civInfo?.cities ?: return null
+                return cities.asSequence()
+                    .filter { it.matchesFilter(cityFilter, gameContext.civInfo) }
+                    .sumOf { city -> city.population.getPopulationFilterAmount(populationFilter) }
+            }
         }
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
