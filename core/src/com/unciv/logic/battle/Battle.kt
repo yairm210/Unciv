@@ -673,7 +673,7 @@ object Battle {
             // if it was a melee attack, and we won, then the unit ALREADY got movement points deducted,
             // for the movement to the enemy's tile!
             // and if it's an air unit, it only has 1 movement anyway, so...
-            if (!attacker.unit.baseUnit.movesLikeAirUnits && !(attacker.isMelee() && defender.isDefeated()))
+            if (!attacker.unit.baseUnit.isAirUnit() && !(attacker.isMelee() && defender.isDefeated()))
                 unit.useMovementPoints(1f)
         } else unit.currentMovement = 0f
         

@@ -67,7 +67,7 @@ object WorldMapTileUpdater {
         val tileGroup = tileGroups[tileMapView.getTile(unit.getTile())] ?: return
 
         // Update flags for units which have them
-        if (!unit.baseUnit.movesLikeAirUnits) {
+        if (!unit.baseUnit.isAirUnit()) {
             tileGroup.layerUnitFlag.selectFlag(unit)
         }
 
@@ -124,7 +124,7 @@ object WorldMapTileUpdater {
             return
         }
 
-        val isAirUnit = unit.baseUnit.movesLikeAirUnits
+        val isAirUnit = unit.baseUnit.isAirUnit()
         val moveTileOverlayColor = if (unit.isPreparingParadrop()) Color.BLUE else Color.WHITE
         val tilesInMoveRange = unit.movement.getReachableTilesInCurrentTurn()
         // Prepare special Nuke blast radius display
@@ -152,7 +152,7 @@ object WorldMapTileUpdater {
 
             // Highlight tile unit can move to
             if (unit.movement.canMoveTo(tile) ||
-                unit.movement.isUnknownTileWeShouldAssumeToBePassable(tile) && !unit.baseUnit.movesLikeAirUnits
+                unit.movement.isUnknownTileWeShouldAssumeToBePassable(tile) && !unit.baseUnit.isAirUnit()
             ) {
                 if (UncivGame.Current.settings.useCirclesToIndicateMovableTiles) {
                     val alpha = if (UncivGame.Current.settings.singleTapMove) 0.7f else 0.3f

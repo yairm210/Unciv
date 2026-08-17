@@ -195,7 +195,7 @@ class WorldMapHolder(
             } else {
                 previousSelectedUnits.any {
                     it.movement.canMoveTo(tile) ||
-                        (it.movement.isUnknownTileWeShouldAssumeToBePassable(tile) && !it.baseUnit.movesLikeAirUnits)
+                        (it.movement.isUnknownTileWeShouldAssumeToBePassable(tile) && !it.baseUnit.isAirUnit())
                 }
             }
 
@@ -278,7 +278,7 @@ class WorldMapHolder(
 
     private fun markUnitMoveTutorialComplete(unitView: MapUnitView) {
         val unit = unitView.getUnit()
-        val key = if (unit.baseUnit.movesLikeAirUnits) "Move an air unit" else "Move unit"
+        val key = if (unit.baseUnit.isAirUnit()) "Move an air unit" else "Move unit"
         UncivGame.Current.settings.addCompletedTutorialTask(key)
     }
 
@@ -445,7 +445,7 @@ class WorldMapHolder(
             for (unitView in selectedUnits) {
                 val unit = unitView.getUnit()
                 val shortestPath = ArrayList<Tile>()
-                val turnsToGetThere = if (unit.baseUnit.movesLikeAirUnits) {
+                val turnsToGetThere = if (unit.baseUnit.isAirUnit()) {
                     if (unit.movement.canReach(tile)) 1
                     else 0
                 } else if (unit.isPreparingParadrop()) {

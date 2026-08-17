@@ -380,7 +380,7 @@ object UnitAutomation {
         val tilesByHealingRate = viableTilesForHealing.groupBy { unit.rankTileForHealing(it) }
 
         if (tilesByHealingRate.keys.all { it == 0 }) { // We can't heal here at all! We're probably embarked
-            if (!unit.baseUnit.movesLikeAirUnits) {
+            if (!unit.baseUnit.isAirUnit()) {
                 val reachableCityTile = unit.civ.cities.asSequence()
                     .map { it.getCenterTile() }
                     .sortedBy { it.aerialDistanceTo(unit.currentTile) }
