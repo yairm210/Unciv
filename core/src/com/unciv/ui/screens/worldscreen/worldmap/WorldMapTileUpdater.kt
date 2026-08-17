@@ -42,12 +42,12 @@ object WorldMapTileUpdater {
                 updateBombardableTilesForSelectedCity(city)
                 // We still want to show road paths to the selected city if they are present
                 if (unitTable.selectedUnitIsConnectingRoad) {
-                    updateTilesForSelectedUnit(civView.gameView.getForeignMapUnitView(unitTable.selectedUnits[0]).tryGetMapUnitView()!!)
+                    updateTilesForSelectedUnit(unitTable.selectedUnits[0])
                 }
             }
             unitTable.selectedUnit != null -> {
-                for (unit in unitTable.selectedUnits) {
-                    updateTilesForSelectedUnit(civView.gameView.getForeignMapUnitView(unit).tryGetMapUnitView()!!)
+                for (unitView in unitTable.selectedUnits) {
+                    updateTilesForSelectedUnit(unitView)
                 }
             }
             unitActionOverlays.isNotEmpty() -> {

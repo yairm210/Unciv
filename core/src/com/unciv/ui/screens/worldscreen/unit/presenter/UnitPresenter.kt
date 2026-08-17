@@ -15,15 +15,16 @@ import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.screens.pickerscreens.UnitRenamePopup
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.ui.screens.worldscreen.unit.UnitTable
+import com.unciv.view.MapUnitView
 import yairm210.purity.annotations.Readonly
 
 class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: WorldScreen) : UnitTable.Presenter {
 
-    val selectedUnit : MapUnit?
+    val selectedUnit : MapUnitView?
         get() = selectedUnits.firstOrNull()
-    
+
     /** This is in preparation for multi-select and multi-move  */
-    val selectedUnits = ArrayList<MapUnit>()
+    val selectedUnits = ArrayList<MapUnitView>()
 
     // Whether the (first) selected unit is in unit-swapping mode
     var selectedUnitIsSwapping = false
@@ -32,20 +33,20 @@ class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: W
     var selectedUnitIsConnectingRoad = false
 
     override val position: HexCoord?
-        get() = selectedUnit?.currentTile?.position
+        get() = selectedUnit?.getUnit()?.currentTile?.position
 
-    fun selectUnit(unit: MapUnit? = null, append: Boolean = false) {
+    fun selectUnit(unitView: MapUnitView? = null, append: Boolean = false) {
         if (!append) selectedUnits.clear()
-        if (unit != null) {
-            selectedUnits.add(unit)
-            unit.actionsOnDeselect()
+        if (unitView != null) {
+            selectedUnits.add(unitView)
+            unitView.getUnit().actionsOnDeselect()
         }
         selectedUnitIsSwapping = false
         selectedUnitIsConnectingRoad = false
     }
 
     override fun update() {
-        val unit = selectedUnit ?: return
+        val unit = selectedUnit?.getUnit() ?: return
         // The unit that was selected, was captured. It exists but is no longer ours.
         val captured =
             unit.civ != worldScreen.viewingCiv && !worldScreen.viewingCiv.isSpectator()
@@ -121,7 +122,7 @@ class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: W
     }
 
     override fun updateWhenNeeded() {
-        val unit = selectedUnit ?: return
+        val unit = selectedUnit?.getUnit() ?: return
         // single selected unit
         if (selectedUnits.size == 1) with(unitTable) {
 
@@ -153,8 +154,8 @@ class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: W
                 worldScreen.openCivilopedia(unit.baseUnit.makeLink())
             }
         } else { // multiple selected units
-            for (selectedUnit in selectedUnits)
-                unitTable.unitIconHolder.add(UnitIconGroup(selectedUnit, 30f)).pad(5f)
+            for (selectedUnitView in selectedUnits)
+                unitTable.unitIconHolder.add(UnitIconGroup(selectedUnitView.getUnit(), 30f)).pad(5f)
         }
     }
 

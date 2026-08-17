@@ -15,12 +15,14 @@ open class ForeignMapUnitView(internal open val unit: MapUnit, viewer: Civilizat
     @Readonly fun civ(): ForeignCivView = ForeignCivView(unit.civ, viewer, spectatorMode)
     /** Get from a foreign view to an inner view, if [unit] belongs to [viewer]. */
     @Readonly fun tryGetMapUnitView(): MapUnitView? {
-        if (unit.civ != viewer) return null
+        if (unit.civ != viewer && !viewer.isSpectator()) return null
         return MapUnitView(unit, gameView.civView)
     }
+    @Readonly fun getTile(): TileView = gameView.tileMapView.getTile(unit.getTile())
 
     // Data retrieval
     @Readonly fun isAirUnit(): Boolean = unit.baseUnit.isAirUnit()
+    @Readonly fun isCivilian(): Boolean = unit.isCivilian()
 
     override fun equals(other: Any?) = other is ForeignMapUnitView && other.unit === unit
     override fun hashCode() = unit.hashCode()

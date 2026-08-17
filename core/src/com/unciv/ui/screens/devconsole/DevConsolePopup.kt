@@ -257,7 +257,7 @@ class DevConsolePopup(val screen: WorldScreen) : Popup(screen, Scrollability.Dev
         val selectedTile = getSelectedTile()
         if (selectedTile.getFirstUnit() == null) throw ConsoleErrorException("Select tile with units")
         val units = selectedTile.getUnits().toList()
-        val selectedUnit = screen.bottomUnitTable.selectedUnit
+        val selectedUnit = screen.bottomUnitTable.selectedUnit?.getUnit()
         return if (selectedUnit != null && selectedUnit.getTile() == selectedTile) selectedUnit
         else units.first()
     }

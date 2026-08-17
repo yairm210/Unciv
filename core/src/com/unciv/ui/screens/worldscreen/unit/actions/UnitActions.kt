@@ -13,10 +13,6 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.hasOpenPopups
 import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.getActionDefaultPage
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.getPagingActions
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.getUnitActions
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.invokeUnitAction
 import yairm210.purity.annotations.Readonly
 
 /**
@@ -181,7 +177,7 @@ object UnitActions {
             // and they are on the same tile. We still have to manualy confirm they are on the same tile here.
             val tile = selectedUnits.first().getTile()
             if (selectedUnits.last().getTile() != tile) return
-            if (selectedUnits.any { it.baseUnit.movesLikeAirUnits }) return
+            if (selectedUnits.any { it.getUnit().baseUnit.movesLikeAirUnits }) return
         } else if (selectedUnits.size != 1) {
             return
         }

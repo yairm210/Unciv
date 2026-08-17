@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.city.City
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Spy
 import com.unciv.ui.components.extensions.addRoundCloseButton
 import com.unciv.ui.components.extensions.addSeparator
@@ -28,6 +27,8 @@ import com.unciv.ui.screens.worldscreen.unit.presenter.SpyPresenter
 import com.unciv.ui.screens.worldscreen.unit.presenter.SummaryPresenter
 import com.unciv.ui.screens.worldscreen.unit.presenter.UnitPresenter
 import com.unciv.view.ForeignCityView
+import com.unciv.view.MapUnitView
+import com.unciv.view.TileView
 import yairm210.purity.annotations.Readonly
 import java.awt.Label
 
@@ -68,7 +69,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
         )
     )
 
-    val selectedUnit: MapUnit?
+    val selectedUnit: MapUnitView?
         get() = (presenter as? UnitPresenter)?.selectedUnit
     val selectedCity: ForeignCityView?
         get() = (presenter as? CityPresenter)?.selectedCity
@@ -76,7 +77,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
     val selectedSpy: Spy?
         get() = (presenter as? SpyPresenter)?.selectedSpy
 
-    val selectedUnits: List<MapUnit> by unitPresenter::selectedUnits
+    val selectedUnits: List<MapUnitView> by unitPresenter::selectedUnits
 
     var selectedUnitIsSwapping by unitPresenter::selectedUnitIsSwapping
 
@@ -141,9 +142,9 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
 
 
     /** Sending no unit clears the selected units entirely */
-    fun selectUnit(unit: MapUnit? = null, append: Boolean = false) {
-        presenter = if (unit != null) unitPresenter else summaryPresenter
-        unitPresenter.selectUnit(unit, append)
+    fun selectUnit(unitView: MapUnitView? = null, append: Boolean = false) {
+        presenter = if (unitView != null) unitPresenter else summaryPresenter
+        unitPresenter.selectUnit(unitView, append)
         resetUnitTable()
     }
 
@@ -203,19 +204,23 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
         shouldUpdate = true
     }
 
-    fun tileSelected(selectedTile: Tile, forceSelectUnit: MapUnit? = null) {
+    fun tileSelected(selectedTileView: TileView, forceSelectUnitView: MapUnitView? = null) {
+        val selectedTile = selectedTileView.getTile()
 
-        val previouslySelectedUnit = selectedUnit
+        val previouslySelectedUnit = selectedUnit?.getUnit()
         val previousNumberOfSelectedUnits = selectedUnits.size
+        val curUnit = selectedUnit?.getUnit()
 
         // Do not select a different unit or city center if we click on it to swap our current unit to it
-        if (selectedUnitIsSwapping && selectedUnit != null && selectedUnit!!.movement.canUnitSwapTo(selectedTile)) return
+        if (selectedUnitIsSwapping && curUnit != null && curUnit.movement.canUnitSwapTo(selectedTile)) return
         // Do no select a different unit while in Air Sweep mode
-        if (selectedUnit != null && selectedUnit!!.isPreparingAirSweep()) return
+        if (curUnit != null && curUnit.isPreparingAirSweep()) return
+
+        val selectedUnitsRaw = selectedUnits.map { it.getUnit() }
 
         @Readonly
         fun MapUnit.isEligible(): Boolean = (this.civ == worldScreen.viewingCiv
-                || worldScreen.viewingCiv.isSpectator()) && this !in selectedUnits
+                || worldScreen.viewingCiv.isSpectator()) && this !in selectedUnitsRaw
 
         // This is the Civ 5 Order of selection:
         // 1. City
@@ -233,7 +238,6 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
 
         val civUnit = selectedTile.civilianUnit
         val milUnit = selectedTile.militaryUnit
-        val curUnit = selectedUnit
 
         val nextUnit: MapUnit?
         val priorityUnit = when {
@@ -254,9 +258,9 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
             && (selectedTile.getOwner() == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())
             && !selectedUnitIsConnectingRoad
         when {
-            forceSelectUnit != null -> selectUnit(forceSelectUnit)
+            forceSelectUnitView != null -> selectUnit(forceSelectUnitView)
             isCitySelected -> citySelected(selectedTile.getCity()!!)
-            nextUnit != null -> selectUnit(nextUnit, Gdx.input.isShiftKeyPressed())
+            nextUnit != null -> selectUnit(worldScreen.selectedGameView.getForeignMapUnitView(nextUnit).tryGetMapUnitView()!!, Gdx.input.isShiftKeyPressed())
             // toggle selection if same unit is clicked again by player
             selectedTile == previouslySelectedUnit?.currentTile -> {
                 selectUnit()
@@ -264,7 +268,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
             }
         }
 
-        if (selectedUnit != previouslySelectedUnit || selectedUnits.size != previousNumberOfSelectedUnits)
+        if (selectedUnit?.getUnit() != previouslySelectedUnit || selectedUnits.size != previousNumberOfSelectedUnits)
             shouldUpdate = true
     }
 

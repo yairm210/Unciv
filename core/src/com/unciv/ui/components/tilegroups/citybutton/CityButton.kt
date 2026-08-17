@@ -176,7 +176,7 @@ class CityButton(val foreignCityView: ForeignCityView, private val tileGroup: Ti
             // second tap on the button will go to the city screen
             // if this city belongs to you and you are not iterating though the air units
             val cityView = foreignCityView.tryGetCityView()
-            val isIteratingUnits = tileGroup.tileView.getVisibleUnits().none { it.getUnit() == unitTable.selectedUnit }
+            val isIteratingUnits = tileGroup.tileView.getVisibleUnits().none { it == unitTable.selectedUnit }
             if (cityView != null && isIteratingUnits)
                 GUI.pushScreen(CityScreen(cityView))
             else if (foreignCityView.isKnownTo(viewingPlayer))
@@ -197,7 +197,7 @@ class CityButton(val foreignCityView: ForeignCityView, private val tileGroup: Ti
         onRightClick(action = ::enterCityOrInfoPopup)
 
         // when deselected, move city button to its original position
-        if (unitTable.selectedCity != foreignCityView.getCity() && unitTable.selectedUnit?.currentTile != foreignCityView.getCenterTile().getTile() && unitTable.selectedSpy == null)
+        if (unitTable.selectedCity != foreignCityView.getCity() && unitTable.selectedUnit?.getTile() != foreignCityView.getCenterTile() && unitTable.selectedSpy == null)
             moveButtonUp()
     }
 

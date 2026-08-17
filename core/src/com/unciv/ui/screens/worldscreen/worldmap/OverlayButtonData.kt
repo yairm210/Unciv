@@ -39,7 +39,7 @@ class MoveHereOverlayButtonData(val unitToTurnsToDestination: HashMap<MapUnitVie
     }
 
     private fun getMoveHereButton(worldMapHolder: WorldMapHolder): Group {
-        val isParadrop = unitToTurnsToDestination.keys.all { it.getUnit().isPreparingParadrop() }
+        val isParadrop = unitToTurnsToDestination.keys.all { it.isPreparingParadrop() }
         val image = if (isParadrop)
             ImageGetter.getUnitActionPortrait("Paradrop", buttonSize / 2)
         else ImageGetter.getStatIcon("Movement")
@@ -64,7 +64,7 @@ class MoveHereOverlayButtonData(val unitToTurnsToDestination: HashMap<MapUnitVie
         unitIcon.y = buttonSize - unitIcon.height
         moveHereButton.addActor(unitIcon)
 
-        val unitsThatCanMove = unitToTurnsToDestination.keys.filter { it.getUnit().hasMovement() }
+        val unitsThatCanMove = unitToTurnsToDestination.keys.filter { it.hasMovement() }
         if (unitsThatCanMove.isEmpty()) moveHereButton.color.a = 0.5f
         else {
             moveHereButton.onActivation(UncivSound.Silent) {

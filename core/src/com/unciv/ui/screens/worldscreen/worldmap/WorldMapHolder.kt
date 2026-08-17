@@ -132,7 +132,7 @@ class WorldMapHolder(
                         if (!UncivGame.Current.settings.longTapMove) return
                         val unit = worldScreen.bottomUnitTable.selectedUnit
                             ?: return
-                        onTileRightClicked(worldScreen.selectedGameView.getForeignMapUnitView(unit).tryGetMapUnitView()!!, child.tileView)
+                        onTileRightClicked(unit, child.tileView)
                     }
                 }
             }
@@ -151,7 +151,7 @@ class WorldMapHolder(
                 if (child !is WorldTileGroup) return false
 
                 Concurrency.run("WorldScreenClick") {
-                    onTileRightClicked(worldScreen.selectedGameView.getForeignMapUnitView(unit).tryGetMapUnitView()!!, child.tileView)
+                    onTileRightClicked(unit, child.tileView)
                 }
                 return true
             }
@@ -169,19 +169,20 @@ class WorldMapHolder(
         unitConnectRoadPaths.clear()
 
         val unitTable = worldScreen.bottomUnitTable
-        val previousSelectedUnits = unitTable.selectedUnits.toList() // create copy
+        val previousSelectedUnitViews = unitTable.selectedUnits.toList() // create copy
         val previousSelectedCity = unitTable.selectedCity
         val previousSelectedUnitIsSwapping = unitTable.selectedUnitIsSwapping
         val previousSelectedUnitIsConnectingRoad = unitTable.selectedUnitIsConnectingRoad
         val movingSpyOnMap = unitTable.selectedSpy != null
         if (!movingSpyOnMap)
-            unitTable.tileSelected(tile)
+            unitTable.tileSelected(tileView)
         val newSelectedUnit = unitTable.selectedUnit
 
         if (previousSelectedCity != null && tileView != previousSelectedCity.getCenterTile() && !movingSpyOnMap)
             tileGroups[previousSelectedCity.getCenterTile()]!!.layerCityButton.moveUp()
 
-        if (previousSelectedUnits.isNotEmpty()) {
+        if (previousSelectedUnitViews.isNotEmpty()) {
+            val previousSelectedUnits = previousSelectedUnitViews.map { it.getUnit() }
             val isTileDifferent = previousSelectedUnits.any { it.getTile() != tile }
             val isPlayerTurn = worldScreen.isPlayersTurn
             val existsUnitNotPreparingAirSweep = previousSelectedUnits.any { !it.isPreparingAirSweep() }
@@ -199,7 +200,6 @@ class WorldMapHolder(
             }
 
             if (isTileDifferent && isPlayerTurn && canPerformActionsOnTile && existsUnitNotPreparingAirSweep) {
-                val previousSelectedUnitViews = previousSelectedUnits.map { worldScreen.selectedGameView.getForeignMapUnitView(it).tryGetMapUnitView()!! }
                 when {
                     previousSelectedUnitIsSwapping -> addTileOverlaysWithUnitSwapping(previousSelectedUnitViews.first(), tileView)
                     previousSelectedUnitIsConnectingRoad -> addTileOverlaysWithUnitRoadConnecting(previousSelectedUnitViews.first(), tileView)
@@ -344,7 +344,7 @@ class WorldMapHolder(
                     if (selectedUnit.currentTile != targetTile)
                         selectedUnit.action =
                                 "moveTo ${targetTile.position.x},${targetTile.position.y}"
-                    if (selectedUnit.hasMovement()) worldScreen.bottomUnitTable.selectUnit(selectedUnit)
+                    if (selectedUnit.hasMovement()) worldScreen.bottomUnitTable.selectUnit(selectedUnitView)
 
                     worldScreen.shouldUpdate = true
 
@@ -426,7 +426,7 @@ class WorldMapHolder(
         // Play something like a swish-swoosh
         SoundPlayer.play(UncivSound.Swap)
 
-        if (selectedUnit.hasMovement()) worldScreen.bottomUnitTable.selectUnit(selectedUnit)
+        if (selectedUnit.hasMovement()) worldScreen.bottomUnitTable.selectUnit(selectedUnitView)
 
         worldScreen.shouldUpdate = true
         removeUnitActionOverlay()
@@ -476,7 +476,7 @@ class WorldMapHolder(
                     for (unitView in unitsWhoCanMoveThere.keys) {
                         unitView.getUnit().movement.headTowards(tile)
                     }
-                    worldScreen.bottomUnitTable.selectUnit(selectedUnitView.getUnit()) // keep moved unit selected
+                    worldScreen.bottomUnitTable.selectUnit(selectedUnitView) // keep moved unit selected
                 } else {
                     // add "move to" button if there is a path to tileInfo
                     val moveHereButtonDto = MoveHereOverlayButtonData(unitsWhoCanMoveThere, tile)
@@ -561,7 +561,7 @@ class WorldMapHolder(
             if (!unit.hasMovement()) unitIconGroup.color.a = 0.66f
             val clickableCircle = ClickableCircle(68f)
             clickableCircle.onClickSuppressive {
-                worldScreen.bottomUnitTable.selectUnit(unit, Gdx.input.isShiftKeyPressed())
+                worldScreen.bottomUnitTable.selectUnit(worldScreen.selectedGameView.getForeignMapUnitView(unit).tryGetMapUnitView()!!, Gdx.input.isShiftKeyPressed())
                 worldScreen.shouldUpdate = true
                 removeUnitActionOverlay()
             }
@@ -624,7 +624,7 @@ class WorldMapHolder(
      * */
     internal fun updateMovementOverlay(pastVisibleUnits: Sequence<MapUnit>, targetVisibleUnits: Sequence<MapUnit>, visibleAttacks: Sequence<Pair<HexCoord, HexCoord>>) {
         val tileMapView = worldScreen.selectedGameView.tileMapView
-        val selectedUnit = worldScreen.bottomUnitTable.selectedUnit
+        val selectedUnit = worldScreen.bottomUnitTable.selectedUnit?.getUnit()
         for (unit in pastVisibleUnits) {
             if (unit.movementMemories.isEmpty()) continue
             if (selectedUnit != null && selectedUnit != unit) continue // When selecting a unit, show only arrows of that unit
@@ -672,7 +672,7 @@ class WorldMapHolder(
         val tileGroup = tileGroups.values.firstOrNull { it.tileView.position() == vector } ?: return false
         selectedTile = tileGroup.tileView
         if (selectUnit || forceSelectUnit != null)
-            worldScreen.bottomUnitTable.tileSelected(selectedTile!!.getTile(), forceSelectUnit)
+            worldScreen.bottomUnitTable.tileSelected(selectedTile!!, forceSelectUnit?.let { worldScreen.selectedGameView.getForeignMapUnitView(it).tryGetMapUnitView() })
 
         // The Y axis of [scrollY] is inverted - when at 0 we're at the top, not bottom - so we invert it back.
         if (!scrollTo(tileGroup.x + tileGroup.width / 2, maxY - (tileGroup.y + tileGroup.width / 2), immediately))
