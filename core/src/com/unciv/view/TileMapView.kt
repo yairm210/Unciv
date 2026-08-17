@@ -2,6 +2,7 @@ package com.unciv.view
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
 import yairm210.purity.annotations.Cache
@@ -27,6 +28,9 @@ class TileMapView(private val tileMap: TileMap,
         if (viewer != null && !isExplored(viewer)) return null
         return TileView(this, this@TileMapView, viewer, spectatorMode)
     }
+
+    /** Returns the [TileView] at [position], or `null` if it isn't explored by [viewer]. */
+    @Readonly fun getTile(position: HexCoord): TileView? = tileMap[position].toViewIfExplored()
 
     // Not sure if I want these as part of the API -
     // we can separate the "get coord" part and put it in HexMath,
