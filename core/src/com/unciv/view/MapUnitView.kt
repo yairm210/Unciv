@@ -14,6 +14,8 @@ class MapUnitView(unit: MapUnit, private val civView: CivView) : ForeignMapUnitV
     @Readonly fun hasUnique(uniqueType: UniqueType): Boolean = unit.hasUnique(uniqueType)
     @Readonly fun isIdle(): Boolean = unit.isIdle()
     @Readonly fun getMovementString(): String = unit.getMovementString()
+    @Readonly fun isMoving(): Boolean = unit.isMoving()
+    @Readonly fun getMovementDestination(): TileView = civView.gameView.tileMapView.getTile(unit.getMovementDestination())
     /** `true` if [unit] was removed from its tile (captured, killed) since being selected. */
     @Readonly fun hasDisappeared(): Boolean = unit !in unit.getTile().getUnits()
 

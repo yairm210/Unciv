@@ -22,6 +22,7 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Spy
 import com.unciv.models.UncivSound
 import com.unciv.view.CivView
+import com.unciv.view.ForeignMapUnitView
 import com.unciv.view.MapUnitView
 import com.unciv.view.TileView
 import com.unciv.ui.audio.SoundPlayer
@@ -546,22 +547,22 @@ class WorldMapHolder(
         if (buttonDto != null && worldScreen.canChangeState)
             table.add(buttonDto.createButton(this))
 
-        val unitList = ArrayList<MapUnit>()
+        val unitList = ArrayList<MapUnitView>()
         if (tile.isCityCenter()
                 && (tile.getOwner() == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())) {
-            unitList.addAll(tile.getCity()!!.getCenterTile().getUnits())
+            unitList.addAll(tile.getCity()!!.getCenterTile().getUnits().map { worldScreen.selectedGameView.getForeignMapUnitView(it).tryGetMapUnitView()!! })
         } else if (tile.airUnits.isNotEmpty()
                 && (tile.airUnits.first().civ == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())) {
-            unitList.addAll(tile.getUnits())
+            unitList.addAll(tile.getUnits().map { worldScreen.selectedGameView.getForeignMapUnitView(it).tryGetMapUnitView()!! })
         }
 
-        for (unit in unitList) {
-            val unitIconGroup = UnitIconGroup(unit, 48f).surroundWithCircle(68f, resizeActor = false)
+        for (unitView in unitList) {
+            val unitIconGroup = UnitIconGroup(unitView.getUnit(), 48f).surroundWithCircle(68f, resizeActor = false)
             unitIconGroup.circle.color = Color.GRAY.cpy().apply { a = 0.5f }
-            if (!unit.hasMovement()) unitIconGroup.color.a = 0.66f
+            if (!unitView.hasMovement()) unitIconGroup.color.a = 0.66f
             val clickableCircle = ClickableCircle(68f)
             clickableCircle.onClickSuppressive {
-                worldScreen.bottomUnitTable.selectUnit(worldScreen.selectedGameView.getForeignMapUnitView(unit).tryGetMapUnitView()!!, Gdx.input.isShiftKeyPressed())
+                worldScreen.bottomUnitTable.selectUnit(unitView, Gdx.input.isShiftKeyPressed())
                 worldScreen.shouldUpdate = true
                 removeUnitActionOverlay()
             }
@@ -618,17 +619,18 @@ class WorldMapHolder(
     /**
      * Add arrows to show all past and planned movements and attacks, if the options setting to do so is enabled.
      *
-     * @param pastVisibleUnits Sequence of [MapUnit]s for which the last turn's movement history can be displayed.
-     * @param targetVisibleUnits Sequence of [MapUnit]s for which the active movement target can be displayed.
+     * @param pastVisibleUnits Sequence of units for which the last turn's movement history can be displayed.
+     * @param targetVisibleUnits Sequence of units for which the active movement target can be displayed.
      * @param visibleAttacks Sequence of pairs of [Vector2] positions of the sources and the targets of all attacks that can be displayed.
      * */
-    internal fun updateMovementOverlay(pastVisibleUnits: Sequence<MapUnit>, targetVisibleUnits: Sequence<MapUnit>, visibleAttacks: Sequence<Pair<HexCoord, HexCoord>>) {
+    internal fun updateMovementOverlay(pastVisibleUnits: Sequence<ForeignMapUnitView>, targetVisibleUnits: Sequence<MapUnitView>, visibleAttacks: Sequence<Pair<HexCoord, HexCoord>>) {
         val tileMapView = worldScreen.selectedGameView.tileMapView
-        val selectedUnit = worldScreen.bottomUnitTable.selectedUnit?.getUnit()
-        for (unit in pastVisibleUnits) {
-            if (unit.movementMemories.isEmpty()) continue
-            if (selectedUnit != null && selectedUnit != unit) continue // When selecting a unit, show only arrows of that unit
-            val stepIter = unit.movementMemories.iterator()
+        val selectedUnit = worldScreen.bottomUnitTable.selectedUnit
+        for (unitView in pastVisibleUnits) {
+            val movementMemories = unitView.getMovementMemories()
+            if (movementMemories.isEmpty()) continue
+            if (selectedUnit != null && selectedUnit != unitView) continue // When selecting a unit, show only arrows of that unit
+            val stepIter = movementMemories.iterator()
             var previous = stepIter.next()
             while (stepIter.hasNext()) {
                 val next = stepIter.next()
@@ -638,21 +640,20 @@ class WorldMapHolder(
                 previous = next
             }
             val fromTileView = tileMapView.getTile(previous.position)
-            val unitTileView = tileMapView.getTile(unit.getTile().position)
-            if (fromTileView != null && unitTileView != null) addArrow(fromTileView, unitTileView, unit.mostRecentMoveType)
+            val unitTileView = tileMapView.getTile(unitView.getTile().position())
+            if (fromTileView != null && unitTileView != null) addArrow(fromTileView, unitTileView, unitView.getMostRecentMoveType())
         }
-        for (unit in targetVisibleUnits) {
-            if (!unit.isMoving())
+        for (unitView in targetVisibleUnits) {
+            if (!unitView.isMoving())
                 continue
-            val toTile = unit.getMovementDestination()
-            val fromTileView = tileMapView.getTile(unit.getTile().position) ?: continue
-            val toTileView = tileMapView.getTile(toTile.position) ?: continue
+            val toTileView = unitView.getMovementDestination()
+            val fromTileView = tileMapView.getTile(unitView.getTile().position()) ?: continue
             addArrow(fromTileView, toTileView, MiscArrowTypes.UnitMoving)
         }
         for ((from, to) in visibleAttacks) {
             if (selectedUnit != null
-                && selectedUnit.currentTile.position != from
-                && selectedUnit.currentTile.position != to) continue
+                && selectedUnit.getTile().position() != from
+                && selectedUnit.getTile().position() != to) continue
             val fromTileView = tileMapView.getTile(from) ?: continue
             val toTileView = tileMapView.getTile(to) ?: continue
             addArrow(fromTileView, toTileView, MiscArrowTypes.UnitHasAttacked)

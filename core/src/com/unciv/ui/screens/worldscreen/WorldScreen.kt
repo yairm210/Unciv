@@ -414,8 +414,8 @@ class WorldScreen(
             val allAttacks = allUnits.map { unit -> unit.attacksSinceTurnStart.asSequence().map { attacked -> Triple(unit.civ, unit.getTile().position, attacked.toHexCoord()) } }.flatten() +
                 gameInfo.civilizations.asSequence().flatMap { civInfo -> civInfo.attacksSinceTurnStart.asSequence().map { Triple(civInfo, it.source, it.target) } }
             mapHolder.updateMovementOverlay(
-                allUnits.filter(mapVisualization::isUnitPastVisible),
-                allUnits.filter(mapVisualization::isUnitFutureVisible),
+                allUnits.filter(mapVisualization::isUnitPastVisible).map { selectedGameView.getForeignMapUnitView(it) },
+                allUnits.filter(mapVisualization::isUnitFutureVisible).map { selectedGameView.getForeignMapUnitView(it).tryGetMapUnitView()!! },
                 allAttacks.filter { (attacker, source, target) -> mapVisualization.isAttackVisible(attacker, source, target) }
                         .map { (_, source, target) -> source to target }
             )
