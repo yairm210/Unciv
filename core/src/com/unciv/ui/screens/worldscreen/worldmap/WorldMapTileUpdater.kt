@@ -7,11 +7,11 @@ import com.unciv.logic.battle.AttackableTile
 import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.city.City
 import com.unciv.logic.map.MapPathing
-import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.Spy
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.view.CivView
+import com.unciv.view.MapUnitView
 
 object WorldMapTileUpdater {
 
@@ -42,12 +42,12 @@ object WorldMapTileUpdater {
                 updateBombardableTilesForSelectedCity(city)
                 // We still want to show road paths to the selected city if they are present
                 if (unitTable.selectedUnitIsConnectingRoad) {
-                    updateTilesForSelectedUnit(unitTable.selectedUnits[0])
+                    updateTilesForSelectedUnit(civView.gameView.getForeignMapUnitView(unitTable.selectedUnits[0]).tryGetMapUnitView()!!)
                 }
             }
             unitTable.selectedUnit != null -> {
                 for (unit in unitTable.selectedUnits) {
-                    updateTilesForSelectedUnit(unit)
+                    updateTilesForSelectedUnit(civView.gameView.getForeignMapUnitView(unit).tryGetMapUnitView()!!)
                 }
             }
             unitActionOverlays.isNotEmpty() -> {
@@ -61,7 +61,8 @@ object WorldMapTileUpdater {
         zoom(scaleX) // zoom to current scale, to set the size of the city buttons after "next turn"
     }
 
-    private fun WorldMapHolder.updateTilesForSelectedUnit(unit: MapUnit) {
+    private fun WorldMapHolder.updateTilesForSelectedUnit(unitView: MapUnitView) {
+        val unit = unitView.getUnit()
 
         val tileGroup = tileGroups[tileMapView.getTile(unit.getTile())] ?: return
 
@@ -113,8 +114,8 @@ object WorldMapTileUpdater {
                 tileGroups[tileMapView.getTile(tile)]!!.layerOverlay.showHighlight(connectRoadTileOverlayColor, 0.3f)
             }
 
-            if (unitConnectRoadPaths.containsKey(unit)) {
-                for (tile in unitConnectRoadPaths[unit]!!) {
+            if (unitConnectRoadPaths.containsKey(unitView)) {
+                for (tile in unitConnectRoadPaths[unitView]!!) {
                     tileGroups[tileMapView.getTile(tile)]!!.layerOverlay.showHighlight(Color.ORANGE, 0.8f)
                 }
             }
@@ -175,8 +176,8 @@ object WorldMapTileUpdater {
 
         // Z-Layer: 3
         // Movement paths
-        if (unitMovementPaths.containsKey(unit)) {
-            for (tile in unitMovementPaths[unit]!!) {
+        if (unitMovementPaths.containsKey(unitView)) {
+            for (tile in unitMovementPaths[unitView]!!) {
                 tileGroups[tileMapView.getTile(tile)]!!.layerOverlay.showHighlight(Color.SKY, 0.8f)
             }
         }

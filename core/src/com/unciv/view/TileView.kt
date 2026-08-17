@@ -43,23 +43,25 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
         if (!tile.isVisible(viewer)) return false
         return !unit.isInvisible(viewer) || tile in viewer.viewableInvisibleUnitsTiles
     }
+    @Readonly private fun toForeignMapUnitView(unit: MapUnit): ForeignMapUnitView =
+        tileMapView.gameView!!.getForeignMapUnitView(unit)
     val civilianUnit: ForeignMapUnitView?
         get() {
             val unit = tile.civilianUnit ?: return null
             if (!isVisible(unit)) return null
-            return ForeignMapUnitView(unit, viewer!!)
+            return toForeignMapUnitView(unit)
         }
     val militaryUnit: ForeignMapUnitView?
         get() {
             val unit = tile.militaryUnit ?: return null
             if (!isVisible(unit)) return null
-            return ForeignMapUnitView(unit, viewer!!)
+            return toForeignMapUnitView(unit)
         }
     @Readonly fun getVisibleUnits(): List<ForeignMapUnitView> {
         if (viewer == null) return emptyList()
         return tile.getUnits()
             .filter { isVisible(it) }
-            .map { ForeignMapUnitView(it, viewer) }
+            .map { toForeignMapUnitView(it) }
             .toList()
     }
 
