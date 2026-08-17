@@ -2,6 +2,7 @@ package com.unciv.view
 
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.models.ruleset.unit.BaseUnit
 import yairm210.purity.annotations.Readonly
 
 /** Should contain information that should be knowable to us about foreign units. Superclass of [MapUnitView]. */
@@ -9,6 +10,7 @@ open class ForeignMapUnitView(internal open val unit: MapUnit, viewer: Civilizat
     val name: String get() = unit.name
     val civName: String get() = unit.civ.civName
     val health: Int get() = unit.health
+    val religiousStrengthLost: Int get() = unit.religiousStrengthLost
 
     // Navigation
     @Readonly fun getUnit(): MapUnit = unit
@@ -23,6 +25,12 @@ open class ForeignMapUnitView(internal open val unit: MapUnit, viewer: Civilizat
     // Data retrieval
     @Readonly fun isAirUnit(): Boolean = unit.baseUnit.isAirUnit()
     @Readonly fun isCivilian(): Boolean = unit.isCivilian()
+    @Readonly fun displayName(): String = unit.displayName()
+    @Readonly fun getBaseUnit(): BaseUnit = unit.baseUnit
+    @Readonly fun getRange(): Int = unit.getRange()
+    @Readonly fun getInterceptionRange(): Int = unit.getInterceptionRange()
+    @Readonly fun getPromotions() = unit.promotions
+    @Readonly fun getStatusMap() = unit.statusMap
 
     override fun equals(other: Any?) = other is ForeignMapUnitView && other.unit === unit
     override fun hashCode() = unit.hashCode()
