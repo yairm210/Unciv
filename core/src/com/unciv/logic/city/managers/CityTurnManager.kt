@@ -25,7 +25,7 @@ class CityTurnManager(val city: City) {
             if (resource.resource.isStockpiled && resource.resource.isCityWide)
                 city.gainStockpiledResource(resource.resource, resource.amount)
         }
-        for (unique in city.getTriggeredUniques(UniqueType.TriggerUponTurnStart, includeCivUniques = false).toList()) {
+        for (unique in city.getTriggeredUniquesSnapshot(UniqueType.TriggerUponTurnStart, includeCivUniques = false)) {
             UniqueTriggerActivation.triggerUnique(unique, city)
         }
 
@@ -143,7 +143,7 @@ class CityTurnManager(val city: City) {
 
 
     fun endTurn():Unit = timeThis("CityTurnManager.endTurn") {
-        for (unique in city.getTriggeredUniques(UniqueType.TriggerUponTurnEnd, includeCivUniques = false).toList()) {
+        for (unique in city.getTriggeredUniquesSnapshot(UniqueType.TriggerUponTurnEnd, includeCivUniques = false)) {
             UniqueTriggerActivation.triggerUnique(unique, city)
         }
         val stats = city.cityStats.currentCityStats

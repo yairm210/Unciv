@@ -18,23 +18,19 @@ object AirUnitAutomation {
         if (unit.health < 75) return // Wait and heal
 
         val tilesWithEnemyUnitsInRange = unit.civ.threatManager.getTilesWithEnemyUnitsInDistance(unit.getTile(), unit.getRange())
-        // TODO: Optimize [friendlyAirUnitsInRange] by creating an alternate [ThreatManager.getTilesWithEnemyUnitsInDistance] that handles only friendly units
-        val friendlyAirUnitsInRange = unit.getTile().getTilesInDistance(unit.getRange()).flatMap { it.airUnits }.filter { it.civ == unit.civ }
         // Find all visible enemy air units
         val enemyAirUnitsInRange = tilesWithEnemyUnitsInRange
             .flatMap { it.airUnits.asSequence() }.filter { it.civ.isAtWarWith(unit.civ) }
         val enemyFighters = enemyAirUnitsInRange.size / 2 // Assume half the planes are fighters
-        val friendlyUnusedFighterCount = friendlyAirUnitsInRange.count { it.canAttack() }
-        val friendlyUsedFighterCount = friendlyAirUnitsInRange.count { !it.canAttack() }
+        val friendlyUnusedFighterCount = unit.getTile().countTilesInDistance(unit.getRange()) { tile -> tile.airUnits.any { it.civ == unit.civ && it.canAttack() } }
+        val friendlyUsedFighterCount = unit.getTile().countTilesInDistance(unit.getRange()) { tile -> tile.airUnits.any { it.civ == unit.civ && !it.canAttack() } }
 
         // We need to be on standby in case they attack
         if (friendlyUnusedFighterCount < enemyFighters) return
 
         if (friendlyUsedFighterCount <= enemyFighters) {
-            @Readonly fun airSweepDamagePercentBonus(): Int {
-                return unit.getMatchingUniques(UniqueType.StrengthWhenAirsweep)
-                    .sumOf { it.params[0].toInt() }
-            }
+            @Readonly fun airSweepDamagePercentBonus(): Int =
+                unit.accumulateForEachMatchingUnique(UniqueType.StrengthWhenAirsweep, initial = 0) { acc, unique -> acc + unique.params[0].toInt() }
 
             // If we are outnumbered, don't heal after attacking and don't have an Air Sweep bonus
             // Then we shouldn't speed the air battle by killing our fighters, instead, focus on defending
@@ -62,11 +58,10 @@ object AirUnitAutomation {
 
         val citiesByNearbyAirUnits = pathsToCities.keys
             .groupBy { key ->
-                key.getTilesInDistance(unit.getMaxMovementForAirUnits())
-                    .count {
-                        val firstAirUnit = it.airUnits.firstOrNull()
-                        firstAirUnit != null && firstAirUnit.civ.isAtWarWith(unit.civ)
-                    }
+                key.countTilesInDistance(unit.getMaxMovementForAirUnits()) {
+                    val firstAirUnit = it.airUnits.firstOrNull()
+                    firstAirUnit != null && firstAirUnit.civ.isAtWarWith(unit.civ)
+                }
             }
 
         if (citiesByNearbyAirUnits.keys.any { it != 0 }) {
@@ -113,8 +108,9 @@ object AirUnitAutomation {
         val citiesThatCanAttackFrom = pathsToCities.keys
             .filter { destinationCity ->
                 destinationCity != airUnit.currentTile
-                    && destinationCity.getTilesInDistance(airUnit.getRange())
-                    .any { TargetHelper.containsAttackableEnemy(it, MapUnitCombatant(airUnit)) }
+                    && destinationCity.anyTileInDistance(airUnit.getRange()) {
+                        TargetHelper.containsAttackableEnemy(it, MapUnitCombatant(airUnit))
+                    }
             }
         if (citiesThatCanAttackFrom.isEmpty()) return
 
@@ -130,11 +126,9 @@ object AirUnitAutomation {
         if (!unit.civ.isAtWar()) return
         // We should *Almost* never want to nuke our own city, so don't consider it
         if (unit.type.isAirUnit()) {
-            val tilesInRange = unit.currentTile.getTilesInDistanceRange(2..unit.getRange())
-            val highestTileNukeValue = tilesInRange.map { it to getNukeLocationValue(unit, it) }
-                .maxByOrNull { it.second }
-            if (highestTileNukeValue != null && highestTileNukeValue.second > 0)
-                Nuke.NUKE(MapUnitCombatant(unit), highestTileNukeValue.first)
+            val bestNuke = unit.currentTile.maxTileInDistanceRange(2..unit.getRange()) { getNukeLocationValue(unit, it) }
+            if (bestNuke != null && bestNuke.second > 0)
+                Nuke.NUKE(MapUnitCombatant(unit), bestNuke.first)
 
             tryRelocateMissileToNearbyAttackableCities(unit)
         } else {
@@ -156,26 +150,31 @@ object AirUnitAutomation {
         val civ = nuke.civ
         if (!Nuke.mayUseNuke(MapUnitCombatant(nuke), tile)) return Int.MIN_VALUE
         val blastRadius = nuke.getNukeBlastRadius()
-        val tilesInBlastRadius = tile.getTilesInDistance(blastRadius)
-        val civsInBlastRadius = tilesInBlastRadius.mapNotNull { it.getOwner() } +
-            tilesInBlastRadius.mapNotNull { it.getFirstUnit()?.civ }
-
-        // Don't nuke if it means we will be declaring war on someone!
-        if (civsInBlastRadius.any { it != civ && !it.isAtWarWith(civ) }) return -100000
-        // If there are no enemies to hit, don't nuke
-        if (!civsInBlastRadius.any { it.isAtWarWith(civ) }) return -100000
-
         // Launching a Nuke uses resources, therefore don't launch it by default
         var explosionValue = -500
+        var anyEnemiesHit = false
+        tile.firstTileInDistanceOrNull(blastRadius) { targetTile->
+            // Don't nuke if it means we will be declaring war on someone!
+            val owner = targetTile.getOwner()
+            val unitCiv = targetTile.getFirstUnit()?.civ
+            val willDeclareWarOnOwner = owner != null && owner != civ && !owner.isAtWarWith(civ)
+            val willDeclareWarOnUnit = unitCiv != null && unitCiv != civ && !unitCiv.isAtWarWith(civ)
 
-        // Returns either ourValue or thierValue depending on if the input Civ matches the Nuke's Civ
-        @Pure
-        fun evaluateCivValue(targetCiv: Civilization, ourValue: Int, theirValue: Int): Int {
-            if (targetCiv == civ) // We are nuking something that we own!
-                return ourValue
-            return theirValue // We are nuking an enemy!
-        }
-        for (targetTile in tilesInBlastRadius) {
+            if (willDeclareWarOnOwner || willDeclareWarOnUnit) {
+                explosionValue = -100000
+                return@firstTileInDistanceOrNull true
+            }
+            if (owner?.isAtWarWith(civ) ?: false || unitCiv?.isAtWarWith(civ) ?: false) {
+                anyEnemiesHit = true
+            }
+    
+            // Returns either ourValue or thierValue depending on if the input Civ matches the Nuke's Civ
+            @Pure
+            fun evaluateCivValue(targetCiv: Civilization, ourValue: Int, theirValue: Int): Int {
+                if (targetCiv == civ) // We are nuking something that we own!
+                    return ourValue
+                return theirValue // We are nuking an enemy!
+            }
             // We can only account for visible units
             if (targetTile.isVisible(civ)) {
                 for (targetUnit in targetTile.getUnits()) {
@@ -206,8 +205,13 @@ object AirUnitAutomation {
                     explosionValue += evaluateCivValue(owningCiv, -40, 20)
             }
             // If the value is too low end the search early
-            if (explosionValue < -1000) return explosionValue
+            if (explosionValue < -1000) return@firstTileInDistanceOrNull true
+            // otherwise, keep analyzing affected tiles
+            return@firstTileInDistanceOrNull false
         }
+        // If there are no enemies to hit, don't nuke
+        if (!anyEnemiesHit)
+            return -100000
         return explosionValue
     }
 
@@ -218,14 +222,13 @@ object AirUnitAutomation {
     }
 
     private fun tryRelocateMissileToNearbyAttackableCities(unit: MapUnit) {
-        val tilesInRange = unit.currentTile.getTilesInDistance(unit.getRange())
-        val immediatelyReachableCities = tilesInRange
-            .filter { unit.movement.canMoveTo(it) }
-
-        for (city in immediatelyReachableCities) if (city.getTilesInDistance(unit.getRange())
-                .any { it.isCityCenter() && it.getOwner()!!.isAtWarWith(unit.civ) }
-        ) {
-            unit.movement.moveToTile(city)
+        val cityToMoveTo = unit.currentTile.firstTileInDistanceOrNull(unit.getRange()) { city ->
+            unit.movement.canMoveTo(city) && city.anyTileInDistance(unit.getRange()) {
+                it.isCityCenter() && it.getOwner()!!.isAtWarWith(unit.civ)
+            }
+        }
+        if (cityToMoveTo != null) {
+            unit.movement.moveToTile(cityToMoveTo)
             return
         }
 
@@ -235,19 +238,13 @@ object AirUnitAutomation {
     }
 
     private fun tryRelocateToCitiesWithEnemyNearBy(unit: MapUnit): Boolean {
-        val immediatelyReachableCitiesAndCarriers = unit.currentTile
-            .getTilesInDistance(unit.getMaxMovementForAirUnits()).filter { unit.movement.canMoveTo(it) }
-
-        for (city in immediatelyReachableCitiesAndCarriers) {
-            if (city.getTilesInDistance(unit.getRange())
-                    .any {
-                        it.isVisible(unit.civ) &&
-                            TargetHelper.containsAttackableEnemy(it,MapUnitCombatant(unit))
-                    }) {
-                unit.movement.moveToTile(city)
-                return true
+        val cityToMoveTo = unit.currentTile.firstTileInDistanceOrNull(unit.getMaxMovementForAirUnits()) { city ->
+            unit.movement.canMoveTo(city) && city.anyTileInDistance(unit.getRange()) {
+                it.isVisible(unit.civ) &&
+                    TargetHelper.containsAttackableEnemy(it,MapUnitCombatant(unit))
             }
-        }
-        return false
+        } ?: return false
+        unit.movement.moveToTile(cityToMoveTo)
+        return true
     }
 }

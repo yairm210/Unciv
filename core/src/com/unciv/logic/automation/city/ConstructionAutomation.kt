@@ -171,7 +171,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
 
         val civilianUnit = city.getCenterTile().civilianUnit
         if (civilianUnit != null && civilianUnit.hasUnique(UniqueType.FoundCity)
-                && city.getCenterTile().getTilesInDistance(city.getExpandRange()).none { it.militaryUnit?.civ == civInfo })
+                && !city.getCenterTile().anyTileInDistance(city.getExpandRange()) { it.militaryUnit?.civ == civInfo })
             modifier = 5f // there's a settler just sitting here, doing nothing - BAD
 
         if (!civInfo.isAIOrAutoPlaying()) modifier /= 2 // Players prefer to make their own unit choices usually
@@ -194,8 +194,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         val twoTurnsMovement = buildableWorkboatUnits.maxOf { it.movement } * 2
         @Readonly fun MapUnit.isOurWorkBoat() = cache.hasUniqueToCreateWaterImprovements
                 && this.civ == this@ConstructionAutomation.civInfo
-        val alreadyHasWorkBoat = city.getCenterTile().getTilesInDistance(twoTurnsMovement)
-            .any { it.civilianUnit?.isOurWorkBoat() == true }
+        val alreadyHasWorkBoat = city.getCenterTile().anyTileInDistance(twoTurnsMovement) { it.civilianUnit?.isOurWorkBoat() == true }
         if (alreadyHasWorkBoat) return
 
         // Define what makes a tile worth sending a Workboat to

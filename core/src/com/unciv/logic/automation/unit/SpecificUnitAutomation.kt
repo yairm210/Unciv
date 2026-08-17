@@ -158,8 +158,7 @@ object SpecificUnitAutomation {
             /** @return the number of tiles 4 (un-modded) out from this city that could hold a city, ie how lonely this city is */
             @Readonly
             fun getFrontierScore(city: City) = city.getCenterTile()
-                .getTilesAtDistance(city.civ.gameInfo.ruleset.modOptions.constants.minimalCityDistance + 1)
-                .count { it.canBeSettled(unit.civ) }
+                .countTilesAtDistance(city.civ.gameInfo.ruleset.modOptions.constants.minimalCityDistance + 1) { it.canBeSettled(unit.civ) }
 
             val frontierCity = unit.civ.cities.maxByOrNull { getFrontierScore(it) }
             if (frontierCity != null && getFrontierScore(frontierCity) > 0  && unit.movement.canReach(frontierCity.getCenterTile()))
@@ -188,7 +187,7 @@ object SpecificUnitAutomation {
     /** @return whether there was any progress in placing the improvement. A return value of `false`
      * can be interpreted as: the unit doesn't know where to place the improvement or is stuck. */
     fun automateImprovementPlacer(unit: MapUnit) : Boolean {
-        val improvementBuildingUnique = unit.getMatchingUniques(UniqueType.ConstructImprovementInstantly).firstOrNull()
+        val improvementBuildingUnique = unit.firstMatchingUniqueOrNull(UniqueType.ConstructImprovementInstantly) { true }
             ?: return false
 
         val improvementName = improvementBuildingUnique.params[0]
@@ -224,7 +223,7 @@ object SpecificUnitAutomation {
                 // Radius 5 is quite arbitrary. Few units have such a high movement radius although
                 // streets might modify it. Also there might be invisible units, so this is just an
                 // approximation for relative safety and simplicity.
-                val enemyUnitsNearby = unit.getTile().getTilesInDistance(5).any { tileNearby ->
+                val enemyUnitsNearby = unit.getTile().anyTileInDistance(5) { tileNearby ->
                     tileNearby.getUnits().any { unitOnTileNearby ->
                         unitOnTileNearby.isMilitary() && unitOnTileNearby.civ.isAtWarWith(unit.civ)
                     }
