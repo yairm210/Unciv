@@ -2517,10 +2517,10 @@ A region not fulfilling any criteria is classified as "Hybrid"
 </table>
 <h3 id="layering-images">Layering images</h3>
 <p>ruleVariants control substitutions when layering images for a tile, they are list looking like:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">&quot;ruleVariants&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;Grassland+Forest&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Grassland&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;GrasslandForest&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;Plains+Forest&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Plains&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;PlainsForest&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;Plains+Jungle&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Plains&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;PlainsJungle&quot;</span><span class="p">],</span>
+<div class="highlight"><pre><span></span><code><span class="nt">"ruleVariants"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"Grassland+Forest"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"Grassland"</span><span class="p">,</span><span class="w"> </span><span class="s2">"GrasslandForest"</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">"Plains+Forest"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"Plains"</span><span class="p">,</span><span class="w"> </span><span class="s2">"PlainsForest"</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">"Plains+Jungle"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"Plains"</span><span class="p">,</span><span class="w"> </span><span class="s2">"PlainsJungle"</span><span class="p">],</span>
 <span class="w">    </span><span class="c1">// . . .</span>
 <span class="p">}</span>
 </code></pre></div>
@@ -2539,13 +2539,13 @@ A region not fulfilling any criteria is classified as "Hybrid"
 </ul>
 <h3 id="general-stat">General stat</h3>
 <p>If an object carries general stat(s), it contains any combination (or none) of the above stats, each mapping to a corresponding number [^1]. For Example:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">&quot;gold&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
-<span class="nt">&quot;improvement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Quarry&quot;</span><span class="p">,</span>
+<div class="highlight"><pre><span></span><code><span class="nt">"gold"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="nt">"improvement"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Quarry"</span><span class="p">,</span>
 </code></pre></div>
 <h3 id="specialized-stats">Specialized stats</h3>
 <p>For specialized stats, they might come as sub-object in a named field. The sub-object contains any combination (or none) of the above stats, each mapping to a corresponding number [^1]. For Example:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">&quot;improvement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Quarry&quot;</span><span class="p">,</span>
-<span class="nt">&quot;improvementStats&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;gold&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;production&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">},</span>
+<div class="highlight"><pre><span></span><code><span class="nt">"improvement"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Quarry"</span><span class="p">,</span>
+<span class="nt">"improvementStats"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"gold"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nt">"production"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">},</span>
 </code></pre></div>
 <p>[^1]: The values are usually integers, though the underlying code supports floating point. The effects are, however, insufficiently tested and therefore -so far- using fractional stats is unsupported. Go ahead and thoroughly test that in a mod and help out with feedback 😁.</p>
 
