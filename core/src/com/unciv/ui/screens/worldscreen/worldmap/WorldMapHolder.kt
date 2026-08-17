@@ -60,9 +60,9 @@ class WorldMapHolder(
     /** Holds buttons created by [OverlayButtonData] implementations */
     internal val unitActionOverlays: ArrayList<Actor> = ArrayList()
 
-    internal val unitMovementPaths: HashMap<MapUnitView, ArrayList<Tile>> = HashMap()
+    internal val unitMovementPaths: HashMap<MapUnitView, ArrayList<TileView>> = HashMap()
 
-    internal val unitConnectRoadPaths: HashMap<MapUnitView, List<Tile>> = HashMap()
+    internal val unitConnectRoadPaths: HashMap<MapUnitView, List<TileView>> = HashMap()
 
     private lateinit var tileGroupMap: TileGroupMap<WorldTileGroup>
 
@@ -184,7 +184,7 @@ class WorldMapHolder(
 
         if (previousSelectedUnitViews.isNotEmpty()) {
             val previousSelectedUnits = previousSelectedUnitViews.map { it.getUnit() }
-            val isTileDifferent = previousSelectedUnits.any { it.getTile() != tile }
+            val isTileDifferent = previousSelectedUnitViews.any { it.getTile() != tileView }
             val isPlayerTurn = worldScreen.isPlayersTurn
             val existsUnitNotPreparingAirSweep = previousSelectedUnits.any { !it.isPreparingAirSweep() }
 
@@ -229,7 +229,7 @@ class WorldMapHolder(
     private fun onTileRightClicked(unitView: MapUnitView, tileView: TileView) {
         val unit = unitView.getUnit()
         val tile = tileView.getTile()
-        if (unit.currentTile.position == tile.position) return
+        if (unitView.getTile() == tileView) return
         removeUnitActionOverlay()
         selectedTile = tileView
         unitMovementPaths.clear()
@@ -435,6 +435,7 @@ class WorldMapHolder(
 
     private fun addTileOverlaysWithUnitMovement(selectedUnits: List<MapUnitView>, tileView: TileView) {
         val tile = tileView.getTile()
+        val tileMapView = worldScreen.selectedGameView.tileMapView
         Concurrency.run("TurnsToGetThere") {
             /** LibGdx sometimes has these weird errors when you try to edit the UI layout from 2 separate threads.
              * And so, all UI editing will be done on the main thread.
@@ -445,7 +446,7 @@ class WorldMapHolder(
             val unitToTurnsToTile = HashMap<MapUnitView, Int>()
             for (unitView in selectedUnits) {
                 val unit = unitView.getUnit()
-                val shortestPath = ArrayList<Tile>()
+                val shortestPath = ArrayList<TileView>()
                 val turnsToGetThere = if (unit.baseUnit.isAirUnit()) {
                     if (unit.movement.canReach(tile)) 1
                     else 0
@@ -454,7 +455,7 @@ class WorldMapHolder(
                     else 0
                 } else {
                     // this is the most time-consuming call
-                    shortestPath.addAll(unit.movement.getShortestPath(tile))
+                    shortestPath.addAll(unit.movement.getShortestPath(tile).map { tileMapView.getTile(it) })
                     shortestPath.size
                 }
                 unitMovementPaths[unitView] = shortestPath
@@ -510,6 +511,7 @@ class WorldMapHolder(
     private fun addTileOverlaysWithUnitRoadConnecting(selectedUnitView: MapUnitView, tileView: TileView){
         val selectedUnit = selectedUnitView.getUnit()
         val tile = tileView.getTile()
+        val tileMapView = worldScreen.selectedGameView.tileMapView
         Concurrency.run("ConnectRoad") {
            val validTile = tile.isLand &&
                !tile.isImpassible() &&
@@ -525,7 +527,7 @@ class WorldMapHolder(
                         worldScreen.shouldUpdate = true
                         return@launchOnGLThread
                     }
-                    unitConnectRoadPaths[selectedUnitView] = roadPath
+                    unitConnectRoadPaths[selectedUnitView] = roadPath.map { tileMapView.getTile(it) }
                     val connectRoadButtonDto = ConnectRoadOverlayButtonData(selectedUnitView, tile)
                     addTileOverlays(tileView, connectRoadButtonDto)
                     worldScreen.shouldUpdate = true

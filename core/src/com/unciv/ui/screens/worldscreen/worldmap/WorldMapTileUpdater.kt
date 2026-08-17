@@ -115,8 +115,8 @@ object WorldMapTileUpdater {
             }
 
             if (unitConnectRoadPaths.containsKey(unitView)) {
-                for (tile in unitConnectRoadPaths[unitView]!!) {
-                    tileGroups[tileMapView.getTile(tile)]!!.layerOverlay.showHighlight(Color.ORANGE, 0.8f)
+                for (tileView in unitConnectRoadPaths[unitView]!!) {
+                    tileGroups[tileView]!!.layerOverlay.showHighlight(Color.ORANGE, 0.8f)
                 }
             }
 
@@ -177,8 +177,8 @@ object WorldMapTileUpdater {
         // Z-Layer: 3
         // Movement paths
         if (unitMovementPaths.containsKey(unitView)) {
-            for (tile in unitMovementPaths[unitView]!!) {
-                tileGroups[tileMapView.getTile(tile)]!!.layerOverlay.showHighlight(Color.SKY, 0.8f)
+            for (tileView in unitMovementPaths[unitView]!!) {
+                tileGroups[tileView]!!.layerOverlay.showHighlight(Color.SKY, 0.8f)
             }
         }
 
