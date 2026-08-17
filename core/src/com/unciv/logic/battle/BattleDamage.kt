@@ -56,7 +56,7 @@ object BattleDamage {
                 modifiers[greatGeneralName] = greatGeneralBonus
 
         } else if (combatant is CityCombatant) {
-            for (unique in combatant.city.getMatchingUniques(UniqueType.StrengthForCities, conditionalState)) {
+            combatant.city.forEachMatchingUnique(UniqueType.StrengthForCities, conditionalState) { unique ->
                 modifiers.add(getModifierStringFromUnique(unique), unique.params[0].toInt())
             }
         }
@@ -96,21 +96,20 @@ object BattleDamage {
         val civInfo = combatant.getCivInfo()
         val modifiers = Counter<String>()
 
-        for (unique in combatant.getMatchingUniques(UniqueType.Strength, conditionalState, true)) {
+        combatant.forEachMatchingUnique(UniqueType.Strength, conditionalState, true) { unique ->
             modifiers.add(getModifierStringFromUnique(unique), unique.params[0].toInt())
         }
 
         // e.g., Mehal Sefari https://civilization.fandom.com/wiki/Mehal_Sefari_(Civ5)
-        for (unique in combatant.getMatchingUniques(
-            UniqueType.StrengthNearCapital, conditionalState, true
-        )) {
-            if (civInfo.cities.isEmpty() || civInfo.getCapital() == null) break
-            val distance =
-                combatant.getTile().aerialDistanceTo(civInfo.getCapital()!!.getCenterTile())
-            // https://steamcommunity.com/sharedfiles/filedetails/?id=326411722#464287
-            val effect = unique.params[0].toInt() - 3 * distance
-            if (effect > 0)
-                modifiers.add(getModifierStringFromUnique(unique), effect)
+        if (civInfo.cities.isNotEmpty() && civInfo.getCapital() != null) {
+            combatant.forEachMatchingUnique(UniqueType.StrengthNearCapital, conditionalState, true) { unique ->
+                val distance =
+                    combatant.getTile().aerialDistanceTo(civInfo.getCapital()!!.getCenterTile())
+                // https://steamcommunity.com/sharedfiles/filedetails/?id=326411722#464287
+                val effect = unique.params[0].toInt() - 3 * distance
+                if (effect > 0)
+                    modifiers.add(getModifierStringFromUnique(unique), effect)
+            }
         }
 
         //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
@@ -121,10 +120,21 @@ object BattleDamage {
             adjacentUnits += sequenceOf(enemy.unit)
 
         // e.g., Maori Warrior - https://civilization.fandom.com/wiki/Maori_Warrior_(Civ5)
-        val strengthMalus = adjacentUnits.filter { it.civ.isAtWarWith(combatant.getCivInfo()) }
-            .flatMap { it.getMatchingUniques(UniqueType.StrengthForAdjacentEnemies) }
-            .filter { combatant.matchesFilter(it.params[1]) && combatant.getTile().matchesFilter(it.params[2]) }
-            .maxByOrNull { it.params[0] }
+        var strengthMalus: Unique? = null
+        var strengthMalusValue = Float.NEGATIVE_INFINITY
+        for (adjacentUnit in adjacentUnits) {
+            if (!adjacentUnit.civ.isAtWarWith(combatant.getCivInfo())) continue
+            val candidate = adjacentUnit.maxByMatchingUnique(UniqueType.StrengthForAdjacentEnemies) { unique ->
+                if (combatant.matchesFilter(unique.params[1]) && combatant.getTile().matchesFilter(unique.params[2]))
+                    unique.params[0].toFloat()
+                else null
+            } ?: continue
+            val candidateValue = candidate.params[0].toFloat()
+            if (candidateValue > strengthMalusValue) {
+                strengthMalus = candidate
+                strengthMalusValue = candidateValue
+            }
+        }
         if (strengthMalus != null) {
             modifiers.add("Adjacent enemy units", strengthMalus.params[0].toInt())
         }
@@ -157,9 +167,10 @@ object BattleDamage {
                     var flankingBonus = BattleConstants.BASE_FLANKING_BONUS
 
                     // e.g., Discipline policy - https://civilization.fandom.com/wiki/Discipline_(Civ5)
-                    for (unique in attacker.unit.getMatchingUniques(UniqueType.FlankAttackBonus, checkCivInfoUniques = true,
-                            gameContext = getGameContext(CombatAction.Attack, attacker, defender)))
+                    attacker.unit.forEachMatchingUnique(UniqueType.FlankAttackBonus, checkCivInfoUniques = true,
+                            gameContext = getGameContext(CombatAction.Attack, attacker, defender)) { unique ->
                         flankingBonus *= unique.params[0].toPercent()
+                    }
                     modifiers["Flanking"] =
                         (flankingBonus * numberOfOtherAttackersSurroundingDefender).toInt()
                 }
@@ -215,7 +226,7 @@ object BattleDamage {
         val modifiers = Counter<String>()
 
         if (attacker is MapUnitCombatant) {
-            for (unique in attacker.unit.getMatchingUniques(UniqueType.StrengthWhenAirsweep)) {
+            attacker.unit.forEachMatchingUnique(UniqueType.StrengthWhenAirsweep) { unique ->
                 modifiers.add(getModifierStringFromUnique(unique), unique.params[0].toInt())
             }
         }

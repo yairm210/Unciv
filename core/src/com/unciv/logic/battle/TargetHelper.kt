@@ -129,16 +129,22 @@ object TargetHelper {
             if (combatant.hasUnique(UniqueType.CannotAttack, gameContext))
                 return false
 
-            if (combatant.unit.getMatchingUniques(UniqueType.CanOnlyAttackUnits, gameContext).run {
-                    any() && none { tileCombatant.matchesFilter(it.params[0]) }
-                }
-            )
+            var hasCanOnlyAttackUnits = false
+            var canAttackThisUnit = false
+            combatant.unit.forEachMatchingUnique(UniqueType.CanOnlyAttackUnits, gameContext) {
+                hasCanOnlyAttackUnits = true
+                if (tileCombatant.matchesFilter(it.params[0])) canAttackThisUnit = true
+            }
+            if (hasCanOnlyAttackUnits && !canAttackThisUnit)
                 return false
 
-            if (combatant.unit.getMatchingUniques(UniqueType.CanOnlyAttackTiles, gameContext).run {
-                    any() && none { tile.matchesFilter(it.params[0]) }
-                }
-            )
+            var hasCanOnlyAttackTiles = false
+            var canAttackThisTile = false
+            combatant.unit.forEachMatchingUnique(UniqueType.CanOnlyAttackTiles, gameContext) {
+                hasCanOnlyAttackTiles = true
+                if (tile.matchesFilter(it.params[0])) canAttackThisTile = true
+            }
+            if (hasCanOnlyAttackTiles && !canAttackThisTile)
                 return false
         }
 
@@ -151,10 +157,29 @@ object TargetHelper {
         return true
     }
 
-    /** Get a list of visible tiles which have something attackable */
+    /** @return a snapshot List of visible tiles which have something attackable */
     @Readonly
-    fun getBombardableTiles(city: City): Sequence<Tile> =
-            city.getCenterTile().getTilesInDistance(city.getBombardRange())
-                    .filter { it.isVisible(city.civ) && containsAttackableEnemy(it, CityCombatant(city)) }
+    fun getBombardableTilesSnapshot(city: City): List<Tile> {
+        val bombardableTiles = ArrayList<Tile>()
+        forEachBombardableTile(city) { bombardableTiles.add(it) }
+        return bombardableTiles
+    }
+
+    /** Iterates over visible tiles which have something attackable, invoking [op] for each */
+    @Readonly
+    fun forEachBombardableTile(city: City, op: (Tile) -> Unit) {
+        firstBombardableTileOrNull(city) { op(it); false }
+    }
+
+    /** @return the first visible tile with something attackable for which [predicate] returns true, or null if none does */
+    @Readonly
+    fun firstBombardableTileOrNull(city: City, predicate: (Tile) -> Boolean): Tile? =
+        city.getCenterTile().firstTileInDistanceOrNull(city.getBombardRange()) {
+            it.isVisible(city.civ) && containsAttackableEnemy(it, CityCombatant(city)) && predicate(it)
+        }
+
+    /** @return whether [city] can bombard [tile] */
+    @Readonly
+    fun canBombard(city: City, tile: Tile): Boolean = firstBombardableTileOrNull(city) { it == tile } != null
 
 }

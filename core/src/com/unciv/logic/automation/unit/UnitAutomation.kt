@@ -597,11 +597,19 @@ object UnitAutomation {
 
     @Readonly
     private fun chooseBombardTarget(city: City): ICombatant? {
-        val targets = TargetHelper.getBombardableTiles(city).map { Battle.getMapCombatantOfTile(it)!! }
-            .filterNot { it is MapUnitCombatant && it.isCivilian() }
+        var bestTarget: ICombatant? = null
+        var bestDamage = -1
+        TargetHelper.forEachBombardableTile(city) { tile ->
+            val target = Battle.getMapCombatantOfTile(tile)!!
             // Don't bombard civilians (they're more efficiently captured/killed by military units if they're indeed this close)
-        if (targets.none()) return null
-        return targets.maxByOrNull { BattleDamage.calculateDamageToDefender(CityCombatant(city), it) }
+            if (target is MapUnitCombatant && target.isCivilian()) return@forEachBombardableTile
+            val damage = BattleDamage.calculateDamageToDefender(CityCombatant(city), target)
+            if (damage > bestDamage) {
+                bestDamage = damage
+                bestTarget = target
+            }
+        }
+        return bestTarget
     }
 
     private fun tryTakeBackCapturedCity(unit: MapUnit): Boolean {

@@ -5,6 +5,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.HexCoord
 import com.unciv.testing.BaseTestRunner
+import com.unciv.logic.map.tile.Tile
 import com.unciv.testing.TestGame
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -49,10 +50,11 @@ class TargetHelperTest {
         testGame.addUnit("Submarine", defenderCiv, tile) // enemy unit inside city range, invisible, not bombardable
 
         // when
-        val bombardableTiles = TargetHelper.getBombardableTiles(attackerCity)
+        val bombardableTiles = ArrayList<Tile>()
+        TargetHelper.forEachBombardableTile(attackerCity) { bombardableTiles.add(it) }
 
         // then
-        assertEquals(1, bombardableTiles.toList().size)
+        assertEquals(1, bombardableTiles.size)
         assertTrue(bombardableTiles.contains(testGame.getTile(1,1)))
     }
 

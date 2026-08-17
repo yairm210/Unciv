@@ -321,8 +321,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
                         )
                         .firstOrNull { it.tileToAttack == defender.getTile() }
                 } else if (attacker is CityCombatant) {
-                    val canBombard =
-                        TargetHelper.getBombardableTiles(attacker.city).contains(defender.getTile())
+                    val canBombard = TargetHelper.canBombard(attacker.city, defender.getTile())
                     if (canBombard) {
                         attackableTile =
                             AttackableTile(attacker.getTile(), defender.getTile(), 0f, defender)

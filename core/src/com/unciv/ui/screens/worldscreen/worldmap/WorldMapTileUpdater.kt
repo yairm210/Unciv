@@ -249,8 +249,9 @@ object WorldMapTileUpdater {
 
     private fun WorldMapHolder.updateBombardableTilesForSelectedCity(city: City) {
         if (!city.canBombard()) return
-        for (tileView in TargetHelper.getBombardableTiles(city).map { tileMapView.getTile(it) }) {
-            val group = tileGroups[tileView]!!
+        TargetHelper.forEachBombardableTile(city) { attackableTile ->
+            val view = tileMapView.getTile(attackableTile)
+            val group = tileGroups[view]!!
             group.layerOverlay.showHighlight(colorFromRGB(237, 41, 57))
             group.layerOverlay.showCrosshair()
         }
