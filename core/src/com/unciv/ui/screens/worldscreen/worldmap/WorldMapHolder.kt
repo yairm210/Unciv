@@ -22,6 +22,7 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Spy
 import com.unciv.models.UncivSound
 import com.unciv.view.CivView
+import com.unciv.view.MapUnitView
 import com.unciv.view.TileView
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.MapArrowType
@@ -53,7 +54,7 @@ class WorldMapHolder(
     internal val tileMap: TileMap
 ) : ZoomableScrollPane(20f, 20f) {
     internal var selectedTile: TileView? = null
-    val tileGroups = HashMap<Tile, WorldTileGroup>()
+    val tileGroups = HashMap<TileView, WorldTileGroup>()
 
     /** Holds buttons created by [OverlayButtonData] implementations */
     internal val unitActionOverlays: ArrayList<Actor> = ArrayList()
@@ -104,7 +105,7 @@ class WorldMapHolder(
         val tileGroupsNew = tileMap.values.map { WorldTileGroup(tileMapView.getTile(it), tileSetStrings) }
         tileGroupMap = TileGroupMap(this, tileGroupsNew, continuousScrollingX)
 
-        for (tileGroup in tileGroupsNew) tileGroups[tileGroup.tile] = tileGroup
+        for (tileGroup in tileGroupsNew) tileGroups[tileGroup.tileView] = tileGroup
 
         addClickListener()
 
@@ -178,7 +179,7 @@ class WorldMapHolder(
         val newSelectedUnit = unitTable.selectedUnit
 
         if (previousSelectedCity != null && tileView != previousSelectedCity.getCenterTile() && !movingSpyOnMap)
-            tileGroups[previousSelectedCity.getCenterTile().getTile()]!!.layerCityButton.moveUp()
+            tileGroups[previousSelectedCity.getCenterTile()]!!.layerCityButton.moveUp()
 
         if (previousSelectedUnits.isNotEmpty()) {
             val isTileDifferent = previousSelectedUnits.any { it.getTile() != tile }
@@ -344,11 +345,12 @@ class WorldMapHolder(
                     worldScreen.shouldUpdate = true
 
                     if (pathToTile != null) {
+                        val civView = worldScreen.selectedGameView.civView
                         val tileToMoveToView = tileMapView.getTile(tileToMoveTo)
                         val pathToTileViews = pathToTile.map { tileMapView.getTile(it) }
-                        animateMovement(previousTileView, selectedUnit, tileToMoveToView, pathToTileViews)
+                        animateMovement(previousTileView, MapUnitView(selectedUnit, civView), tileToMoveToView, pathToTileViews)
                         if (selectedUnit.isEscorting()) {
-                            animateMovement(previousTileView, selectedUnit.getOtherEscortUnit()!!, tileToMoveToView, pathToTileViews)
+                            animateMovement(previousTileView, MapUnitView(selectedUnit.getOtherEscortUnit()!!, civView), tileToMoveToView, pathToTileViews)
                         }
                     }
 
@@ -368,15 +370,15 @@ class WorldMapHolder(
 
     private fun animateMovement(
         previousTileView: TileView,
-        selectedUnit: MapUnit,
+        selectedUnit: MapUnitView,
         targetTileView: TileView,
         pathToTile: List<TileView>
     ) {
-        val tileGroup = tileGroups[previousTileView.getTile()]!!
+        val tileGroup = tileGroups[previousTileView]!!
 
         // Steal the current sprites to our new group
         val unitSpriteAndIcon = Group().apply { setPosition(tileGroup.x, tileGroup.y) }
-        val unitSpriteSlot = tileGroup.layerUnitArt.getSpriteSlot(selectedUnit) ?: return
+        val unitSpriteSlot = tileGroup.layerUnitArt.getSpriteSlot(selectedUnit.getUnit()) ?: return
 
         for (spriteImage in unitSpriteSlot.spriteGroup.children.toList()) // toList because actors added remove themselves from previous parent
             unitSpriteAndIcon.addActor(spriteImage)
@@ -389,19 +391,19 @@ class WorldMapHolder(
                 Actions.run {
                     // Disable the final tile, so we won't have one image "merging into" the other
                     // Can only be done after the new group has been updated, to get the spriteGroup
-                    val targetTileSpriteSlot = tileGroups[targetTileView.getTile()]!!.layerUnitArt.getSpriteSlot(selectedUnit)
+                    val targetTileSpriteSlot = tileGroups[targetTileView]!!.layerUnitArt.getSpriteSlot(selectedUnit.getUnit())
                     targetTileSpriteSlot?.spriteGroup?.isVisible = false
                 },
                 *pathToTile.map { tileView ->
                     Actions.moveTo(
-                        tileGroups[tileView.getTile()]!!.x,
-                        tileGroups[tileView.getTile()]!!.y,
+                        tileGroups[tileView]!!.x,
+                        tileGroups[tileView]!!.y,
                         0.5f / pathToTile.size
                     )
                 }.toTypedArray(),
                 Actions.run {
                     // Re-enable the final tile
-                    val targetTileSpriteSlot = tileGroups[targetTileView.getTile()]!!.layerUnitArt.getSpriteSlot(selectedUnit)
+                    val targetTileSpriteSlot = tileGroups[targetTileView]!!.layerUnitArt.getSpriteSlot(selectedUnit.getUnit())
                     targetTileSpriteSlot?.spriteGroup?.isVisible = true
                     worldScreen.shouldUpdate = true
                 },
@@ -560,7 +562,7 @@ class WorldMapHolder(
             table.add(unitIconGroup)
         }
 
-        addOverlayOnTileGroup(tileGroups[tile]!!, table)
+        addOverlayOnTileGroup(tileGroups[tileView]!!, table)
         if (UncivGame.Current.settings.unitMovementButtonAnimation) {
             table.color.a = 0f
             table.addAction(Actions.moveBy(0f, 48f, 0.15f, Interpolation.smooth))
@@ -603,7 +605,7 @@ class WorldMapHolder(
 
     /** Add an arrow to draw on the next update. */
     fun addArrow(fromTileView: TileView, toTileView: TileView, arrowType: MapArrowType) {
-        tileGroups[fromTileView.getTile()]?.layerMisc?.addArrow(toTileView.getTile(), arrowType)
+        tileGroups[fromTileView]?.layerMisc?.addArrow(toTileView.getTile(), arrowType)
     }
 
     /**

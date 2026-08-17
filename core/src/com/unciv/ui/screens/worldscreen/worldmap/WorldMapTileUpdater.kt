@@ -15,6 +15,8 @@ import com.unciv.view.CivView
 
 object WorldMapTileUpdater {
 
+    private val WorldMapHolder.tileMapView get() = worldScreen.selectedGameView.tileMapView
+
      fun WorldMapHolder.updateTiles(civView: CivView) {
         val viewingCiv = civView.getCiv()
 
@@ -54,14 +56,14 @@ object WorldMapTileUpdater {
         }
 
         // Same as below - randomly, tileGroups doesn't seem to contain the selected tile, and this doesn't seem reproducible
-        tileGroups[selectedTile?.getTile()]?.layerOverlay?.showHighlight(Color.WHITE)
+        tileGroups[selectedTile]?.layerOverlay?.showHighlight(Color.WHITE)
 
         zoom(scaleX) // zoom to current scale, to set the size of the city buttons after "next turn"
     }
 
     private fun WorldMapHolder.updateTilesForSelectedUnit(unit: MapUnit) {
 
-        val tileGroup = tileGroups[unit.getTile()] ?: return
+        val tileGroup = tileGroups[tileMapView.getTile(unit.getTile())] ?: return
 
         // Update flags for units which have them
         if (!unit.baseUnit.movesLikeAirUnits) {
@@ -92,7 +94,7 @@ object WorldMapTileUpdater {
             val unitSwappableTiles = unit.movement.getUnitSwappableTiles()
             val swapUnitsTileOverlayColor = Color.PURPLE
             for (tile in unitSwappableTiles)  {
-                tileGroups[tile]!!.layerOverlay.showHighlight(swapUnitsTileOverlayColor,
+                tileGroups[tileMapView.getTile(tile)]!!.layerOverlay.showHighlight(swapUnitsTileOverlayColor,
                     if (UncivGame.Current.settings.singleTapMove) 0.7f else 0.3f)
             }
             // In swapping-mode we don't want to show other overlays
@@ -108,12 +110,12 @@ object WorldMapTileUpdater {
             }
             val connectRoadTileOverlayColor = Color.RED
             for (tile in validTiles)  {
-                tileGroups[tile]!!.layerOverlay.showHighlight(connectRoadTileOverlayColor, 0.3f)
+                tileGroups[tileMapView.getTile(tile)]!!.layerOverlay.showHighlight(connectRoadTileOverlayColor, 0.3f)
             }
 
             if (unitConnectRoadPaths.containsKey(unit)) {
                 for (tile in unitConnectRoadPaths[unit]!!) {
-                    tileGroups[tile]!!.layerOverlay.showHighlight(Color.ORANGE, 0.8f)
+                    tileGroups[tileMapView.getTile(tile)]!!.layerOverlay.showHighlight(Color.ORANGE, 0.8f)
                 }
             }
 
@@ -131,7 +133,7 @@ object WorldMapTileUpdater {
         // Z-Layer: 1
         // Highlight tiles within movement range
         for (tile in tilesInMoveRange) {
-            val group = tileGroups[tile]!!
+            val group = tileGroups[tileMapView.getTile(tile)]!!
 
             // Air-units have additional highlights
             if (isAirUnit && !unit.isPreparingAirSweep()) {
@@ -167,7 +169,7 @@ object WorldMapTileUpdater {
             val tilesInAttackRange = unit.getTile().getTilesInDistanceRange(IntRange(1, unit.getRange()))
             for (tile in tilesInAttackRange) {
                 // The tile is within attack range
-                tileGroups[tile]!!.layerOverlay.showHighlight(Color.RED, 0.3f)
+                tileGroups[tileMapView.getTile(tile)]!!.layerOverlay.showHighlight(Color.RED, 0.3f)
             }
         }
 
@@ -175,7 +177,7 @@ object WorldMapTileUpdater {
         // Movement paths
         if (unitMovementPaths.containsKey(unit)) {
             for (tile in unitMovementPaths[unit]!!) {
-                tileGroups[tile]!!.layerOverlay.showHighlight(Color.SKY, 0.8f)
+                tileGroups[tileMapView.getTile(tile)]!!.layerOverlay.showHighlight(Color.SKY, 0.8f)
             }
         }
 
@@ -191,7 +193,7 @@ object WorldMapTileUpdater {
                     tileMap[tilePos]
                 }
                 for (tile in futureTiles) {
-                    tileGroups[tile]!!.layerOverlay.showHighlight(Color.ORANGE, if (UncivGame.Current.settings.singleTapMove) 0.7f else 0.3f)
+                    tileGroups[tileMapView.getTile(tile)]!!.layerOverlay.showHighlight(Color.ORANGE, if (UncivGame.Current.settings.singleTapMove) 0.7f else 0.3f)
                 }
             }
         }
@@ -199,7 +201,7 @@ object WorldMapTileUpdater {
         // Z-Layer: 5
         // Highlight movement destination tile
         if (unit.isMoving()) {
-            tileGroups[unit.getMovementDestination()]!!.layerOverlay.showHighlight(Color.WHITE, 0.7f)
+            tileGroups[tileMapView.getTile(unit.getMovementDestination())]!!.layerOverlay.showHighlight(Color.WHITE, 0.7f)
         }
 
         // Z-Layer: 6
@@ -219,7 +221,7 @@ object WorldMapTileUpdater {
                     .distinctBy { it.tileToAttack }
 
             for (attackableTile in attackableTiles) {
-                val tileGroupToAttack = tileGroups[attackableTile.tileToAttack]!!
+                val tileGroupToAttack = tileGroups[tileMapView.getTile(attackableTile.tileToAttack)]!!
                 tileGroupToAttack.layerOverlay.showHighlight(colorFromRGB(237, 41, 57))
                 tileGroupToAttack.layerOverlay.showCrosshair(
                     // the targets which cannot be attacked without movements shown as orange-ish
@@ -228,7 +230,7 @@ object WorldMapTileUpdater {
                     else 1f
                 )
                 if (attackableTile.tileToAttack == selectedTile?.getTile())
-                    tileGroups[attackableTile.tileToAttackFrom]!!.layerOverlay.showHighlight(Color.SKY, 0.7f)
+                    tileGroups[tileMapView.getTile(attackableTile.tileToAttackFrom)]!!.layerOverlay.showHighlight(Color.SKY, 0.7f)
             }
         }
 
@@ -238,7 +240,7 @@ object WorldMapTileUpdater {
             && UncivGame.Current.settings.showSettlersSuggestedCityLocations) {
             CityLocationTileRanker.getBestTilesToFoundCity(unit, 5, minimumValue = 50f).tileRankMap.asSequence()
                 .filter { it.key.isExplored(unit.civ) }.sortedByDescending { it.value }.take(3).forEach {
-                    tileGroups[it.key]!!.layerOverlay.showGoodCityLocationIndicator()
+                    tileGroups[tileMapView.getTile(it.key)]!!.layerOverlay.showGoodCityLocationIndicator()
                 }
         }
     }
@@ -252,7 +254,7 @@ object WorldMapTileUpdater {
         }
         for (city in worldScreen.gameInfo.getCities()) {
             if (spy.canMoveTo(city)) {
-                tileGroups[city.getCenterTile()]!!.layerOverlay.showHighlight(Color.CYAN, .7f)
+                tileGroups[tileMapView.getTile(city.getCenterTile())]!!.layerOverlay.showHighlight(Color.CYAN, .7f)
             }
         }
     }
@@ -260,7 +262,7 @@ object WorldMapTileUpdater {
     private fun WorldMapHolder.updateBombardableTilesForSelectedCity(city: City) {
         if (!city.canBombard()) return
         for (attackableTile in TargetHelper.getBombardableTiles(city)) {
-            val group = tileGroups[attackableTile]!!
+            val group = tileGroups[tileMapView.getTile(attackableTile)]!!
             group.layerOverlay.showHighlight(colorFromRGB(237, 41, 57))
             group.layerOverlay.showCrosshair()
         }

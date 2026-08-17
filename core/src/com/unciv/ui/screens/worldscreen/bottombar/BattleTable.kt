@@ -416,7 +416,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
                     Actions.removeActor()
                     )
                 )
-                val targetTileGroup = worldScreen.mapHolder.tileGroups[targetTile]!!
+                val targetTileGroup = worldScreen.mapHolder.tileGroups[worldScreen.selectedGameView.tileMapView.getTile(targetTile)]!!
                 nukeCircle.x = targetTileGroup.x
                 nukeCircle.y = targetTileGroup.y
                 worldScreen.mapHolder.addActorToTileGroupMap(nukeCircle)
