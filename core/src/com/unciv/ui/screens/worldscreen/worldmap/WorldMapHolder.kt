@@ -190,7 +190,7 @@ class WorldMapHolder(
 
             // Todo: valid tiles for actions should be handled internally, not here.
             val canPerformActionsOnTile = if (previousSelectedUnitIsSwapping) {
-                previousSelectedUnits.first().movement.canUnitSwapTo(tile)
+                previousSelectedUnitViews.first().canSwapTo(tileView)
             } else if(previousSelectedUnitIsConnectingRoad) {
                 true
             } else {
@@ -248,7 +248,7 @@ class WorldMapHolder(
 
         if (worldScreen.bottomUnitTable.selectedUnitIsSwapping) {
             /** ****** Right-click Swap ****** */
-            if (unit.movement.canUnitSwapTo(tile)) {
+            if (unitView.canSwapTo(tileView)) {
                 swapMoveUnitToTargetTile(unitView, tileView)
                 localShouldUpdate = true
             }
@@ -268,7 +268,7 @@ class WorldMapHolder(
                 if (attackableTile.combatant != null)
                     worldScreen.battleAnimationDeferred(attacker, damageToAttacker, attackableTile.combatant, damageToDefender)
                 localShouldUpdate = true
-            } else if (unit.movement.canReach(tile)) {
+            } else if (unitView.canReach(tileView)) {
                 /** ****** Right-click Move ****** */
                 moveUnitToTargetTile(listOf(unitView), tileView)
                 localShouldUpdate = true
@@ -340,7 +340,7 @@ class WorldMapHolder(
                     }
 
                     if (selectedUnit.isExploring() || selectedUnit.isMoving())
-                        selectedUnit.action = null // remove explore on manual move
+                        selectedUnitView.tryResetAction() // remove explore on manual move
                     SoundPlayer.play(UncivSound.Whoosh)
                     if (selectedUnit.currentTile != targetTile)
                         selectedUnit.action =
@@ -419,10 +419,10 @@ class WorldMapHolder(
     internal fun swapMoveUnitToTargetTile(selectedUnitView: MapUnitView, targetTileView: TileView) {
         val selectedUnit = selectedUnitView.getUnit()
         markUnitMoveTutorialComplete(selectedUnitView)
-        selectedUnit.movement.swapMoveToTile(targetTileView.getTile(), keepEscorting = true)
+        selectedUnitView.trySwapMoveToTile(targetTileView, keepEscorting = true)
 
         if (selectedUnit.isExploring() || selectedUnit.isMoving())
-            selectedUnit.action = null // remove explore on manual swap-move
+            selectedUnitView.tryResetAction() // remove explore on manual swap-move
 
         // Play something like a swish-swoosh
         SoundPlayer.play(UncivSound.Swap)
@@ -435,7 +435,6 @@ class WorldMapHolder(
 
     private fun addTileOverlaysWithUnitMovement(selectedUnits: List<MapUnitView>, tileView: TileView) {
         val tile = tileView.getTile()
-        val tileMapView = worldScreen.selectedGameView.tileMapView
         Concurrency.run("TurnsToGetThere") {
             /** LibGdx sometimes has these weird errors when you try to edit the UI layout from 2 separate threads.
              * And so, all UI editing will be done on the main thread.
@@ -448,14 +447,14 @@ class WorldMapHolder(
                 val unit = unitView.getUnit()
                 val shortestPath = ArrayList<TileView>()
                 val turnsToGetThere = if (unit.baseUnit.isAirUnit()) {
-                    if (unit.movement.canReach(tile)) 1
+                    if (unitView.canReach(tileView)) 1
                     else 0
                 } else if (unit.isPreparingParadrop()) {
-                    if (unit.movement.canReach(tile)) 1
+                    if (unitView.canReach(tileView)) 1
                     else 0
                 } else {
                     // this is the most time-consuming call
-                    shortestPath.addAll(unit.movement.getShortestPath(tile).map { tileMapView.getTile(it) })
+                    shortestPath.addAll(unitView.getShortestPath(tileView))
                     shortestPath.size
                 }
                 unitMovementPaths[unitView] = shortestPath
@@ -490,9 +489,7 @@ class WorldMapHolder(
     }
 
     private fun addTileOverlaysWithUnitSwapping(selectedUnitView: MapUnitView, tileView: TileView) {
-        val selectedUnit = selectedUnitView.getUnit()
-        val tile = tileView.getTile()
-        if (!selectedUnit.movement.canUnitSwapTo(tile)) { // give the regular tile overlays with no unit swapping
+        if (!selectedUnitView.canSwapTo(tileView)) { // give the regular tile overlays with no unit swapping
             addTileOverlays(tileView)
             worldScreen.shouldUpdate = true
             return
@@ -502,7 +499,7 @@ class WorldMapHolder(
         }
         else {
             // Add "swap with" button
-            val swapWithButtonDto = SwapWithOverlayButtonData(selectedUnitView, tile)
+            val swapWithButtonDto = SwapWithOverlayButtonData(selectedUnitView, tileView.getTile())
             addTileOverlays(tileView, swapWithButtonDto)
         }
         worldScreen.shouldUpdate = true

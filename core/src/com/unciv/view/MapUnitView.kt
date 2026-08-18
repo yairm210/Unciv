@@ -19,5 +19,19 @@ class MapUnitView(unit: MapUnit, private val civView: CivView) : ForeignMapUnitV
     /** `true` if [unit] was removed from its tile (captured, killed) since being selected. */
     @Readonly fun hasDisappeared(): Boolean = unit !in unit.getTile().getUnits()
 
-    fun actionsOnDeselect() = unit.actionsOnDeselect()
+    @Readonly fun canReach(tileView: TileView): Boolean = unit.movement.canReach(tileView.getTile())
+    @Readonly fun getShortestPath(tileView: TileView): List<TileView> =
+        unit.movement.getShortestPath(tileView.getTile()).map { civView.gameView.tileMapView.getTile(it) }
+    @Readonly fun canSwapTo(tileView: TileView): Boolean = unit.movement.canUnitSwapTo(tileView.getTile())
+    @Readonly fun isPreparingAirSweep(): Boolean = unit.isPreparingAirSweep()
+
+    // Actions
+    fun trySwapMoveToTile(tileView: TileView, keepEscorting: Boolean = false): Boolean {
+        unit.movement.swapMoveToTile(tileView.getTile(), keepEscorting)
+        return true
+    }
+    fun tryResetAction(): Boolean {
+        unit.action = null
+        return true
+    }
 }

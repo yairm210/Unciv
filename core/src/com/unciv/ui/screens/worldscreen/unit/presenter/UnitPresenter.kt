@@ -38,7 +38,8 @@ class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: W
         if (!append) selectedUnits.clear()
         if (unitView != null) {
             selectedUnits.add(unitView)
-            unitView.actionsOnDeselect()
+            if (unitView.isPreparingParadrop() || unitView.isPreparingAirSweep())
+                unitView.tryResetAction()
         }
         selectedUnitIsSwapping = false
         selectedUnitIsConnectingRoad = false
