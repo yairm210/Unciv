@@ -183,10 +183,9 @@ class WorldMapHolder(
             tileGroups[previousSelectedCity.getCenterTile()]!!.layerCityButton.moveUp()
 
         if (previousSelectedUnitViews.isNotEmpty()) {
-            val previousSelectedUnits = previousSelectedUnitViews.map { it.getUnit() }
             val isTileDifferent = previousSelectedUnitViews.any { it.getTile() != tileView }
             val isPlayerTurn = worldScreen.isPlayersTurn
-            val existsUnitNotPreparingAirSweep = previousSelectedUnits.any { !it.isPreparingAirSweep() }
+            val existsUnitNotPreparingAirSweep = previousSelectedUnitViews.any { !it.isPreparingAirSweep() }
 
             // Todo: valid tiles for actions should be handled internally, not here.
             val canPerformActionsOnTile = if (previousSelectedUnitIsSwapping) {
@@ -194,9 +193,9 @@ class WorldMapHolder(
             } else if(previousSelectedUnitIsConnectingRoad) {
                 true
             } else {
-                previousSelectedUnits.any {
-                    it.movement.canMoveTo(tile) ||
-                        (it.movement.isUnknownTileWeShouldAssumeToBePassable(tile) && !it.baseUnit.isAirUnit())
+                previousSelectedUnitViews.any {
+                    it.canMoveTo(tileView) ||
+                        (it.isUnknownTileWeShouldAssumeToBePassable(tileView) && !it.isAirUnit())
                 }
             }
 
@@ -258,7 +257,7 @@ class WorldMapHolder(
             val attackableTile = TargetHelper
                     .getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
                     .firstOrNull { it.tileToAttack == tile }
-            if (unit.canAttack() && attackableTile != null) {
+            if (unitView.canAttack() && attackableTile != null) {
                 /** ****** Right-click Attack ****** */
                 val attacker = MapUnitCombatant(unit)
                 if (!Battle.movePreparingAttack(attacker, attackableTile)) return
@@ -278,8 +277,7 @@ class WorldMapHolder(
     }
 
     private fun markUnitMoveTutorialComplete(unitView: MapUnitView) {
-        val unit = unitView.getUnit()
-        val key = if (unit.baseUnit.isAirUnit()) "Move an air unit" else "Move unit"
+        val key = if (unitView.isAirUnit()) "Move an air unit" else "Move unit"
         UncivGame.Current.settings.addCompletedTutorialTask(key)
     }
 
@@ -444,12 +442,11 @@ class WorldMapHolder(
 
             val unitToTurnsToTile = HashMap<MapUnitView, Int>()
             for (unitView in selectedUnits) {
-                val unit = unitView.getUnit()
                 val shortestPath = ArrayList<TileView>()
-                val turnsToGetThere = if (unit.baseUnit.isAirUnit()) {
+                val turnsToGetThere = if (unitView.isAirUnit()) {
                     if (unitView.canReach(tileView)) 1
                     else 0
-                } else if (unit.isPreparingParadrop()) {
+                } else if (unitView.isPreparingParadrop()) {
                     if (unitView.canReach(tileView)) 1
                     else 0
                 } else {
@@ -475,7 +472,7 @@ class WorldMapHolder(
                     // single turn instant move
                     val selectedUnitView = unitsWhoCanMoveThere.keys.first()
                     for (unitView in unitsWhoCanMoveThere.keys) {
-                        unitView.getUnit().movement.headTowards(tile)
+                        unitView.tryHeadTowards(tileView)
                     }
                     worldScreen.bottomUnitTable.selectUnit(selectedUnitView) // keep moved unit selected
                 } else {

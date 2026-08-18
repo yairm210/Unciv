@@ -24,6 +24,10 @@ class MapUnitView(unit: MapUnit, private val civView: CivView) : ForeignMapUnitV
         unit.movement.getShortestPath(tileView.getTile()).map { civView.gameView.tileMapView.getTile(it) }
     @Readonly fun canSwapTo(tileView: TileView): Boolean = unit.movement.canUnitSwapTo(tileView.getTile())
     @Readonly fun isPreparingAirSweep(): Boolean = unit.isPreparingAirSweep()
+    @Readonly fun canMoveTo(tileView: TileView): Boolean = unit.movement.canMoveTo(tileView.getTile())
+    @Readonly fun isUnknownTileWeShouldAssumeToBePassable(tileView: TileView): Boolean =
+        unit.movement.isUnknownTileWeShouldAssumeToBePassable(tileView.getTile())
+    @Readonly fun canAttack(): Boolean = unit.canAttack()
 
     // Actions
     fun trySwapMoveToTile(tileView: TileView, keepEscorting: Boolean = false): Boolean {
@@ -32,6 +36,10 @@ class MapUnitView(unit: MapUnit, private val civView: CivView) : ForeignMapUnitV
     }
     fun tryResetAction(): Boolean {
         unit.action = null
+        return true
+    }
+    fun tryHeadTowards(tileView: TileView): Boolean {
+        unit.movement.headTowards(tileView.getTile())
         return true
     }
 }
