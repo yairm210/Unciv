@@ -173,6 +173,8 @@ class Civilization : IsPartOfGameInfoSerialization {
     var diplomacy = HashMap<String, DiplomacyManager>()
     var proximity = HashMap<String, Proximity>()
     val popupAlerts = ArrayList<PopupAlert>()
+    /** Tracks which National Wonders have been alerted to avoid repeated notifications */
+    var alertedNationalWonders = HashSet<String>()
     /**Serialization field for [allyCiv]. Is equivalent to ``allyCiv.civName``*/
     private var allyCivName: String? = null
     var naturalWonders = ArrayList<String>()
@@ -335,6 +337,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.notificationCountAtStartTurn = notificationCountAtStartTurn
         toReturn.citiesCreated = citiesCreated
         toReturn.popupAlerts.addAll(popupAlerts)
+        toReturn.alertedNationalWonders.addAll(alertedNationalWonders)
         toReturn.tradeRequests.addAll(tradeRequests)
         toReturn.naturalWonders.addAll(naturalWonders)
         toReturn.cityStatePersonality = cityStatePersonality

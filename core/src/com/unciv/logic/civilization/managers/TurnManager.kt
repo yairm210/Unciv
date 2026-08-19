@@ -103,6 +103,11 @@ class TurnManager(val civInfo: Civilization) {
                 NotificationCategory.Units, unit.name)
         }
 
+        if (civInfo.playerType == PlayerType.Human
+            && UncivGame.Current.settings.alertNationalWonderAvailable) {
+            checkNationalWonderAvailability()
+        }
+
         updateWinningCiv()
     }
 
@@ -351,6 +356,29 @@ class TurnManager(val civInfo: Civilization) {
                 // by checking `viewingCiv.isDefeated() || gameInfo.checkForVictory()`
                 if (otherCiv.playerType != PlayerType.Human || otherCiv == civInfo) continue
                 otherCiv.popupAlerts.add(PopupAlert(AlertType.GameHasBeenWon, ""))
+            }
+        }
+    }
+
+    private fun checkNationalWonderAvailability() {
+        for ((_, building) in civInfo.gameInfo.ruleset.buildings) {
+            if (!building.isNationalWonder) continue
+
+            // Check if already built
+            val alreadyBuilt = civInfo.cities.any { it.cityConstructions.containsBuildingOrEquivalent(building.name) }
+            if (alreadyBuilt) {
+                civInfo.alertedNationalWonders.remove(building.name)
+                continue
+            }
+
+            // Check if already alerted
+            if (building.name in civInfo.alertedNationalWonders) continue
+
+            // Check if buildable in any city
+            val buildableCity = civInfo.cities.firstOrNull { building.isBuildable(it.cityConstructions) }
+            if (buildableCity != null) {
+                civInfo.alertedNationalWonders.add(building.name)
+                civInfo.popupAlerts.add(PopupAlert(AlertType.NationalWonderAvailable, building.name))
             }
         }
     }

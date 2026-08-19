@@ -144,7 +144,14 @@ class GameSettings {
     var keyBindings = KeyboardBindings()
     //endregion
 
-    //region 8: Advanced
+    //region 8: Alerts
+    var alertRivalWarDeclaration = true
+    var alertRivalPeaceTreaty = true
+    var alertNationalWonderAvailable = true
+    var alertRivalSpaceshipPart = true
+    //endregion
+
+    //region 9: Advanced
     var maxAutosavesStored = 10
     var turnsBetweenAutosaves = 1
 
@@ -163,7 +170,7 @@ class GameSettings {
     var useAStarPathfinding = false
     //endregion
 
-    //region 9: Not in OptionsPopup
+    //region 10: Not in OptionsPopup
 
     // Controlled by dragging the minimap
     var minimapSize = 6    // default corresponds to 15% screen space
