@@ -301,10 +301,6 @@ class GlobalPoliticsOverviewTable(
         if (showDiplomacyGroup) {
             val diplomacySize = (overviewScreen.stage.width - (if (portraitMode) 0f else civTable.minWidth))
                 .coerceAtMost(overviewScreen.centerAreaHeight)
-
-            GlobalPoliticsDiagramGroup.Relation.entries // Doing this solves the bug in #15393
-            // I'm still not sure why, it's definitely a compiler bug
-
             val diplomacyGroup = GlobalPoliticsDiagramGroup(undefeatedCivs, diplomacySize)
             table.add(diplomacyGroup).top()
         }
