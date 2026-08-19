@@ -29,12 +29,6 @@ class TurnManager(val civInfo: Civilization) {
         if (civInfo.isSpectator()) return
 
         civInfo.threatManager.clear()
-        if (civInfo.isMajorCiv() && civInfo.isAlive()) {
-            // Force uses a transient cache that is not invalidated on combat losses during
-            // other civs' turns; clear it so the turn-start demographics/charts snapshot is accurate.
-            civInfo.resetMilitaryMightCache()
-            civInfo.statsHistory.recordRankingStats(civInfo)
-        }
 
         if (civInfo.cities.isNotEmpty() && civInfo.gameInfo.ruleset.technologies.isNotEmpty())
             civInfo.tech.updateResearchProgress()

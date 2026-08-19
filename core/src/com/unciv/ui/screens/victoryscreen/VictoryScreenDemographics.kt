@@ -55,7 +55,7 @@ class VictoryScreenDemographics(
     }
 
     /**
-     * Ranking value frozen at that civilization's last turn-start recording in [Civilization.statsHistory].
+     * Ranking value frozen at the end of the last completed turn, as recorded in [Civilization.statsHistory].
      * Falls back to a live value only when no history exists yet (e.g. very early game).
      */
     @Readonly
