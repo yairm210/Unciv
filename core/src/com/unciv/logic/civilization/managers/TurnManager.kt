@@ -19,7 +19,6 @@ import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.utils.Log
 import yairm210.purity.annotations.Readonly
 import kotlin.math.min
-import kotlin.random.Random
 import com.unciv.logic.automation.Timers.Companion.timeThis
 
 class TurnManager(val civInfo: Civilization) {
@@ -90,10 +89,12 @@ class TurnManager(val civInfo: Civilization) {
                 civInfo.notifications.removeAll { it.text == "[${offeringCiv.civName}] has made a counteroffer to your trade request" }
             }
         }
-        
-        val promotableUnits = civInfo.units.getCivUnits().filter { it.promotions.canBePromoted() }
-        if (promotableUnits.count() <= 3) {
-            for (unit in civInfo.units.getCivUnits().filter { it.promotions.canBePromoted() }){
+
+        val promotableUnits = civInfo.units.getCivUnits()
+            .filter { it.promotions.canBePromoted() }
+            .toList()
+        if (promotableUnits.size <= 3) {
+            for (unit in promotableUnits) {
                 civInfo.addNotification(
                     "[${unit.displayName()}] can be promoted!",
                     listOf(MapUnitAction(unit), PromoteUnitAction(unit)),
@@ -103,7 +104,7 @@ class TurnManager(val civInfo: Civilization) {
             }
         } else {
             civInfo.addNotification(
-                "[${promotableUnits.count()}] units can be promoted!",
+                "[${promotableUnits.size}] units can be promoted!",
                 promotableUnits.map { MapUnitAction(it) },
                 NotificationCategory.Units,
                 "UnitActionIcons/Promote"
