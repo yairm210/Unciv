@@ -91,10 +91,23 @@ class TurnManager(val civInfo: Civilization) {
             }
         }
         
-        for (unit in civInfo.units.getCivUnits().filter { it.promotions.canBePromoted() }){
-            civInfo.addNotification("[${unit.displayName()}] can be promoted!",
-                listOf(MapUnitAction(unit), PromoteUnitAction(unit)),
-                NotificationCategory.Units, unit.name)
+        val promotableUnits = civInfo.units.getCivUnits().filter { it.promotions.canBePromoted() }
+        if (promotableUnits.count() <= 3) {
+            for (unit in civInfo.units.getCivUnits().filter { it.promotions.canBePromoted() }){
+                civInfo.addNotification(
+                    "[${unit.displayName()}] can be promoted!",
+                    listOf(MapUnitAction(unit), PromoteUnitAction(unit)),
+                    NotificationCategory.Units,
+                    unit.name
+                )
+            }
+        } else {
+            civInfo.addNotification(
+                "[${promotableUnits.count()}] units can be promoted!",
+                promotableUnits.map { MapUnitAction(it) },
+                NotificationCategory.Units,
+                "UnitActionIcons/Promote"
+            )
         }
 
         updateWinningCiv()
