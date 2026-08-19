@@ -1,31 +1,3 @@
-
-
-View implementation - WorldMapTileUpdater conversion - see 
-
-View implementation - More WorldMapHolder unit stuff conversion - see 
-
-View implementation - More WorldMapHolder unit stuff conversion - see 
-
-View implementation - WorldMapHolder tile->view conversion - see 
-
-View implementation - WorldMapHolder mapunit->view conversion - see 
-
-View implementation - UnitPresenter conversion - see 
-
-Unify BaseUnit.isAirUnit() and BaseUnit.movesLikeAirUnits to BaseUnit.isAirUnit()
-
-View implementation - Massive MapUnit -> MapUnitView conversion - see 
-
-View implementation - WorldMapHolder MapUnit -> MapUnitView - see 
-
-View implementation - WorldMapHolder tilegroups key change - see 
-
-View implementation - WorldMapHolder tileview pass - see 
-
-4.21.9-patch1
-
-Fix map reveal in new games 
-
 By unciv-loof:
 - Squash notifications when many units can be promoted 
 - Preserve scroll position of civ list in victory screen after updating selection 
@@ -34,8 +6,6 @@ Disable legion being able to repair - By O-spin
 
 By SomeTroglodyte:
 - Fix improvement picker hiding researchable improvements and failing to hide others 
-- Fix city founding tile ranker "Oasis" test 
-- Try to create and index the save destination *extra* early for cheap Android devices 
-- chore: Better fix for that `GlobalPoliticsDiagramGroup.Relations.entries` bug 
+- Try to create and index the save destination *extra* early for cheap Android devices
 
-use live data for charts - By ssamt
+Use live data for latest turn in charts - By ssamt
