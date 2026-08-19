@@ -221,7 +221,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
 
         @Readonly
         fun MapUnit.isEligible(): Boolean = (this.civ == worldScreen.viewingCiv
-                || worldScreen.viewingCiv.isSpectator()) && this !in selectedUnitsRaw
+                || worldScreen.selectedGameView.civView.isSpectator()) && this !in selectedUnitsRaw
 
         // This is the Civ 5 Order of selection:
         // 1. City
