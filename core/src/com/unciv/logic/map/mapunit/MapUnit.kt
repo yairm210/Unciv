@@ -1180,6 +1180,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
 
-    fun isNuclearWeapon() = hasUnique(UniqueType.NuclearWeapon)
+    @Readonly fun isNuclearWeapon() = hasUnique(UniqueType.NuclearWeapon)
     //endregion
 }
