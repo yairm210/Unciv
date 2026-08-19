@@ -1,5 +1,6 @@
 package com.unciv.ui.screens.cityscreen
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -555,7 +556,12 @@ class CityScreen(
         val newCityScreen = CityScreen(viewableCities[indexOfNextCity], ambiencePlayer = passOnCityAmbiencePlayer())
         newCityScreen.mapScrollPane.zoom(mapScrollPane.scaleX) // Retain zoom
         newCityScreen.update()
-        game.replaceCurrentScreen(newCityScreen)
+        // Disposing this screen's stage must not happen while we're still inside its own touch event
+        // dispatch (as we are here, called from a button's click listener) - see #15420: clicking two
+        // arrow buttons with different mouse buttons at once can leave another button's gesture listener
+        // mid-dispatch on this stage, and disposing the stage synchronously then crashes with an NPE
+        // inside Gdx's ActorGestureListener when that in-flight dispatch resumes.
+        Gdx.app.postRunnable { game.replaceCurrentScreen(newCityScreen) }
     }
 
     // Don't use passOnCityAmbiencePlayer here - continuing play on the replacement screen would be nice,
