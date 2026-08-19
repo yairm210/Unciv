@@ -68,11 +68,12 @@ class VictoryScreenCharts(
     }
 
     private fun update() {
-        updateControls()
         updateChart()
+        updateControls()
     }
 
     private fun updateControls() {
+        val oldScrollY = civButtonsScroll.scrollY
         civButtonsTable.clear()
         val sortedCivs = gameInfo.civilizations.asSequence()
             .filter { it.isMajorCiv() }
@@ -95,7 +96,9 @@ class VictoryScreenCharts(
         }
         civButtonsTable.add().padBottom(20f).row()
         civButtonsTable.pack()
-        civButtonsScroll.layout()
+        
+        validate()
+        civButtonsScroll.scrollY = oldScrollY
     }
 
     private fun updateChart() {
