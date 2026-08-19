@@ -132,7 +132,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
 
     @Readonly
     private fun tryGetDefenderAtTile(selectedTile: Tile, includeFriendly: Boolean): ICombatant? {
-        val attackerCiv = worldScreen.viewingCiv
+        val attackerCiv = worldScreen.selectedGameView.civView.civ
         val defender: ICombatant? = Battle.getMapCombatantOfTile(selectedTile)
 
         if (defender == null || (!includeFriendly && defender.getCivInfo() == attackerCiv))

@@ -67,6 +67,11 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
 
     // Data retrieval
     @Readonly fun position() = tile.position
+    /** Ideally this function should not exist - you should never be able to get a tileview of an unexplored tile
+     * However, currently the way the map works is we set up a tilegroup for all players and use the tileview for that tile
+     * That means that *in order to allow clicking on an unexplored tile* we currently need to accept tileviews of unexplored tiles
+     * */
+    @Readonly fun isExplored() = viewer == null || tile.isExplored(viewer)
     @Readonly fun getVisibleNeighbors(): Sequence<TileView> =
         tile.neighbors
             .filter { viewer == null || it.isExplored(viewer) }

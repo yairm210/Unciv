@@ -205,6 +205,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
     }
 
     fun tileSelected(selectedTileView: TileView, forceSelectUnitView: MapUnitView? = null) {
+        if (!selectedTileView.isExplored()) return // We don't know anything that exists here!
         val selectedTile = selectedTileView.getTile()
 
         val previouslySelectedUnit = selectedUnit?.getUnit()
