@@ -61,7 +61,7 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
     },
     PickTech("Pick a tech", Color.SKY) {
         override fun isChoice(worldScreen: WorldScreen) =
-            worldScreen.selectedGameView.civView.civ.shouldOpenTechPicker()
+            worldScreen.selectedGameView.civView.shouldOpenTechPicker()
         override fun action(worldScreen: WorldScreen) =
             worldScreen.game.pushScreen(
                 TechPickerScreen(worldScreen.selectedGameView.civView.civ, null)
@@ -69,63 +69,59 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
     },
     PickPolicy("Pick a policy", Color.VIOLET) {
         override fun isChoice(worldScreen: WorldScreen) =
-            worldScreen.selectedGameView.civView.civ.policies.shouldShowPolicyPicker()
+            worldScreen.selectedGameView.civView.shouldShowPolicyPicker()
         override fun action(worldScreen: WorldScreen) {
             worldScreen.game.pushScreen(PolicyPickerScreen(worldScreen.selectedCiv, worldScreen.canChangeState))
-            worldScreen.selectedGameView.civView.civ.policies.shouldOpenPolicyPicker = false
+            worldScreen.selectedGameView.civView.tryDismissPolicyPicker()
         }
     },
     MoveSpies("Move Spies", Color.WHITE) {
         override fun isChoice(worldScreen: WorldScreen) =
-                worldScreen.gameInfo.isEspionageEnabled() && worldScreen.selectedGameView.civView.civ.espionageManager.shouldShowMoveSpies()
+                worldScreen.gameInfo.isEspionageEnabled() && worldScreen.selectedGameView.civView.shouldShowMoveSpies()
         override fun action(worldScreen: WorldScreen) {
             worldScreen.game.pushScreen(EspionageOverviewScreen(worldScreen.selectedCiv, worldScreen))
-            worldScreen.selectedGameView.civView.civ.espionageManager.dismissedShouldMoveSpies = true
+            worldScreen.selectedGameView.civView.tryDismissMoveSpies()
         }
     },
     FoundPantheon("Found Pantheon", Color.valueOf(BeliefType.Pantheon.color)) {
         override fun isChoice(worldScreen: WorldScreen) =
-            worldScreen.selectedGameView.civView.civ.religionManager.run {
-                religionState != ReligionState.Pantheon && canFoundOrExpandPantheon()
-            }
+            worldScreen.selectedGameView.civView.canFoundPantheon()
         override fun action(worldScreen: WorldScreen) =
             worldScreen.game.pushScreen(PantheonPickerScreen(worldScreen.selectedGameView.civView.civ))
     },
     ExpandPantheon("Expand Pantheon", Color.valueOf(BeliefType.Pantheon.color)) {
         override fun isChoice(worldScreen: WorldScreen) =
-            worldScreen.selectedGameView.civView.civ.religionManager.run {
-                religionState == ReligionState.Pantheon && canFoundOrExpandPantheon()
-            }
+            worldScreen.selectedGameView.civView.canExpandPantheon()
         override fun action(worldScreen: WorldScreen) =
             worldScreen.game.pushScreen(PantheonPickerScreen(worldScreen.selectedGameView.civView.civ))
     },
     FoundReligion("Found Religion", Color.valueOf(BeliefType.Founder.color)) {
         override fun isChoice(worldScreen: WorldScreen) =
-            worldScreen.selectedGameView.civView.civ.religionManager.religionState == ReligionState.FoundingReligion
+            worldScreen.selectedGameView.civView.isFoundingReligion()
         override fun action(worldScreen: WorldScreen) =
             openReligionPicker(worldScreen, true) { getBeliefsToChooseAtFounding() }
     },
     EnhanceReligion("Enhance a Religion", Color.valueOf(BeliefType.Enhancer.color)) {
         override fun isChoice(worldScreen: WorldScreen) =
-            worldScreen.selectedGameView.civView.civ.religionManager.religionState == ReligionState.EnhancingReligion
+            worldScreen.selectedGameView.civView.isEnhancingReligion()
         override fun action(worldScreen: WorldScreen) =
             openReligionPicker(worldScreen, false) { getBeliefsToChooseAtEnhancing() }
     },
     ReformReligion("Reform Religion", Color.valueOf(BeliefType.Enhancer.color)) {
         override fun isChoice(worldScreen: WorldScreen) =
-            worldScreen.selectedGameView.civView.civ.religionManager.hasFreeBeliefs()
+            worldScreen.selectedGameView.civView.hasFreeBeliefs()
         override fun action(worldScreen: WorldScreen) =
             openReligionPicker(worldScreen, false) { freeBeliefsAsEnums() }
     },
     WorldCongressVote("Vote for World Leader", Color.MAROON) {
         override fun isChoice(worldScreen: WorldScreen) =
-            worldScreen.selectedGameView.civView.civ.mayVoteForDiplomaticVictory()
+            worldScreen.selectedGameView.civView.mayVoteForDiplomaticVictory()
         override fun action(worldScreen: WorldScreen) =
             worldScreen.game.pushScreen(DiplomaticVotePickerScreen(worldScreen.selectedGameView.civView.civ))
     },
     NextUnit("Next unit", Color.LIGHT_GRAY) {
         override fun isChoice(worldScreen: WorldScreen) =
-            worldScreen.selectedGameView.civView.civ.units.shouldGoToDueUnit()
+            worldScreen.selectedGameView.civView.shouldGoToDueUnit()
         override fun action(worldScreen: WorldScreen) =
             worldScreen.switchToNextUnit(!worldScreen.game.settings.checkForDueUnitsCycles)
         override fun getSubText(worldScreen: WorldScreen): String? =
@@ -179,12 +175,8 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
         private fun WorldScreen.canMoveAutomatedUnits(): Boolean {
             if (selectedGameView.civView.isSpectator()) return false
             if (game.settings.automatedUnitsMoveOnTurnStart) return false
-            if (selectedGameView.civView.civ.hasMovedAutomatedUnits) return false
-            return selectedGameView.civView.civ.units.getCivUnits()
-                .any {
-                    it.currentMovement > Constants.minimumMovementEpsilon
-                    && (it.isMoving() || it.isAutomated() || it.isExploring())
-                }
+            if (selectedGameView.civView.hasMovedAutomatedUnitsThisTurn()) return false
+            return selectedGameView.civView.hasUnitsReadyToAutomate()
         }
 
         private fun moveAutomatedUnits(worldScreen: WorldScreen) {
@@ -192,11 +184,10 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
             if (!worldScreen.isPlayersTurn) return
 
             worldScreen.isPlayersTurn = false // Disable state changes
-            worldScreen.selectedGameView.civView.civ.hasMovedAutomatedUnits = true
+            worldScreen.selectedGameView.civView.tryMarkMovedAutomatedUnits()
             worldScreen.nextTurnButton.disable()
             Concurrency.run("Move automated units") {
-                for (unit in worldScreen.selectedGameView.civView.civ.units.getCivUnits())
-                    unit.doAction()
+                worldScreen.selectedGameView.civView.tryAutomateAllUnits()
                 launchOnGLThread {
                     worldScreen.shouldUpdate = true
                     worldScreen.isPlayersTurn = true //Re-enable state changes
@@ -225,7 +216,7 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
         the NextTurn phase is disabled.
         */
         private fun getIdleUnitsText(worldScreen: WorldScreen): String? {
-            val count = worldScreen.selectedGameView.civView.civ.units.getDueUnits().count()
+            val count = worldScreen.selectedGameView.civView.dueUnitsCount()
             if (count > 0) {
                 return "[$count] units idle"
             }

@@ -170,7 +170,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
         presenter.update()
 
         // more efficient to do this check once for both
-        if (worldScreen.selectedGameView.civView.civ.units.getIdleUnits().any()) {
+        if (worldScreen.selectedGameView.civView.hasIdleUnits()) {
             prevIdleUnitButton.enable()
             nextIdleUnitButton.enable()
         } else {

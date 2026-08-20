@@ -1,7 +1,9 @@
 package com.unciv.view
 
+import com.unciv.Constants
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.tile.ImprovementBuildingProblem
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.tech.Technology
@@ -50,6 +52,48 @@ class CivView(civ: Civilization,
 
     @Readonly fun isSpectator(): Boolean = civ.isSpectator()
     @Readonly fun hasExplored(tileView: TileView): Boolean = civ.hasExplored(tileView.unwrap())
+    @Readonly fun isDefeated(): Boolean = civ.isDefeated()
+    @Readonly fun isCurrentPlayer(): Boolean = civ.isCurrentPlayer()
+    @Readonly fun isHuman(): Boolean = civ.isHuman()
+    @Readonly fun hasMetAnyMajorCiv(): Boolean = civ.getKnownCivs().any { it != civ && !it.isBarbarian }
+
+    // Tech
+    @Readonly fun currentTechnologyName(): String? = civ.tech.currentTechnologyName()
+    @Readonly fun turnsToTech(techName: String): String = civ.tech.turnsToTech(techName)
+    @Readonly fun canResearchTech(): Boolean = civ.tech.canResearchTech()
+    @Readonly fun hasResearchedAnyTech(): Boolean = civ.tech.researchedTechnologies.isNotEmpty()
+    @Readonly fun shouldOpenTechPicker(): Boolean = civ.shouldOpenTechPicker()
+
+    // Policies
+    @Readonly fun hasAdoptedPolicies(): Boolean = civ.policies.adoptedPolicies.isNotEmpty()
+    @Readonly fun canAdoptPolicy(): Boolean = civ.policies.canAdoptPolicy()
+    @Readonly fun shouldShowPolicyPicker(): Boolean = civ.policies.shouldShowPolicyPicker()
+
+    // Espionage
+    @Readonly fun shouldShowMoveSpies(): Boolean = civ.espionageManager.shouldShowMoveSpies()
+
+    // Religion
+    @Readonly fun canFoundPantheon(): Boolean = civ.religionManager.religionState != ReligionState.Pantheon && civ.religionManager.canFoundOrExpandPantheon()
+    @Readonly fun canExpandPantheon(): Boolean = civ.religionManager.religionState == ReligionState.Pantheon && civ.religionManager.canFoundOrExpandPantheon()
+    @Readonly fun isFoundingReligion(): Boolean = civ.religionManager.religionState == ReligionState.FoundingReligion
+    @Readonly fun isEnhancingReligion(): Boolean = civ.religionManager.religionState == ReligionState.EnhancingReligion
+    @Readonly fun hasFreeBeliefs(): Boolean = civ.religionManager.hasFreeBeliefs()
+
+    // Diplomatic victory
+    @Readonly fun mayVoteForDiplomaticVictory(): Boolean = civ.mayVoteForDiplomaticVictory()
+
+    // Units
+    @Readonly fun hasIdleUnits(): Boolean = civ.units.getIdleUnits().any()
+    @Readonly fun idleUnitsCount(due: Boolean): Int = civ.units.getIdleUnits().count { it.due == due }
+    @Readonly fun dueUnitsCount(): Int = civ.units.getDueUnits().count()
+    fun shouldGoToDueUnit(): Boolean = civ.units.shouldGoToDueUnit()
+    @Readonly fun unitCount(): Int = civ.units.getCivUnitsSize()
+    @Readonly fun cityCount(): Int = civ.cities.size
+    @Readonly fun hasMovedAutomatedUnitsThisTurn(): Boolean = civ.hasMovedAutomatedUnits
+    @Readonly fun hasUnitsReadyToAutomate(): Boolean = civ.units.getCivUnits().any {
+        it.currentMovement > Constants.minimumMovementEpsilon
+            && (it.isAutomated() || it.isExploring() || it.isMoving())
+    }
 
     @Readonly fun getStatMapForNextTurn(): StatMap = civ.stats.getStatMapForNextTurn()
     @Readonly fun getHappinessBreakdown(): HashMap<String, Float> = civ.stats.getHappinessBreakdown()
@@ -74,4 +118,8 @@ class CivView(civ: Civilization,
         civ.cities.forEach { it.cityStats.update() }
         return true
     }
+    fun tryDismissPolicyPicker(): Boolean { civ.policies.shouldOpenPolicyPicker = false; return true }
+    fun tryDismissMoveSpies(): Boolean { civ.espionageManager.dismissedShouldMoveSpies = true; return true }
+    fun tryMarkMovedAutomatedUnits(): Boolean { civ.hasMovedAutomatedUnits = true; return true }
+    fun tryAutomateAllUnits(): Boolean { civ.units.getCivUnits().forEach { it.doAction() }; return true }
 }
