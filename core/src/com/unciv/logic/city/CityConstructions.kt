@@ -886,6 +886,15 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         }
     }
 
+    fun getHintNextConstruction(): String? {
+        if (!UncivGame.Current.settings.hintCityProduction) return null
+        if (!isQueueEmptyOrIdle()) {
+            if (getConstruction( currentConstructionName()) !is PerpetualConstruction || currentConstructionIsUserSet) return null
+        }
+        val automation = ConstructionAutomation(this)
+        return automation.getChosenConstruction()?.name
+    }
+
     /** Whether this city may mark its own [tile] to create [improvement] when construction completes. */
     @Readonly
     fun canPlaceCreateOneImprovementOn(improvement: TileImprovement, tile: Tile): Boolean =

@@ -5,6 +5,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.IConstruction
 import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.RejectionReason
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.stats.Stat
 import yairm210.purity.annotations.Readonly
@@ -44,6 +45,13 @@ class CityConstructionsView(private val cityConstructions: CityConstructions, pr
         cityConstructions.isConstructionPurchaseAllowed(construction, stat, cost)
     @Readonly fun isConstructionPurchaseBlockedByUnit(construction: INonPerpetualConstruction): Boolean =
         cityConstructions.isConstructionPurchaseBlockedByUnit(construction)
+
+    fun purchaseConstruction(construction: INonPerpetualConstruction, queuePosition: Int, automatic: Boolean, stat: Stat, tile: Tile?): Boolean =
+        cityConstructions.purchaseConstruction(construction, queuePosition, automatic, stat, tile)
+    // I'm not convinced this is required, I think the usage should move to the logic rather than the view
+    fun chooseNextConstruction() = cityConstructions.chooseNextConstruction()
+
+    fun getHintNextConstruction(): String? = cityConstructions.getHintNextConstruction()
 
     // Actions
     fun purchaseConstruction(construction: INonPerpetualConstruction, queuePosition: Int, stat: Stat, tileView: TileView?): Boolean =
