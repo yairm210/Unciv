@@ -35,7 +35,7 @@ import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
  * @param worldScreen The parent screen
  */
 class TradePopup(worldScreen: WorldScreen) : Popup(worldScreen) {
-    val viewingCiv = worldScreen.selectedGameView.civView.civ
+    val viewingCiv = worldScreen.selectedGameView.civView.getCiv()
     val tradeRequest = viewingCiv.tradeRequests.first()
 
     init {

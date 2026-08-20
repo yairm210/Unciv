@@ -217,7 +217,7 @@ class WorldMapHolder(
             if (previousSelectedCity != null && previousSelectedCity.canBombard()
                     && tile.getTilesInDistance(2).contains(previousSelectedCity.getCenterTile().getTile())
                     && unitsInTile.any()
-                    && unitsInTile.first().civ.isAtWarWith(worldScreen.selectedGameView.civView.civ)) {
+                    && unitsInTile.first().civ.isAtWarWith(worldScreen.selectedGameView.civView.getCiv())) {
                 // try to select the closest city to bombard this guy
                 unitTable.citySelected(previousSelectedCity.getCity())
             }
@@ -546,7 +546,7 @@ class WorldMapHolder(
         val unitList = ArrayList<MapUnitView>()
         val civView = worldScreen.selectedGameView.civView
         if (tileView.isCityCenter()
-                && (tileView.getOwner()?.civ == civView.getCiv() || civView.isSpectator())) {
+                && (tileView.getOwner()?.getCiv() == civView.getCiv() || civView.isSpectator())) {
             unitList.addAll(tileView.owningCity()!!.getCenterTile().getVisibleUnits().map { it.tryGetMapUnitView()!! })
         } else if (tile.airUnits.isNotEmpty()
                 && (tile.airUnits.first().civ == civView.getCiv() || civView.isSpectator())) {
@@ -746,7 +746,7 @@ class WorldMapHolder(
         var result = scrollX - deltaX
         if (worldScreen.selectedGameView.civView.isSpectator()) return result
 
-        val exploredRegion = worldScreen.selectedGameView.civView.civ.exploredRegion
+        val exploredRegion = worldScreen.selectedGameView.civView.getCiv().exploredRegion
         if (exploredRegion.shouldRecalculateCoords()) exploredRegion.calculateStageCoords(maxX, maxY)
         if (!exploredRegion.shouldRestrictX()) return result
 
@@ -765,7 +765,7 @@ class WorldMapHolder(
         var result = scrollY + deltaY
         if (worldScreen.selectedGameView.civView.isSpectator()) return result
 
-        val exploredRegion = worldScreen.selectedGameView.civView.civ.exploredRegion
+        val exploredRegion = worldScreen.selectedGameView.civView.getCiv().exploredRegion
         if (exploredRegion.shouldRecalculateCoords()) exploredRegion.calculateStageCoords(maxX, maxY)
 
         val topY = exploredRegion.getTopY()

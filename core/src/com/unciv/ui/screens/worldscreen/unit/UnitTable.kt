@@ -221,7 +221,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
         val civView = worldScreen.selectedGameView.civView
 
         @Readonly
-        fun MapUnit.isEligible(): Boolean = (this.civ == civView.civ || civView.isSpectator()) 
+        fun MapUnit.isEligible(): Boolean = (this.civ == civView.getCiv() || civView.isSpectator()) 
                 && this !in selectedUnitsRaw
 
         // This is the Civ 5 Order of selection:
@@ -261,7 +261,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
         val selectedTileCity = selectedTile.getCity()
         val isCitySelected = selectedTile.isCityCenter()
             && selectedTileCity != null
-            && (selectedTile.getOwner() == worldScreen.selectedGameView.civView.civ || worldScreen.selectedGameView.civView.isSpectator())
+            && (selectedTile.getOwner() == worldScreen.selectedGameView.civView.getCiv() || worldScreen.selectedGameView.civView.isSpectator())
             && !selectedUnitIsConnectingRoad
         when {
             forceSelectUnitView != null -> selectUnit(forceSelectUnitView)

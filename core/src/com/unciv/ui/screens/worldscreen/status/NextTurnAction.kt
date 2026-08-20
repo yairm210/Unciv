@@ -3,7 +3,6 @@ package com.unciv.ui.screens.worldscreen.status
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.logic.civilization.managers.ReligionManager
-import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.ui.components.extensions.disable
@@ -64,7 +63,7 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
             worldScreen.selectedGameView.civView.shouldOpenTechPicker()
         override fun action(worldScreen: WorldScreen) =
             worldScreen.game.pushScreen(
-                TechPickerScreen(worldScreen.selectedGameView.civView.civ, null)
+                TechPickerScreen(worldScreen.selectedGameView.civView.getCiv(), null)
             )
     },
     PickPolicy("Pick a policy", Color.VIOLET) {
@@ -87,13 +86,13 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
         override fun isChoice(worldScreen: WorldScreen) =
             worldScreen.selectedGameView.civView.canFoundPantheon()
         override fun action(worldScreen: WorldScreen) =
-            worldScreen.game.pushScreen(PantheonPickerScreen(worldScreen.selectedGameView.civView.civ))
+            worldScreen.game.pushScreen(PantheonPickerScreen(worldScreen.selectedGameView.civView.getCiv()))
     },
     ExpandPantheon("Expand Pantheon", Color.valueOf(BeliefType.Pantheon.color)) {
         override fun isChoice(worldScreen: WorldScreen) =
             worldScreen.selectedGameView.civView.canExpandPantheon()
         override fun action(worldScreen: WorldScreen) =
-            worldScreen.game.pushScreen(PantheonPickerScreen(worldScreen.selectedGameView.civView.civ))
+            worldScreen.game.pushScreen(PantheonPickerScreen(worldScreen.selectedGameView.civView.getCiv()))
     },
     FoundReligion("Found Religion", Color.valueOf(BeliefType.Founder.color)) {
         override fun isChoice(worldScreen: WorldScreen) =
@@ -117,7 +116,7 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
         override fun isChoice(worldScreen: WorldScreen) =
             worldScreen.selectedGameView.civView.mayVoteForDiplomaticVictory()
         override fun action(worldScreen: WorldScreen) =
-            worldScreen.game.pushScreen(DiplomaticVotePickerScreen(worldScreen.selectedGameView.civView.civ))
+            worldScreen.game.pushScreen(DiplomaticVotePickerScreen(worldScreen.selectedGameView.civView.getCiv()))
     },
     NextUnit("Next unit", Color.LIGHT_GRAY) {
         override fun isChoice(worldScreen: WorldScreen) =
@@ -153,7 +152,7 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
         // Readability helpers to allow concise enum instances
         @Readonly
         private fun getCityWithNoProductionSet(worldScreen: WorldScreen) =
-            worldScreen.selectedGameView.civView.civ.cities
+            worldScreen.selectedGameView.civView.getCiv().cities
             .firstOrNull {
                 !it.isPuppet && it.cityConstructions. currentConstructionName().isEmpty()
             }
@@ -165,8 +164,8 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
             ) =
             worldScreen.game.pushScreen(
                 ReligiousBeliefsPickerScreen(
-                    worldScreen.selectedGameView.civView.civ,
-                    worldScreen.selectedGameView.civView.civ.religionManager.getBeliefs(),
+                    worldScreen.selectedGameView.civView.getCiv(),
+                    worldScreen.selectedGameView.civView.getCiv().religionManager.getBeliefs(),
                     pickIconAndName = pickIconAndName
                 )
             )

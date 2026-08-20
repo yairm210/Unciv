@@ -71,7 +71,7 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
         pickTechButton.defaults().pad(20f)
         pickTechButton.add(pickTechLabel)
         techButtonHolder.onActivation(UncivSound.Paper, KeyboardBinding.TechnologyTree) {
-            game.pushScreen(TechPickerScreen(viewingCiv.civ))
+            game.pushScreen(TechPickerScreen(viewingCiv.getCiv()))
         }
 
         undoButton.add(ImageGetter.getImage("OtherIcons/Undo")).size(30f).pad(15f)
@@ -133,7 +133,7 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
 
         val currentTech = viewingCiv.currentTechnologyName()
         if (currentTech != null) {
-            val innerButton = TechButton(currentTech, viewingCiv.civ.tech)
+            val innerButton = TechButton(currentTech, viewingCiv.getCiv().tech)
             innerButton.setButtonColor(colorFromRGB(7, 46, 43))
             techButtonHolder.actor = innerButton
             val turnsToTech = viewingCiv.turnsToTech(currentTech)

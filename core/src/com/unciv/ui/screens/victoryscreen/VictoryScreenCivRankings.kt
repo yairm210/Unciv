@@ -23,7 +23,7 @@ class VictoryScreenCivRankings(
 
         val majorCivs = worldScreen.gameInfo.civilizations
             .filter { it.isMajorCiv() }
-            .filter { targetCiv -> VictoryScreen.canViewCivStats(worldScreen.gameInfo, worldScreen.selectedGameView.civView.civ, targetCiv) }
+            .filter { targetCiv -> VictoryScreen.canViewCivStats(worldScreen.gameInfo, worldScreen.selectedGameView.civView.getCiv(), targetCiv) }
 
         for (category in RankingType.filteredEntries(worldScreen.gameInfo.gameParameters)) {
             val textAndIcon = Table()
@@ -40,7 +40,7 @@ class VictoryScreenCivRankings(
                 .sortedBy { it.civ.civName }
                 .sortedByDescending { if(it.civ.isDefeated()) Int.MIN_VALUE else it.value }
             for (civEntry in civData) {
-                column.add(VictoryScreenCivGroup(civEntry, worldScreen.selectedGameView.civView.civ)).fillX().row()
+                column.add(VictoryScreenCivGroup(civEntry, worldScreen.selectedGameView.civView.getCiv())).fillX().row()
             }
             add(column)
         }
