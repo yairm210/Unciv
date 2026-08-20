@@ -46,12 +46,11 @@ object CityLocationTileRanker {
         val baseTileMap = HashMap<Tile, Float>()
 
         // Assume unexplored tiles are worth the average of the explored tiles around us
-        var unexploredTilePrior = 0f
         val throwawayLuxuries = HashSet<TileResource>()
         for (tile in unit.getTile().getTilesInDistance(range + 2))
             // onCoast doesn't matter here, it does not change baseTileMap
             if (unit.civ.hasExplored(tile)) rankTile(tile, unit.civ, false, throwawayLuxuries, baseTileMap, 0f)
-        if (baseTileMap.isNotEmpty()) unexploredTilePrior = baseTileMap.values.average().toFloat()
+        val unexploredTilePrior = if (baseTileMap.isEmpty()) 0f else baseTileMap.values.average().toFloat()
 
         val possibleTileLocationsWithRank = possibleCityLocations
             .map {
