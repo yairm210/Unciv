@@ -72,7 +72,7 @@ class CityAction(private val city: HexCoord = HexCoord.Zero) : NotificationActio
     override fun execute(worldScreen: WorldScreen) {
         val cityObject = worldScreen.mapHolder.tileMap[city].getCity()
             ?: return
-        if (cityObject.civ == worldScreen.viewingCiv)
+        if (cityObject.civ == worldScreen.selectedGameView.civView.civ)
             worldScreen.game.pushScreen(CityScreen(worldScreen.selectedGameView.getCityView(cityObject)))
     }
     companion object {

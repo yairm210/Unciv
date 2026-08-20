@@ -45,7 +45,7 @@ class NextTurnButton(
         if (autoPlay.shouldContinueAutoPlaying() && worldScreen.isPlayersTurn
             && !worldScreen.waitingForAutosave && !worldScreen.isNextTurnUpdateRunning()) {
             autoPlay.runAutoPlayJobInNewThread("MultiturnAutoPlay", worldScreen, false) {
-                TurnManager(worldScreen.viewingCiv).automateTurn()
+                TurnManager(worldScreen.selectedGameView.civView.civ).automateTurn()
                 Concurrency.runOnGLThread { worldScreen.nextTurn() }
                 autoPlay.endTurnMultiturnAutoPlay()
             }

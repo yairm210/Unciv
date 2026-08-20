@@ -46,7 +46,7 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
     private val espionageButtonHolder = Container<Button?>()
     private val espionageButton = Button(skin)
 
-    private val viewingCiv = worldScreen.viewingCiv
+    private val viewingCiv = worldScreen.selectedGameView.civView.civ
     private val game = worldScreen.game
 
     init {

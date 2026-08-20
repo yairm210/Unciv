@@ -27,7 +27,7 @@ class VictoryScreenGlobalVictory(
         defaults().pad(10f)
         for ((victoryName, victory) in victoriesToShow) {
             header.add("[$victoryName] Victory".toLabel()).pad(10f)
-            add(getColumn(majorCivs, victory, worldScreen.viewingCiv))
+            add(getColumn(majorCivs, victory, worldScreen.selectedGameView.civView.civ))
         }
         header.addSeparator(Color.GRAY)
     }

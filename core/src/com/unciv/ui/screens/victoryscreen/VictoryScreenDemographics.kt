@@ -13,7 +13,7 @@ import yairm210.purity.annotations.Readonly
 class VictoryScreenDemographics(
     worldScreen: WorldScreen
 ) : Table(BaseScreen.skin) {
-    private val playerCiv = worldScreen.viewingCiv
+    private val playerCiv = worldScreen.selectedGameView.civView.civ
 
     private enum class RankLabels { Rank, Value, Best, Average, Worst }
 

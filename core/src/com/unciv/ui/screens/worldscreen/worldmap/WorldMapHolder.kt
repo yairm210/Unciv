@@ -217,7 +217,7 @@ class WorldMapHolder(
             if (previousSelectedCity != null && previousSelectedCity.canBombard()
                     && tile.getTilesInDistance(2).contains(previousSelectedCity.getCenterTile().getTile())
                     && unitsInTile.any()
-                    && unitsInTile.first().civ.isAtWarWith(worldScreen.viewingCiv)) {
+                    && unitsInTile.first().civ.isAtWarWith(worldScreen.selectedGameView.civView.civ)) {
                 // try to select the closest city to bombard this guy
                 unitTable.citySelected(previousSelectedCity.getCity())
             }
@@ -744,9 +744,9 @@ class WorldMapHolder(
 
     override fun restrictX(deltaX: Float): Float {
         var result = scrollX - deltaX
-        if (worldScreen.viewingCiv.isSpectator()) return result
+        if (worldScreen.selectedGameView.civView.isSpectator()) return result
 
-        val exploredRegion = worldScreen.viewingCiv.exploredRegion
+        val exploredRegion = worldScreen.selectedGameView.civView.civ.exploredRegion
         if (exploredRegion.shouldRecalculateCoords()) exploredRegion.calculateStageCoords(maxX, maxY)
         if (!exploredRegion.shouldRestrictX()) return result
 
@@ -763,9 +763,9 @@ class WorldMapHolder(
 
     override fun restrictY(deltaY: Float): Float {
         var result = scrollY + deltaY
-        if (worldScreen.viewingCiv.isSpectator()) return result
+        if (worldScreen.selectedGameView.civView.isSpectator()) return result
 
-        val exploredRegion = worldScreen.viewingCiv.exploredRegion
+        val exploredRegion = worldScreen.selectedGameView.civView.civ.exploredRegion
         if (exploredRegion.shouldRecalculateCoords()) exploredRegion.calculateStageCoords(maxX, maxY)
 
         val topY = exploredRegion.getTopY()

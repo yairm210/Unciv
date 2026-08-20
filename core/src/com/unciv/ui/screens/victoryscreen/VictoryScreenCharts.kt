@@ -23,7 +23,7 @@ class VictoryScreenCharts(
 
     private var rankingType = RankingType.Score
     private var selectedCiv = worldScreen.selectedCiv
-    private val viewingCiv = worldScreen.viewingCiv
+    private val viewingCiv = worldScreen.selectedGameView.civView.civ
 
     private val rankingTypeSelect = TranslatedSelectBox(
         RankingType.filteredEntries(gameInfo.gameParameters).map { it.label },
