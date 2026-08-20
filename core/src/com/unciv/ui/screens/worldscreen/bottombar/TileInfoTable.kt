@@ -63,7 +63,7 @@ class TileInfoTable(private val worldScreen: WorldScreen) : Table(BaseScreen.ski
             isVisible = false
             return
         }
-        add(getStatsTable(tileView)).left().row()
+        add(getStatsTable(tileView)).left().padRight(indicator.width).row()
         add(MarkupRenderer.render(TileDescription.toMarkup(tileView, civView), padding = 0f, iconDisplay = IconDisplay.None) {
             worldScreen.openCivilopedia(it)
         } ).padTop(5f).row()
