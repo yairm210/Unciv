@@ -12,6 +12,7 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.utils.DebugUtils
 import yairm210.purity.annotations.Readonly
 
 object CityLocationTileRanker {
@@ -60,6 +61,9 @@ object CityLocationTileRanker {
             bestTilesToFoundCity.bestTile = bestReachableTile.first
             bestTilesToFoundCity.bestTileRank = bestReachableTile.second
         }
+
+        if (DebugUtils.SHOW_SETTLER_SCORES)
+            DebugUtils.SETTLER_SCORES = bestTilesToFoundCity.tileRankMap.entries.associate { it.key.position to it.value }
 
         return bestTilesToFoundCity
     }
