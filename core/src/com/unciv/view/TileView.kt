@@ -123,9 +123,6 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
 
     @Readonly fun getTileMap(): TileMapView = tileMapView
 
-    override fun equals(other: Any?) = other is TileView && other.tile === tile
-    override fun hashCode() = tile.hashCode()
-
     companion object {
         /** For icon/preview rendering of a single tile that has no backing [TileMap]. */
         fun forSingleTile(tile: Tile): TileView {

@@ -546,7 +546,7 @@ class WorldMapHolder(
         val unitList = ArrayList<MapUnitView>()
         val civView = worldScreen.selectedGameView.civView
         if (tileView.isCityCenter()
-                && (tileView.getOwner()?.getCiv() == civView.getCiv() || civView.isSpectator())) {
+                && (tileView.getOwner() == civView || civView.isSpectator())) {
             unitList.addAll(tileView.owningCity()!!.getCenterTile().getVisibleUnits().map { it.tryGetMapUnitView()!! })
         } else if (tile.airUnits.isNotEmpty()
                 && (tile.airUnits.first().civ == civView.getCiv() || civView.isSpectator())) {

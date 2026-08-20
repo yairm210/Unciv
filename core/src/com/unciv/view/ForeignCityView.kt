@@ -61,7 +61,4 @@ open class ForeignCityView(internal open val city: City,
         viewer.espionageManager.getSpyAssignedToCity(city)?.isSetUp() == true
     @Readonly fun getCivInnerColor(): ImmutableColor = city.civ.nation.getInnerColor()
     @Readonly fun getReligionManager(): CityReligionManager = city.religion
-
-    override fun equals(other: Any?) = other is ForeignCityView && city === other.city
-    override fun hashCode() = city.hashCode()
 }

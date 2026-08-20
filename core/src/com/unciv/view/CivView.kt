@@ -122,7 +122,4 @@ class CivView(civ: Civilization,
     fun tryDismissMoveSpies(): Boolean { civ.espionageManager.dismissedShouldMoveSpies = true; return true }
     fun tryMarkMovedAutomatedUnits(): Boolean { civ.hasMovedAutomatedUnits = true; return true }
     fun tryAutomateAllUnits(): Boolean { civ.units.getCivUnits().forEach { it.doAction() }; return true }
-
-    override fun equals(other: Any?): Boolean = other is CivView && civ == other.civ
-    override fun hashCode(): Int = civ.hashCode()
 }
