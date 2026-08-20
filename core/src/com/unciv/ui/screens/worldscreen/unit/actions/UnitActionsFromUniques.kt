@@ -527,7 +527,7 @@ object UnitActionsFromUniques {
         if (tile.isCityCenter()) return null
         if (!tile.isPillaged()) return null
         val uniques = unit.getMatchingUniques(UniqueType.BuildImprovements)
-        val improvement = tile.tileImprovement!!
+        val improvement = tile.getImprovementToRepair()!!
         val civ = unit.civ
             if (!uniques.any { unique ->
             // Engage the MultiFilter on the entire filter, prior to checking the individual filters
