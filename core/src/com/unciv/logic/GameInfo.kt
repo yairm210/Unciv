@@ -364,6 +364,16 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     fun isSimulation(): Boolean = turns < DebugUtils.SIMULATE_UNTIL_TURN
             || turns < simulateMaxTurns && simulateUntilWin
 
+    // Records the ranking stats of all major civs
+    private fun recordRankingStats() {
+        for (civ in civilizations) {
+            if (!civ.isMajorCiv() || !civ.isAlive()) continue
+            // Force uses a transient cache that is not invalidated on combat losses during other civs' turns
+            civ.resetMilitaryMightCache()
+            civ.statsHistory.recordRankingStats(civ)
+        }
+    }
+
     /**
      *  Advance a turn, running automation for AI players, stopping for human players
      *  @param progressBar Optional reference to UI widget either provided by [WorldScreen.nextTurn][com.unciv.ui.screens.worldscreen.WorldScreen.nextTurn] or `null` when simulating
@@ -373,11 +383,19 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         var player = currentPlayerCiv
         var playerIndex = civilizations.indexOf(player)
 
+        if (player.isHuman() && player.isAlive()) {
+            player.totalTurnTimeSeconds +=
+                Duration.between(Instant.ofEpochMilli(currentTurnStartTime), Instant.now())
+                    .toSeconds().toInt()
+            player.turnsPlayedAsHuman++
+        }
+        
         if (gameParameters.isOnlineMultiplayer) updateMinutesBeforeForceResign(player, shouldGainTime)
         // We rotate Players in cycle: 1,2...N,1,2...
         fun setNextPlayer() {
             playerIndex = (playerIndex + 1) % civilizations.size
             if (playerIndex == 0) {
+                recordRankingStats()
                 turns++
                 if (DebugUtils.SIMULATE_UNTIL_TURN != 0)
                     debug("Starting simulation of turn %s", turns)

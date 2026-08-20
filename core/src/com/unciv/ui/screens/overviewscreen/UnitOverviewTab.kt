@@ -5,17 +5,17 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
-import com.unciv.logic.civilization.Civilization
 import com.unciv.ui.components.extensions.equalizeColumns
 import com.unciv.ui.components.widgets.SortableGrid
 import com.unciv.ui.components.widgets.TabbedPager
 import com.unciv.ui.images.IconTextButton
+import com.unciv.view.CivView
 
 /**
  * Supplies the Unit sub-table for the Empire Overview
  */
 class UnitOverviewTab(
-    viewingPlayer: Civilization,
+    viewingPlayer: CivView,
     overviewScreen: EmpireOverviewScreen,
     persistedData: EmpireOverviewTabPersistableData? = null
 ) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
@@ -60,7 +60,7 @@ class UnitOverviewTab(
     //todo the comments and todo below are copied verbatim from CityOverviewTab - synergies?
     private val grid = SortableGrid(
         columns = UnitOverviewTabColumn.entries.asIterable(),
-        data = viewingPlayer.units.getCivUnits().asIterable(),
+        data = viewingPlayer.getCiv().units.getCivUnits().asIterable(),
         actionContext = this,
         sortState = persistableData,
         iconSize = 20f,
@@ -83,7 +83,7 @@ class UnitOverviewTab(
 
     init {
         val supplyTableWidth = (overviewScreen.stage.width * 0.25f).coerceAtLeast(240f)
-        val unitSupplyTable = UnitSupplyTable.create(overviewScreen, this, viewingPlayer, supplyTableWidth)
+        val unitSupplyTable = UnitSupplyTable.create(overviewScreen, this, viewingPlayer.getCiv(), supplyTableWidth)
         fixedContent.add(unitSupplyTable).align(Align.top).padBottom(10f).row()
         fixedContent.add(grid.getHeader()).grow()
         top()
@@ -101,7 +101,7 @@ class UnitOverviewTab(
     }
 
     internal fun update(unitsChanged: Boolean = false) {
-        if (unitsChanged) grid.update(viewingPlayer.units.getCivUnits().asIterable())
+        if (unitsChanged) grid.update(viewingPlayer.getCiv().units.getCivUnits().asIterable())
         grid.update()
     }
 

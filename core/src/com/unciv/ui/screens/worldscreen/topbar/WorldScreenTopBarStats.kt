@@ -84,7 +84,7 @@ internal class WorldScreenTopBarStats(topbar: WorldScreenTopBar) : ScalingTableW
             overviewPage: EmpireOverviewCategories,
             noPad: Boolean = false
         ) = addStat(icon, label, noPad) {
-            EmpireOverviewScreen(worldScreen.selectedCiv, overviewPage)
+            EmpireOverviewScreen(worldScreen.selectedGameView.civView, overviewPage)
         }
 
         fun addPerTurnLabel(label: Label) {

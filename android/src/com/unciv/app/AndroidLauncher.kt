@@ -1,6 +1,7 @@
 package com.unciv.app
 
 import android.content.Intent
+import android.media.MediaScannerConnection
 import android.os.Bundle
 import android.view.View
 import androidx.core.app.NotificationManagerCompat
@@ -10,6 +11,7 @@ import androidx.work.WorkManager
 import com.badlogic.gdx.backends.android.AndroidApplication
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration
 import com.unciv.logic.IdChecker
+import com.unciv.logic.files.SAVE_FILES_FOLDER
 import com.unciv.logic.files.UncivFiles
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.screens.multiplayerscreens.AddFriendScreen
@@ -48,21 +50,26 @@ open class AndroidLauncher : AndroidApplication() {
         val settings = UncivFiles.getSettingsForPlatformLaunchers(filesDir.path)
         val config = AndroidApplicationConfiguration().apply { useImmersiveMode = settings.androidHideSystemUi }
 
-        // Setup orientation, immersive mode and display cutout
+        // Setup orientation
         displayImpl.setOrientation(settings.displayOrientation)
-        displayImpl.setCutoutFromUiThread(settings.androidCutout)
 
         // Create notification channels for Multiplayer notificator
         MultiplayerTurnCheckWorker.createNotificationChannels(applicationContext)
 
         CoroutineScope(Dispatchers.IO).launch {
+            createSaveFolder()
             copyMods()
         }
 
         game = AndroidGame(this)
         initialize(game, config)
 
+        // Setup display cutout AFTER libGDX initialize() — libGDX window setup resets layoutInDisplayCutoutMode
+        displayImpl.setCutoutFromUiThread(settings.androidCutout)
+
         ViewCompat.setOnApplyWindowInsetsListener(window.decorView, ::insetsListener)
+        // Force immediate insets dispatch — libGDX init triggers insets before listener is registered
+        window.decorView.requestApplyInsets()
 
         // can be triggered via `adb shell am start -a android.intent.action.VIEW -d https://unciv.app/g/G-ef0f5e5a-f1db-4a54-9d94-92ca986afe8a-9 com.unciv.app`
         // or whatever your game id is
@@ -107,6 +114,15 @@ open class AndroidLauncher : AndroidApplication() {
             if (!externalModsDir.exists()) externalModsDir.mkdirs() // this can fail sometimes, which is why we check if it exists again in the next line
             if (externalModsDir.exists()) externalModsDir.copyRecursively(internalModsDir, true)
         } catch (ex: Exception) {}
+    }
+
+    // Blind attempt to prevent issues like #9604, #9847, #10302, #13113, #15029, #15219
+    private fun createSaveFolder() {
+        val parent = getExternalFilesDir(null) ?: filesDir
+        val newFolder = File(parent, SAVE_FILES_FOLDER)
+        if (!newFolder.mkdirs()) return
+        // Force MediaStore update
+        MediaScannerConnection.scanFile(context, arrayOf(newFolder.absolutePath), null, null)
     }
 
     override fun onPause() {

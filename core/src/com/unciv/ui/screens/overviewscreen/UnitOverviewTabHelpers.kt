@@ -62,7 +62,7 @@ open class UnitOverviewTabHelpers {
         val table = Table()
         val unitActions = UnitActionsUpgrade.getUpgradeActionAnywhere(unit)
         if (unitActions.none()) return null
-        val canEnable = actionContext.viewingPlayer.isCurrentPlayer() && GUI.isAllowedChangeState()
+        val canEnable = actionContext.viewingPlayer.getCiv().isCurrentPlayer() && GUI.isAllowedChangeState()
 
         for (unitAction in unitActions) {
             val enable = canEnable && unitAction.action != null
@@ -95,7 +95,7 @@ open class UnitOverviewTabHelpers {
         // But the old way also had the mini-bug that PromotionPicker allows unit rename which wasn't reflected on the grid...
         // Now it always does rebuild all rows (as simple as actionContext.update instead of updatePromotionsTable).
         val promotionsTable = Table()
-        val canEnable = actionContext.viewingPlayer.isCurrentPlayer() && GUI.isAllowedChangeState()
+        val canEnable = actionContext.viewingPlayer.getCiv().isCurrentPlayer() && GUI.isAllowedChangeState()
         updatePromotionsTable(promotionsTable, unit, canEnable)
         val selectKey = unit.id.toString()
 

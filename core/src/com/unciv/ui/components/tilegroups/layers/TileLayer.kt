@@ -10,7 +10,7 @@ import com.unciv.ui.components.tilegroups.TileSetStrings
 
 abstract class TileLayer(val tileGroup: TileGroup, val size: Float) {
 
-    val tile: Tile = tileGroup.tile
+    val tile: Tile get() = tileGroup.tileView.getTile()
     val strings: TileSetStrings = tileGroup.tileSetStrings
 
     /** Absolute X of the tile origin in the parent TileMapLayer. 0 until attachTo() is called. */

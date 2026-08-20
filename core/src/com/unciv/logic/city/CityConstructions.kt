@@ -638,10 +638,29 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         if (building.hasUnique(UniqueType.EnemyUnitsSpendExtraMovement))
             civ.cache.updateHasActiveEnemyMovementPenalty()
 
-        // Korean unique - apparently gives the same as the research agreement
-        if (building.isStatRelated(Stat.Science, city) && civ.hasUnique(UniqueType.TechBoostWhenScientificBuildingsBuiltInCapital)
-            && city.isCapital())
-            civ.tech.addScience(civ.tech.scienceOfLast8Turns.sum() / 8)
+        /**
+         * The [Korean unique](https://civilization.fandom.com/wiki/Korean_(Civ5)#Strategy) gives the same tech boost as a [research agreement](https://civilization.fandom.com/wiki/Diplomacy_(Civ5)#Research_Agreement).
+         * We use Vanilla / G&K logic as it is more straightforward, i.e. half of the median cost of our researchable techs.
+         * It is unclear whether RA modifiers should apply. For now, they do not.
+         */
+        fun applyKoreanUnique() {
+            if (!building.isStatRelated(Stat.Science, city)) return
+            if (!civ.hasUnique(UniqueType.TechBoostWhenScientificBuildingsBuiltInCapital)) return
+            if (!city.isCapital()) return
+            val availableTechCosts = city.getRuleset().technologies.values
+                .filter { civ.tech.canBeResearched(it.name) }
+                .map { civ.tech.costOfTech(it.name) }
+                .sorted()
+            if (availableTechCosts.isEmpty()) return
+            val n = availableTechCosts.size
+            val medianCost =
+                if (n % 2 == 1) availableTechCosts[n / 2].toFloat()
+                else (availableTechCosts[n / 2 - 1] + availableTechCosts[n / 2]) / 2f
+            val techBoost = (0.5f * medianCost).roundToInt()
+            civ.tech.addScience(techBoost)
+        }
+        
+        applyKoreanUnique()
 
         val previousHappiness = civ.getHappiness()
         // can cause civ happiness update: reassignPopulationDeferred -> reassignPopulation -> cityStats.update -> civ.updateHappiness
@@ -808,6 +827,9 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         if (queuePosition in 0 until constructionQueue.size)
             removeFromQueue(queuePosition, automatic)
         validateConstructionQueue()
+
+        // A purchase should never leave the city idle if we invalidated or emptied the queue
+        if (isQueueEmptyOrIdle()) chooseNextConstruction()
 
         return true
     }

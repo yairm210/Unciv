@@ -251,12 +251,12 @@ class CityStats(val city: City) {
             sourceToStats.addStats(stats, unique.getSourceNameForUser(), unique.sourceObjectName ?: "")
         }
 
-        for (unique in city.getMatchingUniques(UniqueType.StatPercentBonus)) {
+        city.forEachMatchingUnique(UniqueType.StatPercentBonus) { unique -> 
             addUniqueStats(unique, Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
         }
 
 
-        for (unique in city.getMatchingUniques(UniqueType.StatPercentBonusCities)) {
+        city.forEachMatchingUnique(UniqueType.StatPercentBonusCities) { unique ->
             if (city.matchesFilter(unique.params[2]))
                 addUniqueStats(unique, Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
         }

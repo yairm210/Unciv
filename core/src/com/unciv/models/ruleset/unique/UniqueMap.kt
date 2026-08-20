@@ -121,8 +121,9 @@ open class UniqueMap() {
     fun forEachMatchingUnique(list: List<Unique>, gameContext: GameContext, filter:(Unique)->Boolean, op: (Unique)->Unit) {
         for (i in 0..<list.size) {
             val unique = list[i]
-            if (unique.isTimedTriggerable || !filter(unique) || !unique.conditionalsApply(gameContext))
-                continue
+            if (unique.isTimedTriggerable) continue
+            if (!filter(unique)) continue
+            if (!unique.conditionalsApply(gameContext)) continue
             unique.forEachMultiplied(gameContext, op)
         }
     }

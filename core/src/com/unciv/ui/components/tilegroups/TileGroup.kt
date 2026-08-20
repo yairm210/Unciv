@@ -79,8 +79,6 @@ open class TileGroup(
         layerTerrain.update(null)
     }
 
-    open fun clone() = TileGroup(tileView, tileSetStrings)
-
     fun isViewable(viewingCiv: CivView) = isForceVisible
             || viewingCiv.canSeeTile(tileView)
             || viewingCiv.isSpectator()
@@ -103,7 +101,7 @@ open class TileGroup(
 
     open fun update(viewingCiv: CivView? = null) {
         if (viewingCiv == null) {
-            if (tileView.getViewer() != null)
+            if (tileView.getCivView() != null)
                 tileView = TileMapView(tile.tileMap, null).getTile(tile)
         } else {
             val newTileMapView = viewingCiv.gameView.tileMapView
@@ -118,7 +116,7 @@ open class TileGroup(
 
         // Do not update layers if tile is not explored by viewing player
         if (viewingCiv != null && !(isForceVisible || viewingCiv.hasExplored(tileView))) {
-            if (tileView.neighbors.none { viewingCiv.hasExplored(it) }) {
+            if (tileView.getVisibleNeighbors().none()) {
                 // No explored neighbors - hide all layers
                 setAllLayersVisible(false)
             } else {
@@ -132,14 +130,7 @@ open class TileGroup(
 
         setAllLayersVisible(true)
 
-        removeMissingModReferences()
-
         for (layer in allLayers) layer.update(viewingCiv)
-    }
-
-    private fun removeMissingModReferences() {
-        for (unit in tileView.getTile().getUnits())
-            if (!tileView.getRuleset().nations.containsKey(unit.owner)) unit.removeFromTile()
     }
 
     override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }

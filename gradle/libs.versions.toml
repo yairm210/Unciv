@@ -1,12 +1,12 @@
 [versions]
 #must stay in sync with kotlin and gradle major.minor versions:
 #noinspection AndroidGradlePluginVersion
-agp = "8.9.3"
+agp = "9.2.0"
 
-kotlin = "2.1.21"
+kotlin = "2.4.10"
 coroutines = "1.10.2"
 
-gdx = "1.14.0"
+gdx = "1.14.2"
 discord = "v2.0.1"
 
 jna = "5.17.0"
@@ -14,7 +14,7 @@ ktor = "3.2.3"
 logback = "1.5.21"
 clikt = "5.0.3"
 
-purity = "1.7.0"
+purity = "1.7.1"
 detekt = "1.23.8"
 
 # tests

@@ -1,3 +1,87 @@
+## 4.21.10
+
+By unciv-loof:
+- Squash notifications when many units can be promoted 
+- Preserve scroll position of civ list in victory screen after updating selection 
+
+Disable legion being able to repair - By O-spin
+
+By SomeTroglodyte:
+- Fix improvement picker hiding researchable improvements and failing to hide others 
+- Try to create and index the save destination *extra* early for cheap Android devices
+
+Use live data for latest turn in charts - By ssamt
+
+## 4.21.9
+
+Fix: Defeated singleplayer players again have full map visibility
+
+Fixed crash ewhen clicking on civ relationships lines
+
+Prevent natural-wonder coast conversion artifacts - By mvanhorn
+
+By ssamt:
+- hide spectator in global politics
+- AI avoid selling spaceship parts for resource
+
+Fix WLTKD demand rewrite mid-celebration - By Fanfblrik
+
+Mention which civ took our CS alliance in notification - By unciv-loof
+
+Puppet city in console - By BobbyCobby
+
+## 4.21.8
+
+Fixed rivers on water near Rock of Gibraltar
+
+Resolved OOM errors on crash screen
+
+Resolved ANRs from tech picker and notification overview screens
+
+Fixed checking tile resource filters in dev console, for resources with revealing tech
+
+AI "trade for war declaration" reworked to disallow "kamikaze wars"
+
+Nicer trade overview UI
+
+By unciv-loof:
+- Non vanilla ranking types 
+- Hide average turn time until a full turn has been played 
+
+Max players with spectator - By SomeTroglodyte
+
+## 4.21.7
+
+CPU and memory performance improvements 
+
+ANR Bugfix: Only rebuild the minimap on drag, IF the minimap size actually changed.
+
+Hopefully solved Android 11/12 notch areas on some phones
+
+Fixed improvements not shown in map editor
+
+By unciv-loof:
+- Display players' average turn times in MP preview 
+- Fix Korean tech boost UA 
+
+Fixes for AI bugs - By ssamt
+
+fix: preserve carrier payloads during paradrop and transform - By mvanhorn
+
+## 4.21.6
+
+CPU performance improvements
+
+Disallow XP ruin rewards for civilian units in base rulesets
+
+AI: workers take into account future adjacencies for improvements - By EmperorPinguin
+
+Visually indicate failed MP upload - By cy-elec
+
+Chat: nation-colored names, white body - By Fanfblrik
+
+modding: Warn when OneTimeGainStat is used with a non-civ-wide stat (food/production) - By mvanhorn
+
 ## 4.21.5
 
 By SomeTroglodyte:

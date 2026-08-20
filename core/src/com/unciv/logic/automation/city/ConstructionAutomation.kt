@@ -256,17 +256,18 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
     }
 
     private fun addBuildingChoices() {
+        val cityBaseline = computeCityBaseline()
         for (building in buildings.filterBuildable()) {
             if (building.isWonder && city.isPuppet) continue
             // We shouldn't try to build wonders in undeveloped cities and empires
             if (building.isWonder && (!cityIsOverAverageProduction || civInfo.cities.sumOf { it.population.population } < 12)) continue
-            addChoice(relativeCostEffectiveness, building, getValueOfBuilding(building))
+            addChoice(relativeCostEffectiveness, building, getValueOfBuilding(building, cityBaseline))
         }
     }
 
-    private fun getValueOfBuilding(building: Building): Float {
+    private fun getValueOfBuilding(building: Building, cityBaseline: Stats): Float {
         var value = 0f
-        value += applyBuildingStats(building)
+        value += applyBuildingStats(building, cityBaseline)
         value += getMilitaryBuildingValue(building)
         value += getVictoryBuildingValue(building)
         value += getOnetimeUniqueBonuses(building)
@@ -337,8 +338,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         return value
     }
 
-    private fun applyBuildingStats(building: Building): Float {
-        val buildingStats = getStatDifferenceFromBuilding(building.name)
+    private fun applyBuildingStats(building: Building, cityBaseline: Stats): Float {
+        val buildingStats = getStatDifferenceFromBuilding(building.name, cityBaseline)
         buildingStats.add(getBuildingStatsFromUniques(building, buildingStats))
 
         buildingStats.food *= 3
@@ -362,17 +363,25 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
     }
 
     // NOT readonly safe, since it alters the tile ownership of real tiles
-    private fun getStatDifferenceFromBuilding(building: String): Stats {
+    private fun computeCityBaseline(): Stats {
+        val baselineCity = city.clone()
+        baselineCity.setTransients(city.civ) // Will break the owned tiles. Needs to be reverted before leaving this function
+        //todo: breaks city connection; trade route gold is currently not considered for markets etc.
+        baselineCity.cityStats.update(updateCivStats = false, calculateGrowthModifiers = false) // Don't consider growth penalties for food values (we can work more mines/specialists instead of farms)
+        val baseline = baselineCity.cityStats.currentCityStats
+        city.expansion.setTransients() // Revert owned tiles to original city
+        return baseline
+    }
+
+    // NOT readonly safe, since it alters the tile ownership of real tiles
+    private fun getStatDifferenceFromBuilding(building: String, cityBaseline: Stats): Stats {
         val newCity = city.clone()
         newCity.setTransients(city.civ) // Will break the owned tiles. Needs to be reverted before leaving this function
-        //todo: breaks city connection; trade route gold is currently not considered for markets etc.
-        newCity.cityStats.update(updateCivStats = false, calculateGrowthModifiers = false) // Don't consider growth penalties for food values (we can work more mines/specialists instead of farms)
-        val oldStats = newCity.cityStats.currentCityStats
         newCity.cityConstructions.builtBuildings.add(building)
         newCity.cityConstructions.setTransients()
         newCity.cityStats.update(updateCivStats = false, calculateGrowthModifiers = false)
         city.expansion.setTransients() // Revert owned tiles to original city
-        return newCity.cityStats.currentCityStats - oldStats
+        return newCity.cityStats.currentCityStats - cityBaseline
     }
 
     @Readonly

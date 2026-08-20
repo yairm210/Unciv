@@ -32,7 +32,7 @@ class TileInfoTable(private val worldScreen: WorldScreen) : Table(BaseScreen.ski
         private const val attentionKey = "Tile info draggable get attention"
     }
 
-    var civView: CivView = worldScreen.gameView.civView
+    var civView: CivView = worldScreen.selectedGameView.civView
     var position by worldScreen.game.settings::tileInfoPosition
     val indicator = ImageGetter.getImage("OtherIcons/Increase")
     val attentionAnimation = attentionKey !in worldScreen.game.settings.tutorialsShown
@@ -59,16 +59,17 @@ class TileInfoTable(private val worldScreen: WorldScreen) : Table(BaseScreen.ski
             isVisible = false
             return
         }
+        val tileView = civView.gameView.tileMapView.getTile(tile)
 
         pad(5f)
 
         add(getStatsTable(tile)).left().row()
-        add(MarkupRenderer.render(TileDescription.toMarkup(civView.gameView.tileMapView.getTile(tile), civView), padding = 0f, iconDisplay = IconDisplay.None) {
+        add(MarkupRenderer.render(TileDescription.toMarkup(tileView, civView), padding = 0f, iconDisplay = IconDisplay.None) {
             worldScreen.openCivilopedia(it)
         } ).padTop(5f).row()
         if (DebugUtils.VISIBLE_MAP) add(tile.position.toPrettyString().toLabel()).colspan(2).pad(5f).row()
-        if (DebugUtils.SHOW_TILE_IMAGE_LOCATIONS){
-            val imagesString = "Images: " + worldScreen.mapHolder.tileGroups[tile]!!.layerTerrain.tileBaseImages.joinToString { "\n" + it.name }
+        if (DebugUtils.SHOW_TILE_IMAGE_LOCATIONS) {
+            val imagesString = "Images: " + worldScreen.mapHolder.tileGroups[tileView]!!.layerTerrain.tileBaseImages.joinToString { "\n" + it.name }
             add(imagesString.toLabel())
         }
 

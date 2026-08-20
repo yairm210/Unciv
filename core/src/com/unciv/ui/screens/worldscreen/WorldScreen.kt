@@ -135,14 +135,29 @@ class WorldScreen(
     /** Indicates it's the player's ([viewingCiv]) turn */
     var isPlayersTurn = viewingCiv.isCurrentPlayer()
         internal set     // only this class is allowed to make changes
+    
+    /** Indicates that a game failed to upload, and needs to be uploaded */
+    var failedUpload = false
+        private set
 
     /** Selected civilization, used in spectator and replay mode, equals viewingCiv in ordinary games */
     var selectedCiv = viewingCiv
         internal set
-    /** This is the *base view* from which all other views are derived */
-    var gameView = GameView(gameInfo, selectedCiv, spectatorMode = viewingCiv.isSpectator())
+    /** The [selectedCiv]'s perspective. For non-spectators this this equals the viewingGameView.
+     *  Only ever differs from [spectatorGameView] for spectators. */
+    var selectedGameView = GameView(gameInfo, selectedCiv, spectatorMode = viewingCiv.isSpectator())
         internal set
 
+    /** The [viewingCiv]'s own perspective.
+     * This should only ever be used A. for spectators B. when forOfWar is false, for specific UI elements */
+    private val spectatorGameView by lazy {
+        if (!viewingCiv.isSpectator()) throw Exception("Managed to disable fog of war without being spectator?!")
+        GameView(gameInfo, viewingCiv, spectatorMode = true)
+    }  
+    fun getGameViewConsideringForOfWar() = if (fogOfWar) selectedGameView else spectatorGameView    
+
+    /** UI toggle only (spectator mode): whether the map/tile panel should show [selectedGameView]'s
+     *  (fogged) vision or [spectatorGameView]'s (the spectator's own, unrestricted) vision. */
     var fogOfWar = true
 
     /** `true` when it's the player's turn unless he is a spectator */
@@ -280,7 +295,7 @@ class WorldScreen(
     }
 
     fun openEmpireOverview(category: EmpireOverviewCategories? = null, selection: String = "") {
-        game.pushScreen(EmpireOverviewScreen(selectedCiv, category, selection))
+        game.pushScreen(EmpireOverviewScreen(selectedGameView.civView, category, selection))
     }
 
     fun openNewGameScreen() {
@@ -314,7 +329,7 @@ class WorldScreen(
         globalShortcuts.add(KeyboardBinding.ViewCapitalCity) {
             val capital = gameInfo.getCurrentPlayerCivilization().getCapital()
             if (capital != null && !mapHolder.setCenterPosition(capital.location.toHexCoord()))
-                game.pushScreen(CityScreen(gameView.getCityView(capital)))
+                game.pushScreen(CityScreen(selectedGameView.getCityView(capital)))
         }
         globalShortcuts.add(KeyboardBinding.Options) { // Game Options
             openOptionsPopup { nextTurnButton.update() }
@@ -416,13 +431,10 @@ class WorldScreen(
             bottomUnitTable.update()
 
             updateSelectedCiv()
-
-            if (fogOfWar) minimapWrapper.update(selectedCiv)
-            else minimapWrapper.update(viewingCiv)
-
-            if (fogOfWar) bottomTileInfoTable.civView = gameView.civView
-            else bottomTileInfoTable.civView = gameView.civView
-            bottomTileInfoTable.updateTileTable(mapHolder.selectedTile)
+            
+            minimapWrapper.update(getGameViewConsideringForOfWar().civView.getCiv())
+            bottomTileInfoTable.civView = getGameViewConsideringForOfWar().civView
+            bottomTileInfoTable.updateTileTable(mapHolder.selectedTile?.getTile())
             bottomTileInfoTable.setPosition()
 
             battleTable.update()
@@ -436,8 +448,8 @@ class WorldScreen(
             val allAttacks = allUnits.map { unit -> unit.attacksSinceTurnStart.asSequence().map { attacked -> Triple(unit.civ, unit.getTile().position, attacked.toHexCoord()) } }.flatten() +
                 gameInfo.civilizations.asSequence().flatMap { civInfo -> civInfo.attacksSinceTurnStart.asSequence().map { Triple(civInfo, it.source, it.target) } }
             mapHolder.updateMovementOverlay(
-                allUnits.filter(mapVisualization::isUnitPastVisible),
-                allUnits.filter(mapVisualization::isUnitFutureVisible),
+                allUnits.filter(mapVisualization::isUnitPastVisible).map { selectedGameView.getForeignMapUnitView(it) },
+                allUnits.filter(mapVisualization::isUnitFutureVisible).map { selectedGameView.getForeignMapUnitView(it).tryGetMapUnitView()!! },
                 allAttacks.filter { (attacker, source, target) -> mapVisualization.isAttackVisible(attacker, source, target) }
                         .map { (_, source, target) -> source to target }
             )
@@ -449,8 +461,7 @@ class WorldScreen(
         // it doesn't update the explored tiles of the civ... need to think about that harder
         // it causes a bug when we move a unit to an unexplored tile (for instance a cavalry unit which can move far)
 
-        if (fogOfWar) mapHolder.updateTiles(gameView.civView)
-        else mapHolder.updateTiles(gameView.civView)
+        mapHolder.updateTiles(getGameViewConsideringForOfWar().civView)
 
         topBar.update(selectedCiv)
         if (tutorialTaskTable.isVisible)
@@ -462,7 +473,7 @@ class WorldScreen(
         if (uiEnabled) {
             // UnitActionsTable measures geometry (its own y, techPolicyAndDiplomacy and fogOfWarButton), so call update this late
             unitActionsTable.y = bottomUnitTable.height
-            unitActionsTable.update(bottomUnitTable.selectedUnit)
+            unitActionsTable.update(bottomUnitTable.selectedUnit?.getUnit())
         }
 
         // If the game has ended, lets stop AutoPlay
@@ -584,12 +595,12 @@ class WorldScreen(
 
     fun setSelectedCiv(civ: Civilization) {
         selectedCiv = civ
-        gameView = GameView(gameInfo, civ, viewingCiv.isSpectator())
+        selectedGameView = GameView(gameInfo, civ, viewingCiv.isSpectator())
     }
 
     private fun updateSelectedCiv() {
         setSelectedCiv(when {
-            bottomUnitTable.selectedUnit != null -> bottomUnitTable.selectedUnit!!.civ
+            bottomUnitTable.selectedUnit != null -> bottomUnitTable.selectedUnit!!.civ().getCiv()
             bottomUnitTable.selectedCity != null -> bottomUnitTable.selectedCity!!.owningCiv().getCiv()
             else -> viewingCiv
         })
@@ -695,7 +706,7 @@ class WorldScreen(
                         }
                     }
 
-                    this@WorldScreen.isPlayersTurn = true // Since we couldn't push the new game clone, then it's like we never clicked the "next turn" button
+                    this@WorldScreen.failedUpload = true // Since we couldn't push the new game clone, then we need to try again
                     this@WorldScreen.shouldUpdate = true
                     return@runOnNonDaemonThreadPool
                 }
@@ -721,15 +732,15 @@ class WorldScreen(
     fun switchToNextUnit(resetDue: Boolean = true) {
         // Try to select something new if we already have the next pending unit selected.
         if (bottomUnitTable.selectedUnit != null && resetDue)
-            bottomUnitTable.selectedUnit!!.due = false
-        val nextDueUnit = viewingCiv.units.cycleThroughDueUnits(bottomUnitTable.selectedUnit)
+            bottomUnitTable.selectedUnit!!.getUnit().due = false
+        val nextDueUnit = viewingCiv.units.cycleThroughDueUnits(bottomUnitTable.selectedUnit?.getUnit())
         if (nextDueUnit != null) {
             mapHolder.setCenterPosition(
                 nextDueUnit.currentTile.position,
                 immediately = false,
                 selectUnit = false
             )
-            bottomUnitTable.selectUnit(nextDueUnit)
+            bottomUnitTable.selectUnit(selectedGameView.getForeignMapUnitView(nextDueUnit).tryGetMapUnitView()!!)
         } else {
             mapHolder.removeAction(mapHolder.blinkAction)
             mapHolder.selectedTile = null

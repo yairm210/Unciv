@@ -86,7 +86,7 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
 
         diplomacyButton.add(ImageGetter.getImage("OtherIcons/DiplomacyW")).size(30f).pad(15f)
         diplomacyButtonHolder.onActivation(binding = KeyboardBinding.Diplomacy) {
-            game.pushScreen(DiplomacyScreen(viewingCiv))
+            game.pushScreen(DiplomacyScreen(worldScreen.selectedGameView.civView))
         }
 
         if (game.gameInfo!!.isEspionageEnabled()) {

@@ -55,7 +55,7 @@ class TileLayerBorders(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         // Setup new borders
         val civOuterColor = tileOwner.getOuterColor()
         val civInnerColor = tileOwner.getInnerColor()
-        for (neighbor in tileView.neighbors) {
+        for (neighbor in tileView.getVisibleNeighbors()) {
             var shouldRemoveBorderSegment = false
             var shouldAddBorderSegment = false
 

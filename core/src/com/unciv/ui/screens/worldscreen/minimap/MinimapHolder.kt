@@ -211,7 +211,10 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
                 return
             dragged = true
             val targetSize = Vector2(stage.width - event.stageX, event.stageY)
-            minimapSize = minimap.getClosestMinimapSize(targetSize)
+            val newMinimapSize = minimap.getClosestMinimapSize(targetSize) 
+            if (newMinimapSize == minimapSize) return
+            
+            minimapSize = newMinimapSize
             rebuildAndUpdateMap(civInfo)
         }
         override fun touchUp(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int) {

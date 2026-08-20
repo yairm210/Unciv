@@ -107,8 +107,8 @@ class MajorCivDiplomacyTable(private val diplomacyScreen: DiplomacyScreen) {
         negotiatePeaceButton.onClick {
             val tradeTable = diplomacyScreen.setTrade(otherCiv)
             val peaceTreaty = TradeOffer(Constants.peaceTreaty, TradeOfferType.Treaty, speed = viewingCiv.gameInfo.speed)
-            tradeTable.tradeLogic.currentTrade.theirOffers.add(peaceTreaty)
-            tradeTable.tradeLogic.currentTrade.ourOffers.add(peaceTreaty)
+            tradeTable.tradeView.theirStagedOffers().add(peaceTreaty)
+            tradeTable.tradeView.ourStagedOffers().add(peaceTreaty)
             tradeTable.offerColumnsTable.update()
             tradeTable.enableOfferButton(true)
         }

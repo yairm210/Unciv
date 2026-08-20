@@ -36,9 +36,9 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         else resourceAndImprovementSequence.map { strings.orFallback { getTile(it) } }.toList()
     }
 
-    private fun usePillagedImprovementImage(tileView: TileView, viewingCiv: CivView?): Boolean {
+    private fun usePillagedImprovementImage(tileView: TileView): Boolean {
         if (!tileView.improvementIsPillaged || !UncivGame.Current.settings.showPixelImprovements) return false
-        val shownImprovement = viewingCiv?.getShownImprovementOn(tileView) ?: return false
+        val shownImprovement = tileView.getShownImprovement() ?: return false
         return ImageGetter.imageExists(strings.getTile("$shownImprovement-Pillaged"))
     }
 
@@ -51,8 +51,8 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
 
         val tileView = tileGroup.tileView
 
-        val shownImprovement = if (!UncivGame.Current.settings.showPixelImprovements) null 
-            else viewingCiv?.getShownImprovementOn(tileView)
+        val shownImprovement = if (!UncivGame.Current.settings.showPixelImprovements) null
+            else tileView.getShownImprovement()
 
         val viewableResource = if (!UncivGame.Current.settings.showPixelImprovements) null
             else tileView.getViewableResource(if (isForceVisible) null else viewingCiv)
@@ -62,7 +62,7 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         else sequence {
             if (viewableResource != null)  yield(viewableResource.name)
             if (shownImprovement != null) {
-                if (usePillagedImprovementImage(tileView, viewingCiv))
+                if (usePillagedImprovementImage(tileView))
                     yield("$shownImprovement-Pillaged")
                 else yield(shownImprovement)
             }
@@ -231,7 +231,7 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
     private fun updateTileColor(viewingCiv: CivView?) {
         val isViewable = viewingCiv == null || isViewable(viewingCiv)
         val tileView = tileGroup.tileView
-        val colorPillagedTile = isViewable && tileView.isPillaged() && !usePillagedImprovementImage(tileView, viewingCiv)
+        val colorPillagedTile = isViewable && tileView.isPillaged() && !usePillagedImprovementImage(tileView)
 
         val baseTerrainColor = when {
             colorPillagedTile && strings.tileSetConfig.useColorAsBaseTerrain -> tileView.getBaseTerrain()

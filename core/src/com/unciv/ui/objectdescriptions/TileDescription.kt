@@ -54,7 +54,7 @@ object TileDescription {
             lineList += FormattedLine("[${tileView.roadStatus.name}]$pillageText", link = "Improvement/${tileView.roadStatus.name}")
         }
 
-        val shownImprovement = viewingCiv?.getShownImprovementOn(tileView) ?: tileView.getShownImprovement()
+        val shownImprovement = tileView.getShownImprovement()
         if (shownImprovement != null) {
             val pillageText = if (tileView.improvementIsPillaged) " (Pillaged!)" else ""
             lineList += FormattedLine("[$shownImprovement]$pillageText", link = "Improvement/$shownImprovement")
@@ -72,8 +72,7 @@ object TileDescription {
                 tileView.civilianUnit!!.name.tr() + " - " + tileView.civilianUnit!!.civName.tr(),
                 link = "Unit/${tileView.civilianUnit!!.name}"
             )
-        if (tileView.militaryUnit != null && isViewableToPlayer && !hideUnits
-                && (viewingCiv == null || viewingCiv.canSeeUnit(tileView.militaryUnit!!))) {
+        if (tileView.militaryUnit != null && isViewableToPlayer && !hideUnits) {
             val milUnitString = tileView.militaryUnit!!.name.tr() +
                     (if (tileView.militaryUnit!!.health < 100) "(" + tileView.militaryUnit!!.health + ")" else "") +
                     " - " + tileView.militaryUnit!!.civName.tr()
@@ -107,7 +106,7 @@ object TileDescription {
 
         val techRequired = researchableImprovements
             .mapNotNull { viewingCiv.technologyByName(it.techRequired) }
-            .filterNot { viewingCiv.tech.isResearched(it.name) }
+            .filterNot { viewingCiv.isResearched(it.name) }
             .minByOrNull { it.cost }
             ?: return
 

@@ -159,7 +159,7 @@ object BattleTableHelpers {
     ) {
         fun getMapActorsForCombatant(combatant: ICombatant): Sequence<Actor> =
             sequence {
-                val tileGroup = mapHolder.tileGroups[combatant.getTile()]!!
+                val tileGroup = mapHolder.tileGroups[selectedGameView.tileMapView.getTile(combatant.getTile())]!!
                 if (combatant.isCity()) {
                     val icon = tileGroup.layerImprovement.improvementIcon
                     if (icon != null) yield (icon)
@@ -183,8 +183,8 @@ object BattleTableHelpers {
             .nor()  // normalize vector to length of "1"
             .scl(moveActorsDisplacement)
 
-        val attackerGroup = mapHolder.tileGroups[attacker.getTile()]!!
-        val defenderGroup = mapHolder.tileGroups[defender.getTile()]!!
+        val attackerGroup = mapHolder.tileGroups[selectedGameView.tileMapView.getTile(attacker.getTile())]!!
+        val defenderGroup = mapHolder.tileGroups[selectedGameView.tileMapView.getTile(defender.getTile())]!!
         val hideDefenderDamage = defender.isDefeated() &&
                 attacker.getTile().position == defender.getTile().position
 

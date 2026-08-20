@@ -1,4 +1,4 @@
-# Simulations
+# Testing AI changes
 
 The codebase supports the ability to run automated simulations and compare the results for AI development.
 
@@ -9,13 +9,13 @@ Set up a custom build configuration.
 Set the working directory to android/assets, just like when running desktop. And use the `unciv.desktop.main` module.
 ![image](../assets/ConsoleLauncher_Config.png)
 
-## Running Sims
+## Running Simulations
 
 Execute the ConsoleLauncher Build Configuration set up above. Results should appear in the Console of the IDE.
 
-## Configuring Sims
+## Configuring Simulations
 
-Within the `desktop\src\ConsoleLauncher.kt` file, you can adjust the number of sims to run, which nations to use, etc.
+Within the `desktop\src\ConsoleLauncher.kt` file, you can adjust the number of simulations to run, which nations to use, etc.
 
 Recommend using generic civs with no Uniques. You can see the code add a generic `Nation` to the `ruleset` object, and you can key different behavior throughout the code using the Nation Name constant as the control switch.
 

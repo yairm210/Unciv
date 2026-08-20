@@ -2,12 +2,10 @@ package com.unciv.logic.automation.civilization
 
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.map.AStar
 import com.unciv.models.metadata.GameSettings.PathfindingAlgorithm
-import com.unciv.models.metadata.GameSettings.PathfindingAlgorithm.ClassicPathfinding
 import com.unciv.models.metadata.GameSettings.PathfindingAlgorithm.AStarPathfinding
-import com.unciv.testing.GdxTestRunnerFactory
 import com.unciv.testing.TestGame
+import com.unciv.testing.TestRunnerFactory
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -18,8 +16,14 @@ import org.junit.runners.Parameterized.Parameters
 import org.junit.runners.Parameterized.UseParametersRunnerFactory
 
 @RunWith(Parameterized::class)
-@UseParametersRunnerFactory(GdxTestRunnerFactory::class)
+@UseParametersRunnerFactory(TestRunnerFactory::class)
 class NextTurnAutomationTest(private val algorithm: PathfindingAlgorithm) {
+    companion object {
+        @Suppress("unused")
+        @Parameters
+        @JvmStatic
+        fun parameters() = TestRunnerFactory.Parameters.pathfinding
+    }
 
     private lateinit var civInfo: Civilization
 
@@ -46,7 +50,7 @@ class NextTurnAutomationTest(private val algorithm: PathfindingAlgorithm) {
         // Act
         NextTurnAutomation.automateSettlerEscorting(civInfo)
         assertEquals("settler should not have moved, else test is invalid", testGame.tileMap[0,2], settler.currentTile)
-        
+
         // Assert
         assertEquals("high hp warrior have taken the place of low hp escort of settler", testGame.tileMap[0,2], highHpWarrior.currentTile)
         assertEquals("high hp warrior have taken the place of low hp escort of settler", testGame.tileMap[0,1], lowHpWarrior.currentTile)
@@ -83,14 +87,5 @@ class NextTurnAutomationTest(private val algorithm: PathfindingAlgorithm) {
         assertEquals("high hp warrior have taken the place of low hp escort of settler", settler1, highHpWarrior.getOtherEscortUnit())
         assertEquals("high hp warrior have taken the place of low hp escort of settler", lowHpWarrior, settler2.getOtherEscortUnit())
         assertEquals("high hp warrior have taken the place of low hp escort of settler", settler2, lowHpWarrior.getOtherEscortUnit())
-    }
-
-    companion object {
-        @Suppress("unused")
-        @Parameters
-        @JvmStatic
-        fun parameters(): Collection<Array<Any?>?> {
-            return listOf( arrayOf(ClassicPathfinding), arrayOf(AStarPathfinding))
-        }
     }
 }
