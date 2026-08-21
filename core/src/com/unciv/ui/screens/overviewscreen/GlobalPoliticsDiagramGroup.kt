@@ -214,6 +214,7 @@ class GlobalPoliticsDiagramGroup(
                 width = lineWidth
             )
             statusLine.color = relation.color
+            statusLine.touchable = Touchable.disabled
             val entry = WidgetEntry.Line(statusLine, relation, civ, otherCiv)
             hasLines += civ
             hasLines += otherCiv
