@@ -9,7 +9,6 @@ The works listed in this document fall under various licenses. Here’s a list o
 * CC BY 4.0: [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/)
 * CC BY-SA 4.0 [Creative Commons Attribution-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-sa/4.0/)
 * Public domain: The work has been released into the public domain.
-* Unknown license: A few works have unknown authorship and/or licensing.
 
 ## Icon Credits
 
@@ -36,8 +35,6 @@ The following files include the Unciv logo:
 
 - Various files in `extraImages` contain different renderings of the same logo
 - `android/assets/ExtraImages/banner.png` by letstalkaboutdune; includes work by The Bucketeer / @GeneralWadaling (tiles) and yairm210 and u-ndefine (Unciv logo), released under CC BY-SA 3.0
-- `extraImages/Feature graphic - Google Play.png` by letstalkaboutdune; includes the Unciv logo by yairm210 and u-ndefine. The licensing is UNKNOWN due to unknown authorship and licensing of the background (`extraImages/Steam/library_hero.png`)
-- In `extraImages/Steam/`, the files `library_capsule.png`, `store_capsule_header.png`, `store_capsule_main.png`, `store_capsule_small.png`, `store_capsule_vertical.png` include the Unciv logo by yairm210 and u-ndefine. The full licensing and authorship of those files is UNKNOWN due to unknown authorship and licensing of the background
 
 The base tile icons for the "Fantasy Hex" tileset were created CuddlyClover at <https://cuddlyclover.itch.io/fantasy-hex-tiles> with a few additions by various contributors, licensed CC BY 4.0.
 
