@@ -916,8 +916,8 @@ class Civilization : IsPartOfGameInfoSerialization {
     @Readonly fun isLongCountDisplay() = hasLongCountDisplayUnique && isLongCountActive()
 
     @Readonly
-    fun calculateScoreBreakdown(): HashMap<String,Double> {
-        val scoreBreakdown = hashMapOf<String,Double>()
+    fun calculateScoreBreakdown(): HashMap<String, Double> {
+        val scoreBreakdown = hashMapOf<String, Double>()
         // 1276 is the number of tiles in a medium sized map. The original uses 4160 for this,
         // but they have bigger maps
         var mapSizeModifier = 1276 / gameInfo.tileMap.mapParameters.numberOfTiles().toDouble()
@@ -927,13 +927,13 @@ class Civilization : IsPartOfGameInfoSerialization {
         val modConstants= gameInfo.ruleset.modOptions.constants
         scoreBreakdown["Cities"] = cities.size * 10 * mapSizeModifier
         scoreBreakdown["Population"] = cities.sumOf { it.population.population } * modConstants.scoreFromPopulation * mapSizeModifier
-        scoreBreakdown["Tiles"] = cities.sumOf { city -> city.getTiles().filter { !it.isWater}.count() } * 1 * mapSizeModifier
+        scoreBreakdown["Tiles"] = cities.sumOf { city -> city.getTiles().count { !it.isWater } } * 1 * mapSizeModifier
         scoreBreakdown["Wonders"] = modConstants.scoreFromWonders * cities
-            .sumOf { city -> city.cityConstructions.getBuiltBuildings()
-                .filter { it.isWonder }.count()
+            .sumOf { city ->
+                city.cityConstructions.getBuiltBuildings().count { it.isWonder }
             }.toDouble()
-        scoreBreakdown["Technologies"] = tech.getNumberOfTechsResearched() * 4.toDouble()
-        scoreBreakdown["Future Tech"] = tech.repeatingTechsResearched * 10.toDouble()
+        scoreBreakdown["Technologies"] = tech.techsResearched.size * 4.0
+        scoreBreakdown["Future Tech"] = tech.repeatingTechsResearched * 10.0
 
         return scoreBreakdown
     }
