@@ -898,10 +898,6 @@ The following music is from https://filmmusic.io:
 
 - "[Thatched Villagers](https://incompetech.filmmusic.io/song/4481-thatched-villagers)" by Kevin MacLeod (https://incompetech.com) (CC BY 4.0)
 
-## Trailer audio
-
-Unciv has released a Unciv Gameplay Trailer video separately, not part of this repository. See `Credits_trailer.md` for credits and details for that video.
-
 ## Visual effects
 
 The fireworks on the City Screen of a WLTK-celebrating city are loosely based on the Fireworks.p file included in [Particle Park](https://github.com/raeleus/Particle-Park).
@@ -938,7 +934,7 @@ Please note the Pixabay Content License is a **proprietary license**, which mean
 
 ## Licenses
 
-The following licenses are used:
+The following licenses are used for the Unciv Gameplay Trailer:
 
 * CC0: [Creative Commons Zero 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0/)
 * Pixabay License: [Pixabay Content License](https://pixabay.com/service/license-summary/)
