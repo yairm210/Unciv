@@ -6,13 +6,14 @@ import com.unciv.models.ruleset.tile.ResourceSupplyList
 import yairm210.purity.annotations.Readonly
 
 /** Should contain information that should be knowable to us about foreign civilizations. Superclass of [CivView]. */
-open class ForeignCivView(internal open val civ: Civilization, viewer: Civilization, spectatorMode: Boolean = false) : GameBasedView<Civilization>(civ, viewer, spectatorMode) {
+open class ForeignCivView(protected open val civ: Civilization, viewer: Civilization, spectatorMode: Boolean = false) : GameBasedView<Civilization>(civ, viewer, spectatorMode) {
     val civName: String get() = civ.civName
     val gold: Int get() = civ.gold
     val ruleset = civ.gameInfo.ruleset
 
     // Navigation
-    @Readonly fun getCiv(): Civilization = civ
+    // TEMP - should be removed once migration ends
+    @JvmName("getCivPublic") @Readonly fun getCiv(): Civilization = civ
 
     // Data retrieval
     @Readonly fun getOuterColor(): ImmutableColor = civ.nation.getOuterColor()

@@ -1,6 +1,5 @@
 package com.unciv.ui.screens.cityscreen
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -41,6 +40,7 @@ import com.unciv.ui.popups.closeAllPopups
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.worldscreen.WorldScreen
+import com.unciv.utils.Concurrency
 import com.unciv.view.CityView
 import com.unciv.view.TileView
 import kotlin.math.max
@@ -561,7 +561,7 @@ class CityScreen(
         // arrow buttons with different mouse buttons at once can leave another button's gesture listener
         // mid-dispatch on this stage, and disposing the stage synchronously then crashes with an NPE
         // inside Gdx's ActorGestureListener when that in-flight dispatch resumes.
-        Gdx.app.postRunnable { game.replaceCurrentScreen(newCityScreen) }
+        Concurrency.runOnGLThread { game.replaceCurrentScreen(newCityScreen) }
     }
 
     // Don't use passOnCityAmbiencePlayer here - continuing play on the replacement screen would be nice,

@@ -170,7 +170,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
         presenter.update()
 
         // more efficient to do this check once for both
-        if (worldScreen.viewingCiv.units.getIdleUnits().any()) {
+        if (worldScreen.selectedGameView.civView.hasIdleUnits()) {
             prevIdleUnitButton.enable()
             nextIdleUnitButton.enable()
         } else {
@@ -218,10 +218,11 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
         if (curUnit != null && curUnit.isPreparingAirSweep()) return
 
         val selectedUnitsRaw = selectedUnits.map { it.getUnit() }
+        val civView = worldScreen.selectedGameView.civView
 
         @Readonly
-        fun MapUnit.isEligible(): Boolean = (this.civ == worldScreen.viewingCiv
-                || worldScreen.selectedGameView.civView.isSpectator()) && this !in selectedUnitsRaw
+        fun MapUnit.isEligible(): Boolean = (this.civ == civView.getCiv() || civView.isSpectator()) 
+                && this !in selectedUnitsRaw
 
         // This is the Civ 5 Order of selection:
         // 1. City
@@ -260,7 +261,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
         val selectedTileCity = selectedTile.getCity()
         val isCitySelected = selectedTile.isCityCenter()
             && selectedTileCity != null
-            && (selectedTile.getOwner() == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())
+            && (selectedTile.getOwner() == worldScreen.selectedGameView.civView.getCiv() || worldScreen.selectedGameView.civView.isSpectator())
             && !selectedUnitIsConnectingRoad
         when {
             forceSelectUnitView != null -> selectUnit(forceSelectUnitView)

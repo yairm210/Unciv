@@ -156,7 +156,7 @@ jobs:
           releaseFiles: android/build/outputs/bundle/release/Unciv-release.aab
           track: production
           whatsNewDirectory: whatsNewDirectory
-          changesNotSentForReview: true # TEMP for version 4.21.10 patches... thanks google -_-
+          changesNotSentForReview: false # Turn true when Google denies your upadte and you need to upload a new version :/
 
 
       - name: Sign APK for Github upload

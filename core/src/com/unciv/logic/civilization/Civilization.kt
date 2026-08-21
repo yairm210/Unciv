@@ -419,7 +419,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         if (playerType == PlayerType.AI) return true
         if (gameInfo.isSimulation()) return true
         val worldScreen = UncivGame.Current.worldScreen ?: return false
-        return worldScreen.viewingCiv == this && worldScreen.autoPlay.isAutoPlaying()
+        return worldScreen.selectedGameView.civView.getCiv() == this && worldScreen.autoPlay.isAutoPlaying()
     }
 
     @Readonly fun isOneCityChallenger() = playerType == PlayerType.Human && gameInfo.gameParameters.oneCityChallenge

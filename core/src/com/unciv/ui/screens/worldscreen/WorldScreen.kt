@@ -90,7 +90,7 @@ import kotlin.concurrent.timer
 class WorldScreen(
     val gameInfo: GameInfo,
     val autoPlay: AutoPlay,
-    val viewingCiv: Civilization,
+    private val viewingCiv: Civilization,
     restoreState: RestoreState? = null
 ) : BaseScreen() {
     /** When set, causes the screen to update in the next [render][render] event */

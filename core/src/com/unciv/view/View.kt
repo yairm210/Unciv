@@ -30,4 +30,7 @@ open class View<T>(protected val wrapped: T,
                    protected val spectatorMode: Boolean = false) {
     /** Lets any [View] read the wrapped object of any other [View], without exposing [wrapped] itself outside the hierarchy. */
     @Readonly protected fun <U> View<U>.unwrap(): U = wrapped
+
+    override fun equals(other: Any?): Boolean = other is View<*> && wrapped == other.wrapped
+    override fun hashCode(): Int = wrapped.hashCode()
 }

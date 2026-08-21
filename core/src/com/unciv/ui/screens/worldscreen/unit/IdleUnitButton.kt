@@ -33,7 +33,7 @@ class IdleUnitButton (
         keyShortcuts.add(keyShortcutBind)
         onActivation (binding = keyShortcutBind) {
 
-            val idleUnits = unitTable.worldScreen.viewingCiv.units.getIdleUnits()
+            val idleUnits = unitTable.worldScreen.selectedGameView.civView.getCiv().units.getIdleUnits()
             if (idleUnits.none()) return@onActivation
 
             val selectedUnit = unitTable.selectedUnit?.getUnit()

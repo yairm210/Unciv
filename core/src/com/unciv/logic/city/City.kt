@@ -1,7 +1,6 @@
 package com.unciv.logic.city
 
 import com.unciv.Constants
-import com.unciv.GUI
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.MultiFilter
 import com.unciv.logic.automation.Timers.Companion.timeThis
@@ -466,8 +465,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
      *  @see shouldReassignPopulation
      */
     fun reassignPopulationDeferred() {
-        // TODO - is this the best (or even correct) way to detect "interactive" UI calls?
-        if (GUI.isMyTurn() && GUI.getViewingPlayer() == civ) reassignPopulation()
+        if (civ.isCurrentPlayer() && civ.isHuman()) reassignPopulation() 
         else shouldReassignPopulation = true
     }
 

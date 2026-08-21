@@ -36,7 +36,7 @@ class VictoryScreen(
 ) : PickerScreen(), RecreateOnResize {
     private val music get() = UncivGame.Current.musicController
     private val gameInfo = worldScreen.gameInfo
-    private val playerCiv = worldScreen.viewingCiv
+    private val playerCiv = worldScreen.selectedGameView.civView.getCiv()
     private val tabs = TabbedPager(separatorColor = Color.WHITE, shortcutScreen = this)
 
     internal class CivWithStat(val civ: Civilization, val value: Int) {

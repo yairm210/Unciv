@@ -48,8 +48,8 @@ class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: W
     override fun update() {
         val unit = selectedUnit ?: return
         // The unit that was selected, was captured. It exists but is no longer ours.
-        val captured =
-            unit.civ().getCiv() != worldScreen.viewingCiv && !worldScreen.viewingCiv.isSpectator()
+        val civView = worldScreen.selectedGameView.civView
+        val captured = unit.civ() != civView && !civView.isSpectator()
         // The unit that was there no longer exists
         val disappeared = unit.hasDisappeared()
         if (captured || disappeared) {
