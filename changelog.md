@@ -1,55 +1,20 @@
 ## 4.21.11
 
-View implementation - Unify View equality comparison and replace civView equality by comparing civs - see 
-
-View implementation - Make ForeignCivView.civ protected, migrate to internal use, .unwrap() for views, and getCiv() for external callers - see 
-
 Fixed repair functions for when there is only a pillaged road
-
-View implementation - Replace worldScreen.selectedGameView.civView.civ usages with civView functions - see 
 
 Avoid ANRs when opening civilopedia
 
-Replace WorldScreenviewingCiv with selected game view civ externally, making WorldScreen.viewingCiv internal
-
-chore: Get rid of GUI.getViewingPlayer, we should never be accessing that
-
-4.21.10-patch2
-
-disable auto sent for review 
-
-Resolved  - Fixed crash when activating 2 cityscreen arrow buttons at the same time by not displosing the screen from within the click handling
-
-4.21.10-patch1
-
-Fixed "select foreign city when spectator in a civ's view" 
-
-Resolved  - Fixed "select foreign unit when spectator in a civ's view"
-
-Resolved  - Fixed crash when city razed between isCityCenter check and use in tileSelected
-
-Resolved  - Fixed "spectator as player A, selecting unexplored tile with player B" crash
-
 By SomeTroglodyte:
-- chore: Fix global policy diagram click to open legend intercepted by lines 
 - Fix Future Tech not counting for Contest Technologies quest 
 - Fix ImprovementPicker not offering Improvements needing a removal 
-- chore: Cleaner "unit(s) can promote" notification code 
 
-fix: Reduce autosave memory spikes - By mvanhorn
+Reduce autosave memory spikes - By mvanhorn
 
-By Ambeco:
-- Timers report when app is paused 
-- deserialization string interning enabled 
-- Timers report when app is paused 
-
-AI: pick each unit type's shortlist representative by force evaluation, not cost - By WhoIsJohannes
+AI: Better picking of next unit to construct - By WhoIsJohannes
 
 Crude mod author block list - By unciv-loof
 
-By Wuzzy2:
-- Remove reference to deleted file in credits 
-- Remove promo and old logo files with unknown licensing 
+Fixed crash when activating 2 cityscreen arrow buttons at the same time
 
 ## 4.21.10
 
