@@ -306,7 +306,8 @@ enum class UniqueType(
     MayBuyConstructionsInPuppets("May buy items in puppet cities", UniqueTarget.Global),
     MayNotAnnexCities("May not annex cities", UniqueTarget.Global),
     BorrowsCityNames("\"Borrows\" city names from other civilizations in the game", UniqueTarget.Global),
-    CitiesAreRazedXTimesFaster("Cities are razed [amount] times as fast", UniqueTarget.Global),
+    CitiesAreRazedXTimesFaster("Cities are razed [amount] times as fast", UniqueTarget.Global, UniqueTarget.Unit,
+        docDescription = "When applied to a unit, it works when the unit belongs to the same civ and is present in the razing city or a neighbor tile"),
 
     TechBoostWhenScientificBuildingsBuiltInCapital("Receive a tech boost when scientific buildings/wonders are built in capital", UniqueTarget.Global),
     ResearchableMultipleTimes("Can be continually researched", UniqueTarget.Tech),
@@ -406,7 +407,7 @@ enum class UniqueType(
     ///////////////////////////////////////// region 04 UNIT UNIQUES /////////////////////////////////////////
 
     // Unit action uniques
-    // Unit actions should look like: "Can {action description}, to allow them to be combined with modifiers
+    // Unit actions should look like: "Can {action description}", to allow them to be combined with modifiers
 
     FoundCity("Founds a new city", UniqueTarget.UnitAction),
     FoundPuppetCity("Founds a new puppet city", UniqueTarget.UnitAction),
@@ -954,6 +955,12 @@ enum class UniqueType(
         docDescription = "Works only with promotions that are valid for the unit's type - or for promotions that do not specify any."),  // Not used in Vanilla
     FreeStatBuildings("Provides the cheapest [stat] building in your first [positiveAmount] cities for free", UniqueTarget.Triggerable),  // used in Policy
     FreeSpecificBuildings("Provides a [buildingName] in your first [positiveAmount] cities for free", UniqueTarget.Triggerable),  // used in Policy
+
+    OneTimeModifyCityFlag("[relativeAmount] turns of [cityFlag] [cityFilter]", UniqueTarget.UnitTriggerable,
+        docDescription = "This is not able to add a flag that is not already present, nor is it able to remove a flag entirely, only next-turn can do that.\n" +
+            "The target city will always be the one owning the unit's tile, cityFilter only limits when the action is available.\n" +
+            "As unit action, the icon is \"UnitActionIcons/<Reduce|Increase> <cityFlag>\", depending on amount sign, and not included in the base game."),
+
     TriggerEvent("Triggers a [event] event", UniqueTarget.Triggerable),
     MarkTutorialComplete("Mark tutorial [comment] complete", UniqueTarget.Triggerable, flags = UniqueFlag.setOfHiddenNoConditionals),
     PlaySound("Play [comment] sound", UniqueTarget.Triggerable, flags = UniqueFlag.setOfHiddenToUsers,
