@@ -1,20 +1,30 @@
 package com.unciv.logic.map
 
+import com.badlogic.gdx.files.FileHandle
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.map.PathingMap.Companion.NEVER_LOG
-import com.unciv.logic.map.PathingMap.Companion.VERBOSE_PATHFINDING_LOGS
+import com.unciv.logic.map.astar.PathingMap.Companion.NEVER_LOG
+import com.unciv.logic.map.astar.PathingMap.Companion.VERBOSE_PATHFINDING_LOGS
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
-import com.unciv.logic.map.FixedPointMovement.Companion.fpmFromMovement
-import com.unciv.logic.map.FixedPointMovement.Companion.fpmFromFixedPointBits
+import com.unciv.logic.files.UncivFiles
+import com.unciv.logic.map.astar.FixedPointMovement.Companion.fpmFromMovement
+import com.unciv.logic.map.astar.FixedPointMovement.Companion.fpmFromFixedPointBits
+import com.unciv.logic.map.astar.PathingMap
+import com.unciv.logic.map.astar.PrioritizedNode
+import com.unciv.logic.map.astar.RouteNode
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.ruleset.RulesetCache
+import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.io.File
 
 
 @RunWith(BaseTestRunner::class)
@@ -32,12 +42,12 @@ class PathingMapTest {
         for (i in 0 until 100)
             testGame.tileMap.tileList[i].setExplored(civInfo, true)
     }
-    
+
     @Test // This only exists to reduce how often we accidentally push with verbose logging enabled
     fun verbose_pathing_logs_disabled() {
         assertEquals(VERBOSE_PATHFINDING_LOGS, NEVER_LOG)
     }
-    
+
     @Test
     fun bitsInRouteNodeRoundTrip() {
         testGame.makeHexagonalMap(209) //209 is smallest radius that uses all bits in tile index
@@ -213,12 +223,14 @@ class PathingMapTest {
         assertEquals(path.toString(), 18, path.size)
 //        assertNotEquals(path.toString(), path.firstEntry(), path.lastEntry())
         assertEquals("""
-        -2     -1     +0     +1     +2    
-  +2     /      /     1/1.0  0/2.0  0/2.0 
-  +1     /     0/2.0  0/2.0  0/1.0  0/2.0 
-  +0    0/2.0  0/1.0  0/0.0S 0/1.0  0/2.0 
-  -1    0/2.0  0/1.0  0/1.0  0/2.0   /    
-  -2    0/2.0  0/2.0  0/2.0   /      /    
+        -3     -2     -1     +0     +1     +2     +3    
+  +3     /      /      /      /     1/1.0  1/1.0  1/1.0 
+  +2     /      /     1/1.0  1/1.0  0/2.0  0/2.0  1/1.0 
+  +1     /     1/1.0  0/2.0  0/2.0  0/1.0  0/2.0  1/1.0 
+  +0    1/1.0  0/2.0  0/1.0  0/0.0S 0/1.0  0/2.0  1/1.0 
+  -1    1/1.0  0/2.0  0/1.0  0/1.0  0/2.0  1/1.0   /    
+  -2    1/1.0  0/2.0  0/2.0  0/2.0  1/1.0   /      /    
+  -3    1/1.0  1/1.0  1/1.0  1/1.0   /      /      /    
 """, pathing.toDebugString())
         // And affirm cache
         assertEquals(path, pathing.getMovementToTilesAtPosition())
@@ -343,5 +355,59 @@ class PathingMapTest {
         assertEquals(expected, attackableTiles.map {it.position})
         // And affirm full recalculation using cached tiles has same result.
         assertEquals(expected, pathing.bfsAllMatchingTilesThisTurn { tile, _ -> tile.civilianUnit?.civ == civInfo}.map {it.position})
+    }
+
+    private companion object {
+        const val TestModName = "Pathing-Test"
+        const val TestSaveResource = "SaveFiles/Pathing-Test"
+        const val TestUnitID = 134
+        const val TestUnitName = "Redcoat"
+        const val TestUnitCiv = "England"
+        val ExpectedStartPos = HexCoord(6, 0)
+        val TargetPos = HexCoord(8, 4)
+    }
+
+    @Test
+    fun `issue #15165 - Crash with Can't reach tile`() {
+        runAutomateUnitMovesOnSave(true)
+    }
+
+    @Test
+    fun `issue #15165 - Was fine with classic pathfinding`() {
+        runAutomateUnitMovesOnSave(false)
+    }
+
+    fun runAutomateUnitMovesOnSave(astar: Boolean) {
+        val modUrl = javaClass.classLoader.getResource("mods/$TestModName")
+            ?: error("Test mod not found")
+        val modFile = FileHandle(File(modUrl.toURI()))
+        val errorLines = mutableListOf<String>()
+        val mod = RulesetCache.loadSingleRuleset(modFile, errorLines)
+            ?: error("Could not load Test mod")
+        RulesetCache[TestModName] = mod
+
+        val saveData = javaClass.classLoader.getResourceAsStream(TestSaveResource)
+            ?.bufferedReader()?.readText()
+            ?: error("Could not load Test save")
+        val game = UncivFiles.gameInfoFromString(saveData)
+
+        val unit = game.getCivilization(TestUnitCiv).units.getUnitById(TestUnitID)
+            ?: error("Test unit not found in save")
+        assertEquals(TestUnitName, unit.name)
+        assertEquals(ExpectedStartPos, unit.currentTile.position)
+
+        UncivGame.Current.settings.useAStarPathfinding = astar
+
+        // VERBOSE_PATHFINDING_LOGS = ExpectedStartPos // Activate for debug info
+        // For intricate debugging, one could call `UnitAutomation.automateUnitMoves(unit)` here - too dependent on AI redesign
+
+        // The original issue code path had one PathingMap.getMovementToTilesAtPosition eval,
+        // incomplete due to early exit, then tryHeadTowardsEnemyCity using getShortestPath would
+        // fill in the actual PathingMap but keep the cached PathingMap.tilesSameTurn, then
+        // headTowardsEnemyCity would ask getMovementToTilesAtPosition again and find the destination
+        // returned by getShortestPath missing. Emulate only the first part here:
+        val reachableMap = unit.movement.getDistanceToTiles()
+        val targetTile = reachableMap.keys.firstOrNull { it.position == TargetPos }
+        assertTrue("$unit should be able to reach $TargetPos in one turn", targetTile != null)
     }
 }

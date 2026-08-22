@@ -1,0 +1,190 @@
+[
+    {
+        "name":"Tutorial Task: [Move unit]",
+        "presentation":"Floating",
+        "civilopediaText":[
+			{"text":"Move a unit!", "centered":true},
+            {"extraImage":"Tutorials/Move unit", "imageSize":140},
+            {"text":"Click on a unit → Click on a destination → Click the arrow popup."},
+		],
+        "uniques": [
+            "Only available <if tutorials are enabled> <when number of [Units] is more than [0]>",
+            "Unavailable <if tutorial [Move unit] is completed>"
+        ]
+    },
+    {
+        "name":"Tutorial Task: [Found city]",
+        "presentation":"Floating",
+        "civilopediaText":[
+			{"text":"Found a city!", "centered":true},
+            {"extraImage":"Tutorials/Found city", "imageSize":140},
+            {"text":"Select the Settler → Click on 'Found city'."},
+		],
+        "uniques": [
+            "Only available <if tutorials are enabled> <when number of [[Settler] Units] is more than [0]>",
+            "Unavailable <if tutorial [Found city] is completed>"
+        ]
+    },
+    {
+        "name":"Tutorial Task: [Enter city screen]",
+        "presentation":"Floating",
+        "civilopediaText":[
+			{"text":"Enter the city screen!", "centered":true},
+            {"extraImage":"Tutorials/Enter city screen", "imageSize":100},
+            {"text":"Click the city button twice."},
+		],
+        "uniques": [
+            "Only available <if tutorials are enabled> <when number of [Cities] is more than [0]>",
+            "Unavailable <if tutorial [Enter city screen] is completed>"
+        ]
+    },
+    {
+        "name":"Tutorial Task: [Pick technology]",
+        "presentation":"Floating",
+        "civilopediaText":[
+			{"text":"Pick a technology to research!", "centered":true},
+            {"extraImage":"Tutorials/Pick technology", "imageSize":180},
+            {"text":"Click on the tech button → Select technology → Click 'Research' (bottom right)."},
+		],
+        "uniques": [
+            "Only available <if tutorials are enabled> <if tutorial [Found city] is completed>",
+            "Unavailable <if tutorial [Pick technology] is completed>"
+        ]
+    },
+    {
+        "name":"Tutorial Task: [Pick construction]",
+        "presentation":"Floating",
+        "civilopediaText":[
+			{"text":"Pick a construction!", "centered":true},
+            {"extraImage":"Tutorials/Pick construction", "imageSize":120},
+            {"text":"Enter city screen → Click on a unit or building → Click 'add to queue'."},
+		],
+        "uniques": [
+            "Only available <if tutorials are enabled> <when number of [Cities] is more than [0]>",
+            "Unavailable <if tutorial [Pick construction] is completed>"
+        ]
+    },
+    {
+        "name":"Tutorial Task: [Pass a turn]",
+        "presentation":"Floating",
+        "civilopediaText":[
+			{"text":"Pass a turn!", "centered":true},
+            {"extraImage":"Tutorials/Pass a turn", "imageSize":180},
+            {"text":"Cycle through units with 'Next unit' → Click 'Next turn'."},
+		],
+        "uniques": [
+            "Only available <if tutorials are enabled> <when number of [turns] is less than [3]>",
+            "Unavailable <if tutorial [Pass a turn] is completed>"
+        ]
+    },
+    {
+        "name":"Tutorial Task: [Reassign worked tiles]",
+        "presentation":"Floating",
+        "civilopediaText":[
+			{"text":"Reassign worked tiles!", "centered":true},
+            {"extraImage":"Tutorials/Reassign worked tiles", "imageSize":140},
+            {"text":"Enter city screen → Click the assigned tile to unassign → Click an unassigned tile to assign population."},
+		],
+        "uniques": [
+            "Only available <if tutorials are enabled> <when number of [Cities] is more than [0]>",
+            "Unavailable <if tutorial [Reassign worked tiles] is completed>"
+        ]
+    },
+    {
+        "name":"Tutorial Task: [Meet another civilization]",
+        "presentation":"Floating",
+        "civilopediaText":[
+			{"text":"Meet another civilization!", "centered": true},
+            {"extraImage":"Tutorials/Meet another civilization", "imageSize":160},
+            {"text":"Explore the map until you encounter another civilization!"},
+		],
+        "uniques": [
+            "Only available <if tutorials are enabled> <when number of [turns] is more than [1]>",
+            "Unavailable <if tutorial [Meet another civilization] is completed>"
+        ],
+        "choices": [
+            {
+                "text":"Got it",
+                "uniques": ["Mark tutorial [Meet another civilization] complete"],
+            },
+        ]
+    },
+    {
+        "name":"Tutorial Task: [Open the options table]",
+        "presentation":"Floating",
+        "civilopediaText":[
+			{"text":"Open the options dialog!", "centered":true},
+            {"extraImage":"Tutorials/Open the options table", "imageSize":130},
+            {"text":"Click the menu button (top left) → Click 'Options'."},
+		],
+        "uniques": [
+            "Only available <if tutorials are enabled>",
+            "Unavailable <if tutorial [Open the options table] is completed>"
+        ]
+    },
+    {
+        "name":"Tutorial Task: [Construct an improvement]",
+        "presentation":"Floating",
+        "civilopediaText":[
+			{"text":"Construct an improvement!", "centered":true},
+            {"extraImage":"Tutorials/Construct an improvement", "imageSize":150},
+            {"text":"Construct a Worker unit → Move it to a Plains or Grassland tile → Click 'Construct improvement' → Choose the farm → Leave the worker there until it's finished."},
+		],
+        "uniques": [
+            "Only available <if tutorials are enabled> <when number of [Cities] is more than [0]>",
+            "Unavailable <if tutorial [Construct an improvement] is completed>"
+        ]
+    },
+    {
+        "name":"Tutorial Task: [Create a trade route]",
+        "presentation":"Floating",
+        "civilopediaText":[
+			{"text":"Create a trade route!", "centered":true},
+            {"extraImage":"Tutorials/Create a trade route", "imageSize":120},
+            {"text":"Construct roads between your capital and another city. Or, automate your worker and let him get to that eventually."},
+		],
+        "uniques": [
+            "Only available <if tutorials are enabled> <when number of [Cities] is more than [1]>",
+            "Unavailable <if tutorial [Create a trade route] is completed>"
+        ]
+    },
+    {
+        "name":"Tutorial Task: [Conquer a city]",
+        "presentation":"Floating",
+        "civilopediaText":[
+			{"text":"Conquer a city!", "centered":true},
+            {"extraImage":"Tutorials/Conquer a city", "imageSize":160},
+            {"text":"Bring an enemy city down to low health → Enter the city with a melee unit."},
+		],
+        "uniques": [
+            "Only available <if tutorials are enabled> <when at war>",
+            "Unavailable <if tutorial [Conquer a city] is completed>"
+        ]
+    },
+    {
+        "name":"Tutorial Task: [Move an air unit]",
+        "presentation":"Floating",
+        "civilopediaText":[
+			{"text":"Move an air unit!", "centered":true},
+            {"extraImage":"Tutorials/Move an air unit", "imageSize":140},
+            {"text":"Select an air unit → Select another city within range → Move the unit to the other city."},
+		],
+        "uniques": [
+            "Only available <if tutorials are enabled> <when number of [[Air] Units] is more than [0]>",
+            "Unavailable <if tutorial [Move an air unit] is completed>"
+        ]
+    },
+    {
+        "name":"Tutorial Task: [See your stats breakdown]",
+        "presentation":"Floating",
+        "civilopediaText":[
+			{"text":"See your stats breakdown!", "centered":true},
+            {"extraImage":"Tutorials/See your stats breakdown", "imageSize":140},
+            {"text":"Enter the Overview screen (top right corner) → Click on 'Stats'."},
+		],
+        "uniques": [
+            "Only available <if tutorials are enabled>",
+            "Unavailable <if tutorial [See your stats breakdown] is completed>"
+        ]
+    },
+]
