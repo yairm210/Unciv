@@ -1473,10 +1473,10 @@ object UniqueTriggerActivation {
                 }
             }
 
-            UniqueType.OneTimeReduceCityFlag -> {
-                val (city, flag, amount) = UniqueTriggerExecutors.canReduceCityFlag(civInfo, unique, unit) ?: return null
+            UniqueType.OneTimeModifyCityFlag -> {
+                val (city, flag, amount) = UniqueTriggerExecutors.canModifyCityFlag(civInfo, unique, unit) ?: return null
                 return {
-                    UniqueTriggerExecutors.reduceCityFlag(city, flag, amount)
+                    UniqueTriggerExecutors.modifyCityFlag(city, flag, amount)
                 }
             }
 

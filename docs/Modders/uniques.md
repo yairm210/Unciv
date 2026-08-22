@@ -303,14 +303,14 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
     Uniques that have immediate, one-time effects on a unit.They can be added to units (on unit, unit type, or promotion) to grant them the ability to trigger this effect as an action, which can be modified with UnitActionModifier and UnitTriggerCondition conditionals.
 
-??? example  "Remove [amount] turns of [cityFlag] [cityFilter]"
-	Not able to remove a flag entirely, only next-turn can do that.
+??? example  "[relativeAmount] turns of [cityFlag] [cityFilter]"
+	This is not able to add a flag that is not already present, nor is it able to remove a flag entirely, only next-turn can do that.
 
 	The target city will always be the one owning the unit's tile, cityFilter only limits when the action is available.
 
-	As unit action, the icon is UnitActionIcons/Remove &lt;cityFlag&gt;, and not included in the base game.
+	As unit action, the icon is "UnitActionIcons/&lt;Reduce|Increase&gt; &lt;cityFlag&gt;", depending on amount sign, and not included in the base game.
 
-	Example: "Remove [3] turns of [Resistance] [in all cities]"
+	Example: "[+20] turns of [Resistance] [in all cities]"
 
 	Applicable to: UnitTriggerable
 

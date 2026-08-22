@@ -956,10 +956,10 @@ enum class UniqueType(
     FreeStatBuildings("Provides the cheapest [stat] building in your first [positiveAmount] cities for free", UniqueTarget.Triggerable),  // used in Policy
     FreeSpecificBuildings("Provides a [buildingName] in your first [positiveAmount] cities for free", UniqueTarget.Triggerable),  // used in Policy
 
-    OneTimeReduceCityFlag("Remove [amount] turns of [cityFlag] [cityFilter]", UniqueTarget.UnitTriggerable,
-        docDescription = "Not able to remove a flag entirely, only next-turn can do that.\n" +
+    OneTimeModifyCityFlag("[relativeAmount] turns of [cityFlag] [cityFilter]", UniqueTarget.UnitTriggerable,
+        docDescription = "This is not able to add a flag that is not already present, nor is it able to remove a flag entirely, only next-turn can do that.\n" +
             "The target city will always be the one owning the unit's tile, cityFilter only limits when the action is available.\n" +
-            "As unit action, the icon is UnitActionIcons/Remove <cityFlag>, and not included in the base game."),
+            "As unit action, the icon is \"UnitActionIcons/<Reduce|Increase> <cityFlag>\", depending on amount sign, and not included in the base game."),
 
     TriggerEvent("Triggers a [event] event", UniqueTarget.Triggerable),
     MarkTutorialComplete("Mark tutorial [comment] complete", UniqueTarget.Triggerable, flags = UniqueFlag.setOfHiddenNoConditionals),

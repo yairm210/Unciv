@@ -276,11 +276,10 @@ enum class UniqueParameterType(
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) = getErrorSeverityForFilter(parameterText, ruleset)
     },
 
-    /** e.g. [UniqueType.OneTimeReduceCityFlag]  */
+    /** e.g. [UniqueType.OneTimeModifyCityFlag]  */
     CityFlag("cityFlag", "Resistance", "The name of a city flag (countdown)") {
         override val staticKnownValues = CityFlags.entries.mapTo(mutableSetOf()) { it.label }
     },
-
 
     /** Used by [BuildingFilter] and e.g. [UniqueType.ConditionalCityWithBuilding] */
     BuildingName("buildingName", "Library", "The name of any building") {

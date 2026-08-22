@@ -1,9 +1,9 @@
 package com.unciv.models
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.unciv.Constants
 import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueTriggerExecutors
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.ui.components.fonts.Fonts
@@ -73,7 +73,7 @@ open class UnitAction(
                     UniqueType.OneTimeFreeTechRuins, UniqueType.OneTimeAmountFreeTechs, UniqueType.OneTimeFreeTech -> ImageGetter.getUnitActionPortrait("HurryResearch", size)
                     UniqueType.OneTimeGainTechPercent -> ImageGetter.getTechIconPortrait(associatedUnique.params[1], size)
                     UniqueType.OneTimeDiscoverTech -> ImageGetter.getTechIconPortrait(associatedUnique.params[0], size)
-                    UniqueType.OneTimeReduceCityFlag -> ImageGetter.getUnitActionPortrait("Remove ${associatedUnique.params[1]}", size).apply { image.color = Color.WHITE }
+                    UniqueType.OneTimeModifyCityFlag -> UniqueTriggerExecutors.getModifyCityFlagActionIcon(associatedUnique, size)
                     else -> ImageGetter.getUnitActionPortrait("Star", size)
                 }
             }

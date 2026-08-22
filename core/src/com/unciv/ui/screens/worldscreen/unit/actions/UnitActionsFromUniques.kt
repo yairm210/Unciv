@@ -258,7 +258,7 @@ object UnitActionsFromUniques {
                         stat
                     )
                 }
-                UniqueType.OneTimeReduceCityFlag -> UniqueTriggerExecutors.getReduceCityFlagActionText(unique, unit)
+                UniqueType.OneTimeModifyCityFlag -> UniqueTriggerExecutors.getModifyCityFlagActionText(unique, unit)
                 UniqueType.TriggerEvent -> unique.params[0]
                 else -> unique.text.removeConditionals()
             }
