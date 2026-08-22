@@ -1,8 +1,8 @@
 package com.unciv.ui.components.tilegroups
 
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.NeighborDirection
+import com.unciv.view.ForeignCivView
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.metadata.GameSettings
@@ -182,17 +182,17 @@ class TileSetStrings(
             else baseUnitIconLocation // no change
         }
 
-        val civInfo = unit.civ
-        val style = civInfo.nation.style
-        val civName = civInfo.nation.name
+        val civView = ForeignCivView(unit.civ, unit.civ)
+        val style = civView.getStyle()
+        val civName = civView.civName
 
         var imageAttempter = ImageAttempter(baseUnitIconLocation)
             // Era+civ image: looks like  "pikeman-France-Medieval era"
-            .tryEraImage(civInfo, baseUnitIconLocation, civName, this)
+            .tryEraImage(civView, baseUnitIconLocation, civName, this)
             // Era+style image: looks like  "pikeman-European-Medieval era"
-            .tryEraImage(civInfo, baseUnitIconLocation, style, this, active = style.isNotEmpty())
+            .tryEraImage(civView, baseUnitIconLocation, style, this, active = style.isNotEmpty())
             // Era-only image: looks like "pikeman-Medieval era"
-            .tryEraImage(civInfo, baseUnitIconLocation, null, this)
+            .tryEraImage(civView, baseUnitIconLocation, null, this)
             // Civ + era: looks like "pikeman-France"
             .tryImage { getString(baseUnitIconLocation, tag, civName) }
             // Style + era: "pikeman-European"
@@ -224,8 +224,8 @@ class TileSetStrings(
         return imageLocation
     }
 
-    private fun tryGetOwnedTileImageLocation(baseLocation: String, owner: Civilization): String? {
-        val ownersStyle = owner.nation.getStyleOrCivName()
+    private fun tryGetOwnedTileImageLocation(baseLocation: String, owner: ForeignCivView): String? {
+        val ownersStyle = owner.getStyleOrCivName()
         return ImageAttempter(baseLocation)
             .tryEraImage(owner, baseLocation, ownersStyle, this)
             .tryEraImage(owner, baseLocation, null, this)
@@ -233,10 +233,10 @@ class TileSetStrings(
             .getPathOrNull()
     }
 
-    fun getOwnedTileImageLocation(baseLocation: String, owner: Civilization): String {
+    fun getOwnedTileImageLocation(baseLocation: String, owner: ForeignCivView): String {
         val imageKey = getString(baseLocation, tag,
-            owner.getEra().name, tag,
-            owner.nation.getStyleOrCivName())
+            owner.getEraName(), tag,
+            owner.getStyleOrCivName())
         val currentImageMapping = imageParamsToImageLocation[imageKey]
         if (currentImageMapping != null) return currentImageMapping
 

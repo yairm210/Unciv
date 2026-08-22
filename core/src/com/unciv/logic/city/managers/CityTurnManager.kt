@@ -67,14 +67,17 @@ class CityTurnManager(val city: City) {
 
     private fun tryWeLoveTheKing() {
         if (city.demandedResource == "") return
-        if (city.getAvailableResourceAmount(city.demandedResource) > 0) {
-            // manually adjust with game speed because of the +1 at the end
-            val duration = (20 * city.civ.gameInfo.speed.modifier).roundToInt() + 1 // +1 because it will be decremented by 1 in the same startTurn()
-            city.setFlag(CityFlags.WeLoveTheKing, duration) 
-            city.civ.addNotification(
-                "Because they have [${city.demandedResource}], the citizens of [${city.name}] are celebrating We Love The King Day!",
-                CityAction.withLocation(city), NotificationCategory.General, NotificationIcon.City, NotificationIcon.Happiness)
-        }
+        if (city.getAvailableResourceAmount(city.demandedResource) <= 0) return
+
+        // manually adjust with game speed because of the +1 at the end
+        val duration = (20 * city.civ.gameInfo.speed.modifier).roundToInt() + 1 // +1 because it will be decremented by 1 in the same startTurn()
+        city.setFlag(CityFlags.WeLoveTheKing, duration)
+        // Otherwise ResourceDemand can expire mid-celebration, rewrite demandedResource,
+        // and the Resources overview mislabels the active WLTKD (celebration is flag-based).
+        city.removeFlag(CityFlags.ResourceDemand)
+        city.civ.addNotification(
+            "Because they have [${city.demandedResource}], the citizens of [${city.name}] are celebrating We Love The King Day!",
+            CityAction.withLocation(city), NotificationCategory.General, NotificationIcon.City, NotificationIcon.Happiness)
     }
 
     // cf DiplomacyManager nextTurnFlags
@@ -88,7 +91,10 @@ class CityTurnManager(val city: City) {
 
                 when (flag) {
                     CityFlags.ResourceDemand.name -> {
-                        demandNewResource()
+                        // WLTKD end already demands the next resource; demanding while celebrating
+                        // overwrites demandedResource and mislabels the active celebration in the UI
+                        if (!city.hasFlag(CityFlags.WeLoveTheKing))
+                            demandNewResource()
                     }
                     CityFlags.WeLoveTheKing.name -> {
                         city.civ.addNotification(

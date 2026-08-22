@@ -1,7 +1,6 @@
 package com.unciv.logic.city
 
 import com.unciv.Constants
-import com.unciv.GUI
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.MultiFilter
 import com.unciv.logic.automation.Timers.Companion.timeThis
@@ -470,8 +469,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
      *  @see shouldReassignPopulation
      */
     fun reassignPopulationDeferred() {
-        // TODO - is this the best (or even correct) way to detect "interactive" UI calls?
-        if (GUI.isMyTurn() && GUI.getViewingPlayer() == civ) reassignPopulation()
+        if (civ.isCurrentPlayer() && civ.isHuman()) reassignPopulation() 
         else shouldReassignPopulation = true
     }
 
@@ -566,7 +564,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         val tile = getCenterTile()
         return when {
             construction.isCivilian() -> tile.civilianUnit == null
-            construction.movesLikeAirUnits -> true // Dealt with in MapUnit.getRejectionReasons
+            construction.isAirUnit() -> true // Dealt with in MapUnit.getRejectionReasons
             else -> tile.militaryUnit == null
         }
     }
@@ -584,7 +582,9 @@ class City : IsPartOfGameInfoSerialization, INamed {
         return when (filter) {
             "in this city" -> true // Filtered by the way uniques are found
             "in all cities" -> true
-            in Constants.all -> true
+            // more performant than "in Constants.all" - see https://medium.com/@yairm210/kotlin-when-string-optimization-e15c6eea2734
+            Constants.lowercaseAll -> true
+            Constants.uppercaseAll -> true
             "in your cities", "Your" -> viewingCiv == civ
             "in all coastal cities", "Coastal" -> isCoastal()
             "in capital", "Capital" -> isCapital()

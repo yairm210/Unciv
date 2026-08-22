@@ -10,7 +10,7 @@ import com.unciv.models.metadata.GameSettings.PathfindingAlgorithm
 import com.unciv.models.metadata.GameSettings.PathfindingAlgorithm.AStarPathfinding
 import com.unciv.models.metadata.GameSettings.PathfindingAlgorithm.ClassicPathfinding
 import com.unciv.models.ruleset.nation.Nation
-import com.unciv.testing.GdxTestRunnerFactory
+import com.unciv.testing.TestRunnerFactory
 import com.unciv.testing.TestGame
 import org.hamcrest.CoreMatchers.equalTo
 import org.junit.Assert.assertEquals
@@ -26,13 +26,16 @@ import org.junit.runners.Parameterized
 import org.junit.runners.Parameterized.Parameters
 import org.junit.runners.Parameterized.UseParametersRunnerFactory
 
-//TODO
 @RunWith(Parameterized::class)
-@UseParametersRunnerFactory(GdxTestRunnerFactory::class)
-class PathfindingTests(
-    // parameters come from the Compantion#parameters method
-    private val pathfindingAlgorithm: PathfindingAlgorithm,
-) {
+@UseParametersRunnerFactory(TestRunnerFactory::class)
+class PathfindingTests(private val pathfindingAlgorithm: PathfindingAlgorithm) {
+    companion object {
+        @Suppress("unused")
+        @Parameters
+        @JvmStatic
+        fun parameters() = TestRunnerFactory.Parameters.pathfinding
+    }
+
     private var testGame = TestGame()
     private lateinit var civInfo: Civilization
     private lateinit var originTile: Tile
@@ -720,24 +723,11 @@ class PathfindingTests(
         assertEquals(path2.toString(), 2, path1.size)
         assertEquals(path1[0], path2[0])
     }
-    
+
     private fun verticalWall(x: Int, apply: (Tile)->Unit) {
         for (tile in testGame.tileMap.tileList) {
             if (tile.position.x == x)
                 apply(tile)
-        }
-    }
-    
-    companion object {
-        @Suppress("unused")
-        @Parameters
-        @JvmStatic
-        fun parameters(): Collection<Array<Any?>?> {
-            return listOf(
-                /* First execute the test with these parametrers */
-                arrayOf(ClassicPathfinding),
-                /* and then execute the test with these parametrers */
-                arrayOf(AStarPathfinding))
         }
     }
 }

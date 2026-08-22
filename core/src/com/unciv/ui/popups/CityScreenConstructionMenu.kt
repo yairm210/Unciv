@@ -37,11 +37,11 @@ class CityScreenConstructionMenu(
     /** Cities (including this one) where changing the construction queue makes sense
      *  (excludes isBeingRazed even though technically that would be allowed) */
     // Can't use CityScreen.canChangeState for other cities
-    @Readonly private fun candidateCities() = cityView.civ().cities().asSequence()
+    @Readonly private fun candidateCities() = cityView.viewingCiv().cities().asSequence()
         .filterNot { it.isPuppet() || it.isInResistance() || it.isBeingRazed() }
     /** Check whether an "All cities" menu makes sense: `true` if there's more than one city, it's not a Wonder, and any city's queue matches [predicate]. */
     @Readonly private fun allCitiesEntryValid(predicate: (CityView) -> Boolean) =
-        cityView.civ().cities().size > 1 &&
+        cityView.viewingCiv().cities().size > 1 &&
         (construction as? Building)?.isAnyWonder() != true &&
         candidateCities().any(predicate)
     private fun forAllCities(action: (CityView) -> Unit) =
@@ -134,7 +134,7 @@ class CityScreenConstructionMenu(
         && construction != PerpetualConstruction.Idle
 
     @Readonly private fun canDisableAll() =
-        !cityView.civ().isCivConstructionDisabled(constructionName) &&
+        !cityView.viewingCiv().isCivConstructionDisabled(constructionName) &&
         construction != PerpetualConstruction.Idle
 
     /**
@@ -146,15 +146,15 @@ class CityScreenConstructionMenu(
      * One-time effect: disables this construction in all cities.
      * Persistent effect: disabled in newly founded cities.
      */
-    private fun disableEntryInAllCities() = cityView.civ().tryDisableCivConstruction(constructionName)
+    private fun disableEntryInAllCities() = cityView.viewingCiv().tryDisableCivConstruction(constructionName)
 
     @Readonly private fun canEnable() = constructionName in cityView.getDisabledConstructions()
 
-    @Readonly private fun canEnableAll() = cityView.civ().isCivConstructionDisabled(constructionName)
+    @Readonly private fun canEnableAll() = cityView.viewingCiv().isCivConstructionDisabled(constructionName)
 
     /** Similar to [disableEntry] */
     private fun enableEntry() = cityView.tryEnableConstruction(constructionName)
 
     /** Similar to [disableEntryInAllCities] */
-    private fun enableEntryInAllCities() = cityView.civ().tryEnableCivConstruction(constructionName)
+    private fun enableEntryInAllCities() = cityView.viewingCiv().tryEnableCivConstruction(constructionName)
 }

@@ -24,15 +24,15 @@ class TileLayerFeatures(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
         if (tileGroup.isForMapEditorIcon)
             return
 
-        val tile = tileGroup.tile
-        val isTileVisible = viewingCiv == null || viewingCiv.canSeeTile(tileGroup.tileView!!)
+        val tile = tileGroup.tileView.getTile()
+        val isTileVisible = viewingCiv == null || viewingCiv.canSeeTile(tileGroup.tileView)
 
         for (neighbor in tile.neighbors) {
             var roadImage = roadImages[neighbor]
             val currentStatus = roadImage?.roadStatus ?: RoadStatus.None
 
             val roadStatus = when {
-                !isTileVisible && !viewingCiv!!.canSeeTile(TileView(neighbor, viewingCiv.getCiv())) -> RoadStatus.None // don't show roads on non-visible tiles
+                !isTileVisible && !viewingCiv.canSeeTile(viewingCiv.gameView.tileMapView.getTile(neighbor)) -> RoadStatus.None // don't show roads on non-visible tiles
                 tile.roadStatus == RoadStatus.None || neighbor.roadStatus === RoadStatus.None -> RoadStatus.None
                 tile.roadStatus == RoadStatus.Road || neighbor.roadStatus === RoadStatus.Road -> RoadStatus.Road
                 else -> RoadStatus.Railroad

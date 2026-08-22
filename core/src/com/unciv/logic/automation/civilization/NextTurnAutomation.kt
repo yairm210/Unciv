@@ -384,7 +384,7 @@ object NextTurnAutomation {
             if (civInfo.getResourceAmount(resource) >= 2) continue
 
             val unitToDisband = civInfo.units.getCivUnits()
-                .filter { it.requiresResource(resource) }
+                .filter { it.requiresResource(resource) && !it.hasUnique(UniqueType.SpaceshipPart) }
                 .minByOrNull { it.getForceEvaluation() }
             unitToDisband?.disband()
             sellBuildingForResource(civInfo, resource)

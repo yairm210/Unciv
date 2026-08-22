@@ -47,6 +47,7 @@ import kotlin.math.roundToInt
 import kotlin.math.sqrt
 import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.civilization.managers.quests.QuestManager
+import kotlin.text.toFloat
 
 enum class Proximity : IsPartOfGameInfoSerialization {
     None, // ie no cities
@@ -136,6 +137,11 @@ class Civilization : IsPartOfGameInfoSerialization {
     var playerId = ""
     /** Used in online multiplayer, if a player exceed this time to complete their turn, others can force them to resign*/
     var playerMinutesBeforeForceResign = 3 * 24 * 60
+    /** Total number of minutes spent on their turn. Recorded at the end of each turn. */
+    var totalTurnTimeSeconds = 0
+    /** To calculate average turn time, we only count turns when controlled by a human. Additionally, offers backward compatibility. */
+    var turnsPlayedAsHuman = 0
+    
     /** The Civ's gold reserves. Public get, private set - please use [addGold] method to modify. */
     var gold = 0
         private set
@@ -300,6 +306,8 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.playerType = playerType
         toReturn.playerId = playerId
         toReturn.playerMinutesBeforeForceResign = playerMinutesBeforeForceResign
+        toReturn.totalTurnTimeSeconds = totalTurnTimeSeconds
+        toReturn.turnsPlayedAsHuman = turnsPlayedAsHuman
         toReturn.civName = civName
         toReturn.civID = civID
         toReturn.tech = tech.clone()
@@ -411,10 +419,11 @@ class Civilization : IsPartOfGameInfoSerialization {
         if (playerType == PlayerType.AI) return true
         if (gameInfo.isSimulation()) return true
         val worldScreen = UncivGame.Current.worldScreen ?: return false
-        return worldScreen.viewingCiv == this && worldScreen.autoPlay.isAutoPlaying()
+        return worldScreen.selectedGameView.civView.getCiv() == this && worldScreen.autoPlay.isAutoPlaying()
     }
 
     @Readonly fun isOneCityChallenger() = playerType == PlayerType.Human && gameInfo.gameParameters.oneCityChallenge
+    /** Always false for AI since currentPlayerCiv is only set for human players */
     @Readonly fun isCurrentPlayer() = gameInfo.currentPlayerCiv == this
     @Readonly fun isMajorCiv() = nation.isMajorCiv
     @Readonly fun isMinorCiv() = nation.isCityState || nation.isBarbarian
@@ -425,6 +434,11 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     @Readonly fun isSpectator() = nation.isSpectator
     @Readonly fun isAlive(): Boolean = !isDefeated()
+
+    /** A human player who lost in singleplayer keeps playing as a de-facto spectator, and should get the same map visibility.
+     *  [GameInfo.turns] > 0 guards against the setup phase, where every civ is briefly "defeated" (zero units) before starting units are placed. */
+    @Readonly fun hasSpectatorVision() = isSpectator()
+        || (isDefeated() && isCurrentPlayer() && !gameInfo.gameParameters.isOnlineMultiplayer && gameInfo.turns > 0)
 
     @delegate:Transient
     val cityStateType: CityStateType by lazy { gameInfo.ruleset.cityStateTypes[nation.cityStateType!!]!! }
@@ -562,11 +576,6 @@ class Civilization : IsPartOfGameInfoSerialization {
         if (resource.isStockpiled) return resourceStockpiles[resource.name]
         return getCivResourceSupply().firstOrNull { it.resource == resource }?.amount ?: 0
     }
-
-    /** Gets modifiers for ALL resources */
-    @Readonly
-    fun getResourceModifiers(): Map<String, Float> =
-        gameInfo.ruleset.tileResources.values.associate { it.name to getResourceModifier(it) }
 
     /**
      * Returns the resource production modifier as a multiplier.
@@ -863,6 +872,9 @@ class Civilization : IsPartOfGameInfoSerialization {
                 RankingType.Happiness -> getHappiness()
                 RankingType.Technologies -> tech.researchedTechnologies.size
                 RankingType.Culture -> policies.adoptedPolicies.count { !Policy.isBranchCompleteByName(it) }
+            
+                // Non vanilla ranking types
+                RankingType.TilesExplored -> gameInfo.tileMap.values.count { it.isExplored(this) }
         }
     }
 
@@ -1295,6 +1307,8 @@ class CivilizationInfoPreview() {
     var playerType = PlayerType.AI
     var playerId = ""
     var playerMinutesBeforeForceResign = 60*24*3
+    var totalTurnTimeSeconds = 0
+    var turnsPlayedAsHuman = 0
     @Readonly fun isPlayerCivilization() = playerType == PlayerType.Human
 
     /**
@@ -1306,6 +1320,8 @@ class CivilizationInfoPreview() {
         playerType = civilization.playerType
         playerId = civilization.playerId
         playerMinutesBeforeForceResign = civilization.playerMinutesBeforeForceResign
+        totalTurnTimeSeconds = civilization.totalTurnTimeSeconds
+        turnsPlayedAsHuman = civilization.turnsPlayedAsHuman
     }
 }
 

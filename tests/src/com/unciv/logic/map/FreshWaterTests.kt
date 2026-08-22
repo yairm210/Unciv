@@ -4,13 +4,13 @@ import com.unciv.Constants
 import com.unciv.logic.files.MapSaver
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.BaseTestRunner
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@RunWith(GdxTestRunner::class)
+@RunWith(BaseTestRunner::class)
 class FreshWaterTests {
     private var map = TileMap()
     private var ruleSet = Ruleset()

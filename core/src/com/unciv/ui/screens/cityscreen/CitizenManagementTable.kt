@@ -11,7 +11,7 @@ import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.screens.basescreen.BaseScreen
 
 class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin) {
-    val city = cityScreen.city
+    private val cityView = cityScreen.cityView
     private val numCol = 4
 
     fun update() {
@@ -29,7 +29,7 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin
         if (cityScreen.canCityBeChanged()) {
             resetCell.touchable = Touchable.enabled
             resetCell.onActivation(binding = KeyboardBinding.ResetCitizens) {
-                city.reassignPopulation(true)
+                cityView.tryReassignPopulation(resetLocked = true)
                 cityScreen.update()
             }
         }
@@ -45,14 +45,13 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin
         if (cityScreen.canCityBeChanged()) {
             avoidCell.touchable = Touchable.enabled
             avoidCell.onActivation(binding = KeyboardBinding.AvoidGrowth) {
-                city.avoidGrowth = !city.avoidGrowth
-                city.reassignPopulation()
+                cityView.tryToggleAvoidGrowth()
                 cityScreen.update()
             }
         }
         avoidCell.background = BaseScreen.skinStrings.getUiBackground(
             "CityScreen/CitizenManagementTable/AvoidCell",
-            tintColor = if (city.avoidGrowth) colorSelected else colorButton
+            tintColor = if (cityView.avoidGrowth) colorSelected else colorButton
         )
         topTable.add(avoidCell).pad(3f)
         add(topTable).colspan(numCol).growX()
@@ -68,7 +67,7 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin
         val defaultTable = Table()
         for (focus in CityFocus.entries) {
             if (!focus.tableEnabled) continue
-            if (focus == CityFocus.FaithFocus && !city.civ.gameInfo.isReligionEnabled()) continue
+            if (focus == CityFocus.FaithFocus && !cityView.viewingCiv().isReligionEnabled()) continue
             val label = focus.label.toLabel()
             val cell = Table()
             cell.add(label).pad(5f)
@@ -76,16 +75,15 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin
                 cell.touchable = Touchable.enabled
                 // Note the binding here only works when visible, so the main one is on CityStatsTable.miniStatsTable
                 // If we bind both, both are executed - so only add the one here that re-applies the current focus
-                val binding = if (city.getCityFocus() == focus) focus.binding else KeyboardBinding.None
+                val binding = if (cityView.getCityFocus() == focus) focus.binding else KeyboardBinding.None
                 cell.onActivation(binding = binding) {
-                    city.setCityFocus(focus)
-                    city.reassignPopulation()
+                    cityView.trySetCityFocus(focus)
                     cityScreen.update()
                 }
             }
             cell.background = BaseScreen.skinStrings.getUiBackground(
                 "CityScreen/CitizenManagementTable/FocusCell",
-                tintColor = if (city.getCityFocus() == focus) colorSelected else colorButton
+                tintColor = if (cityView.getCityFocus() == focus) colorSelected else colorButton
             )
             // make NoFocus and Manual their own special row
             if (focus == CityFocus.NoFocus) {

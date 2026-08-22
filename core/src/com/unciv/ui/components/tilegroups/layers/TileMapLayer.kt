@@ -51,3 +51,57 @@ class FeaturesMapLayer(initialCapacity: Int, actable: Boolean = false, touchable
     override fun act(delta: Float) = super.act(delta)
     override fun draw(batch: Batch, parentAlpha: Float) = super.draw(batch, parentAlpha)
 }
+
+class BordersMapLayer(initialCapacity: Int, actable: Boolean = false, touchable: Boolean = false):
+    TileMapLayer<TileLayerBorders>(initialCapacity, actable, touchable) {
+    override fun act(delta: Float) = super.act(delta)
+    override fun draw(batch: Batch, parentAlpha: Float) = super.draw(batch, parentAlpha)
+}
+
+class ResourceMapLayer(initialCapacity: Int, actable: Boolean = false, touchable: Boolean = false):
+    TileMapLayer<TileLayerResource>(initialCapacity, actable, touchable) {
+    override fun act(delta: Float) = super.act(delta)
+    override fun draw(batch: Batch, parentAlpha: Float) = super.draw(batch, parentAlpha)
+}
+
+class ImprovementMapLayer(initialCapacity: Int, actable: Boolean = false, touchable: Boolean = false):
+    TileMapLayer<TileLayerImprovement>(initialCapacity, actable, touchable) {
+    override fun act(delta: Float) = super.act(delta)
+    override fun draw(batch: Batch, parentAlpha: Float) = super.draw(batch, parentAlpha)
+}
+
+class MiscMapLayer(initialCapacity: Int, actable: Boolean = false, touchable: Boolean = false):
+    TileMapLayer<TileLayerMisc>(initialCapacity, actable, touchable) {
+    override fun act(delta: Float) = super.act(delta)
+    override fun draw(batch: Batch, parentAlpha: Float) = super.draw(batch, parentAlpha)
+}
+
+class YieldMapLayer(initialCapacity: Int, actable: Boolean = false, touchable: Boolean = false):
+    TileMapLayer<TileLayerYield>(initialCapacity, actable, touchable) {
+    override fun act(delta: Float) = super.act(delta)
+    override fun draw(batch: Batch, parentAlpha: Float) = super.draw(batch, parentAlpha)
+}
+
+class UnitSpriteMapLayer(initialCapacity: Int, actable: Boolean = false, touchable: Boolean = false):
+    TileMapLayer<TileLayerUnitSprite>(initialCapacity, actable, touchable) {
+    override fun act(delta: Float) = super.act(delta)
+    override fun draw(batch: Batch, parentAlpha: Float) = super.draw(batch, parentAlpha)
+}
+
+class OverlayMapLayer(initialCapacity: Int, actable: Boolean = false, touchable: Boolean = false):
+    TileMapLayer<TileLayerOverlay>(initialCapacity, actable, touchable) {
+    override fun act(delta: Float) = super.act(delta)
+    override fun draw(batch: Batch, parentAlpha: Float) = super.draw(batch, parentAlpha)
+}
+
+class UnitFlagMapLayer(initialCapacity: Int, actable: Boolean = false, touchable: Boolean = false):
+    TileMapLayer<TileLayerUnitFlag>(initialCapacity, actable, touchable) {
+    override fun act(delta: Float) = super.act(delta)
+    override fun draw(batch: Batch, parentAlpha: Float) = super.draw(batch, parentAlpha)
+}
+
+class CityButtonMapLayer(initialCapacity: Int, actable: Boolean = false, touchable: Boolean = false):
+    TileMapLayer<TileLayerCityButton>(initialCapacity, actable, touchable) {
+    override fun act(delta: Float) = super.act(delta)
+    override fun draw(batch: Batch, parentAlpha: Float) = super.draw(batch, parentAlpha)
+}

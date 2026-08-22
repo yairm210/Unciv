@@ -19,7 +19,6 @@ import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.utils.Log
 import yairm210.purity.annotations.Readonly
 import kotlin.math.min
-import kotlin.random.Random
 import com.unciv.logic.automation.Timers.Companion.timeThis
 
 class TurnManager(val civInfo: Civilization) {
@@ -29,12 +28,6 @@ class TurnManager(val civInfo: Civilization) {
         if (civInfo.isSpectator()) return
 
         civInfo.threatManager.clear()
-        if (civInfo.isMajorCiv() && civInfo.isAlive()) {
-            // Force uses a transient cache that is not invalidated on combat losses during
-            // other civs' turns; clear it so the turn-start demographics/charts snapshot is accurate.
-            civInfo.resetMilitaryMightCache()
-            civInfo.statsHistory.recordRankingStats(civInfo)
-        }
 
         if (civInfo.cities.isNotEmpty() && civInfo.gameInfo.ruleset.technologies.isNotEmpty())
             civInfo.tech.updateResearchProgress()
@@ -96,11 +89,26 @@ class TurnManager(val civInfo: Civilization) {
                 civInfo.notifications.removeAll { it.text == "[${offeringCiv.civName}] has made a counteroffer to your trade request" }
             }
         }
-        
-        for (unit in civInfo.units.getCivUnits().filter { it.promotions.canBePromoted() }){
-            civInfo.addNotification("[${unit.displayName()}] can be promoted!",
-                listOf(MapUnitAction(unit), PromoteUnitAction(unit)),
-                NotificationCategory.Units, unit.name)
+
+        val promotableUnits = civInfo.units.getCivUnits()
+            .filter { it.promotions.canBePromoted() }
+            .toList()
+        if (promotableUnits.size <= 3) {
+            for (unit in promotableUnits) {
+                civInfo.addNotification(
+                    "[${unit.displayName()}] can be promoted!",
+                    listOf(MapUnitAction(unit), PromoteUnitAction(unit)),
+                    NotificationCategory.Units,
+                    unit.name
+                )
+            }
+        } else {
+            civInfo.addNotification(
+                "[${promotableUnits.size}] units can be promoted!",
+                promotableUnits.map { MapUnitAction(it) },
+                NotificationCategory.Units,
+                "UnitActionIcons/Promote"
+            )
         }
 
         updateWinningCiv()

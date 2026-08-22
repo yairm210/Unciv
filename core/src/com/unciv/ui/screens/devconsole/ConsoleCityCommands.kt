@@ -13,7 +13,7 @@ internal class ConsoleCityCommands : ConsoleCommandNode {
 
         "add" to ConsoleAction("city add <civName>") { console, params ->
             val civ = console.getCivByName(params[0])
-            if (!civ.isMajorCiv() && !civ.isCityState) 
+            if (!civ.isMajorCiv() && !civ.isCityState)
                 throw ConsoleErrorException("Can only add cities to major civs or city states")
             val selectedTile = console.getSelectedTile()
             if (selectedTile.isCityCenter())
@@ -94,6 +94,12 @@ internal class ConsoleCityCommands : ConsoleCommandNode {
             val building = console.findCliInput<Building>(params[0])
                 ?: throw ConsoleErrorException("Unknown building")
             city.cityConstructions.removeBuilding(building)
+            DevConsoleResponse.OK
+        },
+
+        "setpuppet" to ConsoleAction("city setpuppet <boolean>") { console, params ->
+            val city = console.getSelectedCity()
+            city.isPuppet = params.getOrNull(0)?.toBoolean() ?: true
             DevConsoleResponse.OK
         },
     )

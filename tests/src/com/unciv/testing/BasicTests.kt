@@ -10,7 +10,6 @@ import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Unique
-import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
@@ -28,7 +27,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import kotlin.random.Random
 
-@RunWith(GdxTestRunner::class)
+@RunWith(BaseTestRunner::class)
 class BasicTests {
 
     lateinit var ruleset: Ruleset

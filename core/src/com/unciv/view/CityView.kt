@@ -2,12 +2,12 @@ package com.unciv.view
 
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityFlags
-import com.unciv.logic.map.HexCoord
+import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.city.StatTreeNode
 import com.unciv.logic.city.CityFocus
 import com.unciv.logic.city.CityResources
 import com.unciv.logic.city.GreatPersonPointsBreakdown
 import com.unciv.logic.city.managers.CityReligionManager
-import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Religion
 import com.unciv.models.ruleset.INonPerpetualConstruction
@@ -25,28 +25,37 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import yairm210.purity.annotations.Readonly
 
-/** View of a [City] from the perspective of [viewer]. UI should use this and not city directly. */
-class CityView(private val city: City, private val civView: CivView) {
-    constructor(city: City, viewer: Civilization) : this(city, CivView(viewer, viewer))
+/** View of a [City] from the perspective of the viewer's [gameView]. UI should use this and not city directly.
+ * This should only be for cities we can see as if we own them - our cities, spied cities, or if we're spectator */
+class CityView(city: City,
+               viewer: Civilization,
+               spectatorMode: Boolean = false,
+               override val gameView: GameView) : ForeignCityView(city, viewer, spectatorMode, gameView) {
+    // Navigation
+    /** The viewing player's full CivView (always a self-view). For the city's owning civ, use [owningCiv]. */
+    @Readonly fun viewingCiv(): CivView = gameView.civView
 
-    private val viewer: Civilization = civView.getViewer()
+    /** Cities the viewer can page through in CityScreen: own cities normally, or spy-visited cities when spying. */
+    @Readonly fun getViewableCities(): List<CityView> {
+        val isSpying = city.civ !== viewer && viewer.gameInfo.isEspionageEnabled() && !viewer.isSpectator()
+        return if (isSpying) viewer.espionageManager.getCitiesWithOurSpies()
+            .filter { it.civ != viewer }
+            .map { gameView.getCityView(it) }
+        else city.civ.cities.map { gameView.getCityView(it) }
+    }
 
-    val name: String get() = city.name
-    val location: HexCoord get() = city.location
+    // Data retrieval
     val tilesInRange: Set<Tile> get() = city.tilesInRange
 
-    @Readonly fun civ(): CivView = CivView(city.civ, viewer)
-    @Readonly fun centerTile(): TileView = TileView(city.getCenterTile(), viewer)
-    @Readonly fun getTiles(): Sequence<TileView> = city.getTiles().map { TileView(it, viewer) }
-    @Readonly fun tileView(tile: Tile): TileView = TileView(tile, viewer)
+    @Readonly fun centerTile(): TileView = gameView.tileMapView.getTile(city.getCenterTile())
+    @Readonly fun getTiles(): Sequence<TileView> = city.getTiles().map { gameView.tileMapView.getTile(it) }
+    @Readonly fun tileView(tile: Tile): TileView = gameView.tileMapView.getTile(tile)
 
     @Readonly fun getWorkRange(): Int = city.getWorkRange()
     @Readonly fun isWorked(tileView: TileView): Boolean = city.isWorked(getTile(tileView))
     @Readonly fun canBuyTile(tileView: TileView): Boolean = city.expansion.canBuyTile(getTile(tileView))
     @Readonly fun getGoldCostOfTile(tileView: TileView, extraTiles: Int = 0): Int =
         city.expansion.getGoldCostOfTile(getTile(tileView), extraTiles)
-    @Readonly fun isSameCivAs(other: CityView): Boolean = city.civ === other.city.civ
-
     // Population
     @Readonly fun getFreePopulation(): Int = city.population.getFreePopulation()
     @Readonly fun getPopulationCount(): Int = city.population.population
@@ -54,8 +63,10 @@ class CityView(private val city: City, private val civView: CivView) {
     @Readonly fun getFoodToNextPopulation(): Int = city.population.getFoodToNextPopulation()
     @Readonly fun getMaxSpecialists(): Counter<String> = city.population.getMaxSpecialists()
     @Readonly fun getNewSpecialists(): Counter<String> = city.population.getNewSpecialists()
+    val manualSpecialists: Boolean get() = city.manualSpecialists
     @Readonly fun getNumTurnsToStarvation(): Int? = city.population.getNumTurnsToStarvation()
     @Readonly fun getNumTurnsToNewPopulation(): Int? = city.population.getNumTurnsToNewPopulation()
+    @Readonly fun getStatsOfSpecialist(specialistName: String): Stats = city.cityStats.getStatsOfSpecialist(specialistName)
 
     // City state
     @Readonly fun getNumberOfFollowers(): Counter<String> = city.religion.getNumberOfFollowers()
@@ -67,11 +78,15 @@ class CityView(private val city: City, private val civView: CivView) {
     val demandedResource: String get() = city.demandedResource
     @Readonly fun getFlag(flag: CityFlags): Int = city.getFlag(flag)
     @Readonly fun getCityFocus(): CityFocus = city.getCityFocus()
+    val avoidGrowth: Boolean get() = city.avoidGrowth
     @Readonly fun getState(): GameContext = city.state
 
     // Stats
     @Readonly fun getCurrentCityStats(): Stats = city.cityStats.currentCityStats
     @Readonly fun getHappinessList(): Map<String, Float> = city.cityStats.happinessList
+    @Readonly fun getBaseStatTree(): StatTreeNode = city.cityStats.baseStatTree
+    @Readonly fun getStatPercentBonusTree(): StatTreeNode = city.cityStats.statPercentBonusTree
+    @Readonly fun getFinalStatList(): Map<String, Stats> = city.cityStats.finalStatList
 
     // Expansion
     @Readonly fun hasChoosableTiles(): Boolean = city.expansion.getChoosableTiles().any()
@@ -79,7 +94,7 @@ class CityView(private val city: City, private val civView: CivView) {
     @Readonly fun getCultureStored(): Int = city.expansion.cultureStored
 
     // Constructions
-    val constructions: CityConstructionsView get() = CityConstructionsView(city.cityConstructions)
+    val constructions: CityConstructionsView get() = CityConstructionsView(city.cityConstructions, gameView, viewer, spectatorMode)
     @Readonly fun currentConstructionName(): String = city.cityConstructions.currentConstructionName()
     @Readonly fun getBuiltBuildings(): Sequence<Building> = city.cityConstructions.getBuiltBuildings()
     @Readonly fun isPuppet(): Boolean = city.isPuppet
@@ -103,9 +118,11 @@ class CityView(private val city: City, private val civView: CivView) {
     @Readonly fun getUnitShouldUseSavedPromotion(baseUnit: String): Boolean? = city.unitShouldUseSavedPromotion[baseUnit]
     @Readonly fun getCityAmbienceSound(): String = city.civ.getEra().citySound
     @Readonly fun isBeingRazed(): Boolean = city.isBeingRazed
+    @Readonly fun isCapital(): Boolean = city.isCapital()
+    @Readonly fun getGarrison(): MapUnitView? = city.getGarrison()?.let { MapUnitView(it, gameView.civView) }
     @Readonly fun canBeDestroyed(): Boolean = city.canBeDestroyed()
     @Readonly fun getExpandRange(): Int = city.getExpandRange()
-    @Readonly fun chooseNewTileToOwn(): Tile? = city.expansion.chooseNewTileToOwn()
+    @Readonly fun chooseNewTileToOwn(): TileView? = city.expansion.chooseNewTileToOwn()?.let { gameView.tileMapView.getTile(it) }
     @Readonly fun getImprovementToCreate(construction: Building): TileImprovement? =
         construction.getImprovementToCreate(city.getRuleset(), city.civ)
     @Readonly fun hasFreeBuilding(building: Building): Boolean =
@@ -120,15 +137,15 @@ class CityView(private val city: City, private val civView: CivView) {
 
     @Readonly fun getStatReserve(stat: Stat): Int = city.getStatReserve(stat)
     @Readonly fun getMajorityReligion(): Religion? = city.religion.getMajorityReligion()
-    @Readonly fun getYourReligion(): Religion? = civView.getCiv().religionManager.religion
+    @Readonly fun getYourReligion(): Religion? = viewer.religionManager.religion
     @Readonly fun canBePurchasedWithAnyStat(construction: INonPerpetualConstruction): Boolean =
         construction.canBePurchasedWithAnyStat(city)
     @Readonly fun canBePurchasedWithStat(construction: INonPerpetualConstruction, stat: Stat): Boolean =
         construction.canBePurchasedWithStat(city, stat)
 
-    @Readonly fun getCity(): City = city
-    @Readonly private fun getTile(tileView: TileView) = tileView.getTile()
-    @Readonly fun getViewer(): Civilization = viewer
+    @Readonly fun isOwnedByViewer(): Boolean = city.civ === viewer
+    @Readonly fun isOwnedTile(tile: Tile): Boolean = tile.getCity() === city
+    @Readonly private fun getTile(tileView: TileView) = tileView.unwrap()
 
     // ACTIONS
     private fun canChangeState() = city.civ === viewer && viewer.isCurrentPlayer()
@@ -177,6 +194,11 @@ class CityView(private val city: City, private val civView: CivView) {
     fun updateTileStats() = city.cityStats.updateTileStats()
 
     fun updateCityStats() = city.cityStats.update()
+    fun tryRenameCity(name: String): Boolean {
+        if (!canChangeState()) return false
+        city.name = name
+        return true
+    }
     fun tryAnnexCity(): Boolean {
         if (!canChangeState()) return false
         city.annexCity()
@@ -187,9 +209,9 @@ class CityView(private val city: City, private val civView: CivView) {
         city.isBeingRazed = raze
         return true
     }
-    fun tryAddToQueueWithTile(construction: IConstruction, tile: Tile): Boolean {
+    fun tryAddToQueueWithTile(construction: IConstruction, tileView: TileView): Boolean {
         if (!canChangeState()) return false
-        city.cityConstructions.addToQueue(construction, tile = tile)
+        city.cityConstructions.addToQueue(construction, tile = tileView.unwrap())
         return true
     }
     fun trySetUnitShouldUseSavedPromotion(baseUnit: String, value: Boolean): Boolean {
@@ -226,9 +248,40 @@ class CityView(private val city: City, private val civView: CivView) {
         if (!canChangeState()) return
         city.disabledConstructions.remove(name)
     }
-    fun tryReassignPopulation(): Boolean {
+    fun tryReassignPopulation(resetLocked: Boolean = false): Boolean {
         if (!canChangeState()) return false
+        city.reassignPopulation(resetLocked)
+        return true
+    }
+    fun tryToggleAvoidGrowth(): Boolean {
+        if (!canChangeState()) return false
+        city.avoidGrowth = !city.avoidGrowth
         city.reassignPopulation()
+        return true
+    }
+    fun tryEnableManualSpecialists(): Boolean {
+        if (!canChangeState()) return false
+        city.manualSpecialists = true
+        return true
+    }
+    fun tryDisableManualSpecialists(): Boolean {
+        if (!canChangeState()) return false
+        city.manualSpecialists = false
+        city.reassignPopulation()
+        return true
+    }
+    fun tryAssignSpecialist(specialistName: String): Boolean {
+        if (!canChangeState()) return false
+        city.population.specialistAllocations.add(specialistName, 1)
+        city.manualSpecialists = true
+        city.cityStats.update()
+        return true
+    }
+    fun tryUnassignSpecialist(specialistName: String): Boolean {
+        if (!canChangeState()) return false
+        city.population.specialistAllocations.add(specialistName, -1)
+        city.manualSpecialists = true
+        city.cityStats.update()
         return true
     }
     fun trySetCityFocus(focus: CityFocus): Boolean {
@@ -238,6 +291,4 @@ class CityView(private val city: City, private val civView: CivView) {
         return true
     }
 
-    override fun equals(other: Any?) = other is CityView && city === other.city
-    override fun hashCode() = city.hashCode()
 }

@@ -33,14 +33,15 @@ class IdleUnitButton (
         keyShortcuts.add(keyShortcutBind)
         onActivation (binding = keyShortcutBind) {
 
-            val idleUnits = unitTable.worldScreen.viewingCiv.units.getIdleUnits()
+            val idleUnits = unitTable.worldScreen.selectedGameView.civView.getCiv().units.getIdleUnits()
             if (idleUnits.none()) return@onActivation
 
+            val selectedUnit = unitTable.selectedUnit?.getUnit()
             val unitToSelect: MapUnit
-            if (unitTable.selectedUnit == null || !idleUnits.contains(unitTable.selectedUnit!!))
+            if (selectedUnit == null || !idleUnits.contains(selectedUnit))
                 unitToSelect = idleUnits.first()
             else {
-                var index = idleUnits.indexOf(unitTable.selectedUnit!!)
+                var index = idleUnits.indexOf(selectedUnit)
                 if (previous) index-- else index++
                 index += idleUnits.count()
                 index %= idleUnits.count() // for looping
@@ -48,7 +49,7 @@ class IdleUnitButton (
             }
 
             tileMapHolder.setCenterPosition(unitToSelect.currentTile.position)
-            unitTable.selectUnit(unitToSelect)
+            unitTable.selectUnit(unitTable.worldScreen.selectedGameView.getForeignMapUnitView(unitToSelect).tryGetMapUnitView()!!)
             unitTable.worldScreen.shouldUpdate = true
         }
     }

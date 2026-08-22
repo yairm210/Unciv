@@ -76,10 +76,10 @@ class TileGroupMap<T: TileGroup>(
         for (tileGroup in tileGroups) {
             val positionalVector = if (tileGroupsToUnwrap?.contains(tileGroup) == true) {
                 HexMath.hex2WorldCoords(
-                    tileGroup.tile.tileMap.getUnwrappedPosition(tileGroup.tile.position)
+                    tileGroup.tileView.getTile().tileMap.getUnwrappedPosition(tileGroup.tileView.position())
                 )
             } else {
-                HexMath.hex2WorldCoords(tileGroup.tile.position)
+                HexMath.hex2WorldCoords(tileGroup.tileView.position())
             }
 
             tileGroup.setPosition(
@@ -112,14 +112,14 @@ class TileGroupMap<T: TileGroup>(
 
         val terrainMapLayer     = TerrainMapLayer(numberOfTilegroups)
         val featureMapLayer     = FeaturesMapLayer(numberOfTilegroups)
-        val borderMapLayer      = TileMapLayer<TileLayerBorders>(numberOfTilegroups)
-        val resourceMapLayer    = TileMapLayer<TileLayerResource>(numberOfTilegroups, actable = true)
-        val improvementMapLayer = TileMapLayer<TileLayerImprovement>(numberOfTilegroups, actable = true)
+        val borderMapLayer      = BordersMapLayer(numberOfTilegroups)
+        val resourceMapLayer    = ResourceMapLayer(numberOfTilegroups, actable = true)
+        val improvementMapLayer = ImprovementMapLayer(numberOfTilegroups, actable = true)
         // TileLayerMisc.workedIcon may receive touches, so the container must forward them
-        val miscMapLayer        = TileMapLayer<TileLayerMisc>(numberOfTilegroups, touchable = true)
-        val yieldMapLayer       = TileMapLayer<TileLayerYield>(numberOfTilegroups)
-        val unitSpriteMapLayer  = TileMapLayer<TileLayerUnitSprite>(numberOfTilegroups)
-        val overlayMapLayer     = TileMapLayer<TileLayerOverlay>(numberOfTilegroups)
+        val miscMapLayer        = MiscMapLayer(numberOfTilegroups, touchable = true)
+        val yieldMapLayer       = YieldMapLayer(numberOfTilegroups)
+        val unitSpriteMapLayer  = UnitSpriteMapLayer(numberOfTilegroups)
+        val overlayMapLayer     = OverlayMapLayer(numberOfTilegroups)
         // TileGroups themselves provide click detection; not TileLayer subclasses so plain Group
         val tileGroupLayer      = object: Group(){
             init {
@@ -132,9 +132,9 @@ class TileGroupMap<T: TileGroup>(
             override fun act(delta: Float) {}
             override fun draw(batch: Batch, parentAlpha: Float) {}
         }
-        val unitFlagMapLayer    = TileMapLayer<TileLayerUnitFlag>(numberOfTilegroups, actable = true)
+        val unitFlagMapLayer    = UnitFlagMapLayer(numberOfTilegroups, actable = true)
         // CityButton wrapper Groups are Touchable.childrenOnly, so the container must forward touches
-        val cityButtonMapLayer  = TileMapLayer<TileLayerCityButton>(numberOfTilegroups, actable = true, touchable = true)
+        val cityButtonMapLayer  = CityButtonMapLayer(numberOfTilegroups, actable = true, touchable = true)
 
         // Apparently the sortedByDescending is kinda memory-intensive because it needs to sort ALL the tiles
         //  So instead we group by and then sort on the groups

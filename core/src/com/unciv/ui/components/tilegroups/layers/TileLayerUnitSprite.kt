@@ -21,10 +21,6 @@ class TileLayerUnitSprite(tileGroup: TileGroup, size: Float) : TileLayer(tileGro
 
     fun getSpriteSlot(unit: MapUnit) = if (unit.isCivilian()) civilianSlot else militarySlot
 
-    private fun showMilitaryUnit(viewingCiv: CivView) = tileGroup.isForceVisible
-            || viewingCiv.getCiv().viewableInvisibleUnitsTiles.contains(tileGroup.tile)
-            || !tileGroup.tile.hasEnemyInvisibleUnit(viewingCiv.getCiv())
-
     private fun updateSlot(currentSlot: UnitSpriteSlot?, unit: MapUnit?, isShown: Boolean): UnitSpriteSlot? {
 
         var location = ""
@@ -77,14 +73,13 @@ class TileLayerUnitSprite(tileGroup: TileGroup, size: Float) : TileLayer(tileGro
     override fun doUpdate(viewingCiv: CivView?) {
 
         val isPixelUnitsEnabled = UncivGame.Current.settings.showPixelUnits
-        val isViewable = viewingCiv == null || isViewable(viewingCiv)
-        val isVisibleMilitary = viewingCiv == null || showMilitaryUnit(viewingCiv)
+        val isViewable = viewingCiv == null || tileGroup.isForceVisible || isViewable(viewingCiv)
 
         val isCivilianSlotShown = isPixelUnitsEnabled && isViewable
-        val isMilitarySlotShown = isPixelUnitsEnabled && isViewable && isVisibleMilitary
+        val isMilitarySlotShown = isPixelUnitsEnabled && isViewable
 
-        civilianSlot = updateSlot(civilianSlot, tileGroup.tile.civilianUnit, isShown = isCivilianSlotShown)
-        militarySlot = updateSlot(militarySlot, tileGroup.tile.militaryUnit, isShown = isMilitarySlotShown)
+        civilianSlot = updateSlot(civilianSlot, tileGroup.tileView.civilianUnit?.getUnit(), isShown = isCivilianSlotShown)
+        militarySlot = updateSlot(militarySlot, tileGroup.tileView.militaryUnit?.getUnit(), isShown = isMilitarySlotShown)
     }
 
     override fun determineVisibility() {

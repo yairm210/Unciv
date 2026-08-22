@@ -357,9 +357,9 @@ internal class AdvancedTab(
                 selectUnit = true
             )
 
-            newScreen.mapHolder.onTileClicked(newScreen.mapHolder.tileMap[-2, 3]) // Then click on Keshik
+            newScreen.mapHolder.onTileClicked(newScreen.selectedGameView.getTile(newScreen.mapHolder.tileMap[-2, 3])) // Then click on Keshik
             if (currentConfig.attackCity)
-                newScreen.mapHolder.onTileClicked(newScreen.mapHolder.tileMap[-2, 2]) // Then click city again for attack table
+                newScreen.mapHolder.onTileClicked(newScreen.selectedGameView.getTile(newScreen.mapHolder.tileMap[-2, 2])) // Then click city again for attack table
             newScreen.mapHolder.zoomIn(true)
             withContext(Dispatchers.IO) {
                 Thread.sleep(300)

@@ -15,6 +15,7 @@ import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
 import com.unciv.ui.screens.diplomacyscreen.LeaderIntroTable
+import com.unciv.view.ForeignCivView
 import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 import kotlin.math.min
@@ -34,7 +35,7 @@ import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
  * @param worldScreen The parent screen
  */
 class TradePopup(worldScreen: WorldScreen) : Popup(worldScreen) {
-    val viewingCiv = worldScreen.viewingCiv
+    val viewingCiv = worldScreen.selectedGameView.civView.getCiv()
     val tradeRequest = viewingCiv.tradeRequests.first()
 
     init {
@@ -102,7 +103,7 @@ class TradePopup(worldScreen: WorldScreen) : Popup(worldScreen) {
 
         addButton("How about something else...", 'e') {
             close()
-            worldScreen.game.pushScreen(DiplomacyScreen(viewingCiv, requestingCiv, trade))
+            worldScreen.game.pushScreen(DiplomacyScreen(worldScreen.selectedGameView.civView, ForeignCivView(requestingCiv, viewingCiv), trade))
             worldScreen.shouldUpdate = true
         }.row()
     }
