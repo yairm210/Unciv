@@ -101,12 +101,11 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
         if (campsToAdd <= 0) return
 
         // Camps can't spawn within 7 tiles of each other or within 4 tiles of major civ capitals
+        // We need a snapshot Set to test membership against below, not a one-off iteration.
         val tooCloseToCapitals = gameInfo.civilizations.filterNot { it.isBarbarian || it.isSpectator() || it.cities.isEmpty() || it.isCityState || it.getCapital() == null }
-            .flatMap { it.getCapital()!!.getCenterTile().getTilesInDistance(4) }.toSet()
+            .flatMap { it.getCapital()!!.getCenterTile().getTilesInDistanceSnapshot(4) }.toSet()
         val tooCloseToCamps = encampments
-            .flatMap { tileMap[it.position].getTilesInDistance(
-                    if (it.destroyed) 4 else 7
-            ) }.toSet()
+            .flatMap { tileMap[it.position].getTilesInDistanceSnapshot(if (it.destroyed) 4 else 7) }.toSet()
 
         val viableTiles = fogTiles.filter {
             !it.isImpassible()
@@ -141,7 +140,7 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
             // Still more camps to add?
             if (addedCamps < campsToAdd) {
                 // Remove some newly non-viable tiles
-                viableTiles.removeAll(tile.getTilesInDistance(7).toSet())
+                tile.forEachTileInDistance(7) { viableTiles.remove(it) }
                 // Reroll bias
                 biasCoast = rng.nextInt(6) == 0
             }
@@ -192,9 +191,7 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
             if (gameInfo.turns < 10)
                 return null
 
-            val nearbyBarbarians = tile.getTilesInDistance(4)
-                .mapNotNull { it.militaryUnit }
-                .count { it.civ.isBarbarian }
+            val nearbyBarbarians = tile.countTilesInDistance(4) { it.militaryUnit?.civ?.isBarbarian == true }
             // Too many barbarians around already?
             if (nearbyBarbarians > 2)
                 return null

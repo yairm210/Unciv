@@ -81,13 +81,16 @@ object HeadTowardsEnemyCityAutomation {
             return true
         }
 
-        val ourUnitsAroundEnemyCity = closestReachableEnemyCity.getTilesInDistance(6)
-            .flatMap { it.getUnits() }
-            .filter { it.isMilitary() && it.civ == unit.civ }
-
         val city = closestReachableEnemyCity.getCity()!!
+        val cityCombatant = CityCombatant(city)
+        var expectedDamagePerTurn = 0
+        closestReachableEnemyCity.forEachTileInDistance(6) { tile ->
+            for (tileUnit in tile.getUnits())
+                if (tileUnit.isMilitary() && tileUnit.civ == unit.civ)
+                    expectedDamagePerTurn += BattleDamage.calculateDamageToDefender(MapUnitCombatant(tileUnit), cityCombatant)
+        }
 
-        if (cannotTakeCitySoon(ourUnitsAroundEnemyCity, city)) {
+        if (cannotTakeCitySoon(expectedDamagePerTurn, city)) {
             return headToLandingGrounds(closestReachableEnemyCity, unit)
         }
 
@@ -99,13 +102,9 @@ object HeadTowardsEnemyCityAutomation {
     /** Cannot take within 5 turns */
     @Readonly
     private fun cannotTakeCitySoon(
-        ourUnitsAroundEnemyCity: Sequence<MapUnit>,
+        expectedDamagePerTurn: Int,
         city: City
     ): Boolean {
-        val cityCombatant = CityCombatant(city)
-        val expectedDamagePerTurn = ourUnitsAroundEnemyCity
-            .sumOf { BattleDamage.calculateDamageToDefender(MapUnitCombatant(it), cityCombatant) }
-
         val cityHealingPerTurn = 20
         return expectedDamagePerTurn < city.health && // Cannot take immediately
             (expectedDamagePerTurn <= cityHealingPerTurn // No lasting damage
@@ -115,8 +114,11 @@ object HeadTowardsEnemyCityAutomation {
     private fun headToLandingGrounds(closestReachableEnemyCity: Tile, unit: MapUnit): Boolean {
         // don't head straight to the city, try to head to landing grounds -
         // this is against tha AI's brilliant plan of having everyone embarked and attacking via sea when unnecessary.
-        val tileToHeadTo = closestReachableEnemyCity.getTilesInDistanceRange(minDistanceFromCityToConsiderForLandingArea..maxDistanceFromCityToConsiderForLandingArea)
-            .filter { it.isLand && unit.getDamageFromTerrain(it) <= 0 } // Don't head for hurty terrain
+        // We need a snapshot List for sortedBy below.
+        val candidateLandingTiles = closestReachableEnemyCity.getTilesInDistanceRangeSnapshot(minDistanceFromCityToConsiderForLandingArea..maxDistanceFromCityToConsiderForLandingArea)
+            // Don't head for hurty terrain
+            .filter { it.isLand && unit.getDamageFromTerrain(it) <= 0 }
+        val tileToHeadTo = candidateLandingTiles
             .sortedBy { it.aerialDistanceTo(unit.currentTile) }
             .firstOrNull { (unit.movement.canMoveTo(it) || it == unit.currentTile) && unit.movement.canReach(it) }
 
@@ -134,10 +136,11 @@ object HeadTowardsEnemyCityAutomation {
     ): Boolean {
         // If we're already in fire range but have no sight, hold position
         // If there IS sight, automateUnitMoves would order attacking instead of heading to city
-        if (closestReachableEnemyCity.getTilesInDistance(unitRange).contains(unit.getTile()))
+        if (closestReachableEnemyCity.anyTileInDistance(unitRange) { it == unit.getTile() })
             return true
 
-        val tilesInBombardRange = closestReachableEnemyCity.getTilesInDistance(2).toSet()
+        // We need a snapshot Set for membership testing below.
+        val tilesInBombardRange = closestReachableEnemyCity.getTilesInDistanceSnapshot(2).toSet()
         val candidateTiles = unitDistanceToTiles.asSequence().filter {
             it.key.aerialDistanceTo(closestReachableEnemyCity) >= unitRange
                 && it.key !in tilesInBombardRange

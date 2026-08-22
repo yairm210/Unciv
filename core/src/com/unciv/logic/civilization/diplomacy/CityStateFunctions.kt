@@ -822,10 +822,17 @@ class CityStateFunctions(val civInfo: Civilization) {
     }
 
     @Readonly
-    fun forEachUniqueProvidedByCityStates(uniqueType: UniqueType, gameContext: GameContext, op: (unique: Unique) -> Unit) {
-        if (civInfo.isCityState) return
-        for (uniqueMap in civInfo.cache.cityStateBonusUniqueMaps)
-            uniqueMap.forEachMatchingUnique(uniqueType, gameContext, op)
+    inline fun forEachUniqueProvidedByCityStates(uniqueType: UniqueType, gameContext: GameContext, crossinline op: (unique: Unique) -> Unit)
+        = firstUniqueProvidedByCityStatesOrNull(uniqueType, gameContext) { op(it); false }
+
+    @Readonly
+    inline fun firstUniqueProvidedByCityStatesOrNull(uniqueType: UniqueType, gameContext: GameContext, crossinline predicate: (unique: Unique) -> Boolean): Unique? {
+        if (civInfo.isCityState) return null
+        for (uniqueMap in civInfo.cache.cityStateBonusUniqueMaps) {
+            val result = uniqueMap.firstMatchingUniqueOrNull(uniqueType, gameContext, predicate)
+            if (result != null) return result
+        }
+        return null
     }
 
     companion object {

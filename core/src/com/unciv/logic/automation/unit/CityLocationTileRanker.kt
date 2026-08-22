@@ -35,11 +35,13 @@ object CityLocationTileRanker {
         val nearbyCities = unit.civ.gameInfo.getCities()
             .filter { it.getCenterTile().aerialDistanceTo(unit.getTile()) <= 7 + range }
 
-        val uniques = unit.getMatchingUniques(UniqueType.FoundCity) + unit.getMatchingUniques(UniqueType.FoundPuppetCity)
-        val possibleCityLocations = unit.getTile().getTilesInDistance(range)
+        // We need a snapshot List, used below in a .map/.filter chain.
+        val possibleCityLocations = unit.getTile().getTilesInDistanceSnapshot(range).filter { tile ->
             // Filter out tiles that we can't actually found on
-            .filter { tile -> uniques.any { it.conditionalsApply(GameContext(unit = unit, tile = tile)) } }
-            .filter { canSettleTile(it, unit.civ, nearbyCities) && (unit.getTile() == it || unit.movement.canMoveTo(it)) }
+            val unique = unit.firstMatchingUniqueOrNull(UniqueType.FoundCity) { it.conditionalsApply(GameContext(unit = unit, tile = tile)) }
+                ?: unit.firstMatchingUniqueOrNull(UniqueType.FoundPuppetCity) { it.conditionalsApply(GameContext(unit = unit, tile = tile)) }
+            unique != null && canSettleTile(tile, unit.civ, nearbyCities) && (unit.getTile() == tile || unit.movement.canMoveTo(tile))
+        }
         val bestTilesToFoundCity = BestTilesToFoundCity()
         val baseTileMap = HashMap<Tile, Float>()
 
@@ -126,7 +128,7 @@ object CityLocationTileRanker {
         var tiles = 0
         for (i in 0..2) {
             //Ideally, we shouldn't really count the center tile, as it's converted into 1 production 2 food anyways with special cases treated above, but doing so can lead to AI moving settler back and forth until forever
-            for (nearbyTile in newCityTile.getTilesAtDistance(i)) {
+            newCityTile.forEachTileAtDistance(i) { nearbyTile ->
                 tiles++
                 tileValue += rankTile(nearbyTile, civ, onCoast, newUniqueLuxuryResources, baseTileMap) * (3f / (i + 1))
                 //Tiles close to the city can be worked more quickly, and thus should gain higher weight.

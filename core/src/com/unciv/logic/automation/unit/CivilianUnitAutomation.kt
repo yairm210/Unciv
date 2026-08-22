@@ -28,9 +28,9 @@ object CivilianUnitAutomation {
         // Slightly modified getUsableUnitActionUniques() to allow for settlers with *conditional* settling uniques
         @Readonly
         fun hasSettlerAction(uniqueType: UniqueType) =
-            unit.getMatchingUniques(uniqueType, GameContext.IgnoreConditionals)
-                .filter { unique -> !unique.hasModifier(UniqueType.UnitActionExtraLimitedTimes) }
-                .any { canUse(unit, it) }
+            unit.hasUnique(uniqueType, GameContext.IgnoreConditionals) { unique ->
+                !unique.hasModifier(UniqueType.UnitActionExtraLimitedTimes) && canUse(unit, unique)
+            }
         
         val hasSettlerUnique = hasSettlerAction(UniqueType.FoundCity) || hasSettlerAction(UniqueType.FoundPuppetCity)
         
@@ -133,7 +133,7 @@ object CivilianUnitAutomation {
         }
 
         if (unit.hasUnique(UniqueType.GainFreeBuildings)) {
-            val unique = unit.getMatchingUniques(UniqueType.GainFreeBuildings).first()
+            val unique = unit.firstMatchingUniqueOrNull(UniqueType.GainFreeBuildings) { true }!!
             val buildingName = unique.params[0]
             // Choose the city that is closest in distance and does not have the building constructed.
             val cityToGainBuilding = unit.civ.cities.filter {

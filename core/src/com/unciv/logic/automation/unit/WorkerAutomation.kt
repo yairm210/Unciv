@@ -227,12 +227,12 @@ class WorkerAutomation(
             && (currentTile.isPillaged() || currentTile.hasFalloutEquivalent() || tileHasWorkToDo(currentTile, unit)))
             return currentTile
         
-        val workableTilesCenterFirst = currentTile.getTilesInDistance(3)
-            .filter {
-                (it.getOwner() == null || it.getOwner() == unit.civ || it.getOwner()!!.isCityState)
-                    && isAutomationWorkableTile(it, tilesToAvoid, currentTile, unit) 
-                    && getBasePriority(it, unit) >= 0
-            }
+        // We need a snapshot List for groupBy below.
+        val workableTilesCenterFirst = currentTile.getTilesInDistanceSnapshot(3).filter {
+            (it.getOwner() == null || it.getOwner() == unit.civ || it.getOwner()!!.isCityState)
+                && isAutomationWorkableTile(it, tilesToAvoid, currentTile, unit)
+                && getBasePriority(it, unit) >= 0
+        }
 
         val workableTilesPrioritized = workableTilesCenterFirst.groupBy { getBasePriority(it, unit) }
             .asSequence().sortedByDescending { it.key }
@@ -275,8 +275,8 @@ class WorkerAutomation(
         if (tile.isCityCenter()) return false
         if (tile in roadBetweenCitiesAutomation.tilesOfRoadsMap) return true
         // Don't try to improve tiles we can't benefit from at all
-        if (!civInfo.canSeeResource(tile.tileResource) && tile.getTilesInDistance(civInfo.gameInfo.ruleset.modOptions.constants.cityWorkRange)
-                .none { it.isCityCenter() && it.getCity()?.civ == civInfo }
+        if (!civInfo.canSeeResource(tile.tileResource) && !tile.anyTileInDistance(civInfo.gameInfo.ruleset.modOptions.constants.cityWorkRange) {
+                it.isCityCenter() && it.getCity()?.civ == civInfo }
         ) return false
         if (tile.tileImprovement?.hasUnique(UniqueType.AutomatedUnitsWillNotReplace) == true && !tile.isPillaged()) return false
         return true
@@ -560,7 +560,7 @@ class WorkerAutomation(
                 if (currentImprovement != null && tile.tileResource!!.isImprovedBy(currentImprovement)) {
                     value -= 0.3f // enough to offset the 0.2f food vs production value difference
                 }
-                if (isResourceImprovedByNewImprovement && tile.getTilesInDistance(4).none { it.tileImprovement == improvement }) {
+                if (isResourceImprovedByNewImprovement && !tile.anyTileInDistance(4) { it.tileImprovement == improvement }) {
                     value += 0.3f
                 }
             }

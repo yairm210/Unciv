@@ -69,13 +69,19 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
     }
 
     @Readonly
-    fun forEachMatchingUnique(uniqueType: UniqueType, gameContext: GameContext=city.state, op: (unique: Unique)->Unit)
+    inline fun forEachMatchingUnique(uniqueType: UniqueType, gameContext: GameContext=city.state, crossinline op: (unique: Unique)->Unit)
         = forEachMatchingUnique(uniqueType, gameContext, NO_UNIQUE_FILTER, op)
     @Readonly
-    fun forEachMatchingUnique(uniqueType: UniqueType, gameContext: GameContext=city.state, filter:(Unique)->Boolean, op: (unique: Unique)->Unit) {
-        val majorityReligion = getMajorityReligion() ?: return
-        majorityReligion.followerBeliefUniqueMap.forEachMatchingUnique(uniqueType, gameContext, filter, op)
+    inline fun forEachMatchingUnique(uniqueType: UniqueType, gameContext: GameContext=city.state, crossinline filter:(Unique)->Boolean, crossinline op: (unique: Unique)->Unit) {
+        firstMatchingUniqueOrNull(uniqueType, gameContext, filter) { op(it); false }
     }
+
+    @Readonly
+    inline fun firstMatchingUniqueOrNull(uniqueType: UniqueType, gameContext: GameContext=city.state, crossinline predicate: (unique: Unique)->Boolean): Unique?
+        = firstMatchingUniqueOrNull(uniqueType, gameContext, NO_UNIQUE_FILTER, predicate)
+    @Readonly
+    inline fun firstMatchingUniqueOrNull(uniqueType: UniqueType, gameContext: GameContext=city.state, crossinline filter:(Unique)->Boolean, crossinline predicate: (unique: Unique)->Boolean): Unique? 
+        = getMajorityReligion()?.followerBeliefUniqueMap?.firstMatchingUniqueOrNull(uniqueType, gameContext, filter, predicate)
 
     @Readonly
     fun getAllUniques(): Sequence<Unique> {
@@ -84,10 +90,13 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
     }
 
     @Readonly
-    fun forEachUnique(filter:(Unique)->Boolean, op: (unique: Unique)->Unit) {
-        val majorityReligion = getMajorityReligion() ?: return
-        majorityReligion.followerBeliefUniqueMap.forEachUnique(filter, op)
+    inline fun forEachUnique(filter:(Unique)->Boolean, crossinline op: (unique: Unique)->Unit) {
+        firstUniqueOrNull(filter) { op(it); false }
     }
+
+    @Readonly
+    inline fun firstUniqueOrNull(filter:(Unique)->Boolean, crossinline predicate: (unique: Unique)->Boolean): Unique? 
+        = getMajorityReligion()?.followerBeliefUniqueMap?.firstUniqueOrNull(filter, predicate)
 
     @Readonly fun getPressures(): Counter<String> = pressures.clone()
 

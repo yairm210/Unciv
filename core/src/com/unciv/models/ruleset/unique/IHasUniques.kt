@@ -56,10 +56,37 @@ interface IHasUniques : INamed {
     @Readonly
     fun forEachMatchingUnique(uniqueType: UniqueType, gameContext: GameContext, op: (unique: Unique)->Unit)
         = uniqueMap.forEachMatchingUnique(uniqueType, gameContext, op)
+    
+    /** Folds [accumulate] over every unique matching [uniqueType], starting from [initial]. Useful for e.g. summing up bonuses. */
+    @Readonly
+    fun <T> accumulateForEachMatchingUnique(uniqueType: UniqueType, gameContext: GameContext, initial: T, accumulate: (T, Unique) -> T): T {
+        var acc = initial
+        forEachMatchingUnique(uniqueType, gameContext) { acc = accumulate(acc, it) }
+        return acc
+    }
+
+    @Readonly
+    fun firstMatchingUniqueOrNull(uniqueType: UniqueType, gameContext: GameContext, filter:(Unique)->Boolean, predicate: (unique: Unique)->Boolean): Unique?
+        = uniqueMap.firstMatchingUniqueOrNull(uniqueType, gameContext, filter, predicate)
+    @Readonly
+    fun firstMatchingUniqueOrNull(uniqueType: UniqueType, gameContext: GameContext, predicate: (unique: Unique)->Boolean): Unique?
+        = uniqueMap.firstMatchingUniqueOrNull(uniqueType, gameContext, predicate)
 
     @Readonly
     fun getMatchingTagUniques(uniqueTag: String, state: GameContext = GameContext.EmptyState) =
         uniqueMap.getMatchingTagUniques(uniqueTag, state)
+
+    /** @return A freshly allocated [List] snapshot of the uniques matching [uniqueType], for cases that need to mutate
+     *  [uniques] (or otherwise cannot use a live view) while iterating the result. */
+    @Readonly
+    fun getMatchingUniquesSnapshot(uniqueType: UniqueType, state: GameContext = GameContext.EmptyState) =
+        uniqueMap.getMatchingUniquesSnapshot(uniqueType, state)
+
+    /** @return A freshly allocated [List] snapshot of the uniques matching [uniqueTag], for cases that need to mutate
+     *  [uniques] (or otherwise cannot use a live view) while iterating the result. */
+    @Readonly
+    fun getMatchingTagUniquesSnapshot(uniqueTag: String, state: GameContext = GameContext.EmptyState) =
+        uniqueMap.getMatchingTagUniquesSnapshot(uniqueTag, state)
 
     @Readonly
     fun hasUnique(uniqueType: UniqueType, state: GameContext? = null) =

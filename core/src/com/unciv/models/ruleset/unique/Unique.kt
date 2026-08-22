@@ -145,6 +145,16 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             op(this)
     }
 
+    /** Multiplies the unique according to the multiplication conditionals, returning this unique
+     *  as soon as [predicate] returns true for it, or null if it never does (or the multiplier is 0) */
+    @Readonly
+    inline fun firstMultipliedOrNull(gameContext: GameContext, predicate: (Unique)->Boolean): Unique? {
+        val multiplier = getUniqueMultiplier(gameContext)
+        for (j in 0..<multiplier)
+            if (predicate(this)) return this
+        return null
+    }
+
     private class EndlessSequenceOf<T>(private val value: T) : Sequence<T> {
         override fun iterator(): Iterator<T> = object : Iterator<T> {
             override fun next() = value

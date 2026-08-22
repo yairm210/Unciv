@@ -126,7 +126,7 @@ object UnitAutomation {
     private fun isGoodTileToExplore(unit: MapUnit, tile: Tile, unitVisibilityRange: Int): Boolean {
         // These should be ordered by increasing computational cost
         return (tile.getOwner() == null || !tile.getOwner()!!.isCityState)
-                && tile.getTilesInDistance(unitVisibilityRange).any { !unit.civ.hasExplored(it) }
+                && tile.anyTileInDistance(unitVisibilityRange) { !unit.civ.hasExplored(it) }
                 && (!unit.civ.isCityState || tile.neighbors.any { it.getOwner() == unit.civ }) // Don't want city-states exploring far outside their borders
                 && unit.getDamageFromTerrain(tile) <= 0    // Don't take unnecessary damage
                 && unit.civ.threatManager.getDistanceToClosestEnemyUnit(tile, 3) > 3 // don't walk in range of enemy units
@@ -142,7 +142,7 @@ object UnitAutomation {
                 unit.movement.getDistanceToTiles().keys.filter { isGoodTileToExplore(unit, it, unitVisibilityRange) }
         if (explorableTilesThisTurn.any()) {
             val bestTile = explorableTilesThisTurn
-                .maxBy { it.tileHeight + it.getTilesAtDistance(unit.getVisibilityRange()).count { tile -> !tile.isExplored(unit.civ) }}
+                .maxBy { it.tileHeight + it.countTilesAtDistance(unit.getVisibilityRange()) { tile -> !tile.isExplored(unit.civ) } }
             // Assign each tile a score for "explore value"
             // This could be more elaborate: for example add a malus for distant tiles such as to move not too far away from capital (barb control)
             // or bonus according to tile yields (likely candidates for city locations), but this comes at a cost of performance
@@ -151,11 +151,11 @@ object UnitAutomation {
         }
 
         // Nothing immediate, lets look further. Number increases exponentially with distance - at 10 this took a looong time
-        for (tile in unit.currentTile.getTilesInDistance(5))
-            if (isGoodTileToExplore(unit, tile, unitVisibilityRange)) {
-                unit.movement.headTowards(tile)
-                return true
-            }
+        val goodTile = unit.currentTile.firstTileInDistanceOrNull(5) { isGoodTileToExplore(unit, it, unitVisibilityRange) }
+        if (goodTile != null) {
+            unit.movement.headTowards(goodTile)
+            return true
+        }
         return false
     }
 
@@ -177,7 +177,7 @@ object UnitAutomation {
 
         // If everything around this unit is visible, we can stop.
         // Calculations below are quite expensive especially in the late game.
-        if (unit.currentTile.getTilesInDistance(5).all { it.isVisible(unit.civ) }) {
+        if (!unit.currentTile.anyTileInDistance(5) { !it.isVisible(unit.civ) }) {
             return false
         }
 
@@ -190,11 +190,11 @@ object UnitAutomation {
         }
 
         // Nothing immediate, lets look further. Number increases exponentially with distance - at 10 this took a looong time
-        for (tile in unit.currentTile.getTilesInDistance(5))
-            if (isGoodTileForFogBusting(unit, tile)) {
-                unit.movement.headTowards(tile)
-                return true
-            }
+        val goodTile = unit.currentTile.firstTileInDistanceOrNull(5) { isGoodTileForFogBusting(unit, it) }
+        if (goodTile != null) {
+            unit.movement.headTowards(goodTile)
+            return true
+        }
         return false
     }
 
@@ -204,26 +204,25 @@ object UnitAutomation {
                 && tile.getOwner() == null
                 && tile.neighbors.all { it.getOwner() == null }
                 && unit.civ.hasExplored(tile)
-                && tile.getTilesInDistance(2).any { it.getOwner() == unit.civ }
+                && tile.anyTileInDistance(2) { it.getOwner() == unit.civ }
                 && unit.getDamageFromTerrain(tile) <= 0
                 && unit.movement.canReach(tile) // expensive, evaluate last
     }
 
     fun wander(unit: MapUnit, stayInTerritory: Boolean = false, tilesToAvoid: Set<Tile> = setOf()) {
         if (!unit.hasMovement()) return // return in case we can't move anyways
-        val unitDistanceToTiles = unit.currentTile.getTilesAtDistance(1)
         // We could walk further, but wander() is meant to let units not stay on the same tile permanently,
         // to avoid obstructing human scouts and workers, moving just one tile should be enough
-        val reachableTiles = unitDistanceToTiles
-                .filter {
-                    it !in tilesToAvoid
-                        && unit.movement.canMoveTo(it)
-                        && unit.movement.canReachInCurrentTurn(it) // Yes this is required despite the above line - see #14461
-                        && unit.getDamageFromTerrain(it) <= 0 // Don't end turn on damaging terrain for no good reason
-                        && (!stayInTerritory || it.getOwner() == unit.civ || unit.currentTile.getOwner() != unit.civ)
-                }
+        // We need a snapshot List for .random(rng) below.
+        val reachableTiles = unit.currentTile.getTilesAtDistanceSnapshot(1).filter {
+            it !in tilesToAvoid
+                && unit.movement.canMoveTo(it)
+                && unit.movement.canReachInCurrentTurn(it) // Yes this is required despite the above line - see #14461
+                && unit.getDamageFromTerrain(it) <= 0 // Don't end turn on damaging terrain for no good reason
+                && (!stayInTerritory || it.getOwner() == unit.civ || unit.currentTile.getOwner() != unit.civ)
+        }
         val rng = unit.cache.state.stateBasedRandom("UnitAutomation.wander")
-        if (reachableTiles.any()) unit.movement.moveToTile(reachableTiles.toList().random(rng))
+        if (reachableTiles.isNotEmpty()) unit.movement.moveToTile(reachableTiles.random(rng))
     }
 
     internal fun tryUpgradeUnit(unit: MapUnit): Boolean {
@@ -284,16 +283,22 @@ object UnitAutomation {
 
     private fun tryHeadTowardsEncampment(unit: MapUnit): Boolean {
         if (unit.hasUnique(UniqueType.SelfDestructs)) return false // don't use single-use units against barbarians...
-        val cities = unit.civ.cities
-        val knownEncampments = cities.asSequence()
-            .flatMap { it.getCenterTile().getTilesInDistance(6) }
-                .filter { it.isBarbarianEncampment() && unit.civ.hasExplored(it) }
-            .distinct()
-        val encampmentsCloseToCities = knownEncampments.asSequence()
-            .sortedBy { it.aerialDistanceTo(unit.currentTile) }
-        val encampmentToHeadTowards = encampmentsCloseToCities.firstOrNull { unit.movement.canReach(it) }
-            ?: return false
-        unit.movement.headTowards(encampmentToHeadTowards)
+        var closestReachableEncampment: Tile? = null
+        var closestDistance = Int.MAX_VALUE
+        for (city in unit.civ.cities) {
+            val nearestEncampment = city.getCenterTile().maxTileInDistanceRange(0..6) { tile ->
+                if (tile.isBarbarianEncampment() && unit.civ.hasExplored(tile) && unit.movement.canReach(tile))
+                    -tile.aerialDistanceTo(unit.currentTile)
+                else Int.MIN_VALUE
+            } ?: continue
+            val distance = -nearestEncampment.second
+            if (nearestEncampment.second != Int.MIN_VALUE && distance < closestDistance) {
+                closestReachableEncampment = nearestEncampment.first
+                closestDistance = distance
+            }
+        }
+        if (closestReachableEncampment == null) return false
+        unit.movement.headTowards(closestReachableEncampment)
         return true
     }
 
@@ -436,20 +441,20 @@ object UnitAutomation {
 
     @Readonly
     private fun getDangerousTiles(unit: MapUnit): HashSet<Tile> {
-        val nearbyEnemyUnits = unit.currentTile.getTilesInDistance(3)
-            .flatMap { tile -> tile.getUnits().filter { unit.civ.isAtWarWith(it.civ) } }
+        val dangerousTiles = HashSet<Tile>()
 
-        val tilesInRangeOfAttack = nearbyEnemyUnits
-            .flatMap { it.getTile().getTilesInDistance((it.getMaxMovement() - 1) + it.getRange()) }
+        unit.currentTile.forEachTileInDistance(3) { tile ->
+            for (nearbyEnemyUnit in tile.getUnits())
+                if (unit.civ.isAtWarWith(nearbyEnemyUnit.civ))
+                    nearbyEnemyUnit.getTile().forEachTileInDistance((nearbyEnemyUnit.getMaxMovement() - 1) + nearbyEnemyUnit.getRange()) { dangerousTiles.add(it) }
 
-        val tilesWithinBombardmentRange = unit.currentTile.getTilesInDistance(3)
-            .filter { it.isCityCenter() && it.getCity()!!.civ.isAtWarWith(unit.civ) }
-            .flatMap { it.getTilesInDistance(it.getCity()!!.getBombardRange()) }
+            if (tile.isCityCenter() && tile.getCity()!!.civ.isAtWarWith(unit.civ))
+                tile.forEachTileInDistance(tile.getCity()!!.getBombardRange()) { dangerousTiles.add(it) }
 
-        val tilesWithTerrainDamage = unit.currentTile.getTilesInDistance(3)
-            .filter { unit.getDamageFromTerrain(it) > 0 }
+            if (unit.getDamageFromTerrain(tile) > 0) dangerousTiles.add(tile)
+        }
 
-        return (tilesInRangeOfAttack + tilesWithinBombardmentRange + tilesWithTerrainDamage).toHashSet()
+        return dangerousTiles
     }
 
     /**
@@ -487,7 +492,9 @@ object UnitAutomation {
                 unit.getTile().position,
                 unit.getMaxMovement() * CLOSE_ENEMY_TURNS_AWAY_LIMIT
         )
-        val closeEnemy = TargetHelper.getAttackableEnemies(unit, unitDistanceToTiles, tilesToCheck = unit.getTile().getTilesInDistance(CLOSE_ENEMY_TILES_AWAY_LIMIT).toList())
+        // We need a snapshot List for getAttackableEnemies below.
+        val tilesToCheck = unit.getTile().getTilesInDistanceSnapshot(CLOSE_ENEMY_TILES_AWAY_LIMIT)
+        val closeEnemy = TargetHelper.getAttackableEnemies(unit, unitDistanceToTiles, tilesToCheck = tilesToCheck)
             .filterNot { unit.baseUnit.isRanged() && it.tileToAttack.isCityCenter() && it.tileToAttack.getCity()!!.health == 1 } // occurs fairly often probably because AI dumb
             .filter { unit.getDamageFromTerrain(it.tileToAttackFrom) <= 0 }  // Don't attack from a mountain or near enemy citadels
             .filter {
@@ -530,8 +537,7 @@ object UnitAutomation {
         // Move to the closest city with a tile we can enter nearby
         for (city in citiesToDefend) {
             if (unit.getTile().aerialDistanceTo(city.getCenterTile()) <= 2) return true
-            val tileToMoveTo = city.getCenterTile().getTilesInDistance(2)
-                .firstOrNull { unit.movement.canMoveTo(it) && unit.movement.canReach(it) } ?: continue
+            val tileToMoveTo = city.getCenterTile().firstTileInDistanceOrNull(2) { unit.movement.canMoveTo(it) && unit.movement.canReach(it) } ?: continue
             unit.movement.headTowards(tileToMoveTo)
             return true
         }
@@ -563,11 +569,21 @@ object UnitAutomation {
         if (siegedCities.any { it.getCenterTile().aerialDistanceTo(unit.getTile()) <= 2 })
             return false
 
-        val reachableTileNearSiegedCity = siegedCities
-                .flatMap { it.getCenterTile().getTilesAtDistance(2) }
-                .sortedBy { it.aerialDistanceTo(unit.currentTile) }
-                .firstOrNull { unit.movement.canMoveTo(it) && unit.movement.canReach(it)
-                        && unit.getDamageFromTerrain(it) <= 0 } // Avoid ending up on damaging terrain
+        var reachableTileNearSiegedCity: Tile? = null
+        var closestDistance = Int.MAX_VALUE
+        for (siegedCity in siegedCities) {
+            val nearestTile = siegedCity.getCenterTile().maxTileInDistanceRange(2..2) { tile ->
+                if (unit.movement.canMoveTo(tile) && unit.movement.canReach(tile)
+                        && unit.getDamageFromTerrain(tile) <= 0) // Avoid ending up on damaging terrain
+                    -tile.aerialDistanceTo(unit.currentTile)
+                else Int.MIN_VALUE
+            } ?: continue
+            val distance = -nearestTile.second
+            if (nearestTile.second != Int.MIN_VALUE && distance < closestDistance) {
+                reachableTileNearSiegedCity = nearestTile.first
+                closestDistance = distance
+            }
+        }
 
         if (reachableTileNearSiegedCity != null) {
             unit.movement.headTowards(reachableTileNearSiegedCity)
