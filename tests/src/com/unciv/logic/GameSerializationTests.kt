@@ -1,6 +1,7 @@
 package com.unciv.logic
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Json
 import com.unciv.Constants
 import com.unciv.UncivGame
@@ -22,6 +23,10 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.io.File
+import java.io.StringWriter
+import java.io.Writer
+import java.nio.file.Files
 
 
 @RunWith(BaseTestRunner::class)
@@ -29,6 +34,7 @@ class GameSerializationTests {
 
     private var game = GameInfo()
     private var settingsBackup = GameSettings()
+    private var saveZippedBackup = false
 
     /** A runtime Class object for [kotlin.SynchronizedLazyImpl] to enable helping Gdx.Json to
      * not StackOverflow on them, as a direct compile time retrieval is forbidden */
@@ -44,6 +50,7 @@ class GameSerializationTests {
 
     @Before
     fun prepareGame() {
+        saveZippedBackup = UncivFiles.saveZipped
         RulesetCache.loadRulesets(noMods = true)
 
         // Create a tiny game with just 1 human player and the barbarians
@@ -93,6 +100,103 @@ class GameSerializationTests {
     }
 
     @Test
+    fun canSaveAndLoadUncompressedGame() {
+        val saveFile = File.createTempFile("unciv-save-", ".json")
+        try {
+            UncivFiles.saveZipped = false
+            game.turns = 123
+            game.version = CompatibilityVersion.FIRST_WITHOUT
+
+            UncivGame.Current.files.saveGame(game, FileHandle(saveFile))
+            val loadedGame = UncivGame.Current.files.loadGameFromFile(FileHandle(saveFile))
+
+            Assert.assertTrue(saveFile.readText().startsWith('{'))
+            Assert.assertEquals(game.gameId, loadedGame.gameId)
+            Assert.assertEquals(game.turns, loadedGame.turns)
+            Assert.assertEquals(CompatibilityVersion.CURRENT_COMPATIBILITY_VERSION, loadedGame.version)
+            Assert.assertEquals(
+                game.getCivilization("Rome").cities.size,
+                loadedGame.getCivilization("Rome").cities.size
+            )
+        } finally {
+            saveFile.delete()
+        }
+    }
+
+    @Test
+    fun canSaveAndLoadCompressedGame() {
+        val saveFile = File.createTempFile("unciv-save-", ".json")
+        try {
+            UncivFiles.saveZipped = true
+            game.turns = 123
+
+            UncivGame.Current.files.saveGame(game, FileHandle(saveFile))
+            val loadedGame = UncivGame.Current.files.loadGameFromFile(FileHandle(saveFile))
+
+            Assert.assertFalse(saveFile.readText().startsWith('{'))
+            Assert.assertEquals(game.gameId, loadedGame.gameId)
+            Assert.assertEquals(game.turns, loadedGame.turns)
+            Assert.assertEquals(
+                game.getCivilization("Rome").cities.size,
+                loadedGame.getCivilization("Rome").cities.size
+            )
+        } finally {
+            saveFile.delete()
+        }
+    }
+
+    @Test
+    fun uncompressedSaveWritesDirectlyToFile() {
+        UncivFiles.saveZipped = false
+        val saveFile = WriterOnlyFileHandle()
+
+        UncivGame.Current.files.saveGame(game, saveFile)
+        val loadedGame = UncivFiles.gameInfoFromString(saveFile.output.toString())
+
+        Assert.assertEquals(game.gameId, loadedGame.gameId)
+    }
+
+    @Test
+    fun successfulSaveReportsCompletion() {
+        val saveFile = File.createTempFile("unciv-save-", ".json")
+        try {
+            UncivFiles.saveZipped = false
+            var callbackCount = 0
+            var callbackException: Exception? = null
+
+            UncivGame.Current.files.saveGame(game, FileHandle(saveFile)) {
+                callbackCount++
+                callbackException = it
+            }
+
+            Assert.assertEquals(1, callbackCount)
+            Assert.assertNull(callbackException)
+        } finally {
+            saveFile.delete()
+        }
+    }
+
+    @Test
+    fun failedSaveReportsException() {
+        val saveDirectory = Files.createTempDirectory("unciv-save-").toFile()
+        try {
+            UncivFiles.saveZipped = false
+            var callbackCount = 0
+            var callbackException: Exception? = null
+
+            UncivGame.Current.files.saveGame(game, FileHandle(saveDirectory)) {
+                callbackCount++
+                callbackException = it
+            }
+
+            Assert.assertEquals(1, callbackCount)
+            Assert.assertNotNull(callbackException)
+        } finally {
+            saveDirectory.delete()
+        }
+    }
+
+    @Test
     fun serializedLaziesTest() {
         val jsonSerializer = Json().apply {
             setIgnoreDeprecated(true)
@@ -113,6 +217,17 @@ class GameSerializationTests {
 
     @After
     fun cleanup() {
+        UncivFiles.saveZipped = saveZippedBackup
         settingsBackup.save()
+    }
+
+    private class WriterOnlyFileHandle : FileHandle("writer-only") {
+        val output = StringWriter()
+
+        override fun writer(append: Boolean, charset: String): Writer = output
+
+        override fun writeString(string: String, append: Boolean, charset: String) {
+            throw AssertionError("Uncompressed saves must not allocate a complete JSON string")
+        }
     }
 }

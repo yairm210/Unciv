@@ -177,8 +177,13 @@ class UncivFiles(
     fun saveGame(game: GameInfo, file: FileHandle, saveCompletionCallback: (Exception?) -> Unit = ::rethrowIfNotNull) {
         try {
             debug("Saving GameInfo %s to %s", game.gameId, file.path())
-            val string = gameInfoToString(game)
-            file.writeString(string, false, Charsets.UTF_8.name())
+            if (saveZipped) {
+                val string = gameInfoToString(game)
+                file.writeString(string, false, Charsets.UTF_8.name())
+            } else {
+                game.version = CompatibilityVersion.CURRENT_COMPATIBILITY_VERSION
+                json().toJson(game, file)
+            }
             saveCompletionCallback(null)
         } catch (ex: Exception) {
             saveCompletionCallback(ex)
