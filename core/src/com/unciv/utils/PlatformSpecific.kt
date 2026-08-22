@@ -1,5 +1,6 @@
 package com.unciv.utils
 
+import games.rednblack.miniaudio.MiniAudio
 import java.util.Locale
 
 interface PlatformSpecific {
@@ -7,8 +8,8 @@ interface PlatformSpecific {
     /** Notifies player that his multiplayer turn started */
     fun notifyTurnStarted() {}
 
-    /** Install system audio hooks */
-    fun installAudioHooks() {}
+    /** Platform-specific MiniAudio setup */
+    fun initAudio(miniAudio: MiniAudio) {}
 
     /** If not null, this is the path to the directory in which to store the local files - mods, saves, maps, etc */
     var customDataDirectory: String?

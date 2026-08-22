@@ -11,6 +11,7 @@ import com.unciv.models.UncivSound
 import com.unciv.models.metadata.GameSettings.WindowState.Companion.minimumHeight
 import com.unciv.models.metadata.GameSettings.WindowState.Companion.minimumWidth
 import com.unciv.models.translations.tr
+import com.unciv.ui.audio.MiniAudioFactory
 import com.unciv.ui.components.fonts.FontFamilyData
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyboardBindings
@@ -196,6 +197,9 @@ class GameSettings {
     var keepConsoleOpen = false
     /** Persist the history of successful developer console commands */
     val consoleCommandHistory = ArrayList<String>()
+
+    /** Configuration for MiniAudio initialization, optional but no UI (maybe in the future) */
+    val audioConfig: MiniAudioFactory.MiniAudioConfig? = null
 
     //endregion
 
