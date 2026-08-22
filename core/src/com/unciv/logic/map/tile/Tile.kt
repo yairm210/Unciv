@@ -633,12 +633,33 @@ class Tile : IsPartOfGameInfoSerialization {
         replaceWith = ReplaceWith("forEachTileAtDistance"))
     @Readonly fun getTilesAtDistance(distance: Int): Sequence<Tile> = tileMap.getTilesAtDistance(position, distance)
 
-    @Readonly fun forEachTileInDistance(distance: Int, op: (Tile)->Unit) = tileMap.forEachTileInDistance(position, distance, op)
-    @Readonly fun forEachTileInDistance(distance: Int, filter: (Tile)->Boolean, op: (Tile)->Unit) = tileMap.forEachTileInDistance(position, distance, filter, op)
-    @Readonly fun forEachTileInDistanceRange(range: IntRange, op: (Tile)->Unit) = tileMap.forEachTileInDistanceRange(position, range, op)
-    @Readonly fun forEachTileInDistanceRange(range: IntRange, filter: (Tile)->Boolean, op: (Tile)->Unit) = tileMap.forEachTileInDistanceRange(position, range, filter, op)
-    @Readonly fun forEachTileAtDistance(distance: Int, op: (Tile)->Unit) = tileMap.forEachTileAtDistance(position, distance, op)
-    @Readonly fun forEachTileAtDistance(distance: Int, filter: (Tile)->Boolean, op: (Tile)->Unit) = tileMap.forEachTileAtDistance(position, distance, filter, op)
+    /** @return All tiles in a hexagon of radius [distance] as a freshly allocated [List] snapshot, for cases that need to
+     *  mutate the map (or otherwise cannot use a live view) while iterating the result. */
+    @Readonly fun getTilesInDistanceSnapshot(distance: Int): List<Tile> = tileMap.getTilesInDistanceSnapshot(position, distance)
+    /** @return All tiles in a hexagonal ring in [range] as a freshly allocated [List] snapshot, for cases that need to
+     *  mutate the map (or otherwise cannot use a live view) while iterating the result. */
+    @Readonly fun getTilesInDistanceRangeSnapshot(range: IntRange): List<Tile> = tileMap.getTilesInDistanceRangeSnapshot(position, range)
+    /** @return All tiles at [distance] as a freshly allocated [List] snapshot, for cases that need to
+     *  mutate the map (or otherwise cannot use a live view) while iterating the result. */
+    @Readonly fun getTilesAtDistanceSnapshot(distance: Int): List<Tile> = tileMap.getTilesAtDistanceSnapshot(position, distance)
+
+    @Readonly inline fun forEachTileInDistance(distance: Int, crossinline op: (Tile)->Unit) = tileMap.forEachTileInDistance(position, distance, op)
+    @Readonly inline fun forEachTileInDistance(distance: Int, noinline filter: (Tile)->Boolean, crossinline op: (Tile)->Unit) = tileMap.forEachTileInDistance(position, distance, filter, op)
+    @Readonly inline fun firstTileInDistanceOrNull(distance: Int, noinline predicate: (Tile)->Boolean) = tileMap.firstTileInDistanceOrNull(position, distance, predicate)
+    @Readonly inline fun firstTileInDistanceOrNull(distance: Int, noinline filter: (Tile)->Boolean, noinline predicate: (Tile)->Boolean) = tileMap.firstTileInDistanceOrNull(position, distance, filter, predicate)
+    @Readonly inline fun anyTileInDistance(distance: Int, noinline predicate: (Tile)->Boolean) = tileMap.anyTileInDistance(position, distance, predicate)
+    @Readonly inline fun anyTileInDistance(distance: Int, noinline filter: (Tile)->Boolean, noinline predicate: (Tile)->Boolean) = tileMap.anyTileInDistance(position, distance, filter, predicate)
+    @Readonly inline fun countTilesInDistance(distance: Int, crossinline predicate: (Tile)->Boolean) = tileMap.countTilesInDistance(position, distance, predicate)
+    @Readonly inline fun <T> accumulateForEachTileInDistance(distance: Int, initial: T, crossinline accumulate: (T, Tile) -> T) = tileMap.accumulateForEachTileInDistance(position, distance, initial, accumulate)
+    @Readonly inline fun forEachTileInDistanceRange(range: IntRange, crossinline op: (Tile)->Unit) = tileMap.forEachTileInDistanceRange(position, range, op)
+    @Readonly inline fun forEachTileInDistanceRange(range: IntRange, noinline filter: (Tile)->Boolean, crossinline op: (Tile)->Unit) = tileMap.forEachTileInDistanceRange(position, range, filter, op)
+    @Readonly inline fun countTilesInDistanceRange(range: IntRange, crossinline predicate: (Tile)->Boolean) = tileMap.countTilesInDistanceRange(position, range, predicate)
+    @Readonly inline fun <T> accumulateForEachTileInDistanceRange(range: IntRange, initial: T, crossinline accumulate: (T, Tile) -> T) = tileMap.accumulateForEachTileInDistanceRange(position, range, initial, accumulate)
+    inline fun <R : Comparable<R>> maxTileInDistanceRange(range: IntRange, crossinline selector: (Tile)->R) = tileMap.maxTileInDistanceRange(position, range, selector)
+    @Readonly inline fun forEachTileAtDistance(distance: Int, crossinline op: (Tile)->Unit) = tileMap.forEachTileAtDistance(position, distance, op)
+    @Readonly inline fun forEachTileAtDistance(distance: Int, noinline filter: (Tile)->Boolean, crossinline op: (Tile)->Unit) = tileMap.forEachTileAtDistance(position, distance, filter, op)
+    @Readonly inline fun countTilesAtDistance(distance: Int, crossinline predicate: (Tile)->Boolean) = tileMap.countTilesAtDistance(position, distance, predicate)
+    @Readonly inline fun <T> accumulateForEachTileAtDistance(distance: Int, initial: T, crossinline accumulate: (T, Tile) -> T) = tileMap.accumulateForEachTileAtDistance(position, distance, initial, accumulate)
 
     @Readonly
     fun getDefensiveBonus(includeImprovementBonus: Boolean = true, unit: MapUnit? = null): Float {

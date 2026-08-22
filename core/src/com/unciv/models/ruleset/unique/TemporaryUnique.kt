@@ -42,10 +42,17 @@ fun ArrayList<TemporaryUnique>.getMatchingTagUniques(uniqueType: UniqueType, gam
 }
 
 @Readonly
-fun ArrayList<TemporaryUnique>.forEachMatchingUnique(uniqueType: UniqueType, gameContext: GameContext, op: (unique: Unique)->Unit) {
+inline fun ArrayList<TemporaryUnique>.forEachMatchingUnique(uniqueType: UniqueType, gameContext: GameContext, crossinline op: (unique: Unique)->Unit)
+    = firstMatchingUniqueOrNull(uniqueType, gameContext) { op(it); false }
+
+
+@Readonly
+inline fun ArrayList<TemporaryUnique>.firstMatchingUniqueOrNull(uniqueType: UniqueType, gameContext: GameContext, crossinline predicate: (unique: Unique)->Boolean): Unique? {
     for (i in 0..<size) {
         val unique = get(i).uniqueObject
-        if (unique.type == uniqueType && unique.conditionalsApply(gameContext))
-            unique.forEachMultiplied(gameContext, op)
+        if (unique.type == uniqueType && unique.conditionalsApply(gameContext) && predicate(unique)) {
+            return unique
+        }
     }
+    return null
 }
