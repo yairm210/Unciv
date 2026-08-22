@@ -12,6 +12,7 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.utils.DebugUtils
 import yairm210.purity.annotations.Readonly
 
 object CityLocationTileRanker {
@@ -39,13 +40,21 @@ object CityLocationTileRanker {
         val possibleCityLocations = unit.getTile().getTilesInDistance(range)
             // Filter out tiles that we can't actually found on
             .filter { tile -> uniques.any { it.conditionalsApply(GameContext(unit = unit, tile = tile)) } }
+            .filter { unit.civ.hasExplored(it) }
             .filter { canSettleTile(it, unit.civ, nearbyCities) && (unit.getTile() == it || unit.movement.canMoveTo(it)) }
         val bestTilesToFoundCity = BestTilesToFoundCity()
         val baseTileMap = HashMap<Tile, Float>()
 
+        // Assume unexplored tiles are worth the average of the explored tiles around us
+        val throwawayLuxuries = HashSet<TileResource>()
+        for (tile in unit.getTile().getTilesInDistance(range + 2))
+            // onCoast doesn't matter here, it does not change baseTileMap
+            if (unit.civ.hasExplored(tile)) rankTile(tile, unit.civ, false, throwawayLuxuries, baseTileMap, 0f)
+        val unexploredTilePrior = if (baseTileMap.isEmpty()) 0f else baseTileMap.values.average().toFloat()
+
         val possibleTileLocationsWithRank = possibleCityLocations
             .map {
-                var tileValue = rankTileToSettle(it, unit.civ, nearbyCities, baseTileMap)
+                var tileValue = rankTileToSettle(it, unit.civ, nearbyCities, baseTileMap, unexploredTilePrior)
                 val distanceScore = (unit.currentTile.aerialDistanceTo(it) * distanceModifier).coerceIn(0f, 99f)
                 tileValue *= (100 - distanceScore) / 100
                 if (tileValue >= minimumValue)
@@ -60,6 +69,9 @@ object CityLocationTileRanker {
             bestTilesToFoundCity.bestTile = bestReachableTile.first
             bestTilesToFoundCity.bestTileRank = bestReachableTile.second
         }
+
+        if (DebugUtils.SHOW_SETTLER_SCORES)
+            DebugUtils.SETTLER_SCORES = bestTilesToFoundCity.tileRankMap.entries.associate { it.key.position to it.value }
 
         return bestTilesToFoundCity
     }
@@ -88,7 +100,7 @@ object CityLocationTileRanker {
     }
 
     private fun rankTileToSettle(newCityTile: Tile, civ: Civilization, nearbyCities: Sequence<City>,
-                                 baseTileMap: HashMap<Tile, Float>): Float {
+                                 baseTileMap: HashMap<Tile, Float>, unexploredTilePrior: Float = 0f): Float {
         var tileValue = 0f
         tileValue += getDistanceToCityModifier(newCityTile, nearbyCities, civ)
 
@@ -128,7 +140,7 @@ object CityLocationTileRanker {
             //Ideally, we shouldn't really count the center tile, as it's converted into 1 production 2 food anyways with special cases treated above, but doing so can lead to AI moving settler back and forth until forever
             for (nearbyTile in newCityTile.getTilesAtDistance(i)) {
                 tiles++
-                tileValue += rankTile(nearbyTile, civ, onCoast, newUniqueLuxuryResources, baseTileMap) * (3f / (i + 1))
+                tileValue += rankTile(nearbyTile, civ, onCoast, newUniqueLuxuryResources, baseTileMap, unexploredTilePrior) * (3f / (i + 1))
                 //Tiles close to the city can be worked more quickly, and thus should gain higher weight.
             }
         }
@@ -167,7 +179,9 @@ object CityLocationTileRanker {
     }
 
     private fun rankTile(rankTile: Tile, civ: Civilization, onCoast: Boolean, newUniqueLuxuryResources: HashSet<TileResource>,
-                         baseTileMap: HashMap<Tile, Float>): Float {
+                         baseTileMap: HashMap<Tile, Float>, unexploredTilePrior: Float = 0f): Float {
+        // Unexplored tiles are unknown - estimate them as an average tile instead of reading the actual map
+        if (!civ.hasExplored(rankTile)) return unexploredTilePrior
         if (rankTile.getCity() != null) return -1f
         var locationSpecificTileValue = 0f
         // Don't settle near but not on the coast
