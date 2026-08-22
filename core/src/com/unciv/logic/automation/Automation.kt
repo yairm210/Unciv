@@ -198,7 +198,6 @@ object Automation {
 
     @Readonly
     fun chooseMilitaryUnit(city: City, availableUnits: Sequence<BaseUnit>): BaseUnit? {
-        val rng = city.state.stateBasedRandom("Automation.chooseMilitaryUnit")
         val currentChoice = city.cityConstructions.getCurrentConstruction()
         if (currentChoice is BaseUnit && !currentChoice.isCivilian()) return currentChoice
 
@@ -257,16 +256,16 @@ object Automation {
                 .filter { isNavalMeleeUnit(it) }
                 .maxBy { it.cost }
         }
-        else { // randomize type of unit and take the most expensive of its kind
+        else { // take the strongest unit type we can build, best version of its kind
             val bestUnitsForType = hashMapOf<String, BaseUnit>()
             for (unit in militaryUnits) {
                 if (bestUnitsForType[unit.unitType] == null || bestUnitsForType[unit.unitType]!!.cost < unit.cost) {
                     bestUnitsForType[unit.unitType] = unit
                 }
             }
-            // Check the maximum force evaluation for the shortlist so we can prune useless ones (ie scouts)
             val bestForce = bestUnitsForType.maxOfOrNull { it.value.getForceEvaluation() } ?: return null
-            chosenUnit = bestUnitsForType.filterValues { it.uniqueTo != null || it.getForceEvaluation() > bestForce / 3 }.values.random(rng)
+            chosenUnit = bestUnitsForType.filterValues { it.uniqueTo != null || it.getForceEvaluation() > bestForce / 3 }
+                .values.maxBy { it.getForceEvaluation() }
         }
         return chosenUnit
     }
