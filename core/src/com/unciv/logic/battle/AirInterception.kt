@@ -161,8 +161,7 @@ object AirInterception {
             .firstOrNull { unit ->
                 // Can't intercept if we have a unique preventing it
                 val conditionalState = GameContext(interceptingCiv, ourCombatant = MapUnitCombatant(unit), theirCombatant = attacker, combatAction = CombatAction.Intercept, attackedTile = attackedTile)
-                unit.getMatchingUniques(UniqueType.CannotInterceptUnits, conditionalState)
-                    .none { attacker.matchesFilter(it.params[0]) }
+                !unit.hasUnique(UniqueType.CannotInterceptUnits, conditionalState) { attacker.matchesFilter(it.params[0]) } 
                     // Defender can't intercept either
                     && unit != (defender as? MapUnitCombatant)?.unit
             }

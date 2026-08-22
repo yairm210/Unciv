@@ -49,7 +49,7 @@ object Nuke {
         }
 
         val blastRadius = nuke.unit.getNukeBlastRadius()
-        for (tile in targetTile.getTilesInDistance(blastRadius)) {
+        targetTile.forEachTileInDistance(blastRadius) { tile ->
             checkDefenderCiv(tile.getOwner())
             checkDefenderCiv(Battle.getMapCombatantOfTile(tile)?.getCivInfo())
         }
@@ -59,13 +59,13 @@ object Nuke {
     @Suppress("FunctionName")   // Yes we want this name to stand out
     fun NUKE(attacker: MapUnitCombatant, targetTile: Tile) {
         val attackingCiv = attacker.getCivInfo()
-        val nukeStrength = attacker.unit.getMatchingUniques(UniqueType.NuclearWeapon)
-            .firstOrNull()?.params?.get(0)?.toInt() ?: return
+        val nukeStrength = attacker.unit.firstMatchingUniqueOrNull(UniqueType.NuclearWeapon) { true }
+            ?.params?.get(0)?.toInt() ?: return
 
-        val blastRadius = attacker.unit.getMatchingUniques(UniqueType.BlastRadius)
-            .firstOrNull()?.params?.get(0)?.toInt() ?: 2
+        val blastRadius = attacker.unit.firstMatchingUniqueOrNull(UniqueType.BlastRadius) { true }
+            ?.params?.get(0)?.toInt() ?: 2
 
-        val hitTiles = targetTile.getTilesInDistance(blastRadius)
+        val hitTiles = targetTile.getTilesInDistanceSnapshot(blastRadius)
 
         val (hitCivsTerritory, notifyDeclaredWarCivs) =
             declareWarOnHitCivs(attackingCiv, hitTiles, attacker, targetTile)
@@ -150,7 +150,7 @@ object Nuke {
 
     private fun declareWarOnHitCivs(
         attackingCiv: Civilization,
-        hitTiles: Sequence<Tile>,
+        hitTiles: List<Tile>,
         attacker: MapUnitCombatant,
         targetTile: Tile
     ): Pair<ArrayList<Civilization>, ArrayList<Civilization>> {
@@ -306,12 +306,8 @@ object Nuke {
     }
 
     @Readonly
-    private fun City.getAggregateModifier(uniqueType: UniqueType): Float {
-        var modifier = 1f
-        for (unique in getMatchingUniques(uniqueType)) {
-            if (!matchesFilter(unique.params[1])) continue
-            modifier *= unique.params[0].toPercent()
+    private fun City.getAggregateModifier(uniqueType: UniqueType): Float =
+        accumulateForEachMatchingUnique(uniqueType, state, 1f) { acc, unique ->
+            if (!matchesFilter(unique.params[1])) acc else acc * unique.params[0].toPercent()
         }
-        return modifier
-    }
 }

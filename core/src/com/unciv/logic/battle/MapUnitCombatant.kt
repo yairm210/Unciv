@@ -37,7 +37,7 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
 
     override fun getAttackingStrength(defender: ICombatant?): Int {
         val state = GameContext(this, defender, this.getTile(), CombatAction.Attack)
-        val extraStrength = unit.getMatchingUniques(UniqueType.StrengthAmount, state).sumOf { it.params[0].toInt() }
+        val extraStrength = unit.accumulateForEachMatchingUnique(UniqueType.StrengthAmount, state, 0) { acc, unique -> acc + unique.params[0].toInt() }
         return if (isRanged()) unit.baseUnit.rangedStrength + extraStrength
         else unit.baseUnit.strength + extraStrength
     }
@@ -45,7 +45,7 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     override fun getDefendingStrength(attacker: ICombatant?): Int {
         val attackedByRanged = attacker?.isRanged() == true
         val state = GameContext(this, attacker, this.getTile(), CombatAction.Defend)
-        val extraStrength = unit.getMatchingUniques(UniqueType.StrengthAmount, state).sumOf { it.params[0].toInt() }
+        val extraStrength = unit.accumulateForEachMatchingUnique(UniqueType.StrengthAmount, state, 0) { acc, unique -> acc + unique.params[0].toInt() }
         return if (unit.isEmbarked() && !isCivilian())
             unit.civ.getEra().embarkDefense
         else if (isRanged() && attackedByRanged)
@@ -61,17 +61,23 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
         return unit.name + " of " + unit.civ.civID
     }
 
-    @Readonly 
-    fun getMatchingUniques(uniqueType: UniqueType, gameContext: GameContext, checkCivUniques: Boolean): Sequence<Unique> =
-        unit.getMatchingUniques(uniqueType, gameContext, checkCivUniques)
+    @Readonly
+    fun forEachMatchingUnique(uniqueType: UniqueType, gameContext: GameContext, checkCivUniques: Boolean, op: (Unique) -> Unit) =
+        unit.forEachMatchingUnique(uniqueType, gameContext, checkCivUniques, op)
+
+    /** Folds [accumulate] over every unique matching [uniqueType], starting from [initial]. Useful for e.g. summing up bonuses. */
+    @Readonly
+    inline fun <T> accumulateForEachMatchingUnique(uniqueType: UniqueType, gameContext: GameContext, checkCivUniques: Boolean, initial: T, crossinline accumulate: (T, Unique) -> T): T =
+        unit.accumulateForEachMatchingUnique(uniqueType, gameContext, checkCivUniques, initial, accumulate)
 
     @Readonly
-    override fun getTriggeredUniques(
+    override fun forEachTriggeredUnique(
         trigger: UniqueType,
         gameContext: GameContext,
-        triggerFilter: (Unique) -> Boolean
-    ): Sequence<Unique> {
-        return unit.getTriggeredUniques(trigger, gameContext, triggerFilter)
+        triggerFilter: (Unique) -> Boolean,
+        op: (Unique) -> Unit
+    ) {
+        unit.forEachTriggeredUnique(trigger, gameContext, triggerFilter, op)
     }
 
     @Readonly

@@ -49,8 +49,8 @@ class CityCombatant(val city: City) : ICombatant {
         var strength = modConstants.cityStrengthBase
         strength += (city.population.population * modConstants.cityStrengthPerPop) // Each 5 pop gives 2 defence
         val cityTile = city.getCenterTile()
-        for (unique in cityTile.allTerrains.flatMap { it.getMatchingUniques(UniqueType.GrantsCityStrength) })
-            strength += unique.params[0].toInt()
+        for (terrain in cityTile.allTerrains)
+            strength += terrain.accumulateForEachMatchingUnique(UniqueType.GrantsCityStrength, GameContext.EmptyState, 0) { acc, unique -> acc + unique.params[0].toInt() }
         // as tech progresses so does city strength
         val techCount = getCivInfo().gameInfo.ruleset.technologies.size
         val techsPercentKnown: Float = if (techCount > 0) city.civ.tech.techsResearched.size.toFloat() / techCount else 0.5f // for mods with no tech
@@ -64,26 +64,24 @@ class CityCombatant(val city: City) : ICombatant {
         if (cityTile.militaryUnit != null)
             strength += cityTile.militaryUnit!!.baseUnit.strength * (cityTile.militaryUnit!!.health / 100f) * modConstants.cityStrengthFromGarrison
 
-        var buildingsStrength = city.getStrength()
         val gameContext = GameContext(getCivInfo(), city, ourCombatant = this, theirCombatant = theirCombatant, combatAction = combatAction)
 
-        for (unique in getCivInfo().getMatchingUniques(UniqueType.BetterDefensiveBuildings, gameContext))
-            buildingsStrength *= unique.params[0].toPercent()
+        val buildingsStrength = getCivInfo().accumulateForEachMatchingUnique(UniqueType.BetterDefensiveBuildings, gameContext, city.getStrength()) { acc, unique -> acc * unique.params[0].toPercent() }
         strength += buildingsStrength
 
-        val extraStrength = city.getMatchingUniques(UniqueType.StrengthAmount, gameContext).sumOf { it.params[0].toInt() }
-        strength += extraStrength
+        strength += city.accumulateForEachMatchingUnique(UniqueType.StrengthAmount, gameContext, 0) { acc, unique -> acc + unique.params[0].toInt() }
 
         return strength.roundToInt()
     }
 
     @Readonly
-    override fun getTriggeredUniques(
+    override fun forEachTriggeredUnique(
         trigger: UniqueType,
         gameContext: GameContext,
-        triggerFilter: (Unique) -> Boolean
-    ): Sequence<Unique> {
-        return city.getTriggeredUniques(trigger, gameContext, triggerFilter)
+        triggerFilter: (Unique) -> Boolean,
+        op: (Unique) -> Unit
+    ) {
+        city.forEachTriggeredUnique(trigger, gameContext, triggerFilter, op = op)
     }
 
     override fun toString() = city.name // for debug
