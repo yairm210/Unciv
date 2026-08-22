@@ -25,7 +25,7 @@ fun json() = Json(JsonWriter.OutputType.json).apply {
     setSerializer(Duration::class.java, DurationSerializer())
     setSerializer(KeyCharAndCode::class.java, KeyCharAndCode.Serializer())
     setSerializer(HexCoord::class.java, HexCoord.Serializer())
-    //setSerializer(String::class.java, StringInterningSerializer())
+    setSerializer(String::class.java, StringInterningSerializer())
 }
 
 /**
