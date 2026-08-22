@@ -56,7 +56,9 @@ fun <T> Json.fromJsonFile(tClass: Class<T>, file: FileHandle): T {
 private class StringInterningSerializer : Json.Serializer<String> {
     override fun write(json: Json, key: String, knownType: Class<*>?) = json.writeValue(key as Any?, String::class.java, null)
 
-    override fun read(json: Json, jsonData: JsonValue, type: Class<*>?): String
-    = if (jsonData.type() == JsonValue.ValueType.`object`) (json.readValue("value", type, jsonData) as String)
-        else jsonData.asString().intern()
+    override fun read(json: Json, jsonData: JsonValue, type: Class<*>?) = when {
+        jsonData.isNull -> null
+        jsonData.type() == JsonValue.ValueType.`object` -> json.readValue("value", type, jsonData) as String
+        else -> jsonData.asString().intern()
+    }
 }
