@@ -212,6 +212,30 @@ enum class Countables(
         }
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
     },
+    
+    FilteredPopulation("[populationFilter] in [cityFilter] Cities") {
+        
+        override fun eval(parameterText: String, gameContext: GameContext): Int? {
+            val (populationFilter, cityFilter) = parameterText.getPlaceholderParameters()
+
+            if (cityFilter == "in this city" && gameContext.city != null)
+                return gameContext.city.population.getPopulationFilterAmount(populationFilter)
+            else {
+                val cities = gameContext.civInfo?.cities ?: return null
+                return cities.asSequence()
+                    .filter { it.matchesFilter(cityFilter, gameContext.civInfo) }
+                    .sumOf { city -> city.population.getPopulationFilterAmount(populationFilter) }
+            }
+        }
+
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
+            val params = parameterText.getPlaceholderParameters()
+            return UniqueParameterType.PopulationFilter.getErrorSeverity(params[0], ruleset) 
+                ?: UniqueParameterType.CityFilter.getErrorSeverity(params[1], ruleset)
+        }
+        
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
+    },    
 
     FilteredCitiesByCivs("[cityFilter] Cities of [civFilter] Civilizations") {
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
