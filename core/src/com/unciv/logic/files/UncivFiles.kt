@@ -34,6 +34,7 @@ private const val MULTIPLAYER_FILES_FOLDER = "MultiplayerGames"
 private const val AUTOSAVE_FILE_NAME = "Autosave"
 const val SETTINGS_FILE_NAME = "GameSettings.json"
 const val MOD_LIST_CACHE_FILE_NAME = "ModListCache.json"
+const val EXCLUDED_MOD_AUTHORS_FILE_NAME = "ExcludedModAuthors.txt"
 
 class UncivFiles(
     /**
@@ -363,6 +364,17 @@ class UncivFiles(
         }
         catch (ex: Exception){ // Not a huge deal if this fails
             Log.error("Error loading mod cache", ex)
+            return emptyList()
+        }
+    }
+    
+    fun loadExcludedModAuthors(): Iterable<String> {
+        val file = getLocalFile(EXCLUDED_MOD_AUTHORS_FILE_NAME)
+        if (!file.exists()) return emptyList()
+        try {
+            return file.reader().readLines()
+        } catch (ex: Exception) {
+            Log.error("Error loading mod author exclusion list", ex)
             return emptyList()
         }
     }
