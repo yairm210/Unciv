@@ -36,6 +36,7 @@ class GameSettings {
     /** Orientation for mobile platforms */
     var displayOrientation = ScreenOrientation.Landscape
     var screenMode = 0
+
     /** Allows panning the map by moving the pointer to the screen edges */
     var mapAutoScroll = false
     /** How fast the map pans using keyboard or with [mapAutoScroll] and mouse */
@@ -168,6 +169,9 @@ class GameSettings {
     // Controlled by dragging the minimap
     var minimapSize = 6    // default corresponds to 15% screen space
 
+    // Controlled by dragging TileInfoTable
+    var tileInfoPosition: WidgetPosition = WidgetPosition.Right
+
     // This was a checkbox setting long ago
     val showPixelUnits get() = unitSet != null
 
@@ -260,6 +264,11 @@ class GameSettings {
     enum class PathfindingAlgorithm {
         ClassicPathfinding,
         AStarPathfinding
+    }
+
+    enum class WidgetPosition {
+        Right,
+        Bottom
     }
 
     enum class NationPickerListMode { Icons, List }
