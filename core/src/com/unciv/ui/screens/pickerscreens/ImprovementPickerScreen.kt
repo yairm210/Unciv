@@ -329,9 +329,9 @@ class ImprovementPickerScreen(
                 val removalName = Constants.remove + tile.lastTerrain.name
                 removalImprovement = ruleset.tileImprovements[removalName]
                 if (removalImprovement != null) {
+                    // Check for removals that need a tech that's not yet researched
                     val cannotRemoveReport = getProblemReport(tileWithoutLastTerrain!!, null, removalImprovement!!)
-                        ?: return null
-                    proposedSolutions.addAll(cannotRemoveReport.proposedSolutions)
+                    if (cannotRemoveReport != null) proposedSolutions.addAll(cannotRemoveReport.proposedSolutions)
                     proposedSolutions.add("${Constants.remove}[${tile.lastTerrain.name}] first" to removalImprovement!!.makeLink())
                 }
             }
