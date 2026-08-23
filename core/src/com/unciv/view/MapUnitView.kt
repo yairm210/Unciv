@@ -18,6 +18,8 @@ class MapUnitView(unit: MapUnit, private val civView: CivView) : ForeignMapUnitV
     // This is pure UI and should be migrated somewhere where it can be shared by both its usages
     @Readonly fun getMovementString(): String = unit.getMovementString()
     @Readonly fun isMoving(): Boolean = unit.isMoving()
+    @Readonly fun isExploring(): Boolean = unit.isExploring()
+    @Readonly fun isEscorting(): Boolean = unit.isEscorting()
     @Readonly fun getMovementDestination(): TileView = civView.gameView.tileMapView.getTile(unit.getMovementDestination())
     /** `true` if [unit] was removed from its tile (captured, killed) since being selected. */
     @Readonly fun hasDisappeared(): Boolean = unit !in unit.getTile().getUnits()
@@ -69,6 +71,11 @@ class MapUnitView(unit: MapUnit, private val civView: CivView) : ForeignMapUnitV
     }
     fun tryHeadTowards(tileView: TileView): Boolean {
         unit.movement.headTowards(tileView.getTile())
+        return true
+    }
+    fun trySetMoveToAction(tileView: TileView): Boolean {
+        val position = tileView.position()
+        unit.action = "moveTo ${position.x},${position.y}"
         return true
     }
 }

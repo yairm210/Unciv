@@ -301,7 +301,7 @@ class WorldMapHolder(
             var pathToTile: List<Tile>? = null
             try {
                 tileToMoveTo = selectedUnit.movement.getTileToMoveToThisTurn(targetTile)
-                if (!selectedUnit.type.isAirUnit() && !selectedUnit.isPreparingParadrop())
+                if (!selectedUnitView.isAirUnit() && !selectedUnitView.isPreparingParadrop())
                     pathToTile = selectedUnit.movement.getDistanceToTiles().getPathToTile(tileToMoveTo)
             } catch (ex: Exception) {
                 when (ex) {
@@ -326,22 +326,21 @@ class WorldMapHolder(
                     // I can't think of any way to avoid this,
                     // but it's so rare and edge-case-y that ignoring its failure is actually acceptable, hence the empty catch
                     val tileMapView = worldScreen.selectedGameView.tileMapView
-                    val previousTileView = tileMapView.getTile(selectedUnit.currentTile)
+                    val previousTileView = selectedUnitView.getTile()
                     selectedUnit.movement.moveToTile(tileToMoveTo)
 
                     // If you try to send a unit to a tile that it can't even get nearer to, then this is actualy a dud
-                    if (previousTileView.getTile() == selectedUnit.currentTile){
+                    if (previousTileView == selectedUnitView.getTile()){
                         removeUnitActionOverlay() // so the user knows the action 'has been performed'
                         return@launchOnGLThread
                     }
 
-                    if (selectedUnit.isExploring() || selectedUnit.isMoving())
+                    if (selectedUnitView.isExploring() || selectedUnitView.isMoving())
                         selectedUnitView.tryResetAction() // remove explore on manual move
                     SoundPlayer.play(UncivSound.Whoosh)
-                    if (selectedUnit.currentTile != targetTile)
-                        selectedUnit.action =
-                                "moveTo ${targetTile.position.x},${targetTile.position.y}"
-                    if (selectedUnit.hasMovement()) worldScreen.bottomUnitTable.selectUnit(selectedUnitView)
+                    if (selectedUnitView.getTile() != targetTileView)
+                        selectedUnitView.trySetMoveToAction(targetTileView)
+                    if (selectedUnitView.hasMovement()) worldScreen.bottomUnitTable.selectUnit(selectedUnitView)
 
                     worldScreen.shouldUpdate = true
 
@@ -349,7 +348,7 @@ class WorldMapHolder(
                         val tileToMoveToView = tileMapView.getTile(tileToMoveTo)
                         val pathToTileViews = pathToTile.map { tileMapView.getTile(it) }
                         animateMovement(previousTileView, selectedUnitView, tileToMoveToView, pathToTileViews)
-                        if (selectedUnit.isEscorting()) {
+                        if (selectedUnitView.isEscorting()) {
                             animateMovement(previousTileView, selectedUnitView.getOtherEscortUnit()!!, tileToMoveToView, pathToTileViews)
                         }
                     }
@@ -358,7 +357,7 @@ class WorldMapHolder(
                         moveUnitToTargetTile(selectedUnits.subList(1, selectedUnits.size), targetTileView)
                     } else removeUnitActionOverlay() //we're done here
 
-                    if (UncivGame.Current.settings.autoUnitCycle && !selectedUnit.hasMovement())
+                    if (UncivGame.Current.settings.autoUnitCycle && !selectedUnitView.hasMovement())
                         worldScreen.switchToNextUnit()
 
                 } catch (ex: Exception) {
@@ -413,17 +412,16 @@ class WorldMapHolder(
     }
 
     internal fun swapMoveUnitToTargetTile(selectedUnitView: MapUnitView, targetTileView: TileView) {
-        val selectedUnit = selectedUnitView.getUnit()
         markUnitMoveTutorialComplete(selectedUnitView)
         selectedUnitView.trySwapMoveToTile(targetTileView, keepEscorting = true)
 
-        if (selectedUnit.isExploring() || selectedUnit.isMoving())
+        if (selectedUnitView.isExploring() || selectedUnitView.isMoving())
             selectedUnitView.tryResetAction() // remove explore on manual swap-move
 
         // Play something like a swish-swoosh
         SoundPlayer.play(UncivSound.Swap)
 
-        if (selectedUnit.hasMovement()) worldScreen.bottomUnitTable.selectUnit(selectedUnitView)
+        if (selectedUnitView.hasMovement()) worldScreen.bottomUnitTable.selectUnit(selectedUnitView)
 
         worldScreen.shouldUpdate = true
         removeUnitActionOverlay()
