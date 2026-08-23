@@ -162,8 +162,6 @@ class WorldMapHolder(
     }
 
     fun onTileClicked(tileView: TileView) {
-        val tile = tileView.getTile()
-
         removeUnitActionOverlay()
         selectedTile = tileView
         unitMovementPaths.clear()
@@ -213,11 +211,11 @@ class WorldMapHolder(
         }
 
         if (newSelectedUnit == null || newSelectedUnit.isCivilian()) {
-            val unitsInTile = tile.getUnits()
+            val unitsInTile = tileView.getVisibleUnits()
             if (previousSelectedCity != null && previousSelectedCity.canBombard()
-                    && tile.getTilesInDistance(2).contains(previousSelectedCity.getCenterTile().getTile())
+                    && tileView.getVisibleTilesInDistance(2).contains(previousSelectedCity.getCenterTile())
                     && unitsInTile.any()
-                    && unitsInTile.first().civ.isAtWarWith(worldScreen.selectedGameView.civView.getCiv())) {
+                    && unitsInTile.first().civ().isAtWarWith(worldScreen.selectedGameView.civView)) {
                 // try to select the closest city to bombard this guy
                 unitTable.citySelected(previousSelectedCity.getCity())
             }
@@ -507,9 +505,9 @@ class WorldMapHolder(
         val tile = tileView.getTile()
         val tileMapView = worldScreen.selectedGameView.tileMapView
         Concurrency.run("ConnectRoad") {
-           val validTile = tile.isLand &&
-               !tile.isImpassible() &&
-                selectedUnit.civ.hasExplored(tile)
+           val validTile = tileView.isLand &&
+               !tileView.isImpassible() &&
+                selectedUnitView.isExplored(tileView)
 
             if (validTile) {
                 val roadPath: List<Tile>? =
@@ -531,25 +529,25 @@ class WorldMapHolder(
     }
 
     private fun addMovingSpyOverlay(spy: Spy, tileView: TileView) {
-        val tile = tileView.getTile()
-        val city: City? = if (tile.isCityCenter() && spy.canMoveTo(tile.getCity()!!)) tile.getCity() else null
+        val cityView = tileView.owningCity()
+        val city: City? = if (tileView.isCityCenter() && cityView != null && spy.canMoveTo(cityView.getCity())) cityView.getCity() else null
         addTileOverlays(tileView, MoveSpyOverlayButtonData(spy, city))
         worldScreen.shouldUpdate = true
     }
 
     private fun addTileOverlays(tileView: TileView, buttonDto: OverlayButtonData? = null) {
-        val tile = tileView.getTile()
         val table = Table().apply { defaults().pad(10f) }
         if (buttonDto != null && worldScreen.canChangeState)
             table.add(buttonDto.createButton(this))
 
         val unitList = ArrayList<MapUnitView>()
         val civView = worldScreen.selectedGameView.civView
+        val airUnits = tileView.getAirUnits()
         if (tileView.isCityCenter()
                 && (tileView.getOwner() == civView || civView.isSpectator())) {
             unitList.addAll(tileView.owningCity()!!.getCenterTile().getVisibleUnits().map { it.tryGetMapUnitView()!! })
-        } else if (tile.airUnits.isNotEmpty()
-                && (tile.airUnits.first().civ == civView.getCiv() || civView.isSpectator())) {
+        } else if (airUnits.isNotEmpty()
+                && (airUnits.first().civ() == civView || civView.isSpectator())) {
             unitList.addAll(tileView.getVisibleUnits().map { it.tryGetMapUnitView()!! })
         }
 
