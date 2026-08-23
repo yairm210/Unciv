@@ -184,6 +184,8 @@ project(":core") {
         "implementation"(rootProject.libs.kotlin.reflect)
 
         "implementation"(rootProject.libs.purity.annotations)
+        // androidx isn't actually android-specific and core/desktop are safe to depend on it
+        "implementation"(rootProject.libs.androidx.collection)
 
         "api"(rootProject.libs.bundles.ktor.client)
     }
