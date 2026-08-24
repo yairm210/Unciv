@@ -730,4 +730,16 @@ class PathfindingTests(private val pathfindingAlgorithm: PathfindingAlgorithm) {
                 apply(tile)
         }
     }
+
+    @Test
+    fun connectRoadPathingMustIncludeBothEndpoints() {
+        // Arrange
+        civInfo.tech.addTechnology("The Wheel", false)
+        val worker = testGame.addUnit("Worker", civInfo, originTile)
+        val destination = testGame.getTile(5, 3)
+        // Act
+        val path = worker.movement.getRoadPath(destination) ?: emptyList()
+        // Assert
+        assertTrue("getRoadPath must contain both endpoints", originTile in path && destination in path)
+    }
 }
