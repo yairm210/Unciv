@@ -508,9 +508,7 @@ class WorldMapHolder(
                 selectedUnitView.isExplored(tileView)
 
             if (validTile) {
-                val roadPath: List<Tile>? =
-                    if (UncivGame.Current.settings.useAStarPathfinding) selectedUnit.movement.getRoadPath(selectedUnit.getTile())
-                    else MapPathing.getRoadPath(selectedUnit.civ, selectedUnit.getTile(), tile)
+                val roadPath: List<Tile>? = selectedUnit.movement.getRoadPath(tile)
                 launchOnGLThread {
                     if (roadPath == null) { // give the regular tile overlays with no road connection
                         addTileOverlays(tileView)
