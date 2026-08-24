@@ -45,7 +45,7 @@ class RulesetValidatorTests {
         val errors = game.ruleset.getErrorList()
 
         assertTrue(errors.any {
-            it.errorSeverityToReport == RulesetErrorSeverity.WarningOptionsOnly
+            it.errorSeverityToReport == RulesetErrorSeverity.OK
                 && it.text.contains("\"Park\"")
                 && it.text.contains("Building")
                 && it.text.contains("Nation.spyNames")
@@ -66,7 +66,7 @@ class RulesetValidatorTests {
         val errors = game.ruleset.getErrorList()
 
         assertTrue(errors.any {
-            it.errorSeverityToReport == RulesetErrorSeverity.WarningOptionsOnly
+            it.errorSeverityToReport == RulesetErrorSeverity.OK
                 && it.text.contains("\"Park\"")
                 && it.text.contains("Building")
                 && it.text.contains("Religion")
@@ -87,7 +87,7 @@ class RulesetValidatorTests {
         val errors = game.ruleset.getErrorList()
 
         assertTrue(errors.any {
-            it.errorSeverityToReport == RulesetErrorSeverity.WarningOptionsOnly
+            it.errorSeverityToReport == RulesetErrorSeverity.OK
                 && it.text.contains("\"Park\"")
                 && it.text.contains("Building")
                 && it.text.contains("Religion")
@@ -107,7 +107,7 @@ class RulesetValidatorTests {
         val errors = game.ruleset.getErrorList()
 
         assertTrue(errors.any {
-            it.errorSeverityToReport == RulesetErrorSeverity.WarningOptionsOnly
+            it.errorSeverityToReport == RulesetErrorSeverity.OK
                 && it.text.contains("\"Park\"")
                 && it.text.contains("Building")
                 && it.text.contains("Nation.leaderName")
@@ -127,7 +127,7 @@ class RulesetValidatorTests {
         val errors = game.ruleset.getErrorList()
 
         assertTrue(errors.any {
-            it.errorSeverityToReport == RulesetErrorSeverity.WarningOptionsOnly
+            it.errorSeverityToReport == RulesetErrorSeverity.OK
                 && it.text.contains("\"Park\"")
                 && it.text.contains("Building")
                 && it.text.contains("Nation.cities")
