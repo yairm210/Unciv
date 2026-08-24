@@ -1,8 +1,6 @@
 package com.unciv
 
 import com.badlogic.gdx.*
-import com.unciv.UncivGame.Companion.Current
-import com.unciv.UncivGame.Companion.isCurrentInitialized
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.Version
@@ -315,7 +313,11 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         val newScreen = screenStack.last()
         setScreen(newScreen)
         newScreen.resume()
-        oldScreen.dispose()
+        // Disposing the old screen's stage must not happen while we're still inside its own touch event
+        // dispatch (e.g. this was called from a button's click listener) - see #15420/#15434: disposing
+        // the stage synchronously can crash with an NPE inside Gdx's ActorGestureListener when that
+        // in-flight dispatch resumes.
+        Concurrency.runOnGLThread { oldScreen.dispose() }
         return newScreen
     }
 
@@ -324,12 +326,13 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         val oldScreen = screenStack.removeLast()
         screenStack.addLast(newScreen)
         setScreen(newScreen)
-        oldScreen.dispose()
+        Concurrency.runOnGLThread { oldScreen.dispose() }
     }
 
     /** Resets the game to the stored world screen and automatically [disposes][Screen.dispose] all other screens. */
     fun resetToWorldScreen(): WorldScreen {
-        for (screen in screenStack.filter { it !is WorldScreen }) screen.dispose()
+        val screensToDispose = screenStack.filter { it !is WorldScreen }
+        Concurrency.runOnGLThread { for (screen in screensToDispose) screen.dispose() }
         screenStack.removeAll { it !is WorldScreen }
         val worldScreen = screenStack.last() as WorldScreen
 
