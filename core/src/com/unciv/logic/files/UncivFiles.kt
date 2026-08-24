@@ -177,11 +177,12 @@ class UncivFiles(
     fun saveGame(game: GameInfo, file: FileHandle, saveCompletionCallback: (Exception?) -> Unit = ::rethrowIfNotNull) {
         try {
             debug("Saving GameInfo %s to %s", game.gameId, file.path())
+            game.version = CompatibilityVersion.CURRENT_COMPATIBILITY_VERSION
             if (saveZipped) {
-                val string = gameInfoToString(game)
-                file.writeString(string, false, Charsets.UTF_8.name())
+                Gzip.zippedOutputStream(file.write(false)).writer(Charsets.UTF_8).use {
+                    json().toJson(game, it)
+                }
             } else {
-                game.version = CompatibilityVersion.CURRENT_COMPATIBILITY_VERSION
                 json().toJson(game, file)
             }
             saveCompletionCallback(null)
@@ -252,11 +253,30 @@ class UncivFiles(
             loadGameFromFile(getSave(gameName))
 
     fun loadGameFromFile(gameFile: FileHandle): GameInfo {
-        val gameData = gameFile.readString(Charsets.UTF_8.name())
-        if (gameData.isNullOrBlank()) {
-            throw emptyFile(gameFile)
+        if (gameFile.length() == 0L) throw emptyFile(gameFile)
+
+        val gameInfo = try {
+            openJsonReader(gameFile).use { json().fromJson(GameInfo::class.java, it) }
+        } catch (ex: Exception) {
+            Log.error("Exception while deserializing GameInfo JSON", ex)
+            val onlyVersion = openJsonReader(gameFile).use { json().fromJson(GameInfoSerializationVersion::class.java, it) }
+            throw IncompatibleGameInfoVersionException(onlyVersion.version, ex)
+        } ?: throw UncivShowableException("The file data seems to be corrupted.")
+
+        if (gameInfo.version > CompatibilityVersion.CURRENT_COMPATIBILITY_VERSION) {
+            // this means there wasn't an immediate error while serializing, but this version will cause other errors later down the line
+            throw IncompatibleGameInfoVersionException(gameInfo.version)
         }
-        return gameInfoFromString(gameData)
+        gameInfo.setTransients()
+        return gameInfo
+    }
+
+    /** Opens [file] for reading its JSON content, transparently gunzipping+base64-decoding if it's in that format,
+     *  falling back to reading it as plain text otherwise (e.g. if [saveZipped] was off when it was saved). */
+    private fun openJsonReader(file: FileHandle) = try {
+        Gzip.unzippedInputStream(file.read()).reader(Charsets.UTF_8)
+    } catch (ex: Exception) {
+        file.reader(Charsets.UTF_8.name())
     }
 
     fun loadGamePreviewFromFile(gameFile: FileHandle): GameInfoPreview {

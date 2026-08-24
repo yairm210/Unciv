@@ -29,11 +29,19 @@ object MapSaver {
     }
 
     fun saveMap(mapName: String, tileMap: TileMap) {
-        getMap(mapName).writeString(mapToSavedString(tileMap), false, Charsets.UTF_8.name())
+        tileMap.assignContinents(TileMap.AssignContinentsMode.Reassign)
+        val file = getMap(mapName)
+        if (saveZipped) {
+            Gzip.zippedOutputStream(file.write(false)).writer(Charsets.UTF_8).use {
+                json().toJson(tileMap, it)
+            }
+        } else {
+            json().toJson(tileMap, file)
+        }
     }
 
     fun loadMap(mapFile: FileHandle): TileMap {
-        return mapFromSavedString(mapFile.readString(Charsets.UTF_8.name()))
+        return openJsonReader(mapFile).use { json().fromJson(TileMap::class.java, it) }
     }
 
     fun getMaps(): Array<FileHandle> = UncivGame.Current.files.getLocalFile(mapsFolder).list()
@@ -45,15 +53,14 @@ object MapSaver {
     }
 
     fun loadMapPreview(mapFile: FileHandle): TileMap.Preview {
-        return mapPreviewFromSavedString(mapFile.readString())
+        return openJsonReader(mapFile).use { json().fromJson(TileMap.Preview::class.java, it) }
     }
 
-    private fun mapPreviewFromSavedString(mapString: String): TileMap.Preview {
-        val unzippedJson = try {
-            Gzip.unzip(mapString.trim())
-        } catch (_: Exception) {
-            mapString
-        }
-        return json().fromJson(TileMap.Preview::class.java, unzippedJson)
+    /** Opens [file] for reading its JSON content, transparently gunzipping+base64-decoding if it's in that format,
+     *  falling back to reading it as plain text otherwise (e.g. if [saveZipped] was off when it was saved). */
+    private fun openJsonReader(file: FileHandle) = try {
+        Gzip.unzippedInputStream(file.read()).reader(Charsets.UTF_8)
+    } catch (ex: Exception) {
+        file.reader(Charsets.UTF_8.name())
     }
 }
