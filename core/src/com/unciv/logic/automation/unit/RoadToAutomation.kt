@@ -15,12 +15,11 @@ import com.unciv.utils.debug
 import yairm210.purity.annotations.Readonly
 
 
-/** Responsible for automation the "build road to" action
- * This is *pretty bad code* overall and needs to be cleaned up */
+/** Responsible for automating the "build road to" action
+ *  This is *pretty bad code* overall and needs to be cleaned up */
 class RoadToAutomation(val civInfo: Civilization) {
 
     private val actualBestRoadAvailable: RoadStatus = civInfo.tech.getBestRoadAvailable()
-
 
     /**
      * Automate the process of connecting a road between two points.
@@ -33,19 +32,19 @@ class RoadToAutomation(val civInfo: Civilization) {
      * - End automation upon finish
      */
     // TODO: Caching
-    // TODO: Hide the automate road button if road is not unlocked
     @Suppress("UNUSED_PARAMETER")  // tilesWhereWeWillBeCaptured may be useful in the future
-    fun automateConnectRoad(unit: MapUnit, tilesWhereWeWillBeCaptured: Set<Tile>){
+    fun automateConnectRoad(unit: MapUnit, tilesWhereWeWillBeCaptured: Set<Tile>) {
         if (actualBestRoadAvailable == RoadStatus.None) return
 
         var currentTile = unit.getTile()
 
-
-        if (unit.automatedRoadConnectionDestination == null){
+        if (unit.automatedRoadConnectionDestination == null) {
             stopAndCleanAutomation(unit)
             return
         }
 
+        fun notify(msg: String) =
+            unit.civ.addNotification(msg, MapUnitAction(unit), NotificationCategory.Units, NotificationIcon.Construction)
 
         val destinationTile = unit.civ.gameInfo.tileMap[unit.automatedRoadConnectionDestination!!]
 
@@ -59,7 +58,7 @@ class RoadToAutomation(val civInfo: Civilization) {
             if (foundPath == null) {
                 Log.debug("WorkerAutomation: $unit -> connect road failed")
                 stopAndCleanAutomation(unit)
-                unit.civ.addNotification("Connect road failed!", MapUnitAction(unit), NotificationCategory.Units, NotificationIcon.Construction)
+                notify("Connect road failed!")
                 return
             }
 
@@ -76,11 +75,11 @@ class RoadToAutomation(val civInfo: Civilization) {
         if (currTileIndex == -1) {
             Log.debug("$unit -> was moved off its connect road path. Operation cancelled.")
             stopAndCleanAutomation(unit)
-            unit.civ.addNotification("Connect road cancelled!", MapUnitAction(unit), NotificationCategory.Units, unit.name)
+            notify("Connect road cancelled!")
             return
         }
 
-        /* Can not build a road on this tile, try to move on.
+        /* Cannot build a road on this tile, try to move on.
         * The worker should search for the next furthest tile in the path that:
         * - It can move to
         * - Can be improved/upgraded
@@ -88,7 +87,7 @@ class RoadToAutomation(val civInfo: Civilization) {
         if (unit.hasMovement() && !shouldBuildRoadOnTile(currentTile)) {
             if (currTileIndex == pathToDest.size - 1) { // The last tile in the path is unbuildable or has a road.
                 stopAndCleanAutomation(unit)
-                unit.civ.addNotification("Connect road completed", MapUnitAction(unit), NotificationCategory.Units, unit.name)
+                notify("Connect road completed")
                 return
             }
 
@@ -98,11 +97,8 @@ class RoadToAutomation(val civInfo: Civilization) {
 
                 // Create a new list with tiles where the index is greater than currTileIndex
                 val futureTiles = pathToDest.asSequence()
-                    .dropWhile { it != unit.currentTile.position }
-                    .drop(1)
+                    .drop(currTileIndex + 1)
                     .map { tileMap[it] }
-
-
 
                 for (futureTile in futureTiles) { // Find the furthest tile we can reach in this turn, move to, and does not have a road
                     if (unit.movement.canReachInCurrentTurn(futureTile) && unit.movement.canMoveTo(futureTile)) { // We can at least move to this tile
@@ -113,15 +109,17 @@ class RoadToAutomation(val civInfo: Civilization) {
                     }
                 }
 
-                unit.movement.moveToTile(nextTile)
-                currentTile = unit.getTile()
+                if (nextTile.position != currentTile.position) {
+                    unit.movement.moveToTile(nextTile)
+                    currentTile = unit.getTile()
+                }
             }
         }
 
         // We need to check current movement again after we've (potentially) moved
         if (unit.hasMovement()) {
             // Repair pillaged roads first
-            if (currentTile.roadStatus != RoadStatus.None && currentTile.roadIsPillaged){
+            if (currentTile.roadStatus != RoadStatus.None && currentTile.roadIsPillaged) {
                 currentTile.setRepaired()
                 return
             }
@@ -134,14 +132,14 @@ class RoadToAutomation(val civInfo: Civilization) {
     }
 
     /** Reset side effects from automation, return worker to non-automated state*/
-    fun stopAndCleanAutomation(unit: MapUnit){
+    fun stopAndCleanAutomation(unit: MapUnit) {
         unit.automated = false
         unit.action = null
         unit.automatedRoadConnectionDestination = null
         unit.automatedRoadConnectionPath = null
-        unit.currentTile.stopWorkingOnImprovement()
+        if (unit.currentTile.getTileImprovementInProgress()?.isRoad() == true)
+            unit.currentTile.stopWorkingOnImprovement()
     }
-
 
     /** Conditions for whether it is acceptable to build a road on this tile */
     @Readonly
