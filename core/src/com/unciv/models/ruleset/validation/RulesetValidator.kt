@@ -28,7 +28,6 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitMovementType
-import com.unciv.models.ruleset.validation.RulesetValidator.Companion.create
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stats
 import com.unciv.models.tilesets.TileSetCache
@@ -407,7 +406,6 @@ open class RulesetValidator protected constructor(
 
     protected open fun addRuinsErrors(lines: RulesetErrorList) {
         for (reward in ruleset.ruinRewards.values) {
-            @Suppress("KotlinConstantConditions") // data is read from json, so any assumptions may be wrong
             if (reward.weight < 0) lines.add("${reward.name} has a negative weight, which is not allowed!", sourceObject = reward)
             uniqueValidator.checkUniques(reward, lines, reportRulesetSpecificErrors, tryFixUnknownUniques)
         }
@@ -550,6 +548,7 @@ open class RulesetValidator protected constructor(
             setOf("BaseUnit", "Difficulty", "Tutorial"),
             setOf("BaseUnit", "UnitNameGroup"),
             setOf("Personality", "UnitNameGroup.unitNames"),
+            setOf("Personality", "Nation.leaderName"),
             setOf("Specialist", "UnitNameGroup")
         )
 
@@ -562,7 +561,7 @@ open class RulesetValidator protected constructor(
         for ((name, sources) in duplicateNames) {
             lines.add(
                 "The name \"$name\" is used by several ruleset entries (${sources.joinToString()}) and may cause translation problems.",
-                RulesetErrorSeverity.WarningOptionsOnly,
+                RulesetErrorSeverity.OK,
                 sourceObject = null
             )
         }
