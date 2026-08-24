@@ -2,6 +2,7 @@ package com.unciv.logic.map
 
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.automation.unit.RoadToAutomation
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.tile.RoadStatus
@@ -741,5 +742,20 @@ class PathfindingTests(private val pathfindingAlgorithm: PathfindingAlgorithm) {
         val path = worker.movement.getRoadPath(destination) ?: emptyList()
         // Assert
         assertTrue("getRoadPath must contain both endpoints", originTile in path && destination in path)
+    }
+
+    @Test
+    fun connectRoadAction() {
+        // Arrange
+        civInfo.tech.addTechnology("The Wheel", false)
+        val worker = testGame.addUnit("Worker", civInfo, originTile)
+        val destination = testGame.getTile(5, 3)
+        worker.automatedRoadConnectionDestination = destination.position
+        // Act
+        val auto = RoadToAutomation(civInfo)
+        auto.automateConnectRoad(worker, emptySet())
+        // Assert
+        assertTrue("Worker must have queued a Road", originTile.improvementInProgress == RoadStatus.Road.name)
+        assertTrue("Worker must have a path", worker.automatedRoadConnectionPath?.isNotEmpty() == true)
     }
 }
