@@ -190,7 +190,7 @@ class CityScreen(
 
     internal fun updateWithoutConstructionAndMap() {
         // Bottom right: Tile or selected construction info
-        tileTable.update(selectedTile?.getTile())
+        tileTable.update(selectedTile)
         tileTable.setPosition(stage.width - posFromEdge, posFromEdge, Align.bottomRight)
         selectedConstructionTable.update(selectedConstruction)
         selectedConstructionTable.setPosition(stage.width - posFromEdge, posFromEdge, Align.bottomRight)
