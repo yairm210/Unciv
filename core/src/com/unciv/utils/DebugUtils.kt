@@ -23,4 +23,9 @@ object DebugUtils {
      */
     var SIMULATE_UNTIL_TURN: Int = 0
 
+    /** Civs (by civID) running experimental AI code in a simulation, so a change can be A/B tested against the unchanged AI.
+     *  Gate experimental code with `if (civInfo.civID in DebugUtils.EXPERIMENT_GROUP)`; the simulation reports the group's win rate.
+     */
+    var EXPERIMENT_GROUP: Set<String> = emptySet()
+
 }

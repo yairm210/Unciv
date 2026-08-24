@@ -60,8 +60,16 @@ internal object ConsoleLauncher {
         newGame.gameParameters.victoryTypes = ArrayList(newGame.ruleset.victories.keys)
         UncivGame.Current.gameInfo = newGame
 
-
-        val simulation = Simulation(newGame, 500, 8)
+        // Use in AI logic as:
+        //
+        // import com.unciv.utils.DebugUtils
+        // if (civInfo.civID in DebugUtils.EXPERIMENT_GROUP) {
+        // ...
+        // }
+        //
+        // Pass an empty set (default) to disable the feature
+        val experimentGroup = setOf(simulationCiv1)
+        val simulation = Simulation(newGame, 500, 8, experimentGroup=experimentGroup)
         //Unless the effect size is very large, you'll typically need a large number of games to get a statistically significant result
 
         simulation.start()
