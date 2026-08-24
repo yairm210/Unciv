@@ -884,9 +884,13 @@ class UnitMovement(val unit: MapUnit) {
         return distanceToTiles
     }
 
+    /**
+     *  Get a road path for the "Connect road" unit action. A valid path must include the current tile.
+     */
     @Readonly
     fun getRoadPath(destinationTile: Tile): List<Tile>? =
-        if (UncivGame.Current.settings.useAStarPathfinding) roadPathing.getShortestPath(destinationTile)
+        if (UncivGame.Current.settings.useAStarPathfinding)
+            roadPathing.getShortestPath(destinationTile)?.let { listOf(unit.currentTile) + it }
         else MapPathing.getRoadPath(unit.civ, unit.getTile(), destinationTile)
 
     fun getAerialPathsToCities(): HashMap<Tile, ArrayList<Tile>> {
