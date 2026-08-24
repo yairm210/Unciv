@@ -8,6 +8,7 @@ import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.Terrain
+import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.stats.Stats
 import yairm210.purity.annotations.Readonly
@@ -90,7 +91,7 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
     @Readonly fun isImpassible(): Boolean = tile.isImpassible()
     @Readonly fun isAdjacentTo(terrainFilter: String): Boolean = tile.isAdjacentTo(terrainFilter)
     @Readonly fun getDefensiveBonus(): Float = tile.getDefensiveBonus()
-    @Readonly fun aerialDistanceTo(other: TileView): Int = tile.aerialDistanceTo(other.getTile())
+    @Readonly fun aerialDistanceTo(other: TileView): Int = tile.aerialDistanceTo(other.unwrap())
     @Readonly fun getShownImprovement(): String? = tile.getShownImprovement(viewer)
 
     val baseTerrain: String get() = tile.baseTerrain
@@ -106,7 +107,10 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
     val roadIsPillaged: Boolean get() = tile.roadIsPillaged
     val improvementIsPillaged: Boolean get() = tile.improvementIsPillaged
     val improvementInProgress: String? get() = tile.improvementInProgress
+    val improvement: String? get() = tile.improvement
+    val tileImprovement: TileImprovement? get() = tile.tileImprovement
     val turnsToImprovement: Int get() = tile.turnsToImprovement
+    @Readonly fun isMarkedForCreatesOneImprovement(): Boolean = tile.isMarkedForCreatesOneImprovement()
 
     val isLand: Boolean get() = tile.isLand
     val hasBottomRightRiver: Boolean get() = tile.hasBottomRightRiver

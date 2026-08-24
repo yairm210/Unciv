@@ -73,7 +73,7 @@ class CityTileGroup(val cityView: CityView, tileView: TileView, tileSetStrings: 
             }
 
             // Out of city range
-            tile !in cityView.tilesInRange -> {
+            !cityView.isInRange(tileView) -> {
                 setDimmed(1f)
                 layerYield.dimYields(true)
             }

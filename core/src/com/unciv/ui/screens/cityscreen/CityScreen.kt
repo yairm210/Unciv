@@ -6,8 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.GUI
 import com.unciv.UncivGame
-import com.unciv.logic.automation.Automation
-import com.unciv.logic.civilization.Civilization
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Building
@@ -42,6 +40,7 @@ import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.utils.Concurrency
 import com.unciv.view.CityView
+import com.unciv.view.CivView
 import com.unciv.view.TileView
 import kotlin.math.max
 
@@ -62,9 +61,9 @@ class CityScreen(
         const val wltkIconSize = 40f
     }
 
-    private val selectedCiv: Civilization = cityView.getViewingCiv()
+    private val viewingCiv: CivView = cityView.gameView.civView
 
-    internal val isSpying = selectedCiv.gameInfo.isEspionageEnabled() && !cityView.isOwnedByViewer() && !selectedCiv.isSpectator()
+    internal val isSpying = cityView.isEspionageEnabled() && !cityView.isOwnedByViewer() && !viewingCiv.isSpectator()
 
     /**
      * This is the regular civ city list if we are not spying, if we are spying then it is every foreign city that our spies are in
@@ -242,28 +241,19 @@ class CityScreen(
 
     private fun updateTileGroups() {
         fun isExistingImprovementValuable(tileView: TileView): Boolean {
-            val tile = tileView.getTile()
-            val improvement = tile.tileImprovement ?: return false
-            val civInfo = cityView.owningCiv().getCiv()
-
-            val statDiffForNewImprovement = tile.stats.getStatDiffForImprovement(
-                improvement,
-                civInfo,
-                cityView.getCity(),
-            )
-
+            val improvement = tileView.tileImprovement ?: return false
+            val statDiffForNewImprovement = cityView.getStatDiffForImprovement(tileView, improvement)
             // If stat diff for new improvement is negative/zero utility, current improvement is valuable
-            return Automation.rankStatsValue(statDiffForNewImprovement, civInfo) <= 0
+            return cityView.rankStatsValue(statDiffForNewImprovement) <= 0
         }
 
         fun getPickImprovementColor(tileView: TileView): Pair<Color, Float> {
-            val tile = tileView.getTile()
             val improvementToPlace = pickTileData!!.improvement
             return when {
-                tile.isMarkedForCreatesOneImprovement() -> Color.BROWN to 0.7f
+                tileView.isMarkedForCreatesOneImprovement() -> Color.BROWN to 0.7f
                 !cityView.constructions.canPlaceCreateOneImprovementOn(improvementToPlace, tileView) -> Color.RED to 0.4f
                 isExistingImprovementValuable(tileView) -> Color.ORANGE to 0.5f
-                tile.improvement != null -> Color.YELLOW to 0.6f
+                tileView.improvement != null -> Color.YELLOW to 0.6f
                 tileView.turnsToImprovement > 0 -> Color.YELLOW to 0.6f
                 else -> Color.GREEN to 0.5f
             }
@@ -283,7 +273,7 @@ class CityScreen(
                 /** Support for [UniqueType.CreatesOneImprovement] */
                 tileGroup.tileView == selectedQueueEntryTargetTile ->
                     tileGroup.layerMisc.addHexOutline(Color.BROWN)
-                pickTileData != null && cityView.isOwnedTile(tileGroup.tile) && tileGroup.tile in cityView.tilesInRange ->
+                pickTileData != null && cityView.isOwnedTile(tileGroup.tileView) && cityView.isInRange(tileGroup.tileView) ->
                     getPickImprovementColor(tileGroup.tileView).run {
                         tileGroup.layerMisc.addHexOutline(first.cpy().apply { this.a = second }) }
             }
@@ -363,7 +353,7 @@ class CityScreen(
         val viewRange = max(cityView.getExpandRange(), cityView.getWorkRange())
         val tileSetStrings = TileSetStrings(cityView.getRuleset(), game.settings)
         val cityTileGroups = cityView.centerTile().getVisibleTilesInDistance(viewRange)
-                .filter { selectedCiv.hasExplored(it.getTile()) }
+                .filter { viewingCiv.hasExplored(it) }
                 .map { CityTileGroup(cityView, it, tileSetStrings, false, isSpying) }
 
         for (tileGroup in cityTileGroups) {
@@ -551,7 +541,7 @@ class CityScreen(
 
         val numCities = viewableCities.size
         if (numCities == 0) return
-        val indexOfCity = viewableCities.indexOfFirst { it.getCity() === cityView.getCity() }
+        val indexOfCity = viewableCities.indexOfFirst { it == cityView }
         val indexOfNextCity = (indexOfCity + delta + numCities) % numCities
         val newCityScreen = CityScreen(viewableCities[indexOfNextCity], ambiencePlayer = passOnCityAmbiencePlayer())
         newCityScreen.mapScrollPane.zoom(mapScrollPane.scaleX) // Retain zoom

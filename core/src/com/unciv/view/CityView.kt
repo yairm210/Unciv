@@ -1,5 +1,6 @@
 package com.unciv.view
 
+import com.unciv.logic.automation.Automation
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityFlags
 import com.unciv.logic.civilization.Civilization
@@ -45,7 +46,7 @@ class CityView(city: City,
     }
 
     // Data retrieval
-    val tilesInRange: Set<Tile> get() = city.tilesInRange
+    @Readonly fun isInRange(tileView: TileView): Boolean = tileView.unwrap() in city.tilesInRange
 
     @Readonly fun centerTile(): TileView = gameView.tileMapView.getTile(city.getCenterTile())
     @Readonly fun getTiles(): Sequence<TileView> = city.getTiles().map { gameView.tileMapView.getTile(it) }
@@ -144,7 +145,10 @@ class CityView(city: City,
         construction.canBePurchasedWithStat(city, stat)
 
     @Readonly fun isOwnedByViewer(): Boolean = city.civ === viewer
-    @Readonly fun isOwnedTile(tile: Tile): Boolean = tile.getCity() === city
+    @Readonly fun isOwnedTile(tileView: TileView): Boolean = tileView.unwrap().getCity() === city
+    @Readonly fun getStatDiffForImprovement(tileView: TileView, improvement: TileImprovement): Stats =
+        tileView.unwrap().stats.getStatDiffForImprovement(improvement, city.civ, city)
+    @Readonly fun rankStatsValue(stats: Stats): Float = Automation.rankStatsValue(stats, city.civ)
     @Readonly private fun getTile(tileView: TileView) = tileView.unwrap()
 
     // ACTIONS
