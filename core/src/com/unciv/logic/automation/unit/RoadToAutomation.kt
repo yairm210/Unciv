@@ -1,5 +1,6 @@
 package com.unciv.logic.automation.unit
 
+import com.unciv.Constants
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.civilization.NotificationCategory
@@ -113,18 +114,13 @@ class RoadToAutomation(val civInfo: Civilization) {
         }
 
         // We need to check current movement again after we've (potentially) moved
-        if (unit.hasMovement()) {
-            // Repair pillaged roads first
-            if (currentTile.roadStatus != RoadStatus.None && currentTile.roadIsPillaged) {
-                currentTile.setRepaired()
-                return
-            }
-            if (shouldBuildRoadOnTile(currentTile) && currentTile.improvementInProgress != actualBestRoadAvailable.name) {
-                val improvement = actualBestRoadAvailable.improvement(civInfo.gameInfo.ruleset)!!
-                currentTile.startWorkingOnImprovement(improvement, civInfo, unit)
-                return
-            }
-        }
+        if (!unit.hasMovement()) return
+        // Repair pillaged roads first - try to build a new one if a mod removed repair
+        val repairImprovement = if (currentTile.roadStatus == RoadStatus.None || !currentTile.roadIsPillaged) null
+            else civInfo.gameInfo.ruleset.tileImprovements[Constants.repair]
+        val buildImprovement = if (!shouldBuildRoadOnTile(currentTile) || currentTile.improvementInProgress == actualBestRoadAvailable.name) null
+            else actualBestRoadAvailable.improvement(civInfo.gameInfo.ruleset)
+        (repairImprovement ?: buildImprovement)?.let { currentTile.startWorkingOnImprovement(it, civInfo, unit) }
     }
 
     /** Reset side effects from automation, return worker to non-automated state*/
