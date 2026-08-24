@@ -35,7 +35,7 @@ object Battle {
      *
      * Currently not used by UI, only by automation via [BattleHelper.tryAttackNearbyEnemy][com.unciv.logic.automation.unit.BattleHelper.tryAttackNearbyEnemy]
      */
-    fun moveAndAttack(attacker: ICombatant, attackableTile: AttackableTile) {
+    fun moveAndAttack(attacker: MapUnitCombatant, attackableTile: AttackableTile) {
         if (!movePreparingAttack(attacker, attackableTile, true)) return
         attackOrNuke(attacker, attackableTile)
     }
@@ -44,9 +44,10 @@ object Battle {
      * Moves [attacker] to [attackableTile], handles siege setup and returns `true` if an attack is still possible.
      *
      * This is a logic function, not UI, so e.g. sound needs to be handled after calling this.
+     * Only relevant for [MapUnitCombatant] - cities can't move, so callers with a [CityCombatant] attacker
+     * should skip calling this and treat the attack as always still possible.
      */
-    fun movePreparingAttack(attacker: ICombatant, attackableTile: AttackableTile, tryHealPillage: Boolean = false): Boolean {
-        if (attacker !is MapUnitCombatant) return true
+    fun movePreparingAttack(attacker: MapUnitCombatant, attackableTile: AttackableTile, tryHealPillage: Boolean = false): Boolean {
         val tilesMovedThrough = attacker.unit.movement.getDistanceToTiles().getPathToTile(attackableTile.tileToAttackFrom)
         attacker.unit.movement.moveToTile(attackableTile.tileToAttackFrom)
         /**
