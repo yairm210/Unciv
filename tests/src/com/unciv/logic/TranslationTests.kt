@@ -288,6 +288,14 @@ class TranslationTests {
     }
 
     @Test
+    fun distanceBasedUnitCycleOptionHasCurrentTemplate() {
+        val templateLines = TranslationFileReader.readTemplates { it.toSet() }.orEmpty()
+
+        Assert.assertTrue("Cycle idle units by distance = " in templateLines)
+        Assert.assertFalse("Alternate Unit cycle order = " in templateLines)
+    }
+
+    @Test
     fun allStringsTranslate() {
         setupUncivGame()
         loadTranslations()
