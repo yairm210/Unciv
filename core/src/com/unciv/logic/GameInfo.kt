@@ -36,7 +36,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
-import com.unciv.ui.screens.savescreens.Gzip
+import com.unciv.ui.screens.savescreens.FileConversions
 import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.utils.DebugUtils
 import com.unciv.utils.debug
@@ -353,7 +353,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             .getInstance("SHA-1")
             .digest(json().toJson(this).toByteArray(Charsets.UTF_8))
         checksum = oldChecksum
-        return Gzip.encode(bytes)
+        return FileConversions.encode(bytes)
     }
 
     //endregion

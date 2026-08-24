@@ -19,7 +19,7 @@ import com.unciv.models.metadata.doMigrations
 import com.unciv.models.metadata.isMigrationNecessary
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.screens.modmanager.ModUIData
-import com.unciv.ui.screens.savescreens.Gzip
+import com.unciv.ui.screens.savescreens.FileConversions
 import com.unciv.logic.CompatibilityVersion
 import com.unciv.utils.Concurrency
 import com.unciv.logic.GameInfoSerializationVersion
@@ -178,13 +178,7 @@ class UncivFiles(
         try {
             debug("Saving GameInfo %s to %s", game.gameId, file.path())
             game.version = CompatibilityVersion.CURRENT_COMPATIBILITY_VERSION
-            if (saveZipped) {
-                Gzip.zippedOutputStream(file.write(false)).writer(Charsets.UTF_8).use {
-                    json().toJson(game, it)
-                }
-            } else {
-                json().toJson(game, file)
-            }
+            FileConversions.writeJson(file, game, saveZipped)
             saveCompletionCallback(null)
         } catch (ex: Exception) {
             saveCompletionCallback(ex)
@@ -256,10 +250,10 @@ class UncivFiles(
         if (gameFile.length() == 0L) throw emptyFile(gameFile)
 
         val gameInfo = try {
-            openJsonReader(gameFile).use { json().fromJson(GameInfo::class.java, it) }
+            FileConversions.readJson(gameFile, GameInfo::class.java)
         } catch (ex: Exception) {
             Log.error("Exception while deserializing GameInfo JSON", ex)
-            val onlyVersion = openJsonReader(gameFile).use { json().fromJson(GameInfoSerializationVersion::class.java, it) }
+            val onlyVersion = FileConversions.readJson(gameFile, GameInfoSerializationVersion::class.java)!!
             throw IncompatibleGameInfoVersionException(onlyVersion.version, ex)
         } ?: throw UncivShowableException("The file data seems to be corrupted.")
 
@@ -271,16 +265,8 @@ class UncivFiles(
         return gameInfo
     }
 
-    /** Opens [file] for reading its JSON content, transparently gunzipping+base64-decoding if it's in that format,
-     *  falling back to reading it as plain text otherwise (e.g. if [saveZipped] was off when it was saved). */
-    private fun openJsonReader(file: FileHandle) = try {
-        Gzip.unzippedInputStream(file.read()).reader(Charsets.UTF_8)
-    } catch (ex: Exception) {
-        file.reader(Charsets.UTF_8.name())
-    }
-
     fun loadGamePreviewFromFile(gameFile: FileHandle): GameInfoPreview {
-        val preview = json().fromJson(GameInfoPreview::class.java, gameFile)
+        val preview = FileConversions.readJson(gameFile, GameInfoPreview::class.java)
             ?: throw emptyFile(gameFile)
         preview.migrateCivID()
         return preview
@@ -444,7 +430,7 @@ class UncivFiles(
         fun gameInfoFromString(gameData: String): GameInfo {
             val fixedData = gameData.trim().replace("\r", "").replace("\n", "")
             val unzippedJson = try {
-                Gzip.unzip(fixedData)
+                FileConversions.unzip(fixedData)
             } catch (ex: Exception) {
                 fixedData
             }
@@ -469,7 +455,7 @@ class UncivFiles(
          * @throws SerializationException
          */
         fun gameInfoPreviewFromString(gameData: String): GameInfoPreview {
-            val preview = json().fromJson(GameInfoPreview::class.java, Gzip.unzip(gameData))
+            val preview = json().fromJson(GameInfoPreview::class.java, FileConversions.unzip(gameData))
             preview.migrateCivID()
             return preview
         }
@@ -481,12 +467,12 @@ class UncivFiles(
             if (updateChecksum) game.checksum = game.calculateChecksum()
             val plainJson = json().toJson(game)
 
-            return if (forceZip ?: saveZipped) Gzip.zip(plainJson) else plainJson
+            return if (forceZip ?: saveZipped) FileConversions.zip(plainJson) else plainJson
         }
 
         /** Returns gzipped serialization of preview [game] */
         fun gameInfoToString(game: GameInfoPreview): String {
-            return Gzip.zip(json().toJson(game))
+            return FileConversions.zip(json().toJson(game))
         }
 
         private val charsForbiddenInFileNames = setOf('\\', '/', ':')
