@@ -443,7 +443,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun canAttack(): Boolean {
         if (!hasMovement()) return false
         if (isCivilian()) return false
-        if (isTransported && !baseUnit.movesLikeAirUnits) return false
+        if (isTransported && !baseUnit.isAirUnit()) return false
         return attacksThisTurn < maxAttacksPerTurn()
     }
 
@@ -1003,7 +1003,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
                     "Unit $name of ${civ.civID} at $currentTile can't be put in tile $tile, reason: ${movement.getCannotMoveToReason(tile)}"
                 )
             }
-            baseUnit.movesLikeAirUnits || isTransported -> {
+            baseUnit.isAirUnit() || isTransported -> {
                 tile.airUnits.add(this)
             }
             isCivilian() -> {
@@ -1026,7 +1026,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             }
         }
         // this check is here in order to not load the fresh built unit into carrier right after the build
-        if (baseUnit.movesLikeAirUnits) {
+        if (baseUnit.isAirUnit()) {
             if (!tile.isCityCenter()) isTransported = true
             else {
                 val currentUntransportedUnits = tile.getUnits().count { it.type.isAirUnit() && !it.isTransported }

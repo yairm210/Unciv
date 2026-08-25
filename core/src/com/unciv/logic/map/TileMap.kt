@@ -694,7 +694,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         if (unit.movement.canMoveTo(currentTile)) {
             // Ensure we don't select a tile that would cause an overwrite of an existing unit slot.
             val slotFree = when {
-                unit.baseUnit.movesLikeAirUnits || unit.isTransported -> true
+                unit.baseUnit.isAirUnit() || unit.isTransported -> true
                 unit.isCivilian() -> currentTile.civilianUnit == null
                 else -> currentTile.militaryUnit == null
             }
