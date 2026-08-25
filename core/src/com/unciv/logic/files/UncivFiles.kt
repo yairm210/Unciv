@@ -19,7 +19,6 @@ import com.unciv.models.metadata.doMigrations
 import com.unciv.models.metadata.isMigrationNecessary
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.screens.modmanager.ModUIData
-import com.unciv.ui.screens.savescreens.Gzip
 import com.unciv.logic.CompatibilityVersion
 import com.unciv.utils.Concurrency
 import com.unciv.logic.GameInfoSerializationVersion
@@ -424,7 +423,7 @@ class UncivFiles(
         fun gameInfoFromString(gameData: String): GameInfo {
             val fixedData = gameData.trim().replace("\r", "").replace("\n", "")
             val unzippedJson = try {
-                Gzip.unzip(fixedData)
+                FileConversions.unzip(fixedData)
             } catch (ex: Exception) {
                 fixedData
             }
@@ -449,7 +448,7 @@ class UncivFiles(
          * @throws SerializationException
          */
         fun gameInfoPreviewFromString(gameData: String): GameInfoPreview {
-            val preview = json().fromJson(GameInfoPreview::class.java, Gzip.unzip(gameData))
+            val preview = json().fromJson(GameInfoPreview::class.java, FileConversions.unzip(gameData))
             preview.migrateCivID()
             return preview
         }
@@ -461,12 +460,12 @@ class UncivFiles(
             if (updateChecksum) game.checksum = game.calculateChecksum()
             val plainJson = json().toJson(game)
 
-            return if (forceZip ?: saveZipped) Gzip.zip(plainJson) else plainJson
+            return if (forceZip ?: saveZipped) FileConversions.zip(plainJson) else plainJson
         }
 
         /** Returns gzipped serialization of preview [game] */
         fun gameInfoToString(game: GameInfoPreview): String {
-            return Gzip.zip(json().toJson(game))
+            return FileConversions.zip(json().toJson(game))
         }
 
         private val charsForbiddenInFileNames = setOf('\\', '/', ':')

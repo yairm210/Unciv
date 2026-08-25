@@ -5,7 +5,6 @@ import com.unciv.UncivGame
 import com.unciv.json.json
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.TileMap
-import com.unciv.ui.screens.savescreens.Gzip
 
 object MapSaver {
 
@@ -16,7 +15,7 @@ object MapSaver {
 
     fun mapFromSavedString(mapString: String): TileMap {
         val unzippedJson = try {
-            Gzip.unzip(mapString.trim())
+            FileConversions.unzip(mapString.trim())
         } catch (_: Exception) {
             mapString
         }
@@ -25,7 +24,7 @@ object MapSaver {
     fun mapToSavedString(tileMap: TileMap): String {
         tileMap.assignContinents(TileMap.AssignContinentsMode.Reassign)
         val mapJson = json().toJson(tileMap)
-        return if (saveZipped) Gzip.zip(mapJson) else mapJson
+        return if (saveZipped) FileConversions.zip(mapJson) else mapJson
     }
 
     fun saveMap(mapName: String, tileMap: TileMap) {
@@ -50,7 +49,7 @@ object MapSaver {
 
     private fun mapPreviewFromSavedString(mapString: String): TileMap.Preview {
         val unzippedJson = try {
-            Gzip.unzip(mapString.trim())
+            FileConversions.unzip(mapString.trim())
         } catch (_: Exception) {
             mapString
         }

@@ -1,4 +1,4 @@
-package com.unciv.ui.screens.savescreens
+package com.unciv.logic.files
 
 import com.badlogic.gdx.utils.Base64Coder
 import java.io.BufferedReader
@@ -8,7 +8,7 @@ import java.io.InputStreamReader
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
 
-object Gzip {
+object FileConversions {
 
     fun zip(data: String): String = encode(compress(data))
     fun unzip(data: String): String  = decompress(decode(data))
