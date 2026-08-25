@@ -176,13 +176,8 @@ class UncivFiles(
     fun saveGame(game: GameInfo, file: FileHandle, saveCompletionCallback: (Exception?) -> Unit = ::rethrowIfNotNull) {
         try {
             debug("Saving GameInfo %s to %s", game.gameId, file.path())
-            if (saveZipped) {
-                val string = gameInfoToString(game)
-                file.writeString(string, false, Charsets.UTF_8.name())
-            } else {
-                game.version = CompatibilityVersion.CURRENT_COMPATIBILITY_VERSION
-                json().toJson(game, file)
-            }
+            game.version = CompatibilityVersion.CURRENT_COMPATIBILITY_VERSION
+            FileConversions.writeJson(file, game, saveZipped)
             saveCompletionCallback(null)
         } catch (ex: Exception) {
             saveCompletionCallback(ex)
@@ -251,15 +246,26 @@ class UncivFiles(
             loadGameFromFile(getSave(gameName))
 
     fun loadGameFromFile(gameFile: FileHandle): GameInfo {
-        val gameData = gameFile.readString(Charsets.UTF_8.name())
-        if (gameData.isNullOrBlank()) {
-            throw emptyFile(gameFile)
+        if (gameFile.length() == 0L) throw emptyFile(gameFile)
+
+        val gameInfo = try {
+            FileConversions.readJson(gameFile, GameInfo::class.java)
+        } catch (ex: Exception) {
+            Log.error("Exception while deserializing GameInfo JSON", ex)
+            val onlyVersion = FileConversions.readJson(gameFile, GameInfoSerializationVersion::class.java)!!
+            throw IncompatibleGameInfoVersionException(onlyVersion.version, ex)
+        } ?: throw UncivShowableException("The file data seems to be corrupted.")
+
+        if (gameInfo.version > CompatibilityVersion.CURRENT_COMPATIBILITY_VERSION) {
+            // this means there wasn't an immediate error while serializing, but this version will cause other errors later down the line
+            throw IncompatibleGameInfoVersionException(gameInfo.version)
         }
-        return gameInfoFromString(gameData)
+        gameInfo.setTransients()
+        return gameInfo
     }
 
     fun loadGamePreviewFromFile(gameFile: FileHandle): GameInfoPreview {
-        val preview = json().fromJson(GameInfoPreview::class.java, gameFile)
+        val preview = FileConversions.readJson(gameFile, GameInfoPreview::class.java)
             ?: throw emptyFile(gameFile)
         preview.migrateCivID()
         return preview

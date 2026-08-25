@@ -28,11 +28,12 @@ object MapSaver {
     }
 
     fun saveMap(mapName: String, tileMap: TileMap) {
-        getMap(mapName).writeString(mapToSavedString(tileMap), false, Charsets.UTF_8.name())
+        tileMap.assignContinents(TileMap.AssignContinentsMode.Reassign)
+        FileConversions.writeJson(getMap(mapName), tileMap, saveZipped)
     }
 
     fun loadMap(mapFile: FileHandle): TileMap {
-        return mapFromSavedString(mapFile.readString(Charsets.UTF_8.name()))
+        return FileConversions.readJson(mapFile, TileMap::class.java)!!
     }
 
     fun getMaps(): Array<FileHandle> = UncivGame.Current.files.getLocalFile(mapsFolder).list()
@@ -44,15 +45,6 @@ object MapSaver {
     }
 
     fun loadMapPreview(mapFile: FileHandle): TileMap.Preview {
-        return mapPreviewFromSavedString(mapFile.readString())
-    }
-
-    private fun mapPreviewFromSavedString(mapString: String): TileMap.Preview {
-        val unzippedJson = try {
-            FileConversions.unzip(mapString.trim())
-        } catch (_: Exception) {
-            mapString
-        }
-        return json().fromJson(TileMap.Preview::class.java, unzippedJson)
+        return FileConversions.readJson(mapFile, TileMap.Preview::class.java)!!
     }
 }
