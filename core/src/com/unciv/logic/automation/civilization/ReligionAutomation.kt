@@ -117,9 +117,9 @@ object ReligionAutomation {
         if (validCitiesToBuy.isEmpty()) return
 
         val citiesWithBonusCharges = validCitiesToBuy.filter { city ->
-            city.getMatchingUniques(UniqueType.UnitStartingPromotions).any {
+            city.hasMatchingUnique(UniqueType.UnitStartingPromotions) {
                 val promotionName = it.params[2]
-                val promotion = city.getRuleset().unitPromotions[promotionName] ?: return@any false
+                val promotion = city.getRuleset().unitPromotions[promotionName] ?: return@hasMatchingUnique false
                 promotion.hasUnique(UniqueType.CanSpreadReligion)
             }
         }
@@ -211,7 +211,7 @@ object ReligionAutomation {
         var score = 0f // Roughly equivalent to the sum of stats gained across all cities
 
         for (city in civInfo.cities) {
-            for (tile in city.getCenterTile().getTilesInDistance(city.getWorkRange())) {
+            city.getCenterTile().forEachTileInDistance(city.getWorkRange()) { tile ->
                 val tileRng = tile.stateThisTile.stateBasedRandom("ReligionAutomation.rateBelief")
                 val tileScore = beliefBonusForTile(belief, tile, city)
                 

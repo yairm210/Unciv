@@ -12,6 +12,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
@@ -490,24 +491,23 @@ object DiplomacyAutomation {
     internal fun checkMilitaryPresenceNearBorder(
         civInfo: Civilization
     ) {
-        val nearbyTiles = civInfo.cities.asSequence()
-            .flatMap { it.getTiles() }
-            .flatMap { it.getTilesInDistance(2) }
-            .filter { it.getOwner() != civInfo } // skip open borders
-            .filter { it.isVisible(civInfo) }
-            .toSet()
-
         // only counts what is visible to us
         val nearbyUnitCountByCiv = Counter<Civilization>()
         val nearbyForceByCiv = Counter<Civilization>()
 
-        for (tile in nearbyTiles) {
-            val unit = tile.militaryUnit ?: continue
-            if (! unit.civ.isMajorCiv() || unit.civ == civInfo || unit.isInvisible(civInfo))
-                continue
-            nearbyUnitCountByCiv.add(unit.civ, 1)
-            nearbyForceByCiv.add(unit.civ, unit.getForceEvaluation())
-        }
+        val visitedTiles = HashSet<Tile>()
+        for (city in civInfo.cities) for (tile in city.getTiles())
+            tile.forEachTileInDistance(2) {
+                if (it.getOwner() == civInfo // skip open borders
+                    || !it.isVisible(civInfo)
+                    || !visitedTiles.add(it)) // already counted from a nearer tile
+                    return@forEachTileInDistance
+                val unit = it.militaryUnit ?: return@forEachTileInDistance
+                if (!unit.civ.isMajorCiv() || unit.civ == civInfo || unit.isInvisible(civInfo))
+                    return@forEachTileInDistance
+                nearbyUnitCountByCiv.add(unit.civ, 1)
+                nearbyForceByCiv.add(unit.civ, unit.getForceEvaluation())
+            }
 
         fun decideWhetherToDenounce(otherCiv: Civilization) {
             // this ultimatum can currently only be made by AI to human players, to avoid abuse

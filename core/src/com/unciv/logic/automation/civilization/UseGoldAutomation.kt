@@ -131,13 +131,12 @@ object UseGoldAutomation {
         )
 
         for (city in civInfo.cities.filter { !it.isPuppet && !it.isBeingRazed }) {
-            val highlyDesirableTilesInCity = city.getCenterTile().getTilesAtDistance(2).filter {
-                // Only consider second ring tiles: further tiles may be as good or better, but have much higher gold cost 
-                isHighlyDesirableTile(it, civInfo, city)
-            }
-            for (highlyDesirableTileInCity in highlyDesirableTilesInCity) {
-                @LocalState val desirableTiles = highlyDesirableTiles.getOrPut(highlyDesirableTileInCity) { mutableSetOf() }
-                desirableTiles.add(city)
+            // Only consider second ring tiles: further tiles may be as good or better, but have much higher gold cost
+            city.getCenterTile().forEachTileAtDistance(2) { highlyDesirableTileInCity ->
+                if (isHighlyDesirableTile(highlyDesirableTileInCity, civInfo, city)) {
+                    @LocalState val desirableTiles = highlyDesirableTiles.getOrPut(highlyDesirableTileInCity) { mutableSetOf() }
+                    desirableTiles.add(city)
+                }
             }
         }
         return highlyDesirableTiles

@@ -115,7 +115,7 @@ object BattleHelper {
             val battleDamage = BattleDamage.calculateDamageToAttacker(attackerUnit, cityUnit)
             if (attacker.health - battleDamage * 2 <= 0 && !attacker.hasUnique(UniqueType.SelfDestructs)) {
                 // The more fiendly units around the city, the more willing we should be to just attack the city
-                val friendlyUnitsAroundCity = city.getCenterTile().getTilesInDistance(3).count { it.militaryUnit?.civ == attacker.civ }
+                val friendlyUnitsAroundCity = city.getCenterTile().countTilesInDistance(3) { it.militaryUnit?.civ == attacker.civ }
                 // If we have more than 4 other units around the city, go for it
                 if (friendlyUnitsAroundCity < 5) {
                     val attackerHealthModifier = 1.0 + 1.0 / friendlyUnitsAroundCity
@@ -135,7 +135,7 @@ object BattleHelper {
 
         // Add value based on number of units around the city
         val defendingCityCiv = city.civ
-        city.getCenterTile().getTilesInDistance(2).forEach {
+        city.getCenterTile().forEachTileInDistance(2) {
             if (it.militaryUnit != null) {
                 if (it.militaryUnit!!.civ.isAtWarWith(attacker.civ))
                     attackValue -= 5
