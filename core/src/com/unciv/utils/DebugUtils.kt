@@ -31,4 +31,9 @@ object DebugUtils {
      */
     var SIMULATE_UNTIL_TURN: Int = 0
 
+    /** For A/B testing against the unchanged AI.
+     *  Gate experimental code with `if (civInfo.civID in DebugUtils.CIV_IDS_IN_EXPERIMENT_GROUP)`.
+     */
+    var CIV_IDS_IN_EXPERIMENT_GROUP: Set<String> = emptySet()
+
 }
