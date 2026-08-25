@@ -182,7 +182,7 @@ class CityStateFunctions(val civInfo: Civilization) {
 
         // Point to the gifted unit, then to the other places mentioned in the message
         val unitAction = sequenceOf(MapUnitAction(placedUnit))
-        val notificationActions = unitAction + LocationAction(city.location, city.location)
+        val notificationActions = unitAction + LocationAction(city.location)
         receivingCiv.addNotification(
             "[${civInfo.civName}] gave us a [${militaryUnit.name}] as gift near [${city.name}]!",
             notificationActions,
@@ -323,7 +323,9 @@ class CityStateFunctions(val civInfo: Civilization) {
         }
 
         if (oldAlly != null && civInfo.isAlive()) {
-            val text = "We have lost alliance with [${civInfo.civName}]."
+            val text = 
+                if (newAlly != null) "We have lost our alliance with [${civInfo.civName}] to [${newAlly.civName}]."
+                else "We have lost our alliance with [${civInfo.civName}]."
             oldAlly.addNotification(text,
                 getNotificationActions(),
                 NotificationCategory.Diplomacy, civInfo.civName,

@@ -22,7 +22,19 @@ Flag Icons made by [Freepik](https://www.flaticon.com/authors/freepik) from [www
 -   [Galician flag] made from [wikipedia asset for the civil flag of Galicia](https://en.wikipedia.org/wiki/File:Flag_of_Galicia_(civil).svg): (public domain)
 -   [Hindi flag] made from [wikipedia asset for India's flag](https://en.wikipedia.org/w/index.php?curid=23473510): (public domain)
 
-New Unciv logo made by u-ndefined on Discord
+Unciv logo (e.g. `extraImages/Icons/Unciv icon v6.png`, `android/assets/ExtraImages/Icons/Unciv128.png` and other files) by yairm210 and u-ndefine, licensed under CC BY 4.0. This logo includes the following icons:
+- [Gear](https://thenounproject.com/term/gear/29368) by Alex Bickov (CC BY 3.0)
+- [Apple](https://thenounproject.com/term/apple/1139396) by Pedro Gonçalves (CC BY 3.0)
+- [gold](https://thenounproject.com/term/gold/25438) by Eliricon (CC BY 3.0)
+- [Beaker](https://thenounproject.com/term/beaker/621510) by Delwar Hossain (CC BY 3.0)
+- [Music](https://thenounproject.com/term/music/5611/) by Naomi Atkinson (CC BY 3.0)
+- [Smiley](https://thenounproject.com/term/smiley/1024026) by Alexander Skowalsky (CC BY 3.0)
+- [City](https://thenounproject.com/icon/city-1765370/) by Muhajir ila Robbi (CC BY 3.0)
+
+The following files include the Unciv logo:
+
+- Various files in `extraImages` contain different renderings of the same logo
+- `android/assets/ExtraImages/banner.png` by letstalkaboutdune; includes work by The Bucketeer / @GeneralWadaling (tiles) and yairm210 and u-ndefine (Unciv logo), released under CC BY-SA 3.0
 
 The base tile icons for the "Fantasy Hex" tileset were created CuddlyClover at <https://cuddlyclover.itch.io/fantasy-hex-tiles> with a few additions by various contributors, licensed CC BY 4.0.
 
@@ -653,7 +665,7 @@ HexaRealm tileset images by legacymtgsalvationuser69544 [here](https://github.co
     -   [Spear](https://thenounproject.com/term/spear/3930020/) by Firza Alamsyah
     -   [pennant](https://thenounproject.com/term/pennant/194797/) by Sara Jeffries
 -   [Maya civilization](https://thenounproject.com/term/maya-civilization/1715786/) by Olena Panasovska for The Maya
--   Aztec icon by Kāne, on Unciv Discord server
+-   Aztec icon by Kāne, on Unciv Discord server (CC BY 3.0)
 -   [Questionmark](https://thenounproject.com/icon/questionmark-4248169/) by YURR.studio for Random nation indicator
 -   [View](https://thenounproject.com/icon/view-4211245/) by Adrien Coquet for Spectator
 
@@ -799,7 +811,7 @@ HexaRealm tileset images by legacymtgsalvationuser69544 [here](https://github.co
 - [RobotArm](https://thenounproject.com/icon/robot-7300306/) by Faizal khusein
 - [RobotHeadSquare](https://thenounproject.com/icon/robot-head-6356754/) by Ahmad Arzaha
 - [RobotHeadRect](https://thenounproject.com/icon/robot-1704106/) by suib icon
-- Bobot by reallybasicname in the Discord
+- Bobot by reallybasicname in the Discord (CC BY 3.0)
 - [DollarSign](https://thenounproject.com/icon/dollar-sign-6466560/) by Ahmad Arzaha
 - Spy hideout is gimped from [hide](https://thenounproject.com/icon/hide-8013/) by Luis Prado and the one listed for Spy
 - [hold](https://thenounproject.com/icon/hold-222516/) by icon 54 as long-press indicator
@@ -886,10 +898,6 @@ The following music is from https://filmmusic.io:
 
 - "[Thatched Villagers](https://incompetech.filmmusic.io/song/4481-thatched-villagers)" by Kevin MacLeod (https://incompetech.com) (CC BY 4.0)
 
-## Trailer audio
-
-Unciv has released a Unciv Gameplay Trailer video separately, not part of this repository. See `Credits_trailer.md` for credits and details for that video.
-
 ## Visual effects
 
 The fireworks on the City Screen of a WLTK-celebrating city are loosely based on the Fireworks.p file included in [Particle Park](https://github.com/raeleus/Particle-Park).
@@ -908,3 +916,25 @@ See a human readable version here: https://creativecommons.org/licenses/by/4.0/
 
 ------------------------------------------------------------------------------------------
 ```
+
+# Trailer Audio Credits
+
+These are the audio credits for the Unciv Gameplay Trailer video. This video as well as all its sound files are released *separately* from the main game repository.
+
+The following track and sound effects are used for the Unciv Gameplay Trailer video (license name in brackets):
+
+* [Beyond New Horizons - Free Epic Viking Medieval Soundtrack](https://pixabay.com/music/main-title-beyond-new-horizons-free-epic-viking-medieval-soundtrack-22081/) by GioeleFazzeri for background music (Pixabay License)
+* [Beep 6](https://freesound.org/people/CogFireStudios/sounds/528866/) by Eponn for beep in Cross-Platform Play section (CC0)
+* [Cinematic Boom](https://freesound.org/people/Rizzard/sounds/559529/) by Rizzard for final boom (CC0)
+* [Cymbal Swell 2](https://freesound.org/people/rubberduckie/sounds/219835/) by rubberduckie for cymbal swells (CC0)
+* [hit of orchestral cymbals and bass drum](https://freesound.org/people/Selector/sounds/385011/) by Selector for intro crash (CC0)
+
+As the video and its audio are released entirely separately from the game repository, the licensing here *does not* affect the overall licensing of the Unciv game repository.
+Please note the Pixabay Content License is a **proprietary license**, which means the Unciv Gameplay Trailer can *not* be shared freely.
+
+## Licenses
+
+The following licenses are used for the Unciv Gameplay Trailer:
+
+* CC0: [Creative Commons Zero 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0/)
+* Pixabay License: [Pixabay Content License](https://pixabay.com/service/license-summary/)

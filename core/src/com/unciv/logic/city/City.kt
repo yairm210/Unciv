@@ -1,7 +1,6 @@
 package com.unciv.logic.city
 
 import com.unciv.Constants
-import com.unciv.GUI
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.MultiFilter
 import com.unciv.logic.automation.Timers.Companion.timeThis
@@ -82,9 +81,11 @@ class City : IsPartOfGameInfoSerialization, INamed {
     var cityConstructions = CityConstructions()
     var expansion = CityExpansionManager()
     var religion = CityReligionManager()
+
+    @Transient // Class carries no persisted fields
     var espionage = CityEspionageManager()
 
-    /** Effect: moved to disabled section in cosntruction list, and not built during automation */
+    /** Effect: moved to disabled section in construction list, and not built during automation */
     var disabledConstructions = HashSet<String>()
         private set
     fun resetDisabledConstructions() {
@@ -95,7 +96,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     @Transient  // CityStats has no serializable fields
     var cityStats = CityStats(this)
-    
+
     var resourceStockpiles = Counter<String>()
 
     /** All tiles that this city controls */
@@ -125,7 +126,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
 
     private var cityAIFocus: String = CityFocus.NoFocus.name
     @Readonly fun getCityFocus() = CityFocus.entries.firstOrNull { it.name == cityAIFocus } ?: CityFocus.NoFocus
-    fun setCityFocus(cityFocus: CityFocus){ cityAIFocus = cityFocus.name }
+    fun setCityFocus(cityFocus: CityFocus) { cityAIFocus = cityFocus.name }
 
     /**
      * Civ object for the original founder of this city
@@ -445,11 +446,11 @@ class City : IsPartOfGameInfoSerialization, INamed {
      *
      *  If the next City.startTurn is soon enough, then use [reassignPopulationDeferred] instead.
      */
-    fun reassignPopulation(resetLocked: Boolean = false):Unit = timeThis("reassignPopulation") {
+    fun reassignPopulation(resetLocked: Boolean = false): Unit = timeThis("reassignPopulation") {
         if (resetLocked) {
             workedTiles = hashSetOf()
             lockedTiles = hashSetOf()
-        } else if(cityAIFocus != CityFocus.Manual.name){
+        } else if (cityAIFocus != CityFocus.Manual.name){
             workedTiles = lockedTiles
         }
         if (!manualSpecialists)
@@ -464,8 +465,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
      *  @see shouldReassignPopulation
      */
     fun reassignPopulationDeferred() {
-        // TODO - is this the best (or even correct) way to detect "interactive" UI calls?
-        if (GUI.isMyTurn() && GUI.getViewingPlayer() == civ) reassignPopulation()
+        if (civ.isCurrentPlayer() && civ.isHuman()) reassignPopulation() 
         else shouldReassignPopulation = true
     }
 
@@ -560,7 +560,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         val tile = getCenterTile()
         return when {
             construction.isCivilian() -> tile.civilianUnit == null
-            construction.movesLikeAirUnits -> return true // Dealt with in MapUnit.getRejectionReasons
+            construction.isAirUnit() -> true // Dealt with in MapUnit.getRejectionReasons
             else -> tile.militaryUnit == null
         }
     }
@@ -578,7 +578,9 @@ class City : IsPartOfGameInfoSerialization, INamed {
         return when (filter) {
             "in this city" -> true // Filtered by the way uniques are found
             "in all cities" -> true
-            in Constants.all -> true
+            // more performant than "in Constants.all" - see https://medium.com/@yairm210/kotlin-when-string-optimization-e15c6eea2734
+            Constants.lowercaseAll -> true
+            Constants.uppercaseAll -> true
             "in your cities", "Your" -> viewingCiv == civ
             "in all coastal cities", "Coastal" -> isCoastal()
             "in capital", "Capital" -> isCapital()

@@ -2,7 +2,6 @@ package com.unciv.ui.screens.worldscreen.unit.presenter
 
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.map.HexCoord
-import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.surroundWithCircle
@@ -15,15 +14,16 @@ import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.screens.pickerscreens.UnitRenamePopup
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.ui.screens.worldscreen.unit.UnitTable
+import com.unciv.view.MapUnitView
 import yairm210.purity.annotations.Readonly
 
 class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: WorldScreen) : UnitTable.Presenter {
 
-    val selectedUnit : MapUnit?
+    val selectedUnit : MapUnitView?
         get() = selectedUnits.firstOrNull()
-    
+
     /** This is in preparation for multi-select and multi-move  */
-    val selectedUnits = ArrayList<MapUnit>()
+    val selectedUnits = ArrayList<MapUnitView>()
 
     // Whether the (first) selected unit is in unit-swapping mode
     var selectedUnitIsSwapping = false
@@ -32,13 +32,14 @@ class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: W
     var selectedUnitIsConnectingRoad = false
 
     override val position: HexCoord?
-        get() = selectedUnit?.currentTile?.position
+        get() = selectedUnit?.getTile()?.position()
 
-    fun selectUnit(unit: MapUnit? = null, append: Boolean = false) {
+    fun selectUnit(unitView: MapUnitView? = null, append: Boolean = false) {
         if (!append) selectedUnits.clear()
-        if (unit != null) {
-            selectedUnits.add(unit)
-            unit.actionsOnDeselect()
+        if (unitView != null) {
+            selectedUnits.add(unitView)
+            if (unitView.isPreparingParadrop() || unitView.isPreparingAirSweep())
+                unitView.tryResetAction()
         }
         selectedUnitIsSwapping = false
         selectedUnitIsConnectingRoad = false
@@ -47,10 +48,10 @@ class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: W
     override fun update() {
         val unit = selectedUnit ?: return
         // The unit that was selected, was captured. It exists but is no longer ours.
-        val captured =
-            unit.civ != worldScreen.viewingCiv && !worldScreen.viewingCiv.isSpectator()
+        val civView = worldScreen.selectedGameView.civView
+        val captured = unit.civ() != civView && !civView.isSpectator()
         // The unit that was there no longer exists
-        val disappeared = unit !in unit.getTile().getUnits()
+        val disappeared = unit.hasDisappeared()
         if (captured || disappeared) {
             unitTable.selectUnit()
             worldScreen.shouldUpdate = true
@@ -67,7 +68,7 @@ class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: W
                 if (!worldScreen.canChangeState) return@onClick
                 UnitRenamePopup(
                     screen = worldScreen,
-                    unit = unit,
+                    unit = unit.getUnit(),
                     actionOnClose = {
                         unitNameLabel.setText(buildNameLabelText(unit))
                         shouldUpdate = true
@@ -79,14 +80,15 @@ class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: W
             descriptionTable.defaults().pad(2f)
             descriptionTable.add(Fonts.movement + unit.getMovementString()).padRight(10f)
 
+            val baseUnit = unit.getBaseUnit()
             if (!unit.isCivilian())
-                descriptionTable.add(Fonts.strength + unit.baseUnit.strength.tr()).padRight(10f)
+                descriptionTable.add(Fonts.strength + baseUnit.strength.tr()).padRight(10f)
 
-            if (unit.baseUnit.rangedStrength != 0)
-                descriptionTable.add(Fonts.rangedStrength + unit.baseUnit.rangedStrength.tr())
+            if (baseUnit.rangedStrength != 0)
+                descriptionTable.add(Fonts.rangedStrength + baseUnit.rangedStrength.tr())
                     .padRight(10f)
 
-            if (unit.baseUnit.isRanged())
+            if (baseUnit.isRanged())
                 descriptionTable.add(Fonts.range + unit.getRange().tr()).padRight(10f)
 
             val interceptionRange = unit.getInterceptionRange()
@@ -99,20 +101,20 @@ class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: W
                 descriptionTable.add("XP".toLabel().apply {
                     onClick {
                         if (selectedUnit == null) return@onClick
-                        worldScreen.game.pushScreen(PromotionPickerScreen(unit))
+                        worldScreen.game.pushScreen(PromotionPickerScreen(unit.getUnit()))
                     }
                 })
                 descriptionTable.add(
-                    unit.promotions.XP.tr() + "/" + unit.promotions.xpForNextPromotion().tr()
+                    unit.getPromotions().XP.tr() + "/" + unit.getPromotions().xpForNextPromotion().tr()
                 )
             }
 
-            if (unit.baseUnit.religiousStrength > 0) {
+            if (baseUnit.religiousStrength > 0) {
                 descriptionTable.add(ImageGetter.getStatIcon("ReligiousStrength")).size(20f)
-                descriptionTable.add((unit.baseUnit.religiousStrength - unit.religiousStrengthLost).tr())
+                descriptionTable.add((baseUnit.religiousStrength - unit.religiousStrengthLost).tr())
             }
 
-            if (unit.promotions.promotions.size != promotionsTable.children.size) // The unit has been promoted! Reload promotions!
+            if (unit.getPromotions().promotions.size != promotionsTable.children.size) // The unit has been promoted! Reload promotions!
                 shouldUpdate = true
         } else with(unitTable) { // multiple selected units
             nameLabelText = ""
@@ -125,14 +127,14 @@ class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: W
         // single selected unit
         if (selectedUnits.size == 1) with(unitTable) {
 
-            unitIconHolder.add(UnitIconGroup(unit, 30f)).pad(5f)
+            unitIconHolder.add(UnitIconGroup(unit.getUnit(), 30f)).pad(5f)
 
-            for (promotion in unit.promotions.getPromotions(true))
+            for (promotion in unit.getPromotions().getPromotions(true))
                 if (!promotion.hasUnique(UniqueType.NotShownOnWorldScreen))
                     promotionsTable.add(ImageGetter.getPromotionPortrait(promotion.name, 20f))
                         .padBottom(2f)
 
-            for (status in unit.statusMap.values) {
+            for (status in unit.getStatusMap().values) {
                 if (status.uniques.any { it.type == UniqueType.NotShownOnWorldScreen }) continue
 
                 val group = ImageGetter.getPromotionPortrait(status.name)
@@ -146,20 +148,20 @@ class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: W
             // Since Clear also clears the listeners, we need to re-add them every time
             promotionsTable.onClick {
                 if (selectedUnit == null || promotionsTable.children.isEmpty) return@onClick
-                worldScreen.game.pushScreen(PromotionPickerScreen(unit))
+                worldScreen.game.pushScreen(PromotionPickerScreen(unit.getUnit()))
             }
 
             unitIconHolder.onClick {
-                worldScreen.openCivilopedia(unit.baseUnit.makeLink())
+                worldScreen.openCivilopedia(unit.getBaseUnit().makeLink())
             }
         } else { // multiple selected units
-            for (selectedUnit in selectedUnits)
-                unitTable.unitIconHolder.add(UnitIconGroup(selectedUnit, 30f)).pad(5f)
+            for (selectedUnitView in selectedUnits)
+                unitTable.unitIconHolder.add(UnitIconGroup(selectedUnitView.getUnit(), 30f)).pad(5f)
         }
     }
 
     @Readonly
-    private fun buildNameLabelText(unit: MapUnit) : String {
+    private fun buildNameLabelText(unit: MapUnitView) : String {
         var nameLabelText = unit.displayName().tr(true)
         if (unit.health < 100) nameLabelText += " (${unit.health.tr()})"
         return nameLabelText

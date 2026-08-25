@@ -207,7 +207,10 @@ abstract class BaseScreen : Screen {
     /** Helper for the [openCivilopedia] (link: String) overload to use
      *  - Note: At the time of wrinting, this was the ***only*** CivilopediaScreen constructor call outside itself
      */
-    fun openCivilopedia(ruleset: Ruleset, link: String = "") = game.pushScreen(CivilopediaScreen(ruleset, link = link))
+    fun openCivilopedia(ruleset: Ruleset, link: String = "") {
+        Gdx.input.inputProcessor = null // Avoids ANR crashes waiting for civilopedia - game.pushScreen will set the inputprocessor to the new screen
+        game.pushScreen(CivilopediaScreen(ruleset, link = link))
+    }
 }
 
 interface RecreateOnResize {

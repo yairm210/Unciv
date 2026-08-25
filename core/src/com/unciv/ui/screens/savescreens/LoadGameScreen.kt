@@ -8,6 +8,7 @@ import com.unciv.Constants
 import com.unciv.logic.MissingModsException
 import com.unciv.logic.MissingNationException
 import com.unciv.logic.UncivShowableException
+import com.unciv.logic.files.FileConversions
 import com.unciv.logic.files.PlatformSaverLoader
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.github.GithubAPI
@@ -21,7 +22,6 @@ import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.popups.LoadingPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
@@ -196,7 +196,7 @@ class LoadGameScreen : LoadOrSaveScreen() {
             return
         }
         try {
-            Gdx.app.clipboard.contents = if (gameText[0] == '{') Gzip.zip(gameText) else gameText
+            Gdx.app.clipboard.contents = if (gameText[0] == '{') FileConversions.zip(gameText) else gameText
             launchOnGLThread {
                 ToastPopup("'[${file.name()}]' copied to clipboard!", this@LoadGameScreen)
             }

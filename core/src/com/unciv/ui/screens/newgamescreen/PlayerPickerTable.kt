@@ -39,6 +39,7 @@ import com.unciv.ui.screens.multiplayerscreens.FriendPickerList
 import com.unciv.ui.screens.pickerscreens.PickerPane
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.utils.isUUID
+import com.unciv.utils.removeRange
 import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
 
 /**
@@ -86,13 +87,16 @@ class PlayerPickerTable(
      */
     fun update(desiredCiv: String = "") {
         playerListTable.clear()
-        val gameBasics = previousScreen.ruleset // the mod picking changes this ruleset
+        val ruleset = previousScreen.ruleset // the mod picking changes this ruleset
 
         reassignRemovedModReferences()
-        val newRulesetPlayableCivs = previousScreen.ruleset.nations
-            .count { it.key != Constants.barbarians && !it.value.hasUnique(UniqueType.WillNotBeChosenForNewGames) }
+
+        fun isChoosable(nation: Nation) = (nation.isMajorCiv || nation.isSpectator) && !nation.hasUnique(UniqueType.WillNotBeChosenForNewGames)
+        val newRulesetPlayableCivs = ruleset.nations.values.count(::isChoosable)
+
         if (gameParameters.players.size > newRulesetPlayableCivs)
-            gameParameters.players = ArrayList(gameParameters.players.subList(0, newRulesetPlayableCivs))
+            gameParameters.players.removeRange(newRulesetPlayableCivs, gameParameters.players.size)
+
         if (desiredCiv.isNotEmpty()) assignDesiredCiv(desiredCiv)
 
         for (player in gameParameters.players) {
@@ -106,7 +110,7 @@ class PlayerPickerTable(
             updateRandomNumberLabel()
         }
 
-        if (!locked && gameParameters.players.size < gameBasics.nations.values.count { it.isMajorCiv }) {
+        if (!locked && gameParameters.players.size < newRulesetPlayableCivs) {
             val addPlayerButton = "+".toLabel(ImageGetter.CHARCOAL, 30)
                 .apply { this.setAlignment(Align.center) }
                 .surroundWithCircle(50f)
@@ -116,7 +120,7 @@ class PlayerPickerTable(
                         val availableCiv = getAvailablePlayerCivs().firstOrNull()
                         if (availableCiv != null) Player(availableCiv)
                         // Spectators can only be Humans
-                        else Player(Constants.spectator, PlayerType.Human).apply { setNationTransient(gameBasics) }
+                        else Player(Constants.spectator, PlayerType.Human).apply { setNationTransient(ruleset) }
                     } else Player()  // normal: add random AI
                     gameParameters.players.add(player)
                     update()
@@ -379,7 +383,7 @@ class FriendSelectionPopup(
         pickerPane.rightSideButton.setText("Select friend".tr())
         pickerPane.closeButton.onActivation(::close)
         pickerPane.closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
-        pickerCell.setActor<PickerPane>(pickerPane)
+        pickerCell.setActor(pickerPane)
         pickerPane.rightSideButton.onClick {
             close()
             val friendId = selectedFriendId

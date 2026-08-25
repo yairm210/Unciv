@@ -99,7 +99,7 @@ class TileImprovement : RulesetStatsObject() {
         return when (filter) {
             "all", "All" -> true
             "Improvement" -> true // For situations involving tileFilter
-            "All Road" -> isRoad()
+            Constants.allRoad -> isRoad()
             "Great Improvement", "Great" -> isGreatImprovement()
             else -> filter == name || filter == replaces // 2 string equalities is better than hashmap lookup
         }

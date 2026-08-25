@@ -14,7 +14,7 @@ import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stats
-import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestCase
 import com.unciv.testing.TestGame
 import com.unciv.testing.runTestParcours
@@ -23,7 +23,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@RunWith(GdxTestRunner::class)
+@RunWith(BaseTestRunner::class)
 class TileImprovementConstructionTests {
 
     private lateinit var civInfo: Civilization

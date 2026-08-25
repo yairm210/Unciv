@@ -1,6 +1,6 @@
 package com.unciv.logic.automation.unit
 
-import com.unciv.Constants
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.battle.Battle
@@ -26,6 +26,7 @@ import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 import kotlin.math.ceil
 import yairm210.purity.annotations.Readonly
 import com.unciv.logic.automation.Timers.Companion.timeThis
+import com.unciv.logic.automation.civilization.NextTurnAutomation
 
 object UnitAutomation {
 
@@ -44,8 +45,12 @@ object UnitAutomation {
             return
         }
 
+        val isHumanAndNotAutoplaying =
+            unit.civ.isHuman() && GUI.getWorldScreenIfActive()?.autoPlay?.isAutoPlaying() != true
+        // AI promotes units via NextTurnAutomation.automateUnits
+        if (isHumanAndNotAutoplaying) NextTurnAutomation.applyPromotions(unit)
         // AI upgrades units via UseGoldAutomation in NextTurnAutomation
-        if (unit.civ.isHuman() && tryUpgradeUnit(unit)) return
+        if (isHumanAndNotAutoplaying && tryUpgradeUnit(unit)) return
 
         //This allows for military units with certain civilian abilities to behave as civilians in peace and soldiers in war
         if ((unit.hasUnique(UniqueType.BuildImprovements) || unit.hasUnique(UniqueType.FoundCity) || 
@@ -353,7 +358,7 @@ object UnitAutomation {
             return false // will heal anyway, and attacks don't hurt
 
         // Try pillage improvements until healed
-        while (tryPillageImprovement(unit, false)) {
+        while (tryPillageImprovement(unit, true)) {
             // If we are fully healed and can still do things, lets keep on going by returning false
             if (!unit.hasMovement() || unit.health == 100) return !unit.hasMovement()
         }
@@ -375,7 +380,7 @@ object UnitAutomation {
         val tilesByHealingRate = viableTilesForHealing.groupBy { unit.rankTileForHealing(it) }
 
         if (tilesByHealingRate.keys.all { it == 0 }) { // We can't heal here at all! We're probably embarked
-            if (!unit.baseUnit.movesLikeAirUnits) {
+            if (!unit.baseUnit.isAirUnit()) {
                 val reachableCityTile = unit.civ.cities.asSequence()
                     .map { it.getCenterTile() }
                     .sortedBy { it.aerialDistanceTo(unit.currentTile) }

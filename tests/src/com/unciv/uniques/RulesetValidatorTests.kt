@@ -6,14 +6,14 @@ import com.unciv.models.ruleset.nation.Personality
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.validation.RulesetErrorSeverity
 import com.unciv.models.translations.fillPlaceholders
-import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@RunWith(GdxTestRunner::class)
+@RunWith(BaseTestRunner::class)
 class RulesetValidatorTests {
 
     private fun addPersonality(game: TestGame, name: String, vararg uniques: String): Personality {
@@ -45,7 +45,7 @@ class RulesetValidatorTests {
         val errors = game.ruleset.getErrorList()
 
         assertTrue(errors.any {
-            it.errorSeverityToReport == RulesetErrorSeverity.WarningOptionsOnly
+            it.errorSeverityToReport == RulesetErrorSeverity.OK
                 && it.text.contains("\"Park\"")
                 && it.text.contains("Building")
                 && it.text.contains("Nation.spyNames")
@@ -66,7 +66,7 @@ class RulesetValidatorTests {
         val errors = game.ruleset.getErrorList()
 
         assertTrue(errors.any {
-            it.errorSeverityToReport == RulesetErrorSeverity.WarningOptionsOnly
+            it.errorSeverityToReport == RulesetErrorSeverity.OK
                 && it.text.contains("\"Park\"")
                 && it.text.contains("Building")
                 && it.text.contains("Religion")
@@ -87,7 +87,7 @@ class RulesetValidatorTests {
         val errors = game.ruleset.getErrorList()
 
         assertTrue(errors.any {
-            it.errorSeverityToReport == RulesetErrorSeverity.WarningOptionsOnly
+            it.errorSeverityToReport == RulesetErrorSeverity.OK
                 && it.text.contains("\"Park\"")
                 && it.text.contains("Building")
                 && it.text.contains("Religion")
@@ -107,7 +107,7 @@ class RulesetValidatorTests {
         val errors = game.ruleset.getErrorList()
 
         assertTrue(errors.any {
-            it.errorSeverityToReport == RulesetErrorSeverity.WarningOptionsOnly
+            it.errorSeverityToReport == RulesetErrorSeverity.OK
                 && it.text.contains("\"Park\"")
                 && it.text.contains("Building")
                 && it.text.contains("Nation.leaderName")
@@ -127,7 +127,7 @@ class RulesetValidatorTests {
         val errors = game.ruleset.getErrorList()
 
         assertTrue(errors.any {
-            it.errorSeverityToReport == RulesetErrorSeverity.WarningOptionsOnly
+            it.errorSeverityToReport == RulesetErrorSeverity.OK
                 && it.text.contains("\"Park\"")
                 && it.text.contains("Building")
                 && it.text.contains("Nation.cities")

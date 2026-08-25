@@ -323,9 +323,10 @@ internal interface OptionsPopupHelpers {
             delay((if (force) 0 else 100).milliseconds)
             withGLContext {
                 val screen = UncivGame.Current.screen ?: return@withGLContext
-                if (force && screen.activePopup is OptionsPopup) screen.activePopup!!.close()
+                val page = activePage // Must be fetched before force-closing the current OptionsPopup
+                if (force) (screen.activePopup as? OptionsPopup)?.close()
                 if (screen.hasOpenPopups()) return@withGLContext // e.g. Orientation auto to fixed while auto is already the new orientation
-                screen.openOptionsPopup(activePage)
+                screen.openOptionsPopup(page)
             }
         }
     }
