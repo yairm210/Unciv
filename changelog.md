@@ -1,36 +1,18 @@
 ## 4.21.12
 
-Second part of  - Save/load saves and maps directly to/from filesystem files using streams, avoiding memory spikes for intermediate representations
+Reduce RAM when saving/loading to/from files
 
-First part of  - move+rename Gzip to FileConversions
+Fix rare crashes when handling events while screens are being changed
 
-Attempt to solve  - Apply "dispose screen after handling current events" fix across all screens
+Fix crash on Options re-open with force-close, e.g. toggling "Enable out-of-game turn notifications" - By SomeTroglodyte 
 
-Fix ruleset validator tests
+AI does not see unexplored tiles for tile value when assessing settler locations - By ssamt 
 
-Downgrade "same name for multiple entries" to "OK", lowest level of warning, since most cases are benign
-
-View implementation - CityScreenTileTable migration - see 
-
-View implementation - More CityScreen migrations - see 
-
-chore: Convert moveAndAttack to use MapUnitCombatant instead o f ICombatant because all usages were using that anyway
-
-View implementation - More WorldMapHolder migrations - see 
-
-View implementation - More WorldMapHolder migrations - see 
-
-By SomeTroglodyte:
-- chore: Fix string interning serializer 
-- Fix crash on Options re-open with force-close, e.g. toggling "Enable out-of-game turn notifications" 
-
-By ssamt:
-- Add experiment group for AI simulation 
-- AI should not see unexplored tiles for tile value 
-
-fix: Clarify distance-based unit cycle option - By mvanhorn
+Clarify distance-based unit cycle option - By mvanhorn
 
 Population in cities countable - By PLynx01
+
+Modding: Downgrade "same name for multiple entries" to "OK", lowest level of warning, since most cases are benign
 
 ## 4.21.11
 
