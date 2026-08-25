@@ -1856,7 +1856,8 @@
 <p>Execute the ConsoleLauncher Build Configuration set up above. Results should appear in the Console of the IDE.</p>
 <h2 id="configuring-simulations">Configuring Simulations</h2>
 <p>Within the <code>desktop\src\ConsoleLauncher.kt</code> file, you can adjust the number of simulations to run, which nations to use, etc.</p>
-<p>Recommend using generic civs with no Uniques. You can see the code add a generic <code>Nation</code> to the <code>ruleset</code> object, and you can key different behavior throughout the code using the Nation Name constant as the control switch.</p>
+<p>Recommend using generic civs with no Uniques. You can see the code add a generic <code>Nation</code> to the <code>ruleset</code> object.</p>
+<p>To A/B test an AI change, pass the civs that should use the new behavior as the <code>civIdsInExperimentGroup</code> parameter of <code>Simulation</code>, e.g. <code>Simulation(newGame, 50, 8, civIdsInExperimentGroup = setOf("Nation1", "Nation2"))</code>, and gate the changed code with <code>if (civInfo.civID in DebugUtils.CIV_IDS_IN_EXPERIMENT_GROUP)</code>. You can also run more complicated experiments (e.g. three different AI behaviors) by using the Nation Name constant as the control switch.</p>
 <p>You can also adjust the game parameters and map parameters. To get more consistent results, turning off Natural Wonders and Barbarians can help.</p>
 <p>By default the order of players is randomized to make it more fair.</p>
 <p>The <code>statTurns</code> list parameter allows the system to save certain stats at particular turns so you can track it over the course of the games.</p>
@@ -1864,6 +1865,7 @@
 <p>By default the console will report the number of wins per civ, type of win, and the <code>popsum</code> at the end of the game. This is the average amount of population for the whole civ at the end of the game.</p>
 <p>It is a good habit to validate your expectations for which Civ would win, how they would win, and any changes in the reported values. Some changes won't show up in the win rates, so are better tested by making a scenario in the Map Editor or with the in-game Console then testing the AI behaviors.</p>
 <p>The p-value is also reported, showing based on the winrate how likely this result is in a binomial test. If this value is very small, then there is a low chance this arose out of random chance and that your changes made a statistically significant change in the overall winrate. Running 200-400 Sims is usually a good baseline point.</p>
+<p>When <code>civIdsInExperimentGroup</code> is set, the report starts with the combined win rate and p-value of the experiment group and of the control group (all other civs).</p>
 
 
 
