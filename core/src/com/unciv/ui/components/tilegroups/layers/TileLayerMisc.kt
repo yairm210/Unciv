@@ -26,6 +26,7 @@ import com.unciv.utils.DebugUtils
 import kotlin.math.atan2
 import kotlin.math.min
 import kotlin.math.pow
+import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
 private class MapArrow(val targetTile: Tile, val arrowType: MapArrowType, val strings: TileSetStrings) {
@@ -351,6 +352,22 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
             })
         }
 
+        if (DebugUtils.SHOW_SETTLER_SCORES) {
+            val score = DebugUtils.SETTLER_SCORES[tileGroup.tileView.position()]
+            if (score != null) {
+                val label = score.roundToInt().toString()
+                val tileW = tileGroup.width
+                val tileH = tileGroup.height
+                startingLocationIcons.add(label.toLabel(Color.GOLD, 14).apply {
+                    touchable = Touchable.disabled
+                    setOrigin(Align.center)
+                    x = tileX + (tileW - width) / 2 + 15f
+                    y = tileY + (tileH - height) / 2
+                    tileGroup.layerMisc.addOwnedActor(this)
+                })
+            }
+        }
+
         val tilemap = tile.tileMap
 
         if (tilemap.startingLocationsByNation.isEmpty())
@@ -477,7 +494,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
 
 
     override fun doUpdate(viewingCiv: CivView?) {
-        if (tileGroup !is WorldTileGroup || DebugUtils.SHOW_TILE_COORDS)
+        if (tileGroup !is WorldTileGroup || DebugUtils.SHOW_TILE_COORDS || DebugUtils.SHOW_SETTLER_SCORES)
             updateStartingLocationIcon(true)
         updateArrows()
     }
