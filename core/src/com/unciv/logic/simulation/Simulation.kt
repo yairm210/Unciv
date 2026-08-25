@@ -25,7 +25,7 @@ class Simulation(
     private val threadsNumber: Int = 1,
     private val maxTurns: Int = 500,
     private val statTurns: List<Int> = listOf(),
-    private val experimentGroup: Set<String> = emptySet()
+    private val civIdsInExperimentGroup: Set<String> = emptySet()
 ) {
     private val maxSimulations = threadsNumber * simulationsPerThread
     private val majorCivs = newGameInfo.civilizations.filter { !it.isSpectator() && it.isMajorCiv() }.map { it.civID }
@@ -55,7 +55,7 @@ class Simulation(
     private val printAvgCityPop = false
 
     init{
-        DebugUtils.EXPERIMENT_GROUP = experimentGroup
+        DebugUtils.CIV_IDS_IN_EXPERIMENT_GROUP = civIdsInExperimentGroup
         for (civ in majorCivs) {
             this.numWins[civ] = MutableInt(0)
             winRateByVictory[civ] = mutableMapOf()
@@ -252,9 +252,9 @@ class Simulation(
 
     fun text(): String {
         var outString = ""
-        if (experimentGroup.isNotEmpty()) {
-            outString += groupText("Experiment group", majorCivs.filter { it in experimentGroup })
-            outString += groupText("Control group", majorCivs.filter { it !in experimentGroup })
+        if (civIdsInExperimentGroup.isNotEmpty()) {
+            outString += groupText("Experiment group", majorCivs.filter { it in civIdsInExperimentGroup })
+            outString += groupText("Control group", majorCivs.filter { it !in civIdsInExperimentGroup })
         }
         for (civ in majorCivs) {
 
