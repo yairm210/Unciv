@@ -1,5 +1,6 @@
 package com.unciv.ui.screens.pickerscreens
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
@@ -667,6 +668,7 @@ class PolicyPickerScreen(
         if (!policy.isPickable(viewingCiv, canChangeState)) return
 
         // Avoid ANRs from changing game state; Don't accept more clicking anywhere
+        Gdx.input.inputProcessor = null
         viewingCiv.policies.adopt(policy)
 
         // If we've moved to another screen in the meantime (great person pick, victory screen) ignore this
