@@ -25,6 +25,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.ui.audio.SoundPlayer
+import com.unciv.ui.components.InputDisabling
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.surroundWithCircle
@@ -162,31 +163,31 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         column1.add(quickstartTable).row()
 
         val newGameButton = getMenuButton("Start new game", "OtherIcons/New", KeyboardBinding.StartNewGame) {
-            Gdx.input.inputProcessor = null // Avoid ANRs while preparing the new screen
+            InputDisabling.disableInput()
             game.pushScreen(NewGameScreen()) 
         }
         column1.add(newGameButton).row()
 
         val loadGameTable = getMenuButton("Load game", "OtherIcons/Load", KeyboardBinding.MainMenuLoad) {
-            Gdx.input.inputProcessor = null // Avoid ANRs while preparing the new screen
+            InputDisabling.disableInput()
             game.pushScreen(LoadGameScreen())
         }
         column1.add(loadGameTable).row()
 
         val multiplayerTable = getMenuButton("Multiplayer", "OtherIcons/Multiplayer", KeyboardBinding.Multiplayer) {
-            Gdx.input.inputProcessor = null // Avoid ANRs while preparing the new screen
+            InputDisabling.disableInput()
             game.pushScreen(MultiplayerScreen())
         }
         column2.add(multiplayerTable).row()
 
         val mapEditorScreenTable = getMenuButton("Map editor", "OtherIcons/MapEditor", KeyboardBinding.MapEditor) {
-            Gdx.input.inputProcessor = null // Avoid ANRs while preparing the new screen
+            InputDisabling.disableInput()
             game.pushScreen(MapEditorScreen())
         }
         column2.add(mapEditorScreenTable).row()
 
         val modsTable = getMenuButton("Mods", "OtherIcons/Mods", KeyboardBinding.ModManager) {
-            Gdx.input.inputProcessor = null // Avoid ANRs while preparing the new screen
+            InputDisabling.disableInput()
             game.pushScreen(ModManagementScreen())
         }
         column2.add(modsTable).row()

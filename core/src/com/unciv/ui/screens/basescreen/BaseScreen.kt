@@ -22,6 +22,7 @@ import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.skins.SkinStrings
+import com.unciv.ui.components.InputDisabling
 import com.unciv.ui.components.extensions.isNarrowerThan4to3
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.DispatcherVetoer
@@ -208,7 +209,7 @@ abstract class BaseScreen : Screen {
      *  - Note: At the time of wrinting, this was the ***only*** CivilopediaScreen constructor call outside itself
      */
     fun openCivilopedia(ruleset: Ruleset, link: String = "") {
-        Gdx.input.inputProcessor = null // Avoids ANR crashes waiting for civilopedia - game.pushScreen will set the inputprocessor to the new screen
+        InputDisabling.disableInput()
         game.pushScreen(CivilopediaScreen(ruleset, link = link))
     }
 }
