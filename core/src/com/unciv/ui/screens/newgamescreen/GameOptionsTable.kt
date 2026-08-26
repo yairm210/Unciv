@@ -1,5 +1,6 @@
 package com.unciv.ui.screens.newgamescreen
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
@@ -443,9 +444,17 @@ class GameOptionsTable(
             return null
         }
 
+        fun onBaseRulesetSelectedAvoidingANRs(newBaseRuleset: String): String? {
+            val inputProcessor = Gdx.input.inputProcessor
+            Gdx.input.inputProcessor = null
+            val result = onBaseRulesetSelected(newBaseRuleset)
+            Gdx.input.inputProcessor = inputProcessor
+            return result
+        }
+
         val sortedBaseRulesets = RulesetCache.getSortedBaseRulesets()
         if (sortedBaseRulesets.size < 2) return
-        baseRulesetSelectBox = addSelectBox("{Base Ruleset}:", sortedBaseRulesets, gameParameters.baseRuleset, ::onBaseRulesetSelected)
+        baseRulesetSelectBox = addSelectBox("{Base Ruleset}:", sortedBaseRulesets, gameParameters.baseRuleset, ::onBaseRulesetSelectedAvoidingANRs)
     }
 
     private fun Table.addGameSpeedSelectBox() {
