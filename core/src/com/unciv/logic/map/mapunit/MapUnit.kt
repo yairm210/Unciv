@@ -475,6 +475,13 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return false
     }
 
+    /** @return Whether [civ] can currently see this unit on the map, accounting for fog of war and invisibility. */
+    @Readonly
+    fun isVisibleTo(civ: Civilization): Boolean {
+        if (!getTile().isVisible(civ)) return false
+        return !isInvisible(civ) || getTile() in civ.viewableInvisibleUnitsTiles
+    }
+
     @Readonly
     fun canFortify(ignoreAlreadyFortified: Boolean = false) = when {
         baseUnit.isWaterUnit -> false

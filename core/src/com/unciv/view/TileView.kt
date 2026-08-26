@@ -41,8 +41,7 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
     }
     @Readonly private fun isVisible(unit: MapUnit): Boolean {
         if (viewer == null) return false
-        if (!tile.isVisible(viewer)) return false
-        return !unit.isInvisible(viewer) || tile in viewer.viewableInvisibleUnitsTiles
+        return unit.isVisibleTo(viewer)
     }
     @Readonly private fun toForeignMapUnitView(unit: MapUnit): ForeignMapUnitView =
         tileMapView.gameView!!.getForeignMapUnitView(unit)

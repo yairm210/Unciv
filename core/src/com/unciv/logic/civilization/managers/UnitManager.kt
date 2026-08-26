@@ -195,7 +195,7 @@ class UnitManager(val civInfo: Civilization) {
 
     @Readonly fun getDueUnits(): Sequence<MapUnit> = getCivUnitsStartingAtNextDue().filter { it.due && it.isIdle() }
 
-    fun shouldGoToDueUnit() = UncivGame.Current.settings.checkForDueUnits && getDueUnits().any()
+    @Readonly fun shouldGoToDueUnit() = UncivGame.Current.settings.checkForDueUnits && getDueUnits().any()
 
     @Readonly fun getUnitById(id: Int) = getCivUnits().firstOrNull { it.id == id }
 
