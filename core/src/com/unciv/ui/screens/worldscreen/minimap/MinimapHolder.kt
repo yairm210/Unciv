@@ -1,5 +1,6 @@
 package com.unciv.ui.screens.worldscreen.minimap
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
@@ -99,9 +100,11 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
     }
 
     private fun rebuildAndUpdateMap(civInfo: Civilization?) {
+        Gdx.input.inputProcessor = null // Avoid ANRs while rebuilding minimap
         rebuild(civInfo) // re-create views
         civInfo?.let { minimap.update(it) } // update map
         minimap.mapHolder.onViewportChanged() // update scroll position
+        Gdx.input.inputProcessor = stage // make clickable again
     }
 
     private fun getMaximizeToggleButton(civInfo: Civilization?, alignment: Int): Actor {
