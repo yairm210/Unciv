@@ -214,7 +214,7 @@ class PathingMapTest {
 //        assertNotEquals(path.toString(), path.firstEntry(), path.lastEntry())
         assertEquals("""
         -2     -1     +0     +1     +2    
-  +2     /      /     1/1.0  0/2.0  0/2.0 
+  +2     /      /      /     0/2.0  0/2.0 
   +1     /     0/2.0  0/2.0  0/1.0  0/2.0 
   +0    0/2.0  0/1.0  0/0.0S 0/1.0  0/2.0 
   -1    0/2.0  0/1.0  0/1.0  0/2.0   /    
@@ -282,7 +282,7 @@ class PathingMapTest {
     }
     
     @Test
-    fun findMatchingTilesInAttackRange_considersAttackRange() {
+    fun findMatchingTilesInAttackRange_ignoresAttackRange() {
         val evemyCiv = testGame.addBarbarianCiv()
         // Right side all hills, left side all roads.  A line of enemy warriors just north.
         for (tile in testGame.tileMap.tileList) {
@@ -299,30 +299,27 @@ class PathingMapTest {
         val pathing = PathingMap.createUnitPathingMap(unit)
         val attackableTiles = pathing.bfsAllMatchingTiles(1) { tile, _ -> tile.militaryUnit?.civ == evemyCiv}
         
-        // cant hit enemy at -5,2 because unit would have no movement left.
+        // cant hit enemy at -4,2 or 3,2 because unit would have no movement left.
         val expected = listOf(
-            HexCoord(-4,2),
             HexCoord(-3,2),
             HexCoord(-2,2),
             HexCoord(-1,2),
             HexCoord(0,2),
             HexCoord(1,2),
             HexCoord(2,2),
-            HexCoord(3,2),
         )
         val actual = attackableTiles.map {it.position}.sortedWith { l, r -> if (l.x != r.x) l.x.compareTo(r.x) else l.y.compareTo(r.y) }
         assertEquals(expected, actual)
         assertEquals("""
-        -6     -5     -4     -3     -2     -1     +0     +1     +2     +3    
-  +2     /      /     0/17.0* 0/17.0* 0/17.0* 0/17.0* 0/17.0* 0/17.0* 0/17.0* 0/17.0*
-  +1     /     1/0.5  0/3.0  0/2.5  0/2.0  0/1.5  0/1.0  0/2.0  0/3.0  1/2.0 
-  +0    1/0.5  0/3.0  0/2.5  0/2.0  0/1.5  0/1.0  0/0.0S 0/2.0  0/3.0  1/2.0 
-  -1    1/0.5  0/3.0  0/2.5  0/2.0  0/1.5  0/1.0  0/1.0  0/3.0  1/2.0   /    
-  -2    1/0.5  0/3.0  0/2.5  0/2.0  0/1.5  0/1.5  0/2.0  0/3.0  1/2.0   /    
-  -3    1/0.5  0/3.0  0/2.5  0/2.0  0/2.0  0/2.0  0/3.0  1/2.0   /      /    
-  -4    1/0.5  0/3.0  0/2.5  0/2.5  0/2.5  0/2.5  0/3.0  1/2.0   /      /    
-  -5    1/0.5  0/3.0  0/3.0  0/3.0  0/3.0  0/3.0  1/1.0   /      /      /    
-  -6    1/0.5  1/0.5  1/0.5  1/0.5  1/0.5  1/0.5   /      /      /           
+        -5     -4     -3     -2     -1     +0     +1     +2    
+  +2     /      /     0/17.0* 0/17.0* 0/17.0* 0/17.0* 0/17.0* 0/17.0*
+  +1     /     0/3.0  0/2.5  0/2.0  0/1.5  0/1.0  0/2.0  0/3.0 
+  +0    0/3.0  0/2.5  0/2.0  0/1.5  0/1.0  0/0.0S 0/2.0  0/3.0 
+  -1    0/3.0  0/2.5  0/2.0  0/1.5  0/1.0  0/1.0  0/3.0   /    
+  -2    0/3.0  0/2.5  0/2.0  0/1.5  0/1.5  0/2.0  0/3.0   /    
+  -3    0/3.0  0/2.5  0/2.0  0/2.0  0/2.0  0/3.0   /      /    
+  -4    0/3.0  0/2.5  0/2.5  0/2.5  0/2.5  0/3.0   /      /    
+  -5    0/3.0  0/3.0  0/3.0  0/3.0  0/3.0   /      /      /    
 """, pathing.toDebugString())
         // And affirm full recalculation using cached tiles has same result.
         val actual2 = attackableTiles.map {it.position}.sortedWith { l, r -> if (l.x != r.x) l.x.compareTo(r.x) else l.y.compareTo(r.y) }
