@@ -27,8 +27,6 @@ class CivView(civ: Civilization,
     @Readonly fun getTradeView(otherCiv: ForeignCivView): TradeView = TradeView(civ, otherCiv.unwrap())
 
     // Data retrieval
-    @Readonly fun isResearched(techName: String): Boolean = civ.tech.isResearched(techName)
-
     @Readonly fun hasStatToBuy(stat: Stat, price: Int): Boolean = civ.hasStatToBuy(stat, price)
 
     @Readonly fun canSeeTile(tileView: TileView): Boolean = tileView.unwrap().isVisible(civ)
@@ -58,6 +56,7 @@ class CivView(civ: Civilization,
     @Readonly fun hasMetAnyMajorCiv(): Boolean = civ.getKnownCivs().any { it != civ && !it.isBarbarian }
 
     // Tech
+    @Readonly fun isResearched(techName: String): Boolean = civ.tech.isResearched(techName)
     @Readonly fun currentTechnologyName(): String? = civ.tech.currentTechnologyName()
     @Readonly fun turnsToTech(techName: String): String = civ.tech.turnsToTech(techName)
     @Readonly fun canResearchTech(): Boolean = civ.tech.canResearchTech()
@@ -86,7 +85,7 @@ class CivView(civ: Civilization,
     @Readonly fun hasIdleUnits(): Boolean = civ.units.getIdleUnits().any()
     @Readonly fun idleUnitsCount(due: Boolean): Int = civ.units.getIdleUnits().count { it.due == due }
     @Readonly fun dueUnitsCount(): Int = civ.units.getDueUnits().count()
-    @Readonly fun shouldGoToDueUnit(): Boolean = civ.units.shouldGoToDueUnit()
+    @Readonly fun hasDueUnits(): Boolean = civ.units.getDueUnits().any()
     @Readonly fun unitCount(): Int = civ.units.getCivUnitsSize()
     @Readonly fun cityCount(): Int = civ.cities.size
     @Readonly fun hasMovedAutomatedUnitsThisTurn(): Boolean = civ.hasMovedAutomatedUnits
