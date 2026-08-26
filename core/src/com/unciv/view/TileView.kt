@@ -65,7 +65,6 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
             .map { toForeignMapUnitView(it) }
             .toList()
     }
-    @Readonly fun getAirUnits(): List<ForeignMapUnitView> = tile.airUnits.map { toForeignMapUnitView(it) }
 
     // Data retrieval
     @Readonly fun position() = tile.position

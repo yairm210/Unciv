@@ -539,14 +539,11 @@ class WorldMapHolder(
             table.add(buttonDto.createButton(this))
 
         val unitList = ArrayList<MapUnitView>()
-        val civView = worldScreen.selectedGameView.civView
-        val airUnits = tileView.getAirUnits()
-        if (tileView.isCityCenter()
-                && (tileView.getOwner() == civView || civView.isSpectator())) {
-            unitList.addAll(tileView.owningCity()!!.getCenterTile().getVisibleUnits().map { it.tryGetMapUnitView()!! })
-        } else if (airUnits.isNotEmpty()
-                && (airUnits.first().civ() == civView || civView.isSpectator())) {
-            unitList.addAll(tileView.getVisibleUnits().map { it.tryGetMapUnitView()!! })
+        val visibleOwnedUnits = tileView.getVisibleUnits()
+            .mapNotNull { it.tryGetMapUnitView() }
+        
+        if (tileView.isCityCenter() || unitList.any { it.isAirUnit() }) {
+            unitList.addAll(visibleOwnedUnits)
         }
 
         for (unitView in unitList) {
