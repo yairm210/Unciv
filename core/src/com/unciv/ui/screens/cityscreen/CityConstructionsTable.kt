@@ -670,7 +670,8 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         cityView.tryAddToQueue(construction.name)
         if (!cityView.constructions.shouldBeDisplayed(construction)) // For buildings - unlike units which can be queued multiple times
             cityScreen.clearSelection()
-        cityView.tryReassignPopulation()
+        if (cityView.constructions.constructionQueue.first() == construction.name)
+            cityView.tryReassignPopulation()
         cityScreen.update()
         cityScreen.game.settings.addCompletedTutorialTask("Pick construction")
     }
