@@ -132,25 +132,6 @@ and then goto http://localhost:6901/vnc.html?password=headless
 
 ## Licensing and credits
 
-### Summary
-
-This game is available under the following terms:
-
-* Source code: MPL 2.0 (see [LICENSE](LICENSE))
-* Media: CC BY-SA 4.0, CC BY 3.0/4.0, CC0, Public Domain
-  (see [docs/Credits.md](docs/Credits.md))
-
-### Source code legal notice
-
-    This Source Code Form is subject to the terms of the Mozilla Public
-    License, v. 2.0. If a copy of the MPL was not distributed with this
-    file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
-### Media licensing and credits
-
-The media files (graphics, audio, etc.) are authored by numerous people
-and are released (on a file-by-file basis) under a mixture of libre Creative
-Commons licenses (CC BY, CC BY-SA) and the Public Domain and CC0.
-
-For the full credits, licensing info and info relating to 3rd parties,
-see [docs/Credits.md](docs/Credits.md).
+This game is available under the MPL 2.0 (see [LICENSE](LICENSE]). The media
+files are authored by many people, available under a mix of CC BY-SA 4.0,
+CC BY 3.0/4.0, CC0, Public Domain (see [docs/Credits.md](docs/Credits.md)).
