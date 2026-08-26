@@ -85,9 +85,6 @@ class CivView(civ: Civilization,
     @Readonly fun hasIdleUnits(): Boolean = civ.units.getIdleUnits().any()
     @Readonly fun idleUnitsCount(due: Boolean): Int = civ.units.getIdleUnits().count { it.due == due }
     @Readonly fun dueUnitsCount(): Int = civ.units.getDueUnits().count()
-    @Readonly fun hasDueUnits(): Boolean = civ.units.getDueUnits().any()
-    @Readonly fun unitCount(): Int = civ.units.getCivUnitsSize()
-    @Readonly fun cityCount(): Int = civ.cities.size
     @Readonly fun hasMovedAutomatedUnitsThisTurn(): Boolean = civ.hasMovedAutomatedUnits
     @Readonly fun hasUnitsReadyToAutomate(): Boolean = civ.units.getCivUnits().any {
         it.currentMovement > Constants.minimumMovementEpsilon

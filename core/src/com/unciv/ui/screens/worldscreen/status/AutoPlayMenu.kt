@@ -49,7 +49,7 @@ class AutoPlayMenu(
             worldScreen.nextTurn()
         }
 
-        if (worldScreen.selectedGameView.civView.unitCount() + worldScreen.selectedGameView.civView.cityCount() >= 30) {
+        if (worldScreen.selectedGameView.civView.getUnits().size + worldScreen.selectedGameView.civView.cities().size >= 30) {
             autoPlay.runAutoPlayJobInNewThread("AutoPlayEndTurn", worldScreen, false, endTurnFunction)
         } else {
             autoPlay.autoPlayTurnInProgress = true

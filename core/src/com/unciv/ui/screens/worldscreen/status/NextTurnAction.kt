@@ -120,7 +120,7 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
     },
     NextUnit("Next unit", Color.LIGHT_GRAY) {
         override fun isChoice(worldScreen: WorldScreen) =
-            worldScreen.game.settings.checkForDueUnits && worldScreen.selectedGameView.civView.hasDueUnits()
+            worldScreen.game.settings.checkForDueUnits && worldScreen.selectedGameView.civView.dueUnitsCount() > 0
         override fun action(worldScreen: WorldScreen) =
             worldScreen.switchToNextUnit(!worldScreen.game.settings.checkForDueUnitsCycles)
         override fun getSubText(worldScreen: WorldScreen): String? =
