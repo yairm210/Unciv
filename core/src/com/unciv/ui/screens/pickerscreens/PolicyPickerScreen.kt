@@ -666,6 +666,7 @@ class PolicyPickerScreen(
         // Evil people clicking on buttons too fast to confuse the screen - #4977
         if (!policy.isPickable(viewingCiv, canChangeState)) return
 
+        // Avoid ANRs from changing game state; Don't accept more clicking anywhere
         viewingCiv.policies.adopt(policy)
 
         // If we've moved to another screen in the meantime (great person pick, victory screen) ignore this
