@@ -161,24 +161,34 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             { quickstartNewGame() }
         column1.add(quickstartTable).row()
 
-        val newGameButton = getMenuButton("Start new game", "OtherIcons/New", KeyboardBinding.StartNewGame)
-            { game.pushScreen(NewGameScreen()) }
+        val newGameButton = getMenuButton("Start new game", "OtherIcons/New", KeyboardBinding.StartNewGame) {
+            Gdx.input.inputProcessor = null // Avoid ANRs while preparing the new screen
+            game.pushScreen(NewGameScreen()) 
+        }
         column1.add(newGameButton).row()
 
-        val loadGameTable = getMenuButton("Load game", "OtherIcons/Load", KeyboardBinding.MainMenuLoad)
-            { game.pushScreen(LoadGameScreen()) }
+        val loadGameTable = getMenuButton("Load game", "OtherIcons/Load", KeyboardBinding.MainMenuLoad) {
+            Gdx.input.inputProcessor = null // Avoid ANRs while preparing the new screen
+            game.pushScreen(LoadGameScreen())
+        }
         column1.add(loadGameTable).row()
 
-        val multiplayerTable = getMenuButton("Multiplayer", "OtherIcons/Multiplayer", KeyboardBinding.Multiplayer)
-            { game.pushScreen(MultiplayerScreen()) }
+        val multiplayerTable = getMenuButton("Multiplayer", "OtherIcons/Multiplayer", KeyboardBinding.Multiplayer) {
+            Gdx.input.inputProcessor = null // Avoid ANRs while preparing the new screen
+            game.pushScreen(MultiplayerScreen())
+        }
         column2.add(multiplayerTable).row()
 
-        val mapEditorScreenTable = getMenuButton("Map editor", "OtherIcons/MapEditor", KeyboardBinding.MapEditor)
-            { game.pushScreen(MapEditorScreen()) }
+        val mapEditorScreenTable = getMenuButton("Map editor", "OtherIcons/MapEditor", KeyboardBinding.MapEditor) {
+            Gdx.input.inputProcessor = null // Avoid ANRs while preparing the new screen
+            game.pushScreen(MapEditorScreen())
+        }
         column2.add(mapEditorScreenTable).row()
 
-        val modsTable = getMenuButton("Mods", "OtherIcons/Mods", KeyboardBinding.ModManager)
-            { game.pushScreen(ModManagementScreen()) }
+        val modsTable = getMenuButton("Mods", "OtherIcons/Mods", KeyboardBinding.ModManager) {
+            Gdx.input.inputProcessor = null // Avoid ANRs while preparing the new screen
+            game.pushScreen(ModManagementScreen())
+        }
         column2.add(modsTable).row()
 
         val optionsTable = getMenuButton("Options", "OtherIcons/Options", KeyboardBinding.MainMenuOptions)
