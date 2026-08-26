@@ -20,6 +20,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
+import com.unciv.ui.components.InputDisabling
 import com.unciv.ui.components.extensions.getCloseButton
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toCheckBox
@@ -444,17 +445,10 @@ class GameOptionsTable(
             return null
         }
 
-        fun onBaseRulesetSelectedAvoidingANRs(newBaseRuleset: String): String? {
-            val inputProcessor = Gdx.input.inputProcessor
-            Gdx.input.inputProcessor = null
-            val result = onBaseRulesetSelected(newBaseRuleset)
-            Gdx.input.inputProcessor = inputProcessor
-            return result
-        }
-
         val sortedBaseRulesets = RulesetCache.getSortedBaseRulesets()
         if (sortedBaseRulesets.size < 2) return
-        baseRulesetSelectBox = addSelectBox("{Base Ruleset}:", sortedBaseRulesets, gameParameters.baseRuleset, ::onBaseRulesetSelectedAvoidingANRs)
+        baseRulesetSelectBox = addSelectBox("{Base Ruleset}:", sortedBaseRulesets, gameParameters.baseRuleset)
+            { InputDisabling.withInputDisabled { onBaseRulesetSelected(it) } }
     }
 
     private fun Table.addGameSpeedSelectBox() {

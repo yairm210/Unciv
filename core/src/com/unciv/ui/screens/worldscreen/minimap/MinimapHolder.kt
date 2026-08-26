@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
+import com.unciv.ui.components.InputDisabling
 import com.unciv.ui.components.extensions.addInTable
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
@@ -100,11 +101,11 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
     }
 
     private fun rebuildAndUpdateMap(civInfo: Civilization?) {
-        Gdx.input.inputProcessor = null // Avoid ANRs while rebuilding minimap
-        rebuild(civInfo) // re-create views
-        civInfo?.let { minimap.update(it) } // update map
-        minimap.mapHolder.onViewportChanged() // update scroll position
-        Gdx.input.inputProcessor = stage // make clickable again
+        InputDisabling.withInputDisabled {
+            rebuild(civInfo) // re-create views
+            civInfo?.let { minimap.update(it) } // update map
+            minimap.mapHolder.onViewportChanged() // update scroll position
+        }
     }
 
     private fun getMaximizeToggleButton(civInfo: Civilization?, alignment: Int): Actor {
