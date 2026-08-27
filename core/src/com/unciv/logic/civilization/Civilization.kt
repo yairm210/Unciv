@@ -604,7 +604,6 @@ class Civilization : IsPartOfGameInfoSerialization {
         getMatchingUniques(uniqueType, gameContext).any()
 
     // Does not return local uniques, only global ones.
-    /** Destined to replace getMatchingUniques, gradually, as we fill the enum */
     @Readonly
     @Deprecated(message = "forEachMatchingUnique is faster. If not viable, then this can still be used",
         replaceWith = ReplaceWith("forEachMatchingUnique"))
