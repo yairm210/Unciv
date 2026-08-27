@@ -729,12 +729,20 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         tab.touchable = Touchable.enabled
         tab.onClick {
             tab.touchable = Touchable.disabled
-            cityView.tryRemoveFromQueue(constructionQueueIndex, false)
-            cityScreen.clearSelection()
-            cityView.tryReassignPopulation()
-            // Select next entry in list if available.
-            // If the last one was deleted, select the new last one.
-            selectQueueEntry(constructionQueueIndex.coerceAtMost(cityView.constructions.constructionQueue.lastIndex)) { }
+            Concurrency.run {
+                val success = cityView.tryRemoveFromQueue(constructionQueueIndex, false)
+                if (!success) {
+                    Concurrency.runOnGLThread { cityScreen.update() }
+                    return@run
+                }
+                cityView.tryReassignPopulation()
+                Concurrency.runOnGLThread {
+                    cityScreen.clearSelection()
+                    // Select next entry in list if available.
+                    // If the last one was deleted, select the new last one.
+                    selectQueueEntry(constructionQueueIndex.coerceAtMost(cityView.constructions.constructionQueue.lastIndex)) { }
+                }
+            }
         }
         return tab
     }
