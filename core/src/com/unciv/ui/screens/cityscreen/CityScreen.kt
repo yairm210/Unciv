@@ -16,6 +16,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.CityAmbiencePlayer
 import com.unciv.ui.audio.SoundPlayer
+import com.unciv.ui.components.InputDisabling
 import com.unciv.ui.components.ParticleEffectMapFireworks
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.disable
@@ -38,6 +39,7 @@ import com.unciv.ui.popups.closeAllPopups
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.worldscreen.WorldScreen
+import com.unciv.utils.Concurrency
 import com.unciv.view.CityView
 import com.unciv.view.CivView
 import com.unciv.view.TileView
@@ -432,10 +434,19 @@ class CityScreen(
             true,
             restoreDefault = { update() }
         ) {
-            SoundPlayer.play(UncivSound.Coin)
-            cityView.tryBuyTile(selectedTile)
-            // preselect the next tile on city screen rebuild so bulk buying can go faster
-            UncivGame.Current.replaceCurrentScreen(CityScreen(cityView, initSelectedTile = cityView.chooseNewTileToOwn()))
+            Concurrency.run {
+                val success = cityView.tryBuyTile(selectedTile)
+                if (!success){
+                    update()
+                    return@run
+                }
+                Concurrency.runOnGLThread {
+                    SoundPlayer.play(UncivSound.Coin)
+                    InputDisabling.disableInput()
+                    // preselect the next tile on city screen rebuild so bulk buying can go faster
+                    game.replaceCurrentScreen(CityScreen(cityView, initSelectedTile = cityView.chooseNewTileToOwn()))
+                }
+            }
         }.open()
     }
 

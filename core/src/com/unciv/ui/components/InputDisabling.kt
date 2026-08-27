@@ -22,7 +22,8 @@ object InputDisabling {
     }
 
     /** 
-     * Use with caution - ensure that input is set afterwards, either by setting a new screen or otherwise
+     * Avoids ANRs when we're about to replace the screen
+     * If using when not about to replace the screem, use with caution - ensure that input is set afterwards
      */
     fun disableInput(){
         Gdx.input.inputProcessor = null
