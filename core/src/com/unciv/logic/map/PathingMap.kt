@@ -212,7 +212,7 @@ class PathingMap(
         if (!cache.nodesNeedingNeighbors.isEmpty) {
             if (VERBOSE_PATHFINDING_LOGS == cache.key.startingPoint || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
                 Log.debug("#getMovementToTilesAtPosition calculcating for $debugMapType $debugId")
-            bfsStepUntilDestination(cache, { _,node -> node.turns>0 && node.canMoveTo }, 1)
+            aStarStepUntilDestination(cache, null, 1)
         }
         getTilesSameTurn(cache)
         return tilesSameTurn
@@ -262,7 +262,7 @@ class PathingMap(
         bfsStepUntilDestination(fetchCache(), searchPredicate, timeLimitTurns)
         return results
     }
-    fun bfsAllMatchingTilesThisTurn(tilePredicate: EndSearchPredicate) = bfsAllMatchingTiles(0, tilePredicate)
+    fun bfsAllMatchingTilesThisTurn(tilePredicate: EndSearchPredicate) = bfsAllMatchingTiles(1, tilePredicate)
 
     private fun getTilesSameTurn(cache: PathingMapCache) {
         val tilesSameTurn = cache.tilesSameTurn
