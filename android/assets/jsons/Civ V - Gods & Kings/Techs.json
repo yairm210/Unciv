@@ -290,7 +290,7 @@
 				"name": "Steel",
 				"row": 10,
 				"prerequisites": ["Metal Casting"],
-                "uniques": ["[-100]% weight to this choice for AI decisions <before discovering [Education]>"],
+                "uniques": ["[-100]% weight to this choice for AI decisions <before discovering [Acoustics]>"],
 				"quote": "'John Henry said to his Captain, / 'A man ain't nothin' but a man, / And before I'll let your steam drill beat me down, / I'll die with the hammer in my hand.'' - Anonymous: The Ballad of John Henry, the Steel-Drivin' Man"
 			}
 		]
@@ -313,7 +313,6 @@
 				"name": "Acoustics",
 				"row": 4,
 				"prerequisites": ["Education"],
-                "uniques": ["[-100]% weight to this choice for AI decision <before discovering [Industrialization]>"],
 				"quote": "'Their rising all at once was as the sound of thunder heard remote' - Milton"
 			},
 			{
@@ -333,7 +332,7 @@
 				"name": "Gunpowder",
 				"row": 10,
 				"prerequisites": ["Physics","Steel"],
-                "uniques": ["[-100]% weight to this choice for AI decision <before discovering [Education]>"],
+                "uniques": ["[-100]% weight to this choice for AI decision <before discovering [Scientific Theory]>"],
 				"quote": "'The day when two army corps can annihilate each other in one second, all civilized nations, it is to be hoped, will recoil from war and discharge their troops.' - Alfred Nobel"
 			}
 		]
@@ -356,6 +355,7 @@
 				"name": "Architecture",
 				"row": 4,
 				"prerequisites": ["Acoustics","Banking"],
+                "uniques": ["[-100]% weight to this choice for AI decision <before discovering [Industrialization]>"],
 				"quote": "'Architecture begins where engineering ends.' - Walter Gropius"
 			},
 			{
