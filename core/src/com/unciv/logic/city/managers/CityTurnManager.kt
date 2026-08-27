@@ -9,6 +9,8 @@ import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.OverviewAction
+import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
@@ -46,6 +48,8 @@ class CityTurnManager(val city: City) {
             city.setCityFocus(CityFocus.GoldFocus)
             city.reassignAllPopulation()
         } else if (city.shouldReassignPopulation || city.civ.isAI()) {
+            if (city.civ.isAI())
+                city.setCityFocus(chooseCityFocus())
             city.reassignPopulation()  // includes cityStats.update
         } else
             city.cityStats.update()
@@ -56,6 +60,17 @@ class CityTurnManager(val city: City) {
         }
     }
     
+    private fun chooseCityFocus(): CityFocus {
+        // Small cities focus on growing, following Vox Populi.
+        if (city.population.population <= 3) return CityFocus.NoFocus
+        val construction = city.cityConstructions.getCurrentConstruction()
+        // Focus citizens on production while the city builds a world wonder or spaceship part.
+        if (construction is Building && construction.isWonder) return CityFocus.ProductionFocus
+        if (construction is INonPerpetualConstruction && construction.hasUnique(UniqueType.SpaceshipPart))
+            return CityFocus.ProductionFocus
+        return CityFocus.NoFocus
+    }
+
     private fun setWltkResourceDemandCooldown(isNewCity: Boolean) {
         val rng = city.state.stateBasedRandom("CityTurnManager.setWltkResourceDemandCooldown")
         // Demand a new resource in ~20 turns on Standard speed
