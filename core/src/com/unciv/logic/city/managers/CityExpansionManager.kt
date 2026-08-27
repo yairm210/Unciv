@@ -1,6 +1,5 @@
 package com.unciv.logic.city.managers
 
-import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.city.City
@@ -95,7 +94,7 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
 
         cost *= city.civ.gameInfo.speed.goldCostModifier
 
-        for (unique in city.getMatchingUniques(UniqueType.TileCostPercentage)) {
+        city.forEachMatchingUnique(UniqueType.TileCostPercentage) { unique -> 
             if (city.matchesFilter(unique.params[1]))
                 cost *= unique.params[0].toPercent()
         }
