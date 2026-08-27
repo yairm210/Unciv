@@ -1,0 +1,43 @@
+
+
+Avoid ANRs from game start screen
+
+minor perf: getExtraImprovementStats uses forEachMatchingUnique
+
+Avoid ANRs when buying tiles
+
+Avoid ANRs when removing from queue - run removal on another thread
+
+chore: Minor perf for calculating city resources
+
+chore: Add unified function for disabling input. Only reason is for the documentation of why we're doing this to be unified.
+
+chore: fix detekt
+
+*Actually* disable input processing when adopting policy
+
+chore: Common function for disabling input while stuff is going on and then reenabling it
+
+Avoid ANRs when selecting ruleset - checking mod verification can be hefty
+
+Avoid ANRs when rebuilding minimap
+
+Limit "reassign population" when adding construction, to only activate when the added construction is the top of the queue
+
+Avoid ANRs when switching screens from the main menu
+
+Avoid ANRs when picking policy
+
+chore: Remove "perf only" functions from civview API
+
+chore: Move "check for due units" - a UI setting - out of UnitManager, the logic layer.
+
+Solve  - Spectator-as-civ sees "units moving to tiles" only for the civ's units
+
+Simplify addTileOverlays - see 
+
+AI sets production focus for wonders and spaceship parts - By ssamt
+
+AStar#getMovementToTilesAtPosition correctly finds all tiles - By Ambeco
+
+Summarize licensing of game+media in README - By Wuzzy2
