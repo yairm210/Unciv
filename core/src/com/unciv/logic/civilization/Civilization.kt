@@ -309,6 +309,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.playerMinutesBeforeForceResign = playerMinutesBeforeForceResign
         toReturn.totalTurnTimeSeconds = totalTurnTimeSeconds
         toReturn.turnsPlayedAsHuman = turnsPlayedAsHuman
+        toReturn.lastTurnProcessedWithVersion = lastTurnProcessedWithVersion
         toReturn.civName = civName
         toReturn.civID = civID
         toReturn.tech = tech.clone()
