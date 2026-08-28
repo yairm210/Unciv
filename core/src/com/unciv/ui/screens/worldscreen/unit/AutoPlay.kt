@@ -34,6 +34,7 @@ class AutoPlay(private var autoPlaySettings: GameSettings.GameSettingsAutoPlay) 
     fun endTurnMultiturnAutoPlay() {
         if (!autoPlaySettings.autoPlayUntilEnd && turnsToAutoPlay > 0)
             turnsToAutoPlay--
+        autoPlayTurnInProgress = false
     }
 
     /**

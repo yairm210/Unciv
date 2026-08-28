@@ -239,7 +239,7 @@ object NextTurnAutomation {
         }
     }
 
-    private fun chooseTechToResearch(civInfo: Civilization) {
+    fun chooseTechToResearch(civInfo: Civilization) {
         val rng = civInfo.state.stateBasedRandom("NextTurnAutomation.chooseTechToResearch")
 
         @Readonly
@@ -284,7 +284,7 @@ object NextTurnAutomation {
         }
     }
 
-    private fun adoptPolicy(civInfo: Civilization) {
+    fun adoptPolicy(civInfo: Civilization) {
         val rng = civInfo.state.stateBasedRandom("NextTurnAutomation.adoptPolicy")
         /*
         # Branch-based policy-to-adopt decision
@@ -567,27 +567,35 @@ object NextTurnAutomation {
             && civInfo.getHappiness() >= 5 // live happiness - statsForNextTurn is stale mid-turn, so a multi-city conquest wave would otherwise annex several puppets against a pre-conquest reading
             && civInfo.stats.statsForNextTurn.happiness > city.population.population * 2 - 8 // don't go below -10 happiness due to annexing
 
-    fun automateCities(civInfo: Civilization) {
+    private fun civHasSignificantlyWeakerMilitaryThanEnemies(civInfo: Civilization): Boolean {
         val ownMilitaryStrength = civInfo.getStatForRanking(RankingType.Force)
         val sumOfEnemiesMilitaryStrength =
-                civInfo.gameInfo.civilizations
-                    .filter { it != civInfo && !it.isBarbarian && civInfo.isAtWarWith(it) }
-                    .sumOf { it.getStatForRanking(RankingType.Force) }
-        val civHasSignificantlyWeakerMilitaryThanEnemies =
-                ownMilitaryStrength < sumOfEnemiesMilitaryStrength * 0.66f
-        for (city in civInfo.cities) {
-            if (shouldAnnexCity(civInfo, city)) city.annexCity()
+            civInfo.gameInfo.civilizations
+                .filter { it != civInfo && !it.isBarbarian && civInfo.isAtWarWith(it) }
+                .sumOf { it.getStatForRanking(RankingType.Force) }
+        return ownMilitaryStrength < sumOfEnemiesMilitaryStrength * 0.66f
+    }
+    
+    fun automateCities(civInfo: Civilization) {
+        val civHasSignificantlyWeakerMilitaryThanEnemies = civHasSignificantlyWeakerMilitaryThanEnemies(civInfo)
+        for (city in civInfo.cities) 
+            automateCity(city, civHasSignificantlyWeakerMilitaryThanEnemies)
+    }
+    
+    fun automateCity(city: City, civHasSignificantlyWeakerMilitaryThanEnemies: Boolean?=null) {
+        val civInfo = city.civ
+        if (shouldAnnexCity(civInfo, city)) city.annexCity()
+        val strongMilitary = civHasSignificantlyWeakerMilitaryThanEnemies ?: civHasSignificantlyWeakerMilitaryThanEnemies(civInfo)
 
-            // Don't pull a city off a spaceship part it's already building for the military push (only if actually attacked)
-            val onSpaceshipPart = city.cityConstructions.getCurrentConstruction().name in civInfo.gameInfo.spaceResources
-            if (city.health < city.getMaxHealth() || (civHasSignificantlyWeakerMilitaryThanEnemies && !onSpaceshipPart)) {
-                Automation.tryTrainMilitaryUnit(city) // need defenses if city is under attack
-                if (city.cityConstructions.constructionQueue.isNotEmpty())
-                    continue // found a unit to build so move on
-            }
-
-            city.cityConstructions.chooseNextConstruction()
+        // Don't pull a city off a spaceship part it's already building for the military push (only if actually attacked)
+        val onSpaceshipPart = city.cityConstructions.getCurrentConstruction().name in civInfo.gameInfo.spaceResources
+        if (city.health < city.getMaxHealth() || (strongMilitary && !onSpaceshipPart)) {
+            Automation.tryTrainMilitaryUnit(city) // need defenses if city is under attack
+            if (city.cityConstructions.constructionQueue.isNotEmpty())
+                return // found a unit to build so move on
         }
+
+        city.cityConstructions.chooseNextConstruction()
     }
 
     private fun trainSettler(civInfo: Civilization) {
@@ -643,7 +651,7 @@ object NextTurnAutomation {
 
     // Technically, this function should also check for civs that have liberated one or more cities
     // However, that can be added in another update, this PR is large enough as it is.
-    private fun tryVoteForDiplomaticVictory(civ: Civilization) {
+    fun tryVoteForDiplomaticVictory(civ: Civilization) {
         if (!civ.mayVoteForDiplomaticVictory()) return
         val rng = civ.state.stateBasedRandom("NextTurnAutomation.tryVoteForDiplomaticVictory")
 

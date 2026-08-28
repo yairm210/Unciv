@@ -2,6 +2,7 @@ package com.unciv.ui.screens.worldscreen.worldmap
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.UncivGame
+import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.automation.unit.CityLocationTileRanker
 import com.unciv.logic.battle.AttackableTile
 import com.unciv.logic.battle.TargetHelper
@@ -26,9 +27,11 @@ object WorldMapTileUpdater {
                 it.isForceVisible = true } // So we can see all resources, regardless of tech
         }
 
-        // General update of all tiles
-        for (tileGroup in tileGroups.values)
-            tileGroup.update(civView)
+        // General update of all tiles 
+         timeThis("tileGroup.update") {
+            for (tileGroup in tileGroups.values)
+                tileGroup.update(civView)
+         }
 
         // Update tiles according to selected unit/city
         val unitTable = worldScreen.bottomUnitTable

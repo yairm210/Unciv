@@ -16,6 +16,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.MapVisualization
+import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.multiplayer.MultiplayerGameUpdated
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
@@ -691,7 +692,7 @@ class WorldScreen(
         }
     }
 
-    fun switchToNextUnit(resetDue: Boolean = true) {
+    fun switchToNextUnit(resetDue: Boolean = true, immediately: Boolean = false): MapUnit? {
         // Try to select something new if we already have the next pending unit selected.
         if (bottomUnitTable.selectedUnit != null && resetDue)
             bottomUnitTable.selectedUnit!!.getUnit().due = false
@@ -699,16 +700,17 @@ class WorldScreen(
         if (nextDueUnit != null) {
             mapHolder.setCenterPosition(
                 nextDueUnit.currentTile.position,
-                immediately = false,
-                selectUnit = false
+                immediately = immediately,
+                selectUnit = true,
+                forceSelectUnit = nextDueUnit
             )
-            bottomUnitTable.selectUnit(selectedGameView.getForeignMapUnitView(nextDueUnit).tryGetMapUnitView()!!)
         } else {
             mapHolder.removeAction(mapHolder.blinkAction)
             mapHolder.selectedTile = null
             bottomUnitTable.selectUnit()
         }
         shouldUpdate = true
+        return nextDueUnit
     }
     
     @Readonly

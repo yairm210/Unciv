@@ -40,15 +40,13 @@ class NextTurnButton(
     fun update() {
         nextTurnAction = getNextTurnAction(worldScreen)
         updateButton(nextTurnAction)
-        val autoPlay = worldScreen.autoPlay
-        if (autoPlay.shouldContinueAutoPlaying() && worldScreen.isPlayersTurn
+       if (worldScreen.autoPlay.shouldContinueAutoPlaying() && worldScreen.isPlayersTurn
             && !worldScreen.waitingForAutosave && !worldScreen.isNextTurnUpdateRunning()) {
-            autoPlay.runAutoPlayJobInNewThread("MultiturnAutoPlay", worldScreen, false) {
-                TurnManager(worldScreen.selectedGameView.civView.getCiv()).automateTurn()
-                Concurrency.runOnGLThread { worldScreen.nextTurn() }
-                autoPlay.endTurnMultiturnAutoPlay()
-            }
-        }
+            if (worldScreen.game.settings.autoPlay.autoPlayOneUnit)
+                autoPlayOneUnit()
+            else
+                autoPlayWholeTurn()
+        } 
 
         isEnabled = nextTurnAction.getText(worldScreen) == "AutoPlay"
             || ((worldScreen.isPlayersTurn || worldScreen.failedUpload) && !worldScreen.waitingForAutosave && !worldScreen.isNextTurnUpdateRunning())
@@ -59,6 +57,36 @@ class NextTurnButton(
         }
 
         worldScreen.smallUnitButton.update()
+    }
+    
+    private fun autoPlayWholeTurn() {
+        val autoPlay = worldScreen.autoPlay
+        autoPlay.runAutoPlayJobInNewThread("MultiturnAutoPlay", worldScreen, false) {
+            TurnManager(worldScreen.selectedGameView.civView.getCiv()).automateTurn()
+            autoPlay.autoPlayJob = Concurrency.runOnGLThread {
+                worldScreen.nextTurn()
+            }
+            autoPlay.endTurnMultiturnAutoPlay()
+        }
+    }
+    
+    private fun autoPlayOneUnit() {
+        val autoPlay = worldScreen.autoPlay
+        val nextAction = NextTurnAction.entries.firstOrNull { it.isChoice(worldScreen) && it !in ignoreNexttTurnActions}
+        if (nextAction == null) {
+            autoPlayWholeTurn()
+            return
+        }
+        if (nextAction.selectForAutomation(worldScreen))
+            return
+        autoPlay.autoPlayTurnInProgress = true
+        autoPlay.autoPlayJob = Concurrency.runOnNonDaemonThreadPool("OneUnitAutoPlay") {
+            nextAction.automate(worldScreen)
+            Concurrency.runOnGLThread {
+                autoPlay.autoPlayTurnInProgress = false
+                worldScreen.shouldUpdate = true
+            }
+        }
     }
 
     internal fun updateButton(nextTurnAction: NextTurnAction) {
@@ -86,4 +114,7 @@ class NextTurnButton(
 
     @Readonly fun isNextUnitAction(): Boolean = nextTurnAction == NextTurnAction.NextUnit
 
+    companion object {
+        private val ignoreNexttTurnActions = setOf(NextTurnAction.Working, NextTurnAction.Waiting, NextTurnAction.AutoPlay, NextTurnAction.NextTurn, NextTurnAction.MoveAutomatedUnits)
+    }
 }

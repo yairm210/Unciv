@@ -1,6 +1,7 @@
 package com.unciv.logic.map.mapunit
 
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.MultiFilter
 import com.unciv.logic.automation.unit.UnitAutomation
@@ -305,7 +306,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 !tile.isMarkedForCreatesOneImprovement()
         ) return false
         if (includeOtherEscortUnit && isEscorting() && !getOtherEscortUnit()!!.isIdle(false)) return false
-        return !(isFortified() || isExploring() || isSleeping() || isAutomated() || isMoving() || isGuarding())
+        val automated = isAutomated() && !UncivGame.Current.settings.autoPlay.autoPlayOneUnit
+        return !(isFortified() || isExploring() || isSleeping() || automated || isMoving() || isGuarding())
     }
 
     @Readonly fun getUniques(): Sequence<Unique> = tempUniquesMap.getAllUniques()

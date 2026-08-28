@@ -420,7 +420,7 @@ object ReligionAutomation {
         chooseFreeBeliefs(civInfo)
     }
 
-    private fun choosePantheon(civInfo: Civilization) {
+    fun choosePantheon(civInfo: Civilization) {
         if (!civInfo.religionManager.canFoundOrExpandPantheon()) return
         // So looking through the source code of the base game available online,
         // the functions for choosing beliefs total in at around 400 lines.
@@ -436,7 +436,7 @@ object ReligionAutomation {
         )
     }
 
-    private fun foundReligion(civInfo: Civilization) {
+    fun foundReligion(civInfo: Civilization) {
         if (civInfo.religionManager.religionState != ReligionState.FoundingReligion) return
         val rng = civInfo.state.stateBasedRandom("ReligionAutomation.foundReligion")
         val usedReligions = civInfo.gameInfo.religions.values.mapTo(mutableSetOf()) { it.name }
@@ -455,14 +455,14 @@ object ReligionAutomation {
         civInfo.religionManager.chooseBeliefs(chosenBeliefs)
     }
 
-    private fun enhanceReligion(civInfo: Civilization) {
+    fun enhanceReligion(civInfo: Civilization) {
         if (civInfo.religionManager.religionState != ReligionState.EnhancingReligion) return
         civInfo.religionManager.chooseBeliefs(
             chooseBeliefs(civInfo, civInfo.religionManager.getBeliefsToChooseAtEnhancing()).toList()
         )
     }
 
-    private fun chooseFreeBeliefs(civInfo: Civilization) {
+    fun chooseFreeBeliefs(civInfo: Civilization) {
         if (!civInfo.religionManager.hasFreeBeliefs()) return
         civInfo.religionManager.chooseBeliefs(
             chooseBeliefs(civInfo, civInfo.religionManager.freeBeliefsAsEnums()).toList(),
