@@ -37,6 +37,7 @@ import com.unciv.ui.components.extensions.GdxKeyCodeFixes.valueOf
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.ActorAttachments
 import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.VirtualMouseButtonKeys
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onChange
@@ -473,6 +474,7 @@ object GdxKeyCodeFixes {
         DEL -> "Del"  // Gdx would name this "Forward Delete"
         BACKSPACE -> "Backspace"  // Gdx would name this "Delete"
         else -> Input.Keys.toString(keyCode)
+            ?: VirtualMouseButtonKeys.fromKey(keyCode)?.label
             ?: ""
     }
 
@@ -481,7 +483,8 @@ object GdxKeyCodeFixes {
         "Del" -> DEL
         "Backspace" -> BACKSPACE
         else -> {
-            val code = Input.Keys.valueOf(name)
+            val code = VirtualMouseButtonKeys.fromLabel(name)?.keyCode
+                ?: Input.Keys.valueOf(name)
             if (code == -1) UNKNOWN else code
         }
     }
