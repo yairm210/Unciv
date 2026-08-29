@@ -104,13 +104,13 @@ abstract class ReligionPickerScreenCommon(
             if (belief == null) return@onClick
             descriptionScroll.scrollY = 0f
             descriptionScroll.updateVisualScroll()
+            val labelWidth = if (descriptionScroll.width < 700f) descriptionScroll.width - 40f else 0f
             descriptionTable.apply {
                 add(
                     MarkupRenderer.render(
-                    belief.getCivilopediaTextLines(withHeader = true), width - 20f
-                ) {
-                    openCivilopedia(it)
-                }).growX()
+                        belief.getCivilopediaTextLines(withHeader = true), labelWidth
+                    ) { openCivilopedia(it) }
+                )
                 // Icon should it be needed:  CivilopediaImageGetters.belief(belief.getIconName(), 50f)
             }
         }
