@@ -163,6 +163,8 @@ open class RulesetValidator protected constructor(
 
         if (building.replaces != null && building.uniqueTo == null)
             lines.add("${building.name} should replace ${building.replaces} but does not have uniqueTo assigned!")
+        if (building.replaces == building.name)
+            lines.add("${building.name} replaces itself!")
     }
 
     protected open fun addCityStateTypeErrors(lines: RulesetErrorList) {
@@ -246,6 +248,8 @@ open class RulesetValidator protected constructor(
         for (improvement in ruleset.tileImprovements.values) {
             if (improvement.replaces != null && improvement.uniqueTo == null)
                 lines.add("${improvement.name} should replace ${improvement.replaces} but does not have uniqueTo assigned!")
+            if (improvement.replaces == improvement.name)
+                lines.add("${improvement.name} replaces itself!")
             if (improvement.terrainsCanBeBuiltOn.isEmpty()
                 && !improvement.hasUnique(UniqueType.CanOnlyImproveResource)
                 && !improvement.hasUnique(UniqueType.Unbuildable)
@@ -491,6 +495,8 @@ open class RulesetValidator protected constructor(
 
         if (unit.replaces != null && unit.uniqueTo == null)
             lines.add("${unit.name} should replace ${unit.replaces} but does not have uniqueTo assigned!")
+        if (unit.replaces == unit.name)
+            lines.add("${unit.name} replaces itself!")
 
         if (unit.isMilitary && unit.strength == 0)  // Should only match ranged units with 0 strength
             lines.add("${unit.name} is a military unit but has no assigned strength!", sourceObject = unit)
