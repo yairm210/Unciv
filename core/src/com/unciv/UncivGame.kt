@@ -278,10 +278,14 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         screenStack.addLast(root)
         setScreen(root)
     }
-    /** Adds a screen to be displayed instead of the current screen, with an option to go back to the previous screen by calling [popScreen] */
-    fun pushScreen(newScreen: BaseScreen) {
+    /** Adds a screen to be displayed instead of the current screen, with an option to go back to the previous screen by calling [popScreen]
+     * Disables inputs to avoid ANRs while creating the new screen - we don't want to be handling input in the interim anyway */
+    fun <T: BaseScreen> pushScreen(getScreen: () -> T): T {
+        InputDisabling.disableInput()
+        val newScreen = getScreen()
         screenStack.addLast(newScreen)
         setScreen(newScreen)
+        return newScreen
     }
 
     /**
@@ -467,8 +471,7 @@ private fun logRunningThreads() {
         if (curGameInfo != null) {
             files.autosaves.requestAutoSaveUnCloned(curGameInfo) // Can save gameInfo directly because the user can't modify it on the MainMenuScreen
         }
-        val mainMenuScreen = MainMenuScreen()
-        pushScreen(mainMenuScreen)
+        val mainMenuScreen = pushScreen{ MainMenuScreen() }
         return mainMenuScreen
     }
 

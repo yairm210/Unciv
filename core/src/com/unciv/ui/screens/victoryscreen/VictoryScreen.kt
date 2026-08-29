@@ -190,7 +190,7 @@ class VictoryScreen(
         rightSideButton.onClick {
             val newGameSetupInfo = GameSetupInfo(gameInfo)
             newGameSetupInfo.mapParameters.reseed()
-            game.pushScreen(NewGameScreen(newGameSetupInfo))
+            game.pushScreen{ NewGameScreen(newGameSetupInfo) }
         }
 
         closeButton.setText("One more turn...!".tr())

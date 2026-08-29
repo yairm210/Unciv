@@ -107,7 +107,7 @@ class ImprovementPickerScreen(
             val button = tile.getCity()!!.name.toTextButton(hideIcons = true)
             button.onClick {
                 val cityView = GUI.getWorldScreen().selectedGameView.getCityView(tile.getCity()!!)
-                this.game.pushScreen(CityScreen(cityView, null, cityView.tileView(tile)))
+                game.pushScreen{ CityScreen(cityView, null, cityView.tileView(tile)) }
             }
             val label = "Tile owned by [${tile.getOwner()!!.civName}] (You)".toLabel()
             label.onClick { openCivilopedia(tile.getOwner()!!.nation.makeLink()) }
