@@ -1,3 +1,27 @@
+## 4.21.14
+
+chore: Clearer "on dispose wait for autosave", doesn't solve the problem but does clear up what the problem is
+
+Fixed part of  - Fixed minimap problems when spectating-as-civ
+
+Missed Android screen whoops
+
+Generic'd and default'd "Avoid ANRs by disabling input" by having all screen pushes send a constructor function instead of an instance
+
+By SomeTroglodyte:
+- Fix "Connect road" with A-Star pathing enabled 
+- Allow assigning "key" mappings to extra mouse buttons 
+- Fix equalizeColumns for empty lower tables 
+- More screens support the "F1" binding to Civilopedia 
+
+fix: reject ruleset objects that replace themselves - By mvanhorn
+
+mdae the idle unit cycle button a view (maybe??) - By varchasgopalaswamy
+
+(MP) Record client version of latest turn submitted by each civ - By unciv-loof
+
+PathingMap cleanup and linting - By Ambeco
+
 ## 4.21.13
 
 Massive Application Not Responding cleanup for Android
