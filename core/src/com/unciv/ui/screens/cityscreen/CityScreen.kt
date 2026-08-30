@@ -494,7 +494,8 @@ class CityScreen(
     internal fun hasFreeBuilding(building: Building) = cityView.hasFreeBuilding(building)
 
     fun selectConstructionFromQueue(index: Int) {
-        selectConstruction(cityView.constructions.constructionQueue[index])
+        val constructionName = cityView.constructions.constructionQueue.getOrNull(index) ?: return
+        selectConstruction(constructionName)
     }
     fun selectConstruction(name: String) {
         selectConstruction(cityView.constructions.getConstruction(name))
