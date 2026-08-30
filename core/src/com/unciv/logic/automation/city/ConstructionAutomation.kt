@@ -1,5 +1,6 @@
 package com.unciv.logic.automation.city
 
+import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
@@ -29,6 +30,7 @@ import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 import kotlin.math.sqrt
 import com.unciv.logic.automation.Timers.Companion.timeThis
+import com.unciv.models.ruleset.unique.Unique
 
 class ConstructionAutomation(val cityConstructions: CityConstructions) {
 
@@ -270,16 +272,16 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         value += applyBuildingStats(building, cityBaseline)
         value += getMilitaryBuildingValue(building)
         value += getVictoryBuildingValue(building)
-        value += getOnetimeUniqueBonuses(building)
+        value += getUniqueBonuses(building)
         return value
     }
 
     @Readonly
-    private fun getOnetimeUniqueBonuses(building: Building): Float {
+    private fun getUniqueBonuses(building: Building): Float {
         var value = 0f
         if (building.isWonder) {
             // Buildings generally don't have these uniques, and Wonders generally only one of these, so we can save some time by not checking every building for every unique
-            if (!building.isNationalWonder) value -= civInfo.gameInfo.getAliveMajorCivs().sortedByDescending { it.getStatForRanking(RankingType.Technologies) }.indexOf(civInfo)
+            if (!building.isNationalWonder) value -= civInfo.gameInfo.getAliveMajorCivs().sortedByDescending { it.getStatForRanking(RankingType.Technologies) }.indexOf(civInfo) * if (civInfo.civName == Constants.simulationCiv3) 2 else 1
             // Wonders are a one-time occurence: value less if someone is going to build them before us anyways
             value += when {
                 building.hasUnique(UniqueType.OneTimeFreePolicy) || building.hasUnique(UniqueType.OneTimeAmountFreePolicies) -> civInfo.getPersonality().culture
