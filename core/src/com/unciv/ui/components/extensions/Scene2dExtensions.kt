@@ -504,6 +504,7 @@ fun equalizeColumns(vararg tables: Table) {
     for (table in tables) {
         table.packIfNeeded()
     }
+    if (tables.count { it.rows > 0 } <= 1) return // Nothing to do when at most one table has actual cells
     val columns = tables.first().columns
     check(tables.all { it.columns >= columns }) {
         "equalizeColumns needs all tables to have at least the same number of columns as the first one"
