@@ -16,7 +16,6 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.CityAmbiencePlayer
 import com.unciv.ui.audio.SoundPlayer
-import com.unciv.ui.components.InputDisabling
 import com.unciv.ui.components.ParticleEffectMapFireworks
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.disable
@@ -444,9 +443,8 @@ class CityScreen(
                 }
                 Concurrency.runOnGLThread {
                     SoundPlayer.play(UncivSound.Coin)
-                    InputDisabling.disableInput()
                     // preselect the next tile on city screen rebuild so bulk buying can go faster
-                    game.replaceCurrentScreen(CityScreen(cityView, initSelectedTile = cityView.chooseNewTileToOwn()))
+                    game.replaceCurrentScreen { CityScreen(cityView, initSelectedTile = cityView.chooseNewTileToOwn()) }
                 }
             }
         }.open()
@@ -555,10 +553,12 @@ class CityScreen(
         if (numCities == 0) return
         val indexOfCity = viewableCities.indexOfFirst { it == cityView }
         val indexOfNextCity = (indexOfCity + delta + numCities) % numCities
-        val newCityScreen = CityScreen(viewableCities[indexOfNextCity], ambiencePlayer = passOnCityAmbiencePlayer())
-        newCityScreen.mapScrollPane.zoom(mapScrollPane.scaleX) // Retain zoom
-        newCityScreen.update()
-        game.replaceCurrentScreen(newCityScreen)
+        game.replaceCurrentScreen {
+            val newCityScreen = CityScreen(viewableCities[indexOfNextCity], ambiencePlayer = passOnCityAmbiencePlayer())
+            newCityScreen.mapScrollPane.zoom(mapScrollPane.scaleX) // Retain zoom
+            newCityScreen.update()
+            newCityScreen
+        }
     }
 
     // Don't use passOnCityAmbiencePlayer here - continuing play on the replacement screen would be nice,

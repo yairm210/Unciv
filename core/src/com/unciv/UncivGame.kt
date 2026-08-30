@@ -328,11 +328,14 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     }
 
     /** Replaces the current screen with a new one. Automatically [disposes][BaseScreen.dispose] the old screen. */
-    fun replaceCurrentScreen(newScreen: BaseScreen) {
+    fun <T: BaseScreen> replaceCurrentScreen(getScreen: () -> T): T {
+        InputDisabling.disableInput()
+        val newScreen = getScreen()
         val oldScreen = screenStack.removeLast()
         screenStack.addLast(newScreen)
         setScreen(newScreen)
         Concurrency.runOnGLThread { oldScreen.dispose() }
+        return newScreen
     }
 
     /** Resets the game to the stored world screen and automatically [disposes][Screen.dispose] all other screens. */
@@ -379,8 +382,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
             onlineMultiplayer.downloadGame(deepLinkedMultiplayerGame!!)
         } catch (ex: Exception) {
             launchOnGLThread {
-                val mainMenu = MainMenuScreen()
-                replaceCurrentScreen(mainMenu)
+                val mainMenu = replaceCurrentScreen { MainMenuScreen() }
                 val popup = Popup(mainMenu)
                 val (message) = LoadGameScreen.getLoadExceptionMessage(ex)
                 popup.addGoodSizedLabel(message)

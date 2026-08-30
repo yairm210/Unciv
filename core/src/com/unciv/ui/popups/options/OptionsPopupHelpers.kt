@@ -303,7 +303,7 @@ internal interface OptionsPopupHelpers {
                 UncivGame.Current.reloadWorldscreen()
             } else if (screen is MainMenuScreen) {
                 withGLContext {
-                    UncivGame.Current.replaceCurrentScreen(MainMenuScreen())
+                    UncivGame.Current.replaceCurrentScreen{ MainMenuScreen() }
                 }
             }
             withGLContext {

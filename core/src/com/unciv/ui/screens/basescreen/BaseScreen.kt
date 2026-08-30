@@ -96,7 +96,7 @@ abstract class BaseScreen : Screen {
         if (this !is RecreateOnResize) {
             stage.viewport.update(width, height, true)
         } else if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
-            game.replaceCurrentScreen(recreate())
+            game.replaceCurrentScreen{ recreate() }
         }
     }
 
