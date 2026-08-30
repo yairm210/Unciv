@@ -29,7 +29,6 @@ import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 import kotlin.math.sqrt
 import com.unciv.logic.automation.Timers.Companion.timeThis
-import com.unciv.models.ruleset.unique.Unique
 
 class ConstructionAutomation(val cityConstructions: CityConstructions) {
 
