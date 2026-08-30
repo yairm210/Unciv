@@ -172,6 +172,8 @@ class CityScreen(
             scrollY = (maxY - cityStatsTable.packIfNeeded().height - posFromEdge + cityPickerTable.top) / 2
             updateVisualScroll()
         }
+
+        globalShortcuts.add(KeyboardBinding.Civilopedia) { openCivilopedia() }
     }
 
     override fun getCivilopediaRuleset() = cityView.getRuleset()

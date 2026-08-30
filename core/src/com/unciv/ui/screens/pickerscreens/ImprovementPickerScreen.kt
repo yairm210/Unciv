@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.GUI
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.ImprovementBuildingProblem
 import com.unciv.logic.map.tile.Tile
@@ -25,12 +26,12 @@ import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.ActivationTypes
+import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onDoubleClick
 import com.unciv.ui.images.ImageGetter
-import com.unciv.GUI
 import com.unciv.ui.screens.cityscreen.CityScreen
 import kotlin.math.roundToInt
 
@@ -82,10 +83,11 @@ class ImprovementPickerScreen(
             accept(selectedImprovement)
         }
 
-        descriptionLabel.onClick {
-            val link = selectedImprovement?.makeLink()
-            if (!link.isNullOrEmpty()) openCivilopedia(link)
+        descriptionLabel.onActivation {
+            val link = selectedImprovement?.makeLink().orEmpty()
+            openCivilopedia(link)
         }
+        descriptionLabel.keyShortcuts.add(KeyboardBinding.Civilopedia)
 
         val regularImprovements = Table()
         regularImprovements.defaults().pad(5f)
