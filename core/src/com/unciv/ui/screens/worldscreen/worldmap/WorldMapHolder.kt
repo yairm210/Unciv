@@ -735,7 +735,7 @@ class WorldMapHolder(
 
     override fun restrictX(deltaX: Float): Float {
         var result = scrollX - deltaX
-        if (worldScreen.selectedGameView.civView.isSpectator()) return result
+        if (worldScreen.selectedGameView.spectatorMode) return result
 
         val exploredRegion = worldScreen.selectedGameView.civView.getCiv().exploredRegion
         if (exploredRegion.shouldRecalculateCoords()) exploredRegion.calculateStageCoords(maxX, maxY)
@@ -754,7 +754,7 @@ class WorldMapHolder(
 
     override fun restrictY(deltaY: Float): Float {
         var result = scrollY + deltaY
-        if (worldScreen.selectedGameView.civView.isSpectator()) return result
+        if (worldScreen.selectedGameView.spectatorMode) return result
 
         val exploredRegion = worldScreen.selectedGameView.civView.getCiv().exploredRegion
         if (exploredRegion.shouldRecalculateCoords()) exploredRegion.calculateStageCoords(maxX, maxY)
