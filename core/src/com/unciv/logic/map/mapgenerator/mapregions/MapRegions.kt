@@ -516,6 +516,7 @@ fun getRegionPriority(terrain: Terrain?): Int? {
 internal fun anonymizeUnique(unique: Unique) = Unique(
     "RULE" + unique.modifiers.sortedBy { it.text }.joinToString(prefix = " ", separator = " ") { "<" + it.text + ">" })
 
+@Readonly 
 internal fun isWaterOnlyResource(resource: TileResource, ruleset: Ruleset) = resource.terrainsCanBeFoundOn
     .all { terrainName -> ruleset.terrains[terrainName]!!.type == TerrainType.Water }
 
