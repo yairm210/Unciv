@@ -91,7 +91,7 @@ class CivView(civ: Civilization,
             && (it.isAutomated() || it.isExploring() || it.isMoving())
     }
     /** [civ]'s own units, wrapped for the viewer's own use (e.g. movement-plan arrows). */
-    @Readonly fun getUnits(): List<MapUnitView> = civ.units.getCivUnits().map { MapUnitView(it, this) }.toList()
+    @Readonly fun getUnits(): List<MapUnitView> = civ.units.getCivUnits().map { gameView.getMapUnitView(it) }.toList()
 
     @Readonly fun getStatMapForNextTurn(): StatMap = civ.stats.getStatMapForNextTurn()
     @Readonly fun getHappinessBreakdown(): HashMap<String, Float> = civ.stats.getHappinessBreakdown()

@@ -120,7 +120,7 @@ class CityView(city: City,
     @Readonly fun getCityAmbienceSound(): String = city.civ.getEra().citySound
     @Readonly fun isBeingRazed(): Boolean = city.isBeingRazed
     @Readonly fun isCapital(): Boolean = city.isCapital()
-    @Readonly fun getGarrison(): MapUnitView? = city.getGarrison()?.let { MapUnitView(it, gameView.civView) }
+    @Readonly fun getGarrison(): MapUnitView? = city.getGarrison()?.let { gameView.getMapUnitView(it) }
     @Readonly fun canBeDestroyed(): Boolean = city.canBeDestroyed()
     @Readonly fun getExpandRange(): Int = city.getExpandRange()
     @Readonly fun chooseNewTileToOwn(): TileView? = city.expansion.chooseNewTileToOwn()?.let { gameView.tileMapView.getTile(it) }
