@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.GUI
-import com.unciv.ui.components.InputDisabling
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.centerX
 import com.unciv.ui.components.input.onClick
@@ -179,8 +178,7 @@ class CityButton(val foreignCityView: ForeignCityView, private val tileGroup: Ti
             val cityView = foreignCityView.tryGetCityView()
             val isIteratingUnits = tileGroup.tileView.getVisibleUnits().none { it == unitTable.selectedUnit }
             if (cityView != null && isIteratingUnits) {
-                InputDisabling.disableInput()
-                GUI.pushScreen(CityScreen(cityView))
+                GUI.pushScreen{ CityScreen(cityView) }
             }
             else if (foreignCityView.isKnownTo(viewingPlayer))
                 foreignCityInfoPopup()
@@ -231,7 +229,9 @@ class CityButton(val foreignCityView: ForeignCityView, private val tileGroup: Ti
     }
 
     private fun foreignCityInfoPopup() {
-        fun openDiplomacy() = GUI.pushScreen(DiplomacyScreen(foreignCityView.gameView.civView, foreignCityView.owningCiv()))
+        fun openDiplomacy() = GUI.pushScreen{ 
+            DiplomacyScreen(foreignCityView.gameView.civView, foreignCityView.owningCiv())
+        }
 
         val espionageVisible = foreignCityView.isEspionageEnabled()
                 && foreignCityView.spyIsSetUpAtCity(viewingPlayer)
@@ -245,7 +245,9 @@ class CityButton(val foreignCityView: ForeignCityView, private val tileGroup: Ti
             if (foreignCityView.isReligionEnabled())
                 add(CityReligionInfoTable(foreignCityView.getReligionManager(), true)).colspan(3).row()
             addOKButton("Diplomacy") { openDiplomacy() }
-            if (espionageVisible) addButton("View") { GUI.pushScreen(CityScreen(GUI.getWorldScreen().selectedGameView.getCityView(foreignCityView.getCity()))) }
+            if (espionageVisible) addButton("View") { GUI.pushScreen{ 
+                CityScreen(GUI.getWorldScreen().selectedGameView.getCityView(foreignCityView.getCity()))
+            } }
             add().expandX()
             addCloseButton {
                 GUI.getWorldScreen().run { nextTurnButton.update() }

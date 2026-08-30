@@ -71,7 +71,7 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
         pickTechButton.defaults().pad(20f)
         pickTechButton.add(pickTechLabel)
         techButtonHolder.onActivation(UncivSound.Paper, KeyboardBinding.TechnologyTree) {
-            game.pushScreen(TechPickerScreen(viewingCiv.getCiv()))
+            game.pushScreen{ TechPickerScreen(viewingCiv.getCiv()) }
         }
 
         undoButton.add(ImageGetter.getImage("OtherIcons/Undo")).size(30f).pad(15f)
@@ -81,12 +81,12 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
 
         policyScreenButton.add(ImageGetter.getImage("OtherIcons/Policies")).size(30f).pad(15f)
         policyButtonHolder.onActivation(binding = KeyboardBinding.SocialPolicies) {
-            game.pushScreen(PolicyPickerScreen(worldScreen.selectedCiv, worldScreen.canChangeState))
+            game.pushScreen{ PolicyPickerScreen(worldScreen.selectedCiv, worldScreen.canChangeState) }
         }
 
         diplomacyButton.add(ImageGetter.getImage("OtherIcons/DiplomacyW")).size(30f).pad(15f)
         diplomacyButtonHolder.onActivation(binding = KeyboardBinding.Diplomacy) {
-            game.pushScreen(DiplomacyScreen(worldScreen.selectedGameView.civView))
+            game.pushScreen{ DiplomacyScreen(worldScreen.selectedGameView.civView) }
         }
 
         if (game.gameInfo!!.isEspionageEnabled()) {
@@ -97,7 +97,7 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
                 if (worldScreen.bottomUnitTable.selectedSpy != null) {
                     worldScreen.bottomUnitTable.selectSpy(null)
                 }
-                game.pushScreen(EspionageOverviewScreen(worldScreen.selectedCiv, worldScreen))
+                game.pushScreen{ EspionageOverviewScreen(worldScreen.selectedCiv, worldScreen) }
             }
         }
     }

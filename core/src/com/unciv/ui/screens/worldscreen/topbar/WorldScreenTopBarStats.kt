@@ -70,7 +70,8 @@ internal class WorldScreenTopBarStats(topbar: WorldScreenTopBar) : ScalingTableW
             val image = ImageGetter.getStatIcon(icon)
             val action = {
                 val screen = screenFactory()
-                if (screen != null) worldScreen.game.pushScreen(screen)
+                // I don't like that it's ANR-able but to not do so we'd need to get rid of the nullable option
+                if (screen != null) worldScreen.game.pushScreen{ screen } 
             }
             label.onClick(action)
             image.onClick(action)

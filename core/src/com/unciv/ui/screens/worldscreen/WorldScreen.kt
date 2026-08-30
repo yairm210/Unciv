@@ -259,20 +259,20 @@ class WorldScreen(
     }
 
     fun openEmpireOverview(category: EmpireOverviewCategories? = null, selection: String = "") {
-        game.pushScreen(EmpireOverviewScreen(selectedGameView.civView, category, selection))
+        game.pushScreen{ EmpireOverviewScreen(selectedGameView.civView, category, selection) }
     }
 
     fun openNewGameScreen() {
         val newGameSetupInfo = GameSetupInfo(gameInfo)
         newGameSetupInfo.mapParameters.reseed()
         val newGameScreen = NewGameScreen(newGameSetupInfo)
-        game.pushScreen(newGameScreen)
+        game.pushScreen{ newGameScreen }
     }
 
     fun openSaveGameScreen() {
         // See #10353 - we don't support locally saving an online multiplayer game
         if (gameInfo.gameParameters.isOnlineMultiplayer) return
-        game.pushScreen(SaveGameScreen(gameInfo))
+        game.pushScreen{ SaveGameScreen(gameInfo) }
     }
 
     private fun addKeyboardPresses() {
@@ -285,7 +285,7 @@ class WorldScreen(
         globalShortcuts.add(KeyboardBinding.EmpireOverviewUnits) { openEmpireOverview(EmpireOverviewCategories.Units) }
         globalShortcuts.add(KeyboardBinding.EmpireOverviewPolitics) { openEmpireOverview(EmpireOverviewCategories.Politics) }
         globalShortcuts.add(KeyboardBinding.EmpireOverviewNotifications) { openEmpireOverview(EmpireOverviewCategories.Notifications) }
-        globalShortcuts.add(KeyboardBinding.VictoryScreen) { game.pushScreen(VictoryScreen(this)) }
+        globalShortcuts.add(KeyboardBinding.VictoryScreen) { game.pushScreen{ VictoryScreen(this) } }
         globalShortcuts.add(KeyboardBinding.EmpireOverviewStats) { openEmpireOverview(EmpireOverviewCategories.Stats) }
         globalShortcuts.add(KeyboardBinding.EmpireOverviewResources) { openEmpireOverview(EmpireOverviewCategories.Resources) }
         globalShortcuts.add(KeyboardBinding.QuickSave) { QuickSave.save(gameInfo, this) }
@@ -293,13 +293,13 @@ class WorldScreen(
         globalShortcuts.add(KeyboardBinding.ViewCapitalCity) {
             val capital = gameInfo.getCurrentPlayerCivilization().getCapital()
             if (capital != null && !mapHolder.setCenterPosition(capital.location.toHexCoord()))
-                game.pushScreen(CityScreen(selectedGameView.getCityView(capital)))
+                game.pushScreen{ CityScreen(selectedGameView.getCityView(capital)) }
         }
         globalShortcuts.add(KeyboardBinding.Options) { // Game Options
             openOptionsPopup { nextTurnButton.update() }
         }
         globalShortcuts.add(KeyboardBinding.SaveGame) { openSaveGameScreen() }    //   Save
-        globalShortcuts.add(KeyboardBinding.LoadGame) { game.pushScreen(LoadGameScreen()) }    //   Load
+        globalShortcuts.add(KeyboardBinding.LoadGame) { game.pushScreen{ LoadGameScreen() } }    //   Load
         globalShortcuts.add(KeyboardBinding.QuitGame) { game.popScreen() }    //   WorldScreen is the last screen, so this quits
         globalShortcuts.add(KeyboardBinding.NewGame) { openNewGameScreen() }
         globalShortcuts.add(KeyboardBinding.MusicPlayer) {
@@ -378,7 +378,7 @@ class WorldScreen(
                     }
                 }.right()
                 loadingGamePopup.addButton("Main menu") {
-                    game.pushScreen(MainMenuScreen())
+                    game.pushScreen{ MainMenuScreen() }
                 }.left()
             }
         }
@@ -450,11 +450,11 @@ class WorldScreen(
         if (!hasOpenPopups() && !autoPlay.isAutoPlaying() && isPlayersTurn) {
             when {
                 viewingCiv.shouldShowDiplomaticVotingResults() ->
-                    UncivGame.Current.pushScreen(DiplomaticVoteResultScreen(gameInfo.diplomaticVictoryVotesCast, viewingCiv))
+                    UncivGame.Current.pushScreen{ DiplomaticVoteResultScreen(gameInfo.diplomaticVictoryVotesCast, viewingCiv) }
                 !gameInfo.oneMoreTurnMode && (viewingCiv.isDefeated() || gameInfo.checkForVictory()) ->
-                    game.pushScreen(VictoryScreen(this))
+                    game.pushScreen{ VictoryScreen(this) }
                 viewingCiv.greatPeople.freeGreatPeople > 0 ->
-                    game.pushScreen(GreatPersonPickerScreen(this, viewingCiv))
+                    game.pushScreen{ GreatPersonPickerScreen(this, viewingCiv) }
                 viewingCiv.popupAlerts.any() -> AlertPopup(this, viewingCiv.popupAlerts.first())
                 viewingCiv.tradeRequests.isNotEmpty() -> {
                     // In the meantime this became invalid, perhaps because we accepted previous trades

@@ -22,7 +22,6 @@ import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.skins.SkinStrings
-import com.unciv.ui.components.InputDisabling
 import com.unciv.ui.components.extensions.isNarrowerThan4to3
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.DispatcherVetoer
@@ -97,7 +96,7 @@ abstract class BaseScreen : Screen {
         if (this !is RecreateOnResize) {
             stage.viewport.update(width, height, true)
         } else if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
-            game.replaceCurrentScreen(recreate())
+            game.replaceCurrentScreen{ recreate() }
         }
     }
 
@@ -209,8 +208,7 @@ abstract class BaseScreen : Screen {
      *  - Note: At the time of wrinting, this was the ***only*** CivilopediaScreen constructor call outside itself
      */
     fun openCivilopedia(ruleset: Ruleset, link: String = "") {
-        InputDisabling.disableInput()
-        game.pushScreen(CivilopediaScreen(ruleset, link = link))
+        game.pushScreen{ CivilopediaScreen(ruleset, link = link) }
     }
 }
 

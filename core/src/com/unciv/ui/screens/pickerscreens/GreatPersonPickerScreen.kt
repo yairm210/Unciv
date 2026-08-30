@@ -7,6 +7,9 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.components.extensions.isEnabled
+import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onDoubleClick
 import com.unciv.ui.screens.worldscreen.WorldScreen
@@ -43,6 +46,10 @@ class GreatPersonPickerScreen(val worldScreen: WorldScreen, val civInfo: Civiliz
             confirmAction(useMayaLongCount)
         }
 
+        descriptionLabel.onActivation {
+            openCivilopedia(theChosenOne?.makeLink().orEmpty())
+        }
+        descriptionLabel.keyShortcuts.add(KeyboardBinding.Civilopedia)
     }
 
     private fun confirmAction(useMayaLongCount: Boolean) {

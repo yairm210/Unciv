@@ -101,7 +101,7 @@ class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: W
                 descriptionTable.add("XP".toLabel().apply {
                     onClick {
                         if (selectedUnit == null) return@onClick
-                        worldScreen.game.pushScreen(PromotionPickerScreen(unit.getUnit()))
+                        worldScreen.game.pushScreen{ PromotionPickerScreen(unit.getUnit()) }
                     }
                 })
                 descriptionTable.add(
@@ -148,7 +148,7 @@ class UnitPresenter(private val unitTable: UnitTable, private val worldScreen: W
             // Since Clear also clears the listeners, we need to re-add them every time
             promotionsTable.onClick {
                 if (selectedUnit == null || promotionsTable.children.isEmpty) return@onClick
-                worldScreen.game.pushScreen(PromotionPickerScreen(unit.getUnit()))
+                worldScreen.game.pushScreen{ PromotionPickerScreen(unit.getUnit()) }
             }
 
             unitIconHolder.onClick {

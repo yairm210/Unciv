@@ -508,9 +508,7 @@ class WorldMapHolder(
                 selectedUnitView.isExplored(tileView)
 
             if (validTile) {
-                val roadPath: List<Tile>? =
-                    if (UncivGame.Current.settings.useAStarPathfinding) selectedUnit.movement.getRoadPath(selectedUnit.getTile())
-                    else MapPathing.getRoadPath(selectedUnit.civ, selectedUnit.getTile(), tile)
+                val roadPath: List<Tile>? = selectedUnit.movement.getRoadPath(tile)
                 launchOnGLThread {
                     if (roadPath == null) { // give the regular tile overlays with no road connection
                         addTileOverlays(tileView)
@@ -737,7 +735,7 @@ class WorldMapHolder(
 
     override fun restrictX(deltaX: Float): Float {
         var result = scrollX - deltaX
-        if (worldScreen.selectedGameView.civView.isSpectator()) return result
+        if (worldScreen.selectedGameView.spectatorMode) return result
 
         val exploredRegion = worldScreen.selectedGameView.civView.getCiv().exploredRegion
         if (exploredRegion.shouldRecalculateCoords()) exploredRegion.calculateStageCoords(maxX, maxY)
@@ -756,7 +754,7 @@ class WorldMapHolder(
 
     override fun restrictY(deltaY: Float): Float {
         var result = scrollY + deltaY
-        if (worldScreen.selectedGameView.civView.isSpectator()) return result
+        if (worldScreen.selectedGameView.spectatorMode) return result
 
         val exploredRegion = worldScreen.selectedGameView.civView.getCiv().exploredRegion
         if (exploredRegion.shouldRecalculateCoords()) exploredRegion.calculateStageCoords(maxX, maxY)

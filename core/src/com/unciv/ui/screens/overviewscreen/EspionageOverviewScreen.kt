@@ -23,6 +23,7 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
@@ -77,6 +78,8 @@ class EspionageOverviewScreen(val civInfo: Civilization, val worldScreen: WorldS
         }
         closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
         rightSideButton.isVisible = false
+
+        globalShortcuts.add(KeyboardBinding.Civilopedia) { openCivilopedia("Tutorial/Espionage") }
     }
 
     private fun getPrefSplitAmount(): Float {

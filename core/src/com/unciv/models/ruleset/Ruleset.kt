@@ -377,7 +377,7 @@ class Ruleset {
                 modOptions = json().fromJsonFile(ModOptions::class.java, modOptionsFile)
                 modOptions.updateDeprecations()
             } catch (ex: Exception) {
-                Log.error("Failed to get modOptions from json file", ex)
+                Log.error("Failed to get modOptions from json file; Mod name: {$folderHandle.file}", ex)
             }
         }
 

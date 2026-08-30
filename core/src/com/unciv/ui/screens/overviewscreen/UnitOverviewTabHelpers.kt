@@ -104,13 +104,13 @@ open class UnitOverviewTabHelpers {
             if (!canPromote && unit.promotions.promotions.isEmpty()) return
             // We can either add a promotion or at least view existing ones.
             // PromotionPickerScreen is reponsible for checking viewingPlayer.isCurrentPlayer and isAllowedChangeState **again**.
-            actionContext.overviewScreen.game.pushScreen(
+            actionContext.overviewScreen.game.pushScreen {
                 PromotionPickerScreen(unit) {
                     // Todo seems the picker does not call this if only the unit rename was used
                     actionContext.update()
                     actionContext.overviewScreen.select(EmpireOverviewCategories.Units, selectKey) // actionContext.select skips setting scrollY
                 }
-            )
+            }
         }
         promotionsTable.onClick(::onPromotionsTableClick)
         return promotionsTable

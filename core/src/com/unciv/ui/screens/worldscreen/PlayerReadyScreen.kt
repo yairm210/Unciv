@@ -22,7 +22,7 @@ class PlayerReadyScreen(worldScreen: WorldScreen) : BaseScreen() {
         table.add("[${curCiv.civName}] ready?".toLabel(curCiv.getInnerColor(), Constants.headingFontSize))
 
         table.onActivation {
-            game.replaceCurrentScreen(worldScreen)
+            game.replaceCurrentScreen{ worldScreen }
         }
         // Doing this separately instead of passing the binding to onActivation avoids the tooltip
         table.keyShortcuts.add(KeyboardBinding.NextTurnAlternate)
