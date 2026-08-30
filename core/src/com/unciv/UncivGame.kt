@@ -431,17 +431,15 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
         settings.save()
 
-        if (gameInfo != null) {
-            val autoSaveJob = files.autosaves.autoSaveJob
-            if (autoSaveJob != null && autoSaveJob.isActive) {
-                // onPause() call always precedes dispose() call so auto save is already in progress
-                // This is the primary cause of ANRs at the moment - 
-                //   we need some way to have the autosave keep working but remove the other threads,
-                // I'm not sure what the right way is, we can either not clear daemon threads
-                // or we can cancel the job if it takes too long...?
-                Concurrency.runBlocking { 
-                    autoSaveJob.join()
-                }
+        val autoSaveJob = files.autosaves.autoSaveJob
+        if (autoSaveJob != null && autoSaveJob.isActive) {
+            // onPause() call always precedes dispose() call so auto save is already in progress
+            // This is the primary cause of ANRs at the moment - 
+            //   we need some way to have the autosave keep working but remove the other threads,
+            // I'm not sure what the right way is, we can either not clear daemon threads
+            // or we can cancel the job if it takes too long...?
+            Concurrency.runBlocking { 
+                autoSaveJob.join()
             }
         }
         Concurrency.stopThreadPools()
