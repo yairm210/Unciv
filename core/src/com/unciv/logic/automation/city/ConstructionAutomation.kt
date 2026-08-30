@@ -291,6 +291,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
                 building.hasUnique(UniqueType.OneTimeGainPopulation) || building.hasUnique(UniqueType.OneTimeGainPopulationRandomCity) -> civInfo.getPersonality().food
                 building.hasUnique(UniqueType.StatPercentFromTradeRoutes) -> civInfo.getPersonality().gold
                 building.hasUnique(UniqueType.Strength) -> civInfo.getPersonality().military
+                building.hasUnique(UniqueType.UnhappinessFromPopulationTypePercentageChange) -> civInfo.getPersonality().happiness
+                building.hasUnique(UniqueType.StatsFromObject) || building.hasUnique(UniqueType.StatsFromSpecialist) -> 10 - civInfo.getPersonality().declareWar // Statue of Liberty
                 building.hasUnique(UniqueType.StatPercentBonusCities) -> civInfo.getPersonality().culture // Sistine Chapel in base game, but players seem to "expect" culture civs to build more wonders in general
                 else -> 0f
             }
