@@ -602,8 +602,12 @@ class Civilization : IsPartOfGameInfoSerialization {
     @Readonly fun hasResource(resource: TileResource): Boolean = getResourceAmount(resource) > 0
 
     @Readonly
-    fun hasUnique(uniqueType: UniqueType, gameContext: GameContext = state) =
-        getMatchingUniques(uniqueType, gameContext).any()
+    inline fun hasUnique(uniqueType: UniqueType, gameContext: GameContext = state, noinline predicate: (Unique)->Boolean = { true }) =
+        firstMatchingUniqueOrNull(uniqueType, gameContext, predicate) != null
+
+    @Readonly
+    inline fun hasMatchingUnique(uniqueType: UniqueType, gameContext: GameContext = state, noinline predicate: (unique: Unique)->Boolean) =
+        firstMatchingUniqueOrNull(uniqueType, gameContext, predicate) != null
 
     // Does not return local uniques, only global ones.
     @Readonly
@@ -612,36 +616,45 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun getMatchingUniques(
         uniqueType: UniqueType,
         gameContext: GameContext = state
-    ): Sequence<Unique> = sequence {
-        yieldAll(nation.getMatchingUniques(uniqueType, gameContext))
-        yieldAll(cities.asSequence()
-            .flatMap { city -> city.getMatchingUniquesWithNonLocalEffects(uniqueType, gameContext) }
-        )
-        yieldAll(policies.policyUniques.getMatchingUniques(uniqueType, gameContext))
-        yieldAll(tech.techUniques.getMatchingUniques(uniqueType, gameContext))
-        yieldAll(temporaryUniques.getMatchingTagUniques(uniqueType, gameContext))
-        yieldAll(getEra().getMatchingUniques(uniqueType, gameContext))
-        yieldAll(cityStateFunctions.getUniquesProvidedByCityStates(uniqueType, gameContext))
-        if (religionManager.religion != null)
-            yieldAll(religionManager.religion!!.founderBeliefUniqueMap.getMatchingUniques(uniqueType, gameContext))
+    ): Sequence<Unique> = getMatchingUniquesSnapshot(uniqueType, gameContext).asSequence()
 
-        yieldAll(civResourcesUniqueMap.getMatchingUniques(uniqueType, gameContext))
-        yieldAll(gameInfo.getGlobalUniques().getMatchingUniques(uniqueType, gameContext))
+    /** @return a stable snapshot List of uniques matching [uniqueType], safe to keep iterating even if the
+     *  underlying uniques change mid-iteration - unlike [forEachMatchingUnique]. */
+    @Readonly
+    fun getMatchingUniquesSnapshot(uniqueType: UniqueType, gameContext: GameContext = state): List<Unique> {
+        val uniques = ArrayList<Unique>()
+        forEachMatchingUnique(uniqueType, gameContext) { uniques.add(it) }
+        return uniques
     }
 
     @Readonly
-    fun forEachMatchingUnique(uniqueType: UniqueType, gameContext: GameContext = state, op: (unique: Unique)->Unit) {
-        nation.forEachMatchingUnique(uniqueType, gameContext, op)
-        for (i in 0..<cities.size)
-            cities[i].forEachMatchingUniqueWithNonLocalEffects(uniqueType, gameContext, op)
-        policies.policyUniques.forEachMatchingUnique(uniqueType, gameContext, op)
-        tech.techUniques.forEachMatchingUnique(uniqueType, gameContext, op)
-        temporaryUniques.forEachMatchingUnique(uniqueType, gameContext, op)
-        getEra().forEachMatchingUnique(uniqueType, gameContext, op)
-        cityStateFunctions.forEachUniqueProvidedByCityStates(uniqueType, gameContext, op)
-        religionManager.religion?.founderBeliefUniqueMap?.forEachMatchingUnique(uniqueType, gameContext, op)
-        civResourcesUniqueMap.forEachMatchingUnique(uniqueType, gameContext, op)
-        gameInfo.getGlobalUniques().forEachMatchingUnique(uniqueType, gameContext, op)
+    inline fun forEachMatchingUnique(uniqueType: UniqueType, gameContext: GameContext = state, crossinline op: (unique: Unique)->Unit) {
+        firstMatchingUniqueOrNull(uniqueType, gameContext) { op(it); false }
+    }
+
+    /** Folds [accumulate] over every unique matching [uniqueType], starting from [initial]. Useful for e.g. summing up bonuses. */
+    @Readonly
+    inline fun <T> accumulateForEachMatchingUnique(uniqueType: UniqueType, gameContext: GameContext = state, initial: T, crossinline accumulate: (T, Unique) -> T): T {
+        var acc = initial
+        forEachMatchingUnique(uniqueType, gameContext) { acc = accumulate(acc, it) }
+        return acc
+    }
+
+    @Readonly
+    fun firstMatchingUniqueOrNull(uniqueType: UniqueType, gameContext: GameContext = state, predicate: (unique: Unique)->Boolean): Unique? {
+        for (i in 0..<cities.size) {
+            val r = cities[i].firstMatchingUniqueWithNonLocalEffectsOrNull(uniqueType, gameContext, predicate)?.let { return it }
+            if (r != null) return r
+        }
+        return nation.firstMatchingUniqueOrNull(uniqueType, gameContext, predicate)?.let { return it }
+            ?: policies.policyUniques.firstMatchingUniqueOrNull(uniqueType, gameContext, predicate)?.let { return it }
+            ?: tech.techUniques.firstMatchingUniqueOrNull(uniqueType, gameContext, predicate)?.let { return it }
+            ?: temporaryUniques.firstMatchingUniqueOrNull(uniqueType, gameContext, predicate)?.let { return it }
+            ?: getEra().firstMatchingUniqueOrNull(uniqueType, gameContext, predicate)?.let { return it }
+            ?: cityStateFunctions.firstUniqueProvidedByCityStatesOrNull(uniqueType, gameContext, predicate)?.let { return it }
+            ?: religionManager.religion?.founderBeliefUniqueMap?.firstMatchingUniqueOrNull(uniqueType, gameContext, predicate)?.let { return it }
+            ?: civResourcesUniqueMap.firstMatchingUniqueOrNull(uniqueType, gameContext, predicate)?.let { return it }
+            ?: gameInfo.getGlobalUniques().firstMatchingUniqueOrNull(uniqueType, gameContext, predicate)
     }
 
     @Readonly
@@ -706,25 +719,54 @@ class Civilization : IsPartOfGameInfoSerialization {
         ignoreCities: Boolean,
         op: (Unique)->Unit,
     ) {
-        // Gathering all uniques into a list first since triggers can add e.g. buildings 
+        // Gathering all uniques into a list first since triggers can add e.g. buildings
         // which contain triggers, causing concurrent modification errors.
         // Cannont use getTriggeredUniques from uniqueMaps since we don't want to check conditionals yet
-        val uniqueFilter = { unique: Unique -> unique.getModifiers(trigger).any(triggerFilter) }
         val uniqueList = ArrayList<Unique>(100)
         val listOp: (Unique)->Unit = { unique: Unique -> uniqueList.add(unique) }
-        nation.uniqueMap.forEachMatchingUnique(trigger, gameContext, uniqueFilter, listOp)
+        nation.uniqueMap.forEachTriggeredUnique(trigger, gameContext, triggerFilter, listOp)
         if (!ignoreCities) {
             cities.forEach {city ->
-                city.cityConstructions.builtBuildingUniqueMap.forEachMatchingUnique(trigger, gameContext, uniqueFilter, listOp)
+                city.cityConstructions.builtBuildingUniqueMap.forEachTriggeredUnique(trigger, gameContext, triggerFilter, listOp)
             }
         }
-        religionManager.religion?.founderBeliefUniqueMap?.forEachMatchingUnique(trigger, gameContext, uniqueFilter, listOp)
-        policies.policyUniques.forEachMatchingUnique(trigger, gameContext, uniqueFilter, listOp)
-        tech.techUniques.forEachMatchingUnique(trigger, gameContext, uniqueFilter, listOp)
-        getEra().uniqueMap.forEachMatchingUnique(trigger, gameContext, uniqueFilter, listOp)
-        gameInfo.getGlobalUniques().uniqueMap.forEachMatchingUnique(trigger, gameContext, uniqueFilter, listOp)
+        religionManager.religion?.founderBeliefUniqueMap?.forEachTriggeredUnique(trigger, gameContext, triggerFilter, listOp)
+        policies.policyUniques.forEachTriggeredUnique(trigger, gameContext, triggerFilter, listOp)
+        tech.techUniques.forEachTriggeredUnique(trigger, gameContext, triggerFilter, listOp)
+        getEra().uniqueMap.forEachTriggeredUnique(trigger, gameContext, triggerFilter, listOp)
+        gameInfo.getGlobalUniques().uniqueMap.forEachTriggeredUnique(trigger, gameContext, triggerFilter, listOp)
         // now its safe to do the op, which might mutate the lists
         uniqueList.forEach(op)
+    }
+
+    @Readonly
+    fun firstTriggeredUniqueOrNull(
+        trigger: UniqueType,
+        gameContext: GameContext = state,
+        triggerFilter: (Unique) -> Boolean,
+        predicate: (Unique)->Boolean,
+    ): Unique? = firstTriggeredUniqueOrNull(trigger, gameContext, triggerFilter, false, predicate)
+    @Readonly
+    fun firstTriggeredUniqueOrNull(
+        trigger: UniqueType,
+        gameContext: GameContext = state,
+        triggerFilter: (Unique) -> Boolean = { true },
+        ignoreCities: Boolean,
+        predicate: (Unique)->Boolean,
+    ): Unique? {
+        val uniqueFilter = { unique: Unique -> unique.getModifiers(trigger).any(triggerFilter) }
+        nation.uniqueMap.firstMatchingUniqueOrNull(trigger, gameContext, uniqueFilter, predicate)?.let { return it }
+        if (!ignoreCities) {
+            for (city in cities) {
+                var r = city.cityConstructions.builtBuildingUniqueMap.firstMatchingUniqueOrNull(trigger, gameContext, uniqueFilter, predicate)?.let { return it }
+                if (r != null) return r
+            }
+        }
+        return religionManager.religion?.founderBeliefUniqueMap?.firstMatchingUniqueOrNull(trigger, gameContext, uniqueFilter, predicate)?.let { return it }
+            ?: policies.policyUniques.firstMatchingUniqueOrNull(trigger, gameContext, uniqueFilter, predicate)?.let { return it }
+            ?: tech.techUniques.firstMatchingUniqueOrNull(trigger, gameContext, uniqueFilter, predicate)?.let { return it }
+            ?: getEra().uniqueMap.firstMatchingUniqueOrNull(trigger, gameContext, uniqueFilter, predicate)?.let { return it }
+            ?: gameInfo.getGlobalUniques().uniqueMap.firstMatchingUniqueOrNull(trigger, gameContext, uniqueFilter, predicate)
     }
     /** Implements [UniqueParameterType.CivFilter][com.unciv.models.ruleset.unique.UniqueParameterType.CivFilter] */
     @Readonly
