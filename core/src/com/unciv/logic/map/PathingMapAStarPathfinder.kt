@@ -25,6 +25,7 @@ import com.unciv.utils.Log
 import com.unciv.utils.LongPriorityQueue
 import com.unciv.utils.forEachSetBit
 import org.jetbrains.annotations.VisibleForTesting
+import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.InternalState
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
@@ -81,7 +82,7 @@ internal class AStarPathfinder(
     private val initialBufferSize = tileMap.tileMatrix.size + tileMap.tileMatrix[0].size
     internal val tilesInTodo: IntIntMap = IntIntMap(initialBufferSize)
     private val fpmFullMovement = cache.key.fullMove
-
+    @Cache private var damageFreeAnchorCost = FPM_ZERO
     /**
      * Frontier priority queue for managing the tiles to be checked.
      * Tiles are ordered based on their priority, determined by the cumulative cost so far and the
@@ -161,60 +162,100 @@ internal class AStarPathfinder(
         return true
     }
 
+    /**
+     * Find the previous tile where stopping does not incur damage
+     * 
+     * Tiles that incur damage are assumed to be rare, so we save bits in the node by not storing where the previous
+     * non-damaging parent is. So in the rare cases we'd end up stopping on a damaging tile, we transitively check parents
+     * to find the previous tile where stopping does not incur damage.
+     */
+    @Readonly
+    private fun findDamageFreeAnchor(startNode: RouteNode, neighborTile: Tile, firstHopCost: FixedPointMovement): RouteNode {
+        val startingPoint = cache.key.startingPoint
+        var ancestor = startNode
+        var totalCost = firstHopCost
+        while (true) {
+            if (totalCost >= fpmFullMovement) {
+                if (VERBOSE_PATHFINDING_LOGS == startingPoint || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
+                    Log.debug("#findDamageFreeAnchor gave up short of ${neighborTile.position}: ${ancestor.tile(tileMap).position} is already $totalCost away, for $debugMapType $debugId")
+                return RouteNode() // this ancestor is already too far; anything earlier is even farther
+            }
+            if (ancestor.canStopOn && ancestor.endTurnWithoutMoreDamage) {
+                damageFreeAnchorCost = totalCost
+                return ancestor
+            }
+            val ancestorTile = ancestor.tile(tileMap)
+            val parentTile = ancestor.parentTile(tileMap)
+            if (parentTile == ancestorTile) {
+                if (VERBOSE_PATHFINDING_LOGS == startingPoint || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
+                    Log.debug("#findDamageFreeAnchor reached the search's root looking for ${neighborTile.position} with nothing damage-free usable, for $debugMapType $debugId")
+                return RouteNode() // reached the search's root with nothing usable
+            }
+            ancestor = RouteNode(routeNodes[parentTile.zeroBasedIndex])
+            totalCost = (totalCost + cost(ancestor.tile(tileMap), ancestorTile)).coerceAtMost(RouteNode.MAX_MOVE_THIS_TURN)
+        }
+    }
+
     // This can use more than the remaining movement, but that's correct behavior.
     // https://yairm210.medium.com/multi-turn-pathfinding-7136bd0bdaf0
-    private fun calculateNeighborNode(currentNode: RouteNode, neighborTile: Tile): RouteNode? {
+    private fun calculateNeighborNode(currentNode: RouteNode, neighborTile: Tile): RouteNode {
         val currentTile = currentNode.tile(tileMap)
         val startingPoint = cache.key.startingPoint
         val damagingTiles = currentNode.damagingTiles
         val cost = cost(currentTile, neighborTile).coerceAtMost(fpmFullMovement)
-        val newUsedMovement = (currentNode.moveUsedThisTurn + cost).coerceAtMost(fpmFullMovement)
         val canMoveTo = currentNode.turns > 0 || moveToPredicate(neighborTile)
         val endTurnThereDamage = endTurnDamage(neighborTile).coerceAtMost(1)
-        val newMountainMovement =
-            (if (currentNode.endTurnWithoutMoreDamage && endTurnThereDamage > 0) cost // first entering mountains
-            else if (!currentNode.endTurnWithoutMoreDamage && endTurnThereDamage > 0) currentNode.pbmMoveThisTurn + cost
-            else FPM_ZERO // ignored in this case
-                ).coerceAtMost(fpmFullMovement)
-        val thisTurnPassThroughOrSafeEndTurn = (newUsedMovement < fpmFullMovement) || (canMoveTo && endTurnThereDamage == 0)
-        val nextTurnPassThroughOrEndTurn = (newUsedMovement < fpmFullMovement) || canMoveTo
+        val neighborDamaging = endTurnThereDamage != 0
+        val trueSafe = canMoveTo && !neighborDamaging
+        val moveSinceStoppable = (currentNode.moveSinceStoppable + cost).coerceAtMost(RouteNode.MAX_MOVE_THIS_TURN)
+        val newMoveSinceStoppable = if (canMoveTo) FPM_ZERO else moveSinceStoppable
+        val midTurn = currentNode.moveUsedThisTurn < fpmFullMovement
+        val usedSoFar = if (midTurn) currentNode.moveUsedThisTurn else FPM_ZERO
+        val newUsedMovement = (usedSoFar + cost).coerceAtMost(fpmFullMovement)
+        val thisTurnPassThroughOrSafeEndTurn = newUsedMovement < fpmFullMovement || trueSafe
         val relationship = relationshipLevel(neighborTile)
-        
-        if (currentNode.moveUsedThisTurn < fpmFullMovement  && thisTurnPassThroughOrSafeEndTurn) {
+        if ((midTurn || currentNode.canStopOn) && thisTurnPassThroughOrSafeEndTurn) {
             // if we can move to the next tile, and then either end our turn safely or move away, then we do so.
+            val turns = if (midTurn) currentNode.turns else currentNode.turns + 1
             if (VERBOSE_PATHFINDING_LOGS == startingPoint || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
-                Log.debug("#calculateAndQueue ${currentTile.position} queing ${neighborTile.position} for same turn, for $debugMapType $debugId")
-            return RouteNode(neighborTile, relationship, newMountainMovement, newUsedMovement, currentNode.turns,  currentTile, canMoveTo, damagingTiles)
-        } else if (currentNode.endTurnWithoutMoreDamage && currentNode.canMoveTo && nextTurnPassThroughOrEndTurn) {
-            // If we can safely end our turn on the current tile, and then either end our turn or move away, then we do so.
+                Log.debug("#calculateAndQueue ${currentTile.position} queing ${neighborTile.position} for turn $turns, for $debugMapType $debugId")
+            return RouteNode(neighborTile, relationship, newMoveSinceStoppable, newUsedMovement, turns, currentTile, damagingTiles, neighborDamaging)
+        } else if (!canMoveTo && moveSinceStoppable < fpmFullMovement) {
+            // If we could have moved here if we'd paused before entering unstoppable tiles
+            // (usually allied units), pretend we paused before entering the mountains.
+            // TODO: Eliminate endTurnDamage call.
+            val retreatDamagingTiles = if (currentNode.canStopOn)
+                    (damagingTiles + endTurnDamage(currentTile).coerceAtMost(1)).coerceAtMost(MAX_DAMAGING_TILES)
+                else damagingTiles
+            val retreatTurns = if (currentNode.canStopOn) currentNode.turns + 1 else currentNode.turns
             if (VERBOSE_PATHFINDING_LOGS == startingPoint || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
-                Log.debug("#calculateAndQueue ${currentTile.position} queing ${neighborTile.position} for next turn, for $debugMapType $debugId ($canMoveTo)")
-            return RouteNode(neighborTile, relationship, newMountainMovement, cost, currentNode.turns + 1, currentTile, canMoveTo, damagingTiles)
-        } else if (currentNode.endTurnWithoutMoreDamage && currentNode.canMoveTo && !canMoveTo) {
-            // Cannot end our turn on the next tile, nor pass through it. Possibly because it's occupied by a unit.
-            // Classic #getDistanceToTiles requires we populate the node, so populate it, but do not return it.
+                Log.debug("#calculateAndQueue ${currentTile.position} queing ${neighborTile.position} with retroactive pause, for $debugMapType $debugId")
+            return RouteNode(neighborTile, relationship, moveSinceStoppable, moveSinceStoppable, retreatTurns, currentTile, retreatDamagingTiles, neighborDamaging)
+        } else if (!canMoveTo) {
+            // Even pausing as early as possible wasn't enough: it's simply not reachable this way,
+            // and hopefully another tile finds a route to it later.
             if (VERBOSE_PATHFINDING_LOGS == startingPoint || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
-                Log.debug("#calculateAndQueue ${currentTile.position} stubbing ${neighborTile.position} as occupied, for $debugMapType $debugId (false)")
-            val occupiedNode =  RouteNode(neighborTile, relationship, newMountainMovement, cost, currentNode.turns+1, currentTile, canMoveTo, damagingTiles)
-            routeNodes[neighborTile.zeroBasedIndex] = occupiedNode.bits
-            cache.addedNeighborNodes.set(neighborTile.zeroBasedIndex)
-            cache.addedNeighborNodes.clear(neighborTile.zeroBasedIndex)
-            return null
-        } else if (currentNode.pbmMoveThisTurn < fpmFullMovement) {
-            // If we could have moved here if we'd paused before entering mountains, then
-            // pretend we paused before entering the mountains.
+                Log.debug("#calculateAndQueue ${currentTile.position} skipping ${neighborTile.position} as unreachable, for $debugMapType $debugId")
+            return RouteNode() // uninitialized -- see this function's return-type docs
+        }
+
+        // canMoveTo is true, so we CAN stop here -- but it's damaging, and we've run out of budget
+        // to push past it. Before accepting the damage, look backward for a nearer damage-free
+        // anchor to retroactively pause at instead, taking no damage at all.
+        val damageFreeAnchor = findDamageFreeAnchor(currentNode, neighborTile, cost)
+        if (damageFreeAnchor.initialized) {
             if (VERBOSE_PATHFINDING_LOGS == startingPoint || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
-                Log.debug("#calculateAndQueue ${currentTile.position} queing ${neighborTile.position} with retroactive pause before mountains, for $debugMapType $debugId ($canMoveTo)")
-            return RouteNode(neighborTile, relationship, newMountainMovement, newMountainMovement, currentNode.turns + 1, currentTile, canMoveTo, damagingTiles)
+                Log.debug("#calculateAndQueue ${currentTile.position} queing ${neighborTile.position} with retroactive pause before mountains, for $debugMapType $debugId")
+            return RouteNode(neighborTile, relationship, FPM_ZERO, damageFreeAnchorCost, damageFreeAnchor.turns + 1, currentTile, damageFreeAnchor.damagingTiles, neighborDamaging)
         } else {
             // Ending our turn here takes damage. We'll add the neighbor tile, but the damage
-            // means it's neighbors will be calculated at a super low priority.
-            // In the meantime, another tile might find a route here that doesn't require taking damage,
-            // which is the ONLY scenario where a tile can get recalculated.
+            // means its neighbors will be calculated at a super low priority. In the meantime, another
+            // tile might find a route here that doesn't require taking damage, which is the ONLY
+            // scenario where a tile can get recalculated.
             val newDamageTiles = (damagingTiles + endTurnThereDamage).coerceAtMost(MAX_DAMAGING_TILES)
             if (VERBOSE_PATHFINDING_LOGS == startingPoint || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
                 Log.debug("#calculateAndQueue ${currentTile.position} queing ${neighborTile.position} with taking damage, for $debugMapType $debugId ($canMoveTo)")
-            return RouteNode(neighborTile, relationship, cost, cost, currentNode.turns + 1, currentTile, canMoveTo, newDamageTiles)
+            return RouteNode(neighborTile, relationship, FPM_ZERO, cost, currentNode.turns + 1, currentTile, newDamageTiles, neighborDamaging)
         }
     }
 
@@ -228,7 +269,8 @@ internal class AStarPathfinder(
             if (!neighborNeedsCalcuating(currentNode, neighborTile)) {
                 RouteNode(routeNodes[neighborTile.zeroBasedIndex])
             } else {
-                val newNode = calculateNeighborNode(currentNode, neighborTile) ?: return null // calculate each neighbor
+                val newNode = calculateNeighborNode(currentNode, neighborTile)
+                if (!newNode.initialized) return null
                 routeNodes[neighborTile.zeroBasedIndex] = newNode.bits
                 if (moveFromLessThanTimeLimit(newNode))
                     todo.add(PrioritizedNode(newNode, calculateUnderestimatedMovement(newNode)).bits)
