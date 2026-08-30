@@ -3,13 +3,11 @@ package com.unciv.ui.popups
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.GUI
-import com.unciv.logic.city.City
-import com.unciv.logic.city.CityConstructions
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IConstruction
 import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.view.CityView
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
 
@@ -19,40 +17,35 @@ import yairm210.purity.annotations.Readonly
  *  "Context menu" for City constructions - available by right-clicking (or long-press) in
  *   City Screen, left side, available constructions or queue entries.
  *
- *  @param city The [City] calling us - we need only `cityConstructions`, but future expansion may be easier having the parent
+ *  @param cityView The [CityView] calling us - we need only `cityConstructions`, but future expansion may be easier having the parent
  *  @param construction The construction that was right-clicked
  *  @param onButtonClicked Callback if closed due to any action having been chosen - to update CityScreen
  */
 class CityScreenConstructionMenu(
     stage: Stage,
     positionNextTo: Actor,
-    private val city: City,
+    private val cityView: CityView,
     private val construction: IConstruction,
     private val onButtonClicked: () -> Unit
 ) : AnimatedMenuPopup(stage, positionNextTo) {
 
-    // These are only readability shorteners
-    private val cityConstructions = city.cityConstructions
     private val constructionName = construction.name
-    private val queueSizeWithoutPerpetual get() = // simply remove get() should this be needed more than once
-        cityConstructions.constructionQueue
+    private val queueSizeWithoutPerpetual get() =
+        cityView.constructions.constructionQueue
         .count { it !in PerpetualConstruction.perpetualConstructionsMap }
-    private val myIndex = cityConstructions.constructionQueue.indexOf(constructionName)
+    private val myIndex = cityView.constructions.constructionQueue.indexOf(constructionName)
     /** Cities (including this one) where changing the construction queue makes sense
      *  (excludes isBeingRazed even though technically that would be allowed) */
     // Can't use CityScreen.canChangeState for other cities
-    @Readonly private fun candidateCities() = city.civ.cities.asSequence()
-        .filterNot { it.isPuppet || it.isInResistance() || it.isBeingRazed }
+    @Readonly private fun candidateCities() = cityView.viewingCiv().cities().asSequence()
+        .filterNot { it.isPuppet() || it.isInResistance() || it.isBeingRazed() }
     /** Check whether an "All cities" menu makes sense: `true` if there's more than one city, it's not a Wonder, and any city's queue matches [predicate]. */
-    @Readonly private fun allCitiesEntryValid(predicate: (CityConstructions) -> Boolean) =
-        city.civ.cities.size > 1 &&  // Yes any 2 cities, not candidateCities.drop(1).any()
+    @Readonly private fun allCitiesEntryValid(predicate: (CityView) -> Boolean) =
+        cityView.viewingCiv().cities().size > 1 &&
         (construction as? Building)?.isAnyWonder() != true &&
-        candidateCities().map { it.cityConstructions }.any(predicate)
-    @Readonly private fun forAllCities(action: (CityConstructions) -> Unit) =
-        candidateCities().map { it.cityConstructions }.forEach(action)
-
-    private val settings = GUI.getSettings()
-    private val disabledAutoAssignConstructions = settings.disabledAutoAssignConstructions
+        candidateCities().any(predicate)
+    private fun forAllCities(action: (CityView) -> Unit) =
+        candidateCities().forEach(action)
 
     init {
         closeListeners.add {
@@ -75,74 +68,93 @@ class CityScreenConstructionMenu(
         if (canRemoveAllQueues())
             table.add(getButton("Remove from the queue in all cities", KeyboardBinding.RemoveConstructionAll, ::removeAllQueues)).row()
         if (canDisable())
-            table.add(getButton("Disable", KeyboardBinding.BuildDisabled, ::disableEntry)).row()
+            table.add(getButton("Disable in this city", KeyboardBinding.BuildDisabled, ::disableEntry)).row()
+        if (canDisableAll())
+            table.add(getButton("Disable in all cities", KeyboardBinding.None, ::disableEntryInAllCities)).row()
         if (canEnable())
-            table.add(getButton("Enable", KeyboardBinding.BuildDisabled, ::enableEntry)).row()
+            table.add(getButton("Enable in this city", KeyboardBinding.BuildDisabled, ::enableEntry)).row()
+        if (canEnableAll())
+            table.add(getButton("Enable in all cities", KeyboardBinding.None, ::enableEntryInAllCities)).row()
         return table.takeUnless { it.cells.isEmpty }
     }
 
     @Pure
     private fun canMoveQueueTop(): Boolean {
-        if (construction is PerpetualConstruction)
-            return false
+        if (construction is PerpetualConstruction) return false
         return myIndex > 0
     }
-    private fun moveQueueTop() = cityConstructions.moveEntryToTop(myIndex)
+    private fun moveQueueTop() = cityView.tryMoveEntryToTop(myIndex)
 
     @Pure
     private fun canMoveQueueEnd(): Boolean {
-        if (construction is PerpetualConstruction)
-            return false
+        if (construction is PerpetualConstruction) return false
         return myIndex in 0 until queueSizeWithoutPerpetual - 1
     }
-    private fun moveQueueEnd() = cityConstructions.moveEntryToEnd(myIndex)
+    private fun moveQueueEnd() = cityView.tryMoveEntryToEnd(myIndex)
 
     @Readonly private fun isConstructionImprovementCreationBuilding() =
         construction is Building && construction.hasCreateOneImprovementUnique()
 
     @Readonly
     private fun canAddQueueTop() = construction !is PerpetualConstruction &&
-        cityConstructions.canAddToQueue(construction)
-            && !isConstructionImprovementCreationBuilding()
+        cityView.constructions.canAddToQueue(construction) &&
+        !isConstructionImprovementCreationBuilding()
 
-    private fun addQueueTop() = cityConstructions.addToQueue(construction, addToTop = true)
+    private fun addQueueTop() = cityView.tryAddToQueueConstruction(construction, addToTop = true)
 
     @Readonly
     private fun canAddAllQueues() = allCitiesEntryValid {
-        it.canAddToQueue(construction)
-                && !isConstructionImprovementCreationBuilding()
+        it.constructions.canAddToQueue(construction) &&
+        !isConstructionImprovementCreationBuilding() &&
         // A Perpetual that is already queued can still be added says canAddToQueue, but here we don't want to count that
-                && !(construction is PerpetualConstruction && it.isBeingConstructedOrEnqueued(constructionName))
+        !(construction is PerpetualConstruction && it.constructions.isBeingConstructedOrEnqueued(constructionName))
     }
-    private fun addAllQueues() = forAllCities { it.addToQueue(construction) }
+    private fun addAllQueues() = forAllCities { it.tryAddToQueueConstruction(construction) }
 
     @Readonly
     private fun canAddAllQueuesTop() = construction !is PerpetualConstruction &&
         allCitiesEntryValid {
-            (it.canAddToQueue(construction) && !isConstructionImprovementCreationBuilding())
-                    || it.isEnqueuedForLater(constructionName) }
+            (it.constructions.canAddToQueue(construction) && !isConstructionImprovementCreationBuilding()) ||
+            it.constructions.isEnqueuedForLater(constructionName) }
 
     private fun addAllQueuesTop() = forAllCities {
-        val index = it.constructionQueue.indexOf(constructionName)
+        val index = it.constructions.constructionQueue.indexOf(constructionName)
         if (index > 0)
-            it.moveEntryToTop(index)
+            it.tryMoveEntryToTop(index)
         else
-            it.addToQueue(construction, true)
+            it.tryAddToQueueConstruction(construction, addToTop = true)
     }
 
-    @Readonly private fun canRemoveAllQueues() = allCitiesEntryValid { it.isBeingConstructedOrEnqueued(constructionName) }
-    private fun removeAllQueues() = forAllCities { it.removeAllByName(constructionName) }
-
-    @Readonly private fun canDisable() = constructionName !in disabledAutoAssignConstructions &&
-        construction != PerpetualConstruction.idle
-    private fun disableEntry() {
-        disabledAutoAssignConstructions.add(constructionName)
-        settings.save()
+    @Readonly private fun canRemoveAllQueues() = allCitiesEntryValid {
+        it.constructions.isBeingConstructedOrEnqueued(constructionName)
     }
+    private fun removeAllQueues() = forAllCities { it.tryRemoveAllByName(constructionName) }
 
-    @Readonly private fun canEnable() = constructionName in disabledAutoAssignConstructions
-    private fun enableEntry() {
-        disabledAutoAssignConstructions.remove(constructionName)
-        settings.save()
-    }
+    @Readonly private fun canDisable() = constructionName !in cityView.getDisabledConstructions()
+        && construction != PerpetualConstruction.Idle
+
+    @Readonly private fun canDisableAll() =
+        !cityView.viewingCiv().isCivConstructionDisabled(constructionName) &&
+        construction != PerpetualConstruction.Idle
+
+    /**
+     * One-time effect: disables the construction in this city only.
+     */
+    private fun disableEntry() = cityView.tryDisableConstruction(constructionName)
+
+    /**
+     * One-time effect: disables this construction in all cities.
+     * Persistent effect: disabled in newly founded cities.
+     */
+    private fun disableEntryInAllCities() = cityView.viewingCiv().tryDisableCivConstruction(constructionName)
+
+    @Readonly private fun canEnable() = constructionName in cityView.getDisabledConstructions()
+
+    @Readonly private fun canEnableAll() = cityView.viewingCiv().isCivConstructionDisabled(constructionName)
+
+    /** Similar to [disableEntry] */
+    private fun enableEntry() = cityView.tryEnableConstruction(constructionName)
+
+    /** Similar to [disableEntryInAllCities] */
+    private fun enableEntryInAllCities() = cityView.viewingCiv().tryEnableCivConstruction(constructionName)
 }

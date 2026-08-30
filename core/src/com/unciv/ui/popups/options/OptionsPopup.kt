@@ -1,22 +1,13 @@
 package com.unciv.ui.popups.options
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.GUI
-import com.unciv.models.metadata.BaseRuleset
-import com.unciv.models.ruleset.RulesetCache
-import com.unciv.ui.components.extensions.areSecretKeysPressed
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.getCloseButton
-import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.widgets.TabbedPager
-import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
-import kotlin.reflect.KMutableProperty0
 
 /**
  * The Options (Settings) Popup
@@ -25,22 +16,24 @@ import kotlin.reflect.KMutableProperty0
 //region Fields
 class OptionsPopup(
     screen: BaseScreen,
-    private val selectPage: Int = defaultPage,
+    private val selectPage: OptionsPopupPages = defaultPage,
     withDebug: Boolean = false,
-    private val onClose: () -> Unit = {}
+    private val onClose: () -> Unit = {},
+    private val subSelect: String? = null
 ) : Popup(screen.stage, /** [TabbedPager] handles scrolling */ scrollable = Scrollability.None), OptionsPopupHelpers {
 
     val game = screen.game
     val settings = screen.game.settings
     val tabs: TabbedPager
-    override val activePage get() = tabs.activePage
+    private val pageIndex = HashMap<OptionsPopupPages, OptionsPopupTab>()
+    override val activePage get() = OptionsPopupPages[tabs.activePage]
     override val rightWidgetMinWidth: Float
-    private val tabMinWidth: Float
+    internal val tabMinWidth: Float
 
     //endregion
 
     companion object {
-        const val defaultPage = 2  // Gameplay
+        val defaultPage = OptionsPopupPages.Gameplay
     }
 
     init {
@@ -67,103 +60,33 @@ class OptionsPopup(
         )
         add(tabs).pad(0f).grow().row()
 
-        tabs.addPage(
-            "About",
-            aboutTab(),
-            ImageGetter.getExternalImage("Icons/Unciv128.png"), 24f
-        )
-        tabs.addPage(
-            "Display",
-            DisplayTab(this),
-            ImageGetter.getImage("UnitPromotionIcons/Scouting"), 24f
-        )
-        tabs.addPage(
-            "Gameplay",
-            GameplayTab(this),
-            ImageGetter.getImage("OtherIcons/Options"), 24f
-        )
-        tabs.addPage(
-            "Automation",
-            AutomationTab(this),
-            ImageGetter.getImage("OtherIcons/NationSwap"), 24f
-        )
-        tabs.addPage(
-            "Language",
-            LanguageTab(this),
-            ImageGetter.getImage("FlagIcons/${settings.language}"), 24f
-        )
-        tabs.addPage(
-            "Sound",
-            SoundTab(this),
-            ImageGetter.getImage("OtherIcons/Speaker"), 24f
-        )
-        tabs.addPage(
-            "Multiplayer",
-            MultiplayerTab(this),
-            ImageGetter.getImage("OtherIcons/Multiplayer"), 24f
-        )
-
-        if (GUI.keyboardAvailable) {
-            tabs.addPage(
-                "Keys",
-                KeyBindingsTab(this, tabMinWidth - 40f),  // 40 = padding
-                ImageGetter.getImage("OtherIcons/Keyboard"), 24f
-            )
+        for (page in OptionsPopupPages.entries) {
+            if (!page.visible(withDebug)) continue
+            val content = page.getContent(this)
+            tabs.addPage(page.label, content, page.getIcon(settings.language), 24f)
+            pageIndex[page] = content
         }
 
-        tabs.addPage(
-            "Advanced",
-            AdvancedTab(this),
-            ImageGetter.getImage("OtherIcons/Settings"), 24f
-        )
-
-        if (RulesetCache.size > BaseRuleset.entries.size) {
-            val content = ModCheckTab(screen)
-            tabs.addPage("Locate mod errors", content, ImageGetter.getImage("OtherIcons/Mods"), 24f)
-        }
-        if (withDebug || Gdx.input.areSecretKeysPressed()) {
-            tabs.addPage("Debug", DebugTab(this), ImageGetter.getImage("OtherIcons/SecretOptions"), 24f)
-        }
-
-        tabs.decorateHeader(getCloseButton {
-            screen.game.musicController.onChange(null)
-            center(screen.stage)
-            tabs.selectPage(-1, false)
-            settings.save()
-            onClose() // activate the passed 'on close' callback
-            close() // close this popup
-        })
+        tabs.decorateHeader(getCloseButton { close() })
 
         pack() // Needed to show the background.
         center(screen.stage)
     }
 
+    override fun close() {
+        game.musicController.onChange(null)
+        center(stageToShowOn)
+        tabs.selectPage(-1, false)
+        settings.save()
+        onClose() // activate the passed 'on close' callback
+        super.close()
+    }
+
     override fun setVisible(visible: Boolean) {
         super.setVisible(visible)
         if (!visible) return
-        if (tabs.activePage < 0) tabs.selectPage(selectPage)
-    }
-
-    internal fun addCheckbox(table: Table, text: String, initialState: Boolean, updateWorld: Boolean = false, newRow: Boolean = true, action: ((Boolean) -> Unit)) {
-        val checkbox = text.toCheckBox(initialState) {
-            action(it)
-            val worldScreen = GUI.getWorldScreenIfActive()
-            if (updateWorld && worldScreen != null) worldScreen.shouldUpdate = true
-        }
-        if (newRow) table.add(checkbox).colspan(2).left().row()
-        else table.add(checkbox).left()
-    }
-
-    internal fun addCheckbox(
-        table: Table,
-        text: String,
-        settingsProperty: KMutableProperty0<Boolean>,
-        updateWorld: Boolean = false,
-        action: (Boolean) -> Unit = {}
-    ) {
-        addCheckbox(table, text, settingsProperty.get(), updateWorld) {
-            action(it)
-            settingsProperty.set(it)
-        }
+        if (tabs.activePage >= 0) return
+        pageIndex[selectPage]?.subSelect(subSelect)
+        tabs.selectPage(selectPage.ordinal)
     }
 }

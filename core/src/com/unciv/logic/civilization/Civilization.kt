@@ -47,6 +47,7 @@ import kotlin.math.roundToInt
 import kotlin.math.sqrt
 import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.civilization.managers.quests.QuestManager
+import kotlin.text.toFloat
 
 enum class Proximity : IsPartOfGameInfoSerialization {
     None, // ie no cities
@@ -71,6 +72,15 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     @Transient
     lateinit var gameInfo: GameInfo
+
+    /** Context for [UniqueType.StartBias] during map gen / start placement.
+     *  Passes [GameInfo] only — never this [Civilization], which may be only partially initialized.
+     *  Conditionals that need tiles/cities/units are therefore unsupported here.
+     */
+    @Readonly
+    fun getGameContextForStartBias() =
+        if (this::gameInfo.isInitialized) GameContext(gameInfo = gameInfo)
+        else GameContext.IgnoreConditionals
 
     @Transient
     lateinit var nation: Nation
@@ -127,6 +137,11 @@ class Civilization : IsPartOfGameInfoSerialization {
     var playerId = ""
     /** Used in online multiplayer, if a player exceed this time to complete their turn, others can force them to resign*/
     var playerMinutesBeforeForceResign = 3 * 24 * 60
+    /** Total number of minutes spent on their turn. Recorded at the end of each turn. */
+    var totalTurnTimeSeconds = 0
+    /** To calculate average turn time, we only count turns when controlled by a human. Additionally, offers backward compatibility. */
+    var turnsPlayedAsHuman = 0
+    
     /** The Civ's gold reserves. Public get, private set - please use [addGold] method to modify. */
     var gold = 0
         private set
@@ -194,6 +209,13 @@ class Civilization : IsPartOfGameInfoSerialization {
     // This will NOT be an ArrayList in memory right after GameStarter - but save and reload or pass a next turn, and it will be.
     var cities = listOf<City>()
     var citiesCreated = 0
+
+    /**
+     * Constructions (e.g. buildings) that will be disabled when a new city is founded
+     * They are moved to the "Disabled" section in the build menu, and will not be built during automation.
+     */
+    var disabledCityConstructions = HashSet<String>()
+        private set
 
     // Limit camera within explored region
     var exploredRegion = ExploredRegion()
@@ -284,6 +306,8 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.playerType = playerType
         toReturn.playerId = playerId
         toReturn.playerMinutesBeforeForceResign = playerMinutesBeforeForceResign
+        toReturn.totalTurnTimeSeconds = totalTurnTimeSeconds
+        toReturn.turnsPlayedAsHuman = turnsPlayedAsHuman
         toReturn.civName = civName
         toReturn.civID = civID
         toReturn.tech = tech.clone()
@@ -302,6 +326,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.proximity.putAll(proximity)
         toReturn.cities = cities.map { it.clone() }
         toReturn.neutralRoads = neutralRoads
+        toReturn.disabledCityConstructions.addAll(disabledCityConstructions)
         toReturn.exploredRegion = exploredRegion.clone()
         toReturn.lastSeenImprovement.putAll(lastSeenImprovement)
         toReturn.leaderTitle = leaderTitle
@@ -394,10 +419,11 @@ class Civilization : IsPartOfGameInfoSerialization {
         if (playerType == PlayerType.AI) return true
         if (gameInfo.isSimulation()) return true
         val worldScreen = UncivGame.Current.worldScreen ?: return false
-        return worldScreen.viewingCiv == this && worldScreen.autoPlay.isAutoPlaying()
+        return worldScreen.selectedGameView.civView.getCiv() == this && worldScreen.autoPlay.isAutoPlaying()
     }
 
     @Readonly fun isOneCityChallenger() = playerType == PlayerType.Human && gameInfo.gameParameters.oneCityChallenge
+    /** Always false for AI since currentPlayerCiv is only set for human players */
     @Readonly fun isCurrentPlayer() = gameInfo.currentPlayerCiv == this
     @Readonly fun isMajorCiv() = nation.isMajorCiv
     @Readonly fun isMinorCiv() = nation.isCityState || nation.isBarbarian
@@ -408,6 +434,11 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     @Readonly fun isSpectator() = nation.isSpectator
     @Readonly fun isAlive(): Boolean = !isDefeated()
+
+    /** A human player who lost in singleplayer keeps playing as a de-facto spectator, and should get the same map visibility.
+     *  [GameInfo.turns] > 0 guards against the setup phase, where every civ is briefly "defeated" (zero units) before starting units are placed. */
+    @Readonly fun hasSpectatorVision() = isSpectator()
+        || (isDefeated() && isCurrentPlayer() && !gameInfo.gameParameters.isOnlineMultiplayer && gameInfo.turns > 0)
 
     @delegate:Transient
     val cityStateType: CityStateType by lazy { gameInfo.ruleset.cityStateTypes[nation.cityStateType!!]!! }
@@ -546,11 +577,6 @@ class Civilization : IsPartOfGameInfoSerialization {
         return getCivResourceSupply().firstOrNull { it.resource == resource }?.amount ?: 0
     }
 
-    /** Gets modifiers for ALL resources */
-    @Readonly
-    fun getResourceModifiers(): Map<String, Float> =
-        gameInfo.ruleset.tileResources.values.associate { it.name to getResourceModifier(it) }
-
     /**
      * Returns the resource production modifier as a multiplier.
      *
@@ -578,7 +604,6 @@ class Civilization : IsPartOfGameInfoSerialization {
         getMatchingUniques(uniqueType, gameContext).any()
 
     // Does not return local uniques, only global ones.
-    /** Destined to replace getMatchingUniques, gradually, as we fill the enum */
     @Readonly
     @Deprecated(message = "forEachMatchingUnique is faster. If not viable, then this can still be used",
         replaceWith = ReplaceWith("forEachMatchingUnique"))
@@ -846,6 +871,9 @@ class Civilization : IsPartOfGameInfoSerialization {
                 RankingType.Happiness -> getHappiness()
                 RankingType.Technologies -> tech.researchedTechnologies.size
                 RankingType.Culture -> policies.adoptedPolicies.count { !Policy.isBranchCompleteByName(it) }
+            
+                // Non vanilla ranking types
+                RankingType.TilesExplored -> gameInfo.tileMap.values.count { it.isExplored(this) }
         }
     }
 
@@ -887,8 +915,8 @@ class Civilization : IsPartOfGameInfoSerialization {
     @Readonly fun isLongCountDisplay() = hasLongCountDisplayUnique && isLongCountActive()
 
     @Readonly
-    fun calculateScoreBreakdown(): HashMap<String,Double> {
-        val scoreBreakdown = hashMapOf<String,Double>()
+    fun calculateScoreBreakdown(): HashMap<String, Double> {
+        val scoreBreakdown = hashMapOf<String, Double>()
         // 1276 is the number of tiles in a medium sized map. The original uses 4160 for this,
         // but they have bigger maps
         var mapSizeModifier = 1276 / gameInfo.tileMap.mapParameters.numberOfTiles().toDouble()
@@ -898,13 +926,13 @@ class Civilization : IsPartOfGameInfoSerialization {
         val modConstants= gameInfo.ruleset.modOptions.constants
         scoreBreakdown["Cities"] = cities.size * 10 * mapSizeModifier
         scoreBreakdown["Population"] = cities.sumOf { it.population.population } * modConstants.scoreFromPopulation * mapSizeModifier
-        scoreBreakdown["Tiles"] = cities.sumOf { city -> city.getTiles().filter { !it.isWater}.count() } * 1 * mapSizeModifier
+        scoreBreakdown["Tiles"] = cities.sumOf { city -> city.getTiles().count { !it.isWater } } * 1 * mapSizeModifier
         scoreBreakdown["Wonders"] = modConstants.scoreFromWonders * cities
-            .sumOf { city -> city.cityConstructions.getBuiltBuildings()
-                .filter { it.isWonder }.count()
+            .sumOf { city ->
+                city.cityConstructions.getBuiltBuildings().count { it.isWonder }
             }.toDouble()
-        scoreBreakdown["Technologies"] = tech.getNumberOfTechsResearched() * 4.toDouble()
-        scoreBreakdown["Future Tech"] = tech.repeatingTechsResearched * 10.toDouble()
+        scoreBreakdown["Technologies"] = tech.techsResearched.size * 4.0
+        scoreBreakdown["Future Tech"] = tech.repeatingTechsResearched * 10.0
 
         return scoreBreakdown
     }
@@ -952,9 +980,9 @@ class Civilization : IsPartOfGameInfoSerialization {
 
         // Now that all tile transients have been updated, clean "worked" tiles that are not under the Civ's control
         for (city in cities)
-            for (workedTile in city.workedTiles.toList())
-                if (gameInfo.tileMap[workedTile].getOwner() != this)
-                    city.workedTiles.remove(workedTile)
+            for (tile in city.getWorkedTiles().toList())
+                if (tile.getOwner() != this)
+                    city.stopWorkingTile(tile)
 
         passThroughImpassableUnlocked = passableImpassables.isNotEmpty()
 
@@ -1278,6 +1306,8 @@ class CivilizationInfoPreview() {
     var playerType = PlayerType.AI
     var playerId = ""
     var playerMinutesBeforeForceResign = 60*24*3
+    var totalTurnTimeSeconds = 0
+    var turnsPlayedAsHuman = 0
     @Readonly fun isPlayerCivilization() = playerType == PlayerType.Human
 
     /**
@@ -1289,6 +1319,8 @@ class CivilizationInfoPreview() {
         playerType = civilization.playerType
         playerId = civilization.playerId
         playerMinutesBeforeForceResign = civilization.playerMinutesBeforeForceResign
+        totalTurnTimeSeconds = civilization.totalTurnTimeSeconds
+        turnsPlayedAsHuman = civilization.turnsPlayedAsHuman
     }
 }
 

@@ -3,10 +3,12 @@ package com.unciv.logic.automation.civilization
 import com.unciv.Constants
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
@@ -14,12 +16,12 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.utils.randomWeighted
 import yairm210.purity.annotations.Readonly
 import kotlin.math.max
-import kotlin.math.min
 import kotlin.math.pow
+import kotlin.random.Random
 
 class BarbarianManager : IsPartOfGameInfoSerialization {
 
-    val encampments = ArrayList<Encampment>()
+    val encampments = ArrayList<BarbarianEncampment>()
 
     @Transient
     lateinit var gameInfo: GameInfo
@@ -42,9 +44,8 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
         val existingEncampmentLocations = encampments.asSequence().map { it.position }.toHashSet()
 
         for (tile in tileMap.values) {
-            if (tile.improvement == Constants.barbarianEncampment
-                    && !existingEncampmentLocations.contains(tile.position)) {
-                encampments.add(Encampment(tile.position))
+            if (tile.isBarbarianEncampment() && !existingEncampmentLocations.contains(tile.position)) {
+                encampments.add(BarbarianEncampment(tile.position))
             }
         }
 
@@ -55,7 +56,7 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
     fun updateEncampments() {
         // Check if camps were destroyed
         for (encampment in encampments.toList()) { // tolist to avoid concurrent modification
-            if (tileMap[encampment.position].improvement != Constants.barbarianEncampment) {
+            if (!tileMap[encampment.position].isBarbarianEncampment()) {
                 encampment.wasDestroyed()
             }
             // Check if the ghosts are ready to depart
@@ -75,7 +76,7 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
     }
 
     fun placeBarbarianEncampment(forTesting: Boolean = false) {
-        val rng = gameInfo.getBarbarianCivilization().state.stateBasedRandom("BarbarianManager.placeBarbarianEncampent")
+        val rng = gameInfo.getBarbarianCivilization().state.stateBasedRandom("BarbarianManager.placeBarbarianEncampent", encampments.hashCode())
         // Before we do the expensive stuff, do a roll to see if we will place a camp at all
         if (!forTesting && gameInfo.turns > 1 && rng.nextBoolean())
             return
@@ -133,7 +134,7 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
             } else
                 tile = viableTiles.random(rng)
 
-            createNewCamp(tile)
+            createNewCamp(tile, rng)
             notifyCivsOfBarbarianEncampment(tile)
             addedCamps++
 
@@ -152,108 +153,82 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
      * adopted Honor policy and have explored the [tile] where the Barbarian Encampment has spawned.
      */
     private fun notifyCivsOfBarbarianEncampment(tile: Tile) {
-        gameInfo.civilizations.filter {
-            it.hasUnique(UniqueType.NotifiedOfBarbarianEncampments)
-                    && it.hasExplored(tile)
+        for (civ in gameInfo.civilizations) {
+            if (!civ.hasExplored(tile)) continue
+            if (!civ.hasUnique(UniqueType.NotifiedOfBarbarianEncampments)) continue
+            civ.addNotification("A new barbarian encampment has spawned!", tile.position, NotificationCategory.War, NotificationIcon.War)
+            civ.setLastSeenImprovement(tile.position, tile.improvement)
         }
-            .forEach {
-                it.addNotification("A new barbarian encampment has spawned!", tile.position, NotificationCategory.War, NotificationIcon.War)
-                it.setLastSeenImprovement(tile.position, Constants.barbarianEncampment)
-            }
     }
-    // Creates a new camp without any checks - Does not affect notifications
-    fun createNewCamp(tile: Tile) {
-        tile.setImprovement(Constants.barbarianEncampment)
-        val newCamp = Encampment(tile.position)
+
+    /** Creates a new camp without any checks - Does not affect notifications */
+    fun createNewCamp(tile: Tile, rng: Random = tile.stateThisTile.stateBasedRandom("createNewCamp")) {
+        val candidates = this.gameInfo.ruleset.tileImprovements.values
+            .filter { it.isBarbarianCampEquivalent(tile.stateThisTile) }
+        val improvement = candidates.randomOrNull(rng)?.name ?: Constants.barbarianEncampment
+        tile.setImprovement(improvement)
+        val newCamp = BarbarianEncampment(tile.position)
         newCamp.gameInfo = gameInfo
         encampments.add(newCamp)
     }
 
-}
+    /**
+     * Attempts to spawn a random barbarian [MapUnit] at or near the provided [Tile].
+     * @param allegiance Which [Civilization] should the unit belong to? Defaults to the barbarian civilization.
+     *                   If non-barbarian, there are fewer restrictions on whether a unit can be spawned or not.
+     * @return The newly spawned [MapUnit], or null if unsuccessful.
+     */
+    fun spawnBarbarian(
+        tile: Tile,
+        allegiance: Civilization = gameInfo.getBarbarianCivilization()
+    ): MapUnit? {
+        if (allegiance.isBarbarian) {
+            // Empty camp - spawn a defender
+            if (tile.militaryUnit == null)
+                // Try spawning a unit on this tile, return null if unsuccessful
+                return spawnUnit(tile.position, false)
 
-class Encampment() : IsPartOfGameInfoSerialization {
-    var position = HexCoord()
-    var countdown = 0
-    var spawnedUnits = -1
-    var destroyed = false // destroyed encampments haunt the vicinity for 15 turns preventing new spawns
+            // Don't spawn wandering barbs too early
+            if (gameInfo.turns < 10)
+                return null
 
-    @Transient
-    lateinit var gameInfo: GameInfo
-
-    constructor(position: HexCoord): this() {
-        this.position = position
-    }
-
-    fun clone(): Encampment {
-        val toReturn = Encampment(position)
-        toReturn.countdown = countdown
-        toReturn.spawnedUnits = spawnedUnits
-        toReturn.destroyed = destroyed
-        return toReturn
-    }
-
-    fun update() {
-        if (countdown > 0) // Not yet
-            countdown--
-        else if (!destroyed && spawnBarbarian()) { // Countdown at 0, try to spawn a barbarian
-            // Successful
-            spawnedUnits++
-            resetCountdown()
-        }
-    }
-
-    fun wasAttacked() {
-        if (!destroyed)
-            countdown /= 2
-    }
-
-    fun wasDestroyed() {
-        if (!destroyed) {
-            countdown = 15
-            destroyed = true
-        }
-    }
-
-    /** Attempts to spawn a Barbarian from this encampment. Returns true if a unit was spawned. */
-    private fun spawnBarbarian(): Boolean {
-        val tile = gameInfo.tileMap[position]
-
-        // Empty camp - spawn a defender
-        if (tile.militaryUnit == null) {
-            return spawnUnit(false) // Try spawning a unit on this tile, return false if unsuccessful
+            val nearbyBarbarians = tile.getTilesInDistance(4)
+                .mapNotNull { it.militaryUnit }
+                .count { it.civ.isBarbarian }
+            // Too many barbarians around already?
+            if (nearbyBarbarians > 2)
+                return null
         }
 
-        // Don't spawn wandering barbs too early
-        if (gameInfo.turns < 10)
-            return false
-
-        // Too many barbarians around already?
-        val barbarianCiv = gameInfo.getBarbarianCivilization()
-        if (tile.getTilesInDistance(4).count { it.militaryUnit?.civ == barbarianCiv } > 2)
-            return false
-
-        val canSpawnBoats = gameInfo.turns > 30
+        val canSpawnNaval = gameInfo.turns > 30
         val validTiles = tile.neighbors.toList().filterNot {
             it.isImpassible()
-                    || it.isCityCenter()
-                    || it.getFirstUnit() != null
-                    || (it.isWater && !canSpawnBoats)
-                    || (it.terrainHasUnique(UniqueType.FreshWater) && it.isWater) // No Lakes
+                || it.isCityCenter()
+                || it.getFirstUnit() != null
+                || (it.isWater && !canSpawnNaval)
+                || (it.terrainHasUnique(UniqueType.FreshWater) && it.isWater) // No Lakes
         }
-        if (validTiles.isEmpty()) return false
+        if (validTiles.isEmpty())
+            return null
 
         val rng = gameInfo.getBarbarianCivilization().state.stateBasedRandom("BarbarianManager.spawnBarbarian")
-        return spawnUnit(validTiles.random(rng).isWater) // Attempt to spawn a barbarian on a valid tile
+        // Attempt to spawn a barbarian on a valid tile
+        return spawnUnit(tile.position, validTiles.random(rng).isWater, allegiance) 
     }
 
     /** Attempts to spawn a barbarian on [position], returns true if successful and false if unsuccessful. */
-    private fun spawnUnit(naval: Boolean): Boolean {
+    private fun spawnUnit(
+        position: HexCoord,
+        naval: Boolean,
+        allegiance: Civilization = gameInfo.getBarbarianCivilization()
+    ): MapUnit? {
         updateBarbarianTech()
-        val unitToSpawn = chooseBarbarianUnit(naval) ?: return false // return false if we didn't find a unit
-        val spawnedUnit = gameInfo.tileMap.placeUnitNearTile(position.toHexCoord(), unitToSpawn, gameInfo.getBarbarianCivilization())
-        return (spawnedUnit != null)
+        val unitToSpawn = chooseBarbarianUnit(naval)
+            ?: return null // return null if we didn't find a unit
+        val spawnedUnit = gameInfo.tileMap.placeUnitNearTile(position, unitToSpawn, allegiance)
+        return spawnedUnit
     }
-    
+
     private fun updateBarbarianTech(){
         val barbarianCiv = gameInfo.getBarbarianCivilization()
         val allResearchedTechs = gameInfo.ruleset.technologies.keys.toMutableList()
@@ -270,10 +245,10 @@ class Encampment() : IsPartOfGameInfoSerialization {
         val barbarianCiv = gameInfo.getBarbarianCivilization()
         val unitList = gameInfo.ruleset.units.values
             .filter { it.isMilitary &&
-                    !(it.hasUnique(UniqueType.CannotAttack) ||
-                            it.hasUnique(UniqueType.CannotBeBarbarian)) &&
-                    (if (naval) it.isWaterUnit else it.isLandUnit) &&
-                    it.isBuildable(barbarianCiv) }
+                !(it.hasUnique(UniqueType.CannotAttack) ||
+                    it.hasUnique(UniqueType.CannotBeBarbarian)) &&
+                (if (naval) it.isWaterUnit else it.isLandUnit) &&
+                it.isBuildable(barbarianCiv) }
 
         if (unitList.isEmpty()) return null // No naval tech yet? Mad modders?
 
@@ -285,19 +260,6 @@ class Encampment() : IsPartOfGameInfoSerialization {
         return unitList.randomWeighted(weightings, rng)
     }
 
-    /** When a barbarian is spawned, seed the counter for next spawn */
-    private fun resetCountdown() {
-        val rng = gameInfo.getBarbarianCivilization().state.stateBasedRandom("BarbarianManager.resetCooldown")
-        // Base 8-12 turns
-        countdown = 8 + rng.nextInt(5)
-        // Quicker on Raging Barbarians
-        if (gameInfo.gameParameters.ragingBarbarians)
-            countdown /= 2
-        // Higher on low difficulties
-        countdown += gameInfo.ruleset.difficulties[gameInfo.gameParameters.difficulty]!!.barbarianSpawnDelay
-        // Quicker if this camp has already spawned units
-        countdown -= min(3, spawnedUnits)
-
-        countdown = (countdown * gameInfo.speed.barbarianModifier).toInt()
-    }
+    /** Return a _mutable_ List of encampment tiles, allowing in-place sort */
+    fun getEncampmentTiles() = encampments.mapTo(mutableListOf()) { gameInfo.tileMap[it.position] }
 }

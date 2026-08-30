@@ -45,8 +45,6 @@ object GUI {
 
     @Readonly fun getUnitTable(): UnitTable = UncivGame.Current.worldScreen!!.bottomUnitTable
 
-    @Readonly fun getViewingPlayer(): Civilization = UncivGame.Current.worldScreen!!.viewingCiv
-
     @Readonly fun getSelectedPlayer(): Civilization = UncivGame.Current.worldScreen!!.selectedCiv
 
     /** Disable Undo (as in: forget the way back, but allow future undo checkpoints) */

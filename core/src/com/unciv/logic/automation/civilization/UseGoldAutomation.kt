@@ -24,19 +24,23 @@ object UseGoldAutomation {
         if (civ.isMajorCiv())
             useGoldForCityStates(civ)
 
+        val acceptableHurryCostModifier = civ.gold.coerceAtLeast(0)/100
+        // Ideally we buy things with good gold:production conversion from purchasing and hard-build the rest, but some mods have high hurryCostModifier on everything leading to too much gold being saved. 
+        // Rather than checking the full ruleset for future available constructions and determining if they're worth it, let's gradually accept less efficiency if it turns out we're saving too much
+
         for (city in civ.cities.sortedByDescending { it.cityStats.currentCityStats.production }) {
             // Low production cities are disallowed from building military and world wonders, and have low priority for xp buildings
             val construction = city.cityConstructions.getCurrentConstruction()
             if (construction !is INonPerpetualConstruction) continue
             val statBuyCost = construction.getStatBuyCost(city, Stat.Gold) ?: continue
             if (!city.cityConstructions.isConstructionPurchaseAllowed(construction, Stat.Gold, statBuyCost)) continue
-            if (civ.gold < statBuyCost || construction.hurryCostModifier > 10) continue // Don't buy things that are more expensive than they need to be
+            if (civ.gold < statBuyCost || construction.hurryCostModifier > acceptableHurryCostModifier) continue
+            if (city.cityConstructions.getWorkDone(construction.name) > 0) continue // Don't buy things we already invested production into (may waste the invested production)
             city.cityConstructions.purchaseConstruction(construction, 0, true)
         }
 
         maybeBuyCityTiles(civ)
     }
-
 
     private fun useGoldForCityStates(civ: Civilization) {
         // RARE EDGE CASE: If you ally with a city-state, you may reveal more map that includes ANOTHER civ!

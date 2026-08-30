@@ -51,7 +51,7 @@ object GreatGeneralImplementation {
                 // The "Military" test is also supported deep down in unit.matchesFilter, a small
                 // optimization for the most common case, as this function is only called for `MapUnitCombatant`s
                 it.general.currentTile.aerialDistanceTo(unit.getTile()) <= it.radius
-                        && (it.filter == "Military" || unit.matchesFilter(it.filter))
+                        && (it.filter == "Military" || unit.matchesFilter(it.filter, state = it.general.cache.state))
             }
         val greatGeneralModifier = greatGeneral.maxByOrNull { it.bonus } ?: return Pair("",0)
 

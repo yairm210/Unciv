@@ -252,7 +252,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     internal fun getConstruction(constructionName: String): IConstruction {
         val gameBasics = city.getRuleset()
         when {
-            constructionName == "" -> return PerpetualConstruction.idle
+            constructionName == "" -> return PerpetualConstruction.Idle
             gameBasics.buildings.containsKey(constructionName) -> return gameBasics.buildings[constructionName]!!
             gameBasics.units.containsKey(constructionName) -> return gameBasics.units[constructionName]!!
             else -> {
@@ -638,10 +638,29 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         if (building.hasUnique(UniqueType.EnemyUnitsSpendExtraMovement))
             civ.cache.updateHasActiveEnemyMovementPenalty()
 
-        // Korean unique - apparently gives the same as the research agreement
-        if (building.isStatRelated(Stat.Science, city) && civ.hasUnique(UniqueType.TechBoostWhenScientificBuildingsBuiltInCapital)
-            && city.isCapital())
-            civ.tech.addScience(civ.tech.scienceOfLast8Turns.sum() / 8)
+        /**
+         * The [Korean unique](https://civilization.fandom.com/wiki/Korean_(Civ5)#Strategy) gives the same tech boost as a [research agreement](https://civilization.fandom.com/wiki/Diplomacy_(Civ5)#Research_Agreement).
+         * We use Vanilla / G&K logic as it is more straightforward, i.e. half of the median cost of our researchable techs.
+         * It is unclear whether RA modifiers should apply. For now, they do not.
+         */
+        fun applyKoreanUnique() {
+            if (!building.isStatRelated(Stat.Science, city)) return
+            if (!civ.hasUnique(UniqueType.TechBoostWhenScientificBuildingsBuiltInCapital)) return
+            if (!city.isCapital()) return
+            val availableTechCosts = city.getRuleset().technologies.values
+                .filter { civ.tech.canBeResearched(it.name) }
+                .map { civ.tech.costOfTech(it.name) }
+                .sorted()
+            if (availableTechCosts.isEmpty()) return
+            val n = availableTechCosts.size
+            val medianCost =
+                if (n % 2 == 1) availableTechCosts[n / 2].toFloat()
+                else (availableTechCosts[n / 2 - 1] + availableTechCosts[n / 2]) / 2f
+            val techBoost = (0.5f * medianCost).roundToInt()
+            civ.tech.addScience(techBoost)
+        }
+        
+        applyKoreanUnique()
 
         val previousHappiness = civ.getHappiness()
         // can cause civ happiness update: reassignPopulationDeferred -> reassignPopulation -> cityStats.update -> civ.updateHappiness
@@ -809,6 +828,9 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             removeFromQueue(queuePosition, automatic)
         validateConstructionQueue()
 
+        // A purchase should never leave the city idle if we invalidated or emptied the queue
+        if (isQueueEmptyOrIdle()) chooseNextConstruction()
+
         return true
     }
 
@@ -905,7 +927,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         // `getConstruction(constructionQueue.last()) is PerpetualConstruction` is clear but more expensive
 
     @Readonly fun isQueueEmptyOrIdle() = currentConstructionName().isEmpty()
-        ||  currentConstructionName() == PerpetualConstruction.idle.name
+        ||  currentConstructionName() == PerpetualConstruction.Idle.name
 
     /** Add [construction] to the end or top (controlled by [addToTop]) of the queue with all checks (does nothing if not possible)
      *
@@ -976,7 +998,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
         currentConstructionIsUserSet = if (constructionQueue.isEmpty()) {
             if (automatic) chooseNextConstruction()
-            else constructionQueue.add(PerpetualConstruction.idle.name) // To prevent Construction Automation
+            else constructionQueue.add(PerpetualConstruction.Idle.name) // To prevent Construction Automation
             false
         } else true // we're just continuing the regular queue
     }
@@ -1082,7 +1104,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         constructionQueue.removeAt(indexToRemove)
 
         currentConstructionIsUserSet = if (constructionQueue.isEmpty()) {
-            constructionQueue.add(PerpetualConstruction.idle.name)
+            constructionQueue.add(PerpetualConstruction.Idle.name)
             false
         } else true
     }

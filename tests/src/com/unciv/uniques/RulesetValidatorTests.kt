@@ -6,14 +6,14 @@ import com.unciv.models.ruleset.nation.Personality
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.validation.RulesetErrorSeverity
 import com.unciv.models.translations.fillPlaceholders
-import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@RunWith(GdxTestRunner::class)
+@RunWith(BaseTestRunner::class)
 class RulesetValidatorTests {
 
     private fun addPersonality(game: TestGame, name: String, vararg uniques: String): Personality {
@@ -21,6 +21,14 @@ class RulesetValidatorTests {
             this.name = name
             uniques.toCollection(this.uniques)
             game.ruleset.personalities[name] = this
+        }
+    }
+
+    private fun hasRecursiveResourceUniqueError(game: TestGame, modifierText: String): Boolean {
+        return game.ruleset.getErrorList().any {
+            it.errorSeverityToReport == RulesetErrorSeverity.Error
+                && it.text.contains(modifierText)
+                && it.text.contains("recursive evaluation loop")
         }
     }
 
@@ -37,7 +45,7 @@ class RulesetValidatorTests {
         val errors = game.ruleset.getErrorList()
 
         assertTrue(errors.any {
-            it.errorSeverityToReport == RulesetErrorSeverity.WarningOptionsOnly
+            it.errorSeverityToReport == RulesetErrorSeverity.OK
                 && it.text.contains("\"Park\"")
                 && it.text.contains("Building")
                 && it.text.contains("Nation.spyNames")
@@ -58,7 +66,7 @@ class RulesetValidatorTests {
         val errors = game.ruleset.getErrorList()
 
         assertTrue(errors.any {
-            it.errorSeverityToReport == RulesetErrorSeverity.WarningOptionsOnly
+            it.errorSeverityToReport == RulesetErrorSeverity.OK
                 && it.text.contains("\"Park\"")
                 && it.text.contains("Building")
                 && it.text.contains("Religion")
@@ -79,7 +87,7 @@ class RulesetValidatorTests {
         val errors = game.ruleset.getErrorList()
 
         assertTrue(errors.any {
-            it.errorSeverityToReport == RulesetErrorSeverity.WarningOptionsOnly
+            it.errorSeverityToReport == RulesetErrorSeverity.OK
                 && it.text.contains("\"Park\"")
                 && it.text.contains("Building")
                 && it.text.contains("Religion")
@@ -99,7 +107,7 @@ class RulesetValidatorTests {
         val errors = game.ruleset.getErrorList()
 
         assertTrue(errors.any {
-            it.errorSeverityToReport == RulesetErrorSeverity.WarningOptionsOnly
+            it.errorSeverityToReport == RulesetErrorSeverity.OK
                 && it.text.contains("\"Park\"")
                 && it.text.contains("Building")
                 && it.text.contains("Nation.leaderName")
@@ -119,7 +127,7 @@ class RulesetValidatorTests {
         val errors = game.ruleset.getErrorList()
 
         assertTrue(errors.any {
-            it.errorSeverityToReport == RulesetErrorSeverity.WarningOptionsOnly
+            it.errorSeverityToReport == RulesetErrorSeverity.OK
                 && it.text.contains("\"Park\"")
                 && it.text.contains("Building")
                 && it.text.contains("Nation.cities")
@@ -160,5 +168,48 @@ class RulesetValidatorTests {
                 && it.text.contains(UniqueType.Unbuildable.text)
                 && it.text.contains("not allowed on its target type")
         })
+    }
+
+    @Test
+    fun `ruleset validator rejects resource unique for every citywide resource countable`() {
+        val game = TestGame()
+        val citywideResource = game.createResource(UniqueType.CityResource.text)
+        val providedResource = game.createResource()
+
+        game.createBuilding("Provides [1] [${providedResource.name}] <for every [${citywideResource.name}]>")
+
+        assertTrue(hasRecursiveResourceUniqueError(game, "for every [${citywideResource.name}]"))
+    }
+
+    @Test
+    fun `ruleset validator rejects resource unique when above citywide resource conditional`() {
+        val game = TestGame()
+        val citywideResource = game.createResource(UniqueType.CityResource.text)
+        val providedResource = game.createResource()
+
+        game.createBuilding("Provides [1] [${providedResource.name}] <when above [1] [${citywideResource.name}]>")
+
+        assertTrue(hasRecursiveResourceUniqueError(game, "when above [1] [${citywideResource.name}]"))
+    }
+
+    @Test
+    fun `ruleset validator accepts resource unique for every normal resource countable`() {
+        val game = TestGame()
+        val normalResource = game.createResource()
+        val providedResource = game.createResource()
+
+        game.createBuilding("Provides [1] [${providedResource.name}] <for every [${normalResource.name}]>")
+
+        assertFalse(hasRecursiveResourceUniqueError(game, "for every [${normalResource.name}]"))
+    }
+
+    @Test
+    fun `ruleset validator accepts resource unique for every non resource countable`() {
+        val game = TestGame()
+        val providedResource = game.createResource()
+
+        game.createBuilding("Provides [1] [${providedResource.name}] <for every [Cities]>")
+
+        assertFalse(hasRecursiveResourceUniqueError(game, "for every [Cities]"))
     }
 }

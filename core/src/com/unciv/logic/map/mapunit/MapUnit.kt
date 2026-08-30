@@ -30,6 +30,7 @@ import java.text.DecimalFormat
 import kotlin.math.pow
 import kotlin.math.ulp
 import com.unciv.logic.automation.Timers.Companion.timeThis
+import com.unciv.logic.civilization.MapUnitAction
 
 
 /**
@@ -474,11 +475,18 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return false
     }
 
+    /** @return Whether [civ] can currently see this unit on the map, accounting for fog of war and invisibility. */
+    @Readonly
+    fun isVisibleTo(civ: Civilization): Boolean {
+        if (!getTile().isVisible(civ)) return false
+        return !isInvisible(civ) || getTile() in civ.viewableInvisibleUnitsTiles
+    }
+
     @Readonly
     fun canFortify(ignoreAlreadyFortified: Boolean = false) = when {
         baseUnit.isWaterUnit -> false
         isCivilian() -> false
-        baseUnit.movesLikeAirUnits -> false
+        baseUnit.isAirUnit() -> false
         isEmbarked() -> false
         hasUnique(UniqueType.NoDefensiveTerrainBonus, checkCivInfoUniques = true) -> false
         ignoreAlreadyFortified -> true
@@ -591,7 +599,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         var damageFactor = 1f
         for (unique in getMatchingUniques(UniqueType.DamageFromInterceptionReduced))
             damageFactor *= 1f - unique.params[0].toFloat() / 100f
-        return damageFactor
+        return damageFactor.coerceAtLeast(0f)
     }
 
     @Readonly
@@ -602,7 +610,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     @Readonly
     fun isTransportTypeOf(mapUnit: MapUnit): Boolean {
         // Currently, only missiles and airplanes can be carried
-        if (!mapUnit.baseUnit.movesLikeAirUnits) return false
+        if (!mapUnit.baseUnit.isAirUnit()) return false
         return getMatchingUniques(UniqueType.CarryAirUnits).any { mapUnit.matchesFilter(it.params[1]) }
     }
 
@@ -636,15 +644,17 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 || (civ.isCityState && civ.allyCiv == otherCiv)
     }
 
-    /** Implements [UniqueParameterType.MapUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.MapUnitFilter] */
+    /** Implements [UniqueParameterType.MapUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.MapUnitFilter] 
+     * Gets passed state explicitly when the unit applying the filter isn't this unit*/
     @Readonly
-    fun matchesFilter(filter: String, multiFilter: Boolean = true): Boolean {
-        return if (multiFilter) MultiFilter.multiFilter(filter, ::matchesSingleFilter) else matchesSingleFilter(filter)
-    }
+    fun matchesFilter(filter: String, multiFilter: Boolean = true, state: GameContext = GameContext.EmptyState): Boolean =
+        if (multiFilter) MultiFilter.multiFilter(filter, { matchesSingleFilter(it, state) })
+        else matchesSingleFilter(filter, state)
 
     @Readonly
-    private fun matchesSingleFilter(filter: String): Boolean {
+    private fun matchesSingleFilter(filter: String, state: GameContext = GameContext.EmptyState): Boolean {
         return when (filter) {
+            "other" -> state.unit != this
             Constants.wounded, "wounded units" -> health < 100
             Constants.barbarians, "Barbarian" -> civ.isBarbarian
             "City-State" -> civ.isCityState
@@ -965,11 +975,12 @@ class MapUnit : IsPartOfGameInfoSerialization {
         for (triggeredUnique in triggeredUniques)
             UniqueTriggerActivation.triggerUnique(triggeredUnique, this)
 
-        if (civ.isMajorCiv() && improvement?.isAncientRuinsEquivalent(cache.state) == true) {
-            getAncientRuinBonus(tile)
-        }
-        if (improvement?.name == Constants.barbarianEncampment && !civ.isBarbarian)
+        // clearEncampment must run first, because removing the improvement will invalidate quests, and both functions do so.
+        if (!civ.isBarbarian && tile.isBarbarianEncampment())
             clearEncampment(tile)
+        if (civ.isMajorCiv() && improvement?.isAncientRuinsEquivalent(cache.state) == true)
+            getAncientRuinBonus(tile)
+
         // Check whether any civilians without military units are there.
         // Keep in mind that putInTile(), which calls this method,
         // might have already placed your military unit in this tile.
@@ -997,12 +1008,12 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 val currentTile = if (hasTile()) currentTile else null
                 throw IllegalStateException("Unit $name of ${civ.civID} at $currentTile can't be put in tile $tile, reason: ${movement.getCannotMoveToReason(tile)}")
             }
-            baseUnit.movesLikeAirUnits -> tile.airUnits.add(this)
+            baseUnit.isAirUnit() -> tile.airUnits.add(this)
             isCivilian() -> tile.civilianUnit = this
             else -> tile.militaryUnit = this
         }
         // this check is here in order to not load the fresh built unit into carrier right after the build
-        if (baseUnit.movesLikeAirUnits){
+        if (baseUnit.isAirUnit()){
             if (!tile.isCityCenter()) isTransported = true
             else {
                 val currentUntransportedUnits = tile.getUnits().count { it.type.isAirUnit() && !it.isTransported }
@@ -1039,12 +1050,28 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
         tile.removeImprovement()
 
-        var goldGained =
-                civ.getDifficulty().clearBarbarianCampReward * civ.gameInfo.speed.goldCostModifier
+        var goldGained = civ.getDifficulty().clearBarbarianCampReward.toFloat()
 
-        for (unique in civ.getMatchingUniques(UniqueType.GoldFromEncampmentsAndCities, cache.state)) {
-            goldGained *= unique.params[0].toPercent()
+        // German unique
+        for (unique in civ.getMatchingUniques(UniqueType.GainFromEncampment)) {
+            goldGained += unique.params[0].toInt()
+            val recruitedUnit = civ.gameInfo.barbarians.spawnBarbarian(tile, civ)
+                ?: continue
+            recruitedUnit.health = 50
+            recruitedUnit.currentMovement = 0f
+            civ.addNotification(
+                "An enemy [${recruitedUnit.name}] has joined us!",
+                MapUnitAction(recruitedUnit),
+                NotificationCategory.War,
+                recruitedUnit.name
+            )
         }
+        
+        goldGained *= civ.gameInfo.speed.goldCostModifier
+        
+        // Songhai unique
+        for (unique in civ.getMatchingUniques(UniqueType.GoldFromEncampmentsAndCities, cache.state))
+            goldGained *= unique.params[0].toPercent()
 
         civ.addGold(goldGained.toInt())
         civ.addNotification(
@@ -1119,10 +1146,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
     }
 
-    fun actionsOnDeselect() {
-        if (isPreparingParadrop() || isPreparingAirSweep()) action = null
-    }
-
     /** Add the current position and the most recent movement type to [movementMemories]. Called once at end and once at start of turn, and at unit creation. */
     fun addMovementMemory() {
         movementMemories.add(UnitMovementMemory(getTile().position, mostRecentMoveType))
@@ -1164,6 +1187,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
 
-    fun isNuclearWeapon() = hasUnique(UniqueType.NuclearWeapon)
+    @Readonly fun isNuclearWeapon() = hasUnique(UniqueType.NuclearWeapon)
     //endregion
 }

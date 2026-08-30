@@ -93,16 +93,20 @@ internal class AStarPathfinder(
      * Separate init function so that this work can occur outside 
      */
     init {
+        require(timeLimitTurns > 0)
         require(timeLimitTurns < MAX_TURNS)
         // Add all the initial tiles to check to the priority queue
         cache.nodesNeedingNeighbors.forEachSetBit {
             val node = RouteNode(routeNodes[it])
-            if (node.initialized && node.turns <= timeLimitTurns) {
+            if (node.initialized && moveFromLessThanTimeLimit(node)) {
                 todo.add(PrioritizedNode(node, calculateUnderestimatedMovement(node)).bits)
                 tilesInTodo.put(it, node.damagingTiles)
             }
         }
     }
+    
+    private fun moveFromLessThanTimeLimit(node: RouteNode) = 
+        node.turns < timeLimitTurns-1 || (node.turns == timeLimitTurns-1 && node.moveUsedThisTurn < fpmFullMovement)
 
     // Heuristics for not-yet-calculated tiles here based on distance to target        
     @Readonly
@@ -137,7 +141,7 @@ internal class AStarPathfinder(
         val alreadyCalculatedNode = RouteNode(routeNodes[neighborTile.zeroBasedIndex])
         // If another thread already calculated the best route, then we can queue it and move on
         if (alreadyCalculatedNode.initialized && alreadyCalculatedNode.damagingTiles <= currentNode.damagingTiles) {
-            if (alreadyCalculatedNode.turns < timeLimitTurns)
+            if (moveFromLessThanTimeLimit(alreadyCalculatedNode))
                 todo.add(PrioritizedNode(alreadyCalculatedNode, calculateUnderestimatedMovement(alreadyCalculatedNode)).bits)
             tilesInTodo.put(neighborTile.zeroBasedIndex, alreadyCalculatedNode.damagingTiles)
             cache.nodesNeedingNeighbors.set(neighborTile.zeroBasedIndex)
@@ -226,7 +230,7 @@ internal class AStarPathfinder(
             } else {
                 val newNode = calculateNeighborNode(currentNode, neighborTile) ?: return null // calculate each neighbor
                 routeNodes[neighborTile.zeroBasedIndex] = newNode.bits
-                if (newNode.turns < timeLimitTurns)
+                if (moveFromLessThanTimeLimit(newNode))
                     todo.add(PrioritizedNode(newNode, calculateUnderestimatedMovement(newNode)).bits)
                 tilesInTodo.put(neighborTile.zeroBasedIndex, newNode.damagingTiles)
                 cache.nodesNeedingNeighbors.set(neighborTile.zeroBasedIndex)

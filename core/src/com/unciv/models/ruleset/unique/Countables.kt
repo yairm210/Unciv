@@ -12,6 +12,7 @@ import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Cache
+import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 
 /**
@@ -165,11 +166,26 @@ enum class Countables(
     },
     
     FilteredBuildings("[buildingFilter] Buildings") {
+        // Since each filter matches a small subset of buildings,
+        //  and there can be lots of cities with lots of buildings,
+        //  it's faster to *pre-check* the filter *once* to find matching buildings
+        //  and then use that "list of matching buildings" for the count
+        @Cache private val filterToMatchingBuildingsCache = HashMap<String, Set<String>>()
+
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val filter = parameterText.getPlaceholderParameters()[0]
             val cities = gameContext.civInfo?.cities ?: return null
+            val ruleset = gameContext.gameInfo?.ruleset ?: return null
+            val matchingBuildings = filterToMatchingBuildingsCache.getOrPut(filter) {
+                ruleset.buildings.values.asSequence().filter { it.matchesFilter(filter) }.map { it.name }.toSet()
+            }
             return cities.sumOf { city ->
-                city.cityConstructions.getBuiltBuildings().count { it.matchesFilter(filter) }
+                // Pure time optimization, intersecting both ways gives the same result
+                val builtBuildings = city.cityConstructions.builtBuildings
+                if (matchingBuildings.size <= builtBuildings.size)
+                    matchingBuildings.count { it in builtBuildings }
+                else
+                    builtBuildings.count { it in matchingBuildings }
             }
         }
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? =
@@ -196,6 +212,30 @@ enum class Countables(
         }
         override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
     },
+    
+    FilteredPopulation("[populationFilter] in [cityFilter] Cities") {
+        
+        override fun eval(parameterText: String, gameContext: GameContext): Int? {
+            val (populationFilter, cityFilter) = parameterText.getPlaceholderParameters()
+
+            if (cityFilter == "in this city" && gameContext.city != null)
+                return gameContext.city.population.getPopulationFilterAmount(populationFilter)
+            else {
+                val cities = gameContext.civInfo?.cities ?: return null
+                return cities.asSequence()
+                    .filter { it.matchesFilter(cityFilter, gameContext.civInfo) }
+                    .sumOf { city -> city.population.getPopulationFilterAmount(populationFilter) }
+            }
+        }
+
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
+            val params = parameterText.getPlaceholderParameters()
+            return UniqueParameterType.PopulationFilter.getErrorSeverity(params[0], ruleset) 
+                ?: UniqueParameterType.CityFilter.getErrorSeverity(params[1], ruleset)
+        }
+        
+        override fun getKnownValuesForAutocomplete(ruleset: Ruleset) = setOf<String>()
+    },    
 
     FilteredCitiesByCivs("[cityFilter] Cities of [civFilter] Civilizations") {
         override fun eval(parameterText: String, gameContext: GameContext): Int? {

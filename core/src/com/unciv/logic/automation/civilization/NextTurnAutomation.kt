@@ -384,7 +384,7 @@ object NextTurnAutomation {
             if (civInfo.getResourceAmount(resource) >= 2) continue
 
             val unitToDisband = civInfo.units.getCivUnits()
-                .filter { it.requiresResource(resource) }
+                .filter { it.requiresResource(resource) && !it.hasUnique(UniqueType.SpaceshipPart) }
                 .minByOrNull { it.getForceEvaluation() }
             unitToDisband?.disband()
             sellBuildingForResource(civInfo, resource)
@@ -412,7 +412,7 @@ object NextTurnAutomation {
     private fun automateUnits(civInfo: Civilization) {
         val isAtWar = civInfo.isAtWar()
         val sortedUnits = civInfo.units.getCivUnits().sortedBy { unit -> getUnitPriority(unit, isAtWar) }
-        
+
         val citiesRequiringManualPlacement = civInfo.getKnownCivs().filter { it.isAtWarWith(civInfo) }
             .flatMap { it.cities }
             .filter { it.getCenterTile().getTilesInDistance(4).count { it.militaryUnit?.civ == civInfo } > 4 }
@@ -426,16 +426,16 @@ object NextTurnAutomation {
         }
 
         if (civInfo.cities.isNotEmpty()) automateSettlerEscorting(civInfo)
-        
+
         for (city in citiesRequiringManualPlacement) automateCityConquer(civInfo, city)
-        
+
         for (unit in sortedUnits) {
             // spaceship parts and settlers have already moved
             if (!unit.hasUnique(UniqueType.SpaceshipPart) && !unit.hasUnique(UniqueType.FoundCity)) UnitAutomation.automateUnitMoves(unit)
         }
     }
-    
-    private fun applyPromotions(unit: MapUnit) {
+
+    internal fun applyPromotions(unit: MapUnit) {
         // Restrict Human automated units from promotions via setting
         if (!unit.civ.isAI() && !UncivGame.Current.settings.automatedUnitsChoosePromotions) return
         val rng = unit.cache.state.stateBasedRandom("NextTurnAutomation.automateUnits")
@@ -564,6 +564,7 @@ object NextTurnAutomation {
             && city.population.population > 9
             && !city.isInResistance()
             && !civInfo.hasUnique(UniqueType.MayNotAnnexCities)
+            && civInfo.getHappiness() >= 5 // live happiness - statsForNextTurn is stale mid-turn, so a multi-city conquest wave would otherwise annex several puppets against a pre-conquest reading
             && civInfo.stats.statsForNextTurn.happiness > city.population.population * 2 - 8 // don't go below -10 happiness due to annexing
 
     fun automateCities(civInfo: Civilization) {
@@ -577,7 +578,9 @@ object NextTurnAutomation {
         for (city in civInfo.cities) {
             if (shouldAnnexCity(civInfo, city)) city.annexCity()
 
-            if (city.health < city.getMaxHealth() || civHasSignificantlyWeakerMilitaryThanEnemies) {
+            // Don't pull a city off a spaceship part it's already building for the military push (only if actually attacked)
+            val onSpaceshipPart = city.cityConstructions.getCurrentConstruction().name in civInfo.gameInfo.spaceResources
+            if (city.health < city.getMaxHealth() || (civHasSignificantlyWeakerMilitaryThanEnemies && !onSpaceshipPart)) {
                 Automation.tryTrainMilitaryUnit(city) // need defenses if city is under attack
                 if (city.cityConstructions.constructionQueue.isNotEmpty())
                     continue // found a unit to build so move on
@@ -605,21 +608,33 @@ object NextTurnAutomation {
 
         // This is a tough one - if we don't ignore conditionals we could have units that can found only on certain tiles that are ignored
         // If we DO ignore conditionals we could get a unit that can only found if there's a certain tech, or something
-        if (civInfo.units.getCivUnits().any { it.hasUnique(UniqueType.FoundCity, GameContext.IgnoreConditionals) }) return
-        if (civInfo.cities.any {
+        // Allow up to 2 settlers in flight (built or in production) so early expansion isn't serialized to
+        // one settler at a time - the stock happiness/military guards below still bound how many we build.
+        val maxSettlersInFlight = 2
+        val settlersInFlight = civInfo.units.getCivUnits().count { it.hasUnique(UniqueType.FoundCity, GameContext.IgnoreConditionals) } +
+            civInfo.cities.count {
                 val currentConstruction = it.cityConstructions.getCurrentConstruction()
                 currentConstruction is BaseUnit && currentConstruction.isCityFounder()
-            }) return
+            }
+        if (settlersInFlight >= maxSettlersInFlight) return
         val settlerUnits = civInfo.gameInfo.ruleset.units.values
                 .filter { it.isCityFounder() && it.isBuildable(civInfo) &&
                     personality.getMatchingUniques(UniqueType.WillNotBuild, civInfo.state)
                         .none { unique -> it.matchesFilter(unique.params[0], civInfo.state) } }
         if (settlerUnits.isEmpty()) return
 
-        if (civInfo.units.getCivUnits().count { it.isMilitary() } < civInfo.cities.size) return // We need someone to defend them first
+        // The "defend them first" gate permanently latches peaceful, happy civs at ~4 cities. Bypass it when
+        // we clearly have room to expand safely: at peace, ample happiness, still early, and in a game with
+        // other major civs whose presence deters an opportunistic attack (this is a bad idea in a 1v1 duel).
+        val hasSlackToExpandSafely = !civInfo.isAtWar() && civInfo.getHappiness() >= 8 && civInfo.gameInfo.turns < 150
+            && civInfo.gameInfo.civilizations.count { it.isMajorCiv() && it.isAlive() } >= 3
+        if (civInfo.units.getCivUnits().count { it.isMilitary() } < civInfo.cities.size && !hasSlackToExpandSafely)
+            return // We need someone to defend them first
 
         val bestCity = civInfo.cities
             .filterNot { it.isPuppet || it.population.population < 3 }
+            // don't re-target a city that is already producing a settler (reachable now that 2 may be in flight)
+            .filterNot { (it.cityConstructions.getCurrentConstruction() as? BaseUnit)?.isCityFounder() == true }
             .maxByOrNull { it.cityStats.currentCityStats.production }
             ?: return
         if (bestCity.cityConstructions.getBuiltBuildings().count() > 1) // 2 buildings or more, otherwise focus on self first

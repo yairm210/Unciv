@@ -28,6 +28,7 @@ import com.unciv.utils.yieldIfNotNull
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
+import kotlin.math.min
 import kotlin.math.pow
 
 // This is BaseUnit because Unit is already a base Kotlin class and to avoid mixing the two up
@@ -94,7 +95,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     /** Generate description as multi-line string for CityScreen addSelectedConstructionTable
      * @param city Supplies civInfo to show available resources after resource requirements */
-    fun getDescription(city: City): String = BaseUnitDescriptions.getDescription(this, city)
+    @Readonly fun getDescription(city: City): String = BaseUnitDescriptions.getDescription(this, city)
 
     override fun makeLink() = "Unit/$name"
 
@@ -132,7 +133,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         unit.name = name
         unit.civ = civInfo
         unit.owner = civInfo.civID
-        unit.id = unitId ?: ++civInfo.gameInfo.lastUnitId
+        unit.id = unitId ?: civInfo.gameInfo.getNextUnitId()
 
         // must be after setting name & civInfo because it sets the baseUnit according to the name
         // and the civInfo is required for using `hasUnique` when determining its movement options
@@ -251,7 +252,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (civ.cache.uniqueUnits.any { it.replaces == name })
             yield(RejectionReasonType.ReplacedByOurUnique.toInstance("Our unique unit replaces this"))
 
-        if (isUnavailableBySettings(civ.gameInfo))
+        if (civ.gameInfo.isUnavailableBySettingsCached(this@BaseUnit))
             yield(RejectionReasonType.DisabledBySetting.toInstance())
 
         if (hasUnique(UniqueType.Unbuildable, stateForConditionals))
@@ -437,7 +438,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             "Land" -> isLandUnit
             "Water" -> isWaterUnit
             "Air" -> isAirUnit()
-            "non-air" -> !movesLikeAirUnits
+            "non-air" -> !isAirUnit()
 
             "Nuclear Weapon" -> isNuclearWeapon()
             "Great Person" -> isGreatPerson
@@ -471,8 +472,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     /** Has a MapUnit implementation that does not ignore conditionals, which should be usually used */
     @Readonly private fun isNuclearWeapon() = hasUnique(UniqueType.NuclearWeapon, GameContext.IgnoreConditionals)
-
-    val movesLikeAirUnits by lazy { type.getMovementType() == UnitMovementType.Air }
 
     /** Returns resource requirements from both uniques and requiredResource field */
     override fun getResourceRequirementsPerTurn(state: GameContext?): Counter<String> {
@@ -570,8 +569,12 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                     -> power *= 1.25f
                 UniqueType.MustSetUp // Must set up - 20 % penalty
                     -> power /= 1.20f
-                UniqueType.AdditionalAttacks // Extra attacks - 20% bonus per extra attack
-                    -> power *= (unique.params[0].toInt() * 20f).toPercent()
+                // Extra attacks - 20% bonus per extra attack (if sufficient movement)
+                UniqueType.AdditionalAttacks -> {
+                    val additionalAttacks = unique.params[0].toInt()
+                    val limit = if (isAirUnit()) Int.MAX_VALUE else movement - 1
+                    power *= (20f * min(additionalAttacks, limit)).toPercent()
+                }
                 else -> {}
             }
         }

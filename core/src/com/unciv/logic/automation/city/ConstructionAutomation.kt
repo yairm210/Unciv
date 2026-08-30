@@ -56,21 +56,17 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         return false
     }
 
-    private val disabledAutoAssignConstructions: Set<String> =
-        if (civInfo.isHuman()) GUI.getSettings().disabledAutoAssignConstructions
-        else emptySet()
-
     private val buildableBuildings = hashMapOf<String, Boolean>()
     private val buildableUnits = hashMapOf<String, Boolean>()
     private val buildings = city.getRuleset().buildings.values.asSequence()
-        .filterNot { it.name in disabledAutoAssignConstructions || shouldAvoidConstruction(it) }
+        .filterNot { (civInfo.isHuman() && it.name in city.disabledConstructions) || shouldAvoidConstruction(it) }
 
     private val nonWonders = buildings.filterNot { it.isAnyWonder() }
         .filterNot { buildableBuildings[it.name] == false } // if we already know that this building can't be built here then don't even consider it
 
     private val units = city.getRuleset().units.values.asSequence()
         .filterNot { buildableUnits[it.name] == false || // if we already know that this unit can't be built here then don't even consider it
-            it.name in disabledAutoAssignConstructions || shouldAvoidConstruction(it) }
+            (civInfo.isHuman() && it.name in city.disabledConstructions) || shouldAvoidConstruction(it) }
 
     private val civUnits = civInfo.units.getCivUnits()
     private val militaryUnits = civUnits.count { it.baseUnit.isMilitary }
@@ -129,11 +125,11 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
             if (relativeCostEffectiveness.isEmpty()) { // choose one of the special constructions instead
                 // add science!
                 when {
-                    PerpetualConstruction.science.isBuildable(cityConstructions) && !allTechsAreResearched -> PerpetualConstruction.science
-                    PerpetualConstruction.gold.isBuildable(cityConstructions) -> PerpetualConstruction.gold
-                    PerpetualConstruction.culture.isBuildable(cityConstructions) && !civInfo.policies.allPoliciesAdopted(true) -> PerpetualConstruction.culture
-                    PerpetualConstruction.faith.isBuildable(cityConstructions) -> PerpetualConstruction.faith
-                    else -> PerpetualConstruction.idle
+                    PerpetualConstruction.Science.isBuildable(cityConstructions) && !allTechsAreResearched -> PerpetualConstruction.Science
+                    PerpetualConstruction.Gold.isBuildable(cityConstructions) -> PerpetualConstruction.Gold
+                    PerpetualConstruction.Culture.isBuildable(cityConstructions) && !civInfo.policies.allPoliciesAdopted(true) -> PerpetualConstruction.Culture
+                    PerpetualConstruction.Faith.isBuildable(cityConstructions) -> PerpetualConstruction.Faith
+                    else -> PerpetualConstruction.Idle
                 }
             } else { relativeCostEffectiveness.maxBy { (it.choiceModifier / it.remainingWork.coerceAtLeast(1)).coerceAtLeast(0f) }.choice }
             //TODO: All bad things are build anyways at the moment, maybe let's stop doing that and chose perpetual construction instead
@@ -260,17 +256,18 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
     }
 
     private fun addBuildingChoices() {
+        val cityBaseline = computeCityBaseline()
         for (building in buildings.filterBuildable()) {
             if (building.isWonder && city.isPuppet) continue
             // We shouldn't try to build wonders in undeveloped cities and empires
             if (building.isWonder && (!cityIsOverAverageProduction || civInfo.cities.sumOf { it.population.population } < 12)) continue
-            addChoice(relativeCostEffectiveness, building, getValueOfBuilding(building))
+            addChoice(relativeCostEffectiveness, building, getValueOfBuilding(building, cityBaseline))
         }
     }
 
-    private fun getValueOfBuilding(building: Building): Float {
+    private fun getValueOfBuilding(building: Building, cityBaseline: Stats): Float {
         var value = 0f
-        value += applyBuildingStats(building)
+        value += applyBuildingStats(building, cityBaseline)
         value += getMilitaryBuildingValue(building)
         value += getVictoryBuildingValue(building)
         value += getOnetimeUniqueBonuses(building)
@@ -341,8 +338,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         return value
     }
 
-    private fun applyBuildingStats(building: Building): Float {
-        val buildingStats = getStatDifferenceFromBuilding(building.name)
+    private fun applyBuildingStats(building: Building, cityBaseline: Stats): Float {
+        val buildingStats = getStatDifferenceFromBuilding(building.name, cityBaseline)
         buildingStats.add(getBuildingStatsFromUniques(building, buildingStats))
 
         buildingStats.food *= 3
@@ -366,17 +363,25 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
     }
 
     // NOT readonly safe, since it alters the tile ownership of real tiles
-    private fun getStatDifferenceFromBuilding(building: String): Stats {
+    private fun computeCityBaseline(): Stats {
+        val baselineCity = city.clone()
+        baselineCity.setTransients(city.civ) // Will break the owned tiles. Needs to be reverted before leaving this function
+        //todo: breaks city connection; trade route gold is currently not considered for markets etc.
+        baselineCity.cityStats.update(updateCivStats = false, calculateGrowthModifiers = false) // Don't consider growth penalties for food values (we can work more mines/specialists instead of farms)
+        val baseline = baselineCity.cityStats.currentCityStats
+        city.expansion.setTransients() // Revert owned tiles to original city
+        return baseline
+    }
+
+    // NOT readonly safe, since it alters the tile ownership of real tiles
+    private fun getStatDifferenceFromBuilding(building: String, cityBaseline: Stats): Stats {
         val newCity = city.clone()
         newCity.setTransients(city.civ) // Will break the owned tiles. Needs to be reverted before leaving this function
-        //todo: breaks city connection; trade route gold is currently not considered for markets etc.
-        newCity.cityStats.update(updateCivStats = false, calculateGrowthModifiers = false) // Don't consider growth penalties for food values (we can work more mines/specialists instead of farms)
-        val oldStats = newCity.cityStats.currentCityStats
         newCity.cityConstructions.builtBuildings.add(building)
         newCity.cityConstructions.setTransients()
         newCity.cityStats.update(updateCivStats = false, calculateGrowthModifiers = false)
         city.expansion.setTransients() // Revert owned tiles to original city
-        return newCity.cityStats.currentCityStats - oldStats
+        return newCity.cityStats.currentCityStats - cityBaseline
     }
 
     @Readonly

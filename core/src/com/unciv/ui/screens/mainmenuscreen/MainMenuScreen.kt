@@ -25,6 +25,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.ui.audio.SoundPlayer
+import com.unciv.ui.components.InputDisabling
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.surroundWithCircle
@@ -45,7 +46,7 @@ import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.popups.closeAllPopups
 import com.unciv.ui.popups.hasOpenPopups
-import com.unciv.ui.popups.options.aboutTab
+import com.unciv.ui.popups.options.AboutTab
 import com.unciv.ui.popups.popups
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
@@ -161,24 +162,34 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             { quickstartNewGame() }
         column1.add(quickstartTable).row()
 
-        val newGameButton = getMenuButton("Start new game", "OtherIcons/New", KeyboardBinding.StartNewGame)
-            { game.pushScreen(NewGameScreen()) }
+        val newGameButton = getMenuButton("Start new game", "OtherIcons/New", KeyboardBinding.StartNewGame) {
+            InputDisabling.disableInput()
+            game.pushScreen(NewGameScreen()) 
+        }
         column1.add(newGameButton).row()
 
-        val loadGameTable = getMenuButton("Load game", "OtherIcons/Load", KeyboardBinding.MainMenuLoad)
-            { game.pushScreen(LoadGameScreen()) }
+        val loadGameTable = getMenuButton("Load game", "OtherIcons/Load", KeyboardBinding.MainMenuLoad) {
+            InputDisabling.disableInput()
+            game.pushScreen(LoadGameScreen())
+        }
         column1.add(loadGameTable).row()
 
-        val multiplayerTable = getMenuButton("Multiplayer", "OtherIcons/Multiplayer", KeyboardBinding.Multiplayer)
-            { game.pushScreen(MultiplayerScreen()) }
+        val multiplayerTable = getMenuButton("Multiplayer", "OtherIcons/Multiplayer", KeyboardBinding.Multiplayer) {
+            InputDisabling.disableInput()
+            game.pushScreen(MultiplayerScreen())
+        }
         column2.add(multiplayerTable).row()
 
-        val mapEditorScreenTable = getMenuButton("Map editor", "OtherIcons/MapEditor", KeyboardBinding.MapEditor)
-            { game.pushScreen(MapEditorScreen()) }
+        val mapEditorScreenTable = getMenuButton("Map editor", "OtherIcons/MapEditor", KeyboardBinding.MapEditor) {
+            InputDisabling.disableInput()
+            game.pushScreen(MapEditorScreen())
+        }
         column2.add(mapEditorScreenTable).row()
 
-        val modsTable = getMenuButton("Mods", "OtherIcons/Mods", KeyboardBinding.ModManager)
-            { game.pushScreen(ModManagementScreen()) }
+        val modsTable = getMenuButton("Mods", "OtherIcons/Mods", KeyboardBinding.ModManager) {
+            InputDisabling.disableInput()
+            game.pushScreen(ModManagementScreen())
+        }
         column2.add(modsTable).row()
 
         val optionsTable = getMenuButton("Options", "OtherIcons/Options", KeyboardBinding.MainMenuOptions)
@@ -246,7 +257,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         versionTable.touchable = Touchable.enabled
         versionTable.onClick {
             val popup = Popup(stage)
-            popup.add(aboutTab()).row()
+            popup.add(AboutTab.asTable()).row()
             popup.addCloseButton()
             popup.open()
         }

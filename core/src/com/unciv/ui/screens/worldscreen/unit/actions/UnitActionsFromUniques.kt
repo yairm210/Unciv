@@ -3,6 +3,7 @@ package com.unciv.ui.screens.worldscreen.unit.actions
 import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.UncivGame
+import com.unciv.logic.MultiFilter
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
@@ -440,7 +441,7 @@ object UnitActionsFromUniques {
                 associatedUnique = unique,
                 action = {
                     val oldMovement = unit.currentMovement
-                    unit.destroy()
+                    unit.destroy(destroyTransportedUnit = false)
                     val newUnit =
                         civInfo.units.placeUnitNearTile(unitTile.position, unitToTransformTo, unit.id, copiedFrom = unit)
 
@@ -452,6 +453,7 @@ object UnitActionsFromUniques {
                             civInfo.units.placeUnitNearTile(unitTile.position, unit.baseUnit, unit.id, copiedFrom = unit)!!
                         
                     } else { // Managed to upgrade
+                        unit.movement.teleportTransportedUnitsTo(unitTile, newUnit.currentTile)
                         // have to handle movement manually because we killed the old unit
                         // a .destroy() unit has 0 movement
                         // and a new one may have less Max Movement
@@ -471,7 +473,10 @@ object UnitActionsFromUniques {
 
     internal fun getBuildingImprovementsActions(unit: MapUnit, tile: Tile): Sequence<UnitAction> {
         if (!unit.cache.hasUniqueToBuildImprovements) return emptySequence()
-        val unique = unit.getMatchingUniques(UniqueType.BuildImprovements).first()
+        // Conditional uniques (e.g. <when above [0] [Stockpile]>) may no longer apply even though
+        // the cache flag was set true - use firstOrNull to avoid NoSuchElementException (#15114)
+        val unique = unit.getMatchingUniques(UniqueType.BuildImprovements).firstOrNull()
+            ?: return emptySequence()
 
         val couldConstruct = unit.hasMovement()
             && !tile.isCityCenter()
@@ -521,7 +526,15 @@ object UnitActionsFromUniques {
         val tile = unit.getTile()
         if (tile.isCityCenter()) return null
         if (!tile.isPillaged()) return null
-        val unique = unit.getMatchingUniques(UniqueType.BuildImprovements).first()
+        val uniques = unit.getMatchingUniques(UniqueType.BuildImprovements)
+        val improvement = tile.getImprovementToRepair()!!
+        val civ = unit.civ
+            if (!uniques.any { unique ->
+            // Engage the MultiFilter on the entire filter, prior to checking the individual filters
+            MultiFilter.multiFilter(unique.params[0], {
+                improvement.matchesFilter(it, tile.stateThisTile) || tile.matchesTerrainFilter(it, civ)
+            })
+        }) return null
 
         val couldConstruct = unit.hasMovement()
             && !tile.isCityCenter() && tile.improvementInProgress != Constants.repair
@@ -531,7 +544,7 @@ object UnitActionsFromUniques {
                 .none { it == ImprovementBuildingProblem.OutsideBorders }
 
         val turnsToBuild = getRepairTurns(unit)
-        val useFrequency = getUseFrequency(unit, unique, 90f)
+        val useFrequency = getUseFrequency(unit, uniques.first(), 90f)
 
         return UnitAction(UnitActionType.Repair, useFrequency,
             title = "${UnitActionType.Repair} [${unit.currentTile.getImprovementToRepair()!!.name}] - [${turnsToBuild}${Fonts.turn}]",

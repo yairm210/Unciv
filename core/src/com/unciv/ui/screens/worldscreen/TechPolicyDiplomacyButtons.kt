@@ -46,7 +46,7 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
     private val espionageButtonHolder = Container<Button?>()
     private val espionageButton = Button(skin)
 
-    private val viewingCiv = worldScreen.viewingCiv
+    private val viewingCiv = worldScreen.selectedGameView.civView
     private val game = worldScreen.game
 
     init {
@@ -71,7 +71,7 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
         pickTechButton.defaults().pad(20f)
         pickTechButton.add(pickTechLabel)
         techButtonHolder.onActivation(UncivSound.Paper, KeyboardBinding.TechnologyTree) {
-            game.pushScreen(TechPickerScreen(viewingCiv))
+            game.pushScreen(TechPickerScreen(viewingCiv.getCiv()))
         }
 
         undoButton.add(ImageGetter.getImage("OtherIcons/Undo")).size(30f).pad(15f)
@@ -86,7 +86,7 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
 
         diplomacyButton.add(ImageGetter.getImage("OtherIcons/DiplomacyW")).size(30f).pad(15f)
         diplomacyButtonHolder.onActivation(binding = KeyboardBinding.Diplomacy) {
-            game.pushScreen(DiplomacyScreen(viewingCiv))
+            game.pushScreen(DiplomacyScreen(worldScreen.selectedGameView.civView))
         }
 
         if (game.gameInfo!!.isEspionageEnabled()) {
@@ -128,20 +128,20 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
     private fun updateTechButton() {
         techButtonHolder.touchable = Touchable.disabled
         techButtonHolder.actor = null
-        if (worldScreen.gameInfo.ruleset.technologies.isEmpty() || viewingCiv.cities.isEmpty()) return
+        if (worldScreen.gameInfo.ruleset.technologies.isEmpty() || viewingCiv.cities().isEmpty()) return
         techButtonHolder.touchable = Touchable.enabled
 
-        if (viewingCiv.tech.currentTechnology() != null) {
-            val currentTech = viewingCiv.tech.currentTechnologyName()!!
-            val innerButton = TechButton(currentTech, viewingCiv.tech)
+        val currentTech = viewingCiv.currentTechnologyName()
+        if (currentTech != null) {
+            val innerButton = TechButton(currentTech, viewingCiv.getCiv().tech)
             innerButton.setButtonColor(colorFromRGB(7, 46, 43))
             techButtonHolder.actor = innerButton
-            val turnsToTech = viewingCiv.tech.turnsToTech(currentTech)
+            val turnsToTech = viewingCiv.turnsToTech(currentTech)
             innerButton.text.setText(currentTech.tr(true))
             innerButton.turns.setText(turnsToTech + Fonts.turn)
         } else {
-            val canResearch = viewingCiv.tech.canResearchTech()
-            if (canResearch || viewingCiv.tech.researchedTechnologies.size != 0) {
+            val canResearch = viewingCiv.canResearchTech()
+            if (canResearch || viewingCiv.hasResearchedAnyTech()) {
                 val text = if (canResearch) "{Pick a tech}!" else "Technologies"
                 pickTechLabel.setText(text.tr())
                 techButtonHolder.actor = pickTechButton
@@ -162,7 +162,7 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
 
     private fun updatePolicyButton() {
         // Don't show policies until they become relevant
-        if (viewingCiv.policies.adoptedPolicies.isNotEmpty() || viewingCiv.policies.canAdoptPolicy()) {
+        if (viewingCiv.hasAdoptedPolicies() || viewingCiv.canAdoptPolicy()) {
             policyButtonHolder.touchable = Touchable.enabled
             policyButtonHolder.actor = policyScreenButton
         } else {
@@ -173,7 +173,7 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
 
     private fun updateDiplomacyButton(): Boolean {
         return if (viewingCiv.isDefeated() || viewingCiv.isSpectator()
-                || viewingCiv.getKnownCivs().filterNot { it == viewingCiv || it.isBarbarian }.none()
+                || !viewingCiv.hasMetAnyMajorCiv()
         ) {
             diplomacyButtonHolder.touchable = Touchable.disabled
             diplomacyButtonHolder.actor = null

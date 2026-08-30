@@ -1,11 +1,10 @@
 package com.unciv
 
 import com.badlogic.gdx.*
-import com.unciv.UncivGame.Companion.Current
-import com.unciv.UncivGame.Companion.isCurrentInitialized
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.Version
+import com.unciv.logic.automation.Timers
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.Multiplayer
@@ -18,6 +17,7 @@ import com.unciv.ui.audio.MusicController
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.audio.SoundPlayer
+import com.unciv.ui.components.InputDisabling
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.crashhandling.CrashScreen
 import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
@@ -113,6 +113,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         settings = files.getGeneralSettings() // needed for the screen
         Display.setScreenMode(settings.screenMode, settings)
         setAsRootScreen(GameStartScreen())  // NOT dependent on any atlas or skin
+        InputDisabling.disableInput() // We just set the game start screen, avoid ANRs until we actually load the main menu
 
         musicController = MusicController()  // early, but at this point does only copy volume from settings
         installAudioHooks()
@@ -314,7 +315,11 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         val newScreen = screenStack.last()
         setScreen(newScreen)
         newScreen.resume()
-        oldScreen.dispose()
+        // Disposing the old screen's stage must not happen while we're still inside its own touch event
+        // dispatch (e.g. this was called from a button's click listener) - see #15420/#15434: disposing
+        // the stage synchronously can crash with an NPE inside Gdx's ActorGestureListener when that
+        // in-flight dispatch resumes.
+        Concurrency.runOnGLThread { oldScreen.dispose() }
         return newScreen
     }
 
@@ -323,12 +328,13 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         val oldScreen = screenStack.removeLast()
         screenStack.addLast(newScreen)
         setScreen(newScreen)
-        oldScreen.dispose()
+        Concurrency.runOnGLThread { oldScreen.dispose() }
     }
 
     /** Resets the game to the stored world screen and automatically [disposes][Screen.dispose] all other screens. */
     fun resetToWorldScreen(): WorldScreen {
-        for (screen in screenStack.filter { it !is WorldScreen }) screen.dispose()
+        val screensToDispose = screenStack.filter { it !is WorldScreen }
+        Concurrency.runOnGLThread { for (screen in screensToDispose) screen.dispose() }
         screenStack.removeAll { it !is WorldScreen }
         val worldScreen = screenStack.last() as WorldScreen
 
@@ -402,6 +408,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         val curGameInfo = gameInfo
         // Since we're pausing the game, we don't need to clone it before autosave - no one else will touch it
         if (curGameInfo != null) files.autosaves.requestAutoSaveUnCloned(curGameInfo)
+        Timers.singleton.endTiming()
         super.pause()
     }
 
@@ -440,7 +447,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         // DO NOT `exitProcess(0)` - bypasses all Gdx and GLFW cleanup
     }
 
-    private fun logRunningThreads() {
+private fun logRunningThreads() {
         val numThreads = Thread.activeCount()
         val threadList = Array(numThreads) { Thread() }
         Thread.enumerate(threadList)
@@ -469,7 +476,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.20.15", 1229)
+        val VERSION = Version("4.21.13", 1254)
         //endregion
 
         /** Global reference to the one Gdx.Game instance created by the platform launchers - do not use without checking [isCurrentInitialized] first. */

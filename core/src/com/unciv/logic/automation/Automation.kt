@@ -257,10 +257,11 @@ object Automation {
                 .filter { isNavalMeleeUnit(it) }
                 .maxBy { it.cost }
         }
-        else { // randomize type of unit and take the most expensive of its kind
+        else { // randomize type of unit and take the strongest of its kind
             val bestUnitsForType = hashMapOf<String, BaseUnit>()
             for (unit in militaryUnits) {
-                if (bestUnitsForType[unit.unitType] == null || bestUnitsForType[unit.unitType]!!.cost < unit.cost) {
+                if (bestUnitsForType[unit.unitType] == null
+                        || bestUnitsForType[unit.unitType]!!.getForceEvaluation() < unit.getForceEvaluation()) {
                     bestUnitsForType[unit.unitType] = unit
                 }
             }

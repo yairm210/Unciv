@@ -12,7 +12,6 @@ import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.popups.hasOpenPopups
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.ui.screens.worldscreen.status.NextTurnAction.Default
@@ -44,14 +43,14 @@ class NextTurnButton(
         if (autoPlay.shouldContinueAutoPlaying() && worldScreen.isPlayersTurn
             && !worldScreen.waitingForAutosave && !worldScreen.isNextTurnUpdateRunning()) {
             autoPlay.runAutoPlayJobInNewThread("MultiturnAutoPlay", worldScreen, false) {
-                TurnManager(worldScreen.viewingCiv).automateTurn()
+                TurnManager(worldScreen.selectedGameView.civView.getCiv()).automateTurn()
                 Concurrency.runOnGLThread { worldScreen.nextTurn() }
                 autoPlay.endTurnMultiturnAutoPlay()
             }
         }
 
-        isEnabled = nextTurnAction.getText(worldScreen) == "AutoPlay" ||
-            (!worldScreen.hasOpenPopups() && worldScreen.isPlayersTurn && !worldScreen.waitingForAutosave && !worldScreen.isNextTurnUpdateRunning())
+        isEnabled = nextTurnAction.getText(worldScreen) == "AutoPlay"
+            || ((worldScreen.isPlayersTurn || worldScreen.failedUpload) && !worldScreen.waitingForAutosave && !worldScreen.isNextTurnUpdateRunning())
         if (isEnabled) {
             addTooltip(KeyboardBinding.NextTurn)
             addContextMenu(NextTurnMenuDescriptor.Context(worldScreen))
