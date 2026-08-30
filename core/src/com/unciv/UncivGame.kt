@@ -278,10 +278,14 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         screenStack.addLast(root)
         setScreen(root)
     }
-    /** Adds a screen to be displayed instead of the current screen, with an option to go back to the previous screen by calling [popScreen] */
-    fun pushScreen(newScreen: BaseScreen) {
+    /** Adds a screen to be displayed instead of the current screen, with an option to go back to the previous screen by calling [popScreen]
+     * Disables inputs to avoid ANRs while creating the new screen - we don't want to be handling input in the interim anyway */
+    fun <T: BaseScreen> pushScreen(getScreen: () -> T): T {
+        InputDisabling.disableInput()
+        val newScreen = getScreen()
         screenStack.addLast(newScreen)
         setScreen(newScreen)
+        return newScreen
     }
 
     /**
@@ -425,20 +429,21 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         // We stop the *in-game* multiplayer update, so that it doesn't keep working and A. we'll have errors and B. we'll have multiple updaters active
         if (::onlineMultiplayer.isInitialized) onlineMultiplayer.multiplayerGameUpdater.cancel()
 
-        val curGameInfo = gameInfo
-        if (curGameInfo != null) {
+        settings.save()
+
+        if (gameInfo != null) {
             val autoSaveJob = files.autosaves.autoSaveJob
             if (autoSaveJob != null && autoSaveJob.isActive) {
-                // auto save is already in progress (e.g. started by onPause() event)
-                // let's allow it to finish and do not try to autosave second time
-                Concurrency.runBlocking {
+                // onPause() call always precedes dispose() call so auto save is already in progress
+                // This is the primary cause of ANRs at the moment - 
+                //   we need some way to have the autosave keep working but remove the other threads,
+                // I'm not sure what the right way is, we can either not clear daemon threads
+                // or we can cancel the job if it takes too long...?
+                Concurrency.runBlocking { 
                     autoSaveJob.join()
                 }
-            } else {
-                files.autosaves.autoSave(curGameInfo)      // NO new thread
             }
         }
-        settings.save()
         Concurrency.stopThreadPools()
 
         // On desktop this should only be this one and "DestroyJavaVM"
@@ -467,8 +472,7 @@ private fun logRunningThreads() {
         if (curGameInfo != null) {
             files.autosaves.requestAutoSaveUnCloned(curGameInfo) // Can save gameInfo directly because the user can't modify it on the MainMenuScreen
         }
-        val mainMenuScreen = MainMenuScreen()
-        pushScreen(mainMenuScreen)
+        val mainMenuScreen = pushScreen{ MainMenuScreen() }
         return mainMenuScreen
     }
 

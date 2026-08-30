@@ -27,7 +27,7 @@ open class View<T>(protected val wrapped: T,
                    protected open val viewer: Civilization?,
                    /** Indicates whether we are really a spectator, "looking in" to the view of another civ
                     * In this case we should not be able to execute any state-chaning action */
-                   protected val spectatorMode: Boolean = false) {
+                   val spectatorMode: Boolean = false) {
     /** Lets any [View] read the wrapped object of any other [View], without exposing [wrapped] itself outside the hierarchy. */
     @Readonly protected fun <U> View<U>.unwrap(): U = wrapped
 

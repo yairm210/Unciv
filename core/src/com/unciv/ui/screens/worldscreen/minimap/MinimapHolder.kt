@@ -71,7 +71,7 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
 
     private fun rebuildIfSizeChanged(civInfo: Civilization) {
         // For Spectator should not restrict minimap
-        val civ: Civilization? = civInfo.takeUnless { GUI.getSelectedPlayer().isSpectator() }
+        val civ: Civilization? = civInfo.takeUnless { GUI.getWorldScreen().selectedGameView.spectatorMode }
         val newMinimapSize = worldScreen.game.settings.minimapSize
         val cutoutSetting = worldScreen.game.settings.androidCutout
         if (newMinimapSize == minimapSize && civ?.exploredRegion?.shouldUpdateMinimap() != true && cutoutSetting == lastCutoutSetting) return

@@ -173,7 +173,7 @@ open class AndroidLauncher : AndroidApplication() {
         if (intent.data != null && IdChecker.isFriendDeepLink(intent.data.toString())) {
             val newFriend = IdChecker.checkAndReturnPlayerUuid(intent.data.toString())
             if (newFriend != null) runOnGLThread {
-                game!!.pushScreen(AddFriendScreen(newFriend.name, newFriend.playerID))
+                game!!.pushScreen{ AddFriendScreen(newFriend.name, newFriend.playerID) }
             }
         }
     }

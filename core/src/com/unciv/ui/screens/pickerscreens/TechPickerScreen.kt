@@ -24,6 +24,9 @@ import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.fonts.Fonts
+import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.components.input.onDoubleClick
@@ -77,14 +80,15 @@ class TechPickerScreen(
 
     init {
         Gdx.input.inputProcessor = null // Avoid ANRs while building the tech screen
-        
+
         setDefaultCloseAction()
         scrollPane.setOverscroll(false, false)
 
-        descriptionLabel.onClick {
+        descriptionLabel.onActivation {
             if (selectedTech != null)
                 openCivilopedia(selectedTech!!.makeLink())
         }
+        descriptionLabel.keyShortcuts.add(KeyboardBinding.Civilopedia)
 
         tempTechsToResearch = ArrayList(civTech.techsToResearch)
 
@@ -95,7 +99,7 @@ class TechPickerScreen(
         topTable.add(techTable)
         techTable.background = skinStrings.getUiBackground("TechPickerScreen/Background", tintColor = skinStrings.skinConfig.clearColor)
         pickerPane.bottomTable.background = skinStrings.getUiBackground("TechPickerScreen/BottomTable", tintColor = skinStrings.skinConfig.clearColor)
-        
+
         rightSideButton.setText(if (freeTechPick) "Pick a free tech".tr() else "Pick a tech".tr())
         rightSideButton.onClick(UncivSound.Paper) { tryExit() }
 
