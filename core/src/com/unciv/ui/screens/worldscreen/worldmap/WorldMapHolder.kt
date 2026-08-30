@@ -204,6 +204,8 @@ class WorldMapHolder(
                     else -> addTileOverlaysWithUnitMovement(previousSelectedUnitViews, tileView) // Long-running task
                 }
             }
+            // Regular "switch unit view to another unit", no special actions
+            else addTileOverlays(tileView)
         } else if (movingSpyOnMap) {
             addMovingSpyOverlay(unitTable.selectedSpy!!, tileView)
         } else {
@@ -540,7 +542,7 @@ class WorldMapHolder(
         val visibleOwnedUnits = tileView.getVisibleUnits()
             .mapNotNull { it.tryGetMapUnitView() }
         
-        if (tileView.isCityCenter() || unitList.any { it.isAirUnit() }) {
+        if (tileView.isCityCenter() || visibleOwnedUnits.any { it.isAirUnit() }) {
             unitList.addAll(visibleOwnedUnits)
         }
 
