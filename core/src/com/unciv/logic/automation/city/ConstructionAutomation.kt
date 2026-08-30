@@ -1,6 +1,5 @@
 package com.unciv.logic.automation.city
 
-import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
@@ -281,7 +280,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions) {
         var value = 0f
         if (building.isWonder) {
             // Buildings generally don't have these uniques, and Wonders generally only one of these, so we can save some time by not checking every building for every unique
-            if (!building.isNationalWonder) value -= civInfo.gameInfo.getAliveMajorCivs().sortedByDescending { it.getStatForRanking(RankingType.Technologies) }.indexOf(civInfo) * if (civInfo.civName == Constants.simulationCiv3) 2 else 1
+            if (!building.isNationalWonder) value -= civInfo.gameInfo.getAliveMajorCivs().sortedByDescending { it.getStatForRanking(RankingType.Technologies) }.indexOf(civInfo)
             // Wonders are a one-time occurence: value less if someone is going to build them before us anyways
             value += when {
                 building.hasUnique(UniqueType.OneTimeFreePolicy) || building.hasUnique(UniqueType.OneTimeAmountFreePolicies) -> civInfo.getPersonality().culture
