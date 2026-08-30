@@ -475,7 +475,7 @@
 				"name": "Refrigeration",
 				"row": 2,
 				"prerequisites": ["Biology", "Electricity"], //todo: offshore platform should need this
-                "uniques": ["[-75]% weight to this choice for AI decisions", "[-100]% weight to this choice for AI decision <before discovering [Flight]>"],
+                "uniques": ["[-100]% weight to this choice for AI decision <before discovering [Flight]>"],
 				"quote": "'And homeless near a thousand homes I stood, and near a thousand tables pined and wanted food.' - William Wordsworth"
 			},
 			{
@@ -523,19 +523,21 @@
 				"name": "Electronics",
 				"row": 5,
 				"prerequisites": ["Replaceable Parts", "Flight"],
+                "uniques": ["[-100]% weight to this choice for AI decision <before discovering [Ballistics]>"],
 				"quote": "'There's a basic principle about consumer electronics: it gets more powerful all the time and it gets cheaper all the time.' - Trip Hawkins"
 			},
 			{
 				"name": "Ballistics",
 				"row": 6,
 				"prerequisites": ["Flight"],
+                "uniques": ["[-100]% weight to this choice for AI decision <before discovering [Pharmaceuticals]>"],
 				"quote": "'Men, like bullets, go farthest when they are smoothest.' - Jean Paul"
 			},
 			{
 				"name": "Combustion",
 				"row": 8,
 				"prerequisites": ["Railroads"],
-                "uniques": ["[-50]% weight to this choice for AI decisions"],
+                "uniques": ["[-100]% weight to this choice for AI decision <before discovering [Radar]>"],
 				"quote": "'Any man who can drive safely while kissing a pretty girl is simply not giving the kiss the attention it deserves.' - Albert Einstein"
 			}
 		]
