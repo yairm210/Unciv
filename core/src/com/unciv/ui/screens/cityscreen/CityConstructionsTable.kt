@@ -10,9 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
-import com.unciv.GUI
-import com.unciv.logic.city.City
-import com.unciv.logic.city.CityConstructions
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IConstruction
@@ -70,6 +67,8 @@ private class ConstructionButtonDTO(
 class CityConstructionsTable(private val cityScreen: CityScreen) {
     /* -1 = Nothing, >= 0 queue entry (0 = current construction) */
     var selectedQueueEntry = -1 // None
+
+    private val cityView get() = cityScreen.cityView
 
     private val upperTable = Table(BaseScreen.skin)
     private val constructionsQueueScrollPane: ScrollPane
@@ -171,27 +170,27 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     private fun updateButtons(construction: IConstruction?) {
         if (!cityScreen.canChangeState) return
         /** [UniqueType.MayBuyConstructionsInPuppets] support - we need a buy button for civs that could buy items in puppets */
-        if (cityScreen.city.isPuppet && !cityScreen.city.getMatchingUniques(UniqueType.MayBuyConstructionsInPuppets).any()) return
+        if (cityView.isPuppet() && !cityView.hasMatchingUnique(UniqueType.MayBuyConstructionsInPuppets)) return
         buttonsTable.clear()
 
         for (button in buyButtonFactory.getBuyButtons(construction)) {
             buttonsTable.add(button).width(120f).padRight(10f)
         }
         // priority buttons and remove button
-        val queue = cityScreen.city.cityConstructions.constructionQueue
+        val queue = cityView.constructions.constructionQueue
         if (selectedQueueEntry in 0..<queue.size && queue.size > 1) {
             val constructionName = queue[selectedQueueEntry]
 
-            val raiseButton = getRaisePriorityButton(selectedQueueEntry, constructionName, cityScreen.city)
+            val raiseButton = getRaisePriorityButton(selectedQueueEntry, constructionName)
             raiseButton.setEnabled(cityScreen.canCityBeChanged() && selectedQueueEntry > 0)
             buttonsTable.add(raiseButton).padRight(5f)
 
-            val lowerButton = getLowerPriorityButton(selectedQueueEntry, constructionName, cityScreen.city)
+            val lowerButton = getLowerPriorityButton(selectedQueueEntry, constructionName)
             lowerButton.setEnabled(selectedQueueEntry != queue.lastIndex && cityScreen.canCityBeChanged())
             buttonsTable.add(lowerButton).padRight(5f)
 
             if (cityScreen.canCityBeChanged() && !queueExpander.isOpen && selectedQueueEntry in 1..4)
-                buttonsTable.add(getRemoveFromQueueButton(selectedQueueEntry, cityScreen.city)).padLeft(10f)
+                buttonsTable.add(getRemoveFromQueueButton(selectedQueueEntry)).padLeft(10f)
         }
     }
 
@@ -199,9 +198,8 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         val queueScrollY = constructionsQueueScrollPane.scrollY
         constructionsQueueTable.clear()
 
-        val city = cityScreen.city
-        val cityConstructions = city.cityConstructions
-        val currentConstruction = cityConstructions. currentConstructionName()
+        val cityConstructions = cityView.constructions
+        val currentConstruction = cityConstructions.currentConstructionName()
         val queue = cityConstructions.constructionQueue
 
         constructionsQueueTable.defaults().pad(0f)
@@ -241,7 +239,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         constructionsQueueScrollPane.updateVisualScroll()
     }
 
-    private fun updateQueuePreview(queue: MutableList<String>) {
+    private fun updateQueuePreview(queue: List<String>) {
         queueExpander.header.pad(-5f, 0f, -5f, 0f)
         val title = when(queue.size) {
             in 0..1 -> "Queue empty".tr()
@@ -282,14 +280,13 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     private fun getConstructionButtonDTOs(): ArrayList<ConstructionButtonDTO> {
         val constructionButtonDTOList = ArrayList<ConstructionButtonDTO>()
 
-        val city = cityScreen.city
-        val cityConstructions = city.cityConstructions
+        val cityConstructions = cityView.constructions
 
-        val constructionsSequence = city.getRuleset().units.values.asSequence() +
-                city.getRuleset().buildings.values.asSequence()
+        val constructionsSequence = cityView.getRuleset().units.values.asSequence() +
+                cityView.getRuleset().buildings.values.asSequence()
 
-        city.cityStats.updateTileStats() // only once
-        for (entry in constructionsSequence.filter { it.shouldBeDisplayed(cityConstructions) }) {
+        cityView.updateTileStats() // only once
+        for (entry in constructionsSequence.filter { cityConstructions.shouldBeDisplayed(it) }) {
 
             val useStoredProduction = entry is Building || !cityConstructions.isBeingConstructedOrEnqueued(entry.name)
 
@@ -302,11 +299,9 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 cityConstructions.getTurnsToConstructionString(entry, useStoredProduction).trim()
             }
 
-            val resourcesRequired = if (entry is BaseUnit)
-                entry.getResourceRequirementsPerTurn(city.civ.state)
-                else entry.getResourceRequirementsPerTurn(city.state)
+            val resourcesRequired = cityView.getResourceRequirementsPerTurn(entry)
             val mostImportantRejection =
-                    entry.getRejectionReasons(cityConstructions)
+                    cityConstructions.getRejectionReasons(entry)
                         .filter { it.isImportantRejection() }
                         .minByOrNull { it.getRejectionPrecedence() }
 
@@ -321,12 +316,12 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         }
 
         for (specialConstruction in PerpetualConstruction.perpetualConstructionsMap.values
-                .filter { it.shouldBeDisplayed(cityConstructions) }
+                .filter { cityConstructions.shouldBeDisplayed(it) }
         ) {
             constructionButtonDTOList.add(
                 ConstructionButtonDTO(
                     specialConstruction,
-                    "Produce [${specialConstruction.name}]".tr() + " " + specialConstruction.getProductionTooltip(city).trim()
+                    "Produce [${specialConstruction.name}]".tr() + " " + cityView.getProductionTooltip(specialConstruction).trim()
                 )
             )
         }
@@ -341,7 +336,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             availableConstructionsTable.add(Constants.loading.toLabel()).pad(10f)
         }
 
-        Concurrency.run("Construction info gathering - ${cityScreen.city.name}") {
+        Concurrency.run("Construction info gathering - ${cityView.name}") {
             // Since this can be a heavy operation and leads to many ANRs on older phones we put the metadata-gathering in another thread.
             val constructionButtonDTOList = getConstructionButtonDTOs()
             launchOnGLThread {
@@ -351,7 +346,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 val buildableBuildings = ArrayList<Table>()
                 val specialConstructions = ArrayList<Table>()
                 val blacklisted = ArrayList<Table>()
-                val disabledAutoAssignConstructions: Set<String> = cityScreen.city.disabledConstructions
+                val disabledAutoAssignConstructions: Set<String> = cityView.getDisabledConstructions()
 
                 var maxButtonWidth = constructionsQueueTable.width
                 for (dto in constructionButtonDTOList) {
@@ -366,7 +361,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                             && constructionButtonDTOList.any {
                                 (it.construction is Building) && (it.construction.name == dto.construction.requiredBuilding
                                         || it.construction.replaces == dto.construction.requiredBuilding
-                                        || it.construction.hasTagUnique(dto.construction.requiredBuilding!!, cityScreen.city.state))
+                                        || it.construction.hasTagUnique(dto.construction.requiredBuilding!!, cityView.getState()))
                             })
                         continue
 
@@ -412,8 +407,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     }
 
     private fun getQueueEntry(constructionQueueIndex: Int, constructionName: String): Table {
-        val city = cityScreen.city
-        val cityConstructions = city.cityConstructions
+        val cityConstructions = cityView.constructions
 
         val table = Table()
         table.align(Align.left).pad(5f)
@@ -426,11 +420,9 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 if (constructionName in PerpetualConstruction.perpetualConstructionsMap) "\n" + Fonts.infinity
                 else cityConstructions.getTurnsToConstructionString(construction, isFirstConstructionOfItsKind)
 
-        val constructionResource = if (construction is BaseUnit)
-                construction.getResourceRequirementsPerTurn(city.civ.state)
-            else construction.getResourceRequirementsPerTurn(city.state)
+        val constructionResource = cityView.getResourceRequirementsPerTurn(construction)
         for ((resourceName, amount) in constructionResource) {
-            val resource = cityConstructions.city.getRuleset().tileResources[resourceName] ?: continue
+            val resource = cityView.getRuleset().tileResources[resourceName] ?: continue
             text += "\n" + resourceName.getConsumesAmountString(amount, resource.isStockpiled).tr()
         }
 
@@ -442,14 +434,14 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         if (queueExpander.isOpen) {
             if (constructionQueueIndex > 0 && cityScreen.canCityBeChanged()){
-                table.add(getRaisePriorityButton(constructionQueueIndex, constructionName, city)).right()}
+                table.add(getRaisePriorityButton(constructionQueueIndex, constructionName)).right()}
             else table.add().right()
             if (constructionQueueIndex != cityConstructions.constructionQueue.lastIndex && cityScreen.canCityBeChanged())
-                table.add(getLowerPriorityButton(constructionQueueIndex, constructionName, city)).right()
+                table.add(getLowerPriorityButton(constructionQueueIndex, constructionName)).right()
             else table.add().right()
         }
 
-        if (cityScreen.canCityBeChanged()) table.add(getRemoveFromQueueButton(constructionQueueIndex, city)).right()
+        if (cityScreen.canCityBeChanged()) table.add(getRemoveFromQueueButton(constructionQueueIndex)).right()
         else table.add().right()
 
         table.touchable = Touchable.enabled
@@ -458,8 +450,8 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         if (cityScreen.canCityBeChanged()) {
             table.addContextMenu {
                 selectQueueEntry(constructionQueueIndex) {
-                    CityScreenConstructionMenu(cityScreen.stage, table, cityScreen.city, construction) {
-                        cityScreen.city.reassignPopulation()
+                    CityScreenConstructionMenu(cityScreen.stage, table, cityView, construction) {
+                        cityView.tryReassignPopulation()
                         cityScreen.update()
                     }
                 }
@@ -470,7 +462,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     }
 
     private fun <T> selectQueueEntry(constructionQueueIndex: Int, onBeforeUpdate: () -> T): T {
-        if (constructionQueueIndex in 0..<cityScreen.city.cityConstructions.constructionQueue.size) {
+        if (constructionQueueIndex in 0..<cityView.constructions.constructionQueue.size) {
             cityScreen.selectConstructionFromQueue(constructionQueueIndex)
             selectedQueueEntry = constructionQueueIndex
         } else {
@@ -499,13 +491,13 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     }
 
     private fun getProgressBar(constructionName: String): Group {
-        val cityConstructions = cityScreen.city.cityConstructions
+        val cityConstructions = cityView.constructions
         val construction = cityConstructions.getConstruction(constructionName)
         if (construction is PerpetualConstruction) return Table()
         if (cityConstructions.getWorkDone(constructionName) == 0) return Table()
 
         val constructionPercentage = cityConstructions.getWorkDone(constructionName) /
-                (construction as INonPerpetualConstruction).getProductionCost(cityConstructions.city.civ, cityConstructions.city).toFloat()
+                cityView.getConstructionProductionCost(construction as INonPerpetualConstruction).toFloat()
         return ImageGetter.getProgressBarVertical(2f, 30f, constructionPercentage,
                 Color.BROWN.brighten(0.5f), Color.WHITE)
     }
@@ -530,7 +522,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         val textColor = if (constructionButtonDTO.rejectionReason == null) Color.WHITE else Color.RED
 
         val statIcons = if (construction is Building)
-            " " + Stat.entries.filter { construction.isStatRelated(it, cityScreen.city) }.map { it.character }.joinToString("")
+            " " + Stat.entries.filter { cityView.isStatRelated(it, construction) }.map { it.character }.joinToString("")
         else ""
 
         val constructionNameText = "${construction.name.tr(hideIcons = true)}$statIcons"
@@ -547,8 +539,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 resourceTable.add(ImageGetter.getResourcePortrait(resource, 15f)).padBottom(1f)
             }
         }
-        for ((resourceName, amount) in constructionButtonDTO.construction
-            .getStockpiledResourceRequirements(cityScreen.city.state)) {
+        for ((resourceName, amount) in cityView.getStockpiledResourceRequirements(constructionButtonDTO.construction)) {
             val color = if (constructionButtonDTO.rejectionReason?.type == RejectionReasonType.ConsumesResources)
                 Color.RED else Color.WHITE
             resourceTable.add(ColorMarkupLabel(amount.toString(), color)).expandX().left().padLeft(5f)
@@ -558,7 +549,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         pickConstructionButton.add(constructionTable).expandX().left()
 
-        if (!cannotAddConstructionToQueue(construction, cityScreen.city, cityScreen.city.cityConstructions)) {
+        if (!cannotAddConstructionToQueue(construction)) {
             val addToQueueButton = ImageGetter.getImage("OtherIcons/New")
                 .apply { color = ImageGetter.CHARCOAL }.surroundWithCircle(40f)
             addToQueueButton.onClick(UncivSound.Silent) {
@@ -585,7 +576,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         pickConstructionButton.onClick {
             if (cityScreen.selectedConstruction == construction) {
-                addConstructionToQueue(construction, cityScreen.city.cityConstructions)
+                addConstructionToQueue(construction)
             } else {
                 cityScreen.selectConstruction(construction)
                 highlightConstructionButton(pickConstructionButton, true, true)  // without, will highlight but with visible delay
@@ -603,8 +594,8 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 highlightConstructionButton(pickConstructionButton, true, true)
                 cityScreen.updateWithoutConstructionAndMap()
             }
-            CityScreenConstructionMenu(cityScreen.stage, pickConstructionButton, cityScreen.city, construction) {
-                cityScreen.city.reassignPopulation()
+            CityScreenConstructionMenu(cityScreen.stage, pickConstructionButton, cityView, construction) {
+                cityView.tryReassignPopulation()
                 cityScreen.update()
             }
         }
@@ -653,17 +644,18 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
     private fun isSelectedQueueEntry(): Boolean = selectedQueueEntry >= 0
 
-    private fun cannotAddConstructionToQueue(construction: IConstruction, city: City, cityConstructions: CityConstructions): Boolean {
+    private fun cannotAddConstructionToQueue(construction: IConstruction): Boolean {
+        val cityConstructions = cityView.constructions
         return cityConstructions.isQueueFull()
-                || !construction.isBuildable(cityConstructions)
+                || !cityConstructions.isBuildable(construction)
                 || !cityScreen.canChangeState
                 || construction is PerpetualConstruction && cityConstructions.isBeingConstructedOrEnqueued(construction.name)
-                || city.isPuppet
+                || cityView.isPuppet()
     }
 
-    private fun addConstructionToQueue(construction: IConstruction, cityConstructions: CityConstructions) {
+    private fun addConstructionToQueue(construction: IConstruction) {
         // Some evil person decided to double tap real fast - #4977
-        if (cannotAddConstructionToQueue(construction, cityScreen.city, cityConstructions))
+        if (cannotAddConstructionToQueue(construction))
             return
 
         // UniqueType.CreatesOneImprovement support - don't add yet, postpone until target tile for the improvement is selected
@@ -675,10 +667,11 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         SoundPlayer.play(getConstructionSound(construction))
 
-        cityConstructions.addToQueue(construction.name)
-        if (!construction.shouldBeDisplayed(cityConstructions)) // For buildings - unlike units which can be queued multiple times
+        cityView.tryAddToQueue(construction.name)
+        if (!cityView.constructions.shouldBeDisplayed(construction)) // For buildings - unlike units which can be queued multiple times
             cityScreen.clearSelection()
-        cityScreen.city.reassignPopulation()
+        if (cityView.constructions.constructionQueue.first() == construction.name)
+            cityView.tryReassignPopulation()
         cityScreen.update()
         cityScreen.game.settings.addCompletedTutorialTask("Pick construction")
     }
@@ -700,7 +693,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         binding: KeyboardBinding,
         constructionQueueIndex: Int,
         name: String,
-        movePriority: (Int) -> Int
+        movePriority: (Int) -> Int?
     ): Table {
         val button = Table()
         button.add(ImageGetter.getArrowImage(arrowDirection).apply { color = ImageGetter.CHARCOAL }.surroundWithCircle(40f))
@@ -708,10 +701,10 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         // Don't bind the queue reordering keys here - those should affect only the selected entry, not all of them
         button.onActivation {
             button.touchable = Touchable.disabled
-            selectedQueueEntry = movePriority(constructionQueueIndex)
+            selectedQueueEntry = movePriority(constructionQueueIndex) ?: return@onActivation
             // Selection display may need to update as I can click the button of a non-selected entry.
             cityScreen.selectConstruction(name)
-            cityScreen.city.reassignPopulation()
+            cityView.tryReassignPopulation()
             cityScreen.update()
             //cityScreen.updateWithoutConstructionAndMap()
             updateQueueAndButtons(cityScreen.selectedConstruction)
@@ -724,24 +717,32 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         return button
     }
 
-    private fun getRaisePriorityButton(constructionQueueIndex: Int, name: String, city: City) =
-        getMovePriorityButton(Align.top, KeyboardBinding.RaisePriority, constructionQueueIndex, name, city.cityConstructions::raisePriority)
+    private fun getRaisePriorityButton(constructionQueueIndex: Int, name: String) =
+        getMovePriorityButton(Align.top, KeyboardBinding.RaisePriority, constructionQueueIndex, name, cityView::tryRaisePriority)
 
-    private fun getLowerPriorityButton(constructionQueueIndex: Int, name: String, city: City) =
-        getMovePriorityButton(Align.bottom, KeyboardBinding.LowerPriority, constructionQueueIndex, name, city.cityConstructions::lowerPriority)
+    private fun getLowerPriorityButton(constructionQueueIndex: Int, name: String) =
+        getMovePriorityButton(Align.bottom, KeyboardBinding.LowerPriority, constructionQueueIndex, name, cityView::tryLowerPriority)
 
-    private fun getRemoveFromQueueButton(constructionQueueIndex: Int, city: City): Table {
+    private fun getRemoveFromQueueButton(constructionQueueIndex: Int): Table {
         val tab = Table()
         tab.add(ImageGetter.getImage("OtherIcons/Stop").surroundWithCircle(40f))
         tab.touchable = Touchable.enabled
         tab.onClick {
             tab.touchable = Touchable.disabled
-            city.cityConstructions.removeFromQueue(constructionQueueIndex, false)
-            cityScreen.clearSelection()
-            cityScreen.city.reassignPopulation()
-            // Select next entry in list if available.
-            // If the last one was deleted, select the new last one.
-            selectQueueEntry(constructionQueueIndex.coerceAtMost(city.cityConstructions.constructionQueue.lastIndex)) { }
+            Concurrency.run {
+                val success = cityView.tryRemoveFromQueue(constructionQueueIndex, false)
+                if (!success) {
+                    Concurrency.runOnGLThread { cityScreen.update() }
+                    return@run
+                }
+                cityView.tryReassignPopulation()
+                Concurrency.runOnGLThread {
+                    cityScreen.clearSelection()
+                    // Select next entry in list if available.
+                    // If the last one was deleted, select the new last one.
+                    selectQueueEntry(constructionQueueIndex.coerceAtMost(cityView.constructions.constructionQueue.lastIndex)) { }
+                }
+            }
         }
         return tab
     }
@@ -768,7 +769,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         if (selectedQueueEntry == 0) {
             return constructionsQueueTable.cells[0].actor
         }
-        if (selectedQueueEntry > 0 && selectedQueueEntry < cityScreen.city.cityConstructions.constructionQueue.size) {
+        if (selectedQueueEntry > 0 && selectedQueueEntry < cityView.constructions.constructionQueue.size) {
             // *2 because it's always the entry and a separator
             return queueExpander.innerTable.cells[selectedQueueEntry * 2 - 2].actor
         }

@@ -10,7 +10,6 @@ import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.GameContext
-import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
@@ -229,13 +228,9 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
     }
 
 
+    @Readonly
     fun getHappinessBreakdown(): HashMap<String, Float> {
         val statMap = HashMap<String, Float>()
-
-        fun HashMap<String, Float>.add(key:String, value: Float) {
-            if (!containsKey(key)) put(key, value)
-            else put(key, value+get(key)!!)
-        }
 
         statMap["Base happiness"] = civInfo.getDifficulty().baseHappiness.toFloat()
 
@@ -283,7 +278,7 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
             // Literally no idea how, since happinessList is ONLY replaced, NEVER altered.
             // Oh well, toList() should solve the problem, wherever it may come from.
             for ((key, value) in city.cityStats.happinessList.toList())
-                statMap.add(key, value)
+                statMap[key] = value + (statMap[key] ?: 0f)
         }
 
         val transportUpkeep = getTransportationUpkeep()
@@ -291,7 +286,7 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
             statMap["Transportation Upkeep"] = -transportUpkeep.happiness
 
         for ((key, value) in getGlobalStatsFromUniques())
-            statMap.add(key,value.happiness)
+            statMap[key] = value.happiness + (statMap[key] ?: 0f)
 
         return statMap
     }

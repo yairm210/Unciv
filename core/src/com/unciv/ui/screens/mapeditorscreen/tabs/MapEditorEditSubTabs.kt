@@ -9,6 +9,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
+import com.unciv.view.TileView
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.tile.*
@@ -443,7 +444,7 @@ class MapEditorEditRiversTab(
     private fun Tile.makeTileGroup(): TileGroup {
         ruleset = this@MapEditorEditRiversTab.ruleset
         setTerrainTransients()
-        return TileGroup(this, TileSetStrings(ruleset, UncivGame.Current.settings), iconSize * 36f/54f).apply {
+        return TileGroup(TileView.forSingleTile(this), TileSetStrings(ruleset, UncivGame.Current.settings), iconSize * 36f/54f).apply {
             isForceVisible = true
             isForMapEditorIcon = true
             update()

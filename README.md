@@ -129,4 +129,9 @@ Or just use our already built one:
 ```$ docker run -d -p 6901:6901 -p 5901:5901 ghcr.io/yairm210/unciv ```
 
 and then goto http://localhost:6901/vnc.html?password=headless
-## [Credits and 3rd parties](docs/Credits.md)
+
+## Licensing and credits
+
+This game is available under the MPL 2.0 (see [LICENSE](LICENSE]). The media
+files are authored by many people, available under a mix of CC BY-SA 4.0,
+CC BY 3.0/4.0, CC0, Public Domain (see [docs/Credits.md](docs/Credits.md)).

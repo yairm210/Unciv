@@ -13,7 +13,7 @@ object DeclareWarTargetAutomation {
 
     /**
      * Chooses a target civilization along with a plan of attack.
-     * Note that this doesn't guarantee that we will declare war on them immediatly, or that we will end up declaring war at all.
+     * Note that this doesn't guarantee that we will declare war on them immediately, or that we will end up declaring war at all.
      */
     fun chooseDeclareWarTarget(civInfo: Civilization, civAttackMotivations: List<Pair<Civilization, Float>>) {
         val highestValueTargets = civAttackMotivations.sortedByDescending { it.first.getStatForRanking(RankingType.Score) }

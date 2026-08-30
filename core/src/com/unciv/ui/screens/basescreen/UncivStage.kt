@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.Viewport
 import com.unciv.logic.event.Event
 import com.unciv.logic.event.EventBus
+import com.unciv.ui.components.input.VirtualMouseButtonKeys
 import com.unciv.ui.crashhandling.wrapCrashHandling
 import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
 import com.unciv.ui.screens.basescreen.BaseScreen.Companion.enableSceneDebug
@@ -88,14 +89,17 @@ class UncivStage(viewport: Viewport) : Stage(viewport, getBatch()) {
 
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         mouseOverDebugImpl?.touchDown(this, screenX, screenY, pointer, button)
+        if (VirtualMouseButtonKeys.fromButton(button)?.keyDown() == true) return true
         return { super.touchDown(screenX, screenY, pointer, button) }.wrapCrashHandling()() ?: true
     }
 
     override fun touchDragged(screenX: Int, screenY: Int, pointer: Int) =
             { super.touchDragged(screenX, screenY, pointer) }.wrapCrashHandling()() ?: true
 
-    override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int) =
-            { super.touchUp(screenX, screenY, pointer, button) }.wrapCrashHandling()() ?: true
+    override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
+        if (VirtualMouseButtonKeys.fromButton(button)?.keyUp() == true) return true
+        return { super.touchUp(screenX, screenY, pointer, button) }.wrapCrashHandling()() ?: true
+    }
 
     override fun mouseMoved(screenX: Int, screenY: Int) =
             { super.mouseMoved(screenX, screenY) }.wrapCrashHandling()() ?: true

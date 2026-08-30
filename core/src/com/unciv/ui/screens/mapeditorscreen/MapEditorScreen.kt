@@ -43,6 +43,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 
 //todo normalize properly
@@ -128,7 +130,7 @@ class MapEditorScreen(map: TileMap? = null) : BaseScreen(), RecreateOnResize {
     private fun startMapAutosaveLoop() {
         startBackgroundJob("MapEditorAutosaveLoop", true) {
             while (true) {
-                delay(10_000L) // every 10 seconds
+                delay(10.seconds)
 
                 if (!isActive) return@startBackgroundJob
                 if (!isDirty) continue
@@ -254,6 +256,7 @@ class MapEditorScreen(map: TileMap? = null) : BaseScreen(), RecreateOnResize {
         tileMap = map
         descriptionTextField.text = map.description
         ruleset = newRuleset ?: RulesetCache.getComplexRuleset(map.mapParameters)
+        removeUnitsWithMissingNations(ruleset)
         mapHolder = newMapHolder()
         isDirty = false
         Gdx.input.inputProcessor = stage
@@ -272,7 +275,15 @@ class MapEditorScreen(map: TileMap? = null) : BaseScreen(), RecreateOnResize {
             tileMap.ruleset = newRuleset
             ruleset = newRuleset
         }
+        
+        removeUnitsWithMissingNations(newRuleset)
         modsTabNeedsRefresh = false
+    }
+
+    private fun removeUnitsWithMissingNations(forRuleset: Ruleset) {
+        for (tile in tileMap.values)
+            for (unit in tile.getUnits().toList())
+                if (!forRuleset.nations.containsKey(unit.owner)) unit.removeFromTile()
     }
 
     internal fun closeEditor() {

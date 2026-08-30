@@ -5,7 +5,7 @@ package com.unciv.logic.map
 import com.unciv.models.UpgradeUnitAction
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
-import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 import org.junit.Assert
@@ -13,7 +13,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@RunWith(GdxTestRunner::class)
+@RunWith(BaseTestRunner::class)
 class UpgradeTests {
 
     val testGame = TestGame()

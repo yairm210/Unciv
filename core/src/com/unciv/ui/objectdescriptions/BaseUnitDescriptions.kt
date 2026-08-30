@@ -40,6 +40,7 @@ object BaseUnitDescriptions {
 
     /** Generate description as multi-line string for CityScreen addSelectedConstructionTable
      * @param city Supplies civInfo to show available resources after resource requirements */
+    @Readonly
     fun getDescription(baseUnit: BaseUnit, city: City): String {
         val lines = mutableListOf<String>()
         val availableResources = city.civ.getCivResourcesByName()

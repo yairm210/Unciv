@@ -26,6 +26,7 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
@@ -34,20 +35,22 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
+import com.unciv.view.CivView
+import com.unciv.view.ForeignCivView
 import kotlin.math.floor
 import com.unciv.ui.components.widgets.AutoScrollPane as ScrollPane
 
 /**
- * Creates the diplomacy screen for [viewingCiv].
+ * Creates the diplomacy screen for [viewingCivView].
  *
- * When [selectCiv] is given and [selectTrade] is not, that Civilization is selected as if clicked on the left side.
- * When [selectCiv] is given and [selectTrade] is not but [showTrade] is set, the [TradeTable] for that Civilization is shown.
- * When [selectCiv] and [selectTrade] are supplied, that Trade for that Civilization is selected, used for the counter-offer option from `TradePopup`.
- * Note calling this with [selectCiv] a City State and [selectTrade] supplied is **not allowed**.
+ * When [selectCivView] is given and [selectTrade] is not, that Civilization is selected as if clicked on the left side.
+ * When [selectCivView] is given and [selectTrade] is not but [showTrade] is set, the [TradeTable] for that Civilization is shown.
+ * When [selectCivView] and [selectTrade] are supplied, that Trade for that Civilization is selected, used for the counter-offer option from `TradePopup`.
+ * Note calling this with [selectCivView] a City State and [selectTrade] supplied is **not allowed**.
  */
 class DiplomacyScreen(
-    internal val viewingCiv: Civilization,
-    private val selectCiv: Civilization? = null,
+    internal val viewingCivView: CivView,
+    private val selectCivView: ForeignCivView? = null,
     private val selectTrade: Trade? = null,
     private val showTrade: Boolean = selectTrade != null
 ): BaseScreen(), RecreateOnResize {
@@ -58,6 +61,9 @@ class DiplomacyScreen(
         /** distance of the floating close button from the top and right */
         private const val closeButtonPad = 10f
     }
+
+    internal val viewingCiv: Civilization = viewingCivView.getCiv()
+    private val selectCiv: Civilization? = selectCivView?.getCiv()
 
     private val highlightColor: Color = clearColor.cpy().lerp(skin.getColor("color"), 0.333f)
 
@@ -96,14 +102,16 @@ class DiplomacyScreen(
             if (showTrade) {
                 val tradeTable = setTrade(selectCiv)
                 if (selectTrade != null)
-                    tradeTable.tradeLogic.currentTrade.set(selectTrade)
+                    tradeTable.tradeView.setStagedTrade(selectTrade)
                 tradeTable.offerColumnsTable.update()
             } else
                 updateRightSide(selectCiv)
         }
+
+        globalShortcuts.add(KeyboardBinding.Civilopedia) { openCivilopedia() }
     }
 
-    override fun getCivilopediaRuleset() = viewingCiv.gameInfo.ruleset
+    override fun getCivilopediaRuleset() = viewingCivView.ruleset
 
     private inner class ScrollPaneWithMinSize : ScrollPane(leftSideTable) {
         // On cramped screens 20% default splitAmount can make the left side smaller than a nation icon.
@@ -222,7 +230,7 @@ class DiplomacyScreen(
 
     internal fun setTrade(otherCiv: Civilization): TradeTable {
         rightSideTable.clear()
-        val tradeTable = TradeTable(viewingCiv, otherCiv, this)
+        val tradeTable = TradeTable(viewingCivView, ForeignCivView(otherCiv, viewingCiv), this)
         rightSideTable.add(tradeTable)
         return tradeTable
     }
@@ -416,5 +424,5 @@ class DiplomacyScreen(
         positionCloseButton()
     }
 
-    override fun recreate(): BaseScreen = DiplomacyScreen(viewingCiv, selectCiv, selectTrade, showTrade)
+    override fun recreate(): BaseScreen = DiplomacyScreen(viewingCivView, selectCivView, selectTrade, showTrade)
 }

@@ -1,5 +1,6 @@
 package com.unciv.app
 
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -130,6 +131,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
          * The persistent notification is purely for informational reasons.
          * It is not technically necessary for the Worker, since it is not a Service.
          */
+        @SuppressLint("MissingPermission") // POST_NOTIFICATIONS declared in manifest; NotificationManagerCompat handles denial gracefully
         fun showPersistentNotification(appContext: Context, lastTimeChecked: String, checkPeriod: Duration) {
             val flags = (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) FLAG_IMMUTABLE else 0) or
                 FLAG_UPDATE_CURRENT
@@ -158,6 +160,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
             }
         }
 
+        @SuppressLint("MissingPermission") // POST_NOTIFICATIONS declared in manifest; NotificationManagerCompat handles denial gracefully
         fun notifyUserAboutTurn(applicationContext: Context, game: Pair<String, String>) {
             Log.i(LOG_TAG, "notifyUserAboutTurn ${game.first}")
             val intent = Intent(applicationContext, AndroidLauncher::class.java).apply {
@@ -397,6 +400,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
         showPersistentNotification(applicationContext, displayTime, getConfiguredDelay(inputData))
     }
 
+    @SuppressLint("MissingPermission") // POST_NOTIFICATIONS declared in manifest; NotificationManagerCompat handles denial gracefully
     private fun showErrorNotification(stackTraceString: String) {
         val flags = (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) FLAG_IMMUTABLE else 0) or
                 FLAG_UPDATE_CURRENT

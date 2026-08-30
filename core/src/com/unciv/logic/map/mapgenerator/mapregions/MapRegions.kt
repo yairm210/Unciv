@@ -14,6 +14,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.tile.TileResource
+import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.equalsPlaceholderText
@@ -253,7 +254,9 @@ class MapRegions (val ruleset: Ruleset) {
             StartNormalizer.normalizeStart(tileMap[region.startPosition!!], tileMap, tileData, ruleset, isMinorCiv = false)
         }
 
-        val civBiases = civilizations.associateWith { ruleset.nations[it.civName]!!.startBias }
+        val civBiases = civilizations.associateWith {
+            ruleset.nations[it.civName]!!.getStartBias(ruleset, it.getGameContextForStartBias())
+        }
         // This ensures each civ can only be in one of the buckets
         val civsByBiasType = civBiases.entries.groupBy(
             keySelector = {
@@ -420,7 +423,10 @@ class MapRegions (val ruleset: Ruleset) {
     private fun logAssignRegion(success: Boolean, startBiasType: BiasTypes, civ: Civilization, region: Region? = null) {
         if (Log.backend.isRelease()) return
 
-        val logCiv = { civ.civName + " " + ruleset.nations[civ.civName]!!.startBias.joinToString(",", "(", ")") }
+        val logCiv = {
+            val bias = ruleset.nations[civ.civName]!!.getStartBias(ruleset, civ.getGameContextForStartBias())
+            civ.civName + " " + bias.joinToString(",", "(", ")")
+        }
         val msg = if (success) "(%s): %s to %s"
             else "no region (%s) found for %s"
         Log.debug(Tag("assignRegions"), msg, startBiasType, logCiv, region)

@@ -295,16 +295,17 @@ object UniqueTriggerActivation {
                 val civUnit = civInfo.getEquivalentUnit(baseUnit)
                 if (civUnit.isCityFounder() && civInfo.isOneCityChallenger())
                     return null
-                fun placeUnit(): Boolean {
-                    val placedUnit = when {
-                        // Else set the unit at the given tile
-                        tile != null -> civInfo.gameInfo.tileMap.placeUnitNearTile(tile.position,baseUnit,barbarians) ?: return false
-                        // Else set unit unit near other units if we have no cities
-                        civInfo.units.getCivUnits().any() ->
-                            civInfo.gameInfo.tileMap.placeUnitNearTile(civInfo.units.getCivUnits().first().currentTile.position,baseUnit,barbarians) ?: return false
 
-                        else -> return false
-                    }
+                // Choose a city as the placement anchor: use the relevant city if available, otherwise the first city
+                val placementCity = relevantCity ?: civInfo.cities.firstOrNull() ?: return null
+
+                fun placeUnit(): Boolean {
+                    val placedUnit = civInfo.gameInfo.tileMap.placeUnitNearTile(
+                        placementCity.getCenterTile().position,
+                        baseUnit,
+                        barbarians
+                    ) ?: return false
+
                     val notificationText = getNotificationText(
                         notification, triggerNotificationText,
                         "[1] [${civUnit.name}] has rebelled against us!"
@@ -328,6 +329,8 @@ object UniqueTriggerActivation {
                 val civUnit = civInfo.getEquivalentUnit(baseUnit)
                 if (civUnit.isCityFounder() && civInfo.isOneCityChallenger())
                     return null
+
+                // Existing limit logic (based on the number of similar units the civ already owns)
                 val limit = civUnit.getMatchingUniques(UniqueType.MaxNumberBuildable)
                     .map { it.params[0].toInt() }.minOrNull()
                 val unitCount = civInfo.units.getCivUnits().count { it.name == civUnit.name }
@@ -340,18 +343,17 @@ object UniqueTriggerActivation {
 
                 if (actualAmount <= 0) return null
 
-                fun placeUnits(): Boolean {
-                    val placedUnits: MutableList<MapUnit> = mutableListOf()
-                    repeat(actualAmount) {
-                        val placedUnit = when {
-                            // Else set the unit at the given tile
-                            tile != null -> civInfo.gameInfo.tileMap.placeUnitNearTile(tile.position,baseUnit,barbarians) ?: return false
-                            // Else set unit unit near other units if we have no cities
-                            civInfo.units.getCivUnits().any() ->
-                                civInfo.gameInfo.tileMap.placeUnitNearTile(civInfo.units.getCivUnits().first().currentTile.position,baseUnit,barbarians) ?: return false
+                // Choose a city as the placement anchor
+                val placementCity = relevantCity ?: civInfo.cities.firstOrNull() ?: return null
 
-                            else -> null
-                        }
+                fun placeUnits(): Boolean {
+                    val placedUnits = mutableListOf<MapUnit>()
+                    repeat(actualAmount) {
+                        val placedUnit = civInfo.gameInfo.tileMap.placeUnitNearTile(
+                            placementCity.getCenterTile().position,
+                            baseUnit,
+                            barbarians
+                        )
                         if (placedUnit != null) placedUnits += placedUnit
                     }
                     if (placedUnits.isEmpty()) return false
@@ -1320,12 +1322,12 @@ object UniqueTriggerActivation {
                 if (!tileImprovement.matchesFilter(improvementFilter)) return null
                 return {
                     // Don't remove the improvement if we're just removing the roads
-                    if (improvementFilter != "All Road") {
+                    if (improvementFilter != Constants.allRoad) {
                         tile.removeImprovement()
                     }
 
                     // Remove the roads if desired
-                    if (improvementFilter == "All" || improvementFilter == "All Road") {
+                    if (improvementFilter == "All" || improvementFilter == Constants.allRoad) {
                         tile.removeRoad()
                     }
                     true

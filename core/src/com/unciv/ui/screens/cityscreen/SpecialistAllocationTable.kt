@@ -21,7 +21,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 
 class SpecialistAllocationTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin) {
-    val city = cityScreen.city
+    private val cityView = cityScreen.cityView
     private val smallButtonStyle = SmallButtonStyle()
 
     fun update() {
@@ -30,17 +30,16 @@ class SpecialistAllocationTable(private val cityScreen: CityScreen) : Table(Base
 
         // Auto/Manual Specialists Toggle
         if (cityScreen.canCityBeChanged()) {
-            val toggleButton = if (city.manualSpecialists) {
+            val toggleButton = if (cityView.manualSpecialists) {
                 "Manual Specialists".toTextButton(smallButtonStyle)
                    .onActivation {
-                       city.manualSpecialists = false
-                       city.reassignPopulation()
+                       cityView.tryDisableManualSpecialists()
                        cityScreen.update()
                    }
             } else {
                 "Auto Specialists".toTextButton(smallButtonStyle)
                     .onActivation {
-                        city.manualSpecialists = true
+                        cityView.tryEnableManualSpecialists()
                         update()
                     }
             }
@@ -48,10 +47,10 @@ class SpecialistAllocationTable(private val cityScreen: CityScreen) : Table(Base
         }
 
         // Since getMaxSpecialists is a Counter, iteration is potentially in random order. Ensure consistency by simplified sorting (no collator)
-        for ((specialistName, maxSpecialists) in city.population.getMaxSpecialists().asSequence().sortedBy { it.key }) {
-            if (!city.getRuleset().specialists.containsKey(specialistName)) // specialist doesn't exist in this ruleset, probably a mod
+        for ((specialistName, maxSpecialists) in cityView.getMaxSpecialists().asSequence().sortedBy { it.key }) {
+            if (!cityView.getRuleset().specialists.containsKey(specialistName)) // specialist doesn't exist in this ruleset, probably a mod
                 continue
-            val newSpecialists = city.population.getNewSpecialists()
+            val newSpecialists = cityView.getNewSpecialists()
             val assignedSpecialists = newSpecialists[specialistName]
 
             if (cityScreen.canChangeState) add(getUnassignButton(assignedSpecialists, specialistName))
@@ -68,7 +67,7 @@ class SpecialistAllocationTable(private val cityScreen: CityScreen) : Table(Base
 
     private fun getAllocationTable(assignedSpecialists: Int, maxSpecialists: Int, specialistName: String): Table {
         val specialistIconTable = Table()
-        val specialistObject = city.getRuleset().specialists[specialistName]!!
+        val specialistObject = cityView.getRuleset().specialists[specialistName]!!
         for (i in 1..maxSpecialists) {
             val color = if (i <= assignedSpecialists) specialistObject.colorObject
             else Color.GRAY // unassigned
@@ -82,17 +81,15 @@ class SpecialistAllocationTable(private val cityScreen: CityScreen) : Table(Base
 
     private fun getAssignButton(assignedSpecialists: Int, maxSpecialists: Int, specialistName: String): Actor {
 
-        if (assignedSpecialists >= maxSpecialists || city.isPuppet) return Table()
+        if (assignedSpecialists >= maxSpecialists || cityView.isPuppet()) return Table()
         val assignButton = "+".toLabel(ImageGetter.CHARCOAL, Constants.headingFontSize)
             .apply { this.setAlignment(Align.center) }
             .surroundWithCircle(30f).apply { circle.color = Color.GREEN.darken(0.2f) }
         assignButton.onClick {
-            city.population.specialistAllocations.add(specialistName, 1)
-            city.manualSpecialists = true
-            city.cityStats.update()
+            cityView.tryAssignSpecialist(specialistName)
             cityScreen.update()
         }
-        if (city.population.getFreePopulation() == 0 || !cityScreen.canChangeState)
+        if (cityView.getFreePopulation() == 0 || !cityScreen.canChangeState)
             assignButton.clear()
         return assignButton
     }
@@ -102,13 +99,11 @@ class SpecialistAllocationTable(private val cityScreen: CityScreen) : Table(Base
             .apply { this.setAlignment(Align.center) }
             .surroundWithCircle(30f).apply { circle.color = Color.RED.darken(0.1f) }
         unassignButton.onClick {
-            city.population.specialistAllocations.add(specialistName, -1)
-            city.manualSpecialists = true
-            city.cityStats.update()
+            cityView.tryUnassignSpecialist(specialistName)
             cityScreen.update()
         }
 
-        if (assignedSpecialists <= 0 || city.isPuppet) unassignButton.isVisible = false
+        if (assignedSpecialists <= 0 || cityView.isPuppet()) unassignButton.isVisible = false
         if (!cityScreen.canChangeState) unassignButton.clear()
         return unassignButton
     }
@@ -116,8 +111,8 @@ class SpecialistAllocationTable(private val cityScreen: CityScreen) : Table(Base
 
     private fun getSpecialistStatsTable(specialistName: String): Table {
         val specialistStatTable = Table().apply { defaults().padBottom(5f).padTop(5f) }
-        val specialistStats = city.cityStats.getStatsOfSpecialist(specialistName)
-        val specialist = city.getRuleset().specialists[specialistName]!!
+        val specialistStats = cityView.getStatsOfSpecialist(specialistName)
+        val specialist = cityView.getRuleset().specialists[specialistName]!!
         val maxStat = specialistStats.maxOf { it.value }
         val lightGreen = Color(0x7fff7fff)
         var itemsInRow = 0
@@ -137,7 +132,7 @@ class SpecialistAllocationTable(private val cityScreen: CityScreen) : Table(Base
         // greatPersonPoints is a Counter so iteration order is potentially random:
         // Sort by unit name without collator to ensure consistency in those rare mods where one Specialist gives points to several GP counters
         for ((gpName, gpPoints) in specialist.greatPersonPoints.asSequence().sortedBy { it.key }) {
-            val greatPerson = city.getRuleset().units[gpName] ?: continue
+            val greatPerson = cityView.getRuleset().units[gpName] ?: continue
             addWrapping(gpPoints, Color.GOLD, ImageGetter.getUnitIcon(greatPerson, Color.GOLD))
         }
 

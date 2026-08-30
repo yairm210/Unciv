@@ -95,7 +95,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     /** Generate description as multi-line string for CityScreen addSelectedConstructionTable
      * @param city Supplies civInfo to show available resources after resource requirements */
-    fun getDescription(city: City): String = BaseUnitDescriptions.getDescription(this, city)
+    @Readonly fun getDescription(city: City): String = BaseUnitDescriptions.getDescription(this, city)
 
     override fun makeLink() = "Unit/$name"
 
@@ -438,7 +438,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             "Land" -> isLandUnit
             "Water" -> isWaterUnit
             "Air" -> isAirUnit()
-            "non-air" -> !movesLikeAirUnits
+            "non-air" -> !isAirUnit()
 
             "Nuclear Weapon" -> isNuclearWeapon()
             "Great Person" -> isGreatPerson
@@ -472,8 +472,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     /** Has a MapUnit implementation that does not ignore conditionals, which should be usually used */
     @Readonly private fun isNuclearWeapon() = hasUnique(UniqueType.NuclearWeapon, GameContext.IgnoreConditionals)
-
-    val movesLikeAirUnits by lazy { type.getMovementType() == UnitMovementType.Air }
 
     /** Returns resource requirements from both uniques and requiredResource field */
     override fun getResourceRequirementsPerTurn(state: GameContext?): Counter<String> {

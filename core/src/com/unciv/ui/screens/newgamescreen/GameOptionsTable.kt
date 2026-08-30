@@ -1,5 +1,6 @@
 package com.unciv.ui.screens.newgamescreen
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
@@ -19,6 +20,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
+import com.unciv.ui.components.InputDisabling
 import com.unciv.ui.components.extensions.getCloseButton
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toCheckBox
@@ -145,6 +147,7 @@ class GameOptionsTable(
                     addShowChartsCheckbox()
                     addShowDemographicsCheckbox()
                     addCensorStatsCheckbox()
+                    addShowAdditionalRankingTypesCheckbox()
                 }
                 it.add(statsTable).left()
             }
@@ -243,6 +246,10 @@ class GameOptionsTable(
     private fun Table.addCensorStatsCheckbox() =
         addCheckbox("Restrict to own civilization", gameParameters.hideOtherCivilizationStats)
         { gameParameters.hideOtherCivilizationStats = it }
+    
+    private fun Table.addShowAdditionalRankingTypesCheckbox() =
+        addCheckbox("Show additional stat types", gameParameters.showAdditionalRankingTypes)
+        { gameParameters.showAdditionalRankingTypes = it }
 
     private fun Table.addNationsSelectTextButton() {
         val button = "Select nations".toTextButton()
@@ -260,7 +267,7 @@ class GameOptionsTable(
     }
 
     private fun numberOfMajorCivs() = ruleset.nations.values.count {
-        it.isMajorCiv
+        it.isMajorCiv && !it.hasUnique(UniqueType.WillNotBeChosenForNewGames)
     }
 
     private fun numberOfCityStates() = ruleset.nations.values.count {
@@ -440,7 +447,8 @@ class GameOptionsTable(
 
         val sortedBaseRulesets = RulesetCache.getSortedBaseRulesets()
         if (sortedBaseRulesets.size < 2) return
-        baseRulesetSelectBox = addSelectBox("{Base Ruleset}:", sortedBaseRulesets, gameParameters.baseRuleset, ::onBaseRulesetSelected)
+        baseRulesetSelectBox = addSelectBox("{Base Ruleset}:", sortedBaseRulesets, gameParameters.baseRuleset)
+            { InputDisabling.withInputDisabled { onBaseRulesetSelected(it) } }
     }
 
     private fun Table.addGameSpeedSelectBox() {
@@ -562,6 +570,15 @@ class GameOptionsTable(
         gameParameters.victoryTypes.removeAll { it !in ruleset.victories.keys }
         if (gameParameters.victoryTypes.isEmpty())
             gameParameters.victoryTypes.addAll(ruleset.victories.keys)
+
+        // Mod choices will change the number of available civs
+        val maxMajorCivs = numberOfMajorCivs()
+        if (gameParameters.maxNumberOfPlayers > maxMajorCivs) gameParameters.maxNumberOfPlayers = maxMajorCivs
+        if (gameParameters.minNumberOfPlayers > maxMajorCivs) gameParameters.minNumberOfPlayers = maxMajorCivs
+
+        val maxCityStates = numberOfCityStates()
+        if (gameParameters.maxNumberOfCityStates > maxCityStates) gameParameters.maxNumberOfCityStates = maxCityStates
+        if (gameParameters.minNumberOfCityStates > maxCityStates) gameParameters.minNumberOfCityStates = maxCityStates
 
         (previousScreen as? NewGameScreen)?.refreshExampleMap()
     }

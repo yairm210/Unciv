@@ -1,7 +1,7 @@
 package com.unciv.ui.images
 
-import com.unciv.logic.civilization.Civilization
 import com.unciv.ui.components.tilegroups.TileSetStrings
+import com.unciv.view.ForeignCivView
 
 @Suppress("MemberVisibilityCanBePrivate") // no problem for clients to see scope, imageFound, unused/internally used API
 
@@ -65,18 +65,18 @@ class ImageAttempter<out T: Any>(val scope: T) {
      *  Tries eras from the civ's current one down to the first era defined, by json order of eras.
      *  Result looks like "Plains-Rome-Ancient era": [style] goes before era if supplied.
      *
-     * @param civInfo the civ who owns the tile or unit, used for getEraNumber and ruleset (but not for nation.getStyleOrCivName)
+     * @param civView the civ who owns the tile or unit, used for getEraNumber and ruleset (but not for nation.getStyleOrCivName)
      * @param locationToCheck the beginning of the filename to check
      * @param style an optional string to load a civ- or style-specific sprite
      * @return Chainable `this` [ImageAttempter] extended by one or more checks for era-specific images
      * */
-     fun tryEraImage(civInfo: Civilization, locationToCheck: String, style: String?, tileSetStrings: TileSetStrings,
+     fun tryEraImage(civView: ForeignCivView, locationToCheck: String, style: String?, tileSetStrings: TileSetStrings,
                      active: Boolean = true): ImageAttempter<T> {
         if (!active) return this // for easier chaining
         return tryImages(
-            (civInfo.getEraNumber() downTo 0).asSequence().map {
+            (civView.getEraNumber() downTo 0).asSequence().map {
                 {
-                    val era = civInfo.gameInfo.ruleset.eras.keys.elementAt(it)
+                    val era = civView.getEraNameAt(it)
                     if (style != null)
                         tileSetStrings.getString(locationToCheck, tileSetStrings.tag, style, tileSetStrings.tag, era)
                     else

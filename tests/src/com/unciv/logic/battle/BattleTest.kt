@@ -7,10 +7,8 @@ import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.metadata.GameSettings.PathfindingAlgorithm
 import com.unciv.models.metadata.GameSettings.PathfindingAlgorithm.AStarPathfinding
-import com.unciv.models.metadata.GameSettings.PathfindingAlgorithm.ClassicPathfinding
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.testing.GdxTestRunner
-import com.unciv.testing.GdxTestRunnerFactory
+import com.unciv.testing.TestRunnerFactory
 import com.unciv.testing.TestGame
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
@@ -23,11 +21,15 @@ import org.junit.runners.Parameterized.Parameters
 import org.junit.runners.Parameterized.UseParametersRunnerFactory
 
 @RunWith(Parameterized::class)
-@UseParametersRunnerFactory(GdxTestRunnerFactory::class)
-class BattleTest(
-    // parameters come from the Compantion#parameters method
-     private val pathfindingAlgorithm: PathfindingAlgorithm,
-) {
+@UseParametersRunnerFactory(TestRunnerFactory::class)
+class BattleTest(private val pathfindingAlgorithm: PathfindingAlgorithm) {
+    companion object {
+        @Suppress("unused")
+        @Parameters
+        @JvmStatic
+        fun parameters() = TestRunnerFactory.Parameters.pathfinding
+    }
+
     private lateinit var attackerCiv: Civilization
     private lateinit var defenderCiv: Civilization
 
@@ -578,18 +580,5 @@ class BattleTest(
 
         // then
         assertEquals(30, attackerUnit.promotions.XP) // Attacker should get 2 xp from ranged attack but no xp from melee attack
-    }
-
-    companion object {
-        @Suppress("unused")
-        @Parameters
-        @JvmStatic
-        fun parameters(): Collection<Array<Any?>?> {
-            return listOf(
-                /* First execute the test with these parametrers */
-                arrayOf(ClassicPathfinding),
-                /* and then execute the test with these parametrers */
-                arrayOf(AStarPathfinding))
-        }
     }
 }
