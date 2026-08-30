@@ -49,6 +49,7 @@ enum class LocaleCode(
     German("de-DE"),
     Greek("el-GR"),
     Hindi("hi-IN"),
+    Hebrew("he-IS"), unused = true),
     Hungarian("hu-HU"),
     Indonesian("in-ID"),
     Italian("it-IT"),
