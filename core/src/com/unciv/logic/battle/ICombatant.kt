@@ -51,11 +51,12 @@ interface ICombatant {
     @Readonly fun isCity(): Boolean = this is CityCombatant
     @Readonly fun isCivilian() = this is MapUnitCombatant && this.unit.isCivilian()
     
-    @Readonly fun getTriggeredUniques(
+    @Readonly fun forEachTriggeredUnique(
         trigger: UniqueType,
         gameContext: GameContext,
-        triggerFilter: (Unique) -> Boolean = { true }
-    ): Sequence<Unique>
+        triggerFilter: (Unique) -> Boolean = { true },
+        op: (Unique) -> Unit
+    )
 
     fun getNotificationDisplay(leadingText: String = ""): String = ""
 }

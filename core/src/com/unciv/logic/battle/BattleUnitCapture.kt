@@ -48,9 +48,8 @@ object BattleUnitCapture {
     
     @Readonly
     private fun unitCapturedPrizeShipsUnique(attacker: MapUnitCombatant, defender: MapUnitCombatant): Boolean {
-        if (attacker.unit.getMatchingUniques(UniqueType.KillUnitCapture)
-                .none { defender.matchesFilter(it.params[0]) }
-        ) return false
+        if (!attacker.unit.hasUnique(UniqueType.KillUnitCapture) { defender.matchesFilter(it.params[0]) })
+            return false
 
         val captureChance = min(
             0.8f,
@@ -67,7 +66,7 @@ object BattleUnitCapture {
         if (!attacker.isMelee()) return false
         var unitCaptured = false
         val state = GameContext(attacker.getCivInfo(), ourCombatant = attacker, theirCombatant = defender)
-        for (unique in attacker.getMatchingUniques(UniqueType.GainFromDefeatingUnit, state, true)) {
+        attacker.forEachMatchingUnique(UniqueType.GainFromDefeatingUnit, state, true) { unique ->
             if (defender.unit.matchesFilter(unique.params[0])) {
                 attacker.getCivInfo().addGold(unique.params[1].toInt())
                 unitCaptured = true
