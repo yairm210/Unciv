@@ -97,8 +97,7 @@ object LuxuryResourcePlacementLogic {
 
         val disabledPercent =
             100 - min(tileData.size.toFloat().pow(0.2f) * 16, 100f).toInt() // Approximately
-        val targetDisabledLuxuries = (ruleset.tileResources.values
-            .count { it.resourceType == ResourceType.Luxury } * disabledPercent) / 100
+        val targetDisabledLuxuries = (remainingLuxuries.size * disabledPercent) / 100
         return remainingLuxuries.drop(targetDisabledLuxuries)
     }
 
@@ -307,14 +306,15 @@ object LuxuryResourcePlacementLogic {
         tileMap: TileMap,
         ruleset: Ruleset
     ) {
-        //val rng = GameContext(gameInfo = tileMap.gameInfo).stateBasedRandom("LuxuryResourcePlacementLogic.addRegionalLuxuries")
+        val rng = GameContext(gameInfo = tileMap.gameInfo).stateBasedRandom("LuxuryResourcePlacementLogic.addRegionalLuxuries")
         val idealCivsForMapSize = max(2, tileData.size / 500)
         val civCount = regions.size
         var regionTargetNumber =
             (tileData.size / 600) - (0.3f * abs(regions.size - idealCivsForMapSize)).toInt()
         regionTargetNumber += tileMap.mapParameters.getMapResources().regionalLuxuriesDelta
         regionTargetNumber = max(1, regionTargetNumber)
-        regionTargetNumber = min(civCount-1,regionTargetNumber)
+        // We place atleast 2 regionals close to the civ, and there's no reason to have more copies than one for each other civ
+        regionTargetNumber = min(civCount-3,regionTargetNumber)
         for (region in regions) {
             val resource = ruleset.tileResources[region.luxury] ?: continue
             fun Tile.isShoreOfContinent(continent: Int) =
@@ -324,14 +324,17 @@ object LuxuryResourcePlacementLogic {
                 tileMap.getTilesInRectangle(region.rect)
                     .filter { it.isShoreOfContinent(region.continentID) }
             else region.tiles.asSequence()
-            //val sortedCandidates = candidates.sortedBy {
-            //    getDistance(it.position, region.startPosition!!) + rng.nextFloat() * 0f
-            //}
+            val sortedCandidates = candidates
+                .map { it to getDistance(it.position, region.startPosition!!) + rng.nextFloat() * 120f }
+                .toList()
+                .sortedBy { it.second }
+                .map { it.first }
+                .asSequence()
             MapRegionResources.tryAddingResourceToTiles(
                 tileData,
                 resource,
                 regionTargetNumber,
-                candidates,
+                sortedCandidates,
                 0.4f,
                 true,
                 4,
