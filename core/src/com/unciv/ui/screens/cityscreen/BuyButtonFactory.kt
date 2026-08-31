@@ -121,7 +121,7 @@ class BuyButtonFactory(val cityScreen: CityScreen) {
             val cityView = cityScreen.cityView
             val balance = cityView.getStatReserve(stat)
             val majorityReligion = cityView.getMajorityReligion()
-            val yourReligion = cityView.getYourReligion()
+            val yourReligion = cityView.viewingCiv().getYourReligion()
             val isBuyingWithFaithForForeignReligion = construction.hasUnique(UniqueType.ReligiousUnit)
                 && !construction.hasUnique(UniqueType.TakeReligionOverBirthCity)
                 && majorityReligion != yourReligion

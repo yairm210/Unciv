@@ -2,11 +2,11 @@ package com.unciv.view
 
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.City
-import com.unciv.logic.city.managers.CityReligionManager
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.map.HexCoord
 import com.unciv.models.ImmutableColor
+import com.unciv.models.Religion
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.utils.DebugUtils
 import yairm210.purity.annotations.Readonly
@@ -60,5 +60,12 @@ open class ForeignCityView(internal open val city: City,
     @Readonly fun spyIsSetUpAtCity(viewer: Civilization): Boolean =
         viewer.espionageManager.getSpyAssignedToCity(city)?.isSetUp() == true
     @Readonly fun getCivInnerColor(): ImmutableColor = city.civ.nation.getInnerColor()
-    @Readonly fun getReligionManager(): CityReligionManager = city.religion
+
+    // Religion
+    @Readonly fun getMajorityReligion(): Religion? = city.religion.getMajorityReligion()
+    @Readonly fun getNumberOfFollowers(): Map<String, Int> = city.religion.getNumberOfFollowers()
+    @Readonly fun getPressuresFromSurroundingCities(): Map<String, Int> = city.religion.getPressuresFromSurroundingCities()
+    @Readonly fun getReligionThisIsTheHolyCityOf(): String? = city.religion.religionThisIsTheHolyCityOf
+    @Readonly fun isBlockedHolyCity(): Boolean = city.religion.isBlockedHolyCity
+    @Readonly fun getReligion(religionName: String?): Religion? = if (religionName == null) null else city.civ.gameInfo.religions[religionName]
 }
