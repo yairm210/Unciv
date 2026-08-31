@@ -63,7 +63,7 @@ object DeclareWarPlanEvaluator {
             // If teamCiv has more score than us and the target they are likely in a good position already
             motivation -= 20 * ((teamCivScore / (civScore * 1.4f)) - 1)
         }
-        return motivation - 20f
+        return motivation - 20f - getWarReadinessPenalty(civInfo, target)
     }
 
     /**
@@ -111,7 +111,7 @@ object DeclareWarPlanEvaluator {
             motivation -= (20 * (targetForce * multiplier) / (civToJoinForce + civForce)).coerceIn(-1000f, 1000f)
         }
 
-        return motivation - 15
+        return motivation - 15f - getWarReadinessPenalty(civInfo, target)
     }
 
     /**
@@ -144,26 +144,74 @@ object DeclareWarPlanEvaluator {
     }
 
     /**
+     * Penalizes war plans that would bankrupt the AI or leave it fighting while
+     * already overstretched. The value is deliberately continuous: a rich but
+     * weaker civ may still prepare, while a poor civ in several wars will wait.
+     */
+    @Readonly
+    private fun getWarReadinessPenalty(civInfo: Civilization, target: Civilization): Float {
+        val ownForce = civInfo.getStatForRanking(RankingType.Force).toFloat()
+        val targetForce = target.getStatForRanking(RankingType.Force).toFloat().coerceAtLeast(1f)
+
+        // Keep enough gold to maintain units and react to a lost city/unit.
+        val reserveNeeded = 25f + civInfo.cities.size * 15f + ownForce * 0.05f
+        val reservePenalty =
+            ((reserveNeeded - civInfo.gold.toFloat()).coerceAtLeast(0f) / 5f)
+                .coerceAtMost(35f)
+
+        // A negative income is acceptable briefly, but not as a reason to launch
+        // another expensive war.
+        val goldPerTurn = civInfo.stats.statsForNextTurn.gold -
+            civInfo.getDiplomacyManager(target)!!.goldPerTurn().toFloat()
+        val incomePenalty = when {
+            goldPerTurn <= -10f -> 25f
+            goldPerTurn < 0f -> -goldPerTurn * 2.5f
+            else -> 0f
+        }
+
+        // Do not open a new front while already committed elsewhere.
+        val existingWarPenalty = civInfo.getCivsAtWarWith().count() * 12f
+
+        // Planning is possible while somewhat weaker, but declaring immediately
+        // while far weaker should be rare unless motivation is exceptionally high.
+        val forceRatio = ownForce / targetForce
+        val forcePenalty =
+            ((0.9f - forceRatio).coerceAtLeast(0f) * 45f)
+                .coerceAtMost(30f)
+
+        return reservePenalty + incomePenalty + existingWarPenalty + forcePenalty
+    }
+
+    /**
      * How much motivation [civInfo] has to declare war against [target] this turn.
      * This can be through a prepared war or a suprise war.
      *
      * @return The movtivation of the plan. If it is > 0 then we can declare the war.
      */
     @Readonly
-    fun evaluateDeclareWarPlan(civInfo: Civilization, target: Civilization, givenMotivation: Float?): Float {
+    fun evaluateDeclareWarPlan(
+        civInfo: Civilization,
+        target: Civilization,
+        givenMotivation: Float?
+    ): Float {
         if (civInfo.getPersonality()[PersonalityValue.DeclareWar] == 0f) return -1000f
+
         val motivation = givenMotivation
             ?: MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civInfo, target, 0f)
 
         val diploManager = civInfo.getDiplomacyManager(target)!!
+        val readinessPenalty = getWarReadinessPenalty(civInfo, target)
 
-        if (diploManager.hasFlag(DiplomacyFlags.WaryOf) && diploManager.getFlag(DiplomacyFlags.WaryOf) < 0) {
-            val turnsToPlan = (10 - (motivation / 10)).coerceAtLeast(3f)
+        if (diploManager.hasFlag(DiplomacyFlags.WaryOf) &&
+            diploManager.getFlag(DiplomacyFlags.WaryOf) < 0
+        ) {
+            val turnsToPlan = (10 - motivation / 10).coerceAtLeast(3f)
             val turnsToWait = turnsToPlan + diploManager.getFlag(DiplomacyFlags.WaryOf)
-            return motivation - turnsToWait * 3
+
+            return motivation - turnsToWait * 3f - readinessPenalty
         }
 
-        return motivation - 40
+        return motivation - 40f - readinessPenalty
     }
 
     /**
@@ -172,7 +220,11 @@ object DeclareWarPlanEvaluator {
      * @return The motivation of the plan. If it is > 0 then we can start planning the war.
      */
     @Readonly
-    fun evaluateStartPreparingWarPlan(civInfo: Civilization, target: Civilization, givenMotivation: Float?): Float {
+    fun evaluateStartPreparingWarPlan(
+        civInfo: Civilization,
+        target: Civilization,
+        givenMotivation: Float?
+    ): Float {
         val motivation = givenMotivation
             ?: MotivationToAttackAutomation.hasAtLeastMotivationToAttack(civInfo, target, 0f)
 
@@ -181,7 +233,8 @@ object DeclareWarPlanEvaluator {
         val diploManager = civInfo.getDiplomacyManager(target)!!
         if (diploManager.hasFlag(DiplomacyFlags.WaryOf)) return 0f
 
-        return motivation - 15
+        // Lack of readiness makes the AI build reserves and units first instead
+        // of beginning a war plan it cannot sustain.
+        return motivation - 15f - getWarReadinessPenalty(civInfo, target) * 0.35f
     }
 }
-
