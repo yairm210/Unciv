@@ -8,9 +8,7 @@ import com.unciv.logic.city.StatTreeNode
 import com.unciv.logic.city.CityFocus
 import com.unciv.logic.city.CityResources
 import com.unciv.logic.city.GreatPersonPointsBreakdown
-import com.unciv.logic.city.managers.CityReligionManager
 import com.unciv.logic.map.tile.Tile
-import com.unciv.models.Religion
 import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
@@ -70,8 +68,6 @@ class CityView(city: City,
     @Readonly fun getStatsOfSpecialist(specialistName: String): Stats = city.cityStats.getStatsOfSpecialist(specialistName)
 
     // City state
-    @Readonly fun getNumberOfFollowers(): Counter<String> = city.religion.getNumberOfFollowers()
-    @Readonly fun religion(): CityReligionManager = city.religion
     @Readonly fun isStarving(): Boolean = city.isStarving()
     @Readonly fun isGrowing(): Boolean = city.isGrowing()
     @Readonly fun isInResistance(): Boolean = city.isInResistance()
@@ -137,8 +133,6 @@ class CityView(city: City,
     @Readonly fun getBuildingStats(building: Building): Stats = building.getStats(city)
 
     @Readonly fun getStatReserve(stat: Stat): Int = city.getStatReserve(stat)
-    @Readonly fun getMajorityReligion(): Religion? = city.religion.getMajorityReligion()
-    @Readonly fun getYourReligion(): Religion? = viewer.religionManager.religion
     @Readonly fun canBePurchasedWithAnyStat(construction: INonPerpetualConstruction): Boolean =
         construction.canBePurchasedWithAnyStat(city)
     @Readonly fun canBePurchasedWithStat(construction: INonPerpetualConstruction, stat: Stat): Boolean =

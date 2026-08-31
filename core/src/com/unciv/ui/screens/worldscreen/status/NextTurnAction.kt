@@ -2,7 +2,6 @@ package com.unciv.ui.screens.worldscreen.status
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
-import com.unciv.logic.civilization.managers.ReligionManager
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.ui.components.extensions.disable
@@ -55,7 +54,7 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
             getCityWithNoProductionSet(worldScreen) != null
         override fun action(worldScreen: WorldScreen) {
             val city = getCityWithNoProductionSet(worldScreen) ?: return
-            worldScreen.game.pushScreen{ CityScreen(worldScreen.selectedGameView.getCityView(city)) }
+            worldScreen.game.pushScreen{ CityScreen(city) }
         }
     },
     PickTech("Pick a tech", Color.SKY) {
@@ -98,19 +97,19 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
         override fun isChoice(worldScreen: WorldScreen) =
             worldScreen.selectedGameView.civView.isFoundingReligion()
         override fun action(worldScreen: WorldScreen) =
-            openReligionPicker(worldScreen, true) { getBeliefsToChooseAtFounding() }.let {  }
+            openReligionPicker(worldScreen, true, worldScreen.selectedGameView.civView.getBeliefsToChooseAtFounding()).let {  }
     },
     EnhanceReligion("Enhance a Religion", Color.valueOf(BeliefType.Enhancer.color)) {
         override fun isChoice(worldScreen: WorldScreen) =
             worldScreen.selectedGameView.civView.isEnhancingReligion()
         override fun action(worldScreen: WorldScreen) =
-            openReligionPicker(worldScreen, false) { getBeliefsToChooseAtEnhancing() }.let {  }
+            openReligionPicker(worldScreen, false, worldScreen.selectedGameView.civView.getBeliefsToChooseAtEnhancing()).let {  }
     },
     ReformReligion("Reform Religion", Color.valueOf(BeliefType.Enhancer.color)) {
         override fun isChoice(worldScreen: WorldScreen) =
             worldScreen.selectedGameView.civView.hasFreeBeliefs()
         override fun action(worldScreen: WorldScreen) =
-            openReligionPicker(worldScreen, false) { freeBeliefsAsEnums() }.let {  }
+            openReligionPicker(worldScreen, false, worldScreen.selectedGameView.civView.freeBeliefsAsEnums()).let {  }
     },
     WorldCongressVote("Vote for World Leader", Color.MAROON) {
         override fun isChoice(worldScreen: WorldScreen) =
@@ -152,20 +151,20 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
         // Readability helpers to allow concise enum instances
         @Readonly
         private fun getCityWithNoProductionSet(worldScreen: WorldScreen) =
-            worldScreen.selectedGameView.civView.getCiv().cities
+            worldScreen.selectedGameView.civView.cities()
             .firstOrNull {
-                !it.isPuppet && it.cityConstructions. currentConstructionName().isEmpty()
+                !it.isPuppet() && it.currentConstructionName().isEmpty()
             }
 
         private fun openReligionPicker(
                 worldScreen: WorldScreen,
                 pickIconAndName: Boolean,
-                getBeliefs: ReligionManager.() -> Counter<BeliefType>
+                beliefs: Counter<BeliefType>
             ) =
             worldScreen.game.pushScreen {
                 ReligiousBeliefsPickerScreen(
                     worldScreen.selectedGameView.civView.getCiv(),
-                    worldScreen.selectedGameView.civView.getCiv().religionManager.getBeliefs(),
+                    beliefs,
                     pickIconAndName = pickIconAndName
                 )
             }

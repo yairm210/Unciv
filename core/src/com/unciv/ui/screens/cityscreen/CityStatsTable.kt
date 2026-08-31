@@ -180,7 +180,7 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
 
         for ((resource, amount) in resourceCounter) {
             if (resource.isCityWide) {
-                var resourceIcon = Table()
+                val resourceIcon = Table()
                 resourceIcon.addTooltip(resource.name, targetAlign = Align.bottom)
                 resourceIcon.onClick { cityScreen.openCivilopedia(resource.makeLink()) }
                 resourceIcon.add(ImageGetter.getResourcePortrait(resource.name, 20f)).padRight(5f)
@@ -228,7 +228,7 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
     }
 
     private fun addReligionInfo() {
-        val expanderTab = CityReligionInfoTable(cityView.religion()).asExpander { onContentResize() }
+        val expanderTab = CityReligionInfoTable(cityView).asExpander { onContentResize() }
         lowerTable.add(expanderTab).growX().row()
     }
 

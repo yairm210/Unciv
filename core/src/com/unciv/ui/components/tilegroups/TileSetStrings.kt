@@ -3,7 +3,7 @@ package com.unciv.ui.components.tilegroups
 import com.unciv.UncivGame
 import com.unciv.logic.map.NeighborDirection
 import com.unciv.view.ForeignCivView
-import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.view.ForeignMapUnitView
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.Ruleset
@@ -167,7 +167,7 @@ class TileSetStrings(
      * This means that if there's a "pikeman-France" and a "pikeman-Medieval era",
      * The era-based image wins out, even though it's not the current era.
      */
-    private fun tryGetUnitImageLocation(unit: MapUnit): String? {
+    private fun tryGetUnitImageLocation(unit: ForeignMapUnitView): String? {
 
         var baseUnitIconLocation = getString(this.unitsLocation, unit.name)
         if (unit.isEmbarked()) {
@@ -182,7 +182,7 @@ class TileSetStrings(
             else baseUnitIconLocation // no change
         }
 
-        val civView = ForeignCivView(unit.civ, unit.civ)
+        val civView = unit.civ()
         val style = civView.getStyle()
         val civName = civView.civName
 
@@ -199,18 +199,20 @@ class TileSetStrings(
             .tryImage(active = style.isNotEmpty()) { getString(baseUnitIconLocation, tag, style) }
             .tryImage { baseUnitIconLocation }
 
-        if (unit.baseUnit.replaces != null)
-            imageAttempter = imageAttempter.tryImage { getString(unitsLocation, unit.baseUnit.replaces!!) }
+        val replaces = unit.getBaseUnit().replaces
+        if (replaces != null)
+            imageAttempter = imageAttempter.tryImage { getString(unitsLocation, replaces) }
 
         return imageAttempter.getPathOrNull()
     }
 
-    fun getUnitImageLocation(unit: MapUnit): String {
+    fun getUnitImageLocation(unit: ForeignMapUnitView): String {
+        val civView = unit.civ()
         val imageKey = getString(
             unit.name, tag,
-            unit.civ.getEra().name, tag,
-            unit.civ.nation.name, tag,
-            unit.civ.nation.style, tag,
+            civView.getEraName(), tag,
+            civView.civName, tag,
+            civView.getStyle(), tag,
             unit.isEmbarked().toString()
         )
         // if in cache return that
