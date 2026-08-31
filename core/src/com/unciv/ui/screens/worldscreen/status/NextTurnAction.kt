@@ -2,6 +2,11 @@ package com.unciv.ui.screens.worldscreen.status
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
+import com.unciv.logic.automation.civilization.NextTurnAutomation
+import com.unciv.logic.automation.civilization.NextTurnAutomation.tryVoteForDiplomaticVictory
+import com.unciv.logic.automation.civilization.ReligionAutomation
+import com.unciv.logic.automation.unit.EspionageAutomation
+import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.civilization.managers.ReligionManager
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.BeliefType
@@ -37,6 +42,11 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
             worldScreen.autoPlay.isAutoPlaying()
         override fun action(worldScreen: WorldScreen) =
             worldScreen.autoPlay.stopAutoPlay()
+        override fun getSubText(worldScreen: WorldScreen): String? {
+            return if (worldScreen.game.settings.autoPlay.autoPlayOneUnit)
+                getIdleUnitsText(worldScreen)
+                else null
+        }
     },
     Working(Constants.working, Color.GRAY) {
         override fun isChoice(worldScreen: WorldScreen) =
@@ -57,6 +67,21 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
             val city = getCityWithNoProductionSet(worldScreen) ?: return
             worldScreen.game.pushScreen{ CityScreen(worldScreen.selectedGameView.getCityView(city)) }
         }
+        
+        override fun selectForAutomation(worldScreen: WorldScreen): Boolean {
+            var selectedCity = worldScreen.bottomUnitTable.selectedCity?.city
+            val constructionCity = getCityWithNoProductionSet(worldScreen)!!
+            if (selectedCity == constructionCity) 
+                return false
+            worldScreen.mapHolder.setCenterPosition(constructionCity.getCenterTile().position, immediately = true, selectUnit = false)
+            worldScreen.bottomUnitTable.citySelected(constructionCity)
+            return true
+        }
+
+        override fun automate(worldScreen: WorldScreen) {
+            var selectedCity = worldScreen.bottomUnitTable.selectedCity?.city
+            NextTurnAutomation.automateCity(selectedCity!!)
+        }
     },
     PickTech("Pick a tech", Color.SKY) {
         override fun isChoice(worldScreen: WorldScreen) =
@@ -65,6 +90,10 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
             worldScreen.game.pushScreen{
                 TechPickerScreen(worldScreen.selectedGameView.civView.getCiv(), null)
             }.let {  }
+        override fun automate(worldScreen: WorldScreen) {
+            val civInfo = worldScreen.selectedGameView.civView.getCiv()
+            NextTurnAutomation.chooseTechToResearch(civInfo)
+        }
     },
     PickPolicy("Pick a policy", Color.VIOLET) {
         override fun isChoice(worldScreen: WorldScreen) =
@@ -72,6 +101,10 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
         override fun action(worldScreen: WorldScreen) {
             worldScreen.game.pushScreen { PolicyPickerScreen(worldScreen.selectedCiv, worldScreen.canChangeState) }
             worldScreen.selectedGameView.civView.tryDismissPolicyPicker()
+        }
+        override fun automate(worldScreen: WorldScreen) {
+            val civInfo = worldScreen.selectedGameView.civView.getCiv()
+            NextTurnAutomation.adoptPolicy(civInfo)
         }
     },
     MoveSpies("Move Spies", Color.WHITE) {
@@ -81,50 +114,90 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
             worldScreen.game.pushScreen { EspionageOverviewScreen(worldScreen.selectedCiv, worldScreen) }
             worldScreen.selectedGameView.civView.tryDismissMoveSpies()
         }
+        override fun automate(worldScreen: WorldScreen) {
+            val civInfo = worldScreen.selectedGameView.civView.getCiv()
+            EspionageAutomation(civInfo).automateSpies()
+        }
     },
     FoundPantheon("Found Pantheon", Color.valueOf(BeliefType.Pantheon.color)) {
         override fun isChoice(worldScreen: WorldScreen) =
             worldScreen.selectedGameView.civView.canFoundPantheon()
         override fun action(worldScreen: WorldScreen) =
             worldScreen.game.pushScreen { PantheonPickerScreen(worldScreen.selectedGameView.civView.getCiv()) }.let {  }
+        override fun automate(worldScreen: WorldScreen) {
+            val civInfo = worldScreen.selectedGameView.civView.getCiv()
+            ReligionAutomation.choosePantheon(civInfo)
+        }
     },
     ExpandPantheon("Expand Pantheon", Color.valueOf(BeliefType.Pantheon.color)) {
         override fun isChoice(worldScreen: WorldScreen) =
             worldScreen.selectedGameView.civView.canExpandPantheon()
         override fun action(worldScreen: WorldScreen) =
             worldScreen.game.pushScreen { PantheonPickerScreen(worldScreen.selectedGameView.civView.getCiv()) }.let {  }
+        override fun automate(worldScreen: WorldScreen) {
+            val civInfo = worldScreen.selectedGameView.civView.getCiv()
+            ReligionAutomation.chooseReligiousBeliefs(civInfo)
+        }
     },
     FoundReligion("Found Religion", Color.valueOf(BeliefType.Founder.color)) {
         override fun isChoice(worldScreen: WorldScreen) =
             worldScreen.selectedGameView.civView.isFoundingReligion()
         override fun action(worldScreen: WorldScreen) =
             openReligionPicker(worldScreen, true) { getBeliefsToChooseAtFounding() }.let {  }
+        override fun automate(worldScreen: WorldScreen) {
+            val civInfo = worldScreen.selectedGameView.civView.getCiv()
+            ReligionAutomation.foundReligion(civInfo)
+        }
     },
     EnhanceReligion("Enhance a Religion", Color.valueOf(BeliefType.Enhancer.color)) {
         override fun isChoice(worldScreen: WorldScreen) =
             worldScreen.selectedGameView.civView.isEnhancingReligion()
         override fun action(worldScreen: WorldScreen) =
             openReligionPicker(worldScreen, false) { getBeliefsToChooseAtEnhancing() }.let {  }
+        override fun automate(worldScreen: WorldScreen) {
+            val civInfo = worldScreen.selectedGameView.civView.getCiv()
+            ReligionAutomation.enhanceReligion(civInfo)
+        }
     },
     ReformReligion("Reform Religion", Color.valueOf(BeliefType.Enhancer.color)) {
         override fun isChoice(worldScreen: WorldScreen) =
             worldScreen.selectedGameView.civView.hasFreeBeliefs()
         override fun action(worldScreen: WorldScreen) =
             openReligionPicker(worldScreen, false) { freeBeliefsAsEnums() }.let {  }
+        override fun automate(worldScreen: WorldScreen) {
+            val civInfo = worldScreen.selectedGameView.civView.getCiv()
+            ReligionAutomation.chooseFreeBeliefs(civInfo)
+        }
     },
     WorldCongressVote("Vote for World Leader", Color.MAROON) {
         override fun isChoice(worldScreen: WorldScreen) =
             worldScreen.selectedGameView.civView.mayVoteForDiplomaticVictory()
         override fun action(worldScreen: WorldScreen) =
             worldScreen.game.pushScreen { DiplomaticVotePickerScreen(worldScreen.selectedGameView.civView.getCiv()) }.let {  }
+        override fun automate(worldScreen: WorldScreen) {
+            val civInfo = worldScreen.selectedGameView.civView.getCiv()
+            tryVoteForDiplomaticVictory(civInfo)
+        }
     },
     NextUnit("Next unit", Color.LIGHT_GRAY) {
         override fun isChoice(worldScreen: WorldScreen) =
             worldScreen.game.settings.checkForDueUnits && worldScreen.selectedGameView.civView.dueUnitsCount() > 0
-        override fun action(worldScreen: WorldScreen) =
+        override fun action(worldScreen: WorldScreen) {
             worldScreen.switchToNextUnit(!worldScreen.game.settings.checkForDueUnitsCycles)
+        }
         override fun getSubText(worldScreen: WorldScreen): String? =
             getIdleUnitsText(worldScreen)
+        override fun selectForAutomation(worldScreen: WorldScreen): Boolean {
+            val civInfo = worldScreen.selectedGameView.civView.getCiv()
+            var selectedUnit = worldScreen.bottomUnitTable.selectedUnit?.unit
+            if (selectedUnit != null && selectedUnit in civInfo.units.getDueUnits())
+                return false
+            worldScreen.switchToNextUnit(!worldScreen.game.settings.checkForDueUnitsCycles, immediately = true)!!
+            return true
+        }
+        override fun automate(worldScreen: WorldScreen) {
+            UnitAutomation.automateUnitMoves(worldScreen.bottomUnitTable.selectedUnit?.unit!!)
+        }
     },
     MoveAutomatedUnits("Move automated units", Color.LIGHT_GRAY) {
         override fun isChoice(worldScreen: WorldScreen) =
@@ -147,6 +220,8 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
     open fun getSubText(worldScreen: WorldScreen): String? = null
     abstract fun isChoice(worldScreen: WorldScreen): Boolean
     open fun action(worldScreen: WorldScreen) {}
+    open fun selectForAutomation(worldScreen: WorldScreen): Boolean = false
+    open fun automate(worldScreen: WorldScreen) {}
 
     companion object {
         // Readability helpers to allow concise enum instances
