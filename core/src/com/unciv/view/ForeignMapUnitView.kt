@@ -25,6 +25,8 @@ open class ForeignMapUnitView(internal open val unit: MapUnit, viewer: Civilizat
     // Data retrieval
     @Readonly fun isAirUnit(): Boolean = unit.baseUnit.isAirUnit()
     @Readonly fun isCivilian(): Boolean = unit.isCivilian()
+    @Readonly fun isMilitary(): Boolean = unit.isMilitary()
+    @Readonly fun isEmbarked(): Boolean = unit.isEmbarked()
     @Readonly fun displayName(): String = unit.displayName()
     @Readonly fun getBaseUnit(): BaseUnit = unit.baseUnit
     @Readonly fun getRange(): Int = unit.getRange()

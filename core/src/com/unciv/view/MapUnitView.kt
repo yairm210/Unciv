@@ -41,7 +41,6 @@ class MapUnitView internal constructor(
     @Readonly fun isUnknownTileWeShouldAssumeToBePassable(tileView: TileView): Boolean =
         unit.movement.isUnknownTileWeShouldAssumeToBePassable(tileView.unwrap())
     @Readonly fun canAttack(): Boolean = unit.canAttack()
-    @Readonly fun isMilitary(): Boolean = unit.isMilitary()
     @Readonly fun isNuclearWeapon(): Boolean = unit.isNuclearWeapon()
     @Readonly fun getNukeBlastRadius(): Int = unit.getNukeBlastRadius()
     @Readonly fun cannotMove(): Boolean = unit.cache.cannotMove
