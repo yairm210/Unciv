@@ -1,5 +1,7 @@
 package com.unciv.view
 
+import com.unciv.logic.battle.CityCombatant
+import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.TileMap
@@ -11,6 +13,7 @@ import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.stats.Stats
+import com.unciv.utils.DebugUtils
 import yairm210.purity.annotations.Readonly
 
 /** View of a [Tile] from the perspective of [viewer] via [tileMapView]. */
@@ -41,7 +44,7 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
     }
     @Readonly private fun isVisible(unit: MapUnit): Boolean {
         if (viewer == null) return false
-        return unit.isVisibleTo(viewer)
+        return DebugUtils.VISIBLE_MAP || unit.isVisibleTo(viewer)
     }
     @Readonly private fun toForeignMapUnitView(unit: MapUnit): ForeignMapUnitView =
         tileMapView.gameView!!.getForeignMapUnitView(unit)
@@ -63,6 +66,21 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
             .filter { isVisible(it) }
             .map { toForeignMapUnitView(it) }
             .toList()
+    }
+    @Readonly fun getCombatant(): CombatantView? {
+        val viewer = viewer ?: return null
+        if (!isExplored()) return null
+        val gameView = tileMapView.gameView ?: return null
+        if (tile.isCityCenter())
+            return CombatantView(CityCombatant(tile.getCity()!!), viewer, spectatorMode, gameView)
+
+        val militaryUnit = tile.militaryUnit
+        if (militaryUnit != null && isVisible(militaryUnit))
+            return CombatantView(MapUnitCombatant(militaryUnit), viewer, spectatorMode, gameView)
+        val civilianUnit = tile.civilianUnit
+        if (civilianUnit != null && isVisible(civilianUnit))
+            return CombatantView(MapUnitCombatant(civilianUnit), viewer, spectatorMode, gameView)
+        return null
     }
 
     // Data retrieval

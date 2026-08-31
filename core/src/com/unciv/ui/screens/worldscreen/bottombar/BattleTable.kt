@@ -39,7 +39,8 @@ import com.unciv.ui.screens.worldscreen.UndoHandler.Companion.clearUndoCheckpoin
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.ui.screens.worldscreen.bottombar.BattleTableHelpers.battleAnimationDeferred
 import com.unciv.ui.screens.worldscreen.bottombar.BattleTableHelpers.getHealthBar
-import com.unciv.utils.DebugUtils
+import com.unciv.view.CombatantView
+import com.unciv.view.TileView
 import yairm210.purity.annotations.Readonly
 import kotlin.math.max
 import kotlin.math.roundToInt
@@ -66,21 +67,21 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
     }
 
     fun update() {
-        when (val attacker = tryGetAttacker()) {
-            null -> return hide()
-            is MapUnitCombatant if attacker.unit.isNuclearWeapon() -> {
+        val attacker = tryGetAttacker()?.getCombatant() ?: return hide()
+        when {
+            attacker is MapUnitCombatant && attacker.unit.isNuclearWeapon() -> {
                 val selectedTile = worldScreen.mapHolder.selectedTile?.getTile()
                     ?: return hide() // no selected tile
                 if (selectedTile == attacker.getTile()) return hide() // mayUseNuke would test this again, but not actually seeing the nuke-yourself table just by selecting the nuke is nicer
                 simulateNuke(attacker, selectedTile)
             }
-            is MapUnitCombatant if attacker.unit.isPreparingAirSweep() -> {
+            attacker is MapUnitCombatant && attacker.unit.isPreparingAirSweep() -> {
                 val selectedTile = worldScreen.mapHolder.selectedTile?.getTile()
                     ?: return hide() // no selected tile
                 simulateAirsweep(attacker, selectedTile)
             }
             else -> {
-                val defender = tryGetDefender() ?: return hide()
+                val defender = tryGetDefender()?.getCombatant() ?: return hide()
                 if (attacker is CityCombatant && defender is CityCombatant) return hide()
                 val tileToAttackFrom = if (attacker is MapUnitCombatant)
                     TargetHelper.getAttackableEnemies(
@@ -113,41 +114,39 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
     }
 
     @Readonly
-    private fun tryGetAttacker(): ICombatant? {
+    private fun wrapCombatant(combatant: ICombatant): CombatantView {
+        val gameView = worldScreen.selectedGameView
+        return CombatantView(combatant, gameView.civView.getCiv(), gameView.spectatorMode, gameView)
+    }
+
+    @Readonly
+    private fun tryGetAttacker(): CombatantView? {
         val unitTable = worldScreen.bottomUnitTable
-        return if (unitTable.selectedUnit != null
+        val combatant = if (unitTable.selectedUnit != null
                 && !unitTable.selectedUnit!!.isCivilian()
                 && !unitTable.selectedUnit!!.hasUnique(UniqueType.CannotAttack))  // purely cosmetic - hide battle table
                     MapUnitCombatant(unitTable.selectedUnit!!.getUnit())
         else if (unitTable.selectedCity != null)
             CityCombatant(unitTable.selectedCity!!.getCity())
-        else null // no attacker
+        else return null // no attacker
+        return wrapCombatant(combatant)
     }
 
     @Readonly
-    private fun tryGetDefender(): ICombatant? {
-        val selectedTile = worldScreen.mapHolder.selectedTile?.getTile() ?: return null // no selected tile
-        return tryGetDefenderAtTile(selectedTile, false)
+    private fun tryGetDefender(): CombatantView? {
+        val selectedTileView = worldScreen.mapHolder.selectedTile ?: return null // no selected tile
+        return tryGetDefenderAtTile(selectedTileView, false)
     }
 
     @Readonly
-    private fun tryGetDefenderAtTile(selectedTile: Tile, includeFriendly: Boolean): ICombatant? {
+    private fun tryGetDefenderAtTile(selectedTileView: TileView, includeFriendly: Boolean): CombatantView? {
+        val defenderView = selectedTileView.getCombatant() ?: return null // no visible combatant in tile
         val attackerCiv = worldScreen.selectedGameView.civView.getCiv()
-        val defender: ICombatant? = Battle.getMapCombatantOfTile(selectedTile)
 
-        if (defender == null || (!includeFriendly && defender.getCivInfo() == attackerCiv))
+        if (!includeFriendly && defenderView.getCivInfo().getCiv() == attackerCiv)
             return null  // no enemy combatant in tile
 
-        val canSeeDefender = when {
-            DebugUtils.VISIBLE_MAP -> true
-            defender.isInvisible(attackerCiv) -> attackerCiv.viewableInvisibleUnitsTiles.contains(selectedTile)
-            defender.isCity() -> attackerCiv.hasExplored(selectedTile)
-            else -> attackerCiv.viewableTiles.contains(selectedTile)
-        }
-
-        if (!canSeeDefender) return null
-
-        return defender
+        return defenderView
     }
 
     private fun getIcon(combatant: ICombatant) =
@@ -383,7 +382,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
 
         val defenderNameWrapper = Table()
         for (tile in targetTile.getTilesInDistance(blastRadius)) {
-            val defender = tryGetDefenderAtTile(tile, true) ?: continue
+            val defender = tryGetDefenderAtTile(worldScreen.selectedGameView.getTile(tile), true)?.getCombatant() ?: continue
 
             val defenderLabel = defender.getName().toLabel(hideIcons = true)
             defenderNameWrapper.add(getIcon(defender)).padRight(5f)
