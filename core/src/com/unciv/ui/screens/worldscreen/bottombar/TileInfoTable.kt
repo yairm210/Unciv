@@ -30,11 +30,10 @@ class TileInfoTable(private val worldScreen: WorldScreen) : Table(BaseScreen.ski
         )
     }
 
-    internal fun updateTileTable(selectedTileView: TileView?) {
+    internal fun updateTileTable(tileView: TileView?) {
         clearChildren()
         pad(5f)
 
-        val tileView = selectedTileView?.let { civView.gameView.getTile(it) }
         if (tileView != null && (DebugUtils.VISIBLE_MAP || civView.hasExplored(tileView))) {
             add(getStatsTable(tileView)).left().row()
             add(MarkupRenderer.render(TileDescription.toMarkup(tileView, civView), padding = 0f, iconDisplay = IconDisplay.None) {

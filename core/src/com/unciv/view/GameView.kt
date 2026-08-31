@@ -23,5 +23,4 @@ class GameView(gameInfo: GameInfo, viewer: Civilization, spectatorMode: Boolean 
 
     // Data retrieval
     @Readonly fun getTile(tile: Tile): TileView = tileMapView.getTile(tile)
-    @Readonly fun getTile(tileView: TileView): TileView = tileMapView.getTile(tileView.unwrap())
 }
