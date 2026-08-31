@@ -300,23 +300,24 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
         }
         statsAndSpecialists.add(stats.toLabel(fontSize = Constants.defaultFontSize)).right()
 
-        val assignedSpec = cityView.getNewSpecialists().clone()
-
-        val specialistIcons = Table()
-        for ((specialistName, amount) in building.newSpecialists()) {
-            val specialist = cityView.getRuleset().specialists[specialistName]
-                ?: continue // probably a mod that doesn't have the specialist defined yet
-            repeat(amount) {
-                if (assignedSpec[specialistName] > 0) {
-                    specialistIcons.add(ImageGetter.getSpecialistIcon(specialist.colorObject))
-                        .size(20f)
-                    assignedSpec.add(specialistName, -1)
-                } else {
-                    specialistIcons.add(ImageGetter.getSpecialistIcon(Color.GRAY)).size(20f)
+        if (building.newSpecialists().any()) {
+            val assignedSpec = cityView.getNewSpecialists().clone()
+            val specialistIcons = Table()
+            for ((specialistName, amount) in building.newSpecialists()) {
+                val specialist = cityView.getRuleset().specialists[specialistName]
+                    ?: continue // probably a mod that doesn't have the specialist defined yet
+                repeat(amount) {
+                    if (assignedSpec[specialistName] > 0) {
+                        specialistIcons.add(ImageGetter.getSpecialistIcon(specialist.colorObject))
+                            .size(20f)
+                        assignedSpec.add(specialistName, -1)
+                    } else {
+                        specialistIcons.add(ImageGetter.getSpecialistIcon(Color.GRAY)).size(20f)
+                    }
                 }
             }
+            statsAndSpecialists.add(specialistIcons).right()
         }
-        statsAndSpecialists.add(specialistIcons).right()
 
         info.add(statsAndSpecialists).right()
 
@@ -417,8 +418,8 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
             clear()
             val selected = BaseScreen.skin.getColor("selection")
             for (stat in Stat.entries) {
-                val amount = cityView.getCurrentCityStats()[stat]
                 if (stat == Stat.Faith && !cityView.viewingCiv().isReligionEnabled()) continue
+                val amount = cityView.getCurrentCityStats()[stat]
                 val icon = Table()
                 val focus = CityFocus.safeValueOf(stat)
                 val toggledFocus = if (focus == cityView.getCityFocus()) {
