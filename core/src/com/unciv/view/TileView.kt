@@ -122,6 +122,13 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
         val city = cityView?.unwrap() ?: tile.getCity()
         return tile.stats.getTileStats(city, viewingCiv?.unwrap())
     }
+    @Readonly fun getTileStatsBreakdown(
+        viewingCiv: CivView?,
+        cityView: CityView? = null,
+    ): List<Pair<String, Stats>> {
+        val city = cityView?.unwrap() ?: tile.getCity()
+        return tile.stats.getTileStatsBreakdown(city, viewingCiv?.unwrap())
+    }
     @Readonly fun providesResources(viewingCiv: CivView): Boolean = tile.providesResources(viewingCiv.unwrap())
 
     @Readonly fun getTileMap(): TileMapView = tileMapView
