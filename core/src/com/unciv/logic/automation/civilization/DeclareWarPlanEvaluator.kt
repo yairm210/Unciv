@@ -63,7 +63,7 @@ object DeclareWarPlanEvaluator {
             // If teamCiv has more score than us and the target they are likely in a good position already
             motivation -= 20 * ((teamCivScore / (civScore * 1.4f)) - 1)
         }
-        return motivation - 20f
+        return motivation - 20f - getWarReadinessPenalty(civInfo, target)
     }
 
     /**
@@ -111,7 +111,7 @@ object DeclareWarPlanEvaluator {
             motivation -= (20 * (targetForce * multiplier) / (civToJoinForce + civForce)).coerceIn(-1000f, 1000f)
         }
 
-        return motivation - 15
+        return motivation - 15f - getWarReadinessPenalty(civInfo, target)
     }
 
     /**
@@ -161,7 +161,8 @@ object DeclareWarPlanEvaluator {
 
         // A negative income is acceptable briefly, but not as a reason to launch
         // another expensive war.
-        val goldPerTurn = civInfo.stats.statsForNextTurn.gold
+        val goldPerTurn = civInfo.stats.statsForNextTurn.gold -
+            civInfo.getDiplomacyManager(target)!!.goldPerTurn().toFloat()
         val incomePenalty = when {
             goldPerTurn <= -10f -> 25f
             goldPerTurn < 0f -> -goldPerTurn * 2.5f
