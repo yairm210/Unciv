@@ -177,17 +177,22 @@ class CityScreen(
 
     override fun getCivilopediaRuleset() = cityView.getRuleset()
 
+    /** Async */
     internal fun update() {
-        // Recalculate Stats
-        cityView.updateCityStats()
+        Concurrency.run {
+            // Recalculate Stats
+            cityView.updateCityStats()
+            Concurrency.runOnGLThread {
 
-        constructionsTable.isVisible = !isSpying
-        constructionsTable.update(selectedConstruction)
+                constructionsTable.isVisible = !isSpying
+                constructionsTable.update(selectedConstruction)
 
-        updateWithoutConstructionAndMap()
+                updateWithoutConstructionAndMap()
 
-        // Rest of screen: Map of surroundings
-        updateTileGroups()
+                // Rest of screen: Map of surroundings
+                updateTileGroups()
+            }
+        }
     }
 
     internal fun updateWithoutConstructionAndMap() {
