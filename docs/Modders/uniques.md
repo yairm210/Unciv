@@ -2342,6 +2342,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Unit
 
 ??? example  "Can carry [amount] [mapUnitFilter] units"
+	Using several of these uniques with complex overlapping filters is supported.
+
 	Example: "Can carry [3] [Wounded] units"
 
 	Applicable to: Unit

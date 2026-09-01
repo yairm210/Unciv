@@ -377,7 +377,7 @@ class Ruleset {
                 modOptions = json().fromJsonFile(ModOptions::class.java, modOptionsFile)
                 modOptions.updateDeprecations()
             } catch (ex: Exception) {
-                Log.error("Failed to get modOptions from json file", ex)
+                Log.error("Failed to get modOptions from json file; Mod name: {$folderHandle.file}", ex)
             }
         }
 
@@ -580,21 +580,18 @@ class Ruleset {
                         uniques = ArrayList(cityStateType.uniques.filter {
                             UniqueValidator(this@Ruleset).checkUnique(
                                 Unique(it),
-                                false,
                                 null
                             ).isEmpty()
                         })
                         friendBonusUniques = ArrayList(cityStateType.friendBonusUniques.filter {
                             UniqueValidator(this@Ruleset).checkUnique(
                                 Unique(it),
-                                false,
                                 null
                             ).isEmpty()
                         })
                         allyBonusUniques = ArrayList(cityStateType.allyBonusUniques.filter {
                             UniqueValidator(this@Ruleset).checkUnique(
                                 Unique(it),
-                                false,
                                 null
                             ).isEmpty()
                         })

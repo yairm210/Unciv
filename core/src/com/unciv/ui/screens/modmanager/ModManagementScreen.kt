@@ -157,7 +157,7 @@ class ModManagementScreen private constructor(
 
             // We want to immediately display/hide Scenario button based on changes
             if (screen is MainMenuScreen)
-                screen.game.replaceCurrentScreen(MainMenuScreen())
+                screen.game.replaceCurrentScreen{ MainMenuScreen() }
         }
         closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
 

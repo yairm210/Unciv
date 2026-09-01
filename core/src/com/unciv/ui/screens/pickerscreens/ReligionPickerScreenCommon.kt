@@ -18,6 +18,7 @@ import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
@@ -27,11 +28,11 @@ abstract class ReligionPickerScreenCommon(
     protected val choosingCiv: Civilization,
     disableScroll: Boolean = false
 ) : PickerScreen(disableScroll) {
-
     protected val gameInfo = choosingCiv.gameInfo
     protected val ruleset = gameInfo.ruleset
 
     private val descriptionTable = Table(skin)
+    private var civilopediaLink = defaultLink
 
     protected class Selection {
         var button: Button? = null
@@ -58,6 +59,8 @@ abstract class ReligionPickerScreenCommon(
 
         closeButton.isVisible = true
         setDefaultCloseAction()
+
+        globalShortcuts.add(KeyboardBinding.Civilopedia) { openCivilopedia(civilopediaLink) }
     }
 
     override fun getCivilopediaRuleset() = ruleset
@@ -101,16 +104,17 @@ abstract class ReligionPickerScreenCommon(
             selection.switch(this)
             function()
             descriptionTable.clear()
+            civilopediaLink = belief?.makeLink() ?: defaultLink
             if (belief == null) return@onClick
             descriptionScroll.scrollY = 0f
             descriptionScroll.updateVisualScroll()
+            val labelWidth = if (descriptionScroll.width < 700f) descriptionScroll.width - 40f else 0f
             descriptionTable.apply {
                 add(
                     MarkupRenderer.render(
-                    belief.getCivilopediaTextLines(withHeader = true), width - 20f
-                ) {
-                    openCivilopedia(it)
-                }).growX()
+                        belief.getCivilopediaTextLines(withHeader = true), labelWidth
+                    ) { openCivilopedia(it) }
+                )
                 // Icon should it be needed:  CivilopediaImageGetters.belief(belief.getIconName(), 50f)
             }
         }
@@ -131,5 +135,6 @@ abstract class ReligionPickerScreenCommon(
     protected companion object {
         val redDisableColor = Color.RED.darken(0.25f)
         val greenDisableColor = Color.GREEN.darken(0.25f)
+        const val defaultLink = "Tutorial/Religion"
     }
 }

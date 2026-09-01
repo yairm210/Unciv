@@ -1,12 +1,11 @@
 package com.unciv.logic.automation.unit
 
-import com.unciv.UncivGame
+import com.unciv.Constants
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.HexCoord
-import com.unciv.logic.map.MapPathing
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
@@ -15,12 +14,11 @@ import com.unciv.utils.debug
 import yairm210.purity.annotations.Readonly
 
 
-/** Responsible for automation the "build road to" action
- * This is *pretty bad code* overall and needs to be cleaned up */
+/** Responsible for automating the "build road to" action
+ *  This is *pretty bad code* overall and needs to be cleaned up */
 class RoadToAutomation(val civInfo: Civilization) {
 
     private val actualBestRoadAvailable: RoadStatus = civInfo.tech.getBestRoadAvailable()
-
 
     /**
      * Automate the process of connecting a road between two points.
@@ -33,19 +31,19 @@ class RoadToAutomation(val civInfo: Civilization) {
      * - End automation upon finish
      */
     // TODO: Caching
-    // TODO: Hide the automate road button if road is not unlocked
     @Suppress("UNUSED_PARAMETER")  // tilesWhereWeWillBeCaptured may be useful in the future
-    fun automateConnectRoad(unit: MapUnit, tilesWhereWeWillBeCaptured: Set<Tile>){
+    fun automateConnectRoad(unit: MapUnit, tilesWhereWeWillBeCaptured: Set<Tile>) {
         if (actualBestRoadAvailable == RoadStatus.None) return
 
         var currentTile = unit.getTile()
 
-
-        if (unit.automatedRoadConnectionDestination == null){
+        if (unit.automatedRoadConnectionDestination == null) {
             stopAndCleanAutomation(unit)
             return
         }
 
+        fun notify(msg: String) =
+            unit.civ.addNotification(msg, MapUnitAction(unit), NotificationCategory.Units, NotificationIcon.Construction)
 
         val destinationTile = unit.civ.gameInfo.tileMap[unit.automatedRoadConnectionDestination!!]
 
@@ -53,13 +51,11 @@ class RoadToAutomation(val civInfo: Civilization) {
 
         // The path does not exist, create it
         if (pathToDest == null) {
-            val foundPath: List<Tile>? = 
-                if (UncivGame.Current.settings.useAStarPathfinding) unit.movement.getRoadPath(destinationTile)
-                else MapPathing.getRoadPath(unit.civ, unit.getTile(), destinationTile)
+            val foundPath: List<Tile>? = unit.movement.getRoadPath(destinationTile)
             if (foundPath == null) {
                 Log.debug("WorkerAutomation: $unit -> connect road failed")
                 stopAndCleanAutomation(unit)
-                unit.civ.addNotification("Connect road failed!", MapUnitAction(unit), NotificationCategory.Units, NotificationIcon.Construction)
+                notify("Connect road failed!")
                 return
             }
 
@@ -76,11 +72,11 @@ class RoadToAutomation(val civInfo: Civilization) {
         if (currTileIndex == -1) {
             Log.debug("$unit -> was moved off its connect road path. Operation cancelled.")
             stopAndCleanAutomation(unit)
-            unit.civ.addNotification("Connect road cancelled!", MapUnitAction(unit), NotificationCategory.Units, unit.name)
+            notify("Connect road cancelled!")
             return
         }
 
-        /* Can not build a road on this tile, try to move on.
+        /* Cannot build a road on this tile, try to move on.
         * The worker should search for the next furthest tile in the path that:
         * - It can move to
         * - Can be improved/upgraded
@@ -88,7 +84,7 @@ class RoadToAutomation(val civInfo: Civilization) {
         if (unit.hasMovement() && !shouldBuildRoadOnTile(currentTile)) {
             if (currTileIndex == pathToDest.size - 1) { // The last tile in the path is unbuildable or has a road.
                 stopAndCleanAutomation(unit)
-                unit.civ.addNotification("Connect road completed", MapUnitAction(unit), NotificationCategory.Units, unit.name)
+                notify("Connect road completed")
                 return
             }
 
@@ -98,11 +94,8 @@ class RoadToAutomation(val civInfo: Civilization) {
 
                 // Create a new list with tiles where the index is greater than currTileIndex
                 val futureTiles = pathToDest.asSequence()
-                    .dropWhile { it != unit.currentTile.position }
-                    .drop(1)
+                    .drop(currTileIndex + 1)
                     .map { tileMap[it] }
-
-
 
                 for (futureTile in futureTiles) { // Find the furthest tile we can reach in this turn, move to, and does not have a road
                     if (unit.movement.canReachInCurrentTurn(futureTile) && unit.movement.canMoveTo(futureTile)) { // We can at least move to this tile
@@ -113,35 +106,32 @@ class RoadToAutomation(val civInfo: Civilization) {
                     }
                 }
 
-                unit.movement.moveToTile(nextTile)
-                currentTile = unit.getTile()
+                if (nextTile.position != currentTile.position) {
+                    unit.movement.moveToTile(nextTile)
+                    currentTile = unit.getTile()
+                }
             }
         }
 
         // We need to check current movement again after we've (potentially) moved
-        if (unit.hasMovement()) {
-            // Repair pillaged roads first
-            if (currentTile.roadStatus != RoadStatus.None && currentTile.roadIsPillaged){
-                currentTile.setRepaired()
-                return
-            }
-            if (shouldBuildRoadOnTile(currentTile) && currentTile.improvementInProgress != actualBestRoadAvailable.name) {
-                val improvement = actualBestRoadAvailable.improvement(civInfo.gameInfo.ruleset)!!
-                currentTile.startWorkingOnImprovement(improvement, civInfo, unit)
-                return
-            }
-        }
+        if (!unit.hasMovement()) return
+        // Repair pillaged roads first - try to build a new one if a mod removed repair
+        val repairImprovement = if (currentTile.roadStatus == RoadStatus.None || !currentTile.roadIsPillaged) null
+            else civInfo.gameInfo.ruleset.tileImprovements[Constants.repair]
+        val buildImprovement = if (!shouldBuildRoadOnTile(currentTile) || currentTile.improvementInProgress == actualBestRoadAvailable.name) null
+            else actualBestRoadAvailable.improvement(civInfo.gameInfo.ruleset)
+        (repairImprovement ?: buildImprovement)?.let { currentTile.startWorkingOnImprovement(it, civInfo, unit) }
     }
 
     /** Reset side effects from automation, return worker to non-automated state*/
-    fun stopAndCleanAutomation(unit: MapUnit){
+    fun stopAndCleanAutomation(unit: MapUnit) {
         unit.automated = false
         unit.action = null
         unit.automatedRoadConnectionDestination = null
         unit.automatedRoadConnectionPath = null
-        unit.currentTile.stopWorkingOnImprovement()
+        if (unit.currentTile.getTileImprovementInProgress()?.isRoad() == true)
+            unit.currentTile.stopWorkingOnImprovement()
     }
-
 
     /** Conditions for whether it is acceptable to build a road on this tile */
     @Readonly

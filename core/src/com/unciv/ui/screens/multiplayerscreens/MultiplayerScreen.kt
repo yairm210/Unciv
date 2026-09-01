@@ -131,7 +131,7 @@ class MultiplayerScreen : PickerScreen() {
     private fun createAddGameButton(): TextButton {
         val btn = "Add multiplayer game".toTextButton()
         btn.onClick {
-            game.pushScreen(AddMultiplayerGameScreen(this))
+            game.pushScreen{ AddMultiplayerGameScreen(this) }
         }
         return btn
     }
@@ -353,7 +353,7 @@ class MultiplayerScreen : PickerScreen() {
     private fun createFriendsListButton(): TextButton {
         val btn = "Friends list".toTextButton()
         btn.onClick {
-            game.pushScreen(ViewFriendsListScreen())
+            game.pushScreen{ ViewFriendsListScreen() }
         }
         return btn
     }

@@ -30,7 +30,6 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
-import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
@@ -145,44 +144,6 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         }
 
         return maintenanceCost
-    }
-
-    @Readonly
-    fun getCityProductionTextForCityButton(): String {
-        val currentConstructionSnapshot = currentConstructionName() // See below
-        var result = currentConstructionSnapshot.tr(true)
-        if (currentConstructionSnapshot.isNotEmpty()) {
-            val construction = PerpetualConstruction.perpetualConstructionsMap[currentConstructionSnapshot]
-            result += construction?.getProductionTooltip(city)
-                ?: getTurnsToConstructionString(currentConstructionSnapshot)
-        }
-        return result
-    }
-
-    /** @param constructionName needs to be a non-perpetual construction, else an empty string is returned */
-    @Readonly
-    internal fun getTurnsToConstructionString(constructionName: String, useStoredProduction: Boolean = true) =
-        getTurnsToConstructionString(getConstruction(constructionName), useStoredProduction)
-
-    /** @param construction needs to be a non-perpetual construction, else an empty string is returned */
-    @Readonly
-    internal fun getTurnsToConstructionString(construction: IConstruction, useStoredProduction: Boolean = true): String {
-        if (construction !is INonPerpetualConstruction) return ""   // shouldn't happen
-        val cost = construction.getProductionCost(city.civ, city)
-        val turnsToConstruction = turnsToConstruction(construction.name, useStoredProduction)
-        val currentProgress = if (useStoredProduction) getWorkDone(construction.name) else 0
-        val lines = ArrayList<String>()
-        val buildable = !construction.getMatchingUniques(UniqueType.Unbuildable)
-            .any { it.conditionalsApply(city.state) }
-        if (buildable)
-            lines += (if (currentProgress == 0) "" else "$currentProgress/") +
-                    "$cost${Fonts.production} $turnsToConstruction${Fonts.turn}"
-        val otherStats = Stat.entries.filter {
-            (it != Stat.Gold || !buildable) &&  // Don't show rush cost for consistency
-            construction.canBePurchasedWithStat(city, it)
-        }.joinToString(" / ") { "${construction.getStatBuyCost(city, it)}${it.character}" }
-        if (otherStats.isNotEmpty()) lines += otherStats
-        return lines.joinToString("\n", "\n")
     }
 
     @Readonly

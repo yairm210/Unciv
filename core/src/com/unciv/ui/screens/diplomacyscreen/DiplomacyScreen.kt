@@ -26,6 +26,7 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
@@ -106,6 +107,8 @@ class DiplomacyScreen(
             } else
                 updateRightSide(selectCiv)
         }
+
+        globalShortcuts.add(KeyboardBinding.Civilopedia) { openCivilopedia() }
     }
 
     override fun getCivilopediaRuleset() = viewingCivView.ruleset
@@ -227,7 +230,7 @@ class DiplomacyScreen(
 
     internal fun setTrade(otherCiv: Civilization): TradeTable {
         rightSideTable.clear()
-        val tradeTable = TradeTable(viewingCivView, ForeignCivView(otherCiv, viewingCiv), this)
+        val tradeTable = TradeTable(viewingCivView, viewingCivView.gameView.getForeignCivView(otherCiv), this)
         rightSideTable.add(tradeTable)
         return tradeTable
     }

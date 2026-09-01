@@ -14,7 +14,6 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.tile.TileResource
-import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.equalsPlaceholderText
@@ -25,7 +24,6 @@ import yairm210.purity.annotations.Readonly
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.random.Random
 
 class TileDataMap(size: Int) {
     private val data = arrayOfNulls<MapGenTileData>(size)
@@ -220,11 +218,11 @@ class MapRegions (val ruleset: Ruleset) {
         if (widerThanTall) {
             splitOffRegion.rect.width = bestSplitPoint.toFloat()
             regionToSplit.rect.x = splitOffRegion.rect.x + splitOffRegion.rect.width
-            regionToSplit.rect.width = regionToSplit.rect.width - bestSplitPoint
+            regionToSplit.rect.width -= bestSplitPoint
         } else {
             splitOffRegion.rect.height = bestSplitPoint.toFloat()
             regionToSplit.rect.y = splitOffRegion.rect.y + splitOffRegion.rect.height
-            regionToSplit.rect.height = regionToSplit.rect.height - bestSplitPoint
+            regionToSplit.rect.height -= bestSplitPoint
         }
         splitOffRegion.updateTiles()
         regionToSplit.updateTiles()

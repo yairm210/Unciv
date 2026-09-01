@@ -6,7 +6,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import yairm210.purity.annotations.Readonly
 
 /** Should contain information that should be knowable to us about foreign units. Superclass of [MapUnitView]. */
-open class ForeignMapUnitView(internal open val unit: MapUnit, viewer: Civilization, spectatorMode: Boolean = false, open val gameView: GameView) : GameBasedView<MapUnit>(unit, viewer, spectatorMode) {
+open class ForeignMapUnitView(internal open val unit: MapUnit, viewer: Civilization, spectatorMode: Boolean = false, gameView: GameView) : GameBasedView<MapUnit>(unit, viewer, spectatorMode, gameView) {
     val name: String get() = unit.name
     val civName: String get() = unit.civ.civName
     val health: Int get() = unit.health
@@ -14,17 +14,19 @@ open class ForeignMapUnitView(internal open val unit: MapUnit, viewer: Civilizat
 
     // Navigation
     @Readonly fun getUnit(): MapUnit = unit
-    @Readonly fun civ(): ForeignCivView = ForeignCivView(unit.civ, viewer, spectatorMode)
+    @Readonly fun civ(): ForeignCivView = gameView.getForeignCivView(unit.civ)
     /** Get from a foreign view to an inner view, if [unit] belongs to [viewer]. */
     @Readonly fun tryGetMapUnitView(): MapUnitView? {
         if (unit.civ != viewer && !viewer.isSpectator()) return null
-        return MapUnitView(unit, gameView.civView)
+        return gameView.getMapUnitView(unit)
     }
     @Readonly fun getTile(): TileView = gameView.tileMapView.getTile(unit.getTile())
 
     // Data retrieval
     @Readonly fun isAirUnit(): Boolean = unit.baseUnit.isAirUnit()
     @Readonly fun isCivilian(): Boolean = unit.isCivilian()
+    @Readonly fun isMilitary(): Boolean = unit.isMilitary()
+    @Readonly fun isEmbarked(): Boolean = unit.isEmbarked()
     @Readonly fun displayName(): String = unit.displayName()
     @Readonly fun getBaseUnit(): BaseUnit = unit.baseUnit
     @Readonly fun getRange(): Int = unit.getRange()

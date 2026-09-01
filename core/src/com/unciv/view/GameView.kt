@@ -8,7 +8,7 @@ import com.unciv.logic.map.tile.Tile
 import yairm210.purity.annotations.Readonly
 
 /** View of a [GameInfo] from the perspective of [viewer]. */
-class GameView(gameInfo: GameInfo, viewer: Civilization, spectatorMode: Boolean = false) : GameBasedView<GameInfo>(gameInfo, viewer, spectatorMode) {
+class GameView(gameInfo: GameInfo, override val viewer: Civilization, spectatorMode: Boolean = false) : View<GameInfo>(gameInfo, viewer, spectatorMode) {
     val civView: CivView = CivView(viewer, viewer, spectatorMode, this)
     val tileMapView: TileMapView = TileMapView(gameInfo.tileMap, viewer, spectatorMode, this)
 
@@ -18,7 +18,8 @@ class GameView(gameInfo: GameInfo, viewer: Civilization, spectatorMode: Boolean 
     @Readonly fun getCityView(city: City): CityView = CityView(city, viewer, spectatorMode, this)
     @Readonly fun getForeignCityView(city: City): ForeignCityView = ForeignCityView(city, viewer, spectatorMode, this)
     @Readonly fun getForeignMapUnitView(unit: MapUnit): ForeignMapUnitView = ForeignMapUnitView(unit, viewer, spectatorMode, this)
-    @Readonly fun getForeignCivView(civ: Civilization): ForeignCivView = ForeignCivView(civ, viewer, spectatorMode)
+    @Readonly fun getMapUnitView(unit: MapUnit): MapUnitView = MapUnitView(unit, viewer, spectatorMode, this)
+    @Readonly fun getForeignCivView(civ: Civilization): ForeignCivView = ForeignCivView(civ, viewer, spectatorMode, this)
 
     // Data retrieval
     @Readonly fun getTile(tile: Tile): TileView = tileMapView.getTile(tile)

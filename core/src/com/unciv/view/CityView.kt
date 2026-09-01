@@ -8,9 +8,7 @@ import com.unciv.logic.city.StatTreeNode
 import com.unciv.logic.city.CityFocus
 import com.unciv.logic.city.CityResources
 import com.unciv.logic.city.GreatPersonPointsBreakdown
-import com.unciv.logic.city.managers.CityReligionManager
 import com.unciv.logic.map.tile.Tile
-import com.unciv.models.Religion
 import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
@@ -31,7 +29,7 @@ import yairm210.purity.annotations.Readonly
 class CityView(city: City,
                viewer: Civilization,
                spectatorMode: Boolean = false,
-               override val gameView: GameView) : ForeignCityView(city, viewer, spectatorMode, gameView) {
+               gameView: GameView) : ForeignCityView(city, viewer, spectatorMode, gameView) {
     // Navigation
     /** The viewing player's full CivView (always a self-view). For the city's owning civ, use [owningCiv]. */
     @Readonly fun viewingCiv(): CivView = gameView.civView
@@ -67,11 +65,10 @@ class CityView(city: City,
     val manualSpecialists: Boolean get() = city.manualSpecialists
     @Readonly fun getNumTurnsToStarvation(): Int? = city.population.getNumTurnsToStarvation()
     @Readonly fun getNumTurnsToNewPopulation(): Int? = city.population.getNumTurnsToNewPopulation()
+    @Readonly fun foodForNextTurn(): Int = city.foodForNextTurn()
     @Readonly fun getStatsOfSpecialist(specialistName: String): Stats = city.cityStats.getStatsOfSpecialist(specialistName)
 
     // City state
-    @Readonly fun getNumberOfFollowers(): Counter<String> = city.religion.getNumberOfFollowers()
-    @Readonly fun religion(): CityReligionManager = city.religion
     @Readonly fun isStarving(): Boolean = city.isStarving()
     @Readonly fun isGrowing(): Boolean = city.isGrowing()
     @Readonly fun isInResistance(): Boolean = city.isInResistance()
@@ -120,7 +117,7 @@ class CityView(city: City,
     @Readonly fun getCityAmbienceSound(): String = city.civ.getEra().citySound
     @Readonly fun isBeingRazed(): Boolean = city.isBeingRazed
     @Readonly fun isCapital(): Boolean = city.isCapital()
-    @Readonly fun getGarrison(): MapUnitView? = city.getGarrison()?.let { MapUnitView(it, gameView.civView) }
+    @Readonly fun getGarrison(): MapUnitView? = city.getGarrison()?.let { gameView.getMapUnitView(it) }
     @Readonly fun canBeDestroyed(): Boolean = city.canBeDestroyed()
     @Readonly fun getExpandRange(): Int = city.getExpandRange()
     @Readonly fun chooseNewTileToOwn(): TileView? = city.expansion.chooseNewTileToOwn()?.let { gameView.tileMapView.getTile(it) }
@@ -137,8 +134,6 @@ class CityView(city: City,
     @Readonly fun getBuildingStats(building: Building): Stats = building.getStats(city)
 
     @Readonly fun getStatReserve(stat: Stat): Int = city.getStatReserve(stat)
-    @Readonly fun getMajorityReligion(): Religion? = city.religion.getMajorityReligion()
-    @Readonly fun getYourReligion(): Religion? = viewer.religionManager.religion
     @Readonly fun canBePurchasedWithAnyStat(construction: INonPerpetualConstruction): Boolean =
         construction.canBePurchasedWithAnyStat(city)
     @Readonly fun canBePurchasedWithStat(construction: INonPerpetualConstruction, stat: Stat): Boolean =
