@@ -230,7 +230,7 @@ class DiplomacyScreen(
 
     internal fun setTrade(otherCiv: Civilization): TradeTable {
         rightSideTable.clear()
-        val tradeTable = TradeTable(viewingCivView, ForeignCivView(otherCiv, viewingCiv), this)
+        val tradeTable = TradeTable(viewingCivView, viewingCivView.gameView.getForeignCivView(otherCiv), this)
         rightSideTable.add(tradeTable)
         return tradeTable
     }

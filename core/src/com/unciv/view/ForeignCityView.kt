@@ -15,7 +15,7 @@ import yairm210.purity.annotations.Readonly
 open class ForeignCityView(internal open val city: City,
                            viewer: Civilization,
                            spectatorMode: Boolean = false,
-                           open val gameView: GameView) : GameBasedView<City>(city, viewer, spectatorMode) {
+                           gameView: GameView) : GameBasedView<City>(city, viewer, spectatorMode, gameView) {
     val name: String get() = city.name
     val location: HexCoord get() = city.location
 
@@ -26,7 +26,7 @@ open class ForeignCityView(internal open val city: City,
     @Readonly fun getCity(): City = city
     @Readonly fun getViewingCiv(): Civilization = viewer
     /** The owning civ of this city, as visible from [viewer]'s perspective. For the viewing player's full CivView, use [CityView.viewingCiv]. */
-    @Readonly open fun owningCiv(): ForeignCivView = ForeignCivView(city.civ, viewer, spectatorMode)
+    @Readonly open fun owningCiv(): ForeignCivView = ForeignCivView(city.civ, viewer, spectatorMode, gameView)
     /** Get from a foreign view to an inner view */
     @Readonly fun tryGetCityView(): CityView? {
         val canSeeCityData = viewer.isSpectator() // not posing, actual spectator

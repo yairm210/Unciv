@@ -9,8 +9,8 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.stats.Stat
 import yairm210.purity.annotations.Readonly
 
-class CityConstructionsView(private val cityConstructions: CityConstructions, private val gameView: GameView,
-                             viewer: Civilization, spectatorMode: Boolean = false) : GameBasedView<CityConstructions>(cityConstructions, viewer, spectatorMode) {
+class CityConstructionsView(private val cityConstructions: CityConstructions, gameView: GameView,
+                             viewer: Civilization, spectatorMode: Boolean = false) : GameBasedView<CityConstructions>(cityConstructions, viewer, spectatorMode, gameView) {
     val constructionQueue: List<String> get() = cityConstructions.constructionQueue
 
     // Navigation

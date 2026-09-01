@@ -103,7 +103,7 @@ interface IHasUniques : INamed {
 
     @Readonly
     fun techColumn(ruleset: Ruleset): TechColumn? =
-            requiredTechnologies(ruleset).map { it?.column }.filterNotNull().maxByOrNull { it.columnNumber }
+        requiredTechnologies(ruleset).mapNotNull { it?.column }.maxByOrNull { it.columnNumber }
             // This will return null only if *all* required techs have null TechColumn.
 
     @Readonly
@@ -146,18 +146,6 @@ interface IHasUniques : INamed {
      */
     @Readonly
     fun isUnavailableBySettings(gameInfo: GameInfo): Boolean {
-        val gameBasedConditionals = setOf(
-            UniqueType.ConditionalVictoryDisabled,
-            UniqueType.ConditionalVictoryEnabled,
-            UniqueType.ConditionalSpeed,
-            UniqueType.ConditionalDifficulty,
-            UniqueType.ConditionalDifficultyOrHigher,
-            UniqueType.ConditionalDifficultyOrLower,
-            UniqueType.ConditionalReligionEnabled,
-            UniqueType.ConditionalReligionDisabled,
-            UniqueType.ConditionalEspionageEnabled,
-            UniqueType.ConditionalEspionageDisabled,
-        )
         val gameContext = GameContext(gameInfo = gameInfo)
 
         if (getMatchingUniques(UniqueType.Unavailable, GameContext.IgnoreConditionals)
@@ -234,5 +222,20 @@ interface IHasUniques : INamed {
             if (unique.hasModifier(disabler)) return !hasFeature
         }
         return false
+    }
+    
+    companion object {
+        val gameBasedConditionals = setOf(
+            UniqueType.ConditionalVictoryDisabled,
+            UniqueType.ConditionalVictoryEnabled,
+            UniqueType.ConditionalSpeed,
+            UniqueType.ConditionalDifficulty,
+            UniqueType.ConditionalDifficultyOrHigher,
+            UniqueType.ConditionalDifficultyOrLower,
+            UniqueType.ConditionalReligionEnabled,
+            UniqueType.ConditionalReligionDisabled,
+            UniqueType.ConditionalEspionageEnabled,
+            UniqueType.ConditionalEspionageDisabled,
+        )
     }
 }

@@ -18,7 +18,6 @@ import com.unciv.ui.screens.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.screens.pickerscreens.TechPickerScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
-import com.unciv.view.ForeignCivView
 
 
 /** defines what to do if the user clicks on a notification */
@@ -120,8 +119,8 @@ class DiplomacyAction : NotificationAction {
 
         worldScreen.game.pushScreen{ 
             DiplomacyScreen(
-            worldScreen.selectedGameView.getCivView(currentCiv),
-            ForeignCivView(otherCiv, currentCiv),
+            worldScreen.selectedGameView.civView,
+            worldScreen.selectedGameView.getForeignCivView(otherCiv),
             showTrade = showTrade)
         }
     }
