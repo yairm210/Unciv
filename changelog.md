@@ -1,3 +1,36 @@
+## 4.21.15
+
+Avoid ANRs in multiple places
+
+Performance improvements
+
+Remove initial Android screen orientation restriction for "user landscape" - now takes whatever orientation is set for the device
+
+Air unit list visible on carriers
+
+Resolved map bounds restrictions on spectator-as-civ by removing restrictions entirely
+
+UI doesn't crash if construction list changed while we try and select a queue entry that no longer exists
+
+Better use of multiple slot types on carriers - By SomeTroglodyte
+
+## 4.21.14
+
+Fixed minimap problems when spectating-as-civ
+
+Avoid future ANRs from screen-switching
+
+reject ruleset objects that replace themselves - By mvanhorn
+
+Record client version of latest turn submitted by each civ in Multiplayer - By unciv-loof
+
+By SomeTroglodyte:
+- Fix "Connect road" with A-Star pathing enabled
+- Allow assigning "key" mappings to extra mouse buttons
+- More screens support the "F1" binding to Civilopedia
+- Prevent double terrain damage from healing
+- Fix equalizeColumns for empty lower tables
+
 ## 4.21.13
 
 Massive Application Not Responding cleanup for Android

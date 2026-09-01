@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.GUI
-import com.unciv.ui.components.InputDisabling
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.centerX
 import com.unciv.ui.components.input.onClick
@@ -60,7 +59,7 @@ class CityButton(val foreignCityView: ForeignCityView, private val tileGroup: Ti
     @Readonly private fun belongsToViewingCiv() = foreignCityView.belongsTo(viewingPlayer)
 
     fun update(isCityViewable: Boolean) {
-        val selectedPlayer = GUI.getSelectedPlayer()
+        val selectedPlayer = foreignCityView.getViewingCiv()
         isViewable = isCityViewable
 
         clear()
@@ -78,7 +77,7 @@ class CityButton(val foreignCityView: ForeignCityView, private val tileGroup: Ti
         add(DefenceTable(foreignCityView.getCity(), selectedPlayer)).row()
 
         // Add City main table: pop, name, religion, construction, nation icon
-        cityTable = CityTable(foreignCityView.getCity(), viewingPlayer)
+        cityTable = CityTable(foreignCityView.gameView.getCityView(foreignCityView.getCity()))
         add(cityTable).row()
 
         // If city state - add influence bar
@@ -179,8 +178,7 @@ class CityButton(val foreignCityView: ForeignCityView, private val tileGroup: Ti
             val cityView = foreignCityView.tryGetCityView()
             val isIteratingUnits = tileGroup.tileView.getVisibleUnits().none { it == unitTable.selectedUnit }
             if (cityView != null && isIteratingUnits) {
-                InputDisabling.disableInput()
-                GUI.pushScreen(CityScreen(cityView))
+                GUI.pushScreen{ CityScreen(cityView) }
             }
             else if (foreignCityView.isKnownTo(viewingPlayer))
                 foreignCityInfoPopup()
@@ -231,7 +229,9 @@ class CityButton(val foreignCityView: ForeignCityView, private val tileGroup: Ti
     }
 
     private fun foreignCityInfoPopup() {
-        fun openDiplomacy() = GUI.pushScreen(DiplomacyScreen(foreignCityView.gameView.civView, foreignCityView.owningCiv()))
+        fun openDiplomacy() = GUI.pushScreen{ 
+            DiplomacyScreen(foreignCityView.gameView.civView, foreignCityView.owningCiv())
+        }
 
         val espionageVisible = foreignCityView.isEspionageEnabled()
                 && foreignCityView.spyIsSetUpAtCity(viewingPlayer)
@@ -241,11 +241,13 @@ class CityButton(val foreignCityView: ForeignCityView, private val tileGroup: Ti
 
         val popup = Popup(GUI.getWorldScreen()).apply {
             name = "ForeignCityInfoPopup"
-            add(CityTable(foreignCityView.getCity(), viewingPlayer, true)).fillX().padBottom(5f).colspan(3).row()
+            add(CityTable(foreignCityView.gameView.getCityView(foreignCityView.getCity()), true)).fillX().padBottom(5f).colspan(3).row()
             if (foreignCityView.isReligionEnabled())
-                add(CityReligionInfoTable(foreignCityView.getReligionManager(), true)).colspan(3).row()
+                add(CityReligionInfoTable(foreignCityView, true)).colspan(3).row()
             addOKButton("Diplomacy") { openDiplomacy() }
-            if (espionageVisible) addButton("View") { GUI.pushScreen(CityScreen(GUI.getWorldScreen().selectedGameView.getCityView(foreignCityView.getCity()))) }
+            if (espionageVisible) addButton("View") { GUI.pushScreen{ 
+                CityScreen(GUI.getWorldScreen().selectedGameView.getCityView(foreignCityView.getCity()))
+            } }
             add().expandX()
             addCloseButton {
                 GUI.getWorldScreen().run { nextTurnButton.update() }

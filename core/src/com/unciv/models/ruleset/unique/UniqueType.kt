@@ -507,10 +507,12 @@ enum class UniqueType(
     CanSeeOverObstacles("Can see over obstacles", UniqueTarget.Unit),
 
     // Carrying
-    CarryAirUnits("Can carry [amount] [mapUnitFilter] units", UniqueTarget.Unit),
+    CarryAirUnits("Can carry [amount] [mapUnitFilter] units", UniqueTarget.Unit,
+        docDescription = "Using several of these uniques with complex overlapping filters is supported."),
     CarryExtraAirUnits("Can carry [amount] extra [mapUnitFilter] units", UniqueTarget.Unit, UniqueTarget.Building,
         docDescription = "For buildings, supports using `Air` for `mapUnitFilter` to increase city air unit capacity."),
     CannotBeCarriedBy("Cannot be carried by [mapUnitFilter] units", UniqueTarget.Unit),
+
     // Interception
     ChanceInterceptAirAttacks("[relativeAmount]% chance to intercept air attacks", UniqueTarget.Unit),
     DamageFromInterceptionReduced("Damage taken from interception reduced by [relativeAmount]%", UniqueTarget.Unit),

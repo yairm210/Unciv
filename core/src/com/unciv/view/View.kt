@@ -16,6 +16,7 @@ import yairm210.purity.annotations.Readonly
  * - Data should use readonly interfaces when possible - e.g. List<thing> instead of ArrayList<thing>, Map<X, Int> instead of Counter<X>, etc
  * - Any state-changing function in the UI should be converted to a boolean-returning "try apply state change" function
  *    - In the future these will also check preconditions of applying this state change, not for now
+ *    - Only objects under the user's control should have state-changing functions - civ, city, unit
  * - Retain minimal API - anything the UI can derive from existing calls should not be part of the view
  * 
  * See also https://github.com/yairm210/Unciv/issues/15280 and https://medium.com/@yairm210/game-interfaces-data-access-and-action-validity-1760834be165
@@ -27,7 +28,7 @@ open class View<T>(protected val wrapped: T,
                    protected open val viewer: Civilization?,
                    /** Indicates whether we are really a spectator, "looking in" to the view of another civ
                     * In this case we should not be able to execute any state-chaning action */
-                   protected val spectatorMode: Boolean = false) {
+                   val spectatorMode: Boolean = false) {
     /** Lets any [View] read the wrapped object of any other [View], without exposing [wrapped] itself outside the hierarchy. */
     @Readonly protected fun <U> View<U>.unwrap(): U = wrapped
 

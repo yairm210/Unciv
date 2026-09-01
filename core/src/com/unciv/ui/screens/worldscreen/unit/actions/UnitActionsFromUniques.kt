@@ -494,10 +494,10 @@ object UnitActionsFromUniques {
         return sequenceOf(UnitAction(UnitActionType.ConstructImprovement, useFrequency,
             isCurrentAction = tile.hasImprovementInProgress(),
             action = {
-                GUI.pushScreen(ImprovementPickerScreen(tile, unit) {
+                GUI.pushScreen{ ImprovementPickerScreen(tile, unit) {
                     if (GUI.getSettings().autoUnitCycle)
                         GUI.getWorldScreen().switchToNextUnit()
-                })
+                } }
             }.takeIf { couldConstruct }
         ))
     }
@@ -529,7 +529,7 @@ object UnitActionsFromUniques {
         val uniques = unit.getMatchingUniques(UniqueType.BuildImprovements)
         val improvement = tile.getImprovementToRepair()!!
         val civ = unit.civ
-            if (!uniques.any { unique ->
+        if (!uniques.any { unique ->
             // Engage the MultiFilter on the entire filter, prior to checking the individual filters
             MultiFilter.multiFilter(unique.params[0], {
                 improvement.matchesFilter(it, tile.stateThisTile) || tile.matchesTerrainFilter(it, civ)

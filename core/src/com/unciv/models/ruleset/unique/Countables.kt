@@ -1,8 +1,6 @@
 package com.unciv.models.ruleset.unique
 
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.unique.Countables.Stats
-import com.unciv.models.ruleset.unique.Countables.TileResources
 import com.unciv.models.ruleset.unique.expressions.Expressions
 import com.unciv.models.ruleset.unique.expressions.Operator
 import com.unciv.models.stats.Stat
@@ -12,7 +10,6 @@ import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import org.jetbrains.annotations.VisibleForTesting
 import yairm210.purity.annotations.Cache
-import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 
 /**
@@ -322,7 +319,7 @@ enum class Countables(
         override fun eval(parameterText: String, gameContext: GameContext): Int? {
             val city = gameContext.city ?: return null
             val filter = parameterText.getPlaceholderParameters()[0]
-            return city.getWorkedTiles().filter { it.matchesFilter(filter, city.civ) }.count()
+            return city.getWorkedTiles().count { it.matchesFilter(filter, city.civ) }
         }
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueParameterErrorSeverity? {
             return UniqueParameterType.TileFilter.getTranslatedErrorSeverity(parameterText, ruleset)
@@ -475,10 +472,6 @@ enum class Countables(
             "Supported operations on 1 value are: " + Operator.UnaryOperators.entries.joinToString { "${it.symbol} (${it.description})" },
             "Supported functions:",
             *Operator.Functions.entries.map { 
-                val arityText = if (it.arityRange.first == it.arityRange.last) 
-                    "${it.arityRange.first} argument${if (it.arityRange.first != 1) "s" else ""}"
-                else 
-                    "${it.arityRange.first} to ${it.arityRange.last} arguments"
                 var functionParameters = List(it.arityRange.first){"expression"}.joinToString(",")
                 if (it.arityRange.first != it.arityRange.last) functionParameters += ",..."
                 " - `${it.symbol}($functionParameters)`"

@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.GUI
-import com.unciv.logic.city.managers.CityReligionManager
 import com.unciv.models.Religion
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.addSeparatorVertical
@@ -16,32 +15,32 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.Portrait
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
+import com.unciv.view.ForeignCityView
 
 class CityReligionInfoTable(
-    private val religionManager: CityReligionManager,
+    private val cityView: ForeignCityView,
     showMajority: Boolean = false
 ) : Table(BaseScreen.skin) {
-    private val civInfo = religionManager.city.civ
-    private val gameInfo = civInfo.gameInfo
 
     init {
         val gridColor = Color.DARK_GRAY
-        val followers = religionManager.getNumberOfFollowers()
-        val futurePressures = religionManager.getPressuresFromSurroundingCities()
+        val followers = cityView.getNumberOfFollowers()
+        val futurePressures = cityView.getPressuresFromSurroundingCities()
 
         if (showMajority) {
-            val majorityReligion = religionManager.getMajorityReligion()
+            val majorityReligion = cityView.getMajorityReligion()
             val (iconName, label) = getIconAndLabel(majorityReligion)
             add(linkedReligionIcon(iconName, majorityReligion?.name)).pad(5f)
             add()  // skip vertical separator
             add("Majority Religion: [$label]".toLabel()).colspan(3).center().row()
         }
 
-        if (religionManager.religionThisIsTheHolyCityOf != null) {
-            val (iconName, label) = getIconAndLabel(religionManager.religionThisIsTheHolyCityOf)
-            add(linkedReligionIcon(iconName, religionManager.religionThisIsTheHolyCityOf)).pad(5f)
+        val holyCityOf = cityView.getReligionThisIsTheHolyCityOf()
+        if (holyCityOf != null) {
+            val (iconName, label) = getIconAndLabel(holyCityOf)
+            add(linkedReligionIcon(iconName, holyCityOf)).pad(5f)
             add()
-            if (!religionManager.isBlockedHolyCity) {
+            if (!cityView.isBlockedHolyCity()) {
                 add("Holy City of: [$label]".toLabel()).colspan(3).center().row()
             } else {
                 add("Former Holy City of: [$label]".toLabel()).colspan(3).center().row()
@@ -57,7 +56,7 @@ class CityReligionInfoTable(
             addSeparator(gridColor)
 
             for ((religion, followerCount) in followers.asSequence().sortedByDescending { it.value }) {
-                val iconName = gameInfo.religions[religion]!!.getIconName()
+                val iconName = cityView.getReligion(religion)!!.getIconName()
                 add(linkedReligionIcon(iconName, religion)).pad(5f)
                 addSeparatorVertical(gridColor)
                 add(followerCount.toLabel()).pad(5f)
@@ -72,7 +71,7 @@ class CityReligionInfoTable(
     }
 
     private fun getIconAndLabel(religionName: String?) =
-        getIconAndLabel(gameInfo.religions[religionName])
+        getIconAndLabel(cityView.getReligion(religionName))
     private fun getIconAndLabel(religion: Religion?): Pair<String, String> {
         return if (religion == null) "Religion" to "None"
             else religion.getIconName() to religion.getReligionDisplayName()
@@ -92,7 +91,7 @@ class CityReligionInfoTable(
     }
 
     fun asExpander(onChange: (()->Unit)?): ExpanderTab {
-        val (icon, label) = getIconAndLabel(religionManager.getMajorityReligion())
+        val (icon, label) = getIconAndLabel(cityView.getMajorityReligion())
         return ExpanderTab(
                 title = "Majority Religion: [$label]",
                 fontSize = Constants.defaultFontSize,

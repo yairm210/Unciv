@@ -16,7 +16,6 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.CityAmbiencePlayer
 import com.unciv.ui.audio.SoundPlayer
-import com.unciv.ui.components.InputDisabling
 import com.unciv.ui.components.ParticleEffectMapFireworks
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.disable
@@ -172,21 +171,28 @@ class CityScreen(
             scrollY = (maxY - cityStatsTable.packIfNeeded().height - posFromEdge + cityPickerTable.top) / 2
             updateVisualScroll()
         }
+
+        globalShortcuts.add(KeyboardBinding.Civilopedia) { openCivilopedia() }
     }
 
     override fun getCivilopediaRuleset() = cityView.getRuleset()
 
+    /** Async */
     internal fun update() {
-        // Recalculate Stats
-        cityView.updateCityStats()
+        Concurrency.run {
+            // Recalculate Stats
+            cityView.updateCityStats()
+            Concurrency.runOnGLThread {
 
-        constructionsTable.isVisible = !isSpying
-        constructionsTable.update(selectedConstruction)
+                constructionsTable.isVisible = !isSpying
+                constructionsTable.update(selectedConstruction)
 
-        updateWithoutConstructionAndMap()
+                updateWithoutConstructionAndMap()
 
-        // Rest of screen: Map of surroundings
-        updateTileGroups()
+                // Rest of screen: Map of surroundings
+                updateTileGroups()
+            }
+        }
     }
 
     internal fun updateWithoutConstructionAndMap() {
@@ -442,9 +448,8 @@ class CityScreen(
                 }
                 Concurrency.runOnGLThread {
                     SoundPlayer.play(UncivSound.Coin)
-                    InputDisabling.disableInput()
                     // preselect the next tile on city screen rebuild so bulk buying can go faster
-                    game.replaceCurrentScreen(CityScreen(cityView, initSelectedTile = cityView.chooseNewTileToOwn()))
+                    game.replaceCurrentScreen { CityScreen(cityView, initSelectedTile = cityView.chooseNewTileToOwn()) }
                 }
             }
         }.open()
@@ -494,7 +499,8 @@ class CityScreen(
     internal fun hasFreeBuilding(building: Building) = cityView.hasFreeBuilding(building)
 
     fun selectConstructionFromQueue(index: Int) {
-        selectConstruction(cityView.constructions.constructionQueue[index])
+        val constructionName = cityView.constructions.constructionQueue.getOrNull(index) ?: return
+        selectConstruction(constructionName)
     }
     fun selectConstruction(name: String) {
         selectConstruction(cityView.constructions.getConstruction(name))
@@ -553,10 +559,12 @@ class CityScreen(
         if (numCities == 0) return
         val indexOfCity = viewableCities.indexOfFirst { it == cityView }
         val indexOfNextCity = (indexOfCity + delta + numCities) % numCities
-        val newCityScreen = CityScreen(viewableCities[indexOfNextCity], ambiencePlayer = passOnCityAmbiencePlayer())
-        newCityScreen.mapScrollPane.zoom(mapScrollPane.scaleX) // Retain zoom
-        newCityScreen.update()
-        game.replaceCurrentScreen(newCityScreen)
+        game.replaceCurrentScreen {
+            val newCityScreen = CityScreen(viewableCities[indexOfNextCity], ambiencePlayer = passOnCityAmbiencePlayer())
+            newCityScreen.mapScrollPane.zoom(mapScrollPane.scaleX) // Retain zoom
+            newCityScreen.update()
+            newCityScreen
+        }
     }
 
     // Don't use passOnCityAmbiencePlayer here - continuing play on the replacement screen would be nice,

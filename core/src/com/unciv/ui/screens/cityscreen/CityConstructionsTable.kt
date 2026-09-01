@@ -29,6 +29,7 @@ import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.brighten
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.getConsumesAmountString
+import com.unciv.ui.components.extensions.getTurnsToConstructionString
 import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.components.extensions.setEnabled
 import com.unciv.ui.components.extensions.surroundWithCircle
@@ -647,10 +648,10 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     private fun cannotAddConstructionToQueue(construction: IConstruction): Boolean {
         val cityConstructions = cityView.constructions
         return cityConstructions.isQueueFull()
-                || !cityConstructions.isBuildable(construction)
                 || !cityScreen.canChangeState
-                || construction is PerpetualConstruction && cityConstructions.isBeingConstructedOrEnqueued(construction.name)
                 || cityView.isPuppet()
+                || !cityConstructions.isBuildable(construction)
+                || construction is PerpetualConstruction && cityConstructions.isBeingConstructedOrEnqueued(construction.name)
     }
 
     private fun addConstructionToQueue(construction: IConstruction) {
@@ -672,7 +673,6 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             cityScreen.clearSelection()
         if (cityView.constructions.constructionQueue.first() == construction.name)
             cityView.tryReassignPopulation()
-        cityScreen.update()
         cityScreen.game.settings.addCompletedTutorialTask("Pick construction")
     }
 

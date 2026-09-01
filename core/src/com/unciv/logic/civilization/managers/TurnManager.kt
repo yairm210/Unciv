@@ -343,6 +343,8 @@ class TurnManager(val civInfo: Civilization) {
         civInfo.resetMilitaryMightCache()
 
         updateWinningCiv() // Maybe we did something this turn to win
+        
+        civInfo.lastTurnProcessedWithVersion = UncivGame.VERSION
     }
 
     fun updateWinningCiv() {

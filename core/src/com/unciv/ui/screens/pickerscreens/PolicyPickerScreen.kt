@@ -645,7 +645,7 @@ class PolicyPickerScreen(
                     "Are you sure you want to adopt [${branch.name}]?",
                     "Adopt", true, action = {
                         viewingCiv.policies.adopt(branch, false)
-                        game.replaceCurrentScreen(recreate())
+                        game.replaceCurrentScreen{ recreate() }
                     }
                 ).open(force = true)
         }
@@ -674,7 +674,7 @@ class PolicyPickerScreen(
         // If we've moved to another screen in the meantime (great person pick, victory screen) ignore this
         // update policies
         if (game.screen !is PolicyPickerScreen) game.popScreen()
-        else game.replaceCurrentScreen(recreate())
+        else game.replaceCurrentScreen{ recreate() }
     }
 
     override fun recreate(): BaseScreen {
