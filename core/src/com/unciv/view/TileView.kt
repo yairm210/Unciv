@@ -40,7 +40,8 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
     @Readonly fun getOwner(): ForeignCivView? {
         val owner = tile.getOwner() ?: return null
         if (viewer == null) return null
-        return ForeignCivView(owner, viewer, spectatorMode)
+        val gameView = tileMapView.gameView ?: return null
+        return gameView.getForeignCivView(owner)
     }
     @Readonly private fun isVisible(unit: MapUnit): Boolean {
         if (viewer == null) return false

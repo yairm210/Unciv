@@ -108,7 +108,7 @@ class DeprecatedUniquesTest {
         RulesetCache.loadRulesets(noMods = true)
         val ruleset = RulesetCache.getVanillaRuleset()
 
-        val errors = UniqueValidator(ruleset).checkUnique(unique, false, null)
+        val errors = UniqueValidator(ruleset).checkUnique(unique, null)
 
         assertTrue(
             "A unique matching DeprecatedUniqueType should produce at least one ErrorOptionsOnly error, got: ${errors.map { it.errorSeverityToReport }}",
@@ -129,7 +129,7 @@ class DeprecatedUniquesTest {
         RulesetCache.loadRulesets(noMods = true)
         val ruleset = RulesetCache.getVanillaRuleset()
 
-        val errors = UniqueValidator(ruleset).checkUnique(unique, false, null)
+        val errors = UniqueValidator(ruleset).checkUnique(unique, null)
 
         assertTrue(
             "A half-deprecated unique (DeprecationLevel.WARNING) should produce a WarningOptionsOnly warning, got: ${errors.map { it.errorSeverityToReport }}",

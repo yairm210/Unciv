@@ -21,12 +21,12 @@ import yairm210.purity.annotations.Readonly
 class CivView(civ: Civilization,
               viewer: Civilization,
               spectatorMode: Boolean = false,
-              val gameView: GameView) : ForeignCivView(civ, viewer, spectatorMode) {
+              gameView: GameView) : ForeignCivView(civ, viewer, spectatorMode, gameView) {
 
     // Navigation
     @Readonly fun getCity(city: City): CityView = gameView.getCityView(city)
     @Readonly fun cities(): List<CityView> = civ.cities.map { getCity(it) }
-    @Readonly fun getTradeView(otherCiv: ForeignCivView): TradeView = TradeView(civ, otherCiv.unwrap())
+    @Readonly fun getTradeView(otherCiv: ForeignCivView): TradeView = TradeView(civ, otherCiv.unwrap(), gameView)
 
     // Data retrieval
     @Readonly fun hasStatToBuy(stat: Stat, price: Int): Boolean = civ.hasStatToBuy(stat, price)

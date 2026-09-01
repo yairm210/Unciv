@@ -8,10 +8,10 @@ import yairm210.purity.annotations.Readonly
 
 /** View of an [ICombatant] from the perspective of [viewer] via [gameView]. */
 class CombatantView(private val combatant: ICombatant, viewer: Civilization, spectatorMode: Boolean = false,
-                    private val gameView: GameView) : GameBasedView<ICombatant>(combatant, viewer, spectatorMode) {
+                    gameView: GameView) : GameBasedView<ICombatant>(combatant, viewer, spectatorMode, gameView) {
 
     // Navigation
-    @Readonly fun getCivInfo(): ForeignCivView = ForeignCivView(combatant.getCivInfo(), viewer, spectatorMode)
+    @Readonly fun getCivInfo(): ForeignCivView = gameView.getForeignCivView(combatant.getCivInfo())
     @Readonly fun getTile(): TileView = gameView.getTile(combatant.getTile())
 
     // Data retrieval

@@ -580,21 +580,18 @@ class Ruleset {
                         uniques = ArrayList(cityStateType.uniques.filter {
                             UniqueValidator(this@Ruleset).checkUnique(
                                 Unique(it),
-                                false,
                                 null
                             ).isEmpty()
                         })
                         friendBonusUniques = ArrayList(cityStateType.friendBonusUniques.filter {
                             UniqueValidator(this@Ruleset).checkUnique(
                                 Unique(it),
-                                false,
                                 null
                             ).isEmpty()
                         })
                         allyBonusUniques = ArrayList(cityStateType.allyBonusUniques.filter {
                             UniqueValidator(this@Ruleset).checkUnique(
                                 Unique(it),
-                                false,
                                 null
                             ).isEmpty()
                         })
