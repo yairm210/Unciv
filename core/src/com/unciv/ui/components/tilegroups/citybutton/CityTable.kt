@@ -5,8 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.GUI
-import com.unciv.logic.city.City
-import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.translations.tr
@@ -19,6 +17,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.padTopDescent
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.DebugUtils
+import com.unciv.view.CityView
 
 /**
  *  This is the main "button" inside [CityButton], the one with a rounded edge look,
@@ -38,8 +37,7 @@ import com.unciv.utils.DebugUtils
  *  - nation or city-state icon (unless yours)
  */
 internal class CityTable(
-    city: City,
-    viewingCiv: Civilization,
+    city: CityView,
     forPopup: Boolean = false
 ) : BorderedTable(
     path = "WorldScreen/CityButton/IconTable",
@@ -52,13 +50,14 @@ internal class CityTable(
         pad(0f, 4f, 0f, 4f) // outer pad left and right
 
         val selectedCiv = GUI.getSelectedPlayer()
+        val viewingCiv = city.getViewingCiv()
         when {
-            city.civ == selectedCiv -> {
+            city.belongsTo(selectedCiv) -> {
                 borderOnTop = true
                 borderSize = 4f
                 bgBorderColor = Color.valueOf("#E9E9AC")
             }
-            city.civ.isAtWarWith(selectedCiv) -> {
+            city.isAtWarWith(selectedCiv) -> {
                 borderSize = 4f
                 bgBorderColor = Color.valueOf("#E63200")
             }
@@ -67,10 +66,10 @@ internal class CityTable(
                 bgBorderColor = ImageGetter.CHARCOAL
             }
         }
-        bgColor = city.civ.nation.getOuterColor().cpy().apply { a = 0.9f }
+        bgColor = city.getNationOuterColor().cpy().apply { a = 0.9f }
 
         val isShowDetailedInfo = DebugUtils.VISIBLE_MAP
-                || city.civ == selectedCiv
+                || city.belongsTo(selectedCiv)
                 || viewingCiv.isSpectator()
 
         addCityPopNumber(city)
@@ -83,24 +82,24 @@ internal class CityTable(
         if (isShowDetailedInfo)
             addCityConstruction(city)
 
-        if (city.civ != viewingCiv)
+        if (!city.belongsTo(viewingCiv))
             addCivIcon(city)
     }
 
-    private fun addCityPopNumber(city: City) {
-        val textColor = city.civ.nation.getInnerColor()
-        val popLabel = city.population.population.tr()
+    private fun addCityPopNumber(city: CityView) {
+        val textColor = city.getCivInnerColor()
+        val popLabel = city.getPopulationCount().tr()
             .toLabel(fontColor = textColor, fontSize = 18, alignment = Align.center)
         add(popLabel).minWidth(26f)
     }
 
-    private fun addCityGrowthBar(city: City) {
+    private fun addCityGrowthBar(city: CityView) {
         val table = Table()
-        fun calcGrowthPercentage(food: Int) = (food.toFloat() / city.population.getFoodToNextPopulation()).coerceIn(0f, 1f)
+        fun calcGrowthPercentage(food: Int) = (food.toFloat() / city.getFoodToNextPopulation()).coerceIn(0f, 1f)
         val isGrowing = city.isGrowing()
         val isStarving = city.isStarving()
 
-        val growthPercentage = calcGrowthPercentage(city.population.foodStored)
+        val growthPercentage = calcGrowthPercentage(city.getFoodStored())
         val growthBar = ImageGetter.getProgressBarVertical(
             4f, 30f,
             if (isStarving) 1.0f else growthPercentage,
@@ -109,22 +108,22 @@ internal class CityTable(
         )
         growthBar.color.a = 0.8f
         if (isGrowing) {
-            val nextTurnPercentage = calcGrowthPercentage(city.foodForNextTurn() + city.population.foodStored)
+            val nextTurnPercentage = calcGrowthPercentage(city.foodForNextTurn() + city.getFoodStored())
             growthBar.setSemiProgress(CityButton.ColorGrowth.cpy().darken(0.4f), nextTurnPercentage, 1f)
         }
 
         val turnLabelText = when {
             isGrowing -> {
-                val turnsToGrowth = city.population.getNumTurnsToNewPopulation()
+                val turnsToGrowth = city.getNumTurnsToNewPopulation()
                 if (turnsToGrowth != null && turnsToGrowth < 100) turnsToGrowth.tr() else Fonts.infinity.toString()
             }
             isStarving -> {
-                val turnsToStarvation = city.population.getNumTurnsToStarvation()
+                val turnsToStarvation = city.getNumTurnsToStarvation()
                 if (turnsToStarvation != null && turnsToStarvation < 100) turnsToStarvation.tr() else Fonts.infinity.toString()
             }
             else -> "-"
         }
-        val textColor = city.civ.nation.getInnerColor()
+        val textColor = city.getCivInnerColor()
         val turnLabel = turnLabelText.toLabel(fontColor = textColor, fontSize = 13)
 
         table.add(growthBar).padRight(2f)
@@ -132,13 +131,13 @@ internal class CityTable(
         add(table).minWidth(6f).padLeft(2f)
     }
 
-    private fun addCityText(city: City, forPopup: Boolean) {
-        val textColor = city.civ.nation.getInnerColor()
+    private fun addCityText(city: CityView, forPopup: Boolean) {
+        val textColor = city.getCivInnerColor()
         val table = Table().apply { isTransform = false }
 
         if (city.isCapital()) {
             val capitalIcon = when {
-                city.civ.isCityState -> ImageGetter.getNationIcon("CityState")
+                city.isCityState() -> ImageGetter.getNationIcon("CityState")
                     .apply { color = textColor }
                 else -> ImageGetter.getImage("OtherIcons/Capital")
             }
@@ -149,7 +148,7 @@ internal class CityTable(
         table.add(cityName).growY().center().padTopDescent()
 
         if (!forPopup) {
-            val cityReligion = city.religion.getMajorityReligion()
+            val cityReligion = city.getMajorityReligion()
             if (cityReligion != null) {
                 val religionImage = ImageGetter.getReligionIcon(cityReligion.getIconName()).apply {
                     color = textColor }.toGroup(20f)
@@ -165,10 +164,10 @@ internal class CityTable(
             .expandY().center()
     }
 
-    private fun addCityConstruction(city: City) {
-        val textColor = city.civ.nation.getInnerColor()
+    private fun addCityConstruction(city: CityView) {
+        val textColor = city.getCivInnerColor()
 
-        val cityConstructions = city.cityConstructions
+        val cityConstructions = city.constructions
         val cityCurrentConstruction = cityConstructions.getCurrentConstruction()
 
         val progressTable = Table()
@@ -190,9 +189,9 @@ internal class CityTable(
                 cityCurrentConstruction as INonPerpetualConstruction
                 val turnsToConstruction = cityConstructions.turnsToConstruction(cityCurrentConstruction.name)
                 val workDone = cityConstructions.getWorkDone(cityCurrentConstruction.name).toFloat()
-                val cost = cityCurrentConstruction.getProductionCost(cityConstructions.city.civ, cityConstructions.city)
+                val cost = city.getConstructionProductionCost(cityCurrentConstruction)
                 fun getPercentage(done: Float) = (done / cost).coerceIn(0f, 1f)
-                nextTurnPercentage = getPercentage(workDone + city.cityStats.currentCityStats.production)
+                nextTurnPercentage = getPercentage(workDone + city.getCurrentCityStats().production)
                 percentage = getPercentage(workDone)
                 if (turnsToConstruction < 100) turnsToConstruction.tr() else "-"
             }
@@ -210,12 +209,12 @@ internal class CityTable(
         add(icon).minWidth(26f)
     }
 
-    private fun addCivIcon(city: City) {
+    private fun addCivIcon(city: CityView) {
         val icon = when {
-            city.civ.isMajorCiv() -> ImageGetter.getNationIcon(city.civ.nation.name)
-            else -> ImageGetter.getImage("CityStateIcons/" + city.civ.cityStateType.name)
+            city.isMajorCiv() -> ImageGetter.getNationIcon(city.getNationName())
+            else -> ImageGetter.getImage("CityStateIcons/" + city.getCityStateTypeName())
         }
-        icon.color = city.civ.nation.getInnerColor()
+        icon.color = city.getCivInnerColor()
 
         add(icon.toGroup(20f)).minWidth(26f)
     }

@@ -59,7 +59,7 @@ class CityButton(val foreignCityView: ForeignCityView, private val tileGroup: Ti
     @Readonly private fun belongsToViewingCiv() = foreignCityView.belongsTo(viewingPlayer)
 
     fun update(isCityViewable: Boolean) {
-        val selectedPlayer = GUI.getSelectedPlayer()
+        val selectedPlayer = foreignCityView.getViewingCiv()
         isViewable = isCityViewable
 
         clear()
@@ -77,7 +77,7 @@ class CityButton(val foreignCityView: ForeignCityView, private val tileGroup: Ti
         add(DefenceTable(foreignCityView.getCity(), selectedPlayer)).row()
 
         // Add City main table: pop, name, religion, construction, nation icon
-        cityTable = CityTable(foreignCityView.getCity(), viewingPlayer)
+        cityTable = CityTable(foreignCityView.gameView.getCityView(foreignCityView.getCity()))
         add(cityTable).row()
 
         // If city state - add influence bar
@@ -241,7 +241,7 @@ class CityButton(val foreignCityView: ForeignCityView, private val tileGroup: Ti
 
         val popup = Popup(GUI.getWorldScreen()).apply {
             name = "ForeignCityInfoPopup"
-            add(CityTable(foreignCityView.getCity(), viewingPlayer, true)).fillX().padBottom(5f).colspan(3).row()
+            add(CityTable(foreignCityView.gameView.getCityView(foreignCityView.getCity()), true)).fillX().padBottom(5f).colspan(3).row()
             if (foreignCityView.isReligionEnabled())
                 add(CityReligionInfoTable(foreignCityView, true)).colspan(3).row()
             addOKButton("Diplomacy") { openDiplomacy() }

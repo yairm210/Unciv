@@ -26,7 +26,7 @@ open class ForeignCityView(internal open val city: City,
     @Readonly fun getCity(): City = city
     @Readonly fun getViewingCiv(): Civilization = viewer
     /** The owning civ of this city, as visible from [viewer]'s perspective. For the viewing player's full CivView, use [CityView.viewingCiv]. */
-    @Readonly open fun owningCiv(): ForeignCivView = ForeignCivView(city.civ, viewer, spectatorMode, gameView)
+    @Readonly open fun owningCiv(): ForeignCivView = gameView.getForeignCivView(city.civ) 
     /** Get from a foreign view to an inner view */
     @Readonly fun tryGetCityView(): CityView? {
         val canSeeCityData = viewer.isSpectator() // not posing, actual spectator
@@ -52,6 +52,11 @@ open class ForeignCityView(internal open val city: City,
 
     @Readonly fun belongsTo(civ: Civilization): Boolean = city.civ === civ
     @Readonly fun isCityState(): Boolean = city.civ.isCityState
+    @Readonly fun isMajorCiv(): Boolean = city.civ.isMajorCiv()
+    @Readonly fun getNationName(): String = city.civ.nation.name
+    @Readonly fun getCityStateTypeName(): String = city.civ.cityStateType.name
+    @Readonly fun isAtWarWith(civ: Civilization): Boolean = city.civ.isAtWarWith(civ)
+    @Readonly fun getNationOuterColor(): ImmutableColor = city.civ.nation.getOuterColor()
     @Readonly fun civKnows(civ: Civilization): Boolean = city.civ.knows(civ)
     @Readonly fun isKnownTo(civ: Civilization): Boolean = civ.knows(city.civ)
     @Readonly fun getDiplomacyManagerWith(civ: Civilization): DiplomacyManager? = city.civ.getDiplomacyManager(civ)

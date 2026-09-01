@@ -65,6 +65,7 @@ class CityView(city: City,
     val manualSpecialists: Boolean get() = city.manualSpecialists
     @Readonly fun getNumTurnsToStarvation(): Int? = city.population.getNumTurnsToStarvation()
     @Readonly fun getNumTurnsToNewPopulation(): Int? = city.population.getNumTurnsToNewPopulation()
+    @Readonly fun foodForNextTurn(): Int = city.foodForNextTurn()
     @Readonly fun getStatsOfSpecialist(specialistName: String): Stats = city.cityStats.getStatsOfSpecialist(specialistName)
 
     // City state
