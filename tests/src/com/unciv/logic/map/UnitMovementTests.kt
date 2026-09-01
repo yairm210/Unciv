@@ -20,6 +20,7 @@ import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.testing.TestRunnerFactory
 import com.unciv.testing.TestGame
 import com.unciv.ui.components.UnitMovementMemoryType
+import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -255,6 +256,20 @@ class UnitMovementTests(private val pathfindingAlgorithm: PathfindingAlgorithm) 
     }
 
     @Test
+    fun transportedUnitCanBePlacedEvenIfItCannotMoveThereNormally() {
+        val unit = testGame.addUnit("Warrior", civInfo, tile)
+        unit.isTransported = true
+
+        val waterTile = testGame.tileMap[1, 1]
+        waterTile.baseTerrain = Constants.ocean
+        waterTile.setTransients()
+
+        unit.putInTile(waterTile)
+
+        assertTrue("Transported unit should be placed on the destination tile", waterTile.airUnits.contains(unit))
+    }
+
+    @Test
     fun `can NOT teleport water unit over the land`() {
         testGame.makeHexagonalMap(5)
         for (i in listOf(1,3)) { // only water tiles are 1,1 and 1,3, which are non-contiguous
@@ -322,6 +337,19 @@ class UnitMovementTests(private val pathfindingAlgorithm: PathfindingAlgorithm) 
     }
 
     @Test
+    fun `cannot board a carrier when the tile already has another military unit`() {
+        val carrierTile = testGame.tileMap[1,1]
+        val carrier = testGame.addUnit("Carrier", civInfo, carrierTile)
+        val existingMilitaryUnit = testGame.addUnit("Warrior", civInfo, carrierTile)
+        val payload = testGame.addUnit("Fighter", civInfo, testGame.tileMap[0,1])
+
+        Assert.assertNotNull(existingMilitaryUnit.currentTile.militaryUnit)
+        Assert.assertTrue("Carrier should be carried in air units when the military slot is occupied",
+            carrier.currentTile.airUnits.contains(carrier))
+        Assert.assertFalse("Payload should not be able to board the carrier on a tile with an occupied military slot",
+            payload.movement.canMoveTo(carrierTile))
+    }
+
     fun paradroppingTransportKeepsPayload() {
         val origin = testGame.tileMap[0,0]
         val destination = testGame.tileMap[1,0]
@@ -374,9 +402,9 @@ class UnitMovementTests(private val pathfindingAlgorithm: PathfindingAlgorithm) 
 
         assertTrue(warrior1.movement.canUnitSwapTo(testGame.tileMap[2,2]))
         assertTrue(warrior2.movement.canUnitSwapTo(testGame.tileMap[1,1]))
-        
+
         warrior1.movement.swapMoveToTile(testGame.tileMap[2,2])
-        
+
         assertEquals(testGame.tileMap[2,2], warrior1.currentTile)
         assertEquals(testGame.tileMap[1,1], settler1.currentTile)
         assertEquals(testGame.tileMap[1,1], warrior2.currentTile)
