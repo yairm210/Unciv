@@ -23,6 +23,7 @@ class CityConstructionsView(private val cityConstructions: CityConstructions, ga
     @Readonly fun isBuilt(name: String): Boolean = cityConstructions.isBuilt(name)
     @Readonly fun getTurnsToConstructionString(construction: IConstruction, isFirst: Boolean = true): String = cityConstructions.getTurnsToConstructionString(construction, isFirst)
     @Readonly fun getWorkDone(name: String): Int = cityConstructions.getWorkDone(name)
+    @Readonly fun turnsToConstruction(name: String): Int = cityConstructions.turnsToConstruction(name)
     @Readonly fun shouldBeDisplayed(construction: IConstruction): Boolean = construction.shouldBeDisplayed(cityConstructions)
     @Readonly fun getRejectionReasons(construction: INonPerpetualConstruction): Sequence<RejectionReason> = construction.getRejectionReasons(cityConstructions)
     @Readonly fun isBuildable(construction: IConstruction): Boolean = construction.isBuildable(cityConstructions)
