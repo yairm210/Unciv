@@ -1,42 +1,18 @@
 ## 4.21.15
 
-Avoid ANRs when choosing nation
+Avoid ANRs in multiple places
 
-Run AuthPopup auth off GL thread - avoid ANRs
+Performance improvements
 
-perf(cpu): Don't check misspellings for unique parameters, when we don't care, e.g. when checking mod combo validity
+Remove initial Android screen orientation restriction for "user landscape" - now takes whatever orientation is set for the device
 
-View implementation - Generalized GameView as part of GameBasedView - see 
+Air unit list visible on carriers
 
-View implementation - NextTurnAction conversion - see 
+Resolved map bounds restrictions on spectator-as-civ by removing restrictions entirely
 
-View implementation - TileSetStrings no longer creates its own ForeignCivView - see 
+UI doesn't crash if construction list changed while we try and select a queue entry that no longer exists
 
-View implementation - Get rid of religion manager usage - see 
-
-UI perf: Remove double cityscreen update when adding construction to queue
-
-Minor perf: Only clone specialists in citystatstable, for buildings with specialists
-
-Avoid CityScreen update ANRs by running data gathering on another thread
-
-Remove Android screen orientation restriction for "user landscape" - now takes whatever orientation is set for the device, meaning portrait users don't need to dig in the settings
-
-View implementation - Combatant View, for battle table - see 
-
-Resolved  - UI doesn't crash if construction list changed while we try and select a queue entry that no longer exists
-
-Resolved  - air unit list visible on carriers
-
-minor perf: hasMatchingTagUnique doesn't allocate sequence or iterator
-
-Avoid more potential ANRs when switching screens - this time UncivGame.replaceCurrentScreen
-
-Resolved  - Resolved map bounds restrictions on spectator-as-civ by removing restrictions entirely
-
-Missile slots - By SomeTroglodyte
-
-Continue migrating UI code to the View API - By varchasgopalaswamy
+Better use of multiple slot types on carriers - By SomeTroglodyte
 
 ## 4.21.14
 
