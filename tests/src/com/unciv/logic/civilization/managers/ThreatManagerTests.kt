@@ -1,6 +1,6 @@
 package com.unciv.logic.civilization.managers
 
-import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
 import com.unciv.utils.DebugUtils
 import junit.framework.TestCase.assertEquals
@@ -9,7 +9,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@RunWith(GdxTestRunner::class)
+@RunWith(BaseTestRunner::class)
 class ThreatManagerTests {
 
     val testGame = TestGame()

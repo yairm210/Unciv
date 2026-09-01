@@ -1,11 +1,13 @@
 package com.unciv.ui.screens.pickerscreens
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.GUI
@@ -22,6 +24,9 @@ import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.fonts.Fonts
+import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.components.input.onDoubleClick
@@ -43,8 +48,8 @@ class TechPickerScreen(
     private var selectedTech: Technology? = null
     private var civTech: TechManager = civInfo.tech
     private var tempTechsToResearch: ArrayList<String>
-    private var lines = NonTransformGroup()
-    private var orderIndicators = NonTransformGroup()
+    private var lines = NonTransformGroup().apply { touchable = Touchable.disabled }
+    private var orderIndicators = NonTransformGroup().apply { touchable = Touchable.disabled }
     private var eraLabels = ArrayList<Label>()
 
     /** We need this to be a separate table, and NOT the topTable, because *inhales*
@@ -55,7 +60,10 @@ class TechPickerScreen(
      *  leaving us the juicy small tech tree right in the center.
      */
     private val techTable = object : Table(){
-        override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
+        override fun draw(batch: Batch?, parentAlpha: Float) {
+            cullingArea = topTable.cullingArea
+            super.draw(batch, parentAlpha)
+        }
     }
 
     // All these are to counter performance problems when updating buttons for all techs.
@@ -71,13 +79,16 @@ class TechPickerScreen(
     private val turnsToTech = ruleset.technologies.values.associateBy({ it.name }, { civTech.turnsToTech(it.name) })
 
     init {
+        Gdx.input.inputProcessor = null // Avoid ANRs while building the tech screen
+
         setDefaultCloseAction()
         scrollPane.setOverscroll(false, false)
 
-        descriptionLabel.onClick {
+        descriptionLabel.onActivation {
             if (selectedTech != null)
                 openCivilopedia(selectedTech!!.makeLink())
         }
+        descriptionLabel.keyShortcuts.add(KeyboardBinding.Civilopedia)
 
         tempTechsToResearch = ArrayList(civTech.techsToResearch)
 
@@ -88,7 +99,7 @@ class TechPickerScreen(
         topTable.add(techTable)
         techTable.background = skinStrings.getUiBackground("TechPickerScreen/Background", tintColor = skinStrings.skinConfig.clearColor)
         pickerPane.bottomTable.background = skinStrings.getUiBackground("TechPickerScreen/BottomTable", tintColor = skinStrings.skinConfig.clearColor)
-        
+
         rightSideButton.setText(if (freeTechPick) "Pick a free tech".tr() else "Pick a tech".tr())
         rightSideButton.onClick(UncivSound.Paper) { tryExit() }
 
@@ -108,6 +119,7 @@ class TechPickerScreen(
             if (firstAvailableTech != null)
                 centerOnTechnology(firstAvailableTech)
         }
+        Gdx.input.inputProcessor = stage // Return input 
     }
 
     override fun getCivilopediaRuleset() = ruleset
@@ -351,6 +363,8 @@ class TechPickerScreen(
 
         lines.children.filter { it.color == currentTechColor && it.color != Color.WHITE.cpy() }
             .forEach { it.toFront() }
+
+        lines.setSize(techTable.width, techTable.height)
     }
 
     private fun addOrderIndicators() {
@@ -370,6 +384,7 @@ class TechPickerScreen(
             }
         }
         orderIndicators.toFront()
+        orderIndicators.setSize(techTable.width, techTable.height)
     }
 
     private fun selectTechnology(tech: Technology?, queue: Boolean = false, center: Boolean = false, switchFromWorldScreen: Boolean = true) {

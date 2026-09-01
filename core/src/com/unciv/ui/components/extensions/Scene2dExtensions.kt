@@ -37,11 +37,13 @@ import com.unciv.ui.components.extensions.GdxKeyCodeFixes.valueOf
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.components.input.ActorAttachments
 import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.VirtualMouseButtonKeys
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.images.Portrait
 import com.unciv.ui.screens.basescreen.BaseScreen
 import yairm210.purity.annotations.Pure
 import yairm210.purity.annotations.Readonly
@@ -472,6 +474,7 @@ object GdxKeyCodeFixes {
         DEL -> "Del"  // Gdx would name this "Forward Delete"
         BACKSPACE -> "Backspace"  // Gdx would name this "Delete"
         else -> Input.Keys.toString(keyCode)
+            ?: VirtualMouseButtonKeys.fromKey(keyCode)?.label
             ?: ""
     }
 
@@ -480,7 +483,8 @@ object GdxKeyCodeFixes {
         "Del" -> DEL
         "Backspace" -> BACKSPACE
         else -> {
-            val code = Input.Keys.valueOf(name)
+            val code = VirtualMouseButtonKeys.fromLabel(name)?.keyCode
+                ?: Input.Keys.valueOf(name)
             if (code == -1) UNKNOWN else code
         }
     }
@@ -503,6 +507,7 @@ fun equalizeColumns(vararg tables: Table) {
     for (table in tables) {
         table.packIfNeeded()
     }
+    if (tables.count { it.rows > 0 } <= 1) return // Nothing to do when at most one table has actual cells
     val columns = tables.first().columns
     check(tables.all { it.columns >= columns }) {
         "equalizeColumns needs all tables to have at least the same number of columns as the first one"
@@ -554,6 +559,33 @@ fun Group.allChildren(): Sequence<Actor> = sequence {
         if (child is Group) yieldAll(child.allChildren())
         yield(child)
     }
+}
+
+/** Adds an indicator icon with shadow on top of a Portrait. The defaults look good on 30f-sized Portraits.
+ *  @receiver A Portrait, already sized
+ *  @param relativeSize This allows scaling the indicator.
+ *  @param shiftXSize This allows scaling the shift towards the right.
+ *  @param shiftYSize This allows scaling the shift towards the top.
+ *  @param indicatorName allows using something other than OtherIcons/Capital
+ */
+fun Portrait.addCapitalIndicator(
+    relativeSize: Float = .546f,
+    shiftXSize: Float = .848f,
+    shiftYSize: Float = shiftXSize,
+    indicatorName: String = "OtherIcons/Capital"
+) {
+    val shiftXSize = this.width * shiftXSize
+    val shiftYSize = this.width * shiftYSize
+    val indicatorSize = this.width * relativeSize
+    addActor(ImageGetter.getImage(indicatorName).apply {
+        color = Color.BLACK.cpy().apply { a = 0.4f }
+        setSize(indicatorSize * 1.2f)
+        setPosition(shiftXSize * 1.04f, shiftYSize * .96f, Align.center)
+    })
+    addActor(ImageGetter.getImage(indicatorName).apply {
+        setSize(indicatorSize)
+        setPosition(shiftXSize, shiftYSize, Align.center)
+    })
 }
 
 /** All defined by https://www.w3.org/TR/WCAG20/#relativeluminancedef */

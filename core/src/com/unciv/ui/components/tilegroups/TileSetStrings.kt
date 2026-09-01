@@ -1,9 +1,9 @@
 package com.unciv.ui.components.tilegroups
 
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.NeighborDirection
-import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.view.ForeignCivView
+import com.unciv.view.ForeignMapUnitView
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.Ruleset
@@ -167,7 +167,7 @@ class TileSetStrings(
      * This means that if there's a "pikeman-France" and a "pikeman-Medieval era",
      * The era-based image wins out, even though it's not the current era.
      */
-    private fun tryGetUnitImageLocation(unit: MapUnit): String? {
+    private fun tryGetUnitImageLocation(unit: ForeignMapUnitView): String? {
 
         var baseUnitIconLocation = getString(this.unitsLocation, unit.name)
         if (unit.isEmbarked()) {
@@ -182,35 +182,37 @@ class TileSetStrings(
             else baseUnitIconLocation // no change
         }
 
-        val civInfo = unit.civ
-        val style = civInfo.nation.style
-        val civName = civInfo.nation.name
+        val civView = unit.civ()
+        val style = civView.getStyle()
+        val civName = civView.civName
 
         var imageAttempter = ImageAttempter(baseUnitIconLocation)
             // Era+civ image: looks like  "pikeman-France-Medieval era"
-            .tryEraImage(civInfo, baseUnitIconLocation, civName, this)
+            .tryEraImage(civView, baseUnitIconLocation, civName, this)
             // Era+style image: looks like  "pikeman-European-Medieval era"
-            .tryEraImage(civInfo, baseUnitIconLocation, style, this, active = style.isNotEmpty())
+            .tryEraImage(civView, baseUnitIconLocation, style, this, active = style.isNotEmpty())
             // Era-only image: looks like "pikeman-Medieval era"
-            .tryEraImage(civInfo, baseUnitIconLocation, null, this)
+            .tryEraImage(civView, baseUnitIconLocation, null, this)
             // Civ + era: looks like "pikeman-France"
             .tryImage { getString(baseUnitIconLocation, tag, civName) }
             // Style + era: "pikeman-European"
             .tryImage(active = style.isNotEmpty()) { getString(baseUnitIconLocation, tag, style) }
             .tryImage { baseUnitIconLocation }
 
-        if (unit.baseUnit.replaces != null)
-            imageAttempter = imageAttempter.tryImage { getString(unitsLocation, unit.baseUnit.replaces!!) }
+        val replaces = unit.getBaseUnit().replaces
+        if (replaces != null)
+            imageAttempter = imageAttempter.tryImage { getString(unitsLocation, replaces) }
 
         return imageAttempter.getPathOrNull()
     }
 
-    fun getUnitImageLocation(unit: MapUnit): String {
+    fun getUnitImageLocation(unit: ForeignMapUnitView): String {
+        val civView = unit.civ()
         val imageKey = getString(
             unit.name, tag,
-            unit.civ.getEra().name, tag,
-            unit.civ.nation.name, tag,
-            unit.civ.nation.style, tag,
+            civView.getEraName(), tag,
+            civView.civName, tag,
+            civView.getStyle(), tag,
             unit.isEmbarked().toString()
         )
         // if in cache return that
@@ -224,8 +226,8 @@ class TileSetStrings(
         return imageLocation
     }
 
-    private fun tryGetOwnedTileImageLocation(baseLocation: String, owner: Civilization): String? {
-        val ownersStyle = owner.nation.getStyleOrCivName()
+    private fun tryGetOwnedTileImageLocation(baseLocation: String, owner: ForeignCivView): String? {
+        val ownersStyle = owner.getStyleOrCivName()
         return ImageAttempter(baseLocation)
             .tryEraImage(owner, baseLocation, ownersStyle, this)
             .tryEraImage(owner, baseLocation, null, this)
@@ -233,10 +235,10 @@ class TileSetStrings(
             .getPathOrNull()
     }
 
-    fun getOwnedTileImageLocation(baseLocation: String, owner: Civilization): String {
+    fun getOwnedTileImageLocation(baseLocation: String, owner: ForeignCivView): String {
         val imageKey = getString(baseLocation, tag,
-            owner.getEra().name, tag,
-            owner.nation.getStyleOrCivName())
+            owner.getEraName(), tag,
+            owner.getStyleOrCivName())
         val currentImageMapping = imageParamsToImageLocation[imageKey]
         if (currentImageMapping != null) return currentImageMapping
 

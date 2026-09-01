@@ -6,7 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.trade.TradeOfferType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
@@ -24,10 +23,11 @@ import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.view.CivView
 
 
 class ResourcesOverviewTab(
-    viewingPlayer: Civilization,
+    viewingPlayer: CivView,
     overviewScreen: EmpireOverviewScreen,
     persistedData: EmpireOverviewTabPersistableData? = null
 ) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
@@ -56,7 +56,7 @@ class ResourcesOverviewTab(
     private val turnImageH = getTurnImage(false)
     private val turnImageV = getTurnImage(true)
 
-    private val resourceDrilldown: ResourceSupplyList = viewingPlayer.detailedCivResources
+    private val resourceDrilldown: ResourceSupplyList = viewingPlayer.getCiv().detailedCivResources
     private val extraDrilldown: ResourceSupplyList = getExtraDrilldown()
     private val allResources = resourceDrilldown.asSequence() + extraDrilldown  // Do not materialize into another ResourceSupplyList, we have intentional zero amounts
 
@@ -66,7 +66,7 @@ class ResourcesOverviewTab(
         .map { it.resource }
         .filter {
             it.resourceType != ResourceType.Bonus &&
-            !it.hasUnique(UniqueType.NotShownOnWorldScreen, viewingPlayer.state) &&
+            !it.hasUnique(UniqueType.NotShownOnWorldScreen, viewingPlayer.getCiv().state) &&
             !it.isCityWide // These are Civ-wide resources, so don't show the city-wide ones.
         }
         .distinct()
@@ -82,14 +82,14 @@ class ResourcesOverviewTab(
     private fun ResourceSupplyList.getLabel(resource: TileResource, origin: String): Label? {
         fun isAlliedAndUnimproved(tile: Tile): Boolean {
             val owner = tile.getOwner() ?: return false
-            if (owner != viewingPlayer && !(owner.isCityState && owner.allyCiv == viewingPlayer)) return false
+            if (owner != viewingPlayer.getCiv() && !(owner.isCityState && owner.allyCiv == viewingPlayer.getCiv())) return false
             return tile.countAsUnimproved()
         }
         val amount = get(resource, origin)?.amount ?: return null
         val label = getLabel(resource, origin, amount)
         if (origin == ExtraInfoOrigin.Unimproved.name)
             label.onClick { overviewScreen.showOneTimeNotification(
-                gameInfo.getExploredResourcesNotification(viewingPlayer, resource, filter = ::isAlliedAndUnimproved)
+                gameInfo.getExploredResourcesNotification(viewingPlayer.getCiv(), resource, filter = ::isAlliedAndUnimproved)
             ) }
         return label
     }
@@ -118,7 +118,7 @@ class ResourcesOverviewTab(
     private fun getResourceImage(name: String) =
         ImageGetter.getResourcePortrait(name, iconSize).apply {
             onClick { overviewScreen.showOneTimeNotification(
-                gameInfo.getExploredResourcesNotification(viewingPlayer, name)
+                gameInfo.getExploredResourcesNotification(viewingPlayer.getCiv(), name)
             ) }
         }
     private fun TileResource.getLabel(): Label {
@@ -271,9 +271,9 @@ class ResourcesOverviewTab(
 
     private fun Tile.countAsUnimproved(): Boolean {
         val resource = tileResource
-        return viewingPlayer.canSeeResource(resource) &&
+        return viewingPlayer.getCiv().canSeeResource(resource) &&
             resource.resourceType != ResourceType.Bonus &&
-            !providesResources(viewingPlayer)
+            !providesResources(viewingPlayer.getCiv())
     }
 
     private fun getExtraDrilldown(): ResourceSupplyList {
@@ -286,7 +286,7 @@ class ResourcesOverviewTab(
         }
 
         // Show resources relevant to WTLK day and/or needing improvement
-        for (city in viewingPlayer.cities) {
+        for (city in viewingPlayer.getCiv().cities) {
             if (city.demandedResource.isNotEmpty()) {
                 val wltkResource = gameInfo.ruleset.tileResources[city.demandedResource]!!
                 if (city.isWeLoveTheKingDayActive()) {
@@ -298,14 +298,14 @@ class ResourcesOverviewTab(
             city.addUnimproved()
         }
 
-        for (otherCiv in viewingPlayer.getKnownCivs()) {
+        for (otherCiv in viewingPlayer.getCiv().getKnownCivs()) {
             // Show resources received through trade
-            for (trade in otherCiv.tradeRequests.filter { it.requestingCiv == viewingPlayer.civID })
+            for (trade in otherCiv.tradeRequests.filter { it.requestingCiv == viewingPlayer.getCiv().civID })
                 for (offer in trade.trade.theirOffers.filter { it.type == TradeOfferType.Strategic_Resource || it.type == TradeOfferType.Luxury_Resource })
                     newResourceSupplyList.add(gameInfo.ruleset.tileResources[offer.name]!!, ExtraInfoOrigin.TradeOffer.name, offer.amount)
 
             // Show resources your city-state allies have left unimproved
-            if (!otherCiv.isCityState || otherCiv.allyCiv != viewingPlayer) continue
+            if (!otherCiv.isCityState || otherCiv.allyCiv != viewingPlayer.getCiv()) continue
             for (city in otherCiv.cities)
                 city.addUnimproved()
         }
@@ -319,10 +319,10 @@ class ResourcesOverviewTab(
 
         // A row for stockpiled resources if required.
         // Note viewingPlayer.detailedCivResources will NOT include stockpiles if current income is zero.
-        for (resourceName in viewingPlayer.resourceStockpiles.keys) {
+        for (resourceName in viewingPlayer.getCiv().resourceStockpiles.keys) {
             val resource = gameInfo.ruleset.tileResources[resourceName] ?: continue
-            if (resource.hasUnique(UniqueType.NotShownOnWorldScreen, viewingPlayer.state)) continue
-            newResourceSupplyList.add(resource, ExtraInfoOrigin.Stockpile.name, viewingPlayer.getResourceAmount(resource))
+            if (resource.hasUnique(UniqueType.NotShownOnWorldScreen, viewingPlayer.getCiv().state)) continue
+            newResourceSupplyList.add(resource, ExtraInfoOrigin.Stockpile.name, viewingPlayer.getCiv().getResourceAmount(resource))
         }
 
         return newResourceSupplyList

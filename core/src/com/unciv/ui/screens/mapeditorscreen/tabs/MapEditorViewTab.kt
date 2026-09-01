@@ -9,7 +9,9 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.tile.TileDescription
+import com.unciv.ui.objectdescriptions.TileDescription
+import com.unciv.view.TileMapView
+import com.unciv.view.TileView
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
@@ -180,7 +182,7 @@ class MapEditorViewTab(
         lines += FormattedLine("Position: [${tile.position.toPrettyString()}]")
         lines += FormattedLine()
 
-        lines.addAll(TileDescription.toMarkup(tile, null))
+        lines.addAll(TileDescription.toMarkup(TileMapView(tile.tileMap, mockCiv).getTile(tile), null))
 
         val stats = try {
             tile.stats.getTileStats(null, mockCiv)

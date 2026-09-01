@@ -16,7 +16,7 @@ jobs:
       - name: Generate new buildConfig.kt and changelog.md files
         run: |
           npm i @octokit/rest
-          node .github/workflows/incrementVersionAndChangelog.mjs
+          node .github/workflows/incrementVersionAndChangelog.mjs ${{ secrets.ACTIONS_ACCESS_TOKEN }} ${{ github.event.issue.number }}
 
           rm -rf node_modules # Now we need to remove extraneous node.js parts before commit
           rm package-lock.json

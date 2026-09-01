@@ -278,6 +278,7 @@ internal class AdvancedTab(
             Concurrency.run("WriteTranslations") {
                 val result = TranslationFileWriter.writeNewTranslationFiles(modSelect.selected.value)
                 launchOnGLThread {
+                    if (stage == null) return@launchOnGLThread // Guard the width below in case the user closed the Options in the mean time
                     // notify about completion
                     val resultLabel = WrappableLabel(result, stage.width / 2, Color.GOLD).apply { wrap = true }
                     resultCell.minHeight(resultLabel.height + 10f).setActor(resultLabel)
@@ -356,9 +357,9 @@ internal class AdvancedTab(
                 selectUnit = true
             )
 
-            newScreen.mapHolder.onTileClicked(newScreen.mapHolder.tileMap[-2, 3]) // Then click on Keshik
+            newScreen.mapHolder.onTileClicked(newScreen.selectedGameView.getTile(newScreen.mapHolder.tileMap[-2, 3])) // Then click on Keshik
             if (currentConfig.attackCity)
-                newScreen.mapHolder.onTileClicked(newScreen.mapHolder.tileMap[-2, 2]) // Then click city again for attack table
+                newScreen.mapHolder.onTileClicked(newScreen.selectedGameView.getTile(newScreen.mapHolder.tileMap[-2, 2])) // Then click city again for attack table
             newScreen.mapHolder.zoomIn(true)
             withContext(Dispatchers.IO) {
                 Thread.sleep(300)

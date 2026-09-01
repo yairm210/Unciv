@@ -2,6 +2,7 @@ package com.unciv.logic.map
 
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.automation.unit.RoadToAutomation
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.tile.RoadStatus
@@ -10,7 +11,7 @@ import com.unciv.models.metadata.GameSettings.PathfindingAlgorithm
 import com.unciv.models.metadata.GameSettings.PathfindingAlgorithm.AStarPathfinding
 import com.unciv.models.metadata.GameSettings.PathfindingAlgorithm.ClassicPathfinding
 import com.unciv.models.ruleset.nation.Nation
-import com.unciv.testing.GdxTestRunnerFactory
+import com.unciv.testing.TestRunnerFactory
 import com.unciv.testing.TestGame
 import org.hamcrest.CoreMatchers.equalTo
 import org.junit.Assert.assertEquals
@@ -26,13 +27,16 @@ import org.junit.runners.Parameterized
 import org.junit.runners.Parameterized.Parameters
 import org.junit.runners.Parameterized.UseParametersRunnerFactory
 
-//TODO
 @RunWith(Parameterized::class)
-@UseParametersRunnerFactory(GdxTestRunnerFactory::class)
-class PathfindingTests(
-    // parameters come from the Compantion#parameters method
-    private val pathfindingAlgorithm: PathfindingAlgorithm,
-) {
+@UseParametersRunnerFactory(TestRunnerFactory::class)
+class PathfindingTests(private val pathfindingAlgorithm: PathfindingAlgorithm) {
+    companion object {
+        @Suppress("unused")
+        @Parameters
+        @JvmStatic
+        fun parameters() = TestRunnerFactory.Parameters.pathfinding
+    }
+
     private var testGame = TestGame()
     private lateinit var civInfo: Civilization
     private lateinit var originTile: Tile
@@ -720,24 +724,38 @@ class PathfindingTests(
         assertEquals(path2.toString(), 2, path1.size)
         assertEquals(path1[0], path2[0])
     }
-    
+
     private fun verticalWall(x: Int, apply: (Tile)->Unit) {
         for (tile in testGame.tileMap.tileList) {
             if (tile.position.x == x)
                 apply(tile)
         }
     }
-    
-    companion object {
-        @Suppress("unused")
-        @Parameters
-        @JvmStatic
-        fun parameters(): Collection<Array<Any?>?> {
-            return listOf(
-                /* First execute the test with these parametrers */
-                arrayOf(ClassicPathfinding),
-                /* and then execute the test with these parametrers */
-                arrayOf(AStarPathfinding))
-        }
+
+    @Test
+    fun connectRoadPathingMustIncludeBothEndpoints() {
+        // Arrange
+        civInfo.tech.addTechnology("The Wheel", false)
+        val worker = testGame.addUnit("Worker", civInfo, originTile)
+        val destination = testGame.getTile(5, 3)
+        // Act
+        val path = worker.movement.getRoadPath(destination) ?: emptyList()
+        // Assert
+        assertTrue("getRoadPath must contain both endpoints", originTile in path && destination in path)
+    }
+
+    @Test
+    fun connectRoadAction() {
+        // Arrange
+        civInfo.tech.addTechnology("The Wheel", false)
+        val worker = testGame.addUnit("Worker", civInfo, originTile)
+        val destination = testGame.getTile(5, 3)
+        worker.automatedRoadConnectionDestination = destination.position
+        // Act
+        val auto = RoadToAutomation(civInfo)
+        auto.automateConnectRoad(worker, emptySet())
+        // Assert
+        assertTrue("Worker must have queued a Road", originTile.improvementInProgress == RoadStatus.Road.name)
+        assertTrue("Worker must have a path", worker.automatedRoadConnectionPath?.isNotEmpty() == true)
     }
 }

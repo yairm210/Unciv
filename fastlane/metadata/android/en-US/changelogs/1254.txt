@@ -1,0 +1,9 @@
+Massive Application Not Responding cleanup for Android
+
+Minor CPU performance improvements
+
+Spectator-as-civ sees "units moving to tiles" only for the civ's units
+
+AI sets production focus for wonders and spaceship parts - By ssamt
+
+AStar movement fix - By Ambeco

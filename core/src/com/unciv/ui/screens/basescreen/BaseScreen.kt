@@ -34,6 +34,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.activePopup
 import com.unciv.ui.popups.options.OptionsPopup
+import com.unciv.ui.popups.options.OptionsPopupPages
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
@@ -95,7 +96,7 @@ abstract class BaseScreen : Screen {
         if (this !is RecreateOnResize) {
             stage.viewport.update(width, height, true)
         } else if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
-            game.replaceCurrentScreen(recreate())
+            game.replaceCurrentScreen{ recreate() }
         }
     }
 
@@ -178,7 +179,7 @@ abstract class BaseScreen : Screen {
     /** @return `true` if the screen is narrower than 4:3 landscape */
     fun isNarrowerThan4to3() = stage.isNarrowerThan4to3()
 
-    open fun openOptionsPopup(startingPage: Int = OptionsPopup.defaultPage, withDebug: Boolean = false, onClose: () -> Unit = {}) {
+    open fun openOptionsPopup(startingPage: OptionsPopupPages = OptionsPopup.defaultPage, withDebug: Boolean = false, onClose: () -> Unit = {}) {
         OptionsPopup(this, startingPage, withDebug, onClose).open(force = true)
     }
 
@@ -206,7 +207,9 @@ abstract class BaseScreen : Screen {
     /** Helper for the [openCivilopedia] (link: String) overload to use
      *  - Note: At the time of wrinting, this was the ***only*** CivilopediaScreen constructor call outside itself
      */
-    fun openCivilopedia(ruleset: Ruleset, link: String = "") = game.pushScreen(CivilopediaScreen(ruleset, link = link))
+    fun openCivilopedia(ruleset: Ruleset, link: String = "") {
+        game.pushScreen{ CivilopediaScreen(ruleset, link = link) }
+    }
 }
 
 interface RecreateOnResize {

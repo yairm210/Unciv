@@ -20,6 +20,7 @@ import com.unciv.logic.github.GithubAPI
 import com.unciv.logic.github.GithubAPI.downloadAndExtract
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.addSeparator
@@ -43,6 +44,8 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
+import com.unciv.ui.popups.options.OptionsPopup
+import com.unciv.ui.popups.options.OptionsPopupPages
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
@@ -80,6 +83,12 @@ class ModManagementScreen private constructor(
         fun cleanModName(modName: String): String = modName.replace("   ", " - ")
     }
 
+    private class ModsScrollPane(widget: Actor?) : AutoScrollPane(widget, skin, "mods-scroll") {
+        init {
+            setupFadeScrollBars(3f, 3f) // Let them fade away, but more slowly than default (1, 1)
+        }
+    }
+
     // Since we're `RecreateOnResize`, preserve the portrait/landscape mode for our lifetime
     private val isPortrait: Boolean
 
@@ -90,13 +99,13 @@ class ModManagementScreen private constructor(
 
     // Left column (in landscape, portrait stacks them within expanders)
     private val installedModsTable = Table().apply { defaults().pad(10f) }
-    private val scrollInstalledMods = AutoScrollPane(installedModsTable)
+    private val scrollInstalledMods = ModsScrollPane(installedModsTable)
     // Center column
     private val onlineModsTable = Table().apply { defaults().pad(10f) }
-    private val scrollOnlineMods = AutoScrollPane(onlineModsTable)
+    private val scrollOnlineMods = ModsScrollPane(onlineModsTable)
     // Right column
     private val modActionTable = ModInfoAndActionPane()
-    private val scrollActionTable = AutoScrollPane(modActionTable)
+    private val scrollActionTable = ModsScrollPane(modActionTable)
     // Manager providing the Widget floating top right in landscape mode, stacked expander in portrait
     private val optionsManager = ModManagementOptions(this)
 
@@ -115,6 +124,7 @@ class ModManagementScreen private constructor(
     // Keep metadata and buttons in separate pools
     private val installedModInfo = previousInstalledMods ?: HashMap(RulesetCache.size)
     private val onlineModInfo = previousOnlineMods ?: game.files.loadModCache().associateByTo(HashMap()) { it.name }
+    private val excludedModAuthors = game.files.loadExcludedModAuthors()
     private val modButtons: HashMap<ModUIData, ModDecoratedButton> = HashMap(100)
 
     // cleanup - background processing needs to be stopped on exit and memory freed
@@ -147,7 +157,7 @@ class ModManagementScreen private constructor(
 
             // We want to immediately display/hide Scenario button based on changes
             if (screen is MainMenuScreen)
-                screen.game.replaceCurrentScreen(MainMenuScreen())
+                screen.game.replaceCurrentScreen{ MainMenuScreen() }
         }
         closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
 
@@ -337,7 +347,7 @@ class ModManagementScreen private constructor(
             val mod = ModUIData(repo, isUpdatedVersionOfInstalledMod)
             onlineModInfo[repo.name] = mod
             modButtons.remove(mod) // Remove *cached* mod button since we have NEW DATA
-            if (mod.matchesFilter(optionsManager.getFilter())) {
+            if (mod.matchesFilter(optionsManager.getFilter()) && mod.author() !in excludedModAuthors) {
                 onlineModsTable.add(getCachedModButton(mod)).row()
             }
         }
@@ -404,7 +414,7 @@ class ModManagementScreen private constructor(
         val downloadButton = "Download mod from URL".toTextButton()
         downloadButton.onClick {
             val popup = Popup(this)
-            popup.addGoodSizedLabel("Please enter the mod repository -or- archive zip -or- branch -or- release url:").row()
+            popup.addGoodSizedLabel("Please enter the mod repository -or- archive zip -or- branch -or- release -or- commit url:").row()
             val textField = UncivTextField("").apply { maxLength = 666 }
             popup.add(textField).width(stage.width / 2).row()
             val pasteLinkButton = "Paste from clipboard".toTextButton()
@@ -509,6 +519,8 @@ class ModManagementScreen private constructor(
                         ToastPopup(msg, this@ModManagementScreen, 4000L)
                     }
 
+                    if (RulesetCache[repoName]?.modOptions?.hasUnique(UniqueType.ModIsAudioVisualOnly) == true)
+                        game.settings.visualMods.add(repoName)
                     updateInstalledModUIData(repoName)
                     refreshInstalledModTable()
                     lastSelectedButton?.let { syncOnlineSelected(repoName, it) }
@@ -601,6 +613,12 @@ class ModManagementScreen private constructor(
             if (optionsManager.sortInstalled == SortType.Status)
                 refreshInstalledModTable()
         }
+
+        val checkModButton = "Check [${cleanModName(modInfo.name)}]".toTextButton()
+        checkModButton.onClick {
+            OptionsPopup(this, OptionsPopupPages.ModCheck, subSelect = mod.name).open()
+        }
+        modActionTable.add(checkModButton).row()
 
         val updateModButton = modActionTable.addUpdateModButton(modInfo) ?: return
         updateModButton.onClick {
@@ -712,7 +730,7 @@ class ModManagementScreen private constructor(
         // We update y and height here, we do not replace the ModUIData instances do the referenced buttons stay valid.
         val sortedMods = onlineModInfo.values.asSequence().sortedWith(optionsManager.sortOnline.comparator)
         for (mod in sortedMods) {
-            if (!mod.matchesFilter(filter)) continue
+            if (!mod.matchesFilter(filter) || mod.author() in excludedModAuthors) continue
             onlineModsTable.add(getCachedModButton(mod)).row()
         }
 

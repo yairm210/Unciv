@@ -142,7 +142,7 @@ object UnitActionsReligion {
         if (!hasNewStyleAbility) return emptySequence()
 
         val title =
-            UnitActionModifiers.actionTextWithSideEffects("Remove Heresy", newStyleUnique!!, unit)
+            UnitActionModifiers.actionTextWithSideEffects("Remove Heresy", newStyleUnique, unit)
         val useFrequency = getUseFrequency(unit, newStyleUnique, 69f)
 
         return sequenceOf(UnitAction(

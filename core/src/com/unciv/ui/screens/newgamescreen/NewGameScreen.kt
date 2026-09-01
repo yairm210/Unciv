@@ -109,7 +109,7 @@ class NewGameScreen(
                     val gameSetupInfo = GameSetupInfo().apply {
                         gameParameters.espionageEnabled = true
                     }
-                    game.replaceCurrentScreen(NewGameScreen(gameSetupInfo))
+                    game.replaceCurrentScreen{ NewGameScreen(gameSetupInfo) }
                 }.open(true)
             }
             horizontalGroup.addActor(resetToDefaultsButton)

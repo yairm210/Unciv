@@ -1,5 +1,6 @@
 package com.unciv.ui.screens.pickerscreens
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
@@ -644,7 +645,7 @@ class PolicyPickerScreen(
                     "Are you sure you want to adopt [${branch.name}]?",
                     "Adopt", true, action = {
                         viewingCiv.policies.adopt(branch, false)
-                        game.replaceCurrentScreen(recreate())
+                        game.replaceCurrentScreen{ recreate() }
                     }
                 ).open(force = true)
         }
@@ -666,12 +667,14 @@ class PolicyPickerScreen(
         // Evil people clicking on buttons too fast to confuse the screen - #4977
         if (!policy.isPickable(viewingCiv, canChangeState)) return
 
+        // Avoid ANRs from changing game state; Don't accept more clicking anywhere
+        Gdx.input.inputProcessor = null
         viewingCiv.policies.adopt(policy)
 
         // If we've moved to another screen in the meantime (great person pick, victory screen) ignore this
         // update policies
         if (game.screen !is PolicyPickerScreen) game.popScreen()
-        else game.replaceCurrentScreen(recreate())
+        else game.replaceCurrentScreen{ recreate() }
     }
 
     override fun recreate(): BaseScreen {

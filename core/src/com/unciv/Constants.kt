@@ -3,15 +3,21 @@ package com.unciv
 object Constants {
     const val settler = "Settler"
     const val eraSpecificUnit = "Era Starting Unit"
-    val all = setOf("All", "all")
+    const val lowercaseAll = "all"
+    const val uppercaseAll = "All"
+    val all = setOf(uppercaseAll, lowercaseAll)
     const val NO_ID = -1
 
     const val english = "English"
 
+    // Terrain
     const val impassable = "Impassable"
     const val ocean = "Ocean"
 
-    /** The "Coast" _terrain_ */
+    /** The "Coast" _terrain_
+     *  @see com.unciv.models.ruleset.tile.Terrain.isCoast
+     */
+    @Deprecated("By PR #15123, except for tests. Remove use in Terrain and this deprecation after a grace period.")
     const val coast = "Coast"
     /** The "Coastal" terrain _filter_ */
     const val coastal = "Coastal"
@@ -42,20 +48,21 @@ object Constants {
 
     const val barbarianEncampment = "Barbarian encampment"
     const val cityCenter = "City center"
-    
+    const val allRoad = "All Road"
+
     // Treaties
     const val peaceTreaty = "Peace Treaty"
     const val researchAgreement = "Research Agreement"
     const val defensivePact = "Defensive Pact"
-    
+
     // Agreements
     const val openBorders = "Open Borders"
-    
+
     // Other trade items
     const val acceptEmbassy = "Accept Embassy"
     const val goldPerTurn = "Gold per turn"
     const val flatGold = "Gold"
-    
+
     /** Used as origin in StatMap or ResourceSupplyList, or the toggle button in DiplomacyOverviewTab */
     const val cityStates = "City-States"
     /** Used as origin in ResourceSupplyList */

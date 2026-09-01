@@ -31,6 +31,8 @@ import kotlin.math.pow
 import kotlin.math.ulp
 import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.civilization.MapUnitAction
+import com.unciv.logic.map.CarrierSlotMatcher
+import org.jetbrains.annotations.VisibleForTesting
 
 
 /**
@@ -475,11 +477,18 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return false
     }
 
+    /** @return Whether [civ] can currently see this unit on the map, accounting for fog of war and invisibility. */
+    @Readonly
+    fun isVisibleTo(civ: Civilization): Boolean {
+        if (!getTile().isVisible(civ)) return false
+        return !isInvisible(civ) || getTile() in civ.viewableInvisibleUnitsTiles
+    }
+
     @Readonly
     fun canFortify(ignoreAlreadyFortified: Boolean = false) = when {
         baseUnit.isWaterUnit -> false
         isCivilian() -> false
-        baseUnit.movesLikeAirUnits -> false
+        baseUnit.isAirUnit() -> false
         isEmbarked() -> false
         hasUnique(UniqueType.NoDefensiveTerrainBonus, checkCivInfoUniques = true) -> false
         ignoreAlreadyFortified -> true
@@ -497,14 +506,14 @@ class MapUnit : IsPartOfGameInfoSerialization {
         isEmbarked() -> 0 // embarked units can't heal
         health >= 100 -> 0 // No need to heal if at max health
         hasUnique(UniqueType.HealOnlyByPillaging, checkCivInfoUniques = true) -> 0
-        else -> rankTileForHealing(getTile())
+        else -> rankTileForHealing(getTile(), noTerrainDamage = true)
     }
 
     @Readonly fun canHealInCurrentTile() = getHealAmountForCurrentTile() > 0
 
     /** Returns the health points [MapUnit] will receive if healing on [tile] */
     @Readonly
-    fun rankTileForHealing(tile: Tile): Int {
+    fun rankTileForHealing(tile: Tile, noTerrainDamage: Boolean = false): Int {
         val isFriendlyTerritory = tile.isFriendlyTerritory(civ)
 
         var healing = when {
@@ -535,11 +544,12 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
 
         val maxAdjacentHealingBonus = currentTile.neighbors
-                .flatMap { it.getUnits() }.filter { it.civ == civ }
-                .map { it.adjacentHealingBonus() }.maxOrNull()
+            .flatMap { it.getUnits() }.filter { it.civ == civ }
+            .maxOfOrNull { it.adjacentHealingBonus() }
         if (maxAdjacentHealingBonus != null)
             healing += maxAdjacentHealingBonus
 
+        if (noTerrainDamage) return healing
         healing -= getDamageFromTerrain(tile)
 
         return healing
@@ -592,7 +602,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         var damageFactor = 1f
         for (unique in getMatchingUniques(UniqueType.DamageFromInterceptionReduced))
             damageFactor *= 1f - unique.params[0].toFloat() / 100f
-        return damageFactor
+        return damageFactor.coerceAtLeast(0f)
     }
 
     @Readonly
@@ -603,24 +613,48 @@ class MapUnit : IsPartOfGameInfoSerialization {
     @Readonly
     fun isTransportTypeOf(mapUnit: MapUnit): Boolean {
         // Currently, only missiles and airplanes can be carried
-        if (!mapUnit.baseUnit.movesLikeAirUnits) return false
+        if (!mapUnit.baseUnit.isAirUnit()) return false
         return getMatchingUniques(UniqueType.CarryAirUnits).any { mapUnit.matchesFilter(it.params[1]) }
     }
 
     @Readonly
-    private fun carryCapacity(unit: MapUnit): Int {
-        return (getMatchingUniques(UniqueType.CarryAirUnits)
-                + getMatchingUniques(UniqueType.CarryExtraAirUnits))
-                .filter { unit.matchesFilter(it.params[1]) }
-                .sumOf { it.params[0].toInt() }
+    @VisibleForTesting
+    /**
+     *  Returns the free capacity of [this] carrier for [unit] or units matching the same Unique filters.
+     *
+     *  - Uses an optimizing algorithm that ensures complex overlapping filters are used to the max.
+     *  - See issue [#15087](https://github.com/yairm210/Unciv/issues/15087)
+     */
+    fun checkCarryCapacity(unit: MapUnit): Int {
+        // Fetch ALL "slots", not only those the new unit could occupy - otherwise we couldn't count optimally
+        @LocalState
+        val slots = mutableListOf<CarrierSlotMatcher.SlotRule>()
+        fun getSlotsFor(type: UniqueType) {
+            forEachMatchingUnique(type) { unique ->
+                slots += CarrierSlotMatcher.SlotRule(unique.params[1], unique.params[0].toInt())
+            }
+        }
+        getSlotsFor(UniqueType.CarryAirUnits)
+        getSlotsFor(UniqueType.CarryExtraAirUnits)
+        if (slots.isEmpty()) return 0
+
+        return CarrierSlotMatcher.availableCapacity(
+            slotRules = slots,
+            carriedUnits = currentTile.airUnits.asSequence().filter { it.isTransported },
+            newUnit = unit
+        )
     }
+
+    @Readonly
+    private fun cannotCarry(unit: MapUnit) =
+        unit.getMatchingUniques(UniqueType.CannotBeCarriedBy).any { matchesFilter(it.params[0]) }
 
     @Readonly
     fun canTransport(unit: MapUnit): Boolean {
         if (owner != unit.owner) return false
         if (!isTransportTypeOf(unit)) return false
-        if (unit.getMatchingUniques(UniqueType.CannotBeCarriedBy).any { matchesFilter(it.params[0]) }) return false
-        if (currentTile.airUnits.count { it.isTransported } >= carryCapacity(unit)) return false
+        if (cannotCarry(unit)) return false
+        if (checkCarryCapacity(unit) <= 0) return false
         return true
     }
 
@@ -1001,12 +1035,12 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 val currentTile = if (hasTile()) currentTile else null
                 throw IllegalStateException("Unit $name of ${civ.civID} at $currentTile can't be put in tile $tile, reason: ${movement.getCannotMoveToReason(tile)}")
             }
-            baseUnit.movesLikeAirUnits -> tile.airUnits.add(this)
+            baseUnit.isAirUnit() -> tile.airUnits.add(this)
             isCivilian() -> tile.civilianUnit = this
             else -> tile.militaryUnit = this
         }
         // this check is here in order to not load the fresh built unit into carrier right after the build
-        if (baseUnit.movesLikeAirUnits){
+        if (baseUnit.isAirUnit()){
             if (!tile.isCityCenter()) isTransported = true
             else {
                 val currentUntransportedUnits = tile.getUnits().count { it.type.isAirUnit() && !it.isTransported }
@@ -1139,10 +1173,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
     }
 
-    fun actionsOnDeselect() {
-        if (isPreparingParadrop() || isPreparingAirSweep()) action = null
-    }
-
     /** Add the current position and the most recent movement type to [movementMemories]. Called once at end and once at start of turn, and at unit creation. */
     fun addMovementMemory() {
         movementMemories.add(UnitMovementMemory(getTile().position, mostRecentMoveType))
@@ -1184,6 +1214,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
 
-    fun isNuclearWeapon() = hasUnique(UniqueType.NuclearWeapon)
+    @Readonly fun isNuclearWeapon() = hasUnique(UniqueType.NuclearWeapon)
     //endregion
 }

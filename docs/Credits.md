@@ -8,13 +8,7 @@ The works listed in this document fall under various licenses. Here’s a list o
 * CC BY 3.0: [Creative Commons Attribution 3.0 Unported](https://creativecommons.org/licenses/by/3.0/)
 * CC BY 4.0: [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/)
 * CC BY-SA 4.0 [Creative Commons Attribution-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-sa/4.0/)
-* CC BY-NC 3.0: [Creative Commons Attribution-NonCommercial 3.0 Unported](https://creativecommons.org/licenses/by-nc/3.0/)
-* CC BY-NC 4.0: [Creative Commons Attribution-NonCommercial 4.0 International](https://creativecommons.org/licenses/by-nc/4.0/)
 * Public domain: The work has been released into the public domain.
-* Unknown license: Unfortunately, the license this work was released under got lost to history.
-
-Please note that CC BY-NC 3.0 and CC BY-NC 4.0 are **non-free licenses** and incompatible with free software.
-Unknown licenses are also incompatible with free software.
 
 ## Icon Credits
 
@@ -28,9 +22,21 @@ Flag Icons made by [Freepik](https://www.flaticon.com/authors/freepik) from [www
 -   [Galician flag] made from [wikipedia asset for the civil flag of Galicia](https://en.wikipedia.org/wiki/File:Flag_of_Galicia_(civil).svg): (public domain)
 -   [Hindi flag] made from [wikipedia asset for India's flag](https://en.wikipedia.org/w/index.php?curid=23473510): (public domain)
 
-New Unciv logo made by u-ndefined on Discord
+Unciv logo (e.g. `extraImages/Icons/Unciv icon v6.png`, `android/assets/ExtraImages/Icons/Unciv128.png` and other files) by yairm210 and u-ndefine, licensed under CC BY 4.0. This logo includes the following icons:
+- [Gear](https://thenounproject.com/term/gear/29368) by Alex Bickov (CC BY 3.0)
+- [Apple](https://thenounproject.com/term/apple/1139396) by Pedro Gonçalves (CC BY 3.0)
+- [gold](https://thenounproject.com/term/gold/25438) by Eliricon (CC BY 3.0)
+- [Beaker](https://thenounproject.com/term/beaker/621510) by Delwar Hossain (CC BY 3.0)
+- [Music](https://thenounproject.com/term/music/5611/) by Naomi Atkinson (CC BY 3.0)
+- [Smiley](https://thenounproject.com/term/smiley/1024026) by Alexander Skowalsky (CC BY 3.0)
+- [City](https://thenounproject.com/icon/city-1765370/) by Muhajir ila Robbi (CC BY 3.0)
 
-Base tile icons for the "Fantasy Hex" tileset belong to CuddlyClover @ https://cuddlyclover.itch.io/fantasy-hex-tiles with a few additions by various contributors
+The following files include the Unciv logo:
+
+- Various files in `extraImages` contain different renderings of the same logo
+- `android/assets/ExtraImages/banner.png` by letstalkaboutdune; includes work by The Bucketeer / @GeneralWadaling (tiles) and yairm210 and u-ndefine (Unciv logo), released under CC BY-SA 3.0
+
+The base tile icons for the "Fantasy Hex" tileset were created CuddlyClover at <https://cuddlyclover.itch.io/fantasy-hex-tiles> with a few additions by various contributors, licensed CC BY 4.0.
 
 Promotional trailer for Steam and other storefronts made by [letstalkaboutdune](https://github.com/letstalkaboutdune)
 
@@ -203,7 +209,7 @@ By Basil:
 
 ### HexaRealm
 
-Unless otherwise specified, Tile improvements and units, as well as the terrains and improvements for HexaRealm tileset, are made by The Bucketeer / @GeneralWadaling and are licenced under a Creative Commons license (but we forgot *which* Creative Commons license exactly, we only know it’s a license with version 3.0).
+Unless otherwise specified, tile improvements and units, as well as the terrains and improvements for HexaRealm tileset, are made by The Bucketeer / @GeneralWadaling and are licenced under CC BY-SA 3.0.
 
 
 HexaRealm tileset images by legacymtgsalvationuser69544 [here](https://github.com/legacymtgsalvationuser69544/Edges-Tileset):
@@ -659,7 +665,7 @@ HexaRealm tileset images by legacymtgsalvationuser69544 [here](https://github.co
     -   [Spear](https://thenounproject.com/term/spear/3930020/) by Firza Alamsyah
     -   [pennant](https://thenounproject.com/term/pennant/194797/) by Sara Jeffries
 -   [Maya civilization](https://thenounproject.com/term/maya-civilization/1715786/) by Olena Panasovska for The Maya
--   Aztec icon by Kāne, on Unciv Discord server
+-   Aztec icon by Kāne, on Unciv Discord server (CC BY 3.0)
 -   [Questionmark](https://thenounproject.com/icon/questionmark-4248169/) by YURR.studio for Random nation indicator
 -   [View](https://thenounproject.com/icon/view-4211245/) by Adrien Coquet for Spectator
 
@@ -717,6 +723,7 @@ HexaRealm tileset images by legacymtgsalvationuser69544 [here](https://github.co
 -   [praying](https://thenounproject.com/icon/praying/886367/) by Gan Khoon Lay for Follower
 -   [Hero](https://thenounproject.com/icon/preacher/195465/) by Andrew J. Young for Founder
 -   [yell](https://thenounproject.com/icon/yell/4159889/) by Adrien Coquet for Enhancer
+-   [halo](https://thenounproject.com/icon/halo-4406022/) by Bilal Hussain for Holy city indicator (city overview): Public domain
 
 ### Others
 
@@ -804,7 +811,7 @@ HexaRealm tileset images by legacymtgsalvationuser69544 [here](https://github.co
 - [RobotArm](https://thenounproject.com/icon/robot-7300306/) by Faizal khusein
 - [RobotHeadSquare](https://thenounproject.com/icon/robot-head-6356754/) by Ahmad Arzaha
 - [RobotHeadRect](https://thenounproject.com/icon/robot-1704106/) by suib icon
-- Bobot by reallybasicname in the Discord
+- Bobot by reallybasicname in the Discord (CC BY 3.0)
 - [DollarSign](https://thenounproject.com/icon/dollar-sign-6466560/) by Ahmad Arzaha
 - Spy hideout is gimped from [hide](https://thenounproject.com/icon/hide-8013/) by Luis Prado and the one listed for Spy
 - [hold](https://thenounproject.com/icon/hold-222516/) by icon 54 as long-press indicator
@@ -831,14 +838,14 @@ HexaRealm tileset images by legacymtgsalvationuser69544 [here](https://github.co
 
 ## Sound credits
 
-With some exceptions, most sounds are from FreeSound.org. The sounds are either licensed CC0/Public Domain, CC BY, CC BY-NC or under an unknown license:
+With some exceptions, most sounds are from FreeSound.org. The sounds are either licensed CC0/Public Domain, CC BY 3.0 or CC BY 4.0:
 
 - [Soft two-fingered snap](https://freesound.org/people/EathanMarkson/sounds/388958/) By EathanMarkson as 'click' for most clicks (CC0)
 - [Pencil1](https://freesound.org/people/stijn/sounds/43673/) By stijn as 'paper' for opening and closing the tech picker (CC0)
 - [SawInOut01](https://freesound.org/people/kingof_thelab/sounds/340243/) By kingof_thelab for construction picking? (CC BY 3.0)
 - [Chain Snare #1](https://freesound.org/people/lovesbody/sounds/322079/) By lovesbody as 'fortify' (CC BY 4.0)
 - [Level up](https://freesound.org/people/Marregheriti/sounds/266100/) By Marregheriti as 'upgrade' for upgrading units (CC0)
-- [levelup](https://freesound.org/people/Seidhepriest/sounds/382915/) By Seidhepriest as 'chimes' for special actions (free tech, build city, hurry wonder etc.) (CC BY-NC 4.0)
+- [Level up](https://freesound.org/people/Bastianhallo/sounds/682633/) By Bastianhallo as 'chimes' for special actions (free tech, build city, hurry wonder etc.) (CC0)
 - [Coin](https://freesound.org/people/TheDJoe93/sounds/97373/) By TheDJoe93 as 'coin' for purchasing tiles and constructions (CC0)
 - [fast simple chop 1](https://freesound.org/people/dave.des/sounds/127196/) By dave.dev as 'whoosh' for moving units around, also in edited form to produce the 'swap units' sound. (CC0)
 - [Military kick](https://freesound.org/people/Dodgy%20C/sounds/72070/) By Dodgy C as 'promote' for unit promotions (CC BY 3.0)
@@ -849,7 +856,6 @@ With some exceptions, most sounds are from FreeSound.org. The sounds are either 
 - [Crossbow Firing](https://freesound.org/people/GameWithBepis/sounds/561475/) by GameWithBepis as 'crossbow' for crossbow attacks (CC0)
 - [Metal hit slide](https://freesound.org/people/orginaljun/sounds/149102/) by orginaljun as 'nonmetalhit' for pre-metal melee sounds (CC BY 4.0)
 - [wpn 1 generic](https://freesound.org/people/SlavicMagic/sounds/446016/) By SlavicMagic as 'metalhit' for metal melee sounds (CC0)
-- [snorting horse](https://freesound.org/people/soundslikewillem/sounds/418427/) By soundslikewillem as part of 'horse' for mounted unit attack sounds (CC BY-NC 4.0)
 - [Horse's whinny](https://freesound.org/people/Kubuzz/sounds/347036/) By Kubuzz as part of 'horse' for mounted unit attack sounds (CC0)
 - [machine gun 001 - loop](https://freesound.org/people/pgi/sounds/212602/) By pgi as 'machinegun' for machine gun attack sound (CC0)
 - [uzzi_full_single](https://freesound.org/people/Deganoth/sounds/348685/) By Deganoth as 'shot' for bullet attacks (CC BY 4.0)
@@ -861,19 +867,19 @@ With some exceptions, most sounds are from FreeSound.org. The sounds are either 
 - [Short Choir](https://freesound.org/people/Breviceps/sounds/444491/) by Breviceps as 'choir' for free great person pick (CC0)
 - [Death Robot! Robotic scream](https://freesound.org/people/vultraz168/sounds/334660/) by vultraz168 for Giant Death Robot Attack (CC0)
 - [ceremonial cannon fire](https://freesound.org/people/DylanSmithSound/sounds/274826/) by DylanSmithSound for cannon, shipCannonVolley and cavalry (CC BY 4.0)
-- [artillery fire](https://freesound.org/people/Tomashevsky/sounds/476664/) by Tomashevsky for artillery (CC BY-NC 3.0)
-- [20mm cannons](https://freesound.org/people/Piotr123/sounds/551534/) by Piotr123 for ship guns (unknown license)
-- "bombing" is made by the Unciv team using Audacity from
+- [Incoming Artillery Strike Cinematic Explosion](https://freesound.org/people/EvanBoyerman/sounds/530886/) by EvanBoyerman for artillery (changes were made) (CC BY 3.0)
+- [Cannon5.wav](https://freesound.org/people/Isaac200000/sounds/184651/) by Isaac200000 for shipguns (changes were made) (CC0)
+- "bombing" is made by the Unciv team using Audacity by altering and combining
     -   [lancaster bomber](https://freesound.org/people/confusion_music/sounds/103439/) by confusion_music - aircraft (CC BY 4.0)
-    -   [Artillery Explosion (Close) (Mixed)](https://freesound.org/people/EFlexMusic/sounds/388528/) by EFlexMusic - impact (CC BY-NC 3.0)
+    -   [custom_artillery_booming_explosive_impact_sounds](https://freesound.org/people/Artninja/sounds/750825/) by Artninja - impact (CC BY 4.0)
     -   [SFX Hit drop/bomb effect 5](https://freesound.org/people/old_waveplay/sounds/187502/) by old_waveplay - bass (CC0)
 - "jetgun" for Jet Fighter attack is made by the Unciv team using Audacity from
     -   [Fighter Jet Aircraft Fly by (synthesised)](https://freesound.org/people/Headphaze/sounds/347795/) by Headphaze (CC0)
     -   [Machine Gun 001 - triple shot](https://freesound.org/people/pgi/sounds/212600/) by pgi (CC0)
 - Excerpt from [Tanks Shooting](https://freesound.org/people/qubodup/sounds/189344/) by qubodup for tankshot and shipCannonVolley (CC0)
-- "torpedo" is made by the Unciv team using Audacity from
+- "torpedo" is made by the Unciv team using Audacity by altering and combining
     -   [Torpedo launch underwater](https://freesound.org/people/jobro/sounds/35530/) by jobro (CC BY 3.0)
-    -   [Artillery Explosion (Close) (Mixed)](https://freesound.org/people/EFlexMusic/sounds/388528/) by EFlexMusic (CC BY-NC 3.0)
+    -   [Nearby explosion with debris.wav](https://freesound.org/people/juskiddink/sounds/108641/) by juskiddink (CC BY 4.0)
 - [elephant 44](https://freesound.org/people/y89312/sounds/139875/) by y89312 for Naruesan's Elephant sound (CC BY 3.0)
 - Excerpt from [Missile Strike](https://freesound.org/people/BaDoink/sounds/570690/) by BaDoink for guided missile (CC0)
 - Excerpt from [FireBurning_v2.wav](https://freesound.org/people/pcaeldries/sounds/30322/) by pcaeldries for 'remove heresy' action of inquisitor (CC BY 4.0)
@@ -891,10 +897,6 @@ With some exceptions, most sounds are from FreeSound.org. The sounds are either 
 The following music is from https://filmmusic.io:
 
 - "[Thatched Villagers](https://incompetech.filmmusic.io/song/4481-thatched-villagers)" by Kevin MacLeod (https://incompetech.com) (CC BY 4.0)
-
-## Trailer audio
-
-Unciv has released a Unciv Gameplay Trailer video separately, not part of this repository. See `Credits_trailer.md` for credits and details for that video.
 
 ## Visual effects
 
@@ -914,3 +916,25 @@ See a human readable version here: https://creativecommons.org/licenses/by/4.0/
 
 ------------------------------------------------------------------------------------------
 ```
+
+# Trailer Audio Credits
+
+These are the audio credits for the Unciv Gameplay Trailer video. This video as well as all its sound files are released *separately* from the main game repository.
+
+The following track and sound effects are used for the Unciv Gameplay Trailer video (license name in brackets):
+
+* [Beyond New Horizons - Free Epic Viking Medieval Soundtrack](https://pixabay.com/music/main-title-beyond-new-horizons-free-epic-viking-medieval-soundtrack-22081/) by GioeleFazzeri for background music (Pixabay License)
+* [Beep 6](https://freesound.org/people/CogFireStudios/sounds/528866/) by Eponn for beep in Cross-Platform Play section (CC0)
+* [Cinematic Boom](https://freesound.org/people/Rizzard/sounds/559529/) by Rizzard for final boom (CC0)
+* [Cymbal Swell 2](https://freesound.org/people/rubberduckie/sounds/219835/) by rubberduckie for cymbal swells (CC0)
+* [hit of orchestral cymbals and bass drum](https://freesound.org/people/Selector/sounds/385011/) by Selector for intro crash (CC0)
+
+As the video and its audio are released entirely separately from the game repository, the licensing here *does not* affect the overall licensing of the Unciv game repository.
+Please note the Pixabay Content License is a **proprietary license**, which means the Unciv Gameplay Trailer can *not* be shared freely.
+
+## Licenses
+
+The following licenses are used for the Unciv Gameplay Trailer:
+
+* CC0: [Creative Commons Zero 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0/)
+* Pixabay License: [Pixabay Content License](https://pixabay.com/service/license-summary/)

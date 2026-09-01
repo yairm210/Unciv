@@ -156,9 +156,9 @@ object CityResources {
         val buildingResources = ResourceSupplyList()
 
         // ProvidesResources - Example: "Provides [1] [Iron]"
-        for (unique in city.getMatchingUniques(UniqueType.ProvidesResources, includeCivUniques = includeCivUniques)) {
+        city.forEachMatchingUnique(UniqueType.ProvidesResources, city.state, includeCivUniques) { unique ->
             val resource = city.getRuleset().tileResources[unique.params[1]]
-                ?: continue
+                ?: return@forEachMatchingUnique
             buildingResources.add(
                 resource, unique.getSourceNameForUser(),
                 unique.params[0].toInt()
@@ -166,9 +166,9 @@ object CityResources {
         }
 
         // StatPercentFromObjectToResource - Example: "[50]% of [Culture] from every [improvementFilter/buildingFilter] in the city added to [Iron]"
-        for (unique in city.getMatchingUniques(UniqueType.StatPercentFromObjectToResource, city.state, includeCivUniques)) {
-            val resource = city.getRuleset().tileResources[unique.params[3]] ?: continue
-            val stat = Stat.safeValueOf(unique.params[1]) ?: continue
+        city.forEachMatchingUnique(UniqueType.StatPercentFromObjectToResource, city.state, includeCivUniques) { unique ->
+            val resource = city.getRuleset().tileResources[unique.params[3]] ?: return@forEachMatchingUnique
+            val stat = Stat.safeValueOf(unique.params[1]) ?: return@forEachMatchingUnique
             val filter = unique.params[2]
             var amount = 0.0
 
