@@ -47,7 +47,9 @@ object GreatGeneralImplementation {
                 val context = GameContext(unit.civ, ourCombatant = ourUnitCombatant, theirCombatant = enemy, combatAction = combatAction)
                 // Uniques from the unit type itself
                 val base = general.baseUnit.getMatchingUniques(UniqueType.StrengthBonusInRadius, context)
-                    .map { GeneralBonusData(general, it, general.name) }
+                    .map {
+                        GeneralBonusData(general, it, if (general.isGreatPersonOfType("War")) "Great General" else general.name)
+                    }
                 // Uniques from each individual promotion
                 val promos = general.promotions.getPromotions().flatMap { promotion ->
                          promotion.getMatchingUniques(UniqueType.StrengthBonusInRadius, context)
