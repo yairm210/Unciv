@@ -325,7 +325,7 @@ object LuxuryResourcePlacementLogic {
                     .filter { it.isShoreOfContinent(region.continentID) }
             else region.tiles.asSequence()
             val sortedCandidates = candidates
-                .map { it to getDistance(it.position, region.startPosition!!) + rng.nextFloat() * 120f }
+                .map { it to getDistance(it.position, region.startPosition!!) + rng.nextFloat() * 20f }
                 .toList()
                 .sortedBy { it.second }
                 .map { it.first }
