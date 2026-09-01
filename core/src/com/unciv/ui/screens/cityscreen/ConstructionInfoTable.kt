@@ -14,6 +14,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.disable
+import com.unciv.ui.components.extensions.getTurnsToConstructionString
 import com.unciv.ui.components.extensions.isEnabled
 import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toTextButton

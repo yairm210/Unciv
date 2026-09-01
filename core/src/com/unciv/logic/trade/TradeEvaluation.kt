@@ -111,10 +111,17 @@ class TradeEvaluation {
         if (citiesAskedToSurrender > maxCitiesToSurrender) {
             return Int.MIN_VALUE
         }
+        
+        // Never agree to declare war on more than one enemy at a time.
+        // Not handled correctly by summing evalutation of individual war declarations, 
+        // since the AI will evaluate each war declaration as if it were the only one
+        if (trade.ourOffers.count {it.type == TradeOfferType.WarDeclaration } > 1) {
+            return Int.MIN_VALUE
+        }
 
         val sumOfTheirOffers = trade.theirOffers.asSequence()
-                .filter { it.type != TradeOfferType.Treaty } // since treaties should only be evaluated once for 2 sides
-                .map { evaluateBuyCostWithInflation(it, evaluator, tradePartner, trade) }.sum()
+            .filter { it.type != TradeOfferType.Treaty }
+            .sumOf { evaluateBuyCostWithInflation(it, evaluator, tradePartner, trade) }
 
         var sumOfOurOffers = trade.ourOffers.sumOf { evaluateSellCostWithInflation(it, evaluator, tradePartner, trade) }
 
