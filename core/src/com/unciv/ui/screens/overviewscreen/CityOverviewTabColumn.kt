@@ -24,8 +24,10 @@ import com.unciv.ui.screens.cityscreen.CityScreen
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.city.CityResources
+import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.addCapitalIndicator
+import com.unciv.ui.components.extensions.getTurnsToConstructionString
 import kotlin.math.roundToInt
 
 
@@ -98,7 +100,7 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
                 getCircledIcon("OtherIcons/Settings", iconSize)
         override fun getEntryValue(item: City) = 0
         override fun getEntryActor(item: City, iconSize: Float, actionContext: EmpireOverviewScreen) =
-            item.cityConstructions.getCityProductionTextForCityButton().toLabel()
+            getCityProductionText(item).toLabel()
         override fun getTotalsActor(items: Iterable<City>) = null  // an intended empty space
     },
 
@@ -218,6 +220,19 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
             CityOverviewTabColumn.entries.asSequence()
                 .plus(CityWideResourceColumn.getColumns(viewingPlayer))
                 .asIterable()
+
+        /** Text shown for a city's current construction, as on the city button. */
+        private fun getCityProductionText(item: City): String {
+            val cityView = GUI.getWorldScreen().selectedGameView.getCityView(item)
+            val currentConstructionSnapshot = cityView.currentConstructionName()
+            var result = currentConstructionSnapshot.tr(true)
+            if (currentConstructionSnapshot.isNotEmpty()) {
+                val construction = PerpetualConstruction.perpetualConstructionsMap[currentConstructionSnapshot]
+                result += if (construction != null) cityView.getProductionTooltip(construction)
+                    else cityView.constructions.getTurnsToConstructionString(currentConstructionSnapshot)
+            }
+            return result
+        }
     }
 
     /** The Stat constant if this is a Stat column - helps the default getter methods */

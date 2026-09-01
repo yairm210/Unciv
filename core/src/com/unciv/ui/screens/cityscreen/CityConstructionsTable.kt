@@ -29,6 +29,7 @@ import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.brighten
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.getConsumesAmountString
+import com.unciv.ui.components.extensions.getTurnsToConstructionString
 import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.components.extensions.setEnabled
 import com.unciv.ui.components.extensions.surroundWithCircle
