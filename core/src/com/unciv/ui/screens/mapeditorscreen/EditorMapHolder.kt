@@ -9,6 +9,7 @@ import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.tile.Tile
 import com.unciv.view.TileMapView
 import com.unciv.view.TileView
+import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.toHexCoord
 import com.unciv.models.UncivSound
 import com.unciv.ui.audio.SoundPlayer
@@ -27,15 +28,14 @@ import com.unciv.utils.Concurrency
  */
 class EditorMapHolder(
     parentScreen: BaseScreen,
-    val tileMapView: TileMapView,
-    private val onTileClick: (TileView) -> Unit
+    internal val tileMap: TileMap,
+    private val onTileClick: (Tile) -> Unit
 ): ZoomableScrollPane(20f, 20f) {
     val editorScreen = parentScreen as? MapEditorScreen
 
-    val tileGroups = HashMap<TileView, TileGroup>()
+    val tileGroups = HashMap<Tile, TileGroup>()
     private lateinit var tileGroupMap: TileGroupMap<TileGroup>
-
-    private val allTileGroups = ArrayList<TileGroup>(tileMapView.values.size)
+    private val allTileGroups = ArrayList<TileGroup>(tileMap.values.size)
 
     private var blinkAction: Action? = null
 
@@ -44,7 +44,7 @@ class EditorMapHolder(
 
     init {
         if (editorScreen == null) touchable = Touchable.disabled
-        continuousScrollingX = tileMapView.worldWrap
+        continuousScrollingX = tileMap.mapParameters.worldWrap
         addTiles(parentScreen.stage)
         if (editorScreen != null) {
             addCaptureListener(getDragPaintListener())
@@ -76,7 +76,7 @@ class EditorMapHolder(
                 val child = tileGroupMap.hit(x, y, true) ?: return
                 if (child !is TileGroup) return
                 Concurrency.runOnGLThread("Sound") { SoundPlayer.play(UncivSound.Click) }
-                onTileClick(child.tileView)
+                onTileClick(child.tile)
             }
         }
         tileGroupMap.addListener(listener)
@@ -87,14 +87,15 @@ class EditorMapHolder(
         val tileSetStrings =
             if (editorScreen != null) TileSetStrings(editorScreen.ruleset, editorScreen.game.settings)
             else TileSetStrings()
-        val daTileGroups = tileMapView.values.map { TileGroup(it, tileSetStrings) }
+        val noViewTileMapView = TileMapView(tileMap, null)
+        val daTileGroups = tileMap.values.map { TileGroup(noViewTileMapView.getTile(it), tileSetStrings) }
 
         tileGroupMap = TileGroupMap(this, daTileGroups, continuousScrollingX)
         actor = tileGroupMap
 
         for (tileGroup in daTileGroups) {
             allTileGroups.add(tileGroup)
-            tileGroups[tileGroup.tileView] = tileGroup
+            tileGroups[tileGroup.tile] = tileGroup
         }
 
         for (tileGroup in allTileGroups) {
@@ -129,8 +130,17 @@ class EditorMapHolder(
     }
 
     fun setTransients() {
-        for (tileView in tileGroups.keys)
-            tileView.getTile().setTerrainTransients()
+        for (tileInfo in tileGroups.keys)
+            tileInfo.setTerrainTransients()
+    }
+
+    // This emulates `private TileMap.getOrNull(Int,Int)` and should really move there
+    // still more efficient than `if (rounded in tileMap) tileMap[rounded] else null`
+    private fun TileMap.getOrNull(pos: Vector2): Tile? {
+        val x = pos.x.toInt()
+        val y = pos.y.toInt()
+        if (contains(x, y)) return get(x, y)
+        return null
     }
 
     /**
@@ -230,11 +240,10 @@ class EditorMapHolder(
         val hexPosition = HexMath.world2HexCoords(positionalCoords)
         val rounded = HexMath.roundHexCoords(hexPosition)
 
-        if (!tileMapView.worldWrap)
-            return tileMapView.getOrNull(rounded.toHexCoord())?.getTile()
-        val wrapped = HexMath.getUnwrappedNearestTo(rounded.toHexCoord(), HexCoord.Zero, tileMapView.maxLongitude)
+        if (!tileMap.mapParameters.worldWrap)
+            return tileMap.getOrNull(rounded)
+        val wrapped = HexMath.getUnwrappedNearestTo(rounded.toHexCoord(), HexCoord.Zero, tileMap.maxLongitude)
         //todo this works, but means getUnwrappedNearestTo fails - on the x-y == maxLongitude vertical
-        return tileMapView.getOrNull(wrapped.toHexCoord())?.getTile()
-            ?: tileMapView.getOrNull(rounded.toHexCoord())?.getTile()
+        return tileMap.getOrNull(wrapped) ?: tileMap.getOrNull(rounded)
     }
 }

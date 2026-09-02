@@ -51,12 +51,4 @@ class TileMapView(private val tileMap: TileMap,
     @Readonly fun getNeighborTilePositionAsWorldCoords(tile: TileView, neighbor: TileView): Vector2 =
         tileMap.getNeighborTilePositionAsWorldCoords(tile.unwrap(), neighbor.unwrap())
 
-    val worldWrap: Boolean get() = tileMap.mapParameters.worldWrap
-    val maxLongitude: Int get() = tileMap.maxLongitude
-    val values: List<TileView> get() = tileMap.values.mapNotNull { it.toViewIfExplored() }
-
-    /** Returns the [TileView] at [position], or `null` if it doesn't exist or isn't explored by [viewer]. */
-    @Readonly fun getOrNull(position: HexCoord): TileView? =
-        tileMap.getOrNull(position.x, position.y)?.toViewIfExplored()
-
 }
