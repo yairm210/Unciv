@@ -19,6 +19,7 @@ import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.MapType
 import com.unciv.logic.map.mapgenerator.MapGenerator
+import com.unciv.view.TileMapView
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Ruleset
@@ -282,7 +283,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
                 ImageGetter.setNewRuleset(backgroundMapRuleset, ignoreIfModsAreEqual = true)
                 val mapHolder = EditorMapHolder(
                     this@MainMenuScreen,
-                    newMap
+                    TileMapView(newMap, null)
                 ) {}
                 mapHolder.color = mapHolder.color.cpy()
                 mapHolder.color.a = 0f

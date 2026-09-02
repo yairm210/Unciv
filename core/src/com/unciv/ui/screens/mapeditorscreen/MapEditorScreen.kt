@@ -17,6 +17,7 @@ import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
+import com.unciv.view.TileMapView
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSetupInfo
@@ -211,8 +212,8 @@ class MapEditorScreen(map: TileMap? = null) : BaseScreen(), RecreateOnResize {
         tileMap.setStartingLocationsTransients()
         UncivGame.Current.translations.translationActiveMods = ruleset.mods
 
-        val newHolder = EditorMapHolder(this, tileMap) {
-            tileClickHandler?.invoke(it)
+        val newHolder = EditorMapHolder(this, TileMapView(tileMap, null)) {
+            tileClickHandler?.invoke(it.getTile())
         }
         newHolder.mapPanningSpeed = UncivGame.Current.settings.mapPanningSpeed
         enableKeyboardPanningListener(newHolder, true)
@@ -310,12 +311,12 @@ class MapEditorScreen(map: TileMap? = null) : BaseScreen(), RecreateOnResize {
         highlightedTileGroups.clear()
     }
     fun highlightTile(tile: Tile, color: Color = Color.WHITE) {
-        val group = mapHolder.tileGroups[tile] ?: return
+        val group = mapHolder.tileGroups[mapHolder.tileMapView.getTile(tile)] ?: return
         group.layerOverlay.showHighlight(color)
         highlightedTileGroups.add(group)
     }
     fun updateTile(tile: Tile) {
-        mapHolder.tileGroups[tile]!!.update()
+        mapHolder.tileGroups[mapHolder.tileMapView.getTile(tile)]!!.update()
     }
     fun updateAndHighlight(tile: Tile, color: Color = Color.WHITE) {
         updateTile(tile)
