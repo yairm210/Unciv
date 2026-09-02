@@ -4,7 +4,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.unciv.view.CivView
 import com.unciv.view.TileView
 import com.unciv.logic.map.tile.RoadStatus
-import com.unciv.logic.map.tile.Tile
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.components.tilegroups.TileGroup
 import kotlin.math.atan2
@@ -17,24 +16,25 @@ private class RoadImage {
 
 class TileLayerFeatures(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, size) {
 
-    private val roadImages = HashMap<Tile, RoadImage>()
+    private val roadImages = HashMap<TileView, RoadImage>()
 
     private fun updateRoadImages(viewingCiv: CivView?) {
 
         if (tileGroup.isForMapEditorIcon)
             return
 
-        val tile = tileGroup.tileView.getTile()
-        val isTileVisible = viewingCiv == null || viewingCiv.canSeeTile(tileGroup.tileView)
+        val tileView = tileGroup.tileView
+        val tileMapView = tileView.getTileMap()
+        val isTileVisible = viewingCiv == null || viewingCiv.canSeeTile(tileView)
 
-        for (neighbor in tile.neighbors) {
+        for (neighbor in tileView.getVisibleNeighbors()) {
             var roadImage = roadImages[neighbor]
             val currentStatus = roadImage?.roadStatus ?: RoadStatus.None
 
             val roadStatus = when {
-                !isTileVisible && !viewingCiv.canSeeTile(viewingCiv.gameView.tileMapView.getTile(neighbor)) -> RoadStatus.None // don't show roads on non-visible tiles
-                tile.roadStatus == RoadStatus.None || neighbor.roadStatus === RoadStatus.None -> RoadStatus.None
-                tile.roadStatus == RoadStatus.Road || neighbor.roadStatus === RoadStatus.Road -> RoadStatus.Road
+                !isTileVisible && !viewingCiv.canSeeTile(neighbor) -> RoadStatus.None // don't show roads on non-visible tiles
+                tileView.roadStatus == RoadStatus.None || neighbor.roadStatus === RoadStatus.None -> RoadStatus.None
+                tileView.roadStatus == RoadStatus.Road || neighbor.roadStatus === RoadStatus.Road -> RoadStatus.Road
                 else -> RoadStatus.Railroad
             }
             if (currentStatus == roadStatus) continue // the image is correct
@@ -55,7 +55,7 @@ class TileLayerFeatures(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
             val image = ImageGetter.getImage(strings.orFallback { roadsMap[roadStatus]!! })
             roadImage.image = image
 
-            val relativeWorldPosition = tile.tileMap.getNeighborTilePositionAsWorldCoords(tile, neighbor)
+            val relativeWorldPosition = tileMapView.getNeighborTilePositionAsWorldCoords(tileView, neighbor)
 
             // This is some crazy voodoo magic so I'll explain.
             // Roads start at the tile origin; we offset them to the tile centre then toward the neighbor.

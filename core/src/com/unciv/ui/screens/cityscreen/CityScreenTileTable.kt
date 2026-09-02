@@ -89,7 +89,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen) : Table() {
                 unlockButton.onClick {
                     cityView.tryUnlockTile(tileView)
                     update(tileView)
-                    cityScreen.update()
+                    cityScreen.updateAsync()
                 }
                 if (!cityScreen.canChangeState) unlockButton.disable()
                 innerTable.add(unlockButton).padTop(5f).row()
@@ -98,7 +98,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen) : Table() {
                 lockButton.onClick {
                     cityView.tryLockTile(tileView)
                     update(tileView)
-                    cityScreen.update()
+                    cityScreen.updateAsync()
                 }
                 if (!cityScreen.canChangeState) lockButton.disable()
                 innerTable.add(lockButton).padTop(5f).row()

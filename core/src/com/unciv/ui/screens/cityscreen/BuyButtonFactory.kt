@@ -140,7 +140,7 @@ class BuyButtonFactory(val cityScreen: CityScreen) {
             }
             addGoodSizedLabel("Would you like to purchase [${construction.name}] for [$constructionStatBuyCost] [${stat.character}]?").row()
 
-            addCloseButton(Constants.cancel, KeyboardBinding.Cancel) { cityScreen.update() }
+            addCloseButton(Constants.cancel, KeyboardBinding.Cancel) { cityScreen.updateAsync() }
             val confirmStyle = BaseScreen.skin.get("positive", TextButton.TextButtonStyle::class.java)
             addOKButton("Purchase", KeyboardBinding.Confirm, confirmStyle) {
                 purchaseConstruction(construction, stat, tile)
@@ -183,7 +183,7 @@ class BuyButtonFactory(val cityScreen: CityScreen) {
                     cityScreen.selectConstruction(newConstruction)
             }
         }
-        cityScreen.update()
+        cityScreen.updateAsync()
     }
 
 }

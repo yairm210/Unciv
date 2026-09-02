@@ -160,7 +160,9 @@ class CityScreen(
         stage.addActor(tileTable)
         stage.addActor(cityPickerTable)  // add late so it's top in Z-order and doesn't get covered in cramped portrait
         stage.addActor(exitCityButton)
-        update()
+
+        cityView.updateCityStats()
+        updateSync() // NOT async since that gives a "visual flash" when entering the city
 
         globalShortcuts.add(KeyboardBinding.PreviousCity) { page(-1) }
         globalShortcuts.add(KeyboardBinding.NextCity) { page(1) }
@@ -178,21 +180,21 @@ class CityScreen(
     override fun getCivilopediaRuleset() = cityView.getRuleset()
 
     /** Async */
-    internal fun update() {
+    internal fun updateAsync() {
         Concurrency.run {
             // Recalculate Stats
             cityView.updateCityStats()
-            Concurrency.runOnGLThread {
-
-                constructionsTable.isVisible = !isSpying
-                constructionsTable.update(selectedConstruction)
-
-                updateWithoutConstructionAndMap()
-
-                // Rest of screen: Map of surroundings
-                updateTileGroups()
-            }
+            Concurrency.runOnGLThread { updateSync() }
         }
+    }
+    
+    internal fun updateSync(){
+        constructionsTable.isVisible = !isSpying
+        constructionsTable.update(selectedConstruction)
+        updateWithoutConstructionAndMap()
+
+        // Rest of screen: Map of surroundings
+        updateTileGroups()
     }
 
     internal fun updateWithoutConstructionAndMap() {
@@ -307,14 +309,14 @@ class CityScreen(
             annexCityButton.labelCell.pad(10f)
             annexCityButton.onClick {
                 cityView.tryAnnexCity()
-                update()
+                updateAsync()
             }
             if (!canChangeState) annexCityButton.disable()
             razeCityButtonHolder.add(annexCityButton) //.colspan(cityPickerTable.columns)
         } else if (!cityView.isBeingRazed()) {
             val razeCityButton = "Raze city".toTextButton()
             razeCityButton.labelCell.pad(10f)
-            razeCityButton.onClick { cityView.trySetRazing(true); update() }
+            razeCityButton.onClick { cityView.trySetRazing(true); updateAsync() }
             if (!canChangeState || !cityView.canBeDestroyed() || !canAnnex) {
                 razeCityButton.disable()
             }
@@ -323,7 +325,7 @@ class CityScreen(
         } else {
             val stopRazingCityButton = "Stop razing city".toTextButton()
             stopRazingCityButton.labelCell.pad(10f)
-            stopRazingCityButton.onClick { cityView.trySetRazing(false); update() }
+            stopRazingCityButton.onClick { cityView.trySetRazing(false); updateAsync() }
             if (!canChangeState) stopRazingCityButton.disable()
             razeCityButtonHolder.add(stopRazingCityButton) //.colspan(cityPickerTable.columns)
         }
@@ -411,7 +413,7 @@ class CityScreen(
                 cityView.tryStopWorkingTile(tileGroup.tileView)
             }
             cityView.updateCityStats()
-            update()
+            updateAsync()
 
         } else if (tileGroup.tileState == CityTileState.PURCHASABLE) {
             askToBuyTile(tileGroup.tileView)
@@ -438,12 +440,12 @@ class CityScreen(
             purchasePrompt,
             "Purchase",
             true,
-            restoreDefault = { update() }
+            restoreDefault = { updateAsync() }
         ) {
             Concurrency.run {
                 val success = cityView.tryBuyTile(selectedTile)
                 if (!success){
-                    update()
+                    updateAsync()
                     return@run
                 }
                 Concurrency.runOnGLThread {
@@ -467,7 +469,7 @@ class CityScreen(
         if (tileGroup.tileView.isWorked())
             cityView.tryLockTile(tileGroup.tileView)
 
-        update()
+        updateAsync()
     }
 
     private fun tileGroupOnClick(tileGroup: CityTileGroup) {
@@ -487,12 +489,12 @@ class CityScreen(
                     cityView.tryAddToQueueWithTile(pickTileData.building, tileInfo)
                 }
             }
-            update()
+            updateAsync()
             return
         }
 
         selectTile(tileGroup.tileView)
-        update()
+        updateAsync()
     }
 
     /** Convenience shortcut to [CivConstructions.hasFreeBuilding][com.unciv.logic.civilization.CivConstructions.hasFreeBuilding], nothing more */
@@ -562,7 +564,7 @@ class CityScreen(
         game.replaceCurrentScreen {
             val newCityScreen = CityScreen(viewableCities[indexOfNextCity], ambiencePlayer = passOnCityAmbiencePlayer())
             newCityScreen.mapScrollPane.zoom(mapScrollPane.scaleX) // Retain zoom
-            newCityScreen.update()
+            newCityScreen.updateAsync()
             newCityScreen
         }
     }

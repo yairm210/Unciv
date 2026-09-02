@@ -115,6 +115,8 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         setAsRootScreen(GameStartScreen())  // NOT dependent on any atlas or skin
         InputDisabling.disableInput() // We just set the game start screen, avoid ANRs until we actually load the main menu
 
+        Gdx.graphics.isContinuousRendering = settings.continuousRendering
+
         musicController = MusicController()  // early, but at this point does only copy volume from settings
         installAudioHooks()
 
@@ -128,11 +130,24 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
                 debug("Couldn't connect to server: " + ex.message)
             }
         }
-
+        
+        /** To understand this you need to know a few things
+         * - Initial ImageGetter.reloadImages() is heavy - includes loading image atlases and creating the font, takes ~1s on my computer
+         * - LibGDX calls create() first and then sets up the render() loop meaning first pixels are drawn after create() finishes
+         * - The loop (e.g. in Lwjgl3Window.java) gathers all Runnables sent via postRunnable, then runs them all, then renders
+         * Therefore:
+         *   - If we send something in postRunnable in create(), it'll be run after create()...but still before render()
+         *   - But this also means that runnables posted within a runnable, will only be run on the *next* render call
+         *   - So if we want to "render quickly" so the user gets immediate feedback, we can post a runnable that posts a runnable - 
+         *     the first will run in the first update() call, posting the second to be run in the second update() call, which is after render!
+        */
+        Concurrency.runOnGLThread { Concurrency.runOnGLThread { initialize() } }
+    }
+    
+    private fun initialize(){
         ImageGetter.resetAtlases()
         ImageGetter.reloadImages()  // This needs to come after the settings, since we may have default visual mods
-        
-        Gdx.graphics.isContinuousRendering = settings.continuousRendering
+
 
         Concurrency.run("LoadJSON") {
             RulesetCache.loadRulesets()

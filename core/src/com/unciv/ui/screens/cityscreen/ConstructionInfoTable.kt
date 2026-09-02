@@ -155,7 +155,7 @@ class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
             "Are you sure you want to sell this [${construction.name}]?",
             sellText,
             restoreDefault = {
-                cityScreen.update()
+                cityScreen.updateAsync()
             }
         ) {
             sellBuildingConfirmed(construction)
@@ -165,7 +165,7 @@ class ConstructionInfoTable(val cityScreen: CityScreen) : Table() {
     private fun sellBuildingConfirmed(construction: Building) {
         cityView.trySellBuilding(construction)
         cityScreen.clearSelection()
-        cityScreen.update()
+        cityScreen.updateAsync()
     }
 
 }

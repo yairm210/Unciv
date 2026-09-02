@@ -107,7 +107,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         )
         queueExpander = ExpanderTab(
             "Construction queue",
-            onChange = { cityScreen.update() },
+            onChange = { cityScreen.updateAsync() },
             defaultPad = 0f,
             // keep lowerTable at fixed position
             startsOutOpened = false,
@@ -265,7 +265,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                     override fun touchUp(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int) {
                         cityScreen.selectConstruction(constructionName)
                         selectedQueueEntry = i
-                        cityScreen.update()
+                        cityScreen.updateAsync()
                         event.stop()
                         super.touchUp(event, x, y, pointer, button)
                     }
@@ -453,7 +453,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 selectQueueEntry(constructionQueueIndex) {
                     CityScreenConstructionMenu(cityScreen.stage, table, cityView, construction) {
                         cityView.tryReassignPopulation()
-                        cityScreen.update()
+                        cityScreen.updateAsync()
                     }
                 }
             }
@@ -471,7 +471,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             selectedQueueEntry = -1
         }
         val result = onBeforeUpdate()
-        cityScreen.update()  // Not before CityScreenConstructionMenu or table will have no parent to get stage coords
+        cityScreen.updateAsync()  // Not before CityScreenConstructionMenu or table will have no parent to get stage coords
         ensureQueueEntryVisible()
         return result
     }
@@ -583,7 +583,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 highlightConstructionButton(pickConstructionButton, true, true)  // without, will highlight but with visible delay
             }
             selectedQueueEntry = -1
-            cityScreen.update()
+            cityScreen.updateAsync()
         }
 
         if (!cityScreen.canCityBeChanged()) return pickConstructionButton
@@ -597,7 +597,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             }
             CityScreenConstructionMenu(cityScreen.stage, pickConstructionButton, cityView, construction) {
                 cityView.tryReassignPopulation()
-                cityScreen.update()
+                cityScreen.updateAsync()
             }
         }
         return pickConstructionButton
@@ -705,7 +705,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             // Selection display may need to update as I can click the button of a non-selected entry.
             cityScreen.selectConstruction(name)
             cityView.tryReassignPopulation()
-            cityScreen.update()
+            cityScreen.updateAsync()
             //cityScreen.updateWithoutConstructionAndMap()
             updateQueueAndButtons(cityScreen.selectedConstruction)
             ensureQueueEntryVisible()  // Not passing current button info - already outdated, our parent is already removed from the stage hierarchy and replaced
@@ -732,7 +732,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             Concurrency.run {
                 val success = cityView.tryRemoveFromQueue(constructionQueueIndex, false)
                 if (!success) {
-                    Concurrency.runOnGLThread { cityScreen.update() }
+                    Concurrency.runOnGLThread { cityScreen.updateAsync() }
                     return@run
                 }
                 cityView.tryReassignPopulation()
