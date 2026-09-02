@@ -8,6 +8,7 @@ import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.LocaleCode
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.TranslationEntry
 import com.unciv.models.translations.TranslationFileReader
@@ -27,6 +28,7 @@ import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.RedirectOutput
 import com.unciv.testing.RedirectPolicy
 import com.unciv.ui.components.fonts.DiacriticSupport
+import com.unciv.ui.components.fonts.FontRulesetIcons
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.utils.Log
 import org.junit.Assert
@@ -382,7 +384,51 @@ class TranslationTests {
     fun isStatsRecognizesStatsIncludingStatCharacter() {
         setupUncivGame()
 
-        Assert.assertTrue(Stats.isStats(Stats(1f,2f,3f).toStringForNotifications()))
+        val serializedStat = Stats(production = 1f).toStringForNotifications()
+        val serializedStats = Stats(production = 1f, food = -2f).toStringForNotifications()
+        Assert.assertTrue(Stats.isStats(serializedStat))
+        Assert.assertTrue(Stats.isStats(serializedStats))
+        Assert.assertEquals("+1 ${Stat.Production.character}Production", serializedStat.tr())
+        Assert.assertEquals(
+            "+1 ${Stat.Production.character}Production, -2 ${Stat.Food.character}Food",
+            serializedStats.tr()
+        )
+        Assert.assertEquals("1 Production", serializedStat.tr(hideIcons = true))
+        Assert.assertEquals("1 Production, -2 Food", serializedStats.tr(hideIcons = true))
+
+        UncivGame.Current.translations["Production"] = TranslationEntry("Production").apply {
+            this[LocaleCode.Bangla.name] = "উৎপাদন"
+        }
+        UncivGame.Current.translations["Food"] = TranslationEntry("Food").apply {
+            this[LocaleCode.Bangla.name] = "খাদ্য"
+        }
+        UncivGame.Current.settings.language = LocaleCode.Bangla.name
+        Assert.assertEquals("+১ ${Stat.Production.character}উৎপাদন", serializedStat.tr())
+        Assert.assertEquals(
+            "+১ ${Stat.Production.character}উৎপাদন, -২ ${Stat.Food.character}খাদ্য",
+            serializedStats.tr()
+        )
+        Assert.assertEquals("১ উৎপাদন", serializedStat.tr(hideIcons = true))
+        Assert.assertEquals("১ উৎপাদন, -২ খাদ্য", serializedStats.tr(hideIcons = true))
+    }
+
+    @Test
+    fun iconSuppressionFlagsAffectOnlyTheirIconTypes() {
+        setupUncivGame()
+        val rulesetObjectName = "Test ruleset object"
+        val rulesetObjectIcon = '\uE000'
+        FontRulesetIcons.rulesetObjectNameToChar[rulesetObjectName] = rulesetObjectIcon
+        try {
+            Assert.assertEquals(Stat.Production.character + "Production", "Production".tr())
+            Assert.assertEquals(Stat.Production.character + "Production", "Production".tr(hideIcons = true))
+            Assert.assertEquals("Production", "Production".tr(hideStats = true))
+
+            Assert.assertEquals(rulesetObjectIcon + rulesetObjectName, rulesetObjectName.tr())
+            Assert.assertEquals(rulesetObjectName, rulesetObjectName.tr(hideIcons = true))
+            Assert.assertEquals(rulesetObjectIcon + rulesetObjectName, rulesetObjectName.tr(hideStats = true))
+        } finally {
+            FontRulesetIcons.rulesetObjectNameToChar.remove(rulesetObjectName)
+        }
     }
 
     @Test
@@ -484,18 +530,23 @@ class TranslationTests {
     fun testStringsWithNumbers() {
         setupUncivGame()
 
-        val tests = arrayOf("1", "+1", "-1", "1.0", "+1.0", "-1.0", "0%", "1/2", "(3/4)")
+        val tests = arrayOf("1", "+1", "-1", "1.0", "+1.0", "-1.0", "0%", "1/2", "(3/4)", "Population 1234")
+        UncivGame.Current.translations["Population 1234"] = TranslationEntry("Population 1234").apply {
+            this[LocaleCode.English.name] = "Citizens 1234"
+            this[LocaleCode.Bangla.name] = "নাগরিক 1234"
+        }
 
         UncivGame.Current.settings.language = LocaleCode.English.name
         Assert.assertArrayEquals(
-            "English", tests, // assume unchanged
+            "English",
+            arrayOf("1", "+1", "-1", "1.0", "+1.0", "-1.0", "0%", "1/2", "(3/4)", "Citizens 1,234"),
             tests.map { it.tr() }.toTypedArray()
         )
 
         UncivGame.Current.settings.language = LocaleCode.Bangla.name
         Assert.assertArrayEquals(
             "Bangla",
-            arrayOf("১", "+১", "-১", "১.০", "+১.০", "-১.০", "০%", "১/২", "(৩/৪)"),
+            arrayOf("১", "+১", "-১", "১.০", "+১.০", "-১.০", "০%", "১/২", "(৩/৪)", "নাগরিক ১,২৩৪"),
             tests.map { it.tr() }.toTypedArray()
         )
     }
