@@ -126,7 +126,10 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
                 cityView.getFreePopulation().tr() + "/" + cityView.getPopulationCount().tr()
         val unassignedPopLabel = unassignedPopString.toLabel()
         if (cityScreen.canChangeState)
-            unassignedPopLabel.onClick { cityView.tryReassignPopulation(); cityScreen.update() }
+            unassignedPopLabel.onClick { 
+                cityView.tryReassignPopulation()
+                cityScreen.updateAsync()
+            }
 
         var turnsToExpansionString =
                 if (cityView.getCurrentCityStats().culture > 0 && cityView.hasChoosableTiles()) {
@@ -326,7 +329,7 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
 
         button.onClick {
             cityScreen.selectConstruction(building)
-            cityScreen.update()
+            cityScreen.updateAsync()
         }
 
         destinationTable.add(button).pad(1f).padBottom(2f).padTop(2f).expandX().right().row()
@@ -432,7 +435,7 @@ class CityStatsTable(private val cityScreen: CityScreen) : Table() {
                 if (cityScreen.canCityBeChanged()) {
                     icon.onActivation(binding = toggledFocus.binding) {
                         cityView.trySetCityFocus(toggledFocus)
-                        cityScreen.update()
+                        cityScreen.updateAsync()
                     }
                 }
                 add(icon).size(27f).padRight(3f)
