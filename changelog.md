@@ -1,26 +1,16 @@
 ## 4.21.16
 
-Resolved  - Fixed visual flash when entering a city
+Fixed visual flash when entering a city
 
-View implementation - UN-viewify Map Editor, since it requires "superpowers" and is NOT a "player in game" screen - see 
+Don't allow removing features for improvements, if it requires an unresearched tech
 
-View implementation - MapEditorScreen, EditorMapHolder - see 
-
-View implementation - TileLayerFeatures - see 
-
-Resolved  - Don't allow removing features to reach improvements, if the feature removal requires a tech you don't have
-
-Decrease cold start (time to first pixels) by deferring GL initialization to happen after the initial render() call
+Decrease time-to-first-pixels for better user experience
 
 AI doesn't accept trades to declare war against multiple civs
 
-Extract city production text to UI level, since it's not inherently part of the game logic
+Better multiplayer UUID handling - By dangdinhbaohoang12
 
-View implementation - CityTable conversion - see 
-
-Fixed a few minor issues. - By dangdinhbaohoang12
-
-fix: Correct numeric localization and stat icon suppression - By mvanhorn
+Correct numeric localization and stat icon suppression - By mvanhorn
 
 Increase luxury diversity - By O-spin
 
