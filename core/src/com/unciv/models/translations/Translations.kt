@@ -116,17 +116,16 @@ class Translations : LinkedHashMap<String, TranslationEntry>() {
         // try to load the translations from the mods
         for (modFolder in RulesetCache.values.mapNotNull { it.folderLocation }) {
             val modTranslationFile = modFolder.child(translationFileName)
-            if (modTranslationFile.exists()) {
-                var translationsForMod = modsWithTranslations[modFolder.name()]
-                if (translationsForMod == null) {
-                    translationsForMod = Translations()
-                    modsWithTranslations[modFolder.name()] = translationsForMod
-                }
-                try {
-                    translationsForMod.createTranslations(language, TranslationFileReader.read(modTranslationFile), noDiacritics)
-                } catch (ex: Exception) {
-                    Log.error("Exception reading translations for ${modFolder.name()} $language", ex)
-                }
+            if (!modTranslationFile.exists()) continue
+            var translationsForMod = modsWithTranslations[modFolder.name()]
+            if (translationsForMod == null) {
+                translationsForMod = Translations()
+                modsWithTranslations[modFolder.name()] = translationsForMod
+            }
+            try {
+                translationsForMod.createTranslations(language, TranslationFileReader.read(modTranslationFile), noDiacritics)
+            } catch (ex: Exception) {
+                Log.error("Exception reading translations for ${modFolder.name()} $language", ex)
             }
         }
 

@@ -144,18 +144,20 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         Concurrency.runOnGLThread { Concurrency.runOnGLThread { initialize() } }
     }
     
-    private fun initialize(){
+    private fun initialize() {
         ImageGetter.resetAtlases()
         ImageGetter.reloadImages()  // This needs to come after the settings, since we may have default visual mods
 
 
         Concurrency.run("LoadJSON") {
             RulesetCache.loadRulesets()
-            translations.tryReadTranslationForCurrentLanguage()
-            translations.loadPercentageCompleteOfLanguages()
-            TileSetCache.loadTileSetConfigs()
+            Concurrency.parallelize(listOf(
+                { translations.tryReadTranslationForCurrentLanguage() },
+                { translations.loadPercentageCompleteOfLanguages() },
+                { TileSetCache.loadTileSetConfigs() },
+                { SkinCache.loadSkinConfigs() }
+            ))
 
-            SkinCache.loadSkinConfigs()
 
             val vanillaRuleset = RulesetCache.getVanillaRuleset()
 
@@ -163,10 +165,6 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
                 settings.multiplayer.setUserId(UUID.randomUUID().toString())
                 settings.save()
             }
-
-            // Loading available fonts can take a long time on Android phones.
-            // Therefore we initialize the lazy parameters in the font implementation, while we're in another thread, to avoid ANRs on main thread
-            Fonts.fontImplementation.setFontFamily(settings.fontFamilyData, settings.getFontSize())
 
             // This stuff needs to run on the main thread because it needs the GL context
             launchOnGLThread {
@@ -495,7 +493,7 @@ private fun logRunningThreads() {
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.21.15", 1256)
+        val VERSION = Version("4.21.16", 1257)
         //endregion
 
         /** Global reference to the one Gdx.Game instance created by the platform launchers - do not use without checking [isCurrentInitialized] first. */

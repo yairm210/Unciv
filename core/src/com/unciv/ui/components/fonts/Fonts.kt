@@ -41,6 +41,7 @@ object Fonts {
 
     lateinit var fontImplementation: FontImplementation
     lateinit var font: BitmapFont
+    
 
     /** This resets all cached font data in object Fonts.
      *  Do not call from normal code - reset the Skin instead: `BaseScreen.setSkin()`

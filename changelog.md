@@ -1,3 +1,19 @@
+## 4.21.16
+
+Fixed visual flash when entering a city
+
+Don't allow removing features for improvements, if it requires an unresearched tech
+
+Decrease time-to-first-pixels for better user experience
+
+AI doesn't accept trades to declare war against multiple civs
+
+Better multiplayer UUID handling - By dangdinhbaohoang12
+
+Correct numeric localization and stat icon suppression - By mvanhorn
+
+Increase luxury diversity - By O-spin
+
 ## 4.21.15
 
 Avoid ANRs in multiple places
