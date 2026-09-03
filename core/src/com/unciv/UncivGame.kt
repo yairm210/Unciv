@@ -144,18 +144,20 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         Concurrency.runOnGLThread { Concurrency.runOnGLThread { initialize() } }
     }
     
-    private fun initialize(){
+    private fun initialize() {
         ImageGetter.resetAtlases()
         ImageGetter.reloadImages()  // This needs to come after the settings, since we may have default visual mods
 
 
         Concurrency.run("LoadJSON") {
             RulesetCache.loadRulesets()
-            translations.tryReadTranslationForCurrentLanguage()
-            translations.loadPercentageCompleteOfLanguages()
-            TileSetCache.loadTileSetConfigs()
+            Concurrency.parallelize(listOf(
+                { translations.tryReadTranslationForCurrentLanguage() },
+                { translations.loadPercentageCompleteOfLanguages() },
+                { TileSetCache.loadTileSetConfigs() },
+                { SkinCache.loadSkinConfigs() }
+            ))
 
-            SkinCache.loadSkinConfigs()
 
             val vanillaRuleset = RulesetCache.getVanillaRuleset()
 
