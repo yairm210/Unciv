@@ -164,10 +164,6 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
                 settings.save()
             }
 
-            // Loading available fonts can take a long time on Android phones.
-            // Therefore we initialize the lazy parameters in the font implementation, while we're in another thread, to avoid ANRs on main thread
-            Fonts.fontImplementation.setFontFamily(settings.fontFamilyData, settings.getFontSize())
-
             // This stuff needs to run on the main thread because it needs the GL context
             launchOnGLThread {
                 BaseScreen.setSkin() // needs to come AFTER the Texture reset, since the buttons depend on it and after loadSkinConfigs to be able to use the SkinConfig
