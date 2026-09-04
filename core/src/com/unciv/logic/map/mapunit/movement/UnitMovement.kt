@@ -568,7 +568,7 @@ class UnitMovement(val unit: MapUnit) {
             val hiddenBlocker = getHiddenBlockingUnit(tile)
             if (hiddenBlocker != null) {
                 unit.useMovementPoints(unit.currentMovement)
-                revealHiddenBlockingUnit(hiddenBlocker, tile)
+                notifyHiddenBlockingUnitDiscovered(hiddenBlocker, tile)
                 previousTile = tile
                 break
             }
