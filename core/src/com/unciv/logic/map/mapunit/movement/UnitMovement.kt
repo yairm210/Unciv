@@ -5,6 +5,8 @@ package com.unciv.logic.map.mapunit.movement
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.Timers.Companion.timeThis
+import com.unciv.logic.civilization.NotificationCategory
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.HexCoord
@@ -560,6 +562,17 @@ class UnitMovement(val unit: MapUnit) {
             if (!unit.civ.gameInfo.gameParameters.godMode)
                 passingMovementSpent += MovementCost.getMovementCostBetweenAdjacentTiles(unit, previousTile, tile)
 
+            // We were allowed to *attempt* moving into this tile even though it secretly contains
+            // an enemy unit we couldn't see (e.g. an undetected submarine) - moving into it is
+            // what reveals that unit, so we stop here instead of actually entering the tile.
+            val hiddenBlocker = getHiddenBlockingUnit(tile)
+            if (hiddenBlocker != null) {
+                unit.useMovementPoints(unit.currentMovement)
+                revealHiddenBlockingUnit(hiddenBlocker, tile)
+                previousTile = tile
+                break
+            }
+
             // In case something goes wrong, cache the last tile we were able to end on
             // We can assume we can pass through this tile, as we would have broken earlier
             if (unit.movement.canMoveTo(tile, assumeCanPassThrough = true)) {
@@ -707,6 +720,37 @@ class UnitMovement(val unit: MapUnit) {
     fun canMoveTo(tile: Tile, assumeCanPassThrough: Boolean = false, allowSwap: Boolean = false, includeOtherEscortUnit: Boolean = true) =
         getCannotMoveToReason(tile, assumeCanPassThrough, allowSwap, includeOtherEscortUnit) == null
 
+    /**
+     * If [tile] is occupied only by an enemy unit that [unit]'s civ is at war with but cannot
+     * currently see (e.g. an undetected submarine), returns that unit.
+     * Returns null if the tile is genuinely enterable, or if it's blocked by a unit that's
+     * already visible to us (and thus handled by the normal move-blocking checks).
+     *
+     * We deliberately let [canMoveTo] and [canPassThrough] treat such a tile as passable, so the
+     * player can still order the move - exactly as in the base game, attempting to move onto a
+     * hidden unit's tile is how that unit gets revealed. This function is what stops us from
+     * actually completing that move and silently overwriting the hidden unit's tile.
+     */
+    @Readonly
+    private fun getHiddenBlockingUnit(tile: Tile): MapUnit? {
+        val blocker = tile.militaryUnit ?: tile.civilianUnit ?: return null
+        if (blocker.civ == unit.civ) return null
+        if (!unit.civ.isAtWarWith(blocker.civ)) return null
+        if (blocker.isVisibleTo(unit.civ)) return null
+        return blocker
+    }
+
+    private fun revealHiddenBlockingUnit(hiddenUnit: MapUnit, tile: Tile) {
+        unit.civ.addNotification(
+            "While moving, our [${unit.name}] discovered a hidden enemy [${hiddenUnit.name}]!",
+            tile.position,
+            NotificationCategory.War,
+            unit.name,
+            NotificationIcon.War,
+            hiddenUnit.name
+        )
+    }
+
     enum class CannotMoveToReason{
         TerrainImpassable,
         BoatCannotGoOnLand,
@@ -735,12 +779,15 @@ class UnitMovement(val unit: MapUnit) {
             && !unit.getOtherEscortUnit()!!.movement.canMoveTo(tile, assumeCanPassThrough, allowSwap, includeOtherEscortUnit = false))
             return CannotMoveToReason.EscortCannotMove
 
+        // An at-war foreign unit that we can't currently see (e.g. an undetected submarine) does not
+        // block us from *attempting* to move into its tile - as in the base game, we can order
+        // the move, and doing so is what reveals the hidden unit (see getHiddenBlockingUnit).
         val tileIsEmpty = if (unit.isCivilian())
-            (tile.civilianUnit == null || (allowSwap && tile.civilianUnit!!.owner == unit.owner))
-                && (tile.militaryUnit == null || tile.militaryUnit!!.owner == unit.owner)
+            (tile.civilianUnit == null || (allowSwap && tile.civilianUnit!!.owner == unit.owner) || (!tile.civilianUnit!!.isVisibleTo(unit.civ) && unit.civ.isAtWarWith(tile.civilianUnit!!.civ)))
+                && (tile.militaryUnit == null || tile.militaryUnit!!.owner == unit.owner || (!tile.militaryUnit!!.isVisibleTo(unit.civ) && unit.civ.isAtWarWith(tile.militaryUnit!!.civ)))
         else
         // can skip checking for airUnit since not a city
-            (tile.militaryUnit == null || (allowSwap && tile.militaryUnit!!.owner == unit.owner))
+            (tile.militaryUnit == null || (allowSwap && tile.militaryUnit!!.owner == unit.owner) || (!tile.militaryUnit!!.isVisibleTo(unit.civ) && unit.civ.isAtWarWith(tile.militaryUnit!!.civ)))
                 && (tile.civilianUnit == null || tile.civilianUnit!!.owner == unit.owner || unit.civ.isAtWarWith(tile.civilianUnit!!.civ))
 
         if (!tileIsEmpty) return CannotMoveToReason.TileIsNotEmpty
@@ -841,8 +888,10 @@ class UnitMovement(val unit: MapUnit) {
             if (!(unit.baseUnit.isLandUnit && tile.isWater && !unit.cache.canMoveOnWater)
                 && firstUnit.isCivilian() && unit.civ.isAtWarWith(firstUnit.civ))
                 return null
-            // Cannot enter hostile tile with any unit in there
-            if (unit.civ.isAtWarWith(firstUnit.civ))
+            // Cannot enter hostile tile with any unit in there -
+            // unless that unit is invisible to us (e.g. an undetected submarine), in which case
+            // we don't yet know it's blocking us; attempting to enter is what reveals it.
+            if (unit.civ.isAtWarWith(firstUnit.civ) && firstUnit.isVisibleTo(unit.civ))
                 return CannotMoveToReason.TileIsNotEmpty
         }
         if (includeOtherEscortUnit && unit.isEscorting()) {
