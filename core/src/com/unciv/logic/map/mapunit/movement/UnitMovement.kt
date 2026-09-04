@@ -740,7 +740,7 @@ class UnitMovement(val unit: MapUnit) {
         return blocker
     }
 
-    private fun revealHiddenBlockingUnit(hiddenUnit: MapUnit, tile: Tile) {
+    private fun notifyHiddenBlockingUnitDiscovered(hiddenUnit: MapUnit, tile: Tile) {
         unit.civ.addNotification(
             "While moving, our [${unit.name}] discovered a hidden enemy [${hiddenUnit.name}]!",
             tile.position,
