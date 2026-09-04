@@ -44,6 +44,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
 
             val cityStateLocation = civInfo.getCapital()?.location
             val isFirstMajorCivToMeet = civInfo.diplomacy.count { it.value.otherCiv.isMajorCiv() } == 1
+            val isReligiousCityState = civInfo.cityStateFunctions.canProvideStat(Stat.Faith)
 
             val normalGift = Stats(gold = 15f)
             val religiousGift = Stats(faith = 4f)
@@ -54,7 +55,7 @@ class DiplomacyFunctions(val civInfo: Civilization) {
             }
             
             val meetingText = 
-                if (civInfo.diplomacy.count { it.value.otherCiv.isMajorCiv() } > 1) 
+                if (isFirstMajorCivToMeet) 
                     "[${civInfo.civName}] has given us [${normalGift.toStringForNotifications()}] as a token of goodwill for meeting us"
                 else
                     "[${civInfo.civName}] has given us [${normalGift.toStringForNotifications()}] as we are the first major civ to meet them"
@@ -64,18 +65,12 @@ class DiplomacyFunctions(val civInfo: Civilization) {
             else
                 otherCiv.addNotification(meetingText, NotificationCategory.Diplomacy, NotificationIcon.Gold)
 
-            fun addStats(stats: Stats) {
-                for ((stat, amount) in stats) {
-                    otherCiv.addStat(stat, amount.toInt())
-                }
-            }
+            otherCiv.addStats(normalGift)
             
-            addStats(normalGift)
-
-            if (civInfo.cityStateFunctions.canProvideStat(Stat.Faith)) {
+            if (isReligiousCityState) {
                 val religiousMeetingText = "[${civInfo.civName}] has also given us [${religiousGift.toStringForNotifications()}]"
                 otherCiv.addNotification(religiousMeetingText, NotificationCategory.Diplomacy, NotificationIcon.Faith)
-                addStats(religiousGift)
+                otherCiv.addStats(religiousGift)
             }
 
             if (civInfo.cities.isNotEmpty())
