@@ -779,16 +779,16 @@ class UnitMovement(val unit: MapUnit) {
             && !unit.getOtherEscortUnit()!!.movement.canMoveTo(tile, assumeCanPassThrough, allowSwap, includeOtherEscortUnit = false))
             return CannotMoveToReason.EscortCannotMove
 
-        // A foreign unit that we can't currently see (e.g. an undetected submarine) does not
+        // An at-war foreign unit that we can't currently see (e.g. an undetected submarine) does not
         // block us from *attempting* to move into its tile - as in the base game, we can order
         // the move, and doing so is what reveals the hidden unit (see getHiddenBlockingUnit).
         val tileIsEmpty = if (unit.isCivilian())
-            (tile.civilianUnit == null || (allowSwap && tile.civilianUnit!!.owner == unit.owner) || !tile.civilianUnit!!.isVisibleTo(unit.civ))
-                && (tile.militaryUnit == null || tile.militaryUnit!!.owner == unit.owner || !tile.militaryUnit!!.isVisibleTo(unit.civ))
+            (tile.civilianUnit == null || (allowSwap && tile.civilianUnit!!.owner == unit.owner) || (!tile.civilianUnit!!.isVisibleTo(unit.civ) && unit.civ.isAtWarWith(tile.civilianUnit!!.civ)))
+                && (tile.militaryUnit == null || tile.militaryUnit!!.owner == unit.owner || (!tile.militaryUnit!!.isVisibleTo(unit.civ) && unit.civ.isAtWarWith(tile.militaryUnit!!.civ)))
         else
         // can skip checking for airUnit since not a city
-            (tile.militaryUnit == null || (allowSwap && tile.militaryUnit!!.owner == unit.owner) || !tile.militaryUnit!!.isVisibleTo(unit.civ))
-                && (tile.civilianUnit == null || tile.civilianUnit!!.owner == unit.owner || unit.civ.isAtWarWith(tile.civilianUnit!!.civ) || !tile.civilianUnit!!.isVisibleTo(unit.civ))
+            (tile.militaryUnit == null || (allowSwap && tile.militaryUnit!!.owner == unit.owner) || (!tile.militaryUnit!!.isVisibleTo(unit.civ) && unit.civ.isAtWarWith(tile.militaryUnit!!.civ)))
+                && (tile.civilianUnit == null || tile.civilianUnit!!.owner == unit.owner || unit.civ.isAtWarWith(tile.civilianUnit!!.civ))
 
         if (!tileIsEmpty) return CannotMoveToReason.TileIsNotEmpty
 
