@@ -34,7 +34,12 @@ class MapSize private constructor(
 
     constructor(size: Predefined) : this(size.name, size.radius, size.width, size.height)
 
-    constructor(name: String) : this(Predefined.safeValueOf(name))
+    constructor(name: String) : this(
+        if (name == auto) auto else Predefined.safeValueOf(name).name,
+        (if (name == auto) Predefined.Medium else Predefined.safeValueOf(name)).radius,
+        (if (name == auto) Predefined.Medium else Predefined.safeValueOf(name)).width,
+        (if (name == auto) Predefined.Medium else Predefined.safeValueOf(name)).height
+    )
 
     constructor(radius: Int) : this(custom, radius, 0, 0) {
         setNewRadius(radius)
@@ -76,19 +81,21 @@ class MapSize private constructor(
          * used in [name] to indicate user-defined dimensions.
          * Do not mistake for [MapGeneratedMainType.custom]. */
         const val custom = "Custom"
+        const val auto = "Auto"
+        val Auto get() = MapSize(auto) // Defaulting to Medium dimensions
         val Tiny get() = MapSize(Predefined.Tiny)
         val Small get() = MapSize(Predefined.Small)
         val Medium get() = MapSize(Predefined.Medium)
         val Large get() = MapSize(Predefined.Large)
         val Huge get() = MapSize(Predefined.Huge)
-        fun names() = Predefined.entries.map { it.name }
+        fun names() = Predefined.entries.map { it.name } + listOf(auto)
     }
 
     fun clone() = MapSize(name, radius, width, height)
 
     @Readonly
     fun getPredefinedOrNextSmaller(): Predefined {
-        if (name != custom) return Predefined.safeValueOf(name)
+        if (name != custom && name != auto) return Predefined.safeValueOf(name)
         for (predef in Predefined.entries.reversed()) {
             if (radius >= predef.radius) return predef
         }
