@@ -1,0 +1,15 @@
+
+
+Decrease initial startup time by ~100ms (desktop) by parallelizing json reading functions
+
+Decrease initial startup time by ~500ms (desktop), Android not measured
+
+By Angais:
+- Keep inquisitor conversion targets in owned cities 
+- Copy temporary uniques when cloning civilizations 
+- Fix overflow in trade evaluation 
+- Preserve building sale limit in cloned cities 
+
+By varchasgopalaswamy:
+- fixes a tile info update bug when changing perspective 
+- fixed the bug 
