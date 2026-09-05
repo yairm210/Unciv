@@ -243,8 +243,8 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
     private fun resolveAutoMapSize(mapParameters: MapParameters, gameParameters: GameParameters, gameInfo: GameInfo?): MapSize {
         if (gameInfo == null) return mapParameters.mapSize
 
-        val numberOfMajorCivs = gameInfo.civilizations.filter { it.nation.name != Constants.spectator && it.nation.name != Constants.barbarians && !it.isCityState }.size
-        val numberOfMinorCivs = gameInfo.civilizations.filter { it.isCityState }.size
+        val numberOfMajorCivs = gameInfo.civilizations.count { it.isMajorCiv() }
+        val numberOfMinorCivs = gameInfo.civilizations.count { it.isCityState }
         // This is mostly just vibes, tries to make the average minimum distance between major civs equal to 13
         val majorCivContribution = 7.6 * numberOfMajorCivs.toFloat().pow(2) + 
             522 * numberOfMajorCivs - 360 + 120 * sin( 2.48 * numberOfMajorCivs.toFloat())
