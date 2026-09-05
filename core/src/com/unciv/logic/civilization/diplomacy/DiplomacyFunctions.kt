@@ -46,28 +46,25 @@ class DiplomacyFunctions(val civInfo: Civilization) {
             val isFirstMajorCivToMeet = civInfo.diplomacy.count { it.value.otherCiv.isMajorCiv() } == 1
             val isReligiousCityState = civInfo.cityStateFunctions.canProvideStat(Stat.Faith)
 
-            val normalGift = Stats(gold = 15f)
-            val religiousGift = Stats(faith = 4f)
-
-            if (isFirstMajorCivToMeet) {
-                normalGift.timesInPlace(2f)
-                religiousGift.timesInPlace(2f)
-            }
+            val gift = Stats(gold = 15f)
+            if (isFirstMajorCivToMeet)
+                gift.timesInPlace(2f)
             
-            val meetingText = 
-                if (isFirstMajorCivToMeet) 
-                    "[${civInfo.civName}] has given us [${normalGift.toStringForNotifications()}] as a token of goodwill for meeting us"
-                else
-                    "[${civInfo.civName}] has given us [${normalGift.toStringForNotifications()}] as we are the first major civ to meet them"
+            val meetingText = "[${civInfo.civName}] has given us [${gift.toStringForNotifications()}] as " +
+                if (isFirstMajorCivToMeet) "we are the first major civ to meet them"
+                else "a token of goodwill for meeting us"
             
             if (cityStateLocation != null)
                 otherCiv.addNotification(meetingText, cityStateLocation, NotificationCategory.Diplomacy, NotificationIcon.Gold)
             else
                 otherCiv.addNotification(meetingText, NotificationCategory.Diplomacy, NotificationIcon.Gold)
 
-            otherCiv.addStats(normalGift)
+            otherCiv.addStats(gift)
             
             if (isReligiousCityState) {
+                val religiousGift = Stats(faith = 4f)
+                if (isFirstMajorCivToMeet)
+                    religiousGift.timesInPlace(2f)
                 val religiousMeetingText = "[${civInfo.civName}] has also given us [${religiousGift.toStringForNotifications()}]"
                 otherCiv.addNotification(religiousMeetingText, NotificationCategory.Diplomacy, NotificationIcon.Faith)
                 otherCiv.addStats(religiousGift)
