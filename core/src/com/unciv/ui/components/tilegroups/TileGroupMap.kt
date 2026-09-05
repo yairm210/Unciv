@@ -71,6 +71,9 @@ class TileGroupMap<T: TileGroup>(
      *  so world-wrap can reposition the click-target by index. */
     private val sortedTileGroups: List<T>
 
+    /** Direct overlays retain their tile-relative offset when the map wraps. */
+    private val tileOverlayAnchors = HashMap<Actor, Pair<T, Float>>()
+
     init {
 
         for (tileGroup in tileGroups) {
@@ -220,6 +223,20 @@ class TileGroupMap<T: TileGroup>(
         return null
     }
 
+    /** Draw known events above fog while preserving unit flags and city buttons in the foreground. */
+    fun addTileOverlay(actor: Actor, tileGroup: T) {
+        addActorBefore(allMapLayers.first { it is UnitFlagMapLayer }, actor)
+        tileOverlayAnchors[actor] = tileGroup to actor.x - tileGroup.x
+    }
+
+    override fun removeActorAt(index: Int, unfocus: Boolean): Actor =
+        super.removeActorAt(index, unfocus).also { tileOverlayAnchors.remove(it) }
+
+    override fun clearChildren(unfocus: Boolean) {
+        tileOverlayAnchors.clear()
+        super.clearChildren(unfocus)
+    }
+
     override fun draw(batch: Batch?, parentAlpha: Float) {
         // Propagate the viewport culling area into each layer container so that individual tile
         // actors are culled correctly. Container groups span the full map so they are never
@@ -296,7 +313,10 @@ class TileGroupMap<T: TileGroup>(
                 // Also reposition any actors added directly to this group (e.g. transient overlays).
                 for (child in children) {
                     if (child !in allMapLayers) {
-                        if (beyondRight) {
+                        val anchor = tileOverlayAnchors[child]
+                        if (anchor != null) {
+                            child.x = anchor.first.x + anchor.second
+                        } else if (beyondRight) {
                             if (child.x - drawBottomX <= diffRight)
                                 child.x += width
                         } else if (beyondLeft) {

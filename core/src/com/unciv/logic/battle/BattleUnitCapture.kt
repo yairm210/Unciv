@@ -103,7 +103,7 @@ object BattleUnitCapture {
     /**
      * @throws IllegalArgumentException if the [attacker] and [defender] belong to the same civ.
      */
-    fun captureCivilianUnit(attacker: ICombatant, defender: MapUnitCombatant, checkDefeat: Boolean = true) {
+    fun captureCivilianUnit(attacker: ICombatant, defender: MapUnitCombatant, checkDefeat: Boolean = true): AttackParticipantOutcome {
         require(attacker.getCivInfo() != defender.getCivInfo()) {
             "Can't capture our own unit!"
         }
@@ -180,6 +180,7 @@ object BattleUnitCapture {
         if (checkDefeat)
             Battle.destroyIfDefeated(defenderCiv, attacker.getCivInfo())
         capturedUnit.updateVisibleTiles()
+        return if (wasDestroyedInstead) AttackParticipantOutcome.Destroyed else AttackParticipantOutcome.Captured
     }
 
     /**

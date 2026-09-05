@@ -14,6 +14,8 @@ import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
 import com.unciv.logic.GameInfoPreview.Companion.randomGameId
 import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.automation.civilization.BarbarianManager
+import com.unciv.logic.battle.AttackEvent
+import com.unciv.logic.battle.ICombatant
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.*
 import com.unciv.logic.civilization.managers.TechManager
@@ -111,6 +113,11 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     var tileMap: TileMap = TileMap()
     var gameParameters = GameParameters()
     var turns = 0
+    /** Recent attacks, retained until the attacking civilization next starts its turn.
+     * Older saves have no observation records; their legacy attack histories are intentionally
+     * ignored because their original positions and witnesses cannot be recovered reliably.
+     */
+    var attackEvents = ArrayList<AttackEvent>()
     var oneMoreTurnMode = false
     var currentPlayer = ""
     var currentTurnStartTime = System.currentTimeMillis()
@@ -206,6 +213,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         toReturn.currentPlayer = currentPlayer
         toReturn.currentTurnStartTime = currentTurnStartTime
         toReturn.turns = turns
+        toReturn.attackEvents = attackEvents.mapTo(ArrayList(attackEvents.size)) { it.clone() }
         toReturn.difficulty = difficulty
         toReturn.gameParameters = gameParameters
         toReturn.gameId = gameId
@@ -358,6 +366,13 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
     //endregion
     //region State changing functions
+
+    /** Capture an attack before damage, movement, capture, or destruction changes its witnesses. */
+    fun recordAttack(attacker: ICombatant, target: Tile): AttackEvent {
+        val event = AttackEvent(attacker, target)
+        attackEvents.add(event)
+        return event
+    }
 
     // Do we automatically simulate until N turn?
     @Readonly

@@ -167,7 +167,6 @@ class UnitTurnManager(val unit: MapUnit) {
             unit.movement.teleportToClosestMoveableTile()
 
         unit.addMovementMemory()
-        unit.attacksSinceTurnStart.clear()
         
         for (status in unit.statusMap.values.toList()){
             status.turnsLeft--

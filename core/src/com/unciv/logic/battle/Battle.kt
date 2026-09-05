@@ -104,23 +104,29 @@ object Battle {
     fun attack(attacker: ICombatant, defender: ICombatant): DamageDealt {
         debug("%s %s attacked %s %s", attacker.getCivInfo().civID, attacker.getName(), defender.getCivInfo().civID, defender.getName())
         val attackedTile = defender.getTile()
-        if (attacker is MapUnitCombatant) {
-            attacker.unit.attacksSinceTurnStart.add(attackedTile.position)
-        } else {
-            attacker.getCivInfo().attacksSinceTurnStart.add(Civilization.HistoricalAttackMemory(
-                null,
-                attacker.getTile().position,
-                attackedTile.position
-            ))
-        }
+        val attackEvent = attacker.getCivInfo().gameInfo.recordAttack(attacker, attackedTile)
+        val attackerRecord = attackEvent.attacker!!
+        val defenderRecord = AttackParticipant(defender)
+        attackEvent.targets.add(defenderRecord)
 
         val interceptDamage: DamageDealt
         if (attacker is MapUnitCombatant && attacker.unit.baseUnit.isAirUnit()) {
-            interceptDamage = AirInterception.tryInterceptAirAttack(attacker, attackedTile, defender.getCivInfo(), defender)
-            if (attacker.isDefeated()) return interceptDamage
+            interceptDamage = AirInterception.tryInterceptAirAttack(attacker, attackedTile, defender.getCivInfo(), defender, attackEvent)
+            if (attacker.isDefeated()) {
+                attackerRecord.damageReceived = interceptDamage.defenderDealt
+                attackerRecord.finish(attacker, AttackParticipantOutcome.Destroyed)
+                defenderRecord.finish(defender)
+                attackEvent.resolution = AttackResolution.Intercepted
+                return interceptDamage
+            }
         } else interceptDamage = DamageDealt.None
 
-        if (hasWithdrawnFromMelee(attacker, defender, attackedTile)) return DamageDealt.None
+        if (hasWithdrawnFromMelee(attacker, defender, attackedTile, attackEvent)) {
+            attackerRecord.finish(attacker)
+            defenderRecord.finish(defender, AttackParticipantOutcome.Withdrew)
+            attackEvent.resolution = AttackResolution.Withdrawn
+            return DamageDealt.None
+        }
 
         val isAlreadyDefeatedCity = defender is CityCombatant && defender.isDefeated()
 
@@ -128,20 +134,23 @@ object Battle {
 
         triggerCombatUniques(attacker, defender, attackedTile)
 
-        val damageDealt = takeDamage(attacker, defender) + extraRangedAttackDamage
+        val damageDealt = takeDamage(attacker, defender, defenderRecord) + extraRangedAttackDamage
+        attackerRecord.damageReceived = damageDealt.defenderDealt + interceptDamage.defenderDealt
+        defenderRecord.damageReceived = damageDealt.attackerDealt
 
         // check if unit is captured by the attacker (prize ships unique)
         // As ravignir clarified in issue #4374, this only works for aggressor
         val captureMilitaryUnitSuccess = BattleUnitCapture.tryCaptureMilitaryUnit(attacker, defender, attackedTile)
+        if (captureMilitaryUnitSuccess) defenderRecord.outcome = AttackParticipantOutcome.Captured
 
         if (!captureMilitaryUnitSuccess) // capture creates a new unit, but `defender` still is the original, so this function would still show a kill message
-            postBattleNotifications(attacker, defender, attackedTile, attacker.getTile(), damageDealt)
+            postBattleNotifications(attacker, defender, attackedTile, attackEvent, damageDealt)
 
         if (defender.getCivInfo().isBarbarian && attackedTile.isBarbarianEncampment())
             defender.getCivInfo().gameInfo.barbarians.campAttacked(attackedTile.position)
 
         // This needs to come BEFORE the move-to-tile, because if we haven't conquered it we can't move there =)
-        handleCityDefeated(defender, attacker)
+        handleCityDefeated(defender, attacker)?.let { defenderRecord.outcome = it }
 
         
         // Add culture when defeating a barbarian when Honor policy is adopted, gold from enemy killed when honor is complete
@@ -162,7 +171,7 @@ object Battle {
                 attacker.unit.destroy()
             else if (attacker.unit.isMoving())
                 attacker.unit.action = null
-            doDestroyImprovementsAbility(attacker, attackedTile, defender)
+            doDestroyImprovementsAbility(attacker, attackedTile, defender, attackEvent)
         }
 
         // Should be called after tryCaptureUnit(), as that might spawn a unit on the tile we go to
@@ -179,6 +188,9 @@ object Battle {
             attacker.getCivInfo().notifications.remove(cityCanBombardNotification)
         }
 
+        attackerRecord.finish(attacker)
+        defenderRecord.finish(defender, defenderRecord.outcome.takeUnless { it == AttackParticipantOutcome.Pending })
+        attackEvent.resolution = AttackResolution.Completed
         return damageDealt + interceptDamage
     }
 
@@ -203,11 +215,11 @@ object Battle {
         }
     }
 
-    private fun handleCityDefeated(defender: ICombatant, attacker: ICombatant) {
+    private fun handleCityDefeated(defender: ICombatant, attacker: ICombatant): AttackParticipantOutcome? {
         if (!defender.isDefeated() || defender !is CityCombatant || attacker !is MapUnitCombatant || 
             (!attacker.isMelee() && !attacker.unit.hasUnique(UniqueType.CanDestroyCities, checkCivInfoUniques = true))
             || attacker.unit.hasUnique(UniqueType.CannotCaptureCities, checkCivInfoUniques = true)
-        ) return
+        ) return null
 
         // Must come before normal conquest logic so units that cannot capture cities can still destroy them
         // Melee units can capture capitals; any unit with CanDestroyCities can destroy non-capital cities
@@ -231,7 +243,7 @@ object Battle {
                     destroyIfDefeated(defendingCiv, attacker.getCivInfo(), defender.getTile().position)
                 }
 
-                return // stop further logic because city was destroyed
+                return AttackParticipantOutcome.Destroyed
             }
         }
         
@@ -247,8 +259,12 @@ object Battle {
                 NotificationIcon.War
             )
             attacker.unit.destroy() // Remove the barbarian
-        } else
-            conquerCity(defender.city, attacker)
+            return AttackParticipantOutcome.Raided
+        }
+        conquerCity(defender.city, attacker)
+        // Human city-conquest choices can delay ownership transfer until after this attack.
+        return if (defender.city in defender.city.civ.cities)
+            AttackParticipantOutcome.Captured else AttackParticipantOutcome.Destroyed
     }
 
     private fun triggerCombatUniques(attacker: ICombatant, defender: ICombatant, attackedTile: Tile) {
@@ -372,7 +388,7 @@ object Battle {
         }
     }
 
-    internal fun takeDamage(attacker: ICombatant, defender: ICombatant): DamageDealt {
+    internal fun takeDamage(attacker: ICombatant, defender: ICombatant, defenderRecord: AttackParticipant? = null): DamageDealt {
         val attackerContext = GameContext(attacker, defender, defender.getTile(), CombatAction.Attack)
         val defenderContext = GameContext(defender, attacker, defender.getTile(), CombatAction.Defend)
         var potentialDamageToDefender = BattleDamage.calculateDamageToDefender(attacker, defender)
@@ -383,7 +399,8 @@ object Battle {
         val defenderHealthBefore = defender.getHealth()
 
         if (defender is MapUnitCombatant && defender.unit.isCivilian() && attacker.isMelee()) {
-            BattleUnitCapture.captureCivilianUnit(attacker, defender)
+            val result = BattleUnitCapture.captureCivilianUnit(attacker, defender)
+            if (defenderRecord != null) defenderRecord.outcome = result
         } else if (attacker.isRanged() && !attacker.isAirUnit()) {  // Air Units are Ranged, but take damage as well
             defender.takeDamage(potentialDamageToDefender) // straight up
         } else {
@@ -516,7 +533,7 @@ object Battle {
         attacker: ICombatant,
         defender: ICombatant,
         attackedTile: Tile,
-        attackerTile: Tile? = null,
+        attackEvent: AttackEvent? = null,
         damageDealt: DamageDealt? = null
     ) {
         if (attacker.getCivInfo() == defender.getCivInfo()) return
@@ -534,9 +551,14 @@ object Battle {
             else ->
                 NotificationIcon.Death to "has destroyed"
         }
-        val attackerString =
-                if (attacker.isCity()) "Enemy city [" + attacker.getName() + "]"
-                else "An enemy [" + attacker.getName() + "]"
+        // Unit type is reported even for an unseen attack. Its origin and a city's name
+        // require observation at attack time, before combat changes visibility.
+        val knownSource = attackEvent?.source?.takeIf { defender.getCivInfo().civID in attackEvent.knowsSource }
+        val attackerString = when {
+            !attacker.isCity() -> "An enemy [" + attacker.getName() + "]"
+            knownSource != null -> "Enemy city [" + attacker.getName() + "]"
+            else -> "An enemy city"
+        }
 
         val defenderString =
                 if (defender.isCity())
@@ -550,7 +572,7 @@ object Battle {
         val attackerIcon = if (attacker is CityCombatant) NotificationIcon.City else attacker.getName()
         val defenderIcon = if (defender is CityCombatant) NotificationIcon.City else defender.getName()
         
-        val locations = LocationAction(attackedTile.position, attackerTile?.position)
+        val locations = LocationAction(attackedTile.position, knownSource)
         defender.getCivInfo().addNotification(notificationString, locations, NotificationCategory.War, attackerIcon, battleActionIcon, defenderIcon)
     }
 
@@ -769,7 +791,7 @@ object Battle {
         }
     }
     
-    private fun hasWithdrawnFromMelee(attacker: ICombatant, defender: ICombatant, attackedTile: Tile): Boolean {
+    private fun hasWithdrawnFromMelee(attacker: ICombatant, defender: ICombatant, attackedTile: Tile, attackEvent: AttackEvent): Boolean {
         return (attacker is MapUnitCombatant && attacker.isMelee() && defender is MapUnitCombatant
                 && defender.unit.hasUnique(UniqueType.WithdrawsBeforeMeleeCombat, gameContext = GameContext(
             civInfo = defender.getCivInfo(),
@@ -777,10 +799,10 @@ object Battle {
             theirCombatant = attacker,
             tile = attackedTile
         )) 
-                && doWithdrawFromMeleeAbility(attacker, defender))
+                && doWithdrawFromMeleeAbility(attacker, defender, attackEvent))
     }
 
-    private fun doWithdrawFromMeleeAbility(attacker: MapUnitCombatant, defender: MapUnitCombatant): Boolean {
+    private fun doWithdrawFromMeleeAbility(attacker: MapUnitCombatant, defender: MapUnitCombatant, attackEvent: AttackEvent): Boolean {
         if (defender.unit.isEmbarked()) return false
         if (defender.unit.cache.cannotMove) return false
         if (defender.unit.isEscorting()) return false // running away and leaving the escorted unit defeats the purpose of escorting
@@ -819,13 +841,19 @@ object Battle {
         val attackerName = attacker.getName()
         val defenderName = defender.getName()
         val notificationString = "[$defenderName] withdrew from a [$attackerName]"
-        val locations = LocationAction(toTile.position, attacker.getTile().position)
-        defender.getCivInfo().addNotification(notificationString, locations, NotificationCategory.War, defenderName, NotificationIcon.War, attackerName)
-        attacker.getCivInfo().addNotification(notificationString, locations, NotificationCategory.War, defenderName, NotificationIcon.War, attackerName)
+        val knownSource = attackEvent.source.takeIf { defender.getCivInfo().civID in attackEvent.knowsSource }
+        val defenderLocations = LocationAction(toTile.position, knownSource)
+        defender.getCivInfo().addNotification(notificationString, defenderLocations, NotificationCategory.War, defenderName, NotificationIcon.War, attackerName)
+        // The retreat destination is new information: only report it to the attacker if
+        // the withdrawing unit can be seen there. Otherwise retain the original target.
+        val retreat = AttackParticipant(defender)
+        val knownRetreat = toTile.position.takeIf { attacker.getCivInfo().civID in retreat.knownBy }
+        val attackerLocations = LocationAction(knownRetreat ?: attackEvent.target, attackEvent.source)
+        attacker.getCivInfo().addNotification(notificationString, attackerLocations, NotificationCategory.War, defenderName, NotificationIcon.War, attackerName)
         return true
     }
 
-    private fun doDestroyImprovementsAbility(attacker: MapUnitCombatant, attackedTile: Tile, defender: ICombatant) {
+    private fun doDestroyImprovementsAbility(attacker: MapUnitCombatant, attackedTile: Tile, defender: ICombatant, attackEvent: AttackEvent) {
         val currentTileImprovement = attackedTile.tileImprovement ?: return
 
         val conditionalState = GameContext(attacker.getCivInfo(), ourCombatant = attacker, theirCombatant = defender, combatAction = CombatAction.Attack, attackedTile = attackedTile)
@@ -834,7 +862,7 @@ object Battle {
             attackedTile.removeImprovement()
             defender.getCivInfo().addNotification(
                 "An enemy [${attacker.unit.baseUnit.name}] has destroyed our tile improvement [${currentTileImprovement.name}]",
-                LocationAction(attackedTile.position, attacker.getTile().position),
+                LocationAction(attackedTile.position, attackEvent.source.takeIf { defender.getCivInfo().civID in attackEvent.knowsSource }),
                 NotificationCategory.War, attacker.unit.baseUnit.name,
                 NotificationIcon.War)
         }

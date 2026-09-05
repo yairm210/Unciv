@@ -1,9 +1,9 @@
 package com.unciv.view
 
 import com.unciv.logic.GameInfo
+import com.unciv.logic.battle.AttackParticipant
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.MapVisualization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
@@ -36,20 +36,25 @@ class GameView(gameInfo: GameInfo, override val viewer: Civilization, spectatorM
             .filter(mapVisualization::isUnitPastVisible)
             .map { getForeignMapUnitView(it) }
 
-    /** Visible attacks, including records retained after the attacking unit has disappeared. */
-    @Readonly fun getVisibleAttacks(): Sequence<Pair<HexCoord, HexCoord>> {
-        val unitAttacks = wrapped.civilizations.asSequence().flatMap { civ ->
-            civ.units.getCivUnits().flatMap { unit ->
-                unit.attacksSinceTurnStart.asSequence()
-                    .filter { mapVisualization.isAttackVisible(civ, unit.getTile().position, it) }
-                    .map { unit.getTile().position to it }
-            }
+    /**
+     * The endpoints this civilization observed when an attack happened, regardless of current visibility.
+     * A selected unit matches a known endpoint or a participant identified when the attack happened.
+     */
+    @Readonly fun getObservedAttacks(selectedUnit: MapUnitView? = null): Sequence<ObservedAttack> {
+        val selectedPosition = selectedUnit?.getTile()?.position()
+        val selectedUnitId = selectedUnit?.unit?.id
+        return wrapped.attackEvents.asSequence().mapNotNull { attack ->
+            val source = attack.source.takeIf { viewer.isSpectator() || viewer.civID in attack.knowsSource }
+            val target = attack.target.takeIf { viewer.isSpectator() || viewer.civID in attack.knowsTarget }
+            if (source == null && target == null) return@mapNotNull null
+            if (selectedUnitId != null && selectedPosition != source && selectedPosition != target
+                && !isKnownParticipant(attack.attacker, selectedUnitId)
+                && attack.targets.none { isKnownParticipant(it, selectedUnitId) }) return@mapNotNull null
+            ObservedAttack(attack.turn, source, target)
         }
-        val civilizationAttacks = wrapped.civilizations.asSequence().flatMap { civ ->
-            civ.attacksSinceTurnStart.asSequence()
-                .filter { mapVisualization.isAttackVisible(civ, it.source, it.target) }
-                .map { it.source to it.target }
-        }
-        return unitAttacks + civilizationAttacks
     }
+
+    @Readonly private fun isKnownParticipant(participant: AttackParticipant?, unitId: Int): Boolean =
+        participant != null && participant.unitId == unitId
+            && (viewer.isSpectator() || viewer.civID in participant.knownBy)
 }

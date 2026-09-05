@@ -99,9 +99,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
     /** The most recent type of position change this unit has experienced. Used in movement arrow overlay.*/
     var mostRecentMoveType = UnitMovementMemoryType.UnitMoved
 
-    /** Array list of all the tiles that this unit has attacked since the start of its most recent turn. Used in movement arrow overlay. */
-    var attacksSinceTurnStart = ArrayList<HexCoord>()
-
     class UnitStatus(
         val name: String,
         /** Decreases at *start on next turn* so defensive statuses persist on enemy turns */
@@ -243,7 +240,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
         toReturn.statusMap = newStatusMap
         toReturn.mostRecentMoveType = mostRecentMoveType
-        toReturn.attacksSinceTurnStart = ArrayList(attacksSinceTurnStart)
         return toReturn
     }
 
@@ -940,8 +936,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
         currentMovement = 0f
         civ.units.removeUnit(this)
         if (::currentTile.isInitialized) {
-            val currentPosition = getTile().position
-            civ.attacksSinceTurnStart.addAll(attacksSinceTurnStart.asSequence().map { Civilization.HistoricalAttackMemory(this.name, currentPosition, it.toHexCoord()) })
             removeFromTile()
             civ.cache.updateViewableTiles()
             if (destroyTransportedUnit) {
