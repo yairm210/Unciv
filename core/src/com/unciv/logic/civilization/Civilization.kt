@@ -343,7 +343,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.cityStateResource = cityStateResource
         toReturn.cityStateUniqueUnit = cityStateUniqueUnit
         toReturn.flagsCountdown.putAll(flagsCountdown)
-        toReturn.temporaryUniques.addAll(temporaryUniques)
+        temporaryUniques.mapTo(toReturn.temporaryUniques) { it.clone() }
         toReturn.hasEverOwnedOriginalCapital = hasEverOwnedOriginalCapital
         toReturn.passableImpassables.addAll(passableImpassables)
         toReturn.numMinorCivsAttacked = numMinorCivsAttacked
