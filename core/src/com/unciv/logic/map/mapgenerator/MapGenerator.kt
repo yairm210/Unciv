@@ -250,11 +250,12 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             522 * numberOfMajorCivs - 360 + 120 * sin( 2.48 * numberOfMajorCivs.toFloat())
         val targetNumberOfTiles = (majorCivContribution + numberOfMinorCivs * 60)
 
+        // Calculates mapsize from tile number, simple algebra reversing area formulas
         val aspectRatio = 1.55 // This is around the default aspect ratios
-        mapParameters.mapSize.radius = (sqrt(0.33 * targetNumberOfTiles - 0.083) - 0.5).toInt()
-        mapParameters.mapSize.height = sqrt(0.66 * targetNumberOfTiles).toInt()
-        mapParameters.mapSize.width = (sqrt(0.66 * targetNumberOfTiles) * aspectRatio).toInt()
- 
+        mapParameters.mapSize.radius = (sqrt(1.0/3 * targetNumberOfTiles - 1.0/12) - 1.0/2).toInt()
+        mapParameters.mapSize.height = sqrt(2.0/3 * targetNumberOfTiles).toInt()
+        mapParameters.mapSize.width = (sqrt(2.0/3 * targetNumberOfTiles) * aspectRatio).toInt()
+
         return mapParameters.mapSize
     }
     private fun flipTopBottom(vector: HexCoord): HexCoord = HexCoord.of(-vector.y, -vector.x)
