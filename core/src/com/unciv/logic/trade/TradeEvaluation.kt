@@ -119,6 +119,9 @@ class TradeEvaluation {
             return Int.MIN_VALUE
         }
 
+        // Some offers use Int.MAX_VALUE to prevent acceptance. Summing or multiplying
+        // these costs can overflow and make a rejected trade look favorable.
+        // Use Long for the calculation and clamp the final result to the Int range.
         val sumOfTheirOffers = trade.theirOffers.asSequence()
             .filter { it.type != TradeOfferType.Treaty }
             .sumOf { evaluateBuyCostWithInflation(it, evaluator, tradePartner, trade).toLong() }
