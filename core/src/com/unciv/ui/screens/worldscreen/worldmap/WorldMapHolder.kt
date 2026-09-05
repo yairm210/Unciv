@@ -684,7 +684,7 @@ class WorldMapHolder(
             val fromTileView = tileMapView.getTile(unitView.getTile().position()) ?: continue
             addArrow(fromTileView, toTileView, MiscArrowTypes.UnitMoving)
         }
-        for (attack in gameView.getObservedAttacks(selectedUnit)) {
+        for (attack in gameView.attackEventsView.getObservedAttacks(selectedUnit)) {
             val from = attack.source
             val to = attack.target
             when {

@@ -43,6 +43,7 @@ import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.utils.DebugUtils
 import com.unciv.utils.debug
 import com.unciv.utils.pseudoRandomUuid
+import com.unciv.view.AttackEventsView
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.Readonly
 import java.security.MessageDigest
@@ -117,7 +118,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
      * Older saves have no observation records; their legacy attack histories are intentionally
      * ignored because their original positions and witnesses cannot be recovered reliably.
      */
-    var attackEvents = ArrayList<AttackEvent>()
+    private var attackEvents = ArrayList<AttackEvent>()
     var oneMoreTurnMode = false
     var currentPlayer = ""
     var currentTurnStartTime = System.currentTimeMillis()
@@ -367,11 +368,27 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     //endregion
     //region State changing functions
 
-    /** Capture an attack before damage, movement, capture, or destruction changes its witnesses. */
-    fun recordAttack(attacker: ICombatant, target: Tile): AttackEvent {
+    /**
+     * Trusted construction boundary, called only by GameView. The collection stays private to
+     * engine storage and the final, non-unwrappable AttackEventsView.
+     * AttackEventsViewBoundaryTest enforces this same-module access restriction.
+     */
+    @Readonly
+    internal fun createAttackEventsView(viewer: Civilization, spectatorMode: Boolean): AttackEventsView =
+        AttackEventsView(attackEvents, viewer, spectatorMode)
+
+    /** Capture an attack before damage, movement, capture, or destruction changes its witnesses.
+     * Only combat execution may receive this mutable record for finalization.
+     */
+    internal fun recordAttack(attacker: ICombatant, target: Tile): AttackEvent {
         val event = AttackEvent(attacker, target)
         attackEvents.add(event)
         return event
+    }
+
+    /** Turn processing expires only the history belonging to the civilization starting its turn. */
+    internal fun expireAttackEventsFor(attackingCivId: String) {
+        attackEvents.removeAll { it.attackingCivId == attackingCivId }
     }
 
     // Do we automatically simulate until N turn?

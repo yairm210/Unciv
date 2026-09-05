@@ -6,6 +6,8 @@ import com.unciv.logic.civilization.managers.TurnManager
 import com.unciv.logic.map.HexCoord
 import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
+import com.unciv.testing.attackEventsForTesting
+import com.unciv.testing.recordAttackForTesting
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotSame
@@ -43,7 +45,7 @@ class AttackEventTest {
         Battle.attack(MapUnitCombatant(warrior), MapUnitCombatant(defender))
 
         assertEquals(target, warrior.getTile())
-        val event = game.attackEvents.single()
+        val event = game.attackEventsForTesting.single()
         assertEquals(8, event.turn)
         assertEquals(source.position, event.source)
         assertEquals(target.position, event.target)
@@ -58,7 +60,7 @@ class AttackEventTest {
         val position = city.location
         city.destroyCity(overrideSafeties = true)
 
-        val event = game.attackEvents.single()
+        val event = game.attackEventsForTesting.single()
         assertEquals(position, event.source)
         assertEquals(target.position, event.target)
         assertEquals(attackingCiv.civID, event.attackingCivId)
@@ -66,49 +68,49 @@ class AttackEventTest {
 
     @Test
     fun `history expires on its attacker next turn rather than another civilization turn`() {
-        game.recordAttack(MapUnitCombatant(archer), target)
-        game.recordAttack(MapUnitCombatant(defender), source)
+        game.recordAttackForTesting(MapUnitCombatant(archer), target)
+        game.recordAttackForTesting(MapUnitCombatant(defender), source)
         game.turns++
 
         TurnManager(defendingCiv).startTurn()
-        assertEquals(attackingCiv.civID, game.attackEvents.single().attackingCivId)
+        assertEquals(attackingCiv.civID, game.attackEventsForTesting.single().attackingCivId)
         TurnManager(attackingCiv).startTurn()
-        assertTrue(game.attackEvents.isEmpty())
+        assertTrue(game.attackEventsForTesting.isEmpty())
     }
 
     @Test
     fun `cloning preserves attack history without sharing mutable knowledge or lists`() {
         defendingCiv.viewableTiles = setOf(target)
-        game.recordAttack(MapUnitCombatant(archer), target)
+        game.recordAttackForTesting(MapUnitCombatant(archer), target)
         val clone = game.clone()
-        val event = game.attackEvents.single()
-        val clonedEvent = clone.attackEvents.single()
+        val event = game.attackEventsForTesting.single()
+        val clonedEvent = clone.attackEventsForTesting.single()
 
         assertNotSame(event, clonedEvent)
         assertEquals(event.knowsSource, clonedEvent.knowsSource)
         assertEquals(event.knowsTarget, clonedEvent.knowsTarget)
         clonedEvent.knowsSource.add(defendingCiv.civID)
         clonedEvent.knowsTarget.clear()
-        clone.attackEvents.clear()
+        clone.attackEventsForTesting.clear()
 
         assertFalse(defendingCiv.civID in event.knowsSource)
         assertTrue(defendingCiv.civID in event.knowsTarget)
-        assertEquals(1, game.attackEvents.size)
+        assertEquals(1, game.attackEventsForTesting.size)
     }
 
     @Test
     fun `undo checkpoint retains precisely the events and knowledge from before an attack`() {
         defendingCiv.viewableTiles = setOf(target)
-        game.recordAttack(MapUnitCombatant(archer), target)
+        game.recordAttackForTesting(MapUnitCombatant(archer), target)
         // UndoHandler stores and restores a GameInfo clone.
         val checkpoint = game.clone()
         defendingCiv.viewableTiles = setOf(source, target)
         Battle.attack(MapUnitCombatant(archer), MapUnitCombatant(defender))
 
-        assertEquals(2, game.attackEvents.size)
-        assertEquals(1, checkpoint.attackEvents.size)
-        assertFalse(defendingCiv.civID in checkpoint.attackEvents.single().knowsSource)
-        assertTrue(defendingCiv.civID in checkpoint.attackEvents.single().knowsTarget)
+        assertEquals(2, game.attackEventsForTesting.size)
+        assertEquals(1, checkpoint.attackEventsForTesting.size)
+        assertFalse(defendingCiv.civID in checkpoint.attackEventsForTesting.single().knowsSource)
+        assertTrue(defendingCiv.civID in checkpoint.attackEventsForTesting.single().knowsTarget)
     }
 
     @Test
@@ -116,8 +118,8 @@ class AttackEventTest {
         defendingCiv.viewableTiles = setOf(target)
         game.turns = 12
         Battle.attack(MapUnitCombatant(archer), MapUnitCombatant(defender))
-        val original = game.attackEvents.single()
-        val restored = json().fromJson(GameInfo::class.java, json().toJson(game)).attackEvents.single()
+        val original = game.attackEventsForTesting.single()
+        val restored = json().fromJson(GameInfo::class.java, json().toJson(game)).attackEventsForTesting.single()
 
         assertEquals(original.turn, restored.turn)
         assertEquals(HexCoord(0, 0), restored.source)
@@ -139,6 +141,6 @@ class AttackEventTest {
         val restored = json().fromJson(GameInfo::class.java, oldSave)
 
         assertEquals("Germany", restored.civilizations.single().civID)
-        assertTrue(restored.attackEvents.isEmpty())
+        assertTrue(restored.attackEventsForTesting.isEmpty())
     }
 }

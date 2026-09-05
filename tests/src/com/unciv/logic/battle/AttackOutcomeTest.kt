@@ -6,6 +6,7 @@ import com.unciv.logic.map.HexCoord
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
+import com.unciv.testing.attackEventsForTesting
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotSame
@@ -39,7 +40,7 @@ class AttackOutcomeTest {
         defendingCiv.viewableTiles = setOf(source, target)
 
         Battle.attack(MapUnitCombatant(attacker), MapUnitCombatant(defender))
-        val event = game.attackEvents.single()
+        val event = game.attackEventsForTesting.single()
         val attackerHealthAfter = attacker.health
         val defenderHealthAfter = defender.health
         attacker.instanceName = "Renamed archers"
@@ -65,7 +66,7 @@ class AttackOutcomeTest {
         val defender = testGame.addUnit("Warrior", defendingCiv, target)
 
         val damage = Battle.attack(MapUnitCombatant(attacker), MapUnitCombatant(defender))
-        val event = game.attackEvents.single()
+        val event = game.attackEventsForTesting.single()
 
         assertTrue(damage.attackerDealt > 0)
         assertTrue(damage.defenderDealt > 0)
@@ -86,7 +87,7 @@ class AttackOutcomeTest {
         defender.health = 10
 
         val damage = Battle.attack(MapUnitCombatant(attacker), MapUnitCombatant(defender))
-        val event = game.attackEvents.single()
+        val event = game.attackEventsForTesting.single()
 
         assertTrue(defender.isDestroyed)
         assertEquals(100, attacker.health)
@@ -108,7 +109,7 @@ class AttackOutcomeTest {
         val worker = target.civilianUnit!!
         assertEquals("Worker", worker.name)
         assertEquals(attackingCiv, worker.civ)
-        val record = game.attackEvents.single().targets.single()
+        val record = game.attackEventsForTesting.single().targets.single()
         assertEquals("Settler", record.name)
         assertEquals(settler.id, record.unitId)
         assertEquals("Northern settlers", record.instanceName)
@@ -126,7 +127,7 @@ class AttackOutcomeTest {
         Battle.attack(MapUnitCombatant(attacker), MapUnitCombatant(civilian))
 
         assertTrue(civilian.isDestroyed)
-        val record = game.attackEvents.single().targets.single()
+        val record = game.attackEventsForTesting.single().targets.single()
         assertEquals(0, record.damageReceived)
         assertEquals(AttackParticipantOutcome.Destroyed, record.outcome)
         assertEquals(100, record.healthAfter)
@@ -143,7 +144,7 @@ class AttackOutcomeTest {
 
         assertTrue(defender.isDestroyed)
         assertTrue(attackingCiv.units.getCivUnits().any { it.name == "Warrior" && it.health == 50 })
-        val record = game.attackEvents.single().targets.single()
+        val record = game.attackEventsForTesting.single().targets.single()
         assertEquals(defender.id, record.unitId)
         assertEquals(defendingCiv.civID, record.civId)
         assertEquals(1, record.damageReceived)
@@ -158,7 +159,7 @@ class AttackOutcomeTest {
         Battle.attack(MapUnitCombatant(attacker), MapUnitCombatant(defender))
 
         assertFalse(defender.getTile() == target)
-        val event = game.attackEvents.single()
+        val event = game.attackEventsForTesting.single()
         assertEquals(AttackResolution.Withdrawn, event.resolution)
         assertEquals(AttackParticipantOutcome.Withdrew, event.targets.single().outcome)
         assertEquals(target.position, event.targets.single().position)
@@ -175,7 +176,7 @@ class AttackOutcomeTest {
         Battle.attack(MapUnitCombatant(attacker), CityCombatant(city))
 
         assertEquals(defendingCiv, city.civ)
-        val record = game.attackEvents.single().targets.single()
+        val record = game.attackEventsForTesting.single().targets.single()
         assertEquals(AttackParticipantKind.City, record.kind)
         assertEquals(city.id, record.cityId)
         assertEquals(AttackParticipantOutcome.DefensesReduced, record.outcome)
@@ -192,7 +193,7 @@ class AttackOutcomeTest {
         city.name = "New capital"
 
         assertEquals(attackingCiv, city.civ)
-        val record = game.attackEvents.single().targets.single()
+        val record = game.attackEventsForTesting.single().targets.single()
         assertEquals("Old capital", record.name)
         assertEquals(defendingCiv.civID, record.civId)
         assertEquals(AttackParticipantOutcome.Captured, record.outcome)
@@ -210,7 +211,7 @@ class AttackOutcomeTest {
         assertTrue(attacker.isDestroyed)
         assertTrue(attacker.health > 0)
         assertEquals(defendingCiv, city.civ)
-        val event = game.attackEvents.single()
+        val event = game.attackEventsForTesting.single()
         assertEquals(AttackParticipantOutcome.Destroyed, event.attacker!!.outcome)
         assertEquals(AttackParticipantOutcome.Raided, event.targets.single().outcome)
     }
@@ -227,7 +228,7 @@ class AttackOutcomeTest {
 
         assertTrue(attacker.isDestroyed)
         assertEquals(100, defender.health)
-        val event = game.attackEvents.single()
+        val event = game.attackEventsForTesting.single()
         assertEquals(AttackResolution.Intercepted, event.resolution)
         assertEquals(1, event.attacker!!.damageReceived)
         assertEquals(AttackParticipantOutcome.Destroyed, event.attacker!!.outcome)
@@ -244,7 +245,7 @@ class AttackOutcomeTest {
 
         Nuke.NUKE(MapUnitCombatant(attacker), target)
 
-        val event = game.attackEvents.single()
+        val event = game.attackEventsForTesting.single()
         assertEquals(AttackKind.Nuclear, event.kind)
         assertEquals(AttackResolution.Completed, event.resolution)
         assertEquals(setOf(defender.id, worker.id, friendlyUnit.id), event.targets.mapNotNull { it.unitId }.toSet())
@@ -268,7 +269,7 @@ class AttackOutcomeTest {
 
         Nuke.NUKE(MapUnitCombatant(attacker), target)
 
-        val spawnedUnitRecord = game.attackEvents.single().targets.single {
+        val spawnedUnitRecord = game.attackEventsForTesting.single().targets.single {
             it.kind == AttackParticipantKind.Unit && it.civId == spawningCiv.civID
         }
         assertEquals("Warrior", spawnedUnitRecord.name)
@@ -283,9 +284,9 @@ class AttackOutcomeTest {
         val defender = testGame.addUnit("Warrior", defendingCiv, target)
         attacker.instanceName = "First archers"
         Battle.attack(MapUnitCombatant(attacker), MapUnitCombatant(defender))
-        val event = game.attackEvents.single()
+        val event = game.attackEventsForTesting.single()
 
-        val restored = json().fromJson(GameInfo::class.java, json().toJson(game)).attackEvents.single()
+        val restored = json().fromJson(GameInfo::class.java, json().toJson(game)).attackEventsForTesting.single()
         assertEquals(event.resolution, restored.resolution)
         assertEquals(event.attacker!!.unitId, restored.attacker!!.unitId)
         assertEquals("First archers", restored.attacker!!.instanceName)
@@ -295,7 +296,7 @@ class AttackOutcomeTest {
         assertEquals(event.targets.single().damageReceived, restored.targets.single().damageReceived)
         assertEquals(event.targets.single().healthAfter, restored.targets.single().healthAfter)
 
-        val clone = game.clone().attackEvents.single()
+        val clone = game.clone().attackEventsForTesting.single()
         assertNotSame(event.attacker, clone.attacker)
         assertNotSame(event.targets.single(), clone.targets.single())
         clone.attacker!!.knownBy.clear()

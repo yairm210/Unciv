@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.map.HexCoord
 import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
+import com.unciv.testing.attackEventsForTesting
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -46,7 +47,7 @@ class NukeNotificationTest {
         Nuke.NUKE(MapUnitCombatant(attacker), target)
 
         assertTrue(attackingCiv.isAtWarWith(defendingCiv))
-        assertFalse(defendingCiv.civID in game.attackEvents.single().knowsSource)
+        assertFalse(defendingCiv.civID in game.attackEventsForTesting.single().knowsSource)
         val declaration = defendingCiv.notifications.single {
             it.text == "[${attackingCiv.civName}] has declared war on us!"
         }
@@ -72,7 +73,7 @@ class NukeNotificationTest {
 
         Nuke.NUKE(MapUnitCombatant(attacker), target)
 
-        assertTrue(defendingCiv.civID in game.attackEvents.single().knowsSource)
+        assertTrue(defendingCiv.civID in game.attackEventsForTesting.single().knowsSource)
         val detonation = detonationReport(defendingCiv)
         assertEquals("A(n) [Atomic Bomb] from [${attackingCiv.civName}] has exploded in our territory!", detonation.text)
         assertTrue(attackingCiv.civName in detonation.icons)
@@ -116,7 +117,7 @@ class NukeNotificationTest {
 
         Nuke.NUKE(MapUnitCombatant(attacker), target)
 
-        val event = game.attackEvents.single()
+        val event = game.attackEventsForTesting.single()
         assertFalse(defendingCiv.civID in event.knowsTarget)
         assertTrue(event.targets.any { it.civId == defendingCiv.civID })
         val detonation = detonationReport(defendingCiv)

@@ -7,6 +7,7 @@ import com.unciv.logic.map.HexCoord
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
+import com.unciv.testing.attackEventsForTesting
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -53,13 +54,13 @@ class AttackNotificationTest {
         val notification = attack()
 
         assertTrue(notification.text.startsWith("An enemy [Artillery] has attacked [C6 B Target]"))
-        assertTrue(notification.text.contains("[-${game.attackEvents.single().targets.single().damageReceived}] HP"))
+        assertTrue(notification.text.contains("[-${game.attackEventsForTesting.single().targets.single().damageReceived}] HP"))
         assertTrue("Artillery" in notification.icons)
         assertFalse("Mongolia" in notification.text)
         assertFalse("Mongolia" in notification.icons)
         assertFalse("Secret battery" in notification.text)
         assertEquals(listOf(target.position), locations(notification))
-        assertFalse(defendingCiv.civID in game.attackEvents.single().attacker!!.knownBy)
+        assertFalse(defendingCiv.civID in game.attackEventsForTesting.single().attacker!!.knownBy)
     }
 
     @Test
@@ -73,7 +74,7 @@ class AttackNotificationTest {
         assertFalse("Mongolia" in notification.text)
         assertFalse("Mongolia" in notification.icons)
         assertEquals(listOf(target.position), locations(notification))
-        assertFalse(defendingCiv.civID in game.attackEvents.single().knowsSource)
+        assertFalse(defendingCiv.civID in game.attackEventsForTesting.single().knowsSource)
     }
 
     @Test
@@ -82,7 +83,7 @@ class AttackNotificationTest {
         defendingCiv.viewableTiles = setOf(source, target)
         attacker.instanceName = "New battery name"
         attacker.destroy()
-        game.attackEvents.clear() // Notifications also outlive the short-lived arrow history.
+        game.attackEventsForTesting.clear() // Notifications also outlive the short-lived arrow history.
 
         val restored = json().fromJson(Notification::class.java, json().toJson(notification))
 
@@ -168,7 +169,7 @@ class AttackNotificationTest {
 
         Battle.attack(MapUnitCombatant(melee), MapUnitCombatant(withdrawing))
 
-        assertEquals(AttackResolution.Withdrawn, game.attackEvents.single().resolution)
+        assertEquals(AttackResolution.Withdrawn, game.attackEventsForTesting.single().resolution)
         val defenderNotification = defendingCiv.notifications.single { "withdrew" in it.text }
         val attackerNotification = attackingCiv.notifications.single { "withdrew" in it.text }
         assertEquals(listOf(withdrawing.getTile().position), locations(defenderNotification))

@@ -5,6 +5,8 @@ import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
+import com.unciv.testing.attackEventsForTesting
+import com.unciv.testing.recordAttackForTesting
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -23,17 +25,17 @@ class GameViewAttackHistoryTest {
     private val playerView = GameView(testGame.gameInfo, player)
 
     private fun recordAttack() {
-        testGame.gameInfo.recordAttack(MapUnitCombatant(attacker), target)
+        testGame.gameInfo.recordAttackForTesting(MapUnitCombatant(attacker), target)
     }
 
     @Test
     fun `each observed endpoint is exposed independently`() {
         val sightSets = listOf(emptySet(), setOf(source), setOf(target), setOf(source, target))
         for (sight in sightSets) {
-            testGame.gameInfo.attackEvents.clear()
+            testGame.gameInfo.attackEventsForTesting.clear()
             player.viewableTiles = sight
             recordAttack()
-            val observed = playerView.getObservedAttacks().toList()
+            val observed = playerView.attackEventsView.getObservedAttacks()
             if (sight.isEmpty()) {
                 assertTrue(observed.isEmpty())
             } else {
@@ -51,9 +53,9 @@ class GameViewAttackHistoryTest {
         player.viewableTiles = emptySet()
         recordAttack()
 
-        assertTrue(playerView.getObservedAttacks().none())
+        assertTrue(playerView.attackEventsView.getObservedAttacks().none())
         player.viewableTiles = setOf(source, target)
-        assertTrue(playerView.getObservedAttacks().none())
+        assertTrue(playerView.attackEventsView.getObservedAttacks().none())
     }
 
     @Test
@@ -62,7 +64,7 @@ class GameViewAttackHistoryTest {
         recordAttack()
         player.viewableTiles = setOf(source, target)
 
-        val observed = playerView.getObservedAttacks().single()
+        val observed = playerView.attackEventsView.getObservedAttacks().single()
         assertNull(observed.source)
         assertEquals(target.position, observed.target)
     }
@@ -76,11 +78,11 @@ class GameViewAttackHistoryTest {
         attacker.destroy()
         player.viewableTiles = emptySet()
 
-        val observed = playerView.getObservedAttacks().single()
+        val observed = playerView.attackEventsView.getObservedAttacks().single()
         assertEquals(17, observed.turn)
         assertEquals(source.position, observed.source)
         assertEquals(target.position, observed.target)
-        assertEquals(1, testGame.gameInfo.attackEvents.size)
+        assertEquals(1, testGame.gameInfo.attackEventsForTesting.size)
     }
 
     @Test
@@ -89,14 +91,14 @@ class GameViewAttackHistoryTest {
         val invisibleAttacker = testGame.addDefaultMeleeUnitWithUniques(enemy, source, UniqueType.Invisible.text)
         player.viewableTiles = setOf(source, target)
         player.viewableInvisibleUnitsTiles = emptySet()
-        testGame.gameInfo.recordAttack(MapUnitCombatant(invisibleAttacker), target)
-        assertNull(playerView.getObservedAttacks().single().source)
+        testGame.gameInfo.recordAttackForTesting(MapUnitCombatant(invisibleAttacker), target)
+        assertNull(playerView.attackEventsView.getObservedAttacks().single().source)
 
         // Detection after the attack must not expand the existing record.
         player.viewableInvisibleUnitsTiles = setOf(source)
-        assertNull(playerView.getObservedAttacks().single().source)
-        testGame.gameInfo.recordAttack(MapUnitCombatant(invisibleAttacker), target)
-        assertEquals(source.position, playerView.getObservedAttacks().last().source)
+        assertNull(playerView.attackEventsView.getObservedAttacks().single().source)
+        testGame.gameInfo.recordAttackForTesting(MapUnitCombatant(invisibleAttacker), target)
+        assertEquals(source.position, playerView.attackEventsView.getObservedAttacks().last().source)
     }
 
     @Test
@@ -104,7 +106,7 @@ class GameViewAttackHistoryTest {
         enemy.viewableTiles = emptySet()
         recordAttack()
 
-        val observed = GameView(testGame.gameInfo, enemy).getObservedAttacks().single()
+        val observed = GameView(testGame.gameInfo, enemy).attackEventsView.getObservedAttacks().single()
         assertEquals(source.position, observed.source)
         assertEquals(target.position, observed.target)
     }
@@ -116,10 +118,10 @@ class GameViewAttackHistoryTest {
         val restrictedView = GameView(testGame.gameInfo, player, spectatorMode = true)
         val unrestrictedView = GameView(testGame.gameInfo, spectator, spectatorMode = true)
 
-        assertNull(restrictedView.getObservedAttacks().single().source)
-        assertEquals(source.position, unrestrictedView.getObservedAttacks().single().source)
-        assertEquals(target.position, unrestrictedView.getObservedAttacks().single().target)
-        assertNull(restrictedView.getObservedAttacks().single().source)
+        assertNull(restrictedView.attackEventsView.getObservedAttacks().single().source)
+        assertEquals(source.position, unrestrictedView.attackEventsView.getObservedAttacks().single().source)
+        assertEquals(target.position, unrestrictedView.attackEventsView.getObservedAttacks().single().target)
+        assertNull(restrictedView.attackEventsView.getObservedAttacks().single().source)
     }
 
     @Test
@@ -130,7 +132,7 @@ class GameViewAttackHistoryTest {
         sameNation.civID = "Germany-2"
         sameNation.viewableTiles = setOf(source, target)
 
-        assertEquals(target.position, playerView.getObservedAttacks().single().target)
-        assertTrue(GameView(testGame.gameInfo, sameNation).getObservedAttacks().none())
+        assertEquals(target.position, playerView.attackEventsView.getObservedAttacks().single().target)
+        assertTrue(GameView(testGame.gameInfo, sameNation).attackEventsView.getObservedAttacks().none())
     }
 }

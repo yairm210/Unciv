@@ -1,7 +1,6 @@
 package com.unciv.view
 
 import com.unciv.logic.GameInfo
-import com.unciv.logic.battle.AttackParticipant
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.MapVisualization
@@ -13,6 +12,7 @@ import yairm210.purity.annotations.Readonly
 class GameView(gameInfo: GameInfo, override val viewer: Civilization, spectatorMode: Boolean = false) : View<GameInfo>(gameInfo, viewer, spectatorMode) {
     val civView: CivView = CivView(viewer, viewer, spectatorMode, this)
     val tileMapView: TileMapView = TileMapView(gameInfo.tileMap, viewer, spectatorMode, this)
+    val attackEventsView: AttackEventsView = gameInfo.createAttackEventsView(viewer, spectatorMode)
     private val mapVisualization = MapVisualization(gameInfo, viewer)
 
     // Navigation
@@ -35,26 +35,4 @@ class GameView(gameInfo: GameInfo, override val viewer: Civilization, spectatorM
             .flatMap { it.units.getCivUnits() }
             .filter(mapVisualization::isUnitPastVisible)
             .map { getForeignMapUnitView(it) }
-
-    /**
-     * The endpoints this civilization observed when an attack happened, regardless of current visibility.
-     * A selected unit matches a known endpoint or a participant identified when the attack happened.
-     */
-    @Readonly fun getObservedAttacks(selectedUnit: MapUnitView? = null): Sequence<ObservedAttack> {
-        val selectedPosition = selectedUnit?.getTile()?.position()
-        val selectedUnitId = selectedUnit?.unit?.id
-        return wrapped.attackEvents.asSequence().mapNotNull { attack ->
-            val source = attack.source.takeIf { viewer.isSpectator() || viewer.civID in attack.knowsSource }
-            val target = attack.target.takeIf { viewer.isSpectator() || viewer.civID in attack.knowsTarget }
-            if (source == null && target == null) return@mapNotNull null
-            if (selectedUnitId != null && selectedPosition != source && selectedPosition != target
-                && !isKnownParticipant(attack.attacker, selectedUnitId)
-                && attack.targets.none { isKnownParticipant(it, selectedUnitId) }) return@mapNotNull null
-            ObservedAttack(attack.turn, source, target)
-        }
-    }
-
-    @Readonly private fun isKnownParticipant(participant: AttackParticipant?, unitId: Int): Boolean =
-        participant != null && participant.unitId == unitId
-            && (viewer.isSpectator() || viewer.civID in participant.knownBy)
 }

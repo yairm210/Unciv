@@ -13,6 +13,8 @@ import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
+import com.unciv.testing.attackEventsForTesting
+import com.unciv.testing.recordAttackForTesting
 import com.unciv.ui.components.MapArrowType
 import com.unciv.ui.components.MiscArrowTypes
 import com.unciv.ui.components.UnitMovementMemoryType
@@ -165,7 +167,7 @@ class WorldMapMovementOverlayTest {
         val source = HexCoord.Zero
         val target = HexCoord(1, 0)
         val attacker = game.addUnit("Archer", selectedCiv, game.getTile(source))
-        game.gameInfo.recordAttack(MapUnitCombatant(attacker), game.getTile(target))
+        game.gameInfo.recordAttackForTesting(MapUnitCombatant(attacker), game.getTile(target))
         attacker.movement.moveToTile(game.getTile(-1, 0))
 
         val arrows = drawOverlay(restrictedView, restrictedView.getMapUnitView(attacker))
@@ -181,7 +183,7 @@ class WorldMapMovementOverlayTest {
         val attacker = game.addUnit("Archer", enemy, game.getTile(source))
         val defender = game.addUnit("Warrior", selectedCiv, game.getTile(target))
         selectedCiv.viewableTiles = setOf(game.getTile(source), game.getTile(target))
-        val attack = game.gameInfo.recordAttack(MapUnitCombatant(attacker), game.getTile(target))
+        val attack = game.gameInfo.recordAttackForTesting(MapUnitCombatant(attacker), game.getTile(target))
         attack.targets.add(AttackParticipant(MapUnitCombatant(defender)))
         defender.movement.moveToTile(game.getTile(2, 0))
 
@@ -196,7 +198,7 @@ class WorldMapMovementOverlayTest {
         val attacker = game.addUnit("Archer", enemy, game.getTile(0, 0))
         val target = game.getTile(1, 0)
         selectedCiv.viewableTiles = setOf(target)
-        game.gameInfo.recordAttack(MapUnitCombatant(attacker), target)
+        game.gameInfo.recordAttackForTesting(MapUnitCombatant(attacker), target)
         attacker.movement.moveToTile(game.getTile(-1, 0))
         selectedCiv.viewableTiles = game.tileMap.values.toSet()
         val markers = ArrayList<Marker>()
@@ -287,7 +289,7 @@ class WorldMapMovementOverlayTest {
     }
 
     private fun recordAttack(source: HexCoord, target: HexCoord, knowsSource: Boolean = false, knowsTarget: Boolean = false) {
-        game.gameInfo.attackEvents.add(AttackEvent().apply {
+        game.gameInfo.attackEventsForTesting.add(AttackEvent().apply {
             this.source = source
             this.target = target
             if (knowsSource) this.knowsSource.add(selectedCiv.civID)
