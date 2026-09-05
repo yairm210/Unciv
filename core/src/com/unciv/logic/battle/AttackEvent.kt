@@ -43,8 +43,7 @@ class AttackEvent() : IsPartOfGameInfoSerialization {
                 knowsTarget.add(civ.civID)
                 continue
             }
-            if (sourceTile in civ.viewableTiles
-                && (!attacker.isInvisible(civ) || sourceTile in civ.viewableInvisibleUnitsTiles))
+            if (attacker.isVisibleTo(civ))
                 knowsSource.add(civ.civID)
             if (targetTile in civ.viewableTiles)
                 knowsTarget.add(civ.civID)

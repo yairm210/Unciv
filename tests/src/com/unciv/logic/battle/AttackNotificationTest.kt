@@ -121,8 +121,9 @@ class AttackNotificationTest {
     @Test
     fun `detecting an invisible attacker at attack time permits its firing position`() {
         attacker.promotions.addPromotion(testGame.createUnitPromotion(UniqueType.Invisible.text).name)
+        testGame.addDefaultMeleeUnitWithUniques(
+            defendingCiv, testGame.getTile(1, 0), "Can see invisible [All] units")
         defendingCiv.viewableTiles = setOf(source, target)
-        defendingCiv.viewableInvisibleUnitsTiles = setOf(source)
 
         assertEquals(listOf(target.position, source.position), locations(attack()))
     }

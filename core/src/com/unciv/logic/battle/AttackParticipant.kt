@@ -48,8 +48,7 @@ class AttackParticipant() : IsPartOfGameInfoSerialization {
             }
         }
         for (civ in owner.gameInfo.civilizations) {
-            if (civ == owner || combatant.getTile() in civ.viewableTiles
-                && (!combatant.isInvisible(civ) || combatant.getTile() in civ.viewableInvisibleUnitsTiles))
+            if (combatant.isVisibleTo(civ))
                 knownBy.add(civ.civID)
         }
     }

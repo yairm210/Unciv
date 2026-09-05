@@ -95,7 +95,7 @@ class GameViewAttackHistoryTest {
         assertNull(playerView.attackEventsView.getObservedAttacks().single().source)
 
         // Detection after the attack must not expand the existing record.
-        player.viewableInvisibleUnitsTiles = setOf(source)
+        testGame.addDefaultMeleeUnitWithUniques(player, target, "Can see invisible [All] units")
         assertNull(playerView.attackEventsView.getObservedAttacks().single().source)
         testGame.gameInfo.recordAttackForTesting(MapUnitCombatant(invisibleAttacker), target)
         assertEquals(source.position, playerView.attackEventsView.getObservedAttacks().last().source)
