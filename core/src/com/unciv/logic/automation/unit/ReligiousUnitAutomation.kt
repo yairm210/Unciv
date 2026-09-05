@@ -131,7 +131,8 @@ object ReligiousUnitAutomation {
 
         val holyCity = unit.civ.religionManager.getHolyCity()
         // Our own holy city was taken over!
-        if (holyCity != null && holyCity.religion.getMajorityReligion() != unit.civ.religionManager.religion!!)
+        if (holyCity != null && holyCity.civ == unit.civ
+            && holyCity.religion.getMajorityReligion() != unit.civ.religionManager.religion!!)
             return holyCity
 
         val blockedHolyCity = unit.civ.cities.firstOrNull { it.religion.isBlockedHolyCity && it.religion.religionThisIsTheHolyCityOf == unit.religion }
@@ -139,7 +140,7 @@ object ReligiousUnitAutomation {
             return blockedHolyCity
 
         // Find cities 
-        val relevantCities = unit.civ.gameInfo.getCities()
+        val relevantCities = unit.civ.cities.asSequence()
             .filter { it.getCenterTile().isExplored(unit.civ) } // Cities we know about
             // Someone else is controlling this city
             .filter { 
