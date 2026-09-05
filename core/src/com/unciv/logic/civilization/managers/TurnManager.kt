@@ -27,6 +27,8 @@ class TurnManager(val civInfo: Civilization) {
     fun startTurn(progressBar: NextTurnProgress? = null):Unit = timeThis("TurnManager.startTurn") {
         if (civInfo.isSpectator()) return
 
+        for (city in civInfo.cities) city.hasSoldBuildingThisTurn = false
+
         civInfo.threatManager.clear()
 
         if (civInfo.cities.isNotEmpty() && civInfo.gameInfo.ruleset.technologies.isNotEmpty())
