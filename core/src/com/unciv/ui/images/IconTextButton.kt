@@ -2,6 +2,7 @@ package com.unciv.ui.images
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Label
@@ -43,6 +44,8 @@ open class IconTextButton(
     val labelCell: Cell<Label> = add(label)
 
     init {
+        icon?.touchable = Touchable.disabled
+        label.touchable = Touchable.disabled
         pad(10f)
         // aligned with icon
         labelCell.padTopDescent()
