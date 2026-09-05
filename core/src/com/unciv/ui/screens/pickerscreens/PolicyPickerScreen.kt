@@ -1,6 +1,5 @@
 package com.unciv.ui.screens.pickerscreens
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
@@ -17,6 +16,7 @@ import com.unciv.models.ruleset.Policy.PolicyBranchType
 import com.unciv.models.ruleset.PolicyBranch
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.InputDisabling
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.colorFromRGB
@@ -36,6 +36,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
+import com.unciv.utils.Concurrency
 import yairm210.purity.annotations.Readonly
 import kotlin.math.abs
 import kotlin.math.ceil
@@ -667,14 +668,19 @@ class PolicyPickerScreen(
         // Evil people clicking on buttons too fast to confuse the screen - #4977
         if (!policy.isPickable(viewingCiv, canChangeState)) return
 
-        // Avoid ANRs from changing game state; Don't accept more clicking anywhere
-        Gdx.input.inputProcessor = null
-        viewingCiv.policies.adopt(policy)
+        // Don't accept more clicking anywhere
+        Concurrency.run {
+            InputDisabling.withInputDisabled {
+                viewingCiv.policies.adopt(policy)
+            }
+            Concurrency.runOnGLThread {
+                // If we've moved to another screen in the meantime (great person pick, victory screen) ignore this
+                // update policies
+                if (game.screen !is PolicyPickerScreen) game.popScreen()
+                else game.replaceCurrentScreen{ recreate() }
+            }
+        }
 
-        // If we've moved to another screen in the meantime (great person pick, victory screen) ignore this
-        // update policies
-        if (game.screen !is PolicyPickerScreen) game.popScreen()
-        else game.replaceCurrentScreen{ recreate() }
     }
 
     override fun recreate(): BaseScreen {
