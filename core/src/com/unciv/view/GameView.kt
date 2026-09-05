@@ -25,6 +25,10 @@ class GameView(gameInfo: GameInfo, override val viewer: Civilization, spectatorM
     @Readonly fun getForeignCivView(civ: Civilization): ForeignCivView = ForeignCivView(civ, viewer, spectatorMode, this)
 
     // Data retrieval
+    @Readonly fun getTile(tile: Tile): TileView = tileMapView.getTile(tile)
+    /** Resolves the same tile from this game's viewing perspective, e.g. after a spectator toggles fog of war. */
+    @Readonly fun getTile(tileView: TileView): TileView = tileMapView.getTile(tileView.unwrap())
+
     /** Units whose past movements may be displayed from this view's perspective. */
     @Readonly fun getUnitsWithVisibleMovementHistory(): Sequence<ForeignMapUnitView> =
         wrapped.civilizations.asSequence()
@@ -48,6 +52,4 @@ class GameView(gameInfo: GameInfo, override val viewer: Civilization, spectatorM
         }
         return unitAttacks + civilizationAttacks
     }
-    /** Resolves the same tile from this game's viewing perspective, e.g. after a spectator toggles fog of war. */
-    @Readonly fun getTile(tileView: TileView): TileView = tileMapView.getTile(tileView.unwrap())
 }
