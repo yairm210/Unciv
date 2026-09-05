@@ -23,4 +23,7 @@ class GameView(gameInfo: GameInfo, override val viewer: Civilization, spectatorM
 
     // Data retrieval
     @Readonly fun getTile(tile: Tile): TileView = tileMapView.getTile(tile)
+
+    /** Resolves the same tile from this game's viewing perspective, e.g. after a spectator toggles fog of war. */
+    @Readonly fun getTile(tileView: TileView): TileView = tileMapView.getTile(tileView.unwrap())
 }

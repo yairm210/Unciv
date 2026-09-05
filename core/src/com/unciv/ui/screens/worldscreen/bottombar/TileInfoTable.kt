@@ -30,10 +30,12 @@ class TileInfoTable(private val worldScreen: WorldScreen) : Table(BaseScreen.ski
         )
     }
 
-    internal fun updateTileTable(tileView: TileView?) {
+    internal fun updateTileTable(selectedTileView: TileView?) {
         clearChildren()
         pad(5f)
 
+        // A retained selection may still carry the previous spectator or civilization perspective.
+        val tileView = selectedTileView?.let { civView.gameView.getTile(it) }
         if (tileView != null && (DebugUtils.VISIBLE_MAP || civView.hasExplored(tileView))) {
             add(getStatsTable(tileView)).left().row()
             add(MarkupRenderer.render(TileDescription.toMarkup(tileView, civView), padding = 0f, iconDisplay = IconDisplay.None) {
