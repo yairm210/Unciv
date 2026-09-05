@@ -43,14 +43,14 @@ class DiplomacyFunctions(val civInfo: Civilization) {
                 return // No gift if they are bad people, or we are just about to be at war
 
             val cityStateLocation = civInfo.getCapital()?.location
-            val isFirstMajorCivToMeet = civInfo.diplomacy.count { it.value.otherCiv.isMajorCiv() } == 1
-
             fun addNotification(text: String, icon: String) {
                 if (cityStateLocation != null)
                     otherCiv.addNotification(text, cityStateLocation, NotificationCategory.Diplomacy, icon)
                 else
                     otherCiv.addNotification(text, NotificationCategory.Diplomacy, icon)
             }
+
+            val isFirstMajorCivToMeet = civInfo.diplomacy.count { it.value.otherCiv.isMajorCiv() } == 1
 
             val gift = Stats(gold = 15f)
             if (isFirstMajorCivToMeet)
