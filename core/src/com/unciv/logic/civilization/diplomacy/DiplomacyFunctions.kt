@@ -9,7 +9,6 @@ import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.map.mapunit.movement.UnitMovement
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import yairm210.purity.annotations.Readonly
 import kotlin.math.max
@@ -40,33 +39,38 @@ class DiplomacyFunctions(val civInfo: Civilization) {
 
 
         if (civInfo.isCityState && otherCiv.isMajorCiv()) {
-            if (warOnContact || otherCiv.isMinorCivAggressor()) return // No gift if they are bad people, or we are just about to be at war
+            if (warOnContact || otherCiv.isMinorCivAggressor())
+                return // No gift if they are bad people, or we are just about to be at war
 
             val cityStateLocation = civInfo.getCapital()?.location
             val isFirstMajorCivToMeet = civInfo.diplomacy.count { it.value.otherCiv.isMajorCiv() } == 1
-            val isReligiousCityState = civInfo.cityStateFunctions.canProvideStat(Stat.Faith)
+
+            fun addNotification(text: String, icon: String) {
+                if (cityStateLocation != null)
+                    otherCiv.addNotification(text, cityStateLocation, NotificationCategory.Diplomacy, icon)
+                else
+                    otherCiv.addNotification(text, NotificationCategory.Diplomacy, icon)
+            }
 
             val gift = Stats(gold = 15f)
             if (isFirstMajorCivToMeet)
                 gift.timesInPlace(2f)
-            
-            val meetingText = "[${civInfo.civName}] has given us [${gift.toStringForNotifications()}] as " +
-                if (isFirstMajorCivToMeet) "we are the first major civ to meet them"
-                else "a token of goodwill for meeting us"
-            
-            if (cityStateLocation != null)
-                otherCiv.addNotification(meetingText, cityStateLocation, NotificationCategory.Diplomacy, NotificationIcon.Gold)
-            else
-                otherCiv.addNotification(meetingText, NotificationCategory.Diplomacy, NotificationIcon.Gold)
-
+            val meetingText =
+                if (isFirstMajorCivToMeet)
+                    "[${civInfo.civName}] welcomes us as the first great empire they have encountered and presents us with a gift of [${gift.toStringForNotifications()}]"
+                else
+                    "In honor of our meeting, [${civInfo.civName}] presents us with a gift of [${gift.toStringForNotifications()}]"
+            addNotification(meetingText, NotificationIcon.Gold)
             otherCiv.addStats(gift)
             
-            if (isReligiousCityState) {
-                val religiousGift = Stats(faith = 4f)
+            civInfo.forEachMatchingUnique(UniqueType.CityStateReligiousMeetingGift) {
+                val religiousGift = it.stats.clone()
                 if (isFirstMajorCivToMeet)
                     religiousGift.timesInPlace(2f)
-                val religiousMeetingText = "[${civInfo.civName}] has also given us [${religiousGift.toStringForNotifications()}]"
-                otherCiv.addNotification(religiousMeetingText, NotificationCategory.Diplomacy, NotificationIcon.Faith)
+                val religiousMeetingText = "[${civInfo.civName}] also shares their " +
+                    if (isFirstMajorCivToMeet) "treasured religious idols, awarding us [${religiousGift.toStringForNotifications()}]"
+                    else "knowledge of religious rituals, awarding us [${religiousGift.toStringForNotifications()}]"
+                addNotification(religiousMeetingText, NotificationIcon.Faith)
                 otherCiv.addStats(religiousGift)
             }
 
