@@ -4,7 +4,6 @@ import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
@@ -22,7 +21,7 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Spy
 import com.unciv.models.UncivSound
 import com.unciv.view.CivView
-import com.unciv.view.ForeignMapUnitView
+import com.unciv.view.GameView
 import com.unciv.view.MapUnitView
 import com.unciv.view.TileView
 import com.unciv.ui.audio.SoundPlayer
@@ -609,14 +608,13 @@ class WorldMapHolder(
     /**
      * Add arrows to show all past and planned movements and attacks, if the options setting to do so is enabled.
      *
-     * @param pastVisibleUnits Sequence of units for which the last turn's movement history can be displayed.
+     * @param gameView Effective fog-of-war perspective for history visibility and arrow endpoints.
      * @param targetVisibleUnits Sequence of units for which the active movement target can be displayed.
-     * @param visibleAttacks Sequence of pairs of [Vector2] positions of the sources and the targets of all attacks that can be displayed.
      * */
-    internal fun updateMovementOverlay(pastVisibleUnits: Sequence<ForeignMapUnitView>, targetVisibleUnits: Sequence<MapUnitView>, visibleAttacks: Sequence<Pair<HexCoord, HexCoord>>) {
-        val tileMapView = worldScreen.selectedGameView.tileMapView
+    internal fun updateMovementOverlay(gameView: GameView, targetVisibleUnits: Sequence<MapUnitView>) {
+        val tileMapView = gameView.tileMapView
         val selectedUnit = worldScreen.bottomUnitTable.selectedUnit
-        for (unitView in pastVisibleUnits) {
+        for (unitView in gameView.getUnitsWithVisibleMovementHistory()) {
             val movementMemories = unitView.getMovementMemories()
             if (movementMemories.isEmpty()) continue
             if (selectedUnit != null && selectedUnit != unitView) continue // When selecting a unit, show only arrows of that unit
@@ -640,7 +638,7 @@ class WorldMapHolder(
             val fromTileView = tileMapView.getTile(unitView.getTile().position()) ?: continue
             addArrow(fromTileView, toTileView, MiscArrowTypes.UnitMoving)
         }
-        for ((from, to) in visibleAttacks) {
+        for ((from, to) in gameView.getVisibleAttacks()) {
             if (selectedUnit != null
                 && selectedUnit.getTile().position() != from
                 && selectedUnit.getTile().position() != to) continue
