@@ -188,6 +188,7 @@ class City : IsPartOfGameInfoSerialization, INamed {
         toReturn.resourceStockpiles = resourceStockpiles.clone()
         toReturn.isBeingRazed = isBeingRazed
         toReturn.attackedThisTurn = attackedThisTurn
+        toReturn.hasSoldBuildingThisTurn = hasSoldBuildingThisTurn
         toReturn.foundingCiv = foundingCiv
         toReturn.previousOwner = previousOwner
         toReturn.turnAcquired = turnAcquired
