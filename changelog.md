@@ -1,18 +1,15 @@
 ## 4.21.17
 
-Decrease initial startup time by ~100ms (desktop) by parallelizing json reading functions
-
-Decrease initial startup time by ~500ms (desktop), Android not measured
+Decrease initial startup time
 
 By Angais:
-- Keep inquisitor conversion targets in owned cities 
-- Copy temporary uniques when cloning civilizations 
-- Fix overflow in trade evaluation 
-- Preserve building sale limit in cloned cities 
+- AI: Keep inquisitor conversion targets in owned cities 
+- Retain lost data when saving games 
+- Fixed trade evaluation error  
 
 By varchasgopalaswamy:
-- fixes a tile info update bug when changing perspective 
-- fixed the bug 
+- Fixed tile info update bug when changing perspective in spectator 
+- fixed city selection bug bug 
 
 ## 4.21.16
 
