@@ -121,15 +121,15 @@ class TradeEvaluation {
 
         val sumOfTheirOffers = trade.theirOffers.asSequence()
             .filter { it.type != TradeOfferType.Treaty }
-            .sumOf { evaluateBuyCostWithInflation(it, evaluator, tradePartner, trade) }
+            .sumOf { evaluateBuyCostWithInflation(it, evaluator, tradePartner, trade).toLong() }
 
-        var sumOfOurOffers = trade.ourOffers.sumOf { evaluateSellCostWithInflation(it, evaluator, tradePartner, trade) }
+        var sumOfOurOffers = trade.ourOffers.sumOf { evaluateSellCostWithInflation(it, evaluator, tradePartner, trade).toLong() }
 
         val relationshipLevel = evaluator.getDiplomacyManager(tradePartner)!!.relationshipIgnoreAfraid()
         // If we're making a peace treaty, don't try to up the bargain for people you don't like.
         // Leads to spartan behaviour where you demand more, the more you hate the enemy...unhelpful
         if (trade.ourOffers.none { it.name == Constants.peaceTreaty || it.name == Constants.researchAgreement}) {
-            if (relationshipLevel == RelationshipLevel.Enemy) sumOfOurOffers = (sumOfOurOffers * 1.5).toInt()
+            if (relationshipLevel == RelationshipLevel.Enemy) sumOfOurOffers = (sumOfOurOffers * 1.5).toLong()
             else if (relationshipLevel == RelationshipLevel.Unforgivable) sumOfOurOffers *= 2
         }
         if (trade.ourOffers.firstOrNull { it.name == Constants.defensivePact } != null) {
@@ -140,7 +140,8 @@ class TradeEvaluation {
             }
         }
         val diplomaticGifts: Int = if (includeDiplomaticGifts) evaluator.getDiplomacyManager(tradePartner)!!.getGoldGifts() else 0
-        return sumOfTheirOffers - sumOfOurOffers + diplomaticGifts
+        return (sumOfTheirOffers - sumOfOurOffers + diplomaticGifts)
+            .coerceIn(Int.MIN_VALUE.toLong(), Int.MAX_VALUE.toLong()).toInt()
     }
 
     @Readonly
