@@ -3,6 +3,7 @@ package com.unciv.models.ruleset.unique
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.civilization.NextTurnAutomation
+import com.unciv.logic.battle.AttackRecorder
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.*
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
@@ -43,19 +44,21 @@ object UniqueTriggerActivation {
         unique: Unique,
         city: City,
         notification: String? = null,
-        triggerNotificationText: String? = null
+        triggerNotificationText: String? = null,
+        attackRecorder: AttackRecorder? = null
     ): Boolean {
         return triggerUnique(unique, city.civ, city, tile = city.getCenterTile(),
-            notification = notification, triggerNotificationText = triggerNotificationText)
+            notification = notification, triggerNotificationText = triggerNotificationText, attackRecorder = attackRecorder)
     }
     fun triggerUnique(
         unique: Unique,
         unit: MapUnit,
         notification: String? = null,
-        triggerNotificationText: String? = null
+        triggerNotificationText: String? = null,
+        attackRecorder: AttackRecorder? = null
     ): Boolean {
         return triggerUnique(unique, unit.civ, unit =  unit, tile = unit.currentTile,
-            notification = notification, triggerNotificationText = triggerNotificationText)
+            notification = notification, triggerNotificationText = triggerNotificationText, attackRecorder = attackRecorder)
     }
 
     /** @return whether an action was successfully performed
@@ -67,9 +70,10 @@ object UniqueTriggerActivation {
         unit: MapUnit? = null,
         tile: Tile? = city?.getCenterTile() ?: unit?.currentTile,
         notification: String? = null,
-        triggerNotificationText: String? = null
+        triggerNotificationText: String? = null,
+        attackRecorder: AttackRecorder? = null
     ): Boolean {
-        val function = getTriggerFunction(unique, civInfo, city, unit, tile, notification, triggerNotificationText) ?: return false
+        val function = buildTriggerFunction(unique, civInfo, city, unit, tile, notification, triggerNotificationText, attackRecorder) ?: return false
         return function.invoke()
     }
 
@@ -85,6 +89,19 @@ object UniqueTriggerActivation {
         tile: Tile? = city?.getCenterTile() ?: unit?.currentTile,
         notification: String? = null,
         triggerNotificationText: String? = null
+    ): (()->Boolean)? = buildTriggerFunction(unique, civInfo, city, unit, tile, notification, triggerNotificationText, null)
+
+    // Combat callers execute this immediately through triggerUnique. Deferred UI actions never retain a context.
+    // Only direct damage, healing and destruction participate; nested trigger chains do not.
+    private fun buildTriggerFunction(
+        unique: Unique,
+        civInfo: Civilization,
+        city: City?,
+        unit: MapUnit?,
+        tile: Tile?,
+        notification: String?,
+        triggerNotificationText: String?,
+        attackRecorder: AttackRecorder?
     ): (()->Boolean)? {
 
         val relevantCity by lazy {
@@ -1184,7 +1201,7 @@ object UniqueTriggerActivation {
                 if (unit == null) return null
                 if (unit.health == 100) return null
                 return {
-                    unit.healBy(unique.params[1].toInt())
+                    unit.healBy(unique.params[1].toInt(), attackRecorder)
                     if (notification != null)
                         unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units, unit.name, "Heal Instantly")
                     true
@@ -1193,7 +1210,7 @@ object UniqueTriggerActivation {
             UniqueType.OneTimeUnitDamage -> {
                 if (unit == null) return null
                 return {
-                    unit.takeDamage(unique.params[1].toInt())
+                    unit.takeDamage(unique.params[1].toInt(), attackRecorder)
                     if (notification != null)
                         unit.civ.addNotification(notification, MapUnitAction(unit), NotificationCategory.Units, unit.name)
                     true
@@ -1246,7 +1263,7 @@ object UniqueTriggerActivation {
                 return {
                     if (notification != null)
                         unit.civ.addNotification(notification, LocationAction(unit.getTile().position), NotificationCategory.Units, unit.name, "OtherIcons/DisbandUnit")
-                    unit.destroy()
+                    unit.destroy(attackRecorder = attackRecorder)
                     true
                 }
             }

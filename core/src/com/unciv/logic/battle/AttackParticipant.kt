@@ -22,7 +22,10 @@ class AttackParticipant() : IsPartOfGameInfoSerialization {
     var position = HexCoord.Zero
     var healthBefore = 0
     var healthAfter: Int? = null
-    /** Actual HP damage; destruction or capture without HP loss is represented by [outcome]. */
+    /**
+     * Actual HP loss recorded by direct combat effects; indirect effect chains are excluded.
+     * Destruction or capture without HP loss is represented by [outcome].
+     */
     var damageReceived = 0
     var outcome = AttackParticipantOutcome.Pending
     /**
@@ -50,21 +53,6 @@ class AttackParticipant() : IsPartOfGameInfoSerialization {
         for (civ in owner.gameInfo.civilizations) {
             if (combatant.isVisibleTo(civ))
                 knownBy.add(civ.civID)
-        }
-    }
-
-    /** Use explicit outcomes for capture, withdrawal and raids; HP alone cannot describe them. */
-    fun finish(combatant: ICombatant, result: AttackParticipantOutcome? = null) {
-        healthAfter = combatant.getHealth()
-        outcome = result ?: when (combatant) {
-            is MapUnitCombatant -> if (combatant.unit !in combatant.unit.civ.units.getCivUnits())
-                AttackParticipantOutcome.Destroyed else AttackParticipantOutcome.Survived
-            is CityCombatant -> when {
-                combatant.city !in combatant.city.civ.cities -> AttackParticipantOutcome.Destroyed
-                combatant.isDefeated() -> AttackParticipantOutcome.DefensesReduced
-                else -> AttackParticipantOutcome.Survived
-            }
-            else -> AttackParticipantOutcome.Survived
         }
     }
 

@@ -4,7 +4,6 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.*
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
-import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.GameContext
@@ -16,33 +15,6 @@ import kotlin.math.ulp
 import kotlin.random.Random
 
 object Nuke {
-
-    /** Local combatants used to finalize saved snapshots; these references are never serialized. */
-    private class NuclearAttackParticipants(attacker: MapUnitCombatant, private val event: AttackEvent) {
-        private val units = hashMapOf(attacker.unit to event.attacker!!)
-        private val cities = HashMap<City, AttackParticipant>()
-
-        fun record(unit: MapUnit): AttackParticipant = units.getOrPut(unit) {
-            AttackParticipant(MapUnitCombatant(unit)).also { event.targets.add(it) }
-        }
-
-        fun record(city: City): AttackParticipant = cities.getOrPut(city) {
-            AttackParticipant(CityCombatant(city)).also { event.targets.add(it) }
-        }
-
-        fun recordTiles(tiles: List<Tile>) {
-            for (tile in tiles) {
-                if (tile.isCityCenter()) record(tile.getCity()!!)
-                for (unit in tile.getUnits()) record(unit)
-            }
-        }
-
-        fun finish() {
-            for ((unit, record) in units) record.finish(MapUnitCombatant(unit))
-            for ((city, record) in cities) record.finish(CityCombatant(city))
-        }
-    }
-
 
     /**
      *  Checks whether [nuke] is allowed to nuke [targetTile]
@@ -94,36 +66,58 @@ object Nuke {
 
         val hitTiles = targetTile.getTilesInDistance(blastRadius).toList()
         // War declarations and interception may change visibility before the explosion.
-        val attackEvent = attackingCiv.gameInfo.recordAttack(attacker, targetTile)
-        attackEvent.kind = AttackKind.Nuclear
-        val attackerRecord = attackEvent.attacker!!
-        val participants = NuclearAttackParticipants(attacker, attackEvent)
-        participants.recordTiles(hitTiles)
+        val attackRecorder = AttackRecorder(attacker, targetTile, AttackKind.Nuclear)
+        val resolution = try {
+            performNuke(attacker, targetTile, hitTiles, nukeStrength, attackRecorder)
+        } catch (exception: Exception) {
+            // Combat mutations are not rolled back; preserve the incomplete history.
+            try {
+                attackingCiv.gameInfo.storeAttack(attackRecorder.finishIncomplete())
+            } catch (recordingFailure: Exception) {
+                exception.addSuppressed(recordingFailure)
+            }
+            throw exception
+        }
+        attackingCiv.gameInfo.storeAttack(attackRecorder.finish(resolution))
+    }
+
+    private fun performNuke(
+        attacker: MapUnitCombatant,
+        targetTile: Tile,
+        hitTiles: List<Tile>,
+        nukeStrength: Int,
+        attackRecorder: AttackRecorder
+    ): AttackResolution {
+        val attackingCiv = attacker.getCivInfo()
+        fun snapshotPotentialTargets() {
+            for (tile in hitTiles) {
+                if (tile.isCityCenter())
+                    attackRecorder.snapshotTarget(CityCombatant(tile.getCity()!!), retainIfUnaffected = false)
+                for (unit in tile.getUnits())
+                    attackRecorder.snapshotTarget(MapUnitCombatant(unit), retainIfUnaffected = false)
+            }
+        }
+        snapshotPotentialTargets()
 
         val (hitCivsTerritory, notifyDeclaredWarCivs) =
-            declareWarOnHitCivs(attackingCiv, hitTiles.asSequence(), attacker, targetTile, attackEvent)
+            declareWarOnHitCivs(attackingCiv, hitTiles.asSequence(), attacker, targetTile, attackRecorder)
 
-        addNukeNotifications(targetTile, attacker, notifyDeclaredWarCivs, attackingCiv, hitCivsTerritory, attackEvent)
+        addNukeNotifications(targetTile, attacker, notifyDeclaredWarCivs, attackingCiv, hitCivsTerritory, attackRecorder.snapshot())
 
-        attackerRecord.damageReceived = (attackerRecord.healthBefore - attacker.getHealth()).coerceAtLeast(0)
-        if (attacker.isDefeated()) {
-            attackerRecord.finish(attacker, AttackParticipantOutcome.Destroyed)
-            attackEvent.resolution = AttackResolution.Intercepted
-            attackEvent.targets.clear() // The blast never occurred, so these combatants were not hit.
-            return
-        }
+        // The blast never occurred; the recorder discards unaffected potential victims.
+        if (attacker.isDefeated()) return AttackResolution.Intercepted
 
         // Declaring war can trigger unit spawns. Preserve existing snapshots, and capture the
         // new combatants before the blast damages them without changing endpoint knowledge.
-        participants.recordTiles(hitTiles)
+        snapshotPotentialTargets()
+        attackRecorder.retainAllTargets()
         for (tile in hitTiles) {
             // Handle complicated effects
-            doNukeExplosionForTile(attacker, tile, nukeStrength, targetTile == tile, participants, attackEvent)
+            doNukeExplosionForTile(attacker, tile, nukeStrength, targetTile == tile, attackRecorder)
         }
 
-
         // Instead of postBattleAction() just destroy the unit, all other functions are not relevant
-        if (attacker.unit.hasUnique(UniqueType.SelfDestructs)) attacker.unit.destroy()
+        if (attacker.unit.hasUnique(UniqueType.SelfDestructs)) attacker.unit.destroy(attackRecorder = attackRecorder)
 
         // It's unclear whether using nukes results in a penalty with all civs, or only affected civs.
         // For now I'll make it give a diplomatic penalty to all known civs, but some testing for this would be appreciated
@@ -134,8 +128,7 @@ object Nuke {
         if (!attacker.isDefeated()) {
             attacker.unit.attacksThisTurn += 1
         }
-        participants.finish()
-        attackEvent.resolution = AttackResolution.Completed
+        return AttackResolution.Completed
     }
 
     private fun addNukeNotifications(
@@ -200,7 +193,7 @@ object Nuke {
         hitTiles: Sequence<Tile>,
         attacker: MapUnitCombatant,
         targetTile: Tile,
-        attackEvent: AttackEvent
+        attackRecorder: AttackRecorder
     ): Pair<ArrayList<Civilization>, ArrayList<Civilization>> {
         // Declare war on the owners of all hit tiles
         val notifyDeclaredWarCivs = ArrayList<Civilization>()
@@ -234,7 +227,7 @@ object Nuke {
                     targetTile,
                     civWhoseUnitWasAttacked,
                     null,
-                    attackEvent
+                    attackRecorder
                 )
             }
         }
@@ -246,8 +239,7 @@ object Nuke {
         tile: Tile,
         nukeStrength: Int,
         isGroundZero: Boolean,
-        participants: NuclearAttackParticipants,
-        attackEvent: AttackEvent
+        attackRecorder: AttackRecorder
     ) {
         // https://forums.civfanatics.com/resources/unit-guide-modern-future-units-g-k.25628/
         // https://www.carlsguides.com/strategy/civilization5/units/aircraft-nukes.ph
@@ -268,21 +260,20 @@ object Nuke {
         // Damage city and reduce its population
         val city = tile.getCity()
         if (city != null && tile.position.toHexCoord() == city.location.toHexCoord()) {
-            val attackContext = GameContext(attacker.getCivInfo(), ourCombatant = attacker, theirCombatant = CityCombatant(city), tile = tile)
+            val combatState = GameContext(attacker.getCivInfo(), ourCombatant = attacker, theirCombatant = CityCombatant(city), tile = tile)
             buildingModifier = city.getAggregateModifier(UniqueType.GarrisonDamageFromNukes)
-            val record = participants.record(city)
-            val damage = doNukeExplosionDamageToCity(city, nukeStrength, damageModifierFromMissingResource, attackContext)
-            record.damageReceived += damage
-            Battle.postBattleNotifications(attacker, CityCombatant(city), city.getCenterTile(), attackEvent)
+            attackRecorder.snapshotTarget(CityCombatant(city))
+            doNukeExplosionDamageToCity(city, nukeStrength, damageModifierFromMissingResource, combatState, attackRecorder)
+            Battle.postBattleNotifications(attacker, CityCombatant(city), city.getCenterTile(), attackRecorder.snapshot())
             Battle.destroyIfDefeated(city.civ, attacker.getCivInfo(), city.location.toHexCoord())
         }
 
         // Damage and/or destroy units on the tile
         for (unit in tile.getUnits().toList()) { // toList so if it's destroyed there's no concurrent modification
             val defender = MapUnitCombatant(unit)
-            val record = participants.record(unit)
-            val attackContext = GameContext(attacker.getCivInfo(), ourCombatant = attacker, theirCombatant = defender, tile = tile)
-            val rng = attackContext.stateBasedRandom("Nuke.doNukeExplosionForTile")
+            attackRecorder.snapshotTarget(defender)
+            val combatState = GameContext(attacker.getCivInfo(), ourCombatant = attacker, theirCombatant = defender, tile = tile)
+            val rng = combatState.stateBasedRandom("Nuke.doNukeExplosionForTile")
             val damage = (when {
                 isGroundZero || nukeStrength >= 2 -> 100
                 // The following constants are NUKE_UNIT_DAMAGE_BASE / NUKE_UNIT_DAMAGE_RAND_1 / NUKE_UNIT_DAMAGE_RAND_2 in Civ5
@@ -291,13 +282,11 @@ object Nuke {
                 else -> 20 + rng.nextInt(30)
             } * buildingModifier * damageModifierFromMissingResource + 1f.ulp).toInt()
             if (unit.isCivilian()) {
-                if (unit.health - damage <= 40) unit.destroy()  // Civ5: NUKE_NON_COMBAT_DEATH_THRESHOLD = 60
+                if (unit.health - damage <= 40) unit.destroy(attackRecorder = attackRecorder)  // Civ5: NUKE_NON_COMBAT_DEATH_THRESHOLD = 60
             } else {
-                val healthBefore = defender.getHealth()
-                defender.takeDamage(damage)
-                record.damageReceived += (healthBefore - defender.getHealth()).coerceAtLeast(0)
+                defender.takeDamage(damage, attackRecorder)
             }
-            Battle.postBattleNotifications(attacker, defender, defender.getTile(), attackEvent)
+            Battle.postBattleNotifications(attacker, defender, defender.getTile(), attackRecorder.snapshot())
             Battle.destroyIfDefeated(defender.getCivInfo(), attacker.getCivInfo())
         }
 
@@ -333,21 +322,18 @@ object Nuke {
         tile.addTerrainFeature("Fallout")
     }
 
-    /** @return the "protection" modifier from buildings (Bomb Shelter, UniqueType.PopulationLossFromNukes) */
-    private fun doNukeExplosionDamageToCity(targetedCity: City, nukeStrength: Int, damageModifierFromMissingResource: Float, context: GameContext): Int {
+    private fun doNukeExplosionDamageToCity(targetedCity: City, nukeStrength: Int, damageModifierFromMissingResource: Float, context: GameContext, attackRecorder: AttackRecorder) {
         // Original Capitals must be protected, `canBeDestroyed` is responsible for that check.
         // The `justCaptured = true` parameter is what allows other Capitals to suffer normally.
         if ((nukeStrength > 2 || nukeStrength > 1 && targetedCity.population.population < 5)
             && targetedCity.canBeDestroyed(true)) {
             targetedCity.destroyCity()
-            return 0 // Destruction is an outcome, not HP damage.
+            return // Destruction is an outcome, not HP damage.
         }
 
         val cityCombatant = CityCombatant(targetedCity)
         val rng = context.stateBasedRandom("Nuke.doNukeExplosionDamageToCity")
-        val healthBefore = cityCombatant.getHealth()
-        cityCombatant.takeDamage((cityCombatant.getHealth() * 0.5f * damageModifierFromMissingResource).toInt())
-        val damageReceived = healthBefore - cityCombatant.getHealth()
+        cityCombatant.takeDamage((cityCombatant.getHealth() * 0.5f * damageModifierFromMissingResource).toInt(), attackRecorder)
 
         // Difference to original: Civ5 rounds population loss down twice - before and after bomb shelters
         val populationLoss = (
@@ -361,7 +347,6 @@ object Nuke {
                 }
             ).toInt()
         targetedCity.population.addPopulation(-populationLoss)
-        return damageReceived
     }
 
     @Readonly

@@ -6,7 +6,7 @@ import com.unciv.logic.map.tile.Tile
 import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 
-enum class AttackKind { Combat, Nuclear }
+enum class AttackKind { Combat, Nuclear, AirSweep }
 enum class AttackResolution { Pending, Completed, Withdrawn, Intercepted }
 
 /**
@@ -23,8 +23,10 @@ class AttackEvent() : IsPartOfGameInfoSerialization {
     var kind = AttackKind.Combat
     var resolution = AttackResolution.Pending
     var attacker: AttackParticipant? = null
-    /** Includes every affected city and unit for a nuclear attack; an empty tile has no participant. */
+    /** Primary target and other affected units/cities, including captures and collateral casualties. */
     var targets = ArrayList<AttackParticipant>()
+    /** Interceptors engage [attacker]; their bases never become additional attack endpoints. */
+    var interceptions = ArrayList<AttackInterception>()
 
     constructor(attacker: ICombatant, targetTile: Tile) : this() {
         val attackingCiv = attacker.getCivInfo()
@@ -63,6 +65,7 @@ class AttackEvent() : IsPartOfGameInfoSerialization {
         result.resolution = resolution
         result.attacker = attacker?.clone()
         result.targets = ArrayList(targets.map { it.clone() })
+        result.interceptions = ArrayList(interceptions.map { it.clone() })
         return result
     }
 }

@@ -21,6 +21,22 @@ object AirInterception {
     // Random Civ at War will Intercept, prioritizing Air Units,
     // sorted by highest Intercept chance (same as regular Intercept)
     fun airSweep(attacker: MapUnitCombatant, attackedTile: Tile) {
+        val gameInfo = attacker.getCivInfo().gameInfo
+        val attackRecorder = AttackRecorder(attacker, attackedTile, AttackKind.AirSweep)
+        try {
+            performAirSweep(attacker, attackedTile, attackRecorder)
+        } catch (exception: Exception) {
+            try {
+                gameInfo.storeAttack(attackRecorder.finishIncomplete())
+            } catch (recordingFailure: Exception) {
+                exception.addSuppressed(recordingFailure)
+            }
+            throw exception
+        }
+        gameInfo.storeAttack(attackRecorder.finish(AttackResolution.Completed))
+    }
+
+    private fun performAirSweep(attacker: MapUnitCombatant, attackedTile: Tile, attackRecorder: AttackRecorder) {
         // Air Sweep counts as an attack, even if nothing else happens
         attacker.unit.attacksThisTurn++
         // copied and modified from reduceAttackerMovementPointsAndAttacks()
@@ -51,7 +67,13 @@ object AirInterception {
             .shuffled()  // randomize Civ
             .sortedByDescending { it.interceptChance() }) {
             // No chance of Interceptor to miss (unlike regular Interception). Always want to deal damage
-            val locations = notificationLocations(attacker, interceptor, attackedTile)
+            val interceptorCombatant = MapUnitCombatant(interceptor)
+            val interception = attackRecorder.beginInterception(interceptorCombatant)
+            attackRecorder.recordInterception(interception, intercepted = true)
+            val locations = notificationLocations(
+                attacker, interceptor, attackedTile,
+                attackRecorder.snapshot(), attackRecorder.interceptorSnapshot(interception)
+            )
             interceptor.attacksThisTurn++  // even if you miss, you took the shot
             if (!interceptor.baseUnit.isAirUnit()) {
                 val interceptorName = interceptor.name
@@ -73,7 +95,15 @@ object AirInterception {
             }
 
             // Damage if Air v Air should work similar to Melee
-            val damageDealt: Battle.DamageDealt = Battle.takeDamage(attacker, MapUnitCombatant(interceptor))
+            val attackerDamageBefore = attackRecorder.damageReceived(attacker)
+            val interceptorDamageBefore = attackRecorder.damageReceived(interceptorCombatant)
+            val damageDealt = Battle.takeDamage(attacker, interceptorCombatant, attackRecorder = attackRecorder)
+            // Include damage from combat triggers without subtracting any healing.
+            attackRecorder.recordInterception(
+                interception, intercepted = true,
+                damageToAttacker = attackRecorder.damageReceived(attacker) - attackerDamageBefore,
+                damageToInterceptor = attackRecorder.damageReceived(interceptorCombatant) - interceptorDamageBefore
+            )
 
             // 5 XP to both
             Battle.addXp(MapUnitCombatant(interceptor), 5, attacker)
@@ -135,12 +165,12 @@ object AirInterception {
         attackedTile: Tile,
         interceptingCiv: Civilization,
         defender: ICombatant?,
-        attackEvent: AttackEvent? = null
+        attackRecorder: AttackRecorder
     ): Battle.DamageDealt {
-        val attackContext = GameContext(attacker, defender, attackedTile, CombatAction.Intercept)
-        if (attacker.unit.hasUnique(UniqueType.CannotBeIntercepted, attackContext))
+        val combatState = GameContext(attacker, defender, attackedTile, CombatAction.Intercept)
+        if (attacker.unit.hasUnique(UniqueType.CannotBeIntercepted, combatState))
             return Battle.DamageDealt.None
-        val rng = attackContext.stateBasedRandom("AirInterception.tryInterceptAirAttack")
+        val rng = combatState.stateBasedRandom("AirInterception.tryInterceptAirAttack")
 
 
         // Pick highest chance interceptor
@@ -157,10 +187,13 @@ object AirInterception {
             }
             ?: return Battle.DamageDealt.None
 
+        val interceptorCombatant = MapUnitCombatant(interceptor)
+        val interception = attackRecorder.beginInterception(interceptorCombatant)
         interceptor.attacksThisTurn++  // even if you miss, you took the shot
         // Does Intercept happen? If not, exit
         if (rng.nextFloat() > interceptor.interceptChance() / 100f)
             return Battle.DamageDealt.None
+        attackRecorder.recordInterception(interception, intercepted = true)
 
         var damage = BattleDamage.calculateDamageToDefender(
             MapUnitCombatant(interceptor),
@@ -172,8 +205,18 @@ object AirInterception {
 
         damage = (damage.toFloat() * damageFactor).toInt().coerceAtMost(attacker.unit.health)
 
-        val locations = notificationLocations(attacker, interceptor, attackedTile, attackEvent)
-        attacker.takeDamage(damage)
+        val locations = notificationLocations(
+            attacker, interceptor, attackedTile,
+            attackRecorder.snapshot(), attackRecorder.interceptorSnapshot(interception)
+        )
+        val attackerDamageBefore = attackRecorder.damageReceived(attacker)
+        val interceptorDamageBefore = attackRecorder.damageReceived(interceptorCombatant)
+        attacker.takeDamage(damage, attackRecorder)
+        attackRecorder.recordInterception(
+            interception, intercepted = true,
+            damageToAttacker = attackRecorder.damageReceived(attacker) - attackerDamageBefore,
+            damageToInterceptor = attackRecorder.damageReceived(interceptorCombatant) - interceptorDamageBefore
+        )
         if (damage > 0)
             Battle.addXp(MapUnitCombatant(interceptor), 2, attacker)
 
@@ -219,17 +262,12 @@ object AirInterception {
         attacker: MapUnitCombatant,
         interceptor: MapUnit,
         attackedTile: Tile,
-        attackEvent: AttackEvent? = null
+        attackEvent: AttackEvent,
+        interceptorRecord: AttackParticipant
     ): InterceptionLocations {
-        val attackerRecord = attackEvent?.attacker ?: AttackParticipant(attacker)
-        val interceptorRecord = AttackParticipant(MapUnitCombatant(interceptor))
-        val attackerSource = attackEvent?.source ?: attackerRecord.position
-        val knowsAttackerSource = if (attackEvent != null)
-            interceptor.civ.civID in attackEvent.knowsSource
-        else interceptor.civ.civID in attackerRecord.knownBy
-        val knowsTarget = if (attackEvent != null)
-            interceptor.civ.civID in attackEvent.knowsTarget
-        else attackedTile in interceptor.civ.viewableTiles
+        val attackerSource = attackEvent.source
+        val knowsAttackerSource = interceptor.civ.civID in attackEvent.knowsSource
+        val knowsTarget = interceptor.civ.civID in attackEvent.knowsTarget
         val knowsInterceptorSource = attacker.getCivInfo().civID in interceptorRecord.knownBy
         return InterceptionLocations(
             LocationAction(listOfNotNull(

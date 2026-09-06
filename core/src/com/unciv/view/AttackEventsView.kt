@@ -32,7 +32,8 @@ class AttackEventsView internal constructor(
             if (source == null && target == null) return@mapNotNull null
             if (selectedUnitId != null && selectedPosition != source && selectedPosition != target
                 && !isKnownParticipant(attack.attacker, selectedUnitId)
-                && attack.targets.none { isKnownParticipant(it, selectedUnitId) }) return@mapNotNull null
+                && attack.targets.none { isKnownParticipant(it, selectedUnitId) }
+                && attack.interceptions.none { isKnownParticipant(it.interceptor, selectedUnitId) }) return@mapNotNull null
             ObservedAttack(attack.turn, source, target)
         }
     }

@@ -15,7 +15,6 @@ import com.unciv.logic.GameInfoPreview.Companion.randomGameId
 import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.automation.civilization.BarbarianManager
 import com.unciv.logic.battle.AttackEvent
-import com.unciv.logic.battle.ICombatant
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.*
 import com.unciv.logic.civilization.managers.TechManager
@@ -377,13 +376,9 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     internal fun createAttackEventsView(viewer: Civilization, spectatorMode: Boolean): AttackEventsView =
         AttackEventsView(attackEvents, viewer, spectatorMode)
 
-    /** Capture an attack before damage, movement, capture, or destruction changes its witnesses.
-     * Only combat execution may receive this mutable record for finalization.
-     */
-    internal fun recordAttack(attacker: ICombatant, target: Tile): AttackEvent {
-        val event = AttackEvent(attacker, target)
+    /** Combat execution stores a record after explicitly finishing its recorder. */
+    internal fun storeAttack(event: AttackEvent) {
         attackEvents.add(event)
-        return event
     }
 
     /** Turn processing expires only the history belonging to the civilization starting its turn. */

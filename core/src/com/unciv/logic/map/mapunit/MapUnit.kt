@@ -4,6 +4,7 @@ import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.MultiFilter
 import com.unciv.logic.automation.unit.UnitAutomation
+import com.unciv.logic.battle.AttackRecorder
 import com.unciv.logic.battle.BattleUnitCapture
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.City
@@ -915,7 +916,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
         if (isExploring()) UnitAutomation.automatedExplore(this)
     }
 
-    fun healBy(amount: Int) {
+    fun healBy(amount: Int, attackRecorder: AttackRecorder? = null) {
+        attackRecorder?.markUnitAffected(this)
         health += amount *
                 if (hasUnique(UniqueType.HealingEffectsDoubled, checkCivInfoUniques = true)) 2
                 else 1
@@ -923,15 +925,16 @@ class MapUnit : IsPartOfGameInfoSerialization {
         cache.updateUniques()
     }
 
-    fun takeDamage(amount: Int) {
-        health -= amount
-        if (health > 100) health = 100 // For cheating modders, e.g. negative tile damage
-        if (health < 0) health = 0
-        if (health == 0) destroy()
+    fun takeDamage(amount: Int, attackRecorder: AttackRecorder? = null) {
+        val remainingHealth = (health - amount).coerceIn(0, 100)
+        attackRecorder?.recordDamage(this, health - remainingHealth)
+        health = remainingHealth
+        if (health == 0) destroy(attackRecorder = attackRecorder)
         else cache.updateUniques()
     }
 
-    fun destroy(destroyTransportedUnit: Boolean = true) {
+    fun destroy(destroyTransportedUnit: Boolean = true, attackRecorder: AttackRecorder? = null) {
+        attackRecorder?.recordDestruction(this)
         stopEscorting()
         currentMovement = 0f
         civ.units.removeUnit(this)

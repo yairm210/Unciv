@@ -31,9 +31,10 @@ class CityCombatant(val city: City) : ICombatant {
     else filter == "City" || filter in Constants.all || city.matchesFilter(filter, multiFilter = false)
     override fun getAttackSound() = UncivSound.Bombard
 
-    override fun takeDamage(damage: Int) {
-        city.health -= damage
-        if (city.health < 1) city.health = 1  // min health is 1
+    override fun takeDamage(damage: Int, attackRecorder: AttackRecorder?) {
+        val remainingHealth = (city.health - damage).coerceAtLeast(1)
+        attackRecorder?.recordDamage(city, city.health - remainingHealth)
+        city.health = remainingHealth
     }
 
     override fun getUnitType(): UnitType = UnitType.City

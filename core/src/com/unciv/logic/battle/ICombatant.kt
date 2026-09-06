@@ -17,7 +17,7 @@ interface ICombatant {
     @Readonly fun getUnitType(): UnitType
     @Readonly fun getAttackingStrength(defender: ICombatant? = null): Int
     @Readonly fun getDefendingStrength(attacker: ICombatant? = null): Int
-    fun takeDamage(damage: Int)
+    fun takeDamage(damage: Int, attackRecorder: AttackRecorder? = null)
     @Readonly fun isDefeated(): Boolean
     @Readonly fun getCivInfo(): Civilization
     @Readonly fun getTile(): Tile

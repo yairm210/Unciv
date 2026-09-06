@@ -1,7 +1,10 @@
 package com.unciv.view
 
 import com.unciv.logic.GameInfo
+import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.battle.AttackRecorder
 import com.unciv.logic.battle.AttackEvent
+import com.unciv.logic.battle.AttackInterception
 import com.unciv.logic.battle.AttackParticipant
 import com.unciv.logic.map.HexCoord
 import net.bytebuddy.jar.asm.ClassReader
@@ -43,7 +46,7 @@ class AttackEventsViewBoundaryTest {
         })
 
         val engineMethods = GameInfo::class.declaredMemberFunctions.filter {
-            it.name in setOf("recordAttack", "expireAttackEventsFor", "createAttackEventsView")
+            it.name in setOf("storeAttack", "expireAttackEventsFor", "createAttackEventsView")
         }
         assertEquals(3, engineMethods.size)
         for (method in engineMethods) {
@@ -54,7 +57,7 @@ class AttackEventsViewBoundaryTest {
         val rawReturningMethods = GameInfo::class.java.declaredMethods.filter {
             !Modifier.isPrivate(it.modifiers) && containsRawRecordType(it.genericReturnType.typeName)
         }
-        assertEquals(listOf(engineMethods.single { it.name == "recordAttack" }.javaMethod), rawReturningMethods)
+        assertTrue(rawReturningMethods.isEmpty())
     }
 
     @Test
@@ -99,6 +102,103 @@ class AttackEventsViewBoundaryTest {
             assertEquals(property.name != "turn", property.returnType.isMarkedNullable)
         }
         assertTrue(HexCoord::class.declaredMemberProperties.none { it is KMutableProperty<*> })
+    }
+
+    @Test
+    fun `attack recorder has engine-only construction and bookkeeping`() {
+        assertTrue(Modifier.isFinal(AttackRecorder::class.java.modifiers))
+        assertFalse(IsPartOfGameInfoSerialization::class.java.isAssignableFrom(AttackRecorder::class.java))
+        assertFalse(AutoCloseable::class.java.isAssignableFrom(AttackRecorder::class.java))
+        assertTrue(AttackRecorder::class.declaredMemberFunctions.none { it.name in setOf("close", "finalize") })
+        assertTrue(AttackRecorder::class.constructors.all { it.visibility == KVisibility.INTERNAL })
+        assertTrue(AttackRecorder::class.declaredMemberFunctions.none { it.visibility == KVisibility.PUBLIC })
+        assertTrue(AttackRecorder::class.java.declaredFields.all { Modifier.isPrivate(it.modifiers) })
+    }
+
+    @Test
+    fun `attack recorders stay out of views cached game contexts and serialized state`() {
+        val violations = ArrayList<String>()
+        val classes = coreClassFiles().map(::ClassReader).toList()
+        val parentTypes = classes.associate { it.className to (listOfNotNull(it.superName) + it.interfaces) }
+        fun isSerialized(className: String): Boolean = className == serializedStateInterface ||
+            parentTypes[className].orEmpty().any(::isSerialized)
+        fun containsRecorder(type: String?): Boolean = type?.let(attackRecorderType::containsMatchIn) == true
+
+        for (reader in classes) {
+            val callerClass = reader.className
+            val isPresentation = callerClass.startsWith("com/unciv/view/") || callerClass.startsWith("com/unciv/ui/")
+            val isRecorder = callerClass == attackRecorderClass || callerClass.startsWith("$attackRecorderClass$")
+            val isCachedContext = callerClass == cachedGameContextClass || callerClass.startsWith("$cachedGameContextClass$")
+            reader.accept(object : ClassVisitor(Opcodes.ASM9) {
+                fun checkThreadLocal(type: String?) {
+                    if (isRecorder && type != null && (type.contains("java/lang/ThreadLocal")
+                            || type.contains("java/lang/InheritableThreadLocal")))
+                        violations.add("$callerClass uses ambient thread-local recording")
+                }
+
+                override fun visitField(access: Int, name: String, descriptor: String,
+                                        signature: String?, value: Any?): FieldVisitor? {
+                    checkThreadLocal(descriptor)
+                    checkThreadLocal(signature)
+                    if ((containsRecorder(descriptor) || containsRecorder(signature))
+                        && (isPresentation || isSerialized(callerClass) || isCachedContext
+                            || access and Opcodes.ACC_STATIC != 0))
+                        violations.add("$callerClass.$name retains an attack recorder")
+                    return null
+                }
+
+                override fun visitMethod(access: Int, name: String, descriptor: String,
+                                         signature: String?, exceptions: Array<out String>?): MethodVisitor {
+                    val caller = "$callerClass.$name"
+                    fun checkType(type: String?) {
+                        checkThreadLocal(type)
+                        if (isPresentation && containsRecorder(type))
+                            violations.add("$caller exposes or accesses an attack recorder")
+                    }
+                    fun checkCall(owner: String, calledDescriptor: String) {
+                        checkType(owner)
+                        checkThreadLocal(calledDescriptor)
+                        // Ordinary UI calls may invoke mutation methods with a default null
+                        // recorder argument in the JVM descriptor. A returned recorder is different.
+                        checkType(if (calledDescriptor.startsWith("("))
+                            Type.getReturnType(calledDescriptor).descriptor else calledDescriptor)
+                    }
+                    checkType(descriptor)
+                    checkType(signature)
+                    return object : MethodVisitor(Opcodes.ASM9) {
+                        override fun visitMethodInsn(opcode: Int, owner: String, name: String,
+                                                     descriptor: String, isInterface: Boolean) {
+                            checkCall(owner, descriptor)
+                        }
+
+                        override fun visitFieldInsn(opcode: Int, owner: String, name: String, descriptor: String) {
+                            checkType(owner)
+                            checkType(descriptor)
+                        }
+
+                        override fun visitTypeInsn(opcode: Int, type: String) = checkType(type)
+
+                        override fun visitLdcInsn(value: Any) {
+                            if (value is Handle) checkCall(value.owner, value.desc)
+                            else if (value is Type) checkType(value.descriptor)
+                        }
+
+                        override fun visitInvokeDynamicInsn(name: String, descriptor: String,
+                                                            bootstrapMethodHandle: Handle,
+                                                            vararg bootstrapMethodArguments: Any) {
+                            checkType(descriptor)
+                            for (argument in bootstrapMethodArguments) {
+                                if (argument is Handle) checkCall(argument.owner, argument.desc)
+                                else if (argument is Type) checkType(argument.descriptor)
+                            }
+                        }
+                    }
+                }
+            }, ClassReader.SKIP_DEBUG or ClassReader.SKIP_FRAMES)
+        }
+        assertTrue(classes.any { it.className == attackRecorderClass })
+        assertFalse(classes.any { it.className == "${battlePackage}BattleDamageRecorder" })
+        assertTrue(violations.joinToString("\n"), violations.isEmpty())
     }
 
     @Test
@@ -189,11 +289,13 @@ class AttackEventsViewBoundaryTest {
      * such as expireAttackEventsFor$lambda$0, which is only its removal predicate.
      */
     private fun restrictedJvmOperations(): Map<String, String> = buildMap {
-        for (function in GameInfo::class.declaredMemberFunctions) {
-            val operation = "$gameInfoClass.${function.name}"
-            if (operation !in trustedOperationCallers) continue
-            val method = function.javaMethod!!
-            put("$gameInfoClass.${method.name}${Type.getMethodDescriptor(method)}", operation)
+        for ((className, type) in listOf(gameInfoClass to GameInfo::class, attackRecorderClass to AttackRecorder::class)) {
+            for (function in type.declaredMemberFunctions) {
+                val operation = "$className.${function.name}"
+                if (operation !in trustedOperationCallers) continue
+                val method = function.javaMethod!!
+                put("$className.${method.name}${Type.getMethodDescriptor(method)}", operation)
+            }
         }
         val constructor = AttackEventsView::class.java.declaredConstructors.single()
         put("$attackViewClass.<init>${Type.getConstructorDescriptor(constructor)}", "$attackViewClass.<init>")
@@ -213,21 +315,29 @@ class AttackEventsViewBoundaryTest {
     }
 
     companion object {
-        private val rawRecordTypes = listOf(AttackEvent::class.java, AttackParticipant::class.java)
+        private val rawRecordTypes = listOf(AttackEvent::class.java, AttackParticipant::class.java, AttackInterception::class.java)
             .flatMap { listOf(it.name, it.name.replace('.', '/')) }
             .map { Regex("${Regex.escape(it)}(?![A-Za-z0-9_])") }
         private const val gameInfoClass = "com/unciv/logic/GameInfo"
         private const val attackViewClass = "com/unciv/view/AttackEventsView"
         private const val gameViewClass = "com/unciv/view/GameView"
         private const val battlePackage = "com/unciv/logic/battle/"
+        private const val attackRecorderClass = "${battlePackage}AttackRecorder"
+        private const val cachedGameContextClass = "com/unciv/models/ruleset/unique/GameContext"
+        private const val serializedStateInterface = "com/unciv/logic/IsPartOfGameInfoSerialization"
+        private val attackRecorderType = Regex("${Regex.escape(attackRecorderClass)}(?![A-Za-z0-9_])")
+        private val combatEntryPoints = setOf("${battlePackage}Battle.attack", "${battlePackage}Nuke.NUKE",
+            "${battlePackage}AirInterception.airSweep")
         private val trustedOperationCallers = mapOf(
-            "$gameInfoClass.recordAttack" to setOf("${battlePackage}Battle.attack", "${battlePackage}Nuke.NUKE"),
+            "$gameInfoClass.storeAttack" to combatEntryPoints,
+            "$attackRecorderClass.finish" to combatEntryPoints,
+            "$attackRecorderClass.finishIncomplete" to combatEntryPoints,
             "$gameInfoClass.expireAttackEventsFor" to setOf("com/unciv/logic/civilization/managers/TurnManager.startTurn"),
             "$gameInfoClass.createAttackEventsView" to setOf("$gameViewClass.<init>"),
             "$attackViewClass.<init>" to setOf("$gameInfoClass.createAttackEventsView"),
         )
         private val trustedStorageCallers = mapOf(
-            "$gameInfoClass.attackEvents" to setOf("<init>", "clone", "recordAttack", "expireAttackEventsFor",
+            "$gameInfoClass.attackEvents" to setOf("<init>", "clone", "storeAttack", "expireAttackEventsFor",
                 "createAttackEventsView").map { "$gameInfoClass.$it" }.toSet(),
             "$attackViewClass.events" to setOf("$attackViewClass.<init>", "$attackViewClass.getObservedAttacks"),
         )
