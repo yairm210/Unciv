@@ -38,6 +38,7 @@ import com.unciv.ui.components.tilegroups.WorldTileGroup
 import com.unciv.ui.components.tilegroups.citybutton.CityButton
 import com.unciv.ui.components.widgets.UnitIconGroup
 import com.unciv.ui.components.widgets.ZoomableScrollPane
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.UncivStage
 import com.unciv.ui.screens.worldscreen.UndoHandler.Companion.recordUndoCheckpoint
 import com.unciv.ui.screens.worldscreen.WorldScreen
@@ -47,6 +48,7 @@ import com.unciv.utils.Log
 import com.unciv.utils.launchOnGLThread
 import yairm210.purity.annotations.Readonly
 import java.lang.Float.max
+import kotlin.math.atan2
 
 
 class WorldMapHolder(
@@ -55,6 +57,10 @@ class WorldMapHolder(
 ) : ZoomableScrollPane(20f, 20f) {
     internal var selectedTile: TileView? = null
     val tileGroups = HashMap<TileView, WorldTileGroup>()
+    private val tileGroupsByPosition = HashMap<HexCoord, WorldTileGroup>()
+
+    /** Event overlays are independent of terrain visibility, including endpoints on unexplored tiles. */
+    private val attackOverlays = ArrayList<Actor>()
 
     /** Holds buttons created by [OverlayButtonData] implementations */
     internal val unitActionOverlays: ArrayList<Actor> = ArrayList()
@@ -105,7 +111,10 @@ class WorldMapHolder(
         val tileGroupsNew = tileMap.values.map { WorldTileGroup(tileMapView.getTile(it), tileSetStrings) }
         tileGroupMap = TileGroupMap(this, tileGroupsNew, continuousScrollingX)
 
-        for (tileGroup in tileGroupsNew) tileGroups[tileGroup.tileView] = tileGroup
+        for (tileGroup in tileGroupsNew) {
+            tileGroups[tileGroup.tileView] = tileGroup
+            tileGroupsByPosition[tileGroup.tileView.position()] = tileGroup
+        }
 
         addClickListener()
 
@@ -598,11 +607,48 @@ class WorldMapHolder(
     fun resetArrows() {
         for (tile in tileGroups.asSequence())
             tile.value.layerMisc.resetArrows()
+        for (overlay in attackOverlays) overlay.remove()
+        attackOverlays.clear()
     }
 
     /** Add an arrow to draw on the next update. */
     fun addArrow(fromTileView: TileView, toTileView: TileView, arrowType: MapArrowType) {
         tileGroups[fromTileView]?.layerMisc?.addArrow(toTileView.getTile(), arrowType)
+    }
+
+    /** Draw only recorded coordinates; resolving their map geometry does not reveal their terrain. */
+    fun addAttackArrow(source: HexCoord, target: HexCoord) {
+        if (source == target) return
+        val sourceGroup = tileGroupsByPosition[source] ?: return
+        val targetPosition = if (tileMap.mapParameters.worldWrap)
+            HexMath.getUnwrappedNearestTo(target, source, tileMap.maxLongitude).toHexCoord()
+        else target
+        val relative = HexMath.hex2WorldCoords(targetPosition).sub(HexMath.hex2WorldCoords(source))
+        val arrow = ImageGetter.getImage(currentTileSetStrings.orFallback {
+            getString(tileSetLocation, "Arrows/", MiscArrowTypes.UnitHasAttacked.name)
+        }).apply {
+            touchable = Touchable.disabled
+            setPosition(sourceGroup.x + 25f, sourceGroup.y - 5f)
+            setSize(40f * relative.len(), 60f)
+            setOrigin(0f, 30f)
+            rotation = atan2(relative.y, relative.x) / Math.PI.toFloat() * 180
+        }
+        tileGroupMap.addTileOverlay(arrow, sourceGroup)
+        attackOverlays.add(arrow)
+    }
+
+    /** A partial observation is a marker, never an arrow implying an unknown endpoint. */
+    fun addAttackMarker(position: HexCoord, isTarget: Boolean) {
+        val tileGroup = tileGroupsByPosition[position] ?: return
+        val icon = ImageGetter.getImage(if (isTarget) "OtherIcons/CrosshairB" else "StatIcons/RangedStrength").apply {
+            touchable = Touchable.disabled
+            color = if (isTarget) Color.SCARLET else Color.ORANGE
+            setSize(20f, 20f)
+            // Offset from the center so a defending unit does not cover the observation marker.
+            setPosition(tileGroup.x + 30f, tileGroup.y + 5f)
+        }
+        tileGroupMap.addTileOverlay(icon, tileGroup)
+        attackOverlays.add(icon)
     }
 
     /**
@@ -638,13 +684,14 @@ class WorldMapHolder(
             val fromTileView = tileMapView.getTile(unitView.getTile().position()) ?: continue
             addArrow(fromTileView, toTileView, MiscArrowTypes.UnitMoving)
         }
-        for ((from, to) in gameView.getVisibleAttacks()) {
-            if (selectedUnit != null
-                && selectedUnit.getTile().position() != from
-                && selectedUnit.getTile().position() != to) continue
-            val fromTileView = tileMapView.getTile(from) ?: continue
-            val toTileView = tileMapView.getTile(to) ?: continue
-            addArrow(fromTileView, toTileView, MiscArrowTypes.UnitHasAttacked)
+        for (attack in gameView.attackEventsView.getObservedAttacks(selectedUnit)) {
+            val from = attack.source
+            val to = attack.target
+            when {
+                from != null && to != null -> addAttackArrow(from, to)
+                to != null -> addAttackMarker(to, isTarget = true)
+                from != null -> addAttackMarker(from, isTarget = false)
+            }
         }
     }
 

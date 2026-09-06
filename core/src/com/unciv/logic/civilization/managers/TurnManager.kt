@@ -25,6 +25,8 @@ class TurnManager(val civInfo: Civilization) {
 
 
     fun startTurn(progressBar: NextTurnProgress? = null):Unit = timeThis("TurnManager.startTurn") {
+        // GameInfo also starts turns for defeated civs, so their last attacks expire normally.
+        civInfo.gameInfo.expireAttackEventsFor(civInfo.civID)
         if (civInfo.isSpectator()) return
 
         for (city in civInfo.cities) city.hasSoldBuildingThisTurn = false
@@ -39,7 +41,6 @@ class TurnManager(val civInfo: Civilization) {
             civInfo.gainStockpiledResource(stockpiledResource.resource, stockpiledResource.amount)
 
         civInfo.civConstructions.startTurn()
-        civInfo.attacksSinceTurnStart.clear()
         civInfo.updateStatsForNextTurn() // for things that change when turn passes e.g. golden age, city state influence
 
         // Do this after updateStatsForNextTurn but before cities.startTurn

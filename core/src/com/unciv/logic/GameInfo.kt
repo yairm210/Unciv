@@ -14,6 +14,8 @@ import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
 import com.unciv.logic.GameInfoPreview.Companion.randomGameId
 import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.automation.civilization.BarbarianManager
+import com.unciv.logic.battle.AttackEvent
+import com.unciv.logic.notifications.AttackNotifications
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.*
 import com.unciv.logic.civilization.managers.TechManager
@@ -41,6 +43,7 @@ import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.utils.DebugUtils
 import com.unciv.utils.debug
 import com.unciv.utils.pseudoRandomUuid
+import com.unciv.view.AttackEventsView
 import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.Readonly
 import java.security.MessageDigest
@@ -111,6 +114,11 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     var tileMap: TileMap = TileMap()
     var gameParameters = GameParameters()
     var turns = 0
+    /** Recent attacks, retained until the attacking civilization next starts its turn.
+     * Older saves have no observation records; their legacy attack histories are intentionally
+     * ignored because their original positions and witnesses cannot be recovered reliably.
+     */
+    private var attackEvents = ArrayList<AttackEvent>()
     var oneMoreTurnMode = false
     var currentPlayer = ""
     var currentTurnStartTime = System.currentTimeMillis()
@@ -206,6 +214,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         toReturn.currentPlayer = currentPlayer
         toReturn.currentTurnStartTime = currentTurnStartTime
         toReturn.turns = turns
+        toReturn.attackEvents = attackEvents.mapTo(ArrayList(attackEvents.size)) { it.clone() }
         toReturn.difficulty = difficulty
         toReturn.gameParameters = gameParameters
         toReturn.gameId = gameId
@@ -358,6 +367,40 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
     //endregion
     //region State changing functions
+
+    /**
+     * Trusted construction boundary, called only by GameView. The collection stays private to
+     * engine storage and the final, non-unwrappable AttackEventsView.
+     * AttackEventsViewBoundaryTest enforces this same-module access restriction.
+     */
+    @Readonly
+    internal fun createAttackEventsView(viewer: Civilization, spectatorMode: Boolean): AttackEventsView =
+        AttackEventsView(attackEvents, viewer, spectatorMode)
+
+    /** A single in-progress or completed attack, filtered for one recipient without a raw reader. */
+    @Readonly
+    internal fun createAttackEventView(event: AttackEvent, viewer: Civilization): AttackEventsView =
+        AttackEventsView(listOf(event), viewer, spectatorMode = false)
+
+    /** Combat execution stores a record after explicitly finishing its recorder. */
+    internal fun storeAttack(event: AttackEvent) {
+        attackEvents.add(event)
+    }
+
+    /** Explicit delivery after storage; formatting receives only each recipient's filtered View. */
+    internal fun publishAttackNotifications(event: AttackEvent) {
+        for (recipient in civilizations) {
+            val view = createAttackEventView(event, recipient)
+            for (notification in AttackNotifications.create(view))
+                recipient.addNotification(notification.text, notification.actions, notification.category,
+                    *notification.icons.toTypedArray())
+        }
+    }
+
+    /** Turn processing expires only the history belonging to the civilization starting its turn. */
+    internal fun expireAttackEventsFor(attackingCivId: String) {
+        attackEvents.removeAll { it.attackingCivId == attackingCivId }
+    }
 
     // Do we automatically simulate until N turn?
     @Readonly
