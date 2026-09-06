@@ -50,7 +50,7 @@ class AttackRecorder internal constructor(attacker: MapUnitCombatant, targetTile
     }
 
     /** Capture and withdrawal must be reported explicitly when ordinary survival cannot describe them. */
-    internal fun recordOutcome(combatant: MapUnitCombatant, outcome: AttackParticipantOutcome) {
+    internal fun recordOutcome(combatant: MapUnitCombatant, outcome: AttackParticipantOutcome?) {
         val attack = validate(combatant.getCivInfo().gameInfo)
         require(outcome == AttackParticipantOutcome.Captured || outcome == AttackParticipantOutcome.Withdrew)
         getOrCreateParticipantState(combatant.unit, attack).explicitOutcome = outcome

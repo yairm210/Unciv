@@ -6,7 +6,7 @@ import yairm210.purity.annotations.LocalState
 import yairm210.purity.annotations.Readonly
 
 enum class AttackParticipantOutcome {
-    Pending, Survived, Destroyed, Captured, Withdrew
+    Survived, Destroyed, Captured, Withdrew
 }
 
 /** A participant's identity at attack time, independent of later movement, renaming or capture. */
@@ -23,7 +23,7 @@ class AttackParticipant() : IsPartOfGameInfoSerialization {
      * Destruction or capture without HP loss is represented by [outcome].
      */
     var damageReceived = 0
-    var outcome = AttackParticipantOutcome.Pending
+    var outcome: AttackParticipantOutcome? = null
     /**
      * Civilizations that identified this particular participant when the attack happened.
      * A combat report may disclose its unit type without identifying the unit, owner or origin.
