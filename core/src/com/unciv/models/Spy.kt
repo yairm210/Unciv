@@ -466,8 +466,12 @@ class Spy private constructor() : IsPartOfGameInfoSerialization {
             }
         }
         var totalEfficiency = 1.0
-        totalEfficiency *= (100.0 + friendlyUniques.sumOf { it.params[0].toInt() }) / 100
-        totalEfficiency *= (100.0 + enemyUniques.sumOf { it.params[0].toInt() }) / 100
+        totalEfficiency *= (100.0 + friendlyUniques
+            .filter { city == null || city.matchesFilter(it.params[1], civInfo) }
+            .sumOf { it.params[0].toInt() }) / 100
+        totalEfficiency *= (100.0 + enemyUniques
+            .filter { city != null && city.matchesFilter(it.params[1]) }
+            .sumOf { it.params[0].toInt() }) / 100
         return totalEfficiency.coerceAtLeast(0.0)
     }
 
