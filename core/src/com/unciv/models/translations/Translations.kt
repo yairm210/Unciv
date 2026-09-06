@@ -477,11 +477,12 @@ fun String.getPlaceholderParameters(): List<String> {
     var depthOfBraces = 0
     var startOfCurrentParameter = -1
     stringToParse.indices.forEach { i ->
-        if (stringToParse[i] == '[') {
+        val currentChar = stringToParse[i]
+        if (currentChar == '[') {
             if (depthOfBraces == 0) startOfCurrentParameter = i+1
             depthOfBraces++
         }
-        if (stringToParse[i] == ']' && depthOfBraces > 0) {
+        if (currentChar == ']' && depthOfBraces > 0) {
             depthOfBraces--
             if (depthOfBraces == 0) parameters.add(substring(startOfCurrentParameter,i))
         }
