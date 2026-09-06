@@ -8,7 +8,8 @@ import yairm210.purity.annotations.Readonly
  *  Encapsulates the "map size" concept, without also choosing a shape.
  *
  *  Predefined sizes are kept in the [Predefined] enum, instances derived from these have the same [name] and copied dimensions.
- *  Custom sizes always have [custom] as [name], even if created with the exact same dimensions as a [Predefined].
+ *  Custom sizes always have [custom] as [name], even if created with the exact same dimensions as a [Predefined]. 
+ *  Auto sizes  similarly have [auto] as [name], their sizes are changed dynamically when the map is generated.
  *
  *  @property name
  *  @property radius
@@ -34,13 +35,15 @@ class MapSize private constructor(
 
     constructor(size: Predefined) : this(size.name, size.radius, size.width, size.height)
 
-    constructor(name: String) : this(Predefined.safeValueOf(name))
+    constructor(name: String) : this(if (name == auto) Auto else MapSize(Predefined.safeValueOf(name)))
 
     constructor(radius: Int) : this(custom, radius, 0, 0) {
         setNewRadius(radius)
     }
 
     constructor(width: Int, height: Int) : this(custom, HexMath.getEquivalentHexagonalRadius(width, height), width, height)
+
+    constructor(other: MapSize) : this(other.name, other.radius, other.width, other.height)
 
     /** Predefined Map Sizes, their name can appear in json only as copy in MapSize */
     enum class Predefined(
@@ -76,19 +79,21 @@ class MapSize private constructor(
          * used in [name] to indicate user-defined dimensions.
          * Do not mistake for [MapGeneratedMainType.custom]. */
         const val custom = "Custom"
+        const val auto = "Auto"
+        val Auto get() = MapSize(auto, Predefined.Medium.radius, Predefined.Medium.width, Predefined.Medium.height)
         val Tiny get() = MapSize(Predefined.Tiny)
         val Small get() = MapSize(Predefined.Small)
         val Medium get() = MapSize(Predefined.Medium)
         val Large get() = MapSize(Predefined.Large)
         val Huge get() = MapSize(Predefined.Huge)
-        fun names() = Predefined.entries.map { it.name }
+        fun names() = Predefined.entries.map { it.name } + listOf(auto)
     }
 
     fun clone() = MapSize(name, radius, width, height)
 
     @Readonly
     fun getPredefinedOrNextSmaller(): Predefined {
-        if (name != custom) return Predefined.safeValueOf(name)
+        if (name != custom && name != auto) return Predefined.safeValueOf(name)
         for (predef in Predefined.entries.reversed()) {
             if (radius >= predef.radius) return predef
         }

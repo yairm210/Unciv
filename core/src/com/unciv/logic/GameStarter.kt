@@ -282,9 +282,10 @@ class GameStarter private constructor(
             }
             val desiredNumberOfPlayers = (min.coerceAtLeast(nonAICount)..max.coerceAtLeast(nonAICount)).random(rng)
 
-            if (desiredNumberOfPlayers > newGameParameters.players.size) {
-                extraRandomAIPlayers = desiredNumberOfPlayers - newGameParameters.players.size
-            } else if (desiredNumberOfPlayers < newGameParameters.players.size) {
+            val numberOfNonSpectatorPlayers = newGameParameters.players.filter { it.chosenCiv != Constants.spectator }.size
+            if (desiredNumberOfPlayers > numberOfNonSpectatorPlayers) {
+                extraRandomAIPlayers = desiredNumberOfPlayers - numberOfNonSpectatorPlayers
+            } else if (desiredNumberOfPlayers < numberOfNonSpectatorPlayers) {
                 val extraPlayers = newGameParameters.players.size - desiredNumberOfPlayers
                 selectedAIToSkip = newGameParameters.players
                     .filter { it.playerType === PlayerType.AI }
