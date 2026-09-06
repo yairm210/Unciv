@@ -28,6 +28,8 @@ class AttackParticipant() : IsPartOfGameInfoSerialization {
      */
     var damageReceived = 0
     var outcome = AttackParticipantOutcome.Pending
+    /** A capture attempt can destroy an uncapturable unit instead of transferring it. */
+    var captureAttempted = false
     /**
      * Civilizations that identified this particular participant when the attack happened.
      * A combat report may disclose its unit type without identifying the unit, owner or origin.
@@ -70,6 +72,7 @@ class AttackParticipant() : IsPartOfGameInfoSerialization {
         result.healthAfter = healthAfter
         result.damageReceived = damageReceived
         result.outcome = outcome
+        result.captureAttempted = captureAttempted
         result.knownBy = HashSet(knownBy)
         return result
     }

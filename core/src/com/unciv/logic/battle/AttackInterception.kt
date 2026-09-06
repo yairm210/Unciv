@@ -16,6 +16,11 @@ class AttackInterception() : IsPartOfGameInfoSerialization {
     var intercepted = false
     var damageToAttacker = 0
     var damageToInterceptor = 0
+    /** Outcomes at the end of this engagement, before any later combat or nuclear blast. */
+    var attackerOutcome: AttackParticipantOutcome? = null
+    var interceptorOutcome: AttackParticipantOutcome? = null
+    /** Target knowledge when interception started; null only in older saves. */
+    var knowsTarget: HashSet<String>? = null
 
     constructor(interceptor: MapUnitCombatant) : this() {
         this.interceptor = AttackParticipant(interceptor)
@@ -28,6 +33,9 @@ class AttackInterception() : IsPartOfGameInfoSerialization {
         result.intercepted = intercepted
         result.damageToAttacker = damageToAttacker
         result.damageToInterceptor = damageToInterceptor
+        result.attackerOutcome = attackerOutcome
+        result.interceptorOutcome = interceptorOutcome
+        result.knowsTarget = knowsTarget?.let { HashSet(it) }
         return result
     }
 }

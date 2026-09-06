@@ -1,7 +1,9 @@
 package com.unciv.logic.battle
 
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.*
+import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.NotificationCategory
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.tile.RoadStatus
@@ -12,7 +14,6 @@ import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.worldscreen.bottombar.BattleTable
 import yairm210.purity.annotations.Readonly
 import kotlin.math.ulp
-import kotlin.random.Random
 
 object Nuke {
 
@@ -78,7 +79,9 @@ object Nuke {
             }
             throw exception
         }
-        attackingCiv.gameInfo.storeAttack(attackRecorder.finish(resolution))
+        val event = attackRecorder.finish(resolution)
+        attackingCiv.gameInfo.storeAttack(event)
+        attackingCiv.gameInfo.publishAttackNotifications(event)
     }
 
     private fun performNuke(
@@ -99,10 +102,7 @@ object Nuke {
         }
         snapshotPotentialTargets()
 
-        val (hitCivsTerritory, notifyDeclaredWarCivs) =
-            declareWarOnHitCivs(attackingCiv, hitTiles.asSequence(), attacker, targetTile, attackRecorder)
-
-        addNukeNotifications(targetTile, attacker, notifyDeclaredWarCivs, attackingCiv, hitCivsTerritory, attackRecorder.snapshot())
+        declareWarOnHitCivs(attackingCiv, hitTiles.asSequence(), attacker, targetTile, attackRecorder)
 
         // The blast never occurred; the recorder discards unaffected potential victims.
         if (attacker.isDefeated()) return AttackResolution.Intercepted
@@ -110,6 +110,12 @@ object Nuke {
         // Declaring war can trigger unit spawns. Preserve existing snapshots, and capture the
         // new combatants before the blast damages them without changing endpoint knowledge.
         snapshotPotentialTargets()
+        // Victims learn the impact location when the blast occurs, even through fog of war.
+        // Capture recipients before city destruction and casualties remove their ownership.
+        val territoryCivIds = hitTiles.mapNotNull { it.getOwner()?.civID }.toSet()
+        val affectedCivIds = territoryCivIds + hitTiles.asSequence()
+            .flatMap { it.getUnits() }.map { it.civ.civID }.toSet()
+        attackRecorder.recordNuclearImpact(affectedCivIds, territoryCivIds)
         attackRecorder.retainAllTargets()
         for (tile in hitTiles) {
             // Handle complicated effects
@@ -131,89 +137,32 @@ object Nuke {
         return AttackResolution.Completed
     }
 
-    private fun addNukeNotifications(
-        targetTile: Tile,
-        attacker: MapUnitCombatant,
-        notifyDeclaredWarCivs: ArrayList<Civilization>,
-        attackingCiv: Civilization,
-        hitCivsTerritory: ArrayList<Civilization>,
-        attackEvent: AttackEvent
-    ) {
-        val nukeNotificationAction = sequenceOf(LocationAction(targetTile.position), CivilopediaAction("Units/" + attacker.getName()))
-
-        // If the nuke has been intercepted and destroyed then it fails to detonate
-        if (attacker.isDefeated()) {
-            // Notify attacker that they are now at war for the attempt
-            for (defendingCiv in notifyDeclaredWarCivs)
-                attackingCiv.addNotification(
-                    "After an attempted attack by our [${attacker.getName()}], [${defendingCiv}] has declared war on us!",
-                    nukeNotificationAction,
-                    Notification.NotificationCategory.Diplomacy,
-                    defendingCiv.civName,
-                    NotificationIcon.War,
-                    attacker.getName()
-                )
-            return
-        }
-
-        // Notify attacker that they are now at war
-        for (defendingCiv in notifyDeclaredWarCivs)
-            attackingCiv.addNotification(
-                "After being hit by our [${attacker.getName()}], [${defendingCiv}] has declared war on us!",
-                nukeNotificationAction, NotificationCategory.Diplomacy, defendingCiv.civName, NotificationIcon.War, attacker.getName()
-            )
-
-        // Message all other civs
-        for (otherCiv in attackingCiv.gameInfo.civilizations) {
-            if (!otherCiv.isAlive() || otherCiv == attackingCiv) continue
-            val knowsAttacker = otherCiv.civID in attackEvent.knowsSource
-            val territoryHit = otherCiv in hitCivsTerritory
-            // An affected civilization knows where the blast hit. An uninvolved observer
-            // only receives a map link if it saw the target when the attack began.
-            val knowsImpact = otherCiv.civID in attackEvent.knowsTarget || territoryHit
-                || attackEvent.targets.any { it.civId == otherCiv.civID }
-            val actions = sequenceOf(
-                if (knowsImpact) LocationAction(targetTile.position) else null,
-                CivilopediaAction("Units/" + attacker.getName())
-            ).filterNotNull()
-            val text = when {
-                !knowsAttacker -> "A(n) [${attacker.getName()}] has been detonated by [an unknown civilization]!"
-                territoryHit -> "A(n) [${attacker.getName()}] from [${attackingCiv.civName}] has exploded in our territory!"
-                else -> "A(n) [${attacker.getName()}] has been detonated by [${attackingCiv.civName}]!"
-            }
-            val icons = if (knowsAttacker)
-                arrayOf(attackingCiv.civName, NotificationIcon.War, attacker.getName())
-            else arrayOf(NotificationIcon.War, attacker.getName())
-            otherCiv.addNotification(text, actions, NotificationCategory.War, *icons)
-        }
-    }
-
     private fun declareWarOnHitCivs(
         attackingCiv: Civilization,
         hitTiles: Sequence<Tile>,
         attacker: MapUnitCombatant,
         targetTile: Tile,
         attackRecorder: AttackRecorder
-    ): Pair<ArrayList<Civilization>, ArrayList<Civilization>> {
+    ) {
         // Declare war on the owners of all hit tiles
-        val notifyDeclaredWarCivs = ArrayList<Civilization>()
         fun tryDeclareWar(civSuffered: Civilization) {
             if (civSuffered != attackingCiv
                 && civSuffered.knows(attackingCiv)
                 && civSuffered.getDiplomacyManager(attackingCiv)!!.diplomaticStatus != DiplomaticStatus.War
             ) {
                 attackingCiv.getDiplomacyManager(civSuffered)!!.declareWar()
-                if (!notifyDeclaredWarCivs.contains(civSuffered)) notifyDeclaredWarCivs.add(
-                    civSuffered
+                // Normal declarations notify the defender and observers. Nuclear targeting
+                // also needs to tell its owner which additional wars the blast starts.
+                attackingCiv.addNotification(
+                    "[${attackingCiv.civName}] has declared war on [${civSuffered.civName}]!",
+                    NotificationCategory.Diplomacy, attackingCiv.civName,
+                    NotificationIcon.War, civSuffered.civName
                 )
             }
         }
 
-        val hitCivsTerritory = ArrayList<Civilization>()
-        for (hitCiv in hitTiles.mapNotNull { it.getOwner() }.distinct()) {
-            hitCivsTerritory.add(hitCiv)
+        for (hitCiv in hitTiles.mapNotNull { it.getOwner() }.distinct())
             tryDeclareWar(hitCiv)
-        }
 
         // Declare war on all potentially hit units. They'll try to intercept the nuke before it drops
         for (civWhoseUnitWasAttacked in hitTiles
@@ -231,7 +180,6 @@ object Nuke {
                 )
             }
         }
-        return Pair(hitCivsTerritory, notifyDeclaredWarCivs)
     }
 
     private fun doNukeExplosionForTile(
@@ -264,7 +212,6 @@ object Nuke {
             buildingModifier = city.getAggregateModifier(UniqueType.GarrisonDamageFromNukes)
             attackRecorder.snapshotTarget(CityCombatant(city))
             doNukeExplosionDamageToCity(city, nukeStrength, damageModifierFromMissingResource, combatState, attackRecorder)
-            Battle.postBattleNotifications(attacker, CityCombatant(city), city.getCenterTile(), attackRecorder.snapshot())
             Battle.destroyIfDefeated(city.civ, attacker.getCivInfo(), city.location.toHexCoord())
         }
 
@@ -286,7 +233,6 @@ object Nuke {
             } else {
                 defender.takeDamage(damage, attackRecorder)
             }
-            Battle.postBattleNotifications(attacker, defender, defender.getTile(), attackRecorder.snapshot())
             Battle.destroyIfDefeated(defender.getCivInfo(), attacker.getCivInfo())
         }
 

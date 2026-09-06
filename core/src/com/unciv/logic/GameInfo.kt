@@ -15,6 +15,7 @@ import com.unciv.logic.GameInfoPreview.Companion.randomGameId
 import com.unciv.logic.automation.Timers.Companion.timeThis
 import com.unciv.logic.automation.civilization.BarbarianManager
 import com.unciv.logic.battle.AttackEvent
+import com.unciv.logic.notifications.AttackNotifications
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.*
 import com.unciv.logic.civilization.managers.TechManager
@@ -376,9 +377,24 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     internal fun createAttackEventsView(viewer: Civilization, spectatorMode: Boolean): AttackEventsView =
         AttackEventsView(attackEvents, viewer, spectatorMode)
 
+    /** A single in-progress or completed attack, filtered for one recipient without a raw reader. */
+    @Readonly
+    internal fun createAttackEventView(event: AttackEvent, viewer: Civilization): AttackEventsView =
+        AttackEventsView(listOf(event), viewer, spectatorMode = false)
+
     /** Combat execution stores a record after explicitly finishing its recorder. */
     internal fun storeAttack(event: AttackEvent) {
         attackEvents.add(event)
+    }
+
+    /** Explicit delivery after storage; formatting receives only each recipient's filtered View. */
+    internal fun publishAttackNotifications(event: AttackEvent) {
+        for (recipient in civilizations) {
+            val view = createAttackEventView(event, recipient)
+            for (notification in AttackNotifications.create(view))
+                recipient.addNotification(notification.text, notification.actions, notification.category,
+                    *notification.icons.toTypedArray())
+        }
     }
 
     /** Turn processing expires only the history belonging to the civilization starting its turn. */

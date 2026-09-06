@@ -11,7 +11,8 @@ enum class AttackResolution { Pending, Completed, Withdrawn, Intercepted }
 
 /**
  * One attack and the endpoints each civilization observed when it happened.
- * Knowledge is captured before combat changes units or visibility, and never expanded later.
+ * Knowledge is captured during the attack and never expanded by later exploration.
+ * A nuclear blast also reveals its center to affected civilizations when it detonates.
  */
 class AttackEvent() : IsPartOfGameInfoSerialization {
     var turn = 0
@@ -20,9 +21,19 @@ class AttackEvent() : IsPartOfGameInfoSerialization {
     var attackingCivId = ""
     var knowsSource = HashSet<String>()
     var knowsTarget = HashSet<String>()
+    /** Territory owners at detonation, retained even if the blast destroys their cities. */
+    var nuclearTerritoryCivIds = HashSet<String>()
     var kind = AttackKind.Combat
     var resolution = AttackResolution.Pending
+    /** Actual retreat location and the civilizations that could observe the withdrawing unit there. */
+    var withdrawalDestination: HexCoord? = null
+    var withdrawalKnownBy = HashSet<String>()
+    /** Improvement removed from the original target tile by this attack. */
+    var destroyedImprovement: String? = null
     var attacker: AttackParticipant? = null
+    /** Retaliation in the direct exchange, excluding effects on an unseen attacker afterward. */
+    var defenderRetaliationDamage = 0
+    var attackerDefeatedByDefender = false
     /** Primary target and other affected units/cities, including captures and collateral casualties. */
     var targets = ArrayList<AttackParticipant>()
     /** Interceptors engage [attacker]; their bases never become additional attack endpoints. */
@@ -61,9 +72,15 @@ class AttackEvent() : IsPartOfGameInfoSerialization {
         result.attackingCivId = attackingCivId
         result.knowsSource = HashSet(knowsSource)
         result.knowsTarget = HashSet(knowsTarget)
+        result.nuclearTerritoryCivIds = HashSet(nuclearTerritoryCivIds)
         result.kind = kind
         result.resolution = resolution
+        result.withdrawalDestination = withdrawalDestination
+        result.withdrawalKnownBy = HashSet(withdrawalKnownBy)
+        result.destroyedImprovement = destroyedImprovement
         result.attacker = attacker?.clone()
+        result.defenderRetaliationDamage = defenderRetaliationDamage
+        result.attackerDefeatedByDefender = attackerDefeatedByDefender
         result.targets = ArrayList(targets.map { it.clone() })
         result.interceptions = ArrayList(interceptions.map { it.clone() })
         return result

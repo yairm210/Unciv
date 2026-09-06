@@ -46,9 +46,10 @@ class AttackEventsViewBoundaryTest {
         })
 
         val engineMethods = GameInfo::class.declaredMemberFunctions.filter {
-            it.name in setOf("storeAttack", "expireAttackEventsFor", "createAttackEventsView")
+            it.name in setOf("storeAttack", "expireAttackEventsFor", "createAttackEventsView",
+                "createAttackEventView", "publishAttackNotifications")
         }
-        assertEquals(3, engineMethods.size)
+        assertEquals(5, engineMethods.size)
         for (method in engineMethods) {
             assertEquals(method.name, KVisibility.INTERNAL, method.visibility)
         }
@@ -61,7 +62,7 @@ class AttackEventsViewBoundaryTest {
     }
 
     @Test
-    fun `attack view exposes only a bound read-only query and cannot be unwrapped`() {
+    fun `attack view exposes only bound read-only queries and cannot be unwrapped`() {
         assertTrue(Modifier.isFinal(AttackEventsView::class.java.modifiers))
         assertFalse(View::class.java.isAssignableFrom(AttackEventsView::class.java))
         assertTrue(AttackEventsView::class.constructors.all { it.visibility == KVisibility.INTERNAL })
@@ -69,14 +70,27 @@ class AttackEventsViewBoundaryTest {
         val publicFunctions = AttackEventsView::class.declaredMemberFunctions.filter {
             it.visibility == KVisibility.PUBLIC
         }
-        assertEquals(listOf("getObservedAttacks"), publicFunctions.map { it.name })
-        val query = publicFunctions.single()
+        assertEquals(setOf("getObservedAttacks", "getCombatReports", "getCaptureReports", "getCombatantForTrigger"),
+            publicFunctions.map { it.name }.toSet())
+        val query = publicFunctions.single { it.name == "getObservedAttacks" }
         assertEquals(List::class, query.returnType.classifier)
         assertEquals(ObservedAttack::class, query.returnType.arguments.single().type!!.classifier)
         val argument = query.parameters.single { it.kind == KParameter.Kind.VALUE }
         assertEquals(MapUnitView::class, argument.type.classifier)
         assertTrue(argument.type.isMarkedNullable)
         assertTrue(argument.isOptional)
+
+        for ((name, resultType) in mapOf("getCombatReports" to ObservedCombatReport::class,
+            "getCaptureReports" to ObservedAttackResult::class)) {
+            val reportQuery = publicFunctions.single { it.name == name }
+            assertEquals(List::class, reportQuery.returnType.classifier)
+            assertEquals(resultType, reportQuery.returnType.arguments.single().type!!.classifier)
+            assertTrue(reportQuery.parameters.none { it.kind == KParameter.Kind.VALUE })
+        }
+        val triggerQuery = publicFunctions.single { it.name == "getCombatantForTrigger" }
+        assertEquals(ObservedCombatant::class, triggerQuery.returnType.classifier)
+        assertTrue(triggerQuery.returnType.isMarkedNullable)
+        assertEquals(Int::class, triggerQuery.parameters.single { it.kind == KParameter.Kind.VALUE }.type.classifier)
 
         val publicProperties = AttackEventsView::class.declaredMemberProperties.filter {
             it.visibility == KVisibility.PUBLIC
@@ -217,6 +231,9 @@ class AttackEventsViewBoundaryTest {
                     if (!isTrustedRecordConsumer(callerClass)
                         && (containsRawRecordType(descriptor) || signature?.let(::containsRawRecordType) == true))
                         violations.add("$callerClass.$name stores privileged records")
+                    if (callerClass.startsWith(notificationPackage)
+                        && (containsLiveGameType(descriptor) || signature?.let(::containsLiveGameType) == true))
+                        violations.add("$callerClass.$name retains live game state")
                     return null
                 }
 
@@ -226,10 +243,20 @@ class AttackEventsViewBoundaryTest {
                     fun checkRawType(type: String?) {
                         if (!isTrustedRecordConsumer(callerClass) && type != null && containsRawRecordType(type))
                             violations.add("$caller refers to privileged record type $type")
+                        if (callerClass.startsWith(notificationPackage) && type != null && containsLiveGameType(type))
+                            violations.add("$caller refers to live game state $type")
+                    }
+                    fun checkKnowledgeAccess(owner: String, member: String) {
+                        val fields = attackKnowledgeFields[owner] ?: return
+                        if (callerClass in trustedKnowledgeConsumers || callerClass.startsWith("$attackViewClass$")) return
+                        if (fields.any { member == it || member == "get${it.replaceFirstChar(Char::uppercase)}"
+                                || member == "set${it.replaceFirstChar(Char::uppercase)}" })
+                            violations.add("$caller accesses attack knowledge directly through $owner.$member")
                     }
                     fun checkCall(owner: String, calledName: String, calledDescriptor: String) {
                         checkRawType(owner)
                         checkRawType(calledDescriptor)
+                        checkKnowledgeAccess(owner, calledName)
                         val operation = restrictedOperations["$owner.$calledName$calledDescriptor"] ?: return
                         val allowedCallers = trustedOperationCallers.getValue(operation)
                         seenOperations.add(operation)
@@ -247,6 +274,7 @@ class AttackEventsViewBoundaryTest {
                         override fun visitFieldInsn(opcode: Int, owner: String, name: String, descriptor: String) {
                             checkRawType(owner)
                             checkRawType(descriptor)
+                            checkKnowledgeAccess(owner, name)
                             val allowedCallers = trustedStorageCallers["$owner.$name"] ?: return
                             if (caller !in allowedCallers)
                                 violations.add("$caller accesses private history storage $owner.$name")
@@ -280,8 +308,11 @@ class AttackEventsViewBoundaryTest {
 
     private fun containsRawRecordType(type: String): Boolean = rawRecordTypes.any { it.containsMatchIn(type) }
 
+    private fun containsLiveGameType(type: String): Boolean = liveGameTypes.any { it.containsMatchIn(type) }
+
     private fun isTrustedRecordConsumer(className: String): Boolean =
-        className == gameInfoClass || className == attackViewClass || className.startsWith(battlePackage)
+        className == gameInfoClass || className == attackViewClass || className.startsWith("$attackViewClass$")
+            || className.startsWith(battlePackage)
 
     /**
      * Resolve the declared Kotlin operations to exact JVM names and descriptors. Stripping '$'
@@ -289,7 +320,10 @@ class AttackEventsViewBoundaryTest {
      * such as expireAttackEventsFor$lambda$0, which is only its removal predicate.
      */
     private fun restrictedJvmOperations(): Map<String, String> = buildMap {
-        for ((className, type) in listOf(gameInfoClass to GameInfo::class, attackRecorderClass to AttackRecorder::class)) {
+        val notificationTypes = (formatterClasses + notificationPublisherClass)
+            .map { it to Class.forName(it.replace('/', '.')).kotlin }
+        for ((className, type) in listOf(gameInfoClass to GameInfo::class,
+            attackRecorderClass to AttackRecorder::class) + notificationTypes) {
             for (function in type.declaredMemberFunctions) {
                 val operation = "$className.${function.name}"
                 if (operation !in trustedOperationCallers) continue
@@ -322,7 +356,26 @@ class AttackEventsViewBoundaryTest {
         private const val attackViewClass = "com/unciv/view/AttackEventsView"
         private const val gameViewClass = "com/unciv/view/GameView"
         private const val battlePackage = "com/unciv/logic/battle/"
+        private const val notificationPackage = "com/unciv/logic/notifications/"
+        private val liveGameTypes = listOf(gameInfoClass, "com/unciv/logic/civilization/Civilization",
+            "com/unciv/logic/city/City", "com/unciv/logic/map/mapunit/MapUnit", "com/unciv/logic/map/tile/Tile",
+            "${battlePackage}ICombatant", "${battlePackage}MapUnitCombatant", "${battlePackage}CityCombatant",
+            gameViewClass, "com/unciv/view/View", "com/unciv/UncivGame", "com/unciv/GUI",
+            "com/unciv/ui/screens/worldscreen/WorldScreen")
+            .flatMap { listOf(it, it.replace('/', '.')) }
+            .map { Regex("${Regex.escape(it)}(?![A-Za-z0-9_])") }
         private const val attackRecorderClass = "${battlePackage}AttackRecorder"
+        private const val notificationPublisherClass = "com/unciv/logic/notifications/AttackNotifications"
+        private val formatterClasses = setOf("AttackResultNotifications", "AirInterceptionNotifications",
+            "NuclearAttackNotifications", "CombatEffectNotifications").map { "$notificationPackage$it" }
+        // Combat execution records facts; recipient filtering belongs to AttackEventsView.
+        // In particular, Battle must not reintroduce inline notification visibility checks.
+        private val attackKnowledgeFields = mapOf(
+            "${battlePackage}AttackEvent" to setOf("knowsSource", "knowsTarget", "withdrawalKnownBy", "nuclearTerritoryCivIds"),
+            "${battlePackage}AttackParticipant" to setOf("knownBy"),
+            "${battlePackage}AttackInterception" to setOf("knowsTarget"),
+        )
+        private val trustedKnowledgeConsumers = attackKnowledgeFields.keys + setOf(attackRecorderClass, attackViewClass)
         private const val cachedGameContextClass = "com/unciv/models/ruleset/unique/GameContext"
         private const val serializedStateInterface = "com/unciv/logic/IsPartOfGameInfoSerialization"
         private val attackRecorderType = Regex("${Regex.escape(attackRecorderClass)}(?![A-Za-z0-9_])")
@@ -332,14 +385,21 @@ class AttackEventsViewBoundaryTest {
             "$gameInfoClass.storeAttack" to combatEntryPoints,
             "$attackRecorderClass.finish" to combatEntryPoints,
             "$attackRecorderClass.finishIncomplete" to combatEntryPoints,
+            "$gameInfoClass.publishAttackNotifications" to combatEntryPoints,
+            "$gameInfoClass.createAttackEventView" to setOf("$gameInfoClass.publishAttackNotifications",
+                "${battlePackage}Battle.enemyNameForNotification", "${battlePackage}BattleUnitCapture.publishCaptureNotification"),
+            "$notificationPublisherClass.create" to setOf("$gameInfoClass.publishAttackNotifications"),
+            "$notificationPublisherClass.createCapture" to setOf("${battlePackage}BattleUnitCapture.publishCaptureNotification"),
             "$gameInfoClass.expireAttackEventsFor" to setOf("com/unciv/logic/civilization/managers/TurnManager.startTurn"),
             "$gameInfoClass.createAttackEventsView" to setOf("$gameViewClass.<init>"),
-            "$attackViewClass.<init>" to setOf("$gameInfoClass.createAttackEventsView"),
-        )
+            "$attackViewClass.<init>" to setOf("$gameInfoClass.createAttackEventsView", "$gameInfoClass.createAttackEventView"),
+        ) + formatterClasses.associate { "$it.create" to setOf("$notificationPublisherClass.create",
+            "$notificationPublisherClass.createCapture") }
         private val trustedStorageCallers = mapOf(
             "$gameInfoClass.attackEvents" to setOf("<init>", "clone", "storeAttack", "expireAttackEventsFor",
                 "createAttackEventsView").map { "$gameInfoClass.$it" }.toSet(),
-            "$attackViewClass.events" to setOf("$attackViewClass.<init>", "$attackViewClass.getObservedAttacks"),
+            "$attackViewClass.events" to setOf("<init>", "getObservedAttacks", "getCombatReports",
+                "getCaptureReports", "getCombatantForTrigger").map { "$attackViewClass.$it" }.toSet(),
         )
     }
 }

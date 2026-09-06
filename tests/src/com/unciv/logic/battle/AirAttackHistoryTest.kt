@@ -187,6 +187,9 @@ class AirAttackHistoryTest {
         interceptor.instanceName = "Air guard"
         AirInterception.airSweep(MapUnitCombatant(sweeper), target)
         val original = game.attackEventsForTesting.single().interceptions.single()
+        val attackerOutcome = original.attackerOutcome
+        val interceptorOutcome = original.interceptorOutcome
+        val knowsTarget = original.knowsTarget!!.toSet()
 
         val cloned = game.clone().attackEventsForTesting.single().interceptions.single()
         val saved = json().fromJson(GameInfo::class.java, json().toJson(game))
@@ -200,6 +203,9 @@ class AirAttackHistoryTest {
         original.intercepted = false
         original.damageToAttacker = -1
         original.damageToInterceptor = -1
+        original.attackerOutcome = null
+        original.interceptorOutcome = null
+        original.knowsTarget!!.clear()
 
         for (copy in listOf(cloned, saved)) {
             assertEquals("Air guard", copy.interceptor!!.instanceName)
@@ -209,6 +215,9 @@ class AirAttackHistoryTest {
             assertEquals(100 - interceptor.health, copy.damageToInterceptor)
             assertTrue(copy.intercepted)
             assertEquals(100 - sweeper.health, copy.damageToAttacker)
+            assertEquals(attackerOutcome, copy.attackerOutcome)
+            assertEquals(interceptorOutcome, copy.interceptorOutcome)
+            assertEquals(knowsTarget, copy.knowsTarget)
         }
     }
 
@@ -229,6 +238,8 @@ class AirAttackHistoryTest {
         assertEquals(0, interception.damageToAttacker)
         assertEquals(0, interception.damageToInterceptor)
         assertEquals(AttackParticipantOutcome.Destroyed, interception.interceptor!!.outcome)
+        assertEquals(AttackParticipantOutcome.Survived, interception.attackerOutcome)
+        assertEquals(AttackParticipantOutcome.Survived, interception.interceptorOutcome)
         assertEquals(1, interception.interceptor!!.damageReceived)
         assertEquals(0, interception.interceptor!!.healthAfter)
         val blastVictim = event.targets.single { it.unitId == interceptor.id }

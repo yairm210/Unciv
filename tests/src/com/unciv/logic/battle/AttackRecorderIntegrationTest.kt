@@ -1,6 +1,7 @@
 package com.unciv.logic.battle
 
 import com.unciv.Constants
+import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
@@ -38,6 +39,8 @@ class AttackRecorderIntegrationTest {
 
     @Test
     fun `city teardown destroys its interceptor in both roles without inventing HP damage`() {
+        attackingCiv.playerType = PlayerType.Human
+        defendingCiv.playerType = PlayerType.Human
         // An interceptable strength-two bomb destroys this noncapital city's low population.
         // Its aircraft disappear during city teardown, before the blast's unit-damage loop.
         val bombType = testGame.createBaseUnit("Atomic Bomber",
@@ -71,6 +74,8 @@ class AttackRecorderIntegrationTest {
         assertEquals(1, interceptor.attacksThisTurn)
         assertEquals(0, interception.damageToAttacker)
         assertEquals(0, interception.damageToInterceptor)
+        assertEquals(AttackParticipantOutcome.Survived, interception.attackerOutcome)
+        assertEquals(AttackParticipantOutcome.Survived, interception.interceptorOutcome)
         for (record in listOf(targetRecord, interceptorRecord)) {
             assertEquals(AttackParticipantOutcome.Destroyed, record.outcome)
             assertEquals(100, record.healthBefore)
@@ -81,6 +86,15 @@ class AttackRecorderIntegrationTest {
         assertEquals(AttackParticipantOutcome.Destroyed, cityRecord.outcome)
         assertEquals(cityHealthBefore, cityRecord.healthAfter)
         assertEquals(0, cityRecord.damageReceived)
+        // The fighter survived interception, then died with its city. Finalization must not
+        // rewrite the earlier engagement report as a victory against the interceptor.
+        val interceptionNotice = defendingCiv.notifications.single { "intercepted" in it.text }
+        assertTrue(interceptionNotice.text.contains("intercepted and attacked"))
+        assertFalse(interceptionNotice.text.contains("destroyed"))
+        assertTrue(defendingCiv.notifications.any { "has destroyed" in it.text && "[Fighter]" in it.text })
+        val attackerNotice = attackingCiv.notifications.single { "intercepting" in it.text }
+        assertTrue(attackerNotice.text.contains("was attacked by an intercepting"))
+        assertFalse(attackerNotice.text.contains("destroyed"))
     }
 
     @Test

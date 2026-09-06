@@ -85,11 +85,29 @@ class AttackRecorder internal constructor(
             if (state.target != null) state.retainTargetIfUnaffected = true
     }
 
+    /** Civ V shows the blast center to victims even if they could not see it beforehand. */
+    internal fun recordNuclearImpact(affectedCivIds: Set<String>, territoryCivIds: Set<String>) {
+        val attack = currentEvent()
+        check(attack.kind == AttackKind.Nuclear)
+        attack.knowsTarget.addAll(affectedCivIds)
+        attack.nuclearTerritoryCivIds.addAll(territoryCivIds)
+    }
+
+    /** The defender can report its own retaliation, without learning later hidden enemy effects. */
+    internal fun recordDefenderRetaliation(attacker: ICombatant, actualDamage: Int) {
+        val attack = validate(attacker.getCivInfo().gameInfo)
+        if (attack.kind != AttackKind.Combat) return
+        attack.defenderRetaliationDamage += actualDamage.coerceAtLeast(0)
+        attack.attackerDefeatedByDefender = attack.attackerDefeatedByDefender ||
+            (actualDamage > 0 && attacker.isDefeated())
+    }
+
     /** Register attempts before rolling interception, including misses and zero-damage sweeps. */
     internal fun beginInterception(interceptor: MapUnitCombatant): Int {
         val attack = validate(interceptor.getCivInfo().gameInfo)
         val state = getOrCreateParticipantState(interceptor)
         val interception = AttackInterception(interceptor)
+        interception.knowsTarget = HashSet(attack.knowsTarget)
         val record = interception.interceptor!!
         record.damageReceived = state.damageReceived
         state.records.add(record)
@@ -105,12 +123,16 @@ class AttackRecorder internal constructor(
         index: Int,
         intercepted: Boolean,
         damageToAttacker: Int = 0,
-        damageToInterceptor: Int = 0
+        damageToInterceptor: Int = 0,
+        attackerOutcome: AttackParticipantOutcome? = null,
+        interceptorOutcome: AttackParticipantOutcome? = null
     ) {
         val interception = currentEvent().interceptions[index]
         interception.intercepted = intercepted
         interception.damageToAttacker = damageToAttacker
         interception.damageToInterceptor = damageToInterceptor
+        interception.attackerOutcome = attackerOutcome
+        interception.interceptorOutcome = interceptorOutcome
     }
 
     internal fun damageReceived(combatant: ICombatant): Int {
@@ -128,12 +150,31 @@ class AttackRecorder internal constructor(
     }
 
     internal fun recordCapture(unit: MapUnit, outcome: AttackParticipantOutcome) {
-        recordOutcome(MapUnitCombatant(unit), outcome)
+        val attack = validate(unit.civ.gameInfo)
+        val state = markAffected(MapUnitCombatant(unit), attack)
+        state.explicitOutcome = outcome
+        for (record in state.records) record.captureAttempted = true
     }
 
     internal fun recordOutcome(combatant: ICombatant, outcome: AttackParticipantOutcome) {
         val attack = validate(combatant.getCivInfo().gameInfo)
         markAffected(combatant, attack).explicitOutcome = outcome
+    }
+
+    /** Observe the retreat when it happens without expanding the original attack endpoints. */
+    internal fun recordWithdrawal(defender: MapUnitCombatant) {
+        val owner = defender.getCivInfo()
+        val attack = validate(owner.gameInfo)
+        markAffected(defender, attack).explicitOutcome = AttackParticipantOutcome.Withdrew
+        attack.withdrawalDestination = defender.getTile().position
+        attack.withdrawalKnownBy = owner.gameInfo.civilizations
+            .filter { it == owner || defender.isVisibleTo(it) }
+            .mapTo(HashSet()) { it.civID }
+    }
+
+    /** Preserve the removed improvement's identity for the original target owner's report. */
+    internal fun recordImprovementDestroyed(name: String) {
+        currentEvent().destroyedImprovement = name
     }
 
     /** Replacement can destroy an old unit object; survival is resolved by stable ID at finish. */

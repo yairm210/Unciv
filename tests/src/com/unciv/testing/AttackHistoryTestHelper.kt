@@ -4,6 +4,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.battle.AttackEvent
 import com.unciv.logic.battle.AttackKind
 import com.unciv.logic.battle.AttackParticipant
+import com.unciv.logic.battle.AttackParticipantOutcome
 import com.unciv.logic.battle.AttackRecorder
 import com.unciv.logic.battle.AttackResolution
 import com.unciv.logic.battle.ICombatant
@@ -76,7 +77,7 @@ internal fun AttackRecorder.recordInterceptionForTesting(
     damageToAttacker: Int = 0,
     damageToInterceptor: Int = 0
 ) {
-    recordInterceptionMethod.invokeForTesting(this, index, intercepted, damageToAttacker, damageToInterceptor)
+    recordInterceptionMethod.invokeForTesting(this, index, intercepted, damageToAttacker, damageToInterceptor, null, null)
 }
 
 internal fun AttackRecorder.interceptorSnapshotForTesting(index: Int): AttackParticipant =
@@ -110,7 +111,8 @@ private val markUnitAffectedMethod = recorderMethod("markUnitAffected", MapUnit:
 private val snapshotMethod = recorderMethod("snapshot")
 private val beginInterceptionMethod = recorderMethod("beginInterception", MapUnitCombatant::class.java)
 private val recordInterceptionMethod = recorderMethod("recordInterception", Int::class.javaPrimitiveType!!,
-    Boolean::class.javaPrimitiveType!!, Int::class.javaPrimitiveType!!, Int::class.javaPrimitiveType!!)
+    Boolean::class.javaPrimitiveType!!, Int::class.javaPrimitiveType!!, Int::class.javaPrimitiveType!!,
+    AttackParticipantOutcome::class.java, AttackParticipantOutcome::class.java)
 private val interceptorSnapshotMethod = recorderMethod("interceptorSnapshot", Int::class.javaPrimitiveType!!)
 private val damageReceivedMethod = recorderMethod("damageReceived", ICombatant::class.java)
 private val retainAllTargetsMethod = recorderMethod("retainAllTargets")

@@ -4,12 +4,12 @@ import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.civilization.NotificationCategory
-import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.map.HexCoord
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.notifications.AttackNotifications
 import com.unciv.models.ruleset.unique.GameContext
 import com.unciv.models.ruleset.unique.UniqueType
 import yairm210.purity.annotations.Readonly
@@ -80,16 +80,30 @@ object BattleUnitCapture {
      * Adds a notification to [attacker]'s civInfo and returns whether the captured unit could be placed */
     private fun spawnCapturedUnit(defender: MapUnitCombatant, attacker: MapUnitCombatant, attackRecorder: AttackRecorder? = null): Boolean {
         val defenderTile = defender.getTile()
+        val defenderCiv = defender.getCivInfo()
+        val captureEvent = AttackEvent(attacker, defenderTile).apply {
+            targets.add(AttackParticipant(defender))
+        }
+        val civilianBeforePlacement = defenderTile.civilianUnit
+        val civilianOwnerBeforePlacement = civilianBeforePlacement?.civ
+        if (civilianBeforePlacement != null)
+            attackRecorder?.snapshotTarget(MapUnitCombatant(civilianBeforePlacement), retainIfUnaffected = false)
         val addedUnit = attacker.getCivInfo().units.placeUnitNearTile(defenderTile.position, defender.getName()) ?: return false
+        // Placement may capture a stacked civilian through ordinary movement code. Classify
+        // that capture here without passing the recorder through placement or movement.
+        if (civilianBeforePlacement != null &&
+            (civilianBeforePlacement.civ != civilianOwnerBeforePlacement || civilianBeforePlacement.isDestroyed)) {
+            val outcome = if (civilianBeforePlacement.civ != civilianOwnerBeforePlacement &&
+                civilianBeforePlacement.civ.units.getUnitById(civilianBeforePlacement.id) != null)
+                AttackParticipantOutcome.Captured else AttackParticipantOutcome.Destroyed
+            attackRecorder?.recordCapture(civilianBeforePlacement, outcome)
+        }
+        attackRecorder?.recordCapture(defender.unit, AttackParticipantOutcome.Captured)
         addedUnit.currentMovement = 0f
         addedUnit.health = 50
         attacker.getCivInfo().addNotification("An enemy [${defender.getName()}] has joined us!", MapUnitAction(addedUnit), NotificationCategory.War, defender.getName())
 
-        defender.getCivInfo().addNotification(
-            "An enemy [${attacker.getName()}] has captured our [${defender.getName()}]",
-            defender.getTile().position, NotificationCategory.War, attacker.getName(),
-            NotificationIcon.War, defender.getName()
-        )
+        publishCaptureNotification(captureEvent, defenderCiv, AttackParticipantOutcome.Captured)
 
         val civilianUnit = defenderTile.civilianUnit
         // placeUnitNearTile might not have spawned the unit in exactly this tile, in which case no capture would have happened on this tile. So we need to do that here.
@@ -112,12 +126,15 @@ object BattleUnitCapture {
         val defenderCiv = defender.getCivInfo()
 
         val capturedUnit = defender.unit
+        val capturedUnitTile = capturedUnit.getTile()
+        val captureEvent = AttackEvent(attacker, capturedUnitTile).apply {
+            targets.add(AttackParticipant(defender))
+        }
         attackRecorder?.markUnitAffected(capturedUnit)
         // Stop current action
         capturedUnit.action = null
         capturedUnit.automated = false
 
-        val capturedUnitTile = capturedUnit.getTile()
         val originalOwner = capturedUnit.originalOwningCiv
 
         var wasDestroyedInstead = false
@@ -163,27 +180,28 @@ object BattleUnitCapture {
                     wasDestroyedInstead = true
         }
 
-        if (!wasDestroyedInstead)
-            defenderCiv.addNotification(
-                "An enemy [${attacker.getName()}] has captured our [${defender.getName()}]",
-                defender.getTile().position, NotificationCategory.War, attacker.getName(),
-                NotificationIcon.War, defender.getName()
-            )
-        else {
-            defenderCiv.addNotification(
-                "An enemy [${attacker.getName()}] has destroyed our [${defender.getName()}]",
-                defender.getTile().position, NotificationCategory.War, attacker.getName(),
-                NotificationIcon.War, defender.getName()
-            )
+        val outcome = if (wasDestroyedInstead) AttackParticipantOutcome.Destroyed else AttackParticipantOutcome.Captured
+        publishCaptureNotification(captureEvent, defenderCiv, outcome)
+        if (wasDestroyedInstead)
             Battle.triggerDefeatUniques(defender, attacker, capturedUnitTile, attackRecorder)
-        }
 
         if (checkDefeat)
             Battle.destroyIfDefeated(defenderCiv, attacker.getCivInfo())
         capturedUnit.updateVisibleTiles()
-        val outcome = if (wasDestroyedInstead) AttackParticipantOutcome.Destroyed else AttackParticipantOutcome.Captured
         attackRecorder?.recordCapture(capturedUnit, outcome)
         return outcome
+    }
+
+    /** Standalone movement captures use the same privacy projection without adding attack history. */
+    private fun publishCaptureNotification(event: AttackEvent, recipient: Civilization, outcome: AttackParticipantOutcome) {
+        val target = event.targets.single()
+        target.captureAttempted = true
+        target.outcome = outcome
+        event.resolution = AttackResolution.Completed
+        val view = recipient.gameInfo.createAttackEventView(event, recipient)
+        for (notification in AttackNotifications.createCapture(view))
+            recipient.addNotification(notification.text, notification.actions, notification.category,
+                *notification.icons.toTypedArray())
     }
 
     /**
