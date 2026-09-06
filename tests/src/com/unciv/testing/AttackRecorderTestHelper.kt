@@ -37,7 +37,7 @@ internal fun AttackRecorder.recordDestructionForTesting(unit: MapUnit) {
     recordDestructionMethod.invokeForTesting(this, unit)
 }
 
-internal fun AttackRecorder.finishForTesting(resolution: AttackResolution = AttackResolution.Completed): AttackEvent =
+internal fun AttackRecorder.finishForTesting(resolution: AttackResolution? = AttackResolution.Completed): AttackEvent =
     finishMethod.invokeForTesting(this, resolution) as AttackEvent
 
 internal fun AttackRecorder.finishIncompleteForTesting(): AttackEvent =

@@ -78,15 +78,15 @@ class AttackRecorder internal constructor(attacker: MapUnitCombatant, targetTile
     private fun currentEvent(): AttackEvent = checkNotNull(event) { "This attack has already finished" }
 
     /** Finalize exactly once. Storage and any later delivery are the caller's responsibility. */
-    internal fun finish(resolution: AttackResolution): AttackEvent {
-        require(resolution != AttackResolution.Pending) { "Use finishIncomplete for a failed attack" }
+    internal fun finish(resolution: AttackResolution?): AttackEvent {
+        require(resolution != null) { "Use finishIncomplete for a failed attack" }
         return finishRecording(resolution)
     }
 
     /** Preserve partial history on an explicit exception path; combat mutations are not rolled back. */
-    internal fun finishIncomplete(): AttackEvent = finishRecording(AttackResolution.Pending)
+    internal fun finishIncomplete(): AttackEvent = finishRecording(null)
 
-    private fun finishRecording(resolution: AttackResolution): AttackEvent {
+    private fun finishRecording(resolution: AttackResolution?): AttackEvent {
         val attack = currentEvent()
         try {
             for (state in participants.values) finishParticipant(state)
@@ -102,8 +102,8 @@ class AttackRecorder internal constructor(attacker: MapUnitCombatant, targetTile
     private fun finishParticipant(state: ParticipantState) {
         val unit = state.unit
         val record = state.record
-        val survivingUnit = record.unitId?.let { unit.civ.units.getUnitById(it) }
-        val captured = unit.civ.civID != record.civId && survivingUnit != null
+        val survivingUnit = record.unitID?.let { unit.civ.units.getUnitById(it) }
+        val captured = unit.civ.civID != record.civID && survivingUnit != null
         record.outcome = state.explicitOutcome ?: when {
             captured -> AttackParticipantOutcome.Captured
             survivingUnit == null -> AttackParticipantOutcome.Destroyed
