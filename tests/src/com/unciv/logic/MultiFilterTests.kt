@@ -5,14 +5,14 @@ import com.unciv.logic.map.HexCoord
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.*
 import com.unciv.models.ruleset.validation.UniqueValidator
-import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@RunWith(GdxTestRunner::class)
+@RunWith(BaseTestRunner::class)
 class MultiFilterTests {
     private val game = TestGame()
     private val civ = game.addCiv()
@@ -62,7 +62,7 @@ class MultiFilterTests {
     fun `test a complete Unique with a complex multi-filter is parsed and validated correctly`() {
         val text = "Only available <if [Colosseum] is constructed in all [non-[{non-[Resisting]} {non-[Razing]} {non-[Coastal]}]] cities>"
         val unique = Unique(text)
-        val errors = UniqueValidator(game.ruleset).checkUnique(unique, false, null, UniqueValidator.extensionModParameterSeverities)
+        val errors = UniqueValidator(game.ruleset).checkUnique(unique, null, UniqueValidator.extensionModParameterSeverities)
         Assert.assertFalse(errors.isNotOK())
     }
 

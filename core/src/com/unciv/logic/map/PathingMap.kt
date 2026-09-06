@@ -156,7 +156,7 @@ class PathingMap(
         val targetNode = RouteNode(cache.routeNodes[destination.zeroBasedIndex])
         if (!targetNode.initialized  && !cache.nodesNeedingNeighbors.isEmpty) {
             if (VERBOSE_PATHFINDING_LOGS == cache.key.startingPoint || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
-                Log.debug("#getShortestPath(${destination.position}) calculcating for $debugMapType $debugId")
+                Log.debug("#getShortestPath(${destination.position}) calculating for $debugMapType $debugId")
             aStarStepUntilDestination(cache, destination, maxTurns)
         }
         val bestTarget =  RouteNode(cache.routeNodes[destination.zeroBasedIndex])
@@ -211,8 +211,8 @@ class PathingMap(
         // include enemies we would otherwise reach this turn.
         if (!cache.nodesNeedingNeighbors.isEmpty) {
             if (VERBOSE_PATHFINDING_LOGS == cache.key.startingPoint || VERBOSE_PATHFINDING_LOGS == ALWAYS_LOG)
-                Log.debug("#getMovementToTilesAtPosition calculcating for $debugMapType $debugId")
-            bfsStepUntilDestination(cache, { _,node -> node.turns>0 && node.canMoveTo }, 1)
+                Log.debug("#getMovementToTilesAtPosition calculating for $debugMapType $debugId")
+            aStarStepUntilDestination(cache, null, 1)
         }
         getTilesSameTurn(cache)
         return tilesSameTurn
@@ -262,7 +262,7 @@ class PathingMap(
         bfsStepUntilDestination(fetchCache(), searchPredicate, timeLimitTurns)
         return results
     }
-    fun bfsAllMatchingTilesThisTurn(tilePredicate: EndSearchPredicate) = bfsAllMatchingTiles(0, tilePredicate)
+    fun bfsAllMatchingTilesThisTurn(tilePredicate: EndSearchPredicate) = bfsAllMatchingTiles(1, tilePredicate)
 
     private fun getTilesSameTurn(cache: PathingMapCache) {
         val tilesSameTurn = cache.tilesSameTurn

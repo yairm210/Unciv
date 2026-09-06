@@ -122,6 +122,10 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     /** Continent ID to Continent size */
     val continentSizes = HashMap<Int, Int>()
 
+    @Transient
+    /** Continent IDs sorted by size descending */
+    val continentsSortedBySize = ArrayList<Int>()
+
     //endregion
     //region Constructors
 
@@ -608,14 +612,19 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             tileMatrix[tileInfo.position.x - leftX][tileInfo.position.y - bottomY] = tileInfo
         }
         for ((index, tileInfo) in values.withIndex()) {
+            tileInfo.tileMap = this
+            tileInfo.zeroBasedIndex = index
+            tileInfo.ruleset = this.ruleset!!
+        }
+        for (tileInfo in values) {
             // Do ***NOT*** call Tile.setTerrainTransients before the tileMatrix is complete -
             // setting transients might trigger the neighbors lazy (e.g. thanks to convertHillToTerrainFeature).
             // When that lazy runs, some directions might be omitted because getIfTileExistsOrNull
             // looks at tileMatrix. Thus filling Tiles into tileMatrix and setting their
             // transients in the same loop will leave incomplete cached `neighbors`.
-            tileInfo.tileMap = this
-            tileInfo.zeroBasedIndex = index
-            tileInfo.ruleset = this.ruleset!!
+            // Similarly, ruleset must be set on ALL tiles before setTerrainTransients runs on ANY tile,
+            // since transient setup can evaluate unique conditionals (e.g. isAdjacentTo) that read
+            // ruleset on neighbor tiles not yet reached in iteration order.
             tileInfo.setTerrainTransients()
             tileInfo.setUnitTransients(setUnitCivTransients)
         }
@@ -678,7 +687,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
                 tile.neighbors.filter { unit.movement.canPassThrough(it) }
 
         // both the civ name and actual civ need to be in here in order to calculate the canMoveTo...Darn
-        unit.assignOwner(civInfo, false)
+        unit.assignOwner(civInfo, updateCivInfo = false)
         // remember our first owner
         unit.originalOwner = civInfo.civID
 
@@ -724,7 +733,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         }
 
         if (unitToPlaceTile == null) {
-            civInfo.units.removeUnit(unit) // since we added it to the civ units in the previous assignOwner
+            civInfo.units.removeUnit(unit, updateCivInfo = false) // since we added it to the civ units in the previous assignOwner
             return null // we didn't actually create a unit...
         }
 
@@ -864,6 +873,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         if (mode == AssignContinentsMode.Clear) {
             values.forEach { it.clearContinent() }
             continentSizes.clear()
+            continentsSortedBySize.clear()
             return
         }
 
@@ -874,7 +884,10 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
                 if (continent == -1) continue
                 continentSizes[continent] = 1 + (continentSizes[continent] ?: 0)
             }
-            if (continentSizes.isNotEmpty()) return
+            if (continentSizes.isNotEmpty()) {
+                updateContinentsSortedBySize()
+                return
+            }
         }
 
         var landTiles = values.filter { it.isLand && !it.isImpassible() }
@@ -896,6 +909,12 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             currentContinent++
             landTiles = landTiles.filter { it !in continent }
         }
+        updateContinentsSortedBySize()
+    }
+
+    private fun updateContinentsSortedBySize() {
+        continentsSortedBySize.clear()
+        continentsSortedBySize.addAll(continentSizes.entries.sortedByDescending { it.value }.map { it.key })
     }
     //endregion
 

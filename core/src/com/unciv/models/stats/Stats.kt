@@ -185,7 +185,7 @@ open class Stats(
     @Readonly
     fun toStringWithoutIcons(): String {
         return this.joinToString {
-            it.value.toInt().tr() + " " + it.key.name.tr().substring(startIndex = 1)
+            it.value.toInt().tr() + " " + it.key.name.tr(hideStats = true)
         }
     }
 

@@ -54,7 +54,7 @@ internal class WorldScreenTopBarResources(topbar: WorldScreenTopBar) : ScalingTa
                 val gameInfo = worldScreen.selectedCiv.gameInfo
                 MayaCalendar.openPopup(worldScreen, worldScreen.selectedCiv, gameInfo.getYear())
             } else {
-                worldScreen.game.pushScreen(VictoryScreen(worldScreen))
+                worldScreen.game.pushScreen{ VictoryScreen(worldScreen) }
             }
         }
         resourcesWrapper.onClick {

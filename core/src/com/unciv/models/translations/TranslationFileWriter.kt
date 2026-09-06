@@ -45,6 +45,7 @@ import com.unciv.models.ruleset.unit.UnitNameGroup
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import com.unciv.utils.isRunFromJar
@@ -106,8 +107,11 @@ object TranslationFileWriter {
             }
             if (allSelected) {
                 // See #5168 for some background on this
-                for ((modName, modTranslations) in translations.modsWithTranslations)
-                    processMod(modName, modTranslations)
+                Concurrency.parallelize(
+                    translations.modsWithTranslations.map { (modName, modTranslations) ->
+                        { processMod(modName, modTranslations) }
+                    }
+                )
             } else if (modSelected) {
                 processMod(modSelection, translations.modsWithTranslations[modSelection]!!)
             }
@@ -177,17 +181,24 @@ object TranslationFileWriter {
         val countOfTranslatableLines = if (languages.isEmpty()) 0
         else countTranslatableLines(parsedLines, languages.first(), translations, baseTranslations)
 
-        val countOfTranslatedLines = HashMap<String, Int>()
-        for (language in languages) {
-            countOfTranslatedLines[language] =
-                writeLanguageFile(language, parsedLines, translations, baseTranslations, modFolder, backup)
-        }
+        val countOfTranslatedLines = java.util.concurrent.ConcurrentHashMap<String, Int>()
+
+        // each language writes its own independent file, so this can run in parallel
+        Concurrency.parallelize(
+            languages.map { language ->
+                {
+                    countOfTranslatedLines[language] =
+                        writeLanguageFile(language, parsedLines, translations, baseTranslations, modFolder, backup)
+                }
+            }
+        )
 
         // Calculate the percentages of translations
-        for (entry in countOfTranslatedLines)
-            entry.setValue(if (countOfTranslatableLines <= 0) 100 else entry.value * 100 / countOfTranslatableLines)
+        val result = HashMap<String, Int>()
+        for ((language, translatedCount) in countOfTranslatedLines)
+            result[language] = if (countOfTranslatableLines <= 0) 100 else translatedCount * 100 / countOfTranslatableLines
 
-        return countOfTranslatedLines
+        return result
     }
 
     private fun MutableList<String>.collectTemplateLines() {
@@ -487,8 +498,10 @@ object TranslationFileWriter {
     private fun UniqueType.getTranslatable(): String {
         // to get rid of multiple equal parameters, like "[amount] [amount]", don't use the unique.text directly
         //  instead fill the placeholders with incremented values if the previous one exists
+        val placeholderParameters = text.getPlaceholderParameters()
+        if (placeholderParameters.isEmpty()) return text
         val newPlaceholders = ArrayList<String>()
-        for (placeholderText in text.getPlaceholderParameters()) {
+        for (placeholderText in placeholderParameters) {
             newPlaceholders.addNumberedParameter(placeholderText)
         }
         return text.fillPlaceholders(*newPlaceholders.toTypedArray())

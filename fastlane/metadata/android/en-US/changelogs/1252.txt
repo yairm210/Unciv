@@ -1,0 +1,15 @@
+Fixed repair functions for when there is only a pillaged road
+
+Avoid ANRs when opening civilopedia
+
+By SomeTroglodyte:
+- Fix Future Tech not counting for Contest Technologies quest 
+- Fix ImprovementPicker not offering Improvements needing a removal 
+
+Reduce autosave memory spikes - By mvanhorn
+
+AI: Better picking of next unit to construct - By WhoIsJohannes
+
+Crude mod author block list - By unciv-loof
+
+Fixed crash when activating 2 cityscreen arrow buttons at the same time

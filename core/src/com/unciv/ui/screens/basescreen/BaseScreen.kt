@@ -96,7 +96,7 @@ abstract class BaseScreen : Screen {
         if (this !is RecreateOnResize) {
             stage.viewport.update(width, height, true)
         } else if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
-            game.replaceCurrentScreen(recreate())
+            game.replaceCurrentScreen{ recreate() }
         }
     }
 
@@ -207,7 +207,9 @@ abstract class BaseScreen : Screen {
     /** Helper for the [openCivilopedia] (link: String) overload to use
      *  - Note: At the time of wrinting, this was the ***only*** CivilopediaScreen constructor call outside itself
      */
-    fun openCivilopedia(ruleset: Ruleset, link: String = "") = game.pushScreen(CivilopediaScreen(ruleset, link = link))
+    fun openCivilopedia(ruleset: Ruleset, link: String = "") {
+        game.pushScreen{ CivilopediaScreen(ruleset, link = link) }
+    }
 }
 
 interface RecreateOnResize {

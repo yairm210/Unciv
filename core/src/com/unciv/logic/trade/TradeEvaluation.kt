@@ -111,18 +111,28 @@ class TradeEvaluation {
         if (citiesAskedToSurrender > maxCitiesToSurrender) {
             return Int.MIN_VALUE
         }
+        
+        // Never agree to declare war on more than one enemy at a time.
+        // Not handled correctly by summing evalutation of individual war declarations, 
+        // since the AI will evaluate each war declaration as if it were the only one
+        if (trade.ourOffers.count {it.type == TradeOfferType.WarDeclaration } > 1) {
+            return Int.MIN_VALUE
+        }
 
+        // Some offers use Int.MAX_VALUE to prevent acceptance. Summing or multiplying
+        // these costs can overflow and make a rejected trade look favorable.
+        // Use Long for the calculation and clamp the final result to the Int range.
         val sumOfTheirOffers = trade.theirOffers.asSequence()
-                .filter { it.type != TradeOfferType.Treaty } // since treaties should only be evaluated once for 2 sides
-                .map { evaluateBuyCostWithInflation(it, evaluator, tradePartner, trade) }.sum()
+            .filter { it.type != TradeOfferType.Treaty }
+            .sumOf { evaluateBuyCostWithInflation(it, evaluator, tradePartner, trade).toLong() }
 
-        var sumOfOurOffers = trade.ourOffers.sumOf { evaluateSellCostWithInflation(it, evaluator, tradePartner, trade) }
+        var sumOfOurOffers = trade.ourOffers.sumOf { evaluateSellCostWithInflation(it, evaluator, tradePartner, trade).toLong() }
 
         val relationshipLevel = evaluator.getDiplomacyManager(tradePartner)!!.relationshipIgnoreAfraid()
         // If we're making a peace treaty, don't try to up the bargain for people you don't like.
         // Leads to spartan behaviour where you demand more, the more you hate the enemy...unhelpful
         if (trade.ourOffers.none { it.name == Constants.peaceTreaty || it.name == Constants.researchAgreement}) {
-            if (relationshipLevel == RelationshipLevel.Enemy) sumOfOurOffers = (sumOfOurOffers * 1.5).toInt()
+            if (relationshipLevel == RelationshipLevel.Enemy) sumOfOurOffers = (sumOfOurOffers * 1.5).toLong()
             else if (relationshipLevel == RelationshipLevel.Unforgivable) sumOfOurOffers *= 2
         }
         if (trade.ourOffers.firstOrNull { it.name == Constants.defensivePact } != null) {
@@ -133,7 +143,8 @@ class TradeEvaluation {
             }
         }
         val diplomaticGifts: Int = if (includeDiplomaticGifts) evaluator.getDiplomacyManager(tradePartner)!!.getGoldGifts() else 0
-        return sumOfTheirOffers - sumOfOurOffers + diplomaticGifts
+        return (sumOfTheirOffers - sumOfOurOffers + diplomaticGifts)
+            .coerceIn(Int.MIN_VALUE.toLong(), Int.MAX_VALUE.toLong()).toInt()
     }
 
     @Readonly
@@ -438,18 +449,25 @@ class TradeEvaluation {
             TradeOfferType.Introduction -> return introductionValue(civInfo.gameInfo.ruleset)
             TradeOfferType.WarDeclaration -> {
                 val civToDeclareWarOn = civInfo.gameInfo.getCivilization(offer.name)
-                if (trade.theirOffers.any { it.type == TradeOfferType.WarDeclaration && it.name == offer.name }
-                        && trade.ourOffers.any {it.type == TradeOfferType.WarDeclaration && it.name == offer.name}) {
-                    // Only accept if the war will benefit us, or if they pay us enough
-                    // We shouldn't want to pay them for us to declare war (no negative values)
-                    return (-20 * DeclareWarPlanEvaluator.evaluateTeamWarPlan(civInfo, civToDeclareWarOn, tradePartner, null)).toInt().coerceAtLeast(0)
-                } else if (tradePartner.isAtWarWith(civToDeclareWarOn)) {
-                    // We might want them to pay us to join them in war (no negative values)
-                    return (-20 * DeclareWarPlanEvaluator.evaluateJoinWarPlan(civInfo, civToDeclareWarOn, tradePartner, null)).toInt().coerceAtLeast(0)
-                } else {
-                    // We might want them to pay us to declare war (no negative values)
-                    return (-25 * DeclareWarPlanEvaluator.evaluateDeclareWarPlan(civInfo, civToDeclareWarOn, null)).toInt().coerceAtLeast(0)
+                val motivation = when {
+                    // Joint war
+                    trade.theirOffers.any { it.type == TradeOfferType.WarDeclaration && it.name == offer.name }
+                            && trade.ourOffers.any {it.type == TradeOfferType.WarDeclaration && it.name == offer.name} ->
+                        DeclareWarPlanEvaluator.evaluateTeamWarPlan(civInfo, civToDeclareWarOn, tradePartner, null)
+                    tradePartner.isAtWarWith(civToDeclareWarOn) ->
+                        DeclareWarPlanEvaluator.evaluateJoinWarPlan(civInfo, civToDeclareWarOn, tradePartner, null)
+                    else ->
+                        DeclareWarPlanEvaluator.evaluateDeclareWarPlan(civInfo, civToDeclareWarOn, null)
                 }
+
+                // No amount of gold will make us declare a war we're this against - never accept
+                if (motivation < -10f) return Int.MAX_VALUE
+
+                // Missing motivation costs 1000 gold per point, so 1000 min (-1 motivation) to 10000 max (-10 motivation)
+                if (motivation < 0f) return (-motivation * 1000).toInt().coerceAtMost(10000)
+
+                // If we already want to declare this war then thanks for the extra money I guess!
+                return 1000
             }
             TradeOfferType.PeaceProposal -> {
                 // We're evaluating peace cost for third civ to be paid by requesting civ (tradePartner) to us (civInfo)

@@ -31,21 +31,24 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.Speed
 import com.unciv.models.ruleset.nation.Difficulty
 import com.unciv.models.ruleset.tile.TileResource
+import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
-import com.unciv.ui.screens.savescreens.Gzip
+import com.unciv.logic.files.FileConversions
 import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.utils.DebugUtils
 import com.unciv.utils.debug
 import com.unciv.utils.pseudoRandomUuid
+import yairm210.purity.annotations.Cache
 import yairm210.purity.annotations.Readonly
 import java.security.MessageDigest
 import java.security.SecureRandom
 import java.time.Duration
 import java.time.Instant
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 
 
 /**
@@ -147,6 +150,17 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
     @Transient
     private lateinit var difficultyObject: Difficulty // Since this is static game-wide, and was taking a large part of nextTurn
+
+    /** [IHasUniques.isUnavailableBySettings] is a pure function of game-start constants (game parameters,
+     *  starting era, mod options) - it cannot change during a game - yet it is re-evaluated per building/unit
+     *  on every construction-candidacy check ([getRejectionReasons]). Memoize it per rule object.
+     *  ConcurrentHashMap because rejection reasons are queried from both the game thread and the render thread. */
+    @Transient @Cache
+    private val settingsUnavailability = ConcurrentHashMap<IHasUniques, Boolean>()
+
+    @Readonly
+    fun isUnavailableBySettingsCached(obj: IHasUniques): Boolean =
+        settingsUnavailability.computeIfAbsent(obj) { it.isUnavailableBySettings(this) }
 
     @Transient
     lateinit var speed: Speed
@@ -339,7 +353,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             .getInstance("SHA-1")
             .digest(json().toJson(this).toByteArray(Charsets.UTF_8))
         checksum = oldChecksum
-        return Gzip.encode(bytes)
+        return FileConversions.encode(bytes)
     }
 
     //endregion
@@ -350,6 +364,16 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     fun isSimulation(): Boolean = turns < DebugUtils.SIMULATE_UNTIL_TURN
             || turns < simulateMaxTurns && simulateUntilWin
 
+    // Records the ranking stats of all major civs
+    private fun recordRankingStats() {
+        for (civ in civilizations) {
+            if (!civ.isMajorCiv() || !civ.isAlive()) continue
+            // Force uses a transient cache that is not invalidated on combat losses during other civs' turns
+            civ.resetMilitaryMightCache()
+            civ.statsHistory.recordRankingStats(civ)
+        }
+    }
+
     /**
      *  Advance a turn, running automation for AI players, stopping for human players
      *  @param progressBar Optional reference to UI widget either provided by [WorldScreen.nextTurn][com.unciv.ui.screens.worldscreen.WorldScreen.nextTurn] or `null` when simulating
@@ -359,11 +383,19 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         var player = currentPlayerCiv
         var playerIndex = civilizations.indexOf(player)
 
+        if (player.isHuman() && player.isAlive()) {
+            player.totalTurnTimeSeconds +=
+                Duration.between(Instant.ofEpochMilli(currentTurnStartTime), Instant.now())
+                    .toSeconds().toInt()
+            player.turnsPlayedAsHuman++
+        }
+        
         if (gameParameters.isOnlineMultiplayer) updateMinutesBeforeForceResign(player, shouldGainTime)
         // We rotate Players in cycle: 1,2...N,1,2...
         fun setNextPlayer() {
             playerIndex = (playerIndex + 1) % civilizations.size
             if (playerIndex == 0) {
+                recordRankingStats()
                 turns++
                 if (DebugUtils.SIMULATE_UNTIL_TURN != 0)
                     debug("Starting simulation of turn %s", turns)
@@ -767,6 +799,9 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         spaceResources.clear()
         spaceResources.addAll(ruleset.buildings.values.filter { it.hasUnique(UniqueType.SpaceshipPart) }
+            .flatMap { it.getResourceRequirementsPerTurn().keys })
+        // Spaceship parts are UNITS in the base ruleset (SS Booster etc., each requiring Aluminum).
+        spaceResources.addAll(ruleset.units.values.filter { it.hasUnique(UniqueType.SpaceshipPart) }
             .flatMap { it.getResourceRequirementsPerTurn().keys })
         spaceResources.addAll(ruleset.victories.values.flatMap { it.requiredSpaceshipParts })
 

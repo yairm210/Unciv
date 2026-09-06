@@ -1,7 +1,7 @@
 package com.unciv.logic
 
 import com.unciv.models.ModConstants
-import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.BaseTestRunner
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -13,7 +13,7 @@ import kotlin.math.ulp
  *  There was a bug in an earlier version where includion of the companion object created a recursion.
  *  This prevents such occurrences and guards against side effects from library/jvm changes.
  */
-@RunWith(GdxTestRunner::class)
+@RunWith(BaseTestRunner::class)
 class ModConstantsTests {
     @Test
     fun `Test ModConstants hashCode`() {

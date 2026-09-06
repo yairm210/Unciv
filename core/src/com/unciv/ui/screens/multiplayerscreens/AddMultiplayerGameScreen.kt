@@ -48,7 +48,8 @@ class AddMultiplayerGameScreen(multiplayerScreen: MultiplayerScreen) : PickerScr
         rightSideButton.enable()
         rightSideButton.keyShortcuts.add(KeyCharAndCode.RETURN)
         rightSideButton.onActivation {
-            if (!(IdChecker.checkAndReturnUuiId(gameIDTextField.text)?.isUUID() ?: false)) {
+            val gameId = IdChecker.checkAndReturnUuiId(gameIDTextField.text)
+            if (gameId?.isUUID() != true) {
                 ToastPopup("Invalid game ID!", this)
                 return@onActivation
             }
@@ -59,7 +60,7 @@ class AddMultiplayerGameScreen(multiplayerScreen: MultiplayerScreen) : PickerScr
 
             Concurrency.run("AddMultiplayerGame") {
                 try {
-                    game.onlineMultiplayer.addGame(gameIDTextField.text.trim(), gameNameTextField.text.trim())
+                    game.onlineMultiplayer.addGame(gameId, gameNameTextField.text.trim())
                     launchOnGLThread {
                         popup.close()
                         game.popScreen()

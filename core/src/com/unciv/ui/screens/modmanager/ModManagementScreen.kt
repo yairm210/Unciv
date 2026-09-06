@@ -124,6 +124,7 @@ class ModManagementScreen private constructor(
     // Keep metadata and buttons in separate pools
     private val installedModInfo = previousInstalledMods ?: HashMap(RulesetCache.size)
     private val onlineModInfo = previousOnlineMods ?: game.files.loadModCache().associateByTo(HashMap()) { it.name }
+    private val excludedModAuthors = game.files.loadExcludedModAuthors()
     private val modButtons: HashMap<ModUIData, ModDecoratedButton> = HashMap(100)
 
     // cleanup - background processing needs to be stopped on exit and memory freed
@@ -156,7 +157,7 @@ class ModManagementScreen private constructor(
 
             // We want to immediately display/hide Scenario button based on changes
             if (screen is MainMenuScreen)
-                screen.game.replaceCurrentScreen(MainMenuScreen())
+                screen.game.replaceCurrentScreen{ MainMenuScreen() }
         }
         closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
 
@@ -346,7 +347,7 @@ class ModManagementScreen private constructor(
             val mod = ModUIData(repo, isUpdatedVersionOfInstalledMod)
             onlineModInfo[repo.name] = mod
             modButtons.remove(mod) // Remove *cached* mod button since we have NEW DATA
-            if (mod.matchesFilter(optionsManager.getFilter())) {
+            if (mod.matchesFilter(optionsManager.getFilter()) && mod.author() !in excludedModAuthors) {
                 onlineModsTable.add(getCachedModButton(mod)).row()
             }
         }
@@ -413,7 +414,7 @@ class ModManagementScreen private constructor(
         val downloadButton = "Download mod from URL".toTextButton()
         downloadButton.onClick {
             val popup = Popup(this)
-            popup.addGoodSizedLabel("Please enter the mod repository -or- archive zip -or- branch -or- release url:").row()
+            popup.addGoodSizedLabel("Please enter the mod repository -or- archive zip -or- branch -or- release -or- commit url:").row()
             val textField = UncivTextField("").apply { maxLength = 666 }
             popup.add(textField).width(stage.width / 2).row()
             val pasteLinkButton = "Paste from clipboard".toTextButton()
@@ -729,7 +730,7 @@ class ModManagementScreen private constructor(
         // We update y and height here, we do not replace the ModUIData instances do the referenced buttons stay valid.
         val sortedMods = onlineModInfo.values.asSequence().sortedWith(optionsManager.sortOnline.comparator)
         for (mod in sortedMods) {
-            if (!mod.matchesFilter(filter)) continue
+            if (!mod.matchesFilter(filter) || mod.author() in excludedModAuthors) continue
             onlineModsTable.add(getCachedModButton(mod)).row()
         }
 

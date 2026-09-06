@@ -156,6 +156,7 @@ jobs:
           releaseFiles: android/build/outputs/bundle/release/Unciv-release.aab
           track: production
           whatsNewDirectory: whatsNewDirectory
+          changesNotSentForReview: false # Turn true when Google denies your upadte and you need to upload a new version :/
 
 
       - name: Sign APK for Github upload

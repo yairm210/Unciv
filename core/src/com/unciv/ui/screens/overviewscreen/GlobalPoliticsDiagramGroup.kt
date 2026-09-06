@@ -81,7 +81,8 @@ class GlobalPoliticsDiagramGroup(
 
             operator fun get(level: RelationshipLevel) = relationshipLevels[level.ordinal]
 
-            val entries = listOf(
+            // Don't materialize this, see issue 15393 (class-initialization cycle when the outer diagram draws a DefensivePact line first)
+            val entries get() = listOf(
                 War,
                 *relationshipLevels,
                 DefensivePact,
@@ -213,6 +214,7 @@ class GlobalPoliticsDiagramGroup(
                 width = lineWidth
             )
             statusLine.color = relation.color
+            statusLine.touchable = Touchable.disabled
             val entry = WidgetEntry.Line(statusLine, relation, civ, otherCiv)
             hasLines += civ
             hasLines += otherCiv

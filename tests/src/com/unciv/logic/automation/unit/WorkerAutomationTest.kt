@@ -8,7 +8,7 @@ import com.unciv.logic.civilization.managers.TurnManager
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.stats.Stat
-import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.BaseTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
@@ -17,7 +17,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@RunWith(GdxTestRunner::class)
+@RunWith(BaseTestRunner::class)
 internal class WorkerAutomationTest {
     private lateinit var workerAutomation: WorkerAutomation
     private lateinit var civInfo: Civilization
@@ -93,8 +93,8 @@ internal class WorkerAutomationTest {
         val currentTile = testGame.tileMap[1,1]
         val city = testGame.addCity(civInfo, testGame.tileMap[0,0])
         // Currently worked tile is prioritized for worker actions
-        city.workedTiles.clear()
-        city.workedTiles.add(currentTile.position)
+        city.clearWorkedTiles()
+        city.workTile(currentTile)
 
         currentTile.baseTerrain = Constants.grassland
         currentTile.setTileResource("Iron")

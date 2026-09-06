@@ -74,6 +74,8 @@ class Tile : IsPartOfGameInfoSerialization {
             turnsToImprovement = (turnsToImprovement - 1).coerceAtLeast(0)
             return turnsToImprovement > 0
         }
+        @Readonly
+        fun clone() = ImprovementQueueEntry(improvement, turnsToImprovement)
     }
     internal val improvementQueue = ArrayList<ImprovementQueueEntry>(1)
 
@@ -112,7 +114,10 @@ class Tile : IsPartOfGameInfoSerialization {
     // This is for performance - since we access the neighbors of a tile ALL THE TIME,
     // and the neighbors of a tile never change, it's much more efficient to save the list once and for all!
     @delegate:Transient
-    val neighbors: Sequence<Tile> by lazy { getTilesAtDistance(1).toList().asSequence() }
+    val neighbors: Sequence<Tile> by lazy {
+        if (!isTilemapInitialized()) emptySequence()
+        else getTilesAtDistance(1).toList().asSequence()
+    }
     // We have to .toList() so that the values are stored together once for caching,
     // and the toSequence so that aggregations (like neighbors.flatMap{it.units} don't take up their own space
 
@@ -245,7 +250,7 @@ class Tile : IsPartOfGameInfoSerialization {
         toReturn.resourceAmount = resourceAmount
         toReturn.improvement = improvement
         @LocalState val cloneImprovementQueue = toReturn.improvementQueue
-        cloneImprovementQueue.addAll(improvementQueue)
+        cloneImprovementQueue.addAll(improvementQueue.map { it.clone() })
         toReturn.improvementIsPillaged = improvementIsPillaged
         toReturn.roadStatus = roadStatus
         toReturn.roadIsPillaged = roadIsPillaged
@@ -568,7 +573,7 @@ class Tile : IsPartOfGameInfoSerialization {
         //  see https://yairm210.medium.com/kotlin-when-string-optimization-e15c6eea2734
         when (filter) {
             "Terrain" -> return true
-            "All", "all" -> return true
+            Constants.uppercaseAll, Constants.lowercaseAll -> return true
             "Water" -> return isWater
             "Land" -> return isLand
             Constants.coastal -> return isAdjacentToCoast()
@@ -609,7 +614,7 @@ class Tile : IsPartOfGameInfoSerialization {
 
                 // Now that we know that this resource matches the filter - can the observer see that there's a resource here?
                 if (resourceObject.revealedBy == null) return true  // no need for tech
-                if (observingCiv == null) return false  // can't check tech
+                if (observingCiv == null) return true  // can't check tech, assume visible - consistent with the direct resource-name check above
                 return observingCiv.canSeeResource(resourceObject)
             }
         }
@@ -835,7 +840,7 @@ class Tile : IsPartOfGameInfoSerialization {
 
     /** Will be false if this is a "fake tile" - either created for calculation purposes,
      * or to display how things look e.g. in Civilopedia  */
-    fun isTilemapInitialized() = ::tileMap.isInitialized
+    @Readonly fun isTilemapInitialized() = ::tileMap.isInitialized
 
     //endregion
     //region state-changing functions

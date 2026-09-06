@@ -52,7 +52,7 @@ object DeclareWarPlanEvaluator {
         } else if (civForce + teamCivForce > targetForce * 2) {
             // Why gang up on such a weaker enemy when we can declare war ourselves?
             // If our combined force is twice their force we will have -20 motivation
-            motivation -= 20 * ((civForce + teamCivForce) / targetForce * 2) - 1
+            motivation -= 20 * ((civForce + teamCivForce) / targetForce - 1)
         }
 
         val civScore = civInfo.getStatForRanking(RankingType.Score)
@@ -108,7 +108,7 @@ object DeclareWarPlanEvaluator {
             else -> 0.8f
         }
         if (civToJoinForce + civForce < targetForce * multiplier) {
-            motivation -= 20 * (targetForce * multiplier) / (civToJoinForce + civForce).coerceIn(-1000f, 1000f)
+            motivation -= (20 * (targetForce * multiplier) / (civToJoinForce + civForce)).coerceIn(-1000f, 1000f)
         }
 
         return motivation - 15

@@ -9,6 +9,8 @@ import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.OverviewAction
+import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
@@ -46,6 +48,8 @@ class CityTurnManager(val city: City) {
             city.setCityFocus(CityFocus.GoldFocus)
             city.reassignAllPopulation()
         } else if (city.shouldReassignPopulation || city.civ.isAI()) {
+            if (city.civ.isAI())
+                city.setCityFocus(chooseCityFocus())
             city.reassignPopulation()  // includes cityStats.update
         } else
             city.cityStats.update()
@@ -56,6 +60,17 @@ class CityTurnManager(val city: City) {
         }
     }
     
+    private fun chooseCityFocus(): CityFocus {
+        // Small cities focus on growing, following Vox Populi.
+        if (city.population.population <= 3) return CityFocus.NoFocus
+        val construction = city.cityConstructions.getCurrentConstruction()
+        // Focus citizens on production while the city builds a world wonder or spaceship part.
+        if (construction is Building && construction.isWonder) return CityFocus.ProductionFocus
+        if (construction is INonPerpetualConstruction && construction.hasUnique(UniqueType.SpaceshipPart))
+            return CityFocus.ProductionFocus
+        return CityFocus.NoFocus
+    }
+
     private fun setWltkResourceDemandCooldown(isNewCity: Boolean) {
         val rng = city.state.stateBasedRandom("CityTurnManager.setWltkResourceDemandCooldown")
         // Demand a new resource in ~20 turns on Standard speed
@@ -67,14 +82,17 @@ class CityTurnManager(val city: City) {
 
     private fun tryWeLoveTheKing() {
         if (city.demandedResource == "") return
-        if (city.getAvailableResourceAmount(city.demandedResource) > 0) {
-            // manually adjust with game speed because of the +1 at the end
-            val duration = (20 * city.civ.gameInfo.speed.modifier).roundToInt() + 1 // +1 because it will be decremented by 1 in the same startTurn()
-            city.setFlag(CityFlags.WeLoveTheKing, duration) 
-            city.civ.addNotification(
-                "Because they have [${city.demandedResource}], the citizens of [${city.name}] are celebrating We Love The King Day!",
-                CityAction.withLocation(city), NotificationCategory.General, NotificationIcon.City, NotificationIcon.Happiness)
-        }
+        if (city.getAvailableResourceAmount(city.demandedResource) <= 0) return
+
+        // manually adjust with game speed because of the +1 at the end
+        val duration = (20 * city.civ.gameInfo.speed.modifier).roundToInt() + 1 // +1 because it will be decremented by 1 in the same startTurn()
+        city.setFlag(CityFlags.WeLoveTheKing, duration)
+        // Otherwise ResourceDemand can expire mid-celebration, rewrite demandedResource,
+        // and the Resources overview mislabels the active WLTKD (celebration is flag-based).
+        city.removeFlag(CityFlags.ResourceDemand)
+        city.civ.addNotification(
+            "Because they have [${city.demandedResource}], the citizens of [${city.name}] are celebrating We Love The King Day!",
+            CityAction.withLocation(city), NotificationCategory.General, NotificationIcon.City, NotificationIcon.Happiness)
     }
 
     // cf DiplomacyManager nextTurnFlags
@@ -88,7 +106,10 @@ class CityTurnManager(val city: City) {
 
                 when (flag) {
                     CityFlags.ResourceDemand.name -> {
-                        demandNewResource()
+                        // WLTKD end already demands the next resource; demanding while celebrating
+                        // overwrites demandedResource and mislabels the active celebration in the UI
+                        if (!city.hasFlag(CityFlags.WeLoveTheKing))
+                            demandNewResource()
                     }
                     CityFlags.WeLoveTheKing.name -> {
                         city.civ.addNotification(
