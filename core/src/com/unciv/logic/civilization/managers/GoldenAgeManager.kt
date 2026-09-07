@@ -75,7 +75,7 @@ class GoldenAgeManager : IsPartOfGameInfoSerialization {
                     UniqueTriggerActivation.triggerUnique(unique, civInfo)
         }
                 
-        else if (storedHappiness > happinessRequiredForNextGoldenAge()) {
+        else if (storedHappiness >= happinessRequiredForNextGoldenAge()) {
             storedHappiness -= happinessRequiredForNextGoldenAge()
             enterGoldenAge()
             numberOfGoldenAges++
