@@ -5,9 +5,6 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 
 interface FontImplementation {
-    /** Opt in to mipmapped font atlases on platforms where they have been enabled. */
-    val useMipMaps: Boolean get() = false
-
     /** Apply platform-specific sampling settings when a font atlas page is created. */
     fun configureFontTexture(texture: Texture) {}
 

@@ -19,7 +19,7 @@ import org.mockito.Mockito.`when`
 
 @RunWith(GdxTestRunner::class)
 class NativeBitmapFontDataTest {
-    private class TestFont(override val useMipMaps: Boolean, private val glyphSize: Int = 50) : FontImplementation {
+    private class TestFont(private val glyphSize: Int = 50) : FontImplementation {
         override fun setFontFamily(fontFamilyData: FontFamilyData, size: Int) {}
         override fun getFontSize() = 100
         override fun getCharPixmap(symbolString: String) = Pixmap(glyphSize, glyphSize, Pixmap.Format.RGBA8888).apply {
@@ -37,7 +37,7 @@ class NativeBitmapFontDataTest {
 
     @Test
     fun multipleLabelsShareOneMipmapUpdateAtBatchFlush() {
-        val data = NativeBitmapFontData(TestFont(true))
+        val data = NativeBitmapFontData(TestFont())
         `when`(Gdx.gl.glGenBuffer()).thenReturn(1)
         val batch = SpriteBatch(1000, mock(ShaderProgram::class.java))
         try {
@@ -81,7 +81,7 @@ class NativeBitmapFontDataTest {
 
     @Test
     fun newPageDoesNotFlushPendingMipmapsOnAnotherPage() {
-        val data = NativeBitmapFontData(TestFont(true, 400))
+        val data = NativeBitmapFontData(TestFont(400))
         try {
             val firstTexture = data.regions.first().texture
             data.getGlyphs(GlyphLayout.GlyphRun(), "ABC", 0, 3, null)
@@ -100,7 +100,7 @@ class NativeBitmapFontDataTest {
 
     @Test
     fun fullReloadRetainsNewGlyphsWithoutGeneratingStaleMipmaps() {
-        val data = NativeBitmapFontData(TestFont(true))
+        val data = NativeBitmapFontData(TestFont())
         try {
             data.getGlyphs(GlyphLayout.GlyphRun(), "A", 0, 1, null)
             val texture = data.regions.first().texture
@@ -121,17 +121,20 @@ class NativeBitmapFontDataTest {
     }
 
     @Test
-    fun otherPlatformsKeepLinearFilteringWithoutMipmaps() {
-        val data = NativeBitmapFontData(TestFont(false))
+    fun defaultImplementationUsesMipmapsForDirectGlyphLookups() {
+        val data = NativeBitmapFontData(TestFont())
         try {
             val texture = data.regions.first().texture
-            assertFalse(texture.textureData.useMipMaps())
-            assertEquals(TextureFilter.Linear, texture.minFilter)
+            assertTrue(texture.textureData.useMipMaps())
+            assertEquals(TextureFilter.MipMapLinearLinear, texture.minFilter)
             assertEquals(TextureFilter.Linear, texture.magFilter)
             clearInvocations(Gdx.gl)
-            data.getGlyphs(GlyphLayout.GlyphRun(), "AB", 0, 2, null)
+            data.getGlyph('A')
+            data.getGlyph('B')
             assertFalse(mipmapsUploaded())
             assertTrue(mockingDetails(Gdx.gl).invocations.any { it.method.name == "glTexSubImage2D" })
+            texture.bind()
+            assertEquals(1, mockingDetails(Gdx.gl).invocations.count { it.method.name == "glGenerateMipmap" })
         } finally {
             data.regions.forEach { it.texture.dispose() }
             data.dispose()

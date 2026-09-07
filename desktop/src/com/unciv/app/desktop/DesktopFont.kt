@@ -20,8 +20,6 @@ import org.lwjgl.opengl.GL14
 
 class DesktopFont : FontImplementation {
 
-    override val useMipMaps = true
-
     override fun configureFontTexture(texture: Texture) {
         // Prefer slightly finer mip levels to sharpen text while retaining trilinear filtering.
         texture.bind()
@@ -95,15 +93,14 @@ class DesktopFont : FontImplementation {
         val pixmap = Pixmap(bi.width, bi.height, Pixmap.Format.RGBA8888)
         // Mipmaps average RGB as well as alpha. Transparent black around white glyphs
         // would darken their edges, then alpha blending would attenuate them again.
-        // Keep white RGB even at zero coverage, and copy without blending to preserve it.
+        // Keep white RGB at zero coverage, preserving visible colours from colour fonts.
+        // Copy without blending to preserve the RGB of fully transparent pixels.
         pixmap.blending = Pixmap.Blending.None
         val data = bi.getRGB(0, 0, bi.width, bi.height, null, 0, bi.width)
         for (i in 0 until bi.width) {
             for (j in 0 until bi.height) {
-                val pixel = data[i + (j * bi.width)]
-                val rgba = 0xffffff00.toInt() or (pixel ushr 24)
-                pixmap.setColor(rgba)
-                pixmap.drawPixel(i, j)
+                val rgba = Integer.rotateLeft(data[i + (j * bi.width)], 8)
+                pixmap.drawPixel(i, j, if ((rgba and 255) == 0) 0xffffff00.toInt() else rgba)
             }
         }
         g.dispose()
