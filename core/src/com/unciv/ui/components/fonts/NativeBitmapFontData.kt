@@ -23,7 +23,11 @@ class NativeBitmapFontData(
     private var dirty = false
     private val packer: PixmapPacker
 
-    private val filter = Texture.TextureFilter.Linear
+    private val useMipMaps = fontImplementation.useMipMaps
+    // Trilinear minification smooths both within and between mip levels. Magnification
+    // must use a non-mipmap filter, since mip levels only help when shrinking text.
+    private val minFilter = if (useMipMaps) Texture.TextureFilter.MipMapLinearLinear else Texture.TextureFilter.Linear
+    private val magFilter = Texture.TextureFilter.Linear
 
     private companion object {
         /** How to get the alpha channel in a Pixmap.getPixel return value (Int) - it's the LSB */
@@ -53,13 +57,15 @@ class NativeBitmapFontData(
         // Create a packer.
         val size = 1024
         val packStrategy = PixmapPacker.GuillotineStrategy()
-        packer = PixmapPacker(size, size, Pixmap.Format.RGBA8888, 1, false, packStrategy)
+        // Leave room between glyphs for the wider sampling footprint of mipmaps at UI sizes.
+        val padding = if (useMipMaps) 16 else 1
+        packer = PixmapPacker(size, size, Pixmap.Format.RGBA8888, padding, false, packStrategy)
         packer.transparentColor = Color.WHITE
         packer.transparentColor.a = 0f
 
         // Generate texture regions.
         regions = Array()
-        packer.updateTextureRegions(regions, filter, filter, false)
+        updateTextureRegions()
 
         // Set space glyph.
         val spaceGlyph = getGlyph(' ')
@@ -95,7 +101,7 @@ class NativeBitmapFontData(
 
         // If a page was added, create a new texture region for the incrementally added glyph.
         if (regions.size <= glyph.page)
-            packer.updateTextureRegions(regions, filter, filter, false)
+            updateTextureRegions()
 
         setGlyphRegion(glyph, regions.get(glyph.page))
         setGlyph(ch.code, glyph)
@@ -155,12 +161,21 @@ class NativeBitmapFontData(
     }
 
     override fun getGlyphs(run: GlyphLayout.GlyphRun, str: CharSequence, start: Int, end: Int, lastGlyph: BitmapFont.Glyph?) {
-        packer.packToTexture = true // All glyphs added after this are packed directly to the texture.
+        // Direct subimage uploads update only level zero. For mipmapped fonts, let the
+        // packer upload dirty pages and regenerate their mipmaps after adding glyphs.
+        packer.packToTexture = !useMipMaps
         super.getGlyphs(run, str, start, end, lastGlyph)
         if (dirty) {
             dirty = false
-            packer.updateTextureRegions(regions, filter, filter, false)
+            updateTextureRegions()
         }
+    }
+
+    private fun updateTextureRegions() {
+        val previousPageCount = regions.size
+        packer.updateTextureRegions(regions, minFilter, magFilter, useMipMaps)
+        for (page in previousPageCount until regions.size)
+            fontImplementation.configureFontTexture(regions[page].texture)
     }
 
     override fun dispose() {
