@@ -1,8 +1,12 @@
 package com.unciv.view
 
+import com.unciv.logic.battle.Battle
+import com.unciv.logic.battle.MapUnitCombatant
+import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.MapPathing
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.mapunit.movement.PathsToTilesWithinTurn
 import com.unciv.models.ruleset.unique.UniqueType
 import yairm210.purity.annotations.Readonly
 
@@ -56,6 +60,13 @@ class MapUnitView internal constructor(
     @Readonly fun getTilesInAttackRange(): List<TileView> =
         unit.getTile().getTilesInDistanceRange(IntRange(1, unit.getRange())).map { gameView.tileMapView.getTile(it) }.toList()
     @Readonly fun isExplored(tileView: TileView): Boolean = unit.civ.hasExplored(tileView.unwrap())
+    @Readonly fun getAttackableEnemies(
+        unitDistanceToTiles: PathsToTilesWithinTurn,
+        tilesToCheck: List<TileView>? = null,
+        stayOnTile: Boolean = false
+    ): List<AttackableTileView> =
+        TargetHelper.getAttackableEnemies(unit, unitDistanceToTiles, tilesToCheck?.map { it.unwrap() }, stayOnTile)
+            .map { AttackableTileView(it, viewer, spectatorMode, gameView) }
     /** `null` if the unit isn't currently pathing a road; otherwise the tiles still to come on that path. */
     @Readonly fun getFutureAutomatedRoadConnectionTiles(): List<TileView>? {
         val path = unit.automatedRoadConnectionPath ?: return null
@@ -83,4 +94,10 @@ class MapUnitView internal constructor(
         unit.action = "moveTo ${position.x},${position.y}"
         return true
     }
+    /** Moves [unit] to [attackableTileView], handles siege setup, and returns `true` if an attack is still possible. */
+    fun tryMovePreparingAttack(attackableTileView: AttackableTileView, tryHealPillage: Boolean = false): Boolean =
+        Battle.movePreparingAttack(MapUnitCombatant(unit), attackableTileView.getAttackableTile(), tryHealPillage)
+    /** Meant to be called only after all prerequisite checks (e.g. [tryMovePreparingAttack]) have been done. */
+    fun attackOrNuke(attackableTileView: AttackableTileView): Battle.DamageDealt =
+        Battle.attackOrNuke(MapUnitCombatant(unit), attackableTileView.getAttackableTile())
 }
