@@ -91,7 +91,6 @@ class NativeBitmapFontData(
         val assumeRoundIcon = isFontRulesetIcon && charPixmap.guessIsRoundSurroundedByTransparency()
 
         val rect = packer.pack(charPixmap)
-        charPixmap.dispose()
         glyph.page = packer.pages.size - 1 // Glyph is always packed into the last page for now.
         glyph.srcX = rect.x
         glyph.srcY = rect.y
@@ -102,10 +101,13 @@ class NativeBitmapFontData(
         // If a page was added, create a new texture region for the incrementally added glyph.
         if (regions.size <= glyph.page)
             updateTextureRegions()
+        else if (useMipMaps)
+            (regions[glyph.page].texture as MipmappedFontTexture).uploadGlyph(charPixmap, rect.x, rect.y)
+        charPixmap.dispose()
 
         setGlyphRegion(glyph, regions.get(glyph.page))
         setGlyph(ch.code, glyph)
-        dirty = true
+        if (!useMipMaps) dirty = true
 
         return glyph
     }
@@ -161,8 +163,8 @@ class NativeBitmapFontData(
     }
 
     override fun getGlyphs(run: GlyphLayout.GlyphRun, str: CharSequence, start: Int, end: Int, lastGlyph: BitmapFont.Glyph?) {
-        // Direct subimage uploads update only level zero. For mipmapped fonts, let the
-        // packer upload dirty pages and regenerate their mipmaps after adding glyphs.
+        // Mipmapped pages use our own incremental uploads and regenerate mipmaps at
+        // draw time. The packer only manages their CPU images and glyph placement.
         packer.packToTexture = !useMipMaps
         super.getGlyphs(run, str, start, end, lastGlyph)
         if (dirty) {
@@ -173,13 +175,25 @@ class NativeBitmapFontData(
 
     private fun updateTextureRegions() {
         val previousPageCount = regions.size
-        packer.updateTextureRegions(regions, minFilter, magFilter, useMipMaps)
+        if (useMipMaps) {
+            while (regions.size < packer.pages.size) {
+                val texture = MipmappedFontTexture(packer.pages[regions.size].pixmap, fontImplementation)
+                texture.setFilter(minFilter, magFilter)
+                regions.add(TextureRegion(texture))
+            }
+        } else {
+            packer.updateTextureRegions(regions, minFilter, magFilter, false)
+        }
         for (page in previousPageCount until regions.size)
             fontImplementation.configureFontTexture(regions[page].texture)
     }
 
     override fun dispose() {
-        packer.dispose()
+        // Mipmapped textures own their CPU pages, just like PixmapPacker's textures.
+        // Calling packer.dispose() for those pages would dispose their pixmaps twice,
+        // since the packer itself has no reference to our custom textures.
+        if (useMipMaps) regions.forEach { it.texture.dispose() }
+        else packer.dispose()
     }
 
 }
