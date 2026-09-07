@@ -1,41 +1,22 @@
 ## 4.21.18
 
-move "reveal all tiles when defeated" from ui to logic layer
+Avoid ANRs from multiple sources
 
-View implementation - attack uses views - see 
-
-View implementation - tile/unit selection uses views - see 
-
-Avoid ANRs caused by construction purchase taking a long time
-
-Fix: Set transients only after tilemap/ruleset applied to all tiles, to avoid crashes for unit/tile conditionals that check neighbor adjacency
-
-Parallelize translation generation
-
-Fixed flaky barb encampment test
-
-Try avoid map editor "apply ruleset" ANRs by disabling input while recreating map holder
-
-Avoid policy ANRs by running state change in a different thread
-
-Parallelize texture packings on desktop - cuts another ~150-200ms on desktop start time (for me with many mods)
+Avoid game load crashes for unit/tile neighbor adjacency conditionals
 
 Adds auto map size - By O-spin
 
-By Angais:
-- Spawn Great Generals at the required point total 
+By Angais: 
 - Apply warmonger penalties to alliance motivation 
 - Apply city filters to spy effectiveness 
-- Start Golden Ages at the required happiness total 
-- Preserve multiplayer timers when copying game settings 
 
-By varchasgopalaswamy:
-- fix bug where unplacable great people will disappear 
+By varchasgopalaswamy (new contributor!):
+- Fix bug where unplacable great people will disappear 
 - Fix movement history perspective 
 
 By SomeTroglodyte:
-- Font fallback rendering glyphs 
-- Generate translation files preserves existing translations for mods and can do a simple backup 
+- Font fallback for missing glyphs 
+- Translation generation preserves existing data for mods, can backup 
 
 ## 4.21.17
 
