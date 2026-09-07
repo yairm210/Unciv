@@ -103,6 +103,9 @@ class WorldScreen(
     var failedUpload = false
         private set
 
+    /** Defers reopening an unfulfilled free-Great-Person choice until the player requests it. */
+    internal var deferFreeGreatPersonPicker = false
+
     /** Selected civilization, used in spectator and replay mode, equals viewingCiv in ordinary games */
     var selectedCiv = viewingCiv
         internal set
@@ -446,8 +449,8 @@ class WorldScreen(
                     UncivGame.Current.pushScreen{ DiplomaticVoteResultScreen(gameInfo.diplomaticVictoryVotesCast, viewingCiv) }
                 !gameInfo.oneMoreTurnMode && (viewingCiv.isDefeated() || gameInfo.checkForVictory()) ->
                     game.pushScreen{ VictoryScreen(this) }
-                viewingCiv.greatPeople.freeGreatPeople > 0 ->
-                    game.pushScreen{ GreatPersonPickerScreen(this, viewingCiv) }
+                hasPendingFreeGreatPerson() && !deferFreeGreatPersonPicker ->
+                    openGreatPersonPicker()
                 viewingCiv.popupAlerts.any() -> AlertPopup(this, viewingCiv.popupAlerts.first())
                 viewingCiv.tradeRequests.isNotEmpty() -> {
                     // In the meantime this became invalid, perhaps because we accepted previous trades
@@ -472,6 +475,14 @@ class WorldScreen(
         val posZoomFromRight = if (game.settings.showMinimap) minimapWrapper.width
         else bottomTileInfoTable.width
         zoomController.setPosition(stage.width - posZoomFromRight - 10f, 10f, Align.bottomRight)
+    }
+
+    @Readonly
+    internal fun hasPendingFreeGreatPerson() = viewingCiv.greatPeople.freeGreatPeople > 0
+
+    internal fun openGreatPersonPicker() {
+        deferFreeGreatPersonPicker = false
+        game.pushScreen { GreatPersonPickerScreen(this, viewingCiv) }
     }
 
     private fun getCurrentTutorialTask(): Event? {

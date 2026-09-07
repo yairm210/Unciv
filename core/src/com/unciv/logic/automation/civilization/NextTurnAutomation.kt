@@ -349,27 +349,15 @@ object NextTurnAutomation {
     }
 
     fun chooseGreatPerson(civInfo: Civilization) {
-        if (civInfo.greatPeople.freeGreatPeople == 0) return
-        val rng = civInfo.state.stateBasedRandom("NextTurnAutomation.chooseGreatPerson")
-        val mayanGreatPerson = civInfo.greatPeople.mayaLimitedFreeGP > 0
-        val greatPeople =
-            if (mayanGreatPerson)
-                civInfo.greatPeople.getGreatPeople().filter { it.name in civInfo.greatPeople.longCountGPPool }
-            else civInfo.greatPeople.getGreatPeople()
-
+        val greatPeople = civInfo.greatPeople.getFreeGreatPersonOptions()
         if (greatPeople.isEmpty()) return
+        val rng = civInfo.state.stateBasedRandom("NextTurnAutomation.chooseGreatPerson")
         var greatPerson = greatPeople.random(rng)
         val scienceGP = greatPeople.firstOrNull { it.uniques.contains("Great Person - [Science]") }
         if (scienceGP != null)  greatPerson = scienceGP
         // Humans would pick a prophet or engineer, but it'd require more sophistication on part of the AI - a scientist is the safest option for now
 
-        civInfo.units.addUnit(greatPerson, civInfo.cities.firstOrNull { it.isCapital() })
-
-        civInfo.greatPeople.freeGreatPeople--
-        if (mayanGreatPerson){
-            civInfo.greatPeople.longCountGPPool.remove(greatPerson.name)
-            civInfo.greatPeople.mayaLimitedFreeGP--
-        }
+        civInfo.greatPeople.chooseFreeGreatPerson(greatPerson.name)
     }
 
     /** If we are able to build a spaceship but have already spent our resources, try disbanding

@@ -49,6 +49,13 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
         override fun isChoice(worldScreen: WorldScreen) =
             !worldScreen.isPlayersTurn
     },
+    PickGreatPerson("Choose a free great person", Color.GOLD) {
+        override val icon = "OtherIcons/Personality"
+        override fun isChoice(worldScreen: WorldScreen) =
+            worldScreen.hasPendingFreeGreatPerson()
+        override fun action(worldScreen: WorldScreen) =
+            worldScreen.openGreatPersonPicker()
+    },
     PickConstruction("Pick construction", Color.CORAL) {
         override fun isChoice(worldScreen: WorldScreen) =
             getCityWithNoProductionSet(worldScreen) != null
