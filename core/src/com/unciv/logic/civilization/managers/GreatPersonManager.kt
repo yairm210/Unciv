@@ -4,7 +4,9 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.MayaLongCountAction
 import com.unciv.logic.civilization.NotificationCategory
+import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.Counter
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.MayaCalendar
 import yairm210.purity.annotations.Readonly
@@ -111,6 +113,38 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
         .map { civInfo.getEquivalentUnit(it.name) }
         .filterNot { it.isUnavailableBySettings(civInfo.gameInfo) }
         .toHashSet()
+
+    /**
+     * Returns the Great People this Civilization can currently select for a free grant.
+     *
+     * An option being present does not guarantee placement will succeed when it is chosen.
+     */
+    @Readonly
+    fun getFreeGreatPersonOptions(): Set<BaseUnit> {
+        if (freeGreatPeople <= 0 || civInfo.cities.isEmpty()) return emptySet()
+
+        val greatPeople = getGreatPeople()
+        if (mayaLimitedFreeGP <= 0) return greatPeople
+        return greatPeople.filter { it.name in longCountGPPool }.toSet()
+    }
+
+    /**
+     * Attempts to grant the named option, returning the placed unit or `null` if the choice is not
+     * currently available or placement fails. A failed placement consumes no entitlement or Maya
+     * pool entry, though the existing placement internals may already have allocated a unit ID.
+     */
+    fun chooseFreeGreatPerson(unitName: String): MapUnit? {
+        val choice = getFreeGreatPersonOptions().singleOrNull { it.name == unitName } ?: return null
+        val useMayaLongCount = mayaLimitedFreeGP > 0
+        val unit = civInfo.units.addUnit(choice, civInfo.getCapital()) ?: return null
+
+        freeGreatPeople--
+        if (useMayaLongCount) {
+            mayaLimitedFreeGP--
+            longCountGPPool.remove(choice.name)
+        }
+        return unit
+    }
 
     @Readonly
     fun getGreatPersonPointsForNextTurn(): Counter<String> {

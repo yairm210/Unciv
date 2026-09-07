@@ -23,13 +23,17 @@ class GreatPersonPickerScreen(val worldScreen: WorldScreen, val civInfo: Civiliz
         rightSideButton.setText("Choose a free great person".tr())
 
         val greatPersonUnits = civInfo.greatPeople.getGreatPeople()
-        val useMayaLongCount = civInfo.greatPeople.mayaLimitedFreeGP > 0
+        val availableGreatPeople = civInfo.greatPeople.getFreeGreatPersonOptions()
+        if (availableGreatPeople.isEmpty()) {
+            descriptionLabel.setText("Unavailable".tr())
+            allowClose()
+        }
 
         for (unit in greatPersonUnits) {
             val button =
                 PickerPane.getPickerOptionButton(ImageGetter.getUnitIcon(unit), unit.name)
             button.pack()
-            button.isEnabled = !useMayaLongCount || unit.name in civInfo.greatPeople.longCountGPPool
+            button.isEnabled = unit in availableGreatPeople
             if (button.isEnabled) {
                 button.onClick {
                     theChosenOne = unit
@@ -37,13 +41,13 @@ class GreatPersonPickerScreen(val worldScreen: WorldScreen, val civInfo: Civiliz
                     descriptionLabel.setText(unit.getShortDescription())
                 }
 
-                button.onDoubleClick(UncivSound.Choir) { confirmAction(useMayaLongCount) }
+                button.onDoubleClick(UncivSound.Choir) { confirmAction() }
             }
             topTable.add(button).pad(10f).row()
         }
 
         rightSideButton.onClick(UncivSound.Choir) {
-            confirmAction(useMayaLongCount)
+            confirmAction()
         }
 
         descriptionLabel.onActivation {
@@ -52,13 +56,35 @@ class GreatPersonPickerScreen(val worldScreen: WorldScreen, val civInfo: Civiliz
         descriptionLabel.keyShortcuts.add(KeyboardBinding.Civilopedia)
     }
 
-    private fun confirmAction(useMayaLongCount: Boolean) {
-        civInfo.units.addUnit(theChosenOne!!, civInfo.getCapital())
-        civInfo.greatPeople.freeGreatPeople--
-        if (useMayaLongCount) {
-            civInfo.greatPeople.mayaLimitedFreeGP--
-            civInfo.greatPeople.longCountGPPool.remove(theChosenOne!!.name)
+    private fun confirmAction() {
+        val chosenUnit = theChosenOne ?: return
+        val currentOptions = civInfo.greatPeople.getFreeGreatPersonOptions()
+        if (currentOptions.none { it.name == chosenUnit.name }) {
+            descriptionLabel.setText("Unavailable".tr())
+            if (currentOptions.isEmpty()) {
+                worldScreen.deferFreeGreatPersonPicker = worldScreen.hasPendingFreeGreatPerson()
+                UncivGame.Current.popScreen()
+            } else {
+                theChosenOne = null
+                setRightSideButtonEnabled(false)
+                // Reopening rebuilds buttons if the set of available choices changed.
+                allowClose()
+            }
+            return
         }
+        if (civInfo.greatPeople.chooseFreeGreatPerson(chosenUnit.name) == null) {
+            descriptionLabel.setText("No space to place this unit".tr())
+            allowClose()
+            return
+        }
+        worldScreen.deferFreeGreatPersonPicker = false
         UncivGame.Current.popScreen()
+    }
+
+    private fun allowClose() {
+        if (closeButton.isVisible) return
+        worldScreen.deferFreeGreatPersonPicker = true
+        closeButton.isVisible = true
+        setDefaultCloseAction()
     }
 }
