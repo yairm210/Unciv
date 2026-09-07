@@ -30,7 +30,6 @@ class DesktopFont : FontImplementation {
 
     private lateinit var font: Font
     private lateinit var metric: FontMetrics
-    private lateinit var fallbackMetric: FontMetrics
 
     override fun setFontFamily(fontFamilyData: FontFamilyData, size: Int) {
 
@@ -48,7 +47,6 @@ class DesktopFont : FontImplementation {
         val bufferedImage = BufferedImage(1, 1, BufferedImage.TYPE_4BYTE_ABGR)
         val graphics = bufferedImage.createGraphics()
         this.metric = graphics.getFontMetrics(font)
-        fallbackMetric = graphics.getFontMetrics(Font(Font.DIALOG, Font.PLAIN, size))
         graphics.dispose()
     }
 
@@ -79,12 +77,7 @@ class DesktopFont : FontImplementation {
     override fun getCharPixmap(symbolString: String) = getCharPixmapCommon(symbolString, metric.stringWidth(symbolString))
 
     private fun getCharPixmapCommon(symbolString: String, measuredWidth: Int): Pixmap {
-        // Physical fonts such as Microsoft YaHei may lack typographic spaces used by
-        // the UI (U+2004, U+2009). Their missing-glyph box is neither blank nor the right
-        // width. Borrow the logical font's spacing, without changing visible glyphs.
-        val unsupportedSpace = symbolString.isNotEmpty() &&
-            symbolString.all { Character.isSpaceChar(it) } && font.canDisplayUpTo(symbolString) != -1
-        var width = if (unsupportedSpace) fallbackMetric.stringWidth(symbolString) else measuredWidth
+        var width = measuredWidth
         var height = metric.height
         if (width == 0) {
             // This happens e.g. for the Tab character
@@ -97,8 +90,7 @@ class DesktopFont : FontImplementation {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
         g.font = font
         g.color = Color.WHITE
-        if (!unsupportedSpace)
-            g.drawString(symbolString, 0, metric.leading + metric.ascent)
+        g.drawString(symbolString, 0, metric.leading + metric.ascent)
 
         val pixmap = Pixmap(bi.width, bi.height, Pixmap.Format.RGBA8888)
         // Mipmaps average RGB as well as alpha. Transparent black around white glyphs
