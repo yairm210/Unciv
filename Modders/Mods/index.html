@@ -601,6 +601,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#fonts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fonts
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#adding-maps-to-mods" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1915,6 +1926,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#fonts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fonts
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#adding-maps-to-mods" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2033,7 +2055,7 @@ Games loaded with these mods will function according to the mod definition.</p>
 <ul>
 <li><strong>Extension mods</strong> - these add new nations/units/buildings/resources to a base ruleset - can be either to the default ruleset, or to a base ruleset mod. Easy to do and probably the better place to get started - for example, <a href="../Making-a-new-Civilization/">creating a new Civilization</a></li>
 <li><strong>Base Ruleset mods</strong> - these replace the entire existing ruleset - tech tree, units, policies, nations etc - to give an entirely different experience than the base game. These generally require quite a bit of work, but give a whole new experience, and so are the most popular. <a href="https://github.com/yairm210/Unciv-minimal-base-ruleset">A minimal example can be found here</a> as a template to build off of ("Use this template" green button in top right, "Create a new repository"). For requirements, see <a href="../Mod-file-structure/1-Overview/#requirements-for-base-rulesets">Requirements</a></li>
-<li><strong>Ruleset-agnostic mods</strong> - these do not contain any ruleset-related jsons, but instead contain other affects. Audiovisual mods (including tilesets, unitsets, and UI skins) and map mods are in this category.</li>
+<li><strong>Ruleset-agnostic mods</strong> - these do not contain any ruleset-related jsons, but instead contain other assets. <a href="#audiovisual-components">Audiovisual</a> mods (including tilesets, unitsets, and UI skins), <a href="#fonts">font</a> mods and map mods are in this category.</li>
 </ul>
 <p>Creating and editing mods from your phone is NOT RECOMMENDED - it's <em>much easier</em> using a desktop device!</p>
 <h2 id="mod-names">Mod names</h2>
@@ -2055,6 +2077,12 @@ Dashes are <em>automatically</em> converted to spaces for display and use within
 <p>Custom tilesets and unitsets are a subgroup of these - see <a href="../Creating-a-custom-tileset/">Creating a custom tileset</a> - as are UI skin mods, see <a href="../Creating-a-UI-skin/">Creating a UI skin</a>.</p>
 <p>Such mods are candidates for the "Permanent audiovisual mod" switch available on the Mod Management Screen, see <a href="../Images-and-Audio/#permanent-audiovisual-mods">Permanent audiovisual mods</a>.</p>
 <p>Images need to be 'packed' before the game can use them, which the desktop version can do for you. Please make sure to read the <a href="../Images-and-Audio/#images-and-the-texture-atlas">Texture atlas</a> chapter!</p>
+<h2 id="fonts">Fonts</h2>
+<p>Mods can supply fonts as TTF or OTF files in a "fonts" folder (but the actual file name must use lowercase extensions).</p>
+<p>These are available unter Options-Advanced-Font once the mod is installed (the "Permanent audiovisual mod" switch has no effect).
+A mod containing font(s) can be standalone, or it can carry the font to support text contained in its json, when that text uses unusual characters not typically present in system fonts (e.g. Klingon or Phoenician script do have Unicode codepoints but most system fonts don't have glyphs for either).
+If the font is required to render the mod's text, then the Modder is responsible for informing users to manually select that font - there's no automatic use.
+Also, at this time there's no automatic fallback to use system default fonts for missing glyphs, so the font should be complete enough to cover all Unciv text.</p>
 <h2 id="adding-maps-to-mods">Adding maps to mods</h2>
 <p>You can also add maps to mods, so they'll be available to players who download your mod.</p>
 <p>A mod can also be maps-only, if all you want to do is share your maps.</p>
