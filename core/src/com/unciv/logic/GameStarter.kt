@@ -11,6 +11,8 @@ import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.tile.TileNormalizer
+import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Ruleset
@@ -407,9 +409,86 @@ class GameStarter private constructor(
         }
 
         val startingLocations = getStartingLocations(allCivs, landTilesInBigEnoughGroup, startScores)
+        patchUnsatisfiedStartBiases(startingLocations)
 
         // no starting units for Barbarians and Spectators
         determineStartingUnitsAndLocations(gameInfo, startingLocations, ruleSet)
+    }
+
+    /**
+     * Last-resort guarantee: after placement, force a neighbor of each civ's start tile to satisfy
+     * any start bias that still isn't met (e.g. no Tundra existed anywhere reachable on this map).
+     * This intentionally accepts a locally mismatched tile (e.g. a lone Tundra tile deep in a
+     * temperate region) in exchange for the bias actually being followed.
+     */
+    private fun patchUnsatisfiedStartBiases(startingLocations: Map<Civilization, Tile>) {
+        if (gameSetupInfo.gameParameters.noStartBias) return
+        for ((civ, tile) in startingLocations) {
+            if (civ.isBarbarian || civ.isSpectator()) continue
+            val startBiases = civ.nation.getStartBias(ruleset, civ.getGameContextForStartBias())
+            for (startBias in startBiases) {
+                if (isStartBiasSatisfiedBy(tile, startBias)) continue
+                patchNeighborForStartBias(tile, startBias)
+            }
+        }
+    }
+
+    private fun patchNeighborForStartBias(startTile: Tile, startBias: String) {
+        // Can't reliably force a specific natural wonder or coastline into existence here -
+        // these already have dedicated (if imperfect) handling elsewhere.
+        if (startBias in tileMap.naturalWonders) return
+        if (startBias.equalsPlaceholderText("Avoid []")) {
+            patchAreaToAvoid(startTile, startBias.getPlaceholderParameters()[0])
+            return
+        }
+        val targetTerrain = ruleset.terrains[startBias] ?: return
+        if (targetTerrain.isCoast || targetTerrain.type == TerrainType.Water) return
+
+        val positionOrder = compareBy<Tile>({ it.position.x }, { it.position.y })
+        @Suppress("DEPRECATION")
+        val ring1 = startTile.getTilesInDistance(1).filter { it != startTile && it.isLand && !it.isImpassible() }.sortedWith(positionOrder).toList()
+        @Suppress("DEPRECATION")
+        val ring2 = startTile.getTilesInDistance(2).filter { it !in ring1 && it != startTile && it.isLand && !it.isImpassible() }.sortedWith(positionOrder).toList()
+        // Ring 1 first (preserved, not re-sorted together with ring 2), so the immediate-adjacency
+        // bias check is guaranteed to have a converted candidate as long as one exists at all.
+        val orderedCandidates = (ring1 + ring2).filterNot { it.matchesTerrainFilter(startBias, null) }
+        if (orderedCandidates.isEmpty()) return
+
+        // Mirror the ruleset's own "region counts as this type" percentage instead of a guessed number.
+        val requiredPercent = targetTerrain.getMatchingUniques(UniqueType.RegionRequirePercentSingleType)
+            .firstOrNull()?.params?.get(0)?.toIntOrNull() ?: 30
+        val areaSize = ring1.size + ring2.size
+        val alreadyMatching = areaSize - orderedCandidates.size
+        val target = (requiredPercent * areaSize) / 100
+        val toConvert = (target - alreadyMatching).coerceAtLeast(1)
+
+        for (candidate in orderedCandidates.take(toConvert)) {
+            if (targetTerrain.type == TerrainType.TerrainFeature) {
+                val compatibleBaseTerrainName = targetTerrain.occursOn.firstOrNull { ruleset.terrains.containsKey(it) } ?: continue
+                candidate.setBaseTerrain(ruleset.terrains[compatibleBaseTerrainName]!!)
+                candidate.addTerrainFeature(startBias)
+            } else {
+                candidate.setBaseTerrain(targetTerrain)
+            }
+            TileNormalizer.normalizeToRuleset(candidate, ruleset)
+        }
+    }
+
+    private fun patchAreaToAvoid(startTile: Tile, terrainToAvoid: String) {
+        val avoidedTerrain = ruleset.terrains[terrainToAvoid] ?: return
+        @Suppress("DEPRECATION")
+        val offenders = startTile.getTilesInDistance(2).filter { it.matchesTerrainFilter(terrainToAvoid, null) }
+        for (offender in offenders) {
+            if (avoidedTerrain.type == TerrainType.TerrainFeature) {
+                offender.removeTerrainFeature(terrainToAvoid)
+            } else {
+                val replacement = ruleset.terrains.values.firstOrNull {
+                    it.type == TerrainType.Land && !it.impassable && it.name != terrainToAvoid
+                } ?: continue
+                offender.setBaseTerrain(replacement)
+            }
+            TileNormalizer.normalizeToRuleset(offender, ruleset)
+        }
     }
 
     private fun removeAncientRuinsNearStartingLocation(startingLocation: Tile) {
@@ -551,14 +630,58 @@ class GameStarter private constructor(
     ): HashMap<Civilization, Tile> {
 
         val civsOrderedByAvailableLocations = getCivsOrderedByAvailableLocations(civs)
+        val totalBiasCount = civsOrderedByAvailableLocations.sumOf {
+            it.nation.getStartBias(ruleset, it.getGameContextForStartBias()).size
+        }
 
+        // The largest spacing that successfully places everyone doesn't necessarily respect the most
+        // start biases - tightly-clustered biased terrain (e.g. Tundra near the poles) can get pruned
+        // by the edge-distance requirement at high spacing. So try every spacing down to 0 and keep
+        // whichever successful placement satisfies the most start biases, favoring larger spacing on ties.
+        var bestStartingLocations: HashMap<Civilization, Tile>? = null
+        var bestSatisfiedBiasCount = -1
         for (minimumDistanceBetweenStartingLocations in tileMap.tileMatrix.size / 6 downTo 0) {
             val freeTiles = getFreeTiles(landTilesInBigEnoughGroup, minimumDistanceBetweenStartingLocations)
 
             val startingLocations = getStartingLocationsForCivs(civsOrderedByAvailableLocations, freeTiles, startScores, minimumDistanceBetweenStartingLocations)
-            if (startingLocations != null) return startingLocations
+                ?: continue
+            if (totalBiasCount == 0) return startingLocations // nothing to optimize for
+
+            val satisfiedBiasCount = countSatisfiedBiases(startingLocations)
+            if (satisfiedBiasCount > bestSatisfiedBiasCount) {
+                bestSatisfiedBiasCount = satisfiedBiasCount
+                bestStartingLocations = startingLocations
+            }
+            if (satisfiedBiasCount == totalBiasCount) break
         }
-        throw Exception("Didn't manage to get starting tiles even with distance of 1?")
+        return bestStartingLocations ?: throw Exception("Didn't manage to get starting tiles even with distance of 1?")
+    }
+
+    @Readonly
+    private fun countSatisfiedBiases(startingLocations: Map<Civilization, Tile>): Int {
+        var count = 0
+        for ((civ, tile) in startingLocations) {
+            val startBiases = civ.nation.getStartBias(ruleset, civ.getGameContextForStartBias())
+            for (startBias in startBiases) {
+                if (isStartBiasSatisfiedBy(tile, startBias)) count++
+            }
+        }
+        return count
+    }
+
+    @Readonly
+    private fun isStartBiasSatisfiedBy(tile: Tile, startBias: String): Boolean {
+        if (startBias.equalsPlaceholderText("Avoid []")) {
+            val tileToAvoid = startBias.getPlaceholderParameters()[0]
+            @Suppress("DEPRECATION")
+            return !tile.getTilesInDistance(1).any { it.matchesTerrainFilter(tileToAvoid, null) }
+        }
+        if (startBias in tileMap.naturalWonders) {
+            @Suppress("DEPRECATION")
+            return tile.getTilesInDistance(1).any { it.isNaturalWonder() && it.naturalWonder == startBias }
+        }
+        @Suppress("DEPRECATION")
+        return tile.getTilesInDistance(1).any { it.matchesTerrainFilter(startBias, null) }
     }
 
     @Readonly
@@ -650,7 +773,7 @@ class GameStarter private constructor(
 
         var preferredTiles = freeTiles.toList()
         for (startBias in startBiases) {
-            preferredTiles = when {
+            val filtered = when {
                 startBias.equalsPlaceholderText("Avoid []") -> {
                     val tileToAvoid = startBias.getPlaceholderParameters()[0]
                     preferredTiles.filter { tile ->
@@ -668,6 +791,9 @@ class GameStarter private constructor(
                     }
                 }
             }
+            // If this bias can't be satisfied alongside the previous ones, drop it rather than
+            // discarding all previously-matched biases by falling through to a fully random tile.
+            if (filtered.isNotEmpty()) preferredTiles = filtered
         }
         return preferredTiles.randomOrNull(rng) ?: freeTiles.random(rng)
     }
