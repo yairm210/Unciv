@@ -192,7 +192,7 @@ class CityButton(val foreignCityView: ForeignCityView, private val tileGroup: Ti
             } else {
                 moveButtonDown()
                 if ((unitTable.selectedUnit == null || !unitTable.selectedUnit!!.hasMovement()) && belongsToViewingCiv())
-                    unitTable.citySelected(foreignCityView.getCity())
+                    unitTable.citySelected(foreignCityView)
             }
         }
         onRightClick(action = ::enterCityOrInfoPopup)
