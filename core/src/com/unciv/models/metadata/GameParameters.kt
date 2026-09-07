@@ -104,6 +104,9 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
         parameters.isOnlineMultiplayer = isOnlineMultiplayer
         parameters.multiplayerServerUrl = multiplayerServerUrl
         parameters.anyoneCanSpectate = anyoneCanSpectate
+        parameters.minutesUntilSkipTurn = minutesUntilSkipTurn
+        parameters.minutesUntilForceResign = minutesUntilForceResign
+        parameters.minutesRecoveredPerTurn = minutesRecoveredPerTurn
         parameters.baseRuleset = baseRuleset
         parameters.mods = LinkedHashSet(mods)
         parameters.maxTurns = maxTurns
