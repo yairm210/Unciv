@@ -27,6 +27,7 @@ import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.isEnabled
 import com.unciv.ui.components.extensions.setFontColor
+import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.fonts.FontFamilyData
@@ -256,6 +257,8 @@ internal class AdvancedTab(
         if (Gdx.app.type != Application.ApplicationType.Desktop) return
 
         val generateTranslationsButton = "Generate translation files".toTextButton()
+        generateTranslationsButton.keyShortcuts.add(Input.Keys.F12)
+        generateTranslationsButton.addTooltip("F12", 18f)
 
         // Can't use UncivGame.Current.translations.modsWithTranslations here, it's selective to the chosen language
         val entries = listOf("All mods") +
@@ -263,11 +266,14 @@ internal class AdvancedTab(
             RulesetCache.keys.filter { mod -> BaseRuleset.entries.none { it.fullName == mod } }.sorted()
         val modSelect = TranslatedSelectBox(entries, "All mods")
 
-        generateTranslationsButton.keyShortcuts.add(Input.Keys.F12)
-        generateTranslationsButton.addTooltip("F12", 18f)
+        val backupCheckBox = "backup".toCheckBox()
 
-        add(generateTranslationsButton)
-        add(modSelect).maxWidth(stage.width / 2).row()
+        addWrapped {
+            defaults().space(10f)
+            add(generateTranslationsButton)
+            add(modSelect).maxWidth(this@AdvancedTab.stage.width / 2)
+            add(backupCheckBox)
+        }
         val resultCell = add().colspan(2)
         row()
 
@@ -276,7 +282,7 @@ internal class AdvancedTab(
             generateTranslationsButton.setText(Constants.working.tr())
             generateTranslationsButton.disable()
             Concurrency.run("WriteTranslations") {
-                val result = TranslationFileWriter.writeNewTranslationFiles(modSelect.selected.value)
+                val result = TranslationFileWriter.writeNewTranslationFiles(modSelect.selected.value, backup = backupCheckBox.isChecked)
                 launchOnGLThread {
                     if (stage == null) return@launchOnGLThread // Guard the width below in case the user closed the Options in the mean time
                     // notify about completion
