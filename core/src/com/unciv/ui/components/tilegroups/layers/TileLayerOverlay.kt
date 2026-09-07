@@ -76,7 +76,7 @@ class TileLayerOverlay(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
     }
 
     override fun doUpdate(viewingCiv: CivView?) {
-        val isViewable = viewingCiv == null || isViewable(viewingCiv)
+        val isViewable = isViewable(viewingCiv)
 
         setFog(isViewable)
 

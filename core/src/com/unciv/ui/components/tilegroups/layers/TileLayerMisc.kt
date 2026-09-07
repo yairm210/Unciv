@@ -147,7 +147,7 @@ class TileLayerResource(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
 
 
         if (resourceIcon != null){
-            val isViewable = viewingCiv == null || isViewable(viewingCiv)
+            val isViewable = isViewable(viewingCiv)
             dimResource(!isViewable)
 
             val shouldResourceProvidedBeDisplayed =

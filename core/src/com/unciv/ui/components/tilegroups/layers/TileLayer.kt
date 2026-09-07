@@ -79,7 +79,7 @@ abstract class TileLayer(val tileGroup: TileGroup, val size: Float) {
         return this
     }
 
-    fun isViewable(viewingCiv: CivView) = tileGroup.isViewable(viewingCiv)
+    fun isViewable(viewingCiv: CivView?) = viewingCiv == null || tileGroup.isViewable(viewingCiv)
 
     fun update(viewingCiv: CivView?) {
         doUpdate(viewingCiv)

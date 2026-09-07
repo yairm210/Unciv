@@ -229,7 +229,7 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
     }
 
     private fun updateTileColor(viewingCiv: CivView?) {
-        val isViewable = viewingCiv == null || isViewable(viewingCiv)
+        val isViewable = isViewable(viewingCiv)
         val tileView = tileGroup.tileView
         val colorPillagedTile = isViewable && tileView.isPillaged() && !usePillagedImprovementImage(tileView)
 
