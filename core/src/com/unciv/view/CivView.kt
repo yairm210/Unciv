@@ -52,6 +52,8 @@ class CivView(civ: Civilization,
     @Readonly fun isCivConstructionDisabled(name: String): Boolean = name in civ.disabledCityConstructions
 
     @Readonly fun isSpectator(): Boolean = civ.isSpectator()
+    /** `true` when this civ is a human player defeated in a singleplayer game - the map is fully revealed for them to watch the game play out. */
+    @Readonly fun isMapRevealed(): Boolean = !civ.gameInfo.gameParameters.isOnlineMultiplayer && civ.isCurrentPlayer() && civ.isDefeated()
     @Readonly fun hasExplored(tileView: TileView): Boolean = civ.hasExplored(tileView.unwrap())
     @Readonly fun isDefeated(): Boolean = civ.isDefeated()
     @Readonly fun isCurrentPlayer(): Boolean = civ.isCurrentPlayer()

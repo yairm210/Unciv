@@ -583,15 +583,6 @@ class WorldMapHolder(
         unitActionOverlays.add(actor)
     }
 
-    /** Returns true when the civ is a human player defeated in singleplayer game */
-    @Readonly
-    fun isMapRevealEnabled(civView: CivView): Boolean {
-        val viewingCiv = civView.getCiv()
-        return !viewingCiv.gameInfo.gameParameters.isOnlineMultiplayer
-            && viewingCiv.isCurrentPlayer()
-            && viewingCiv.isDefeated()
-    }
-
     /** Clear all arrows to be drawn on the next update. */
     fun resetArrows() {
         for (tile in tileGroups.asSequence())

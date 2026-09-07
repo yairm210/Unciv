@@ -74,7 +74,7 @@ class TileLayerUnitSprite(tileGroup: TileGroup, size: Float) : TileLayer(tileGro
     override fun doUpdate(viewingCiv: CivView?) {
 
         val isPixelUnitsEnabled = UncivGame.Current.settings.showPixelUnits
-        val isViewable = viewingCiv == null || tileGroup.isForceVisible || isViewable(viewingCiv)
+        val isViewable = viewingCiv == null || isViewable(viewingCiv)
 
         val isCivilianSlotShown = isPixelUnitsEnabled && isViewable
         val isMilitarySlotShown = isPixelUnitsEnabled && isViewable

@@ -7,7 +7,6 @@ import com.unciv.view.TileMapView
 import com.unciv.view.TileView
 import com.unciv.logic.map.tile.Tile
 import com.unciv.ui.components.tilegroups.layers.*
-import com.unciv.utils.DebugUtils
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -42,7 +41,6 @@ open class TileGroup(
     val hexagonImageOriginY = sqrt((hexagonImageWidth / 2f).pow(2) - (hexagonImageWidth / 4f).pow(2))
     val hexagonImagePosition = Pair(-hexagonImageOriginX / 3f, -hexagonImageOriginY / 4f)
 
-    var isForceVisible = DebugUtils.VISIBLE_MAP
     var isForMapEditorIcon = false
 
     @Suppress("LeakingThis") val layerTerrain = TileLayerTerrain(this, groupSize)
@@ -79,7 +77,7 @@ open class TileGroup(
         layerTerrain.update(null)
     }
 
-    fun isViewable(viewingCiv: CivView) = isForceVisible
+    fun isViewable(viewingCiv: CivView) = tileView.isForceVisible()
             || viewingCiv.canSeeTile(tileView)
             || viewingCiv.isSpectator()
 
@@ -115,7 +113,7 @@ open class TileGroup(
         layerOverlay.hideGoodCityLocationIndicator()
 
         // Do not update layers if tile is not explored by viewing player
-        if (viewingCiv != null && !(isForceVisible || viewingCiv.hasExplored(tileView))) {
+        if (viewingCiv != null && !(tileView.isForceVisible() || viewingCiv.hasExplored(tileView))) {
             if (tileView.getVisibleNeighbors().none()) {
                 // No explored neighbors - hide all layers
                 setAllLayersVisible(false)

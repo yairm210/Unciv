@@ -17,11 +17,6 @@ object WorldMapTileUpdater {
     private val WorldMapHolder.tileMapView get() = worldScreen.selectedGameView.tileMapView
 
      fun WorldMapHolder.updateTiles(civView: CivView) {
-        if (isMapRevealEnabled(civView)) {
-            // The map itself was already revealed in Civilization.revealMapWhenDefeated() on defeat
-            tileGroups.values.forEach { it.isForceVisible = true } // So we can see all resources, regardless of tech
-        }
-
         // General update of all tiles
         for (tileGroup in tileGroups.values)
             tileGroup.update(civView)

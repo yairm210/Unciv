@@ -73,7 +73,7 @@ class TileLayerYield(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, s
     ) {
         val effectiveVisible = show &&
                 !tileGroup.isForMapEditorIcon &&  // don't have a map to calc yields
-                !(viewingCiv == null && tileGroup.isForceVisible) // main menu background
+                viewingCiv != null // main menu background
 
         if (!effectiveVisible) {
             yields?.isVisible = false
@@ -123,7 +123,7 @@ class TileLayerResource(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
     private fun updateResourceIcon(viewingCiv: CivView?, showResourceIcon: Boolean) {
         val tileView = tileGroup.tileView
         // This could change on any turn, since resources need certain techs to reveal them
-        val effectiveVisible = showResourceIcon && (tileGroup.isForceVisible || tileView.getViewableResource(viewingCiv) != null)
+        val effectiveVisible = showResourceIcon && (tileView.isForceVisible() || tileView.getViewableResource(viewingCiv) != null)
 
         // If resource has changed (e.g. tech researched) - force new icon next time it's needed
         if (resourceName != tileView.resource || resourceAmount != tileView.resourceAmount) {

@@ -111,7 +111,6 @@ class EditorMapHolder(
                 }
             }
 */
-            tileGroup.isForceVisible = true
             tileGroup.update()
         }
 

@@ -44,7 +44,7 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
 
     private fun getTileBaseImageLocations(viewingCiv: CivView?): List<String> {
 
-        val isForceVisible = tileGroup.isForceVisible
+        val isForceVisible = tileGroup.tileView.isForceVisible()
 
         if (viewingCiv == null && !isForceVisible)
             return strings.hexagonList

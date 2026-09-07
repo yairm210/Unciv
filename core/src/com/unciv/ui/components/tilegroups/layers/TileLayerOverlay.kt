@@ -106,7 +106,7 @@ class TileLayerOverlay(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
     }
 
     private fun setFog(isViewable: Boolean) {
-        val fogShouldBeVisible = !isViewable && !tileGroup.isForceVisible
+        val fogShouldBeVisible = !isViewable
         val fogIsVisible = fog != null
         if (fogIsVisible && !fogShouldBeVisible) {
             removeOwnedActor(fog!!)
