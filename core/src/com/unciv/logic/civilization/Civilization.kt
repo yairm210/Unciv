@@ -1172,6 +1172,7 @@ class Civilization : IsPartOfGameInfoSerialization {
      */
     // At the moment, the "last unit down" callers do not pass a location, the city ones do - because the former isn't interesting
     fun destroy(notificationLocation: HexCoord? = null) {
+        revealMapWhenDefeated()
         val destructionText = if (isMajorCiv()) "The civilization of [$civName] has been destroyed!"
             else "The City-State of [$civName] has been destroyed!"
         for (civ in gameInfo.civilizations) {
@@ -1192,6 +1193,12 @@ class Civilization : IsPartOfGameInfoSerialization {
         }
         if (gameInfo.isEspionageEnabled())
             espionageManager.removeAllSpies()
+    }
+
+    /** Reveals the entire map to a human player defeated in a singleplayer game, so they can watch the game play out. */
+    fun revealMapWhenDefeated() {
+        if (gameInfo.gameParameters.isOnlineMultiplayer || !isCurrentPlayer()) return
+        for (tile in gameInfo.tileMap.values) tile.setExplored(this, true)
     }
 
     fun updateProximity(otherCiv: Civilization, preCalculated: Proximity? = null): Proximity = cache.updateProximity(otherCiv, preCalculated)
