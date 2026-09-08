@@ -243,33 +243,6 @@ class Civilization : IsPartOfGameInfoSerialization {
      */
     var leaderTitle = ""
 
-    /**
-     * Container class to represent a historical attack recently performed by this civilization.
-     *
-     * @property attackingUnit Name key of [BaseUnit] type that performed the attack, or null (E.G. for city bombardments).
-     * @property source Position of the tile from which the attack was made.
-     * @property target Position of the tile targeted by the attack.
-     * @see [MapUnit.UnitMovementMemory], [attacksSinceTurnStart]
-     */
-    class HistoricalAttackMemory() : IsPartOfGameInfoSerialization {
-        constructor(attackingUnit: String?, source: HexCoord, target: HexCoord): this() {
-            this.attackingUnit = attackingUnit
-            this.source = source
-            this.target = target
-        }
-        var attackingUnit: String? = null
-        lateinit var source: HexCoord
-        lateinit var target: HexCoord
-        @Readonly fun clone() = HistoricalAttackMemory(attackingUnit, source, target)
-    }
-    /** Deep clone an ArrayList of [HistoricalAttackMemory]s. */
-    @Readonly private fun ArrayList<HistoricalAttackMemory>.copy() = ArrayList(this.map { it.clone() })
-    /**
-     * List of attacks that this civilization has performed since the start of its most recent turn. Does not include attacks already tracked in [MapUnit.attacksSinceTurnStart] of living units. Used in movement arrow overlay.
-     * @see [MapUnit.attacksSinceTurnStart]
-     */
-    var attacksSinceTurnStart = ArrayList<HistoricalAttackMemory>()
-
     var hasMovedAutomatedUnits = false
 
     @Transient
@@ -349,7 +322,6 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.numMinorCivsAttacked = numMinorCivsAttacked
         toReturn.totalCultureForContests = totalCultureForContests
         toReturn.totalFaithForContests = totalFaithForContests
-        toReturn.attacksSinceTurnStart = attacksSinceTurnStart.copy()
         toReturn.hasMovedAutomatedUnits = hasMovedAutomatedUnits
         toReturn.statsHistory = statsHistory.clone()
         toReturn.resourceStockpiles = resourceStockpiles.clone()

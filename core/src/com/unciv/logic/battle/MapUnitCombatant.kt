@@ -33,7 +33,7 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     }
 
 
-    override fun takeDamage(damage: Int) = unit.takeDamage(damage)
+    override fun takeDamage(damage: Int, attackRecorder: AttackRecorder?) = unit.takeDamage(damage, attackRecorder)
 
     override fun getAttackingStrength(defender: ICombatant?): Int {
         val state = GameContext(this, defender, this.getTile(), CombatAction.Attack)

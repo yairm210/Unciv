@@ -101,7 +101,7 @@ class UnitUpgradeManager(val unit: MapUnit) {
          * The only known cause of this currently is "land units upgrading to water units" which fail to be placed.
          */
         if (newUnit == null) {
-            civ.units.placeUnitNearTile(position, unit.baseUnit, copiedFrom = unit)!!
+            civ.units.placeUnitNearTile(position, unit.baseUnit, unit.id, copiedFrom = unit)!!
             return
         }
 
