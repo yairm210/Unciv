@@ -246,7 +246,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
             val maxDamageToAttacker = attacker.calculateDamageToAttacker(defender, tileToAttackFromView, 1f)
             val minDamageToAttacker = attacker.calculateDamageToAttacker(defender, tileToAttackFromView, 0f)
 
-            if (!defender.isCity() && attacker.hasUnique(UniqueType.ExtraRangedAttack)) {
+            if (!defender.isCity() && attacker is MapUnitCombatantView && attacker.hasUnique(UniqueType.ExtraRangedAttack)) {
                 add("Will perform an extra ranged attack".toLabel(fontSize = 16).apply { wrap = true }).width(quarterScreen)
                 row()
 
@@ -304,7 +304,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
                         if (canBombard) {
                             val gameView = worldScreen.selectedGameView
                             attackableTileView = attacker.buildBombardAttackableTile(
-                                cityView.getCenterTile(), defender.getTile(), defender,
+                                defender.getTile(), defender,
                                 gameView.civView.getCiv(), gameView.spectatorMode, gameView
                             )
                         }

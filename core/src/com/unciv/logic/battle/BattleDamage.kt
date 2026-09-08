@@ -319,6 +319,18 @@ object BattleDamage {
         return (damageModifier(ratio, false, randomnessFactor) * getHealthDependantDamageRatio(attacker)).roundToInt()
     }
 
+    /** (max, min) bonus damage dealt to [defender] from an additional [UniqueType.ExtraRangedAttack] - `(0, 0)` if not applicable. */
+    @Readonly
+    fun getExtraRangedAttackBonusDamage(attacker: MapUnitCombatant, defender: ICombatant, tileToAttackFrom: Tile): Pair<Int, Int> {
+        var maxExtra = 0
+        var minExtra = 0
+        for (fakeAttacker in Battle.getExtraRangedAttackFakeUnits(attacker)) {
+            maxExtra += calculateDamageToDefender(fakeAttacker, defender, tileToAttackFrom, 1f)
+            minExtra += calculateDamageToDefender(fakeAttacker, defender, tileToAttackFrom, 0f)
+        }
+        return maxExtra to minExtra
+    }
+
     @Pure
     private fun damageModifier(
         attackerToDefenderRatio: Float,

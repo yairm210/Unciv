@@ -1,7 +1,6 @@
 package com.unciv.view
 
 import com.unciv.logic.battle.AttackableTile
-import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.battle.ICombatant
@@ -54,27 +53,6 @@ sealed class CombatantView protected constructor(private val combatant: ICombata
         BattleDamage.calculateDamageToDefender(combatant, defender.unwrap(), tileToAttackFrom.getTile(), randomnessFactor)
     @Readonly fun calculateDamageToAttacker(defender: CombatantView, tileToAttackFrom: TileView, randomnessFactor: Float): Int =
         BattleDamage.calculateDamageToAttacker(combatant, defender.unwrap(), tileToAttackFrom.getTile(), randomnessFactor)
-    /** (max, min) bonus damage dealt to [defender] from an additional [UniqueType.ExtraRangedAttack] - `(0, 0)` if not applicable. */
-    @Readonly fun getExtraRangedAttackBonusDamage(defender: CombatantView, tileToAttackFrom: TileView): Pair<Int, Int> {
-        if (combatant !is MapUnitCombatant) return 0 to 0
-        val defenderCombatant = defender.unwrap()
-        var maxExtra = 0
-        var minExtra = 0
-        for (unique in combatant.unit.getMatchingUniques(UniqueType.ExtraRangedAttack)) {
-            val baseRangedStrengthForExtraAttack = (combatant.unit.baseUnit.strength * unique.params[0].toFloat() / 100).toInt()
-            val fakeAttacker = Battle.FakeUnitForExtraRangedAttack(combatant, baseRangedStrengthForExtraAttack)
-            maxExtra += BattleDamage.calculateDamageToDefender(fakeAttacker, defenderCombatant, tileToAttackFrom.getTile(), 1f)
-            minExtra += BattleDamage.calculateDamageToDefender(fakeAttacker, defenderCombatant, tileToAttackFrom.getTile(), 0f)
-        }
-        return maxExtra to minExtra
-    }
-
-    /** Builds the [AttackableTileView] a city bombard needs (no movement, so no tileToAttackFrom calculation required). */
-    @Readonly fun buildBombardAttackableTile(
-        fromTile: TileView, toTile: TileView, defender: CombatantView,
-        viewer: Civilization, spectatorMode: Boolean, gameView: GameView
-    ): AttackableTileView =
-        AttackableTileView(AttackableTile(fromTile.getTile(), toTile.getTile(), 0f, defender.unwrap()), viewer, spectatorMode, gameView)
 }
 
 /** A [CombatantView] of a unit - carries the full [MapUnitView], so battle actions (movement, attack, nuke, air sweep) can be dispatched directly. */
@@ -82,6 +60,10 @@ class MapUnitCombatantView internal constructor(
     private val unitView: MapUnitView, viewer: Civilization, spectatorMode: Boolean = false, gameView: GameView
 ) : CombatantView(MapUnitCombatant(unitView.getUnit()), viewer, spectatorMode, gameView) {
     @Readonly fun getUnitView(): MapUnitView = unitView
+
+    /** (max, min) bonus damage dealt to [defender] from an additional [UniqueType.ExtraRangedAttack] - `(0, 0)` if not applicable. */
+    @Readonly fun getExtraRangedAttackBonusDamage(defender: CombatantView, tileToAttackFrom: TileView): Pair<Int, Int> =
+        BattleDamage.getExtraRangedAttackBonusDamage(MapUnitCombatant(unitView.getUnit()), defender.unwrap(), tileToAttackFrom.getTile())
 }
 
 /** A [CombatantView] of a city - carries the full [ForeignCityView], so battle actions (bombard) can be dispatched directly. */
@@ -89,4 +71,11 @@ class CityCombatantView internal constructor(
     private val cityView: ForeignCityView, viewer: Civilization, spectatorMode: Boolean = false, gameView: GameView
 ) : CombatantView(CityCombatant(cityView.getCity()), viewer, spectatorMode, gameView) {
     @Readonly fun getCityView(): ForeignCityView = cityView
+
+    /** Builds the [AttackableTileView] this city bombard needs (no movement, so no tileToAttackFrom calculation required). */
+    @Readonly fun buildBombardAttackableTile(
+        toTile: TileView, defender: CombatantView,
+        viewer: Civilization, spectatorMode: Boolean, gameView: GameView
+    ): AttackableTileView =
+        AttackableTileView(AttackableTile(cityView.getCenterTile().getTile(), toTile.getTile(), 0f, defender.unwrap()), viewer, spectatorMode, gameView)
 }
