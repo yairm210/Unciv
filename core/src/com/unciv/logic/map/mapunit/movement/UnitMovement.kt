@@ -569,21 +569,25 @@ class UnitMovement(val unit: MapUnit) {
                 break // If you ever remove this break, remove the `assumeCanPassThrough` param below
             }
 
-            // This fixes a bug where tiles in the fog of war would always only cost 1 mp
-            if (!unit.civ.gameInfo.gameParameters.godMode)
-                passingMovementSpent += MovementCost.getMovementCostBetweenAdjacentTiles(unit, previousTile, tile)
-
             // We were allowed to *attempt* moving into this tile even though it secretly contains
             // a unit of another civ we couldn't see (friendly/allied or enemy, e.g. an undetected
             // submarine) - moving into it is what reveals that unit, so we stop here instead of
             // actually entering the tile and overwriting/stacking onto it.
+            // This check happens BEFORE the movement-cost calculation below: the unit never
+            // actually enters this tile, so it must never pay for it. Only the cost of tiles it
+            // genuinely passed through/entered before this one (already accumulated in
+            // passingMovementSpent) gets deducted.
             val hiddenBlocker = getHiddenBlockingUnit(tile)
             if (hiddenBlocker != null) {
-                unit.useMovementPoints(unit.currentMovement)
+                unit.useMovementPoints(passingMovementSpent)
                 notifyHiddenBlockingUnitDiscovered(hiddenBlocker, tile)
                 previousTile = tile
                 break
             }
+
+            // This fixes a bug where tiles in the fog of war would always only cost 1 mp
+            if (!unit.civ.gameInfo.gameParameters.godMode)
+                passingMovementSpent += MovementCost.getMovementCostBetweenAdjacentTiles(unit, previousTile, tile)
 
             // In case something goes wrong, cache the last tile we were able to end on
             // We can assume we can pass through this tile, as we would have broken earlier
@@ -794,7 +798,19 @@ class UnitMovement(val unit: MapUnit) {
         return tile.militaryUnit?.asHiddenBlockerOrNull() ?: tile.civilianUnit?.asHiddenBlockerOrNull()
     }
 
+    /**
+     * Notifies the player that a hidden unit was discovered, and - using Unciv's existing
+     * invisible-unit visibility mechanism (the civ's `viewableInvisibleUnitsTiles`, the same set
+     * [MapUnit.isVisibleTo] and the map renderer already consult for units like undetected
+     * submarines) - actually reveals it, instead of only sending a notification while the unit
+     * remains hidden on the map.
+     */
     private fun notifyHiddenBlockingUnitDiscovered(hiddenUnit: MapUnit, tile: Tile) {
+        // Reveal this tile's normally-invisible unit(s) to us, the same way the game already
+        // displays any other detected-but-invisible unit. This is what makes the discovery
+        // actually show up on the map, not just in the notification text below.
+        unit.civ.viewableInvisibleUnitsTiles = unit.civ.viewableInvisibleUnitsTiles + tile
+
         unit.civ.addNotification(
             "While moving, our [${unit.name}] discovered a hidden [${hiddenUnit.name}]!",
             tile.position,
