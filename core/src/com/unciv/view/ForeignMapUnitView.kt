@@ -12,6 +12,9 @@ open class ForeignMapUnitView(internal open val unit: MapUnit, viewer: Civilizat
     val civName: String get() = unit.civ.civName
     val unitHealth: Int get() = unit.health
     val religiousStrengthLost: Int get() = unit.religiousStrengthLost
+    val id: Int get() = unit.id
+    val currentMovement: Float get() = unit.currentMovement
+    val attacksThisTurn: Int get() = unit.attacksThisTurn
 
     // Navigation
     @Readonly fun getUnit(): MapUnit = unit
@@ -34,6 +37,7 @@ open class ForeignMapUnitView(internal open val unit: MapUnit, viewer: Civilizat
     @Readonly fun displayName(): String = unit.displayName()
     @Readonly fun getBaseUnit(): BaseUnit = unit.baseUnit
     @Readonly fun getRange(): Int = unit.getRange()
+    @Readonly fun getMaxMovement(): Int = unit.getMaxMovement()
     @Readonly fun getInterceptionRange(): Int = unit.getInterceptionRange()
     @Readonly fun getPromotions() = unit.promotions
     @Readonly fun getStatusMap() = unit.statusMap
