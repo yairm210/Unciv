@@ -32,9 +32,10 @@ enum class UnitOverviewTabColumn(
         override fun getEntryString(item: MapUnit) = item.displayName().tr(hideIcons = true)
         override fun getEntryActor(item: MapUnit, iconSize: Float, actionContext: UnitOverviewTab): Actor {
             // Unit button column - name, health, fortified, sleeping, embarked are visible here
+            val itemView = actionContext.viewingPlayer.gameView.getForeignMapUnitView(item)
             val button = IconTextButton(
                 item.displayName(),
-                UnitIconGroup(item, 20f).apply { if (!unit.isIdle()) color.a = 0.5f },
+                UnitIconGroup(itemView, 20f).apply { if (!itemView.isIdle()) color.a = 0.5f },
                 fontColor = if (item.isIdle()) Color.WHITE else Color.LIGHT_GRAY
             )
             button.name = "unit-${item.id}"  // Marker to find a unit in select()

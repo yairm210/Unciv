@@ -136,7 +136,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
     }
 
     private fun getIcon(combatantView: CombatantView) =
-        (combatantView as? MapUnitCombatantView)?.let { UnitIconGroup(it.getUnitView().getUnit(), 25f) }
+        (combatantView as? MapUnitCombatantView)?.let { UnitIconGroup(it.getUnitView(), 25f) }
             ?: ImageGetter.getNationPortrait(combatantView.getCivInfo().getNation(), 25f)
 
     private val quarterScreen = worldScreen.stage.width / 4

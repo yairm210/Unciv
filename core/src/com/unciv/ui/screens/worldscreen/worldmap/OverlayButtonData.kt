@@ -57,7 +57,7 @@ class MoveHereOverlayButtonData(val unitToTurnsToDestination: HashMap<MapUnitVie
         }
 
         val firstUnit = unitToTurnsToDestination.keys.first()
-        val unitIcon = if (unitToTurnsToDestination.size == 1) UnitIconGroup(firstUnit.getUnit(), smallerCircleSizes)
+        val unitIcon = if (unitToTurnsToDestination.size == 1) UnitIconGroup(firstUnit, smallerCircleSizes)
         else unitToTurnsToDestination.size.tr().toLabel(fontColor = firstUnit.civ().getInnerColor()).apply { setAlignment(
             Align.center) }
             .surroundWithCircle(smallerCircleSizes).apply { circle.color = firstUnit.civ().getOuterColor() }
@@ -94,7 +94,7 @@ class SwapWithOverlayButtonData(val unitView: MapUnitView, val tile: Tile) : Ove
             }
         )
 
-        val unitIcon = UnitIconGroup(unitView.getUnit(), smallerCircleSizes)
+        val unitIcon = UnitIconGroup(unitView, smallerCircleSizes)
         unitIcon.y = buttonSize - unitIcon.height
         swapWithButton.addActor(unitIcon)
 
@@ -121,7 +121,7 @@ class ConnectRoadOverlayButtonData(val unitView: MapUnitView, val tile: Tile) : 
         }
         )
 
-        val unitIcon = UnitIconGroup(unitView.getUnit(), smallerCircleSizes)
+        val unitIcon = UnitIconGroup(unitView, smallerCircleSizes)
         unitIcon.y = buttonSize - unitIcon.height
         connectRoadButton.addActor(unitIcon)
 

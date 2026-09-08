@@ -24,13 +24,8 @@ class MapUnitView internal constructor(
     @Readonly fun getOtherEscortUnit(): MapUnitView? = unit.getOtherEscortUnit()?.let { gameView.getMapUnitView(it) }
     // All "prepare and then choose tile" logic is actually UI stuff, and should be migrated out of logic layer
     @Readonly fun isPreparingParadrop(): Boolean = unit.isPreparingParadrop()
-    @Readonly fun hasMovement(): Boolean = unit.hasMovement()
-    @Readonly fun isIdle(): Boolean = unit.isIdle()
     // This is pure UI and should be migrated somewhere where it can be shared by both its usages
     @Readonly fun getMovementString(): String = unit.getMovementString()
-    @Readonly fun isMoving(): Boolean = unit.isMoving()
-    @Readonly fun isExploring(): Boolean = unit.isExploring()
-    @Readonly fun isEscorting(): Boolean = unit.isEscorting()
     @Readonly fun getMovementDestination(): TileView = gameView.tileMapView.getTile(unit.getMovementDestination())
     /** `true` if [unit] was removed from its tile (captured, killed) since being selected. */
     @Readonly fun hasDisappeared(): Boolean = unit !in unit.getTile().getUnits()
