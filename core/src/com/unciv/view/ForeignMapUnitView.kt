@@ -1,6 +1,5 @@
 package com.unciv.view
 
-import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.unique.UniqueType
@@ -23,8 +22,8 @@ open class ForeignMapUnitView(internal open val unit: MapUnit, viewer: Civilizat
         return gameView.getMapUnitView(unit)
     }
     @Readonly fun getTile(): TileView = gameView.tileMapView.getTile(unit.getTile())
-    /** Wraps [unit] as an [CombatantView] for battle purposes. */
-    @Readonly fun asCombatant(): CombatantView = CombatantView(MapUnitCombatant(unit), viewer, spectatorMode, gameView)
+    /** Wraps [unit] as a [MapUnitCombatantView] for battle purposes. */
+    @Readonly open fun asCombatant(): MapUnitCombatantView = MapUnitCombatantView(gameView.getMapUnitView(unit), viewer, spectatorMode, gameView)
 
     // Data retrieval
     @Readonly fun isAirUnit(): Boolean = unit.baseUnit.isAirUnit()

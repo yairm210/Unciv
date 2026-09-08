@@ -2,6 +2,7 @@ package com.unciv.view
 
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ImmutableColor
+import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import yairm210.purity.annotations.Readonly
 
@@ -26,6 +27,8 @@ open class ForeignCivView(protected open val civ: Civilization, viewer: Civiliza
     @Readonly fun getEraNameAt(index: Int): String = civ.gameInfo.ruleset.eras.keys.elementAt(index)
 
     @Readonly fun isAtWarWith(other: ForeignCivView): Boolean = civ.isAtWarWith(other.civ)
+    @Readonly fun isBarbarian(): Boolean = civ.isBarbarian
+    @Readonly fun getNation(): Nation = civ.nation
 
     @Readonly fun getGoldPerTurn(): Int = civ.stats.statsForNextTurn.gold.toInt()
     @Readonly fun getPerTurnResourcesWithOriginsForTrade(): ResourceSupplyList = civ.getPerTurnResourcesWithOriginsForTrade()

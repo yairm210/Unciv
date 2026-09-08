@@ -25,7 +25,7 @@ interface ICombatant {
     @Readonly fun canAttack(): Boolean
     /** Implements [UniqueParameterType.CombatantFilter][com.unciv.models.ruleset.unique.UniqueParameterType.CombatantFilter] */
     @Readonly fun matchesFilter(filter: String, multiFilter: Boolean = true): Boolean
-    fun getAttackSound(): UncivSound
+    @Readonly fun getAttackSound(): UncivSound
 
     @Readonly fun isMelee(): Boolean = !isRanged()
     @Readonly 

@@ -78,8 +78,8 @@ open class ForeignCityView(internal open val city: City,
     @Readonly fun isBlockedHolyCity(): Boolean = city.religion.isBlockedHolyCity
     @Readonly fun getReligion(religionName: String?): Religion? = if (religionName == null) null else city.civ.gameInfo.religions[religionName]
 
-    /** Wraps [city] as an [CombatantView] for battle purposes. */
-    @Readonly fun asCombatant(): CombatantView = CombatantView(CityCombatant(city), viewer, spectatorMode, gameView)
+    /** Wraps [city] as a [CityCombatantView] for battle purposes. */
+    @Readonly fun asCombatant(): CityCombatantView = CityCombatantView(this, viewer, spectatorMode, gameView)
 
     /** Meant to be called only after all prerequisite checks (e.g. [canBombard]/[getBombardableTiles]) have been done, on our own city. */
     fun tryBombard(attackableTileView: AttackableTileView): Battle.DamageDealt =

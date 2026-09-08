@@ -3,6 +3,7 @@ package com.unciv.view
 import com.unciv.logic.battle.AttackableTile
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.BattleDamage
+import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.battle.ICombatant
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.civilization.Civilization
@@ -13,11 +14,12 @@ import com.unciv.models.ruleset.unit.UnitType
 import yairm210.purity.annotations.Readonly
 
 /**
- * View of an [ICombatant] from the perspective of [viewer] via [gameView].
- *
- * I tried going the ICombatantView route which unitview and cityview would inherit, couldn't make it not leak the underlying ICombatant
+ * View of an [ICombatant] from the perspective of [viewer] via [gameView]. Get one via
+ * [ForeignMapUnitView.asCombatant] or [ForeignCityView.asCombatant] - which return the richer
+ * [MapUnitCombatantView]/[CityCombatantView] subclasses when the underlying view carries enough
+ * information to also dispatch battle actions (movement, nuke, air sweep, bombard).
  */
-class CombatantView(private val combatant: ICombatant, viewer: Civilization, spectatorMode: Boolean = false,
+sealed class CombatantView protected constructor(private val combatant: ICombatant, viewer: Civilization, spectatorMode: Boolean = false,
                     gameView: GameView) : GameBasedView<ICombatant>(combatant, viewer, spectatorMode, gameView) {
 
     @Readonly fun getCivInfo(): ForeignCivView = gameView.getForeignCivView(combatant.getCivInfo())
@@ -33,17 +35,11 @@ class CombatantView(private val combatant: ICombatant, viewer: Civilization, spe
     @Readonly fun getAttackingStrength(defender: CombatantView? = null): Int = combatant.getAttackingStrength(defender?.unwrap())
     @Readonly fun getDefendingStrength(attacker: CombatantView? = null): Int = combatant.getDefendingStrength(attacker?.unwrap())
     @Readonly fun isDefeated(): Boolean = combatant.isDefeated()
-    @Readonly fun isInvisible(to: ForeignCivView): Boolean = combatant.isInvisible(to.getCiv())
     @Readonly fun canAttack(): Boolean = combatant.canAttack()
-    @Readonly fun matchesFilter(filter: String, multiFilter: Boolean = true): Boolean = combatant.matchesFilter(filter, multiFilter)
-    fun getAttackSound(): UncivSound = combatant.getAttackSound()
-    fun getNotificationDisplay(leadingText: String = ""): String = combatant.getNotificationDisplay(leadingText)
+    @Readonly fun getAttackSound(): UncivSound = combatant.getAttackSound()
 
-    @Readonly fun isMelee(): Boolean = combatant.isMelee()
     @Readonly fun isRanged(): Boolean = combatant.isRanged()
     @Readonly fun isAirUnit(): Boolean = combatant.isAirUnit()
-    @Readonly fun isWaterUnit(): Boolean = combatant.isWaterUnit()
-    @Readonly fun isLandUnit(): Boolean = combatant.isLandUnit()
     @Readonly fun isCity(): Boolean = combatant.isCity()
     @Readonly fun isCivilian(): Boolean = combatant.isCivilian()
     @Readonly fun isEmbarked(): Boolean = combatant is MapUnitCombatant && combatant.unit.isEmbarked()
@@ -87,4 +83,18 @@ class CombatantView(private val combatant: ICombatant, viewer: Civilization, spe
         viewer: Civilization, spectatorMode: Boolean, gameView: GameView
     ): AttackableTileView =
         AttackableTileView(AttackableTile(fromTile.getTile(), toTile.getTile(), 0f, defender.unwrap()), viewer, spectatorMode, gameView)
+}
+
+/** A [CombatantView] of a unit - carries the full [MapUnitView], so battle actions (movement, attack, nuke, air sweep) can be dispatched directly. */
+class MapUnitCombatantView internal constructor(
+    private val unitView: MapUnitView, viewer: Civilization, spectatorMode: Boolean = false, gameView: GameView
+) : CombatantView(MapUnitCombatant(unitView.getUnit()), viewer, spectatorMode, gameView) {
+    @Readonly fun getUnitView(): MapUnitView = unitView
+}
+
+/** A [CombatantView] of a city - carries the full [ForeignCityView], so battle actions (bombard) can be dispatched directly. */
+class CityCombatantView internal constructor(
+    private val cityView: ForeignCityView, viewer: Civilization, spectatorMode: Boolean = false, gameView: GameView
+) : CombatantView(CityCombatant(cityView.getCity()), viewer, spectatorMode, gameView) {
+    @Readonly fun getCityView(): ForeignCityView = cityView
 }
