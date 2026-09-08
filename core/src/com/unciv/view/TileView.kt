@@ -1,7 +1,5 @@
 package com.unciv.view
 
-import com.unciv.logic.battle.CityCombatant
-import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.TileMap
@@ -68,19 +66,19 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
             .map { toForeignMapUnitView(it) }
             .toList()
     }
-    @Readonly fun getCombatant(): CombatantView? {
-        val viewer = viewer ?: return null
+    @Readonly fun getCombatant(): ICombatantView? {
+        if (viewer == null) return null
         if (!isExplored()) return null
         val gameView = tileMapView.gameView ?: return null
         if (tile.isCityCenter())
-            return CombatantView(CityCombatant(tile.getCity()!!), viewer, spectatorMode, gameView)
+            return gameView.getForeignCityView(tile.getCity()!!)
 
         val militaryUnit = tile.militaryUnit
         if (militaryUnit != null && isVisible(militaryUnit))
-            return CombatantView(MapUnitCombatant(militaryUnit), viewer, spectatorMode, gameView)
+            return toForeignMapUnitView(militaryUnit)
         val civilianUnit = tile.civilianUnit
         if (civilianUnit != null && isVisible(civilianUnit))
-            return CombatantView(MapUnitCombatant(civilianUnit), viewer, spectatorMode, gameView)
+            return toForeignMapUnitView(civilianUnit)
         return null
     }
 

@@ -14,8 +14,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
-import com.unciv.logic.battle.ICombatant
-import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.map.HexMath
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.tilegroups.TileSetStrings
@@ -23,6 +21,8 @@ import com.unciv.ui.components.widgets.ShadowedLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.utils.Concurrency
+import com.unciv.view.ForeignMapUnitView
+import com.unciv.view.ICombatantView
 
 
 object BattleTableHelpers {
@@ -72,7 +72,7 @@ object BattleTableHelpers {
 
 
     class AttackAnimationAction(
-        private val attacker: ICombatant,
+        private val attacker: ICombatantView,
         defenderActors: List<Actor>,
         private val currentTileSetStrings: TileSetStrings
     ): SequenceAction() {
@@ -99,8 +99,8 @@ object BattleTableHelpers {
         private fun getAttackAnimationLocation(): String? {
             fun TileSetStrings.getLocation(name: String) = getString(unitsLocation, name, "-attack-")
 
-            if (attacker is MapUnitCombatant) {
-                val unitSpecificAttackAnimationLocation = currentTileSetStrings.getLocation(attacker.getName())
+            if (attacker is ForeignMapUnitView) {
+                val unitSpecificAttackAnimationLocation = currentTileSetStrings.getLocation(attacker.getCombatantName())
                 if (ImageGetter.imageExists(unitSpecificAttackAnimationLocation + "1"))
                     return unitSpecificAttackAnimationLocation
             }
@@ -145,26 +145,26 @@ object BattleTableHelpers {
     }
 
     fun WorldScreen.battleAnimationDeferred(
-        attacker: ICombatant, damageToAttacker: Int,
-        defender: ICombatant, damageToDefender: Int
+        attacker: ICombatantView, damageToAttacker: Int,
+        defender: ICombatantView, damageToDefender: Int
     ){
-        // This ensures that we schedule the animation to happen AFTER the worldscreen.update(), 
-        //    where the spriteGroup of the attacker is created on the tile it moves to 
+        // This ensures that we schedule the animation to happen AFTER the worldscreen.update(),
+        //    where the spriteGroup of the attacker is created on the tile it moves to
         Concurrency.runOnGLThread { battleAnimation(attacker, damageToAttacker, defender, damageToDefender) }
     }
 
     private fun WorldScreen.battleAnimation(
-        attacker: ICombatant, damageToAttacker: Int,
-        defender: ICombatant, damageToDefender: Int
+        attacker: ICombatantView, damageToAttacker: Int,
+        defender: ICombatantView, damageToDefender: Int
     ) {
-        fun getMapActorsForCombatant(combatant: ICombatant): Sequence<Actor> =
+        fun getMapActorsForCombatant(combatant: ICombatantView): Sequence<Actor> =
             sequence {
-                val tileGroup = mapHolder.tileGroups[selectedGameView.tileMapView.getTile(combatant.getTile())]!!
+                val tileGroup = mapHolder.tileGroups[combatant.getTile()]!!
                 if (combatant.isCity()) {
                     val icon = tileGroup.layerImprovement.improvementIcon
                     if (icon != null) yield (icon)
                 } else if (!combatant.isAirUnit()) {
-                    val slot = tileGroup.layerUnitArt.getSpriteSlot((combatant as MapUnitCombatant).unit)
+                    val slot = tileGroup.layerUnitArt.getSpriteSlot((combatant as ForeignMapUnitView).getUnit())
                     if (slot != null) yieldAll(slot.spriteGroup.children)
                 }
             }
@@ -178,15 +178,15 @@ object BattleTableHelpers {
 
         val actorsToMove = getMapActorsForCombatant(attacker).toList()
 
-        val attackVectorHexCoords = defender.getTile().position.minus(attacker.getTile().position)
+        val attackVectorHexCoords = defender.getTile().position().minus(attacker.getTile().position())
         val attackVectorWorldCoords = HexMath.hex2WorldCoords(attackVectorHexCoords)
             .nor()  // normalize vector to length of "1"
             .scl(moveActorsDisplacement)
 
-        val attackerGroup = mapHolder.tileGroups[selectedGameView.tileMapView.getTile(attacker.getTile())]!!
-        val defenderGroup = mapHolder.tileGroups[selectedGameView.tileMapView.getTile(defender.getTile())]!!
+        val attackerGroup = mapHolder.tileGroups[attacker.getTile()]!!
+        val defenderGroup = mapHolder.tileGroups[defender.getTile()]!!
         val hideDefenderDamage = defender.isDefeated() &&
-                attacker.getTile().position == defender.getTile().position
+                attacker.getTile().position() == defender.getTile().position()
 
         stage.addAction(
             Actions.sequence(

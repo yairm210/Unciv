@@ -1,16 +1,21 @@
 package com.unciv.view
 
+import com.unciv.logic.battle.ICombatant
+import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import yairm210.purity.annotations.Readonly
 
 /** Should contain information that should be knowable to us about foreign units. Superclass of [MapUnitView]. */
-open class ForeignMapUnitView(internal open val unit: MapUnit, viewer: Civilization, spectatorMode: Boolean = false, gameView: GameView) : GameBasedView<MapUnit>(unit, viewer, spectatorMode, gameView) {
+open class ForeignMapUnitView(internal open val unit: MapUnit, viewer: Civilization, spectatorMode: Boolean = false, gameView: GameView) : GameBasedView<MapUnit>(unit, viewer, spectatorMode, gameView), ICombatantView {
     val name: String get() = unit.name
     val civName: String get() = unit.civ.civName
-    val health: Int get() = unit.health
+    val unitHealth: Int get() = unit.health
     val religiousStrengthLost: Int get() = unit.religiousStrengthLost
+
+    private val combatant = MapUnitCombatant(unit)
 
     // Navigation
     @Readonly fun getUnit(): MapUnit = unit
@@ -20,11 +25,9 @@ open class ForeignMapUnitView(internal open val unit: MapUnit, viewer: Civilizat
         if (unit.civ != viewer && !viewer.isSpectator()) return null
         return gameView.getMapUnitView(unit)
     }
-    @Readonly fun getTile(): TileView = gameView.tileMapView.getTile(unit.getTile())
+    @Readonly override fun getTile(): TileView = gameView.tileMapView.getTile(unit.getTile())
 
     // Data retrieval
-    @Readonly fun isAirUnit(): Boolean = unit.baseUnit.isAirUnit()
-    @Readonly fun isCivilian(): Boolean = unit.isCivilian()
     @Readonly fun isMilitary(): Boolean = unit.isMilitary()
     @Readonly fun isEmbarked(): Boolean = unit.isEmbarked()
     @Readonly fun displayName(): String = unit.displayName()
@@ -35,4 +38,10 @@ open class ForeignMapUnitView(internal open val unit: MapUnit, viewer: Civilizat
     @Readonly fun getStatusMap() = unit.statusMap
     @Readonly fun getMovementMemories() = unit.movementMemories
     @Readonly fun getMostRecentMoveType() = unit.mostRecentMoveType
+    @Readonly fun hasUnique(uniqueType: UniqueType): Boolean = unit.hasUnique(uniqueType)
+
+    // ICombatantView
+    // TEMP - should be removed once migration ends
+    @Readonly override fun getCombatant(): ICombatant = combatant
+    @Readonly override fun getCivInfo(): ForeignCivView = civ()
 }

@@ -1,7 +1,10 @@
 package com.unciv.view
 
+import com.unciv.logic.battle.AirInterception
 import com.unciv.logic.battle.Battle
+import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.MapUnitCombatant
+import com.unciv.logic.battle.Nuke
 import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.MapPathing
@@ -23,7 +26,6 @@ class MapUnitView internal constructor(
     // All "prepare and then choose tile" logic is actually UI stuff, and should be migrated out of logic layer
     @Readonly fun isPreparingParadrop(): Boolean = unit.isPreparingParadrop()
     @Readonly fun hasMovement(): Boolean = unit.hasMovement()
-    @Readonly fun hasUnique(uniqueType: UniqueType): Boolean = unit.hasUnique(uniqueType)
     @Readonly fun isIdle(): Boolean = unit.isIdle()
     // This is pure UI and should be migrated somewhere where it can be shared by both its usages
     @Readonly fun getMovementString(): String = unit.getMovementString()
@@ -44,7 +46,6 @@ class MapUnitView internal constructor(
     // This reads as "logic leaking through to UI"
     @Readonly fun isUnknownTileWeShouldAssumeToBePassable(tileView: TileView): Boolean =
         unit.movement.isUnknownTileWeShouldAssumeToBePassable(tileView.unwrap())
-    @Readonly fun canAttack(): Boolean = unit.canAttack()
     @Readonly fun isNuclearWeapon(): Boolean = unit.isNuclearWeapon()
     @Readonly fun getNukeBlastRadius(): Int = unit.getNukeBlastRadius()
     @Readonly fun cannotMove(): Boolean = unit.cache.cannotMove
@@ -100,4 +101,29 @@ class MapUnitView internal constructor(
     /** Meant to be called only after all prerequisite checks (e.g. [tryMovePreparingAttack]) have been done. */
     fun attackOrNuke(attackableTileView: AttackableTileView): Battle.DamageDealt =
         Battle.attackOrNuke(MapUnitCombatant(unit), attackableTileView.getAttackableTile())
+    @Readonly fun mayUseNuke(targetTileView: TileView): Boolean = Nuke.mayUseNuke(MapUnitCombatant(unit), targetTileView.getTile())
+    fun tryNuke(targetTileView: TileView): Boolean {
+        Nuke.NUKE(MapUnitCombatant(unit), targetTileView.getTile())
+        return true
+    }
+    fun tryAirSweep(targetTileView: TileView): Boolean {
+        AirInterception.airSweep(MapUnitCombatant(unit), targetTileView.getTile())
+        return true
+    }
+
+    @Readonly fun getAirSweepAttackModifiers(): Map<String, Int> = BattleDamage.getAirSweepAttackModifiers(getCombatant())
+    @Readonly fun hasReachedMaxXPFromBarbarians(): Boolean =
+        unit.promotions.totalXpProduced() >= unit.civ.gameInfo.ruleset.modOptions.constants.maxXPfromBarbarians
+    /** Bonus (max, min) damage this unit would deal to [defender] from an additional [UniqueType.ExtraRangedAttack]. */
+    @Readonly fun getExtraRangedAttackDamage(defender: ICombatantView, tileToAttackFromView: TileView): Pair<Int, Int> {
+        var maxExtraDamage = 0
+        var minExtraDamage = 0
+        for (unique in unit.getMatchingUniques(UniqueType.ExtraRangedAttack)) {
+            val baseRangedStrengthForExtraAttack = (unit.baseUnit.strength * unique.params[0].toFloat() / 100).toInt()
+            val fakeAttacker = Battle.FakeUnitForExtraRangedAttack(MapUnitCombatant(unit), baseRangedStrengthForExtraAttack)
+            maxExtraDamage += BattleDamage.calculateDamageToDefender(fakeAttacker, defender.getCombatant(), tileToAttackFromView.getTile(), 1f)
+            minExtraDamage += BattleDamage.calculateDamageToDefender(fakeAttacker, defender.getCombatant(), tileToAttackFromView.getTile(), 0f)
+        }
+        return maxExtraDamage to minExtraDamage
+    }
 }

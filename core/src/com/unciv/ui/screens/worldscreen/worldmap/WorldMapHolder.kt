@@ -10,7 +10,6 @@ import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.scenes.scene2d.*
 import com.unciv.UncivGame
-import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.City
 import com.unciv.logic.map.*
 import com.unciv.logic.map.mapunit.MapUnit
@@ -255,14 +254,13 @@ class WorldMapHolder(
                     .firstOrNull { it.getTileToAttack() == tileView }
             if (unitView.canAttack() && attackableTile != null) {
                 /** ****** Right-click Attack ****** */
-                val attacker = MapUnitCombatant(unit)
                 if (!unitView.tryMovePreparingAttack(attackableTile)) return
-                if (!SoundPlayer.play(UncivSound(attacker.getName())))
-                    SoundPlayer.play(attacker.getAttackSound())
+                if (!SoundPlayer.play(UncivSound(unitView.getCombatantName())))
+                    SoundPlayer.play(unitView.getAttackSound())
                 val (damageToDefender, damageToAttacker) = unitView.attackOrNuke(attackableTile)
                 val defenderCombatant = attackableTile.getCombatant()
                 if (defenderCombatant != null)
-                    worldScreen.battleAnimationDeferred(attacker, damageToAttacker, defenderCombatant.getCombatant(), damageToDefender)
+                    worldScreen.battleAnimationDeferred(unitView, damageToAttacker, defenderCombatant, damageToDefender)
                 localShouldUpdate = true
             } else if (unitView.canReach(tileView)) {
                 /** ****** Right-click Move ****** */

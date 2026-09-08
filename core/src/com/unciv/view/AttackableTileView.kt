@@ -1,6 +1,8 @@
 package com.unciv.view
 
 import com.unciv.logic.battle.AttackableTile
+import com.unciv.logic.battle.CityCombatant
+import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.civilization.Civilization
 import yairm210.purity.annotations.Readonly
 
@@ -11,8 +13,19 @@ class AttackableTileView(private val attackableTile: AttackableTile, viewer: Civ
     @Readonly fun getTileToAttackFrom(): TileView = gameView.getTile(attackableTile.tileToAttackFrom)
     @Readonly fun getTileToAttack(): TileView = gameView.getTile(attackableTile.tileToAttack)
     @Readonly fun getMovementLeftAfterMovingToAttackTile(): Float = attackableTile.movementLeftAfterMovingToAttackTile
-    @Readonly fun getCombatant(): CombatantView? = attackableTile.combatant?.let { CombatantView(it, viewer, spectatorMode, gameView) }
+    @Readonly fun getCombatant(): ICombatantView? = when (val combatant = attackableTile.combatant) {
+        null -> null
+        is MapUnitCombatant -> gameView.getForeignMapUnitView(combatant.unit)
+        is CityCombatant -> gameView.getForeignCityView(combatant.city)
+        else -> null
+    }
 
     // TEMP - should be removed once migration ends
     @Readonly fun getAttackableTile(): AttackableTile = attackableTile
+
+    companion object {
+        /** Builds the [AttackableTile] a city bombard needs (no movement involved, so no [AttackableTile.tileToAttackFrom] calculation required). */
+        fun forBombard(fromTileView: TileView, toTileView: TileView, defender: ICombatantView, viewer: Civilization, spectatorMode: Boolean, gameView: GameView): AttackableTileView =
+            AttackableTileView(AttackableTile(fromTileView.getTile(), toTileView.getTile(), 0f, defender.getCombatant()), viewer, spectatorMode, gameView)
+    }
 }
