@@ -2,7 +2,6 @@ package com.unciv.view
 
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.CityCombatant
-import com.unciv.logic.battle.ICombatant
 import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
@@ -18,14 +17,12 @@ import yairm210.purity.annotations.Readonly
 open class ForeignCityView(internal open val city: City,
                            viewer: Civilization,
                            spectatorMode: Boolean = false,
-                           gameView: GameView) : GameBasedView<City>(city, viewer, spectatorMode, gameView), ICombatantView {
+                           gameView: GameView) : GameBasedView<City>(city, viewer, spectatorMode, gameView) {
     val name: String get() = city.name
     val location: HexCoord get() = city.location
 
     /** The owning civ's [CivView], as visible from [viewer]'s perspective. For the viewing player's full CivView, use [CityView.viewingCiv]. */
     val owningCivView: CivView get() = gameView.getCivView(city.civ)
-
-    private val combatant = CityCombatant(city)
 
     // Navigation
     @Readonly fun getCity(): City = city
@@ -43,6 +40,8 @@ open class ForeignCityView(internal open val city: City,
     }
 
     // Data retrieval
+    @Readonly fun getHealth(): Int = city.health
+    @Readonly fun getMaxHealth(): Int = city.getMaxHealth()
     @Readonly fun getDefendingStrength(): Int = CityCombatant(city).getDefendingStrength()
     @Readonly fun getAttackingStrength(): Int = CityCombatant(city).getAttackingStrength()
     @Readonly fun getBombardableTiles(): List<TileView> =
@@ -79,14 +78,10 @@ open class ForeignCityView(internal open val city: City,
     @Readonly fun isBlockedHolyCity(): Boolean = city.religion.isBlockedHolyCity
     @Readonly fun getReligion(religionName: String?): Religion? = if (religionName == null) null else city.civ.gameInfo.religions[religionName]
 
-    // ICombatantView
-    // TEMP - should be removed once migration ends
-    // TODO: ICombatant should NOT be available from outside - find a way to have the interface be able to read this but nothing else
-    @Readonly override fun getCombatant(): ICombatant = combatant
-    @Readonly override fun getCivInfo(): ForeignCivView = owningCivView
-    @Readonly override fun getTile(): TileView = getCenterTile()
+    /** Wraps [city] as an [CombatantView] for battle purposes. */
+    @Readonly fun asCombatant(): CombatantView = CombatantView(CityCombatant(city), viewer, spectatorMode, gameView)
 
-    /** Meant to be called only after all prerequisite checks (e.g. [canAttack]/[getBombardableTiles]) have been done, on our own city. */
+    /** Meant to be called only after all prerequisite checks (e.g. [canBombard]/[getBombardableTiles]) have been done, on our own city. */
     fun tryBombard(attackableTileView: AttackableTileView): Battle.DamageDealt =
-        Battle.attackOrNuke(combatant, attackableTileView.getAttackableTile())
+        Battle.attackOrNuke(CityCombatant(city), attackableTileView.getAttackableTile())
 }

@@ -10,7 +10,6 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.MapPathing
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.movement.PathsToTilesWithinTurn
-import com.unciv.models.ruleset.unique.UniqueType
 import yairm210.purity.annotations.Readonly
 
 /** View of a [MapUnit] from the perspective of [viewer] via [gameView]. */
@@ -111,19 +110,5 @@ class MapUnitView internal constructor(
         return true
     }
 
-    @Readonly fun getAirSweepAttackModifiers(): Map<String, Int> = BattleDamage.getAirSweepAttackModifiers(getCombatant())
-    @Readonly fun hasReachedMaxXPFromBarbarians(): Boolean =
-        unit.promotions.totalXpProduced() >= unit.civ.gameInfo.ruleset.modOptions.constants.maxXPfromBarbarians
-    /** Bonus (max, min) damage this unit would deal to [defender] from an additional [UniqueType.ExtraRangedAttack]. */
-    @Readonly fun getExtraRangedAttackDamage(defender: ICombatantView, tileToAttackFromView: TileView): Pair<Int, Int> {
-        var maxExtraDamage = 0
-        var minExtraDamage = 0
-        for (unique in unit.getMatchingUniques(UniqueType.ExtraRangedAttack)) {
-            val baseRangedStrengthForExtraAttack = (unit.baseUnit.strength * unique.params[0].toFloat() / 100).toInt()
-            val fakeAttacker = Battle.FakeUnitForExtraRangedAttack(MapUnitCombatant(unit), baseRangedStrengthForExtraAttack)
-            maxExtraDamage += BattleDamage.calculateDamageToDefender(fakeAttacker, defender.getCombatant(), tileToAttackFromView.getTile(), 1f)
-            minExtraDamage += BattleDamage.calculateDamageToDefender(fakeAttacker, defender.getCombatant(), tileToAttackFromView.getTile(), 0f)
-        }
-        return maxExtraDamage to minExtraDamage
-    }
+    @Readonly fun getAirSweepAttackModifiers(): Map<String, Int> = BattleDamage.getAirSweepAttackModifiers(MapUnitCombatant(unit))
 }

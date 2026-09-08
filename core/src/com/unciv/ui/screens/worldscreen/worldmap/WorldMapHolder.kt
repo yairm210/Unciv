@@ -17,7 +17,6 @@ import com.unciv.logic.map.mapunit.movement.UnitMovement
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Spy
 import com.unciv.models.UncivSound
-import com.unciv.view.CivView
 import com.unciv.view.GameView
 import com.unciv.view.MapUnitView
 import com.unciv.view.TileView
@@ -42,7 +41,6 @@ import com.unciv.ui.screens.worldscreen.bottombar.BattleTableHelpers.battleAnima
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import com.unciv.utils.launchOnGLThread
-import yairm210.purity.annotations.Readonly
 import java.lang.Float.max
 
 
@@ -254,13 +252,14 @@ class WorldMapHolder(
                     .firstOrNull { it.getTileToAttack() == tileView }
             if (unitView.canAttack() && attackableTile != null) {
                 /** ****** Right-click Attack ****** */
+                val attackerCombatant = unitView.asCombatant()
                 if (!unitView.tryMovePreparingAttack(attackableTile)) return
-                if (!SoundPlayer.play(UncivSound(unitView.getCombatantName())))
-                    SoundPlayer.play(unitView.getAttackSound())
+                if (!SoundPlayer.play(UncivSound(attackerCombatant.getCombatantName())))
+                    SoundPlayer.play(attackerCombatant.getAttackSound())
                 val (damageToDefender, damageToAttacker) = unitView.attackOrNuke(attackableTile)
                 val defenderCombatant = attackableTile.getCombatant()
                 if (defenderCombatant != null)
-                    worldScreen.battleAnimationDeferred(unitView, damageToAttacker, defenderCombatant, damageToDefender)
+                    worldScreen.battleAnimationDeferred(attackerCombatant, damageToAttacker, defenderCombatant, damageToDefender)
                 localShouldUpdate = true
             } else if (unitView.canReach(tileView)) {
                 /** ****** Right-click Move ****** */

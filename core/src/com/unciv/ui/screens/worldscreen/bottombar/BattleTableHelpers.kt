@@ -21,8 +21,7 @@ import com.unciv.ui.components.widgets.ShadowedLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.utils.Concurrency
-import com.unciv.view.ForeignMapUnitView
-import com.unciv.view.ICombatantView
+import com.unciv.view.CombatantView
 
 
 object BattleTableHelpers {
@@ -72,7 +71,7 @@ object BattleTableHelpers {
 
 
     class AttackAnimationAction(
-        private val attacker: ICombatantView,
+        private val attacker: CombatantView,
         defenderActors: List<Actor>,
         private val currentTileSetStrings: TileSetStrings
     ): SequenceAction() {
@@ -99,7 +98,7 @@ object BattleTableHelpers {
         private fun getAttackAnimationLocation(): String? {
             fun TileSetStrings.getLocation(name: String) = getString(unitsLocation, name, "-attack-")
 
-            if (attacker is ForeignMapUnitView) {
+            if (attacker.getMapUnitOrNull() != null) {
                 val unitSpecificAttackAnimationLocation = currentTileSetStrings.getLocation(attacker.getCombatantName())
                 if (ImageGetter.imageExists(unitSpecificAttackAnimationLocation + "1"))
                     return unitSpecificAttackAnimationLocation
@@ -145,8 +144,8 @@ object BattleTableHelpers {
     }
 
     fun WorldScreen.battleAnimationDeferred(
-        attacker: ICombatantView, damageToAttacker: Int,
-        defender: ICombatantView, damageToDefender: Int
+        attacker: CombatantView, damageToAttacker: Int,
+        defender: CombatantView, damageToDefender: Int
     ){
         // This ensures that we schedule the animation to happen AFTER the worldscreen.update(),
         //    where the spriteGroup of the attacker is created on the tile it moves to
@@ -154,17 +153,17 @@ object BattleTableHelpers {
     }
 
     private fun WorldScreen.battleAnimation(
-        attacker: ICombatantView, damageToAttacker: Int,
-        defender: ICombatantView, damageToDefender: Int
+        attacker: CombatantView, damageToAttacker: Int,
+        defender: CombatantView, damageToDefender: Int
     ) {
-        fun getMapActorsForCombatant(combatant: ICombatantView): Sequence<Actor> =
+        fun getMapActorsForCombatant(combatant: CombatantView): Sequence<Actor> =
             sequence {
                 val tileGroup = mapHolder.tileGroups[combatant.getTile()]!!
                 if (combatant.isCity()) {
                     val icon = tileGroup.layerImprovement.improvementIcon
                     if (icon != null) yield (icon)
                 } else if (!combatant.isAirUnit()) {
-                    val slot = tileGroup.layerUnitArt.getSpriteSlot((combatant as ForeignMapUnitView).getUnit())
+                    val slot = tileGroup.layerUnitArt.getSpriteSlot(combatant.getMapUnitOrNull()!!)
                     if (slot != null) yieldAll(slot.spriteGroup.children)
                 }
             }
