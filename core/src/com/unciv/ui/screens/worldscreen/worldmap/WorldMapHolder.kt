@@ -588,7 +588,7 @@ class WorldMapHolder(
 
     /** Add an arrow to draw on the next update. */
     fun addArrow(fromTileView: TileView, toTileView: TileView, arrowType: MapArrowType) {
-        tileGroups[fromTileView]?.layerMisc?.addArrow(toTileView.getTile(), arrowType)
+        tileGroups[fromTileView]?.layerMisc?.addArrow(toTileView, arrowType)
     }
 
     /**

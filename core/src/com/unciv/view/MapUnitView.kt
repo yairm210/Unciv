@@ -107,13 +107,13 @@ class MapUnitView internal constructor(
     /** Meant to be called only after all prerequisite checks (e.g. [tryMovePreparingAttack]) have been done. */
     fun attackOrNuke(attackableTileView: AttackableTileView): Battle.DamageDealt =
         Battle.attackOrNuke(MapUnitCombatant(unit), attackableTileView.getAttackableTile())
-    @Readonly fun mayUseNuke(targetTileView: TileView): Boolean = Nuke.mayUseNuke(MapUnitCombatant(unit), targetTileView.getTile())
+    @Readonly fun mayUseNuke(targetTileView: TileView): Boolean = Nuke.mayUseNuke(MapUnitCombatant(unit), targetTileView.unwrap())
     fun tryNuke(targetTileView: TileView): Boolean {
-        Nuke.NUKE(MapUnitCombatant(unit), targetTileView.getTile())
+        Nuke.NUKE(MapUnitCombatant(unit), targetTileView.unwrap())
         return true
     }
     fun tryAirSweep(targetTileView: TileView): Boolean {
-        AirInterception.airSweep(MapUnitCombatant(unit), targetTileView.getTile())
+        AirInterception.airSweep(MapUnitCombatant(unit), targetTileView.unwrap())
         return true
     }
 

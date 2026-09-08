@@ -1,16 +1,13 @@
 package com.unciv.ui.components.tilegroups.layers
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.view.CivView
-import com.unciv.logic.map.HexMath
-import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.toHexCoord
+import com.unciv.view.TileView
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.*
 import com.unciv.ui.components.extensions.*
@@ -29,7 +26,7 @@ import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
-private class MapArrow(val targetTile: Tile, val arrowType: MapArrowType, val strings: TileSetStrings) {
+private class MapArrow(val targetTile: TileView, val arrowType: MapArrowType, val strings: TileSetStrings) {
 
     private fun getArrowImage(imageName: String) = ImageGetter.getImage(
         strings.orFallback { getString(tileSetLocation, "Arrows/", imageName) })
@@ -261,7 +258,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
 
     /** Array list of all arrows to draw from this tile on the next update. */
     private val arrowsToDraw = ArrayList<MapArrow>()
-    private val arrows = HashMap<Tile, ArrayList<Actor>>()
+    private val arrows = HashMap<TileView, ArrayList<Actor>>()
 
     private var hexOutlineIcon: Actor? = null
 
@@ -284,15 +281,12 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
     private fun updateArrows() {
         clearArrows()
         val tileScale = 50f * 0.8f // See notes in updateRoadImages.
+        val ownTileView = tileGroup.tileView
+        val tileMapView = ownTileView.getTileMap()
 
         for (arrowToAdd in arrowsToDraw) {
             val targetTile = arrowToAdd.targetTile
-            var targetPos = Vector2(targetTile.position.toVector2())
-            if (tile.tileMap.mapParameters.worldWrap)
-                targetPos = HexMath.getUnwrappedNearestTo(targetPos.toHexCoord(),
-                    tile.position, tile.tileMap.maxLongitude)
-            val targetRelative = HexMath.hex2WorldCoords(targetPos.toHexCoord())
-                .sub(HexMath.hex2WorldCoords(tile.position))
+            val targetRelative = tileMapView.getRelativeWorldPosition(ownTileView, targetTile)
 
             val targetDistance = sqrt(targetRelative.x.pow(2) + targetRelative.y.pow(2))
             val targetAngle = atan2(targetRelative.y, targetRelative.x)
@@ -368,18 +362,15 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
             }
         }
 
-        val tilemap = tile.tileMap
-
-        if (tilemap.startingLocationsByNation.isEmpty())
-            return
+        val ownTileView = tileGroup.tileView
+        val ruleset = ownTileView.getRuleset()
 
         // Allow display of up to three nations starting locations on the same tile, rest only as count.
         // Sorted so major get precedence and to make the display deterministic, otherwise you could get
         // different stacking order of the same nations in the same editing session
-        val nations = tilemap.startingLocationsByNation.asSequence()
-            .filter { tile in it.value }
-            .filter { it.key in tilemap.ruleset!!.nations } // Ignore missing nations
-            .map { it.key to tilemap.ruleset!!.nations[it.key]!! }
+        val nations = ownTileView.getTileMap().getStartingLocationNationNames(ownTileView).asSequence()
+            .filter { it in ruleset.nations } // Ignore missing nations
+            .map { it to ruleset.nations[it]!! }
             .sortedWith(compareBy({ it.second.isCityState }, { it.first }))
             .toList()
         if (nations.isEmpty()) return
@@ -481,8 +472,8 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
     }
 
 
-    fun addArrow(targetTile: Tile, type: MapArrowType) {
-        if (targetTile.position != tile.position)
+    fun addArrow(targetTile: TileView, type: MapArrowType) {
+        if (targetTile.position() != tileGroup.tileView.position())
             arrowsToDraw.add(MapArrow(targetTile, type, strings))
     }
 

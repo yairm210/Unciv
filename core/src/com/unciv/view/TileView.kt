@@ -20,6 +20,7 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
                spectatorMode: Boolean = false) : View<Tile>(tile, viewer, spectatorMode) {
 
     // Navigation
+    @Deprecated("Scheduled for removal - views should unwrap() instead")
     @Readonly fun getTile(): Tile = tile
     @Readonly fun getCivView(): CivView? = tileMapView.gameView?.civView
     @Readonly fun owningCity(): ForeignCityView? {
