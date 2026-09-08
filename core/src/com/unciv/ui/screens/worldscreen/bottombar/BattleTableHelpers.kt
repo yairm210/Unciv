@@ -22,6 +22,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.utils.Concurrency
 import com.unciv.view.CombatantView
+import com.unciv.view.MapUnitCombatantView
 
 
 object BattleTableHelpers {
@@ -98,7 +99,7 @@ object BattleTableHelpers {
         private fun getAttackAnimationLocation(): String? {
             fun TileSetStrings.getLocation(name: String) = getString(unitsLocation, name, "-attack-")
 
-            if (attacker.getMapUnitOrNull() != null) {
+            if (attacker is MapUnitCombatantView) {
                 val unitSpecificAttackAnimationLocation = currentTileSetStrings.getLocation(attacker.getCombatantName())
                 if (ImageGetter.imageExists(unitSpecificAttackAnimationLocation + "1"))
                     return unitSpecificAttackAnimationLocation
@@ -162,8 +163,8 @@ object BattleTableHelpers {
                 if (combatant.isCity()) {
                     val icon = tileGroup.layerImprovement.improvementIcon
                     if (icon != null) yield (icon)
-                } else if (!combatant.isAirUnit()) {
-                    val slot = tileGroup.layerUnitArt.getSpriteSlot(combatant.getMapUnitOrNull()!!)
+                } else if (combatant is MapUnitCombatantView && !combatant.getUnitView().isAirUnit()) {
+                    val slot = tileGroup.layerUnitArt.getSpriteSlot(combatant.getUnitView().getUnit())
                     if (slot != null) yieldAll(slot.spriteGroup.children)
                 }
             }

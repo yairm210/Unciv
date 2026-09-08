@@ -140,7 +140,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
     }
 
     private fun getIcon(combatantView: CombatantView) =
-        combatantView.getMapUnitOrNull()?.let { UnitIconGroup(it, 25f) }
+        (combatantView as? MapUnitCombatantView)?.let { UnitIconGroup(it.getUnitView().getUnit(), 25f) }
             ?: ImageGetter.getNationPortrait(combatantView.getCivInfo().getNation(), 25f)
 
     private val quarterScreen = worldScreen.stage.width / 4
@@ -195,7 +195,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
 
         val attackIcon = if (attacker.isRanged()) Fonts.rangedStrength else Fonts.strength
         val defenceIcon =
-            if (attacker.isRanged() && defender.isRanged() && !defender.isCity() && !defender.isEmbarked())
+            if (attacker.isRanged() && defender.isRanged() && !defender.isCity() && !(defender is MapUnitCombatantView && defender.getUnitView().isEmbarked()))
                 Fonts.rangedStrength
             else Fonts.strength // use strength icon if attacker is melee, defender is melee, defender is a city, or defender is embarked
         add(attacker.getAttackingStrength(defender).tr() + attackIcon)
@@ -224,16 +224,17 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
         }
 
         // from Battle.addXp(), check for can't gain more XP from Barbarians
-        if (attacker.hasReachedMaxXPFromBarbarians() && defender.getCivInfo().isBarbarian()) {
+        if (attacker is MapUnitCombatantView && attacker.getUnitView().hasReachedMaxXPFromBarbarians() && defender.getCivInfo().isBarbarian()) {
             add("Cannot gain more XP from Barbarians".toLabel(fontSize = 16).apply { wrap = true }).width(quarterScreen)
             row()
         }
 
+        val defenderIsCivilian = defender is MapUnitCombatantView && defender.getUnitView().isCivilian()
         if (!attacker.isRanged() &&
-                (defender.isCivilian() || defender.isCity() && defender.isDefeated())) {
+                (defenderIsCivilian || defender.isCity() && defender.isDefeated())) {
             add()
             val defeatedText = when {
-                !defender.isCivilian() -> "Occupied!"
+                !defenderIsCivilian -> "Occupied!"
                 defender.hasUnique(UniqueType.Uncapturable) -> ""
                 else -> "Captured!"
             }

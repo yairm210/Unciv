@@ -7,7 +7,6 @@ import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.battle.ICombatant
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.UnitType
@@ -24,8 +23,6 @@ sealed class CombatantView protected constructor(private val combatant: ICombata
 
     @Readonly fun getCivInfo(): ForeignCivView = gameView.getForeignCivView(combatant.getCivInfo())
     @Readonly fun getTile(): TileView = gameView.getTile(combatant.getTile())
-    /** The underlying unit for rendering purposes (icons, sprites) - `null` for cities. Deliberately not [ICombatant]. */
-    @Readonly fun getMapUnitOrNull(): MapUnit? = (combatant as? MapUnitCombatant)?.unit
 
     // Named to avoid clashing with the JVM getter of the `name` property some view classes already expose
     @Readonly fun getCombatantName(): String = combatant.getName()
@@ -39,13 +36,8 @@ sealed class CombatantView protected constructor(private val combatant: ICombata
     @Readonly fun getAttackSound(): UncivSound = combatant.getAttackSound()
 
     @Readonly fun isRanged(): Boolean = combatant.isRanged()
-    @Readonly fun isAirUnit(): Boolean = combatant.isAirUnit()
     @Readonly fun isCity(): Boolean = combatant.isCity()
-    @Readonly fun isCivilian(): Boolean = combatant.isCivilian()
-    @Readonly fun isEmbarked(): Boolean = combatant is MapUnitCombatant && combatant.unit.isEmbarked()
     @Readonly fun hasUnique(uniqueType: UniqueType): Boolean = combatant is MapUnitCombatant && combatant.hasUnique(uniqueType)
-    @Readonly fun hasReachedMaxXPFromBarbarians(): Boolean =
-        combatant is MapUnitCombatant && combatant.unit.promotions.totalXpProduced() >= combatant.unit.civ.gameInfo.ruleset.modOptions.constants.maxXPfromBarbarians
 
     // Battle math - identical for unit and city combatants
     @Readonly fun getAttackModifiers(defender: CombatantView, tileToAttackFrom: TileView): Map<String, Int> =
