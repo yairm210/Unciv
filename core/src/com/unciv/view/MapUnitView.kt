@@ -27,6 +27,17 @@ class MapUnitView internal constructor(
     // This is pure UI and should be migrated somewhere where it can be shared by both its usages
     @Readonly fun getMovementString(): String = unit.getMovementString()
     @Readonly fun getMovementDestination(): TileView = gameView.tileMapView.getTile(unit.getMovementDestination())
+    @Readonly fun isMoving(): Boolean = unit.isMoving()
+    @Readonly fun isExploring(): Boolean = unit.isExploring()
+    @Readonly fun isEscorting(): Boolean = unit.isEscorting()
+    @Readonly fun isSleeping(): Boolean = unit.isSleeping()
+    @Readonly fun isAutomated(): Boolean = unit.isAutomated()
+    @Readonly fun isSetUpForSiege(): Boolean = unit.isSetUpForSiege()
+    @Readonly fun getImprovementInProgress(): String? = unit.getTile().improvementInProgress
+    @Readonly fun canBuildCurrentImprovement(): Boolean {
+        val tile = unit.getTile()
+        return tile.improvementInProgress != null && unit.canBuildImprovement(tile.getTileImprovementInProgress()!!)
+    }
     /** `true` if [unit] was removed from its tile (captured, killed) since being selected. */
     @Readonly fun hasDisappeared(): Boolean = unit !in unit.getTile().getUnits()
 

@@ -179,15 +179,16 @@ class UnitIconGroup(val unitView: ForeignMapUnitView, val size: Float) : NonTran
     }
 
     private fun getActionImage(): Image? {
+        val unit = unitView.tryGetMapUnitView() ?: return null
         return when {
-            unitView.isSleeping() -> ImageGetter.getImage("UnitActionIcons/Sleep")
-            unitView.canBuildCurrentImprovement() ->
-                ImageGetter.getImage("ImprovementIcons/${unitView.getImprovementInProgress()}")
-            unitView.isEscorting() -> ImageGetter.getImage("UnitActionIcons/Escort")
-            unitView.isMoving() -> ImageGetter.getImage("UnitActionIcons/MoveTo")
-            unitView.isExploring() -> ImageGetter.getImage("UnitActionIcons/Explore")
-            unitView.isAutomated() -> ImageGetter.getImage("UnitActionIcons/Automate")
-            unitView.isSetUpForSiege() -> ImageGetter.getImage("UnitActionIcons/SetUp")
+            unit.isSleeping() -> ImageGetter.getImage("UnitActionIcons/Sleep")
+            unit.canBuildCurrentImprovement() ->
+                ImageGetter.getImage("ImprovementIcons/${unit.getImprovementInProgress()}")
+            unit.isEscorting() -> ImageGetter.getImage("UnitActionIcons/Escort")
+            unit.isMoving() -> ImageGetter.getImage("UnitActionIcons/MoveTo")
+            unit.isExploring() -> ImageGetter.getImage("UnitActionIcons/Explore")
+            unit.isAutomated() -> ImageGetter.getImage("UnitActionIcons/Automate")
+            unit.isSetUpForSiege() -> ImageGetter.getImage("UnitActionIcons/SetUp")
             else -> null
         }
     }

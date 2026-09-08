@@ -46,17 +46,6 @@ open class ForeignMapUnitView(internal open val unit: MapUnit, viewer: Civilizat
     // Rendering (icons/flags) - visible regardless of whether [unit] is ours
     @Readonly fun hasMovement(): Boolean = unit.hasMovement()
     @Readonly fun isIdle(): Boolean = unit.isIdle()
-    @Readonly fun isMoving(): Boolean = unit.isMoving()
-    @Readonly fun isExploring(): Boolean = unit.isExploring()
-    @Readonly fun isEscorting(): Boolean = unit.isEscorting()
     @Readonly fun isFortified(): Boolean = unit.isFortified()
     @Readonly fun isGuarding(): Boolean = unit.isGuarding()
-    @Readonly fun isSleeping(): Boolean = unit.isSleeping()
-    @Readonly fun isAutomated(): Boolean = unit.isAutomated()
-    @Readonly fun isSetUpForSiege(): Boolean = unit.isSetUpForSiege()
-    @Readonly fun getImprovementInProgress(): String? = unit.getTile().improvementInProgress
-    @Readonly fun canBuildCurrentImprovement(): Boolean {
-        val tile = unit.getTile()
-        return tile.improvementInProgress != null && unit.canBuildImprovement(tile.getTileImprovementInProgress()!!)
-    }
 }
